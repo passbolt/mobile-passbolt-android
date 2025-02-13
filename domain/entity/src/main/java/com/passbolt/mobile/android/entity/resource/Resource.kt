@@ -6,6 +6,7 @@ import androidx.room.ForeignKey.Companion.CASCADE
 import androidx.room.ForeignKey.Companion.SET_NULL
 import androidx.room.PrimaryKey
 import com.passbolt.mobile.android.entity.folder.Folder
+import com.passbolt.mobile.android.entity.metadata.MetadataKeyType
 import java.time.ZonedDateTime
 
 /**
@@ -54,7 +55,9 @@ data class Resource(
     val resourceTypeId: String,
     val favouriteId: String?,
     val modified: ZonedDateTime,
-    val expiry: ZonedDateTime?
+    val expiry: ZonedDateTime?,
+    val metadataKeyId: String?,
+    val metadataKeyType: MetadataKeyType?
 )
 
 @Entity(
@@ -103,5 +106,7 @@ data class ResourceWithMetadata(
     val favouriteId: String?,
     val modified: ZonedDateTime,
     val expiry: ZonedDateTime?,
-    val metadataJson: String
+    val metadataJson: String,
+    val metadataKeyId: String?,
+    val metadataKeyType: MetadataKeyType?
 )

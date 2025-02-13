@@ -9,6 +9,9 @@ import com.passbolt.mobile.android.core.mvp.authentication.plus
 import com.passbolt.mobile.android.core.resources.usecase.ResourceInteractor
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypesInteractor
 import com.passbolt.mobile.android.core.users.UsersInteractor
+import com.passbolt.mobile.android.featureflags.usecase.GetFeatureFlagsUseCase
+import com.passbolt.mobile.android.metadata.interactor.MetadataKeysInteractor
+import com.passbolt.mobile.android.metadata.interactor.MetadataSessionKeysInteractor
 
 /**
  * Passbolt - Open source password manager for teams
@@ -42,33 +45,62 @@ class HomeDataInteractor(
     private val groupsInteractor: GroupsInteractor,
     private val usersInteractor: UsersInteractor,
     private val resourceTypesInteractor: ResourceTypesInteractor,
+    private val metadataKeysInteractor: MetadataKeysInteractor,
+    private val metadataSessionKeysInteractor: MetadataSessionKeysInteractor,
+    private val featureFlagsUseCase: GetFeatureFlagsUseCase,
     private val resourcesFullRefreshIdlingResource: ResourcesFullRefreshIdlingResource
 ) {
 
+    // TODO start multiple async where possible
     suspend fun refreshAllHomeScreenData(): Output {
         resourcesFullRefreshIdlingResource.setIdle(false)
+        val featureFlagsOutput = featureFlagsUseCase.execute(Unit).featureFlags
+        val metadataKeysOutput = if (featureFlagsOutput.isV5MetadataAvailable) {
+            metadataKeysInteractor.fetchAndSaveMetadataKeys()
+        } else {
+            MetadataKeysInteractor.Output.Success
+        }
+        val metadataSessionKeysOutput = if (featureFlagsOutput.isV5MetadataAvailable) {
+            metadataSessionKeysInteractor.fetchMetadataSessionKeys()
+        } else {
+            MetadataSessionKeysInteractor.Output.Success
+        }
+
         val resourceTypesOutput = resourceTypesInteractor.fetchAndSaveResourceTypes()
         val userInteractorOutput = usersInteractor.fetchAndSaveUsers()
         val groupsRefreshOutput = groupsInteractor.fetchAndSaveGroups()
         val foldersRefreshOutput = foldersInteractor.fetchAndSaveFolders()
         val resourcesOutput = resourcesInteractor.fetchAndSaveResources()
+
+        val saveSessionKeysOutput = if (featureFlagsOutput.isV5MetadataAvailable) {
+            metadataSessionKeysInteractor.saveMetadataSessionKeysCache()
+        } else {
+            MetadataSessionKeysInteractor.Output.Success
+        }
+
         resourcesFullRefreshIdlingResource.setIdle(true)
 
         @Suppress("ComplexCondition")
-        return if (resourceTypesOutput is ResourceTypesInteractor.Output.Success &&
+        return if (metadataKeysOutput is MetadataKeysInteractor.Output.Success &&
+            metadataSessionKeysOutput is MetadataSessionKeysInteractor.Output.Success &&
+            resourceTypesOutput is ResourceTypesInteractor.Output.Success &&
             userInteractorOutput is UsersInteractor.Output.Success &&
             groupsRefreshOutput is GroupsInteractor.Output.Success &&
             foldersRefreshOutput is FoldersInteractor.Output.Success &&
-            resourcesOutput is ResourceInteractor.Output.Success
+            resourcesOutput is ResourceInteractor.Output.Success &&
+            saveSessionKeysOutput is MetadataSessionKeysInteractor.Output.Success
         ) {
             Output.Success
         } else {
             Output.Failure(
-                resourceTypesOutput.authenticationState +
+                metadataKeysOutput.authenticationState +
+                        metadataSessionKeysOutput.authenticationState +
+                        resourceTypesOutput.authenticationState +
                         userInteractorOutput.authenticationState +
                         groupsRefreshOutput.authenticationState +
                         foldersRefreshOutput.authenticationState +
-                        resourcesOutput.authenticationState
+                        resourcesOutput.authenticationState +
+                        saveSessionKeysOutput.authenticationState
             )
         }
     }

@@ -25,30 +25,31 @@ package com.passbolt.mobile.android.feature.otp.scanotpsuccess
 
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import com.passbolt.mobile.android.core.resources.actions.ResourceCreateActionsInteractor
 import com.passbolt.mobile.android.core.resources.actions.ResourceUpdateActionsInteractor
+import com.passbolt.mobile.android.core.resources.actions.performResourceCreateAction
 import com.passbolt.mobile.android.core.resources.actions.performResourceUpdateAction
-import com.passbolt.mobile.android.core.resources.interactor.create.CreateResourceInteractor
-import com.passbolt.mobile.android.core.resources.interactor.create.CreateStandaloneTotpResourceInteractor
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.PASSWORD_DESCRIPTION_TOTP
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.PASSWORD_WITH_DESCRIPTION
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.SIMPLE_PASSWORD
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.STANDALONE_TOTP
-import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
+import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
 import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
 import com.passbolt.mobile.android.resourcepicker.model.PickResourceAction
 import com.passbolt.mobile.android.serializers.jsonschema.SchemaEntity
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordAndDescription
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordDescriptionTotp
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5Default
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5DefaultWithTotp
 import com.passbolt.mobile.android.ui.ResourceModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import org.koin.core.parameter.parametersOf
+import java.util.UUID
 
 class ScanOtpSuccessPresenter(
-    private val createStandaloneTotpResourceInteractor: CreateStandaloneTotpResourceInteractor,
-    private val resourceTypeFactory: ResourceTypeFactory,
+    private val idToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : BaseAuthenticatedPresenter<ScanOtpSuccessContract.View>(coroutineLaunchContext),
     ScanOtpSuccessContract.Presenter, KoinComponent {
@@ -65,25 +66,27 @@ class ScanOtpSuccessPresenter(
     override fun createStandaloneOtpClick() {
         scope.launch {
             view?.showProgress()
-            when (val result = runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
-                createStandaloneTotpResourceInteractor.execute(
-                    createTotpResourceCommonCreateInput(),
-                    createTotpResourceCustomCreateInput()
-                )
-            }) {
-                is CreateResourceInteractor.Output.Failure<*> ->
-                    view?.showGenericError()
-                is CreateResourceInteractor.Output.OpenPgpError ->
-                    view?.showEncryptionError(result.message)
-                is CreateResourceInteractor.Output.PasswordExpired -> {
-                    /* will not happen in BaseAuthenticatedPresenter */
-                }
-                is CreateResourceInteractor.Output.Success -> {
-                    view?.navigateToOtpList(otpCreated = true)
-                }
-                is CreateResourceInteractor.Output.JsonSchemaValidationFailure ->
-                    handleSchemaValidationFailure(result.entity)
+            val resourceCreateActionsInteractor = get<ResourceCreateActionsInteractor> {
+                parametersOf(needSessionRefreshFlow, sessionRefreshedFlow)
             }
+            performResourceCreateAction(
+                action = {
+                    resourceCreateActionsInteractor.createStandaloneTotpResource(
+                        label = scannedTotp.label,
+                        resourceUsername = null,
+                        issuer = scannedTotp.issuer,
+                        period = scannedTotp.period,
+                        digits = scannedTotp.digits,
+                        algorithm = scannedTotp.algorithm.name,
+                        secretKey = scannedTotp.secret,
+                        resourceParentFolderId = null
+                    )
+                },
+                doOnFailure = { view?.showGenericError() },
+                doOnCryptoFailure = { view?.showEncryptionError(it) },
+                doOnSchemaValidationFailure = ::handleSchemaValidationFailure,
+                doOnSuccess = { view?.navigateToOtpList(otpCreated = true) }
+            )
             view?.hideProgress()
         }
     }
@@ -99,33 +102,44 @@ class ScanOtpSuccessPresenter(
         scope.launch {
             view?.showProgress()
 
+            val slug = idToSlugMappingProvider.provideMappingForSelectedAccount()[
+                UUID.fromString(resource.resourceTypeId)
+            ]
             val resourceUpdateActionsInteractor = get<ResourceUpdateActionsInteractor> {
                 parametersOf(resource, needSessionRefreshFlow, sessionRefreshedFlow)
             }
             val updateOperation =
-                when (resourceTypeFactory.getResourceTypeEnum(resource.resourceTypeId)) {
-                    SIMPLE_PASSWORD, STANDALONE_TOTP ->
-                        throw IllegalArgumentException("These resource types are not possible to link")
-                    PASSWORD_WITH_DESCRIPTION -> suspend {
+                when (val contentType = ContentType.fromSlug(slug!!)) {
+                    is PasswordAndDescription, V5Default -> suspend {
                         resourceUpdateActionsInteractor.addTotpToResource(
                             overrideName = resource.name,
-                            overrideUri = resource.url,
+                            overrideUri = if (contentType.isV5()) {
+                                resource.uris?.firstOrNull()
+                            } else {
+                                resource.uri
+                            },
                             period = scannedTotp.period,
                             digits = scannedTotp.digits,
                             algorithm = scannedTotp.algorithm.name,
                             secretKey = scannedTotp.secret
                         )
                     }
-                    PASSWORD_DESCRIPTION_TOTP -> suspend {
+                    is PasswordDescriptionTotp, V5DefaultWithTotp -> suspend {
                         resourceUpdateActionsInteractor.updateLinkedTotpResourceTotpFields(
                             label = resource.name,
-                            issuer = resource.url,
+                            issuer = if (contentType.isV5()) {
+                                resource.uris?.firstOrNull()
+                            } else {
+                                resource.uri
+                            },
                             period = scannedTotp.period,
                             digits = scannedTotp.digits,
                             algorithm = scannedTotp.algorithm.name,
                             secretKey = scannedTotp.secret
                         )
                     }
+                    else ->
+                        throw IllegalArgumentException("$slug resource type is not possible to link")
                 }
             performResourceUpdateAction(
                 action = updateOperation,
@@ -144,19 +158,8 @@ class ScanOtpSuccessPresenter(
         view?.navigateToResourcePicker()
     }
 
-    private fun createTotpResourceCommonCreateInput() =
-        CreateResourceInteractor.CommonInput(
-            resourceName = scannedTotp.label,
-            resourceUsername = null,
-            resourceUri = scannedTotp.issuer,
-            resourceParentFolderId = null
-        )
-
-    private fun createTotpResourceCustomCreateInput() =
-        CreateStandaloneTotpResourceInteractor.CreateStandaloneTotpInput(
-            period = scannedTotp.period,
-            digits = scannedTotp.digits,
-            algorithm = scannedTotp.algorithm.name,
-            secretKey = scannedTotp.secret
-        )
+    override fun detach() {
+        scope.coroutineContext.cancelChildren()
+        super<BaseAuthenticatedPresenter>.detach()
+    }
 }

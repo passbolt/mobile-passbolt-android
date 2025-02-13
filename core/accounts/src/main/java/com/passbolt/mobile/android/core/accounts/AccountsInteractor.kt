@@ -28,11 +28,11 @@ import com.passbolt.mobile.android.common.UuidProvider
 import com.passbolt.mobile.android.core.accounts.AccountsInteractor.InjectAccountFailureType.ACCOUNT_ALREADY_LINKED
 import com.passbolt.mobile.android.core.accounts.AccountsInteractor.InjectAccountFailureType.ERROR_NON_HTTPS_DOMAIN
 import com.passbolt.mobile.android.core.accounts.AccountsInteractor.InjectAccountFailureType.ERROR_WHEN_SAVING_PRIVATE_KEY
+import com.passbolt.mobile.android.core.accounts.usecase.accountdata.UpdateAccountDataUseCase
+import com.passbolt.mobile.android.core.accounts.usecase.accounts.CheckAccountExistsUseCase
+import com.passbolt.mobile.android.core.accounts.usecase.privatekey.SavePrivateKeyUseCase
+import com.passbolt.mobile.android.core.accounts.usecase.selectedaccount.SaveCurrentApiUrlUseCase
 import com.passbolt.mobile.android.core.navigation.AccountSetupDataModel
-import com.passbolt.mobile.android.storage.usecase.accountdata.UpdateAccountDataUseCase
-import com.passbolt.mobile.android.storage.usecase.accounts.CheckAccountExistsUseCase
-import com.passbolt.mobile.android.storage.usecase.privatekey.SavePrivateKeyUseCase
-import com.passbolt.mobile.android.storage.usecase.selectedaccount.SaveCurrentApiUrlUseCase
 
 typealias UserId = String
 

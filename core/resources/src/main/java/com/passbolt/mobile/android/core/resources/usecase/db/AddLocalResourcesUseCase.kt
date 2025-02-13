@@ -38,13 +38,13 @@ class AddLocalResourcesUseCase(
         val resourceMetadataDao = db.resourceMetadataDao()
         val resourceUriDao = db.resourceUriDao()
 
-        input.resourceModels.forEach {
-            resourcesDao.insert(resourceModelMapper.map(it))
-            resourceMetadataDao.insert(resourceModelMapper.mapResourceMetadata(it))
-            resourceModelMapper.mapResourceUri(it)?.let { uri ->
-                resourceUriDao.insert(uri)
-            }
-        }
+        val resources = input.resourceModels.map { resourceModelMapper.map(it) }
+        val resourceMetadata = input.resourceModels.map { resourceModelMapper.mapResourceMetadata(it) }
+        val resourceUris = input.resourceModels.mapNotNull { resourceModelMapper.mapResourceUri(it) }
+
+        resourcesDao.insertAll(resources)
+        resourceMetadataDao.insertAll(resourceMetadata)
+        resourceUriDao.insertAll(resourceUris)
     }
 
     data class Input(

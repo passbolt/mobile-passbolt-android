@@ -1,10 +1,13 @@
 package com.passbolt.mobile.android.core.resources.actions
 
 import androidx.annotation.VisibleForTesting
+import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType
 import com.passbolt.mobile.android.ui.ResourceModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.single
+import java.util.UUID
 
 /**
  * Passbolt - Open source password manager for teams
@@ -29,17 +32,28 @@ import kotlinx.coroutines.flow.single
  * @since v1.0
  */
 class ResourcePropertiesActionsInteractor(
-    private val resource: ResourceModel
+    private val resource: ResourceModel,
+    private val idToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider
 ) {
 
-    fun provideWebsiteUrl(): Flow<ResourcePropertyActionResult<String>> =
-        flowOf(
+    suspend fun provideWebsiteUrl(): Flow<ResourcePropertyActionResult<String>> {
+        val resourceContentType = ContentType.fromSlug(
+            idToSlugMappingProvider.provideMappingForSelectedAccount()[
+                UUID.fromString(resource.resourceTypeId)
+            ]!!
+        )
+        return flowOf(
             ResourcePropertyActionResult(
                 URL_LABEL,
                 isSecret = false,
-                resource.url.orEmpty()
+                if (resourceContentType.isV5()) {
+                    resource.uris?.firstOrNull()
+                } else {
+                    resource.uri
+                }.orEmpty()
             )
         )
+    }
 
     fun provideUsername(): Flow<ResourcePropertyActionResult<String>> =
         flowOf(
@@ -74,7 +88,7 @@ class ResourcePropertiesActionsInteractor(
 }
 
 suspend fun <T> performResourcePropertyAction(
-    action: () -> Flow<ResourcePropertyActionResult<T>>,
+    action: suspend () -> Flow<ResourcePropertyActionResult<T>>,
     doOnResult: (ResourcePropertyActionResult<T>) -> Unit
 ) {
     doOnResult(action().single())

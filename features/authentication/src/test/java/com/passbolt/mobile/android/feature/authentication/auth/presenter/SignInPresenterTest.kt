@@ -1,9 +1,13 @@
 package com.passbolt.mobile.android.feature.authentication.auth.presenter
 
+import com.passbolt.mobile.android.core.accounts.usecase.accountdata.IsServerFingerprintCorrectUseCase
+import com.passbolt.mobile.android.core.authenticationcore.passphrase.CheckIfPassphraseFileExistsUseCase
+import com.passbolt.mobile.android.core.authenticationcore.session.GetSessionUseCase
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.networking.NetworkResult
 import com.passbolt.mobile.android.core.policies.usecase.PasswordExpiryPoliciesInteractor
 import com.passbolt.mobile.android.core.policies.usecase.PasswordPoliciesInteractor
+import com.passbolt.mobile.android.core.preferences.usecase.GetGlobalPreferencesUseCase
 import com.passbolt.mobile.android.core.rbac.usecase.RbacInteractor
 import com.passbolt.mobile.android.core.users.profile.UserProfileInteractor
 import com.passbolt.mobile.android.dto.response.ChallengeResponseDto
@@ -13,17 +17,15 @@ import com.passbolt.mobile.android.feature.authentication.auth.challenge.Challen
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeProvider
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeVerifier
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.MfaStatus
-import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicPgpKeyUseCase
-import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicRsaKeyUseCase
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.FetchServerPublicPgpKeyUseCase
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.FetchServerPublicRsaKeyUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GopenPgpTimeUpdater
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignInFailureType
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignInUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.VerifyPassphraseUseCase
 import com.passbolt.mobile.android.featureflags.usecase.FeatureFlagsInteractor
-import com.passbolt.mobile.android.storage.usecase.accountdata.IsServerFingerprintCorrectUseCase
-import com.passbolt.mobile.android.storage.usecase.passphrase.CheckIfPassphraseFileExistsUseCase
-import com.passbolt.mobile.android.storage.usecase.preferences.GetGlobalPreferencesUseCase
-import com.passbolt.mobile.android.storage.usecase.session.GetSessionUseCase
+import com.passbolt.mobile.android.metadata.interactor.MetadataKeysSettingsInteractor
+import com.passbolt.mobile.android.metadata.interactor.MetadataTypesSettingsInteractor
 import com.passbolt.mobile.android.ui.CaseTypeModel
 import com.passbolt.mobile.android.ui.PassphraseGeneratorSettingsModel
 import com.passbolt.mobile.android.ui.PasswordExpirySettings
@@ -142,6 +144,16 @@ class SignInPresenterTest : KoinTest {
                 )
             )
         }
+        mockMetadataTypesSettingsInteractor.stub {
+            onBlocking { fetchAndSaveMetadataTypesSettings() }.doReturn(
+                MetadataTypesSettingsInteractor.Output.Success
+            )
+        }
+        mockMetadataKeysSettingsInteractor.stub {
+            onBlocking { fetchAndSaveMetadataKeysSettings() }.doReturn(
+                MetadataKeysSettingsInteractor.Output.Success
+            )
+        }
     }
 
     @Test
@@ -149,9 +161,9 @@ class SignInPresenterTest : KoinTest {
         mockVerifyPassphraseUseCase.stub {
             onBlocking { execute(any()) }.doReturn(VerifyPassphraseUseCase.Output(true))
         }
-        mockGetServerPublicPgpKeyUseCase.stub {
+        mockFetchServerPublicPgpKeyUseCase.stub {
             onBlocking { execute(any()) }.thenReturn(
-                GetServerPublicPgpKeyUseCase.Output.Failure(
+                FetchServerPublicPgpKeyUseCase.Output.Failure(
                     NetworkResult.Failure.NetworkError(UnknownHostException(), "")
                 )
             )
@@ -177,9 +189,9 @@ class SignInPresenterTest : KoinTest {
         mockVerifyPassphraseUseCase.stub {
             onBlocking { execute(any()) }.doReturn(VerifyPassphraseUseCase.Output(true))
         }
-        mockGetServerPublicPgpKeyUseCase.stub {
+        mockFetchServerPublicPgpKeyUseCase.stub {
             onBlocking { execute(any()) }.thenReturn(
-                GetServerPublicPgpKeyUseCase.Output.Failure(
+                FetchServerPublicPgpKeyUseCase.Output.Failure(
                     NetworkResult.Failure.ServerError(SocketTimeoutException(), headerMessage = "")
                 )
             )
@@ -205,17 +217,17 @@ class SignInPresenterTest : KoinTest {
         mockVerifyPassphraseUseCase.stub {
             onBlocking { execute(any()) }.doReturn(VerifyPassphraseUseCase.Output(true))
         }
-        mockGetServerPublicPgpKeyUseCase.stub {
+        mockFetchServerPublicPgpKeyUseCase.stub {
             onBlocking { execute(any()) }.thenReturn(
-                GetServerPublicPgpKeyUseCase.Output.Success(
+                FetchServerPublicPgpKeyUseCase.Output.Success(
                     "publicKey",
                     "fingerprint",
                     Instant.now().epochSecond
                 )
             )
         }
-        mockGetServerPublicRsaKeyUseCase.stub {
-            onBlocking { execute(any()) }.thenReturn(GetServerPublicRsaKeyUseCase.Output.Success("publicRsa"))
+        mockFetchServerPublicRsaKeyUseCase.stub {
+            onBlocking { execute(any()) }.thenReturn(FetchServerPublicRsaKeyUseCase.Output.Success("publicRsa"))
         }
         whenever(mockIsServerFingerprintCorrectUseCase.execute(any()))
             .doReturn(IsServerFingerprintCorrectUseCase.Output(true))
@@ -255,7 +267,8 @@ class SignInPresenterTest : KoinTest {
                         isRbacAvailable = true,
                         isPasswordExpiryAvailable = true,
                         arePasswordPoliciesAvailable = true,
-                        canUpdatePasswordPolicies = true
+                        canUpdatePasswordPolicies = true,
+                        isV5MetadataAvailable = false
                     )
                 )
             )
@@ -295,17 +308,17 @@ class SignInPresenterTest : KoinTest {
         mockVerifyPassphraseUseCase.stub {
             onBlocking { execute(any()) }.doReturn(VerifyPassphraseUseCase.Output(true))
         }
-        mockGetServerPublicPgpKeyUseCase.stub {
+        mockFetchServerPublicPgpKeyUseCase.stub {
             onBlocking { execute(any()) }.thenReturn(
-                GetServerPublicPgpKeyUseCase.Output.Success(
+                FetchServerPublicPgpKeyUseCase.Output.Success(
                     "publickKey",
                     "fingerprint",
                     Instant.now().epochSecond
                 )
             )
         }
-        mockGetServerPublicRsaKeyUseCase.stub {
-            onBlocking { execute(any()) }.thenReturn(GetServerPublicRsaKeyUseCase.Output.Success("publicRsa"))
+        mockFetchServerPublicRsaKeyUseCase.stub {
+            onBlocking { execute(any()) }.thenReturn(FetchServerPublicRsaKeyUseCase.Output.Success("publicRsa"))
         }
         mockChallengeProvider.stub {
             onBlocking { get(any(), any(), any(), any()) }.doReturn(
@@ -330,17 +343,17 @@ class SignInPresenterTest : KoinTest {
         mockVerifyPassphraseUseCase.stub {
             onBlocking { execute(any()) }.doReturn(VerifyPassphraseUseCase.Output(true))
         }
-        mockGetServerPublicPgpKeyUseCase.stub {
+        mockFetchServerPublicPgpKeyUseCase.stub {
             onBlocking { execute(any()) }.thenReturn(
-                GetServerPublicPgpKeyUseCase.Output.Success(
+                FetchServerPublicPgpKeyUseCase.Output.Success(
                     "publickKey",
                     "fingerprint",
                     Instant.now().epochSecond
                 )
             )
         }
-        mockGetServerPublicRsaKeyUseCase.stub {
-            onBlocking { execute(any()) }.thenReturn(GetServerPublicRsaKeyUseCase.Output.Success("publicRsa"))
+        mockFetchServerPublicRsaKeyUseCase.stub {
+            onBlocking { execute(any()) }.thenReturn(FetchServerPublicRsaKeyUseCase.Output.Success("publicRsa"))
         }
         mockChallengeProvider.stub {
             onBlocking { get(any(), any(), any(), any()) }.doReturn(
@@ -380,17 +393,17 @@ class SignInPresenterTest : KoinTest {
         mockVerifyPassphraseUseCase.stub {
             onBlocking { execute(any()) }.doReturn(VerifyPassphraseUseCase.Output(true))
         }
-        mockGetServerPublicPgpKeyUseCase.stub {
+        mockFetchServerPublicPgpKeyUseCase.stub {
             onBlocking { execute(any()) }.thenReturn(
-                GetServerPublicPgpKeyUseCase.Output.Success(
+                FetchServerPublicPgpKeyUseCase.Output.Success(
                     "publickKey",
                     "fingerprint",
                     Instant.now().epochSecond
                 )
             )
         }
-        mockGetServerPublicRsaKeyUseCase.stub {
-            onBlocking { execute(any()) }.thenReturn(GetServerPublicRsaKeyUseCase.Output.Success("publicRsa"))
+        mockFetchServerPublicRsaKeyUseCase.stub {
+            onBlocking { execute(any()) }.thenReturn(FetchServerPublicRsaKeyUseCase.Output.Success("publicRsa"))
         }
         mockIsServerFingerprintCorrectUseCase.stub {
             onBlocking { execute(any()) }.thenReturn(IsServerFingerprintCorrectUseCase.Output(true))
@@ -424,17 +437,17 @@ class SignInPresenterTest : KoinTest {
         mockVerifyPassphraseUseCase.stub {
             onBlocking { execute(any()) }.doReturn(VerifyPassphraseUseCase.Output(true))
         }
-        mockGetServerPublicPgpKeyUseCase.stub {
+        mockFetchServerPublicPgpKeyUseCase.stub {
             onBlocking { execute(any()) }.thenReturn(
-                GetServerPublicPgpKeyUseCase.Output.Success(
+                FetchServerPublicPgpKeyUseCase.Output.Success(
                     "publickKey",
                     "fingerprint",
                     Instant.now().epochSecond
                 )
             )
         }
-        mockGetServerPublicRsaKeyUseCase.stub {
-            onBlocking { execute(any()) }.thenReturn(GetServerPublicRsaKeyUseCase.Output.Success("publicRsa"))
+        mockFetchServerPublicRsaKeyUseCase.stub {
+            onBlocking { execute(any()) }.thenReturn(FetchServerPublicRsaKeyUseCase.Output.Success("publicRsa"))
         }
         mockIsServerFingerprintCorrectUseCase.stub {
             onBlocking { execute(any()) }.thenReturn(IsServerFingerprintCorrectUseCase.Output(false))
@@ -469,17 +482,17 @@ class SignInPresenterTest : KoinTest {
         mockVerifyPassphraseUseCase.stub {
             onBlocking { execute(any()) }.doReturn(VerifyPassphraseUseCase.Output(true))
         }
-        mockGetServerPublicPgpKeyUseCase.stub {
+        mockFetchServerPublicPgpKeyUseCase.stub {
             onBlocking { execute(any()) }.thenReturn(
-                GetServerPublicPgpKeyUseCase.Output.Success(
+                FetchServerPublicPgpKeyUseCase.Output.Success(
                     "publickKey",
                     "fingerprint",
                     Instant.now().epochSecond
                 )
             )
         }
-        mockGetServerPublicRsaKeyUseCase.stub {
-            onBlocking { execute(any()) }.thenReturn(GetServerPublicRsaKeyUseCase.Output.Success("publicRsa"))
+        mockFetchServerPublicRsaKeyUseCase.stub {
+            onBlocking { execute(any()) }.thenReturn(FetchServerPublicRsaKeyUseCase.Output.Success("publicRsa"))
         }
         mockChallengeProvider.stub {
             onBlocking { get(any(), any(), any(), any()) }.doReturn(
@@ -524,17 +537,17 @@ class SignInPresenterTest : KoinTest {
         mockVerifyPassphraseUseCase.stub {
             onBlocking { execute(any()) }.doReturn(VerifyPassphraseUseCase.Output(true))
         }
-        mockGetServerPublicPgpKeyUseCase.stub {
+        mockFetchServerPublicPgpKeyUseCase.stub {
             onBlocking { execute(any()) }.thenReturn(
-                GetServerPublicPgpKeyUseCase.Output.Success(
+                FetchServerPublicPgpKeyUseCase.Output.Success(
                     "publickKey",
                     "fingerprint",
                     Instant.now().epochSecond
                 )
             )
         }
-        mockGetServerPublicRsaKeyUseCase.stub {
-            onBlocking { execute(any()) }.thenReturn(GetServerPublicRsaKeyUseCase.Output.Success("publicRsa"))
+        mockFetchServerPublicRsaKeyUseCase.stub {
+            onBlocking { execute(any()) }.thenReturn(FetchServerPublicRsaKeyUseCase.Output.Success("publicRsa"))
         }
         mockChallengeProvider.stub {
             onBlocking { get(any(), any(), any(), any()) }.doReturn(

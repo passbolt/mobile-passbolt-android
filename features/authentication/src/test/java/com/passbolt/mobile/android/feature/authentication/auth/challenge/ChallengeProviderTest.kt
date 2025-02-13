@@ -1,12 +1,12 @@
 package com.passbolt.mobile.android.feature.authentication.auth.challenge
 
+import com.passbolt.mobile.android.core.accounts.usecase.privatekey.GetPrivateKeyUseCase
 import com.passbolt.mobile.android.feature.authentication.challengeTestModule
 import com.passbolt.mobile.android.feature.authentication.getPrivateKeyUseCase
 import com.passbolt.mobile.android.feature.authentication.openPgp
 import com.passbolt.mobile.android.feature.authentication.timeProvider
 import com.passbolt.mobile.android.feature.authentication.uuidProvider
 import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpResult
-import com.passbolt.mobile.android.storage.usecase.privatekey.GetPrivateKeyUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule

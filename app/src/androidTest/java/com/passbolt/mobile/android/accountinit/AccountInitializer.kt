@@ -1,13 +1,13 @@
 package com.passbolt.mobile.android.accountinit
 
+import com.passbolt.mobile.android.common.usecase.UserIdInput
+import com.passbolt.mobile.android.core.accounts.usecase.account.SaveAccountUseCase
+import com.passbolt.mobile.android.core.accounts.usecase.accountdata.UpdateAccountDataUseCase
+import com.passbolt.mobile.android.core.accounts.usecase.privatekey.SavePrivateKeyUseCase
+import com.passbolt.mobile.android.core.accounts.usecase.selectedaccount.SaveCurrentApiUrlUseCase
+import com.passbolt.mobile.android.core.accounts.usecase.selectedaccount.SaveSelectedAccountUseCase
+import com.passbolt.mobile.android.database.usecase.SaveResourcesDatabasePassphraseUseCase
 import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
-import com.passbolt.mobile.android.storage.usecase.account.SaveAccountUseCase
-import com.passbolt.mobile.android.storage.usecase.accountdata.UpdateAccountDataUseCase
-import com.passbolt.mobile.android.storage.usecase.database.SaveResourcesDatabasePassphraseUseCase
-import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
-import com.passbolt.mobile.android.storage.usecase.privatekey.SavePrivateKeyUseCase
-import com.passbolt.mobile.android.storage.usecase.selectedaccount.SaveCurrentApiUrlUseCase
-import com.passbolt.mobile.android.storage.usecase.selectedaccount.SaveSelectedAccountUseCase
 import org.koin.core.component.KoinComponent
 
 class AccountInitializer(

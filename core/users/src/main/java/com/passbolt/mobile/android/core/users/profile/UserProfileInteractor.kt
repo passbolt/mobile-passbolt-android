@@ -1,8 +1,8 @@
 package com.passbolt.mobile.android.core.users.profile
 
-import com.passbolt.mobile.android.storage.usecase.accountdata.UpdateAccountDataUseCase
-import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
-import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
+import com.passbolt.mobile.android.common.usecase.UserIdInput
+import com.passbolt.mobile.android.core.accounts.usecase.accountdata.UpdateAccountDataUseCase
+import com.passbolt.mobile.android.core.accounts.usecase.selectedaccount.GetSelectedAccountUseCase
 
 /**
  * Passbolt - Open source password manager for teams

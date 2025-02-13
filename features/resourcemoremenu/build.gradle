@@ -7,7 +7,6 @@ plugins {
 dependencies {
     implementation project(':common')
     implementation project(':architecture')
-    implementation project(':storage')
     implementation project(':mappers')
     implementation project(':ui')
     implementation project(':coreui')
@@ -24,6 +23,9 @@ dependencies {
     implementation project(':entity')
     implementation project(':rbac')
     implementation project(':idlingresource')
+    implementation project(':featureflags')
+    implementation project(':accounts')
+    implementation project(':jsonmodel')
 
     implementation libs.androidx.core
     implementation libs.appcompat

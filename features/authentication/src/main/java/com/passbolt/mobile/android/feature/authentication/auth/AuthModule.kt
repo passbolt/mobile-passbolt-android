@@ -13,16 +13,22 @@ import com.passbolt.mobile.android.feature.authentication.auth.presenter.Refresh
 import com.passbolt.mobile.android.feature.authentication.auth.presenter.SignInPresenter
 import com.passbolt.mobile.android.feature.authentication.auth.uistrategy.AuthStrategyFactory
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.BiometryInteractor
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.FetchServerPublicPgpKeyUseCase
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.FetchServerPublicRsaKeyUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetAndVerifyServerKeysAndTimeInteractor
-import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicPgpKeyUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicRsaKeyUseCase
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetSessionExpiryUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GopenPgpTimeUpdater
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.PostSignInActionsInteractor
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.RemoveAllAccountDataUseCase
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.RemoveServerPublicRsaKeyUseCase
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.SaveServerPublicRsaKeyUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignInUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignInVerifyInteractor
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.VerifyPassphraseUseCase
 import org.koin.core.module.Module
+import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.scopedOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier.named
@@ -57,8 +63,8 @@ fun Module.authModule() {
     scope(named<AuthFragment>()) {
         authPresenter()
 
-        scopedOf(::GetServerPublicPgpKeyUseCase)
-        scopedOf(::GetServerPublicRsaKeyUseCase)
+        scopedOf(::FetchServerPublicPgpKeyUseCase)
+        scopedOf(::FetchServerPublicRsaKeyUseCase)
         scopedOf(::SignInUseCase)
         scopedOf(::ChallengeProvider)
         scopedOf(::ChallengeDecryptor)
@@ -78,6 +84,12 @@ fun Module.authModule() {
     singleOf(::SignOutUseCase)
     singleOf(::BiometryInteractor)
     singleOf(::SignInIdlingResource)
+    singleOf(::SignInIdlingResource)
+    singleOf(::SaveServerPublicRsaKeyUseCase)
+    singleOf(::GetServerPublicRsaKeyUseCase)
+    singleOf(::RemoveServerPublicRsaKeyUseCase)
+    singleOf(::GetSessionExpiryUseCase)
+    factoryOf(::RemoveAllAccountDataUseCase)
 }
 
 private fun ScopeDSL.authPresenter() {

@@ -23,37 +23,41 @@
 
 package com.passbolt.mobile.android.core.resources.interactor.update
 
-import com.google.gson.Gson
+import com.passbolt.mobile.android.common.extension.stripPGPHeaders
+import com.passbolt.mobile.android.common.usecase.UserIdInput
+import com.passbolt.mobile.android.core.accounts.usecase.privatekey.GetPrivateKeyUseCase
+import com.passbolt.mobile.android.core.accounts.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticatedUseCaseOutput
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
 import com.passbolt.mobile.android.core.networking.MfaTypeProvider
 import com.passbolt.mobile.android.core.networking.NetworkResult
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.Companion.SLUG_PASSWORD_AND_DESCRIPTION
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.Companion.SLUG_PASSWORD_DESCRIPTION_TOTP
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.Companion.SLUG_SIMPLE_PASSWORD
+import com.passbolt.mobile.android.core.passphrasememorycache.PassphraseMemoryCache
+import com.passbolt.mobile.android.core.passphrasememorycache.PotentialPassphrase
+import com.passbolt.mobile.android.core.policies.usecase.GetPasswordExpirySettingsUseCase
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.GetResourceTypeIdToSlugMappingUseCase
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.SecretInput
 import com.passbolt.mobile.android.core.users.usecase.FetchUsersUseCase
-import com.passbolt.mobile.android.dto.request.CreateResourceDto
+import com.passbolt.mobile.android.dto.request.CreateV4ResourceDto
+import com.passbolt.mobile.android.dto.request.CreateV5ResourceDto
 import com.passbolt.mobile.android.dto.request.EncryptedSecret
 import com.passbolt.mobile.android.gopenpgp.OpenPgp
 import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpResult
+import com.passbolt.mobile.android.mappers.MetadataMapper
 import com.passbolt.mobile.android.mappers.ResourceModelMapper
 import com.passbolt.mobile.android.passboltapi.resource.ResourceRepository
+import com.passbolt.mobile.android.serializers.gson.MetadataEncryptor
 import com.passbolt.mobile.android.serializers.gson.validation.JsonSchemaValidationRunner
 import com.passbolt.mobile.android.serializers.jsonschema.SchemaEntity
 import com.passbolt.mobile.android.serializers.jsonschema.SchemaEntity.RESOURCE
 import com.passbolt.mobile.android.serializers.jsonschema.SchemaEntity.SECRET
 import com.passbolt.mobile.android.serializers.validationwrapper.PlainSecretValidationWrapper
-import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
-import com.passbolt.mobile.android.storage.cache.passphrase.PotentialPassphrase
-import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
-import com.passbolt.mobile.android.storage.usecase.policies.GetPasswordExpirySettingsUseCase
-import com.passbolt.mobile.android.storage.usecase.privatekey.GetPrivateKeyUseCase
-import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType
+import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes
 import com.passbolt.mobile.android.ui.EncryptedSecretOrError
 import com.passbolt.mobile.android.ui.ResourceModel
+import com.passbolt.mobile.android.ui.UpdateResourceModel
 import com.passbolt.mobile.android.ui.UserModel
+import org.koin.core.component.KoinComponent
 import java.time.ZonedDateTime
 
 class UpdateResourceInteractor(
@@ -63,78 +67,114 @@ class UpdateResourceInteractor(
     private val fetchUsersUseCase: FetchUsersUseCase,
     private val getResourceTypeIdToSlugMappingUseCase: GetResourceTypeIdToSlugMappingUseCase,
     private val jsonSchemaValidationRunner: JsonSchemaValidationRunner,
-    private val gson: Gson,
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
     private val getPrivateKeyUseCase: GetPrivateKeyUseCase,
     private val openPgp: OpenPgp,
-    private val passwordExpirySettingsUseCase: GetPasswordExpirySettingsUseCase
-) {
+    private val passwordExpirySettingsUseCase: GetPasswordExpirySettingsUseCase,
+    private val metadataMapper: MetadataMapper,
+    private val metadataEncryptor: MetadataEncryptor
+) : KoinComponent {
 
-    suspend fun execute(input: ResourceInput, secretInput: SecretInput): Output {
+    suspend fun execute(resourceInput: UpdateResourceModel, secretInput: SecretInput): Output {
         val passphrase = when (val result = passphraseMemoryCache.get()) {
             is PotentialPassphrase.Passphrase -> result.passphrase
             is PotentialPassphrase.PassphraseNotPresent -> return Output.PasswordExpired
         }
 
+        val isSecretValid = isSecretValid(
+            PlainSecretValidationWrapper(secretInput.secretModel.json, resourceInput.contentType)
+                .validationPlainSecret,
+            resourceInput.contentType
+        )
+        val isResourceValid = isResourceValid(resourceInput.json, resourceInput.contentType)
+
         return when (val usersWhoHaveAccess =
-            fetchUsersUseCase.execute(FetchUsersUseCase.Input(listOf(input.resourceId)))) {
+            fetchUsersUseCase.execute(FetchUsersUseCase.Input(listOf(resourceInput.resourceId)))) {
             is FetchUsersUseCase.Output.Failure<*> -> Output.Failure(usersWhoHaveAccess.response)
             is FetchUsersUseCase.Output.Success -> {
-                if (isSecretValid(
-                        PlainSecretValidationWrapper(secretInput.decryptedSecret.json, input.newResourceTypeSlug)
-                            .validationPlainSecret,
-                        input.newResourceTypeSlug
-                    )
-                ) {
-                    createResource(secretInput, passphrase, usersWhoHaveAccess, input)
+                if (isSecretValid && isResourceValid) {
+                    updateResource(secretInput, passphrase, usersWhoHaveAccess.users, resourceInput)
                 } else {
-                    Output.JsonSchemaValidationFailure(SECRET)
+                    if (!isSecretValid) {
+                        Output.JsonSchemaValidationFailure(SECRET)
+                    } else {
+                        Output.JsonSchemaValidationFailure(RESOURCE)
+                    }
                 }
             }
         }
     }
 
-    private suspend fun createResource(
+    private suspend fun updateResource(
         secretInput: SecretInput,
         passphrase: ByteArray,
-        usersWhoHaveAccess: FetchUsersUseCase.Output.Success,
-        resourceInput: ResourceInput
+        usersWhoHaveAccess: List<UserModel>,
+        resourceInput: UpdateResourceModel
     ): Output {
-        val encryptedSecrets = encrypt(secretInput.decryptedSecret.json, passphrase, usersWhoHaveAccess.users)
+        val encryptedSecrets = encrypt(secretInput.secretModel.json, passphrase, usersWhoHaveAccess)
         return if (encryptedSecrets.any { it is EncryptedSecretOrError.Error }) {
             Output.OpenPgpError(
                 encryptedSecrets.filterIsInstance<EncryptedSecretOrError.Error>().first().message
             )
         } else {
             val secrets = encryptedSecrets.filterIsInstance<EncryptedSecretOrError.EncryptedSecret>()
-            val createResourceDto = CreateResourceDto(
-                name = resourceInput.resourceName,
-                resourceTypeId = getResourceTypeIdForSlug(resourceInput.newResourceTypeSlug),
-                secrets = secrets.map { EncryptedSecret(it.userId, it.data) },
-                username = resourceInput.resourceUsername,
-                uri = resourceInput.resourceUri,
-                description = resourceInput.description,
-                folderParentId = resourceInput.resourceParentFolderId,
-                expiry = getResourceExpiry(resourceInput, secretInput)
-            )
-            if (isResourceValid(createResourceDto, resourceInput.newResourceTypeSlug)) {
-                when (val response = resourceRepository.updateResource(
-                    resourceInput.resourceId,
-                    createResourceDto
-                )) {
-                    is NetworkResult.Failure -> Output.Failure(response)
-                    is NetworkResult.Success -> Output.Success(resourceModelMapper.map(response.value.body))
-                }
+            val createResourceDto = if (SupportedContentTypes.v4Slugs.contains(resourceInput.contentType.slug)) {
+                CreateV4ResourceDto(
+                    name = resourceInput.name,
+                    resourceTypeId = getResourceTypeIdForSlug(resourceInput.contentType.slug),
+                    secrets = secrets.map { EncryptedSecret(it.userId, it.data) },
+                    username = resourceInput.username,
+                    uri = resourceInput.uri,
+                    description = resourceInput.description,
+                    folderParentId = resourceInput.folderId,
+                    expiry = getResourceExpiry(resourceInput, secretInput)
+                )
             } else {
-                Output.JsonSchemaValidationFailure(RESOURCE)
+                resourceInput.apply {
+                    this.objectType = "PASSBOLT_RESOURCE_METADATA"
+                    this.resourceTypeId = getResourceTypeIdForSlug(contentType.slug)
+                }
+
+                val encryptedMetadata = metadataEncryptor.encryptMetadata(
+                    resourceInput.metadataKeyType!!,
+                    resourceInput.metadataKeyId!!,
+                    resourceInput.json,
+                    passphrase
+                )
+                when (encryptedMetadata) {
+                    is MetadataEncryptor.Output.Success -> CreateV5ResourceDto(
+                        resourceTypeId = getResourceTypeIdForSlug(resourceInput.contentType.slug),
+                        secrets = secrets.map { EncryptedSecret(it.userId, it.data) },
+                        folderParentId = resourceInput.folderId,
+                        expiry = getResourceExpiry(resourceInput, secretInput),
+                        // FIXME temporary solution to satisfy web-extension validation
+                        metadata = encryptedMetadata.encryptedMetadata.stripPGPHeaders(),
+                        metadataKeyId = resourceInput.metadataKeyId,
+                        metadataKeyType = metadataMapper.mapToDto(resourceInput.metadataKeyType)
+                    )
+                    is MetadataEncryptor.Output.Failure -> return Output.OpenPgpError(
+                        encryptedMetadata.error?.message.orEmpty()
+                    )
+                }
+            }
+
+            return when (val response = resourceRepository.updateResource(
+                resourceInput.resourceId,
+                createResourceDto
+            )) {
+                is NetworkResult.Failure -> Output.Failure(response)
+                is NetworkResult.Success -> Output.Success(resourceModelMapper.map(response.value.body))
             }
         }
     }
 
     @Suppress("NestedBlockDepth")
     // https://drive.google.com/file/d/1lqiF0ajpuvx1xaZ74aSSjxiDLMGPBXVa/view?usp=drive_link
-    private suspend fun getResourceExpiry(resourceInput: ResourceInput, secretInput: SecretInput): ZonedDateTime? {
-        return if (resourcesSlugsSupportingExpiry.contains(resourceInput.newResourceTypeSlug)) {
+    private suspend fun getResourceExpiry(
+        resourceInput: UpdateResourceModel,
+        secretInput: SecretInput
+    ): ZonedDateTime? {
+        return if (SupportedContentTypes.resourcesSlugsSupportingExpiry.contains(resourceInput.contentType)) {
             val expirySettings = passwordExpirySettingsUseCase.execute(Unit).expirySettings
             if (expirySettings.automaticUpdate) {
                 if (secretInput.passwordChanged) {
@@ -173,11 +213,11 @@ class UpdateResourceInteractor(
             }
         }
 
-    private suspend fun isSecretValid(plainSecret: String, slug: String) =
-        jsonSchemaValidationRunner.isSecretValid(plainSecret, slug)
+    private suspend fun isSecretValid(plainSecret: String, contenType: ContentType) =
+        jsonSchemaValidationRunner.isSecretValid(plainSecret, contenType.slug)
 
-    private suspend fun isResourceValid(createResourceDto: CreateResourceDto, slug: String) =
-        jsonSchemaValidationRunner.isResourceValid(gson.toJson(createResourceDto), slug)
+    private suspend fun isResourceValid(plainResourceMetadataJson: String, contentType: ContentType) =
+        jsonSchemaValidationRunner.isResourceValid(plainResourceMetadataJson, contentType.slug)
 
     private suspend fun getResourceTypeIdForSlug(slug: String) =
         getResourceTypeIdToSlugMappingUseCase.execute(Unit)
@@ -186,17 +226,6 @@ class UpdateResourceInteractor(
             .keys
             .first()
             .toString()
-
-    data class ResourceInput(
-        val resourceId: String,
-        val resourceName: String,
-        val resourceUsername: String?,
-        val resourceUri: String?,
-        val resourceParentFolderId: String?,
-        val description: String?,
-        val newResourceTypeSlug: String,
-        val expiry: ZonedDateTime?
-    )
 
     sealed class Output : AuthenticatedUseCaseOutput {
 
@@ -230,13 +259,5 @@ class UpdateResourceInteractor(
         data class OpenPgpError(val message: String) : Output()
 
         data class JsonSchemaValidationFailure(val entity: SchemaEntity) : Output()
-    }
-
-    private companion object {
-        private val resourcesSlugsSupportingExpiry = setOf(
-            SLUG_PASSWORD_AND_DESCRIPTION,
-            SLUG_SIMPLE_PASSWORD,
-            SLUG_PASSWORD_DESCRIPTION_TOTP
-        )
     }
 }

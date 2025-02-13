@@ -10,9 +10,9 @@ dependencies {
     implementation project(':passboltapi')
     implementation project(':architecture')
     implementation project(':mappers')
-    implementation project(':storage')
     implementation project(':database')
     implementation project(':entity')
+    implementation project(':accounts')
 
     implementation libs.koin
     implementation libs.room.core

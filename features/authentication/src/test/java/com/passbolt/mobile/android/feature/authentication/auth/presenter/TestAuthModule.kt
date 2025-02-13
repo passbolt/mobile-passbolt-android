@@ -1,17 +1,30 @@
 package com.passbolt.mobile.android.feature.authentication.auth.presenter
 
 import com.passbolt.mobile.android.common.FingerprintInformationProvider
+import com.passbolt.mobile.android.common.usecase.UserIdInput
 import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
+import com.passbolt.mobile.android.core.accounts.usecase.accountdata.GetAccountDataUseCase
+import com.passbolt.mobile.android.core.accounts.usecase.accountdata.IsServerFingerprintCorrectUseCase
+import com.passbolt.mobile.android.core.accounts.usecase.accountdata.SaveServerFingerprintUseCase
+import com.passbolt.mobile.android.core.accounts.usecase.biometrickey.RemoveBiometricKeyUseCase
+import com.passbolt.mobile.android.core.accounts.usecase.privatekey.GetPrivateKeyUseCase
+import com.passbolt.mobile.android.core.authenticationcore.passphrase.CheckIfPassphraseFileExistsUseCase
+import com.passbolt.mobile.android.core.authenticationcore.passphrase.GetPassphraseUseCase
+import com.passbolt.mobile.android.core.authenticationcore.passphrase.RemoveAllAccountsPassphrasesUseCase
+import com.passbolt.mobile.android.core.authenticationcore.session.GetSessionUseCase
 import com.passbolt.mobile.android.core.idlingresource.SignInIdlingResource
 import com.passbolt.mobile.android.core.inappreview.InAppReviewInteractor
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
+import com.passbolt.mobile.android.core.passphrasememorycache.PassphraseMemoryCache
 import com.passbolt.mobile.android.core.policies.usecase.PasswordExpiryPoliciesInteractor
 import com.passbolt.mobile.android.core.policies.usecase.PasswordPoliciesInteractor
+import com.passbolt.mobile.android.core.preferences.usecase.GetGlobalPreferencesUseCase
 import com.passbolt.mobile.android.core.rbac.usecase.RbacInteractor
 import com.passbolt.mobile.android.core.security.rootdetection.RootDetectorImpl
 import com.passbolt.mobile.android.core.security.runtimeauth.RuntimeAuthenticatedFlag
 import com.passbolt.mobile.android.core.users.profile.UserProfileInteractor
+import com.passbolt.mobile.android.encryptedstorage.biometric.BiometricCipher
 import com.passbolt.mobile.android.feature.authentication.auth.AuthContract
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeDecryptor
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeProvider
@@ -19,29 +32,19 @@ import com.passbolt.mobile.android.feature.authentication.auth.challenge.Challen
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.MfaStatusProvider
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.BiometryInteractor
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetAndVerifyServerKeysAndTimeInteractor
-import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicPgpKeyUseCase
-import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicRsaKeyUseCase
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.FetchServerPublicPgpKeyUseCase
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.FetchServerPublicRsaKeyUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GopenPgpTimeUpdater
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.PostSignInActionsInteractor
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.RefreshSessionUseCase
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.SaveServerPublicRsaKeyUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignInUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignInVerifyInteractor
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.VerifyPassphraseUseCase
 import com.passbolt.mobile.android.featureflags.usecase.FeatureFlagsInteractor
-import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
-import com.passbolt.mobile.android.storage.encrypted.biometric.BiometricCipher
-import com.passbolt.mobile.android.storage.usecase.accountdata.GetAccountDataUseCase
-import com.passbolt.mobile.android.storage.usecase.accountdata.IsServerFingerprintCorrectUseCase
-import com.passbolt.mobile.android.storage.usecase.accountdata.SaveServerFingerprintUseCase
-import com.passbolt.mobile.android.storage.usecase.biometrickey.RemoveBiometricKeyUseCase
-import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
-import com.passbolt.mobile.android.storage.usecase.passphrase.CheckIfPassphraseFileExistsUseCase
-import com.passbolt.mobile.android.storage.usecase.passphrase.GetPassphraseUseCase
-import com.passbolt.mobile.android.storage.usecase.passphrase.RemoveAllAccountsPassphrasesUseCase
-import com.passbolt.mobile.android.storage.usecase.preferences.GetGlobalPreferencesUseCase
-import com.passbolt.mobile.android.storage.usecase.privatekey.GetPrivateKeyUseCase
-import com.passbolt.mobile.android.storage.usecase.session.GetSessionUseCase
+import com.passbolt.mobile.android.metadata.interactor.MetadataKeysSettingsInteractor
+import com.passbolt.mobile.android.metadata.interactor.MetadataTypesSettingsInteractor
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.scope.Scope
@@ -106,9 +109,9 @@ internal val mockPrivateKeyUseCase = mock<GetPrivateKeyUseCase> {
 internal val mockVerifyPassphraseUseCase = mock<VerifyPassphraseUseCase>()
 internal val mockCheckIfPassphraseExistsUseCase = mock<CheckIfPassphraseFileExistsUseCase>()
 
-internal val mockGetServerPublicPgpKeyUseCase = mock<GetServerPublicPgpKeyUseCase>()
+internal val mockFetchServerPublicPgpKeyUseCase = mock<FetchServerPublicPgpKeyUseCase>()
 internal val mockRemoveAllAccountsPassphraseUseCase = mock<RemoveAllAccountsPassphrasesUseCase>()
-internal val mockGetServerPublicRsaKeyUseCase = mock<GetServerPublicRsaKeyUseCase>()
+internal val mockFetchServerPublicRsaKeyUseCase = mock<FetchServerPublicRsaKeyUseCase>()
 internal val mockChallengeProvider = mock<ChallengeProvider>()
 internal val mockSignInUseCase = mock<SignInUseCase>()
 internal val mockChallengeDecryptor = mock<ChallengeDecryptor>()
@@ -138,16 +141,20 @@ internal val mockGopenPgpTimeUpdater = mock<GopenPgpTimeUpdater>()
 internal val mockRbacInteractor = mock<RbacInteractor>()
 internal val mockPasswordExpiryPoliciesInteractor = mock<PasswordExpiryPoliciesInteractor>()
 internal val mockPasswordPoliciesInteractor = mock<PasswordPoliciesInteractor>()
+internal val mockMetadataTypesSettingsInteractor = mock<MetadataTypesSettingsInteractor>()
+internal val mockMetadataKeysSettingsInteractor = mock<MetadataKeysSettingsInteractor>()
+internal val mockSaveServerPublicRsaKeyUseCase = mock<SaveServerPublicRsaKeyUseCase>()
 
 @ExperimentalCoroutinesApi
 val testAuthModule = module {
     factory {
         GetAndVerifyServerKeysAndTimeInteractor(
-            getServerPublicPgpKeyUseCase = mockGetServerPublicPgpKeyUseCase,
-            getServerPublicRsaKeyUseCase = mockGetServerPublicRsaKeyUseCase,
+            fetchServerPublicPgpKeyUseCase = mockFetchServerPublicPgpKeyUseCase,
+            fetchServerPublicRsaKeyUseCase = mockFetchServerPublicRsaKeyUseCase,
             getAccountDataUseCase = mockGetAccountDataUseCase,
             isServerFingerprintCorrectUseCase = mockIsServerFingerprintCorrectUseCase,
-            gopenPgpTimeUpdater = mockGopenPgpTimeUpdater
+            gopenPgpTimeUpdater = mockGopenPgpTimeUpdater,
+            saveServerPublicRsaKeyUseCase = mockSaveServerPublicRsaKeyUseCase
         )
     }
     factory {
@@ -174,7 +181,9 @@ val testAuthModule = module {
             rbacInteractor = mockRbacInteractor,
             userProfileInteractor = mockProfileInteractor,
             passwordExpiryPoliciesInteractor = mockPasswordExpiryPoliciesInteractor,
-            passwordPoliciesInteractor = mockPasswordPoliciesInteractor
+            passwordPoliciesInteractor = mockPasswordPoliciesInteractor,
+            metadataTypesSettingsInteractor = mockMetadataTypesSettingsInteractor,
+            metadataKeysSettingsInteractor = mockMetadataKeysSettingsInteractor
         )
     }
     single { RuntimeAuthenticatedFlag() }

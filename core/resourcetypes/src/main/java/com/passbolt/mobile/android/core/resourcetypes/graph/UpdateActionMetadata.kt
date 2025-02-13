@@ -23,9 +23,9 @@
 
 package com.passbolt.mobile.android.core.resourcetypes.graph
 
-import com.passbolt.mobile.android.core.resourcetypes.graph.base.Slug
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType
 
 data class UpdateActionMetadata(
     val action: UpdateAction,
-    val newResourceTypeSlug: Slug
+    val newResourceType: ContentType
 )

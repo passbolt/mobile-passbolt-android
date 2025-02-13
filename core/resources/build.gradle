@@ -7,7 +7,6 @@ plugins {
 dependencies {
     implementation project(':common')
     implementation project(':architecture')
-    implementation project(':storage')
     implementation project(':mappers')
     implementation project(':ui')
     implementation project(':dto')
@@ -23,11 +22,18 @@ dependencies {
     implementation project(':tags')
     implementation project(':serializers')
     implementation project(':policies')
+    implementation project(':supportedresourcetypes')
+    implementation project(':folders')
+    implementation project(':accounts')
+    implementation project(':passphrasememorycache')
+    implementation project(':metadata')
+    implementation project(':jsonmodel')
 
     implementation libs.gson
     implementation libs.room.core
     implementation(libs.sqlite.cipher) { artifact { type = "aar" } }
     implementation libs.koin
+    implementation libs.json.path
 }
 
 android {

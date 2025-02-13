@@ -63,23 +63,6 @@ Run extensive verifications:
       - build/dependencyUpdates/dependecyUpdates.txt
       - build/reports/build-health-report.txt
 
-# run instrumented tests on Sauce Labs
-Run instrumented tests on Sauce Labs:
-  stage: Instrumented tests
-  script:
-    - >
-      ./gradlew --no-daemon --build-cache 
-      assembleDebug assembleAndroidTest
-    - saucectl configure --username $SAUCELABS_USERNAME --accessKey $SAUCELABS_ACCESS_KEY
-    - saucectl run --build $CI_PIPELINE_ID
-  when: manual
-  artifacts:
-    when: always
-    expire_in: 72hrs
-    paths:
-      - "**/reports/saucelabs/"
-  allow_failure: true
-
   # build and upload QA application to Firebase App Distribution
 Deploy qa application to Firebase:
   stage: Deploy

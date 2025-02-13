@@ -25,7 +25,7 @@ package com.passbolt.mobile.android.feature.settings.termsandlicenses
 
 import com.passbolt.mobile.android.entity.featureflags.FeatureFlagsModel
 import com.passbolt.mobile.android.feature.settings.screen.termsandlicenses.TermsAndLicensesSettingsContract
-import com.passbolt.mobile.android.storage.usecase.featureflags.GetFeatureFlagsUseCase
+import com.passbolt.mobile.android.featureflags.usecase.GetFeatureFlagsUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Before
 import org.junit.Rule
@@ -68,7 +68,8 @@ class TermsAndLicensesSettingsPresenterTest : KoinTest {
                         isRbacAvailable = true,
                         isPasswordExpiryAvailable = true,
                         arePasswordPoliciesAvailable = true,
-                        canUpdatePasswordPolicies = true
+                        canUpdatePasswordPolicies = true,
+                        isV5MetadataAvailable = false
                     )
                 )
             )
@@ -90,7 +91,8 @@ class TermsAndLicensesSettingsPresenterTest : KoinTest {
                         isRbacAvailable = true,
                         isPasswordExpiryAvailable = true,
                         arePasswordPoliciesAvailable = true,
-                        canUpdatePasswordPolicies = true
+                        canUpdatePasswordPolicies = true,
+                        isV5MetadataAvailable = false
                     )
                 )
             )
@@ -130,7 +132,8 @@ class TermsAndLicensesSettingsPresenterTest : KoinTest {
             isRbacAvailable = true,
             isPasswordExpiryAvailable = true,
             arePasswordPoliciesAvailable = true,
-            canUpdatePasswordPolicies = true
+            canUpdatePasswordPolicies = true,
+            isV5MetadataAvailable = false
         )
         getFeatureFlagsUseCase.stub {
             onBlocking { execute(Unit) }.doReturn(

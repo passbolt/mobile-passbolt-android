@@ -1,0 +1,39 @@
+plugins {
+    alias libs.plugins.android.library
+    alias libs.plugins.kotlin.gradle
+}
+
+dependencies {
+    implementation project(':architecture')
+    implementation project(':common')
+
+    implementation libs.koin
+    implementation libs.lifecycle.annotationprocessor
+    implementation libs.lifecycle.process
+
+    androidTestImplementation project(":commontest")
+    androidTestImplementation libs.koin.test
+    androidTestImplementation libs.koin.test.junit
+    androidTestImplementation libs.kotlin.coroutines.test
+    androidTestImplementation libs.android.tests.runner
+    androidTestImplementation libs.android.test.rules
+}
+
+android {
+    namespace = "com.passbolt.mobile.android.core.storage"
+    defaultConfig {
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    useLibrary("android.test.runner")
+    useLibrary("android.test.base")
+    useLibrary("android.test.mock")
+
+    packagingOptions {
+        exclude "META-INF/{AL2.0,LGPL2.1}"
+    }
+}
+
+kotlin {
+    jvmToolchain(17)
+}

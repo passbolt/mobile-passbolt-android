@@ -1,15 +1,15 @@
 package com.passbolt.mobile.android.feature.authentication.accountslist
 
+import com.passbolt.mobile.android.common.usecase.UserIdInput
+import com.passbolt.mobile.android.core.accounts.usecase.accounts.GetAllAccountsDataUseCase
+import com.passbolt.mobile.android.core.accounts.usecase.selectedaccount.GetSelectedAccountUseCase
+import com.passbolt.mobile.android.core.accounts.usecase.selectedaccount.SaveCurrentApiUrlUseCase
+import com.passbolt.mobile.android.core.accounts.usecase.selectedaccount.SaveSelectedAccountUseCase
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.database.DatabaseProvider
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.RemoveAllAccountDataUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
 import com.passbolt.mobile.android.mappers.AccountModelMapper
-import com.passbolt.mobile.android.storage.usecase.accountdata.RemoveAllAccountDataUseCase
-import com.passbolt.mobile.android.storage.usecase.accounts.GetAllAccountsDataUseCase
-import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
-import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
-import com.passbolt.mobile.android.storage.usecase.selectedaccount.SaveCurrentApiUrlUseCase
-import com.passbolt.mobile.android.storage.usecase.selectedaccount.SaveSelectedAccountUseCase
 import com.passbolt.mobile.android.ui.AccountModelUi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -47,7 +47,7 @@ class AccountsListPresenter(
     private val signOutUseCase: SignOutUseCase,
     private val saveCurrentApiUrlUseCase: SaveCurrentApiUrlUseCase,
     private val databaseProvider: DatabaseProvider,
-    private val coroutineLaunchContext: CoroutineLaunchContext
+    coroutineLaunchContext: CoroutineLaunchContext
 ) : AccountsListContract.Presenter {
 
     override var view: AccountsListContract.View? = null
@@ -67,8 +67,10 @@ class AccountsListPresenter(
     }
 
     private fun displayAccounts() {
+        val selectedAccount = getSelectedAccountUseCase.execute(Unit).selectedAccount
         accounts = accountModelMapper.map(
-            getAllAccountsDataUseCase.execute(Unit).accounts
+            getAllAccountsDataUseCase.execute(Unit).accounts,
+            selectedAccount
         )
         view?.showAccounts(accounts)
     }
@@ -107,7 +109,7 @@ class AccountsListPresenter(
 
     private fun removeModeOn(isOn: Boolean) {
         accounts = accounts
-            .filterIsInstance(AccountModelUi.AccountModel::class.java)
+            .filterIsInstance<AccountModelUi.AccountModel>()
             .map { it.copy(isTrashIconVisible = isOn) }
             .let {
                 if (!isOn) it + AccountModelUi.AddNewAccount else it

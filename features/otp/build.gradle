@@ -24,7 +24,6 @@ dependencies {
     implementation project(':authentication')
     implementation project(':fulldatarefresh')
     implementation project(':home')
-    implementation project(':storage')
     implementation project(':navigation')
     implementation project(':security')
     implementation project(':qrscan')
@@ -46,6 +45,8 @@ dependencies {
     implementation project(':otpmoremenu')
     implementation project(':createotpmanually')
     implementation project(':serializers')
+    implementation project(':accounts')
+    implementation project(':jsonmodel')
 
     implementation libs.navigation.fragment
     implementation libs.navigation.ui
@@ -64,6 +65,7 @@ dependencies {
 
     testImplementation project(':commontest')
     testImplementation libs.gson
+    testImplementation libs.json.path
 }
 
 android {

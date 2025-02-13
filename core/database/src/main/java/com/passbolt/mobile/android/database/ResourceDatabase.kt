@@ -7,14 +7,14 @@ import com.passbolt.mobile.android.database.impl.folderandgroupscrossref.FolderA
 import com.passbolt.mobile.android.database.impl.folderanduserscrossref.FoldersAndUsersCrossRefDao
 import com.passbolt.mobile.android.database.impl.folders.FoldersDao
 import com.passbolt.mobile.android.database.impl.groups.GroupsDao
+import com.passbolt.mobile.android.database.impl.metadata.MetadataKeysDao
+import com.passbolt.mobile.android.database.impl.metadata.MetadataPrivateKeysDao
 import com.passbolt.mobile.android.database.impl.metadata.ResourceMetadataDao
 import com.passbolt.mobile.android.database.impl.metadata.ResourceUriDao
 import com.passbolt.mobile.android.database.impl.resourceandgroupscrossref.ResourceAndGroupsCrossRefDao
 import com.passbolt.mobile.android.database.impl.resourceandtagcrossref.ResourcesAndTagsCrossRefDao
 import com.passbolt.mobile.android.database.impl.resourceanduserscrossref.ResourcesAndUsersCrossRefDao
 import com.passbolt.mobile.android.database.impl.resources.ResourcesDao
-import com.passbolt.mobile.android.database.impl.resourcetypes.ResourceFieldsDao
-import com.passbolt.mobile.android.database.impl.resourcetypes.ResourceTypesAndFieldsCrossRefDao
 import com.passbolt.mobile.android.database.impl.resourcetypes.ResourceTypesDao
 import com.passbolt.mobile.android.database.impl.tags.TagsDao
 import com.passbolt.mobile.android.database.impl.users.UsersDao
@@ -26,12 +26,12 @@ import com.passbolt.mobile.android.entity.group.FolderAndGroupsCrossRef
 import com.passbolt.mobile.android.entity.group.ResourceAndGroupsCrossRef
 import com.passbolt.mobile.android.entity.group.UsersAndGroupCrossRef
 import com.passbolt.mobile.android.entity.group.UsersGroup
+import com.passbolt.mobile.android.entity.metadata.MetadataKey
+import com.passbolt.mobile.android.entity.metadata.MetadataPrivateKey
 import com.passbolt.mobile.android.entity.resource.Resource
 import com.passbolt.mobile.android.entity.resource.ResourceAndTagsCrossRef
-import com.passbolt.mobile.android.entity.resource.ResourceField
 import com.passbolt.mobile.android.entity.resource.ResourceMetadata
 import com.passbolt.mobile.android.entity.resource.ResourceType
-import com.passbolt.mobile.android.entity.resource.ResourceTypesAndFieldsCrossRef
 import com.passbolt.mobile.android.entity.resource.ResourceUri
 import com.passbolt.mobile.android.entity.resource.Tag
 import com.passbolt.mobile.android.entity.user.ResourceAndUsersCrossRef
@@ -65,8 +65,6 @@ import com.passbolt.mobile.android.entity.user.User
         Resource::class,
         Folder::class,
         ResourceType::class,
-        ResourceField::class,
-        ResourceTypesAndFieldsCrossRef::class,
         Tag::class,
         ResourceAndTagsCrossRef::class,
         UsersGroup::class,
@@ -77,9 +75,11 @@ import com.passbolt.mobile.android.entity.user.User
         FolderAndUsersCrossRef::class,
         FolderAndGroupsCrossRef::class,
         ResourceMetadata::class,
-        ResourceUri::class
+        ResourceUri::class,
+        MetadataKey::class,
+        MetadataPrivateKey::class
     ],
-    version = 16
+    version = 17
 )
 @TypeConverters(Converters::class)
 abstract class ResourceDatabase : RoomDatabase() {
@@ -91,10 +91,6 @@ abstract class ResourceDatabase : RoomDatabase() {
     abstract fun resourceUriDao(): ResourceUriDao
 
     abstract fun resourceTypesDao(): ResourceTypesDao
-
-    abstract fun resourceFieldsDao(): ResourceFieldsDao
-
-    abstract fun resourceTypesAndFieldsCrossRefDao(): ResourceTypesAndFieldsCrossRefDao
 
     abstract fun foldersDao(): FoldersDao
 
@@ -115,4 +111,8 @@ abstract class ResourceDatabase : RoomDatabase() {
     abstract fun folderAndGroupsCrossRefDao(): FolderAndGroupsCrossRefDao
 
     abstract fun folderAndUsersCrossRefDao(): FoldersAndUsersCrossRefDao
+
+    abstract fun metadataKeysDao(): MetadataKeysDao
+
+    abstract fun metadataPrivateKeysDao(): MetadataPrivateKeysDao
 }

@@ -6,13 +6,16 @@ plugins {
 
 dependencies {
     implementation project(':common')
-    implementation project(':storage')
-    implementation project(':navigation')
+    implementation project(':encryptedstorage')
     implementation project(':gopenpgp')
     implementation project(':dto')
+    implementation project(':entity')
+    implementation project(':navigation')
+    implementation project(':ui')
 
     implementation libs.koin
     implementation libs.kotlin.serializationjson
+    implementation libs.security
 }
 
 android {

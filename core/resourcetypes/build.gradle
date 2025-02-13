@@ -5,7 +5,6 @@ plugins {
 
 dependencies {
     implementation project(':common')
-    implementation project(':storage')
     implementation project(':database')
     implementation project(':entity')
     implementation project(':networking')
@@ -13,6 +12,8 @@ dependencies {
     implementation project(':architecture')
     implementation project(':dto')
     implementation project(':mappers')
+    implementation project(':supportedresourcetypes')
+    implementation project(':accounts')
 
     implementation libs.koin
     implementation libs.room.core

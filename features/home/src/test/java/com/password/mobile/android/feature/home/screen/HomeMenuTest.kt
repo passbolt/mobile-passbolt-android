@@ -1,6 +1,8 @@
 package com.password.mobile.android.feature.home.screen
 
 import com.google.gson.JsonObject
+import com.passbolt.mobile.android.core.accounts.usecase.accountdata.GetSelectedAccountDataUseCase
+import com.passbolt.mobile.android.core.accounts.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalResourcesAndFoldersUseCase
 import com.passbolt.mobile.android.core.fulldatarefresh.DataRefreshStatus
 import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
@@ -11,14 +13,10 @@ import com.passbolt.mobile.android.core.resources.actions.ResourcePropertyAction
 import com.passbolt.mobile.android.core.resources.actions.SecretPropertiesActionsInteractor
 import com.passbolt.mobile.android.core.resources.actions.SecretPropertyActionResult
 import com.passbolt.mobile.android.core.resources.usecase.ResourceInteractor
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.PASSWORD_WITH_DESCRIPTION
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.SIMPLE_PASSWORD
 import com.passbolt.mobile.android.feature.home.screen.HomeContract
 import com.passbolt.mobile.android.feature.home.screen.ShowSuggestedModel
 import com.passbolt.mobile.android.resourcemoremenu.usecase.CreateResourceMoreMenuModelUseCase
-import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
-import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType
 import com.passbolt.mobile.android.ui.HomeDisplayViewModel
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
@@ -42,6 +40,7 @@ import org.mockito.kotlin.stub
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.time.ZonedDateTime
+import java.util.UUID
 
 @ExperimentalCoroutinesApi
 class HomeMenuTest : KoinTest {
@@ -88,6 +87,24 @@ class HomeMenuTest : KoinTest {
                 label = "label",
                 role = "user"
             )
+        )
+
+        RESOURCE_MODEL = ResourceModel(
+            resourceId = ID,
+            resourceTypeId = RESOURCE_TYPE_ID.toString(),
+            folderId = FOLDER_ID,
+            permission = ResourcePermission.READ,
+            favouriteId = null,
+            modified = ZonedDateTime.now(),
+            expiry = null,
+            json = JsonObject().apply {
+                addProperty("name", NAME)
+                addProperty("username", USERNAME)
+                addProperty("uri", URL)
+                addProperty("description", DESCRIPTION)
+            }.toString(),
+            metadataKeyId = null,
+            metadataKeyType = null
         )
     }
 
@@ -151,9 +168,9 @@ class HomeMenuTest : KoinTest {
 
     @Test
     fun `view should copy secret after successful decrypt`() = runTest {
-        mockResourceTypeFactory.stub {
-            onBlocking { getResourceTypeEnum(any()) }.doReturn(
-                ResourceTypeFactory.ResourceTypeEnum.SIMPLE_PASSWORD
+        mockIdToSlugMappingProvider.stub {
+            onBlocking { provideMappingForSelectedAccount() }.doReturn(
+                mapOf(RESOURCE_TYPE_ID to ContentType.PasswordString.slug)
             )
         }
         val password = "pass"
@@ -188,8 +205,10 @@ class HomeMenuTest : KoinTest {
 
     @Test
     fun `view should copy description from secret after successful decrypt`() = runTest {
-        mockResourceTypeFactory.stub {
-            onBlocking { getResourceTypeEnum(RESOURCE_MODEL.resourceTypeId) } doReturn PASSWORD_WITH_DESCRIPTION
+        mockIdToSlugMappingProvider.stub {
+            onBlocking { provideMappingForSelectedAccount() }.doReturn(
+                mapOf(RESOURCE_TYPE_ID to ContentType.PasswordAndDescription.slug)
+            )
         }
         val resourceDescription = "desc"
         mockSecretPropertiesActionsInteractor.stub {
@@ -223,8 +242,10 @@ class HomeMenuTest : KoinTest {
 
     @Test
     fun `view should copy description from resource`() = runTest {
-        mockResourceTypeFactory.stub {
-            onBlocking { getResourceTypeEnum(RESOURCE_MODEL.resourceTypeId) } doReturn SIMPLE_PASSWORD
+        mockIdToSlugMappingProvider.stub {
+            onBlocking { provideMappingForSelectedAccount() }.doReturn(
+                mapOf(RESOURCE_TYPE_ID to ContentType.PasswordString.slug)
+            )
         }
         mockResourcePropertiesActionsInteractor.stub {
             onBlocking { provideDescription() } doReturn flowOf(
@@ -335,7 +356,7 @@ class HomeMenuTest : KoinTest {
                 ResourcePropertyActionResult(
                     ResourcePropertiesActionsInteractor.URL_LABEL,
                     isSecret = false,
-                    RESOURCE_MODEL.url.orEmpty()
+                    RESOURCE_MODEL.uri.orEmpty()
                 )
             )
         }
@@ -354,7 +375,7 @@ class HomeMenuTest : KoinTest {
 
         verify(view).addToClipboard(
             ResourcePropertiesActionsInteractor.URL_LABEL,
-            RESOURCE_MODEL.url.orEmpty(),
+            RESOURCE_MODEL.uri.orEmpty(),
             isSecret = false
         )
     }
@@ -397,7 +418,7 @@ class HomeMenuTest : KoinTest {
                 ResourcePropertyActionResult(
                     ResourcePropertiesActionsInteractor.URL_LABEL,
                     isSecret = false,
-                    RESOURCE_MODEL.url.orEmpty()
+                    RESOURCE_MODEL.uri.orEmpty()
                 )
             )
         }
@@ -414,7 +435,7 @@ class HomeMenuTest : KoinTest {
         presenter.resourceMoreClick(RESOURCE_MODEL)
         presenter.menuLaunchWebsiteClick()
 
-        verify(view).openWebsite(RESOURCE_MODEL.url.orEmpty())
+        verify(view).openWebsite(RESOURCE_MODEL.uri.orEmpty())
     }
 
     @Test
@@ -439,7 +460,7 @@ class HomeMenuTest : KoinTest {
         private const val USERNAME = "username"
         private const val URL = "https://www.passbolt.com"
         private const val ID = "id"
-        private const val RESOURCE_TYPE_ID = "resTypeId"
+        private val RESOURCE_TYPE_ID = UUID.randomUUID()
         private const val FOLDER_ID = "folderId"
         private const val DESCRIPTION = "desc"
 
@@ -453,20 +474,6 @@ class HomeMenuTest : KoinTest {
             canCopy = true
         )
 
-        private val RESOURCE_MODEL = ResourceModel(
-            resourceId = ID,
-            resourceTypeId = RESOURCE_TYPE_ID,
-            folderId = FOLDER_ID,
-            permission = ResourcePermission.READ,
-            favouriteId = null,
-            modified = ZonedDateTime.now(),
-            expiry = null,
-            json = JsonObject().apply {
-                addProperty("name", NAME)
-                addProperty("username", USERNAME)
-                addProperty("uri", URL)
-                addProperty("description", DESCRIPTION)
-            }.toString()
-        )
+        private lateinit var RESOURCE_MODEL: ResourceModel
     }
 }

@@ -24,9 +24,9 @@
 package com.passbolt.mobile.android.core
 
 import com.passbolt.mobile.android.core.rbac.usecase.FetchRbacPermissionsUseCase
-import com.passbolt.mobile.android.storage.usecase.rbac.GetRbacRulesUseCase
+import com.passbolt.mobile.android.core.rbac.usecase.GetRbacRulesUseCase
 import com.passbolt.mobile.android.core.rbac.usecase.RbacInteractor
-import com.passbolt.mobile.android.storage.usecase.rbac.SaveRbacRulesUseCase
+import com.passbolt.mobile.android.core.rbac.usecase.SaveRbacRulesUseCase
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 

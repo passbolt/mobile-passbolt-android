@@ -1,6 +1,6 @@
 /**
  * Passbolt - Open source password manager for teams
- * Copyright (c) 2021 Passbolt SA
+ * Copyright (c) 2021,2024 Passbolt SA
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
  * Public License (AGPL) as published by the Free Software Foundation version 3.
@@ -25,6 +25,7 @@ package com.passbolt.mobile.android.scenarios.resourcesdetails
 
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.closeSoftKeyboard
 import androidx.test.espresso.action.ViewActions.swipeUp
 import androidx.test.espresso.action.ViewActions.typeText
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -42,12 +43,12 @@ import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.feature.authentication.AuthenticationMainActivity
 import com.passbolt.mobile.android.feature.setup.R
-import com.passbolt.mobile.android.hasDrawable
+import com.passbolt.mobile.android.helpers.signIn
 import com.passbolt.mobile.android.instrumentationTestsModule
 import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
+import com.passbolt.mobile.android.matchers.hasDrawable
 import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
-import com.passbolt.mobile.android.scenarios.helpers.signIn
 import org.hamcrest.Matchers.allOf
 import org.junit.Rule
 import org.junit.Test
@@ -169,10 +170,12 @@ class ResourcesDetailsTest : KoinTest {
         //    And       the Passbolt application is already opened
         //    And       I completed the login step
         //    And       I am on a resource display screen
-        onView(withId(com.passbolt.mobile.android.feature.otp.R.id.searchEditText)).perform(
-            click(),
-            typeText("TestResourceDesc")
-        )
+        onView(withId(com.passbolt.mobile.android.feature.otp.R.id.searchEditText))
+            .perform(
+                click(),
+                typeText("TestResourceDesc"),
+                closeSoftKeyboard()
+            )
         onView(withText("TestResourceDescription")).perform(click())
         //    When      I click on the show icon in the “Description” item list
         onView(

@@ -26,6 +26,7 @@ package com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
 import com.passbolt.mobile.android.serializers.gson.validation.JsonSchemaValidationRunner
 import com.passbolt.mobile.android.serializers.validationwrapper.PlainSecretValidationWrapper
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType
 import com.passbolt.mobile.android.ui.DecryptedSecretOrError
 import timber.log.Timber
 import java.util.UUID
@@ -38,7 +39,7 @@ class SecretParser(
     suspend fun parseSecret(
         resourceTypeId: String,
         decryptedSecret: ByteArray
-    ): DecryptedSecretOrError<DecryptedSecret> {
+    ): DecryptedSecretOrError<SecretModel> {
 
         val slug = resourceTypeIdToSlugMappingProvider
             .provideMappingForSelectedAccount()[UUID.fromString(resourceTypeId)]
@@ -47,11 +48,11 @@ class SecretParser(
             // in case of simple password the backend returns a string (not a json string)
             val plainSecret = String(decryptedSecret)
             if (secretValidationRunner.isSecretValid(
-                    PlainSecretValidationWrapper(plainSecret, slug!!).validationPlainSecret,
+                    PlainSecretValidationWrapper(plainSecret, ContentType.fromSlug(slug!!)).validationPlainSecret,
                     slug
                 )
             ) {
-                val parsedSecret = DecryptedSecret(plainSecret)
+                val parsedSecret = SecretModel(plainSecret)
                 DecryptedSecretOrError.DecryptedSecret(parsedSecret)
             } else {
                 val errorMessage = "Invalid secret in $slug resource type"

@@ -34,18 +34,21 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
+import com.passbolt.mobile.android.accountinit.AccountDataCleaner
+import com.passbolt.mobile.android.accountinit.AccountInitializer
 import com.passbolt.mobile.android.core.idlingresource.SignInIdlingResource
 import com.passbolt.mobile.android.feature.setup.R
 import com.passbolt.mobile.android.feature.startup.StartUpActivity
 import com.passbolt.mobile.android.instrumentationTestsModule
 import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
 import com.passbolt.mobile.android.rules.IdlingResourceRule
-import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
+import com.passbolt.mobile.android.rules.lazyActivityScenarioRule
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.koin.test.KoinTest
 import org.koin.test.inject
+import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
@@ -55,7 +58,7 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
 class SetupAutofillConfiguredTest : KoinTest {
 
     @get:Rule
-    val startActivityRule = lazyActivitySetupScenarioRule<StartUpActivity>(
+    val startActivityRule = lazyActivityScenarioRule<StartUpActivity>(
         koinOverrideModules = listOf(instrumentationTestsModule, autofillConfiguredModuleTests),
         intentSupplier = {
             managedAccountIntentCreator.createIntent(
@@ -74,6 +77,8 @@ class SetupAutofillConfiguredTest : KoinTest {
     val permissionRule: GrantPermissionRule = GrantPermissionRule.grant(android.Manifest.permission.CAMERA)
 
     private val managedAccountIntentCreator: ManagedAccountIntentCreator by inject()
+    private val accountDataCleaner: AccountDataCleaner by inject()
+    private val accountDataInitializer: AccountInitializer by inject()
 
     @BeforeTest
     fun setup() {
@@ -82,6 +87,12 @@ class SetupAutofillConfiguredTest : KoinTest {
         onView(withId(com.passbolt.mobile.android.feature.autofill.R.id.button)).perform(click())
         onView(withId(CoreUiR.id.input)).perform(typeText(managedAccountIntentCreator.getPassphrase()))
         onView(withId(com.passbolt.mobile.android.feature.authentication.R.id.authButton)).perform(scrollTo(), click())
+        accountDataInitializer.initializeAccount()
+    }
+
+    @AfterTest
+    fun tearDown() {
+        accountDataCleaner.clearAccountData()
     }
 
     @Test

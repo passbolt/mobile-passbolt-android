@@ -34,6 +34,7 @@ import com.passbolt.mobile.android.common.extension.areListsEmpty
 import com.passbolt.mobile.android.common.search.Searchable
 import com.passbolt.mobile.android.common.search.SearchableMatcher
 import com.passbolt.mobile.android.common.types.ClipboardLabel
+import com.passbolt.mobile.android.core.accounts.usecase.accountdata.GetSelectedAccountDataUseCase
 import com.passbolt.mobile.android.core.autofill.urlmatcher.AutofillUrlMatcher
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalFolderDetailsUseCase
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalResourcesAndFoldersUseCase
@@ -44,6 +45,8 @@ import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReac
 import com.passbolt.mobile.android.core.idlingresource.DeleteResourceIdlingResource
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.otpcore.TotpParametersProvider
+import com.passbolt.mobile.android.core.preferences.usecase.GetHomeDisplayViewPrefsUseCase
+import com.passbolt.mobile.android.core.rbac.usecase.GetRbacRulesUseCase
 import com.passbolt.mobile.android.core.resources.actions.ResourceCommonActionsInteractor
 import com.passbolt.mobile.android.core.resources.actions.ResourcePropertiesActionsInteractor
 import com.passbolt.mobile.android.core.resources.actions.ResourceUpdateActionsInteractor
@@ -56,18 +59,15 @@ import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesFi
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesWithGroupUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesWithTagUseCase
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.SIMPLE_PASSWORD
-import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.TotpSecret
+import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
+import com.passbolt.mobile.android.jsonmodel.delegates.TotpSecret
 import com.passbolt.mobile.android.core.tags.usecase.db.GetLocalTagsUseCase
 import com.passbolt.mobile.android.feature.home.screen.model.HeaderSectionConfiguration
 import com.passbolt.mobile.android.feature.home.screen.model.SearchInputEndIconMode
 import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
 import com.passbolt.mobile.android.mappers.HomeDisplayViewMapper
 import com.passbolt.mobile.android.serializers.jsonschema.SchemaEntity
-import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
-import com.passbolt.mobile.android.storage.usecase.preferences.GetHomeDisplayViewPrefsUseCase
-import com.passbolt.mobile.android.storage.usecase.rbac.GetRbacRulesUseCase
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType
 import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.homeSlugs
 import com.passbolt.mobile.android.ui.Folder
 import com.passbolt.mobile.android.ui.FolderMoreMenuModel
@@ -112,8 +112,8 @@ class HomePresenter(
     private val getLocalFolderUseCase: GetLocalFolderDetailsUseCase,
     private val deleteResourceIdlingResource: DeleteResourceIdlingResource,
     private val totpParametersProvider: TotpParametersProvider,
-    private val resourceTypeFactory: ResourceTypeFactory,
-    private val getRbacRulesUseCase: GetRbacRulesUseCase
+    private val getRbacRulesUseCase: GetRbacRulesUseCase,
+    private val idToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider
 ) : DataRefreshViewReactivePresenter<HomeContract.View>(coroutineLaunchContext), HomeContract.Presenter,
     KoinComponent {
 
@@ -349,8 +349,7 @@ class HomePresenter(
                         .resources
                         .filter {
                             val autofillUrl = (showSuggestedModel as? ShowSuggestedModel.Show)?.suggestedUri
-                            val resourceUrl = it.url
-                            autofillMatcher.isMatching(autofillUrl, resourceUrl)
+                            autofillMatcher.isMatching(autofillUrl, it)
                         }
                 } else {
                     emptyList()
@@ -680,21 +679,21 @@ class HomePresenter(
 
     override fun menuCopyDescriptionClick() {
         coroutineScope.launch {
-            when (resourceTypeFactory.getResourceTypeEnum(currentMoreMenuResource!!.resourceTypeId)) {
-                SIMPLE_PASSWORD -> {
-                    performResourcePropertyAction(
-                        action = { resourcePropertiesActionsInteractor.provideDescription() },
-                        doOnResult = { view?.addToClipboard(it.label, it.result, it.isSecret) }
-                    )
-                }
-                else -> {
-                    performSecretPropertyAction(
-                        action = { secretPropertiesActionsInteractor.provideDescription() },
-                        doOnDecryptionFailure = { view?.showDecryptionFailure() },
-                        doOnFetchFailure = { view?.showFetchFailure() },
-                        doOnSuccess = { view?.addToClipboard(it.label, it.result, it.isSecret) }
-                    )
-                }
+            val slug = idToSlugMappingProvider.provideMappingForSelectedAccount()[
+                java.util.UUID.fromString(currentMoreMenuResource!!.resourceTypeId)
+            ]
+            if (ContentType.fromSlug(slug!!).isSimplePassword()) {
+                performResourcePropertyAction(
+                    action = { resourcePropertiesActionsInteractor.provideDescription() },
+                    doOnResult = { view?.addToClipboard(it.label, it.result, it.isSecret) }
+                )
+            } else {
+                performSecretPropertyAction(
+                    action = { secretPropertiesActionsInteractor.provideDescription() },
+                    doOnDecryptionFailure = { view?.showDecryptionFailure() },
+                    doOnFetchFailure = { view?.showFetchFailure() },
+                    doOnSuccess = { view?.addToClipboard(it.label, it.result, it.isSecret) }
+                )
             }
         }
     }
@@ -912,7 +911,7 @@ class HomePresenter(
                 ManageTotpAction.ADD_TOTP -> suspend {
                     resourceUpdateActionsInteractor.addTotpToResource(
                         overrideName = resourceModel.name,
-                        overrideUri = resourceModel.url,
+                        overrideUri = resourceModel.uri,
                         period = totpQr.period,
                         digits = totpQr.digits,
                         algorithm = totpQr.algorithm.name,
@@ -922,7 +921,7 @@ class HomePresenter(
                 ManageTotpAction.EDIT_TOTP -> suspend {
                     resourceUpdateActionsInteractor.updateLinkedTotpResourceTotpFields(
                         label = resourceModel.name,
-                        issuer = resourceModel.url,
+                        issuer = resourceModel.uri,
                         period = totpQr.period,
                         digits = totpQr.digits,
                         algorithm = totpQr.algorithm.name,

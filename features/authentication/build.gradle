@@ -7,7 +7,6 @@ plugins {
 dependencies {
     implementation project(':architecture')
     implementation project(':coreui')
-    implementation project(':storage')
     implementation project(':common')
     implementation project(':mappers')
     implementation project(':entity')
@@ -31,6 +30,13 @@ dependencies {
     implementation project(':database')
     implementation project(':rbac')
     implementation project(':policies')
+    implementation project(':metadata')
+    implementation project(':accounts')
+    implementation project(':authenticationcore')
+    implementation project(':passphrasememorycache')
+    implementation project(':encryptedstorage')
+    implementation project(':preferences')
+    implementation project(':encryptedstorage')
 
     implementation libs.navigation.fragment
     implementation libs.navigation.ui

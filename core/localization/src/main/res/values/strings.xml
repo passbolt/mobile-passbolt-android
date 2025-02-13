@@ -46,6 +46,7 @@
     <string name="common_sign_out">Sign out</string>
     <string name="common_data_refresh_error">There was an error during data refresh. Swipe down to refresh.</string>
     <string name="common_decryption_failure">Error during secret decryption</string>
+    <string name="common_metadata_encryption_failure">Error during metadata encryption</string>
     <string name="common_fetch_failure">Error during downloading the secret</string>
     <string name="common_encryption_failure">There was an error during secret encryption</string>
     <string name="common_json_schema_resource_validation_error">There was an error during validation of resource. Enable logs for more details.</string>
@@ -77,7 +78,7 @@
     <string name="no_username">no username</string>
 
     <string name="more_launch_website">Launch website</string>
-    <string name="more_copy_url">Copy URL</string>
+    <string name="more_copy_uri">Copy URI</string>
     <string name="more_copy_password">Copy password</string>
     <string name="more_copy_username">Copy username</string>
     <string name="more_copy_desc">Copy description</string>
@@ -269,7 +270,7 @@
     <string name="resource_details_username_header">Username</string>
     <string name="resource_details_password_header">Password</string>
     <string name="resource_details_totp_header">Totp</string>
-    <string name="resource_details_url_header">Website URL</string>
+    <string name="resource_details_url_header">Main URI</string>
     <string name="resource_details_expiry_header">Expiry</string>
     <string name="resource_details_description_header">Description</string>
     <string name="resource_details_tags_header">Tags</string>
@@ -293,8 +294,8 @@
     <string name="resource_update_create_success">New password was created!</string>
     <string name="resource_update_edit_password_title">Edit password</string>
     <string name="resource_update_field_password">Password</string>
-    <string name="resource_update_field_name">Name</string>
-    <string name="resource_update_field_uri">URL</string>
+    <string name="resource_update_field_name">Resource name</string>
+    <string name="resource_update_field_uri">Main URI</string>
     <string name="resource_update_field_username">Username</string>
     <string name="resource_update_field_description">Description</string>
     <string name="resource_update_invalid_secret_data">Invalid secret data types. Aborting edit.</string>

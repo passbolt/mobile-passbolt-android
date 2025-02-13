@@ -7,10 +7,13 @@ dependencies {
     implementation project(':dto')
     implementation project(':common')
     implementation project(':database')
-    implementation project(':storage')
     implementation project(':resourcetypes')
     implementation project(':supportedresourcetypes')
     implementation project(':gopenpgp')
+    implementation project(':metadata')
+    implementation project(':ui')
+    implementation project(':accounts')
+    implementation project(':passphrasememorycache')
 
     implementation libs.koin
     implementation libs.gson

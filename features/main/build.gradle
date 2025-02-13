@@ -19,11 +19,12 @@ dependencies {
     implementation project(':otp')
     implementation project(':database')
     implementation project(':resourcetypes')
-    implementation project(':storage')
     implementation project(':entity')
     implementation project(':scanotp')
     implementation project(':createotpmanually')
     implementation project(':resourcepicker')
+    implementation project(':featureflags')
+    implementation project(':accounts')
 
     implementation libs.navigation.fragment
     implementation libs.navigation.ui

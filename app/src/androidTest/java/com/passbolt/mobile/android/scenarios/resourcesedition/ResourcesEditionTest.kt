@@ -1,6 +1,6 @@
 /**
  * Passbolt - Open source password manager for teams
- * Copyright (c) 2023-2024 Passbolt SA
+ * Copyright (c) 2023-2025 Passbolt SA
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
  * Public License (AGPL) as published by the Free Software Foundation version 3.
@@ -48,17 +48,17 @@ import com.passbolt.mobile.android.core.idlingresource.UpdateResourceIdlingResou
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.feature.authentication.AuthenticationMainActivity
-import com.passbolt.mobile.android.first
-import com.passbolt.mobile.android.hasDrawable
+import com.passbolt.mobile.android.helpers.createNewPasswordFromHomeScreen
+import com.passbolt.mobile.android.helpers.pickFirstResourceWithName
+import com.passbolt.mobile.android.helpers.signIn
 import com.passbolt.mobile.android.instrumentationTestsModule
 import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
+import com.passbolt.mobile.android.matchers.first
+import com.passbolt.mobile.android.matchers.hasDrawable
+import com.passbolt.mobile.android.matchers.withHint
+import com.passbolt.mobile.android.matchers.withTextInputStrokeColorOf
 import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
-import com.passbolt.mobile.android.scenarios.helpers.createNewPasswordFromHomeScreen
-import com.passbolt.mobile.android.scenarios.helpers.pickFirstResourceWithName
-import com.passbolt.mobile.android.scenarios.helpers.signIn
-import com.passbolt.mobile.android.withHint
-import com.passbolt.mobile.android.withTextInputStrokeColorOf
 import org.hamcrest.CoreMatchers
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.Matchers.allOf
@@ -72,6 +72,9 @@ import kotlin.test.BeforeTest
 import com.google.android.material.R as MaterialR
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
+import com.passbolt.mobile.android.feature.otp.R as OtpR
+import com.passbolt.mobile.android.feature.resourcemoremenu.R.id as ResourcemoremenuId
+import com.passbolt.mobile.android.feature.resources.R.id as ResourcesID
 
 
 @RunWith(AndroidJUnit4::class)
@@ -124,11 +127,12 @@ class ResourcesEditionTest : KoinTest {
         //    Given     that I am on the action menu drawer
         pickFirstResourceWithName("ResourcesEditionTest")
         //    And       I see ‘Edit password’ element enabled
-        onView(withId(com.passbolt.mobile.android.feature.resourcemoremenu.R.id.editPassword))
+        onView(first(withId(ResourcesID.moreIcon))).perform(click())
+        onView(withId(ResourcemoremenuId.editPassword))
             .check(matches(isDisplayed()))
             .check(matches(hasDrawable(id = CoreUiR.drawable.ic_edit, tint = CoreUiR.color.icon_tint)))
         //    When      I click ‘Edit password’
-        onView(withId(com.passbolt.mobile.android.feature.resourcemoremenu.R.id.editPassword)).perform(click())
+        onView(withId(ResourcemoremenuId.editPassword)).perform(click())
         //    Then      I am on `Edit password` screen
         onView(withText(LocalizationR.string.resource_update_edit_password_title)).check(matches(isDisplayed()))
     }
@@ -137,9 +141,7 @@ class ResourcesEditionTest : KoinTest {
 //    https://passbolt.testrail.io/index.php?/cases/view/8135
     fun onTheEditPasswordPageICanEditElements() {
         //    Given     that I am on `Edit password` screen
-        onView(withId(com.passbolt.mobile.android.feature.otp.R.id.searchEditText)).perform(typeText("ResourcesEditionTest"))
-        onView(first(withId(com.passbolt.mobile.android.feature.otp.R.id.more))).perform(click())
-        onView(withId(com.passbolt.mobile.android.feature.resourcemoremenu.R.id.editPassword)).perform(click())
+        enterEditPasswordScreen()
         //    And       I see Edit password workspace
         onView(withText(LocalizationR.string.resource_update_edit_password_title)).check(matches(isDisplayed()))
         //    And       <placeholder> is filled
@@ -166,13 +168,12 @@ class ResourcesEditionTest : KoinTest {
         //    | Enter description |
     }
 
+
     @Test
 //    https://passbolt.testrail.io/index.php?/cases/view/8136
     fun onTheEditPasswordPageICanSaveChangedResources() {
         //    Given     that I am on `Edit password` screen
-        onView(withId(com.passbolt.mobile.android.feature.otp.R.id.searchEditText)).perform(typeText("ResourcesEditionTest"))
-        onView(first(withId(com.passbolt.mobile.android.feature.otp.R.id.more))).perform(click())
-        onView(withId(com.passbolt.mobile.android.feature.resourcemoremenu.R.id.editPassword)).perform(click())
+        enterEditPasswordScreen()
         //    And       I see Edit password workspace
         onView(withText(LocalizationR.string.resource_update_edit_password_title)).check(matches(isDisplayed()))
         //    And       <placeholder> was changed
@@ -181,7 +182,7 @@ class ResourcesEditionTest : KoinTest {
                 .perform(replaceText(editableInputField.textToReplace))
         }
         //    When      I click ‘Save’ button
-        onView(withId(com.passbolt.mobile.android.feature.resources.R.id.updateButton)).perform(scrollTo(), click())
+        onView(withId(ResourcesID.updateButton)).perform(scrollTo(), click())
         //    Examples:
         //    | placeholder |
         //    | Enter a name |
@@ -195,9 +196,7 @@ class ResourcesEditionTest : KoinTest {
 //    https://passbolt.testrail.io/index.php?/cases/view/8137
     fun onTheEditPasswordPageIShouldSeeAnErrorMessageAfterDeletingTheMandatoryTextField() {
         //    Given     that I am on `Edit password` screen
-        onView(withId(com.passbolt.mobile.android.feature.otp.R.id.searchEditText)).perform(typeText("ResourcesEditionTest"))
-        onView(first(withId(com.passbolt.mobile.android.feature.otp.R.id.more))).perform(click())
-        onView(withId(com.passbolt.mobile.android.feature.resourcemoremenu.R.id.editPassword)).perform(click())
+        enterEditPasswordScreen()
         //    And       all placeholders are filled
         EditableFieldInput.entries.forEach { editableInputField ->
             onViewInputWithHintName(editableInputField.hintName)
@@ -209,9 +208,9 @@ class ResourcesEditionTest : KoinTest {
         onViewInputWithHintName(EditableFieldInput.ENTER_PASSWORD.hintName)
             .perform(replaceText(""))
         //    Then      I click Save button
-        onView(withId(com.passbolt.mobile.android.feature.resources.R.id.updateButton)).perform(scrollTo(), click())
+        onView(withId(ResourcesID.updateButton)).perform(scrollTo(), click())
         //    And       I see <placeholder> label in @red
-        onView(withText("Name *")).check(matches(hasTextColor(CoreUiR.color.red)))
+        onView(withText("Resource name *")).check(matches(hasTextColor(CoreUiR.color.red)))
         onView(withText("Password *")).check(matches(hasTextColor(CoreUiR.color.red)))
         //    And       I see <placeholder> frame in @red
         onViewTextInputLayoutWithHintName(EditableFieldInput.ENTER_NAME.hintName)
@@ -236,9 +235,7 @@ class ResourcesEditionTest : KoinTest {
 //    https://passbolt.testrail.io/index.php?/cases/view/8138
     fun onTheEditPasswordPageICanDeleteTheOptionalInputTextField() {
         //    Given     that I am on `Edit password` screen
-        onView(withId(com.passbolt.mobile.android.feature.otp.R.id.searchEditText)).perform(typeText("ResourcesEditionTest"))
-        onView(first(withId(com.passbolt.mobile.android.feature.otp.R.id.more))).perform(click())
-        onView(withId(com.passbolt.mobile.android.feature.resourcemoremenu.R.id.editPassword)).perform(click())
+        enterEditPasswordScreen()
         //    And       all placeholders are filled
         EditableFieldInput.entries.forEach { editableInputField ->
             onViewInputWithHintName(editableInputField.hintName)
@@ -271,11 +268,7 @@ class ResourcesEditionTest : KoinTest {
         // unregister refresh idling resource after first refresh not to block the snackbar checks
         // (second refresh is during snackbar is showing)
         IdlingRegistry.getInstance().unregister(resourcesFullRefreshIdlingResource)
-
-        //    Given     that I am on `Edit password` screen
-        onView(withId(com.passbolt.mobile.android.feature.otp.R.id.searchEditText)).perform(typeText("ResourcesEditionTest"))
-        onView(first(withId(com.passbolt.mobile.android.feature.otp.R.id.more))).perform(click())
-        onView(withId(com.passbolt.mobile.android.feature.resourcemoremenu.R.id.editPassword)).perform(click())
+        enterEditPasswordScreen()
         //    And       all placeholders are filled
         EditableFieldInput.entries.forEach { editableInputField ->
             onViewInputWithHintName(editableInputField.hintName)
@@ -291,7 +284,7 @@ class ResourcesEditionTest : KoinTest {
         onViewInputWithHintName(EditableFieldInput.ENTER_DESCRIPTION.hintName)
             .perform(replaceText(""))
         //    When      I click "Save" button
-        onView(withId(com.passbolt.mobile.android.feature.resources.R.id.updateButton)).perform(scrollTo(), click())
+        onView(withId(ResourcesID.updateButton)).perform(scrollTo(), click())
         //    Then      I see a popup "{password name} password was successfully edited." in @green
         onView(withId(com.passbolt.mobile.android.feature.permissions.R.id.rootLayout)).check(matches(isDisplayed()))
         onView(withId(MaterialR.id.snackbar_text))
@@ -312,4 +305,10 @@ class ResourcesEditionTest : KoinTest {
             isAssignableFrom(TextInputLayout::class.java)
         )
     )
+
+    private fun enterEditPasswordScreen() {
+        onView(withId(OtpR.id.searchEditText)).perform(typeText("ResourcesEditionTest"))
+        onView(first(withId(OtpR.id.more))).perform(click())
+        onView(withId(ResourcemoremenuId.editPassword)).perform(click())
+    }
 }

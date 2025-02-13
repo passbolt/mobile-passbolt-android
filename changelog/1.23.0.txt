@@ -1,0 +1,23 @@
+# Passbolt 1.23.0-33 Android app release notes
+
+## Added
+- Add support for handling v5 metadata settings
+- Add support for parsing and viewing v5 resources
+- Use local resource schemas
+- Add metadata keys integration
+- Add metadata session keys integration
+- Support v5 resources creation, update and share
+- Add multiple URI support (on the UI only the main URI is currently visible)
+- Add support for expired passphrase during metadata decryption
+- Add metadata session keys cache for full refresh optimization
+- Add support for devices with 16kb memory page
+
+## Improved
+- Split main storage module into dedicated core modules
+- Change session refresh mechanism from reactive to proactive (reduced session refresh requests)
+- Small pre-v5 UI improvements for resource details and resource edit form
+- Added latest translations
+
+## Maintenance
+- Refactor current create and update resource interactors
+- Improve instrumented tests test stability and reliability (use Gradle managed devices)

@@ -1,10 +1,8 @@
 package com.passbolt.mobile.android.feature.authentication.auth.usecase
 
-import com.passbolt.mobile.android.common.usecase.AsyncUseCase
-import com.passbolt.mobile.android.core.networking.NetworkResult
-import com.passbolt.mobile.android.dto.response.BaseResponse
-import com.passbolt.mobile.android.dto.response.ServerRsaResponseDto
-import com.passbolt.mobile.android.passboltapi.auth.AuthRepository
+import com.passbolt.mobile.android.common.usecase.UseCase
+import com.passbolt.mobile.android.common.usecase.UserIdInput
+import com.passbolt.mobile.android.encryptedstorage.EncryptedSharedPreferencesFactory
 
 /**
  * Passbolt - Open source password manager for teams
@@ -29,19 +27,16 @@ import com.passbolt.mobile.android.passboltapi.auth.AuthRepository
  * @since v1.0
  */
 class GetServerPublicRsaKeyUseCase(
-    private val authRepository: AuthRepository
-) : AsyncUseCase<Unit, GetServerPublicRsaKeyUseCase.Output> {
+    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory
+) : UseCase<UserIdInput, GetServerPublicRsaKeyUseCase.Output> {
 
-    override suspend fun execute(input: Unit): Output =
-        when (val result = authRepository.getServerPublicRsaKey()) {
-            is NetworkResult.Failure -> Output.Failure(result)
-            is NetworkResult.Success -> Output.Success(result.value.body.keydata)
-        }
-
-    sealed class Output {
-
-        data class Success(val rsaKey: String) : Output()
-
-        data class Failure(val error: NetworkResult.Failure<BaseResponse<ServerRsaResponseDto>>) : Output()
+    override fun execute(input: UserIdInput): Output {
+        val fileName = ServerRsaKeyFileName(input.userId).name
+        val sharedPreferences = encryptedSharedPreferencesFactory.get("$fileName.xml")
+        return Output(sharedPreferences.getString(SERVER_RSA_KEY_KEY, null))
     }
+
+    data class Output(
+        val rsaKey: String?
+    )
 }

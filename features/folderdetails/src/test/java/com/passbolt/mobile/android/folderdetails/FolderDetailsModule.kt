@@ -5,7 +5,7 @@ import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalFolderD
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalFolderLocationUseCase
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalFolderPermissionsUseCase
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
-import com.passbolt.mobile.android.storage.usecase.rbac.GetRbacRulesUseCase
+import com.passbolt.mobile.android.core.rbac.usecase.GetRbacRulesUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.dsl.module
 import org.mockito.kotlin.mock

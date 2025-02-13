@@ -24,5 +24,5 @@
 package com.passbolt.mobile.android.core.resourcetypes.graph.base
 
 interface Vertex<T> {
-    val slug: T
+    val contentType: T
 }

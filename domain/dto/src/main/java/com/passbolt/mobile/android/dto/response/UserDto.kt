@@ -43,6 +43,7 @@ data class RoleDto(
 )
 
 data class GpgKeyDto(
+    val id: UUID,
     @SerializedName("armored_key")
     val armoredKey: String,
     val fingerprint: String,

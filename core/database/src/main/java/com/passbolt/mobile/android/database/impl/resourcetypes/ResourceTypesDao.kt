@@ -5,7 +5,6 @@ import androidx.room.Query
 import androidx.room.Transaction
 import com.passbolt.mobile.android.database.impl.base.BaseDao
 import com.passbolt.mobile.android.entity.resource.ResourceType
-import com.passbolt.mobile.android.entity.resource.ResourceTypeIdWithFields
 import com.passbolt.mobile.android.entity.resourcetype.ResourceTypeIdToSlugMapping
 
 /**
@@ -32,19 +31,6 @@ import com.passbolt.mobile.android.entity.resourcetype.ResourceTypeIdToSlugMappi
  */
 @Dao
 interface ResourceTypesDao : BaseDao<ResourceType> {
-
-    @Transaction
-    @Query("SELECT * FROM ResourceType WHERE resourceTypeId = :resourceType")
-    suspend fun getResourceTypeWithFieldsById(resourceType: String): ResourceTypeIdWithFields
-
-    @Transaction
-    @Query("SELECT * FROM ResourceType WHERE slug = :slug")
-    suspend fun getResourceTypeWithFieldsBySlug(slug: String): ResourceTypeIdWithFields
-
-    @Transaction
-    @Query("SELECT EXISTS (SELECT * FROM ResourceType WHERE slug = :slug)")
-    suspend fun isResourceTypeSupported(slug: String): Boolean
-
     @Transaction
     @Query("SELECT resourceTypeId, slug FROM ResourceType")
     suspend fun getResourceTypesIdToSlugMapping(): List<ResourceTypeIdToSlugMapping>

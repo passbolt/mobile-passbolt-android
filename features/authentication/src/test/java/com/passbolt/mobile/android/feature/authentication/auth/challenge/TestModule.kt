@@ -3,11 +3,11 @@ package com.passbolt.mobile.android.feature.authentication
 import com.google.gson.Gson
 import com.passbolt.mobile.android.common.UuidProvider
 import com.passbolt.mobile.android.common.time.TimeProvider
+import com.passbolt.mobile.android.core.accounts.usecase.privatekey.GetPrivateKeyUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeDecryptor
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeProvider
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeVerifier
 import com.passbolt.mobile.android.gopenpgp.OpenPgp
-import com.passbolt.mobile.android.storage.usecase.privatekey.GetPrivateKeyUseCase
 import org.koin.dsl.module
 import org.mockito.kotlin.mock
 

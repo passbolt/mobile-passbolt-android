@@ -23,10 +23,10 @@
 
 package com.passbolt.mobile.android.feature.settings.accounts.keyinspector.keyinspectormoremenu
 
+import com.passbolt.mobile.android.core.accounts.usecase.privatekey.GetSelectedUserPrivateKeyUseCase
 import com.passbolt.mobile.android.feature.settings.screen.accounts.keyinspector.keyinspectormoremenu.KeyInspectorMoreMenuContract
 import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpError
 import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpResult
-import com.passbolt.mobile.android.storage.usecase.privatekey.GetSelectedUserPrivateKeyUseCase
 import org.junit.Rule
 import org.junit.Test
 import org.koin.core.logger.Level

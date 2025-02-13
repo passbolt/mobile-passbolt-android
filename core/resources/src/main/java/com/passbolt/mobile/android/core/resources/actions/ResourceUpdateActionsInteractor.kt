@@ -30,10 +30,17 @@ import com.passbolt.mobile.android.core.resourcetypes.graph.ResourceTypesUpdates
 import com.passbolt.mobile.android.core.resourcetypes.graph.UpdateAction
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.SecretInput
-import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.DecryptedSecret
+import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.SecretModel
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
+import com.passbolt.mobile.android.jsonmodel.delegates.TotpSecret
 import com.passbolt.mobile.android.serializers.jsonschema.SchemaEntity
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType
+import com.passbolt.mobile.android.ui.MetadataKeyTypeModel
+import com.passbolt.mobile.android.ui.MetadataTypeModel
+import com.passbolt.mobile.android.ui.MetadataTypeModel.V4
+import com.passbolt.mobile.android.ui.MetadataTypeModel.V5
 import com.passbolt.mobile.android.ui.ResourceModel
+import com.passbolt.mobile.android.ui.UpdateResourceModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -57,21 +64,20 @@ class ResourceUpdateActionsInteractor(
     suspend fun deleteTotpFromResource(): Flow<ResourceUpdateActionResult> =
         updateResource(
             updateAction = UpdateAction.REMOVE_TOTP,
-            updateResource = { newResourceTypeSlug ->
-                UpdateResourceInteractor.ResourceInput(
+            updateResource = { newResourceType, _ ->
+                UpdateResourceModel(
                     resourceId = resource.resourceId,
-                    resourceName = resource.name,
-                    resourceUsername = resource.username,
-                    resourceUri = resource.url,
-                    resourceParentFolderId = resource.folderId,
-                    description = null,
+                    contentType = newResourceType,
+                    folderId = resource.folderId,
                     expiry = resource.expiry,
-                    newResourceTypeSlug = newResourceTypeSlug
+                    json = resource.json,
+                    metadataKeyId = resource.metadataKeyId,
+                    metadataKeyType = resource.metadataKeyType
                 )
             },
             updateSecret = { decryptedSecret ->
                 SecretInput(
-                    decryptedSecret = decryptedSecret.apply {
+                    secretModel = decryptedSecret.apply {
                         removeTotp()
                     },
                     passwordChanged = false
@@ -89,22 +95,33 @@ class ResourceUpdateActionsInteractor(
     ): Flow<ResourceUpdateActionResult> =
         updateResource(
             updateAction = UpdateAction.ADD_TOTP,
-            updateResource = { newResourceTypeSlug ->
-                UpdateResourceInteractor.ResourceInput(
+            updateResource = { newResourceType, metadataType ->
+                UpdateResourceModel(
                     resourceId = resource.resourceId,
-                    resourceName = overrideName ?: resource.name,
-                    resourceUsername = resource.username,
-                    resourceUri = overrideUri ?: resource.url,
-                    resourceParentFolderId = resource.folderId,
-                    description = null,
+                    contentType = newResourceType,
+                    folderId = resource.folderId,
                     expiry = resource.expiry,
-                    newResourceTypeSlug = newResourceTypeSlug
-                )
+                    json = resource.json,
+                    metadataKeyId = resource.metadataKeyId,
+                    metadataKeyType = resource.metadataKeyType
+                ).apply {
+                    name = overrideName ?: resource.name
+                    username = resource.username
+                    when (metadataType) {
+                        V4 -> this.uri = overrideUri ?: resource.uri
+                        V5 -> this.uris = if (overrideUri != null) listOf(overrideUri) else resource.uris
+                    }
+                }
             },
             updateSecret = { decryptedSecret ->
                 SecretInput(
-                    decryptedSecret = decryptedSecret.apply {
-                        addTotp(algorithm, secretKey, digits, period.toInt())
+                    secretModel = decryptedSecret.apply {
+                        totp = TotpSecret(
+                            algorithm,
+                            secretKey,
+                            digits,
+                            period
+                        )
                     },
                     passwordChanged = false
                 )
@@ -121,28 +138,32 @@ class ResourceUpdateActionsInteractor(
     ): Flow<ResourceUpdateActionResult> =
         updateResource(
             updateAction = UpdateAction.EDIT_PASSWORD,
-            updateResource = { newResourceTypeSlug ->
-                UpdateResourceInteractor.ResourceInput(
+            updateResource = { newResourceType, metadataType ->
+                UpdateResourceModel(
                     resourceId = resource.resourceId,
-                    resourceName = resourceName,
-                    resourceUsername = resourceUsername,
-                    resourceUri = resourceUri,
-                    resourceParentFolderId = resourceParentFolderId,
-                    description = null,
+                    contentType = newResourceType,
+                    folderId = resourceParentFolderId,
                     expiry = resource.expiry,
-                    newResourceTypeSlug = newResourceTypeSlug
-                )
+                    json = resource.json,
+                    metadataKeyId = resource.metadataKeyId,
+                    metadataKeyType = resource.metadataKeyType
+                ).apply {
+                    name = resourceName
+                    username = resourceUsername
+                    when (metadataType) {
+                        V4 -> this.uri = resourceUri
+                        V5 -> this.uris = if (resourceUri != null) listOf(resourceUri) else emptyList()
+                    }
+                }
             },
             updateSecret = { decryptedSecret ->
-                decryptedSecret.secret.let { currentPassword ->
-                    SecretInput(
-                        decryptedSecret = decryptedSecret.apply {
-                            this.secret = password
-                            this.description = description
-                        },
-                        passwordChanged = currentPassword != password
-                    )
-                }
+                SecretInput(
+                    secretModel = decryptedSecret.apply {
+                        this.secret = password
+                        this.description = description
+                    },
+                    passwordChanged = decryptedSecret.secret != password
+                )
             }
         )
 
@@ -156,25 +177,33 @@ class ResourceUpdateActionsInteractor(
     ): Flow<ResourceUpdateActionResult> =
         updateResource(
             updateAction = UpdateAction.EDIT_TOTP,
-            updateResource = { newResourceTypeSlug ->
-                UpdateResourceInteractor.ResourceInput(
+            updateResource = { newResourceType, metadataType ->
+                UpdateResourceModel(
                     resourceId = resource.resourceId,
-                    resourceName = label,
-                    resourceUsername = resource.username,
-                    resourceUri = issuer,
-                    resourceParentFolderId = resource.folderId,
-                    description = null,
+                    contentType = newResourceType,
+                    folderId = resource.folderId,
                     expiry = resource.expiry,
-                    newResourceTypeSlug = newResourceTypeSlug
-                )
+                    json = resource.json,
+                    metadataKeyId = resource.metadataKeyId,
+                    metadataKeyType = resource.metadataKeyType
+                ).apply {
+                    name = label
+                    username = resource.username
+                    when (metadataType) {
+                        V4 -> this.uri = issuer
+                        V5 -> this.uris = if (issuer != null) listOf(issuer) else emptyList()
+                    }
+                }
             },
             updateSecret = { decryptedSecret ->
                 SecretInput(
                     decryptedSecret.apply {
-                        this.totpAlgorithm = algorithm
-                        this.totpKey = secretKey
-                        this.totpDigits = digits
-                        this.totpPeriod = period.toInt()
+                        totp = TotpSecret(
+                            algorithm,
+                            secretKey,
+                            digits,
+                            period
+                        )
                     },
                     passwordChanged = false
                 )
@@ -191,27 +220,32 @@ class ResourceUpdateActionsInteractor(
     ): Flow<ResourceUpdateActionResult> =
         updateResource(
             updateAction = UpdateAction.EDIT_PASSWORD,
-            updateResource = { newResourceTypeSlug ->
-                UpdateResourceInteractor.ResourceInput(
+            updateResource = { newResourceType, metadataType ->
+                UpdateResourceModel(
                     resourceId = resource.resourceId,
-                    resourceName = resourceName, // validated to be not null
-                    resourceUsername = resourceUsername,
-                    resourceUri = resourceUri,
-                    resourceParentFolderId = resourceParentFolderId,
-                    description = description,
+                    contentType = newResourceType,
+                    folderId = resourceParentFolderId,
                     expiry = resource.expiry,
-                    newResourceTypeSlug = newResourceTypeSlug
-                )
+                    json = resource.json,
+                    metadataKeyId = resource.metadataKeyId,
+                    metadataKeyType = resource.metadataKeyType
+                ).apply {
+                    this.name = resourceName
+                    this.username = resourceUsername
+                    this.description = description
+                    when (metadataType) {
+                        V4 -> this.uri = resourceUri
+                        V5 -> this.uris = if (resourceUri != null) listOf(resourceUri) else emptyList()
+                    }
+                }
             },
             updateSecret = { decryptedSecret ->
-                decryptedSecret.password.let { currentPassword ->
-                    SecretInput(
-                        decryptedSecret = decryptedSecret.apply {
-                            this.password = password
-                        },
-                        passwordChanged = currentPassword != password
-                    )
-                }
+                SecretInput(
+                    secretModel = decryptedSecret.apply {
+                        this.password = password
+                    },
+                    passwordChanged = decryptedSecret.password != password
+                )
             }
         )
 
@@ -225,25 +259,33 @@ class ResourceUpdateActionsInteractor(
     ): Flow<ResourceUpdateActionResult> =
         updateResource(
             updateAction = UpdateAction.EDIT_TOTP,
-            updateResource = { newResourceTypeSlug ->
-                UpdateResourceInteractor.ResourceInput(
+            updateResource = { newResourceType, metadataType ->
+                UpdateResourceModel(
                     resourceId = resource.resourceId,
-                    resourceName = label,
-                    resourceUsername = resource.username,
-                    resourceUri = issuer,
-                    resourceParentFolderId = resource.folderId,
-                    description = null,
+                    contentType = newResourceType,
+                    folderId = resource.folderId,
                     expiry = resource.expiry,
-                    newResourceTypeSlug = newResourceTypeSlug
-                )
+                    json = resource.json,
+                    metadataKeyId = resource.metadataKeyId,
+                    metadataKeyType = resource.metadataKeyType
+                ).apply {
+                    name = label
+                    username = resource.username
+                    when (metadataType) {
+                        V4 -> this.uri = issuer
+                        V5 -> this.uris = if (issuer != null) listOf(issuer) else emptyList()
+                    }
+                }
             },
             updateSecret = { decryptedSecret ->
                 SecretInput(
-                    decryptedSecret = decryptedSecret.apply {
-                        this.totpAlgorithm = algorithm
-                        this.totpKey = secretKey
-                        this.totpDigits = digits
-                        this.totpPeriod = period.toInt()
+                    secretModel = decryptedSecret.apply {
+                        totp = TotpSecret(
+                            algorithm,
+                            secretKey,
+                            digits,
+                            period
+                        )
                     },
                     passwordChanged = false
                 )
@@ -260,39 +302,68 @@ class ResourceUpdateActionsInteractor(
     ): Flow<ResourceUpdateActionResult> =
         updateResource(
             updateAction = UpdateAction.EDIT_PASSWORD,
-            updateResource = { newResourceTypeSlug ->
-                UpdateResourceInteractor.ResourceInput(
+            updateResource = { newResourceType, metadataType ->
+                UpdateResourceModel(
                     resourceId = resource.resourceId,
-                    resourceName = resourceName,
-                    resourceUsername = resourceUsername,
-                    resourceUri = resourceUri,
-                    resourceParentFolderId = resourceParentFolderId,
-                    description = null,
+                    contentType = newResourceType,
+                    folderId = resourceParentFolderId,
                     expiry = resource.expiry,
-                    newResourceTypeSlug = newResourceTypeSlug
+                    json = resource.json,
+                    metadataKeyId = resource.metadataKeyId,
+                    metadataKeyType = resource.metadataKeyType
+                ).apply {
+                    name = resourceName
+                    username = resourceUsername
+                    when (metadataType) {
+                        V4 -> this.uri = resourceUri
+                        V5 -> this.uris = if (resourceUri != null) listOf(resourceUri) else emptyList()
+                    }
+                }
+            },
+            updateSecret = { decryptedSecret ->
+                SecretInput(
+                    secretModel = decryptedSecret.apply {
+                        this.secret = password
+                        this.description = description.orEmpty()
+                    },
+                    passwordChanged = decryptedSecret.secret != password
+                )
+            }
+        )
+
+    suspend fun reEncryptResourceMetadata(
+        metadataKeyId: String,
+        metadataKeyType: MetadataKeyTypeModel
+    ): Flow<ResourceUpdateActionResult> =
+        updateResource(
+            updateAction = UpdateAction.EDIT_METADATA,
+            updateResource = { newResourceType, _ ->
+                UpdateResourceModel(
+                    resourceId = resource.resourceId,
+                    contentType = newResourceType,
+                    folderId = resource.folderId,
+                    expiry = resource.expiry,
+                    json = resource.json,
+                    metadataKeyId = metadataKeyId,
+                    metadataKeyType = metadataKeyType
                 )
             },
             updateSecret = { decryptedSecret ->
-                decryptedSecret.secret.let { currentPassword ->
-                    SecretInput(
-                        decryptedSecret = decryptedSecret.apply {
-                            this.secret = password
-                            this.description = description.orEmpty()
-                        },
-                        passwordChanged = currentPassword != password
-                    )
-                }
+                SecretInput(
+                    secretModel = decryptedSecret,
+                    passwordChanged = false
+                )
             }
         )
 
     private suspend fun updateResource(
         updateAction: UpdateAction,
-        updateResource: (String) -> UpdateResourceInteractor.ResourceInput,
-        updateSecret: (DecryptedSecret) -> SecretInput
+        updateResource: (ContentType, MetadataTypeModel) -> UpdateResourceModel,
+        updateSecret: (SecretModel) -> SecretInput
     ): Flow<ResourceUpdateActionResult> {
         return try {
             val decryptedSecret = secretPropertiesActionsInteractor.provideDecryptedSecret().single()
-            val newResourceTypeSlug = resourceTypesUpdateGraph.getResourceTypeSlugAfterUpdate(
+            val newResourceType = resourceTypesUpdateGraph.getResourceTypeSlugAfterUpdate(
                 idToSlugMappingProvider.provideMappingForSelectedAccount()[UUID.fromString(resource.resourceTypeId)]!!,
                 updateAction
             )
@@ -301,8 +372,11 @@ class ResourceUpdateActionsInteractor(
                     is SecretPropertyActionResult.Success ->
                         runUpdateOperation {
                             updateResourceInteractor.execute(
-                                updateResource(newResourceTypeSlug),
-                                updateSecret(decryptedSecret.result)
+                                resourceInput = updateResource(
+                                    newResourceType,
+                                    if (newResourceType.isV5()) V5 else V4
+                                ),
+                                secretInput = updateSecret(decryptedSecret.result)
                             )
                         }
                     is SecretPropertyActionResult.FetchFailure ->

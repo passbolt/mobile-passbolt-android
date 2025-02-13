@@ -1,6 +1,6 @@
 package com.passbolt.mobile.android.feature.resourcedetails.update
 
-import com.passbolt.mobile.android.entity.resource.ResourceField
+import com.passbolt.mobile.android.ui.ResourceField
 
 class ResourceValue(
     val field: ResourceField,

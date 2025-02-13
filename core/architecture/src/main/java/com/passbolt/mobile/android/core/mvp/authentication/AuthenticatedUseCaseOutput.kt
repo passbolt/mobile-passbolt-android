@@ -39,7 +39,22 @@ operator fun AuthenticationState.plus(other: AuthenticationState): Authenticatio
     return when {
         this is AuthenticationState.Authenticated && other is AuthenticationState.Authenticated ->
             AuthenticationState.Authenticated
-        else -> AuthenticationState.Unauthenticated(AuthenticationState.Unauthenticated.Reason.Session)
+        else -> {
+            val isAnyAPassphraseReason =
+                (this is AuthenticationState.Unauthenticated &&
+                        this.reason is AuthenticationState.Unauthenticated.Reason.Passphrase) ||
+                        (other is AuthenticationState.Unauthenticated &&
+                                other.reason is AuthenticationState.Unauthenticated.Reason.Passphrase)
+
+            // resurface passphrase reason if present when multiple reasons
+            AuthenticationState.Unauthenticated(
+                if (isAnyAPassphraseReason) {
+                    AuthenticationState.Unauthenticated.Reason.Passphrase
+                } else {
+                    AuthenticationState.Unauthenticated.Reason.Session
+                }
+            )
+        }
     }
 }
 

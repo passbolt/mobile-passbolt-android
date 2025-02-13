@@ -55,7 +55,8 @@ data class PluginsDto(
     val rbacs: PluginAvailabilityDto?,
     val passwordExpiry: PluginAvailabilityDto?,
     val passwordPolicies: PluginAvailabilityDto?,
-    val passwordPoliciesUpdate: PluginAvailabilityDto?
+    val passwordPoliciesUpdate: PluginAvailabilityDto?,
+    val metadata: PluginAvailabilityDto?
 )
 
 data class PluginAvailabilityDto(

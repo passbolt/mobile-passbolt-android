@@ -23,9 +23,16 @@
 
 package com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser
 
+import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
+import com.jayway.jsonpath.Configuration
+import com.jayway.jsonpath.Option
+import com.jayway.jsonpath.spi.json.GsonJsonProvider
+import com.jayway.jsonpath.spi.mapper.GsonMappingProvider
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
+import com.passbolt.mobile.android.jsonmodel.JSON_MODEL_GSON
+import com.passbolt.mobile.android.jsonmodel.jsonpathops.JsonPathJsonPathOps
+import com.passbolt.mobile.android.jsonmodel.jsonpathops.JsonPathsOps
 import com.passbolt.mobile.android.serializers.gson.validation.JsonSchemaValidationRunner
 import com.passbolt.mobile.android.serializers.jsonschema.schamarepository.JSFJsonSchemaValidator
 import com.passbolt.mobile.android.serializers.jsonschema.schamarepository.JSFSchemaRepository
@@ -34,10 +41,12 @@ import com.passbolt.mobile.android.serializers.jsonschema.schamarepository.JsonS
 import net.jimblackler.jsonschemafriend.Schema
 import net.jimblackler.jsonschemafriend.Validator
 import org.koin.core.module.dsl.singleOf
+import org.koin.core.qualifier.named
+import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.mockito.kotlin.mock
+import java.util.EnumSet
 
-internal val mockResourceTypeFactory = mock<ResourceTypeFactory>()
 internal val mockJSFSchemaRepository = mock<JSFSchemaRepository>()
 internal val mockIdToSlugMappingProvider = mock<ResourceTypeIdToSlugMappingProvider>()
 
@@ -60,5 +69,13 @@ val testParserModule = module {
             resourceTypeIdToSlugMappingProvider = mockIdToSlugMappingProvider
         )
     }
-    factory { mockResourceTypeFactory }
+    single(named(JSON_MODEL_GSON)) { Gson() }
+    single {
+        Configuration.builder()
+            .jsonProvider(GsonJsonProvider())
+            .mappingProvider(GsonMappingProvider())
+            .options(EnumSet.noneOf(Option::class.java))
+            .build()
+    }
+    singleOf(::JsonPathJsonPathOps) bind JsonPathsOps::class
 }

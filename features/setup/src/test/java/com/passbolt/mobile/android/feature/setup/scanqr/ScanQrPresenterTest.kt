@@ -1,6 +1,8 @@
 package com.passbolt.mobile.android.feature.setup.scanqr
 
 import com.google.common.truth.Truth.assertThat
+import com.passbolt.mobile.android.core.accounts.usecase.accounts.CheckAccountExistsUseCase
+import com.passbolt.mobile.android.core.accounts.usecase.privatekey.SavePrivateKeyUseCase
 import com.passbolt.mobile.android.core.qrscan.analyzer.BarcodeScanResult
 import com.passbolt.mobile.android.dto.response.qrcode.QrFirstPageDto
 import com.passbolt.mobile.android.dto.response.qrcode.ReservedBytesDto
@@ -11,8 +13,6 @@ import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.ParseResult.Use
 import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.ParseResult.UserResolvableError.ErrorType.NO_BARCODES_IN_RANGE
 import com.passbolt.mobile.android.feature.setup.scanqr.usecase.UpdateTransferUseCase
 import com.passbolt.mobile.android.feature.setup.summary.ResultStatus
-import com.passbolt.mobile.android.storage.usecase.accounts.CheckAccountExistsUseCase
-import com.passbolt.mobile.android.storage.usecase.privatekey.SavePrivateKeyUseCase
 import com.passbolt.mobile.android.ui.UpdateTransferModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow

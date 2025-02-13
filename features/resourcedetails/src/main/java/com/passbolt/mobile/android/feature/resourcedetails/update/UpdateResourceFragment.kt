@@ -272,37 +272,9 @@ class UpdateResourceFragment :
         binding.toolbar.toolbarTitle = getString(LocalizationR.string.resource_update_edit_password_title)
     }
 
-    override fun showShareSimulationFailure() {
-        showSnackbar(
-            LocalizationR.string.resource_permissions_share_simulation_failed,
-            backgroundColor = CoreUiR.color.red
-        )
-    }
-
     override fun showShareFailure() {
         showSnackbar(
             LocalizationR.string.resource_permissions_share_failed,
-            backgroundColor = CoreUiR.color.red
-        )
-    }
-
-    override fun showSecretFetchFailure() {
-        showSnackbar(
-            LocalizationR.string.common_fetch_failure,
-            backgroundColor = CoreUiR.color.red
-        )
-    }
-
-    override fun showSecretEncryptFailure() {
-        showSnackbar(
-            LocalizationR.string.common_encryption_failure,
-            backgroundColor = CoreUiR.color.red
-        )
-    }
-
-    override fun showSecretDecryptFailure() {
-        showSnackbar(
-            LocalizationR.string.common_decryption_failure,
             backgroundColor = CoreUiR.color.red
         )
     }

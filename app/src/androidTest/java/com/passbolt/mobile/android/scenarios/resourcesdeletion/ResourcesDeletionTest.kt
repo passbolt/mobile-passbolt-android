@@ -26,6 +26,7 @@ package com.passbolt.mobile.android.scenarios.resourcesdeletion
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.swipeUp
 import androidx.test.espresso.action.ViewActions.typeText
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
@@ -42,14 +43,15 @@ import com.passbolt.mobile.android.core.idlingresource.SignInIdlingResource
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.feature.authentication.AuthenticationMainActivity
-import com.passbolt.mobile.android.first
-import com.passbolt.mobile.android.hasDrawable
+import com.passbolt.mobile.android.feature.otp.R
+import com.passbolt.mobile.android.helpers.createNewPasswordFromHomeScreen
+import com.passbolt.mobile.android.helpers.signIn
 import com.passbolt.mobile.android.instrumentationTestsModule
 import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
+import com.passbolt.mobile.android.matchers.first
+import com.passbolt.mobile.android.matchers.hasDrawable
 import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
-import com.passbolt.mobile.android.scenarios.helpers.createNewPasswordFromHomeScreen
-import com.passbolt.mobile.android.scenarios.helpers.signIn
 import org.hamcrest.CoreMatchers.endsWith
 import org.junit.Rule
 import org.junit.Test
@@ -60,6 +62,7 @@ import kotlin.test.BeforeTest
 import com.google.android.material.R as MaterialR
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
+import com.passbolt.mobile.android.feature.home.R.id as HomeId
 
 
 @RunWith(AndroidJUnit4::class)
@@ -80,8 +83,8 @@ class ResourcesDeletionTest : KoinTest {
     )
 
     private val managedAccountIntentCreator: ManagedAccountIntentCreator by inject()
-
     private val resourcesFullRefreshIdlingResource: ResourcesFullRefreshIdlingResource by inject()
+
 
     @get:Rule
     val idlingResourceRule = let {
@@ -105,7 +108,7 @@ class ResourcesDeletionTest : KoinTest {
         signIn(managedAccountIntentCreator.getPassphrase())
         createNewPasswordFromHomeScreen("ResourcesDeletionTest")
         onView(withId(MaterialR.id.text_input_start_icon)).perform(click())
-        onView(withId(com.passbolt.mobile.android.feature.home.R.id.allItems)).perform(click())
+        onView(withId(HomeId.allItems)).perform(click())
     }
 
     @Test
@@ -113,11 +116,13 @@ class ResourcesDeletionTest : KoinTest {
     fun onTheActionMenuDrawerICanClickDeletePasswordElement() {
         //    Given that I am on the resource’s action menu drawer
         onView(withId(com.passbolt.mobile.android.feature.otp.R.id.searchEditText)).perform(typeText("ResourcesDeletionTest"))
-        onView(first(withId(com.passbolt.mobile.android.feature.otp.R.id.more))).perform(click())
+        onView(first(withId(R.id.more))).perform(click())
         //    And I see ‘Delete password’ element enabled
         onView(withId(com.passbolt.mobile.android.feature.resourcemoremenu.R.id.delete))
             .check(matches(isDisplayed()))
             .check(matches(hasDrawable(id = CoreUiR.drawable.ic_trash)))
+        onView(withId(com.passbolt.mobile.android.feature.resourcemoremenu.R.id.passwordBottomSheetRoot))
+            .perform(swipeUp())
         //    When I click ‘Delete password’
         onView(withId(com.passbolt.mobile.android.feature.resourcemoremenu.R.id.delete)).perform(click())
         //    Then I see a popup with ‘Are you sure?’ information
@@ -135,7 +140,9 @@ class ResourcesDeletionTest : KoinTest {
     fun onThePasswordRemovalPopupICanClickTheCancelButton() {
         //    Given that I am on removal popup
         onView(withId(com.passbolt.mobile.android.feature.otp.R.id.searchEditText)).perform(typeText("ResourcesDeletionTest"))
-        onView(first(withId(com.passbolt.mobile.android.feature.otp.R.id.more))).perform(click())
+        onView(first(withId(R.id.more))).perform(click())
+        onView(withId(com.passbolt.mobile.android.feature.resourcemoremenu.R.id.passwordBottomSheetRoot))
+            .perform(swipeUp())
         onView(withId(com.passbolt.mobile.android.feature.resourcemoremenu.R.id.delete)).perform(click())
         //    When I click ‘Cancel’ button in @blue
         onView(withText(LocalizationR.string.cancel)).perform(click())
@@ -152,7 +159,9 @@ class ResourcesDeletionTest : KoinTest {
 
         //    Given that I am on removal popup
         onView(withId(com.passbolt.mobile.android.feature.otp.R.id.searchEditText)).perform(typeText("ResourcesDeletionTest"))
-        onView(first(withId(com.passbolt.mobile.android.feature.otp.R.id.more))).perform(click())
+        onView(first(withId(R.id.more))).perform(click())
+        onView(withId(com.passbolt.mobile.android.feature.resourcemoremenu.R.id.passwordBottomSheetRoot))
+            .perform(swipeUp())
         onView(withId(com.passbolt.mobile.android.feature.resourcemoremenu.R.id.delete)).perform(click())
         //    When I click ‘Delete’ button in @blue
         onView(withText(LocalizationR.string.delete)).perform(click())

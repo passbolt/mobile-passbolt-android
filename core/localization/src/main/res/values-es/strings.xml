@@ -42,6 +42,7 @@
     <string name="common_sign_out">Cerrar sesión</string>
     <string name="common_data_refresh_error">Se ha producido un error durante la actualización de datos</string>
     <string name="common_decryption_failure">Error durante el descifrado del secreto</string>
+    <string name="common_metadata_encryption_failure">Error during metadata encryption</string>
     <string name="common_fetch_failure">Error durante la descarga del secreto</string>
     <string name="common_encryption_failure">Se ha producido un error durante el cifrado del secreto</string>
     <string name="common_json_schema_resource_validation_error">Se ha producido un error durante la validación del recurso. Habilite los registros para más detalles.</string>
@@ -65,7 +66,7 @@
     <string name="logout_dialog_sign_out">Cerrar sesión</string>
     <string name="no_username">sin nombre de usuario</string>
     <string name="more_launch_website">Abrir sitio web</string>
-    <string name="more_copy_url">Copiar URL</string>
+    <string name="more_copy_uri">Copiar URI</string>
     <string name="more_copy_password">Copiar contraseña</string>
     <string name="more_copy_username">Copiar nombre de usuario</string>
     <string name="more_copy_desc">Copiar descripción</string>
@@ -200,7 +201,7 @@
     <string name="autofill_service_title">Passbolt</string>
     <string name="autofill_service_content">Servicio de accesibilidad de autocompletado activado</string>
     <string name="autofill_service_enable_overlay">Activar permiso de superposición</string>
-    <string name="autofill_service_overlay_description"><![CDATA[Autocompletar nombres de usuario y contraseñas para los navegadores web Android. Por favor, active el permiso ‘Mostrar sobre otras aplicaciones’ para el autocompletado de Passbolt]]></string>
+    <string name="autofill_service_overlay_description"><![CDATA[Autocompletar nombres de usuario y contraseñas para los navegadores web Android. Por favor, active el permiso \'Mostrar sobre otras aplicaciones\' para el autocompletado de Passbolt]]></string>
     <string name="autofill_service_enable_service">Activar autocompletado para la mayoría de aplicaciones</string>
     <string name="autofill_service_enable_service_description"><![CDATA[Autocompletar nombres de usuario y contraseñas para aplicaciones Android]]></string>
     <string name="autofill_dropdown_select">Seleccionar desde Passbolt</string>
@@ -235,7 +236,7 @@
     <string name="resource_details_username_header">Nombre de usuario</string>
     <string name="resource_details_password_header">Contraseña</string>
     <string name="resource_details_totp_header">TOTP</string>
-    <string name="resource_details_url_header">URL del sitio web</string>
+    <string name="resource_details_url_header">Main URI</string>
     <string name="resource_details_expiry_header">Caducidad</string>
     <string name="resource_details_description_header">Descripción</string>
     <string name="resource_details_tags_header">Etiquetas</string>
@@ -255,8 +256,8 @@
     <string name="resource_update_create_success">¡La nueva contraseña fue creada!</string>
     <string name="resource_update_edit_password_title">Editar contraseña</string>
     <string name="resource_update_field_password">Contraseña</string>
-    <string name="resource_update_field_name">Nombre</string>
-    <string name="resource_update_field_uri">URL</string>
+    <string name="resource_update_field_name">Resource name</string>
+    <string name="resource_update_field_uri">Main URI</string>
     <string name="resource_update_field_username">Nombre de usuario</string>
     <string name="resource_update_field_description">Descripción</string>
     <string name="resource_update_invalid_secret_data">Tipos de datos secretos no válidos. Abortando la edición.</string>
@@ -356,7 +357,7 @@
     <string name="group_member_details_group_member">Miembro del grupo</string>
     <string name="permission_recipients_select_users">Seleccionar usuarios</string>
     <string name="permission_recipients_already_added">Ya ha sido añadido</string>
-    <string name="permission_recipients_user_or_group_not_found">User or group not found</string>
+    <string name="permission_recipients_user_or_group_not_found">Usuario o grupo no encontrado</string>
     <string name="permission_deletion_dialog_message">La contraseña ya no se compartirá con este usuario.</string>
     <string name="main_update_downloaded">La actualización de Passbolt se acaba de descargar</string>
     <string name="main_update_download_in_progress">Descargando en segundo plano. Le notificaremos una vez finalice la descarga.</string>

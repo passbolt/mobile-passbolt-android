@@ -14,7 +14,6 @@ dependencies {
     implementation project(':ui')
     implementation project(':networking')
     implementation project(':database')
-    implementation project(':storage')
     implementation project(':entity')
     implementation project(':featureflags')
     implementation project(':security')
@@ -45,6 +44,9 @@ dependencies {
     implementation project(':scanotp')
     implementation project(':rbac')
     implementation project(':serializers')
+    implementation project(':accounts')
+    implementation project(':policies')
+    implementation project(':jsonmodel')
 
     implementation libs.navigation.fragment
     implementation libs.navigation.ui
@@ -57,9 +59,11 @@ dependencies {
     implementation libs.coil.base
     implementation libs.room.core
     implementation libs.espresso.idling.resource
+    implementation libs.jsonschema.friend
 
     testImplementation project(':commontest')
     testImplementation libs.gson
+    testImplementation libs.json.path
 }
 
 android {

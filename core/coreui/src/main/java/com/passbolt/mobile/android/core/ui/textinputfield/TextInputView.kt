@@ -106,7 +106,9 @@ open class TextInputView @JvmOverloads constructor(
     }
 
     fun setDefaultHint(name: String) {
-        hint = String.format(resources.getString(LocalizationR.string.input_default_hint), name)
+        hint = String.format(
+            resources.getString(LocalizationR.string.input_default_hint),
+            name.replaceFirstChar { it.lowercase() })
     }
 
     private fun parseAttributes(attrs: AttributeSet?) {

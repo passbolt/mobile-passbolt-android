@@ -24,7 +24,6 @@
 package com.passbolt.mobile.android.core.policies.usecase
 
 import com.passbolt.mobile.android.core.policies.validation.PasswordPoliciesValidator
-import com.passbolt.mobile.android.storage.usecase.policies.SavePasswordPoliciesUseCase
 import com.passbolt.mobile.android.ui.PasswordPolicies
 
 class PasswordPoliciesInteractor(

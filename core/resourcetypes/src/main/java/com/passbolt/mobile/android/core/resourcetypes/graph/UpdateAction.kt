@@ -27,5 +27,6 @@ enum class UpdateAction {
     EDIT_PASSWORD,
     EDIT_TOTP,
     ADD_TOTP,
-    REMOVE_TOTP
+    REMOVE_TOTP,
+    EDIT_METADATA
 }

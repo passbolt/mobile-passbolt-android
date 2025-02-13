@@ -72,8 +72,8 @@ fun Module.homeModule() {
                 getLocalFolderUseCase = get(),
                 deleteResourceIdlingResource = get(),
                 totpParametersProvider = get(),
-                resourceTypeFactory = get(),
-                getRbacRulesUseCase = get()
+                getRbacRulesUseCase = get(),
+                idToSlugMappingProvider = get()
             )
         }
         scopedOf(::HomeSpeedDialFabFactory)

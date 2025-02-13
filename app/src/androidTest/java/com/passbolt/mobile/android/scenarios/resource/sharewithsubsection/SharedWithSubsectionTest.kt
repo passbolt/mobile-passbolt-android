@@ -24,6 +24,8 @@
 package com.passbolt.mobile.android.scenarios.resource.sharewithsubsection
 
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.swipeUp
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
@@ -34,18 +36,15 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.passbolt.mobile.android.core.idlingresource.ResourceDetailActionIdlingResource
 import com.passbolt.mobile.android.core.idlingresource.ResourcesFullRefreshIdlingResource
 import com.passbolt.mobile.android.core.idlingresource.SignInIdlingResource
-import com.passbolt.mobile.android.core.localization.R.string as localizationString
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.feature.authentication.AuthenticationMainActivity
-import com.passbolt.mobile.android.feature.permissions.R.id as permissionsId
-import com.passbolt.mobile.android.feature.resources.R.id as resourcesId
+import com.passbolt.mobile.android.helpers.pickFirstResourceWithName
+import com.passbolt.mobile.android.helpers.signIn
 import com.passbolt.mobile.android.instrumentationTestsModule
 import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
 import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
-import com.passbolt.mobile.android.scenarios.helpers.pickFirstResourceWithName
-import com.passbolt.mobile.android.scenarios.helpers.signIn
 import org.hamcrest.Matchers.allOf
 import org.junit.Rule
 import org.junit.Test
@@ -54,6 +53,11 @@ import org.junit.runners.Parameterized
 import org.koin.core.component.inject
 import org.koin.test.KoinTest
 import kotlin.test.BeforeTest
+import com.google.android.material.R as MaterialR
+import com.passbolt.mobile.android.core.localization.R.string as localizationString
+import com.passbolt.mobile.android.feature.home.R.id as HomeId
+import com.passbolt.mobile.android.feature.permissions.R.id as permissionsId
+import com.passbolt.mobile.android.feature.resources.R.id as resourcesId
 
 
 @RunWith(Parameterized::class)
@@ -100,12 +104,15 @@ class SharedWithSubsectionTest(
     @Test
     //  https://passbolt.testrail.io/index.php?/cases/view/10599
     fun onTheResourceScreenICanSeeSharedWithSubsection() {
+        onView(withId(MaterialR.id.text_input_start_icon)).perform(click())
+        onView(withId(HomeId.allItems)).perform(click())
         //      Given I have `Shared with` permission
         //      And   I am a user on the <resource> display screen
         pickFirstResourceWithName(testedResource)
         //      When  I review screen content
         //      Then  I see Shared with subsection with corresponding title
         onView(withText(localizationString.shared_with)).check(matches(isDisplayed()))
+        onView(withId(resourcesId.root)).perform(swipeUp())
         onView(withId(resourcesId.sharedWithRecycler)).check(matches(isDisplayed()))
         //      And   Shared with subsection is filled with icons of users
         //      And   At least one icon is presented
@@ -114,7 +121,7 @@ class SharedWithSubsectionTest(
                 isDescendantOfA(withId(resourcesId.sharedWithRecycler)),
                 withId(permissionsId.userItem)
             )
-        )
+        ).check(matches(isDisplayed()))
         //      And   Shared with subsection contains caret
         onView(withId(resourcesId.sharedWithNavIcon)).check(matches(isDisplayed()))
     }

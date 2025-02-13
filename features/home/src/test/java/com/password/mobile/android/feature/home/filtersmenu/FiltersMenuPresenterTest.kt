@@ -1,9 +1,9 @@
 package com.password.mobile.android.feature.home.filtersmenu
 
+import com.passbolt.mobile.android.core.rbac.usecase.GetRbacRulesUseCase
 import com.passbolt.mobile.android.entity.featureflags.FeatureFlagsModel
 import com.passbolt.mobile.android.feature.home.filtersmenu.FiltersMenuContract
-import com.passbolt.mobile.android.storage.usecase.featureflags.GetFeatureFlagsUseCase
-import com.passbolt.mobile.android.storage.usecase.rbac.GetRbacRulesUseCase
+import com.passbolt.mobile.android.featureflags.usecase.GetFeatureFlagsUseCase
 import com.passbolt.mobile.android.ui.FiltersMenuModel
 import com.passbolt.mobile.android.ui.HomeDisplayViewModel
 import com.passbolt.mobile.android.ui.RbacModel
@@ -66,7 +66,8 @@ class FiltersMenuPresenterTest : KoinTest {
                     isRbacAvailable = true,
                     isPasswordExpiryAvailable = true,
                     arePasswordPoliciesAvailable = true,
-                    canUpdatePasswordPolicies = true
+                    canUpdatePasswordPolicies = true,
+                    isV5MetadataAvailable = false
                 )
             )
         }
@@ -93,7 +94,8 @@ class FiltersMenuPresenterTest : KoinTest {
                     isRbacAvailable = true,
                     isPasswordExpiryAvailable = true,
                     arePasswordPoliciesAvailable = true,
-                    canUpdatePasswordPolicies = true
+                    canUpdatePasswordPolicies = true,
+                    isV5MetadataAvailable = false
                 )
             )
         }

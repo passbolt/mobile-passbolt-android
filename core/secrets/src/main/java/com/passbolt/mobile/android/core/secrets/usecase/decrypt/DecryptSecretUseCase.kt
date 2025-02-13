@@ -25,16 +25,16 @@ package com.passbolt.mobile.android.core.secrets.usecase.decrypt
 
 import com.passbolt.mobile.android.common.extension.erase
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
+import com.passbolt.mobile.android.common.usecase.UserIdInput
+import com.passbolt.mobile.android.core.accounts.usecase.privatekey.GetPrivateKeyUseCase
+import com.passbolt.mobile.android.core.accounts.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
 import com.passbolt.mobile.android.core.mvp.authentication.UnauthenticatedReason
+import com.passbolt.mobile.android.core.passphrasememorycache.PassphraseMemoryCache
+import com.passbolt.mobile.android.core.passphrasememorycache.PotentialPassphrase
 import com.passbolt.mobile.android.gopenpgp.OpenPgp
 import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpError
 import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpResult
-import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
-import com.passbolt.mobile.android.storage.cache.passphrase.PotentialPassphrase
-import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
-import com.passbolt.mobile.android.storage.usecase.privatekey.GetPrivateKeyUseCase
-import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import timber.log.Timber
 
 class DecryptSecretUseCase(
@@ -88,9 +88,7 @@ class DecryptSecretUseCase(
 
                 other as DecryptedSecret
 
-                if (!decryptedSecret.contentEquals(other.decryptedSecret)) return false
-
-                return true
+                return decryptedSecret.contentEquals(other.decryptedSecret)
             }
 
             override fun hashCode(): Int {

@@ -47,28 +47,40 @@ abstract class DataRefreshViewReactivePresenter<V : DataRefreshViewReactiveContr
     private val job = SupervisorJob()
     private val coroutineScope = CoroutineScope(job + coroutineLaunchContext.ui)
 
+    // used to not invoke the refresh twice on the same presenter
+    // invoking twice can happen in both BE session and biometric session expire
+    // this calls attach twice (second one is after coming back from biometric auth UI screen)
+    private var mostRecentCollection: LatestStatusUpdateCollection? = null
+
     override fun resume(view: V) {
         fullDataRefreshExecutor.attach(this)
 
         coroutineScope.launch {
             fullDataRefreshExecutor.dataRefreshStatusFlow.collectLatest {
-                when (it) {
-                    is DataRefreshStatus.Finished -> {
-                        this@DataRefreshViewReactivePresenter.view?.hideRefreshProgress()
-                        when (it.output) {
-                            is HomeDataInteractor.Output.Failure -> {
-                                Timber.d("Full data refresh failed - executing failure action")
-                                refreshFailureAction()
-                            }
-                            is HomeDataInteractor.Output.Success -> {
-                                Timber.d("Full data refresh succeeded - executing success action")
-                                refreshAction()
+                val currentCollection = LatestStatusUpdateCollection(this.javaClass.name, it.toString())
+                if (currentCollection != mostRecentCollection) {
+                    mostRecentCollection = currentCollection
+
+                    when (it) {
+                        is DataRefreshStatus.Finished -> {
+                            this@DataRefreshViewReactivePresenter.view?.hideRefreshProgress()
+                            when (it.output) {
+                                is HomeDataInteractor.Output.Failure -> {
+                                    Timber.d("Full data refresh failed - executing failure action")
+                                    refreshFailureAction()
+                                }
+                                is HomeDataInteractor.Output.Success -> {
+                                    Timber.d("Full data refresh succeeded - executing success action")
+                                    refreshAction()
+                                }
                             }
                         }
+                        DataRefreshStatus.InProgress -> {
+                            this@DataRefreshViewReactivePresenter.view?.showRefreshProgress()
+                        }
                     }
-                    DataRefreshStatus.InProgress -> {
-                        this@DataRefreshViewReactivePresenter.view?.showRefreshProgress()
-                    }
+                } else {
+                    Timber.d("This status refresh is already collected - skipping")
                 }
             }
         }
@@ -78,4 +90,9 @@ abstract class DataRefreshViewReactivePresenter<V : DataRefreshViewReactiveContr
         fullDataRefreshExecutor.detach()
         coroutineScope.coroutineContext.cancelChildren()
     }
+
+    private data class LatestStatusUpdateCollection(
+        val className: String,
+        val statusName: String
+    )
 }

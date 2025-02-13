@@ -23,9 +23,15 @@
 
 package com.passbolt.mobile.android.feature.otp.screen
 
+import com.google.gson.Gson
+import com.jayway.jsonpath.Configuration
+import com.jayway.jsonpath.Option
+import com.jayway.jsonpath.spi.json.GsonJsonProvider
+import com.jayway.jsonpath.spi.mapper.GsonMappingProvider
 import com.passbolt.mobile.android.common.InitialsProvider
 import com.passbolt.mobile.android.common.search.SearchableMatcher
 import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
+import com.passbolt.mobile.android.core.accounts.usecase.accountdata.GetSelectedAccountDataUseCase
 import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.otpcore.TotpParametersProvider
@@ -34,17 +40,22 @@ import com.passbolt.mobile.android.core.resources.actions.ResourcePropertiesActi
 import com.passbolt.mobile.android.core.resources.actions.ResourceUpdateActionsInteractor
 import com.passbolt.mobile.android.core.resources.actions.SecretPropertiesActionsInteractor
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesUseCase
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
+import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
+import com.passbolt.mobile.android.jsonmodel.JSON_MODEL_GSON
+import com.passbolt.mobile.android.jsonmodel.jsonpathops.JsonPathJsonPathOps
+import com.passbolt.mobile.android.jsonmodel.jsonpathops.JsonPathsOps
 import com.passbolt.mobile.android.mappers.GroupsModelMapper
 import com.passbolt.mobile.android.mappers.OtpModelMapper
 import com.passbolt.mobile.android.mappers.PermissionsModelMapper
 import com.passbolt.mobile.android.mappers.UsersModelMapper
-import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.core.module.dsl.factoryOf
+import org.koin.core.module.dsl.singleOf
+import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.mockito.kotlin.mock
+import java.util.EnumSet
 
 internal val mockSelectedAccountDataCase = mock<GetSelectedAccountDataUseCase>()
 internal val mockTotpParametersProvider = mock<TotpParametersProvider>()
@@ -52,8 +63,8 @@ internal val mockSecretPropertiesActionsInteractor = mock<SecretPropertiesAction
 internal val mockResourcePropertiesActionsInteractor = mock<ResourcePropertiesActionsInteractor>()
 internal val mockResourceCommonActionsInteractor = mock<ResourceCommonActionsInteractor>()
 internal val mockResourceUpdateActionsInteractor = mock<ResourceUpdateActionsInteractor>()
-internal val mockResourceTypeFactory = mock<ResourceTypeFactory>()
 internal val mockGetLocalResourcesUseCase = mock<GetLocalResourcesUseCase>()
+internal val mockIdToSlugMappingProvider = mock<ResourceTypeIdToSlugMappingProvider>()
 
 @ExperimentalCoroutinesApi
 internal val testOtpModule = module {
@@ -72,12 +83,21 @@ internal val testOtpModule = module {
             getLocalResourcesUseCase = mockGetLocalResourcesUseCase,
             otpModelMapper = get(),
             totpParametersProvider = mockTotpParametersProvider,
-            resourceTypeFactory = mockResourceTypeFactory,
-            coroutineLaunchContext = get()
+            coroutineLaunchContext = get(),
+            idToSlugMappingProvider = mockIdToSlugMappingProvider
         )
     }
     factory { mockResourceCommonActionsInteractor }
     factory { mockResourcePropertiesActionsInteractor }
     factory { mockSecretPropertiesActionsInteractor }
     factory { mockResourceUpdateActionsInteractor }
+    single(named(JSON_MODEL_GSON)) { Gson() }
+    single {
+        Configuration.builder()
+            .jsonProvider(GsonJsonProvider())
+            .mappingProvider(GsonMappingProvider())
+            .options(EnumSet.noneOf(Option::class.java))
+            .build()
+    }
+    singleOf(::JsonPathJsonPathOps) bind JsonPathsOps::class
 }

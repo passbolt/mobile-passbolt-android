@@ -23,7 +23,6 @@
 
 package com.passbolt.mobile.android.core.policies.usecase
 
-import com.passbolt.mobile.android.storage.usecase.policies.SavePasswordExpirySettingsUseCase
 import com.passbolt.mobile.android.ui.PasswordExpirySettings
 
 class PasswordExpiryPoliciesInteractor(

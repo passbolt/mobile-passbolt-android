@@ -72,7 +72,7 @@ abstract class BaseAuthenticatedPresenter<T : BaseAuthenticatedContract.View>(
                 .drop(1) // drop initial value
                 .take(1)
                 .collect {
-                    Timber.d("[Session] Session refresh needed - showing auth")
+                    Timber.d("[Session] Session refresh needed, reason [$it] - showing auth")
                     it?.let {
                         when (it) {
                             is AuthenticationState.Unauthenticated.Reason.Mfa -> {

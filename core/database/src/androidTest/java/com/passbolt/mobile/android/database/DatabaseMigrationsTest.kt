@@ -33,6 +33,7 @@ import com.passbolt.mobile.android.database.migrations.Migration12to13
 import com.passbolt.mobile.android.database.migrations.Migration13to14
 import com.passbolt.mobile.android.database.migrations.Migration14to15
 import com.passbolt.mobile.android.database.migrations.Migration15to16
+import com.passbolt.mobile.android.database.migrations.Migration16to17
 import com.passbolt.mobile.android.database.migrations.Migration1to2
 import com.passbolt.mobile.android.database.migrations.Migration2to3
 import com.passbolt.mobile.android.database.migrations.Migration3to4
@@ -343,6 +344,47 @@ class DatabaseMigrationsTest {
     }
 
     @Test
+    fun migrate16To17() {
+        helper.createDatabase(TEST_DB, 16)
+            .apply {
+                execSQL("INSERT INTO ResourceType VALUES('1', 'resourceTypeName', 'resourceTypeSlug', 'resourceSchemaJson', 'secretSchemaJson', 1644909225833)")
+                execSQL(
+                    "INSERT INTO Resource VALUES('id1','folderid','READ', '1'," +
+                            " 'favouriteId', 1644909225833, 1644909225833)"
+                )
+                execSQL(
+                    "INSERT INTO User VALUES('id2','username',1,'fName','lName','avatar','armoredKey'," +
+                            "4096,'uid','keyId','fingerprint','type',1644909225833, 1644909225830)"
+                )
+                close()
+            }
+
+        helper.runMigrationsAndValidate(TEST_DB, 17, true, Migration16to17)
+            .apply {
+                execSQL("INSERT INTO ResourceType VALUES('1', 'resourceTypeName', 'resourceTypeSlug', 1644909225833)")
+
+                execSQL("INSERT INTO MetadataKey VALUES('id', 'fingerprint', 'armoredKey', 1644909225833, 1644909225833)")
+                execSQL("INSERT INTO MetadataKey VALUES('id2', 'fingerprint', 'armoredKey', null, null)")
+                execSQL(
+                    "INSERT INTO MetadataPrivateKey VALUES(0,'id', 'userId', 'data')"
+                )
+                execSQL(
+                    "INSERT INTO Resource VALUES('id2','folderid','READ', '1'," +
+                            " 'favouriteId', 1644909225833, 1644909225833, null, 'SHARED')"
+                )
+                execSQL(
+                    "INSERT INTO Resource VALUES('id3','folderid','READ', '1'," +
+                            " 'favouriteId', 1644909225833, 1644909225833, 'id', 'SHARED')"
+                )
+                execSQL(
+                    "INSERT INTO User VALUES('id3','username',1,'fName','lName','avatar','userKeyId', 'armoredKey'," +
+                            "4096,'uid','keyId','fingerprint','type',1644909225833, 1644909225830)"
+                )
+                close()
+            }
+    }
+
+    @Test
     fun migrateAll() {
         helper.createDatabase(TEST_DB, 1).apply {
             close()
@@ -356,7 +398,8 @@ class DatabaseMigrationsTest {
             .addMigrations(
                 Migration1to2, Migration2to3, Migration3to4, Migration4to5, Migration5to6,
                 Migration6to7, Migration7to8, Migration8to9, Migration9to10, Migration10to11,
-                Migration11to12, Migration12to13, Migration13to14, Migration14to15, Migration15to16
+                Migration11to12, Migration12to13, Migration13to14, Migration14to15, Migration15to16,
+                Migration16to17
             )
             .build().apply {
                 openHelper.writableDatabase

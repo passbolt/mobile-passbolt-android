@@ -1,8 +1,15 @@
 package com.password.mobile.android.feature.home.screen
 
+import com.google.gson.Gson
+import com.jayway.jsonpath.Configuration
+import com.jayway.jsonpath.Option
+import com.jayway.jsonpath.spi.json.GsonJsonProvider
+import com.jayway.jsonpath.spi.mapper.GsonMappingProvider
 import com.passbolt.mobile.android.common.InitialsProvider
 import com.passbolt.mobile.android.common.search.SearchableMatcher
 import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
+import com.passbolt.mobile.android.core.accounts.usecase.accountdata.GetSelectedAccountDataUseCase
+import com.passbolt.mobile.android.core.accounts.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.core.autofill.urlmatcher.AutofillUrlMatcher
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalFolderDetailsUseCase
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalResourcesAndFoldersUseCase
@@ -13,6 +20,8 @@ import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
 import com.passbolt.mobile.android.core.idlingresource.DeleteResourceIdlingResource
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.otpcore.TotpParametersProvider
+import com.passbolt.mobile.android.core.preferences.usecase.GetHomeDisplayViewPrefsUseCase
+import com.passbolt.mobile.android.core.rbac.usecase.GetRbacRulesUseCase
 import com.passbolt.mobile.android.core.resources.actions.ResourceCommonActionsInteractor
 import com.passbolt.mobile.android.core.resources.actions.ResourcePropertiesActionsInteractor
 import com.passbolt.mobile.android.core.resources.actions.ResourceUpdateActionsInteractor
@@ -23,30 +32,30 @@ import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesFi
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesWithGroupUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesWithTagUseCase
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
+import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.SecretParser
 import com.passbolt.mobile.android.core.tags.usecase.db.GetLocalTagsUseCase
 import com.passbolt.mobile.android.feature.home.screen.HomeContract
 import com.passbolt.mobile.android.feature.home.screen.HomePresenter
+import com.passbolt.mobile.android.jsonmodel.JSON_MODEL_GSON
+import com.passbolt.mobile.android.jsonmodel.jsonpathops.JsonPathJsonPathOps
+import com.passbolt.mobile.android.jsonmodel.jsonpathops.JsonPathsOps
 import com.passbolt.mobile.android.mappers.HomeDisplayViewMapper
 import com.passbolt.mobile.android.resourcemoremenu.usecase.CreateResourceMoreMenuModelUseCase
-import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
-import com.passbolt.mobile.android.storage.usecase.preferences.GetHomeDisplayViewPrefsUseCase
-import com.passbolt.mobile.android.storage.usecase.rbac.GetRbacRulesUseCase
-import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
+import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.mockito.kotlin.mock
+import java.util.EnumSet
 
 internal val mockResourcesInteractor = mock<ResourceInteractor>()
 internal val mockGetSelectedAccountDataUseCase = mock<GetSelectedAccountDataUseCase>()
 internal val mockGetSelectedAccountUseCase = mock<GetSelectedAccountUseCase>()
 internal val mockFetchAndUpdateDatabaseUseCase = mock<RebuildResourceTablesUseCase>()
 internal val mockSecretParser = mock<SecretParser>()
-internal val mockResourceTypeFactory = mock<ResourceTypeFactory>()
 internal val mockGetLocalResourcesUseCase = mock<GetLocalResourcesUseCase>()
 internal val mockGetSubFoldersUseCase = mock<GetLocalSubFoldersForFolderUseCase>()
 internal val mockGetSubFoldersResourcesUseCase = mock<GetLocalSubFolderResourcesFilteredUseCase>()
@@ -65,6 +74,7 @@ internal val mockResourcePropertiesActionsInteractor = mock<ResourcePropertiesAc
 internal val mockResourceCommonActionsInteractor = mock<ResourceCommonActionsInteractor>()
 internal val mockResourceUpdateActionsInteractor = mock<ResourceUpdateActionsInteractor>()
 internal val mockGetRbacRulesUseCase = mock<GetRbacRulesUseCase>()
+internal val mockIdToSlugMappingProvider = mock<ResourceTypeIdToSlugMappingProvider>()
 
 @ExperimentalCoroutinesApi
 val testHomeModule = module {
@@ -72,7 +82,6 @@ val testHomeModule = module {
     factory { mockGetSelectedAccountDataUseCase }
     factory { mockFetchAndUpdateDatabaseUseCase }
     factory { mockSecretParser }
-    factory { mockResourceTypeFactory }
     factory { mockCreateResourceMoreMenuModelUseCase }
     single { mock<FullDataRefreshExecutor>() }
     factoryOf(::TestCoroutineLaunchContext) bind CoroutineLaunchContext::class
@@ -101,12 +110,22 @@ val testHomeModule = module {
             getLocalFolderUseCase = mockGetLocalFolderUseCase,
             deleteResourceIdlingResource = get(),
             totpParametersProvider = mockTotpParametersProvider,
-            resourceTypeFactory = mockResourceTypeFactory,
-            getRbacRulesUseCase = mockGetRbacRulesUseCase
+            getRbacRulesUseCase = mockGetRbacRulesUseCase,
+            idToSlugMappingProvider = mockIdToSlugMappingProvider
         )
     }
     factory { mockResourceCommonActionsInteractor }
     factory { mockResourcePropertiesActionsInteractor }
     factory { mockSecretPropertiesActionsInteractor }
     factory { mockResourceUpdateActionsInteractor }
+
+    single(named(JSON_MODEL_GSON)) { Gson() }
+    single {
+        Configuration.builder()
+            .jsonProvider(GsonJsonProvider())
+            .mappingProvider(GsonMappingProvider())
+            .options(EnumSet.noneOf(Option::class.java))
+            .build()
+    }
+    singleOf(::JsonPathJsonPathOps) bind JsonPathsOps::class
 }

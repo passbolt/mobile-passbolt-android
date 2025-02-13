@@ -23,8 +23,8 @@
 
 package com.passbolt.mobile.android.feature.settings.debuglogssettings
 
+import com.passbolt.mobile.android.core.preferences.usecase.GetGlobalPreferencesUseCase
 import com.passbolt.mobile.android.feature.settings.screen.debuglogssettings.DebugLogsSettingsContract
-import com.passbolt.mobile.android.storage.usecase.preferences.GetGlobalPreferencesUseCase
 import org.junit.Rule
 import org.junit.Test
 import org.koin.core.logger.Level

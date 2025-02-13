@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.viewbinding.ViewBinding
+import com.passbolt.mobile.android.core.authenticationcore.session.GetSessionUseCase
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated.Reason
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated.Reason.Mfa.MfaProvider.DUO
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated.Reason.Mfa.MfaProvider.TOTP
@@ -19,7 +20,6 @@ import com.passbolt.mobile.android.feature.authentication.mfa.totp.EnterTotpList
 import com.passbolt.mobile.android.feature.authentication.mfa.unknown.UnknownProviderDialog
 import com.passbolt.mobile.android.feature.authentication.mfa.youbikey.ScanYubikeyDialog
 import com.passbolt.mobile.android.feature.authentication.mfa.youbikey.ScanYubikeyListener
-import com.passbolt.mobile.android.storage.usecase.session.GetSessionUseCase
 import org.koin.android.ext.android.inject
 
 /**

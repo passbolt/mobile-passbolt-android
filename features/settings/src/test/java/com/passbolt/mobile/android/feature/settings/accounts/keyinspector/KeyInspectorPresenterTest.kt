@@ -23,10 +23,11 @@
 
 package com.passbolt.mobile.android.feature.settings.accounts.keyinspector
 
+import com.passbolt.mobile.android.commontest.session.validSessionTestModule
+import com.passbolt.mobile.android.core.accounts.usecase.accountdata.GetSelectedAccountDataUseCase
 import com.passbolt.mobile.android.core.networking.NetworkResult
 import com.passbolt.mobile.android.core.users.user.FetchCurrentUserUseCase
 import com.passbolt.mobile.android.feature.settings.screen.accounts.keyinspector.KeyInspectorContract
-import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
 import com.passbolt.mobile.android.ui.GpgKeyModel
 import com.passbolt.mobile.android.ui.UserModel
 import com.passbolt.mobile.android.ui.UserProfileModel
@@ -46,6 +47,7 @@ import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
 import java.net.UnknownHostException
 import java.time.ZonedDateTime
+import java.util.UUID
 
 
 class KeyInspectorPresenterTest : KoinTest {
@@ -56,7 +58,7 @@ class KeyInspectorPresenterTest : KoinTest {
     @get:Rule
     val koinTestRule = KoinTestRule.create {
         printLogger(Level.ERROR)
-        modules(testKeyInspectorModule)
+        modules(testKeyInspectorModule, validSessionTestModule)
     }
 
     @Before
@@ -133,7 +135,8 @@ class KeyInspectorPresenterTest : KoinTest {
                     keyId = "keyid",
                     type = "rsa",
                     keyExpirationDate = now,
-                    keyCreationDate = now
+                    keyCreationDate = now,
+                    id = UUID.randomUUID().toString()
                 ),
                 profile = UserProfileModel(
                     username = "username",

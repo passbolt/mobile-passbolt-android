@@ -5,11 +5,12 @@ plugins {
 
 dependencies {
     implementation project(':passboltapi')
-    implementation project(':storage')
     implementation project(':mappers')
     implementation project(':common')
     implementation project(':dto')
     implementation project(':ui')
+    implementation project(':encryptedstorage')
+    implementation project(':accounts')
 
     implementation libs.koin
 }

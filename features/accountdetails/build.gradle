@@ -9,13 +9,13 @@ dependencies {
     implementation project(':ui')
     implementation project(':coreui')
     implementation project(':authentication')
-    implementation project(':storage')
     implementation project(':common')
     implementation project(':mappers')
     implementation project(':localization')
     implementation project(':security')
     implementation project(':transferaccounttoanotherdevice')
     implementation project(':navigation')
+    implementation project(':accounts')
 
     implementation libs.navigation.fragment
     implementation libs.navigation.ui

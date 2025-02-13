@@ -20,6 +20,11 @@ dependencies {
     implementation project(':users')
     implementation project(':folders')
     implementation project(':localization')
+    implementation project(':jsonmodel')
+    implementation project(':resourcetypes')
+    implementation project(':supportedresourcetypes')
+    implementation project(':metadata')
+    implementation project(':accounts')
 
     implementation libs.koin
     implementation libs.fastadapter.core
@@ -34,6 +39,7 @@ dependencies {
 
     testImplementation project(':commontest')
     testImplementation libs.gson
+    testImplementation libs.json.path
 }
 
 android {

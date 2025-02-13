@@ -1,7 +1,7 @@
 package com.passbolt.mobile.android.core.networking.interceptor
 
+import com.passbolt.mobile.android.core.accounts.usecase.selectedaccount.GetCurrentApiUrlUseCase
 import com.passbolt.mobile.android.core.networking.PLACEHOLDER_BASE_URL
-import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetCurrentApiUrlUseCase
 import okhttp3.Interceptor
 import okhttp3.Response
 

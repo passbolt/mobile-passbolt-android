@@ -1,10 +1,10 @@
 package com.passbolt.mobile.android.feature.accountdetails.screen
 
 import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
+import com.passbolt.mobile.android.core.accounts.usecase.accountdata.GetSelectedAccountDataUseCase
+import com.passbolt.mobile.android.core.accounts.usecase.accountdata.UpdateAccountDataUseCase
+import com.passbolt.mobile.android.core.accounts.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
-import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
-import com.passbolt.mobile.android.storage.usecase.accountdata.UpdateAccountDataUseCase
-import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.dsl.module
 import org.mockito.kotlin.doReturn

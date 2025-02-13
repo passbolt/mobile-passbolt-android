@@ -1,10 +1,19 @@
 package com.passbolt.mobile.android.feature.authentication.auth.presenter
 
+import com.passbolt.mobile.android.core.accounts.usecase.accountdata.GetAccountDataUseCase
+import com.passbolt.mobile.android.core.accounts.usecase.accountdata.SaveServerFingerprintUseCase
+import com.passbolt.mobile.android.core.accounts.usecase.privatekey.GetPrivateKeyUseCase
+import com.passbolt.mobile.android.core.accounts.usecase.selectedaccount.SaveSelectedAccountUseCase
+import com.passbolt.mobile.android.core.authenticationcore.passphrase.GetPassphraseUseCase
+import com.passbolt.mobile.android.core.authenticationcore.session.SaveSessionUseCase
 import com.passbolt.mobile.android.core.idlingresource.SignInIdlingResource
 import com.passbolt.mobile.android.core.inappreview.InAppReviewInteractor
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import com.passbolt.mobile.android.core.passphrasememorycache.PassphraseMemoryCache
+import com.passbolt.mobile.android.core.preferences.usecase.GetGlobalPreferencesUseCase
 import com.passbolt.mobile.android.core.security.rootdetection.RootDetector
 import com.passbolt.mobile.android.core.security.runtimeauth.RuntimeAuthenticatedFlag
+import com.passbolt.mobile.android.encryptedstorage.biometric.BiometricCipher
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.MfaStatusProvider
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.BiometryInteractor
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetAndVerifyServerKeysAndTimeInteractor
@@ -13,15 +22,6 @@ import com.passbolt.mobile.android.feature.authentication.auth.usecase.RefreshSe
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignInVerifyInteractor
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.VerifyPassphraseUseCase
-import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
-import com.passbolt.mobile.android.storage.encrypted.biometric.BiometricCipher
-import com.passbolt.mobile.android.storage.usecase.accountdata.GetAccountDataUseCase
-import com.passbolt.mobile.android.storage.usecase.accountdata.SaveServerFingerprintUseCase
-import com.passbolt.mobile.android.storage.usecase.passphrase.GetPassphraseUseCase
-import com.passbolt.mobile.android.storage.usecase.preferences.GetGlobalPreferencesUseCase
-import com.passbolt.mobile.android.storage.usecase.privatekey.GetPrivateKeyUseCase
-import com.passbolt.mobile.android.storage.usecase.selectedaccount.SaveSelectedAccountUseCase
-import com.passbolt.mobile.android.storage.usecase.session.SaveSessionUseCase
 import kotlinx.coroutines.launch
 
 /**

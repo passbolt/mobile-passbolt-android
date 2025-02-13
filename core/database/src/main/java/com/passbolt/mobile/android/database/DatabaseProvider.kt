@@ -9,6 +9,7 @@ import com.passbolt.mobile.android.database.migrations.Migration12to13
 import com.passbolt.mobile.android.database.migrations.Migration13to14
 import com.passbolt.mobile.android.database.migrations.Migration14to15
 import com.passbolt.mobile.android.database.migrations.Migration15to16
+import com.passbolt.mobile.android.database.migrations.Migration16to17
 import com.passbolt.mobile.android.database.migrations.Migration1to2
 import com.passbolt.mobile.android.database.migrations.Migration2to3
 import com.passbolt.mobile.android.database.migrations.Migration3to4
@@ -18,7 +19,7 @@ import com.passbolt.mobile.android.database.migrations.Migration6to7
 import com.passbolt.mobile.android.database.migrations.Migration7to8
 import com.passbolt.mobile.android.database.migrations.Migration8to9
 import com.passbolt.mobile.android.database.migrations.Migration9to10
-import com.passbolt.mobile.android.storage.usecase.database.GetResourcesDatabasePassphraseUseCase
+import com.passbolt.mobile.android.database.usecase.GetResourcesDatabasePassphraseUseCase
 import net.zetetic.database.sqlcipher.SupportOpenHelperFactory
 import java.nio.charset.StandardCharsets
 import kotlin.coroutines.resume
@@ -70,7 +71,8 @@ class DatabaseProvider(
             .addMigrations(
                 Migration1to2, Migration2to3, Migration3to4, Migration4to5, Migration5to6,
                 Migration6to7, Migration7to8, Migration8to9, Migration9to10, Migration10to11,
-                Migration11to12, Migration12to13, Migration13to14, Migration14to15, Migration15to16
+                Migration11to12, Migration12to13, Migration13to14, Migration14to15, Migration15to16,
+                Migration16to17
             )
             .openHelperFactory(factory)
             .build()

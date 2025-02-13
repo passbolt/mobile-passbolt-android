@@ -2,11 +2,13 @@ package com.passbolt.mobile.android.permissions.permissions
 
 import com.google.common.truth.Truth.assertThat
 import com.google.gson.JsonObject
+import com.passbolt.mobile.android.commontest.session.validSessionTestModule
 import com.passbolt.mobile.android.core.fulldatarefresh.DataRefreshStatus
 import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
 import com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcePermissionsUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUseCase
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType
 import com.passbolt.mobile.android.ui.GroupModel
 import com.passbolt.mobile.android.ui.PermissionModelUi
 import com.passbolt.mobile.android.ui.ResourceModel
@@ -26,10 +28,12 @@ import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.stub
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyBlocking
 import org.mockito.kotlin.whenever
 import java.time.ZonedDateTime
+import java.util.UUID
 
 /**
  * Passbolt - Open source password manager for teams
@@ -64,14 +68,31 @@ class ResourcePermissionsPresenterTest : KoinTest {
     @get:Rule
     val koinTestRule = KoinTestRule.create {
         printLogger(Level.ERROR)
-        modules(testResourcePermissionsModule)
+        modules(testResourcePermissionsModule, validSessionTestModule)
     }
 
     @Before
     fun setup() {
+        resourceModel = ResourceModel(
+            resourceId = RESOURCE_ID,
+            resourceTypeId = RESOURCE_TYPE_ID.toString(),
+            folderId = FOLDER_ID_ID.toString(),
+            permission = ResourcePermission.READ,
+            favouriteId = null,
+            modified = ZonedDateTime.now(),
+            expiry = null,
+            json = JsonObject().apply {
+                addProperty("name", NAME)
+                addProperty("username", USERNAME)
+                addProperty("uri", URL)
+                addProperty("description", DESCRIPTION)
+            }.toString(),
+            metadataKeyId = null,
+            metadataKeyType = null
+        )
         mockGetLocalResourceUseCase.stub {
             onBlocking { execute(GetLocalResourceUseCase.Input(RESOURCE_ID)) }
-                .doReturn(GetLocalResourceUseCase.Output(RESOURCE_MODEL))
+                .doReturn(GetLocalResourceUseCase.Output(resourceModel))
         }
         whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
             flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
@@ -91,8 +112,8 @@ class ResourcePermissionsPresenterTest : KoinTest {
     @Test
     fun `edit button should be shown in view mode and if owner`() {
         mockGetLocalResourceUseCase.stub {
-            onBlocking { execute(GetLocalResourceUseCase.Input(RESOURCE_MODEL.resourceId)) }
-                .doReturn(GetLocalResourceUseCase.Output(RESOURCE_MODEL.copy(permission = ResourcePermission.OWNER)))
+            onBlocking { execute(GetLocalResourceUseCase.Input(resourceModel.resourceId)) }
+                .doReturn(GetLocalResourceUseCase.Output(resourceModel.copy(permission = ResourcePermission.OWNER)))
         }
 
         presenter.argsReceived(PermissionsItem.RESOURCE, RESOURCE_ID, PermissionsMode.VIEW)
@@ -155,7 +176,7 @@ class ResourcePermissionsPresenterTest : KoinTest {
         presenter.resume(view)
         presenter.userPermissionDeleted(USER_PERMISSIONS[0])
 
-        verify(view).showPermissions(GROUP_PERMISSIONS)
+        verify(view, times(2)).showPermissions(GROUP_PERMISSIONS)
     }
 
     @Test
@@ -170,7 +191,7 @@ class ResourcePermissionsPresenterTest : KoinTest {
         presenter.resume(view)
         presenter.groupPermissionDeleted(GROUP_PERMISSIONS[0])
 
-        verify(view).showPermissions(USER_PERMISSIONS)
+        verify(view, times(2)).showPermissions(USER_PERMISSIONS)
     }
 
     @Test
@@ -189,7 +210,7 @@ class ResourcePermissionsPresenterTest : KoinTest {
         presenter.userPermissionModified(modifiedPermission)
 
         argumentCaptor<List<PermissionModelUi>>().apply {
-            verify(view).showPermissions(capture())
+            verify(view, times(2)).showPermissions(capture())
             assertThat(firstValue).contains(GROUP_PERMISSIONS[0])
             assertThat(firstValue.filterIsInstance<PermissionModelUi.UserPermissionModel>()).hasSize(1)
             assertThat(firstValue.filterIsInstance<PermissionModelUi.UserPermissionModel>()[0].permission)
@@ -213,7 +234,7 @@ class ResourcePermissionsPresenterTest : KoinTest {
         presenter.groupPermissionModified(modifiedPermission)
 
         argumentCaptor<List<PermissionModelUi>>().apply {
-            verify(view).showPermissions(capture())
+            verify(view, times(2)).showPermissions(capture())
             assertThat(firstValue).contains(USER_PERMISSIONS[0])
             assertThat(firstValue.filterIsInstance<PermissionModelUi.GroupPermissionModel>()).hasSize(1)
             assertThat(firstValue.filterIsInstance<PermissionModelUi.GroupPermissionModel>()[0].permission)
@@ -235,6 +256,11 @@ class ResourcePermissionsPresenterTest : KoinTest {
         mockHomeDataInteractor.stub {
             onBlocking { refreshAllHomeScreenData() }
                 .doReturn(HomeDataInteractor.Output.Success)
+        }
+        mockResourceTypeIdToSlugMappingProvider.stub {
+            onBlocking { provideMappingForSelectedAccount() }.doReturn(
+                mapOf(RESOURCE_TYPE_ID to ContentType.PasswordAndDescription.slug)
+            )
         }
 
         presenter.argsReceived(PermissionsItem.RESOURCE, RESOURCE_ID, PermissionsMode.EDIT)
@@ -275,22 +301,8 @@ class ResourcePermissionsPresenterTest : KoinTest {
         private const val USERNAME = "username"
         private const val URL = "https://www.passbolt.com"
         private const val DESCRIPTION = "desc"
-        private const val RESOURCE_TYPE_ID = "resTypeId"
-        private const val FOLDER_ID_ID = "folderId"
-        private val RESOURCE_MODEL = ResourceModel(
-            resourceId = RESOURCE_ID,
-            resourceTypeId = RESOURCE_TYPE_ID,
-            folderId = FOLDER_ID_ID,
-            permission = ResourcePermission.READ,
-            favouriteId = null,
-            modified = ZonedDateTime.now(),
-            expiry = null,
-            json = JsonObject().apply {
-                addProperty("name", NAME)
-                addProperty("username", USERNAME)
-                addProperty("uri", URL)
-                addProperty("description", DESCRIPTION)
-            }.toString()
-        )
+        private val RESOURCE_TYPE_ID = UUID.randomUUID()
+        private val FOLDER_ID_ID = UUID.randomUUID()
+        private lateinit var resourceModel: ResourceModel
     }
 }

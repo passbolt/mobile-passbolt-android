@@ -18,6 +18,7 @@ dependencies {
     implementation project(':folders')
     implementation project(':resources')
     implementation project(':localization')
+    implementation project(':jsonmodel')
 
     implementation libs.koin
     implementation libs.sqlite

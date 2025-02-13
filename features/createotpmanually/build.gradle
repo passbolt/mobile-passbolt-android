@@ -32,6 +32,8 @@ dependencies {
     implementation project(':networking')
     implementation project(':gopenpgp')
     implementation project(':serializers')
+    implementation project(':supportedresourcetypes')
+    implementation project(':jsonmodel')
 
     implementation libs.navigation.fragment
     implementation libs.navigation.ui

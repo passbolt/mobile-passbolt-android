@@ -1,11 +1,10 @@
 package com.passbolt.mobile.android.core.resourcetypes.usecase.db
 
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
+import com.passbolt.mobile.android.core.accounts.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.database.DatabaseProvider
 import com.passbolt.mobile.android.dto.response.ResourceTypeDto
-import com.passbolt.mobile.android.entity.resource.ResourceTypesAndFieldsCrossRef
 import com.passbolt.mobile.android.mappers.ResourceTypesModelMapper
-import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 
 /**
  * Passbolt - Open source password manager for teams
@@ -46,33 +45,13 @@ class RebuildLocalResourceTypesUseCase(
             .get(selectedAccount)
             .resourceTypesDao()
 
-        val resourceFieldsDao = databaseProvider
-            .get(selectedAccount)
-            .resourceFieldsDao()
-
-        val resourceTypesAndFieldsCrossRefDao = databaseProvider
-            .get(selectedAccount)
-            .resourceTypesAndFieldsCrossRefDao()
-
         val resourceTypeDbModel = resourceTypesModelMapper
             .map(input.resourceTypesDto)
 
-        // insert each resource types along with its fields and ResourceType<->ResourceField cross reference
-        resourceFieldsDao.deleteAll()
-        resourceTypesAndFieldsCrossRefDao.deleteAll()
         resourcesDao.deleteAll()
         resourceTypesDao.deleteAll()
         resourceTypeDbModel.forEach { resourceType ->
-            resourceTypesDao.insert(resourceType.resourceType)
-            resourceType.resourceFields.forEach { resourceTypeField ->
-                val resourceTypeFieldId = resourceFieldsDao.insert(resourceTypeField)
-                resourceTypesAndFieldsCrossRefDao.insert(
-                    ResourceTypesAndFieldsCrossRef(
-                        resourceType.resourceType.resourceTypeId,
-                        resourceTypeFieldId
-                    )
-                )
-            }
+            resourceTypesDao.insert(resourceType)
         }
     }
 

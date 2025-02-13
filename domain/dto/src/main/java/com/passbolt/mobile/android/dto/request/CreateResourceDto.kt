@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.dto.request
 
 import com.google.gson.annotations.SerializedName
+import com.passbolt.mobile.android.dto.response.MetadataKeyTypeDto
 import java.time.ZonedDateTime
 
 /**
@@ -25,19 +26,41 @@ import java.time.ZonedDateTime
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-data class CreateResourceDto(
+sealed class CreateResourceDto {
+    abstract val resourceTypeId: String
+    abstract val secrets: List<EncryptedSecret>
+    abstract val folderParentId: String?
+    abstract val expiry: ZonedDateTime?
+}
+
+data class CreateV4ResourceDto(
     val name: String,
     @SerializedName("resource_type_id")
-    val resourceTypeId: String,
-    val secrets: List<EncryptedSecret>,
+    override val resourceTypeId: String,
+    override val secrets: List<EncryptedSecret>,
     val username: String?,
     val uri: String?,
     val description: String?,
     @SerializedName("folder_parent_id")
-    val folderParentId: String?,
+    override val folderParentId: String?,
     @SerializedName("expired")
-    val expiry: ZonedDateTime?
-)
+    override val expiry: ZonedDateTime?
+) : CreateResourceDto()
+
+data class CreateV5ResourceDto(
+    @SerializedName("resource_type_id")
+    override val resourceTypeId: String,
+    override val secrets: List<EncryptedSecret>,
+    @SerializedName("folder_parent_id")
+    override val folderParentId: String?,
+    @SerializedName("expired")
+    override val expiry: ZonedDateTime?,
+    val metadata: String,
+    @SerializedName("metadata_key_id")
+    val metadataKeyId: String?,
+    @SerializedName("metadata_key_type")
+    val metadataKeyType: MetadataKeyTypeDto?
+) : CreateResourceDto()
 
 data class EncryptedSecret(
     @SerializedName("user_id")

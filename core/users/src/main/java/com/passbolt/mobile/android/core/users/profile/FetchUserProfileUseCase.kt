@@ -1,10 +1,10 @@
 package com.passbolt.mobile.android.core.users.profile
 
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
+import com.passbolt.mobile.android.common.usecase.UserIdInput
 import com.passbolt.mobile.android.core.networking.NetworkResult
 import com.passbolt.mobile.android.mappers.UserProfileMapper
 import com.passbolt.mobile.android.passboltapi.users.UsersRepository
-import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 import com.passbolt.mobile.android.ui.UserProfileModel
 import timber.log.Timber
 

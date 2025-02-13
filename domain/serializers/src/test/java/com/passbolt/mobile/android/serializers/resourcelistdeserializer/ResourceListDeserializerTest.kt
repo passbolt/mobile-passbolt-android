@@ -26,16 +26,22 @@ package com.passbolt.mobile.android.serializers.resourcelistdeserializer
 import com.google.common.truth.Truth.assertThat
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.passbolt.mobile.android.core.resourcetypes.usecase.db.GetResourceTypeIdToSlugMappingUseCase.Output
+import com.passbolt.mobile.android.core.accounts.usecase.selectedaccount.GetSelectedAccountUseCase
+import com.passbolt.mobile.android.core.resourcetypes.usecase.db.GetResourceTypeIdToSlugMappingUseCase
+import com.passbolt.mobile.android.dto.response.MetadataKeyTypeDto
 import com.passbolt.mobile.android.dto.response.PermissionDto
 import com.passbolt.mobile.android.dto.response.ResourceResponseDto
 import com.passbolt.mobile.android.dto.response.ResourceResponseV4Dto
-import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
-import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes
-import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.PASSWORD_AND_DESCRIPTION_SLUG
-import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.PASSWORD_DESCRIPTION_TOTP_SLUG
-import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.PASSWORD_STRING_SLUG
-import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.TOTP_SLUG
+import com.passbolt.mobile.android.dto.response.ResourceResponseV5Dto
+import com.passbolt.mobile.android.serializers.gson.MetadataDecryptor
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordAndDescription
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordString
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.Totp
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5Default
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5DefaultWithTotp
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5PasswordString
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5TotpStandalone
 import net.jimblackler.jsonschemafriend.SchemaStore
 import org.junit.Before
 import org.junit.Rule
@@ -44,6 +50,7 @@ import org.koin.core.logger.Level
 import org.koin.test.KoinTest
 import org.koin.test.KoinTestRule
 import org.koin.test.inject
+import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.stub
 import java.util.UUID
@@ -64,17 +71,29 @@ class ResourceListDeserializerTest : KoinTest {
             onBlocking { execute(Unit) } doReturn GetSelectedAccountUseCase.Output("selectedAccountId")
         }
         mockJSFSchemaRepository.stub {
-            on { schemaForResource(PASSWORD_STRING_SLUG) } doReturn SchemaStore().loadSchema(
+            on { schemaForResource(PasswordString.slug) } doReturn SchemaStore().loadSchema(
                 this::class.java.getResource("/password-string-resource-schema.json")
             )
-            on { schemaForResource(PASSWORD_AND_DESCRIPTION_SLUG) } doReturn SchemaStore().loadSchema(
+            on { schemaForResource(V5PasswordString.slug) } doReturn SchemaStore().loadSchema(
+                this::class.java.getResource("/v5-password-string-resource-schema.json")
+            )
+            on { schemaForResource(PasswordAndDescription.slug) } doReturn SchemaStore().loadSchema(
                 this::class.java.getResource("/password-and-description-resource-schema.json")
             )
-            on { schemaForResource(PASSWORD_DESCRIPTION_TOTP_SLUG) } doReturn SchemaStore().loadSchema(
+            on { schemaForResource(V5Default.slug) } doReturn SchemaStore().loadSchema(
+                this::class.java.getResource("/v5-default-resource-schema.json")
+            )
+            on { schemaForResource(ContentType.PasswordDescriptionTotp.slug) } doReturn SchemaStore().loadSchema(
                 this::class.java.getResource("/password-description-totp-resource-schema.json")
             )
-            on { schemaForResource(TOTP_SLUG) } doReturn SchemaStore().loadSchema(
+            on { schemaForResource(V5DefaultWithTotp.slug) } doReturn SchemaStore().loadSchema(
+                this::class.java.getResource("/v5-default-with-totp-resource-schema.json")
+            )
+            on { schemaForResource(Totp.slug) } doReturn SchemaStore().loadSchema(
                 this::class.java.getResource("/totp-resource-schema.json")
+            )
+            on { schemaForResource(V5TotpStandalone.slug) } doReturn SchemaStore().loadSchema(
+                this::class.java.getResource("/v5-totp-standalone-resource-schema.json")
             )
         }
     }
@@ -83,11 +102,49 @@ class ResourceListDeserializerTest : KoinTest {
     fun `resources with invalid fields for password string type should be filtered`() {
         mockIdToSlugMappingUseCase.stub {
             onBlocking { execute(Unit) }.doReturn(
-                Output(
-                    mapOf(testedResourceTypeUuid to PASSWORD_STRING_SLUG)
+                GetResourceTypeIdToSlugMappingUseCase.Output(
+                    mapOf(testedResourceTypeUuid to PasswordString.slug)
                 )
             )
         }
+
+        val invalidResources = listOf(
+            resourceWithNameOfLength(
+                PASSWORD_STRING_NAME_MAX_LENGTH + 1, testedResourceTypeUuid
+            ),
+            resourceWithUriOfLength(
+                PASSWORD_STRING_URI_MAX_LENGTH + 1,
+                testedResourceTypeUuid
+            ),
+            resourceWithDescriptionOfLength(
+                PASSWORD_STRING_DESCRIPTION_MAX_LENGTH + 1,
+                testedResourceTypeUuid
+            ),
+            resourceWithUsernameOfLength(
+                PASSWORD_STRING_USERNAME_MAX_LENGTH + 1,
+                testedResourceTypeUuid
+            )
+        )
+
+        val listJson = gson.toJson(invalidResources)
+        val resulList = gson.fromJson<List<ResourceResponseDto>>(
+            listJson,
+            object : TypeToken<List<@JvmSuppressWildcards ResourceResponseDto>>() {}.type
+        )
+
+        assertThat(resulList).isEmpty()
+    }
+
+    @Test
+    fun `resources with invalid fields for v5 password string type should be filtered`() {
+        mockIdToSlugMappingUseCase.stub {
+            onBlocking { execute(Unit) }.doReturn(
+                GetResourceTypeIdToSlugMappingUseCase.Output(
+                    mapOf(testedResourceTypeUuid to V5PasswordString.slug)
+                )
+            )
+        }
+
         val invalidResources = listOf(
             resourceWithNameOfLength(
                 PASSWORD_STRING_NAME_MAX_LENGTH + 1, testedResourceTypeUuid
@@ -119,8 +176,41 @@ class ResourceListDeserializerTest : KoinTest {
     fun `resources with invalid fields for password and description type should be filtered`() {
         mockIdToSlugMappingUseCase.stub {
             onBlocking { execute(Unit) }.doReturn(
-                Output(
-                    mapOf(testedResourceTypeUuid to PASSWORD_AND_DESCRIPTION_SLUG)
+                GetResourceTypeIdToSlugMappingUseCase.Output(
+                    mapOf(testedResourceTypeUuid to PasswordAndDescription.slug)
+                )
+            )
+        }
+        val invalidResources = listOf(
+            resourceWithNameOfLength(
+                PASSWORD_AND_DESCRIPTION_NAME_MAX_LENGTH + 1,
+                testedResourceTypeUuid
+            ),
+            resourceWithUriOfLength(
+                PASSWORD_AND_DESCRIPTION_URI_MAX_LENGTH + 1,
+                testedResourceTypeUuid
+            ),
+            resourceWithUsernameOfLength(
+                PASSWORD_AND_DESCRIPTION_USERNAME_MAX_LENGTH + 1,
+                testedResourceTypeUuid
+            )
+        )
+
+        val listJson = gson.toJson(invalidResources)
+        val resulList = gson.fromJson<List<ResourceResponseDto>>(
+            listJson,
+            object : TypeToken<List<@JvmSuppressWildcards ResourceResponseDto>>() {}.type
+        )
+
+        assertThat(resulList).isEmpty()
+    }
+
+    @Test
+    fun `resources with invalid fields for v5 default type should be filtered`() {
+        mockIdToSlugMappingUseCase.stub {
+            onBlocking { execute(Unit) }.doReturn(
+                GetResourceTypeIdToSlugMappingUseCase.Output(
+                    mapOf(testedResourceTypeUuid to V5Default.slug)
                 )
             )
         }
@@ -152,8 +242,37 @@ class ResourceListDeserializerTest : KoinTest {
     fun `resources with invalid fields for totp type should be filtered`() {
         mockIdToSlugMappingUseCase.stub {
             onBlocking { execute(Unit) }.doReturn(
-                Output(
-                    mapOf(testedResourceTypeUuid to SupportedContentTypes.TOTP_SLUG)
+                GetResourceTypeIdToSlugMappingUseCase.Output(
+                    mapOf(testedResourceTypeUuid to Totp.slug)
+                )
+            )
+        }
+        val invalidResources = listOf(
+            resourceWithNameOfLength(
+                TOTP_NAME_MAX_LENGTH + 1,
+                testedResourceTypeUuid
+            ),
+            resourceWithUriOfLength(
+                TOTP_URI_MAX_LENGTH + 1,
+                testedResourceTypeUuid
+            ),
+        )
+
+        val listJson = gson.toJson(invalidResources)
+        val resulList = gson.fromJson<List<ResourceResponseDto>>(
+            listJson,
+            object : TypeToken<List<@JvmSuppressWildcards ResourceResponseDto>>() {}.type
+        )
+
+        assertThat(resulList).isEmpty()
+    }
+
+    @Test
+    fun `resources with invalid fields for v5 totp standalone type should be filtered`() {
+        mockIdToSlugMappingUseCase.stub {
+            onBlocking { execute(Unit) }.doReturn(
+                GetResourceTypeIdToSlugMappingUseCase.Output(
+                    mapOf(testedResourceTypeUuid to V5TotpStandalone.slug)
                 )
             )
         }
@@ -181,8 +300,41 @@ class ResourceListDeserializerTest : KoinTest {
     fun `resources with invalid fields for password description totp type should be filtered`() {
         mockIdToSlugMappingUseCase.stub {
             onBlocking { execute(Unit) }.doReturn(
-                Output(
-                    mapOf(testedResourceTypeUuid to PASSWORD_DESCRIPTION_TOTP_SLUG)
+                GetResourceTypeIdToSlugMappingUseCase.Output(
+                    mapOf(testedResourceTypeUuid to ContentType.PasswordDescriptionTotp.slug)
+                )
+            )
+        }
+        val invalidResources = listOf(
+            resourceWithNameOfLength(
+                PASSWORD_DESCRIPTION_TOTP_NAME_MAX_LENGTH + 1,
+                testedResourceTypeUuid
+            ),
+            resourceWithUriOfLength(
+                PASSWORD_DESCRIPTION_TOTP_URI_MAX_LENGTH + 1,
+                testedResourceTypeUuid
+            ),
+            resourceWithUsernameOfLength(
+                PASSWORD_DESCRIPTION_TOTP_USERNAME_MAX_LENGTH + 1,
+                testedResourceTypeUuid
+            )
+        )
+
+        val listJson = gson.toJson(invalidResources)
+        val resulList = gson.fromJson<List<ResourceResponseDto>>(
+            listJson,
+            object : TypeToken<List<@JvmSuppressWildcards ResourceResponseDto>>() {}.type
+        )
+
+        assertThat(resulList).isEmpty()
+    }
+
+    @Test
+    fun `resources with invalid fields for v5 default with totp type should be filtered`() {
+        mockIdToSlugMappingUseCase.stub {
+            onBlocking { execute(Unit) }.doReturn(
+                GetResourceTypeIdToSlugMappingUseCase.Output(
+                    mapOf(testedResourceTypeUuid to V5DefaultWithTotp.slug)
                 )
             )
         }
@@ -214,8 +366,8 @@ class ResourceListDeserializerTest : KoinTest {
     fun `optional fields should pass validation`() {
         mockIdToSlugMappingUseCase.stub {
             onBlocking { execute(Unit) }.doReturn(
-                Output(
-                    mapOf(testedResourceTypeUuid to PASSWORD_AND_DESCRIPTION_SLUG)
+                GetResourceTypeIdToSlugMappingUseCase.Output(
+                    mapOf(testedResourceTypeUuid to PasswordAndDescription.slug)
                 )
             )
         }
@@ -250,8 +402,8 @@ class ResourceListDeserializerTest : KoinTest {
     fun `resource with valid fields for password string type should not be filtered`() {
         mockIdToSlugMappingUseCase.stub {
             onBlocking { execute(Unit) }.doReturn(
-                Output(
-                    mapOf(testedResourceTypeUuid to PASSWORD_STRING_SLUG)
+                GetResourceTypeIdToSlugMappingUseCase.Output(
+                    mapOf(testedResourceTypeUuid to PasswordString.slug)
                 )
             )
         }
@@ -272,6 +424,56 @@ class ResourceListDeserializerTest : KoinTest {
                 expired = null
             )
         )
+
+        val listJson = gson.toJson(validResources)
+        val resulList = gson.fromJson<List<ResourceResponseDto>>(
+            listJson,
+            object : TypeToken<List<@JvmSuppressWildcards ResourceResponseDto>>() {}.type
+        )
+
+        assertThat(resulList).hasSize(1)
+        assertThat(resulList[0].id).isEqualTo(validResources[0].id)
+    }
+
+    @Test
+    fun `resource with valid fields for v5 password string type should not be filtered`() {
+        mockIdToSlugMappingUseCase.stub {
+            onBlocking { execute(Unit) }.doReturn(
+                GetResourceTypeIdToSlugMappingUseCase.Output(
+                    mapOf(testedResourceTypeUuid to V5PasswordString.slug)
+                )
+            )
+        }
+        val validResources = listOf(
+            ResourceResponseV5Dto(
+                id = UUID.randomUUID(),
+                resourceTypeId = testedResourceTypeUuid,
+                resourceFolderId = null,
+                permission = PermissionDto(UUID.randomUUID(), 1, "", UUID.randomUUID(), "", UUID.randomUUID(), "", ""),
+                favorite = null,
+                modified = "",
+                tags = emptyList(),
+                permissions = emptyList(),
+                expired = null,
+                metadataKeyType = MetadataKeyTypeDto.SHARED,
+                metadata = "encrypted metadata",
+                metadataKeyId = UUID.randomUUID()
+            )
+        )
+        mockMetadataDecryptor.stub {
+            onBlocking { decryptMetadata(any()) }.doReturn(
+                MetadataDecryptor.Output.Success(
+                    """
+                    {
+                        "name": "name",
+                        "uris": ["uri1"],
+                        "username": "username",
+                        "description": "description"
+                    }
+                    """.trimIndent()
+                )
+            )
+        }
 
         val listJson = gson.toJson(validResources)
         val resulList = gson.fromJson<List<ResourceResponseDto>>(
@@ -287,8 +489,8 @@ class ResourceListDeserializerTest : KoinTest {
     fun `resources with valid fields for password and description type should not be filtered`() {
         mockIdToSlugMappingUseCase.stub {
             onBlocking { execute(Unit) }.doReturn(
-                Output(
-                    mapOf(testedResourceTypeUuid to PASSWORD_AND_DESCRIPTION_SLUG)
+                GetResourceTypeIdToSlugMappingUseCase.Output(
+                    mapOf(testedResourceTypeUuid to PasswordAndDescription.slug)
                 )
             )
         }
@@ -309,6 +511,56 @@ class ResourceListDeserializerTest : KoinTest {
                 expired = null
             )
         )
+
+        val listJson = gson.toJson(validResources)
+        val resulList = gson.fromJson<List<ResourceResponseDto>>(
+            listJson,
+            object : TypeToken<List<@JvmSuppressWildcards ResourceResponseDto>>() {}.type
+        )
+
+        assertThat(resulList).hasSize(1)
+        assertThat(resulList[0].id).isEqualTo(validResources[0].id)
+    }
+
+    @Test
+    fun `resources with valid fields for v5 default type should not be filtered`() {
+        mockIdToSlugMappingUseCase.stub {
+            onBlocking { execute(Unit) }.doReturn(
+                GetResourceTypeIdToSlugMappingUseCase.Output(
+                    mapOf(testedResourceTypeUuid to V5Default.slug)
+                )
+            )
+        }
+        val validResources = listOf(
+            ResourceResponseV5Dto(
+                id = UUID.randomUUID(),
+                resourceTypeId = testedResourceTypeUuid,
+                resourceFolderId = null,
+                permission = PermissionDto(UUID.randomUUID(), 1, "", UUID.randomUUID(), "", UUID.randomUUID(), "", ""),
+                favorite = null,
+                modified = "",
+                tags = emptyList(),
+                permissions = emptyList(),
+                expired = null,
+                metadataKeyType = MetadataKeyTypeDto.SHARED,
+                metadata = "encrypted metadata",
+                metadataKeyId = UUID.randomUUID()
+            )
+        )
+        mockMetadataDecryptor.stub {
+            onBlocking { decryptMetadata(any()) }.doReturn(
+                MetadataDecryptor.Output.Success(
+                    """
+                    {
+                        "name": "name",
+                        "uris": ["uri1"],
+                        "username": "username",
+                        "description": "description"
+                    }
+                    """.trimIndent()
+                )
+            )
+        }
 
         val listJson = gson.toJson(validResources)
         val resulList = gson.fromJson<List<ResourceResponseDto>>(
@@ -324,8 +576,8 @@ class ResourceListDeserializerTest : KoinTest {
     fun `resources with valid fields for totp type should not be filtered`() {
         mockIdToSlugMappingUseCase.stub {
             onBlocking { execute(Unit) }.doReturn(
-                Output(
-                    mapOf(testedResourceTypeUuid to SupportedContentTypes.TOTP_SLUG)
+                GetResourceTypeIdToSlugMappingUseCase.Output(
+                    mapOf(testedResourceTypeUuid to Totp.slug)
                 )
             )
         }
@@ -358,11 +610,61 @@ class ResourceListDeserializerTest : KoinTest {
     }
 
     @Test
+    fun `resources with valid fields for v5 totp standalone type should not be filtered`() {
+        mockIdToSlugMappingUseCase.stub {
+            onBlocking { execute(Unit) }.doReturn(
+                GetResourceTypeIdToSlugMappingUseCase.Output(
+                    mapOf(testedResourceTypeUuid to V5TotpStandalone.slug)
+                )
+            )
+        }
+        val validResources = listOf(
+            ResourceResponseV5Dto(
+                id = UUID.randomUUID(),
+                resourceTypeId = testedResourceTypeUuid,
+                resourceFolderId = null,
+                permission = PermissionDto(UUID.randomUUID(), 1, "", UUID.randomUUID(), "", UUID.randomUUID(), "", ""),
+                favorite = null,
+                modified = "",
+                tags = emptyList(),
+                permissions = emptyList(),
+                expired = null,
+                metadataKeyType = MetadataKeyTypeDto.SHARED,
+                metadata = "encrypted metadata",
+                metadataKeyId = UUID.randomUUID()
+            )
+        )
+        mockMetadataDecryptor.stub {
+            onBlocking { decryptMetadata(any()) }.doReturn(
+                MetadataDecryptor.Output.Success(
+                    """
+                    {
+                        "name": "name",
+                        "uris": ["uri1"],
+                        "username": "username",
+                        "description": "description"
+                    }
+                    """.trimIndent()
+                )
+            )
+        }
+
+        val listJson = gson.toJson(validResources)
+        val resulList = gson.fromJson<List<ResourceResponseDto>>(
+            listJson,
+            object : TypeToken<List<@JvmSuppressWildcards ResourceResponseDto>>() {}.type
+        )
+
+        assertThat(resulList).hasSize(1)
+        assertThat(resulList[0].id).isEqualTo(validResources[0].id)
+    }
+
+    @Test
     fun `resources with valid fields for password description totp type should not be filtered`() {
         mockIdToSlugMappingUseCase.stub {
             onBlocking { execute(Unit) }.doReturn(
-                Output(
-                    mapOf(testedResourceTypeUuid to PASSWORD_DESCRIPTION_TOTP_SLUG)
+                GetResourceTypeIdToSlugMappingUseCase.Output(
+                    mapOf(testedResourceTypeUuid to ContentType.PasswordDescriptionTotp.slug)
                 )
             )
         }
@@ -383,6 +685,56 @@ class ResourceListDeserializerTest : KoinTest {
                 expired = null
             )
         )
+
+        val listJson = gson.toJson(validResources)
+        val resulList = gson.fromJson<List<ResourceResponseDto>>(
+            listJson,
+            object : TypeToken<List<@JvmSuppressWildcards ResourceResponseDto>>() {}.type
+        )
+
+        assertThat(resulList).hasSize(1)
+        assertThat(resulList[0].id).isEqualTo(validResources[0].id)
+    }
+
+    @Test
+    fun `resources with valid fields for v5 default with totp type should not be filtered`() {
+        mockIdToSlugMappingUseCase.stub {
+            onBlocking { execute(Unit) }.doReturn(
+                GetResourceTypeIdToSlugMappingUseCase.Output(
+                    mapOf(testedResourceTypeUuid to V5DefaultWithTotp.slug)
+                )
+            )
+        }
+        val validResources = listOf(
+            ResourceResponseV5Dto(
+                id = UUID.randomUUID(),
+                resourceTypeId = testedResourceTypeUuid,
+                resourceFolderId = null,
+                permission = PermissionDto(UUID.randomUUID(), 1, "", UUID.randomUUID(), "", UUID.randomUUID(), "", ""),
+                favorite = null,
+                modified = "",
+                tags = emptyList(),
+                permissions = emptyList(),
+                expired = null,
+                metadataKeyType = MetadataKeyTypeDto.SHARED,
+                metadata = "encrypted metadata",
+                metadataKeyId = UUID.randomUUID()
+            )
+        )
+        mockMetadataDecryptor.stub {
+            onBlocking { decryptMetadata(any()) }.doReturn(
+                MetadataDecryptor.Output.Success(
+                    """
+                    {
+                        "name": "name",
+                        "uris": ["uri1"],
+                        "username": "username",
+                        "description": "description"
+                    }
+                    """.trimIndent()
+                )
+            )
+        }
 
         val listJson = gson.toJson(validResources)
         val resulList = gson.fromJson<List<ResourceResponseDto>>(

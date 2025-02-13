@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import com.google.common.truth.Truth.assertThat
-import com.google.gson.JsonObject
 import com.passbolt.mobile.android.database.impl.resources.ResourcesDao
 import com.passbolt.mobile.android.entity.resource.Permission
 import com.passbolt.mobile.android.entity.resource.Resource
@@ -93,8 +92,6 @@ class SortByModifiedDateTest {
             resourceTypeId = "1",
             name = "password-description",
             slug = PASSWORD_DESCRIPTION_SLUG,
-            resourceSchemaJson = JsonObject(),
-            secretSchemaJson = JsonObject(),
             deleted = null
         )
 
@@ -106,6 +103,8 @@ class SortByModifiedDateTest {
             favouriteId = null,
             modified = ZonedDateTime.now(),
             expiry = null,
+            metadataKeyId = null,
+            metadataKeyType = null
         )
         private val RESOURCE_2 = Resource(
             resourceId = "2",
@@ -115,6 +114,8 @@ class SortByModifiedDateTest {
             favouriteId = null,
             modified = ZonedDateTime.now().plusDays(1),
             expiry = null,
+            metadataKeyId = null,
+            metadataKeyType = null
         )
         private val RESOURCE_3 = Resource(
             resourceId = "3",
@@ -124,6 +125,8 @@ class SortByModifiedDateTest {
             favouriteId = null,
             modified = ZonedDateTime.now().plusDays(2),
             expiry = null,
+            metadataKeyId = null,
+            metadataKeyType = null
         )
         private val RESOURCE_1_ZONE_MINUS = Resource(
             resourceId = "4",
@@ -133,6 +136,8 @@ class SortByModifiedDateTest {
             favouriteId = null,
             modified = LocalDateTime.now().atZone(ZoneOffset.of("-08:00")),
             expiry = null,
+            metadataKeyId = null,
+            metadataKeyType = null
         )
         private val RESOURCE_1_ZONE_PLUS = Resource(
             resourceId = "5",
@@ -142,6 +147,8 @@ class SortByModifiedDateTest {
             favouriteId = null,
             modified = LocalDateTime.now().atZone(ZoneOffset.of("+08:00")),
             expiry = null,
+            metadataKeyId = null,
+            metadataKeyType = null
         )
     }
 }

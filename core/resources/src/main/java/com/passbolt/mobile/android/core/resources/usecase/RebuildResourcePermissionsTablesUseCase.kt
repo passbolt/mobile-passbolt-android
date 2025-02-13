@@ -1,10 +1,10 @@
 package com.passbolt.mobile.android.core.resources.usecase
 
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
+import com.passbolt.mobile.android.common.usecase.UserIdInput
+import com.passbolt.mobile.android.core.accounts.usecase.SelectedAccountUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.AddLocalResourcePermissionsUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.RemoveLocalResourcePermissionsUseCase
-import com.passbolt.mobile.android.storage.usecase.SelectedAccountUseCase
-import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 import com.passbolt.mobile.android.ui.ResourceModelWithAttributes
 
 /**
@@ -32,7 +32,8 @@ import com.passbolt.mobile.android.ui.ResourceModelWithAttributes
 class RebuildResourcePermissionsTablesUseCase(
     private val removeLocalResourcePermissionsUseCase: RemoveLocalResourcePermissionsUseCase,
     private val addLocalResourcePermissionsUseCase: AddLocalResourcePermissionsUseCase
-) : AsyncUseCase<RebuildResourcePermissionsTablesUseCase.Input, Unit>, SelectedAccountUseCase {
+) : AsyncUseCase<RebuildResourcePermissionsTablesUseCase.Input, Unit>,
+    SelectedAccountUseCase {
 
     override suspend fun execute(input: Input) {
         removeLocalResourcePermissionsUseCase.execute(UserIdInput(selectedAccountId))

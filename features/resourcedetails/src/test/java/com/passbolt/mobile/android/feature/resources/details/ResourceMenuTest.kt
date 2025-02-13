@@ -5,6 +5,7 @@ import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalFolderL
 import com.passbolt.mobile.android.core.fulldatarefresh.DataRefreshStatus
 import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
 import com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor
+import com.passbolt.mobile.android.core.rbac.usecase.GetRbacRulesUseCase
 import com.passbolt.mobile.android.core.resources.actions.ResourceCommonActionResult
 import com.passbolt.mobile.android.core.resources.actions.ResourcePropertiesActionsInteractor
 import com.passbolt.mobile.android.core.resources.actions.ResourcePropertyActionResult
@@ -12,14 +13,10 @@ import com.passbolt.mobile.android.core.resources.usecase.FavouritesInteractor
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcePermissionsUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceTagsUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUseCase
-import com.passbolt.mobile.android.core.resourcetypes.usecase.db.GetResourceTypeIdToSlugMappingUseCase
-import com.passbolt.mobile.android.core.resourcetypes.usecase.db.GetResourceTypeWithFieldsByIdUseCase
 import com.passbolt.mobile.android.entity.featureflags.FeatureFlagsModel
-import com.passbolt.mobile.android.entity.resource.ResourceField
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsContract
-import com.passbolt.mobile.android.storage.usecase.featureflags.GetFeatureFlagsUseCase
-import com.passbolt.mobile.android.storage.usecase.rbac.GetRbacRulesUseCase
-import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.PASSWORD_AND_DESCRIPTION_SLUG
+import com.passbolt.mobile.android.featureflags.usecase.GetFeatureFlagsUseCase
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType
 import com.passbolt.mobile.android.ui.GroupModel
 import com.passbolt.mobile.android.ui.PermissionModelUi
 import com.passbolt.mobile.android.ui.RbacModel
@@ -85,12 +82,29 @@ class ResourceMenuTest : KoinTest {
 
     @Before
     fun setup() {
+        resourceModel = ResourceModel(
+            resourceId = ID,
+            resourceTypeId = RESOURCE_TYPE_ID.toString(),
+            folderId = FOLDER_ID_ID,
+            permission = ResourcePermission.READ,
+            favouriteId = "fav-id",
+            modified = ZonedDateTime.now(),
+            expiry = null,
+            json = JsonObject().apply {
+                addProperty("name", NAME)
+                addProperty("username", USERNAME)
+                addProperty("uri", URL)
+                addProperty("description", DESCRIPTION)
+            }.toString(),
+            metadataKeyType = null,
+            metadataKeyId = null
+        )
         mockGetLocalResourceUseCase.stub {
-            onBlocking { execute(GetLocalResourceUseCase.Input(RESOURCE_MODEL.resourceId)) }
-                .doReturn(GetLocalResourceUseCase.Output(RESOURCE_MODEL))
+            onBlocking { execute(GetLocalResourceUseCase.Input(resourceModel.resourceId)) }
+                .doReturn(GetLocalResourceUseCase.Output(resourceModel))
         }
         mockGetLocalResourcePermissionsUseCase.stub {
-            onBlocking { execute(GetLocalResourcePermissionsUseCase.Input(RESOURCE_MODEL.resourceId)) }
+            onBlocking { execute(GetLocalResourcePermissionsUseCase.Input(resourceModel.resourceId)) }
                 .doReturn(GetLocalResourcePermissionsUseCase.Output(listOf(groupPermission, userPermission)))
         }
         mockGetFeatureFlagsUseCase.stub {
@@ -105,7 +119,8 @@ class ResourceMenuTest : KoinTest {
                     isRbacAvailable = true,
                     isPasswordExpiryAvailable = true,
                     arePasswordPoliciesAvailable = true,
-                    canUpdatePasswordPolicies = true
+                    canUpdatePasswordPolicies = true,
+                    isV5MetadataAvailable = false
                 )
             )
         }
@@ -135,19 +150,9 @@ class ResourceMenuTest : KoinTest {
         mockGetFolderLocationUseCase.stub {
             onBlocking { execute(any()) }.doReturn(GetLocalFolderLocationUseCase.Output(emptyList()))
         }
-        mockGetResourceTypeWithFields.stub {
-            onBlocking { execute(any()) }.doReturn(
-                GetResourceTypeWithFieldsByIdUseCase.Output(
-                    resourceTypeId = RESOURCE_MODEL.resourceTypeId,
-                    listOf(ResourceField(0, "description", false, null, true, "string"))
-                )
-            )
-        }
-        mockGetResourceTypeIdToSlugMappingUseCase.stub {
-            onBlocking { execute(Unit) }.doReturn(
-                GetResourceTypeIdToSlugMappingUseCase.Output(
-                    mapOf(UUID.fromString(RESOURCE_TYPE_ID) to PASSWORD_AND_DESCRIPTION_SLUG)
-                )
+        mockResourceTypeIdToSlugMappingProvider.stub {
+            onBlocking { provideMappingForSelectedAccount() }.doReturn(
+                mapOf(RESOURCE_TYPE_ID to ContentType.PasswordString.slug)
             )
         }
         presenter.attach(view)
@@ -158,12 +163,12 @@ class ResourceMenuTest : KoinTest {
     fun `delete resource should show confirmation dialog, delete and close details`() = runTest {
         mockResourceCommonActionsInteractor.stub {
             onBlocking { deleteResource() } doReturn flowOf(
-                ResourceCommonActionResult.Success(RESOURCE_MODEL.name)
+                ResourceCommonActionResult.Success(resourceModel.name)
             )
         }
 
         presenter.argsReceived(
-            RESOURCE_MODEL.resourceId,
+            resourceModel.resourceId,
             100,
             20f
         )
@@ -173,7 +178,7 @@ class ResourceMenuTest : KoinTest {
         presenter.deleteResourceConfirmed()
 
         verify(view).showDeleteConfirmationDialog()
-        verify(view).closeWithDeleteSuccessResult(RESOURCE_MODEL.name)
+        verify(view).closeWithDeleteSuccessResult(resourceModel.name)
     }
 
     @ExperimentalCoroutinesApi
@@ -184,7 +189,7 @@ class ResourceMenuTest : KoinTest {
         }
 
         presenter.argsReceived(
-            RESOURCE_MODEL.resourceId,
+            resourceModel.resourceId,
             100,
             20f
         )
@@ -205,13 +210,13 @@ class ResourceMenuTest : KoinTest {
                 ResourcePropertyActionResult(
                     ResourcePropertiesActionsInteractor.URL_LABEL,
                     isSecret = false,
-                    RESOURCE_MODEL.url.orEmpty()
+                    resourceModel.uri.orEmpty()
                 )
             )
         }
 
         presenter.argsReceived(
-            RESOURCE_MODEL.resourceId,
+            resourceModel.resourceId,
             100,
             20f
         )
@@ -219,7 +224,7 @@ class ResourceMenuTest : KoinTest {
         presenter.moreClick()
         presenter.launchWebsiteClick()
 
-        verify(view).openWebsite(RESOURCE_MODEL.url.orEmpty())
+        verify(view).openWebsite(resourceModel.uri.orEmpty())
     }
 
     @Test
@@ -229,12 +234,12 @@ class ResourceMenuTest : KoinTest {
                 ResourcePropertyActionResult(
                     ResourcePropertiesActionsInteractor.USERNAME_LABEL,
                     isSecret = false,
-                    RESOURCE_MODEL.username.orEmpty()
+                    resourceModel.username.orEmpty()
                 )
             )
         }
         presenter.argsReceived(
-            RESOURCE_MODEL.resourceId,
+            resourceModel.resourceId,
             100,
             20f
         )
@@ -244,7 +249,7 @@ class ResourceMenuTest : KoinTest {
 
         verify(view).addToClipboard(
             ResourcePropertiesActionsInteractor.USERNAME_LABEL,
-            RESOURCE_MODEL.username.orEmpty(),
+            resourceModel.username.orEmpty(),
             isSecret = false
         )
     }
@@ -256,12 +261,12 @@ class ResourceMenuTest : KoinTest {
                 ResourcePropertyActionResult(
                     ResourcePropertiesActionsInteractor.URL_LABEL,
                     isSecret = false,
-                    RESOURCE_MODEL.url.orEmpty()
+                    resourceModel.uri.orEmpty()
                 )
             )
         }
         presenter.argsReceived(
-            RESOURCE_MODEL.resourceId,
+            resourceModel.resourceId,
             100,
             20f
         )
@@ -271,7 +276,7 @@ class ResourceMenuTest : KoinTest {
 
         verify(view).addToClipboard(
             ResourcePropertiesActionsInteractor.URL_LABEL,
-            RESOURCE_MODEL.url.orEmpty(),
+            resourceModel.uri.orEmpty(),
             isSecret = false
         )
     }
@@ -282,23 +287,9 @@ class ResourceMenuTest : KoinTest {
         private const val URL = "https://www.passbolt.com"
         private val ID = UUID.randomUUID().toString()
         private const val DESCRIPTION = "desc"
-        private val RESOURCE_TYPE_ID = UUID.randomUUID().toString()
+        private val RESOURCE_TYPE_ID = UUID.randomUUID()
         private const val FOLDER_ID_ID = "folderId"
-        private val RESOURCE_MODEL = ResourceModel(
-            resourceId = ID,
-            resourceTypeId = RESOURCE_TYPE_ID,
-            folderId = FOLDER_ID_ID,
-            permission = ResourcePermission.READ,
-            favouriteId = "fav-id",
-            modified = ZonedDateTime.now(),
-            expiry = null,
-            json = JsonObject().apply {
-                addProperty("name", NAME)
-                addProperty("username", USERNAME)
-                addProperty("uri", URL)
-                addProperty("description", DESCRIPTION)
-            }.toString()
-        )
+        private lateinit var resourceModel: ResourceModel
         private val groupPermission = PermissionModelUi.GroupPermissionModel(
             permission = ResourcePermission.READ, permissionId = "permId1", group = GroupModel("grId", "grName")
         )

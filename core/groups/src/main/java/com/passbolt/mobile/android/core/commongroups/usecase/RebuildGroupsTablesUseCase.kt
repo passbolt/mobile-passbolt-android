@@ -1,10 +1,10 @@
 package com.passbolt.mobile.android.core.commongroups.usecase
 
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
+import com.passbolt.mobile.android.common.usecase.UserIdInput
+import com.passbolt.mobile.android.core.accounts.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.core.commongroups.usecase.db.AddLocalGroupsUseCase
 import com.passbolt.mobile.android.core.commongroups.usecase.db.RemoveLocalGroupsUseCase
-import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
-import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.ui.GroupModelWithUsers
 
 class RebuildGroupsTablesUseCase(

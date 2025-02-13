@@ -2,13 +2,13 @@ package com.passbolt.mobile.android.feature.authentication.auth.usecase
 
 import com.passbolt.mobile.android.common.CookieExtractor
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
+import com.passbolt.mobile.android.common.usecase.UserIdInput
+import com.passbolt.mobile.android.core.accounts.usecase.accountdata.GetAccountDataUseCase
+import com.passbolt.mobile.android.core.accounts.usecase.selectedaccount.GetSelectedAccountUseCase
+import com.passbolt.mobile.android.core.authenticationcore.session.GetSessionUseCase
+import com.passbolt.mobile.android.core.authenticationcore.session.SaveSessionUseCase
 import com.passbolt.mobile.android.dto.request.RefreshSessionRequest
 import com.passbolt.mobile.android.passboltapi.auth.AuthRepository
-import com.passbolt.mobile.android.storage.usecase.accountdata.GetAccountDataUseCase
-import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
-import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
-import com.passbolt.mobile.android.storage.usecase.session.GetSessionUseCase
-import com.passbolt.mobile.android.storage.usecase.session.SaveSessionUseCase
 import retrofit2.HttpException
 import timber.log.Timber
 import java.net.HttpURLConnection

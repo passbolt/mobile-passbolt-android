@@ -4,11 +4,11 @@ import com.google.gson.Gson
 import com.passbolt.mobile.android.common.UuidProvider
 import com.passbolt.mobile.android.common.extension.erase
 import com.passbolt.mobile.android.common.time.TimeProvider
+import com.passbolt.mobile.android.common.usecase.UserIdInput
+import com.passbolt.mobile.android.core.accounts.usecase.privatekey.GetPrivateKeyUseCase
 import com.passbolt.mobile.android.dto.request.ChallengeDto
 import com.passbolt.mobile.android.gopenpgp.OpenPgp
 import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpResult
-import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
-import com.passbolt.mobile.android.storage.usecase.privatekey.GetPrivateKeyUseCase
 
 /**
  * Passbolt - Open source password manager for teams

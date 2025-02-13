@@ -1,11 +1,11 @@
 package com.passbolt.mobile.android.feature.authentication.auth.accountslist
 
 import com.google.common.truth.Truth.assertThat
+import com.passbolt.mobile.android.core.accounts.usecase.accounts.GetAllAccountsDataUseCase
+import com.passbolt.mobile.android.core.accounts.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.entity.account.Account
 import com.passbolt.mobile.android.feature.authentication.accountslist.AccountsListContract
 import com.passbolt.mobile.android.mappers.AccountModelMapper
-import com.passbolt.mobile.android.storage.usecase.accounts.GetAllAccountsDataUseCase
-import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.ui.AccountModelUi
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Before
@@ -79,7 +79,7 @@ class AccountListPresenterTest : KoinTest {
             verify(view).showAccounts(capture())
             // verify list content
             assertThat(firstValue.size).isEqualTo(SAVED_ACCOUNT.size + 1)
-            assertThat(firstValue).isEqualTo(accountEntityToUiMapper.map(SAVED_ACCOUNT))
+            assertThat(firstValue).isEqualTo(accountEntityToUiMapper.map(SAVED_ACCOUNT, currentAccount = null))
 
             // verify if add new account button is added
             assertThat(firstValue).contains(AccountModelUi.AddNewAccount)
@@ -126,7 +126,7 @@ class AccountListPresenterTest : KoinTest {
         whenever(mockGetAllAccountsDataUseCase.execute(Unit)).doReturn(GetAllAccountsDataUseCase.Output(SAVED_ACCOUNT))
 
         presenter.attach(view)
-        val accountToRemove = accountEntityToUiMapper.map(SAVED_ACCOUNT)[0] as AccountModelUi.AccountModel
+        val accountToRemove = accountEntityToUiMapper.map(SAVED_ACCOUNT, currentAccount = null)[0] as AccountModelUi.AccountModel
         presenter.removeAccountClick(accountToRemove)
 
         verify(view).showAccounts(any())
@@ -145,7 +145,7 @@ class AccountListPresenterTest : KoinTest {
         }
 
         presenter.attach(view)
-        val accountToRemove = accountEntityToUiMapper.map(SAVED_ACCOUNT)[0]
+        val accountToRemove = accountEntityToUiMapper.map(SAVED_ACCOUNT, currentAccount = null)[0]
         presenter.confirmRemoveAccountClick(accountToRemove as AccountModelUi.AccountModel)
 
         argumentCaptor<List<AccountModelUi>>().apply {
@@ -172,7 +172,7 @@ class AccountListPresenterTest : KoinTest {
         }
 
         presenter.attach(view)
-        val accountToRemove = accountEntityToUiMapper.map(SAVED_ACCOUNT)[0]
+        val accountToRemove = accountEntityToUiMapper.map(SAVED_ACCOUNT, currentAccount = null)[0]
         presenter.confirmRemoveAccountClick(accountToRemove as AccountModelUi.AccountModel)
 
         verify(view).navigateToStartUp()

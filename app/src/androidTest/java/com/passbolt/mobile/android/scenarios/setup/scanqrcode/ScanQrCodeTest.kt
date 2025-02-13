@@ -39,16 +39,15 @@ import androidx.test.filters.MediumTest
 import androidx.test.rule.GrantPermissionRule
 import com.passbolt.mobile.android.feature.setup.R
 import com.passbolt.mobile.android.feature.setup.SetUpActivity
+import com.passbolt.mobile.android.helpers.getString
 import com.passbolt.mobile.android.instrumentationTestsModule
 import com.passbolt.mobile.android.rules.lazyActivityScenarioRule
-import com.passbolt.mobile.android.scenarios.helpers.getString
 import org.hamcrest.Matcher
 import org.hamcrest.core.AllOf
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.koin.test.KoinTest
-import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
@@ -67,14 +66,8 @@ class ScanQrCodeTest : KoinTest {
 
     @BeforeTest
     fun setup() {
-        Intents.init()
         onView(withId(R.id.connectToAccountButton)).perform(click())
         onView(withId(R.id.scanQrCodesButton)).perform(scrollTo(), click())
-    }
-
-    @AfterTest
-    fun tearDown() {
-        Intents.release()
     }
 
     @Test
@@ -98,6 +91,8 @@ class ScanQrCodeTest : KoinTest {
     @Test
     //    https://passbolt.testrail.io/index.php?/cases/view/6192
     fun asAMobileUserICanOpenHelpWebpageDuringTheQrCodeScanningProcess() {
+        Intents.init()
+
         //        Given   the user is on the “Help” modal
         onView(withContentDescription(LocalizationR.string.help_button_description)).perform(click())
         //        When    the user clicks on the “Visit help site” button
@@ -108,6 +103,8 @@ class ScanQrCodeTest : KoinTest {
             IntentMatchers.hasData(getString(LocalizationR.string.help_website))
         )
         Intents.intended(expectedIntent)
+
+        Intents.release()
     }
 
     @Test

@@ -25,6 +25,7 @@ package com.passbolt.mobile.android.feature.otp.screen
 
 import com.passbolt.mobile.android.common.coroutinetimer.infiniteTimer
 import com.passbolt.mobile.android.common.search.SearchableMatcher
+import com.passbolt.mobile.android.core.accounts.usecase.accountdata.GetSelectedAccountDataUseCase
 import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReactivePresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.navigation.AppContext
@@ -36,16 +37,16 @@ import com.passbolt.mobile.android.core.resources.actions.performCommonResourceA
 import com.passbolt.mobile.android.core.resources.actions.performResourceUpdateAction
 import com.passbolt.mobile.android.core.resources.actions.performSecretPropertyAction
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesUseCase
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.PASSWORD_DESCRIPTION_TOTP
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.PASSWORD_WITH_DESCRIPTION
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.SIMPLE_PASSWORD
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.STANDALONE_TOTP
+import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
 import com.passbolt.mobile.android.feature.home.screen.model.SearchInputEndIconMode
 import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
 import com.passbolt.mobile.android.mappers.OtpModelMapper
 import com.passbolt.mobile.android.serializers.jsonschema.SchemaEntity
-import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordDescriptionTotp
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.Totp
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5DefaultWithTotp
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5TotpStandalone
 import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.totpSlugs
 import com.passbolt.mobile.android.ui.OtpItemWrapper
 import com.passbolt.mobile.android.ui.ResourceModel
@@ -62,6 +63,7 @@ import org.koin.core.component.getOrCreateScope
 import org.koin.core.parameter.parametersOf
 import org.koin.core.scope.Scope
 import timber.log.Timber
+import java.util.UUID
 import kotlin.time.Duration.Companion.seconds
 
 @Suppress("TooManyFunctions")
@@ -71,7 +73,7 @@ class OtpPresenter(
     private val getLocalResourcesUseCase: GetLocalResourcesUseCase,
     private val otpModelMapper: OtpModelMapper,
     private val totpParametersProvider: TotpParametersProvider,
-    private val resourceTypeFactory: ResourceTypeFactory,
+    private val idToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : DataRefreshViewReactivePresenter<OtpContract.View>(coroutineLaunchContext), OtpContract.Presenter,
     KoinScopeComponent {
@@ -382,13 +384,16 @@ class OtpPresenter(
         presenterScope.launch {
             view?.showProgress()
             val otpResource = currentOtpItemForMenu!!.resource
-            when (val resourceTypeEnum = resourceTypeFactory.getResourceTypeEnum(otpResource.resourceTypeId)) {
-                SIMPLE_PASSWORD, PASSWORD_WITH_DESCRIPTION ->
-                    throw IllegalArgumentException("${resourceTypeEnum.name} type should not be presented on totp list")
-                STANDALONE_TOTP ->
+            val slug = idToSlugMappingProvider.provideMappingForSelectedAccount()[
+                UUID.fromString(otpResource.resourceTypeId)
+            ]
+            when (val contentType = ContentType.fromSlug(slug!!)) {
+                is Totp, V5TotpStandalone ->
                     deleteStandaloneTotpResource(otpResource)
-                PASSWORD_DESCRIPTION_TOTP ->
+                is PasswordDescriptionTotp, V5DefaultWithTotp ->
                     downgradeToPasswordAndDescriptionResource(otpResource)
+                else ->
+                    throw IllegalArgumentException("$contentType type should not be presented on totp list")
             }
             view?.hideProgress()
         }
@@ -488,11 +493,12 @@ class OtpPresenter(
             val resourceUpdateActionsInteractor = get<ResourceUpdateActionsInteractor> {
                 parametersOf(resource, needSessionRefreshFlow, sessionRefreshedFlow)
             }
+            val slug = idToSlugMappingProvider.provideMappingForSelectedAccount()[
+                UUID.fromString(resource.resourceTypeId)
+            ]
             val updateOperation =
-                when (resourceTypeFactory.getResourceTypeEnum(resource.resourceTypeId)) {
-                    SIMPLE_PASSWORD, PASSWORD_WITH_DESCRIPTION ->
-                        throw IllegalArgumentException("These resource types are not shown on TOTP tab")
-                    STANDALONE_TOTP ->
+                when (val contentType = ContentType.fromSlug(slug!!)) {
+                    is Totp, V5TotpStandalone ->
                         resourceUpdateActionsInteractor.updateStandaloneTotpResource(
                             label = totpQr.label,
                             issuer = totpQr.issuer,
@@ -501,15 +507,21 @@ class OtpPresenter(
                             algorithm = totpQr.algorithm.name,
                             secretKey = totpQr.secret
                         )
-                    PASSWORD_DESCRIPTION_TOTP ->
+                    is PasswordDescriptionTotp, V5DefaultWithTotp ->
                         resourceUpdateActionsInteractor.updateLinkedTotpResourceTotpFields(
                             label = resource.name,
-                            issuer = resource.url,
+                            issuer = if (contentType.isV5()) {
+                                resource.uris?.firstOrNull()
+                            } else {
+                                resource.uri
+                            },
                             period = totpQr.period,
                             digits = totpQr.digits,
                             algorithm = totpQr.algorithm.name,
                             secretKey = totpQr.secret
                         )
+                    else ->
+                        throw IllegalArgumentException("$slug resource type should not be on TOTP tab")
                 }
             performResourceUpdateAction(
                 action = { updateOperation },

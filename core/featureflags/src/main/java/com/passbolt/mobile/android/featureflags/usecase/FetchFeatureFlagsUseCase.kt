@@ -3,7 +3,7 @@ package com.passbolt.mobile.android.featureflags.usecase
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
 import com.passbolt.mobile.android.core.networking.NetworkResult
 import com.passbolt.mobile.android.entity.featureflags.FeatureFlagsModel
-import com.passbolt.mobile.android.mappers.FeatureFlagsMapper
+import com.passbolt.mobile.android.featureflags.mapper.FeatureFlagsMapper
 import com.passbolt.mobile.android.passboltapi.settings.SettingsRepository
 
 /**

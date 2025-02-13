@@ -7,7 +7,6 @@ plugins {
 dependencies {
     implementation project(':common')
     implementation project(':architecture')
-    implementation project(':storage')
     implementation project(':mappers')
     implementation project(':ui')
     implementation project(':networking')
@@ -25,6 +24,7 @@ dependencies {
     implementation project(':folders')
     implementation project(':localization')
     implementation project(':rbac')
+    implementation project(':accounts')
 
     implementation libs.koin
     implementation libs.material

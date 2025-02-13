@@ -26,7 +26,6 @@ package com.passbolt.mobile.android.scenarios.setup.passphrase
 import androidx.appcompat.widget.Toolbar
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.action.ViewActions.scrollTo
 import androidx.test.espresso.action.ViewActions.typeText
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.hasTextColor
@@ -38,16 +37,19 @@ import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
 import androidx.test.platform.app.InstrumentationRegistry
-import androidx.test.rule.GrantPermissionRule
 import com.passbolt.mobile.android.commontest.viewassertions.CastedViewAssertion
+import com.passbolt.mobile.android.core.idlingresource.SignInIdlingResource
+import com.passbolt.mobile.android.core.navigation.ActivityIntents
+import com.passbolt.mobile.android.core.navigation.AppContext
+import com.passbolt.mobile.android.feature.authentication.AuthenticationMainActivity
 import com.passbolt.mobile.android.feature.setup.R
-import com.passbolt.mobile.android.feature.startup.StartUpActivity
-import com.passbolt.mobile.android.hasToast
 import com.passbolt.mobile.android.instrumentationTestsModule
 import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
-import com.passbolt.mobile.android.isTextHidden
 import com.passbolt.mobile.android.mappers.AccountModelMapper
-import com.passbolt.mobile.android.rules.lazyActivityScenarioRule
+import com.passbolt.mobile.android.matchers.hasToast
+import com.passbolt.mobile.android.matchers.isTextHidden
+import com.passbolt.mobile.android.rules.IdlingResourceRule
+import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
 import org.hamcrest.Matchers.not
 import org.junit.Rule
 import org.junit.Test
@@ -65,24 +67,32 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
 class SetupPassphraseTest : KoinTest {
 
     @get:Rule
-    val startUpActivityRule = lazyActivityScenarioRule<StartUpActivity>(
+    val startUpActivityRule = lazyActivitySetupScenarioRule<AuthenticationMainActivity>(
         koinOverrideModules = listOf(instrumentationTestsModule),
         intentSupplier = {
-            managedAccountIntentCreator.createIntent(
-                InstrumentationRegistry.getInstrumentation().targetContext
+            ActivityIntents.authentication(
+                InstrumentationRegistry.getInstrumentation().targetContext,
+                ActivityIntents.AuthConfig.Setup,
+                AppContext.APP,
+                managedAccountIntentCreator.getUserLocalId()
             )
         }
     )
 
-    @get:Rule
-    val permissionRule: GrantPermissionRule = GrantPermissionRule.grant(android.Manifest.permission.CAMERA)
-
     private val managedAccountIntentCreator: ManagedAccountIntentCreator by inject()
+
+    @get:Rule
+    val idlingResourceRule = let {
+        val signInIdlingResource: SignInIdlingResource by inject()
+        IdlingResourceRule(
+            arrayOf(
+                signInIdlingResource
+            )
+        )
+    }
 
     @BeforeTest
     fun setup() {
-        onView(withId(R.id.connectToAccountButton)).perform(click())
-        onView(withId(R.id.scanQrCodesButton)).perform(scrollTo(), click())
     }
 
     @Test
@@ -90,7 +100,6 @@ class SetupPassphraseTest : KoinTest {
     fun asAMobileUserIShouldSeeTheEnterMyPassphraseScreenAfterISuccessfullyScannedQrCodes() {
         //    Given     the user is on the "Success feedback" screen at the end of the QR code scanning process
         //    When      the user clicks the "Continue" button
-        onView(withId(com.passbolt.mobile.android.feature.autofill.R.id.button)).perform(click())
         //    Then      an "Enter your passphrase" page is presented
         onView(withText(LocalizationR.string.auth_enter_passphrase)).check(matches(isDisplayed()))
         //    And       a back arrow button is presented
@@ -126,7 +135,6 @@ class SetupPassphraseTest : KoinTest {
     //    https://passbolt.testrail.io/index.php?/cases/view/2353
     fun asAMobileUserICanPreviewMyPassphrase() {
         //    Given     I am on the "Enter your passphrase" page
-        onView(withId(com.passbolt.mobile.android.feature.autofill.R.id.button)).perform(click())
         //    And       there is some <initial text> inside the passphrase field
         onView(withId(CoreUiR.id.input)).perform(typeText("SomeRandomText\n"))
         //    When      I click the "eye" button inside the passphrase field
@@ -144,7 +152,6 @@ class SetupPassphraseTest : KoinTest {
     //    https://passbolt.testrail.io/index.php?/cases/view/2354
     fun asAMobileUserICanSeeAFeedbackMessageIfIEnteredTheWrongPassphrase() {
         //    Given     I am on the “Enter your passphrase" page
-        onView(withId(com.passbolt.mobile.android.feature.autofill.R.id.button)).perform(click())
         //    When      I submit a wrong passphrase
         onView(withId(CoreUiR.id.input)).perform(typeText("wrongPass1!@\n"))
         onView(withId(com.passbolt.mobile.android.feature.authentication.R.id.authButton)).perform(click())
@@ -166,7 +173,6 @@ class SetupPassphraseTest : KoinTest {
     //    https://passbolt.testrail.io/index.php?/cases/view/2352
     fun asAMobileUserICanGetSomeHelpIfIForgotMyPassphrase() {
         //    Given     I am on the "Enter your passphrase" page
-        onView(withId(com.passbolt.mobile.android.feature.autofill.R.id.button)).perform(click())
         //    When      I click the "forgot my passphrase" link
         onView(withId(com.passbolt.mobile.android.feature.authentication.R.id.forgotPasswordButton)).perform(click())
         //    Then      I see a dialog with a help

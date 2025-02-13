@@ -2,18 +2,14 @@ package com.passbolt.mobile.android.mappers
 
 import com.google.common.truth.Truth.assertThat
 import com.passbolt.mobile.android.entity.account.Account
-import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.ui.AccountModelUi
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.koin.core.logger.Level
 import org.koin.test.KoinTest
 import org.koin.test.KoinTestRule
 import org.koin.test.inject
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.whenever
 
 /**
  * Passbolt - Open source password manager for teams
@@ -47,11 +43,6 @@ class AccountModelMapperTest : KoinTest {
         modules(testMappersModule)
     }
 
-    @Before
-    fun setUp() {
-        whenever(mockGetSelectedAccountUseCase.execute(Unit)).doReturn(GetSelectedAccountUseCase.Output("id1"))
-    }
-
     @Test
     fun `Mapping accounts entities should return proper models with add account`() {
         val accountsList = listOf(
@@ -76,7 +67,7 @@ class AccountModelMapperTest : KoinTest {
                 label = "label"
             )
         )
-        val result = mapper.map(accountsList)
+        val result = mapper.map(accountsList, currentAccount = "id1")
         val expected = listOf(
             AccountModelUi.AccountModel(
                 userId = "id1",

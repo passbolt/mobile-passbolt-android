@@ -8,13 +8,14 @@ dependencies {
     implementation project(':common')
     implementation project(':architecture')
     implementation project(':entity')
-    implementation project(':storage')
     implementation project(':mappers')
     implementation project(':ui')
     implementation project(':dto')
     implementation project(':networking')
     implementation project(':passboltapi')
     implementation project(':database')
+    implementation project(':featureflags')
+    implementation project(':accounts')
 
     implementation libs.koin
     implementation libs.room.core

@@ -14,7 +14,6 @@ dependencies {
     implementation project(':networking')
     implementation project(':passboltapi')
     implementation project(':mappers')
-    implementation project(':storage')
     implementation project(':resources')
     implementation project(':database')
     implementation project(':secrets')
@@ -45,6 +44,9 @@ dependencies {
     implementation project(':rbac')
     implementation project(':serializers')
     implementation project(':autofill')
+    implementation project(':accounts')
+    implementation project(':preferences')
+    implementation project(':jsonmodel')
 
     implementation libs.navigation.fragment
     implementation libs.navigation.ui
@@ -62,6 +64,7 @@ dependencies {
 
     testImplementation project(':commontest')
     testImplementation libs.gson
+    testImplementation libs.json.path
 }
 
 android {

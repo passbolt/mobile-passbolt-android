@@ -60,9 +60,26 @@ class ResourceTagsPresenterTest : KoinTest {
 
     @Before
     fun setup() {
+        resourceModel = ResourceModel(
+            resourceId = ID,
+            resourceTypeId = RESOURCE_TYPE_ID,
+            folderId = FOLDER_ID_ID,
+            permission = ResourcePermission.READ,
+            favouriteId = "fav-id",
+            modified = ZonedDateTime.now(),
+            expiry = null,
+            json = JsonObject().apply {
+                addProperty("name", NAME)
+                addProperty("username", USERNAME)
+                addProperty("uri", URL)
+                addProperty("description", DESCRIPTION)
+            }.toString(),
+            metadataKeyId = null,
+            metadataKeyType = null
+        )
         mockGetLocalResourceUseCase.stub {
-            onBlocking { execute(GetLocalResourceUseCase.Input(RESOURCE_MODEL.resourceId)) }
-                .doReturn(GetLocalResourceUseCase.Output(RESOURCE_MODEL))
+            onBlocking { execute(GetLocalResourceUseCase.Input(resourceModel.resourceId)) }
+                .doReturn(GetLocalResourceUseCase.Output(resourceModel))
         }
         mockResourceTagsUseCase.stub {
             onBlocking { execute(any()) }.doReturn(Output(RESOURCE_TAGS))
@@ -73,7 +90,7 @@ class ResourceTagsPresenterTest : KoinTest {
     @Test
     fun `resource header and tags list should be shown correct`() {
         presenter.argsRetrieved(
-            RESOURCE_MODEL.resourceId,
+            resourceModel.resourceId,
             PermissionsMode.VIEW
         )
 
@@ -92,21 +109,7 @@ class ResourceTagsPresenterTest : KoinTest {
         private const val DESCRIPTION = "desc"
         private const val RESOURCE_TYPE_ID = "resTypeId"
         private const val FOLDER_ID_ID = "folderId"
-        private val RESOURCE_MODEL = ResourceModel(
-            resourceId = ID,
-            resourceTypeId = RESOURCE_TYPE_ID,
-            folderId = FOLDER_ID_ID,
-            permission = ResourcePermission.READ,
-            favouriteId = "fav-id",
-            modified = ZonedDateTime.now(),
-            expiry = null,
-            json = JsonObject().apply {
-                addProperty("name", NAME)
-                addProperty("username", USERNAME)
-                addProperty("uri", URL)
-                addProperty("description", DESCRIPTION)
-            }.toString()
-        )
+        private lateinit var resourceModel: ResourceModel
         private val RESOURCE_TAGS = listOf(
             TagModel("id1", "tag1", false),
             TagModel("id2", "tag2", false)

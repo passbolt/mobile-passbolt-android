@@ -28,9 +28,6 @@ RUN wget --quiet --output-document=$ANDROID_HOME/cmdline-tools.zip https://dl.go
     && sdkmanager --sdk_root=${ANDROID_HOME} "build-tools;${ANDROID_BUILD_TOOLS_VERSION}" \
     && sdkmanager --sdk_root=${ANDROID_HOME} "platforms;android-${ANDROID_VERSION}"
 
-# download and install Saouce Labs
-RUN sh -c 'wget https://saucelabs.github.io/saucectl/install --output-document - | bash -s -- -b /usr/local/bin'
-
 RUN mkdir /application
 
 WORKDIR /application

@@ -29,3 +29,19 @@ import androidx.core.text.HtmlCompat
 
 fun String.fromHtml(): Spanned =
     Html.fromHtml(this, HtmlCompat.FROM_HTML_MODE_LEGACY)
+
+// TODO: This is a temporary solution to satisfy web-extension validation
+fun String.stripPGPHeaders(): String {
+    return lines()
+        .filterNot { it.startsWith("Version:") || it.startsWith("Comment:") }
+        .joinToString("\n")
+}
+
+fun String.decodeHex(): ByteArray {
+    require(length % 2 == 0) { "String must have an even length" }
+
+    @Suppress("MagicNumber") // hex is radix 16
+    return chunked(2)
+        .map { it.toInt(16).toByte() }
+        .toByteArray()
+}

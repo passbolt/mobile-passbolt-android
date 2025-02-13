@@ -9,7 +9,6 @@ dependencies {
     implementation project(':common')
     implementation project(':navigation')
     implementation project(':database')
-    implementation project(':storage')
     implementation project(':networking')
     implementation project(':ui')
     implementation project(':mappers')
@@ -24,6 +23,8 @@ dependencies {
     implementation project(':fulldatarefresh')
     implementation project(':notifications')
     implementation project(':autofill')
+    implementation project(':accounts')
+    implementation project(':jsonmodel')
 
     implementation libs.navigation.fragment
     implementation libs.navigation.ui

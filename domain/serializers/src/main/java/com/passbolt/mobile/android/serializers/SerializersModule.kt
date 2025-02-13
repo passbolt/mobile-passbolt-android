@@ -25,8 +25,12 @@ package com.passbolt.mobile.android.serializers
 
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
+import com.passbolt.mobile.android.dto.request.CreateResourceDto
 import com.passbolt.mobile.android.dto.response.ResourceResponseDto
 import com.passbolt.mobile.android.dto.response.ResourceTypeDto
+import com.passbolt.mobile.android.serializers.gson.CreateResourceModelSerializer
+import com.passbolt.mobile.android.serializers.gson.MetadataDecryptor
+import com.passbolt.mobile.android.serializers.gson.MetadataEncryptor
 import com.passbolt.mobile.android.serializers.gson.ResourceListDeserializer
 import com.passbolt.mobile.android.serializers.gson.ResourceListItemDeserializer
 import com.passbolt.mobile.android.serializers.gson.ResourceTypesListDeserializer
@@ -35,13 +39,16 @@ import com.passbolt.mobile.android.serializers.gson.serializer.ZonedDateTimeSeri
 import com.passbolt.mobile.android.serializers.gson.strictTypeAdapters
 import com.passbolt.mobile.android.serializers.gson.validation.JsonSchemaValidationRunner
 import com.passbolt.mobile.android.serializers.jsonschema.jsonSchemaModule
+import com.passbolt.mobile.android.ui.ParsedMetadataKeyModel
+import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
+import org.koin.core.parameter.parametersOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import java.time.ZonedDateTime
 import java.util.UUID
 
-internal const val RESOURCE_DTO_GSON = "RESOURCE_DTO_GSON"
+const val STRICT_ADAPTERS_ONLY_GSON = "RESOURCE_DTO_GSON"
 
 val serializersModule = module {
     jsonSchemaModule()
@@ -50,22 +57,37 @@ val serializersModule = module {
     singleOf(::ResourceListDeserializer)
     singleOf(::ResourceTypesListDeserializer)
     singleOf(::ZonedDateTimeSerializer)
-    single {
+    factory {
         SingleResourceDeserializer(
             resourceTypeIdToSlugMappingProvider = get(),
             jsonSchemaValidationRunner = get(),
-            gson = get(named(RESOURCE_DTO_GSON))
+            getLocalMetadataKeys = get(),
+            gson = get(named(STRICT_ADAPTERS_ONLY_GSON))
         )
     }
-    single { (resourceTypeIdToSlugMapping: Map<UUID, String>, supportedResourceTypesIds: Set<UUID>) ->
+    factory { (
+                  resourceTypeIdToSlugMapping: Map<UUID, String>,
+                  supportedResourceTypesIds: Set<UUID>,
+                  metadataKeys: List<ParsedMetadataKeyModel>
+              ) ->
         ResourceListItemDeserializer(
             jsonSchemaValidationRunner = get(),
-            gson = get(named(RESOURCE_DTO_GSON)),
+            gson = get(named(STRICT_ADAPTERS_ONLY_GSON)),
+            metadataDecryptor = get<MetadataDecryptor> { parametersOf(metadataKeys) },
             resourceTypeIdToSlugMapping = resourceTypeIdToSlugMapping,
             supportedResourceTypesIds = supportedResourceTypesIds
         )
     }
-
+    factory { (metadataKeys: List<ParsedMetadataKeyModel>) ->
+        MetadataDecryptor(
+            getSelectedUserPrivateKeyUseCase = get(),
+            passphraseMemoryCache = get(),
+            openPgp = get(),
+            sessionKeysCache = get(),
+            metadataKeys = metadataKeys
+        )
+    }
+    factoryOf(::MetadataEncryptor)
     single {
         GsonBuilder()
             .serializeNulls()
@@ -86,11 +108,12 @@ val serializersModule = module {
                     ResourceResponseDto::class.java,
                     get<SingleResourceDeserializer>()
                 )
+                registerTypeAdapter(CreateResourceDto::class.java, CreateResourceModelSerializer())
             }
             .create()
     }
 
-    single(named(RESOURCE_DTO_GSON)) {
+    single(named(STRICT_ADAPTERS_ONLY_GSON)) {
         GsonBuilder()
             .apply {
                 strictTypeAdapters.forEach {
