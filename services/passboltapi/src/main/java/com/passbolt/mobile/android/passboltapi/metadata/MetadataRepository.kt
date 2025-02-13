@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.passboltapi.metadata
 
 import com.passbolt.mobile.android.core.networking.ResponseHandler
 import com.passbolt.mobile.android.core.networking.callWithHandler
+import com.passbolt.mobile.android.dto.request.EncryptedDataAndModifiedRequest
 import com.passbolt.mobile.android.dto.request.EncryptedDataRequest
 
 /**
@@ -47,7 +48,12 @@ class MetadataRepository(
         metadataDataSource.getMetadataSessionKeys()
     }
 
-    suspend fun saveMetadataSessionKeys(request: EncryptedDataRequest) = callWithHandler(responseHandler) {
-        metadataDataSource.saveMetadataSessionKeys(request)
+    suspend fun postMetadataSessionKeys(request: EncryptedDataRequest) = callWithHandler(responseHandler) {
+        metadataDataSource.postMetadataSessionKeys(request)
     }
+
+    suspend fun updateMetadataSessionKeys(uuid: String, request: EncryptedDataAndModifiedRequest) =
+        callWithHandler(responseHandler) {
+            metadataDataSource.updateMetadataSessionKeys(uuid, request)
+        }
 }

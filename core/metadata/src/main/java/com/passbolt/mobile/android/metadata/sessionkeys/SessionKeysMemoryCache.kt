@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.metadata.sessionkeys
 
+import com.passbolt.mobile.android.ui.MergedSessionKeys
 import com.passbolt.mobile.android.ui.SessionKeyIdentifier
 import com.passbolt.mobile.android.ui.SessionKeyModel
 import java.time.ZonedDateTime
@@ -30,16 +31,35 @@ import java.util.UUID
 
 class SessionKeysMemoryCache {
 
-    var value: HashMap<SessionKeyIdentifier, SessionKeyModel> = hashMapOf()
+    var value = MergedSessionKeys()
+        set(value) {
+            field = value
+            isLocallyModified = false
+            wasInitialCacheEmpty = value.keys.isEmpty()
+        }
+
+    var isLocallyModified = false
+    var wasInitialCacheEmpty = true
 
     fun put(model: String, id: UUID, sessionKey: String) {
         val sessionKeyIdentifier = SessionKeyIdentifier(model, id)
-        value[sessionKeyIdentifier] = SessionKeyModel(sessionKey, ZonedDateTime.now())
+        value.keys[sessionKeyIdentifier] = SessionKeyModel(sessionKey, ZonedDateTime.now())
+        isLocallyModified = true
     }
 
     fun hasCachedKey(model: String, id: UUID): Boolean =
-        value.containsKey(SessionKeyIdentifier(model, id))
+        value.keys.containsKey(SessionKeyIdentifier(model, id))
 
     fun getSessionKeyHexString(model: String, id: UUID): String? =
-        value[SessionKeyIdentifier(model, id)]?.sessionKey
+        value.keys[SessionKeyIdentifier(model, id)]?.sessionKey
+
+    fun findLatestModifiedOriginBundleData(): OriginBundleMetadata? =
+        value.originMetadata.entries.maxByOrNull { it.value }?.let {
+            OriginBundleMetadata(it.key, it.value)
+        }
 }
+
+data class OriginBundleMetadata(
+    val originBundleId: String,
+    val modifiedDate: ZonedDateTime
+)

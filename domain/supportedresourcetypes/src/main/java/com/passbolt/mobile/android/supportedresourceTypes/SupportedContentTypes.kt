@@ -26,9 +26,11 @@ package com.passbolt.mobile.android.supportedresourceTypes
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordAndDescription
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordDescriptionTotp
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordString
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.Totp
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5Default
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5DefaultWithTotp
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5PasswordString
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5TotpStandalone
 
 private const val PASSWORD_STRING_SLUG = "password-string"
 private const val PASSWORD_AND_DESCRIPTION_SLUG = "password-and-description"
@@ -76,14 +78,15 @@ object SupportedContentTypes {
         PasswordString,
         PasswordAndDescription,
         PasswordDescriptionTotp,
+        V5PasswordString,
         V5Default,
-        V5PasswordString
+        V5DefaultWithTotp
     ).map { it.slug }.toSet()
 
     val totpSlugs = setOf(
-        ContentType.Totp,
+        Totp,
         PasswordDescriptionTotp,
-        ContentType.V5TotpStandalone,
+        V5TotpStandalone,
         V5DefaultWithTotp
     ).map { it.slug }.toSet()
 
@@ -93,14 +96,14 @@ object SupportedContentTypes {
         PasswordString,
         PasswordAndDescription,
         PasswordDescriptionTotp,
-        ContentType.Totp
+        Totp
     ).map { it.slug }.toSet()
 
     val v5Slugs = setOf(
         V5Default,
         V5PasswordString,
         V5DefaultWithTotp,
-        ContentType.V5TotpStandalone
+        V5TotpStandalone
     ).map { it.slug }.toSet()
 
     val resourcesSlugsSupportingExpiry = setOf(

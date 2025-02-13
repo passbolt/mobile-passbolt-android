@@ -30,12 +30,12 @@ import com.passbolt.mobile.android.passboltapi.metadata.MetadataRepository
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class SaveMetadataSessionKeysUseCase(
+class PostMetadataSessionKeysUseCase(
     private val metadataRepository: MetadataRepository
-) : AsyncUseCase<SaveMetadataSessionKeysUseCase.Input, SaveMetadataSessionKeysUseCase.Output> {
+) : AsyncUseCase<PostMetadataSessionKeysUseCase.Input, PostMetadataSessionKeysUseCase.Output> {
 
     override suspend fun execute(input: Input): Output =
-        when (val response = metadataRepository.saveMetadataSessionKeys(EncryptedDataRequest(input.encryptedData))) {
+        when (val response = metadataRepository.postMetadataSessionKeys(EncryptedDataRequest(input.encryptedData))) {
             is NetworkResult.Failure -> Output.Failure(response)
             is NetworkResult.Success -> Output.Success
         }
