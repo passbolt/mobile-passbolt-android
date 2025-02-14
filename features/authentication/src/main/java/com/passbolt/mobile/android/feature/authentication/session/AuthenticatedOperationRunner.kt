@@ -75,7 +75,7 @@ class AuthenticatedOperationRunner(
             // sometimes even with proactive refresh we may receive Unauthenticated state from backend
             // i.e. after server key rotation for all the users
             Timber.d("Operation is unauthenticated, starting UI authentication")
-            authenticateUsingSignInUi(Reason.Session)
+            authenticateUsingSignInUi(authenticationState.reason)
             runOperation(request)
         } else {
             response
