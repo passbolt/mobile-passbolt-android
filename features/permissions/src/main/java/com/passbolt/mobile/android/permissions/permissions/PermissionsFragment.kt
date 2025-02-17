@@ -126,6 +126,7 @@ class PermissionsFragment :
         initPermissionsRecycler()
         presenter.attach(this)
         presenter.argsReceived(args.permissionsItem, args.id, args.mode)
+        presenter.refreshPermissionsList()
     }
 
     override fun onResume() {
