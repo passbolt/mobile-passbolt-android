@@ -32,6 +32,7 @@ dependencies {
     implementation project(':entity')
     implementation project(':featureflags')
     implementation project(':accounts')
+    implementation project(':database')
 
     implementation libs.koin
     implementation libs.room.core

@@ -21,7 +21,7 @@
  * @since v1.0
  */
 
-package com.passbolt.mobile.android.serializers.resourcelistdeserializer
+package com.passbolt.mobile.android.serializers.resourcelistdeserializer.caching
 
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
@@ -37,11 +37,6 @@ import com.passbolt.mobile.android.serializers.gson.ResourceListDeserializer
 import com.passbolt.mobile.android.serializers.gson.ResourceListItemDeserializer
 import com.passbolt.mobile.android.serializers.gson.strictTypeAdapters
 import com.passbolt.mobile.android.serializers.gson.validation.JsonSchemaValidationRunner
-import com.passbolt.mobile.android.serializers.jsonschema.schamarepository.JSFJsonSchemaValidator
-import com.passbolt.mobile.android.serializers.jsonschema.schamarepository.JSFSchemaRepository
-import com.passbolt.mobile.android.serializers.jsonschema.schamarepository.JsonSchemaRepository
-import com.passbolt.mobile.android.serializers.jsonschema.schamarepository.JsonSchemaValidator
-import net.jimblackler.jsonschemafriend.Schema
 import net.jimblackler.jsonschemafriend.Validator
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier.named
@@ -51,17 +46,17 @@ import java.util.UUID
 
 internal val mockIdToSlugMappingUseCase = mock<GetResourceTypeIdToSlugMappingUseCase>()
 internal val mockGetSelectedAccountUseCase = mock<GetSelectedAccountUseCase>()
-internal val mockJSFSchemaRepository = mock<JSFSchemaRepository>()
 internal val mockMetadataDecryptor = mock<MetadataDecryptor>()
 internal val mockGetLocalMetadataKeysUseCase = mock<GetLocalMetadataKeysUseCase>()
 internal val mockResourcesSnapShot = mock<ResourcesSnapshot>()
+internal val mockJsonSchemaValidationRunner = mock<JsonSchemaValidationRunner>()
 
-val resourceListDeserializationTestModule = module {
+val resourceListItemDeserializationTestModule = module {
     singleOf(::JsonSchemaValidationRunner)
     singleOf(::ResourceListDeserializer)
     single { (resourceTypeIdToSlugMapping: Map<UUID, String>, supportedResourceTypesIds: Set<UUID>) ->
         ResourceListItemDeserializer(
-            jsonSchemaValidationRunner = get(),
+            jsonSchemaValidationRunner = mockJsonSchemaValidationRunner,
             gson = get(named(STRICT_ADAPTERS_ONLY_GSON)),
             resourceTypeIdToSlugMapping = resourceTypeIdToSlugMapping,
             supportedResourceTypesIds = supportedResourceTypesIds,
@@ -72,15 +67,6 @@ val resourceListDeserializationTestModule = module {
     singleOf(::ResourceTypeIdToSlugMappingProvider)
     single { Validator() }
     single { mockResourcesSnapShot }
-    single<JsonSchemaRepository<Schema>> {
-        mockJSFSchemaRepository
-    }
-    single<JsonSchemaValidator> {
-        JSFJsonSchemaValidator(
-            schemaRepository = get(),
-            validator = get()
-        )
-    }
     single { mockIdToSlugMappingUseCase }
     factory { mockGetSelectedAccountUseCase }
     single {

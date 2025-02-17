@@ -27,6 +27,7 @@ import com.google.gson.JsonDeserializationContext
 import com.google.gson.JsonDeserializer
 import com.google.gson.JsonElement
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
+import com.passbolt.mobile.android.database.snapshot.ResourcesSnapshot
 import com.passbolt.mobile.android.dto.response.ResourceResponseDto
 import com.passbolt.mobile.android.metadata.usecase.db.GetLocalMetadataKeysUseCase
 import com.passbolt.mobile.android.metadata.usecase.db.GetLocalMetadataKeysUseCase.MetadataKeyPurpose.DECRYPT
@@ -64,8 +65,10 @@ open class ResourceListDeserializer(
 
             val metadataKeys = getLocalMetadataKeysUseCase.execute(GetLocalMetadataKeysUseCase.Input(DECRYPT))
 
+            val resourcesSnapshot = get<ResourcesSnapshot>()
+
             val singleResourceDeserializer = get<ResourceListItemDeserializer> {
-                parametersOf(resourceTypeIdToSlugMapping, supportedResourceTypesIds, metadataKeys)
+                parametersOf(resourceTypeIdToSlugMapping, supportedResourceTypesIds, metadataKeys, resourcesSnapshot)
             }
 
             if (json.isJsonArray) {

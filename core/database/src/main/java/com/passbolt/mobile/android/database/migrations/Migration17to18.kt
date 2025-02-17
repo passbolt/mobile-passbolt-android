@@ -1,10 +1,7 @@
-package com.passbolt.mobile.android.database
+package com.passbolt.mobile.android.database.migrations
 
-import com.passbolt.mobile.android.database.snapshot.ResourcesSnapshot
-import com.passbolt.mobile.android.database.usecase.databaseModule
-import org.koin.android.ext.koin.androidApplication
-import org.koin.core.module.dsl.singleOf
-import org.koin.dsl.module
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 
 /**
  * Passbolt - Open source password manager for teams
@@ -28,14 +25,30 @@ import org.koin.dsl.module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-val databaseModule = module {
-    databaseModule()
-    singleOf(::ResourcesSnapshot)
-    single {
-        DatabaseProvider(
-            context = androidApplication(),
-            getResourcesDatabasePassphraseUseCase = get(),
-            messageDigestHash = get()
-        )
+
+@Suppress("MagicNumber")
+object Migration17to18 : Migration(17, 18) {
+    private const val DROP_RESOURCES = "DROP TABLE Resource"
+
+    @Suppress("MaxLineLength")
+    private const val CREATE_RESOURCES = "CREATE TABLE IF NOT EXISTS `Resource` (" +
+            "`resourceId` TEXT NOT NULL, " +
+            "`folderId` TEXT, " +
+            "`resourcePermission` TEXT NOT NULL, " +
+            "`resourceTypeId` TEXT NOT NULL, " +
+            "`favouriteId` TEXT, " +
+            "`modified` INTEGER NOT NULL, " +
+            "`expiry` INTEGER, " +
+            "`metadataKeyId` TEXT, " +
+            "`metadataKeyType` TEXT, " +
+            "PRIMARY KEY(`resourceId`), " +
+            "FOREIGN KEY(`folderId`) REFERENCES `Folder`(`folderId`) ON UPDATE NO ACTION ON DELETE SET NULL , " +
+            "FOREIGN KEY(`resourceTypeId`) REFERENCES `ResourceType`(`resourceTypeId`) ON UPDATE NO ACTION ON DELETE CASCADE )"
+
+    override fun migrate(db: SupportSQLiteDatabase) {
+        with(db) {
+            execSQL(DROP_RESOURCES)
+            execSQL(CREATE_RESOURCES)
+        }
     }
 }

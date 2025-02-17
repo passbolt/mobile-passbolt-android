@@ -25,6 +25,7 @@ package com.passbolt.mobile.android.serializers
 
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
+import com.passbolt.mobile.android.database.snapshot.ResourcesSnapshot
 import com.passbolt.mobile.android.dto.request.CreateResourceDto
 import com.passbolt.mobile.android.dto.response.ResourceResponseDto
 import com.passbolt.mobile.android.dto.response.ResourceTypeDto
@@ -68,14 +69,16 @@ val serializersModule = module {
     factory { (
                   resourceTypeIdToSlugMapping: Map<UUID, String>,
                   supportedResourceTypesIds: Set<UUID>,
-                  metadataKeys: List<ParsedMetadataKeyModel>
+                  metadataKeys: List<ParsedMetadataKeyModel>,
+                  resourcesSnapshot: ResourcesSnapshot
               ) ->
         ResourceListItemDeserializer(
             jsonSchemaValidationRunner = get(),
             gson = get(named(STRICT_ADAPTERS_ONLY_GSON)),
             metadataDecryptor = get<MetadataDecryptor> { parametersOf(metadataKeys) },
             resourceTypeIdToSlugMapping = resourceTypeIdToSlugMapping,
-            supportedResourceTypesIds = supportedResourceTypesIds
+            supportedResourceTypesIds = supportedResourceTypesIds,
+            resourcesSnapshot = resourcesSnapshot
         )
     }
     factory { (metadataKeys: List<ParsedMetadataKeyModel>) ->
