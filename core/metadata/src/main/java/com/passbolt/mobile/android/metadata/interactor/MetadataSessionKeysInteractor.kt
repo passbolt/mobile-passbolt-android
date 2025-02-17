@@ -14,6 +14,7 @@ import com.passbolt.mobile.android.gopenpgp.OpenPgp
 import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpResult
 import com.passbolt.mobile.android.mappers.MetadataMapper
 import com.passbolt.mobile.android.metadata.sessionkeys.SessionKeysBundleMerger
+import com.passbolt.mobile.android.metadata.sessionkeys.SessionKeysBundleValidator
 import com.passbolt.mobile.android.metadata.sessionkeys.SessionKeysMemoryCache
 import com.passbolt.mobile.android.metadata.usecase.FetchMetadataSessionKeysUseCase
 import com.passbolt.mobile.android.metadata.usecase.FetchMetadataSessionKeysUseCase.Output.Success
@@ -56,7 +57,8 @@ class MetadataSessionKeysInteractor(
     private val sessionKeysBundleMerger: SessionKeysBundleMerger,
     private val sessionKeysMemoryCache: SessionKeysMemoryCache,
     private val metadataMapper: MetadataMapper,
-    private val gson: Gson
+    private val gson: Gson,
+    private val sessionKeysBundleValidator: SessionKeysBundleValidator
 ) {
 
     suspend fun fetchMetadataSessionKeys(): Output {
@@ -85,7 +87,6 @@ class MetadataSessionKeysInteractor(
         return when (val passphrase = passphraseMemoryCache.get()) {
             is PotentialPassphrase.Passphrase -> {
                 Timber.d("Building session keys cache; Bundles count: ${metadataKeysBundles.size}")
-
                 metadataKeysBundles
                     .mapDecryptNotNull(privateKey, passphrase.passphrase)
                     .let {
@@ -255,7 +256,7 @@ class MetadataSessionKeysInteractor(
                 }
                 is OpenPgpResult.Result -> {
                     Timber.d("Decrypted session keys bundle")
-                    DecryptedMetadataSessionKeysBundleModel(
+                    val bundleModel = DecryptedMetadataSessionKeysBundleModel(
                         id = metadataSessionKeysBundle.id,
                         bundle = gson.fromJson(
                             String(decryptedBundleResult.result),
@@ -264,6 +265,12 @@ class MetadataSessionKeysInteractor(
                         created = metadataSessionKeysBundle.created,
                         modified = metadataSessionKeysBundle.modified
                     )
+                    if (sessionKeysBundleValidator.isValid(bundleModel.bundle)) {
+                        bundleModel
+                    } else {
+                        Timber.e("Invalid session keys bundle: ${metadataSessionKeysBundle.id}")
+                        null
+                    }
                 }
             }
         }

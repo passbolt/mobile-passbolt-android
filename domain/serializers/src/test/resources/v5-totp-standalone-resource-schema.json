@@ -2,9 +2,12 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
   "required": [
-    "name"
+    "name", "object_type"
   ],
   "properties": {
+    "object_type": {
+      "const": "PASSBOLT_RESOURCE_METADATA"
+    },
     "name": {
       "type": "string",
       "maxLength": 255

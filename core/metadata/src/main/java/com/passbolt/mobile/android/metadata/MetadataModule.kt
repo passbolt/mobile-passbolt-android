@@ -4,7 +4,9 @@ import com.passbolt.mobile.android.metadata.interactor.MetadataKeysInteractor
 import com.passbolt.mobile.android.metadata.interactor.MetadataKeysSettingsInteractor
 import com.passbolt.mobile.android.metadata.interactor.MetadataSessionKeysInteractor
 import com.passbolt.mobile.android.metadata.interactor.MetadataTypesSettingsInteractor
+import com.passbolt.mobile.android.metadata.privatekeys.MetadataPrivateKeysValidator
 import com.passbolt.mobile.android.metadata.sessionkeys.SessionKeysBundleMerger
+import com.passbolt.mobile.android.metadata.sessionkeys.SessionKeysBundleValidator
 import com.passbolt.mobile.android.metadata.sessionkeys.SessionKeysMemoryCache
 import com.passbolt.mobile.android.metadata.usecase.FetchMetadataKeysSettingsUseCase
 import com.passbolt.mobile.android.metadata.usecase.FetchMetadataKeysUseCase
@@ -62,6 +64,8 @@ val metadataModule = module {
     singleOf(::FetchMetadataSessionKeysUseCase)
     singleOf(::SessionKeysBundleMerger)
     singleOf(::SessionKeysMemoryCache)
+    singleOf(::SessionKeysBundleValidator)
+    singleOf(::MetadataPrivateKeysValidator)
     singleOf(::PostMetadataSessionKeysUseCase)
     singleOf(::UpdateMetadataSessionKeysUseCase)
     single {
@@ -75,7 +79,8 @@ val metadataModule = module {
             sessionKeysBundleMerger = get(),
             sessionKeysMemoryCache = get(),
             metadataMapper = get(),
-            gson = get()
+            gson = get(),
+            sessionKeysBundleValidator = get()
         )
     }
 }

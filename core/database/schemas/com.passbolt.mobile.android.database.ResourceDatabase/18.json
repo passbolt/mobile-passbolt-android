@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 18,
-    "identityHash": "312bafe76089927f0828bee711d28aea",
+    "identityHash": "769180f48cee80342ad20d278f7e4b26",
     "entities": [
       {
         "tableName": "Resource",
@@ -839,7 +839,7 @@
       },
       {
         "tableName": "MetadataPrivateKey",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `metadataKeyId` TEXT NOT NULL, `userId` TEXT, `data` TEXT NOT NULL, FOREIGN KEY(`metadataKeyId`) REFERENCES `MetadataKey`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `metadataKeyId` TEXT NOT NULL, `userId` TEXT, `data` TEXT NOT NULL, `passphrase` TEXT NOT NULL, FOREIGN KEY(`metadataKeyId`) REFERENCES `MetadataKey`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
@@ -862,6 +862,12 @@
           {
             "fieldPath": "data",
             "columnName": "data",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "passphrase",
+            "columnName": "passphrase",
             "affinity": "TEXT",
             "notNull": true
           }
@@ -891,7 +897,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '312bafe76089927f0828bee711d28aea')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '769180f48cee80342ad20d278f7e4b26')"
     ]
   }
 }

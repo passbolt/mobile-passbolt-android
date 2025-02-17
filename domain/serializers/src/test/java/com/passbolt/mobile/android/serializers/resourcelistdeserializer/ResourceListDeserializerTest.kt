@@ -465,6 +465,7 @@ class ResourceListDeserializerTest : KoinTest {
                 MetadataDecryptor.Output.Success(
                     """
                     {
+                        "object_type": "PASSBOLT_RESOURCE_METADATA",
                         "name": "name",
                         "uris": ["uri1"],
                         "username": "username",
@@ -552,6 +553,7 @@ class ResourceListDeserializerTest : KoinTest {
                 MetadataDecryptor.Output.Success(
                     """
                     {
+                        "object_type": "PASSBOLT_RESOURCE_METADATA",
                         "name": "name",
                         "uris": ["uri1"],
                         "username": "username",
@@ -639,6 +641,7 @@ class ResourceListDeserializerTest : KoinTest {
                 MetadataDecryptor.Output.Success(
                     """
                     {
+                        "object_type": "PASSBOLT_RESOURCE_METADATA",
                         "name": "name",
                         "uris": ["uri1"],
                         "username": "username",
@@ -726,6 +729,7 @@ class ResourceListDeserializerTest : KoinTest {
                 MetadataDecryptor.Output.Success(
                     """
                     {
+                        "object_type": "PASSBOLT_RESOURCE_METADATA",
                         "name": "name",
                         "uris": ["uri1"],
                         "username": "username",

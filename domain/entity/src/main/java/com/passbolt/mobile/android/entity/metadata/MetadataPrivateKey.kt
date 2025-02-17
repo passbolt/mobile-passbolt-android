@@ -43,5 +43,6 @@ data class MetadataPrivateKey(
     val id: Long = 0,
     val metadataKeyId: String,
     val userId: String?,
-    val data: String
+    val data: String,
+    val passphrase: String
 )
