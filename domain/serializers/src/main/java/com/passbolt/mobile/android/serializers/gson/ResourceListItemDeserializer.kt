@@ -31,13 +31,18 @@ import com.passbolt.mobile.android.dto.PassphraseNotInCacheException
 import com.passbolt.mobile.android.dto.response.ResourceResponseDto
 import com.passbolt.mobile.android.dto.response.ResourceResponseV4Dto
 import com.passbolt.mobile.android.dto.response.ResourceResponseV5Dto
+import com.passbolt.mobile.android.database.snapshot.ResourcesSnapshot
+import com.passbolt.mobile.android.entity.resource.ResourceWithMetadata
 import com.passbolt.mobile.android.serializers.gson.validation.JsonSchemaValidationRunner
 import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes
 import kotlinx.coroutines.runBlocking
 import org.koin.core.component.KoinComponent
 import timber.log.Timber
 import java.lang.reflect.Type
+import java.time.ZonedDateTime
 import java.util.UUID
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.contract
 
 // resourceTypeIdToSlugMapping and supportedResourceTypesIds are provided from ResourceListDeserializer
 // they cannot be constructed here as *deserialize()* must be fast and they cannot be injected as they change
@@ -48,7 +53,8 @@ open class ResourceListItemDeserializer(
     private val gson: Gson,
     private val metadataDecryptor: MetadataDecryptor,
     private val resourceTypeIdToSlugMapping: Map<UUID, String>,
-    private val supportedResourceTypesIds: Set<UUID>
+    private val supportedResourceTypesIds: Set<UUID>,
+    private val resourcesSnapshot: ResourcesSnapshot
 ) : JsonDeserializer<ResourceResponseDto?>, KoinComponent {
 
     override fun deserialize(
@@ -69,27 +75,38 @@ open class ResourceListItemDeserializer(
                 try {
                     if (slug in SupportedContentTypes.v4Slugs) {
                         val resource = gson.fromJson(json, ResourceResponseV4Dto::class.java)
-                        if (isValid(resource.resourceTypeId, json.toString(), resourceTypeIdToSlugMapping)) {
+                        val cachedResource = resourcesSnapshot.getCachedResource(resource.id.toString())
+
+                        if (canSkipDecryptionAndValidation(resource, cachedResource)) {
                             resource
                         } else {
-                            Timber.d("Invalid resource found id=(${resource.id}, skipping")
-                            null
+                            if (isValid(resource.resourceTypeId, json.toString(), resourceTypeIdToSlugMapping)) {
+                                resource
+                            } else {
+                                Timber.d("Invalid resource found id=(${resource.id}, skipping")
+                                null
+                            }
                         }
                     } else if (slug in SupportedContentTypes.v5Slugs) {
                         val resource = gson.fromJson(json, ResourceResponseV5Dto::class.java)
+                        val cachedResource = resourcesSnapshot.getCachedResource(resource.id.toString())
 
-                        val decryptedMetadataResult = metadataDecryptor.decryptMetadata(resource)
-
-                        if (decryptedMetadataResult is MetadataDecryptor.Output.Success && isValid(
-                                resource.resourceTypeId,
-                                decryptedMetadataResult.decryptedMetadata,
-                                resourceTypeIdToSlugMapping
-                            )
-                        ) {
-                            resource.copy(metadata = decryptedMetadataResult.decryptedMetadata)
+                        if (canSkipDecryptionAndValidation(resource, cachedResource)) {
+                            resource.copy(metadata = cachedResource.metadataJson)
                         } else {
-                            Timber.d("Invalid resource found id=(${resource.id}, skipping")
-                            null
+                            val decryptedMetadataResult = metadataDecryptor.decryptMetadata(resource)
+
+                            if (decryptedMetadataResult is MetadataDecryptor.Output.Success && isValid(
+                                    resource.resourceTypeId,
+                                    decryptedMetadataResult.decryptedMetadata,
+                                    resourceTypeIdToSlugMapping
+                                )
+                            ) {
+                                resource.copy(metadata = decryptedMetadataResult.decryptedMetadata)
+                            } else {
+                                Timber.d("Invalid resource found id=(${resource.id}, skipping")
+                                null
+                            }
                         }
                     } else {
                         @Suppress("UseRequire")
@@ -105,6 +122,17 @@ open class ResourceListItemDeserializer(
                 }
             }
         }
+    }
+
+    // validation and decryption can be skipped if metadata on the backend is not modified compared to cached one
+    @OptIn(ExperimentalContracts::class)
+    private fun canSkipDecryptionAndValidation(
+        resource: ResourceResponseDto,
+        cachedResource: ResourceWithMetadata?
+    ): Boolean {
+        contract { returns(true) implies (cachedResource != null) }
+        if (cachedResource == null) return false
+        return cachedResource.modified >= ZonedDateTime.parse(resource.modified)
     }
 
     private suspend fun isValid(

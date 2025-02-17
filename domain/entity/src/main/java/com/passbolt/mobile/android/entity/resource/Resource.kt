@@ -43,7 +43,8 @@ import java.time.ZonedDateTime
         ForeignKey(
             entity = ResourceType::class,
             parentColumns = ["resourceTypeId"],
-            childColumns = ["resourceTypeId"]
+            childColumns = ["resourceTypeId"],
+            onDelete = CASCADE
         )
     ]
 )

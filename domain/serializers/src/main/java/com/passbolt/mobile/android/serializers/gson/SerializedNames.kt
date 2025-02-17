@@ -24,4 +24,5 @@ package com.passbolt.mobile.android.serializers.gson
  */
 object SerializedNames {
     const val RESOURCE_TYPE_ID = "resource_type_id"
+    const val RESOURCE_ID = "resource_id"
 }

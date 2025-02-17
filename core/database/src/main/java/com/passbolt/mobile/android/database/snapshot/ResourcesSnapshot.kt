@@ -1,10 +1,8 @@
-package com.passbolt.mobile.android.database
+package com.passbolt.mobile.android.database.snapshot
 
-import com.passbolt.mobile.android.database.snapshot.ResourcesSnapshot
-import com.passbolt.mobile.android.database.usecase.databaseModule
-import org.koin.android.ext.koin.androidApplication
-import org.koin.core.module.dsl.singleOf
-import org.koin.dsl.module
+import com.passbolt.mobile.android.core.accounts.usecase.selectedaccount.GetSelectedAccountUseCase
+import com.passbolt.mobile.android.database.DatabaseProvider
+import com.passbolt.mobile.android.entity.resource.ResourceWithMetadata
 
 /**
  * Passbolt - Open source password manager for teams
@@ -28,14 +26,26 @@ import org.koin.dsl.module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-val databaseModule = module {
-    databaseModule()
-    singleOf(::ResourcesSnapshot)
-    single {
-        DatabaseProvider(
-            context = androidApplication(),
-            getResourcesDatabasePassphraseUseCase = get(),
-            messageDigestHash = get()
-        )
+
+class ResourcesSnapshot(
+    private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
+    private val databaseProvider: DatabaseProvider
+) {
+    private var hashedSnapshot = mapOf<String, ResourceWithMetadata>()
+
+    suspend fun populateForCurrentAccount() {
+        val currentUser = getSelectedAccountUseCase.execute(Unit).selectedAccount!!
+        hashedSnapshot = databaseProvider
+            .get(currentUser)
+            .resourcesDao()
+            .getAll()
+            .associateBy { it.resourceId }
+    }
+
+    fun getCachedResource(resourceId: String): ResourceWithMetadata? =
+        hashedSnapshot[resourceId]
+
+    fun clear() {
+        hashedSnapshot = emptyMap()
     }
 }
