@@ -28,6 +28,10 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 
 @Suppress("MagicNumber")
 object Migration17to18 : Migration(17, 18) {
+
+    private const val ADD_METADATA_PRIVATE_KEY_PASSPHRASE =
+        "ALTER TABLE MetadataPrivateKey ADD COLUMN `passphrase` TEXT NOT NULL DEFAULT ''"
+
     private const val DROP_RESOURCES = "DROP TABLE Resource"
 
     @Suppress("MaxLineLength")
@@ -47,6 +51,7 @@ object Migration17to18 : Migration(17, 18) {
 
     override fun migrate(db: SupportSQLiteDatabase) {
         with(db) {
+            execSQL(ADD_METADATA_PRIVATE_KEY_PASSPHRASE)
             execSQL(DROP_RESOURCES)
             execSQL(CREATE_RESOURCES)
         }

@@ -35,7 +35,7 @@ class MetadataEncryptor(
 
                     require(metadataPrivateKey != null) { "Metadata private key not found" }
 
-                    metadataPrivateKey.armoredKey to metadataPrivateKey.passphrase.toByteArray()
+                    metadataPrivateKey.keyData to metadataPrivateKey.passphrase.toByteArray()
                 }
             }
             val encryptedMeta = openPgp.encryptSignMessageArmored(

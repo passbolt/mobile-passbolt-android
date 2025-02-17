@@ -4,7 +4,7 @@ import com.passbolt.mobile.android.common.usecase.AsyncUseCase
 import com.passbolt.mobile.android.core.accounts.usecase.SelectedAccountUseCase
 import com.passbolt.mobile.android.database.DatabaseProvider
 import com.passbolt.mobile.android.mappers.MetadataMapper
-import com.passbolt.mobile.android.ui.MetadataKeyModel
+import com.passbolt.mobile.android.ui.ParsedMetadataKeyModel
 
 /**
  * Passbolt - Open source password manager for teams
@@ -43,15 +43,18 @@ class AddLocalMetadataKeysUseCase(
             .get(selectedAccountId)
             .metadataPrivateKeysDao()
 
-        input.metadataKeys.forEach { metadataKey ->
-            metadataKeysDao.insert(metadataMapper.map(metadataKey))
-            metadataKey.metadataPrivateKeys.forEach { metadataPrivateKey ->
-                metadataPrivateKeysDao.insert(metadataMapper.map(metadataPrivateKey))
+        val keys = input.metadataKeys.map { metadataMapper.map(it) }
+        val privateKeys = input.metadataKeys.map { metadataKey ->
+            metadataKey.metadataPrivateKeys.map { privateKey ->
+                metadataMapper.map(privateKey, metadataKey.id.toString())
             }
-        }
+        }.flatten()
+
+        metadataKeysDao.insertAll(keys)
+        metadataPrivateKeysDao.insertAll(privateKeys)
     }
 
     data class Input(
-        val metadataKeys: List<MetadataKeyModel>
+        val metadataKeys: List<ParsedMetadataKeyModel>
     )
 }

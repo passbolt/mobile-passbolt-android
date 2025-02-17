@@ -98,7 +98,7 @@ class MetadataDecryptor(
                     "Metadata private key for resource id=(${resource.id}) not found, skipping"
                 }
 
-                metadataPrivateKey.armoredKey to metadataPrivateKey.passphrase.toByteArray()
+                metadataPrivateKey.keyData to metadataPrivateKey.passphrase.toByteArray()
             }
             PERSONAL -> {
                 val privateKey = getSelectedUserPrivateKeyUseCase.execute(Unit).privateKey

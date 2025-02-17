@@ -44,7 +44,7 @@ class GetLocalMetadataKeysUseCase(
         return when (input.purpose) {
             ENCRYPT -> metadataKeysDao.getEncryptionMetadataKeysWithPrivateKeys()
             DECRYPT -> metadataKeysDao.getDecryptionMetadataKeysWithPrivateKeys()
-        }.let { metadataMapper.mapToUi(it) }
+        }.map { metadataMapper.mapToUi(it) }
     }
 
     data class Input(val purpose: MetadataKeyPurpose)

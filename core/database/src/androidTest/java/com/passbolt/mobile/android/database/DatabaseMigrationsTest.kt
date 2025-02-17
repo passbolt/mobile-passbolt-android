@@ -389,6 +389,9 @@ class DatabaseMigrationsTest {
     fun migrate17To18() {
         helper.createDatabase(TEST_DB, 17)
             .apply {
+                execSQL("INSERT INTO MetadataKey VALUES('id', 'fingerprint', 'armoredKey', 1644909225833, 1644909225833)")
+                execSQL("INSERT INTO MetadataKey VALUES('id2', 'fingerprint', 'armoredKey', null, null)")
+                execSQL("INSERT INTO MetadataPrivateKey VALUES(0,'id', 'userId', 'data')")
                 execSQL("INSERT INTO ResourceType VALUES('1', 'resourceTypeName', 'resourceTypeSlug', 1644909225833)")
                 execSQL(
                     "INSERT INTO Resource VALUES('id2','folderid','READ', '1'," +
@@ -399,6 +402,9 @@ class DatabaseMigrationsTest {
 
         helper.runMigrationsAndValidate(TEST_DB, 18, true, Migration17to18)
             .apply {
+                execSQL(
+                    "INSERT INTO MetadataPrivateKey VALUES(1,'id', 'userId', 'data', 'passphrase')"
+                )
                 execSQL(
                     "INSERT INTO Resource VALUES('id3','folderid','READ', '1'," +
                             " 'favouriteId', 1644909225833, 1644909225833, null, 'SHARED')"
