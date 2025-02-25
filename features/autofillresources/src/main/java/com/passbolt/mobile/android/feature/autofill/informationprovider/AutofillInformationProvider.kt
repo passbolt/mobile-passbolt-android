@@ -24,9 +24,20 @@ package com.passbolt.mobile.android.feature.autofill.informationprovider
  */
 
 interface AutofillInformationProvider {
+
     fun isAutofillServiceSupported(): Boolean
+
     fun isPassboltAutofillServiceSet(): Boolean
+
     fun isAccessibilityOverlayEnabled(): Boolean
+
     fun isAccessibilityServiceEnabled(): Boolean
+
     fun isAccessibilityAutofillSetup(): Boolean
+
+    fun getChromeNativeAutofillStatus(): ChromeNativeAutofillStatus
+
+    enum class ChromeNativeAutofillStatus {
+        NOT_SUPPORTED, ENABLED, DISABLED
+    }
 }

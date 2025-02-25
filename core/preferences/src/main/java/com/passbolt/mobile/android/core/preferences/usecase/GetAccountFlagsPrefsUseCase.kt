@@ -1,6 +1,9 @@
-package com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill
+package com.passbolt.mobile.android.core.preferences.usecase
 
-import com.passbolt.mobile.android.core.mvp.BaseContract
+import com.passbolt.mobile.android.common.usecase.UseCase
+import com.passbolt.mobile.android.core.accounts.usecase.SelectedAccountUseCase
+import com.passbolt.mobile.android.core.preferences.AccountPreferencesFileName
+import com.passbolt.mobile.android.encryptedstorage.EncryptedSharedPreferencesFactory
 
 /**
  * Passbolt - Open source password manager for teams
@@ -24,30 +27,24 @@ import com.passbolt.mobile.android.core.mvp.BaseContract
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-interface SettingsAutofillContract {
 
-    interface View : BaseContract.View {
-        fun setAccessibilitySwitchOn()
-        fun setAccessibilitySwitchOff()
-        fun showAutofillServiceNotSupported()
-        fun setAutofillSwitchOff()
-        fun setAutofillSwitchOn()
-        fun showEncourageAutofillService()
-        fun showEncourageAccessibilityService()
-        fun showAutofillFeatureEnabledSuccess()
-        fun disableChromeNativeAutofillLayout()
-        fun showChromeNativeAutofillNotSupported()
-        fun setChromeNativeAutofillSwitchOn()
-        fun setChromeNativeAutofillSwitchOff()
-        fun enableChromeNativeAutofillLayout()
-        fun launchChromeNativeAutofillDeeplink()
+class GetAccountFlagsPrefsUseCase(
+    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory
+) : UseCase<Unit, GetAccountFlagsPrefsUseCase.Output>,
+    SelectedAccountUseCase {
+
+    override fun execute(input: Unit): Output {
+        val fileName = AccountPreferencesFileName(selectedAccountId).name
+        val sharedPreferences = encryptedSharedPreferencesFactory.get("$fileName.xml")
+
+        with(sharedPreferences) {
+            return Output(
+                wasChromeNativeAutofillDialogShown = getBoolean(KEY_CHROME_NATIVE_AUTOFILL_DIALOG_SHOWN, false)
+            )
+        }
     }
 
-    interface Presenter : BaseContract.Presenter<View> {
-        fun autofillServiceSwitchClick()
-        fun accessibilityServiceSwitchClick()
-        fun viewResumed()
-        fun autofillSetupSuccessfully()
-        fun chromeNativeAutofillServiceSwitchClick()
-    }
+    data class Output(
+        val wasChromeNativeAutofillDialogShown: Boolean
+    )
 }

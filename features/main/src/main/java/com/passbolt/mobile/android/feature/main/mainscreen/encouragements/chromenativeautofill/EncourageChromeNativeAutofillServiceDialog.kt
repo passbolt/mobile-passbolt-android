@@ -1,20 +1,20 @@
-package com.passbolt.mobile.android.feature.autofill.encourage.tutorial
+package com.passbolt.mobile.android.feature.main.mainscreen.encouragements.chromenativeautofill
 
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.os.BundleCompat
 import androidx.fragment.app.DialogFragment
 import com.passbolt.mobile.android.common.ExternalDeeplinkHandler
-import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
+import com.passbolt.mobile.android.common.extension.fromHtml
 import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
-import com.passbolt.mobile.android.feature.authentication.auth.accountdoesnotexist.AccountDoesNotExistDialog
-import com.passbolt.mobile.android.feature.autofill.databinding.DialogAutofillTutorialBinding
+import com.passbolt.mobile.android.core.ui.circlestepsview.CircleStepItemModel
+import com.passbolt.mobile.android.feature.main.databinding.DialogEncourageChromeNativeAutofillBinding
 import org.koin.android.ext.android.inject
 import org.koin.android.scope.AndroidScopeComponent
 import org.koin.androidx.scope.fragmentScope
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 /**
@@ -39,18 +39,13 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class AutofillTutorialDialog : DialogFragment(), AutofillTutorialContract.View, AndroidScopeComponent {
+class EncourageChromeNativeAutofillServiceDialog : DialogFragment(), EncourageChromeNativeAutofillContract.View,
+    AndroidScopeComponent {
 
-    override val scope by fragmentScope(useParentActivityScope = false)
-    private val presenter: AutofillTutorialContract.Presenter by scope.inject()
-    private val tutorialMode by lifecycleAwareLazy {
-        requireNotNull(
-            BundleCompat.getSerializable(requireArguments(), TUTORIAL_MODE_KEY, TutorialMode::class.java)
-        )
-    }
-    private val externalDeeplinkHandler: ExternalDeeplinkHandler by inject()
-    private val settingsNavigator: SettingsNavigator by inject()
     private var listener: Listener? = null
+    override val scope by fragmentScope(useParentActivityScope = false)
+    private val presenter: EncourageChromeNativeAutofillContract.Presenter by scope.inject()
+    private val externalDeeplinkHandler: ExternalDeeplinkHandler by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,10 +53,9 @@ class AutofillTutorialDialog : DialogFragment(), AutofillTutorialContract.View, 
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        val binding = DialogAutofillTutorialBinding.inflate(inflater)
-        setupView(binding)
+        val binding = DialogEncourageChromeNativeAutofillBinding.inflate(inflater)
         setupListeners(binding)
-        presenter.argsReceived(tutorialMode)
+        setupSteps(binding)
         return binding.root
     }
 
@@ -70,7 +64,7 @@ class AutofillTutorialDialog : DialogFragment(), AutofillTutorialContract.View, 
         listener = when {
             activity is Listener -> activity as Listener
             parentFragment is Listener -> parentFragment as Listener
-            else -> error("Parent must implement ${AccountDoesNotExistDialog.Listener::class.java.name}")
+            else -> error("Parent must implement ${Listener::class.java.name}")
         }
         presenter.attach(this)
     }
@@ -80,46 +74,58 @@ class AutofillTutorialDialog : DialogFragment(), AutofillTutorialContract.View, 
         presenter.resume()
     }
 
-    private fun setupView(binding: DialogAutofillTutorialBinding) = with(binding) {
-        headerLabel.text = context?.getString(tutorialMode.title)
-        descriptionLabel.text = context?.getString(tutorialMode.description)
+    override fun onDetach() {
+        presenter.detach()
+        super.onDetach()
     }
 
-    override fun openWebsite(url: String) {
-        externalDeeplinkHandler.openWebsite(requireContext(), url)
+    private fun setupSteps(binding: DialogEncourageChromeNativeAutofillBinding) {
+        binding.stepsView.addList(
+            requireContext()
+                .resources
+                .getStringArray(LocalizationR.array.dialog_encourage_chrome_native_autofill_setup_steps)
+                .mapIndexed { index, text -> CircleStepItemModel(text.fromHtml(), getStepDrawable(index)) }
+        )
     }
 
-    private fun setupListeners(binding: DialogAutofillTutorialBinding) = with(binding) {
-        samsungContainer.setDebouncingOnClick { presenter.samsungClick() }
-        xiaomiContainer.setDebouncingOnClick { presenter.xiaomiClick() }
-        huaweiContainer.setDebouncingOnClick { presenter.huaweiClick() }
-        otherContainer.setDebouncingOnClick { presenter.otherClick() }
-        closeButton.setDebouncingOnClick { presenter.closeClick() }
-        backButton.setDebouncingOnClick { presenter.backClick() }
-        goToSettings.setDebouncingOnClick { presenter.goToSettingsClick() }
+    private fun getStepDrawable(index: Int) = try {
+        CHROME_NATIVE_AUTOFILL_SETUP_STEPS_ICONS[index]
+    } catch (ignored: Exception) {
+        null
     }
 
-    override fun navigateToOverlaySettings() {
-        settingsNavigator.navigateToAppSettings(requireActivity())
+    private fun setupListeners(binding: DialogEncourageChromeNativeAutofillBinding) {
+        with(binding) {
+            goToChromeSettingsButton.setDebouncingOnClick { presenter.goToChromeNativeAutofillSettingsClick() }
+            maybeLaterButton.setDebouncingOnClick { presenter.maybeLaterClick() }
+            closeButton.setDebouncingOnClick { presenter.closeClick() }
+        }
     }
 
-    override fun navigateToServiceSettings() {
-        settingsNavigator.navigateToAccessibilitySettings(requireActivity())
+    override fun launchChromeNativeAutofillDeeplink() {
+        externalDeeplinkHandler.openChromeNativeAutofillSettings(requireContext())
     }
 
-    override fun notifyAutofillSettingsPossibleChange() {
-        listener?.autofillSettingsPossibleChange()
-    }
-
-    override fun closeDialog() {
+    override fun notifyChromeNativeAutofillSetUp() {
+        listener?.chromeNativeAutofillSetupSuccessfully()
         dismiss()
     }
 
-    interface Listener {
-        fun autofillSettingsPossibleChange()
+    override fun close() {
+        listener?.chromeNativeAutofillSetupClosed()
+        dismiss()
     }
 
-    companion object {
-        const val TUTORIAL_MODE_KEY = "TUTORIAL_MODE_KEY"
+    private companion object {
+        private val CHROME_NATIVE_AUTOFILL_SETUP_STEPS_ICONS = listOf(
+            CoreUiR.drawable.passbolt_with_bg,
+            CoreUiR.drawable.ic_chrome,
+            CoreUiR.drawable.passbolt_with_bg
+        )
+    }
+
+    interface Listener {
+        fun chromeNativeAutofillSetupClosed() {}
+        fun chromeNativeAutofillSetupSuccessfully() {}
     }
 }

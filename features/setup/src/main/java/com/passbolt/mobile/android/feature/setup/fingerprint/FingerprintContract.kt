@@ -41,6 +41,7 @@ interface FingerprintContract {
         fun startAuthActivity()
         fun showKeyChangesDetected()
         fun showGenericError()
+        fun showEncourageChromeNativeAutofillDialog()
     }
 
     interface Presenter : BaseContract.Presenter<View> {
@@ -54,5 +55,7 @@ interface FingerprintContract {
         fun keyChangesInfoConfirmClick()
         fun getPassphraseSucceeded()
         fun autofillSetupSuccess()
+        fun chromeNativeAutofillSetupClosed()
+        fun chromeNativeAutofillSetupSuccessfully()
     }
 }

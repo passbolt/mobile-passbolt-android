@@ -1,4 +1,4 @@
-package com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill
+package com.passbolt.mobile.android.feature.main.mainscreen.encouragements.chromenativeautofill
 
 import com.passbolt.mobile.android.core.mvp.BaseContract
 
@@ -24,30 +24,19 @@ import com.passbolt.mobile.android.core.mvp.BaseContract
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-interface SettingsAutofillContract {
+
+interface EncourageChromeNativeAutofillContract {
 
     interface View : BaseContract.View {
-        fun setAccessibilitySwitchOn()
-        fun setAccessibilitySwitchOff()
-        fun showAutofillServiceNotSupported()
-        fun setAutofillSwitchOff()
-        fun setAutofillSwitchOn()
-        fun showEncourageAutofillService()
-        fun showEncourageAccessibilityService()
-        fun showAutofillFeatureEnabledSuccess()
-        fun disableChromeNativeAutofillLayout()
-        fun showChromeNativeAutofillNotSupported()
-        fun setChromeNativeAutofillSwitchOn()
-        fun setChromeNativeAutofillSwitchOff()
-        fun enableChromeNativeAutofillLayout()
+        fun close()
         fun launchChromeNativeAutofillDeeplink()
+        fun notifyChromeNativeAutofillSetUp()
     }
 
     interface Presenter : BaseContract.Presenter<View> {
-        fun autofillServiceSwitchClick()
-        fun accessibilityServiceSwitchClick()
-        fun viewResumed()
-        fun autofillSetupSuccessfully()
-        fun chromeNativeAutofillServiceSwitchClick()
+        fun goToChromeNativeAutofillSettingsClick()
+        fun closeClick()
+        fun maybeLaterClick()
+        fun resume()
     }
 }

@@ -23,7 +23,7 @@ import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
-import com.passbolt.mobile.android.common.WebsiteOpener
+import com.passbolt.mobile.android.common.ExternalDeeplinkHandler
 import com.passbolt.mobile.android.common.dialogs.confirmResourceDeletionAlertDialog
 import com.passbolt.mobile.android.common.dialogs.confirmTotpDeletionAlertDialog
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
@@ -133,7 +133,7 @@ class ResourceDetailsFragment :
     private val locationFields
         get() = listOf(binding.locationHeader, binding.locationValue, binding.locationNavIcon)
 
-    private val websiteOpener: WebsiteOpener by inject()
+    private val externalDeeplinkHandler: ExternalDeeplinkHandler by inject()
     private val groupPermissionsItemAdapter: ItemAdapter<GroupItem> by inject(named(GROUP_ITEM_ADAPTER))
     private val userPermissionsItemAdapter: ItemAdapter<UserItem> by inject(named(USER_ITEM_ADAPTER))
     private val permissionsCounterItemAdapter: ItemAdapter<CounterItem> by inject(named(COUNTER_ITEM_ADAPTER))
@@ -462,7 +462,7 @@ class ResourceDetailsFragment :
     }
 
     override fun openWebsite(url: String) {
-        websiteOpener.open(requireContext(), url)
+        externalDeeplinkHandler.openWebsite(requireContext(), url)
     }
 
     override fun showPasswordEyeIcon() {

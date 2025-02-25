@@ -30,8 +30,8 @@
         android:drawablePadding="@dimen/dp_16"
         android:gravity="center"
         android:paddingHorizontal="@dimen/dp_16"
-        android:textColor="@color/text_primary"
-        android:text="@string/settings_autofill_autofill_desc" />
+        android:text="@string/settings_autofill_autofill_desc"
+        android:textColor="@color/text_primary" />
 
     <!-- Switches are disabled -->
     <LinearLayout
@@ -62,9 +62,35 @@
 
     <!-- Switches are disabled -->
     <LinearLayout
+        android:id="@+id/chromeNativeAutofillServiceSwitchContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?selectableItemBackground"
+        android:orientation="vertical"
+        android:paddingHorizontal="@dimen/dp_16">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_24"
+            android:text="@string/settings_chrome_native_autofill_autofill_service"
+            android:textColor="@color/primary"
+            android:textStyle="bold" />
+
+        <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/chromeNativeAutofillServiceSwitch"
+            style="@style/PrimarySwitch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="false"
+            android:enabled="false"
+            android:text="@string/settings_chrome_native_autofill_autofill_service_description" />
+    </LinearLayout>
+
+    <!-- Switches are disabled -->
+    <LinearLayout
         android:id="@+id/accessibilityServiceSwitchContainer"
         android:layout_width="match_parent"
-
         android:layout_height="wrap_content"
         android:background="?selectableItemBackground"
         android:orientation="vertical"

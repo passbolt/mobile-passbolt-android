@@ -1,11 +1,4 @@
-package com.passbolt.mobile.android.common
-
-import android.content.Context
-import android.content.Intent
-import android.net.Uri
-import android.widget.Toast
-import timber.log.Timber
-import com.passbolt.mobile.android.core.localization.R as LocalizationR
+package com.passbolt.mobile.android.core.preferences
 
 /**
  * Passbolt - Open source password manager for teams
@@ -29,16 +22,13 @@ import com.passbolt.mobile.android.core.localization.R as LocalizationR
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class WebsiteOpener {
 
-    fun open(context: Context, url: String) {
-        runCatching {
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-            context.startActivity(intent)
-        }
-            .onFailure {
-                Timber.e(it)
-                Toast.makeText(context, LocalizationR.string.common_failure, Toast.LENGTH_SHORT).show()
-            }
+class AccountPreferencesFileName(userId: String) {
+
+    val name = ACCOUNT_PREFERENCES_FILE_NAME_FORMAT.format(userId)
+
+    private companion object {
+        private const val ACCOUNT_PREFERENCES_DATA_ALIAS = "account_preferences"
+        private const val ACCOUNT_PREFERENCES_FILE_NAME_FORMAT = "${ACCOUNT_PREFERENCES_DATA_ALIAS}_%s"
     }
 }
