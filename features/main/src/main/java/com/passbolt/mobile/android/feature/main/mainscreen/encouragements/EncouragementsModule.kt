@@ -1,7 +1,3 @@
-package com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill
-
-import com.passbolt.mobile.android.core.mvp.BaseContract
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -24,30 +20,12 @@ import com.passbolt.mobile.android.core.mvp.BaseContract
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-interface SettingsAutofillContract {
 
-    interface View : BaseContract.View {
-        fun setAccessibilitySwitchOn()
-        fun setAccessibilitySwitchOff()
-        fun showAutofillServiceNotSupported()
-        fun setAutofillSwitchOff()
-        fun setAutofillSwitchOn()
-        fun showEncourageAutofillService()
-        fun showEncourageAccessibilityService()
-        fun showAutofillFeatureEnabledSuccess()
-        fun disableChromeNativeAutofillLayout()
-        fun showChromeNativeAutofillNotSupported()
-        fun setChromeNativeAutofillSwitchOn()
-        fun setChromeNativeAutofillSwitchOff()
-        fun enableChromeNativeAutofillLayout()
-        fun launchChromeNativeAutofillDeeplink()
-    }
+package com.passbolt.mobile.android.feature.main.mainscreen.encouragements
 
-    interface Presenter : BaseContract.Presenter<View> {
-        fun autofillServiceSwitchClick()
-        fun accessibilityServiceSwitchClick()
-        fun viewResumed()
-        fun autofillSetupSuccessfully()
-        fun chromeNativeAutofillServiceSwitchClick()
-    }
+import org.koin.core.module.Module
+import org.koin.core.module.dsl.factoryOf
+
+fun Module.encouragementsModule() {
+    factoryOf(::EncouragementsInteractor)
 }

@@ -17,6 +17,7 @@ import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.feature.autofill.enabled.AutofillEnabledDialog
 import com.passbolt.mobile.android.feature.autofill.enabled.DialogMode
 import com.passbolt.mobile.android.feature.autofill.encourage.autofill.EncourageAutofillServiceDialog
+import com.passbolt.mobile.android.feature.main.mainscreen.encouragements.chromenativeautofill.EncourageChromeNativeAutofillServiceDialog
 import com.passbolt.mobile.android.feature.setup.databinding.FragmentFingerprintBinding
 import org.koin.android.ext.android.inject
 import java.util.concurrent.Executor
@@ -47,7 +48,8 @@ import com.passbolt.mobile.android.core.localization.R as LocalizationR
  */
 
 class FingerprintFragment : BindingScopedFragment<FragmentFingerprintBinding>(FragmentFingerprintBinding::inflate),
-    FingerprintContract.View, EncourageAutofillServiceDialog.Listener, AutofillEnabledDialog.Listener {
+    FingerprintContract.View, EncourageAutofillServiceDialog.Listener, AutofillEnabledDialog.Listener,
+    EncourageChromeNativeAutofillServiceDialog.Listener {
 
     private val presenter: FingerprintContract.Presenter by inject()
     private val biometricPromptBuilder: BiometricPrompt.PromptInfo.Builder by inject()
@@ -180,5 +182,20 @@ class FingerprintFragment : BindingScopedFragment<FragmentFingerprintBinding>(Fr
             .setPositiveButton(LocalizationR.string.got_it) { _, _ -> presenter.keyChangesInfoConfirmClick() }
             .setCancelable(false)
             .show()
+    }
+
+    override fun showEncourageChromeNativeAutofillDialog() {
+        EncourageChromeNativeAutofillServiceDialog().show(
+            childFragmentManager,
+            EncourageChromeNativeAutofillServiceDialog::class.java.name
+        )
+    }
+
+    override fun chromeNativeAutofillSetupClosed() {
+        presenter.chromeNativeAutofillSetupClosed()
+    }
+
+    override fun chromeNativeAutofillSetupSuccessfully() {
+        presenter.chromeNativeAutofillSetupSuccessfully()
     }
 }

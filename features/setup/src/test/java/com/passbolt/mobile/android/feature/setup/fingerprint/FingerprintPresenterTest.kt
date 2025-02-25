@@ -135,5 +135,20 @@ class FingerprintPresenterTest : KoinTest {
         verify(view).navigateToHome()
         verifyNoMoreInteractions(view)
     }
+
+    @Test
+    fun `when autofill service is already set up and chrome service is available view should show chrome autofill encouragement`() {
+        whenever(fingerprintInformationProvider.hasBiometricSetUp()).thenReturn(true)
+        whenever(autofillInformationProvider.isAutofillServiceSupported()).thenReturn(true)
+        whenever(autofillInformationProvider.isPassboltAutofillServiceSet()).thenReturn(true)
+        whenever(mockEncouragementsInteractor.shouldShowChromeNativeAutofillEncouragement()).thenReturn(true)
+        whenever(passphraseMemoryCache.get()).thenReturn(
+            PotentialPassphrase.Passphrase("passphrase".toByteArray())
+        )
+
+        presenter.autofillSetupSuccess()
+
+        verify(view).showEncourageChromeNativeAutofillDialog()
+    }
 }
 

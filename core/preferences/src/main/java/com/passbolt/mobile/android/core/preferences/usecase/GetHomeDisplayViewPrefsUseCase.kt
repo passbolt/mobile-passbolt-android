@@ -1,7 +1,7 @@
 package com.passbolt.mobile.android.core.preferences.usecase
 
 import com.passbolt.mobile.android.common.usecase.UseCase
-import com.passbolt.mobile.android.core.accounts.usecase.AccountPreferencesFileName
+import com.passbolt.mobile.android.core.preferences.AccountPreferencesFileName
 import com.passbolt.mobile.android.core.accounts.usecase.SelectedAccountUseCase
 import com.passbolt.mobile.android.encryptedstorage.EncryptedSharedPreferencesFactory
 import com.passbolt.mobile.android.entity.home.HomeDisplayView

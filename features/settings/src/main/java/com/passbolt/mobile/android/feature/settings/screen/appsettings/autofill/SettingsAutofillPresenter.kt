@@ -1,6 +1,9 @@
 package com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill
 
 import com.passbolt.mobile.android.feature.autofill.informationprovider.AutofillInformationProvider
+import com.passbolt.mobile.android.feature.autofill.informationprovider.AutofillInformationProvider.ChromeNativeAutofillStatus.DISABLED
+import com.passbolt.mobile.android.feature.autofill.informationprovider.AutofillInformationProvider.ChromeNativeAutofillStatus.ENABLED
+import com.passbolt.mobile.android.feature.autofill.informationprovider.AutofillInformationProvider.ChromeNativeAutofillStatus.NOT_SUPPORTED
 
 class SettingsAutofillPresenter(
     private val autofillInformationProvider: AutofillInformationProvider
@@ -19,6 +22,7 @@ class SettingsAutofillPresenter(
 
     private fun refreshSwitchesState() {
         handleAutofillServiceSwitchState()
+        handleChromeNativeAutofillSwitchState()
         handleAccessibilityServiceSwitchState()
     }
 
@@ -42,6 +46,24 @@ class SettingsAutofillPresenter(
         }
     }
 
+    private fun handleChromeNativeAutofillSwitchState() {
+        when (autofillInformationProvider.getChromeNativeAutofillStatus()) {
+            NOT_SUPPORTED -> {
+                view?.setChromeNativeAutofillSwitchOff()
+                view?.disableChromeNativeAutofillLayout()
+                view?.showChromeNativeAutofillNotSupported()
+            }
+            ENABLED -> {
+                view?.enableChromeNativeAutofillLayout()
+                view?.setChromeNativeAutofillSwitchOn()
+            }
+            DISABLED -> {
+                view?.enableChromeNativeAutofillLayout()
+                view?.setChromeNativeAutofillSwitchOff()
+            }
+        }
+    }
+
     override fun autofillServiceSwitchClick() {
         if (autofillInformationProvider.isAutofillServiceSupported()) {
             if (autofillInformationProvider.isPassboltAutofillServiceSet()) {
@@ -52,6 +74,10 @@ class SettingsAutofillPresenter(
         } else {
             view?.showAutofillServiceNotSupported()
         }
+    }
+
+    override fun chromeNativeAutofillServiceSwitchClick() {
+        view?.launchChromeNativeAutofillDeeplink()
     }
 
     override fun autofillSetupSuccessfully() {

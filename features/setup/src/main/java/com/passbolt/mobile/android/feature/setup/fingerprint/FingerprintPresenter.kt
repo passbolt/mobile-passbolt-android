@@ -9,6 +9,7 @@ import com.passbolt.mobile.android.core.passphrasememorycache.PotentialPassphras
 import com.passbolt.mobile.android.encryptedstorage.biometric.BiometricCipher
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.BiometryInteractor
 import com.passbolt.mobile.android.feature.autofill.informationprovider.AutofillInformationProvider
+import com.passbolt.mobile.android.feature.main.mainscreen.encouragements.EncouragementsInteractor
 import org.koin.core.component.KoinComponent
 import timber.log.Timber
 import javax.crypto.Cipher
@@ -42,7 +43,8 @@ class FingerprintPresenter(
     private val savePassphraseUseCase: SavePassphraseUseCase,
     private val biometricCipher: BiometricCipher,
     private val saveBiometricKeyIvUseCase: SaveBiometricKeyIvUseCase,
-    private val biometryInteractor: BiometryInteractor
+    private val biometryInteractor: BiometryInteractor,
+    private val encouragementsInteractor: EncouragementsInteractor
 ) : FingerprintContract.Presenter, KoinComponent {
 
     override var view: FingerprintContract.View? = null
@@ -134,6 +136,18 @@ class FingerprintPresenter(
     }
 
     override fun autofillSetupSuccess() {
+        if (encouragementsInteractor.shouldShowChromeNativeAutofillEncouragement()) {
+            view?.showEncourageChromeNativeAutofillDialog()
+        } else {
+            view?.navigateToHome()
+        }
+    }
+
+    override fun chromeNativeAutofillSetupClosed() {
+        view?.navigateToHome()
+    }
+
+    override fun chromeNativeAutofillSetupSuccessfully() {
         view?.navigateToHome()
     }
 }

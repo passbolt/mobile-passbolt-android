@@ -57,6 +57,16 @@ fun Fragment.showSnackbar(
     showSnackbar(getString(messageResId, *messageArgs), anchorView, length, backgroundColor, *messageArgs)
 }
 
+fun Activity.showSnackbar(
+    message: String,
+    length: Int = Snackbar.LENGTH_SHORT,
+    @ColorRes backgroundColor: Int = R.color.background_gray_dark,
+    vararg messageArgs: String
+) {
+    snackbar(message, length, backgroundColor, *messageArgs)
+        .show()
+}
+
 fun Fragment.showSnackbar(
     message: String,
     anchorView: View? = null,
@@ -85,6 +95,18 @@ fun Fragment.snackbar(
     vararg messageArgs: String
 ) =
     Snackbar.make(requireView(), message.format(messageArgs), length)
+        .apply {
+            view.setBackgroundColor(context.getColor(backgroundColor))
+            anchorView?.let { setAnchorView(it) }
+        }
+
+fun Activity.snackbar(
+    message: String,
+    length: Int = Snackbar.LENGTH_SHORT,
+    @ColorRes backgroundColor: Int = R.color.background_gray_dark,
+    vararg messageArgs: String
+) =
+    Snackbar.make(getRootView(), message.format(messageArgs), length)
         .apply {
             view.setBackgroundColor(context.getColor(backgroundColor))
             anchorView?.let { setAnchorView(it) }

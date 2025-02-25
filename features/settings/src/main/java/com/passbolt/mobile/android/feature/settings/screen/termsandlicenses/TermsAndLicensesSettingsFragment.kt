@@ -26,7 +26,7 @@ package com.passbolt.mobile.android.feature.settings.screen.termsandlicenses
 import android.os.Bundle
 import android.view.View
 import androidx.navigation.fragment.findNavController
-import com.passbolt.mobile.android.common.WebsiteOpener
+import com.passbolt.mobile.android.common.ExternalDeeplinkHandler
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
 import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
@@ -38,7 +38,7 @@ class TermsAndLicensesSettingsFragment :
     TermsAndLicensesSettingsContract.View {
 
     private val presenter: TermsAndLicensesSettingsContract.Presenter by inject()
-    private val websiteOpener: WebsiteOpener by inject()
+    private val externalDeeplinkHandler: ExternalDeeplinkHandler by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -88,7 +88,7 @@ class TermsAndLicensesSettingsFragment :
     }
 
     override fun openUrl(url: String) {
-        websiteOpener.open(requireContext(), url)
+        externalDeeplinkHandler.openWebsite(requireContext(), url)
     }
 
     override fun navigateToLicenses() {

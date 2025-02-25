@@ -15,13 +15,16 @@ import com.google.android.play.core.review.ReviewManager
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.extension.findNavHostFragment
 import com.passbolt.mobile.android.core.extension.getRootView
+import com.passbolt.mobile.android.core.extension.showSnackbar
 import com.passbolt.mobile.android.core.security.runtimeauth.RuntimeAuthenticatedFlag
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedActivity
+import com.passbolt.mobile.android.feature.main.mainscreen.encouragements.chromenativeautofill.EncourageChromeNativeAutofillServiceDialog
 import com.passbolt.mobile.android.feature.main.databinding.ActivityMainBinding
 import com.passbolt.mobile.android.feature.main.mainscreen.bottomnavigation.MainBottomNavigationModel
 import org.koin.android.ext.android.inject
 import timber.log.Timber
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
+import com.passbolt.mobile.android.core.ui.R as CoreUiR
 import com.passbolt.mobile.android.feature.createotpmanually.R as CreateOtpManuallyR
 import com.passbolt.mobile.android.feature.otp.R as OtpR
 import com.passbolt.mobile.android.feature.resourcepicker.R as ResourcePickerR
@@ -29,7 +32,7 @@ import com.passbolt.mobile.android.feature.scanotp.R as ScanOtpR
 
 class MainActivity :
     BindingScopedAuthenticatedActivity<ActivityMainBinding, MainContract.View>(ActivityMainBinding::inflate),
-    MainContract.View {
+    MainContract.View, EncourageChromeNativeAutofillServiceDialog.Listener {
 
     override val presenter: MainContract.Presenter by inject()
 
@@ -132,6 +135,20 @@ class MainActivity :
                     Timber.e("In app review request to start flow failed: ${it.exception?.message}")
                 }
             }
+    }
+
+    override fun showChromeNativeAutofillEncouragement() {
+        EncourageChromeNativeAutofillServiceDialog().show(
+            supportFragmentManager,
+            EncourageChromeNativeAutofillServiceDialog::class.java.name
+        )
+    }
+
+    override fun chromeNativeAutofillSetupSuccessfully() {
+        showSnackbar(
+            getString(LocalizationR.string.main_chrome_native_autofill_setup_success),
+            backgroundColor = CoreUiR.color.green
+        )
     }
 
     private companion object {

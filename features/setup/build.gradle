@@ -30,6 +30,7 @@ dependencies {
     implementation project(':encryptedstorage')
     implementation project(':authenticationcore')
     implementation project(':preferences')
+    implementation project(':main')
 
     implementation libs.navigation.fragment
     implementation libs.navigation.ui

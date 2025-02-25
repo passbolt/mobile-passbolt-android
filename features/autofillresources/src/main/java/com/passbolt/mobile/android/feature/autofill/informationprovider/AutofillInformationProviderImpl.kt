@@ -1,9 +1,16 @@
 package com.passbolt.mobile.android.feature.autofill.informationprovider
 
+import android.content.ContentResolver
 import android.content.Context
+import android.net.Uri
 import android.provider.Settings
 import android.view.autofill.AutofillManager
 import com.passbolt.mobile.android.feature.autofill.accessibility.AccessibilityService
+import com.passbolt.mobile.android.feature.autofill.informationprovider.AutofillInformationProvider.ChromeNativeAutofillStatus
+import com.passbolt.mobile.android.feature.autofill.informationprovider.AutofillInformationProvider.ChromeNativeAutofillStatus.DISABLED
+import com.passbolt.mobile.android.feature.autofill.informationprovider.AutofillInformationProvider.ChromeNativeAutofillStatus.ENABLED
+import com.passbolt.mobile.android.feature.autofill.informationprovider.AutofillInformationProvider.ChromeNativeAutofillStatus.NOT_SUPPORTED
+import com.passbolt.mobile.android.core.common.R as CommonR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -50,4 +57,41 @@ class AutofillInformationProviderImpl(
 
     override fun isAccessibilityAutofillSetup() =
         isAccessibilityOverlayEnabled() && isAccessibilityServiceEnabled()
+
+    override fun getChromeNativeAutofillStatus(): ChromeNativeAutofillStatus {
+        val chromeChannelPackage = context.getString(CommonR.string.chrome_native_autofill_target_package)
+        val uri = Uri.Builder()
+            .scheme(ContentResolver.SCHEME_CONTENT)
+            .authority(chromeChannelPackage + CHROME_AUTOFILL_PROVIDER_NAME)
+            .path(CHROME_PROVIDER_THIRD_PARTY_MODE_ACTIONS_URI_PATH)
+            .build()
+
+        return context.contentResolver.query(
+            uri,
+            arrayOf(CHROME_PROVIDER_THIRD_PARTY_MODE_COLUMN),
+            null,
+            null,
+            null
+        ).use { cursor ->
+            if (cursor == null) {
+                NOT_SUPPORTED
+            } else {
+                cursor.moveToFirst()
+                val thirdPartyColumnIndex = cursor.getColumnIndex(CHROME_PROVIDER_THIRD_PARTY_MODE_COLUMN)
+
+                if (0 == cursor.getInt(thirdPartyColumnIndex)) {
+                    DISABLED
+                } else {
+                    ENABLED
+                }
+            }
+        }
+    }
+
+    private companion object {
+        // Query "Chrome Stable"
+        private const val CHROME_AUTOFILL_PROVIDER_NAME = ".AutofillThirdPartyModeContentProvider"
+        private const val CHROME_PROVIDER_THIRD_PARTY_MODE_COLUMN = "autofill_third_party_state"
+        private const val CHROME_PROVIDER_THIRD_PARTY_MODE_ACTIONS_URI_PATH = "autofill_third_party_mode"
+    }
 }

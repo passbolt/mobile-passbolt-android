@@ -6,6 +6,7 @@ import com.passbolt.mobile.android.core.inappreview.InAppReviewInteractor
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.feature.main.mainscreen.bottomnavigation.MainBottomNavigationModel
+import com.passbolt.mobile.android.feature.main.mainscreen.encouragements.EncouragementsInteractor
 import com.passbolt.mobile.android.featureflags.usecase.GetFeatureFlagsUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -17,6 +18,7 @@ class MainPresenter(
     private val inAppReviewInteractor: InAppReviewInteractor,
     private val fullDataRefreshExecutor: FullDataRefreshExecutor,
     private val getFeatureFlagsUseCase: GetFeatureFlagsUseCase,
+    private val encouragementsInteractor: EncouragementsInteractor,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : BaseAuthenticatedPresenter<MainContract.View>(coroutineLaunchContext), MainContract.Presenter {
 
@@ -28,6 +30,9 @@ class MainPresenter(
         super<BaseAuthenticatedPresenter>.attach(view)
         setupBottomNavigation()
         performFullDataRefresh()
+        if (encouragementsInteractor.shouldShowChromeNativeAutofillEncouragement()) {
+            view.showChromeNativeAutofillEncouragement()
+        }
         view.checkForAppUpdates()
         if (inAppReviewInteractor.shouldShowInAppReviewFlow()) {
             view.tryLaunchReviewFlow()

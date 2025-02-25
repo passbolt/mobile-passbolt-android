@@ -9,7 +9,7 @@ import android.widget.CompoundButton
 import androidx.core.os.BundleCompat
 import androidx.core.os.bundleOf
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.passbolt.mobile.android.common.WebsiteOpener
+import com.passbolt.mobile.android.common.ExternalDeeplinkHandler
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.extension.visible
@@ -49,7 +49,7 @@ class HelpMenuFragment : BottomSheetDialogFragment(), AndroidScopeComponent, Hel
     override val scope: Scope by fragmentScope(useParentActivityScope = false)
     private lateinit var binding: ViewHelpBottomsheetBinding
     private var listener: Listener? = null
-    private val websiteOpener: WebsiteOpener by inject()
+    private val externalDeeplinkHandler: ExternalDeeplinkHandler by inject()
     private val bundledShowQrCodesHelp by lifecycleAwareLazy {
         requireNotNull(BundleCompat.getParcelable(requireArguments(), EXTRA_HELP_MENU_MODEL, HelpMenuModel::class.java))
     }
@@ -120,7 +120,7 @@ class HelpMenuFragment : BottomSheetDialogFragment(), AndroidScopeComponent, Hel
     }
 
     private fun openHelpWebsite() {
-        websiteOpener.open(requireContext(), getString(LocalizationR.string.help_website))
+        externalDeeplinkHandler.openWebsite(requireContext(), getString(LocalizationR.string.help_website))
     }
 
     override fun showScanQrCodesHelp() {

@@ -75,7 +75,7 @@
             android:background="?selectableItemBackground"
             android:gravity="center_horizontal"
             android:padding="@dimen/dp_16"
-            android:text="@string/fingerprint_setup_maybe_later_button" />
+            android:text="@string/common_maybe_later" />
 
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

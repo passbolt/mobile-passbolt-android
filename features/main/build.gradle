@@ -25,6 +25,8 @@ dependencies {
     implementation project(':resourcepicker')
     implementation project(':featureflags')
     implementation project(':accounts')
+    implementation project(':autofillresources')
+    implementation project(':preferences')
 
     implementation libs.navigation.fragment
     implementation libs.navigation.ui
@@ -33,6 +35,8 @@ dependencies {
     implementation libs.inappupdate.ktx
     implementation libs.inappreview.core
     implementation libs.inappreview.ktx
+
+    testImplementation project(':commontest')
 }
 
 android {

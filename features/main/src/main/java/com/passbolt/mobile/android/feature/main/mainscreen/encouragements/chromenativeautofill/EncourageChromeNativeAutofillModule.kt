@@ -1,4 +1,9 @@
-package com.passbolt.mobile.android.core.accounts.usecase
+package com.passbolt.mobile.android.feature.main.mainscreen.encouragements.chromenativeautofill
+
+import org.koin.core.module.Module
+import org.koin.core.module.dsl.scopedOf
+import org.koin.core.qualifier.named
+import org.koin.dsl.bind
 
 /**
  * Passbolt - Open source password manager for teams
@@ -23,12 +28,8 @@ package com.passbolt.mobile.android.core.accounts.usecase
  * @since v1.0
  */
 
-class AccountPreferencesFileName(userId: String) {
-
-    val name = ACCOUNT_PREFERENCES_FILE_NAME_FORMAT.format(userId)
-
-    private companion object {
-        private const val ACCOUNT_PREFERENCES_DATA_ALIAS = "account_preferences"
-        private const val ACCOUNT_PREFERENCES_FILE_NAME_FORMAT = "${ACCOUNT_PREFERENCES_DATA_ALIAS}_%s"
+fun Module.encourageChromeNativeAutofillModule() {
+    scope(named<EncourageChromeNativeAutofillServiceDialog>()) {
+        scopedOf(::EncourageChromeNativeAutofillPresenter) bind EncourageChromeNativeAutofillContract.Presenter::class
     }
 }

@@ -32,4 +32,6 @@ internal fun Module.preferencesModule() {
     factoryOf(::GetHomeDisplayViewPrefsUseCase)
     factoryOf(::UpdateHomeDisplayViewPrefsUseCase)
     factoryOf(::HomeDisplayViewPrefsValidator)
+    factoryOf(::GetAccountFlagsPrefsUseCase)
+    factoryOf(::UpdateAccountFlagsPrefsUseCase)
 }

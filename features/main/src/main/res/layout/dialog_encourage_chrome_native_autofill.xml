@@ -28,7 +28,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="@string/dialog_encourage_autofill_header"
+            android:text="@string/dialog_encourage_chrome_autofill_title"
             android:textColor="@color/text_primary"
             app:layout_constraintBottom_toTopOf="@id/stepsView"
             app:layout_constraintTop_toBottomOf="@id/closeButton"
@@ -36,22 +36,23 @@
 
         <com.passbolt.mobile.android.core.ui.circlestepsview.CircleStepsView
             android:id="@+id/stepsView"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/dp_16"
             android:layout_marginTop="@dimen/dp_48"
-            app:layout_constraintBottom_toTopOf="@id/goToSettingsButton"
+            app:layout_constraintBottom_toTopOf="@id/goToChromeSettingsButton"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/headerLabel"
             app:layout_constraintVertical_chainStyle="packed" />
 
         <Button
-            android:id="@+id/goToSettingsButton"
+            android:id="@+id/goToChromeSettingsButton"
             style="@style/PrimaryButton"
             android:layout_width="match_parent"
             android:layout_height="@dimen/dp_56"
             android:layout_marginBottom="@dimen/dp_24"
-            android:text="@string/dialog_encourage_autofill_go_to_settings"
+            android:text="@string/dialog_encourage_chrome_autofill_go_to_settings"
             app:layout_constraintBottom_toTopOf="@id/maybeLaterButton"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
