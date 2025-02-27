@@ -312,7 +312,7 @@ class PermissionsFragment :
     }
 
     override fun showProgress() {
-        showProgressDialog(childFragmentManager)
+        showProgressDialog(childFragmentManager, dismissOnStop = false)
     }
 
     override fun hideProgress() {
