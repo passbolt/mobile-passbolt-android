@@ -35,6 +35,10 @@ class SessionKeysBundleMerger {
         val merged = hashMapOf<SessionKeyIdentifier, SessionKeyModel>()
 
         input.flatMap { it.bundle.sessionKeys }.forEach {
+            // certain versions of web-ext do not append modified date to session keys
+            // these session keys are filtered out in MetadataSessionKeysInteractor#mapDecryptNotNull
+            requireNotNull(it.modified) { "Session key modified date is required" }
+
             val sessionKeyIdentifier = SessionKeyIdentifier(foreignModel = it.foreignModel, foreignId = it.foreignId)
             val currentModified = ZonedDateTime.parse(it.modified)
             val existing = merged[sessionKeyIdentifier]

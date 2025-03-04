@@ -90,6 +90,7 @@ class MetadataSessionKeysInteractor(
                     .mapDecryptNotNull(privateKey, passphrase.passphrase)
                     .let {
                         Timber.d("Merging session keys cache")
+                        if (it.isNotEmpty()) sessionKeysMemoryCache.wasInitialCacheEmpty = false
                         sessionKeysBundleMerger.merge(it)
                     }
                     .let {
@@ -255,11 +256,14 @@ class MetadataSessionKeysInteractor(
                 }
                 is OpenPgpResult.Result -> {
                     Timber.d("Decrypted session keys bundle")
+                    val parsedBundle = gson.fromJson(
+                        String(decryptedBundleResult.result),
+                        SessionKeysBundleDto::class.java
+                    )
                     DecryptedMetadataSessionKeysBundleModel(
                         id = metadataSessionKeysBundle.id,
-                        bundle = gson.fromJson(
-                            String(decryptedBundleResult.result),
-                            SessionKeysBundleDto::class.java
+                        bundle = parsedBundle.copy(
+                            sessionKeys = parsedBundle.sessionKeys.filterNot { it.modified == null }
                         ),
                         created = metadataSessionKeysBundle.created,
                         modified = metadataSessionKeysBundle.modified

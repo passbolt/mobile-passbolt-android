@@ -1,4 +1,4 @@
-# Passbolt 1.23.0-33 Android app release notes
+# Passbolt 1.23.0-34 Android app release notes
 
 ## Added
 - Add support for handling v5 metadata settings
