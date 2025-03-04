@@ -345,7 +345,7 @@
     <string name="settings_autofill_autofill_service">Autofill Service (recommended)</string>
     <string name="settings_chrome_native_autofill_autofill_service">Chrome Native Autofill (recommended)</string>
     <string name="settings_autofill_autofill_service_description">Autofill will be based on the recommended Autofill Service</string>
-    <string name="settings_chrome_native_autofill_autofill_service_description">Chrome will delegate autofill requests to Android OS autofill service instead of using a build-in one. Works in Chrome only if Autofill Service is set in the system.</string>
+    <string name="settings_chrome_native_autofill_autofill_service_description">Chrome will use Android’s system Autofill Service instead of its own, but only if it’s enabled in system settings.</string>
     <string name="settings_chrome_native_autofill_not_supported">Your Chrome version does not support this feature yet.</string>
     <string name="settings_autofill_accessibility">Accessibility Service (legacy)</string>
     <string name="settings_autofill_accessibility_description">Autofill will be based on the Accessibility Service. You will need to approve additional permissions.</string>
