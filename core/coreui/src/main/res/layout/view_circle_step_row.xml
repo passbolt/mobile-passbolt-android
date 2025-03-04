@@ -10,18 +10,16 @@
         android:id="@+id/circle"
         android:layout_width="@dimen/dp_24"
         android:layout_height="@dimen/dp_24"
-        app:layout_constraintBottom_toBottomOf="@id/titleLabel"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/titleLabel" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/titleLabel"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/dp_12"
         android:textColor="@color/text_secondary"
         android:textSize="@dimen/sp_14"
-        app:layout_constraintHorizontal_bias="0"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/circle"
         app:layout_constraintTop_toTopOf="parent" />
@@ -30,7 +28,7 @@
         android:id="@+id/line"
         android:layout_width="@dimen/dp_1"
         android:layout_height="@dimen/dp_16"
-        android:layout_marginTop="@dimen/dp_4"
+        android:layout_marginVertical="@dimen/dp_4"
         android:background="@color/divider"
         app:layout_constraintEnd_toEndOf="@id/circle"
         app:layout_constraintStart_toStartOf="@id/circle"
