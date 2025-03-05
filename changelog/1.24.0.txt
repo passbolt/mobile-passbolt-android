@@ -1,12 +1,12 @@
 # Passbolt 1.24.0-35 Android app release notes
 
 ## Added
-- MOB-2164: Skip validation and decryption for unmodified metadata
+- MOB-2164: Skip validation and decryption for unmodified metadata for performance improvements
 
 ## Improved
-- MOB-1878: Drop usage of folders personal field
-- MOB-2521: Remove compat for Firefox
-- MOB-2507: Don't dismiss progress dialog on share process
+- MOB-1878: Drop usage of personal field on folders
+- MOB-2521: Clean up autofill compat mode config; Remove compat for Firefox
+- MOB-2507: Allow to not dismiss progress dialog on a flag; don't dismiss dialog on share process
 
 ## Fixed
 - MOB-2506: Fix permissions save button disappearing after going deeper in navigation
