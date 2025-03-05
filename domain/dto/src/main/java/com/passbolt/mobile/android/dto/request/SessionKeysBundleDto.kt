@@ -41,5 +41,5 @@ data class SessionKeyDto(
     @SerializedName("session_key")
     val sessionKey: String,
     @SerializedName("modified")
-    val modified: String
+    val modified: String?
 )

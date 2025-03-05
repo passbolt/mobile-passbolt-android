@@ -91,6 +91,7 @@ class MetadataSessionKeysInteractor(
                     .mapDecryptNotNull(privateKey, passphrase.passphrase)
                     .let {
                         Timber.d("Merging session keys cache")
+                        if (it.isNotEmpty()) sessionKeysMemoryCache.wasInitialCacheEmpty = false
                         sessionKeysBundleMerger.merge(it)
                     }
                     .let {
@@ -243,7 +244,7 @@ class MetadataSessionKeysInteractor(
     private suspend fun List<MetadataSessionKeysBundleModel>.mapDecryptNotNull(
         privateKey: String,
         passphrase: ByteArray
-    ) =
+    ): List<DecryptedMetadataSessionKeysBundleModel> =
         mapNotNull { metadataSessionKeysBundle ->
             when (val decryptedBundleResult = openPgp.decryptVerifyMessageArmored(
                 privateKey,
@@ -256,17 +257,19 @@ class MetadataSessionKeysInteractor(
                 }
                 is OpenPgpResult.Result -> {
                     Timber.d("Decrypted session keys bundle")
-                    val bundleModel = DecryptedMetadataSessionKeysBundleModel(
-                        id = metadataSessionKeysBundle.id,
-                        bundle = gson.fromJson(
-                            String(decryptedBundleResult.result),
-                            SessionKeysBundleDto::class.java
-                        ),
-                        created = metadataSessionKeysBundle.created,
-                        modified = metadataSessionKeysBundle.modified
+                    val parsedBundle = gson.fromJson(
+                        String(decryptedBundleResult.result),
+                        SessionKeysBundleDto::class.java
                     )
-                    if (sessionKeysBundleValidator.isValid(bundleModel.bundle)) {
-                        bundleModel
+                    if (sessionKeysBundleValidator.isValid(parsedBundle)) {
+                        DecryptedMetadataSessionKeysBundleModel(
+                            id = metadataSessionKeysBundle.id,
+                            bundle = parsedBundle.copy(
+                                sessionKeys = parsedBundle.sessionKeys.filterNot { it.modified == null }
+                            ),
+                            created = metadataSessionKeysBundle.created,
+                            modified = metadataSessionKeysBundle.modified
+                        )
                     } else {
                         Timber.e("Invalid session keys bundle: ${metadataSessionKeysBundle.id}")
                         null

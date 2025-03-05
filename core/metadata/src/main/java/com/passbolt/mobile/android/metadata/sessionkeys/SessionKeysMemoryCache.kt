@@ -35,7 +35,6 @@ class SessionKeysMemoryCache {
         set(value) {
             field = value
             isLocallyModified = false
-            wasInitialCacheEmpty = value.keys.isEmpty()
         }
 
     var isLocallyModified = false
