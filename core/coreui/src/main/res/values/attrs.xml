@@ -58,4 +58,8 @@
                 value="2" />
         </attr>
     </declare-styleable>
+    <declare-styleable name="LeadingSectionView">
+        <attr name="sectionTitle"
+            format="string" />
+    </declare-styleable>
 </resources>

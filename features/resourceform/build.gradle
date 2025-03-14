@@ -1,0 +1,26 @@
+plugins {
+    alias libs.plugins.android.library
+    alias libs.plugins.kotlin.gradle
+}
+
+dependencies {
+    implementation project(':authentication')
+    implementation project(':fulldatarefresh')
+    implementation project(':architecture')
+    implementation project(':coreui')
+
+    implementation libs.navigation.fragment
+    implementation libs.navigation.ui
+    implementation libs.koin
+}
+
+android {
+    namespace = "com.passbolt.mobile.android.feature.resourceform"
+    buildFeatures {
+        viewBinding true
+    }
+}
+
+kotlin {
+    jvmToolchain(17)
+}
