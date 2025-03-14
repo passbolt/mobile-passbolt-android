@@ -34,5 +34,6 @@
     <color name="icon_dark">#333333</color>
     <color name="scrollbars">#9F9F9F</color>
     <color name="icon_tint">#333333</color>
+    <color name="section_background">#F7F7F7</color>
 
 </resources>
