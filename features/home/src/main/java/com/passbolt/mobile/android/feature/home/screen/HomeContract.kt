@@ -92,7 +92,6 @@ interface HomeContract {
         fun showFolderMoreMenuIcon()
         fun hideFolderMoreMenuIcon()
         fun navigateToFolderDetails(childFolder: Folder.Child)
-        fun initSpeedDialFab(homeView: HomeDisplayViewModel)
         fun navigateToCreateFolder(folderId: String?)
         fun showFolderCreated(name: String)
         fun showContentNotAvailable()
@@ -113,6 +112,7 @@ interface HomeContract {
         fun showJsonResourceSchemaValidationError()
         fun showJsonSecretSchemaValidationError()
         fun navigateToOtpCreateMenu()
+        fun showCreateResourceMenu(homeView: HomeDisplayViewModel)
     }
 
     interface Presenter : DataRefreshViewReactiveContract.Presenter<View> {
@@ -175,5 +175,6 @@ interface HomeContract {
         fun totpDeletionConfirmed()
         fun expiryClick()
         fun menuAddTotpClick()
+        fun onCreateResourceClick()
     }
 }

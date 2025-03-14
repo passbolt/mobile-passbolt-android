@@ -42,7 +42,6 @@ import coil.ImageLoader
 import coil.request.ImageRequest
 import coil.transform.CircleCropTransformation
 import com.google.android.material.snackbar.Snackbar
-import com.leinardi.android.speeddial.SpeedDialView
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.ItemAdapter
@@ -59,6 +58,7 @@ import com.passbolt.mobile.android.core.navigation.deeplinks.NavDeepLinkProvider
 import com.passbolt.mobile.android.core.ui.initialsicon.InitialsIconGenerator
 import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
 import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
+import com.passbolt.mobile.android.createresourcemenu.CreateResourceMenuFragment
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
 import com.passbolt.mobile.android.feature.home.switchaccount.SwitchAccountBottomSheetFragment
 import com.passbolt.mobile.android.feature.otp.createotpmanually.CreateOtpFragment
@@ -78,7 +78,7 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
 class OtpFragment :
     BindingScopedAuthenticatedFragment<FragmentOtpBinding, OtpContract.View>(FragmentOtpBinding::inflate),
     OtpContract.View, SwitchAccountBottomSheetFragment.Listener, OtpMoreMenuFragment.Listener,
-    OtpUpdateMoreMenuFragment.Listener {
+    OtpUpdateMoreMenuFragment.Listener, CreateResourceMenuFragment.Listener {
 
     override val presenter: OtpContract.Presenter by inject()
     private val otpAdapter: ItemAdapter<OtpItem> by inject()
@@ -86,8 +86,6 @@ class OtpFragment :
     private val initialsIconGenerator: InitialsIconGenerator by inject()
     private val imageLoader: ImageLoader by inject()
     private val clipboardManager: ClipboardManager? by inject()
-    private val speedDialFabFactory: OtpSpeedDialFabFactory by inject()
-    private var speedDialView: SpeedDialView? = null
 
     private val authenticationResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -130,7 +128,6 @@ class OtpFragment :
         super.onViewCreated(view, savedInstanceState)
         setUpRecycler()
         setupListeners()
-        initSpeedDialFab()
         presenter.attach(this)
     }
 
@@ -145,20 +142,20 @@ class OtpFragment :
     }
 
     override fun onDestroyView() {
-        speedDialView = null
         presenter.detach()
         super.onDestroyView()
     }
 
-    private fun initSpeedDialFab() {
-        with(speedDialFabFactory) {
-            scanQrCodeClick = { presenter.scanOtpQrCodeClick() }
-            createManuallyClick = { presenter.createOtpManuallyClick() }
+    override fun createTotpClick() {
+        //            scanQrCodeClick = { presenter.scanOtpQrCodeClick() }
+        //            createManuallyClick = { presenter.createOtpManuallyClick() }
+        throw NotImplementedError("Not implemented")
+    }
 
-            speedDialView = getSpeedDialFab(requireContext(), binding.overlay)
-            speedDialView?.gone()
-            binding.otpRootLayout.addView(speedDialView)
-        }
+    override fun createPasswordClick() {
+        //            scanQrCodeClick = { presenter.scanOtpQrCodeClick() }
+        //            createManuallyClick = { presenter.createOtpManuallyClick() }
+        throw NotImplementedError("Not implemented")
     }
 
     private fun setUpRecycler() {
@@ -183,7 +180,15 @@ class OtpFragment :
             searchEditText.doAfterTextChanged {
                 presenter.searchTextChanged(it.toString())
             }
+            createResourceFab.setOnClickListener {
+                showCreateResourceMenu()
+            }
         }
+    }
+
+    private fun showCreateResourceMenu() {
+        CreateResourceMenuFragment.newInstance(homeDisplayViewModel = null)
+            .show(childFragmentManager, CreateResourceMenuFragment::class.java.name)
     }
 
     override fun hideRefreshProgress() {
@@ -441,11 +446,11 @@ class OtpFragment :
     }
 
     override fun showCreateButton() {
-        speedDialView?.visible()
+        binding.createResourceFab.visible()
     }
 
     override fun hideCreateButton() {
-        speedDialView?.gone()
+        binding.createResourceFab.gone()
     }
 
     override fun showJsonResourceSchemaValidationError() {

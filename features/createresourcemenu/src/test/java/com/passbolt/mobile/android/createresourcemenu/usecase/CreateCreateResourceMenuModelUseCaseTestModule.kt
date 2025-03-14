@@ -1,3 +1,10 @@
+package com.passbolt.mobile.android.createresourcemenu.usecase
+
+import com.passbolt.mobile.android.featureflags.usecase.GetFeatureFlagsUseCase
+import org.koin.dsl.module
+import org.mockito.kotlin.mock
+
+
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -21,22 +28,12 @@
  * @since v1.0
  */
 
-package com.passbolt.mobile.android.feature.otp.screen
+internal val mockGetFeatureFlagsUseCase = mock<GetFeatureFlagsUseCase>()
 
-import com.mikepenz.fastadapter.FastAdapter
-import com.mikepenz.fastadapter.adapters.ItemAdapter
-import com.passbolt.mobile.android.feature.otp.screen.recycler.OtpItem
-import org.koin.core.module.Module
-import org.koin.core.module.dsl.scopedOf
-import org.koin.dsl.bind
-
-fun Module.otpModule() {
-    scope<OtpFragment> {
-        scopedOf(::OtpPresenter) bind OtpContract.Presenter::class
-
-        scoped { FastAdapter.with(get<ItemAdapter<OtpItem>>()) }
-        scoped<ItemAdapter<OtpItem>> {
-            ItemAdapter.items()
-        }
+internal val testCreateCreateResourceMenuModelUseCaseModule = module {
+    factory {
+        CreateCreateResourceMenuModelUseCase(
+            getFeatureFlagsUseCase = mockGetFeatureFlagsUseCase
+        )
     }
 }

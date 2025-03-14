@@ -47,6 +47,7 @@ dependencies {
     implementation project(':accounts')
     implementation project(':preferences')
     implementation project(':jsonmodel')
+    implementation project(':createresourcemenu')
 
     implementation libs.navigation.fragment
     implementation libs.navigation.ui
@@ -58,7 +59,6 @@ dependencies {
     implementation libs.textdrawable
     implementation libs.coil.core
     implementation libs.coil.base
-    implementation libs.fab.speeddial
     implementation libs.room.core
     implementation libs.espresso.idling.resource
 

@@ -46,8 +46,8 @@ import com.passbolt.mobile.android.core.ui.initialsicon.InitialsIconGenerator
 import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
 import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
 import com.passbolt.mobile.android.createfolder.CreateFolderFragment
+import com.passbolt.mobile.android.createresourcemenu.CreateResourceMenuFragment
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
-import com.passbolt.mobile.android.feature.home.R
 import com.passbolt.mobile.android.feature.home.databinding.FragmentHomeBinding
 import com.passbolt.mobile.android.feature.home.filtersmenu.FiltersMenuFragment
 import com.passbolt.mobile.android.feature.home.screen.model.HeaderSectionConfiguration
@@ -113,7 +113,7 @@ class HomeFragment :
     BindingScopedAuthenticatedFragment<FragmentHomeBinding, HomeContract.View>(FragmentHomeBinding::inflate),
     HomeContract.View, ResourceMoreMenuFragment.Listener, SwitchAccountBottomSheetFragment.Listener,
     FiltersMenuFragment.Listener, FolderMoreMenuFragment.Listener, OtpCreateMoreMenuFragment.Listener,
-    OtpMoreMenuFragment.Listener, OtpUpdateMoreMenuFragment.Listener {
+    OtpMoreMenuFragment.Listener, OtpUpdateMoreMenuFragment.Listener, CreateResourceMenuFragment.Listener {
 
     override val presenter: HomeContract.Presenter by inject()
     override val appContext = AppContext.APP
@@ -140,11 +140,12 @@ class HomeFragment :
 
     private val snackbarAnchorView: View?
         get() {
-            val speedDialView: View = binding.rootLayout.findViewById(R.id.homeSpeedDialViewId)
-            return if (speedDialView.isVisible) {
-                speedDialView
-            } else {
-                null
+            return binding.createResourceFab.let {
+                if (it.isVisible) {
+                    it
+                } else {
+                    null
+                }
             }
         }
     private val fastAdapter: FastAdapter<GenericItem> by inject()
@@ -153,7 +154,6 @@ class HomeFragment :
     private val externalDeeplinkHandler: ExternalDeeplinkHandler by inject()
     private val arguments: HomeFragmentArgs by navArgs()
     private val navController by lifecycleAwareLazy { findNavController() }
-    private val speedDialFabFactory: HomeSpeedDialFabFactory by inject()
 
     private val folderCreatedListener = { _: String, bundle: Bundle ->
         val name = requireNotNull(bundle.getString(CreateFolderFragment.EXTRA_CREATED_FOLDER_NAME))
@@ -250,15 +250,16 @@ class HomeFragment :
         super.onPause()
     }
 
-    override fun initSpeedDialFab(homeView: HomeDisplayViewModel) {
-        with(speedDialFabFactory) {
-            addPasswordClick = { presenter.createResourceClick() }
-            addFolderClick = { presenter.createFolderClick() }
+    override fun createTotpClick() {
+        throw NotImplementedError("Not implemented")
+    }
 
-            binding.rootLayout.addView(
-                getSpeedDialFab(requireContext(), binding.overlay, homeView)
-            )
-        }
+    override fun createPasswordClick() {
+        presenter.createResourceClick()
+    }
+
+    override fun createFolderClick() {
+        presenter.createFolderClick()
     }
 
     override fun onDestroyView() {
@@ -375,10 +376,18 @@ class HomeFragment :
             backButton.setDebouncingOnClick {
                 navController.popBackStack()
             }
+            createResourceFab.setDebouncingOnClick {
+                presenter.onCreateResourceClick()
+            }
             closeButton.setDebouncingOnClick {
                 presenter.closeClick()
             }
         }
+    }
+
+    override fun showCreateResourceMenu(homeView: HomeDisplayViewModel) {
+        CreateResourceMenuFragment.newInstance(homeView)
+            .show(childFragmentManager, CreateResourceMenuFragment::class.java.name)
     }
 
     @Suppress("LongMethod") // will be refactored in Q2 - MOB-1029
@@ -669,11 +678,11 @@ class HomeFragment :
     }
 
     override fun hideAddButton() {
-        binding.rootLayout.findViewById<View>(R.id.homeSpeedDialViewId).gone()
+        binding.createResourceFab.gone()
     }
 
     override fun showAddButton() {
-        binding.rootLayout.findViewById<View>(R.id.homeSpeedDialViewId).visible()
+        binding.createResourceFab.visible()
     }
 
     override fun showDeleteConfirmationDialog() {

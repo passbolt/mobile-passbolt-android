@@ -60,11 +60,11 @@ import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesUs
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesWithGroupUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesWithTagUseCase
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
-import com.passbolt.mobile.android.jsonmodel.delegates.TotpSecret
 import com.passbolt.mobile.android.core.tags.usecase.db.GetLocalTagsUseCase
 import com.passbolt.mobile.android.feature.home.screen.model.HeaderSectionConfiguration
 import com.passbolt.mobile.android.feature.home.screen.model.SearchInputEndIconMode
 import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
+import com.passbolt.mobile.android.jsonmodel.delegates.TotpSecret
 import com.passbolt.mobile.android.mappers.HomeDisplayViewMapper
 import com.passbolt.mobile.android.serializers.jsonschema.SchemaEntity
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType
@@ -171,7 +171,6 @@ class HomePresenter(
         this.showSuggestedModel = showSuggestedModel
         this.hasPreviousBackEntry = hasPreviousEntry
 
-        view?.initSpeedDialFab(homeView)
         view?.apply {
             hideAddButton()
             processSearchHint(this)
@@ -1031,5 +1030,9 @@ class HomePresenter(
             )
             view?.hideProgress()
         }
+    }
+
+    override fun onCreateResourceClick() {
+        view?.showCreateResourceMenu(homeView)
     }
 }

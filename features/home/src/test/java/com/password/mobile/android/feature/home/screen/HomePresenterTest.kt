@@ -50,7 +50,6 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
 import java.time.ZonedDateTime
-import java.util.EnumSet
 
 @ExperimentalCoroutinesApi
 class HomePresenterTest : KoinTest {
@@ -177,7 +176,6 @@ class HomePresenterTest : KoinTest {
         verify(view).displaySearchAvatar(null)
         verify(view).hideRefreshProgress()
         verify(view).hideFolderMoreMenuIcon()
-        verify(view).initSpeedDialFab(HomeDisplayViewModel.AllItems)
         verifyNoMoreInteractions(view)
     }
 

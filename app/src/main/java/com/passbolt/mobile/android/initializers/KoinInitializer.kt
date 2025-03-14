@@ -33,6 +33,7 @@ import com.passbolt.mobile.android.core.security.securityModule
 import com.passbolt.mobile.android.core.tags.tagsModule
 import com.passbolt.mobile.android.core.users.usersModule
 import com.passbolt.mobile.android.createFolderModule
+import com.passbolt.mobile.android.createresourcemenu.createResourceMenuModule
 import com.passbolt.mobile.android.database.databaseModule
 import com.passbolt.mobile.android.encryptedstorage.encryptedStorageModule
 import com.passbolt.mobile.android.feature.accountdetails.accountDetailsModule
@@ -173,7 +174,8 @@ class KoinInitializer : Initializer<Unit> {
             authenticationCoreModule,
             preferencesModule,
             passphraseMemoryCacheModule,
-            jsonModelModule
+            jsonModelModule,
+            createResourceMenuModule
         )
     }
 }

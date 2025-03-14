@@ -558,6 +558,11 @@
     <string name="password_generator_known_strength_format">%s (entropy: %.2f bits)</string>
     <string name="password_generator_unknown_strength_format">Strength (entropy: n/a bits)</string>
 
+    <string name="create_resource_menu_create_a_resource">Create a resource</string>
+    <string name="create_resource_menu_create_totp">TOTP</string>
+    <string name="create_resource_menu_create_password">Password</string>
+    <string name="create_resource_menu_create_folder">Folder</string>
+
     <!--
     arrays can be inconsistent when in other languages
     index / size is not used in code

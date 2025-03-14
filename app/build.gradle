@@ -191,6 +191,7 @@ dependencies {
     implementation project(':preferences')
     implementation project(':passphrasememorycache')
     implementation project(':jsonmodel')
+    implementation project(':createresourcemenu')
 
     debugImplementation libs.leakcanary
 
@@ -214,5 +215,4 @@ dependencies {
     androidTestImplementation libs.koin.test.junit
     androidTestImplementation libs.android.test.intents
     androidTestImplementation libs.mockito.android
-    androidTestImplementation libs.fab.speeddial
 }
