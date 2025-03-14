@@ -83,6 +83,7 @@ featureModule "otpcreatemoremenu"
 featureModule "scanotp"
 featureModule "otpmoremenu"
 featureModule "createotpmanually"
+featureModule "createresourcemenu"
 
 serviceModule "passboltapi"
 serviceModule "linksapi"

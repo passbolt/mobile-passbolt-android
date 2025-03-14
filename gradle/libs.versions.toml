@@ -67,7 +67,6 @@ balloon = "1.5.4"
 rootbeer = "0.1.1"
 playStorePublisher = "3.7.0"
 inAppUpdate = "2.1.0"
-fabSpeedDial = "3.3.0"
 inAppReview = "2.0.1"
 okio = "3.5.0"
 otp = "2.4.0"
@@ -155,7 +154,6 @@ inappupdate-core = { group = "com.google.android.play", name = "app-update", ver
 inappupdate-ktx = { group = "com.google.android.play", name = "app-update-ktx", version.ref = "inAppUpdate" }
 inappreview-core = { group = "com.google.android.play", name = "review", version.ref = "inAppReview" }
 inappreview-ktx = { group = "com.google.android.play", name = "review-ktx", version.ref = "inAppReview" }
-fab-speeddial = { group = "com.leinardi.android", name = "speed-dial", version.ref = "fabSpeedDial" }
 okio = { group = "com.squareup.okio", name = "okio", version.ref = "okio" }
 otp = { group = "dev.turingcomplete", name = "kotlin-onetimepassword", version.ref = "otp" }
 apache-commons-codec = { group = "commons-codec", name = "commons-codec", version.ref = "apacheCommonsCodec" }

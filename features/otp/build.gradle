@@ -47,12 +47,12 @@ dependencies {
     implementation project(':serializers')
     implementation project(':accounts')
     implementation project(':jsonmodel')
+    implementation project(':createresourcemenu')
 
     implementation libs.navigation.fragment
     implementation libs.navigation.ui
     implementation libs.koin
     implementation libs.swiperefresh
-    implementation libs.fab.speeddial
     implementation libs.fastadapter.core
     implementation libs.fastadapter.binding
     implementation libs.fastadapter.diff

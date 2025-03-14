@@ -1,3 +1,8 @@
+package com.passbolt.mobile.android.createresourcemenu
+
+import com.passbolt.mobile.android.core.mvp.BaseContract
+import com.passbolt.mobile.android.ui.HomeDisplayViewModel
+
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -21,22 +26,15 @@
  * @since v1.0
  */
 
-package com.passbolt.mobile.android.feature.otp.screen
+interface CreateResourceMenuContract {
 
-import com.mikepenz.fastadapter.FastAdapter
-import com.mikepenz.fastadapter.adapters.ItemAdapter
-import com.passbolt.mobile.android.feature.otp.screen.recycler.OtpItem
-import org.koin.core.module.Module
-import org.koin.core.module.dsl.scopedOf
-import org.koin.dsl.bind
+    interface View : BaseContract.View {
+        fun showTotpButton()
+        fun showFoldersButton()
+        fun hideMenu()
+    }
 
-fun Module.otpModule() {
-    scope<OtpFragment> {
-        scopedOf(::OtpPresenter) bind OtpContract.Presenter::class
-
-        scoped { FastAdapter.with(get<ItemAdapter<OtpItem>>()) }
-        scoped<ItemAdapter<OtpItem>> {
-            ItemAdapter.items()
-        }
+    interface Presenter : BaseContract.Presenter<View> {
+        fun argsRetrieved(homeDisplayViewModel: HomeDisplayViewModel?)
     }
 }
