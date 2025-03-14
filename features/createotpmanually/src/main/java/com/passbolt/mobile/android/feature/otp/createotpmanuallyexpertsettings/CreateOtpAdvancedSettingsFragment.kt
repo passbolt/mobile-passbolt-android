@@ -35,8 +35,8 @@ import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
 import com.passbolt.mobile.android.core.ui.textinputfield.StatefulInput
 import com.passbolt.mobile.android.feature.createotpmanually.databinding.FragmentCreateOtpAdvancedSettingsBinding
-import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
 import com.passbolt.mobile.android.ui.OtpAdvancedSettingsModel
+import com.passbolt.mobile.android.ui.OtpParseResult
 import org.koin.android.ext.android.inject
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
@@ -59,7 +59,7 @@ class CreateOtpAdvancedSettingsFragment :
     private fun setupDropdowns() {
         with(binding) {
             totpPeriodInput.setInputType(InputType.TYPE_CLASS_NUMBER)
-            algorithmDropdown.items = OtpParseResult.OtpQr.Algorithm.values().map { it.toString() }
+            algorithmDropdown.items = OtpParseResult.OtpQr.Algorithm.entries.map { it.toString() }
             digitsDropdown.items = OtpParseResult.OtpQr.digitsRange.map { it.toString() }
         }
     }

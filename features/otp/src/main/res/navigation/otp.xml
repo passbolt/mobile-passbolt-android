@@ -41,12 +41,12 @@
         tools:layout="@layout/fragment_create_otp_success">
         <argument
             android:name="scannedTotp"
-            app:argType="com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult$OtpQr$TotpQr" />
+            app:argType="com.passbolt.mobile.android.ui.OtpParseResult$OtpQr$TotpQr" />
     </fragment>
 
     <include app:graph="@navigation/resource_picker" />
 
     <include app:graph="@navigation/scan_otp" />
 
-    <include app:graph="@navigation/createotpmanually"/>
+    <include app:graph="@navigation/createotpmanually" />
 </navigation>

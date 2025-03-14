@@ -25,7 +25,7 @@ package com.passbolt.mobile.android.feature.otp.scanotp
 
 import com.passbolt.mobile.android.core.mvp.BaseContract
 import com.passbolt.mobile.android.core.qrscan.analyzer.BarcodeScanResult
-import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
+import com.passbolt.mobile.android.ui.OtpParseResult
 import kotlinx.coroutines.flow.StateFlow
 
 interface ScanOtpContract {

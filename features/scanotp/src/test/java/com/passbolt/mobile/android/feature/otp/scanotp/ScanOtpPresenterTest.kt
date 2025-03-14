@@ -1,10 +1,10 @@
 package com.passbolt.mobile.android.feature.otp.scanotp
 
 import com.passbolt.mobile.android.core.qrscan.analyzer.BarcodeScanResult
-import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
-import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult.UserResolvableError.ErrorType.MULTIPLE_BARCODES
-import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult.UserResolvableError.ErrorType.NOT_A_OTP_QR
-import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult.UserResolvableError.ErrorType.NO_BARCODES_IN_RANGE
+import com.passbolt.mobile.android.ui.OtpParseResult
+import com.passbolt.mobile.android.ui.OtpParseResult.UserResolvableError.ErrorType.MULTIPLE_BARCODES
+import com.passbolt.mobile.android.ui.OtpParseResult.UserResolvableError.ErrorType.NOT_A_OTP_QR
+import com.passbolt.mobile.android.ui.OtpParseResult.UserResolvableError.ErrorType.NO_BARCODES_IN_RANGE
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.runTest

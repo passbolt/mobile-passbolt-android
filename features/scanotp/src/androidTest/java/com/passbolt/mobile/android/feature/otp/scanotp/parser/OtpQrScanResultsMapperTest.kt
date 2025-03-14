@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.feature.otp.scanotp.parser
 
 import com.google.common.truth.Truth.assertThat
 import com.passbolt.mobile.android.core.qrscan.analyzer.BarcodeScanResult
+import com.passbolt.mobile.android.ui.OtpParseResult
 import org.junit.Test
 import java.io.IOException
 

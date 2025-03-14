@@ -8,6 +8,7 @@ dependencies {
     implementation project(':fulldatarefresh')
     implementation project(':architecture')
     implementation project(':coreui')
+    implementation project(':ui')
 
     implementation libs.navigation.fragment
     implementation libs.navigation.ui

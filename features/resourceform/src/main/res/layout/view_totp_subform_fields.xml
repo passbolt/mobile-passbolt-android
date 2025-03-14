@@ -8,26 +8,26 @@
     tools:parentTag="android.widget.LinearLayout">
 
     <com.passbolt.mobile.android.core.ui.textinputfield.TextInputView
-        android:id="@+id/uriInput"
+        android:id="@+id/secretInput"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:inputHint="@string/resource_form_enter_uri"
-        app:inputTitle="@string/resource_form_uri" />
+        app:inputHint="@string/resource_form_totp_secret"
+        app:inputTitle="@string/resource_form_totp_secret" />
 
     <com.passbolt.mobile.android.core.ui.textinputfield.TextInputView
-        android:id="@+id/usernameInput"
+        android:id="@+id/urlInput"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dp_16"
-        app:inputHint="@string/resource_form_enter_username"
-        app:inputTitle="@string/resource_form_username" />
+        app:inputHint="@string/resource_form_totp_url"
+        app:inputTitle="@string/resource_form_totp_url" />
 
-    <com.passbolt.mobile.android.core.ui.textinputfield.PasswordGenerateInputView
-        android:id="@+id/passwordInput"
+    <com.passbolt.mobile.android.core.ui.menu.OpenableSettingView
+        android:id="@+id/moreTotpSettings"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dp_16"
-        app:inputHint="@string/resource_form_enter_password"
-        app:inputTitle="@string/resource_form_password" />
+        app:icon="@drawable/ic_cog"
+        app:name="@string/resource_form_totp_more_settings" />
 
 </merge>

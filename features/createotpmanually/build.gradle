@@ -25,7 +25,6 @@ dependencies {
     implementation project(':localization')
     implementation project(':resourcepicker')
     implementation project(':navigation')
-    implementation project(':scanotp')
     implementation project(':secrets')
     implementation project(':resources')
     implementation project(':resourcetypes')
