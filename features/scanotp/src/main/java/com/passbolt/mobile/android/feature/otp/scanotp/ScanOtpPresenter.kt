@@ -25,8 +25,8 @@ package com.passbolt.mobile.android.feature.otp.scanotp
 
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.qrscan.CameraInformationProvider
-import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
 import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpQrParser
+import com.passbolt.mobile.android.ui.OtpParseResult
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren

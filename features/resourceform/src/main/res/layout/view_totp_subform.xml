@@ -8,9 +8,9 @@
     tools:parentTag="android.widget.LinearLayout">
 
     <com.passbolt.mobile.android.core.ui.sectionview.LeadingSectionView
-        android:id="@+id/passwordSectionView"
+        android:id="@+id/totpSectionView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:sectionTitle="@string/resource_form_password" />
+        app:sectionTitle="@string/resource_form_totp" />
 
 </merge>

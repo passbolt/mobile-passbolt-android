@@ -311,6 +311,11 @@
     <string name="resource_form_enter_uri">Enter URI</string>
     <string name="resource_form_username">Username</string>
     <string name="resource_form_enter_username">Enter username</string>
+    <string name="resource_form_totp">TOTP</string>
+    <string name="resource_form_totp_secret">Secret</string>
+    <string name="resource_form_totp_url">URL (Issuer)</string>
+    <string name="resource_form_totp_more_settings">More TOTP settings</string>
+    <string name="resource_form_totp_settings">TOTP settings</string>
 
     <string name="settings_app_settings">App settings</string>
     <string name="settings_accounts">Accounts</string>
