@@ -316,6 +316,11 @@
     <string name="resource_form_totp_url">URL (Issuer)</string>
     <string name="resource_form_totp_more_settings">More TOTP settings</string>
     <string name="resource_form_totp_settings">TOTP settings</string>
+    <string name="resource_form_description">Description</string>
+    <string name="resource_form_enter_description">Enter description</string>
+    <string name="resource_form_metadata_description">Metadata description</string>
+    <string name="resource_form_secret_description">Secret description</string>
+    <string name="resource_form_metadata_description_info">If you want the description to be part of the secret, use note instead.</string>
 
     <string name="settings_app_settings">App settings</string>
     <string name="settings_accounts">Accounts</string>
