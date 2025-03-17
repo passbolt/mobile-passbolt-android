@@ -78,7 +78,7 @@ class ResourceTagsPresenter(
         }
     }
 
-    override fun refreshAction() {
+    override fun refreshSuccessAction() {
         showTags()
     }
 

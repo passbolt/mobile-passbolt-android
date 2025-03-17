@@ -132,7 +132,7 @@ class ResourceDetailsPresenter(
         updateOtpsCounterTime()
     }
 
-    override fun refreshAction() {
+    override fun refreshSuccessAction() {
         getResourcesAndPermissions(resourceId)
     }
 

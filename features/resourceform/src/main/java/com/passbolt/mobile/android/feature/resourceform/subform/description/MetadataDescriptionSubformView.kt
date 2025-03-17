@@ -5,7 +5,7 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.LinearLayout
 import com.passbolt.mobile.android.feature.resourceform.R
-import com.passbolt.mobile.android.feature.resourceform.databinding.ViewDescriptionSubformBinding
+import com.passbolt.mobile.android.feature.resourceform.databinding.ViewMetadataDescriptionSubformBinding
 
 /**
  * Passbolt - Open source password manager for teams
@@ -36,7 +36,7 @@ class MetadataDescriptionSubformView @JvmOverloads constructor(
     defStyle: Int = 0
 ) : LinearLayout(context, attrs, defStyle) {
 
-    private val binding = ViewDescriptionSubformBinding.inflate(LayoutInflater.from(context), this)
+    private val binding = ViewMetadataDescriptionSubformBinding.inflate(LayoutInflater.from(context), this)
 
     init {
         orientation = VERTICAL

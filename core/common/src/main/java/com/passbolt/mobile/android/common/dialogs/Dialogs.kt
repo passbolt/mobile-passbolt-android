@@ -195,7 +195,7 @@ fun qrCodesInformationDialog(context: Context) =
         .create()
 
 fun howToCreateAccountDialog(context: Context) =
-    AlertDialog.Builder(context, com.passbolt.mobile.android.core.ui.R.style.AlertDialogTheme)
+    AlertDialog.Builder(context)
         .setTitle(LocalizationR.string.welcome_create_account_dialog_title)
         .setMessage(LocalizationR.string.welcome_create_account_dialog_message)
         .setPositiveButton(LocalizationR.string.got_it) { _, _ -> }

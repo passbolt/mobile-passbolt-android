@@ -5,7 +5,6 @@ plugins {
 
 dependencies {
     implementation project(':localization')
-    implementation project(':coreui')
     implementation project(':architecture')
 
     implementation libs.androidx.core

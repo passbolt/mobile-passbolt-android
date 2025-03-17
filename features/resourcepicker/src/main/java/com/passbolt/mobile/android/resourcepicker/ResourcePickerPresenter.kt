@@ -81,7 +81,7 @@ class ResourcePickerPresenter(
         this.suggestionUri = suggestionUri
     }
 
-    override fun refreshAction() {
+    override fun refreshSuccessAction() {
         coroutineScope.launch {
             showResourcesFromDatabase()
             if (::pickedResource.isInitialized) {

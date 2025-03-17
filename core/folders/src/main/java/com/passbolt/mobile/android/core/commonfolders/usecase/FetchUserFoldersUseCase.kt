@@ -63,7 +63,8 @@ class FetchUserFoldersUseCase(
                 }
             }
 
-        data class Success(val foldersWithAttributes: List<FolderModelWithAttributes>) : Output()
+        data class Success(val foldersWithAttributes: List<FolderModelWithAttributes>) :
+            Output()
 
         data class Failure(val result: NetworkResult.Failure<*>) : Output()
     }

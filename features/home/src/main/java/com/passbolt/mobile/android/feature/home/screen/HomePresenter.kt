@@ -171,9 +171,8 @@ class HomePresenter(
         this.showSuggestedModel = showSuggestedModel
         this.hasPreviousBackEntry = hasPreviousEntry
 
-        view?.apply {
-            hideAddButton()
-            processSearchHint(this)
+        view?.let {
+            processSearchHint(it)
         }
 
         showActiveHomeView()
@@ -245,10 +244,14 @@ class HomePresenter(
         }
     }
 
-    override fun refreshAction() {
+    override fun refreshStartAction() {
+        view?.hideCreateButton()
+    }
+
+    override fun refreshSuccessAction() {
         coroutineScope.launch {
-            if (shouldShowAddButton()) {
-                view?.showAddButton()
+            if (shouldShowCreateButton()) {
+                view?.showCreateButton()
             }
             refreshInProgress = false
             showActiveHomeView()
@@ -273,7 +276,7 @@ class HomePresenter(
         }
     }
 
-    private suspend fun shouldShowAddButton(): Boolean {
+    private suspend fun shouldShowCreateButton(): Boolean {
         homeView.let {
             // currently do not show add button on tags and groups
             if (it is HomeDisplayViewModel.Tags || it is HomeDisplayViewModel.Groups) {
@@ -624,7 +627,7 @@ class HomePresenter(
     override fun refreshSwipe() {
         refreshInProgress = true
         view?.apply {
-            hideAddButton()
+            hideCreateButton()
             fullDataRefreshExecutor.performFullDataRefresh()
         }
     }
@@ -843,6 +846,15 @@ class HomePresenter(
 
     override fun createResourceClick() {
         view?.navigateToCreateResource(
+            when (val currentHomeView = homeView) {
+                is HomeDisplayViewModel.Folders -> currentHomeView.activeFolder.folderId
+                else -> null
+            }
+        )
+    }
+
+    override fun createTotpClick() {
+        view?.navigateToCreateTotp(
             when (val currentHomeView = homeView) {
                 is HomeDisplayViewModel.Folders -> currentHomeView.activeFolder.folderId
                 else -> null

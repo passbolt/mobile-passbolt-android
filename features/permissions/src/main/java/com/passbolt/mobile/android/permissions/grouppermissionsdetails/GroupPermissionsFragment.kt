@@ -17,6 +17,8 @@ import com.passbolt.mobile.android.common.dialogs.permissionDeletionConfirmation
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
 import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.extension.visible
+import com.passbolt.mobile.android.core.ui.extensions.getPermissionIcon
+import com.passbolt.mobile.android.core.ui.extensions.getPermissionTextValue
 import com.passbolt.mobile.android.core.ui.recyclerview.OverlappingItemDecorator
 import com.passbolt.mobile.android.core.ui.recyclerview.OverlappingItemDecorator.Overlap
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
@@ -101,9 +103,9 @@ class GroupPermissionsFragment :
     override fun showPermission(permission: ResourcePermission) {
         with(binding.permissionLabel) {
             visible()
-            text = ResourcePermission.getPermissionTextValue(context, permission)
+            text = permission.getPermissionTextValue(context)
             setCompoundDrawablesWithIntrinsicBounds(
-                ResourcePermission.getPermissionIcon(context, permission),
+                permission.getPermissionIcon(context),
                 null,
                 null,
                 null

@@ -192,6 +192,7 @@ dependencies {
     implementation project(':passphrasememorycache')
     implementation project(':jsonmodel')
     implementation project(':createresourcemenu')
+    implementation project(':resourceform')
 
     debugImplementation libs.leakcanary
 

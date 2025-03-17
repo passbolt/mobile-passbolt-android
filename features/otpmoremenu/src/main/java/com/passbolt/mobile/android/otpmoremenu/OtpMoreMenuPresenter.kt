@@ -36,7 +36,7 @@ class OtpMoreMenuPresenter(
         super<DataRefreshViewReactivePresenter>.detach()
     }
 
-    override fun refreshAction() {
+    override fun refreshSuccessAction() {
         createMenuModelIdlingResource.setIdle(false)
         scope.launch {
             menuModel = createOtpMoreMenuModelUseCase.execute(

@@ -13,6 +13,8 @@ import com.passbolt.mobile.android.core.UiConstants
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
 import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.extension.visible
+import com.passbolt.mobile.android.core.ui.extensions.getPermissionIcon
+import com.passbolt.mobile.android.core.ui.extensions.getPermissionTextValue
 import com.passbolt.mobile.android.core.ui.formatter.FingerprintFormatter
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
 import com.passbolt.mobile.android.feature.permissions.databinding.FragmentUserPermissionsBinding
@@ -57,9 +59,9 @@ class UserPermissionsFragment :
     override fun showPermission(permission: ResourcePermission) {
         with(binding.permissionLabel) {
             visible()
-            text = ResourcePermission.getPermissionTextValue(context, permission)
+            text = permission.getPermissionTextValue(context)
             setCompoundDrawablesWithIntrinsicBounds(
-                ResourcePermission.getPermissionIcon(context, permission),
+                permission.getPermissionIcon(context),
                 null,
                 null,
                 null

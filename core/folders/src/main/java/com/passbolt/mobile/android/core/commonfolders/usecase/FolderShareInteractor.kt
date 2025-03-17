@@ -37,7 +37,10 @@ class FolderShareInteractor(
     private val getLocalFolderPermissionsUseCase: GetLocalFolderPermissionsUseCase
 ) {
 
-    suspend fun shareFolder(folderId: String, permissions: List<PermissionModelUi>): Output {
+    suspend fun shareFolder(
+        folderId: String,
+        permissions: List<PermissionModelUi>
+    ): Output {
         val existingPermissions =
             getLocalFolderPermissionsUseCase.execute(GetLocalFolderPermissionsUseCase.Input(folderId))
                 .permissions

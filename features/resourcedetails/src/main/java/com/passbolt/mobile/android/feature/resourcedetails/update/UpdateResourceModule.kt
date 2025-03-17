@@ -52,7 +52,6 @@ fun Module.updateResourceModule() {
             )
         }
 
-        scopedOf(::EntropyViewMapper)
         scopedOf(::ViewProvider)
     }
     factoryOf(::NewFieldsModelCreator)

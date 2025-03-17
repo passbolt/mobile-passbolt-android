@@ -38,6 +38,7 @@ interface PermissionRecipientsContract {
             alreadyAddedListWidth: Int,
             alreadyAddedItemWidth: Float
         )
+
         fun searchTextChange(searchText: String)
         fun searchClearClick()
         fun saveButtonClick()

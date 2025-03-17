@@ -1,11 +1,11 @@
-package com.passbolt.mobile.android.feature.resourceform.subform.description
+package com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.advanced
 
-import android.content.Context
-import android.util.AttributeSet
-import android.view.LayoutInflater
-import android.widget.LinearLayout
-import com.passbolt.mobile.android.feature.resourceform.R
-import com.passbolt.mobile.android.feature.resourceform.databinding.ViewDescriptionSubformBinding
+import android.os.Bundle
+import android.view.View
+import com.passbolt.mobile.android.core.extension.initDefaultToolbar
+import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
+import com.passbolt.mobile.android.feature.resourceform.databinding.FragmentTotpAdvancedSettingsFormBinding
+import org.koin.android.ext.android.inject
 
 /**
  * Passbolt - Open source password manager for teams
@@ -29,21 +29,16 @@ import com.passbolt.mobile.android.feature.resourceform.databinding.ViewDescript
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+class TotpAdvancedSettingsFormFragment :
+    BindingScopedFragment<FragmentTotpAdvancedSettingsFormBinding>(
+        FragmentTotpAdvancedSettingsFormBinding::inflate
+    ), TotpAdvancedSettingsFormContract.View {
 
-class SecretDescriptionSubformView @JvmOverloads constructor(
-    context: Context,
-    attrs: AttributeSet? = null,
-    defStyle: Int = 0
-) : LinearLayout(context, attrs, defStyle) {
+    private val presenter: TotpAdvancedSettingsFormContract.Presenter by inject()
 
-    private val binding = ViewDescriptionSubformBinding.inflate(LayoutInflater.from(context), this)
-
-    init {
-        orientation = VERTICAL
-        LayoutInflater.from(context).inflate(
-            R.layout.view_secret_description_subform_fields,
-            binding.descriptionSectionView.backgroundContainer,
-            true
-        )
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        initDefaultToolbar(binding.toolbar)
+        presenter.attach(this)
     }
 }

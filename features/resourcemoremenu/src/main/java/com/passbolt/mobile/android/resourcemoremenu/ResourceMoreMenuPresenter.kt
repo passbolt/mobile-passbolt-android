@@ -36,7 +36,7 @@ class ResourceMoreMenuPresenter(
         this.resourceId = resourceId
     }
 
-    override fun refreshAction() {
+    override fun refreshSuccessAction() {
         menuModelIdlingResource.setIdle(false)
         coroutineScope.launch {
             try {

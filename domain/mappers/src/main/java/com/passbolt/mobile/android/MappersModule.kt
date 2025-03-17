@@ -25,6 +25,7 @@ package com.passbolt.mobile.android
 
 import com.passbolt.mobile.android.mappers.AccountModelMapper
 import com.passbolt.mobile.android.mappers.CreateResourceMapper
+import com.passbolt.mobile.android.mappers.EntropyViewMapper
 import com.passbolt.mobile.android.mappers.FolderModelMapper
 import com.passbolt.mobile.android.mappers.GroupsModelMapper
 import com.passbolt.mobile.android.mappers.HomeDisplayViewMapper
@@ -73,4 +74,5 @@ val mappersModule = module {
     singleOf(::PasswordExpiryMapper)
     singleOf(::PasswordPoliciesMapper)
     singleOf(::MetadataMapper)
+    singleOf(::EntropyViewMapper)
 }

@@ -18,15 +18,16 @@ import com.passbolt.mobile.android.core.extension.getRootView
 import com.passbolt.mobile.android.core.extension.showSnackbar
 import com.passbolt.mobile.android.core.security.runtimeauth.RuntimeAuthenticatedFlag
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedActivity
-import com.passbolt.mobile.android.feature.main.mainscreen.encouragements.chromenativeautofill.EncourageChromeNativeAutofillServiceDialog
 import com.passbolt.mobile.android.feature.main.databinding.ActivityMainBinding
 import com.passbolt.mobile.android.feature.main.mainscreen.bottomnavigation.MainBottomNavigationModel
+import com.passbolt.mobile.android.feature.main.mainscreen.encouragements.chromenativeautofill.EncourageChromeNativeAutofillServiceDialog
 import org.koin.android.ext.android.inject
 import timber.log.Timber
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
 import com.passbolt.mobile.android.feature.createotpmanually.R as CreateOtpManuallyR
 import com.passbolt.mobile.android.feature.otp.R as OtpR
+import com.passbolt.mobile.android.feature.resourceform.R as ResourceFormR
 import com.passbolt.mobile.android.feature.resourcepicker.R as ResourcePickerR
 import com.passbolt.mobile.android.feature.scanotp.R as ScanOtpR
 
@@ -158,7 +159,8 @@ class MainActivity :
             CreateOtpManuallyR.id.createOtpManuallyFragment,
             CreateOtpManuallyR.id.createOtpAdvancedSettingsFragment,
             OtpR.id.scanOtpSuccessFragment,
-            ResourcePickerR.id.resourcePickerFragment
+            ResourcePickerR.id.resourcePickerFragment,
+            ResourceFormR.id.resourceFormFragment
         )
     }
 }

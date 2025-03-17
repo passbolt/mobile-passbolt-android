@@ -319,8 +319,21 @@
     <string name="resource_form_description">Description</string>
     <string name="resource_form_enter_description">Enter description</string>
     <string name="resource_form_metadata_description">Metadata description</string>
-    <string name="resource_form_secret_description">Secret description</string>
+    <string name="resource_form_secure_note">Secure note</string>
+    <string name="resource_form_secure_note_content">Content</string>
+    <string name="resource_form_enter_note">Content</string>
+    <string name="resource_form_secure_note_info">The secure note is part of the secret if you want to be able to search this content, use metadata description.</string>
     <string name="resource_form_metadata_description_info">If you want the description to be part of the secret, use note instead.</string>
+    <string name="resource_form_resource_name">Resource name</string>
+    <string name="resource_form_name">Name</string>
+    <string name="resource_form_create_password">Create a password</string>
+    <string name="resource_form_create_totp">Create a TOTP</string>
+    <string name="resource_form_view_advanced_settings">View advanced settings</string>
+    <string name="resource_form_view_additional_secrets">Additional secrets</string>
+    <string name="resource_form_view_metadata">Metadata</string>
+    <string name="resource_form_view_additional_uris">Additional URIs</string>
+    <string name="resource_form_create">Create</string>
+    <string name="resource_form_save">Save</string>
 
     <string name="settings_app_settings">App settings</string>
     <string name="settings_accounts">Accounts</string>

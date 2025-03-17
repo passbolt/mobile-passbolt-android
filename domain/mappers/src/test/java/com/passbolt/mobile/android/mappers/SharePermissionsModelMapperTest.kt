@@ -126,7 +126,8 @@ class SharePermissionsModelMapperTest : KoinTest {
     fun `share and simulate permissions should be mapped correct for updated recipient`() {
         val recipients = List(EXISTING_PERMISSIONS.size) {
             if (it == 0) {
-                val firstMockPermission = EXISTING_PERMISSIONS[0] as PermissionModelUi.GroupPermissionModel
+                val firstMockPermission =
+                    EXISTING_PERMISSIONS[0] as PermissionModelUi.GroupPermissionModel
                 PermissionModelUi.GroupPermissionModel(
                     ResourcePermission.OWNER,
                     firstMockPermission.permissionId,

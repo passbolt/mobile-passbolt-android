@@ -67,7 +67,7 @@ class OtpMoreMenuTest : KoinTest {
         presenter.apply {
             attach(this@OtpMoreMenuTest.view)
             argsRetrieved("resourceId", canShowTotp = true)
-            refreshAction()
+            refreshSuccessAction()
         }
 
         verify(view).showTitle("title")
@@ -92,7 +92,7 @@ class OtpMoreMenuTest : KoinTest {
         presenter.apply {
             attach(this@OtpMoreMenuTest.view)
             argsRetrieved("resourceId", canShowTotp = false)
-            refreshAction()
+            refreshSuccessAction()
         }
 
         verify(view).showTitle("title")
