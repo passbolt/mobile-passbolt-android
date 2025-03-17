@@ -112,11 +112,23 @@ class PermissionsModelMapper(
             }
             .toList()
 
-    fun map(model: GroupModel, permission: ResourcePermission, permissionId: String) =
+    fun map(
+        model: GroupModel,
+        permission: ResourcePermission,
+        permissionId: String
+    ) =
         PermissionModelUi.GroupPermissionModel(permission, permissionId, model)
 
-    fun map(model: UserModel, permission: ResourcePermission, permissionId: String) =
-        PermissionModelUi.UserPermissionModel(permission, permissionId, usersModelMapper.mapToUserWithAvatar(model))
+    fun map(
+        model: UserModel,
+        permission: ResourcePermission,
+        permissionId: String
+    ) =
+        PermissionModelUi.UserPermissionModel(
+            permission,
+            permissionId,
+            usersModelMapper.mapToUserWithAvatar(model)
+        )
 
     fun mapToUserPermission(permission: PermissionDto): PermissionModel.UserPermissionModel =
         PermissionModel.UserPermissionModel(

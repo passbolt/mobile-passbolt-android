@@ -1,10 +1,12 @@
 plugins {
     alias libs.plugins.android.library
     alias libs.plugins.kotlin.gradle
+    alias libs.plugins.kotlin.parcelize
 }
 
 dependencies {
     implementation project(':localization')
+    implementation project(':ui')
 
     implementation libs.androidx.core
     implementation libs.appcompat

@@ -66,6 +66,7 @@ import com.passbolt.mobile.android.feature.otp.databinding.FragmentOtpBinding
 import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpFragment
 import com.passbolt.mobile.android.feature.otp.scanotpsuccess.ScanOtpSuccessFragment
 import com.passbolt.mobile.android.feature.otp.screen.recycler.OtpItem
+import com.passbolt.mobile.android.feature.resourceform.main.Mode
 import com.passbolt.mobile.android.otpeditmoremenu.OtpUpdateMoreMenuFragment
 import com.passbolt.mobile.android.otpmoremenu.OtpMoreMenuFragment
 import com.passbolt.mobile.android.ui.OtpItemWrapper
@@ -149,13 +150,21 @@ class OtpFragment :
     override fun createTotpClick() {
         //            scanQrCodeClick = { presenter.scanOtpQrCodeClick() }
         //            createManuallyClick = { presenter.createOtpManuallyClick() }
-        throw NotImplementedError("Not implemented")
+        // TODO implement listening for result
+        findNavController().navigate(
+            NavDeepLinkProvider.resourceFormDescriptionDeepLinkRequest(Mode.CREATE.name)
+        )
     }
 
     override fun createPasswordClick() {
         //            scanQrCodeClick = { presenter.scanOtpQrCodeClick() }
         //            createManuallyClick = { presenter.createOtpManuallyClick() }
-        throw NotImplementedError("Not implemented")
+        // TODO implement listening for result
+        findNavController().navigate(
+            NavDeepLinkProvider.resourceFormDescriptionDeepLinkRequest(
+                Mode.CREATE.name
+            )
+        )
     }
 
     private fun setUpRecycler() {

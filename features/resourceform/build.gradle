@@ -1,6 +1,7 @@
 plugins {
     alias libs.plugins.android.library
     alias libs.plugins.kotlin.gradle
+    alias libs.plugins.navigation.safeargs
 }
 
 dependencies {
@@ -9,6 +10,13 @@ dependencies {
     implementation project(':architecture')
     implementation project(':coreui')
     implementation project(':ui')
+    implementation project(':localization')
+    implementation project(':policies')
+    implementation project(':passwordgenerator')
+    implementation project(':common')
+    implementation project(':accounts')
+    implementation project(':mappers')
+    implementation project(':navigation')
 
     implementation libs.navigation.fragment
     implementation libs.navigation.ui

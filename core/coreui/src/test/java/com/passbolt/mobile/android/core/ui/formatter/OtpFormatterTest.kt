@@ -21,10 +21,9 @@
  * @since v1.0
  */
 
-package com.passbolt.mobile.android.common
+package com.passbolt.mobile.android.core.ui.formatter
 
 import com.google.common.truth.Truth.assertThat
-import com.passbolt.mobile.android.core.ui.formatter.OtpFormatter
 import org.junit.Test
 
 

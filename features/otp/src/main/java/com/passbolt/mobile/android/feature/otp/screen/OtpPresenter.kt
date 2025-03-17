@@ -112,7 +112,7 @@ class OtpPresenter(
         }
     }
 
-    override fun refreshAction() {
+    override fun refreshSuccessAction() {
         refreshInProgress = false
         view?.showCreateButton()
         presenterScope.launch {
@@ -129,6 +129,10 @@ class OtpPresenter(
                 showOtps()
             }
         }
+    }
+
+    override fun refreshStartAction() {
+        view?.hideCreateButton()
     }
 
     private suspend fun getAndShowOtpResources() {

@@ -2,8 +2,8 @@ package com.passbolt.mobile.android.feature.resourcedetails.update
 
 import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReactiveContract
 import com.passbolt.mobile.android.core.passwordgenerator.codepoints.Codepoint
-import com.passbolt.mobile.android.core.ui.textinputfield.PasswordGenerateInputView.PasswordStrength
 import com.passbolt.mobile.android.feature.resourcedetails.ResourceMode
+import com.passbolt.mobile.android.ui.PasswordStrength
 import com.passbolt.mobile.android.ui.ResourceModel
 
 /**

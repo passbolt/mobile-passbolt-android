@@ -66,8 +66,8 @@ interface HomeContract {
         fun showGeneralError(errorMessage: String? = null)
         fun navigateToEdit(resourceModel: ResourceModel)
         fun showResourceEditedSnackbar(resourceName: String)
-        fun hideAddButton()
-        fun showAddButton()
+        fun hideCreateButton()
+        fun showCreateButton()
         fun showDeleteConfirmationDialog()
         fun navigateToManageAccounts()
         fun showFiltersMenu(activeDisplayView: HomeDisplayViewModel)
@@ -113,6 +113,7 @@ interface HomeContract {
         fun showJsonSecretSchemaValidationError()
         fun navigateToOtpCreateMenu()
         fun showCreateResourceMenu(homeView: HomeDisplayViewModel)
+        fun navigateToCreateTotp(parentFolderId: String?)
     }
 
     interface Presenter : DataRefreshViewReactiveContract.Presenter<View> {
@@ -176,5 +177,6 @@ interface HomeContract {
         fun expiryClick()
         fun menuAddTotpClick()
         fun onCreateResourceClick()
+        fun createTotpClick()
     }
 }

@@ -75,7 +75,7 @@ class ResourceMoreMenuTest : KoinTest {
         presenter.apply {
             attach(this@ResourceMoreMenuTest.view)
             argsRetrieved("resourceId")
-            refreshAction()
+            refreshSuccessAction()
         }
 
         verify(view).showTitle("title")
@@ -108,7 +108,7 @@ class ResourceMoreMenuTest : KoinTest {
         presenter.apply {
             attach(this@ResourceMoreMenuTest.view)
             argsRetrieved("resourceId")
-            refreshAction()
+            refreshSuccessAction()
         }
 
         verify(view).showTitle("title")

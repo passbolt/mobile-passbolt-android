@@ -45,6 +45,7 @@ import com.passbolt.mobile.android.feature.otp.createOtpManuallyMainModule
 import com.passbolt.mobile.android.feature.otp.otpMainModule
 import com.passbolt.mobile.android.feature.otp.scanOtpMainModule
 import com.passbolt.mobile.android.feature.resourcedetails.resourceDetailsModule
+import com.passbolt.mobile.android.feature.resourceform.resourceFormModule
 import com.passbolt.mobile.android.feature.settings.settingsModule
 import com.passbolt.mobile.android.feature.setup.setupModule
 import com.passbolt.mobile.android.feature.startup.startUpModule
@@ -175,7 +176,8 @@ class KoinInitializer : Initializer<Unit> {
             preferencesModule,
             passphraseMemoryCacheModule,
             jsonModelModule,
-            createResourceMenuModule
+            createResourceMenuModule,
+            resourceFormModule
         )
     }
 }

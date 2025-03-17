@@ -147,7 +147,10 @@ class HomePresenterTest : KoinTest {
     @Test
     fun `all fetched resources should be displayed when empty search text`() = runTest {
         whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
-            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
+            flowOf(
+                DataRefreshStatus.InProgress,
+                DataRefreshStatus.Finished(HomeDataInteractor.Output.Success)
+            )
         )
         whenever(mockResourcesInteractor.fetchAndSaveResources()).thenReturn(
             ResourceInteractor.Output.Success
@@ -170,8 +173,9 @@ class HomePresenterTest : KoinTest {
         verify(view, times(2)).showHomeScreenTitle(HomeDisplayViewModel.AllItems)
         verify(view).showAllItemsSearchHint()
         verify(view).hideBackArrow()
-        verify(view).hideAddButton()
-        verify(view).showAddButton()
+        verify(view).hideCreateButton()
+        verify(view).showRefreshProgress()
+        verify(view).showCreateButton()
         verify(view, times(2)).showItems(any(), any(), any(), any(), any(), any(), any(), any())
         verify(view).displaySearchAvatar(null)
         verify(view).hideRefreshProgress()
@@ -190,7 +194,10 @@ class HomePresenterTest : KoinTest {
         )
         mockAccountData(null)
         whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
-            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
+            flowOf(
+                DataRefreshStatus.InProgress,
+                DataRefreshStatus.Finished(HomeDataInteractor.Output.Success)
+            )
         )
         val refreshFlow = MutableStateFlow(
             DataRefreshStatus.Finished(
@@ -219,10 +226,10 @@ class HomePresenterTest : KoinTest {
         presenter.refreshSwipe()
 
 
-        verify(view, times(2)).hideAddButton()
+        verify(view).hideCreateButton()
         verify(view).hideRefreshProgress()
         verify(view, times(2)).showItems(any(), any(), any(), any(), any(), any(), any(), any())
-        verify(view, times(1)).showAddButton()
+        verify(view, times(1)).showCreateButton()
     }
 
     @Test
@@ -235,7 +242,10 @@ class HomePresenterTest : KoinTest {
         )
         mockAccountData(null)
         whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
-            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
+            flowOf(
+                DataRefreshStatus.InProgress,
+                DataRefreshStatus.Finished(HomeDataInteractor.Output.Success)
+            )
         )
 
         presenter.attach(view)
@@ -249,9 +259,9 @@ class HomePresenterTest : KoinTest {
         presenter.resume(view)
         presenter.searchTextChange("empty search")
 
-        verify(view).hideAddButton()
+        verify(view).hideCreateButton()
         verify(view).showSearchEmptyList()
-        verify(view).showAddButton()
+        verify(view).showCreateButton()
     }
 
     @Test
@@ -283,7 +293,10 @@ class HomePresenterTest : KoinTest {
     @Test
     fun `error should be displayed when request failures`() = runTest {
         whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
-            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Failure(AuthenticationState.Authenticated)))
+            flowOf(
+                DataRefreshStatus.InProgress,
+                DataRefreshStatus.Finished(HomeDataInteractor.Output.Failure(AuthenticationState.Authenticated))
+            )
         )
         mockAccountData(null)
         whenever(mockGetLocalResourcesUseCase.execute(any())).thenReturn(
@@ -303,12 +316,12 @@ class HomePresenterTest : KoinTest {
         verify(view).hideBackArrow()
         verify(view).showHomeScreenTitle(HomeDisplayViewModel.AllItems)
         verify(view).showAllItemsSearchHint()
-        verify(view).hideAddButton()
+        verify(view).hideCreateButton()
         verify(view).hideRefreshProgress()
         verify(view).showDataRefreshError()
         verify(view).displaySearchAvatar(null)
         verify(view).hideFolderMoreMenuIcon()
-        verify(view, never()).showAddButton()
+        verify(view, never()).showCreateButton()
     }
 
     @Test
@@ -346,7 +359,6 @@ class HomePresenterTest : KoinTest {
         presenter.resume(view)
 
         verify(view).hideBackArrow()
-        verify(view).hideAddButton()
         verify(view).hideRefreshProgress()
         verify(view).showDataRefreshError()
     }
@@ -418,7 +430,7 @@ class HomePresenterTest : KoinTest {
         presenter.resume(view)
 
         verify(view, times(2)).navigateToRootHomeFromChildHome(HomeDisplayViewModel.folderRoot())
-        verify(view).showAddButton()
+        verify(view).showCreateButton()
     }
 
     @Test

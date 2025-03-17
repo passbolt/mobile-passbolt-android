@@ -27,6 +27,7 @@ import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthentic
 import com.passbolt.mobile.android.feature.resourcedetails.ResourceActivity
 import com.passbolt.mobile.android.feature.resourcedetails.ResourceMode
 import com.passbolt.mobile.android.feature.resources.databinding.FragmentUpdateResourceBinding
+import com.passbolt.mobile.android.ui.PasswordStrength
 import com.passbolt.mobile.android.ui.ResourceModel
 import org.koin.android.ext.android.inject
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
@@ -151,7 +152,7 @@ class UpdateResourceFragment :
         uiTag: String,
         isRequired: Boolean,
         initialPassword: String?,
-        initialPasswordStrength: PasswordGenerateInputView.PasswordStrength,
+        initialPasswordStrength: PasswordStrength,
         initialPasswordEntropyBits: Double
     ) {
         val (view, params) = viewProvider.getPasswordWithGeneratorInput(requireContext())
@@ -167,7 +168,7 @@ class UpdateResourceFragment :
 
     override fun showPasswordStrength(
         tag: String,
-        strength: PasswordGenerateInputView.PasswordStrength,
+        strength: PasswordStrength,
         entropyBits: Double
     ) {
         (binding.container.findViewWithTag<View>(tag) as PasswordGenerateInputView).setPasswordStrength(
@@ -207,7 +208,7 @@ class UpdateResourceFragment :
         tag: String,
         password: List<Codepoint>,
         entropyBits: Double,
-        passwordStrength: PasswordGenerateInputView.PasswordStrength
+        passwordStrength: PasswordStrength
     ) {
         val stringBuilder = StringBuilder()
         password.forEach {

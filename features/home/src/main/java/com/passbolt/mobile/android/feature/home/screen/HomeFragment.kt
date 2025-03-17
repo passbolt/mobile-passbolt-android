@@ -64,6 +64,8 @@ import com.passbolt.mobile.android.feature.otp.createotpmanually.CreateOtpFragme
 import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpFragment
 import com.passbolt.mobile.android.feature.resourcedetails.ResourceActivity
 import com.passbolt.mobile.android.feature.resourcedetails.ResourceMode
+import com.passbolt.mobile.android.feature.resourceform.main.LeadingContentType
+import com.passbolt.mobile.android.feature.resourceform.main.Mode
 import com.passbolt.mobile.android.moremenu.FolderMoreMenuFragment
 import com.passbolt.mobile.android.otpcreatemoremenu.OtpCreateMoreMenuFragment
 import com.passbolt.mobile.android.otpeditmoremenu.OtpUpdateMoreMenuFragment
@@ -251,7 +253,7 @@ class HomeFragment :
     }
 
     override fun createTotpClick() {
-        throw NotImplementedError("Not implemented")
+        presenter.createTotpClick()
     }
 
     override fun createPasswordClick() {
@@ -677,11 +679,11 @@ class HomeFragment :
         )
     }
 
-    override fun hideAddButton() {
+    override fun hideCreateButton() {
         binding.createResourceFab.gone()
     }
 
-    override fun showAddButton() {
+    override fun showCreateButton() {
         binding.createResourceFab.visible()
     }
 
@@ -871,10 +873,22 @@ class HomeFragment :
     }
 
     override fun navigateToCreateResource(parentFolderId: String?) {
-        resourceDetailsResult.launch(
-            ResourceActivity.newInstance(
-                requireContext(),
-                ResourceMode.NEW,
+        // TODO handle result and refresh list
+        findNavController().navigate(
+            NavDeepLinkProvider.resourceFormDeepLinkRequest(
+                Mode.CREATE.name,
+                LeadingContentType.PASSWORD.name,
+                parentFolderId
+            )
+        )
+    }
+
+    override fun navigateToCreateTotp(parentFolderId: String?) {
+        // TODO handle result and refresh list
+        findNavController().navigate(
+            NavDeepLinkProvider.resourceFormDeepLinkRequest(
+                Mode.CREATE.name,
+                LeadingContentType.TOTP.name,
                 parentFolderId
             )
         )

@@ -69,7 +69,7 @@ class LocationDetailsPresenter(
         }
     }
 
-    override fun refreshAction() {
+    override fun refreshSuccessAction() {
         showItemLocation()
     }
 

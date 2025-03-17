@@ -11,7 +11,6 @@ import com.passbolt.mobile.android.core.idlingresource.CreateResourceIdlingResou
 import com.passbolt.mobile.android.core.idlingresource.UpdateResourceIdlingResource
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.passwordgenerator.SecretGenerator
-import com.passbolt.mobile.android.core.passwordgenerator.entropy.Entropy
 import com.passbolt.mobile.android.core.passwordgenerator.entropy.EntropyCalculator
 import com.passbolt.mobile.android.core.passwordgenerator.usecase.CheckPasswordPropertiesUseCase
 import com.passbolt.mobile.android.core.policies.usecase.GetPasswordPoliciesUseCase
@@ -34,6 +33,7 @@ import com.passbolt.mobile.android.feature.resourcedetails.update.fieldsgenerato
 import com.passbolt.mobile.android.feature.resourcedetails.update.fieldsgenerator.FieldNamesMapper.Companion.USERNAME_FIELD
 import com.passbolt.mobile.android.feature.resourcedetails.update.fieldsgenerator.NewFieldsModelCreator
 import com.passbolt.mobile.android.feature.resourcedetails.update.fieldsgenerator.ResourceUpdateType
+import com.passbolt.mobile.android.mappers.EntropyViewMapper
 import com.passbolt.mobile.android.serializers.jsonschema.SchemaEntity
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordAndDescription
@@ -42,6 +42,7 @@ import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordSt
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5Default
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5DefaultWithTotp
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5PasswordString
+import com.passbolt.mobile.android.ui.Entropy
 import com.passbolt.mobile.android.ui.PasswordGeneratorTypeModel
 import com.passbolt.mobile.android.ui.ResourceField
 import com.passbolt.mobile.android.ui.ResourceModel
@@ -115,7 +116,7 @@ class UpdateResourcePresenter(
         setupUi()
     }
 
-    override fun refreshAction() {
+    override fun refreshSuccessAction() {
         if (!::fields.isInitialized) {
             createForm()
         }

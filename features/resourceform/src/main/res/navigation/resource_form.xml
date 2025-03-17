@@ -10,5 +10,78 @@
         android:id="@+id/resourceFormFragment"
         android:name="com.passbolt.mobile.android.feature.resourceform.main.ResourceFormFragment"
         android:label="ResourceFormFragment"
-        tools:layout="@layout/fragment_resource_form" />
+        tools:layout="@layout/fragment_resource_form">
+        <deepLink
+            android:id="@+id/deepLink"
+            app:uri="passbolt://resourceForm?mode={mode}&amp;leadingType={leadingContentType}" />
+        <argument
+            android:name="mode"
+            app:argType="com.passbolt.mobile.android.feature.resourceform.main.Mode" />
+        <argument
+            android:name="leadingContentType"
+            app:argType="com.passbolt.mobile.android.feature.resourceform.main.LeadingContentType" />
+        <argument
+            android:name="parentFolderId"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/descriptionFormFragment"
+        android:name="com.passbolt.mobile.android.feature.resourceform.metadata.description.DescriptionFormFragment"
+        android:label="DescriptionFormFragment"
+        tools:layout="@layout/fragment_description_form">
+
+        <deepLink
+            android:id="@+id/deepLink"
+            app:uri="passbolt://resourceForm/description?mode={mode}&amp;kind={descriptionKind}" />
+        <argument
+            android:name="mode"
+            app:argType="com.passbolt.mobile.android.feature.resourceform.main.Mode" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/totpFormFragment"
+        android:name="com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.TotpFormFragment"
+        android:label="TotpFormFragment"
+        tools:layout="@layout/fragment_totp_form">
+
+        <deepLink
+            android:id="@+id/deepLink"
+            app:uri="passbolt://resourceForm/totp?mode={mode}" />
+        <argument
+            android:name="mode"
+            app:argType="com.passbolt.mobile.android.feature.resourceform.main.Mode" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/secureNoteFormFragment"
+        android:name="com.passbolt.mobile.android.feature.resourceform.additionalsecrets.securenote.SecureNoteFormFragment"
+        android:label="SecureNoteFormFragment"
+        tools:layout="@layout/fragment_secure_note_form">
+
+        <deepLink
+            android:id="@+id/deepLink"
+            app:uri="passbolt://resourceForm/secureNote?mode={mode}" />
+        <argument
+            android:name="mode"
+            app:argType="com.passbolt.mobile.android.feature.resourceform.main.Mode" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/totpAdvancedSettingsFormFragment"
+        android:name="com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.advanced.TotpAdvancedSettingsFormFragment"
+        android:label="TotpAdvancedSettingsFormFragment"
+        tools:layout="@layout/fragment_totp_advanced_settings_form">
+
+        <deepLink
+            android:id="@+id/deepLink"
+            app:uri="passbolt://resourceForm/totp/advancedSettings?mode={mode}" />
+        <argument
+            android:name="mode"
+            app:argType="com.passbolt.mobile.android.feature.resourceform.main.Mode" />
+    </fragment>
+
+
 </navigation>

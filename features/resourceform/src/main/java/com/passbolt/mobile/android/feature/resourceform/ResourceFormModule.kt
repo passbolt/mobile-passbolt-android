@@ -1,6 +1,10 @@
 package com.passbolt.mobile.android.feature.resourceform
 
+import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.securenote.secureNoteFormModule
+import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.advanced.totpAdvancedSettingsFormModule
+import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.totpFormModule
 import com.passbolt.mobile.android.feature.resourceform.main.resourceFormModule
+import com.passbolt.mobile.android.feature.resourceform.metadata.description.descriptionFormModule
 import org.koin.dsl.module
 
 /**
@@ -28,4 +32,8 @@ import org.koin.dsl.module
 
 val resourceFormModule = module {
     resourceFormModule()
+    descriptionFormModule()
+    totpFormModule()
+    totpAdvancedSettingsFormModule()
+    secureNoteFormModule()
 }

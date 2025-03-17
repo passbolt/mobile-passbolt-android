@@ -1,6 +1,9 @@
 package com.passbolt.mobile.android.feature.resourceform.main
 
 import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReactiveContract
+import com.passbolt.mobile.android.ui.PasswordStrength
+import com.passbolt.mobile.android.core.passwordgenerator.codepoints.Codepoint
+import com.passbolt.mobile.android.ui.PasswordStrength.Empty
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,7 +29,28 @@ import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReac
  */
 interface ResourceFormContract {
 
-    interface View : DataRefreshViewReactiveContract.View
+    interface View : DataRefreshViewReactiveContract.View {
+        fun addTotpLeadingForm()
+        fun addPasswordLeadingForm(
+            initialPassword: String = "",
+            initialPasswordStrength: PasswordStrength = Empty,
+            initialPasswordEntropyBits: Double = 0.0
+        )
 
-    interface Presenter : DataRefreshViewReactiveContract.Presenter<View>
+        fun showCreatePasswordTitle()
+        fun showCreateTotpTitle()
+        fun showCreateButton()
+        fun showSaveButton()
+        fun showUnableToGeneratePassword(minimumEntropyBits: Int)
+        fun showPassword(password: List<Codepoint>, entropy: Double, passwordStrength: PasswordStrength)
+        fun showPasswordStrength(strength: PasswordStrength, entropyBits: Double)
+    }
+
+    interface Presenter : DataRefreshViewReactiveContract.Presenter<View> {
+        fun argsRetrieved(mode: Mode, leadingContentType: LeadingContentType, parentFolderId: String?)
+        fun createResourceClick()
+        fun updateResourceClick()
+        fun passwordGenerateClick()
+        fun passwordTextChanged(password: String)
+    }
 }

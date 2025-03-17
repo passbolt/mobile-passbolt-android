@@ -91,7 +91,7 @@ class PermissionsPresenter(
         this.permissionsItem = permissionsItem
     }
 
-    override fun refreshAction() {
+    override fun refreshSuccessAction() {
         refreshPermissionsList()
     }
 

@@ -1,4 +1,4 @@
-package com.passbolt.mobile.android.core.passwordgenerator.entropy
+package com.passbolt.mobile.android.ui
 
 @Suppress("MagicNumber")
 enum class Entropy(val rawValue: Int) {
