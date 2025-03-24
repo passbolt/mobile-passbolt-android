@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.LinearLayout
+import com.passbolt.mobile.android.core.ui.textinputfield.TextInputView
 import com.passbolt.mobile.android.feature.resourceform.R
 import com.passbolt.mobile.android.feature.resourceform.databinding.ViewSecureNoteSubformBinding
 
@@ -37,6 +38,9 @@ class SecureNoteSubformView @JvmOverloads constructor(
 ) : LinearLayout(context, attrs, defStyle) {
 
     private val binding = ViewSecureNoteSubformBinding.inflate(LayoutInflater.from(context), this)
+
+    val secureNoteInput: TextInputView
+        get() = binding.secureNoteSectionView.backgroundContainer.findViewById(R.id.secureNoteInput)
 
     init {
         orientation = VERTICAL

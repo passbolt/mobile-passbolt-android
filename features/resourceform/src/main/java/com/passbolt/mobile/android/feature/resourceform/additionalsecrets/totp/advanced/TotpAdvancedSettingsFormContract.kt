@@ -1,6 +1,8 @@
 package com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.advanced
 
 import com.passbolt.mobile.android.core.mvp.BaseContract
+import com.passbolt.mobile.android.ui.Mode
+import com.passbolt.mobile.android.ui.TotpUiModel
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,7 +28,20 @@ import com.passbolt.mobile.android.core.mvp.BaseContract
  */
 interface TotpAdvancedSettingsFormContract {
 
-    interface View : BaseContract.View
+    interface View : BaseContract.View {
+        fun goBackWithResult(totpModel: TotpUiModel)
+        fun showCreateTitle()
+        fun showExpiry(expiry: String)
+        fun showLength(length: String)
+        fun showAlgorithm(algorithm: String)
+        fun showTotpPeriodError()
+    }
 
-    interface Presenter : BaseContract.Presenter<View>
+    interface Presenter : BaseContract.Presenter<View> {
+        fun applyClick()
+        fun argsRetrieved(mode: Mode, totpUiModel: TotpUiModel)
+        fun totpPeriodChanged(period: String)
+        fun totpDigitsChanged(digits: String)
+        fun totpAlgorithmChanged(algorithm: String)
+    }
 }

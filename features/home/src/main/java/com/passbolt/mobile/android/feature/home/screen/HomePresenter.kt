@@ -634,7 +634,7 @@ class HomePresenter(
 
     override fun resourceMoreClick(resourceModel: ResourceModel) {
         currentMoreMenuResource = resourceModel
-        view?.navigateToMore(resourceModel.resourceId, resourceModel.name)
+        view?.navigateToMore(resourceModel.resourceId, resourceModel.metadataJsonModel.name)
     }
 
     override fun itemClick(resourceModel: ResourceModel) {
@@ -921,8 +921,8 @@ class HomePresenter(
             val updateAction = when (otpAction) {
                 ManageTotpAction.ADD_TOTP -> suspend {
                     resourceUpdateActionsInteractor.addTotpToResource(
-                        overrideName = resourceModel.name,
-                        overrideUri = resourceModel.uri,
+                        overrideName = resourceModel.metadataJsonModel.name,
+                        overrideUri = resourceModel.metadataJsonModel.uri,
                         period = totpQr.period,
                         digits = totpQr.digits,
                         algorithm = totpQr.algorithm.name,
@@ -931,8 +931,8 @@ class HomePresenter(
                 }
                 ManageTotpAction.EDIT_TOTP -> suspend {
                     resourceUpdateActionsInteractor.updateLinkedTotpResourceTotpFields(
-                        label = resourceModel.name,
-                        issuer = resourceModel.uri,
+                        label = resourceModel.metadataJsonModel.name,
+                        issuer = resourceModel.metadataJsonModel.uri,
                         period = totpQr.period,
                         digits = totpQr.digits,
                         algorithm = totpQr.algorithm.name,
@@ -968,7 +968,7 @@ class HomePresenter(
     override fun manageTotpClick() {
         view?.navigateToOtpMoreMenu(
             resourceId = currentMoreMenuResource!!.resourceId,
-            resourceName = currentMoreMenuResource!!.name
+            resourceName = currentMoreMenuResource!!.metadataJsonModel.name
         )
     }
 

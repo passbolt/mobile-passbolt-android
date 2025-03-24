@@ -63,7 +63,12 @@ class OtpItem(
         super.bindView(binding, payloads)
         with(binding) {
             setupTitleAndExpiry(this)
-            icon.setImageDrawable(initialsIconGenerator.generate(otpModel.resource.name, otpModel.resource.initials))
+            icon.setImageDrawable(
+                initialsIconGenerator.generate(
+                    otpModel.resource.metadataJsonModel.name,
+                    otpModel.resource.initials
+                )
+            )
             eye.isVisible = !otpModel.isVisible && !otpModel.isRefreshing
             totpViewController.updateView(
                 ViewParameters(binding.progress, binding.otp, binding.generationInProgress),
@@ -76,11 +81,11 @@ class OtpItem(
     private fun setupTitleAndExpiry(binding: ItemOtpBinding) {
         otpModel.resource.expiry.let { expiry ->
             if (expiry == null || expiry.isInFuture()) {
-                binding.name.text = otpModel.resource.name
+                binding.name.text = otpModel.resource.metadataJsonModel.name
                 binding.indicatorIcon.setImageDrawable(null)
             } else {
                 binding.name.text = binding.root.context.getString(
-                    LocalizationR.string.name_expired, otpModel.resource.name
+                    LocalizationR.string.name_expired, otpModel.resource.metadataJsonModel.name
                 )
                 binding.indicatorIcon.setImageDrawable(
                     ContextCompat.getDrawable(

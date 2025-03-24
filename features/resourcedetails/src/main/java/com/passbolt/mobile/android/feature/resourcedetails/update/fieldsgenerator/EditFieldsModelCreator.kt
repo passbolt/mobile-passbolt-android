@@ -81,7 +81,7 @@ class EditFieldsModelCreator(
                     }
                     FieldNamesMapper.DESCRIPTION_FIELD -> {
                         when (editedResourceTypeSlug) {
-                            PasswordString.slug, V5PasswordString.slug -> existingResource.description
+                            PasswordString.slug, V5PasswordString.slug -> existingResource.metadataJsonModel.description
                             // there can be parsing errors when secret data is invalid - do not create the input then
                             PasswordAndDescription.slug, PasswordDescriptionTotp.slug,
                             V5Default.slug, V5DefaultWithTotp.slug -> (secretParser.parseSecret(
@@ -95,8 +95,8 @@ class EditFieldsModelCreator(
                     }
                     else -> {
                         when (field.field.name) {
-                            FieldNamesMapper.NAME_FIELD -> existingResource.name
-                            FieldNamesMapper.USERNAME_FIELD -> existingResource.username
+                            FieldNamesMapper.NAME_FIELD -> existingResource.metadataJsonModel.name
+                            FieldNamesMapper.USERNAME_FIELD -> existingResource.metadataJsonModel.username
                             FieldNamesMapper.URI_FIELD -> {
                                 val resourcePropertiesActionsInteractor = get<ResourcePropertiesActionsInteractor> {
                                     parametersOf(existingResource)

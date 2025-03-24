@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.LinearLayout
+import com.passbolt.mobile.android.core.ui.textinputfield.TextInputView
 import com.passbolt.mobile.android.feature.resourceform.R
 import com.passbolt.mobile.android.feature.resourceform.databinding.ViewMetadataDescriptionSubformBinding
 
@@ -37,6 +38,9 @@ class MetadataDescriptionSubformView @JvmOverloads constructor(
 ) : LinearLayout(context, attrs, defStyle) {
 
     private val binding = ViewMetadataDescriptionSubformBinding.inflate(LayoutInflater.from(context), this)
+
+    val descriptionInput: TextInputView
+        get() = binding.descriptionSectionView.backgroundContainer.findViewById(R.id.descriptionInput)
 
     init {
         orientation = VERTICAL

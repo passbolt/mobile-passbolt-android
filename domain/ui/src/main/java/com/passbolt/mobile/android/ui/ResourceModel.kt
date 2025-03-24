@@ -8,6 +8,8 @@ import com.passbolt.mobile.android.jsonmodel.delegates.RootRelativeJsonPathNulla
 import com.passbolt.mobile.android.jsonmodel.delegates.RootRelativeJsonPathNullableStringListDelegate
 import com.passbolt.mobile.android.jsonmodel.delegates.RootRelativeJsonPathStringDelegate
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType
+import com.passbolt.mobile.android.ui.MetadataTypeModel.V4
+import com.passbolt.mobile.android.ui.MetadataTypeModel.V5
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.koin.java.KoinJavaComponent.inject
@@ -47,30 +49,12 @@ data class ResourceModel(
     val expiry: ZonedDateTime?,
     val metadataKeyId: String?,
     val metadataKeyType: MetadataKeyTypeModel?,
-    override var json: String
-) : Parcelable, Searchable, JsonModel {
-
-    @IgnoredOnParcel
-    var name: String by RootRelativeJsonPathStringDelegate(jsonPath = "name")
-
-    @IgnoredOnParcel
-    var username: String? by RootRelativeJsonPathNullableStringDelegate(jsonPath = "username")
-
-    @IgnoredOnParcel
-    var description: String? by RootRelativeJsonPathNullableStringDelegate(jsonPath = "description")
-
-    @IgnoredOnParcel
-    var uri: String? by RootRelativeJsonPathNullableStringDelegate(jsonPath = "uri")
-
-    @IgnoredOnParcel
-    var uris: List<String>? by RootRelativeJsonPathNullableStringListDelegate(jsonPath = "uris")
+    val metadataJsonModel: MetadataJsonModel
+) : Parcelable, Searchable by metadataJsonModel {
 
     @IgnoredOnParcel
     val initials: String
-        get() = initialsProvider.get(name)
-
-    @IgnoredOnParcel
-    override val searchCriteria: String = "$name${username.orEmpty()}${uri.orEmpty()}${uris?.joinToString()}"
+        get() = initialsProvider.get(metadataJsonModel.name)
 
     companion object {
         val initialsProvider: InitialsProvider by inject(InitialsProvider::class.java)
@@ -97,23 +81,8 @@ open class CreateResourceModel(
     val expiry: ZonedDateTime?,
     val metadataKeyId: String?,
     val metadataKeyType: MetadataKeyTypeModel?,
-    override var json: String
-) : JsonModel {
-
-    var objectType: String by RootRelativeJsonPathStringDelegate(jsonPath = "object_type")
-
-    var resourceTypeId: String by RootRelativeJsonPathStringDelegate(jsonPath = "resource_type_id")
-
-    var name: String by RootRelativeJsonPathStringDelegate(jsonPath = "name")
-
-    var username: String? by RootRelativeJsonPathNullableStringDelegate(jsonPath = "username")
-
-    var description: String? by RootRelativeJsonPathNullableStringDelegate(jsonPath = "description")
-
-    var uri: String? by RootRelativeJsonPathNullableStringDelegate(jsonPath = "uri")
-
-    var uris: List<String>? by RootRelativeJsonPathNullableStringListDelegate(jsonPath = "uris")
-}
+    val metadataJsonModel: MetadataJsonModel
+)
 
 class UpdateResourceModel(
     val resourceId: String,
@@ -122,12 +91,61 @@ class UpdateResourceModel(
     expiry: ZonedDateTime?,
     metadataKeyId: String?,
     metadataKeyType: MetadataKeyTypeModel?,
-    json: String
+    metadataJsonModel: MetadataJsonModel
 ) : CreateResourceModel(
     contentType = contentType,
     folderId = folderId,
     expiry = expiry,
     metadataKeyId = metadataKeyId,
     metadataKeyType = metadataKeyType,
-    json = json
+    metadataJsonModel = metadataJsonModel
 )
+
+@Parcelize
+data class MetadataJsonModel(override var json: String) : JsonModel, Parcelable, Searchable {
+
+    @IgnoredOnParcel
+    var objectType: String by RootRelativeJsonPathStringDelegate(jsonPath = "object_type")
+
+    @IgnoredOnParcel
+    var resourceTypeId: String by RootRelativeJsonPathStringDelegate(jsonPath = "resource_type_id")
+
+    @IgnoredOnParcel
+    var name: String by RootRelativeJsonPathStringDelegate(jsonPath = "name")
+
+    @IgnoredOnParcel
+    var username: String? by RootRelativeJsonPathNullableStringDelegate(jsonPath = "username")
+
+    @IgnoredOnParcel
+    var description: String? by RootRelativeJsonPathNullableStringDelegate(jsonPath = "description")
+
+    @IgnoredOnParcel
+    var uri: String? by RootRelativeJsonPathNullableStringDelegate(jsonPath = "uri")
+
+    @IgnoredOnParcel
+    var uris: List<String>? by RootRelativeJsonPathNullableStringListDelegate(jsonPath = "uris")
+
+    @IgnoredOnParcel
+    override val searchCriteria: String = "$name${username.orEmpty()}${uri.orEmpty()}${uris.orEmpty().joinToString()}"
+
+    fun getMainUri(metadataType: MetadataTypeModel) = when (metadataType) {
+        V4 -> uri.orEmpty()
+        V5 -> uris?.firstOrNull().orEmpty()
+    }
+
+    @Suppress("NestedBlockDepth")
+    fun setMainUri(metadataType: MetadataTypeModel, mainUri: String) {
+        when (metadataType) {
+            V4 -> uri = mainUri
+            V5 -> uris = uris.let {
+                if (it.isNullOrEmpty()) {
+                    listOf(mainUri)
+                } else {
+                    it.toMutableList().apply {
+                        set(0, mainUri)
+                    }
+                }
+            }
+        }
+    }
+}

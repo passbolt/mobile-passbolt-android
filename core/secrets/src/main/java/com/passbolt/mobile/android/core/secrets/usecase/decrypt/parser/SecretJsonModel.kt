@@ -30,9 +30,7 @@ import com.passbolt.mobile.android.jsonmodel.delegates.RootRelativeJsonPathTotpD
 import com.passbolt.mobile.android.jsonmodel.delegates.StringDelegate
 import com.passbolt.mobile.android.jsonmodel.delegates.TotpSecret
 
-class SecretModel(override var json: String) : JsonModel {
-
-    private val totpFieldDelegate = RootRelativeJsonPathTotpDelegate(jsonPath = "totp")
+class SecretJsonModel(override var json: String) : JsonModel {
 
     var objectType: String? by RootRelativeJsonPathNullableStringDelegate(jsonPath = "object_type")
 
@@ -45,9 +43,5 @@ class SecretModel(override var json: String) : JsonModel {
 
     var description: String? by RootRelativeJsonPathNullableStringDelegate(jsonPath = "description")
 
-    var totp: TotpSecret by totpFieldDelegate
-
-    fun removeTotp() {
-        totpFieldDelegate.delete(this)
-    }
+    var totp: TotpSecret? by RootRelativeJsonPathTotpDelegate(jsonPath = "totp")
 }

@@ -46,7 +46,7 @@ class CreateOtpMoreMenuModelUseCase(
 
         return Output(
             OtpMoreMenuModel(
-                title = resource.name,
+                title = resource.metadataJsonModel.name,
                 canDelete = resource.permission in WRITE_PERMISSIONS,
                 canEdit = resource.permission in WRITE_PERMISSIONS &&
                         updateActionsMetadata.any { it.action == UpdateAction.EDIT_TOTP }

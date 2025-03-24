@@ -40,8 +40,8 @@ class PasswordSubformView @JvmOverloads constructor(
 
     private val binding = ViewPasswordSubformBinding.inflate(LayoutInflater.from(context), this)
 
-    val uriInput: TextInputView
-        get() = binding.passwordSectionView.findViewById(R.id.uriInput)
+    val mainUriInput: TextInputView
+        get() = binding.passwordSectionView.findViewById(R.id.mainUriInput)
 
     val usernameInput: TextInputView
         get() = binding.passwordSectionView.findViewById(R.id.usernameInput)

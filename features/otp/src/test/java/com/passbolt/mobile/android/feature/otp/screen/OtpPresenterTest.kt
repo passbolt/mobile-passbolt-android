@@ -36,6 +36,7 @@ import com.passbolt.mobile.android.core.resources.actions.SecretPropertyActionRe
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesUseCase
 import com.passbolt.mobile.android.jsonmodel.delegates.TotpSecret
 import com.passbolt.mobile.android.mappers.OtpModelMapper
+import com.passbolt.mobile.android.ui.MetadataJsonModel
 import com.passbolt.mobile.android.ui.OtpItemWrapper
 import com.passbolt.mobile.android.ui.OtpParseResult
 import com.passbolt.mobile.android.ui.ResourceModel
@@ -102,12 +103,16 @@ class OtpPresenterTest : KoinTest {
                 favouriteId = null,
                 modified = ZonedDateTime.now(),
                 expiry = null,
-                json = JsonObject().apply {
-                    addProperty("name", "")
-                    addProperty("username", "")
-                    addProperty("uri", "")
-                    addProperty("description", "")
-                }.toString(),
+                metadataJsonModel = MetadataJsonModel(
+                    """
+                    {
+                        "name": "",
+                        "uri": "",
+                        "username": "",
+                        "description": ""
+                    }
+                """.trimIndent()
+                ),
                 metadataKeyId = null,
                 metadataKeyType = null
             )

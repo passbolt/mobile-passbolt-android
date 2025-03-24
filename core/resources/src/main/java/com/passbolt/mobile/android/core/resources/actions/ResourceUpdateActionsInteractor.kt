@@ -30,11 +30,12 @@ import com.passbolt.mobile.android.core.resourcetypes.graph.ResourceTypesUpdates
 import com.passbolt.mobile.android.core.resourcetypes.graph.UpdateAction
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.SecretInput
-import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.SecretModel
+import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.SecretJsonModel
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
 import com.passbolt.mobile.android.jsonmodel.delegates.TotpSecret
 import com.passbolt.mobile.android.serializers.jsonschema.SchemaEntity
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType
+import com.passbolt.mobile.android.ui.MetadataJsonModel
 import com.passbolt.mobile.android.ui.MetadataKeyTypeModel
 import com.passbolt.mobile.android.ui.MetadataTypeModel
 import com.passbolt.mobile.android.ui.MetadataTypeModel.V4
@@ -70,15 +71,15 @@ class ResourceUpdateActionsInteractor(
                     contentType = newResourceType,
                     folderId = resource.folderId,
                     expiry = resource.expiry,
-                    json = resource.json,
+                    metadataJsonModel = MetadataJsonModel(resource.metadataJsonModel.json),
                     metadataKeyId = resource.metadataKeyId,
                     metadataKeyType = resource.metadataKeyType
                 )
             },
             updateSecret = { decryptedSecret ->
                 SecretInput(
-                    secretModel = decryptedSecret.apply {
-                        removeTotp()
+                    secretJsonModel = decryptedSecret.apply {
+                        totp = null
                     },
                     passwordChanged = false
                 )
@@ -101,21 +102,25 @@ class ResourceUpdateActionsInteractor(
                     contentType = newResourceType,
                     folderId = resource.folderId,
                     expiry = resource.expiry,
-                    json = resource.json,
+                    metadataJsonModel = MetadataJsonModel(resource.metadataJsonModel.json),
                     metadataKeyId = resource.metadataKeyId,
                     metadataKeyType = resource.metadataKeyType
                 ).apply {
-                    name = overrideName ?: resource.name
-                    username = resource.username
+                    metadataJsonModel.name = overrideName ?: resource.metadataJsonModel.name
+                    metadataJsonModel.username = resource.metadataJsonModel.username
                     when (metadataType) {
-                        V4 -> this.uri = overrideUri ?: resource.uri
-                        V5 -> this.uris = if (overrideUri != null) listOf(overrideUri) else resource.uris
+                        V4 -> this.metadataJsonModel.uri = overrideUri ?: resource.metadataJsonModel.uri
+                        V5 -> this.metadataJsonModel.uris = if (overrideUri != null) {
+                            listOf(overrideUri)
+                        } else {
+                            resource.metadataJsonModel.uris
+                        }
                     }
                 }
             },
             updateSecret = { decryptedSecret ->
                 SecretInput(
-                    secretModel = decryptedSecret.apply {
+                    secretJsonModel = decryptedSecret.apply {
                         totp = TotpSecret(
                             algorithm,
                             secretKey,
@@ -144,22 +149,26 @@ class ResourceUpdateActionsInteractor(
                     contentType = newResourceType,
                     folderId = resourceParentFolderId,
                     expiry = resource.expiry,
-                    json = resource.json,
+                    metadataJsonModel = MetadataJsonModel(resource.metadataJsonModel.json),
                     metadataKeyId = resource.metadataKeyId,
                     metadataKeyType = resource.metadataKeyType
                 ).apply {
-                    name = resourceName
-                    username = resourceUsername
+                    metadataJsonModel.name = resourceName
+                    metadataJsonModel.username = resourceUsername
                     when (metadataType) {
-                        V4 -> this.uri = resourceUri
-                        V5 -> this.uris = if (resourceUri != null) listOf(resourceUri) else emptyList()
+                        V4 -> this.metadataJsonModel.uri = resourceUri
+                        V5 -> this.metadataJsonModel.uris = if (resourceUri != null) {
+                            listOf(resourceUri)
+                        } else {
+                            emptyList()
+                        }
                     }
                 }
             },
             updateSecret = { decryptedSecret ->
                 val passwordChanged = decryptedSecret.secret != password
                 SecretInput(
-                    secretModel = decryptedSecret.apply {
+                    secretJsonModel = decryptedSecret.apply {
                         this.secret = password
                         this.description = description
                     },
@@ -184,15 +193,15 @@ class ResourceUpdateActionsInteractor(
                     contentType = newResourceType,
                     folderId = resource.folderId,
                     expiry = resource.expiry,
-                    json = resource.json,
+                    metadataJsonModel = MetadataJsonModel(resource.metadataJsonModel.json),
                     metadataKeyId = resource.metadataKeyId,
                     metadataKeyType = resource.metadataKeyType
                 ).apply {
-                    name = label
-                    username = resource.username
+                    metadataJsonModel.name = label
+                    metadataJsonModel.username = resource.metadataJsonModel.username
                     when (metadataType) {
-                        V4 -> this.uri = issuer
-                        V5 -> this.uris = if (issuer != null) listOf(issuer) else emptyList()
+                        V4 -> this.metadataJsonModel.uri = issuer
+                        V5 -> this.metadataJsonModel.uris = if (issuer != null) listOf(issuer) else emptyList()
                     }
                 }
             },
@@ -227,23 +236,24 @@ class ResourceUpdateActionsInteractor(
                     contentType = newResourceType,
                     folderId = resourceParentFolderId,
                     expiry = resource.expiry,
-                    json = resource.json,
+                    metadataJsonModel = MetadataJsonModel(resource.metadataJsonModel.json),
                     metadataKeyId = resource.metadataKeyId,
                     metadataKeyType = resource.metadataKeyType
                 ).apply {
-                    this.name = resourceName
-                    this.username = resourceUsername
-                    this.description = description
+                    this.metadataJsonModel.name = resourceName
+                    this.metadataJsonModel.username = resourceUsername
+                    this.metadataJsonModel.description = description
                     when (metadataType) {
-                        V4 -> this.uri = resourceUri
-                        V5 -> this.uris = if (resourceUri != null) listOf(resourceUri) else emptyList()
+                        V4 -> this.metadataJsonModel.uri = resourceUri
+                        V5 -> this.metadataJsonModel.uris =
+                            if (resourceUri != null) listOf(resourceUri) else emptyList()
                     }
                 }
             },
             updateSecret = { decryptedSecret ->
                 val passwordChanged = decryptedSecret.secret != password
                 SecretInput(
-                    secretModel = decryptedSecret.apply {
+                    secretJsonModel = decryptedSecret.apply {
                         this.password = password
                     },
                     passwordChanged = passwordChanged
@@ -267,21 +277,21 @@ class ResourceUpdateActionsInteractor(
                     contentType = newResourceType,
                     folderId = resource.folderId,
                     expiry = resource.expiry,
-                    json = resource.json,
+                    metadataJsonModel = MetadataJsonModel(resource.metadataJsonModel.json),
                     metadataKeyId = resource.metadataKeyId,
                     metadataKeyType = resource.metadataKeyType
                 ).apply {
-                    name = label
-                    username = resource.username
+                    metadataJsonModel.name = label
+                    metadataJsonModel.username = resource.metadataJsonModel.username
                     when (metadataType) {
-                        V4 -> this.uri = issuer
-                        V5 -> this.uris = if (issuer != null) listOf(issuer) else emptyList()
+                        V4 -> this.metadataJsonModel.uri = issuer
+                        V5 -> this.metadataJsonModel.uris = if (issuer != null) listOf(issuer) else emptyList()
                     }
                 }
             },
             updateSecret = { decryptedSecret ->
                 SecretInput(
-                    secretModel = decryptedSecret.apply {
+                    secretJsonModel = decryptedSecret.apply {
                         totp = TotpSecret(
                             algorithm,
                             secretKey,
@@ -310,22 +320,23 @@ class ResourceUpdateActionsInteractor(
                     contentType = newResourceType,
                     folderId = resourceParentFolderId,
                     expiry = resource.expiry,
-                    json = resource.json,
+                    metadataJsonModel = MetadataJsonModel(resource.metadataJsonModel.json),
                     metadataKeyId = resource.metadataKeyId,
                     metadataKeyType = resource.metadataKeyType
                 ).apply {
-                    name = resourceName
-                    username = resourceUsername
+                    metadataJsonModel.name = resourceName
+                    metadataJsonModel.username = resourceUsername
                     when (metadataType) {
-                        V4 -> this.uri = resourceUri
-                        V5 -> this.uris = if (resourceUri != null) listOf(resourceUri) else emptyList()
+                        V4 -> this.metadataJsonModel.uri = resourceUri
+                        V5 -> this.metadataJsonModel.uris =
+                            if (resourceUri != null) listOf(resourceUri) else emptyList()
                     }
                 }
             },
             updateSecret = { decryptedSecret ->
                 val passwordChanged = decryptedSecret.secret != password
                 SecretInput(
-                    secretModel = decryptedSecret.apply {
+                    secretJsonModel = decryptedSecret.apply {
                         this.secret = password
                         this.description = description.orEmpty()
                     },
@@ -346,14 +357,14 @@ class ResourceUpdateActionsInteractor(
                     contentType = newResourceType,
                     folderId = resource.folderId,
                     expiry = resource.expiry,
-                    json = resource.json,
+                    metadataJsonModel = MetadataJsonModel(resource.metadataJsonModel.json),
                     metadataKeyId = metadataKeyId,
                     metadataKeyType = metadataKeyType
                 )
             },
             updateSecret = { decryptedSecret ->
                 SecretInput(
-                    secretModel = decryptedSecret,
+                    secretJsonModel = decryptedSecret,
                     passwordChanged = false
                 )
             }
@@ -362,7 +373,7 @@ class ResourceUpdateActionsInteractor(
     private suspend fun updateResource(
         updateAction: UpdateAction,
         updateResource: (ContentType, MetadataTypeModel) -> UpdateResourceModel,
-        updateSecret: (SecretModel) -> SecretInput
+        updateSecret: (SecretJsonModel) -> SecretInput
     ): Flow<ResourceUpdateActionResult> {
         return try {
             val decryptedSecret = secretPropertiesActionsInteractor.provideDecryptedSecret().single()
@@ -416,7 +427,7 @@ class ResourceUpdateActionsInteractor(
                 )
                 ResourceUpdateActionResult.Success(
                     operationResult.resource.resourceId,
-                    operationResult.resource.name
+                    operationResult.resource.metadataJsonModel.name
                 )
             }
             is UpdateResourceInteractor.Output.JsonSchemaValidationFailure ->

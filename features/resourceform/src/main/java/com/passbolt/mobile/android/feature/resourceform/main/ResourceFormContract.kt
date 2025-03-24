@@ -3,7 +3,11 @@ package com.passbolt.mobile.android.feature.resourceform.main
 import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReactiveContract
 import com.passbolt.mobile.android.ui.PasswordStrength
 import com.passbolt.mobile.android.core.passwordgenerator.codepoints.Codepoint
+import com.passbolt.mobile.android.ui.LeadingContentType
+import com.passbolt.mobile.android.ui.Mode
 import com.passbolt.mobile.android.ui.PasswordStrength.Empty
+import com.passbolt.mobile.android.ui.ResourceFormUiModel
+import com.passbolt.mobile.android.ui.TotpUiModel
 
 /**
  * Passbolt - Open source password manager for teams
@@ -30,11 +34,11 @@ import com.passbolt.mobile.android.ui.PasswordStrength.Empty
 interface ResourceFormContract {
 
     interface View : DataRefreshViewReactiveContract.View {
-        fun addTotpLeadingForm()
+        fun addTotpLeadingForm(totpUiModel: TotpUiModel)
         fun addPasswordLeadingForm(
-            initialPassword: String = "",
-            initialPasswordStrength: PasswordStrength = Empty,
-            initialPasswordEntropyBits: Double = 0.0
+            password: String = "",
+            passwordStrength: PasswordStrength = Empty,
+            passwordEntropyBits: Double = 0.0
         )
 
         fun showCreatePasswordTitle()
@@ -44,6 +48,17 @@ interface ResourceFormContract {
         fun showUnableToGeneratePassword(minimumEntropyBits: Int)
         fun showPassword(password: List<Codepoint>, entropy: Double, passwordStrength: PasswordStrength)
         fun showPasswordStrength(strength: PasswordStrength, entropyBits: Double)
+        fun setupAdditionalSecrets(supportedAdditionalSecrets: List<ResourceFormUiModel.Secret>)
+        fun setupMetadata(supportedMetadata: List<ResourceFormUiModel.Metadata>)
+        fun hideAdvancedSettings()
+        fun navigateToSecureNote(secureNote: String)
+        fun navigateToTotp(totpUiModel: TotpUiModel)
+        fun navigateToMetadataDescription(metadataDescription: String)
+        fun showName(name: String)
+        fun showPasswordUsername(username: String)
+        fun showPasswordMainUri(mainUri: String)
+        fun showTotpSecret(secret: String)
+        fun showTotpIssuer(issuer: String)
     }
 
     interface Presenter : DataRefreshViewReactiveContract.Presenter<View> {
@@ -52,5 +67,18 @@ interface ResourceFormContract {
         fun updateResourceClick()
         fun passwordGenerateClick()
         fun passwordTextChanged(password: String)
+        fun advancedSettingsClick()
+        fun nameTextChanged(name: String)
+        fun passwordMainUriTextChanged(mainUri: String)
+        fun passowrdUsernameTextChanged(username: String)
+        fun additionalSecureNoteClick()
+        fun additionalTotpClick()
+        fun metadataDescriptionClick()
+        fun secureNoteChanged(secureNote: String?)
+        fun metadataDescriptionChanged(metadataDescription: String?)
+        fun totpChanged(totpUiModel: TotpUiModel?)
+        fun totpSecretChanged(secret: String)
+        fun totpUrlChanged(url: String)
+        fun totpAdvancedSettingsChanged(totpAdvancedSettings: TotpUiModel?)
     }
 }

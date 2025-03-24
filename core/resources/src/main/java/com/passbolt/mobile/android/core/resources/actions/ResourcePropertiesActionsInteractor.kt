@@ -47,9 +47,9 @@ class ResourcePropertiesActionsInteractor(
                 URL_LABEL,
                 isSecret = false,
                 if (resourceContentType.isV5()) {
-                    resource.uris?.firstOrNull()
+                    resource.metadataJsonModel.uris?.firstOrNull()
                 } else {
-                    resource.uri
+                    resource.metadataJsonModel.uri
                 }.orEmpty()
             )
         )
@@ -60,7 +60,7 @@ class ResourcePropertiesActionsInteractor(
             ResourcePropertyActionResult(
                 USERNAME_LABEL,
                 isSecret = false,
-                resource.username.orEmpty()
+                resource.metadataJsonModel.username.orEmpty()
             )
         )
 
@@ -71,7 +71,7 @@ class ResourcePropertiesActionsInteractor(
             ResourcePropertyActionResult(
                 DESCRIPTION_LABEL,
                 isSecret = false,
-                resource.description.orEmpty()
+                resource.metadataJsonModel.description.orEmpty()
             )
         )
 

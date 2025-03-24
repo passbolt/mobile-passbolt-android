@@ -71,7 +71,7 @@ inAppReview = "2.0.1"
 okio = "3.5.0"
 otp = "2.4.0"
 apacheCommonsCodec = "1.16.0"
-jsonSchemaFriend = "0.12.4"
+jsonSchemaFriend = "0.12.3"
 jsonPath = "2.9.0"
 
 [libraries]

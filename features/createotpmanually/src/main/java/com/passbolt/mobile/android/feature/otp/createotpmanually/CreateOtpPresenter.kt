@@ -142,12 +142,12 @@ class CreateOtpPresenter(
                     OtpResourceModel(
                         resourceId = resource.resourceId,
                         parentFolderId = resource.folderId,
-                        label = resource.name,
+                        label = resource.metadataJsonModel.name,
                         secret = it.result.key,
                         issuer = if (contentType.isV5()) {
-                            resource.uris?.firstOrNull()
+                            resource.metadataJsonModel.uris?.firstOrNull()
                         } else {
-                            resource.uri
+                            resource.metadataJsonModel.uri
                         },
                         algorithm = it.result.algorithm,
                         digits = it.result.digits,
@@ -163,12 +163,12 @@ class CreateOtpPresenter(
             OtpResourceModel(
                 resourceId = resource.resourceId,
                 parentFolderId = resource.folderId,
-                label = resource.name,
+                label = resource.metadataJsonModel.name,
                 secret = "",
                 issuer = if (contentType.isV5()) {
-                    resource.uris?.firstOrNull()
+                    resource.metadataJsonModel.uris?.firstOrNull()
                 } else {
-                    resource.uri
+                    resource.metadataJsonModel.uri
                 },
                 algorithm = OtpParseResult.OtpQr.Algorithm.DEFAULT.name,
                 digits = OtpParseResult.OtpQr.TotpQr.DEFAULT_DIGITS,
@@ -354,11 +354,11 @@ class CreateOtpPresenter(
                         throw IllegalArgumentException("These resource types are not possible to link")
                     is PasswordAndDescription, V5Default -> suspend {
                         resourceUpdateActionsInteractor.addTotpToResource(
-                            overrideName = resource.name,
+                            overrideName = resource.metadataJsonModel.name,
                             overrideUri = if (contentType.isV5()) {
-                                resource.uris?.firstOrNull()
+                                resource.metadataJsonModel.uris?.firstOrNull()
                             } else {
-                                resource.uri
+                                resource.metadataJsonModel.uri
                             },
                             period = period,
                             digits = digits,
@@ -368,11 +368,11 @@ class CreateOtpPresenter(
                     }
                     is PasswordDescriptionTotp, V5DefaultWithTotp -> suspend {
                         resourceUpdateActionsInteractor.updateLinkedTotpResourceTotpFields(
-                            label = resource.name,
+                            label = resource.metadataJsonModel.name,
                             issuer = if (contentType.isV5()) {
-                                resource.uris?.firstOrNull()
+                                resource.metadataJsonModel.uris?.firstOrNull()
                             } else {
-                                resource.uri
+                                resource.metadataJsonModel.uri
                             },
                             period = period,
                             digits = digits,

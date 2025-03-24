@@ -307,7 +307,7 @@
 
     <string name="resource_form_password">Password</string>
     <string name="resource_form_enter_password">Enter password</string>
-    <string name="resource_form_uri">URI</string>
+    <string name="resource_form_main_uri">Main URI</string>
     <string name="resource_form_enter_uri">Enter URI</string>
     <string name="resource_form_username">Username</string>
     <string name="resource_form_enter_username">Enter username</string>
@@ -319,9 +319,11 @@
     <string name="resource_form_description">Description</string>
     <string name="resource_form_enter_description">Enter description</string>
     <string name="resource_form_metadata_description">Metadata description</string>
+    <string name="resource_form_create_metadata_description">Create metadata description</string>
     <string name="resource_form_secure_note">Secure note</string>
+    <string name="resource_form_create_secure_note">Create secure note</string>
     <string name="resource_form_secure_note_content">Content</string>
-    <string name="resource_form_enter_note">Content</string>
+    <string name="resource_form_enter_note">Enter note</string>
     <string name="resource_form_secure_note_info">The secure note is part of the secret if you want to be able to search this content, use metadata description.</string>
     <string name="resource_form_metadata_description_info">If you want the description to be part of the secret, use note instead.</string>
     <string name="resource_form_resource_name">Resource name</string>

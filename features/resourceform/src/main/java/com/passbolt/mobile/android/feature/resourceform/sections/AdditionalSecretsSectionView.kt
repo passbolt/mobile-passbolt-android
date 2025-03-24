@@ -4,10 +4,15 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.LinearLayout
+import androidx.core.view.isVisible
+import com.passbolt.mobile.android.core.extension.gone
 import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.ui.menu.OpenableSettingView
 import com.passbolt.mobile.android.feature.resourceform.R
 import com.passbolt.mobile.android.feature.resourceform.databinding.ViewAdditionalSecretsSectionBinding
+import com.passbolt.mobile.android.ui.ResourceFormUiModel
+import com.passbolt.mobile.android.ui.ResourceFormUiModel.Secret.SECURE_NOTE
+import com.passbolt.mobile.android.ui.ResourceFormUiModel.Secret.TOTP
 
 /**
  * Passbolt - Open source password manager for teams
@@ -69,5 +74,14 @@ class AdditionalSecretsSectionView @JvmOverloads constructor(
             binding.additionalSecretsSectionView.backgroundContainer,
             true
         )
+    }
+
+    fun setUp(fields: List<ResourceFormUiModel.Secret>) {
+        if (fields.isEmpty()) {
+            gone()
+        } else {
+            totpAdditionalSecretSection.isVisible = fields.contains(TOTP)
+            secureNoteAdditionalSecretSection.isVisible = fields.contains(SECURE_NOTE)
+        }
     }
 }

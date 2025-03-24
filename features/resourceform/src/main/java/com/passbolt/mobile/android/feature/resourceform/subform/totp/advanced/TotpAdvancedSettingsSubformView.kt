@@ -61,10 +61,8 @@ class TotpAdvancedSettingsSubformView @JvmOverloads constructor(
     }
 
     private fun setupDropdowns() {
-        with(binding) {
-            totpPeriodInput.setInputType(InputType.TYPE_CLASS_NUMBER)
-            algorithmDropdown.items = OtpParseResult.OtpQr.Algorithm.entries.map { it.toString() }
-            digitsDropdown.items = OtpParseResult.OtpQr.digitsRange.map { it.toString() }
-        }
+        totpPeriodInput.setInputType(InputType.TYPE_CLASS_NUMBER)
+        algorithmDropdown.items = OtpParseResult.OtpQr.Algorithm.entries.map { it.toString() }
+        digitsDropdown.items = OtpParseResult.OtpQr.digitsRange.map { it.toString() }
     }
 }

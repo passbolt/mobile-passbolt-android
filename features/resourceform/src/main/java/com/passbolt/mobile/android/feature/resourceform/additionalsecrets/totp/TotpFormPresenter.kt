@@ -1,5 +1,10 @@
 package com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp
 
+import com.passbolt.mobile.android.ui.Mode
+import com.passbolt.mobile.android.ui.Mode.CREATE
+import com.passbolt.mobile.android.ui.Mode.UPDATE
+import com.passbolt.mobile.android.ui.TotpUiModel
+
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -30,4 +35,44 @@ package com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp
 class TotpFormPresenter : TotpFormContract.Presenter {
 
     override var view: TotpFormContract.View? = null
+
+    private lateinit var totpUiModel: TotpUiModel
+
+    override fun argsRetrieved(mode: Mode, totpUiModel: TotpUiModel) {
+        this.totpUiModel = totpUiModel
+
+        when (mode) {
+            CREATE -> view?.showCreateTitle()
+            UPDATE -> throw NotImplementedError() // TODO
+        }
+
+        view?.showSecret(totpUiModel.secret)
+        view?.showUrl(totpUiModel.issuer)
+    }
+
+    override fun totpSecretChanged(secret: String) {
+        totpUiModel = totpUiModel.copy(secret = secret)
+    }
+
+    override fun totpUrlChanged(url: String) {
+        totpUiModel = totpUiModel.copy(issuer = url)
+    }
+
+    override fun moreSettingsClick() {
+        view?.navigateToTotpAdvancedSettingsForm(totpUiModel)
+    }
+
+    override fun totpAdvancedSettingsChanged(totpModel: TotpUiModel?) {
+        totpModel?.let {
+            totpUiModel = it.copy(
+                expiry = totpModel.expiry,
+                length = totpModel.length,
+                algorithm = totpModel.algorithm
+            )
+        }
+    }
+
+    override fun applyClick() {
+        view?.goBackWithResult(totpUiModel)
+    }
 }

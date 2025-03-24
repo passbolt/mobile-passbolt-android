@@ -18,6 +18,7 @@ import com.passbolt.mobile.android.feature.home.screen.ShowSuggestedModel
 import com.passbolt.mobile.android.resourcemoremenu.usecase.CreateResourceMoreMenuModelUseCase
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType
 import com.passbolt.mobile.android.ui.HomeDisplayViewModel
+import com.passbolt.mobile.android.ui.MetadataJsonModel
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.FavouriteOption.ADD_TO_FAVOURITES
@@ -97,12 +98,16 @@ class HomeMenuTest : KoinTest {
             favouriteId = null,
             modified = ZonedDateTime.now(),
             expiry = null,
-            json = JsonObject().apply {
-                addProperty("name", NAME)
-                addProperty("username", USERNAME)
-                addProperty("uri", URL)
-                addProperty("description", DESCRIPTION)
-            }.toString(),
+            metadataJsonModel = MetadataJsonModel(
+                """
+                    {
+                        "name": "$NAME",
+                        "uri": "$URL",
+                        "username": "$USERNAME",
+                        "description": "$DESCRIPTION"
+                    }
+                """.trimIndent()
+            ),
             metadataKeyId = null,
             metadataKeyType = null
         )
@@ -121,7 +126,7 @@ class HomeMenuTest : KoinTest {
         presenter.resume(view)
         presenter.resourceMoreClick(RESOURCE_MODEL)
 
-        verify(view).navigateToMore(RESOURCE_MODEL.resourceId, RESOURCE_MODEL.name)
+        verify(view).navigateToMore(RESOURCE_MODEL.resourceId, RESOURCE_MODEL.metadataJsonModel.name)
     }
 
     @Test
@@ -252,7 +257,7 @@ class HomeMenuTest : KoinTest {
                 ResourcePropertyActionResult(
                     ResourcePropertiesActionsInteractor.DESCRIPTION_LABEL,
                     isSecret = false,
-                    RESOURCE_MODEL.description.orEmpty()
+                    RESOURCE_MODEL.metadataJsonModel.description.orEmpty()
                 )
             )
         }
@@ -271,7 +276,7 @@ class HomeMenuTest : KoinTest {
 
         verify(view).addToClipboard(
             SecretPropertiesActionsInteractor.DESCRIPTION_LABEL,
-            RESOURCE_MODEL.description.orEmpty(),
+            RESOURCE_MODEL.metadataJsonModel.description.orEmpty(),
             isSecret = false
         )
     }
@@ -280,7 +285,7 @@ class HomeMenuTest : KoinTest {
     fun `delete resource should show confirmation dialog, delete and show snackbar`() = runTest {
         mockResourceCommonActionsInteractor.stub {
             onBlocking { deleteResource() } doReturn flowOf(
-                ResourceCommonActionResult.Success(RESOURCE_MODEL.name)
+                ResourceCommonActionResult.Success(RESOURCE_MODEL.metadataJsonModel.name)
             )
         }
 
@@ -298,7 +303,7 @@ class HomeMenuTest : KoinTest {
         presenter.deleteResourceConfirmed()
 
         verify(view).showDeleteConfirmationDialog()
-        verify(view).showResourceDeletedSnackbar(RESOURCE_MODEL.name)
+        verify(view).showResourceDeletedSnackbar(RESOURCE_MODEL.metadataJsonModel.name)
     }
 
     @Test
@@ -356,7 +361,7 @@ class HomeMenuTest : KoinTest {
                 ResourcePropertyActionResult(
                     ResourcePropertiesActionsInteractor.URL_LABEL,
                     isSecret = false,
-                    RESOURCE_MODEL.uri.orEmpty()
+                    RESOURCE_MODEL.metadataJsonModel.uri.orEmpty()
                 )
             )
         }
@@ -375,7 +380,7 @@ class HomeMenuTest : KoinTest {
 
         verify(view).addToClipboard(
             ResourcePropertiesActionsInteractor.URL_LABEL,
-            RESOURCE_MODEL.uri.orEmpty(),
+            RESOURCE_MODEL.metadataJsonModel.uri.orEmpty(),
             isSecret = false
         )
     }
@@ -387,7 +392,7 @@ class HomeMenuTest : KoinTest {
                 ResourcePropertyActionResult(
                     ResourcePropertiesActionsInteractor.USERNAME_LABEL,
                     isSecret = false,
-                    RESOURCE_MODEL.username.orEmpty()
+                    RESOURCE_MODEL.metadataJsonModel.username.orEmpty()
                 )
             )
         }
@@ -406,7 +411,7 @@ class HomeMenuTest : KoinTest {
 
         verify(view).addToClipboard(
             ResourcePropertiesActionsInteractor.USERNAME_LABEL,
-            RESOURCE_MODEL.username.orEmpty(),
+            RESOURCE_MODEL.metadataJsonModel.username.orEmpty(),
             isSecret = false
         )
     }
@@ -418,7 +423,7 @@ class HomeMenuTest : KoinTest {
                 ResourcePropertyActionResult(
                     ResourcePropertiesActionsInteractor.URL_LABEL,
                     isSecret = false,
-                    RESOURCE_MODEL.uri.orEmpty()
+                    RESOURCE_MODEL.metadataJsonModel.uri.orEmpty()
                 )
             )
         }
@@ -435,7 +440,7 @@ class HomeMenuTest : KoinTest {
         presenter.resourceMoreClick(RESOURCE_MODEL)
         presenter.menuLaunchWebsiteClick()
 
-        verify(view).openWebsite(RESOURCE_MODEL.uri.orEmpty())
+        verify(view).openWebsite(RESOURCE_MODEL.metadataJsonModel.uri.orEmpty())
     }
 
     @Test

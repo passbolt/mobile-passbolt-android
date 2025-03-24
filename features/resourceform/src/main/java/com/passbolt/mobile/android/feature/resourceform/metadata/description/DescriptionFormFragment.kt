@@ -2,10 +2,16 @@ package com.passbolt.mobile.android.feature.resourceform.metadata.description
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.os.bundleOf
+import androidx.fragment.app.setFragmentResult
+import androidx.navigation.fragment.findNavController
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
 import com.passbolt.mobile.android.feature.resourceform.databinding.FragmentDescriptionFormBinding
 import org.koin.android.ext.android.inject
+import androidx.navigation.fragment.navArgs
+import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -35,10 +41,46 @@ class DescriptionFormFragment :
     ), DescriptionFormContract.View {
 
     private val presenter: DescriptionFormContract.Presenter by inject()
+    private val navArgs: DescriptionFormFragmentArgs by navArgs()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initDefaultToolbar(binding.toolbar)
+        setListeners()
         presenter.attach(this)
+        presenter.argsRetrieved(navArgs.mode, navArgs.metadataDescription)
+    }
+
+    private fun setListeners() {
+        with(binding) {
+            metadataDescriptionSubformView.descriptionInput.setTextChangeListener {
+                presenter.onDescriptionChanged(it)
+            }
+            apply.setDebouncingOnClick {
+                presenter.applyClick()
+            }
+        }
+    }
+
+    override fun showCreateTitle() {
+        binding.toolbar.toolbarTitle = getString(LocalizationR.string.resource_form_create_metadata_description)
+    }
+
+    override fun showDescription(metadataDescription: String) {
+        binding.metadataDescriptionSubformView.descriptionInput.text = metadataDescription
+    }
+
+    override fun goBackWithResult(metadataDescription: String) {
+        setFragmentResult(
+            REQUEST_METADATA_DESCRIPTION,
+            bundleOf(EXTRA_METADATA_DESCRIPTION to metadataDescription)
+        )
+        findNavController().popBackStack()
+    }
+
+    companion object {
+        const val REQUEST_METADATA_DESCRIPTION = "METADATA_DESCRIPTION"
+
+        const val EXTRA_METADATA_DESCRIPTION = "metadata_description"
     }
 }

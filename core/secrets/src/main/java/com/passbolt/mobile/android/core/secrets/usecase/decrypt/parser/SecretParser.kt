@@ -39,7 +39,7 @@ class SecretParser(
     suspend fun parseSecret(
         resourceTypeId: String,
         decryptedSecret: ByteArray
-    ): DecryptedSecretOrError<SecretModel> {
+    ): DecryptedSecretOrError<SecretJsonModel> {
 
         val slug = resourceTypeIdToSlugMappingProvider
             .provideMappingForSelectedAccount()[UUID.fromString(resourceTypeId)]
@@ -52,7 +52,7 @@ class SecretParser(
                     slug
                 )
             ) {
-                val parsedSecret = SecretModel(plainSecret)
+                val parsedSecret = SecretJsonModel(plainSecret)
                 DecryptedSecretOrError.DecryptedSecret(parsedSecret)
             } else {
                 val errorMessage = "Invalid secret in $slug resource type"

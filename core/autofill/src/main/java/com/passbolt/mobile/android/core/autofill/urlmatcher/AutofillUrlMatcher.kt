@@ -30,7 +30,7 @@ import java.net.URL
 class AutofillUrlMatcher {
 
     fun isMatching(autofillUrl: String?, resource: ResourceModel): Boolean {
-        val resourceUris = resource.uris.orEmpty() + resource.uri.orEmpty()
+        val resourceUris = resource.metadataJsonModel.uris.orEmpty() + resource.metadataJsonModel.uri.orEmpty()
         return resourceUris.any { isMatching(autofillUrl, it) }
     }
 

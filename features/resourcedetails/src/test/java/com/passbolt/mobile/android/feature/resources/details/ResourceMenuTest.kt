@@ -18,6 +18,7 @@ import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetai
 import com.passbolt.mobile.android.featureflags.usecase.GetFeatureFlagsUseCase
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType
 import com.passbolt.mobile.android.ui.GroupModel
+import com.passbolt.mobile.android.ui.MetadataJsonModel
 import com.passbolt.mobile.android.ui.PermissionModelUi
 import com.passbolt.mobile.android.ui.RbacModel
 import com.passbolt.mobile.android.ui.RbacRuleModel
@@ -90,12 +91,16 @@ class ResourceMenuTest : KoinTest {
             favouriteId = "fav-id",
             modified = ZonedDateTime.now(),
             expiry = null,
-            json = JsonObject().apply {
-                addProperty("name", NAME)
-                addProperty("username", USERNAME)
-                addProperty("uri", URL)
-                addProperty("description", DESCRIPTION)
-            }.toString(),
+            metadataJsonModel = MetadataJsonModel(
+                """
+                    {
+                        "name": "$NAME",
+                        "uri": "$URL",
+                        "username": "$USERNAME",
+                        "description": "$DESCRIPTION"
+                    }
+                """.trimIndent()
+            ),
             metadataKeyType = null,
             metadataKeyId = null
         )
@@ -163,7 +168,7 @@ class ResourceMenuTest : KoinTest {
     fun `delete resource should show confirmation dialog, delete and close details`() = runTest {
         mockResourceCommonActionsInteractor.stub {
             onBlocking { deleteResource() } doReturn flowOf(
-                ResourceCommonActionResult.Success(resourceModel.name)
+                ResourceCommonActionResult.Success(resourceModel.metadataJsonModel.name)
             )
         }
 
@@ -178,7 +183,7 @@ class ResourceMenuTest : KoinTest {
         presenter.deleteResourceConfirmed()
 
         verify(view).showDeleteConfirmationDialog()
-        verify(view).closeWithDeleteSuccessResult(resourceModel.name)
+        verify(view).closeWithDeleteSuccessResult(resourceModel.metadataJsonModel.name)
     }
 
     @ExperimentalCoroutinesApi
@@ -210,7 +215,7 @@ class ResourceMenuTest : KoinTest {
                 ResourcePropertyActionResult(
                     ResourcePropertiesActionsInteractor.URL_LABEL,
                     isSecret = false,
-                    resourceModel.uri.orEmpty()
+                    resourceModel.metadataJsonModel.uri.orEmpty()
                 )
             )
         }
@@ -224,7 +229,7 @@ class ResourceMenuTest : KoinTest {
         presenter.moreClick()
         presenter.launchWebsiteClick()
 
-        verify(view).openWebsite(resourceModel.uri.orEmpty())
+        verify(view).openWebsite(resourceModel.metadataJsonModel.uri.orEmpty())
     }
 
     @Test
@@ -234,7 +239,7 @@ class ResourceMenuTest : KoinTest {
                 ResourcePropertyActionResult(
                     ResourcePropertiesActionsInteractor.USERNAME_LABEL,
                     isSecret = false,
-                    resourceModel.username.orEmpty()
+                    resourceModel.metadataJsonModel.username.orEmpty()
                 )
             )
         }
@@ -249,7 +254,7 @@ class ResourceMenuTest : KoinTest {
 
         verify(view).addToClipboard(
             ResourcePropertiesActionsInteractor.USERNAME_LABEL,
-            resourceModel.username.orEmpty(),
+            resourceModel.metadataJsonModel.username.orEmpty(),
             isSecret = false
         )
     }
@@ -261,7 +266,7 @@ class ResourceMenuTest : KoinTest {
                 ResourcePropertyActionResult(
                     ResourcePropertiesActionsInteractor.URL_LABEL,
                     isSecret = false,
-                    resourceModel.uri.orEmpty()
+                    resourceModel.metadataJsonModel.uri.orEmpty()
                 )
             )
         }
@@ -276,7 +281,7 @@ class ResourceMenuTest : KoinTest {
 
         verify(view).addToClipboard(
             ResourcePropertiesActionsInteractor.URL_LABEL,
-            resourceModel.uri.orEmpty(),
+            resourceModel.metadataJsonModel.uri.orEmpty(),
             isSecret = false
         )
     }

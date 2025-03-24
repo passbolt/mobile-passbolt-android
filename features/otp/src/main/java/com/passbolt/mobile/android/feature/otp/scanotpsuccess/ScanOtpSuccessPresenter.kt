@@ -112,11 +112,11 @@ class ScanOtpSuccessPresenter(
                 when (val contentType = ContentType.fromSlug(slug!!)) {
                     is PasswordAndDescription, V5Default -> suspend {
                         resourceUpdateActionsInteractor.addTotpToResource(
-                            overrideName = resource.name,
+                            overrideName = resource.metadataJsonModel.name,
                             overrideUri = if (contentType.isV5()) {
-                                resource.uris?.firstOrNull()
+                                resource.metadataJsonModel.uris?.firstOrNull()
                             } else {
-                                resource.uri
+                                resource.metadataJsonModel.uri
                             },
                             period = scannedTotp.period,
                             digits = scannedTotp.digits,
@@ -126,11 +126,11 @@ class ScanOtpSuccessPresenter(
                     }
                     is PasswordDescriptionTotp, V5DefaultWithTotp -> suspend {
                         resourceUpdateActionsInteractor.updateLinkedTotpResourceTotpFields(
-                            label = resource.name,
+                            label = resource.metadataJsonModel.name,
                             issuer = if (contentType.isV5()) {
-                                resource.uris?.firstOrNull()
+                                resource.metadataJsonModel.uris?.firstOrNull()
                             } else {
-                                resource.uri
+                                resource.metadataJsonModel.uri
                             },
                             period = scannedTotp.period,
                             digits = scannedTotp.digits,

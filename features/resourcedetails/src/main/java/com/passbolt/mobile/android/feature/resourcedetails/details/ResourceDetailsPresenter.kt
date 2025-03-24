@@ -214,8 +214,8 @@ class ResourceDetailsPresenter(
             doOnResult = { view?.displayUrl(it.result) }
         )
         view?.apply {
-            displayUsername(resourceModel.username.orEmpty())
-            displayInitialsIcon(resourceModel.name, resourceModel.initials)
+            displayUsername(resourceModel.metadataJsonModel.username.orEmpty())
+            displayInitialsIcon(resourceModel.metadataJsonModel.name, resourceModel.initials)
             handleExpiry()
             handleFavourite()
             hidePassword()
@@ -236,14 +236,14 @@ class ResourceDetailsPresenter(
     private fun handleExpiry() {
         resourceModel.expiry.let { expiry ->
             if (expiry == null) {
-                view?.displayTitle(resourceModel.name)
+                view?.displayTitle(resourceModel.metadataJsonModel.name)
                 view?.hideExpirySection()
             } else {
                 if (expiry.isBeforeNow()) {
-                    view?.displayExpiryTitle(resourceModel.name)
+                    view?.displayExpiryTitle(resourceModel.metadataJsonModel.name)
                     view?.showExpiryIndicator()
                 } else {
-                    view?.displayTitle(resourceModel.name)
+                    view?.displayTitle(resourceModel.metadataJsonModel.name)
                 }
                 view?.displayExpirySection(resourceModel.expiry!!)
             }
@@ -283,7 +283,7 @@ class ResourceDetailsPresenter(
             if (isDescriptionSecret) {
                 view?.hideDescription()
             } else {
-                view?.showDescription(resourceModel.description.orEmpty(), isSecret = false)
+                view?.showDescription(resourceModel.metadataJsonModel.description.orEmpty(), isSecret = false)
             }
         }
     }
@@ -303,11 +303,11 @@ class ResourceDetailsPresenter(
 
     override fun moreClick() {
         hideTotp()
-        view?.navigateToMore(resourceModel.resourceId, resourceModel.name)
+        view?.navigateToMore(resourceModel.resourceId, resourceModel.metadataJsonModel.name)
     }
 
     override fun manageTotpClick() {
-        view?.navigateToOtpMoreMenu(resourceModel.resourceId, resourceModel.name)
+        view?.navigateToOtpMoreMenu(resourceModel.resourceId, resourceModel.metadataJsonModel.name)
     }
 
     override fun backArrowClick() {
@@ -493,7 +493,7 @@ class ResourceDetailsPresenter(
             performCommonResourceAction(
                 action = { resourceCommonActionsInteractor.toggleFavourite(option) },
                 doOnFailure = { view?.showToggleFavouriteFailure() },
-                doOnSuccess = { view?.setResourceEditedResult(resourceModel.name) }
+                doOnSuccess = { view?.setResourceEditedResult(resourceModel.metadataJsonModel.name) }
             )
             getResourcesAndPermissions(resourceModel.resourceId)
             resourceDetailActionIdlingResource.setIdle(true)
@@ -575,8 +575,8 @@ class ResourceDetailsPresenter(
                 val updateAction = when (otpAction) {
                     ADD_TOTP -> suspend {
                         resourceUpdateActionsInteractor.addTotpToResource(
-                            overrideName = resourceModel.name,
-                            overrideUri = resourceModel.uri,
+                            overrideName = resourceModel.metadataJsonModel.name,
+                            overrideUri = resourceModel.metadataJsonModel.uri,
                             period = totpQr.period,
                             digits = totpQr.digits,
                             algorithm = totpQr.algorithm.name,
@@ -585,8 +585,8 @@ class ResourceDetailsPresenter(
                     }
                     EDIT_TOTP -> suspend {
                         resourceUpdateActionsInteractor.updateLinkedTotpResourceTotpFields(
-                            label = resourceModel.name,
-                            issuer = resourceModel.uri,
+                            label = resourceModel.metadataJsonModel.name,
+                            issuer = resourceModel.metadataJsonModel.uri,
                             period = totpQr.period,
                             digits = totpQr.digits,
                             algorithm = totpQr.algorithm.name,

@@ -66,7 +66,7 @@ class PasswordItem(
             loader.isVisible = resourceWrapper.loaderVisible
             itemPassword.isEnabled = resourceWrapper.clickable
             initialsIconGenerator.generate(
-                resourceWrapper.resourceModel.name,
+                resourceWrapper.resourceModel.metadataJsonModel.name,
                 resourceWrapper.resourceModel.initials
             ).apply {
                 icon.setImageDrawable(this)
@@ -77,11 +77,11 @@ class PasswordItem(
     private fun setupTitleAndExpiry(binding: ItemPasswordBinding) {
         resourceWrapper.resourceModel.expiry.let { expiry ->
             if (expiry == null || expiry.isInFuture()) {
-                binding.title.text = resourceWrapper.resourceModel.name
+                binding.title.text = resourceWrapper.resourceModel.metadataJsonModel.name
                 binding.indicatorIcon.setImageDrawable(null)
             } else {
                 binding.title.text = binding.root.context.getString(
-                    LocalizationR.string.name_expired, resourceWrapper.resourceModel.name
+                    LocalizationR.string.name_expired, resourceWrapper.resourceModel.metadataJsonModel.name
                 )
                 binding.indicatorIcon.setImageDrawable(
                     ContextCompat.getDrawable(
@@ -96,12 +96,12 @@ class PasswordItem(
     private fun setupUsername(binding: ItemPasswordBinding) = with(binding) {
         val fontFamily = ResourcesCompat.getFont(binding.root.context, CoreUiR.font.inter)
 
-        if (resourceWrapper.resourceModel.username.isNullOrBlank()) {
+        if (resourceWrapper.resourceModel.metadataJsonModel.username.isNullOrBlank()) {
             subtitle.typeface = Typeface.create(fontFamily, FONT_WEIGHT, true)
             subtitle.text = binding.root.context.getString(LocalizationR.string.no_username)
         } else {
             subtitle.typeface = Typeface.create(fontFamily, FONT_WEIGHT, false)
-            subtitle.text = resourceWrapper.resourceModel.username
+            subtitle.text = resourceWrapper.resourceModel.metadataJsonModel.username
         }
     }
 
