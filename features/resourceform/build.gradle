@@ -17,10 +17,18 @@ dependencies {
     implementation project(':accounts')
     implementation project(':mappers')
     implementation project(':navigation')
+    implementation project(':metadata')
+    implementation project(':supportedresourcetypes')
+    implementation project(':secrets')
+    implementation project(':jsonmodel')
 
     implementation libs.navigation.fragment
     implementation libs.navigation.ui
     implementation libs.koin
+
+    testImplementation project(':commontest')
+    testImplementation libs.gson
+    testImplementation libs.json.path
 }
 
 android {

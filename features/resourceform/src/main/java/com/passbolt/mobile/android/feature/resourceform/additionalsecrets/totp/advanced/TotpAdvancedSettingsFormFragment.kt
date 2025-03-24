@@ -2,10 +2,18 @@ package com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.os.bundleOf
+import androidx.fragment.app.setFragmentResult
+import androidx.navigation.fragment.findNavController
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
+import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
 import com.passbolt.mobile.android.feature.resourceform.databinding.FragmentTotpAdvancedSettingsFormBinding
 import org.koin.android.ext.android.inject
+import androidx.navigation.fragment.navArgs
+import com.passbolt.mobile.android.core.ui.textinputfield.StatefulInput
+import com.passbolt.mobile.android.ui.TotpUiModel
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -35,10 +43,68 @@ class TotpAdvancedSettingsFormFragment :
     ), TotpAdvancedSettingsFormContract.View {
 
     private val presenter: TotpAdvancedSettingsFormContract.Presenter by inject()
+    private val navArgs: TotpAdvancedSettingsFormFragmentArgs by navArgs()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initDefaultToolbar(binding.toolbar)
+        setListeners()
         presenter.attach(this)
+        presenter.argsRetrieved(navArgs.mode, navArgs.totpUiModel)
+    }
+
+    override fun showCreateTitle() {
+        binding.toolbar.toolbarTitle = getString(LocalizationR.string.resource_form_create_totp)
+    }
+
+    private fun setListeners() {
+        with(binding) {
+            totpAdvancedSettingsSubformView.totpPeriodInput.setTextChangeListener {
+                presenter.totpPeriodChanged(it)
+            }
+            totpAdvancedSettingsSubformView.digitsDropdown.selectedItemChangedListener = {
+                presenter.totpDigitsChanged(it)
+            }
+            totpAdvancedSettingsSubformView.algorithmDropdown.selectedItemChangedListener = {
+                presenter.totpAlgorithmChanged(it)
+            }
+            apply.setDebouncingOnClick {
+                presenter.applyClick()
+            }
+        }
+    }
+
+    override fun showExpiry(expiry: String) {
+        binding.totpAdvancedSettingsSubformView.totpPeriodInput.text = expiry
+    }
+
+    override fun showLength(length: String) {
+        binding.totpAdvancedSettingsSubformView.digitsDropdown.setItem(length)
+    }
+
+    override fun showAlgorithm(algorithm: String) {
+        binding.totpAdvancedSettingsSubformView.algorithmDropdown.setItem(algorithm)
+    }
+
+    override fun showTotpPeriodError() {
+        binding.totpAdvancedSettingsSubformView.totpPeriodInput.setState(
+            StatefulInput.State.Error(
+                getString(LocalizationR.string.validation_required_integer)
+            )
+        )
+    }
+
+    override fun goBackWithResult(totpModel: TotpUiModel) {
+        setFragmentResult(
+            REQUEST_TOTP_ADVANCED,
+            bundleOf(EXTRA_TOTP_ADVANCED to totpModel)
+        )
+        findNavController().popBackStack()
+    }
+
+    companion object {
+        const val REQUEST_TOTP_ADVANCED = "TOTP_ADVANCED"
+
+        const val EXTRA_TOTP_ADVANCED = "totp_advanced"
     }
 }

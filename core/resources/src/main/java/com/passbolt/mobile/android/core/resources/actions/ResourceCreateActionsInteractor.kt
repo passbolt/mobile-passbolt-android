@@ -39,7 +39,7 @@ import com.passbolt.mobile.android.core.resources.interactor.create.CreateResour
 import com.passbolt.mobile.android.core.resources.usecase.ResourceShareInteractor
 import com.passbolt.mobile.android.core.resources.usecase.db.AddLocalResourcePermissionsUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.AddLocalResourceUseCase
-import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.SecretModel
+import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.SecretJsonModel
 import com.passbolt.mobile.android.core.users.usecase.db.GetLocalCurrentUserUseCase
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
 import com.passbolt.mobile.android.jsonmodel.delegates.TotpSecret
@@ -53,6 +53,7 @@ import com.passbolt.mobile.android.supportedresourceTypes.ContentType.Totp
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5Default
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5TotpStandalone
 import com.passbolt.mobile.android.ui.CreateResourceModel
+import com.passbolt.mobile.android.ui.MetadataJsonModel
 import com.passbolt.mobile.android.ui.MetadataKeyParamsModel
 import com.passbolt.mobile.android.ui.MetadataKeyTypeModel
 import com.passbolt.mobile.android.ui.MetadataTypeModel
@@ -102,18 +103,18 @@ class ResourceCreateActionsInteractor(
                     expiry = null,
                     metadataKeyId = metadataKeyId,
                     metadataKeyType = metadataKeyType,
-                    json = "{}"
+                    metadataJsonModel = MetadataJsonModel("{}")
                 ).apply {
-                    name = resourceName
-                    username = resourceUsername
+                    metadataJsonModel.name = resourceName
+                    metadataJsonModel.username = resourceUsername
                     when (metadataType) {
-                        V4 -> this.uri = resourceUris?.firstOrNull()
-                        V5 -> this.uris = resourceUris
+                        V4 -> this.metadataJsonModel.uri = resourceUris?.firstOrNull()
+                        V5 -> this.metadataJsonModel.uris = resourceUris
                     }
                 }
             },
             createSecret = {
-                SecretModel(json = "{}").apply {
+                SecretJsonModel(json = "{}").apply {
                     this.secret = password
                     this.description = description
                 }
@@ -145,19 +146,19 @@ class ResourceCreateActionsInteractor(
                     expiry = null,
                     metadataKeyId = metadataKeyId,
                     metadataKeyType = metadataKeyType,
-                    json = "{}"
+                    metadataJsonModel = MetadataJsonModel("{}")
                 ).apply {
-                    name = label
-                    username = resourceUsername
+                    metadataJsonModel.name = label
+                    metadataJsonModel.username = resourceUsername
                     when (metadataType) {
-                        V4 -> this.uri = issuer
-                        V5 -> this.uris = issuer?.let { listOf(it) }
+                        V4 -> this.metadataJsonModel.uri = issuer
+                        V5 -> this.metadataJsonModel.uris = issuer?.let { listOf(it) }
                     }
                 }
             },
 
             createSecret = {
-                SecretModel(json = "{}").apply {
+                SecretJsonModel(json = "{}").apply {
                     this.totp = TotpSecret(
                         algorithm = algorithm,
                         key = secretKey,
@@ -202,7 +203,7 @@ class ResourceCreateActionsInteractor(
 
     private suspend fun createResource(
         createResource: (MetadataTypeModel) -> CreateResourceModel,
-        createSecret: () -> SecretModel
+        createSecret: () -> SecretJsonModel
     ): Flow<ResourceCreateActionResult> {
         return try {
             flowOf(
@@ -244,7 +245,7 @@ class ResourceCreateActionsInteractor(
                     applyFolderPermissionsToCreatedResource(operationResult.resource.resourceModel, it)
                 } ?: Success(
                     operationResult.resource.resourceModel.resourceId,
-                    operationResult.resource.resourceModel.name
+                    operationResult.resource.resourceModel.metadataJsonModel.name
                 )
             }
             is CreateResourceInteractor.Output.JsonSchemaValidationFailure ->
@@ -271,7 +272,7 @@ class ResourceCreateActionsInteractor(
             is ResourceShareInteractor.Output.SecretFetchFailure -> FetchFailure
             is ResourceShareInteractor.Output.ShareFailure -> ShareFailure(shareResult.exception.message)
             is ResourceShareInteractor.Output.SimulateShareFailure -> ShareFailure(shareResult.exception.message)
-            is ResourceShareInteractor.Output.Success -> Success(resource.resourceId, resource.name)
+            is ResourceShareInteractor.Output.Success -> Success(resource.resourceId, resource.metadataJsonModel.name)
             is ResourceShareInteractor.Output.Unauthorized -> Unauthorized
         }
     }

@@ -376,7 +376,7 @@ class UpdateResourcePresenter(
             doOnFailure = { view?.showError() },
             doOnCryptoFailure = { view?.showEncryptionError(it) },
             doOnSchemaValidationFailure = ::handleSchemaValidationFailure,
-            doOnSuccess = { view?.closeWithEditSuccessResult(existingResource.name) }
+            doOnSuccess = { view?.closeWithEditSuccessResult(existingResource.metadataJsonModel.name) }
         )
     }
 

@@ -1,0 +1,77 @@
+package com.passbolt.mobile.android.feature.resourceform.metadata.description
+
+import com.google.common.truth.Truth.assertThat
+import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.TotpFormContract
+import com.passbolt.mobile.android.ui.Mode
+import com.passbolt.mobile.android.ui.OtpParseResult
+import com.passbolt.mobile.android.ui.TotpUiModel
+import org.junit.Rule
+import org.junit.Test
+import org.koin.core.logger.Level
+import org.koin.test.KoinTest
+import org.koin.test.KoinTestRule
+import org.koin.test.inject
+import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyNoMoreInteractions
+
+/**
+ * Passbolt - Open source password manager for teams
+ * Copyright (c) 2021 Passbolt SA
+ *
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
+ * Public License (AGPL) as published by the Free Software Foundation version 3.
+ *
+ * The name "Passbolt" is a registered trademark of Passbolt SA, and Passbolt SA hereby declines to grant a trademark
+ * license to "Passbolt" pursuant to the GNU Affero General Public License version 3 Section 7(e), without a separate
+ * agreement with Passbolt SA.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License along with this program. If not,
+ * see GNU Affero General Public License v3 (http://www.gnu.org/licenses/agpl-3.0.html).
+ *
+ * @copyright Copyright (c) Passbolt SA (https://www.passbolt.com)
+ * @license https://opensource.org/licenses/AGPL-3.0 AGPL License
+ * @link https://www.passbolt.com Passbolt (tm)
+ * @since v1.0
+ */
+
+class DescriptionFormPresenterTest : KoinTest {
+
+    private val presenter: DescriptionFormContract.Presenter by inject()
+    private val view: DescriptionFormContract.View = mock()
+
+    @get:Rule
+    val koinTestRule = KoinTestRule.create {
+        printLogger(Level.ERROR)
+        modules(descriptionFormModule)
+    }
+
+    @Test
+    fun `view should show correct create title and description on attach`() {
+        val description = "mock description"
+
+        presenter.attach(view)
+        presenter.argsRetrieved(Mode.CREATE, description)
+
+        verify(view).showCreateTitle()
+        verify(view).showDescription(description)
+        verifyNoMoreInteractions(view)
+    }
+
+    @Test
+    fun `description changes should be applied`() {
+        val description = "mock description"
+        val changedDescription = "changed description"
+
+        presenter.attach(view)
+        presenter.argsRetrieved(Mode.CREATE, description)
+        presenter.onDescriptionChanged(changedDescription)
+        presenter.applyClick()
+
+        verify(view).goBackWithResult(changedDescription)
+    }
+}

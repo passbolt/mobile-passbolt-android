@@ -82,11 +82,11 @@ class UpdateResourceInteractor(
         }
 
         val isSecretValid = isSecretValid(
-            PlainSecretValidationWrapper(secretInput.secretModel.json, resourceInput.contentType)
+            PlainSecretValidationWrapper(secretInput.secretJsonModel.json, resourceInput.contentType)
                 .validationPlainSecret,
             resourceInput.contentType
         )
-        val isResourceValid = isResourceValid(resourceInput.json, resourceInput.contentType)
+        val isResourceValid = isResourceValid(resourceInput.metadataJsonModel.json, resourceInput.contentType)
 
         return when (val usersWhoHaveAccess =
             fetchUsersUseCase.execute(FetchUsersUseCase.Input(listOf(resourceInput.resourceId)))) {
@@ -111,7 +111,7 @@ class UpdateResourceInteractor(
         usersWhoHaveAccess: List<UserModel>,
         resourceInput: UpdateResourceModel
     ): Output {
-        val encryptedSecrets = encrypt(secretInput.secretModel.json, passphrase, usersWhoHaveAccess)
+        val encryptedSecrets = encrypt(secretInput.secretJsonModel.json, passphrase, usersWhoHaveAccess)
         return if (encryptedSecrets.any { it is EncryptedSecretOrError.Error }) {
             Output.OpenPgpError(
                 encryptedSecrets.filterIsInstance<EncryptedSecretOrError.Error>().first().message
@@ -120,25 +120,25 @@ class UpdateResourceInteractor(
             val secrets = encryptedSecrets.filterIsInstance<EncryptedSecretOrError.EncryptedSecret>()
             val createResourceDto = if (SupportedContentTypes.v4Slugs.contains(resourceInput.contentType.slug)) {
                 CreateV4ResourceDto(
-                    name = resourceInput.name,
+                    name = resourceInput.metadataJsonModel.name,
                     resourceTypeId = getResourceTypeIdForSlug(resourceInput.contentType.slug),
                     secrets = secrets.map { EncryptedSecret(it.userId, it.data) },
-                    username = resourceInput.username,
-                    uri = resourceInput.uri,
-                    description = resourceInput.description,
+                    username = resourceInput.metadataJsonModel.username,
+                    uri = resourceInput.metadataJsonModel.uri,
+                    description = resourceInput.metadataJsonModel.description,
                     folderParentId = resourceInput.folderId,
                     expiry = getResourceExpiry(resourceInput, secretInput)
                 )
             } else {
                 resourceInput.apply {
-                    this.objectType = "PASSBOLT_RESOURCE_METADATA"
-                    this.resourceTypeId = getResourceTypeIdForSlug(contentType.slug)
+                    this.metadataJsonModel.objectType = "PASSBOLT_RESOURCE_METADATA"
+                    this.metadataJsonModel.resourceTypeId = getResourceTypeIdForSlug(contentType.slug)
                 }
 
                 val encryptedMetadata = metadataEncryptor.encryptMetadata(
                     resourceInput.metadataKeyType!!,
                     resourceInput.metadataKeyId!!,
-                    resourceInput.json,
+                    resourceInput.metadataJsonModel.json,
                     passphrase
                 )
                 when (encryptedMetadata) {

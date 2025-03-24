@@ -66,9 +66,10 @@ import com.passbolt.mobile.android.feature.otp.databinding.FragmentOtpBinding
 import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpFragment
 import com.passbolt.mobile.android.feature.otp.scanotpsuccess.ScanOtpSuccessFragment
 import com.passbolt.mobile.android.feature.otp.screen.recycler.OtpItem
-import com.passbolt.mobile.android.feature.resourceform.main.Mode
+import com.passbolt.mobile.android.ui.Mode
 import com.passbolt.mobile.android.otpeditmoremenu.OtpUpdateMoreMenuFragment
 import com.passbolt.mobile.android.otpmoremenu.OtpMoreMenuFragment
+import com.passbolt.mobile.android.ui.LeadingContentType
 import com.passbolt.mobile.android.ui.OtpItemWrapper
 import com.passbolt.mobile.android.ui.OtpParseResult
 import org.koin.android.ext.android.inject
@@ -152,7 +153,7 @@ class OtpFragment :
         //            createManuallyClick = { presenter.createOtpManuallyClick() }
         // TODO implement listening for result
         findNavController().navigate(
-            NavDeepLinkProvider.resourceFormDescriptionDeepLinkRequest(Mode.CREATE.name)
+            NavDeepLinkProvider.resourceFormDeepLinkRequest(Mode.CREATE.name, LeadingContentType.TOTP.name)
         )
     }
 
@@ -161,9 +162,8 @@ class OtpFragment :
         //            createManuallyClick = { presenter.createOtpManuallyClick() }
         // TODO implement listening for result
         findNavController().navigate(
-            NavDeepLinkProvider.resourceFormDescriptionDeepLinkRequest(
-                Mode.CREATE.name
-            )
+            NavDeepLinkProvider.resourceFormDeepLinkRequest(Mode.CREATE.name, LeadingContentType.PASSWORD.name)
+
         )
     }
 

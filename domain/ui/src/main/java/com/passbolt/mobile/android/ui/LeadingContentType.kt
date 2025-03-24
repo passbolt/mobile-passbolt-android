@@ -1,4 +1,4 @@
-package com.passbolt.mobile.android.feature.resourceform.main
+package com.passbolt.mobile.android.ui
 
 /**
  * Passbolt - Open source password manager for teams

@@ -299,7 +299,7 @@ class OtpPresenter(
     override fun otpItemMoreClick(otpListWrapper: OtpItemWrapper) {
         hideCurrentlyVisibleItem()
         currentOtpItemForMenu = otpListWrapper
-        view?.showOtmMoreMenu(otpListWrapper.resource.resourceId, otpListWrapper.resource.name)
+        view?.showOtmMoreMenu(otpListWrapper.resource.resourceId, otpListWrapper.resource.metadataJsonModel.name)
     }
 
     override fun refreshFailureAction() {
@@ -513,11 +513,11 @@ class OtpPresenter(
                         )
                     is PasswordDescriptionTotp, V5DefaultWithTotp ->
                         resourceUpdateActionsInteractor.updateLinkedTotpResourceTotpFields(
-                            label = resource.name,
+                            label = resource.metadataJsonModel.name,
                             issuer = if (contentType.isV5()) {
-                                resource.uris?.firstOrNull()
+                                resource.metadataJsonModel.uris?.firstOrNull()
                             } else {
-                                resource.uri
+                                resource.metadataJsonModel.uri
                             },
                             period = totpQr.period,
                             digits = totpQr.digits,

@@ -37,10 +37,10 @@ class RootRelativeJsonPathTotpDelegateTest : KoinTest {
             var testTotpField by RootRelativeJsonPathTotpDelegate(jsonPath = "testTotpField")
         }
 
-        assertThat(jsonModel.testTotpField.algorithm).isEqualTo("testAlgo")
-        assertThat(jsonModel.testTotpField.key).isEqualTo("testKey")
-        assertThat(jsonModel.testTotpField.digits).isEqualTo(6)
-        assertThat(jsonModel.testTotpField.period).isEqualTo(30)
+        assertThat(jsonModel.testTotpField?.algorithm).isEqualTo("testAlgo")
+        assertThat(jsonModel.testTotpField?.key).isEqualTo("testKey")
+        assertThat(jsonModel.testTotpField?.digits).isEqualTo(6)
+        assertThat(jsonModel.testTotpField?.period).isEqualTo(30)
     }
 
     @Test
@@ -143,14 +143,10 @@ class RootRelativeJsonPathTotpDelegateTest : KoinTest {
         val jsonModel = object : JsonModel {
             override var json = jsonString
 
-            val totpDelegate = RootRelativeJsonPathTotpDelegate(jsonPath = "testTotpField")
-
-            fun delete() {
-                totpDelegate.delete(this)
-            }
+            var testTotpField by RootRelativeJsonPathTotpDelegate(jsonPath = "testTotpField")
         }
 
-        jsonModel.delete()
+        jsonModel.testTotpField = null
 
         val jsonObject = Gson().fromJson(jsonModel.json, JsonObject::class.java)
         assertThat(jsonObject.has("testTotpField")).isFalse()

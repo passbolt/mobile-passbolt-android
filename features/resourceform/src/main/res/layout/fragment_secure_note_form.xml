@@ -16,7 +16,7 @@
         android:textSize="@dimen/sp_16"
         android:theme="@style/Theme.Passbolt.Toolbar"
         app:layout_constraintTop_toTopOf="parent"
-        app:toolbarTitle="@string/resource_form_secure_note" />
+        tools:toolbarTitle="@string/resource_form_secure_note" />
 
     <com.passbolt.mobile.android.feature.resourceform.subform.securenote.SecureNoteSubformView
         android:id="@+id/secureNoteSubformView"
@@ -24,5 +24,20 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/dp_16"
         android:layout_marginTop="@dimen/dp_16" />
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <Button
+        android:id="@+id/apply"
+        style="@style/PrimaryButton"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_56"
+        android:layout_gravity="center"
+        android:layout_marginHorizontal="@dimen/dp_16"
+        android:backgroundTint="@color/primary_button_selector"
+        android:text="@string/apply" />
 
 </LinearLayout>

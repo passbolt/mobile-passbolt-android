@@ -2,10 +2,16 @@ package com.passbolt.mobile.android.feature.resourceform.additionalsecrets.secur
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.os.bundleOf
+import androidx.fragment.app.setFragmentResult
+import androidx.navigation.fragment.findNavController
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
 import com.passbolt.mobile.android.feature.resourceform.databinding.FragmentSecureNoteFormBinding
 import org.koin.android.ext.android.inject
+import androidx.navigation.fragment.navArgs
+import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -35,10 +41,46 @@ class SecureNoteFormFragment :
     ), SecureNoteFormContract.View {
 
     private val presenter: SecureNoteFormContract.Presenter by inject()
+    private val navArgs: SecureNoteFormFragmentArgs by navArgs()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initDefaultToolbar(binding.toolbar)
+        setListeners()
         presenter.attach(this)
+        presenter.argsRetrieved(navArgs.mode, navArgs.secureNote)
+    }
+
+    override fun showCreateTitle() {
+        binding.toolbar.toolbarTitle = getString(LocalizationR.string.resource_form_create_secure_note)
+    }
+
+    private fun setListeners() {
+        with(binding) {
+            secureNoteSubformView.secureNoteInput.setTextChangeListener {
+                presenter.secureNoteTextChanged(it)
+            }
+            apply.setDebouncingOnClick {
+                presenter.applyClick()
+            }
+        }
+    }
+
+    override fun showSecureNote(secureNote: String) {
+        binding.secureNoteSubformView.secureNoteInput.text = secureNote
+    }
+
+    override fun goBackWithResult(secureNote: String) {
+        setFragmentResult(
+            REQUEST_SECURE_NOTE,
+            bundleOf(EXTRA_SECURE_NOTE to secureNote)
+        )
+        findNavController().popBackStack()
+    }
+
+    companion object {
+        const val REQUEST_SECURE_NOTE = "SECURE_NOTE"
+
+        const val EXTRA_SECURE_NOTE = "secure_note"
     }
 }

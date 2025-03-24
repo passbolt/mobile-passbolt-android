@@ -63,7 +63,7 @@ class ResourceCommonActionsInteractor(
                 }
                 is FavouritesInteractor.Output.Success -> {
                     Timber.d("Added to favourites")
-                    flowOf(ResourceCommonActionResult.Success(resource.name))
+                    flowOf(ResourceCommonActionResult.Success(resource.metadataJsonModel.name))
                 }
             }
         }
@@ -73,7 +73,7 @@ class ResourceCommonActionsInteractor(
             deleteResourceUseCase.execute(DeleteResourceUseCase.Input(resource.resourceId))
         }) {
             is DeleteResourceUseCase.Output.Success -> {
-                flowOf(ResourceCommonActionResult.Success(resource.name))
+                flowOf(ResourceCommonActionResult.Success(resource.metadataJsonModel.name))
             }
             is DeleteResourceUseCase.Output.Failure<*> -> {
                 Timber.e(response.response.exception)

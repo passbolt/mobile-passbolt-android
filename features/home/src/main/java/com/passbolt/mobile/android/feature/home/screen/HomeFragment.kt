@@ -64,8 +64,7 @@ import com.passbolt.mobile.android.feature.otp.createotpmanually.CreateOtpFragme
 import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpFragment
 import com.passbolt.mobile.android.feature.resourcedetails.ResourceActivity
 import com.passbolt.mobile.android.feature.resourcedetails.ResourceMode
-import com.passbolt.mobile.android.feature.resourceform.main.LeadingContentType
-import com.passbolt.mobile.android.feature.resourceform.main.Mode
+import com.passbolt.mobile.android.ui.Mode
 import com.passbolt.mobile.android.moremenu.FolderMoreMenuFragment
 import com.passbolt.mobile.android.otpcreatemoremenu.OtpCreateMoreMenuFragment
 import com.passbolt.mobile.android.otpeditmoremenu.OtpUpdateMoreMenuFragment
@@ -77,6 +76,7 @@ import com.passbolt.mobile.android.ui.FolderMoreMenuModel
 import com.passbolt.mobile.android.ui.FolderWithCountAndPath
 import com.passbolt.mobile.android.ui.GroupWithCount
 import com.passbolt.mobile.android.ui.HomeDisplayViewModel
+import com.passbolt.mobile.android.ui.LeadingContentType
 import com.passbolt.mobile.android.ui.OtpParseResult
 import com.passbolt.mobile.android.ui.ResourceItemWrapper
 import com.passbolt.mobile.android.ui.ResourceListUiModel

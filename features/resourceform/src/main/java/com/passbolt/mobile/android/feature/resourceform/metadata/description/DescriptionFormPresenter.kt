@@ -1,5 +1,9 @@
 package com.passbolt.mobile.android.feature.resourceform.metadata.description
 
+import com.passbolt.mobile.android.ui.Mode
+import com.passbolt.mobile.android.ui.Mode.CREATE
+import com.passbolt.mobile.android.ui.Mode.UPDATE
+
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -30,4 +34,23 @@ package com.passbolt.mobile.android.feature.resourceform.metadata.description
 class DescriptionFormPresenter : DescriptionFormContract.Presenter {
 
     override var view: DescriptionFormContract.View? = null
+
+    private var metadataDescription: String = ""
+
+    override fun argsRetrieved(mode: Mode, metadataDescription: String) {
+        when (mode) {
+            CREATE -> view?.showCreateTitle()
+            UPDATE -> throw NotImplementedError() // TODO
+        }
+
+        view?.showDescription(metadataDescription)
+    }
+
+    override fun onDescriptionChanged(description: String) {
+        metadataDescription = description
+    }
+
+    override fun applyClick() {
+        view?.goBackWithResult(metadataDescription)
+    }
 }

@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.feature.resourceform.additionalsecrets.securenote
 
 import com.passbolt.mobile.android.core.mvp.BaseContract
+import com.passbolt.mobile.android.ui.Mode
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,7 +27,15 @@ import com.passbolt.mobile.android.core.mvp.BaseContract
  */
 interface SecureNoteFormContract {
 
-    interface View : BaseContract.View
+    interface View : BaseContract.View {
+        fun showSecureNote(secureNote: String)
+        fun goBackWithResult(secureNote: String)
+        fun showCreateTitle()
+    }
 
-    interface Presenter : BaseContract.Presenter<View>
+    interface Presenter : BaseContract.Presenter<View> {
+        fun argsRetrieved(mode: Mode, secureNote: String)
+        fun secureNoteTextChanged(secureNote: String)
+        fun applyClick()
+    }
 }

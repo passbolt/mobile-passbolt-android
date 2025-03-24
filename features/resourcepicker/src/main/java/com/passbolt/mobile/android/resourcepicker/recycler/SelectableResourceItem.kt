@@ -41,11 +41,11 @@ class SelectableResourceItem(
     private fun setupTitleAndExpiry(binding: ItemSelectableResourceBinding) {
         resourcePickerListItem.resourceModel.expiry.let { expiry ->
             if (expiry == null || expiry.isInFuture()) {
-                binding.title.text = resourcePickerListItem.resourceModel.name
+                binding.title.text = resourcePickerListItem.resourceModel.metadataJsonModel.name
                 binding.indicatorIcon.setImageDrawable(null)
             } else {
                 binding.title.text = binding.root.context.getString(
-                    LocalizationR.string.name_expired, resourcePickerListItem.resourceModel.name
+                    LocalizationR.string.name_expired, resourcePickerListItem.resourceModel.metadataJsonModel.name
                 )
                 binding.indicatorIcon.setImageDrawable(
                     ContextCompat.getDrawable(
@@ -67,7 +67,7 @@ class SelectableResourceItem(
 
     private fun setupInitialsIcon(binding: ItemSelectableResourceBinding) {
         initialsIconGenerator.generate(
-            resourcePickerListItem.resourceModel.name,
+            resourcePickerListItem.resourceModel.metadataJsonModel.name,
             resourcePickerListItem.resourceModel.initials
         ).apply {
             binding.icon.setImageDrawable(this)
@@ -77,12 +77,12 @@ class SelectableResourceItem(
     private fun setupUsername(binding: ItemSelectableResourceBinding) = with(binding) {
         val fontFamily = ResourcesCompat.getFont(binding.root.context, CoreUiR.font.inter)
 
-        if (resourcePickerListItem.resourceModel.username.isNullOrBlank()) {
+        if (resourcePickerListItem.resourceModel.metadataJsonModel.username.isNullOrBlank()) {
             subtitle.typeface = Typeface.create(fontFamily, FONT_WEIGHT, true)
             subtitle.text = binding.root.context.getString(LocalizationR.string.no_username)
         } else {
             subtitle.typeface = Typeface.create(fontFamily, FONT_WEIGHT, false)
-            subtitle.text = resourcePickerListItem.resourceModel.username
+            subtitle.text = resourcePickerListItem.resourceModel.metadataJsonModel.username
         }
     }
 

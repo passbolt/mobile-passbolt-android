@@ -57,7 +57,7 @@ class CreateResourceMoreMenuModelUseCase(
 
         return Output(
             ResourceMoreMenuModel(
-                title = resource.name,
+                title = resource.metadataJsonModel.name,
                 canCopy = copyRbac == ALLOW,
                 canDelete = resource.permission in WRITE_PERMISSIONS,
                 canEdit = resource.permission in WRITE_PERMISSIONS &&

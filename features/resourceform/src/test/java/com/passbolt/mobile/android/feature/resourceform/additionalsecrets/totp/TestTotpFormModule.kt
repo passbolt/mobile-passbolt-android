@@ -1,4 +1,10 @@
-package com.passbolt.mobile.android.feature.resourceform.main
+package com.passbolt.mobile.android.feature.resourceform.additionalsecrets.securenote
+
+import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.TotpFormContract
+import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.TotpFormPresenter
+import org.koin.core.module.dsl.factoryOf
+import org.koin.dsl.bind
+import org.koin.dsl.module
 
 /**
  * Passbolt - Open source password manager for teams
@@ -22,7 +28,7 @@ package com.passbolt.mobile.android.feature.resourceform.main
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-enum class Mode {
-    CREATE,
-    UPDATE
+
+internal val totpFormModule = module {
+    factoryOf(::TotpFormPresenter) bind TotpFormContract.Presenter::class
 }

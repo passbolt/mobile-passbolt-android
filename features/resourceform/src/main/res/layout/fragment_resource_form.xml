@@ -31,6 +31,7 @@
             android:orientation="vertical">
 
             <com.passbolt.mobile.android.core.ui.textinputfield.TextInputView
+                android:id="@+id/resourceName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dp_8"

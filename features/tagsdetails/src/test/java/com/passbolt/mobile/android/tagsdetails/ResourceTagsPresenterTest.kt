@@ -4,6 +4,7 @@ import com.google.gson.JsonObject
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceTagsUseCase.Output
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUseCase
 import com.passbolt.mobile.android.permissions.permissions.PermissionsMode
+import com.passbolt.mobile.android.ui.MetadataJsonModel
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourcePermission
 import com.passbolt.mobile.android.ui.TagModel
@@ -68,12 +69,16 @@ class ResourceTagsPresenterTest : KoinTest {
             favouriteId = "fav-id",
             modified = ZonedDateTime.now(),
             expiry = null,
-            json = JsonObject().apply {
-                addProperty("name", NAME)
-                addProperty("username", USERNAME)
-                addProperty("uri", URL)
-                addProperty("description", DESCRIPTION)
-            }.toString(),
+            metadataJsonModel = MetadataJsonModel(
+                """
+                    {
+                        "name": "$NAME",
+                        "uri": "$URL",
+                        "username": "$USERNAME",
+                        "description": "$DESCRIPTION"
+                    }
+                """.trimIndent()
+            ),
             metadataKeyId = null,
             metadataKeyType = null
         )

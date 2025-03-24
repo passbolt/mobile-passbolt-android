@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.feature.resourceform.metadata.description
 
 import com.passbolt.mobile.android.core.mvp.BaseContract
+import com.passbolt.mobile.android.ui.Mode
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,7 +27,15 @@ import com.passbolt.mobile.android.core.mvp.BaseContract
  */
 interface DescriptionFormContract {
 
-    interface View : BaseContract.View
+    interface View : BaseContract.View {
+        fun showDescription(metadataDescription: String)
+        fun goBackWithResult(metadataDescription: String)
+        fun showCreateTitle()
+    }
 
-    interface Presenter : BaseContract.Presenter<View>
+    interface Presenter : BaseContract.Presenter<View> {
+        fun argsRetrieved(mode: Mode, metadataDescription: String)
+        fun onDescriptionChanged(description: String)
+        fun applyClick()
+    }
 }

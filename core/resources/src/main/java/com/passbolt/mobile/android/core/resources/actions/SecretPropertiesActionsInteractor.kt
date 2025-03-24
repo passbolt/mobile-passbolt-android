@@ -27,7 +27,7 @@ import androidx.annotation.VisibleForTesting
 import com.passbolt.mobile.android.core.mvp.authentication.UnauthenticatedReason
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.SecretInteractor
-import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.SecretModel
+import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.SecretJsonModel
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.SecretParser
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
 import com.passbolt.mobile.android.jsonmodel.delegates.TotpSecret
@@ -52,7 +52,7 @@ class SecretPropertiesActionsInteractor(
     private val idToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider
 ) {
 
-    suspend fun provideDecryptedSecret(): Flow<SecretPropertyActionResult<SecretModel>> =
+    suspend fun provideDecryptedSecret(): Flow<SecretPropertyActionResult<SecretJsonModel>> =
         fetchAndDecrypt()
             .mapSuccess {
                 when (val secret = secretParser.parseSecret(resource.resourceTypeId, it.secret)) {
@@ -113,7 +113,7 @@ class SecretPropertiesActionsInteractor(
                         SecretPropertyActionResult.Success(
                             OTP_LABEL,
                             isSecret = true,
-                            totp.secret.totp
+                            requireNotNull(totp.secret.totp)
                         )
                     is DecryptedSecretOrError.Error ->
                         SecretPropertyActionResult.DecryptionFailure()

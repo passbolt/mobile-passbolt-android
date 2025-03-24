@@ -85,7 +85,7 @@ class AutofillResourcesPresenter(
                 doOnDecryptionFailure = { view?.showDecryptionFailure() },
                 doOnSuccess = {
                     view?.autofillReturn(
-                        resourceModel.username.orEmpty(),
+                        resourceModel.metadataJsonModel.username.orEmpty(),
                         it.result,
                         uri
                     )

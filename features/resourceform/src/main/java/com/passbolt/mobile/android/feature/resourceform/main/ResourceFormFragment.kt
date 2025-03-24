@@ -2,6 +2,8 @@ package com.passbolt.mobile.android.feature.resourceform.main
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.os.BundleCompat
+import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.passbolt.mobile.android.common.dialogs.unableToGeneratePasswordAlertDialog
@@ -9,13 +11,18 @@ import com.passbolt.mobile.android.core.extension.gone
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
 import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.extension.visible
-import com.passbolt.mobile.android.core.navigation.deeplinks.NavDeepLinkProvider
 import com.passbolt.mobile.android.core.passwordgenerator.codepoints.Codepoint
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
+import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.securenote.SecureNoteFormFragment
+import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.TotpFormFragment
+import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.advanced.TotpAdvancedSettingsFormFragment
 import com.passbolt.mobile.android.feature.resourceform.databinding.FragmentResourceFormBinding
+import com.passbolt.mobile.android.feature.resourceform.metadata.description.DescriptionFormFragment
 import com.passbolt.mobile.android.feature.resourceform.subform.password.PasswordSubformView
 import com.passbolt.mobile.android.feature.resourceform.subform.totp.TotpSubformView
 import com.passbolt.mobile.android.ui.PasswordStrength
+import com.passbolt.mobile.android.ui.ResourceFormUiModel
+import com.passbolt.mobile.android.ui.TotpUiModel
 import org.koin.android.ext.android.inject
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
@@ -49,50 +56,107 @@ class ResourceFormFragment :
     override val presenter: ResourceFormContract.Presenter by inject()
     private val navArgs: ResourceFormFragmentArgs by navArgs()
 
+    private val secureNoteResult = { _: String, result: Bundle ->
+        if (result.containsKey(SecureNoteFormFragment.EXTRA_SECURE_NOTE)) {
+            presenter.secureNoteChanged(result.getString(SecureNoteFormFragment.EXTRA_SECURE_NOTE))
+        }
+    }
+
+    private val metadataDescriptionResult = { _: String, result: Bundle ->
+        if (result.containsKey(DescriptionFormFragment.EXTRA_METADATA_DESCRIPTION)) {
+            presenter.metadataDescriptionChanged(result.getString(DescriptionFormFragment.EXTRA_METADATA_DESCRIPTION))
+        }
+    }
+
+    private val totpResult = { _: String, result: Bundle ->
+        if (result.containsKey(TotpFormFragment.EXTRA_TOTP)) {
+            presenter.totpChanged(
+                BundleCompat.getParcelable(result, TotpFormFragment.EXTRA_TOTP, TotpUiModel::class.java)
+            )
+        }
+    }
+
+    private val totpAdvancedResult = { _: String, result: Bundle ->
+        if (result.containsKey(TotpAdvancedSettingsFormFragment.EXTRA_TOTP_ADVANCED)) {
+            presenter.totpAdvancedSettingsChanged(
+                BundleCompat.getParcelable(
+                    result,
+                    TotpAdvancedSettingsFormFragment.EXTRA_TOTP_ADVANCED,
+                    TotpUiModel::class.java
+                )
+            )
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.resourceName.disableSavingInstanceState()
         initDefaultToolbar(binding.toolbar)
         setListeners()
         presenter.attach(this)
         presenter.argsRetrieved(navArgs.mode, navArgs.leadingContentType, navArgs.parentFolderId)
     }
 
+    override fun onDestroyView() {
+        presenter.detach()
+        super.onDestroyView()
+    }
+
+    override fun showName(name: String) {
+        binding.resourceName.text = name
+    }
+
     private fun setListeners() {
         with(binding) {
+            resourceName.setTextChangeListener { presenter.nameTextChanged(it) }
             viewAdvancedSettings.setDebouncingOnClick {
-                viewAdvancedSettings.gone()
-                // TODO forward via presenter to decide which fields are visible / possible
-                with(additionalSecretsSectionView) {
-                    visible()
-                    additionalTotpClick = { navigateToTotp() }
-                    additionalSecureNoteClick = { navigateToSecureNote() }
-                }
-                with(metadataSectionView) {
-                    visible()
-                    descriptionClick = { navigateToMetadataDescription() }
-                }
+                presenter.advancedSettingsClick()
             }
         }
     }
 
-    private fun navigateToMetadataDescription() {
-        // TODO listen for results and update model
+    override fun hideAdvancedSettings() {
+        binding.viewAdvancedSettings.gone()
+    }
+
+    override fun setupAdditionalSecrets(supportedAdditionalSecrets: List<ResourceFormUiModel.Secret>) {
+        binding.additionalSecretsSectionView.apply {
+            visible()
+            setUp(supportedAdditionalSecrets)
+            additionalTotpClick = { presenter.additionalTotpClick() }
+            additionalSecureNoteClick = { presenter.additionalSecureNoteClick() }
+        }
+    }
+
+    override fun setupMetadata(supportedMetadata: List<ResourceFormUiModel.Metadata>) {
+        binding.metadataSectionView.apply {
+            visible()
+            setUp(supportedMetadata)
+            descriptionClick = { presenter.metadataDescriptionClick() }
+        }
+    }
+
+    override fun navigateToMetadataDescription(metadataDescription: String) {
+        setFragmentResultListener(DescriptionFormFragment.REQUEST_METADATA_DESCRIPTION, metadataDescriptionResult)
         findNavController().navigate(
-            NavDeepLinkProvider.resourceFormDescriptionDeepLinkRequest(navArgs.mode.name)
+            ResourceFormFragmentDirections.actionResourceFormFragmentToDescriptionFormFragment(
+                navArgs.mode,
+                metadataDescription
+            )
         )
     }
 
-    private fun navigateToSecureNote() {
-        // TODO listen for results and update model
+    override fun navigateToSecureNote(secureNote: String) {
+        setFragmentResultListener(SecureNoteFormFragment.REQUEST_SECURE_NOTE, secureNoteResult)
         findNavController().navigate(
-            NavDeepLinkProvider.resourceFormSecureNoteDeepLinkRequest(navArgs.mode.name)
+            ResourceFormFragmentDirections.actionResourceFormFragmentToSecureNoteFormFragment(navArgs.mode, secureNote)
         )
     }
 
-    private fun navigateToTotp() {
-        // TODO listen for results and update model
+    override fun navigateToTotp(totpUiModel: TotpUiModel) {
+        setFragmentResultListener(TotpFormFragment.REQUEST_TOTP, totpResult)
         findNavController().navigate(
-            NavDeepLinkProvider.resourceFormTotpSettingsDeepLinkRequest(navArgs.mode.name)
+            ResourceFormFragmentDirections.actionResourceFormFragmentToTotpFormFragment(navArgs.mode, totpUiModel)
         )
     }
 
@@ -114,29 +178,77 @@ class ResourceFormFragment :
         binding.toolbar.toolbarTitle = getString(LocalizationR.string.resource_form_create_totp)
     }
 
-    override fun addTotpLeadingForm() {
-        val totpSubformView = TotpSubformView(requireContext())
+    override fun addTotpLeadingForm(totpUiModel: TotpUiModel) {
+        val totpSubformView = TotpSubformView(requireContext()).apply {
+            tag = TAG_TOTP_SUBFORM
+            secretInput.apply {
+                disableSavingInstanceState()
+                setTextChangeListener { presenter.totpSecretChanged(it) }
+            }
+            urlInput.apply {
+                disableSavingInstanceState()
+                setTextChangeListener { presenter.totpUrlChanged(it) }
+            }
+        }
         totpSubformView.moreSettingsClickListener = {
-            // TODO listen for result and update model
+            setFragmentResultListener(TotpAdvancedSettingsFormFragment.REQUEST_TOTP_ADVANCED, totpAdvancedResult)
             findNavController().navigate(
-                NavDeepLinkProvider.resourceFormTotpAdvancedSettingsDeepLinkRequest(navArgs.mode.name)
+                ResourceFormFragmentDirections.actionResourceFormFragmentToTotpAdvancedSettingsFormFragment(
+                    navArgs.mode,
+                    totpUiModel
+                )
             )
         }
         binding.leadingTypeContainer.addView(totpSubformView)
     }
 
+    override fun showTotpSecret(secret: String) {
+        binding.leadingTypeContainer.findViewWithTag<TotpSubformView>(TAG_TOTP_SUBFORM).apply {
+            secretInput.text = secret
+        }
+    }
+
+    override fun showTotpIssuer(issuer: String) {
+        binding.leadingTypeContainer.findViewWithTag<TotpSubformView>(TAG_TOTP_SUBFORM).apply {
+            urlInput.text = issuer
+        }
+    }
+
     override fun addPasswordLeadingForm(
-        initialPassword: String,
-        initialPasswordStrength: PasswordStrength,
-        initialPasswordEntropyBits: Double
+        password: String,
+        passwordStrength: PasswordStrength,
+        passwordEntropyBits: Double
     ) {
         PasswordSubformView(requireContext()).apply {
             tag = TAG_PASSWORD_SUBFORM
-            passwordGenerateInput.showPassword(initialPassword, initialPasswordStrength, initialPasswordEntropyBits)
-            passwordGenerateInput.setGenerateClickListener { presenter.passwordGenerateClick() }
-            passwordGenerateInput.setPasswordChangeListener { presenter.passwordTextChanged(it) }
+            mainUriInput.apply {
+                disableSavingInstanceState()
+                setTextChangeListener { presenter.passwordMainUriTextChanged(it) }
+            }
+            usernameInput.apply {
+                disableSavingInstanceState()
+                setTextChangeListener { presenter.passowrdUsernameTextChanged(it) }
+            }
+            passwordGenerateInput.apply {
+                disableSavingInstanceState()
+                showPassword(password, passwordStrength, passwordEntropyBits)
+                setGenerateClickListener { presenter.passwordGenerateClick() }
+                setPasswordChangeListener { presenter.passwordTextChanged(it) }
+            }
         }.let {
             binding.leadingTypeContainer.addView(it)
+        }
+    }
+
+    override fun showPasswordUsername(username: String) {
+        binding.leadingTypeContainer.findViewWithTag<PasswordSubformView>(TAG_PASSWORD_SUBFORM).apply {
+            usernameInput.text = username
+        }
+    }
+
+    override fun showPasswordMainUri(mainUri: String) {
+        binding.leadingTypeContainer.findViewWithTag<PasswordSubformView>(TAG_PASSWORD_SUBFORM).apply {
+            mainUriInput.text = mainUri
         }
     }
 
@@ -187,5 +299,6 @@ class ResourceFormFragment :
 
     private companion object {
         private const val TAG_PASSWORD_SUBFORM = "PasswordSubform"
+        private const val TAG_TOTP_SUBFORM = "TotpSubform"
     }
 }

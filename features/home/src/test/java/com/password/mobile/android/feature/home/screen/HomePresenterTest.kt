@@ -21,6 +21,7 @@ import com.passbolt.mobile.android.ui.DefaultFilterModel
 import com.passbolt.mobile.android.ui.Folder
 import com.passbolt.mobile.android.ui.FolderModel
 import com.passbolt.mobile.android.ui.HomeDisplayViewModel
+import com.passbolt.mobile.android.ui.MetadataJsonModel
 import com.passbolt.mobile.android.ui.RbacModel
 import com.passbolt.mobile.android.ui.RbacRuleModel.ALLOW
 import com.passbolt.mobile.android.ui.ResourceModel
@@ -379,12 +380,16 @@ class HomePresenterTest : KoinTest {
             favouriteId = null,
             modified = ZonedDateTime.now(),
             expiry = null,
-            json = JsonObject().apply {
-                addProperty("name", "")
-                addProperty("username", "")
-                addProperty("uri", "")
-                addProperty("description", "")
-            }.toString(),
+            metadataJsonModel = MetadataJsonModel(
+                """
+                        {
+                            "name": "",
+                            "uri": "",
+                            "username": "",
+                            "description": ""
+                        }
+                """.trimIndent()
+            ),
             metadataKeyId = null,
             metadataKeyType = null
         )
@@ -629,12 +634,16 @@ class HomePresenterTest : KoinTest {
             favouriteId = null,
             modified = ZonedDateTime.now(),
             expiry = null,
-            json = JsonObject().apply {
-                addProperty("name", "")
-                addProperty("username", "")
-                addProperty("uri", "")
-                addProperty("description", "")
-            }.toString(),
+            metadataJsonModel = MetadataJsonModel(
+                """
+                    {
+                        "name": "",
+                        "uri": "",
+                        "username": "",
+                        "description": ""
+                    }
+                """.trimIndent()
+            ),
             metadataKeyId = null,
             metadataKeyType = null
         ),
@@ -646,13 +655,16 @@ class HomePresenterTest : KoinTest {
             favouriteId = null,
             modified = ZonedDateTime.now(),
             expiry = null,
-            json = JsonObject().apply
-            {
-                addProperty("name", "")
-                addProperty("username", "")
-                addProperty("uri", "")
-                addProperty("description", "")
-            }.toString(),
+            metadataJsonModel = MetadataJsonModel(
+                """
+                    {
+                        "name": "",
+                        "uri": "",
+                        "username": "",
+                        "description": ""
+                    }
+                """.trimIndent()
+            ),
             metadataKeyId = null,
             metadataKeyType = null
         )
