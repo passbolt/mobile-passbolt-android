@@ -1,5 +1,3 @@
-package com.passbolt.mobile.android.core.accounts.usecase
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -23,12 +21,12 @@ package com.passbolt.mobile.android.core.accounts.usecase
  * @since v1.0
  */
 
-class AccountPreferencesFileName(userId: String) {
+package com.passbolt.mobile.android.metadata.sessionkeys
 
-    val name = ACCOUNT_PREFERENCES_FILE_NAME_FORMAT.format(userId)
+import com.passbolt.mobile.android.dto.request.SessionKeysBundleDto
 
-    private companion object {
-        private const val ACCOUNT_PREFERENCES_DATA_ALIAS = "account_preferences"
-        private const val ACCOUNT_PREFERENCES_FILE_NAME_FORMAT = "${ACCOUNT_PREFERENCES_DATA_ALIAS}_%s"
-    }
+class SessionKeysBundleValidator {
+
+    fun isValid(bundle: SessionKeysBundleDto?): Boolean =
+        bundle?.objectType == "PASSBOLT_SESSION_KEYS"
 }

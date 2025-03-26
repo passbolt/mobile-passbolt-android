@@ -3,7 +3,7 @@ package com.passbolt.mobile.android.metadata.usecase.db
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
 import com.passbolt.mobile.android.common.usecase.UserIdInput
 import com.passbolt.mobile.android.core.accounts.usecase.SelectedAccountUseCase
-import com.passbolt.mobile.android.ui.MetadataKeyModel
+import com.passbolt.mobile.android.ui.ParsedMetadataKeyModel
 
 class RebuildMetadataKeysTablesUseCase(
     private val removeLocalMetadataKeysUseCase: RemoveLocalMetadataKeysUseCase,
@@ -17,6 +17,6 @@ class RebuildMetadataKeysTablesUseCase(
     }
 
     data class Input(
-        val metadataKeys: List<MetadataKeyModel>
+        val metadataKeys: List<ParsedMetadataKeyModel>
     )
 }

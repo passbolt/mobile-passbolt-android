@@ -82,19 +82,24 @@ class CreateResourceInteractor(
             is PotentialPassphrase.PassphraseNotPresent -> return Output.PasswordExpired
         }
 
+        if (resourceInput.contentType.slug in SupportedContentTypes.v5Slugs) {
+            val resourceTypeId = getResourceTypeIdForSlug(resourceInput.contentType.slug)
+            secretInput.apply {
+                this.objectType = "PASSBOLT_SECRET_V5"
+                this.resourceTypeId = resourceTypeId
+            }
+            resourceInput.apply {
+                this.objectType = "PASSBOLT_RESOURCE_METADATA"
+                this.resourceTypeId = resourceTypeId
+            }
+        }
+
         val isSecretValid = isSecretValid(
             PlainSecretValidationWrapper(secretInput.json, resourceInput.contentType)
                 .validationPlainSecret,
             resourceInput.contentType
         )
         val isResourceValid = isResourceValid(resourceInput.json, resourceInput.contentType)
-
-        if (resourceInput.contentType.slug in SupportedContentTypes.v5Slugs) {
-            secretInput.apply {
-                this.objectType = "PASSBOLT_SECRET_V5"
-                this.resourceTypeId = getResourceTypeIdForSlug(resourceInput.contentType.slug)
-            }
-        }
 
         return if (isSecretValid && isResourceValid) {
             when (val encryptedSecret = encryptSecret(secretInput.json, passphrase)) {
@@ -130,11 +135,6 @@ class CreateResourceInteractor(
                 expiry = getResourceExpiry(resourceInput.contentType)
             )
         } else {
-            resourceInput.apply {
-                this.objectType = "PASSBOLT_RESOURCE_METADATA"
-                this.resourceTypeId = getResourceTypeIdForSlug(contentType.slug)
-            }
-
             val encryptedMetadata = metadataEncryptor.encryptMetadata(
                 resourceInput.metadataKeyType!!,
                 resourceInput.metadataKeyId!!,

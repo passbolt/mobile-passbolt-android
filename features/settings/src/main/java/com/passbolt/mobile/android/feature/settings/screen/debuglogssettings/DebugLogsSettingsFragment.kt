@@ -3,7 +3,7 @@ package com.passbolt.mobile.android.feature.settings.screen.debuglogssettings
 import android.os.Bundle
 import android.view.View
 import androidx.navigation.fragment.findNavController
-import com.passbolt.mobile.android.common.WebsiteOpener
+import com.passbolt.mobile.android.common.ExternalDeeplinkHandler
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
 import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
@@ -39,7 +39,7 @@ class DebugLogsSettingsFragment :
     DebugLogsSettingsContract.View {
 
     private val presenter: DebugLogsSettingsContract.Presenter by inject()
-    private val websiteOpener: WebsiteOpener by inject()
+    private val externalDeeplinkHandler: ExternalDeeplinkHandler by inject()
 
     private var logSettingChanged: ((Boolean) -> Unit)? = {
         presenter.enableDebugLogsChanged(it)
@@ -99,6 +99,6 @@ class DebugLogsSettingsFragment :
     }
 
     override fun openHelpWebsite() {
-        websiteOpener.open(requireContext(), getString(LocalizationR.string.help_website))
+        externalDeeplinkHandler.openWebsite(requireContext(), getString(LocalizationR.string.help_website))
     }
 }

@@ -1,7 +1,7 @@
-image: registry.gitlab.com/passbolt/passbolt-ci-docker-images/android-app:latest
+image: registry.gitlab.com/passbolt/passbolt-ci-docker-images/android-app-alpine:latest
 
 variables:
-  ANDROID_HOME: "${PWD}/android-home"
+  ANDROID_HOME: "/usr/local/android-sdk"
 
 default:
   retry:
@@ -18,7 +18,7 @@ stages:
   - Deploy
 
 # run all static analysis and reporting tools
-Run required verifications:
+Run verifications:
   stage: Build
   script:
     - >
@@ -26,8 +26,17 @@ Run required verifications:
       detekt 
       ktlint 
       unitTest
+      lintRelease 
+      licenseeRelease 
+      dependencyUpdates
+  #     TODO uncomment when support added ready, currently it causes error
+  #     The Dependency Analysis plugin is only known to work with versions of AGP between 8.0.0 and 8.4.0-alpha01. You are using 8.5.0.
+  #     buildHealth
   rules:
-    - if: '$CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "schedule"'
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: always
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+      when: always
   artifacts:
     when: always
     expire_in: 72 hrs
@@ -35,46 +44,24 @@ Run required verifications:
       - "**/reports/ktlint-report.xml"
       - "**/reports/detekt-report.xml"
       - "**/test-results/**/TEST-*.xml"
+      - "**/lint-results-*.html"
+      - build/dependencyUpdates/dependecyUpdates.txt
+      - build/reports/build-health-report.txt
     reports:
       junit: "**/test-results/**/TEST-*.xml"
 
-# run all static analysis and reporting tools
-Run extensive verifications:
-  stage: Build
-  script:
-    - >
-      ./gradlew --no-daemon --build-cache 
-      lintRelease 
-      koverMergedHtmlReport 
-      licenseeRelease 
-      dependencyUpdates
-  #     TODO uncomment when support added ready, currently it causes error
-  #     The Dependency Analysis plugin is only known to work with versions of AGP between 8.0.0 and 8.4.0-alpha01. You are using 8.5.0.
-  #     buildHealth
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-      when: always
-  artifacts:
-    when: always
-    expire_in: 72 hrs
-    paths:
-      - "**/lint-results-*.html"
-      - build/reports/kover/html/
-      - build/dependencyUpdates/dependecyUpdates.txt
-      - build/reports/build-health-report.txt
-
-  # build and upload QA application to Firebase App Distribution
+# build and upload QA application to Firebase App Distribution
 Deploy qa application to Firebase:
   stage: Deploy
+  variables:
+    GITLAB_BUILD_NUMBER: $CI_PIPELINE_IID
   script:
     - echo $QA_KEY | base64 -d > "${HOME}/qa.keystore"
-    - python3 -m pip install -r gradle/requirements.txt
-    - export GITLAB_BUILD_NUMBER="$(python3 gradle/gitlabBuildNumber.py "RELEASE_BUILD_NUMBER" ${CI_API_V4_URL} ${CI_PROJECT_ID} ${GITLAB_ACCESS_TOKEN})"
     - export FIREBASE_DIR="$HOME/.config/firebase"
     - install -d $FIREBASE_DIR
-    - echo ${FIREBASE_SERVICE_KEY} | base64 --decode > "$FIREBASE_DIR/service_key.json"
+    - echo ${FIREBASE_SERVICE_KEY} | base64 -d > "$FIREBASE_DIR/service_key.json"
     - >
-      ./gradlew --no-daemon --build-cache -PwithGitlabReleaseNotes -PserviceKey="$FIREBASE_DIR/service_key.json"
+      ./gradlew --no-daemon --build-cache -PserviceKey="$FIREBASE_DIR/service_key.json"
       -Pandroid.injected.signing.store.file="${HOME}/qa.keystore"
       -Pandroid.injected.signing.store.password=$QA_KEYSTORE_PASSWORD
       -Pandroid.injected.signing.key.alias=$QA_KEY_ALIAS
@@ -93,8 +80,6 @@ Deploy production application to Play Store:
   stage: Deploy
   script:
     - echo $PROD_KEYSTORE | base64 -d > "${HOME}/production.keystore"
-    - python3 -m pip install -r gradle/requirements.txt
-
     - >
       ./gradlew --no-daemon
       -Pandroid.injected.signing.store.file="${HOME}/production.keystore"

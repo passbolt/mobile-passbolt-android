@@ -126,6 +126,7 @@ class PermissionsFragment :
         initPermissionsRecycler()
         presenter.attach(this)
         presenter.argsReceived(args.permissionsItem, args.id, args.mode)
+        presenter.refreshPermissionsList()
     }
 
     override fun onResume() {
@@ -311,7 +312,7 @@ class PermissionsFragment :
     }
 
     override fun showProgress() {
-        showProgressDialog(childFragmentManager)
+        showProgressDialog(childFragmentManager, dismissOnStop = false)
     }
 
     override fun hideProgress() {

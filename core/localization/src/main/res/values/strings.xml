@@ -51,6 +51,7 @@
     <string name="common_encryption_failure">There was an error during secret encryption</string>
     <string name="common_json_schema_resource_validation_error">There was an error during validation of resource. Enable logs for more details.</string>
     <string name="common_json_schema_secret_validation_error">There was an error during validation of secret. Enable logs for more details.</string>
+    <string name="common_maybe_later">Maybe later</string>
 
     <string name="common_message_resource_edited">%s password was successfully edited.</string>
     <string name="common_message_resource_deleted">%s password was deleted.</string>
@@ -212,9 +213,11 @@
     <string name="dialog_encourage_autofill_overlay_header">Enable overlay permission</string>
     <string name="dialog_encourage_autofill_overlay_description">On the Android settings screen, enable the ‘Draw over other apps’ permission for Passbolt Autofill,
     or check the specific guide for your device:</string>
-    <string name="dialog_encourage_autofill_maybe_later">Maybe later</string>
     <string name="dialog_encourage_autofill_autofill_not_supported_title">Autofill not supported</string>
     <string name="dialog_encourage_autofill_autofill_not_supported_message">Autofill is not supported on this device.</string>
+
+    <string name="dialog_encourage_chrome_autofill_title">Enable Chrome native autofill</string>
+    <string name="dialog_encourage_chrome_autofill_go_to_settings">Go to Chrome settings</string>
 
     <string name="dialog_autofill_enabled_go_to_app">Go to the app</string>
     <string name="dialog_autofill_enabled_got_it">Got it!</string>
@@ -266,6 +269,7 @@
     <string name="main_menu_home">Home</string>
     <string name="main_menu_settings">Settings</string>
     <string name="main_menu_otp">TOTP</string>
+    <string name="main_chrome_native_autofill_setup_success">Chrome autofill setup success</string>
 
     <string name="resource_details_username_header">Username</string>
     <string name="resource_details_password_header">Password</string>
@@ -339,7 +343,10 @@
     <string name="settings_autofill_autofill_title">Here you can change autofill methods</string>
     <string name="settings_autofill_autofill_desc">It is recommended to use the Autofill Service method, but the Service performance may depend on your device and battery optimization settings. \n\nIf the Autofill Service is not working reliably on your device you can try enabling autofill based on Accessibility Service.</string>
     <string name="settings_autofill_autofill_service">Autofill Service (recommended)</string>
+    <string name="settings_chrome_native_autofill_autofill_service">Chrome Native Autofill (recommended)</string>
     <string name="settings_autofill_autofill_service_description">Autofill will be based on the recommended Autofill Service</string>
+    <string name="settings_chrome_native_autofill_autofill_service_description">Chrome will use Android’s system Autofill Service instead of its own, but only if it’s enabled in system settings.</string>
+    <string name="settings_chrome_native_autofill_not_supported">Your Chrome version does not support this feature yet.</string>
     <string name="settings_autofill_accessibility">Accessibility Service (legacy)</string>
     <string name="settings_autofill_accessibility_description">Autofill will be based on the Accessibility Service. You will need to approve additional permissions.</string>
     <string name="settings_autofill_autofill_service_not_supported">Autofill service is not supported on your device</string>
@@ -385,7 +392,6 @@
     <string name="scan_qr_summary_no_network_title">No Internet connection</string>
 
     <string name="fingerprint_setup_use_fingerprint_button">Use Fingerprint</string>
-    <string name="fingerprint_setup_maybe_later_button">Maybe later</string>
     <string name="fingerprint_setup_configure_title">Configure Fingerprint</string>
     <string name="fingerprint_setup_configure_description">Unlock your secrets in a second.</string>
     <string name="fingerprint_setup_use_title">Use Fingerprint instead of passphrase</string>
@@ -579,6 +585,12 @@
     <string-array name="dialog_encourage_autofill_setup_steps">
         <item>&lt;b>Turn on Autofill&lt;/b> settings</item>
         <item>Choose &lt;b>Passbolt!&lt;/b></item>
+    </string-array>
+
+    <string-array name="dialog_encourage_chrome_native_autofill_setup_steps">
+        <item>Make sure Passbolt native autofill is turned on in the Android OS settings</item>
+        <item>Go to &lt;b>Chrome settings&lt;/b> and select &lt;b>Autofill services&lt;/b></item>
+        <item>Choose &lt;b>Autofill using another service&lt;/b></item>
     </string-array>
 
     <string-array name="transfer_details_steps_array">

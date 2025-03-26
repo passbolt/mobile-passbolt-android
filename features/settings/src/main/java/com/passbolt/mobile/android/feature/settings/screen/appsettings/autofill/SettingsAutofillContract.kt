@@ -35,6 +35,12 @@ interface SettingsAutofillContract {
         fun showEncourageAutofillService()
         fun showEncourageAccessibilityService()
         fun showAutofillFeatureEnabledSuccess()
+        fun disableChromeNativeAutofillLayout()
+        fun showChromeNativeAutofillNotSupported()
+        fun setChromeNativeAutofillSwitchOn()
+        fun setChromeNativeAutofillSwitchOff()
+        fun enableChromeNativeAutofillLayout()
+        fun launchChromeNativeAutofillDeeplink()
     }
 
     interface Presenter : BaseContract.Presenter<View> {
@@ -42,5 +48,6 @@ interface SettingsAutofillContract {
         fun accessibilityServiceSwitchClick()
         fun viewResumed()
         fun autofillSetupSuccessfully()
+        fun chromeNativeAutofillServiceSwitchClick()
     }
 }

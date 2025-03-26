@@ -9,6 +9,7 @@ import com.passbolt.mobile.android.core.mvp.authentication.plus
 import com.passbolt.mobile.android.core.resources.usecase.ResourceInteractor
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypesInteractor
 import com.passbolt.mobile.android.core.users.UsersInteractor
+import com.passbolt.mobile.android.database.snapshot.ResourcesSnapshot
 import com.passbolt.mobile.android.featureflags.usecase.GetFeatureFlagsUseCase
 import com.passbolt.mobile.android.metadata.interactor.MetadataKeysInteractor
 import com.passbolt.mobile.android.metadata.interactor.MetadataSessionKeysInteractor
@@ -48,12 +49,15 @@ class HomeDataInteractor(
     private val metadataKeysInteractor: MetadataKeysInteractor,
     private val metadataSessionKeysInteractor: MetadataSessionKeysInteractor,
     private val featureFlagsUseCase: GetFeatureFlagsUseCase,
-    private val resourcesFullRefreshIdlingResource: ResourcesFullRefreshIdlingResource
+    private val resourcesFullRefreshIdlingResource: ResourcesFullRefreshIdlingResource,
+    private val resourcesSnapshot: ResourcesSnapshot
 ) {
 
     // TODO start multiple async where possible
     suspend fun refreshAllHomeScreenData(): Output {
         resourcesFullRefreshIdlingResource.setIdle(false)
+        resourcesSnapshot.populateForCurrentAccount()
+
         val featureFlagsOutput = featureFlagsUseCase.execute(Unit).featureFlags
         val metadataKeysOutput = if (featureFlagsOutput.isV5MetadataAvailable) {
             metadataKeysInteractor.fetchAndSaveMetadataKeys()
@@ -78,6 +82,7 @@ class HomeDataInteractor(
             MetadataSessionKeysInteractor.Output.Success
         }
 
+        resourcesSnapshot.clear()
         resourcesFullRefreshIdlingResource.setIdle(true)
 
         @Suppress("ComplexCondition")

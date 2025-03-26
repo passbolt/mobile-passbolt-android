@@ -1,15 +1,21 @@
-# Passbolt 1.23.0-34 Android app release notes
+# Passbolt 1.24.0-35 Android app release notes
 
 ## Added
-- Add v5 content types support (view, create, update, share)
-- Add session keys cache for v5 performance optimization
-- Add support for devices with 16kb memory page
+- MOB-2164: Skip validation and decryption for unmodified metadata
 
 ## Improved
-- Small pre-v5 UI improvements
-- Change session refresh mechanism from reactive to proactive
-- Added latest translations
+- MOB-1878: Drop usage of folders personal field
+- MOB-2521: Remove compat for Firefox
+- MOB-2507: Don't dismiss progress dialog on share process
+
+## Fixed
+- MOB-2506: Fix permissions save button disappearing after going deeper in navigation
+- MOB-2514: Fix resetting expiry after resource password change
+- MOB-2509: Fix showing auth screen after MFA session expired
+
+## Security
+- MOB-2503: Update docker image
+- MOB-2501: Validate object_type fields
 
 ## Maintenance
-- Refactor current create and update resource interactors
-- Improve instrumented tests test stability
+- MOB-2498: Bump yubikit

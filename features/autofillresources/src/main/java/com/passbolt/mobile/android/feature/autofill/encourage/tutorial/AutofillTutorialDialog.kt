@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.BundleCompat
 import androidx.fragment.app.DialogFragment
-import com.passbolt.mobile.android.common.WebsiteOpener
+import com.passbolt.mobile.android.common.ExternalDeeplinkHandler
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.feature.authentication.auth.accountdoesnotexist.AccountDoesNotExistDialog
@@ -48,7 +48,7 @@ class AutofillTutorialDialog : DialogFragment(), AutofillTutorialContract.View, 
             BundleCompat.getSerializable(requireArguments(), TUTORIAL_MODE_KEY, TutorialMode::class.java)
         )
     }
-    private val websiteOpener: WebsiteOpener by inject()
+    private val externalDeeplinkHandler: ExternalDeeplinkHandler by inject()
     private val settingsNavigator: SettingsNavigator by inject()
     private var listener: Listener? = null
 
@@ -86,7 +86,7 @@ class AutofillTutorialDialog : DialogFragment(), AutofillTutorialContract.View, 
     }
 
     override fun openWebsite(url: String) {
-        websiteOpener.open(requireContext(), url)
+        externalDeeplinkHandler.openWebsite(requireContext(), url)
     }
 
     private fun setupListeners(binding: DialogAutofillTutorialBinding) = with(binding) {

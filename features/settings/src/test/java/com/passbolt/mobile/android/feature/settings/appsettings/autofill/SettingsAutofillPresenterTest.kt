@@ -1,5 +1,8 @@
 package com.passbolt.mobile.android.feature.settings.appsettings.autofill
 
+import com.passbolt.mobile.android.feature.autofill.informationprovider.AutofillInformationProvider.ChromeNativeAutofillStatus.DISABLED
+import com.passbolt.mobile.android.feature.autofill.informationprovider.AutofillInformationProvider.ChromeNativeAutofillStatus.ENABLED
+import com.passbolt.mobile.android.feature.autofill.informationprovider.AutofillInformationProvider.ChromeNativeAutofillStatus.NOT_SUPPORTED
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.SettingsAutofillContract
 import org.junit.Rule
 import org.junit.Test
@@ -50,12 +53,17 @@ class SettingsAutofillPresenterTest : KoinTest {
     fun `view should show info message when autofill is not supported`() {
         whenever(mockAutofillInformationProvider.isAutofillServiceSupported())
             .doReturn(false)
+        whenever(mockAutofillInformationProvider.getChromeNativeAutofillStatus())
+            .doReturn(NOT_SUPPORTED)
 
         presenter.attach(view)
         presenter.autofillServiceSwitchClick()
 
         verify(view).setAutofillSwitchOff()
         verify(view).showAutofillServiceNotSupported()
+        verify(view).disableChromeNativeAutofillLayout()
+        verify(view).setChromeNativeAutofillSwitchOff()
+        verify(view).showChromeNativeAutofillNotSupported()
     }
 
     @Test
@@ -66,11 +74,15 @@ class SettingsAutofillPresenterTest : KoinTest {
             .doReturn(true)
         whenever(mockAutofillInformationProvider.isPassboltAutofillServiceSet())
             .doReturn(true)
+        whenever(mockAutofillInformationProvider.getChromeNativeAutofillStatus())
+            .doReturn(ENABLED)
 
         presenter.attach(view)
 
         verify(view).setAutofillSwitchOn()
         verify(view).setAccessibilitySwitchOn()
+        verify(view).enableChromeNativeAutofillLayout()
+        verify(view).setChromeNativeAutofillSwitchOn()
     }
 
     @Test
@@ -81,10 +93,13 @@ class SettingsAutofillPresenterTest : KoinTest {
             .doReturn(false)
         whenever(mockAutofillInformationProvider.isPassboltAutofillServiceSet())
             .doReturn(false)
+        whenever(mockAutofillInformationProvider.getChromeNativeAutofillStatus())
+            .doReturn(DISABLED)
 
         presenter.attach(view)
 
         verify(view).setAutofillSwitchOff()
         verify(view).setAccessibilitySwitchOff()
+        verify(view).setChromeNativeAutofillSwitchOff()
     }
 }

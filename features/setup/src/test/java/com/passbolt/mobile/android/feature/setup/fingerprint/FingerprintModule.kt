@@ -7,6 +7,7 @@ import com.passbolt.mobile.android.core.passphrasememorycache.PassphraseMemoryCa
 import com.passbolt.mobile.android.encryptedstorage.biometric.BiometricCipher
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.BiometryInteractor
 import com.passbolt.mobile.android.feature.autofill.informationprovider.AutofillInformationProvider
+import com.passbolt.mobile.android.feature.main.mainscreen.encouragements.EncouragementsInteractor
 import org.koin.dsl.module
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
@@ -47,6 +48,7 @@ internal val biometricCipher = mock<BiometricCipher> {
 }
 internal val saveBiometricKayIvUseCase = mock<SaveBiometricKeyIvUseCase>()
 internal val mockBiometryInteractor = mock<BiometryInteractor>()
+internal val mockEncouragementsInteractor = mock<EncouragementsInteractor>()
 
 
 val fingerprintModule = module {
@@ -58,7 +60,8 @@ val fingerprintModule = module {
             savePassphraseUseCase = savePassphraseUseCase,
             biometricCipher = biometricCipher,
             saveBiometricKeyIvUseCase = saveBiometricKayIvUseCase,
-            biometryInteractor = mockBiometryInteractor
+            biometryInteractor = mockBiometryInteractor,
+            encouragementsInteractor = mockEncouragementsInteractor
         )
     }
     factory { fingerprintInformationProvider }

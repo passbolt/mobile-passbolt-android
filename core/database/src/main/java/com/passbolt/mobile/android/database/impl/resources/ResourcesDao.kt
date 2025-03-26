@@ -42,6 +42,16 @@ interface ResourcesDao : BaseDao<Resource> {
                 "r.resourcePermission, r.resourceTypeId, r.metadataKeyId, r.metadataKeyType, rm.metadataJson " +
                 "FROM Resource r " +
                 "INNER JOIN ResourceMetadata rm " +
+                "ON r.resourceId = rm.resourceId "
+    )
+    suspend fun getAll(): List<ResourceWithMetadata>
+
+    @Transaction
+    @Query(
+        "SELECT r.resourceId, r.folderId, r.expiry, r.favouriteId, r.modified, " +
+                "r.resourcePermission, r.resourceTypeId, r.metadataKeyId, r.metadataKeyType, rm.metadataJson " +
+                "FROM Resource r " +
+                "INNER JOIN ResourceMetadata rm " +
                 "ON r.resourceId = rm.resourceId " +
                 "WHERE r.resourceTypeId IN(" +
                 "   SELECT resourceTypeId FROM ResourceType WHERE slug IN (:slugs)" +

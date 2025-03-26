@@ -157,12 +157,13 @@ class ResourceUpdateActionsInteractor(
                 }
             },
             updateSecret = { decryptedSecret ->
+                val passwordChanged = decryptedSecret.secret != password
                 SecretInput(
                     secretModel = decryptedSecret.apply {
                         this.secret = password
                         this.description = description
                     },
-                    passwordChanged = decryptedSecret.secret != password
+                    passwordChanged = passwordChanged
                 )
             }
         )
@@ -240,11 +241,12 @@ class ResourceUpdateActionsInteractor(
                 }
             },
             updateSecret = { decryptedSecret ->
+                val passwordChanged = decryptedSecret.secret != password
                 SecretInput(
                     secretModel = decryptedSecret.apply {
                         this.password = password
                     },
-                    passwordChanged = decryptedSecret.password != password
+                    passwordChanged = passwordChanged
                 )
             }
         )
@@ -321,12 +323,13 @@ class ResourceUpdateActionsInteractor(
                 }
             },
             updateSecret = { decryptedSecret ->
+                val passwordChanged = decryptedSecret.secret != password
                 SecretInput(
                     secretModel = decryptedSecret.apply {
                         this.secret = password
                         this.description = description.orEmpty()
                     },
-                    passwordChanged = decryptedSecret.secret != password
+                    passwordChanged = passwordChanged
                 )
             }
         )

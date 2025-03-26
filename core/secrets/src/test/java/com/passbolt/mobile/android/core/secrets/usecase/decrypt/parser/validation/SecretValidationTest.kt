@@ -29,7 +29,6 @@ import com.google.gson.JsonObject
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.mockJSFSchemaRepository
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.testParserModule
 import com.passbolt.mobile.android.serializers.gson.validation.JsonSchemaValidationRunner
-import com.passbolt.mobile.android.supportedresourceTypes.ContentType
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordAndDescription
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordDescriptionTotp
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordString
@@ -115,10 +114,12 @@ class SecretValidationTest : KoinTest {
                 .joinToString { "a" }
         val invalidSecrets = listOf(
             JsonObject().apply {
+                addProperty("object_type", "PASSBOLT_SECRET_V5")
                 addProperty("description", "desc")
                 addProperty("secret", tooLongPassword)
             },
             JsonObject().apply {
+                addProperty("object_type", "PASSBOLT_SECRET_V5")
                 addProperty("description", tooLongDescription)
                 addProperty("secret", "pass")
             },
@@ -142,6 +143,7 @@ class SecretValidationTest : KoinTest {
 
         val invalidSecrets = listOf(
             JsonObject().apply {
+                addProperty("object_type", "PASSBOLT_SECRET_V5")
                 add("totp", JsonObject().apply {
                     addProperty("algorithm", invalidAlgorithm)
                     addProperty("secret_key", "A")
@@ -150,6 +152,7 @@ class SecretValidationTest : KoinTest {
                 })
             },
             JsonObject().apply {
+                addProperty("object_type", "PASSBOLT_SECRET_V5")
                 add("totp", JsonObject().apply {
                     addProperty("algorithm", "SHA1")
                     addProperty("secret_key", tooLongKey)
@@ -158,6 +161,7 @@ class SecretValidationTest : KoinTest {
                 })
             },
             JsonObject().apply {
+                addProperty("object_type", "PASSBOLT_SECRET_V5")
                 add("totp", JsonObject().apply {
                     addProperty("algorithm", "SHA1")
                     addProperty("secret_key", "A")
@@ -166,6 +170,7 @@ class SecretValidationTest : KoinTest {
                 })
             },
             JsonObject().apply {
+                addProperty("object_type", "PASSBOLT_SECRET_V5")
                 add("totp", JsonObject().apply {
                     addProperty("algorithm", "SHA1")
                     addProperty("secret_key", "A")
@@ -200,6 +205,7 @@ class SecretValidationTest : KoinTest {
             PASSWORD_DESCRIPTION_TOTP_TOTP_DIGITS_INCLUSIVE_MAX + 1
         val invalidSecrets = listOf(
             JsonObject().apply {
+                addProperty("object_type", "PASSBOLT_SECRET_V5")
                 addProperty("secret", tooLongPassword)
                 addProperty("desc", "desc")
                 add("totp", JsonObject().apply {
@@ -210,6 +216,7 @@ class SecretValidationTest : KoinTest {
                 })
             },
             JsonObject().apply {
+                addProperty("object_type", "PASSBOLT_SECRET_V5")
                 addProperty("secret", "pass")
                 addProperty("desc", tooLongDescription)
                 add("totp", JsonObject().apply {
@@ -220,6 +227,7 @@ class SecretValidationTest : KoinTest {
                 })
             },
             JsonObject().apply {
+                addProperty("object_type", "PASSBOLT_SECRET_V5")
                 addProperty("secret", "pass")
                 addProperty("desc", "desc")
                 add("totp", JsonObject().apply {
@@ -230,6 +238,7 @@ class SecretValidationTest : KoinTest {
                 })
             },
             JsonObject().apply {
+                addProperty("object_type", "PASSBOLT_SECRET_V5")
                 addProperty("secret", "pass")
                 addProperty("desc", "desc")
                 add("totp", JsonObject().apply {
@@ -240,6 +249,7 @@ class SecretValidationTest : KoinTest {
                 })
             },
             JsonObject().apply {
+                addProperty("object_type", "PASSBOLT_SECRET_V5")
                 addProperty("secret", "pass")
                 addProperty("desc", "desc")
                 add("totp", JsonObject().apply {
@@ -250,6 +260,7 @@ class SecretValidationTest : KoinTest {
                 })
             },
             JsonObject().apply {
+                addProperty("object_type", "PASSBOLT_SECRET_V5")
                 addProperty("secret", "pass")
                 addProperty("desc", "desc")
                 add("totp", JsonObject().apply {
@@ -283,6 +294,7 @@ class SecretValidationTest : KoinTest {
     fun `valid secret for password and description resource type should not be rejected`() = runTest {
         val validSecrets = listOf(
             JsonObject().apply {
+                addProperty("object_type", "PASSBOLT_SECRET_V5")
                 addProperty("description", "desc")
                 addProperty("password", "password")
             },
@@ -300,6 +312,7 @@ class SecretValidationTest : KoinTest {
     fun `valid secret for totp resource type should be not rejected`() = runTest {
         val validSecrets = listOf(
             JsonObject().apply {
+                addProperty("object_type", "PASSBOLT_SECRET_V5")
                 add("totp", JsonObject().apply {
                     addProperty("algorithm", "SHA-1")
                     addProperty("secret_key", "A")
@@ -321,6 +334,7 @@ class SecretValidationTest : KoinTest {
     fun `valid secret for password description totp resource type should not be rejected`() = runTest {
         val validSecrets = listOf(
             JsonObject().apply {
+                addProperty("object_type", "PASSBOLT_SECRET_V5")
                 addProperty("description", "desc")
                 addProperty("password", "password")
                 add("totp", JsonObject().apply {

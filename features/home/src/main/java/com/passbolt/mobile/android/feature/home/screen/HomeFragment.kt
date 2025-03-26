@@ -28,7 +28,7 @@ import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
-import com.passbolt.mobile.android.common.WebsiteOpener
+import com.passbolt.mobile.android.common.ExternalDeeplinkHandler
 import com.passbolt.mobile.android.common.dialogs.confirmResourceDeletionAlertDialog
 import com.passbolt.mobile.android.common.dialogs.confirmTotpDeletionAlertDialog
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
@@ -150,7 +150,7 @@ class HomeFragment :
     private val fastAdapter: FastAdapter<GenericItem> by inject()
     private val imageLoader: ImageLoader by inject()
     private val clipboardManager: ClipboardManager? by inject()
-    private val websiteOpener: WebsiteOpener by inject()
+    private val externalDeeplinkHandler: ExternalDeeplinkHandler by inject()
     private val arguments: HomeFragmentArgs by navArgs()
     private val navController by lifecycleAwareLazy { findNavController() }
     private val speedDialFabFactory: HomeSpeedDialFabFactory by inject()
@@ -570,7 +570,7 @@ class HomeFragment :
     }
 
     override fun openWebsite(url: String) {
-        websiteOpener.open(requireContext(), url)
+        externalDeeplinkHandler.openWebsite(requireContext(), url)
     }
 
     override fun showDecryptionFailure() {

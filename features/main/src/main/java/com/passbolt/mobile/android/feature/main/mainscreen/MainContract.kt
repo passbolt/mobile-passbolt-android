@@ -33,6 +33,7 @@ interface MainContract {
         fun showAppUpdateDownloadedSnackbar()
         fun tryLaunchReviewFlow()
         fun setupBottomNavigation(navigationModel: MainBottomNavigationModel)
+        fun showChromeNativeAutofillEncouragement()
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {

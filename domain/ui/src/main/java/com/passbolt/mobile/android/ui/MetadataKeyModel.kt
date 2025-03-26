@@ -23,6 +23,7 @@
 
 package com.passbolt.mobile.android.ui
 
+import com.google.gson.annotations.SerializedName
 import java.time.ZonedDateTime
 import java.util.UUID
 
@@ -37,18 +38,28 @@ data class MetadataKeyModel(
 
 data class MetadataPrivateKeyModel(
     val metadataKeyId: UUID,
-    val userId: UUID?,
-    val keyData: String
+    val userId: UUID,
+    val encryptedKeyData: String
 )
 
 data class ParsedMetadataKeyModel(
     val id: UUID,
     val armoredKey: String,
+    val fingerprint: String?,
+    val expired: ZonedDateTime?,
+    val deleted: ZonedDateTime?,
     val metadataPrivateKeys: List<ParsedMetadataPrivateKeyModel>
 )
 
-data class ParsedMetadataPrivateKeyModel(
-    val userId: UUID?,
+data class MetadataPrivateKeyJsonModel(
+    @SerializedName("object_type")
+    val objectType: String,
+    @SerializedName("armored_key")
     val armoredKey: String,
+    val passphrase: String
+)
+data class ParsedMetadataPrivateKeyModel(
+    val userId: UUID,
+    val keyData: String,
     val passphrase: String
 )

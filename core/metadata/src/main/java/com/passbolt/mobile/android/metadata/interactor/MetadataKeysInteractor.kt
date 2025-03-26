@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.metadata.interactor
 
+import com.google.gson.Gson
 import com.passbolt.mobile.android.core.accounts.usecase.privatekey.GetSelectedUserPrivateKeyUseCase
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticatedUseCaseOutput
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
@@ -9,9 +10,13 @@ import com.passbolt.mobile.android.core.passphrasememorycache.PotentialPassphras
 import com.passbolt.mobile.android.dto.PassphraseNotInCacheException
 import com.passbolt.mobile.android.gopenpgp.OpenPgp
 import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpResult
+import com.passbolt.mobile.android.metadata.privatekeys.MetadataPrivateKeysValidator
 import com.passbolt.mobile.android.metadata.usecase.FetchMetadataKeysUseCase
 import com.passbolt.mobile.android.metadata.usecase.db.RebuildMetadataKeysTablesUseCase
 import com.passbolt.mobile.android.ui.MetadataKeyModel
+import com.passbolt.mobile.android.ui.MetadataPrivateKeyJsonModel
+import com.passbolt.mobile.android.ui.ParsedMetadataKeyModel
+import com.passbolt.mobile.android.ui.ParsedMetadataPrivateKeyModel
 import timber.log.Timber
 
 /**
@@ -42,7 +47,9 @@ class MetadataKeysInteractor(
     private val rebuildMetadataKeysTablesUseCase: RebuildMetadataKeysTablesUseCase,
     private val passphraseMemoryCache: PassphraseMemoryCache,
     private val getPrivateKeyUseCase: GetSelectedUserPrivateKeyUseCase,
-    private val openPgp: OpenPgp
+    private val openPgp: OpenPgp,
+    private val gson: Gson,
+    private val metadataPrivateKeysValidator: MetadataPrivateKeysValidator
 ) {
 
     suspend fun fetchAndSaveMetadataKeys(): Output {
@@ -69,19 +76,41 @@ class MetadataKeysInteractor(
         return when (val passphrase = passphraseMemoryCache.get()) {
             is PotentialPassphrase.Passphrase -> {
                 val decryptedKeysModel = metadataKeysModel.map {
-                    it.copy(metadataPrivateKeys = it.metadataPrivateKeys.mapNotNull { metadataPrivateKey ->
-                        val decryptedKeyData = openPgp.decryptMessageArmored(
-                            privateKey,
-                            passphrase.passphrase,
-                            metadataPrivateKey.keyData
-                        )
-                        when (decryptedKeyData) {
-                            is OpenPgpResult.Error -> null
-                            is OpenPgpResult.Result -> metadataPrivateKey.copy(
-                                keyData = String(decryptedKeyData.result)
+                    ParsedMetadataKeyModel(
+                        id = it.id,
+                        armoredKey = it.armoredKey,
+                        fingerprint = it.fingerprint,
+                        expired = it.expired,
+                        deleted = it.deleted,
+                        metadataPrivateKeys = it.metadataPrivateKeys.mapNotNull { metadataPrivateKey ->
+                            val decryptedKeyData = openPgp.decryptMessageArmored(
+                                privateKey,
+                                passphrase.passphrase,
+                                metadataPrivateKey.encryptedKeyData
                             )
-                        }
-                    })
+                            when (decryptedKeyData) {
+                                is OpenPgpResult.Error -> null
+                                is OpenPgpResult.Result -> {
+                                    val keyModel = gson.fromJson(
+                                        String(decryptedKeyData.result),
+                                        MetadataPrivateKeyJsonModel::class.java
+                                    )
+                                    if (metadataPrivateKeysValidator.isValid(keyModel)) {
+                                        ParsedMetadataPrivateKeyModel(
+                                            userId = metadataPrivateKey.userId,
+                                            keyData = keyModel.armoredKey,
+                                            passphrase = keyModel.passphrase
+                                        )
+                                    } else {
+                                        Timber.e(
+                                            "Invalid metadata private key for metadata " +
+                                                    "key: ${metadataPrivateKey.metadataKeyId}"
+                                        )
+                                        null
+                                    }
+                                }
+                            }
+                        })
                 }
                 rebuildMetadataKeysTablesUseCase.execute(
                     RebuildMetadataKeysTablesUseCase.Input(decryptedKeysModel)

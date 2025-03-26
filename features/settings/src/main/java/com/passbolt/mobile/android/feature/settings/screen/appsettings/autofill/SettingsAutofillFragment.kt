@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill
 
 import android.os.Bundle
 import android.view.View
+import com.passbolt.mobile.android.common.ExternalDeeplinkHandler
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
 import com.passbolt.mobile.android.core.extension.showSnackbar
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
@@ -43,6 +44,7 @@ class SettingsAutofillFragment :
     EncourageAccessibilityAutofillDialog.Listener, AutofillEnabledDialog.Listener {
 
     private val presenter: SettingsAutofillContract.Presenter by inject()
+    private val externalDeeplinkHandler: ExternalDeeplinkHandler by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -59,6 +61,9 @@ class SettingsAutofillFragment :
             autofillServiceSwitchContainer.setOnClickListener {
                 presenter.autofillServiceSwitchClick()
             }
+            chromeNativeAutofillServiceSwitchContainer.setOnClickListener {
+                presenter.chromeNativeAutofillServiceSwitchClick()
+            }
             accessibilityServiceSwitchContainer.setOnClickListener {
                 presenter.accessibilityServiceSwitchClick()
             }
@@ -72,6 +77,33 @@ class SettingsAutofillFragment :
 
     override fun setAccessibilitySwitchOff() {
         binding.accessibilityServiceSwitch.isChecked = false
+    }
+
+    override fun disableChromeNativeAutofillLayout() {
+        binding.chromeNativeAutofillServiceSwitchContainer.isEnabled = false
+    }
+
+    override fun showChromeNativeAutofillNotSupported() {
+        binding.chromeNativeAutofillServiceSwitch.apply {
+            isChecked = false
+            text = String.format(
+                "%s\n%s",
+                getString(LocalizationR.string.settings_chrome_native_autofill_autofill_service_description),
+                getString(LocalizationR.string.settings_chrome_native_autofill_not_supported)
+            )
+        }
+    }
+
+    override fun setChromeNativeAutofillSwitchOn() {
+        binding.chromeNativeAutofillServiceSwitch.isChecked = true
+    }
+
+    override fun setChromeNativeAutofillSwitchOff() {
+        binding.chromeNativeAutofillServiceSwitch.isChecked = false
+    }
+
+    override fun enableChromeNativeAutofillLayout() {
+        binding.chromeNativeAutofillServiceSwitchContainer.isEnabled = true
     }
 
     override fun showAutofillServiceNotSupported() {
@@ -132,5 +164,9 @@ class SettingsAutofillFragment :
 
     override fun autofillEnabledDialogDismissed() {
         // ignore
+    }
+
+    override fun launchChromeNativeAutofillDeeplink() {
+        externalDeeplinkHandler.openChromeNativeAutofillSettings(requireContext())
     }
 }

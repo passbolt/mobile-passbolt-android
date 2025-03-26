@@ -75,5 +75,6 @@ interface PermissionsContract {
         fun groupPermissionModified(permission: PermissionModelUi.GroupPermissionModel)
         fun userPermissionDeleted(permission: PermissionModelUi.UserPermissionModel)
         fun groupPermissionDeleted(permission: PermissionModelUi.GroupPermissionModel)
+        fun refreshPermissionsList()
     }
 }
