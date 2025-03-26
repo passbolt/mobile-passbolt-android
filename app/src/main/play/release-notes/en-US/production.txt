@@ -1,15 +1,18 @@
-# Passbolt 1.23.0-34 Android app release notes
+# Passbolt 1.24.0-35 Android app release notes
 
 ## Added
-- Add v5 content types support (view, create, update, share)
-- Add session keys cache for v5 performance optimization
-- Add support for devices with 16kb memory page
+- Skip validation and decryption for unmodified metadata
 
 ## Improved
-- Small pre-v5 UI improvements
-- Change session refresh mechanism from reactive to proactive
-- Added latest translations
+- Remove compat for Firefox
+
+## Fixed
+- Fix permissions save button disappearing after going deeper in navigation
+- Fix resetting expiry after resource password change
+- Fix showing auth screen after MFA session expired
+
+## Security
+- Validate object_type fields
 
 ## Maintenance
-- Refactor current create and update resource interactors
-- Improve instrumented tests test stability
+- Bump yubikit

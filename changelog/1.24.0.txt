@@ -1,0 +1,21 @@
+# Passbolt 1.24.0-35 Android app release notes
+
+## Added
+- MOB-2164: Skip validation and decryption for unmodified metadata for performance improvements
+
+## Improved
+- MOB-1878: Drop usage of personal field on folders
+- MOB-2521: Clean up autofill compat mode config; Remove compat for Firefox
+- MOB-2507: Allow to not dismiss progress dialog on a flag; don't dismiss dialog on share process
+
+## Fixed
+- MOB-2506: Fix permissions save button disappearing after going deeper in navigation
+- MOB-2514: Fix resetting expiry after resource password change
+- MOB-2509: Fix showing auth screen after MFA session expired
+
+## Security
+- MOB-2503: Update docker image
+- MOB-2501: Validate object_type fields
+
+## Maintenance
+- MOB-2498: Bump yubikit
