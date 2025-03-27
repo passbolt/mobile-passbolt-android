@@ -11,6 +11,7 @@ import com.passbolt.mobile.android.core.ui.menu.OpenableSettingView
 import com.passbolt.mobile.android.feature.resourceform.R
 import com.passbolt.mobile.android.feature.resourceform.databinding.ViewAdditionalSecretsSectionBinding
 import com.passbolt.mobile.android.ui.ResourceFormUiModel
+import com.passbolt.mobile.android.ui.ResourceFormUiModel.Secret.PASSWORD
 import com.passbolt.mobile.android.ui.ResourceFormUiModel.Secret.SECURE_NOTE
 import com.passbolt.mobile.android.ui.ResourceFormUiModel.Secret.TOTP
 
@@ -43,6 +44,14 @@ class AdditionalSecretsSectionView @JvmOverloads constructor(
     defStyle: Int = 0
 ) : LinearLayout(context, attrs, defStyle) {
 
+    var additionalPasswordClick: (() -> Unit)? = null
+        set(value) {
+            field = value
+            value?.let {
+                passwordAdditionalSecretSection.setDebouncingOnClick(action = value)
+            }
+        }
+
     var additionalTotpClick: (() -> Unit)? = null
         set(value) {
             field = value
@@ -60,6 +69,9 @@ class AdditionalSecretsSectionView @JvmOverloads constructor(
         }
 
     private val binding = ViewAdditionalSecretsSectionBinding.inflate(LayoutInflater.from(context), this)
+
+    private val passwordAdditionalSecretSection: OpenableSettingView
+        get() = binding.additionalSecretsSectionView.findViewById(R.id.additionalPassword)
 
     private val totpAdditionalSecretSection: OpenableSettingView
         get() = binding.additionalSecretsSectionView.findViewById(R.id.additionalTotp)
@@ -80,6 +92,7 @@ class AdditionalSecretsSectionView @JvmOverloads constructor(
         if (fields.isEmpty()) {
             gone()
         } else {
+            passwordAdditionalSecretSection.isVisible = fields.contains(PASSWORD)
             totpAdditionalSecretSection.isVisible = fields.contains(TOTP)
             secureNoteAdditionalSecretSection.isVisible = fields.contains(SECURE_NOTE)
         }

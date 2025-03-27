@@ -13,6 +13,7 @@ import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.extension.visible
 import com.passbolt.mobile.android.core.passwordgenerator.codepoints.Codepoint
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
+import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.password.PasswordFormFragment
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.securenote.SecureNoteFormFragment
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.TotpFormFragment
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.advanced.TotpAdvancedSettingsFormFragment
@@ -21,6 +22,7 @@ import com.passbolt.mobile.android.feature.resourceform.metadata.description.Des
 import com.passbolt.mobile.android.feature.resourceform.subform.password.PasswordSubformView
 import com.passbolt.mobile.android.feature.resourceform.subform.totp.TotpSubformView
 import com.passbolt.mobile.android.ui.PasswordStrength
+import com.passbolt.mobile.android.ui.PasswordUiModel
 import com.passbolt.mobile.android.ui.ResourceFormUiModel
 import com.passbolt.mobile.android.ui.TotpUiModel
 import org.koin.android.ext.android.inject
@@ -88,6 +90,14 @@ class ResourceFormFragment :
         }
     }
 
+    private val passwordResult = { _: String, result: Bundle ->
+        if (result.containsKey(PasswordFormFragment.EXTRA_PASSWORD)) {
+            presenter.passwordChanged(
+                BundleCompat.getParcelable(result, PasswordFormFragment.EXTRA_PASSWORD, PasswordUiModel::class.java)
+            )
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.resourceName.disableSavingInstanceState()
@@ -123,6 +133,7 @@ class ResourceFormFragment :
         binding.additionalSecretsSectionView.apply {
             visible()
             setUp(supportedAdditionalSecrets)
+            additionalPasswordClick = { presenter.additionalPasswordClick() }
             additionalTotpClick = { presenter.additionalTotpClick() }
             additionalSecureNoteClick = { presenter.additionalSecureNoteClick() }
         }
@@ -157,6 +168,16 @@ class ResourceFormFragment :
         setFragmentResultListener(TotpFormFragment.REQUEST_TOTP, totpResult)
         findNavController().navigate(
             ResourceFormFragmentDirections.actionResourceFormFragmentToTotpFormFragment(navArgs.mode, totpUiModel)
+        )
+    }
+
+    override fun navigateToPassword(passwordUiModel: PasswordUiModel) {
+        setFragmentResultListener(PasswordFormFragment.REQUEST_PASSWORD, passwordResult)
+        findNavController().navigate(
+            ResourceFormFragmentDirections.actionResourceFormFragmentToPasswordFormFragment(
+                navArgs.mode,
+                passwordUiModel
+            )
         )
     }
 
@@ -227,7 +248,7 @@ class ResourceFormFragment :
             }
             usernameInput.apply {
                 disableSavingInstanceState()
-                setTextChangeListener { presenter.passowrdUsernameTextChanged(it) }
+                setTextChangeListener { presenter.passwordUsernameTextChanged(it) }
             }
             passwordGenerateInput.apply {
                 disableSavingInstanceState()

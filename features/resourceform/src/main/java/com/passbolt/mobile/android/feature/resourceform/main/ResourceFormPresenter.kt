@@ -10,6 +10,7 @@ import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.SecretJso
 import com.passbolt.mobile.android.feature.resourceform.usecase.GetDefaultCreateContentTypeUseCase
 import com.passbolt.mobile.android.mappers.EntropyViewMapper
 import com.passbolt.mobile.android.mappers.ResourceFormMapper
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType
 import com.passbolt.mobile.android.ui.Entropy
 import com.passbolt.mobile.android.ui.LeadingContentType
 import com.passbolt.mobile.android.ui.LeadingContentType.PASSWORD
@@ -20,6 +21,7 @@ import com.passbolt.mobile.android.ui.Mode
 import com.passbolt.mobile.android.ui.Mode.CREATE
 import com.passbolt.mobile.android.ui.Mode.UPDATE
 import com.passbolt.mobile.android.ui.PasswordGeneratorTypeModel
+import com.passbolt.mobile.android.ui.PasswordUiModel
 import com.passbolt.mobile.android.ui.ResourceFormUiModel
 import com.passbolt.mobile.android.ui.TotpUiModel
 import kotlinx.coroutines.CoroutineScope
@@ -75,6 +77,7 @@ class ResourceFormPresenter(
     private lateinit var resourceMetadata: MetadataJsonModel
     private lateinit var resourceSecret: SecretJsonModel
     private lateinit var metadataType: MetadataTypeModel
+    private lateinit var contentType: ContentType
 
     private var argsConsumed = false
     private var areAdvancedSettingsExpanded = false
@@ -100,7 +103,7 @@ class ResourceFormPresenter(
         val defaultContentTypeToCreate = getDefaultCreateContentTypeUseCase.execute(
             GetDefaultCreateContentTypeUseCase.Input(leadingContentType)
         )
-        val contentType = defaultContentTypeToCreate.contentType
+        contentType = defaultContentTypeToCreate.contentType
         metadataType = defaultContentTypeToCreate.metadataType
         uiModel = resourceFormMapper.map(contentType)
 
@@ -150,7 +153,7 @@ class ResourceFormPresenter(
                 view?.addPasswordLeadingForm()
                 view?.showPasswordUsername(resourceMetadata.username.orEmpty())
                 view?.showPasswordMainUri(resourceMetadata.getMainUri(metadataType))
-                showPassword(resourceSecret.secret)
+                showPassword(resourceSecret.getPassword(contentType))
             }
         }
     }
@@ -181,9 +184,9 @@ class ResourceFormPresenter(
     }
 
     override fun passwordTextChanged(password: String) {
-        scope.launch {
-            resourceSecret.secret = password
+        resourceSecret.setPassword(contentType, password)
 
+        scope.launch {
             val entropy = entropyCalculator.getSecretEntropy(password)
             view?.showPasswordStrength(entropyViewMapper.map(Entropy.parse(entropy)), entropy)
         }
@@ -198,7 +201,7 @@ class ResourceFormPresenter(
         resourceMetadata.setMainUri(metadataType, mainUri)
     }
 
-    override fun passowrdUsernameTextChanged(username: String) {
+    override fun passwordUsernameTextChanged(username: String) {
         resourceMetadata.username = username
     }
 
@@ -233,6 +236,16 @@ class ResourceFormPresenter(
         )
     }
 
+    override fun additionalPasswordClick() {
+        view?.navigateToPassword(
+            resourceFormMapper.mapToUiModel(
+                resourceSecret.getPassword(contentType),
+                resourceMetadata.getMainUri(metadataType),
+                resourceMetadata.username.orEmpty()
+            )
+        )
+    }
+
     override fun metadataDescriptionClick() {
         view?.navigateToMetadataDescription(resourceMetadata.description.orEmpty())
     }
@@ -243,8 +256,19 @@ class ResourceFormPresenter(
 
     override fun totpChanged(totpUiModel: TotpUiModel?) {
         // TODO ensure validated before mapping
-        resourceSecret.totp = resourceFormMapper.mapToJsonModel(totpUiModel)!!
-        resourceMetadata.setMainUri(metadataType, totpUiModel?.issuer.orEmpty())
+        totpUiModel?.let {
+            resourceSecret.totp = resourceFormMapper.mapToJsonModel(totpUiModel)
+            resourceMetadata.setMainUri(metadataType, totpUiModel.issuer)
+        }
+    }
+
+    override fun passwordChanged(passwordUiModel: PasswordUiModel?) {
+        // TODO ensure validated before mapping
+        passwordUiModel?.let {
+            resourceSecret.setPassword(contentType, it.password)
+            resourceMetadata.username = it.username
+            resourceMetadata.setMainUri(metadataType, passwordUiModel.mainUri)
+        }
     }
 
     override fun refreshSuccessAction() {

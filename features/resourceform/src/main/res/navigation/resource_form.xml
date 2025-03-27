@@ -53,6 +53,9 @@
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_resourceFormFragment_to_passwordFormFragment"
+            app:destination="@id/passwordFormFragment" />
     </fragment>
 
     <fragment
@@ -112,6 +115,19 @@
         <argument
             android:name="totpUiModel"
             app:argType="com.passbolt.mobile.android.ui.TotpUiModel" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/passwordFormFragment"
+        android:name="com.passbolt.mobile.android.feature.resourceform.additionalsecrets.password.PasswordFormFragment"
+        android:label="PasswordFormFragment"
+        tools:layout="@layout/fragment_password_form">
+        <argument
+            android:name="mode"
+            app:argType="com.passbolt.mobile.android.ui.Mode" />
+        <argument
+            android:name="passwordModel"
+            app:argType="com.passbolt.mobile.android.ui.PasswordUiModel" />
     </fragment>
 
 </navigation>
