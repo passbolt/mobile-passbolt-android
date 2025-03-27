@@ -11,8 +11,10 @@ import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5DefaultW
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5PasswordString
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5TotpStandalone
 import com.passbolt.mobile.android.ui.LeadingContentType
+import com.passbolt.mobile.android.ui.PasswordUiModel
 import com.passbolt.mobile.android.ui.ResourceFormUiModel
 import com.passbolt.mobile.android.ui.ResourceFormUiModel.Metadata.DESCRIPTION
+import com.passbolt.mobile.android.ui.ResourceFormUiModel.Secret.PASSWORD
 import com.passbolt.mobile.android.ui.ResourceFormUiModel.Secret.SECURE_NOTE
 import com.passbolt.mobile.android.ui.ResourceFormUiModel.Secret.TOTP
 import com.passbolt.mobile.android.ui.TotpUiModel
@@ -52,7 +54,7 @@ class ResourceFormMapper {
                 PasswordString, V5PasswordString -> emptyList()
                 PasswordAndDescription, V5Default -> listOf(SECURE_NOTE, TOTP)
                 PasswordDescriptionTotp, V5DefaultWithTotp -> listOf(SECURE_NOTE, TOTP)
-                Totp, V5TotpStandalone -> listOf(SECURE_NOTE)
+                Totp, V5TotpStandalone -> listOf(PASSWORD, SECURE_NOTE)
             },
             supportedMetadata = when (contentType) {
                 PasswordString, V5PasswordString -> listOf(DESCRIPTION)
@@ -73,13 +75,18 @@ class ResourceFormMapper {
             )
         } ?: TotpUiModel.emptyWithDefaults(issuer)
 
-    fun mapToJsonModel(totpUiModel: TotpUiModel?): TotpSecret? =
-        totpUiModel?.let {
-            TotpSecret(
-                key = it.secret,
-                period = it.expiry.toLong(),
-                digits = it.length.toInt(),
-                algorithm = it.algorithm
-            )
-        }
+    fun mapToJsonModel(totpUiModel: TotpUiModel): TotpSecret =
+        TotpSecret(
+            key = totpUiModel.secret,
+            period = totpUiModel.expiry.toLong(),
+            digits = totpUiModel.length.toInt(),
+            algorithm = totpUiModel.algorithm
+        )
+
+    fun mapToUiModel(password: String, mainUri: String, username: String) =
+        PasswordUiModel(
+            password = password,
+            mainUri = mainUri,
+            username = username
+        )
 }

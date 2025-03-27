@@ -1,4 +1,8 @@
-package com.passbolt.mobile.android.ui
+package com.passbolt.mobile.android.feature.resourceform.additionalsecrets.password
+
+import org.koin.core.module.Module
+import org.koin.core.module.dsl.scopedOf
+import org.koin.dsl.bind
 
 /**
  * Passbolt - Open source password manager for teams
@@ -22,19 +26,9 @@ package com.passbolt.mobile.android.ui
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-data class ResourceFormUiModel(
-    val leadingContentType: LeadingContentType,
-    val supportedMetadata: List<Metadata>,
-    val supportedAdditionalSecrets: List<Secret>
-) {
 
-    enum class Metadata {
-        DESCRIPTION
-    }
-
-    enum class Secret {
-        PASSWORD,
-        SECURE_NOTE,
-        TOTP
+fun Module.passwordFormModule() {
+    scope<PasswordFormFragment> {
+        scopedOf(::PasswordFormPresenter) bind PasswordFormContract.Presenter::class
     }
 }

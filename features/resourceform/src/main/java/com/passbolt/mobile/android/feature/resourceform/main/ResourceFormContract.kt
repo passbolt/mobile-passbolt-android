@@ -6,6 +6,7 @@ import com.passbolt.mobile.android.core.passwordgenerator.codepoints.Codepoint
 import com.passbolt.mobile.android.ui.LeadingContentType
 import com.passbolt.mobile.android.ui.Mode
 import com.passbolt.mobile.android.ui.PasswordStrength.Empty
+import com.passbolt.mobile.android.ui.PasswordUiModel
 import com.passbolt.mobile.android.ui.ResourceFormUiModel
 import com.passbolt.mobile.android.ui.TotpUiModel
 
@@ -59,6 +60,7 @@ interface ResourceFormContract {
         fun showPasswordMainUri(mainUri: String)
         fun showTotpSecret(secret: String)
         fun showTotpIssuer(issuer: String)
+        fun navigateToPassword(passwordUiModel: PasswordUiModel)
     }
 
     interface Presenter : DataRefreshViewReactiveContract.Presenter<View> {
@@ -70,7 +72,7 @@ interface ResourceFormContract {
         fun advancedSettingsClick()
         fun nameTextChanged(name: String)
         fun passwordMainUriTextChanged(mainUri: String)
-        fun passowrdUsernameTextChanged(username: String)
+        fun passwordUsernameTextChanged(username: String)
         fun additionalSecureNoteClick()
         fun additionalTotpClick()
         fun metadataDescriptionClick()
@@ -80,5 +82,7 @@ interface ResourceFormContract {
         fun totpSecretChanged(secret: String)
         fun totpUrlChanged(url: String)
         fun totpAdvancedSettingsChanged(totpAdvancedSettings: TotpUiModel?)
+        fun additionalPasswordClick()
+        fun passwordChanged(passwordUiModel: PasswordUiModel?)
     }
 }

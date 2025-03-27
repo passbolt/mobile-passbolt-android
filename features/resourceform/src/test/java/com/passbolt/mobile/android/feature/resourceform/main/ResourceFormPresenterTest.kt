@@ -10,6 +10,7 @@ import com.passbolt.mobile.android.ui.Mode
 import com.passbolt.mobile.android.ui.OtpParseResult
 import com.passbolt.mobile.android.ui.PasswordStrength
 import com.passbolt.mobile.android.ui.ResourceFormUiModel
+import com.passbolt.mobile.android.ui.ResourceFormUiModel.Secret.PASSWORD
 import com.passbolt.mobile.android.ui.ResourceFormUiModel.Secret.SECURE_NOTE
 import com.passbolt.mobile.android.ui.ResourceFormUiModel.Secret.TOTP
 import com.passbolt.mobile.android.ui.TotpUiModel
@@ -161,7 +162,7 @@ class ResourceFormPresenterTest : KoinTest {
 
         argumentCaptor<List<ResourceFormUiModel.Secret>> {
             verify(view).setupAdditionalSecrets(capture())
-            assertThat(firstValue).containsExactly(SECURE_NOTE)
+            assertThat(firstValue).containsExactly(PASSWORD, SECURE_NOTE)
         }
         argumentCaptor<List<ResourceFormUiModel.Metadata>> {
             verify(view).setupMetadata(capture())
