@@ -1,3 +1,5 @@
+package com.passbolt.mobile.android.feature.otp.scanotp
+
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -21,14 +23,14 @@
  * @since v1.0
  */
 
-package com.passbolt.mobile.android.feature.otp.createotpmanually
+enum class ScanOtpMode {
+    /**
+     * Scan OTP and return the result
+     */
+    SCAN_FOR_RESULT,
 
-import org.koin.core.module.Module
-import org.koin.core.module.dsl.scopedOf
-import org.koin.dsl.bind
-
-fun Module.createOtpModule() {
-    scope<CreateOtpFragment> {
-        scopedOf(::CreateOtpPresenter) bind CreateOtpContract.Presenter::class
-    }
+    /**
+     * Scan OTP, show success screen (with option to create standalone TOTP) and return the result
+     */
+    SCAN_WITH_SUCCESS_SCREEN
 }

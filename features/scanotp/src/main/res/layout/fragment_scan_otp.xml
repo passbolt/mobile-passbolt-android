@@ -11,29 +11,46 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingVertical="@dimen/dp_8"
+        android:paddingTop="@dimen/dp_8"
         android:theme="@style/Theme.Passbolt.Toolbar"
         app:layout_constraintTop_toTopOf="parent"
         app:toolbarTitle="@string/otp_scan_title" />
+
+    <TextView
+        android:id="@+id/tooltip"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/background"
+        android:gravity="center"
+        android:paddingBottom="@dimen/dp_8"
+        android:textColor="@color/text_primary"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        tools:text="Aim the camera at the QR code" />
 
     <androidx.camera.view.PreviewView
         android:id="@+id/cameraPreview"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/toolbar" />
+        app:layout_constraintBottom_toTopOf="@id/primaryButtonLayout"
+        app:layout_constraintTop_toBottomOf="@id/tooltip" />
 
-    <TextView
-        android:id="@+id/tooltip"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/dp_64"
-        android:background="@drawable/qr_scan_tooltip_background"
-        android:elevation="@dimen/dp_8"
-        android:padding="@dimen/dp_8"
-        android:textColor="@color/text_primary"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:text="Aim the camera at the QR code" />
+    <LinearLayout
+        android:id="@+id/primaryButtonLayout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_96"
+        android:background="@color/background"
+        android:elevation="@dimen/dp_24"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <Button
+            android:id="@+id/createTotpManuallyButton"
+            style="@style/PrimaryButton"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_56"
+            android:layout_gravity="center_vertical"
+            android:layout_marginHorizontal="@dimen/dp_16"
+            android:backgroundTint="@color/primary_button_selector"
+            android:text="@string/scan_qr_or_create_totp_manually" />
+    </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

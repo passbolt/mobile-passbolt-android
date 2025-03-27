@@ -21,7 +21,7 @@
  * @since v1.0
  */
 
-package com.passbolt.mobile.android.feature.otp.scanotpsuccess
+package com.passbolt.mobile.android.feature.otp.scanotp.scanotpsuccess
 
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
@@ -85,7 +85,7 @@ class ScanOtpSuccessPresenter(
                 doOnFailure = { view?.showGenericError() },
                 doOnCryptoFailure = { view?.showEncryptionError(it) },
                 doOnSchemaValidationFailure = ::handleSchemaValidationFailure,
-                doOnSuccess = { view?.navigateToOtpList(otpCreated = true) }
+                doOnSuccess = { view?.navigateToOtpList(scannedTotp, otpCreated = true) }
             )
             view?.hideProgress()
         }
@@ -147,7 +147,7 @@ class ScanOtpSuccessPresenter(
                 doOnFetchFailure = { view?.showGenericError() },
                 doOnCryptoFailure = { view?.showEncryptionError(it) },
                 doOnSchemaValidationFailure = ::handleSchemaValidationFailure,
-                doOnSuccess = { view?.navigateToOtpList(otpCreated = true) }
+                doOnSuccess = { view?.navigateToOtpList(totp = scannedTotp, otpCreated = true) }
             )
 
             view?.hideProgress()

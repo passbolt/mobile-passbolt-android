@@ -83,13 +83,11 @@
     <string name="more_copy_password">Copy password</string>
     <string name="more_copy_username">Copy username</string>
     <string name="more_copy_desc">Copy description</string>
-    <string name="more_edit">Edit password</string>
-    <string name="more_delete">Delete password</string>
-    <string name="more_share">Share password</string>
+    <string name="more_edit">Edit</string>
+    <string name="more_delete">Delete</string>
+    <string name="more_share">Share</string>
     <string name="more_add_to_favourite">Add to favourite</string>
     <string name="more_remove_from_favourite">Remove from favourite</string>
-    <string name="more_add_totp">Add TOTP</string>
-    <string name="more_manage_totp">Manage TOTP</string>
 
     <string name="folder_more_see_details">See details</string>
 
@@ -417,6 +415,7 @@
     <string name="scan_qr_scanning_error">Error during scanning</string>
     <string name="scan_qr_camera_error">Camera error</string>
     <string name="scan_qr_update_transfer_error">There was an error during transfer update</string>
+    <string name="scan_qr_or_create_totp_manually">Or create TOTP manually</string>
 
     <string name="scan_qr_summary_success_title">Your information has been transferred!</string>
     <string name="scan_qr_summary_already_linked_title">Account  is already linked to the device</string>

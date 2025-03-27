@@ -148,4 +148,13 @@ data class MetadataJsonModel(override var json: String) : JsonModel, Parcelable,
             }
         }
     }
+
+    companion object {
+        fun empty(): MetadataJsonModel = MetadataJsonModel(
+            """
+                {"name": ""}
+            """
+                .trimIndent()
+        )
+    }
 }

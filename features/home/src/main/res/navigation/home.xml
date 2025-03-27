@@ -68,7 +68,11 @@
         app:enterAnim="@anim/slide_in_right"
         app:exitAnim="@anim/slide_out_left"
         app:popEnterAnim="@anim/slide_in_left"
-        app:popExitAnim="@anim/slide_out_right" />
+        app:popExitAnim="@anim/slide_out_right" >
+        <argument
+            android:name="scanOtpMode"
+            app:argType="com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpMode" />
+    </action>
 
     <action
         android:id="@+id/action_homeChild_to_home"

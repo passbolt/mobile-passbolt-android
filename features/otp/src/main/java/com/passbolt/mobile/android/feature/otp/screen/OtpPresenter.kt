@@ -48,7 +48,6 @@ import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5DefaultW
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5TotpStandalone
 import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.totpSlugs
 import com.passbolt.mobile.android.ui.OtpItemWrapper
-import com.passbolt.mobile.android.ui.OtpParseResult
 import com.passbolt.mobile.android.ui.ResourceModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -62,7 +61,6 @@ import org.koin.core.component.get
 import org.koin.core.component.getOrCreateScope
 import org.koin.core.parameter.parametersOf
 import org.koin.core.scope.Scope
-import timber.log.Timber
 import java.util.UUID
 import kotlin.time.Duration.Companion.seconds
 
@@ -98,8 +96,6 @@ class OtpPresenter(
 
     private var otpList = mutableListOf<OtpItemWrapper>()
     private var visibleOtpId: String = ""
-
-    private lateinit var otpResultAction: OtpResultAction
 
     override fun attach(view: OtpContract.View) {
         super<DataRefreshViewReactivePresenter>.attach(view)
@@ -371,15 +367,6 @@ class OtpPresenter(
         view?.showConfirmDeleteDialog()
     }
 
-    override fun menuEditOtpClick() {
-        view?.navigateToEditOtpMenu()
-    }
-
-    override fun scanOtpQrCodeClick() {
-        otpResultAction = OtpResultAction.CREATE
-        view?.navigateToScanOtpCodeForResult()
-    }
-
     override fun createOtpManuallyClick() {
         view?.navigateToCreateOtpManually()
     }
@@ -460,90 +447,13 @@ class OtpPresenter(
         refreshData()
     }
 
-    override fun menuEditByQrScanClick() {
-        otpResultAction = OtpResultAction.EDIT
-        view?.navigateToScanOtpCodeForResult()
-    }
-
-    override fun menuEditOtpManuallyClick() {
-        view?.navigateToEditOtpManually(currentOtpItemForMenu!!.resource.resourceId)
-    }
-
-    override fun otpQrScanned(totpQr: OtpParseResult.OtpQr.TotpQr?) {
-        when (otpResultAction) {
-            OtpResultAction.EDIT -> {
-                editOtpAfterQrScan(totpQr)
-            }
-            OtpResultAction.CREATE -> {
-                totpQr
-                    ?.let { view?.navigateToScanOtpSuccess(totpQr) }
-                    ?: run {
-                        Timber.e("Invalid totp data scanned")
-                        view?.showInvalidQrCodeDataScanned()
-                    }
+    override fun otpQrScanReturned(isTotpCreated: Boolean, isManualCreationChosen: Boolean) {
+        if (isTotpCreated) {
+            refreshData()
+        } else {
+            if (isManualCreationChosen) {
+                view?.navigateToCreateTotpManually()
             }
         }
-    }
-
-    private fun editOtpAfterQrScan(totpQr: OtpParseResult.OtpQr.TotpQr?) {
-        if (totpQr == null) {
-            Timber.e("No data scanned in the QR code")
-            view?.showInvalidQrCodeDataScanned()
-            return
-        }
-        presenterScope.launch {
-            view?.showProgress()
-            val resource = currentOtpItemForMenu!!.resource
-            val resourceUpdateActionsInteractor = get<ResourceUpdateActionsInteractor> {
-                parametersOf(resource, needSessionRefreshFlow, sessionRefreshedFlow)
-            }
-            val slug = idToSlugMappingProvider.provideMappingForSelectedAccount()[
-                UUID.fromString(resource.resourceTypeId)
-            ]
-            val updateOperation =
-                when (val contentType = ContentType.fromSlug(slug!!)) {
-                    is Totp, V5TotpStandalone ->
-                        resourceUpdateActionsInteractor.updateStandaloneTotpResource(
-                            label = totpQr.label,
-                            issuer = totpQr.issuer,
-                            period = totpQr.period,
-                            digits = totpQr.digits,
-                            algorithm = totpQr.algorithm.name,
-                            secretKey = totpQr.secret
-                        )
-                    is PasswordDescriptionTotp, V5DefaultWithTotp ->
-                        resourceUpdateActionsInteractor.updateLinkedTotpResourceTotpFields(
-                            label = resource.metadataJsonModel.name,
-                            issuer = if (contentType.isV5()) {
-                                resource.metadataJsonModel.uris?.firstOrNull()
-                            } else {
-                                resource.metadataJsonModel.uri
-                            },
-                            period = totpQr.period,
-                            digits = totpQr.digits,
-                            algorithm = totpQr.algorithm.name,
-                            secretKey = totpQr.secret
-                        )
-                    else ->
-                        throw IllegalArgumentException("$slug resource type should not be on TOTP tab")
-                }
-            performResourceUpdateAction(
-                action = { updateOperation },
-                doOnCryptoFailure = { view?.showEncryptionError(it) },
-                doOnFailure = { view?.showError(it) },
-                doOnSchemaValidationFailure = ::handleSchemaValidationFailure,
-                doOnSuccess = {
-                    view?.showOtpUpdate()
-                    refreshData()
-                }
-            )
-
-            view?.hideProgress()
-        }
-    }
-
-    private enum class OtpResultAction {
-        EDIT,
-        CREATE
     }
 }

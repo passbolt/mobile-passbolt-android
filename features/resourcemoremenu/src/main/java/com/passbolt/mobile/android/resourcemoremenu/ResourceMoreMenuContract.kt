@@ -36,8 +36,6 @@ interface ResourceMoreMenuContract {
         fun showShareButton()
         fun showAddToFavouritesButton()
         fun showRemoveFromFavouritesButton()
-        fun showManageTotpButton()
-        fun showAddTotpButton()
         fun showRefreshFailure()
         fun notifyFavouriteClick(favouriteOption: ResourceMoreMenuModel.FavouriteOption)
         fun hideMenu()

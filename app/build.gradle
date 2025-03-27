@@ -179,7 +179,6 @@ dependencies {
     implementation project(':tags')
     implementation project(':scanotp')
     implementation project(':otpmoremenu')
-    implementation project(':createotpmanually')
     implementation project(':rbac')
     implementation project(':accounts')
     implementation project(':policies')

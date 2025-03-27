@@ -14,7 +14,6 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.content.IntentCompat
-import androidx.core.os.BundleCompat
 import androidx.core.view.doOnLayout
 import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
@@ -25,7 +24,6 @@ import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
 import com.passbolt.mobile.android.common.ExternalDeeplinkHandler
 import com.passbolt.mobile.android.common.dialogs.confirmResourceDeletionAlertDialog
-import com.passbolt.mobile.android.common.dialogs.confirmTotpDeletionAlertDialog
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.extension.gone
 import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
@@ -45,15 +43,10 @@ import com.passbolt.mobile.android.core.ui.recyclerview.OverlappingItemDecorator
 import com.passbolt.mobile.android.core.ui.recyclerview.OverlappingItemDecorator.Overlap
 import com.passbolt.mobile.android.core.ui.span.RoundedBackgroundSpan
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
-import com.passbolt.mobile.android.feature.otp.createotpmanually.CreateOtpFragment
-import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpFragment
 import com.passbolt.mobile.android.feature.resourcedetails.ResourceActivity
 import com.passbolt.mobile.android.feature.resourcedetails.ResourceMode
 import com.passbolt.mobile.android.feature.resources.databinding.FragmentResourceDetailsBinding
 import com.passbolt.mobile.android.locationdetails.LocationItem
-import com.passbolt.mobile.android.otpcreatemoremenu.OtpCreateMoreMenuFragment
-import com.passbolt.mobile.android.otpeditmoremenu.OtpUpdateMoreMenuFragment
-import com.passbolt.mobile.android.otpmoremenu.OtpMoreMenuFragment
 import com.passbolt.mobile.android.permissions.permissions.NavigationOrigin
 import com.passbolt.mobile.android.permissions.permissions.PermissionsFragment
 import com.passbolt.mobile.android.permissions.permissions.PermissionsItem
@@ -63,7 +56,6 @@ import com.passbolt.mobile.android.permissions.recycler.GroupItem
 import com.passbolt.mobile.android.permissions.recycler.UserItem
 import com.passbolt.mobile.android.resourcemoremenu.ResourceMoreMenuFragment
 import com.passbolt.mobile.android.ui.OtpItemWrapper
-import com.passbolt.mobile.android.ui.OtpParseResult
 import com.passbolt.mobile.android.ui.PermissionModelUi
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
@@ -99,8 +91,7 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
 class ResourceDetailsFragment :
     BindingScopedAuthenticatedFragment<FragmentResourceDetailsBinding, ResourceDetailsContract.View>(
         FragmentResourceDetailsBinding::inflate
-    ), ResourceDetailsContract.View, ResourceMoreMenuFragment.Listener, OtpCreateMoreMenuFragment.Listener,
-    OtpMoreMenuFragment.Listener, OtpUpdateMoreMenuFragment.Listener {
+    ), ResourceDetailsContract.View, ResourceMoreMenuFragment.Listener {
 
     override val presenter: ResourceDetailsContract.Presenter by inject()
     private val clipboardManager: ClipboardManager? by inject()
@@ -152,26 +143,6 @@ class ResourceDetailsFragment :
     }
 
     private val totpViewController: TotpViewController by inject()
-
-    private val otpQrScanned = { _: String, result: Bundle ->
-        if (result.containsKey(ScanOtpFragment.EXTRA_SCANNED_OTP)) {
-            presenter.otpScanned(
-                BundleCompat.getParcelable(
-                    result,
-                    ScanOtpFragment.EXTRA_SCANNED_OTP,
-                    OtpParseResult.OtpQr.TotpQr::class.java
-                )
-            )
-        }
-    }
-
-    private val otpEdited = { _: String, result: Bundle ->
-        if (result.containsKey(CreateOtpFragment.EXTRA_OTP_UPDATED) &&
-            result.containsKey(CreateOtpFragment.EXTRA_RESOURCE_NAME)
-        ) {
-            presenter.resourceEdited(result.getString(CreateOtpFragment.EXTRA_RESOURCE_NAME).orEmpty())
-        }
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -415,25 +386,6 @@ class ResourceDetailsFragment :
         presenter.editClick()
     }
 
-    override fun menuAddTotpClick() {
-        presenter.menuAddTotpClick()
-    }
-
-    override fun navigateToOtpCreateMenu() {
-        OtpCreateMoreMenuFragment()
-            .show(childFragmentManager, OtpCreateMoreMenuFragment::class.java.name)
-    }
-
-    override fun menuManageTotpClick() {
-        presenter.manageTotpClick()
-    }
-
-    override fun navigateToOtpMoreMenu(resourceId: String, resourceName: String) {
-        presenter.pause()
-        OtpMoreMenuFragment.newInstance(resourceId, resourceName, canShowTotp = true)
-            .show(childFragmentManager, OtpMoreMenuFragment::class.java.name)
-    }
-
     override fun menuFavouriteClick(option: ResourceMoreMenuModel.FavouriteOption) {
         presenter.favouriteClick(option)
     }
@@ -540,13 +492,6 @@ class ResourceDetailsFragment :
     override fun showDeleteConfirmationDialog() {
         confirmResourceDeletionAlertDialog(requireContext()) {
             presenter.deleteResourceConfirmed()
-        }
-            .show()
-    }
-
-    override fun showTotpDeleteConfirmationDialog() {
-        confirmTotpDeletionAlertDialog(requireContext()) {
-            presenter.totpDeleteConfirmed()
         }
             .show()
     }
@@ -658,82 +603,7 @@ class ResourceDetailsFragment :
         }
     }
 
-    override fun menuCreateOtpManuallyClick() {
-        presenter.addTotpManuallyClick()
-    }
-
-    override fun navigateToOtpCreate(resourceId: String) {
-        setFragmentResultListener(
-            CreateOtpFragment.REQUEST_UPDATE_OTP,
-            otpEdited
-        )
-        findNavController().navigate(
-            NavDeepLinkProvider.otpManualFormDeepLinkRequest(resourceId)
-        )
-    }
-
-    override fun menuCreateByNewOtpScanClick() {
-        navigateToScanOtpForResult()
-    }
-
-    override fun menuCopyOtpClick() {
-        presenter.menuCopyOtpClick()
-    }
-
-    override fun menuShowOtpClick() {
-        presenter.menuShowOtpClick()
-    }
-
-    override fun menuEditOtpClick() {
-        presenter.menuEditOtpClick()
-    }
-
-    override fun menuDeleteOtpClick() {
-        presenter.menuDeleteOtpClick()
-    }
-
-    override fun navigateToOtpEdit() {
-        OtpUpdateMoreMenuFragment()
-            .show(childFragmentManager, OtpUpdateMoreMenuFragment::class.java.name)
-    }
-
-    override fun menuEditOtpManuallyClick() {
-        presenter.editOtpManuallyClick()
-    }
-
-    override fun menuEditByNewOtpScanClick() {
-        navigateToScanOtpForResult()
-    }
-
     override fun resourceMoreMenuDismissed() {
         presenter.resume(this)
-    }
-
-    override fun otpMenuDismissed() {
-        presenter.resume(this)
-    }
-
-    private fun navigateToScanOtpForResult() {
-        setFragmentResultListener(
-            ScanOtpFragment.REQUEST_SCAN_OTP_FOR_RESULT,
-            otpQrScanned
-        )
-        findNavController().navigate(
-            ResourceDetailsFragmentDirections.actionResourceDetailsToScanOtp()
-        )
-    }
-
-    override fun showJsonResourceSchemaValidationError() {
-        showSnackbar(
-            LocalizationR.string.common_json_schema_resource_validation_error,
-            backgroundColor = CoreUiR.color.red
-        )
-    }
-
-    override fun showJsonSecretSchemaValidationError() {
-        showSnackbar(
-            LocalizationR.string.common_json_schema_secret_validation_error,
-            backgroundColor = CoreUiR.color.red
-        )
     }
 }

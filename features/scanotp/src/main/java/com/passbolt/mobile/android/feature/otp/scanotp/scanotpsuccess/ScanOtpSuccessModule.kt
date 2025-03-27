@@ -21,13 +21,14 @@
  * @since v1.0
  */
 
-package com.passbolt.mobile.android.feature.otp
+package com.passbolt.mobile.android.feature.otp.scanotp.scanotpsuccess
 
-import com.passbolt.mobile.android.feature.otp.createotpmanually.createOtpModule
-import com.passbolt.mobile.android.feature.otp.createotpmanuallyexpertsettings.createOtpAdvancedSettingsModule
-import org.koin.dsl.module
+import org.koin.core.module.Module
+import org.koin.core.module.dsl.scopedOf
+import org.koin.dsl.bind
 
-val createOtpManuallyMainModule = module {
-    createOtpModule()
-    createOtpAdvancedSettingsModule()
+fun Module.scanOtpSuccessModule() {
+    scope<ScanOtpSuccessFragment> {
+        scopedOf(::ScanOtpSuccessPresenter) bind ScanOtpSuccessContract.Presenter::class
+    }
 }

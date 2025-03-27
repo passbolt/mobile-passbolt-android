@@ -45,6 +45,7 @@ interface ScanOtpContract {
         fun requestCameraPermission()
         fun showCameraPermissionRequiredDialog()
         fun navigateToAppSettings()
+        fun navigateToScanOtpSuccess(parserResult: OtpParseResult.OtpQr.TotpQr)
     }
 
     interface Presenter : BaseContract.Presenter<View> {
@@ -54,5 +55,6 @@ interface ScanOtpContract {
         fun cameraPermissionGranted()
         fun permissionRejectedClick()
         fun settingsButtonClick()
+        fun argsRetrieved(mode: ScanOtpMode)
     }
 }

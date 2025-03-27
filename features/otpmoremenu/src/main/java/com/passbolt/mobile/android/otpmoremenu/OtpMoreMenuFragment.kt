@@ -93,8 +93,6 @@ class OtpMoreMenuFragment :
         with(binding) {
             setDebouncingOnClickAndDismiss(showOtp) { listener?.menuShowOtpClick() }
             setDebouncingOnClickAndDismiss(copyOtp) { listener?.menuCopyOtpClick() }
-            setDebouncingOnClickAndDismiss(deleteOtp) { listener?.menuDeleteOtpClick() }
-            setDebouncingOnClickAndDismiss(editOtp) { listener?.menuEditOtpClick() }
             setDebouncingOnClickAndDismiss(close)
         }
     }
@@ -151,9 +149,7 @@ class OtpMoreMenuFragment :
 
     interface Listener {
         fun menuCopyOtpClick()
-        fun menuShowOtpClick() {} // on some flows show OTP is hidden
-        fun menuEditOtpClick()
-        fun menuDeleteOtpClick()
+        fun menuShowOtpClick()
         fun otpMenuDismissed()
     }
 }

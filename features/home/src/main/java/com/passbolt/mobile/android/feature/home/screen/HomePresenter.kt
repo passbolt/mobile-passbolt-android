@@ -49,11 +49,9 @@ import com.passbolt.mobile.android.core.preferences.usecase.GetHomeDisplayViewPr
 import com.passbolt.mobile.android.core.rbac.usecase.GetRbacRulesUseCase
 import com.passbolt.mobile.android.core.resources.actions.ResourceCommonActionsInteractor
 import com.passbolt.mobile.android.core.resources.actions.ResourcePropertiesActionsInteractor
-import com.passbolt.mobile.android.core.resources.actions.ResourceUpdateActionsInteractor
 import com.passbolt.mobile.android.core.resources.actions.SecretPropertiesActionsInteractor
 import com.passbolt.mobile.android.core.resources.actions.performCommonResourceAction
 import com.passbolt.mobile.android.core.resources.actions.performResourcePropertyAction
-import com.passbolt.mobile.android.core.resources.actions.performResourceUpdateAction
 import com.passbolt.mobile.android.core.resources.actions.performSecretPropertyAction
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesFilteredByTagUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesUseCase
@@ -65,7 +63,6 @@ import com.passbolt.mobile.android.feature.home.screen.model.HeaderSectionConfig
 import com.passbolt.mobile.android.feature.home.screen.model.SearchInputEndIconMode
 import com.passbolt.mobile.android.jsonmodel.delegates.TotpSecret
 import com.passbolt.mobile.android.mappers.HomeDisplayViewMapper
-import com.passbolt.mobile.android.serializers.jsonschema.SchemaEntity
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType
 import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.homeSlugs
 import com.passbolt.mobile.android.ui.Folder
@@ -73,8 +70,6 @@ import com.passbolt.mobile.android.ui.FolderMoreMenuModel
 import com.passbolt.mobile.android.ui.FolderWithCountAndPath
 import com.passbolt.mobile.android.ui.GroupWithCount
 import com.passbolt.mobile.android.ui.HomeDisplayViewModel
-import com.passbolt.mobile.android.ui.ManageTotpAction
-import com.passbolt.mobile.android.ui.OtpParseResult
 import com.passbolt.mobile.android.ui.RbacRuleModel.ALLOW
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
@@ -154,7 +149,6 @@ class HomePresenter(
         }
 
     private var refreshInProgress: Boolean = true
-    private lateinit var otpAction: ManageTotpAction
 
     override fun argsRetrieved(
         showSuggestedModel: ShowSuggestedModel,
@@ -853,15 +847,6 @@ class HomePresenter(
         )
     }
 
-    override fun createTotpClick() {
-        view?.navigateToCreateTotp(
-            when (val currentHomeView = homeView) {
-                is HomeDisplayViewModel.Folders -> currentHomeView.activeFolder.folderId
-                else -> null
-            }
-        )
-    }
-
     override fun closeClick() {
         view?.finish()
     }
@@ -906,86 +891,23 @@ class HomePresenter(
         view?.showFolderCreated(name)
     }
 
-    override fun otpScanned(totpQr: OtpParseResult.OtpQr.TotpQr?) {
-        if (totpQr == null) {
-            view?.showInvalidTotpScanned()
-            return
-        }
-        coroutineScope.launch {
-            val resourceModel = requireNotNull(currentMoreMenuResource)
-            view?.showProgress()
-
-            val resourceUpdateActionsInteractor = get<ResourceUpdateActionsInteractor> {
-                parametersOf(resourceModel, needSessionRefreshFlow, sessionRefreshedFlow)
-            }
-            val updateAction = when (otpAction) {
-                ManageTotpAction.ADD_TOTP -> suspend {
-                    resourceUpdateActionsInteractor.addTotpToResource(
-                        overrideName = resourceModel.metadataJsonModel.name,
-                        overrideUri = resourceModel.metadataJsonModel.uri,
-                        period = totpQr.period,
-                        digits = totpQr.digits,
-                        algorithm = totpQr.algorithm.name,
-                        secretKey = totpQr.secret
-                    )
+    override fun otpQrScanReturned(isTotpCreated: Boolean, isManualCreationChosen: Boolean) {
+        if (isTotpCreated) {
+            initRefresh()
+        } else if (isManualCreationChosen) {
+            view?.navigateToCreateTotpManually(
+                when (val currentHomeView = homeView) {
+                    is HomeDisplayViewModel.Folders -> currentHomeView.activeFolder.folderId
+                    else -> null
                 }
-                ManageTotpAction.EDIT_TOTP -> suspend {
-                    resourceUpdateActionsInteractor.updateLinkedTotpResourceTotpFields(
-                        label = resourceModel.metadataJsonModel.name,
-                        issuer = resourceModel.metadataJsonModel.uri,
-                        period = totpQr.period,
-                        digits = totpQr.digits,
-                        algorithm = totpQr.algorithm.name,
-                        secretKey = totpQr.secret
-                    )
-                }
-            }
-
-            performResourceUpdateAction(
-                action = updateAction,
-                doOnFailure = { view?.showGeneralError(it) },
-                doOnCryptoFailure = { view?.showEncryptionError(it) },
-                doOnFetchFailure = { view?.showFetchFailure() },
-                doOnSchemaValidationFailure = ::handleSchemaValidationFailure,
-                doOnSuccess = { fullDataRefreshExecutor.performFullDataRefresh() }
             )
-
-            view?.hideProgress()
         }
-    }
-
-    private fun handleSchemaValidationFailure(entity: SchemaEntity) {
-        when (entity) {
-            SchemaEntity.RESOURCE -> view?.showJsonResourceSchemaValidationError()
-            SchemaEntity.SECRET -> view?.showJsonSecretSchemaValidationError()
-        }
-    }
-
-    override fun menuAddTotpManuallyClick() {
-        view?.navigateToOtpCreate(currentMoreMenuResource!!.resourceId)
-    }
-
-    override fun manageTotpClick() {
-        view?.navigateToOtpMoreMenu(
-            resourceId = currentMoreMenuResource!!.resourceId,
-            resourceName = currentMoreMenuResource!!.metadataJsonModel.name
-        )
     }
 
     override fun menuCopyOtpClick() {
         doAfterOtpFetchAndDecrypt { label, _, otpParameters ->
             view?.addToClipboard(label, otpParameters.otpValue, isSecret = true)
         }
-    }
-
-    override fun menuAddTotpClick() {
-        otpAction = ManageTotpAction.ADD_TOTP
-        view?.navigateToOtpCreateMenu()
-    }
-
-    override fun menuEditOtpClick() {
-        otpAction = ManageTotpAction.EDIT_TOTP
-        view?.navigateToOtpEdit()
     }
 
     private fun doAfterOtpFetchAndDecrypt(
@@ -1010,37 +932,6 @@ class HomePresenter(
                     action(it.label, it.result, otpParameters)
                 }
             )
-        }
-    }
-
-    override fun editOtpManuallyClick() {
-        view?.navigateToOtpCreate(currentMoreMenuResource!!.resourceId)
-    }
-
-    override fun menuDeleteOtpClick() {
-        view?.showDeleteTotpConfirmationDialog()
-    }
-
-    override fun totpDeletionConfirmed() {
-        coroutineScope.launch {
-            view?.showProgress()
-            val resourceUpdateActionInteractor = get<ResourceUpdateActionsInteractor> {
-                parametersOf(currentMoreMenuResource!!, needSessionRefreshFlow, sessionRefreshedFlow)
-            }
-            performResourceUpdateAction(
-                action = {
-                    resourceUpdateActionInteractor.deleteTotpFromResource()
-                },
-                doOnCryptoFailure = { view?.showEncryptionError(it) },
-                doOnFailure = { view?.showTotpDeletionFailed() },
-                doOnSuccess = {
-                    fullDataRefreshExecutor.performFullDataRefresh()
-                    view?.showTotpDeleted()
-                },
-                doOnSchemaValidationFailure = ::handleSchemaValidationFailure,
-                doOnFetchFailure = { view?.showFetchFailure() }
-            )
-            view?.hideProgress()
         }
     }
 

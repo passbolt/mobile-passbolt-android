@@ -8,18 +8,17 @@ import com.passbolt.mobile.android.core.passwordgenerator.entropy.EntropyCalcula
 import com.passbolt.mobile.android.core.policies.usecase.GetPasswordPoliciesUseCase
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.SecretJsonModel
 import com.passbolt.mobile.android.feature.resourceform.usecase.GetDefaultCreateContentTypeUseCase
-import com.passbolt.mobile.android.ui.LeadingContentType.PASSWORD
-import com.passbolt.mobile.android.ui.LeadingContentType.TOTP
-import com.passbolt.mobile.android.ui.Mode.CREATE
-import com.passbolt.mobile.android.ui.Mode.UPDATE
 import com.passbolt.mobile.android.mappers.EntropyViewMapper
 import com.passbolt.mobile.android.mappers.ResourceFormMapper
 import com.passbolt.mobile.android.ui.Entropy
 import com.passbolt.mobile.android.ui.LeadingContentType
+import com.passbolt.mobile.android.ui.LeadingContentType.PASSWORD
+import com.passbolt.mobile.android.ui.LeadingContentType.TOTP
 import com.passbolt.mobile.android.ui.MetadataJsonModel
 import com.passbolt.mobile.android.ui.MetadataTypeModel
 import com.passbolt.mobile.android.ui.Mode
-import com.passbolt.mobile.android.ui.OtpParseResult
+import com.passbolt.mobile.android.ui.Mode.CREATE
+import com.passbolt.mobile.android.ui.Mode.UPDATE
 import com.passbolt.mobile.android.ui.PasswordGeneratorTypeModel
 import com.passbolt.mobile.android.ui.ResourceFormUiModel
 import com.passbolt.mobile.android.ui.TotpUiModel
@@ -105,26 +104,8 @@ class ResourceFormPresenter(
         metadataType = defaultContentTypeToCreate.metadataType
         uiModel = resourceFormMapper.map(contentType)
 
-        // TODO create default value
-        resourceMetadata = MetadataJsonModel(
-            """
-                {"name": ""}
-            """.trimIndent()
-        )
-        // TODO create default value
-        resourceSecret = SecretJsonModel(
-            """
-                {
-                    "password": "",
-                    "totp": {
-                        "secret_key": "",
-                        "period": ${OtpParseResult.OtpQr.TotpQr.DEFAULT_PERIOD_SECONDS},
-                        "digits": ${OtpParseResult.OtpQr.TotpQr.DEFAULT_DIGITS},
-                        "algorithm": ${OtpParseResult.OtpQr.Algorithm.DEFAULT.name}
-                    }
-                }
-            """.trimIndent()
-        )
+        resourceMetadata = MetadataJsonModel.empty()
+        resourceSecret = SecretJsonModel.emptyPasswordWithTotp()
     }
 
     private fun setupAdvancedSettings() {

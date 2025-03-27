@@ -29,6 +29,7 @@ import com.passbolt.mobile.android.jsonmodel.delegates.RootRelativeJsonPathStrin
 import com.passbolt.mobile.android.jsonmodel.delegates.RootRelativeJsonPathTotpDelegate
 import com.passbolt.mobile.android.jsonmodel.delegates.StringDelegate
 import com.passbolt.mobile.android.jsonmodel.delegates.TotpSecret
+import com.passbolt.mobile.android.ui.OtpParseResult
 
 class SecretJsonModel(override var json: String) : JsonModel {
 
@@ -44,4 +45,45 @@ class SecretJsonModel(override var json: String) : JsonModel {
     var description: String? by RootRelativeJsonPathNullableStringDelegate(jsonPath = "description")
 
     var totp: TotpSecret? by RootRelativeJsonPathTotpDelegate(jsonPath = "totp")
+
+    companion object {
+
+        fun emptyPassword(): SecretJsonModel = SecretJsonModel(
+            """
+                {
+                    "password": ""
+                }
+            """
+                .trimIndent()
+        )
+
+        fun emptyPasswordWithTotp(): SecretJsonModel = SecretJsonModel(
+            """
+                {
+                    "password": "",
+                    "totp": {
+                        "secret_key": "",
+                        "period": ${OtpParseResult.OtpQr.TotpQr.DEFAULT_PERIOD_SECONDS},
+                        "digits": ${OtpParseResult.OtpQr.TotpQr.DEFAULT_DIGITS},
+                        "algorithm": ${OtpParseResult.OtpQr.Algorithm.DEFAULT.name}
+                    }
+                }
+            """
+                .trimIndent()
+        )
+
+        fun emptyTotp(): SecretJsonModel = SecretJsonModel(
+            """
+                {
+                    "totp": {
+                        "secret_key": "",
+                        "period": ${OtpParseResult.OtpQr.TotpQr.DEFAULT_PERIOD_SECONDS},
+                        "digits": ${OtpParseResult.OtpQr.TotpQr.DEFAULT_DIGITS},
+                        "algorithm": ${OtpParseResult.OtpQr.Algorithm.DEFAULT.name}
+                    }
+                }
+            """
+                .trimIndent()
+        )
+    }
 }

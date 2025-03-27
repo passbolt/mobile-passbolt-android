@@ -21,24 +21,31 @@
  * @since v1.0
  */
 
-package com.passbolt.mobile.android.feature.otp.createotpmanuallyexpertsettings
+package com.passbolt.mobile.android.feature.otp.scanotp.scanotpsuccess
 
-import com.passbolt.mobile.android.core.mvp.BaseContract
-import com.passbolt.mobile.android.ui.OtpAdvancedSettingsModel
+import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
+import com.passbolt.mobile.android.resourcepicker.model.PickResourceAction
+import com.passbolt.mobile.android.ui.OtpParseResult
+import com.passbolt.mobile.android.ui.ResourceModel
 
-interface CreateOtpAdvancedSettingsContract {
+interface ScanOtpSuccessContract {
 
-    interface View : BaseContract.View {
-        fun applyChangesAndGoBack(model: OtpAdvancedSettingsModel)
-        fun setValues(values: OtpAdvancedSettingsModel)
-        fun showTotpPeriodError()
+    interface View : BaseAuthenticatedContract.View {
+        fun showGenericError()
+        fun showEncryptionError(message: String)
+        fun navigateToOtpList(totp: OtpParseResult.OtpQr.TotpQr, otpCreated: Boolean)
+        fun showProgress()
+        fun hideProgress()
+        fun navigateToResourcePicker()
+        fun showError(message: String)
+        fun showJsonResourceSchemaValidationError()
+        fun showJsonSecretSchemaValidationError()
     }
 
-    interface Presenter : BaseContract.Presenter<View> {
-        fun totpPeriodChanged(period: String)
-        fun totpAlgorithmChanged(algorithm: String)
-        fun applyClick()
-        fun totpDigitsChanged(digits: String)
-        fun bundleRetrieved(advancedSettingsModel: OtpAdvancedSettingsModel)
+    interface Presenter : BaseAuthenticatedContract.Presenter<View> {
+        fun createStandaloneOtpClick()
+        fun argsRetrieved(scannedTotp: OtpParseResult.OtpQr.TotpQr)
+        fun linkToResourceClick()
+        fun linkedResourceReceived(action: PickResourceAction, resource: ResourceModel)
     }
 }
