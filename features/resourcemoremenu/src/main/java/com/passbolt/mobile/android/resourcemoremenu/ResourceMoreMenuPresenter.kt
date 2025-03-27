@@ -80,13 +80,6 @@ class ResourceMoreMenuPresenter(
 
         if (menuModel.canEdit) {
             view?.showEditButton()
-            when (menuModel.totpOption) {
-                ResourceMoreMenuModel.TotpOption.MANAGE_TOTP -> view?.showManageTotpButton()
-                ResourceMoreMenuModel.TotpOption.ADD_TOTP -> view?.showAddTotpButton()
-                else -> {
-                    // do nothing - totp buttons are initially hidden
-                }
-            }
         }
     }
 

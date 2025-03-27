@@ -28,5 +28,4 @@
 
     <include app:graph="@navigation/scan_otp" />
 
-    <include app:graph="@navigation/createotpmanually" />
 </navigation>

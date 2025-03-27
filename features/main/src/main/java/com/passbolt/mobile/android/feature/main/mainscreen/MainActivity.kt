@@ -25,7 +25,6 @@ import org.koin.android.ext.android.inject
 import timber.log.Timber
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
-import com.passbolt.mobile.android.feature.createotpmanually.R as CreateOtpManuallyR
 import com.passbolt.mobile.android.feature.otp.R as OtpR
 import com.passbolt.mobile.android.feature.resourceform.R as ResourceFormR
 import com.passbolt.mobile.android.feature.resourcepicker.R as ResourcePickerR
@@ -156,9 +155,7 @@ class MainActivity :
         private const val REQUEST_APP_UPDATE = 8000
         private val noBottomNavFragmentIds = listOf(
             ScanOtpR.id.scanOtpFragment,
-            CreateOtpManuallyR.id.createOtpManuallyFragment,
-            CreateOtpManuallyR.id.createOtpAdvancedSettingsFragment,
-            OtpR.id.scanOtpSuccessFragment,
+            ScanOtpR.id.scanOtpSuccessFragment,
             ResourcePickerR.id.resourcePickerFragment,
             ResourceFormR.id.resourceFormFragment
         )

@@ -98,9 +98,7 @@ class ResourceMoreMenuFragment :
             setDebouncingOnClickAndDismiss(launchWebsite) { listener?.menuLaunchWebsiteClick() }
             setDebouncingOnClickAndDismiss(share) { listener?.menuShareClick() }
             setDebouncingOnClickAndDismiss(delete) { listener?.menuDeleteClick() }
-            setDebouncingOnClickAndDismiss(editPassword) { listener?.menuEditClick() }
-            setDebouncingOnClickAndDismiss(manageTotp) { listener?.menuManageTotpClick() }
-            setDebouncingOnClickAndDismiss(addTotp) { listener?.menuAddTotpClick() }
+            setDebouncingOnClickAndDismiss(edit) { listener?.menuEditClick() }
             setDebouncingOnClickAndDismiss(close)
             favourite.setDebouncingOnClick { presenter.menuFavouriteClick() }
         }
@@ -150,19 +148,11 @@ class ResourceMoreMenuFragment :
     }
 
     override fun showEditButton() {
-        binding.editPassword.visible()
+        binding.edit.visible()
     }
 
     override fun showShareButton() {
         binding.share.visible()
-    }
-
-    override fun showManageTotpButton() {
-        binding.manageTotp.visible()
-    }
-
-    override fun showAddTotpButton() {
-        binding.addTotp.visible()
     }
 
     override fun showCopyButton() {
@@ -211,8 +201,6 @@ class ResourceMoreMenuFragment :
         fun menuEditClick()
         fun menuShareClick()
         fun menuFavouriteClick(option: ResourceMoreMenuModel.FavouriteOption)
-        fun menuAddTotpClick()
-        fun menuManageTotpClick()
         fun resourceMoreMenuDismissed()
     }
 }

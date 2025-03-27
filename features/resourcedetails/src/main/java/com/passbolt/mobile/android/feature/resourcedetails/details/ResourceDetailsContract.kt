@@ -3,7 +3,6 @@ package com.passbolt.mobile.android.feature.resourcedetails.details
 import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReactiveContract
 import com.passbolt.mobile.android.permissions.permissions.PermissionsMode
 import com.passbolt.mobile.android.ui.OtpItemWrapper
-import com.passbolt.mobile.android.ui.OtpParseResult
 import com.passbolt.mobile.android.ui.PermissionModelUi
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
@@ -81,20 +80,15 @@ interface ResourceDetailsContract {
         fun showTotpSection()
         fun showInvalidTotpScanned()
         fun showEncryptionError(message: String)
-        fun navigateToOtpCreate(resourceId: String)
-        fun navigateToOtpEdit()
-        fun navigateToOtpMoreMenu(resourceId: String, resourceName: String)
         fun hideTotpSection()
         fun showTotpDeleted()
-        fun showTotpDeleteConfirmationDialog()
         fun hidePasswordEyeIcon()
         fun clearDescriptionInput()
         fun hideDescription()
-        fun showJsonResourceSchemaValidationError()
-        fun showJsonSecretSchemaValidationError()
+//        fun showJsonResourceSchemaValidationError()
+//        fun showJsonSecretSchemaValidationError()
         fun displayExpirySection(expiry: ZonedDateTime)
         fun showExpiryIndicator()
-        fun navigateToOtpCreateMenu()
         fun hideExpirySection()
     }
 
@@ -123,15 +117,5 @@ interface ResourceDetailsContract {
         fun locationClick()
         fun totpIconClick()
         fun copyTotpClick()
-        fun otpScanned(totpQr: OtpParseResult.OtpQr.TotpQr?)
-        fun addTotpManuallyClick()
-        fun menuCopyOtpClick()
-        fun menuShowOtpClick()
-        fun menuEditOtpClick()
-        fun menuDeleteOtpClick()
-        fun editOtpManuallyClick()
-        fun manageTotpClick()
-        fun totpDeleteConfirmed()
-        fun menuAddTotpClick()
     }
 }

@@ -132,6 +132,7 @@ class ScanOtpPresenterTest : KoinTest {
         whenever(cameraInformationProvider.isCameraPermissionGranted()).thenReturn(true)
 
         presenter.attach(view)
+        presenter.argsRetrieved(ScanOtpMode.SCAN_FOR_RESULT)
 
         val successfulResult = OtpParseResult.OtpQr.TotpQr(
             label = "label",

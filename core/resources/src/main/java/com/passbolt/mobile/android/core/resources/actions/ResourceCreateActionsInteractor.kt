@@ -103,7 +103,7 @@ class ResourceCreateActionsInteractor(
                     expiry = null,
                     metadataKeyId = metadataKeyId,
                     metadataKeyType = metadataKeyType,
-                    metadataJsonModel = MetadataJsonModel("{}")
+                    metadataJsonModel = MetadataJsonModel.empty()
                 ).apply {
                     metadataJsonModel.name = resourceName
                     metadataJsonModel.username = resourceUsername
@@ -114,7 +114,7 @@ class ResourceCreateActionsInteractor(
                 }
             },
             createSecret = {
-                SecretJsonModel(json = "{}").apply {
+                SecretJsonModel.emptyPassword().apply {
                     this.secret = password
                     this.description = description
                 }
@@ -146,7 +146,7 @@ class ResourceCreateActionsInteractor(
                     expiry = null,
                     metadataKeyId = metadataKeyId,
                     metadataKeyType = metadataKeyType,
-                    metadataJsonModel = MetadataJsonModel("{}")
+                    metadataJsonModel = MetadataJsonModel.empty()
                 ).apply {
                     metadataJsonModel.name = label
                     metadataJsonModel.username = resourceUsername
@@ -158,7 +158,7 @@ class ResourceCreateActionsInteractor(
             },
 
             createSecret = {
-                SecretJsonModel(json = "{}").apply {
+                SecretJsonModel.emptyTotp().apply {
                     this.totp = TotpSecret(
                         algorithm = algorithm,
                         key = secretKey,

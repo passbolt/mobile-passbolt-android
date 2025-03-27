@@ -11,42 +11,21 @@
         android:name="com.passbolt.mobile.android.feature.otp.screen.OtpFragment"
         android:label="OtpFragment"
         tools:layout="@layout/fragment_otp">
-        <action
-            android:id="@+id/action_otpFragment_to_createOtpManuallyFragment"
-            app:destination="@id/createOtpManuallyNav"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left"
-            app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right" />
-        <action
-            android:id="@+id/action_otpFragment_to_scanOtpSuccessFragment"
-            app:destination="@id/scanOtpSuccessFragment"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left"
-            app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right" />
+
         <action
             android:id="@+id/action_otpFragment_to_scanOtpFragment"
             app:destination="@id/scanOtpNav"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right" />
-    </fragment>
+            app:popExitAnim="@anim/slide_out_right">
 
-    <fragment
-        android:id="@+id/scanOtpSuccessFragment"
-        android:name="com.passbolt.mobile.android.feature.otp.scanotpsuccess.ScanOtpSuccessFragment"
-        android:label="CreateOtpSuccessFragment"
-        tools:layout="@layout/fragment_create_otp_success">
-        <argument
-            android:name="scannedTotp"
-            app:argType="com.passbolt.mobile.android.ui.OtpParseResult$OtpQr$TotpQr" />
+            <argument
+                android:name="scanOtpMode"
+                app:argType="com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpMode" />
+        </action>
     </fragment>
-
-    <include app:graph="@navigation/resource_picker" />
 
     <include app:graph="@navigation/scan_otp" />
 
-    <include app:graph="@navigation/createotpmanually" />
 </navigation>

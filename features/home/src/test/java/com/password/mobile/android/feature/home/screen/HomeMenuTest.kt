@@ -1,6 +1,5 @@
 package com.password.mobile.android.feature.home.screen
 
-import com.google.gson.JsonObject
 import com.passbolt.mobile.android.core.accounts.usecase.accountdata.GetSelectedAccountDataUseCase
 import com.passbolt.mobile.android.core.accounts.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalResourcesAndFoldersUseCase
@@ -471,12 +470,11 @@ class HomeMenuTest : KoinTest {
 
         val resourceMenuModel = ResourceMoreMenuModel(
             title = "title",
+            canCopy = true,
             canDelete = true,
             canEdit = true,
             canShare = true,
-            favouriteOption = ADD_TO_FAVOURITES,
-            totpOption = ResourceMoreMenuModel.TotpOption.NONE,
-            canCopy = true
+            favouriteOption = ADD_TO_FAVOURITES
         )
 
         private lateinit var RESOURCE_MODEL: ResourceModel

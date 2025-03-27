@@ -1,6 +1,5 @@
 package com.passbolt.mobile.android.feature.resources.details
 
-import com.google.gson.JsonObject
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalFolderLocationUseCase
 import com.passbolt.mobile.android.core.fulldatarefresh.DataRefreshStatus
 import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor

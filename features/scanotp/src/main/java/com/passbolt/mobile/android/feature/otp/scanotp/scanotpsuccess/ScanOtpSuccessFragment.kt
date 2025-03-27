@@ -1,4 +1,4 @@
-package com.passbolt.mobile.android.feature.otp.scanotpsuccess
+package com.passbolt.mobile.android.feature.otp.scanotp.scanotpsuccess
 
 import android.os.Bundle
 import android.view.View
@@ -14,11 +14,14 @@ import com.passbolt.mobile.android.core.navigation.deeplinks.NavDeepLinkProvider
 import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
 import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
-import com.passbolt.mobile.android.feature.otp.databinding.FragmentCreateOtpSuccessBinding
+import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpFragment
+import com.passbolt.mobile.android.feature.scanotp.R
+import com.passbolt.mobile.android.feature.scanotp.databinding.FragmentCreateOtpSuccessBinding
 import com.passbolt.mobile.android.resourcepicker.ResourcePickerFragment
 import com.passbolt.mobile.android.resourcepicker.ResourcePickerFragment.Companion.RESULT_PICKED_ACTION
 import com.passbolt.mobile.android.resourcepicker.ResourcePickerFragment.Companion.RESULT_PICKED_RESOURCE
 import com.passbolt.mobile.android.resourcepicker.model.PickResourceAction
+import com.passbolt.mobile.android.ui.OtpParseResult
 import com.passbolt.mobile.android.ui.ResourceModel
 import org.koin.android.ext.android.inject
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
@@ -125,12 +128,15 @@ class ScanOtpSuccessFragment :
         showSnackbar(LocalizationR.string.common_encryption_failure, backgroundColor = CoreUiR.color.red)
     }
 
-    override fun navigateToOtpList(otpCreated: Boolean) {
+    override fun navigateToOtpList(totp: OtpParseResult.OtpQr.TotpQr, otpCreated: Boolean) {
         setFragmentResult(
-            REQUEST_SCAN_OTP,
-            bundleOf(EXTRA_OTP_CREATED to otpCreated)
+            ScanOtpFragment.REQUEST_SCAN_OTP_FOR_RESULT,
+            bundleOf(
+                ScanOtpFragment.EXTRA_SCANNED_OTP to totp,
+                EXTRA_OTP_CREATED to otpCreated
+            )
         )
-        findNavController().popBackStack()
+        findNavController().popBackStack(destinationId = R.id.scanOtpFragment, true)
     }
 
     override fun navigateToResourcePicker() {
@@ -158,7 +164,6 @@ class ScanOtpSuccessFragment :
     }
 
     companion object {
-        const val REQUEST_SCAN_OTP = "SCAN_OTP"
         const val EXTRA_OTP_CREATED = "OTP_CREATED"
     }
 }

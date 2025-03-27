@@ -2,12 +2,12 @@ package com.passbolt.mobile.android.feature.home.screen
 
 import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReactiveContract
 import com.passbolt.mobile.android.feature.home.screen.model.HeaderSectionConfiguration
+import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpMode
 import com.passbolt.mobile.android.ui.Folder
 import com.passbolt.mobile.android.ui.FolderMoreMenuModel
 import com.passbolt.mobile.android.ui.FolderWithCountAndPath
 import com.passbolt.mobile.android.ui.GroupWithCount
 import com.passbolt.mobile.android.ui.HomeDisplayViewModel
-import com.passbolt.mobile.android.ui.OtpParseResult
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
 import com.passbolt.mobile.android.ui.TagWithCount
@@ -101,19 +101,12 @@ interface HomeContract {
         fun showDeleteResourceFailure()
         fun showProgress()
         fun hideProgress()
-        fun showInvalidTotpScanned()
         fun showEncryptionError(message: String)
-        fun navigateToOtpCreate(resourceId: String)
-        fun navigateToOtpMoreMenu(resourceId: String, resourceName: String)
-        fun navigateToOtpEdit()
-        fun showDeleteTotpConfirmationDialog()
-        fun showTotpDeleted()
-        fun showTotpDeletionFailed()
         fun showJsonResourceSchemaValidationError()
         fun showJsonSecretSchemaValidationError()
-        fun navigateToOtpCreateMenu()
         fun showCreateResourceMenu(homeView: HomeDisplayViewModel)
-        fun navigateToCreateTotp(parentFolderId: String?)
+        fun navigateToCreateTotpManually(parentFolderId: String?)
+        fun navigateToScanTotp(scanMode: ScanOtpMode)
     }
 
     interface Presenter : DataRefreshViewReactiveContract.Presenter<View> {
@@ -166,17 +159,9 @@ interface HomeContract {
         fun seeFolderDetailsClick()
         fun createFolderClick()
         fun folderCreated(name: String)
-        fun otpScanned(totpQr: OtpParseResult.OtpQr.TotpQr?)
-        fun menuAddTotpManuallyClick()
-        fun manageTotpClick()
+        fun otpQrScanReturned(isTotpCreated: Boolean, isManualCreationChosen: Boolean)
         fun menuCopyOtpClick()
-        fun menuEditOtpClick()
-        fun editOtpManuallyClick()
-        fun menuDeleteOtpClick()
-        fun totpDeletionConfirmed()
         fun expiryClick()
-        fun menuAddTotpClick()
         fun onCreateResourceClick()
-        fun createTotpClick()
     }
 }

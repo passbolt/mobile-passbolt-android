@@ -33,7 +33,6 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
-import androidx.core.os.BundleCompat
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
@@ -61,17 +60,15 @@ import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
 import com.passbolt.mobile.android.createresourcemenu.CreateResourceMenuFragment
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
 import com.passbolt.mobile.android.feature.home.switchaccount.SwitchAccountBottomSheetFragment
-import com.passbolt.mobile.android.feature.otp.createotpmanually.CreateOtpFragment
 import com.passbolt.mobile.android.feature.otp.databinding.FragmentOtpBinding
 import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpFragment
-import com.passbolt.mobile.android.feature.otp.scanotpsuccess.ScanOtpSuccessFragment
+import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpMode
+import com.passbolt.mobile.android.feature.otp.scanotp.scanotpsuccess.ScanOtpSuccessFragment
 import com.passbolt.mobile.android.feature.otp.screen.recycler.OtpItem
 import com.passbolt.mobile.android.ui.Mode
-import com.passbolt.mobile.android.otpeditmoremenu.OtpUpdateMoreMenuFragment
 import com.passbolt.mobile.android.otpmoremenu.OtpMoreMenuFragment
 import com.passbolt.mobile.android.ui.LeadingContentType
 import com.passbolt.mobile.android.ui.OtpItemWrapper
-import com.passbolt.mobile.android.ui.OtpParseResult
 import org.koin.android.ext.android.inject
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
@@ -80,7 +77,7 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
 class OtpFragment :
     BindingScopedAuthenticatedFragment<FragmentOtpBinding, OtpContract.View>(FragmentOtpBinding::inflate),
     OtpContract.View, SwitchAccountBottomSheetFragment.Listener, OtpMoreMenuFragment.Listener,
-    OtpUpdateMoreMenuFragment.Listener, CreateResourceMenuFragment.Listener {
+    CreateResourceMenuFragment.Listener {
 
     override val presenter: OtpContract.Presenter by inject()
     private val otpAdapter: ItemAdapter<OtpItem> by inject()
@@ -98,32 +95,11 @@ class OtpFragment :
             }
         }
 
-    private val otpCreatedResult = { _: String, result: Bundle ->
-        if (result.containsKey(CreateOtpFragment.EXTRA_OTP_CREATED) &&
-            result.getBoolean(CreateOtpFragment.EXTRA_OTP_CREATED)
-        ) {
-            presenter.otpCreated()
-        }
-    }
-
-    private val otpUpdatedResult = { _: String, result: Bundle ->
-        if (result.containsKey(CreateOtpFragment.EXTRA_OTP_UPDATED) &&
-            result.getBoolean(CreateOtpFragment.EXTRA_OTP_UPDATED)
-        ) {
-            presenter.otpUpdated()
-        }
-    }
-
-    private val otpQrScannedResult = { _: String, result: Bundle ->
-        if (result.containsKey(ScanOtpFragment.EXTRA_SCANNED_OTP)) {
-            presenter.otpQrScanned(
-                BundleCompat.getParcelable(
-                    result,
-                    ScanOtpFragment.EXTRA_SCANNED_OTP,
-                    OtpParseResult.OtpQr.TotpQr::class.java
-                )
-            )
-        }
+    private val otpScanQrReturned = { _: String, result: Bundle ->
+        presenter.otpQrScanReturned(
+            result.getBoolean(ScanOtpSuccessFragment.EXTRA_OTP_CREATED, false),
+            result.getBoolean(ScanOtpFragment.EXTRA_MANUAL_CREATION_CHOSEN)
+        )
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -149,21 +125,24 @@ class OtpFragment :
     }
 
     override fun createTotpClick() {
-        //            scanQrCodeClick = { presenter.scanOtpQrCodeClick() }
-        //            createManuallyClick = { presenter.createOtpManuallyClick() }
-        // TODO implement listening for result
-        findNavController().navigate(
-            NavDeepLinkProvider.resourceFormDeepLinkRequest(Mode.CREATE.name, LeadingContentType.TOTP.name)
-        )
+        navigateToScanOtpCodeForResult()
     }
 
     override fun createPasswordClick() {
-        //            scanQrCodeClick = { presenter.scanOtpQrCodeClick() }
-        //            createManuallyClick = { presenter.createOtpManuallyClick() }
-        // TODO implement listening for result
+        // TODO implement listening for creation result;
         findNavController().navigate(
             NavDeepLinkProvider.resourceFormDeepLinkRequest(Mode.CREATE.name, LeadingContentType.PASSWORD.name)
 
+        )
+    }
+
+    override fun navigateToCreateTotpManually() {
+        // TODO handle result and refresh list
+        findNavController().navigate(
+            NavDeepLinkProvider.resourceFormDeepLinkRequest(
+                Mode.CREATE.name,
+                LeadingContentType.TOTP.name
+            )
         )
     }
 
@@ -247,11 +226,6 @@ class OtpFragment :
             .show(childFragmentManager, SwitchAccountBottomSheetFragment::class.java.name)
     }
 
-    override fun navigateToEditOtpMenu() {
-        OtpUpdateMoreMenuFragment()
-            .show(childFragmentManager, OtpUpdateMoreMenuFragment::class.java.name)
-    }
-
     override fun showOtmMoreMenu(resourceId: String, resourceName: String) {
         presenter.pause()
         OtpMoreMenuFragment.newInstance(resourceId, resourceName, true)
@@ -312,14 +286,6 @@ class OtpFragment :
         presenter.menuShowOtpClick()
     }
 
-    override fun menuEditOtpClick() {
-        presenter.menuEditOtpClick()
-    }
-
-    override fun menuDeleteOtpClick() {
-        presenter.menuDeleteOtpClick()
-    }
-
     override fun showTotpDeleted() {
         showSnackbar(LocalizationR.string.otp_deleted)
     }
@@ -335,24 +301,15 @@ class OtpFragment :
         Toast.makeText(requireContext(), getString(LocalizationR.string.copied_info, label), Toast.LENGTH_SHORT).show()
     }
 
-    override fun navigateToScanOtpSuccess(totpQr: OtpParseResult.OtpQr.TotpQr) {
-        setFragmentResultListener(
-            ScanOtpSuccessFragment.REQUEST_SCAN_OTP,
-            otpCreatedResult
-        )
-        findNavController().navigate(
-            OtpFragmentDirections.actionOtpFragmentToScanOtpSuccessFragment(totpQr)
-        )
-    }
-
+    // TODO refine
     override fun navigateToCreateOtpManually() {
-        setFragmentResultListener(
-            CreateOtpFragment.REQUEST_CREATE_OTP,
-            otpCreatedResult
-        )
-        findNavController().navigate(
-            NavDeepLinkProvider.otpManualFormDeepLinkRequest(null)
-        )
+//        setFragmentResultListener(
+//            CreateOtpFragment.REQUEST_CREATE_OTP,
+//            otpCreatedResult
+//        )
+//        findNavController().navigate(
+//            NavDeepLinkProvider.otpManualFormDeepLinkRequest(null)
+//        )
     }
 
     override fun showDecryptionFailure() {
@@ -385,14 +342,6 @@ class OtpFragment :
         showSnackbar(LocalizationR.string.otp_otp_updated, backgroundColor = CoreUiR.color.green)
     }
 
-    override fun menuEditOtpManuallyClick() {
-        presenter.menuEditOtpManuallyClick()
-    }
-
-    override fun menuEditByNewOtpScanClick() {
-        presenter.menuEditByQrScanClick()
-    }
-
     override fun otpMenuDismissed() {
         presenter.resume(this)
     }
@@ -401,30 +350,14 @@ class OtpFragment :
         showProgressDialog(childFragmentManager)
     }
 
-    override fun navigateToEditOtpManually(resourceId: String) {
-        setFragmentResultListener(
-            CreateOtpFragment.REQUEST_UPDATE_OTP,
-            otpUpdatedResult
-        )
-        findNavController().navigate(
-            NavDeepLinkProvider.otpManualFormDeepLinkRequest(resourceId)
-        )
-    }
-
     override fun navigateToScanOtpCodeForResult() {
+        // TODO implement listening for creation result;
         setFragmentResultListener(
             ScanOtpFragment.REQUEST_SCAN_OTP_FOR_RESULT,
-            otpQrScannedResult
+            otpScanQrReturned
         )
         findNavController().navigate(
-            OtpFragmentDirections.actionOtpFragmentToScanOtpFragment()
-        )
-    }
-
-    override fun showInvalidQrCodeDataScanned() {
-        showSnackbar(
-            messageResId = LocalizationR.string.otp_invalid_itp_data_scanned,
-            backgroundColor = CoreUiR.color.red
+            OtpFragmentDirections.actionOtpFragmentToScanOtpFragment(ScanOtpMode.SCAN_WITH_SUCCESS_SCREEN)
         )
     }
 

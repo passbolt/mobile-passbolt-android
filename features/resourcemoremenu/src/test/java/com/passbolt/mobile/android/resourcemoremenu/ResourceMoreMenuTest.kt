@@ -27,8 +27,6 @@ import com.passbolt.mobile.android.resourcemoremenu.usecase.CreateResourceMoreMe
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.FavouriteOption.ADD_TO_FAVOURITES
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.FavouriteOption.REMOVE_FROM_FAVOURITES
-import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.TotpOption.ADD_TOTP
-import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.TotpOption.NONE
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Rule
 import org.junit.Test
@@ -64,10 +62,9 @@ class ResourceMoreMenuTest : KoinTest {
                             title = "title",
                             canCopy = true,
                             canDelete = true,
-                            canShare = true,
                             canEdit = true,
-                            favouriteOption = ADD_TO_FAVOURITES,
-                            totpOption = ADD_TOTP
+                            canShare = true,
+                            favouriteOption = ADD_TO_FAVOURITES
                         )
                     )
         }
@@ -84,7 +81,6 @@ class ResourceMoreMenuTest : KoinTest {
         verify(view).showEditButton()
         verify(view).showShareButton()
         verify(view).showAddToFavouritesButton()
-        verify(view).showAddTotpButton()
     }
 
     @Test
@@ -96,10 +92,9 @@ class ResourceMoreMenuTest : KoinTest {
                         title = "title",
                         canCopy = false,
                         canDelete = false,
-                        canShare = false,
                         canEdit = false,
-                        favouriteOption = REMOVE_FROM_FAVOURITES,
-                        totpOption = NONE
+                        canShare = false,
+                        favouriteOption = REMOVE_FROM_FAVOURITES
                     )
                 )
             )
@@ -117,7 +112,6 @@ class ResourceMoreMenuTest : KoinTest {
         verify(view, never()).showEditButton()
         verify(view, never()).showShareButton()
         verify(view, never()).showAddToFavouritesButton()
-        verify(view, never()).showAddTotpButton()
         verify(view).showRemoveFromFavouritesButton()
     }
 }

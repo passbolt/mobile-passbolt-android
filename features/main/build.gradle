@@ -21,7 +21,6 @@ dependencies {
     implementation project(':resourcetypes')
     implementation project(':entity')
     implementation project(':scanotp')
-    implementation project(':createotpmanually')
     implementation project(':resourcepicker')
     implementation project(':featureflags')
     implementation project(':accounts')

@@ -11,11 +11,9 @@ import com.passbolt.mobile.android.core.otpcore.TotpParametersProvider
 import com.passbolt.mobile.android.core.rbac.usecase.GetRbacRulesUseCase
 import com.passbolt.mobile.android.core.resources.actions.ResourceCommonActionsInteractor
 import com.passbolt.mobile.android.core.resources.actions.ResourcePropertiesActionsInteractor
-import com.passbolt.mobile.android.core.resources.actions.ResourceUpdateActionsInteractor
 import com.passbolt.mobile.android.core.resources.actions.SecretPropertiesActionsInteractor
 import com.passbolt.mobile.android.core.resources.actions.performCommonResourceAction
 import com.passbolt.mobile.android.core.resources.actions.performResourcePropertyAction
-import com.passbolt.mobile.android.core.resources.actions.performResourceUpdateAction
 import com.passbolt.mobile.android.core.resources.actions.performSecretPropertyAction
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcePermissionsUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceTagsUseCase
@@ -26,15 +24,10 @@ import com.passbolt.mobile.android.jsonmodel.delegates.TotpSecret
 import com.passbolt.mobile.android.mappers.OtpModelMapper
 import com.passbolt.mobile.android.permissions.permissions.PermissionsMode
 import com.passbolt.mobile.android.permissions.recycler.PermissionsDatasetCreator
-import com.passbolt.mobile.android.serializers.jsonschema.SchemaEntity
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordDescriptionTotp
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5DefaultWithTotp
-import com.passbolt.mobile.android.ui.ManageTotpAction
-import com.passbolt.mobile.android.ui.ManageTotpAction.ADD_TOTP
-import com.passbolt.mobile.android.ui.ManageTotpAction.EDIT_TOTP
 import com.passbolt.mobile.android.ui.OtpItemWrapper
-import com.passbolt.mobile.android.ui.OtpParseResult
 import com.passbolt.mobile.android.ui.RbacModel
 import com.passbolt.mobile.android.ui.RbacRuleModel.ALLOW
 import com.passbolt.mobile.android.ui.ResourceModel
@@ -122,7 +115,6 @@ class ResourceDetailsPresenter(
         get() = get {
             parametersOf(resourceModel, needSessionRefreshFlow, sessionRefreshedFlow)
         }
-    private lateinit var otpAction: ManageTotpAction
 
     override fun argsReceived(resourceId: String, permissionsListWidth: Int, permissionItemWidth: Float) {
         this.permissionsListWidth = permissionsListWidth
@@ -304,10 +296,6 @@ class ResourceDetailsPresenter(
     override fun moreClick() {
         hideTotp()
         view?.navigateToMore(resourceModel.resourceId, resourceModel.metadataJsonModel.name)
-    }
-
-    override fun manageTotpClick() {
-        view?.navigateToOtpMoreMenu(resourceModel.resourceId, resourceModel.metadataJsonModel.name)
     }
 
     override fun backArrowClick() {
@@ -562,113 +550,6 @@ class ResourceDetailsPresenter(
         }
     }
 
-    override fun otpScanned(totpQr: OtpParseResult.OtpQr.TotpQr?) {
-        if (totpQr == null) {
-            view?.showInvalidTotpScanned()
-            return
-        }
-        coroutineScope.launch {
-            runWhileShowingProgress {
-                val resourceUpdateActionsInteractor = get<ResourceUpdateActionsInteractor> {
-                    parametersOf(resourceModel, needSessionRefreshFlow, sessionRefreshedFlow)
-                }
-                val updateAction = when (otpAction) {
-                    ADD_TOTP -> suspend {
-                        resourceUpdateActionsInteractor.addTotpToResource(
-                            overrideName = resourceModel.metadataJsonModel.name,
-                            overrideUri = resourceModel.metadataJsonModel.uri,
-                            period = totpQr.period,
-                            digits = totpQr.digits,
-                            algorithm = totpQr.algorithm.name,
-                            secretKey = totpQr.secret
-                        )
-                    }
-                    EDIT_TOTP -> suspend {
-                        resourceUpdateActionsInteractor.updateLinkedTotpResourceTotpFields(
-                            label = resourceModel.metadataJsonModel.name,
-                            issuer = resourceModel.metadataJsonModel.uri,
-                            period = totpQr.period,
-                            digits = totpQr.digits,
-                            algorithm = totpQr.algorithm.name,
-                            secretKey = totpQr.secret
-                        )
-                    }
-                }
-                performResourceUpdateAction(
-                    action = updateAction,
-                    doOnFetchFailure = { view?.showFetchFailure() },
-                    doOnFailure = { view?.showGeneralError(it) },
-                    doOnCryptoFailure = { view?.showEncryptionError(it) },
-                    doOnSchemaValidationFailure = ::handleSchemaValidationFailure,
-                    doOnSuccess = { resourceEdited(it.resourceName) }
-                )
-            }
-        }
-    }
-
-    private fun handleSchemaValidationFailure(entity: SchemaEntity) {
-        when (entity) {
-            SchemaEntity.RESOURCE -> view?.showJsonResourceSchemaValidationError()
-            SchemaEntity.SECRET -> view?.showJsonSecretSchemaValidationError()
-        }
-    }
-
-    override fun addTotpManuallyClick() {
-        view?.navigateToOtpCreate(resourceModel.resourceId)
-    }
-
-    override fun menuCopyOtpClick() {
-        doAfterOtpFetchAndDecrypt { label, _, otpParameters ->
-            view?.addToClipboard(label, otpParameters.otpValue, isSecret = true)
-        }
-    }
-
-    override fun menuShowOtpClick() {
-        showTotp()
-    }
-
-    override fun menuAddTotpClick() {
-        otpAction = ADD_TOTP
-        view?.navigateToOtpCreateMenu()
-    }
-
-    override fun menuEditOtpClick() {
-        otpAction = EDIT_TOTP
-        view?.navigateToOtpEdit()
-    }
-
-    override fun menuDeleteOtpClick() {
-        view?.showTotpDeleteConfirmationDialog()
-    }
-
-    override fun totpDeleteConfirmed() {
-        resourceDetailActionIdlingResource.setIdle(false)
-        coroutineScope.launch {
-            view?.showProgress()
-
-            val resourceUpdateActionInteractor = get<ResourceUpdateActionsInteractor> {
-                parametersOf(resourceModel, needSessionRefreshFlow, sessionRefreshedFlow)
-            }
-            performResourceUpdateAction(
-                action = {
-                    resourceUpdateActionInteractor.deleteTotpFromResource()
-                },
-                doOnCryptoFailure = { view?.showEncryptionError(it) },
-                doOnFailure = { view?.showGeneralError(it) },
-                doOnSuccess = {
-                    view?.showTotpDeleted()
-                    getResourcesAndPermissions(it.resourceId)
-                    view?.setResourceEditedResult(it.resourceName)
-                },
-                doOnSchemaValidationFailure = ::handleSchemaValidationFailure,
-                doOnFetchFailure = { view?.showFetchFailure() }
-            )
-
-            view?.hideProgress()
-            resourceDetailActionIdlingResource.setIdle(true)
-        }
-    }
-
     private fun doAfterOtpFetchAndDecrypt(
         action: (
             ClipboardLabel,
@@ -692,9 +573,5 @@ class ResourceDetailsPresenter(
                 }
             )
         }
-    }
-
-    override fun editOtpManuallyClick() {
-        view?.navigateToOtpCreate(resourceModel.resourceId)
     }
 }

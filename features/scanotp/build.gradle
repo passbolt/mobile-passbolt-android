@@ -26,6 +26,14 @@ dependencies {
     implementation project(':qrscan')
     implementation project(':otpcore')
     implementation project(':security')
+    implementation project(':resourcepicker')
+    implementation project(':authentication')
+    implementation project(':resourcetypes')
+    implementation project(':resources')
+    implementation project(':serializers')
+    implementation project(':supportedresourcetypes')
+    implementation project(':jsonmodel')
+    implementation project(':resourcepicker')
 
     implementation libs.navigation.fragment
     implementation libs.navigation.ui

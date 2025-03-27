@@ -10,6 +10,34 @@
         android:id="@+id/scanOtpFragment"
         android:name="com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpFragment"
         android:label="ScanOtpFragment"
-        tools:layout="@layout/fragment_scan_otp" />
+        tools:layout="@layout/fragment_scan_otp">
+
+        <deepLink
+            android:id="@+id/deepLink"
+            app:uri="passbolt://scanTotp?scanOtpMode={scanOtpMode}" />
+
+        <argument
+            android:name="scanOtpMode"
+            app:argType="com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpMode" />
+        <action
+            android:id="@+id/action_scanOtpFragment_to_scanOtpSuccessFragment"
+            app:destination="@id/scanOtpSuccessFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/scanOtpSuccessFragment"
+        android:name="com.passbolt.mobile.android.feature.otp.scanotp.scanotpsuccess.ScanOtpSuccessFragment"
+        android:label="CreateOtpSuccessFragment"
+        tools:layout="@layout/fragment_create_otp_success">
+        <argument
+            android:name="scannedTotp"
+            app:argType="com.passbolt.mobile.android.ui.OtpParseResult$OtpQr$TotpQr" />
+    </fragment>
+
+    <include app:graph="@navigation/resource_picker" />
 
 </navigation>
