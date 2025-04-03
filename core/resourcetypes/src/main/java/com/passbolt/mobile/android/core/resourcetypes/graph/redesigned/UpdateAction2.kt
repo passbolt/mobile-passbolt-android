@@ -21,12 +21,25 @@
  * @since v1.0
  */
 
-package com.passbolt.mobile.android.core.resourcetypes.graph
+package com.passbolt.mobile.android.core.resourcetypes.graph.redesigned
 
-import com.passbolt.mobile.android.supportedresourceTypes.ContentType
+enum class UpdateAction2 {
+    /**
+     * Use for editing remaining metadata (description, username, name, uri, uris)
+     */
+    EDIT_METADATA,
 
-@Deprecated("Use UpdateActionMetadata2 instead")
-data class UpdateActionMetadata(
-    val action: UpdateAction,
-    val newResourceType: ContentType
-)
+    ADD_METADATA_DESCRIPTION,
+    REMOVE_METADATA_DESCRIPTION,
+
+    ADD_SECURE_NOTE,
+    REMOVE_SECURE_NOTE,
+
+    ADD_TOTP,
+    REMOVE_TOTP,
+
+    ADD_PASSWORD,
+    REMOVE_PASSWORD,
+
+    REMOVE_PASSWORD_AND_SECURE_NOTE
+}

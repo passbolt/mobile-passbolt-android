@@ -29,9 +29,9 @@ class JsonSchemaValidationRunner(
     private val jsonSchemaValidator: JsonSchemaValidator
 ) {
 
-    suspend fun isResourceValid(resourceJson: String, resourceTypeSlug: String) =
+    suspend fun isResourceValid(resourceJson: String?, resourceTypeSlug: String) =
         jsonSchemaValidator.isResourceValid(resourceTypeSlug, resourceJson)
 
-    suspend fun isSecretValid(secretJson: String, resourceTypeSlug: String) =
+    suspend fun isSecretValid(secretJson: String?, resourceTypeSlug: String) =
         jsonSchemaValidator.isSecretValid(resourceTypeSlug, secretJson)
 }

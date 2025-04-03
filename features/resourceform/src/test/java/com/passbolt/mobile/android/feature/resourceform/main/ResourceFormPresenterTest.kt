@@ -200,7 +200,7 @@ class ResourceFormPresenterTest : KoinTest {
         }
 
         presenter.attach(view)
-        presenter.argsRetrieved(Mode.CREATE, LeadingContentType.TOTP, parentFolderId = null)
+        presenter.argsRetrieved(Mode.CREATE, LeadingContentType.PASSWORD, parentFolderId = null)
         presenter.passwordTextChanged("t")
         presenter.passwordTextChanged("te")
         presenter.passwordTextChanged("tes")

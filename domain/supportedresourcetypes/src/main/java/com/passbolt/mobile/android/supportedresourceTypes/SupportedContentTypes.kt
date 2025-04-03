@@ -55,6 +55,29 @@ sealed class ContentType(val slug: String) {
 
     fun isV5() = this.slug in SupportedContentTypes.v5Slugs
 
+    fun hasTotp() = this in setOf(
+        Totp,
+        PasswordDescriptionTotp,
+        V5TotpStandalone,
+        V5DefaultWithTotp
+    )
+
+    fun hasEncryptedDescription() = this in setOf(
+        PasswordAndDescription,
+        PasswordDescriptionTotp,
+        V5Default,
+        V5DefaultWithTotp
+    )
+
+    fun hasPassword() = this in setOf(
+        PasswordString,
+        PasswordAndDescription,
+        PasswordDescriptionTotp,
+        V5Default,
+        V5DefaultWithTotp,
+        V5PasswordString
+    )
+
     companion object {
         fun fromSlug(slug: String): ContentType {
             return when (slug) {

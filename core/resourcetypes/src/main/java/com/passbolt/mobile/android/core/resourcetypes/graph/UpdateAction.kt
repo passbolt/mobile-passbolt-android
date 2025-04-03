@@ -23,6 +23,7 @@
 
 package com.passbolt.mobile.android.core.resourcetypes.graph
 
+@Deprecated("Use redesigned.UpdateAction2 instead")
 enum class UpdateAction {
     EDIT_PASSWORD,
     EDIT_TOTP,

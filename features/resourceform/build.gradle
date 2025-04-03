@@ -21,6 +21,9 @@ dependencies {
     implementation project(':supportedresourcetypes')
     implementation project(':secrets')
     implementation project(':jsonmodel')
+    implementation project(':resourcetypes')
+    implementation project(':resources')
+    implementation project(':serializers')
 
     implementation libs.navigation.fragment
     implementation libs.navigation.ui
@@ -29,6 +32,7 @@ dependencies {
     testImplementation project(':commontest')
     testImplementation libs.gson
     testImplementation libs.json.path
+    testImplementation libs.json.assert
 }
 
 android {

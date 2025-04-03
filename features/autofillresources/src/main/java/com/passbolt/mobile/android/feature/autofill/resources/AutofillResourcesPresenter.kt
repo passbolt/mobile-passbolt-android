@@ -86,7 +86,7 @@ class AutofillResourcesPresenter(
                 doOnSuccess = {
                     view?.autofillReturn(
                         resourceModel.metadataJsonModel.username.orEmpty(),
-                        it.result,
+                        it.result.orEmpty(),
                         uri
                     )
                 }

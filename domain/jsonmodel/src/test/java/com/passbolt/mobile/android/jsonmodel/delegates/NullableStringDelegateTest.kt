@@ -1,6 +1,5 @@
 package com.passbolt.mobile.android.jsonmodel.delegates
 
-import com.google.common.truth.Truth
 import com.google.common.truth.Truth.assertThat
 import com.passbolt.mobile.android.jsonmodel.JsonModel
 import org.junit.Rule
@@ -9,7 +8,7 @@ import org.koin.core.logger.Level
 import org.koin.test.KoinTest
 import org.koin.test.KoinTestRule
 
-class StringDelegateTest : KoinTest {
+class NullableStringDelegateTest : KoinTest {
 
     @get:Rule
     val koinTestRule = KoinTestRule.create {
@@ -21,9 +20,10 @@ class StringDelegateTest : KoinTest {
     fun `read should work as expected`() {
         val jsonString = "test"
         val jsonModel = object : JsonModel {
-            override var json = jsonString
 
-            var testStringField by StringDelegate()
+            override var json: String? = jsonString
+
+            var testStringField by NullableStringDelegate()
         }
 
         assertThat(jsonModel.testStringField).isEqualTo("test")
@@ -40,9 +40,9 @@ class StringDelegateTest : KoinTest {
         val jsonModels = jsonStringInputs.map { jsonString ->
 
             object : JsonModel {
-                override var json = jsonString
+                override var json: String? = jsonString
 
-                var testStringField by StringDelegate()
+                var testStringField by NullableStringDelegate()
             }
         }
 

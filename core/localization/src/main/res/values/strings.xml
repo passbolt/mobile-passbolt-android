@@ -311,7 +311,8 @@
     <string name="resource_form_enter_username">Enter username</string>
     <string name="resource_form_totp">TOTP</string>
     <string name="resource_form_totp_secret">Secret</string>
-    <string name="resource_form_totp_url">URL (Issuer)</string>
+    <string name="resource_form_totp_url">URL</string>
+    <string name="resource_form_totp_url_issuer">URL (Issuer)</string>
     <string name="resource_form_totp_more_settings">More TOTP settings</string>
     <string name="resource_form_totp_settings">TOTP settings</string>
     <string name="resource_form_description">Description</string>

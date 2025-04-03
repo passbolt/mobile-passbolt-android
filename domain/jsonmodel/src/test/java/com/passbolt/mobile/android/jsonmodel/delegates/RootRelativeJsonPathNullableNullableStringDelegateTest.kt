@@ -10,7 +10,7 @@ import org.koin.core.logger.Level
 import org.koin.test.KoinTest
 import org.koin.test.KoinTestRule
 
-class RootRelativeJsonPathNullableStringDelegateTest : KoinTest {
+class RootRelativeJsonPathNullableNullableStringDelegateTest : KoinTest {
 
     @get:Rule
     val koinTestRule = KoinTestRule.create {
@@ -27,7 +27,7 @@ class RootRelativeJsonPathNullableStringDelegateTest : KoinTest {
             }
             """
         val jsonModel = object : JsonModel {
-            override var json = jsonString
+            override var json: String? = jsonString
 
             var testStringField by RootRelativeJsonPathNullableStringDelegate(jsonPath = "testStringField")
         }
@@ -44,7 +44,7 @@ class RootRelativeJsonPathNullableStringDelegateTest : KoinTest {
             }
             """
         val jsonModel = object : JsonModel {
-            override var json = jsonString
+            override var json: String? = jsonString
 
             var testStringField by RootRelativeJsonPathNullableStringDelegate(jsonPath = "testStringField")
         }
@@ -71,7 +71,7 @@ class RootRelativeJsonPathNullableStringDelegateTest : KoinTest {
         val jsonModels = jsonStringInputs.map { jsonString ->
 
             object : JsonModel {
-                override var json = jsonString
+                override var json: String? = jsonString
 
                 var testStringField by RootRelativeJsonPathNullableStringDelegate(jsonPath = "testStringField")
             }
@@ -98,7 +98,7 @@ class RootRelativeJsonPathNullableStringDelegateTest : KoinTest {
             """
 
         val jsonModel = object : JsonModel {
-            override var json = jsonStringInput
+            override var json: String? = jsonStringInput
 
             var testStringField by RootRelativeJsonPathNullableStringDelegate(jsonPath = "testStringField")
         }
@@ -117,7 +117,7 @@ class RootRelativeJsonPathNullableStringDelegateTest : KoinTest {
         """
 
         val jsonModel = object : JsonModel {
-            override var json = jsonString
+            override var json: String? = jsonString
 
             var testStringField by RootRelativeJsonPathNullableStringDelegate(jsonPath = "testStringField")
         }

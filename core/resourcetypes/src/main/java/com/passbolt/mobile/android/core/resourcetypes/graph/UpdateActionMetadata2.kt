@@ -23,10 +23,10 @@
 
 package com.passbolt.mobile.android.core.resourcetypes.graph
 
+import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction2
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType
 
-@Deprecated("Use UpdateActionMetadata2 instead")
-data class UpdateActionMetadata(
-    val action: UpdateAction,
+data class UpdateActionMetadata2(
+    val action: UpdateAction2,
     val newResourceType: ContentType
 )

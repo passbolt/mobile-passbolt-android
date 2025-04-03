@@ -34,6 +34,7 @@ import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5DefaultW
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5PasswordString
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5TotpStandalone
 
+@Deprecated("Use redesigned.ResourceTypesUpdatesAdjacencyGraph2 instead")
 class ResourceTypesUpdatesAdjacencyGraph {
     private val adjacencyMap: Map<ResourceTypeVertex, List<ResourceTypeEdge>>
 

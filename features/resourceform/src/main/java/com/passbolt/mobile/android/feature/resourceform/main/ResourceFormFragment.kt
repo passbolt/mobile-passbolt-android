@@ -3,6 +3,8 @@ package com.passbolt.mobile.android.feature.resourceform.main
 import android.os.Bundle
 import android.view.View
 import androidx.core.os.BundleCompat
+import androidx.core.os.bundleOf
+import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -10,8 +12,12 @@ import com.passbolt.mobile.android.common.dialogs.unableToGeneratePasswordAlertD
 import com.passbolt.mobile.android.core.extension.gone
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
 import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
+import com.passbolt.mobile.android.core.extension.showSnackbar
 import com.passbolt.mobile.android.core.extension.visible
 import com.passbolt.mobile.android.core.passwordgenerator.codepoints.Codepoint
+import com.passbolt.mobile.android.core.ui.R
+import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
+import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.password.PasswordFormFragment
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.securenote.SecureNoteFormFragment
@@ -50,6 +56,8 @@ import com.passbolt.mobile.android.core.localization.R as LocalizationR
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+
+@Suppress("TooManyFunctions")
 class ResourceFormFragment :
     BindingScopedAuthenticatedFragment<FragmentResourceFormBinding, ResourceFormContract.View>(
         FragmentResourceFormBinding::inflate
@@ -318,7 +326,56 @@ class ResourceFormFragment :
 //        TODO("Not yet implemented")
     }
 
-    private companion object {
+    override fun showProgress() {
+        showProgressDialog(childFragmentManager)
+    }
+
+    override fun hideProgress() {
+        hideProgressDialog(childFragmentManager)
+    }
+
+    override fun showJsonResourceSchemaValidationError() {
+        showSnackbar(
+            LocalizationR.string.common_json_schema_resource_validation_error,
+            backgroundColor = R.color.red
+        )
+    }
+
+    override fun showJsonSecretSchemaValidationError() {
+        showSnackbar(
+            LocalizationR.string.common_json_schema_secret_validation_error,
+            backgroundColor = R.color.red
+        )
+    }
+
+    override fun showGenericError() {
+        showSnackbar(
+            LocalizationR.string.common_failure,
+            backgroundColor = R.color.red
+        )
+    }
+
+    override fun showEncryptionError(error: String) {
+        showSnackbar(
+            LocalizationR.string.common_encryption_failure,
+            backgroundColor = R.color.red
+        )
+    }
+
+    override fun navigateBackWithCreateSuccess() {
+        setFragmentResult(
+            REQUEST_RESOURCE_FORM, bundleOf(
+                EXTRA_RESOURCE_CREATED to true
+            )
+        )
+        findNavController().popBackStack()
+    }
+
+    companion object {
+        const val REQUEST_RESOURCE_FORM = "RESOURCE_FORM"
+
+        const val EXTRA_RESOURCE_CREATED = "RESOURCE_CREATED"
+
         private const val TAG_PASSWORD_SUBFORM = "PasswordSubform"
         private const val TAG_TOTP_SUBFORM = "TotpSubform"
     }

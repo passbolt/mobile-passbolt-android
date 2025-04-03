@@ -73,6 +73,7 @@ otp = "2.4.0"
 apacheCommonsCodec = "1.16.0"
 jsonSchemaFriend = "0.12.3"
 jsonPath = "2.9.0"
+jsonAssert = "2.0-rc1"
 
 [libraries]
 desugar-jdklibs = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "desugarJdkLibs" }
@@ -159,6 +160,7 @@ otp = { group = "dev.turingcomplete", name = "kotlin-onetimepassword", version.r
 apache-commons-codec = { group = "commons-codec", name = "commons-codec", version.ref = "apacheCommonsCodec" }
 jsonschema-friend = { group = "net.jimblackler.jsonschemafriend", name = "core", version.ref = "jsonSchemaFriend" }
 json-path = { group = "com.jayway.jsonpath", name = "json-path", version.ref = "jsonPath" }
+json-assert = {group="org.skyscreamer", name="jsonassert", version.ref="jsonAssert" }
 
 [plugins]
 android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }

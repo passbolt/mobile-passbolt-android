@@ -21,12 +21,13 @@
  * @since v1.0
  */
 
-package com.passbolt.mobile.android.core.resourcetypes.graph
+package com.passbolt.mobile.android.core.resourcetypes.graph.base
 
+import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction2
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType
 
-@Deprecated("Use UpdateActionMetadata2 instead")
-data class UpdateActionMetadata(
-    val action: UpdateAction,
-    val newResourceType: ContentType
-)
+class ResourceTypeEdge2(
+    override val source: ResourceTypeVertex,
+    override val destination: ResourceTypeVertex,
+    override val updateAction: UpdateAction2
+) : Edge2<ContentType>

@@ -61,6 +61,13 @@ interface ResourceFormContract {
         fun showTotpSecret(secret: String)
         fun showTotpIssuer(issuer: String)
         fun navigateToPassword(passwordUiModel: PasswordUiModel)
+        fun showProgress()
+        fun hideProgress()
+        fun showGenericError()
+        fun showEncryptionError(error: String)
+        fun showJsonResourceSchemaValidationError()
+        fun showJsonSecretSchemaValidationError()
+        fun navigateBackWithCreateSuccess()
     }
 
     interface Presenter : DataRefreshViewReactiveContract.Presenter<View> {
@@ -79,7 +86,7 @@ interface ResourceFormContract {
         fun secureNoteChanged(secureNote: String?)
         fun metadataDescriptionChanged(metadataDescription: String?)
         fun totpChanged(totpUiModel: TotpUiModel?)
-        fun totpSecretChanged(secret: String)
+        fun totpSecretChanged(totpSecret: String)
         fun totpUrlChanged(url: String)
         fun totpAdvancedSettingsChanged(totpAdvancedSettings: TotpUiModel?)
         fun additionalPasswordClick()

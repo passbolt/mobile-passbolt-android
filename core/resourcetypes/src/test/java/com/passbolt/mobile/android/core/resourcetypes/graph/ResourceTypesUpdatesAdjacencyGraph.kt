@@ -27,7 +27,6 @@ import com.google.common.truth.Truth.assertThat
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType
 import org.junit.Test
 
-
 class ResourceTypesUpdatesAdjacencyGraphTest {
     private val graph = ResourceTypesUpdatesAdjacencyGraph()
 

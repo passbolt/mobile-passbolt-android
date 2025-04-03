@@ -111,7 +111,7 @@ class UpdateResourceInteractor(
         usersWhoHaveAccess: List<UserModel>,
         resourceInput: UpdateResourceModel
     ): Output {
-        val encryptedSecrets = encrypt(secretInput.secretJsonModel.json, passphrase, usersWhoHaveAccess)
+        val encryptedSecrets = encrypt(secretInput.secretJsonModel.json!!, passphrase, usersWhoHaveAccess)
         return if (encryptedSecrets.any { it is EncryptedSecretOrError.Error }) {
             Output.OpenPgpError(
                 encryptedSecrets.filterIsInstance<EncryptedSecretOrError.Error>().first().message
@@ -138,7 +138,7 @@ class UpdateResourceInteractor(
                 val encryptedMetadata = metadataEncryptor.encryptMetadata(
                     resourceInput.metadataKeyType!!,
                     resourceInput.metadataKeyId!!,
-                    resourceInput.metadataJsonModel.json,
+                    resourceInput.metadataJsonModel.json!!,
                     passphrase
                 )
                 when (encryptedMetadata) {
@@ -213,11 +213,14 @@ class UpdateResourceInteractor(
             }
         }
 
-    private suspend fun isSecretValid(plainSecret: String, contenType: ContentType) =
-        jsonSchemaValidationRunner.isSecretValid(plainSecret, contenType.slug)
+    private suspend fun isSecretValid(plainSecret: String?, contenType: ContentType) =
+        plainSecret != null && jsonSchemaValidationRunner.isSecretValid(plainSecret, contenType.slug)
 
-    private suspend fun isResourceValid(plainResourceMetadataJson: String, contentType: ContentType) =
-        jsonSchemaValidationRunner.isResourceValid(plainResourceMetadataJson, contentType.slug)
+    private suspend fun isResourceValid(plainResourceMetadataJson: String?, contentType: ContentType) =
+        plainResourceMetadataJson != null && jsonSchemaValidationRunner.isResourceValid(
+            plainResourceMetadataJson,
+            contentType.slug
+        )
 
     private suspend fun getResourceTypeIdForSlug(slug: String) =
         getResourceTypeIdToSlugMappingUseCase.execute(Unit)

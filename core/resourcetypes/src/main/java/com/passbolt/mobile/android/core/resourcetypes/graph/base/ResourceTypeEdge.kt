@@ -26,6 +26,7 @@ package com.passbolt.mobile.android.core.resourcetypes.graph.base
 import com.passbolt.mobile.android.core.resourcetypes.graph.UpdateAction
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType
 
+@Deprecated("Use ResourceTypeEdge2 instead")
 class ResourceTypeEdge(
     override val source: ResourceTypeVertex,
     override val destination: ResourceTypeVertex,
