@@ -102,7 +102,7 @@ class CreateResourceInteractor(
         val isResourceValid = isResourceValid(resourceInput.metadataJsonModel.json, resourceInput.contentType)
 
         return if (isSecretValid && isResourceValid) {
-            when (val encryptedSecret = encryptSecret(secretInput.json, passphrase)) {
+            when (val encryptedSecret = encryptSecret(secretInput.json!!, passphrase)) {
                 is EncryptedSecretOrError.Error -> Output.OpenPgpError(encryptedSecret.message)
                 is EncryptedSecretOrError.EncryptedSecret -> {
                     createResource(resourceInput, encryptedSecret, passphrase)
@@ -138,7 +138,7 @@ class CreateResourceInteractor(
             val encryptedMetadata = metadataEncryptor.encryptMetadata(
                 resourceInput.metadataKeyType!!,
                 resourceInput.metadataKeyId!!,
-                resourceInput.metadataJsonModel.json,
+                resourceInput.metadataJsonModel.json!!,
                 passphrase
             )
             when (encryptedMetadata) {
@@ -206,11 +206,12 @@ class CreateResourceInteractor(
         }
     }
 
-    private suspend fun isSecretValid(plainSecretJson: String, type: ContentType) =
-        jsonSchemaValidationRunner.isSecretValid(plainSecretJson, type.slug)
+    private suspend fun isSecretValid(plainSecretJson: String?, type: ContentType) =
+        plainSecretJson != null && jsonSchemaValidationRunner.isSecretValid(plainSecretJson, type.slug)
 
-    private suspend fun isResourceValid(plainResourceMetadataJson: String, type: ContentType) =
-        jsonSchemaValidationRunner.isResourceValid(plainResourceMetadataJson, type.slug)
+    private suspend fun isResourceValid(plainResourceMetadataJson: String?, type: ContentType) =
+        plainResourceMetadataJson != null &&
+                jsonSchemaValidationRunner.isResourceValid(plainResourceMetadataJson, type.slug)
 
     private suspend fun getResourceTypeIdForSlug(slug: String) =
         getResourceTypeIdToSlugMappingUseCase.execute(Unit)

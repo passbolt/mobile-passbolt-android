@@ -107,7 +107,7 @@ class ResourceModelMapper(
     fun mapResourceMetadata(resourceModel: ResourceModel): ResourceMetadata =
         ResourceMetadata(
             resourceId = resourceModel.resourceId,
-            metadataJson = resourceModel.metadataJsonModel.json,
+            metadataJson = requireNotNull(resourceModel.metadataJsonModel.json),
             name = resourceModel.metadataJsonModel.name,
             username = resourceModel.metadataJsonModel.username,
             description = resourceModel.metadataJsonModel.description

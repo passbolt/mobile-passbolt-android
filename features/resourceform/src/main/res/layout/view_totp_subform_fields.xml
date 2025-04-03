@@ -20,7 +20,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dp_16"
         app:inputHint="@string/resource_form_totp_url"
-        app:inputTitle="@string/resource_form_totp_url" />
+        app:inputTitle="@string/resource_form_totp_url_issuer" />
 
     <com.passbolt.mobile.android.core.ui.menu.OpenableSettingView
         android:id="@+id/moreTotpSettings"

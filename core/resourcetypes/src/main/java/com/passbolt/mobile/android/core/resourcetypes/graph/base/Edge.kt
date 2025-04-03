@@ -25,6 +25,7 @@ package com.passbolt.mobile.android.core.resourcetypes.graph.base
 
 import com.passbolt.mobile.android.core.resourcetypes.graph.UpdateAction
 
+@Deprecated("Use Edge2 instead")
 interface Edge<T> {
     val source: Vertex<T>
     val destination: Vertex<T>

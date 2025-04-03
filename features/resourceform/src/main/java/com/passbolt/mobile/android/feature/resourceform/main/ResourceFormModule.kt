@@ -30,5 +30,6 @@ import org.koin.dsl.bind
 fun Module.resourceFormModule() {
     scope<ResourceFormFragment> {
         scopedOf(::ResourceFormPresenter) bind ResourceFormContract.Presenter::class
+        scopedOf(::ResourceModelHandler)
     }
 }

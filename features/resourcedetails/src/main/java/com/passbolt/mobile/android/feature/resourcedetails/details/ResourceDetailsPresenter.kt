@@ -311,7 +311,7 @@ class ResourceDetailsPresenter(
                     doOnDecryptionFailure = { view?.showDecryptionFailure() },
                     doOnFetchFailure = { view?.showFetchFailure() },
                     doOnSuccess = {
-                        view?.showPassword(it.result)
+                        view?.showPassword(it.result.orEmpty())
                         isPasswordVisible = true
                     }
                 )
@@ -385,7 +385,7 @@ class ResourceDetailsPresenter(
                     action = { secretPropertiesActionsInteractor.providePassword() },
                     doOnFetchFailure = { view?.showFetchFailure() },
                     doOnDecryptionFailure = { view?.showDecryptionFailure() },
-                    doOnSuccess = { view?.addToClipboard(it.label, it.result, it.isSecret) }
+                    doOnSuccess = { view?.addToClipboard(it.label, it.result.orEmpty(), it.isSecret) }
                 )
             }
             resourceDetailActionIdlingResource.setIdle(true)

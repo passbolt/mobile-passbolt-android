@@ -668,7 +668,7 @@ class HomePresenter(
                 action = { secretPropertiesActionsInteractor.providePassword() },
                 doOnDecryptionFailure = { view?.showDecryptionFailure() },
                 doOnFetchFailure = { view?.showFetchFailure() },
-                doOnSuccess = { view?.addToClipboard(it.label, it.result, it.isSecret) }
+                doOnSuccess = { view?.addToClipboard(it.label, it.result.orEmpty(), it.isSecret) }
             )
         }
     }
@@ -901,6 +901,12 @@ class HomePresenter(
                     else -> null
                 }
             )
+        }
+    }
+
+    override fun resourceFormReturned(isResourceCreated: Boolean) {
+        if (isResourceCreated) {
+            initRefresh()
         }
     }
 

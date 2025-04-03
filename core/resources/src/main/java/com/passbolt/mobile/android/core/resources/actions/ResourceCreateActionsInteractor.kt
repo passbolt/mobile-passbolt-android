@@ -48,6 +48,7 @@ import com.passbolt.mobile.android.metadata.usecase.GetMetadataTypesSettingsUseC
 import com.passbolt.mobile.android.metadata.usecase.db.GetLocalMetadataKeysUseCase
 import com.passbolt.mobile.android.metadata.usecase.db.GetLocalMetadataKeysUseCase.MetadataKeyPurpose.ENCRYPT
 import com.passbolt.mobile.android.serializers.jsonschema.SchemaEntity
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordAndDescription
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.Totp
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5Default
@@ -82,6 +83,28 @@ class ResourceCreateActionsInteractor(
     private val getMetadataKeysUseCase: GetLocalMetadataKeysUseCase,
     private val getLocalCurrentUserUseCase: GetLocalCurrentUserUseCase
 ) : KoinComponent {
+
+    suspend fun createGenericResourceResource(
+        contentType: ContentType,
+        resourceParentFolderId: String?,
+        metadataJsonModel: MetadataJsonModel,
+        secretJsonModel: SecretJsonModel
+    ): Flow<ResourceCreateActionResult> {
+        val (metadataKeyId, metadataKeyType) = getMetadataKeysParams(resourceParentFolderId)
+        return createResource(
+            createResource = {
+                CreateResourceModel(
+                    contentType = contentType,
+                    folderId = resourceParentFolderId,
+                    expiry = null,
+                    metadataKeyId = metadataKeyId,
+                    metadataKeyType = metadataKeyType,
+                    metadataJsonModel = metadataJsonModel
+                )
+            },
+            createSecret = { secretJsonModel }
+        )
+    }
 
     suspend fun createPasswordAndDescriptionResource(
         resourceName: String,

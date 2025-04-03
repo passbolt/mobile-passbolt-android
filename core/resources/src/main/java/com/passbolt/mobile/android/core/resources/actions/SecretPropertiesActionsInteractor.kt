@@ -84,7 +84,7 @@ class SecretPropertiesActionsInteractor(
                 }
             }
 
-    suspend fun providePassword(): Flow<SecretPropertyActionResult<String>> =
+    suspend fun providePassword(): Flow<SecretPropertyActionResult<String?>> =
         fetchAndDecrypt()
             .mapSuccess {
                 val slug = idToSlugMappingProvider
@@ -94,11 +94,7 @@ class SecretPropertiesActionsInteractor(
                         SecretPropertyActionResult.Success(
                             SECRET_LABEL,
                             isSecret = true,
-                            if (ContentType.fromSlug(slug!!).isSimplePassword()) {
-                                password.secret.password
-                            } else {
-                                password.secret.secret
-                            }
+                            password.secret.getPassword(ContentType.fromSlug(slug!!))
                         )
                     is DecryptedSecretOrError.Error ->
                         SecretPropertyActionResult.DecryptionFailure()

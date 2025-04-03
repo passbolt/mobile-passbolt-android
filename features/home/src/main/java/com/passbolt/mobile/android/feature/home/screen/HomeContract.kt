@@ -163,5 +163,6 @@ interface HomeContract {
         fun menuCopyOtpClick()
         fun expiryClick()
         fun onCreateResourceClick()
+        fun resourceFormReturned(isResourceCreated: Boolean)
     }
 }

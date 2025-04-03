@@ -102,7 +102,7 @@ class UpdateResourceModel(
 )
 
 @Parcelize
-data class MetadataJsonModel(override var json: String) : JsonModel, Parcelable, Searchable {
+data class MetadataJsonModel(override var json: String?) : JsonModel, Parcelable, Searchable {
 
     @IgnoredOnParcel
     var objectType: String by RootRelativeJsonPathStringDelegate(jsonPath = "object_type")

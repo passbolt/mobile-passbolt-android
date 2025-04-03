@@ -63,6 +63,7 @@ import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpMode
 import com.passbolt.mobile.android.feature.otp.scanotp.scanotpsuccess.ScanOtpSuccessFragment
 import com.passbolt.mobile.android.feature.resourcedetails.ResourceActivity
 import com.passbolt.mobile.android.feature.resourcedetails.ResourceMode
+import com.passbolt.mobile.android.feature.resourceform.main.ResourceFormFragment
 import com.passbolt.mobile.android.moremenu.FolderMoreMenuFragment
 import com.passbolt.mobile.android.resourcemoremenu.ResourceMoreMenuFragment
 import com.passbolt.mobile.android.ui.FiltersMenuModel
@@ -205,6 +206,13 @@ class HomeFragment :
         presenter.otpQrScanReturned(
             result.getBoolean(ScanOtpSuccessFragment.EXTRA_OTP_CREATED, false),
             result.getBoolean(ScanOtpFragment.EXTRA_MANUAL_CREATION_CHOSEN)
+        )
+    }
+
+    // TODO support edited
+    private val resourceFormReturned = { _: String, result: Bundle ->
+        presenter.resourceFormReturned(
+            result.getBoolean(ResourceFormFragment.EXTRA_RESOURCE_CREATED, false)
         )
     }
 
@@ -366,6 +374,19 @@ class HomeFragment :
                 presenter.closeClick()
             }
         }
+
+        setFragmentResultListener(
+            CreateFolderFragment.REQUEST_CREATE_FOLDER,
+            folderCreatedListener
+        )
+        setFragmentResultListener(
+            ScanOtpFragment.REQUEST_SCAN_OTP_FOR_RESULT,
+            otpScanQrReturned
+        )
+        setFragmentResultListener(
+            ResourceFormFragment.REQUEST_RESOURCE_FORM,
+            resourceFormReturned
+        )
     }
 
     override fun showCreateResourceMenu(homeView: HomeDisplayViewModel) {
@@ -889,10 +910,6 @@ class HomeFragment :
     }
 
     override fun navigateToCreateFolder(folderId: String?) {
-        setFragmentResultListener(
-            CreateFolderFragment.REQUEST_CREATE_FOLDER,
-            folderCreatedListener
-        )
         findNavController().navigate(
             NavDeepLinkProvider.createFolderDeepLinkRequest(folderId)
         )
@@ -939,11 +956,6 @@ class HomeFragment :
     }
 
     override fun navigateToScanTotp(scanMode: ScanOtpMode) {
-        // TODO implement listening for creation result;
-        setFragmentResultListener(
-            ScanOtpFragment.REQUEST_SCAN_OTP_FOR_RESULT,
-            otpScanQrReturned
-        )
         findNavController().navigate(
             HomeFragmentDirections.actionHomeToScanOtp(scanMode)
         )

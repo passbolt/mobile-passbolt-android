@@ -25,34 +25,33 @@ package com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser
 
 import com.passbolt.mobile.android.jsonmodel.JsonModel
 import com.passbolt.mobile.android.jsonmodel.delegates.RootRelativeJsonPathNullableStringDelegate
-import com.passbolt.mobile.android.jsonmodel.delegates.RootRelativeJsonPathStringDelegate
 import com.passbolt.mobile.android.jsonmodel.delegates.RootRelativeJsonPathTotpDelegate
-import com.passbolt.mobile.android.jsonmodel.delegates.StringDelegate
+import com.passbolt.mobile.android.jsonmodel.delegates.NullableStringDelegate
 import com.passbolt.mobile.android.jsonmodel.delegates.TotpSecret
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType
 import com.passbolt.mobile.android.ui.OtpParseResult
 
-class SecretJsonModel(override var json: String) : JsonModel {
+class SecretJsonModel(override var json: String?) : JsonModel {
 
     var objectType: String? by RootRelativeJsonPathNullableStringDelegate(jsonPath = "object_type")
 
     var resourceTypeId: String? by RootRelativeJsonPathNullableStringDelegate(jsonPath = "resource_type_id")
 
     // simple-password is just a string (not a valid JSON)
-    var password: String by StringDelegate()
+    var password: String? by NullableStringDelegate()
 
-    var secret: String by RootRelativeJsonPathStringDelegate(jsonPath = "password")
+    var secret: String? by RootRelativeJsonPathNullableStringDelegate(jsonPath = "password")
 
     var description: String? by RootRelativeJsonPathNullableStringDelegate(jsonPath = "description")
 
     var totp: TotpSecret? by RootRelativeJsonPathTotpDelegate(jsonPath = "totp")
 
-    fun getPassword(contentType: ContentType): String = when (contentType) {
+    fun getPassword(contentType: ContentType): String? = when (contentType) {
         ContentType.PasswordString, ContentType.V5PasswordString -> password
         else -> secret
     }
 
-    fun setPassword(contentType: ContentType, password: String) {
+    fun setPassword(contentType: ContentType, password: String?) {
         when (contentType) {
             ContentType.PasswordString, ContentType.V5PasswordString -> this.password = password
             else -> this.secret = password
@@ -74,12 +73,7 @@ class SecretJsonModel(override var json: String) : JsonModel {
             """
                 {
                     "password": "",
-                    "totp": {
-                        "secret_key": "",
-                        "period": ${OtpParseResult.OtpQr.TotpQr.DEFAULT_PERIOD_SECONDS},
-                        "digits": ${OtpParseResult.OtpQr.TotpQr.DEFAULT_DIGITS},
-                        "algorithm": ${OtpParseResult.OtpQr.Algorithm.DEFAULT.name}
-                    }
+                    ${emptyTotpObject()}
                 }
             """
                 .trimIndent()
@@ -88,15 +82,20 @@ class SecretJsonModel(override var json: String) : JsonModel {
         fun emptyTotp(): SecretJsonModel = SecretJsonModel(
             """
                 {
-                    "totp": {
-                        "secret_key": "",
-                        "period": ${OtpParseResult.OtpQr.TotpQr.DEFAULT_PERIOD_SECONDS},
-                        "digits": ${OtpParseResult.OtpQr.TotpQr.DEFAULT_DIGITS},
-                        "algorithm": ${OtpParseResult.OtpQr.Algorithm.DEFAULT.name}
-                    }
+                    ${emptyTotpObject()}
                 }
             """
                 .trimIndent()
         )
+
+        private fun emptyTotpObject() =
+            """
+                "totp": {
+                            "secret_key": "",
+                            "period": ${OtpParseResult.OtpQr.TotpQr.DEFAULT_PERIOD_SECONDS},
+                            "digits": ${OtpParseResult.OtpQr.TotpQr.DEFAULT_DIGITS},
+                            "algorithm": ${OtpParseResult.OtpQr.Algorithm.DEFAULT.name}
+                        }
+            """
     }
 }

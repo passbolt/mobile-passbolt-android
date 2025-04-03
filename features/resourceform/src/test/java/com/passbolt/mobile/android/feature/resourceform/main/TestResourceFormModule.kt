@@ -10,6 +10,7 @@ import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchCont
 import com.passbolt.mobile.android.core.passwordgenerator.SecretGenerator
 import com.passbolt.mobile.android.core.passwordgenerator.entropy.EntropyCalculator
 import com.passbolt.mobile.android.core.policies.usecase.GetPasswordPoliciesUseCase
+import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.ResourceTypesUpdatesAdjacencyGraph2
 import com.passbolt.mobile.android.feature.resourceform.usecase.GetDefaultCreateContentTypeUseCase
 import com.passbolt.mobile.android.jsonmodel.JSON_MODEL_GSON
 import com.passbolt.mobile.android.jsonmodel.jsonpathops.JsonPathJsonPathOps
@@ -59,17 +60,20 @@ internal val testResourceFormModule = module {
     factoryOf(::TestCoroutineLaunchContext) bind CoroutineLaunchContext::class
     factoryOf(::ResourceFormMapper)
     factoryOf(::EntropyViewMapper)
+    singleOf(::ResourceModelHandler)
+    factoryOf(::ResourceTypesUpdatesAdjacencyGraph2)
+
+    single { mockGetDefaultCreateContentTypeUseCase }
 
     factory<ResourceFormContract.Presenter> {
         ResourceFormPresenter(
             getPasswordPoliciesUseCase = mockGetPasswordPoliciesUseCase,
             secretGenerator = mockSecretGenerator,
             entropyCalculator = mockEntropyCalculator,
-            getDefaultCreateContentTypeUseCase = mockGetDefaultCreateContentTypeUseCase,
             entropyViewMapper = get(),
             resourceFormMapper = get(),
-            coroutineLaunchContext = get()
-
+            coroutineLaunchContext = get(),
+            resourceModelHandler = get()
         )
     }
 
