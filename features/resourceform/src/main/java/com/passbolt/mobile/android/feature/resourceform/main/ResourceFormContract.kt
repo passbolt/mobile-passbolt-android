@@ -3,8 +3,10 @@ package com.passbolt.mobile.android.feature.resourceform.main
 import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReactiveContract
 import com.passbolt.mobile.android.ui.PasswordStrength
 import com.passbolt.mobile.android.core.passwordgenerator.codepoints.Codepoint
+import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpMode
 import com.passbolt.mobile.android.ui.LeadingContentType
 import com.passbolt.mobile.android.ui.Mode
+import com.passbolt.mobile.android.ui.OtpParseResult
 import com.passbolt.mobile.android.ui.PasswordStrength.Empty
 import com.passbolt.mobile.android.ui.PasswordUiModel
 import com.passbolt.mobile.android.ui.ResourceFormUiModel
@@ -68,6 +70,7 @@ interface ResourceFormContract {
         fun showJsonResourceSchemaValidationError()
         fun showJsonSecretSchemaValidationError()
         fun navigateBackWithCreateSuccess()
+        fun navigateToScanTotp(scanMode: ScanOtpMode)
     }
 
     interface Presenter : DataRefreshViewReactiveContract.Presenter<View> {
@@ -91,5 +94,6 @@ interface ResourceFormContract {
         fun totpAdvancedSettingsChanged(totpAdvancedSettings: TotpUiModel?)
         fun additionalPasswordClick()
         fun passwordChanged(passwordUiModel: PasswordUiModel?)
+        fun totpScanned(isManualCreationChosen: Boolean, scannedTotp: OtpParseResult.OtpQr.TotpQr?)
     }
 }

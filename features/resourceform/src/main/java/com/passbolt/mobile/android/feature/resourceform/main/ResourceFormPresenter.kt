@@ -18,6 +18,7 @@ import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAct
 import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction2.REMOVE_SECURE_NOTE
 import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction2.REMOVE_TOTP
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.SecretJsonModel
+import com.passbolt.mobile.android.jsonmodel.delegates.TotpSecret
 import com.passbolt.mobile.android.mappers.EntropyViewMapper
 import com.passbolt.mobile.android.mappers.ResourceFormMapper
 import com.passbolt.mobile.android.serializers.jsonschema.SchemaEntity
@@ -31,6 +32,7 @@ import com.passbolt.mobile.android.ui.MetadataTypeModel
 import com.passbolt.mobile.android.ui.Mode
 import com.passbolt.mobile.android.ui.Mode.CREATE
 import com.passbolt.mobile.android.ui.Mode.UPDATE
+import com.passbolt.mobile.android.ui.OtpParseResult
 import com.passbolt.mobile.android.ui.PasswordGeneratorTypeModel
 import com.passbolt.mobile.android.ui.PasswordUiModel
 import com.passbolt.mobile.android.ui.ResourceFormUiModel
@@ -249,7 +251,7 @@ class ResourceFormPresenter(
     }
 
     override fun totpAdvancedSettingsChanged(totpAdvancedSettings: TotpUiModel?) {
-        resourceModelHandler.applyModelChange(EDIT_METADATA) { _, secret ->
+        resourceModelHandler.applyModelChange(ADD_TOTP) { _, secret ->
             val settings =
                 totpAdvancedSettings ?: TotpUiModel.emptyWithDefaults(resourceMetadata.getMainUri(metadataType))
             secret.totp = requireNotNull(resourceSecret.totp).copy(
@@ -257,6 +259,26 @@ class ResourceFormPresenter(
                 digits = settings.length.toInt(),
                 period = settings.expiry.toLong()
             )
+        }
+    }
+
+    override fun totpScanned(isManualCreationChosen: Boolean, scannedTotp: OtpParseResult.OtpQr.TotpQr?) {
+        // just stay on totp screen and allow manual input
+        if (isManualCreationChosen) return
+
+        scannedTotp?.let {
+            resourceModelHandler.applyModelChange(EDIT_METADATA) { metadata, _ ->
+                metadata.setMainUri(metadataType, it.issuer.orEmpty())
+                metadata.name = it.label
+            }
+            resourceModelHandler.applyModelChange(ADD_TOTP) { _, secret ->
+                secret.totp = TotpSecret(
+                    key = it.secret,
+                    algorithm = it.algorithm.name,
+                    digits = it.digits,
+                    period = it.period
+                )
+            }
         }
     }
 

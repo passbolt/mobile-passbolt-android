@@ -266,6 +266,45 @@ class V5TotpResourceFormPresenterTest : KoinTest {
         )
     }
 
+    @Test
+    fun `scan totp should apply model changes`() = runTest {
+        val scannedTotp = OtpParseResult.OtpQr.TotpQr(
+            label = "label",
+            secret = "secret",
+            issuer = "issuer",
+            algorithm = OtpParseResult.OtpQr.Algorithm.SHA1,
+            digits = 6,
+            period = 30
+        )
+
+        presenter.totpScanned(isManualCreationChosen = false, scannedTotp = scannedTotp)
+
+        assertThat(resourceModelHandler.contentType).isEqualTo(ContentType.V5TotpStandalone)
+        JSONAssert.assertEquals(
+            """
+                {
+                    "name": "${scannedTotp.label}",
+                    "uris": ["${scannedTotp.issuer}"]
+
+                }
+            """.trimIndent(),
+            resourceModelHandler.resourceMetadata.json, STRICT_MODE_ENABLED
+        )
+        JSONAssert.assertEquals(
+            """
+                {
+                    "totp": {
+                        "secret_key": "${scannedTotp.secret}",
+                        "period": ${scannedTotp.period},
+                        "digits": ${scannedTotp.digits},
+                        "algorithm": "${scannedTotp.algorithm.name}"
+                    }
+                }
+            """.trimIndent(),
+            resourceModelHandler.resourceSecret.json, STRICT_MODE_ENABLED
+        )
+    }
+
     private companion object {
         private const val STRICT_MODE_ENABLED = true
     }
