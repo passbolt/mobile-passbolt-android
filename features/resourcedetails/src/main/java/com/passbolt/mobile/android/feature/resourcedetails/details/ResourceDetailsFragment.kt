@@ -13,7 +13,6 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
-import androidx.core.content.IntentCompat
 import androidx.core.view.doOnLayout
 import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
@@ -24,7 +23,6 @@ import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
 import com.passbolt.mobile.android.common.ExternalDeeplinkHandler
 import com.passbolt.mobile.android.common.dialogs.confirmResourceDeletionAlertDialog
-import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.extension.gone
 import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.extension.showSnackbar
@@ -64,6 +62,7 @@ import org.koin.core.qualifier.named
 import java.time.ZonedDateTime
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
+import androidx.navigation.fragment.navArgs
 
 /**
  * Passbolt - Open source password manager for teams
@@ -96,15 +95,7 @@ class ResourceDetailsFragment :
     override val presenter: ResourceDetailsContract.Presenter by inject()
     private val clipboardManager: ClipboardManager? by inject()
     private val initialsIconGenerator: InitialsIconGenerator by inject()
-    private val bundledResourceModel by lifecycleAwareLazy {
-        requireNotNull(
-            IntentCompat.getParcelableExtra(
-                requireActivity().intent,
-                ResourceActivity.EXTRA_RESOURCE_MODEL,
-                ResourceModel::class.java
-            )
-        )
-    }
+    private val navArgs: ResourceDetailsFragmentArgs by navArgs()
 
     private val sharedWithFields
         get() = listOf(
@@ -116,7 +107,7 @@ class ResourceDetailsFragment :
     private val sharedWithDecorator: OverlappingItemDecorator by inject()
 
     private val totpFields
-        get() = listOf(binding.totpHeader, binding.totpValue)
+        get() = listOf(binding.totpSectionTitle, binding.totpContainer)
 
     private val tagsFields
         get() = listOf(binding.tagsHeader, binding.tagsValue, binding.tagsClickableArea, binding.tagsNavIcon)
@@ -153,11 +144,12 @@ class ResourceDetailsFragment :
         binding.sharedWithRecycler.doOnLayout {
             binding.sharedWithRecycler.addItemDecoration(sharedWithDecorator)
             presenter.argsReceived(
-                bundledResourceModel.resourceId,
+                navArgs.resourceModel,
                 it.width,
                 resources.getDimension(CoreUiR.dimen.dp_40)
             )
         }
+        binding.secureNoteItem.conceal()
     }
 
     override fun onResume() {
@@ -201,9 +193,13 @@ class ResourceDetailsFragment :
                 setDebouncingOnClick(action = urlCopyAction)
                 actionClickListener = urlCopyAction
             }
-            with(descriptionItem) {
-                setDebouncingOnClick { presenter.copyDescriptionClick() }
-                actionClickListener = { presenter.descriptionActionClick() }
+            with(metadataDescriptionItem) {
+                setDebouncingOnClick { presenter.copyMetadataDescriptionClick() }
+                actionClickListener = { presenter.metadataDescriptionActionClick() }
+            }
+            with(secureNoteItem) {
+                setDebouncingOnClick { presenter.copySecureNoteClick() }
+                actionClickListener = { presenter.secureNoteActionClick() }
             }
             backArrow.setDebouncingOnClick { presenter.backArrowClick() }
             moreIcon.setDebouncingOnClick { presenter.moreClick() }
@@ -261,15 +257,29 @@ class ResourceDetailsFragment :
     }
 
     override fun showTotpSection() {
-        (totpFields + binding.totpIcon).forEach { it.visible() }
+        totpFields.forEach { it.visible() }
     }
 
     override fun hideTotpSection() {
-        (totpFields + binding.totpIcon).forEach { it.gone() }
+        totpFields.forEach { it.gone() }
+    }
+
+    override fun hidePasswordSection() {
+        with(binding) {
+            passwordSectionTitle.gone()
+            passwordContainer.gone()
+        }
+    }
+
+    override fun showPasswordSection() {
+        with(binding) {
+            passwordSectionTitle.visible()
+            passwordContainer.visible()
+        }
     }
 
     override fun navigateBack() {
-        requireActivity().finish()
+        findNavController().popBackStack()
     }
 
     override fun navigateToMore(resourceId: String, resourceName: String) {
@@ -337,25 +347,46 @@ class ResourceDetailsFragment :
         binding.passwordItem.textValue = ""
     }
 
-    override fun clearDescriptionInput() {
-        binding.descriptionItem.textValue = ""
+    override fun clearSecureNoteInput() {
+        binding.secureNoteItem.textValue = ""
     }
 
-    override fun showDescription(description: String, isSecret: Boolean) {
-        with(binding.descriptionItem) {
-            isValueSecret = isSecret
+    override fun showSecureNote(secureNote: String) {
+        with(binding) {
+            secureNoteItem.show()
+            secureNoteItem.isValueSecret = true
+            secureNoteItem.textValue = secureNote
+            secureNoteItem.actionIcon = ActionIcon.HIDE
+            secureNoteItem.setTextIsSelectable(true)
+            secureNoteSectionTitle.visible()
+            secureNoteContainer.visible()
+        }
+    }
+
+    override fun hideSecureNote() {
+        with(binding.secureNoteItem) {
+            conceal()
+            actionIcon = ActionIcon.VIEW
+        }
+    }
+
+    override fun disableSecureNote() {
+        with(binding) {
+            secureNoteSectionTitle.gone()
+            secureNoteContainer.gone()
+        }
+    }
+
+    override fun showMetadataDescription(description: String) {
+        with(binding.metadataDescriptionItem) {
+            visible()
             textValue = description
-            actionIcon = if (isSecret) ActionIcon.HIDE else ActionIcon.NONE
             setTextIsSelectable(true)
         }
     }
 
-    override fun hideDescription() {
-        with(binding.descriptionItem) {
-            isValueSecret = true
-            actionIcon = ActionIcon.VIEW
-            textValue = getString(LocalizationR.string.hidden_secret)
-        }
+    override fun disableMetadataDescription() {
+        binding.metadataDescriptionItem.gone()
     }
 
     override fun menuCopyPasswordClick() {
@@ -363,7 +394,7 @@ class ResourceDetailsFragment :
     }
 
     override fun menuCopyDescriptionClick() {
-        presenter.copyDescriptionClick()
+        presenter.copyMetadataDescriptionClick()
     }
 
     override fun menuCopyUrlClick() {

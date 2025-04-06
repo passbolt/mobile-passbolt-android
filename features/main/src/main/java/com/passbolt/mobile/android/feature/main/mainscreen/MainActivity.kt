@@ -29,6 +29,7 @@ import com.passbolt.mobile.android.feature.otp.R as OtpR
 import com.passbolt.mobile.android.feature.resourceform.R as ResourceFormR
 import com.passbolt.mobile.android.feature.resourcepicker.R as ResourcePickerR
 import com.passbolt.mobile.android.feature.scanotp.R as ScanOtpR
+import com.passbolt.mobile.android.feature.resources.R as ResourceDetailsR
 
 class MainActivity :
     BindingScopedAuthenticatedActivity<ActivityMainBinding, MainContract.View>(ActivityMainBinding::inflate),
@@ -156,6 +157,7 @@ class MainActivity :
         private val noBottomNavFragmentIds = listOf(
             ScanOtpR.id.scanOtpFragment,
             ScanOtpR.id.scanOtpSuccessFragment,
+            ResourceDetailsR.id.resourceDetails,
             ResourcePickerR.id.resourcePickerFragment,
             ResourceFormR.id.resourceFormFragment
         )

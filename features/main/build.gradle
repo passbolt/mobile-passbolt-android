@@ -27,6 +27,7 @@ dependencies {
     implementation project(':autofillresources')
     implementation project(':preferences')
     implementation project(':resourceform')
+    implementation project(':resourcedetails')
 
     implementation libs.navigation.fragment
     implementation libs.navigation.ui

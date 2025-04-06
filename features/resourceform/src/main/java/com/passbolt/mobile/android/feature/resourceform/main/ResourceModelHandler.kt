@@ -77,7 +77,7 @@ class ResourceModelHandler(
                 key = ""
             )
         }
-        if (contentType.hasEncryptedDescription() && resourceSecret.description == null) {
+        if (contentType.hasSecureNote() && resourceSecret.description == null) {
             resourceSecret.description = ""
         }
         if (contentType.hasPassword() && resourceSecret.getPassword(contentType) == null) {
@@ -89,7 +89,7 @@ class ResourceModelHandler(
         if (!contentType.hasTotp() && resourceSecret.totp != null) {
             resourceSecret.totp = null
         }
-        if (!contentType.hasEncryptedDescription() && resourceSecret.description != null) {
+        if (!contentType.hasSecureNote() && resourceSecret.description != null) {
             resourceSecret.description = null
         }
         if (!contentType.hasPassword() && resourceSecret.getPassword(contentType) != null) {

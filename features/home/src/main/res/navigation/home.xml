@@ -68,7 +68,7 @@
         app:enterAnim="@anim/slide_in_right"
         app:exitAnim="@anim/slide_out_left"
         app:popEnterAnim="@anim/slide_in_left"
-        app:popExitAnim="@anim/slide_out_right" >
+        app:popExitAnim="@anim/slide_out_right">
         <argument
             android:name="scanOtpMode"
             app:argType="com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpMode" />
@@ -88,6 +88,18 @@
             app:argType="com.passbolt.mobile.android.ui.HomeDisplayViewModel" />
     </action>
 
+    <action
+        android:id="@+id/action_home_to_details"
+        app:destination="@id/resourcesDetails"
+        app:enterAnim="@anim/slide_in_right"
+        app:exitAnim="@anim/slide_out_left"
+        app:popEnterAnim="@anim/slide_in_left"
+        app:popExitAnim="@anim/slide_out_right">
+        <argument
+            android:name="resourceModel"
+            app:argType="com.passbolt.mobile.android.ui.ResourceModel" />
+    </action>
+
     <include app:graph="@navigation/folder_details" />
 
     <include app:graph="@navigation/createfolder" />
@@ -95,4 +107,6 @@
     <include app:graph="@navigation/scan_otp" />
 
     <include app:graph="@navigation/resource_form" />
+
+    <include app:graph="@navigation/resources_details" />
 </navigation>

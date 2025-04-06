@@ -512,8 +512,10 @@ class HomeFragment :
     }
 
     override fun navigateToDetails(resourceModel: ResourceModel) {
-        resourceDetailsResult.launch(
-            ResourceActivity.newInstance(requireContext(), ResourceMode.DETAILS, resourceModel.folderId, resourceModel)
+        // TODO handle result on editing
+
+        findNavController().navigate(
+            HomeFragmentDirections.actionHomeToDetails(resourceModel)
         )
     }
 

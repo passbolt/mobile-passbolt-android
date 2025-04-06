@@ -42,13 +42,13 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:fillViewport="true"
-            android:padding="@dimen/dp_8"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/backArrow">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:padding="@dimen/dp_16">
 
                 <ImageView
                     android:id="@+id/icon"
@@ -76,8 +76,8 @@
                     android:layout_height="18dp"
                     android:layout_marginTop="-9dp"
                     android:layout_marginEnd="-9dp"
-                    app:layout_constraintTop_toBottomOf="@id/icon"
-                    app:layout_constraintEnd_toEndOf="@id/icon" />
+                    app:layout_constraintEnd_toEndOf="@id/icon"
+                    app:layout_constraintTop_toBottomOf="@id/icon" />
 
                 <TextView
                     android:id="@+id/name"
@@ -93,259 +93,306 @@
                     app:layout_constraintTop_toBottomOf="@+id/icon"
                     tools:text="DD" />
 
-                <com.passbolt.mobile.android.core.ui.itemwithheaderandaction.ItemWithHeaderAndActionView
-                    android:id="@+id/expiryItem"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/dp_24"
-                    android:layout_marginEnd="@dimen/dp_12"
-                    app:itemWithHeaderAndActionView_title="@string/resource_details_expiry_header"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    android:visibility="gone"
-                    app:layout_constraintStart_toEndOf="@id/guideline"
-                    app:layout_constraintTop_toBottomOf="@id/name" />
-
-                <com.passbolt.mobile.android.core.ui.itemwithheaderandaction.ItemWithHeaderAndActionView
-                    android:id="@+id/urlItem"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/dp_24"
-                    android:layout_marginEnd="@dimen/dp_12"
-                    app:itemWithHeaderAndActionView_action="COPY"
-                    app:itemWithHeaderAndActionView_shouldUseWebLink="true"
-                    app:itemWithHeaderAndActionView_title="@string/resource_details_url_header"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@id/guideline"
-                    app:layout_constraintTop_toBottomOf="@id/expiryItem" />
-
-                <com.passbolt.mobile.android.core.ui.itemwithheaderandaction.ItemWithHeaderAndActionView
-                    android:id="@+id/usernameItem"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/dp_24"
-                    android:layout_marginEnd="@dimen/dp_12"
-                    app:itemWithHeaderAndActionView_action="COPY"
-                    app:itemWithHeaderAndActionView_title="@string/resource_details_username_header"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@id/guideline"
-                    app:layout_constraintTop_toBottomOf="@id/urlItem" />
-
-                <com.passbolt.mobile.android.core.ui.itemwithheaderandaction.ItemWithHeaderAndActionView
-                    android:id="@+id/passwordItem"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/dp_24"
-                    android:layout_marginEnd="@dimen/dp_12"
-                    app:itemWithHeaderAndActionView_action="NONE"
-                    app:itemWithHeaderAndActionView_isValueSecret="true"
-                    app:itemWithHeaderAndActionView_title="@string/resource_details_password_header"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@id/guideline"
-                    app:layout_constraintTop_toBottomOf="@id/usernameItem" />
-
-                <com.passbolt.mobile.android.core.ui.itemwithheaderandaction.ItemWithHeaderAndActionView
-                    android:id="@+id/descriptionItem"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/dp_24"
-                    android:layout_marginEnd="@dimen/dp_12"
-                    app:itemWithHeaderAndActionView_action="VIEW"
-                    app:itemWithHeaderAndActionView_isValueSecret="true"
-                    app:itemWithHeaderAndActionView_title="@string/resource_details_description_header"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@id/guideline"
-                    app:layout_constraintTop_toBottomOf="@id/passwordItem" />
-
                 <TextView
-                    android:id="@+id/totpHeader"
-                    style="@style/Heading"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="@dimen/dp_16"
-                    android:layout_marginTop="@dimen/dp_24"
-                    android:layout_marginEnd="@dimen/dp_8"
-                    android:text="@string/resource_details_totp_header"
-                    android:textAllCaps="true"
-                    android:textColor="@color/text_primary"
-                    android:textSize="@dimen/sp_12"
-                    android:visibility="gone"
-                    app:layout_constraintStart_toStartOf="@+id/guideline"
-                    app:layout_constraintTop_toBottomOf="@id/descriptionItem" />
-
-                <TextView
-                    android:id="@+id/totpValue"
-                    style="@style/SecretText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/dp_8"
-                    android:layout_marginEnd="@dimen/dp_8"
-                    android:ellipsize="end"
-                    android:fontFamily="@font/inconsolata"
-                    android:maxLines="1"
-                    android:text="@string/otp_hide_otp"
-                    android:textColor="@color/text_secondary"
-                    android:textFontWeight="400"
-                    android:textSize="@dimen/sp_24"
-                    android:visibility="gone"
-                    app:layout_constraintStart_toStartOf="@+id/guideline"
-                    app:layout_constraintTop_toBottomOf="@+id/totpHeader" />
-
-                <com.google.android.material.progressindicator.CircularProgressIndicator
-                    android:id="@+id/totpProgress"
-                    android:layout_width="@dimen/dp_20"
-                    android:layout_height="@dimen/dp_20"
-                    android:layout_marginStart="@dimen/dp_16"
-                    android:visibility="gone"
-                    app:indicatorDirectionCircular="clockwise"
-                    app:indicatorSize="@dimen/dp_20"
-                    app:layout_constraintStart_toEndOf="@id/totpValue"
-                    app:layout_constraintTop_toBottomOf="@id/totpValue"
-                    app:layout_constraintTop_toTopOf="@id/totpValue"
-                    app:layout_goneMarginStart="@dimen/dp_16"
-                    app:trackColor="#40000000"
-                    app:trackThickness="3dp" />
-
-                <ImageView
-                    android:id="@+id/generationInProgress"
-                    android:layout_width="@dimen/dp_20"
-                    android:layout_height="@dimen/dp_20"
-                    android:layout_marginStart="@dimen/dp_16"
-                    android:src="@drawable/ic_refresh"
-                    android:visibility="gone"
-                    app:layout_constraintStart_toEndOf="@id/totpValue"
-                    app:layout_constraintTop_toBottomOf="@id/totpValue"
-                    app:layout_constraintTop_toTopOf="@id/totpValue"
-                    app:layout_goneMarginStart="@dimen/dp_16" />
-
-                <ImageView
-                    android:id="@+id/totpIcon"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="@dimen/dp_12"
-                    android:background="?selectableItemBackgroundBorderless"
-                    android:src="@drawable/ic_eye_visible"
-                    android:visibility="gone"
-                    app:layout_constraintBottom_toBottomOf="@+id/totpValue"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/totpHeader"
-                    app:tint="@color/icon_tint" />
-
-                <TextView
-                    android:id="@+id/tagsHeader"
-                    style="@style/Heading"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/dp_24"
-                    android:layout_marginEnd="@dimen/dp_8"
-                    android:text="@string/resource_details_tags_header"
-                    android:textColor="@color/text_primary"
-                    android:textSize="@dimen/sp_12"
-                    android:visibility="gone"
-                    app:drawableTint="@color/icon_tint"
-                    app:layout_constraintEnd_toStartOf="@id/tagsNavIcon"
-                    app:layout_constraintStart_toStartOf="@+id/guideline"
-                    app:layout_constraintTop_toBottomOf="@+id/totpValue" />
-
-                <TextView
-                    android:id="@+id/tagsValue"
-                    style="@style/ValueText"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/dp_8"
-                    android:layout_marginEnd="@dimen/dp_8"
-                    android:ellipsize="middle"
-                    android:maxLines="1"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="@dimen/sp_14"
-                    android:visibility="gone"
-                    app:layout_constraintEnd_toStartOf="@id/tagsNavIcon"
-                    app:layout_constraintStart_toStartOf="@+id/guideline"
-                    app:layout_constraintTop_toBottomOf="@+id/tagsHeader"
-                    tools:text="Tag, Tag2" />
-
-                <ImageView
-                    android:id="@+id/tagsNavIcon"
-                    android:layout_width="@dimen/dp_8"
-                    android:layout_height="@dimen/dp_16"
-                    android:layout_marginEnd="@dimen/dp_12"
-                    android:background="?selectableItemBackgroundBorderless"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/ic_arrow_right"
-                    android:visibility="gone"
-                    app:layout_constraintBottom_toBottomOf="@id/tagsValue"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@id/tagsHeader"
-                    app:tint="@color/icon_tint" />
-
-                <View
-                    android:id="@+id/tagsClickableArea"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:layout_marginEnd="@dimen/dp_8"
-                    android:visibility="gone"
-                    app:layout_constraintBottom_toBottomOf="@id/tagsValue"
-                    app:layout_constraintEnd_toStartOf="@id/tagsNavIcon"
-                    app:layout_constraintStart_toStartOf="@id/guideline"
-                    app:layout_constraintTop_toBottomOf="@id/tagsHeader" />
-
-                <TextView
-                    android:id="@+id/locationHeader"
-                    style="@style/Heading"
-                    android:layout_width="0dp"
+                    android:id="@+id/passwordSectionTitle"
+                    style="@style/Section"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/dp_16"
-                    android:layout_marginEnd="@dimen/dp_8"
-                    android:text="@string/location"
-                    android:textColor="@color/text_primary"
-                    android:textSize="@dimen/sp_12"
-                    android:visibility="gone"
-                    app:layout_constraintEnd_toStartOf="@id/locationNavIcon"
-                    app:layout_constraintStart_toStartOf="@+id/guideline"
-                    app:layout_constraintTop_toBottomOf="@+id/tagsClickableArea" />
+                    android:text="@string/resource_details_password_header"
+                    app:layout_constraintTop_toBottomOf="@id/name" />
 
-                <TextView
-                    android:id="@+id/locationValue"
-                    style="@style/ValueText"
-                    android:layout_width="0dp"
+                <!-- PASSWORD -->
+                <LinearLayout
+                    android:id="@+id/passwordContainer"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/dp_8"
-                    android:layout_marginEnd="@dimen/dp_8"
-                    android:ellipsize="middle"
-                    android:maxLines="1"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="@dimen/sp_14"
-                    android:visibility="gone"
-                    app:layout_constraintEnd_toStartOf="@id/locationNavIcon"
-                    app:layout_constraintStart_toStartOf="@+id/guideline"
-                    app:layout_constraintTop_toBottomOf="@+id/locationHeader"
-                    tools:text="Root > Private" />
+                    android:layout_marginTop="@dimen/dp_16"
+                    android:background="@color/section_background"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="@dimen/dp_24"
+                    android:paddingVertical="@dimen/dp_16"
+                    android:paddingBottom="@dimen/dp_16"
+                    app:layout_constraintTop_toBottomOf="@id/passwordSectionTitle">
 
-                <ImageView
-                    android:id="@+id/locationNavIcon"
-                    android:layout_width="@dimen/dp_8"
-                    android:layout_height="@dimen/dp_16"
-                    android:layout_marginEnd="@dimen/dp_12"
-                    android:background="?selectableItemBackgroundBorderless"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/ic_arrow_right"
-                    android:visibility="gone"
-                    app:layout_constraintBottom_toBottomOf="@id/locationValue"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@id/locationHeader"
-                    app:tint="@color/icon_tint" />
+                    <com.passbolt.mobile.android.core.ui.itemwithheaderandaction.ItemWithHeaderAndActionView
+                        android:id="@+id/usernameItem"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:itemWithHeaderAndActionView_action="COPY"
+                        app:itemWithHeaderAndActionView_title="@string/resource_details_username_header" />
+
+                    <com.passbolt.mobile.android.core.ui.itemwithheaderandaction.ItemWithHeaderAndActionView
+                        android:id="@+id/passwordItem"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/dp_16"
+                        app:itemWithHeaderAndActionView_action="NONE"
+                        app:itemWithHeaderAndActionView_isValueSecret="true"
+                        app:itemWithHeaderAndActionView_title="@string/resource_details_password_header" />
+
+                    <com.passbolt.mobile.android.core.ui.itemwithheaderandaction.ItemWithHeaderAndActionView
+                        android:id="@+id/urlItem"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/dp_16"
+                        app:itemWithHeaderAndActionView_action="COPY"
+                        app:itemWithHeaderAndActionView_shouldUseWebLink="true"
+                        app:itemWithHeaderAndActionView_title="@string/resource_details_url_header" />
+
+                </LinearLayout>
+
+                <!-- TOTP -->
+                <TextView
+                    android:id="@+id/totpSectionTitle"
+                    style="@style/Section"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dp_16"
+                    android:text="@string/resource_details_totp_header"
+                    android:textAllCaps="true"
+                    app:layout_constraintTop_toBottomOf="@id/passwordContainer" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/totpContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dp_16"
+                    android:background="@color/section_background"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="@dimen/dp_24"
+                    android:paddingVertical="@dimen/dp_16"
+                    app:layout_constraintTop_toBottomOf="@id/totpSectionTitle">
+
+                    <TextView
+                        android:id="@+id/totpValue"
+                        style="@style/SecretText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="@dimen/dp_8"
+                        android:ellipsize="end"
+                        android:fontFamily="@font/inconsolata"
+                        android:maxLines="1"
+                        android:text="@string/otp_hide_otp"
+                        android:textColor="@color/text_secondary"
+                        android:textFontWeight="400"
+                        android:textSize="@dimen/sp_24"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <com.google.android.material.progressindicator.CircularProgressIndicator
+                        android:id="@+id/totpProgress"
+                        android:layout_width="@dimen/dp_20"
+                        android:layout_height="@dimen/dp_20"
+                        android:layout_marginStart="@dimen/dp_16"
+                        android:visibility="invisible"
+                        app:indicatorDirectionCircular="clockwise"
+                        app:indicatorSize="@dimen/dp_20"
+                        app:layout_constraintStart_toEndOf="@id/totpValue"
+                        app:layout_constraintTop_toBottomOf="@id/totpValue"
+                        app:layout_constraintTop_toTopOf="@id/totpValue"
+                        app:layout_goneMarginStart="@dimen/dp_16"
+                        app:trackColor="#40000000"
+                        app:trackThickness="3dp" />
+
+                    <ImageView
+                        android:id="@+id/generationInProgress"
+                        android:layout_width="@dimen/dp_20"
+                        android:layout_height="@dimen/dp_20"
+                        android:layout_marginStart="@dimen/dp_16"
+                        android:src="@drawable/ic_refresh"
+                        android:visibility="invisible"
+                        app:layout_constraintStart_toEndOf="@id/totpValue"
+                        app:layout_constraintTop_toBottomOf="@id/totpValue"
+                        app:layout_constraintTop_toTopOf="@id/totpValue"
+                        app:layout_goneMarginStart="@dimen/dp_16" />
+
+                    <ImageView
+                        android:id="@+id/totpIcon"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="?selectableItemBackgroundBorderless"
+                        android:src="@drawable/ic_eye_visible"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:tint="@color/icon_tint" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <!-- SECURE NOTE -->
+                <TextView
+                    android:id="@+id/secureNoteSectionTitle"
+                    style="@style/Section"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dp_16"
+                    android:text="@string/resource_details_secure_note_header"
+                    app:layout_constraintTop_toBottomOf="@id/totpContainer" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/secureNoteContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dp_16"
+                    android:background="@color/section_background"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="@dimen/dp_24"
+                    android:paddingVertical="@dimen/dp_16"
+                    app:layout_constraintTop_toBottomOf="@id/secureNoteSectionTitle">
+
+                    <com.passbolt.mobile.android.core.ui.itemwithheaderandaction.ItemWithHeaderAndActionView
+                        android:id="@+id/secureNoteItem"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:itemWithHeaderAndActionView_action="VIEW"
+                        app:itemWithHeaderAndActionView_isValueSecret="true"
+                        app:itemWithHeaderAndActionView_title="@string/resource_details_secure_note_content"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <!-- METADATA -->
+                <TextView
+                    android:id="@+id/metadataSectionTitle"
+                    style="@style/Section"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dp_16"
+                    android:text="@string/resource_details_metadata_header"
+                    app:layout_constraintTop_toBottomOf="@id/secureNoteContainer" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/metadataContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dp_16"
+                    android:background="@color/section_background"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="@dimen/dp_24"
+                    android:paddingBottom="@dimen/dp_16"
+                    app:layout_constraintTop_toBottomOf="@id/metadataSectionTitle">
+
+                    <com.passbolt.mobile.android.core.ui.itemwithheaderandaction.ItemWithHeaderAndActionView
+                        android:id="@+id/metadataDescriptionItem"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/dp_16"
+                        app:itemWithHeaderAndActionView_action="NONE"
+                        app:itemWithHeaderAndActionView_isValueSecret="true"
+                        app:itemWithHeaderAndActionView_title="@string/resource_details_description_header"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/locationHeader"
+                        style="@style/Heading"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/dp_16"
+                        android:layout_marginEnd="@dimen/dp_8"
+                        android:text="@string/location"
+                        android:textColor="@color/text_primary"
+                        android:textSize="@dimen/sp_12"
+                        app:layout_constraintEnd_toStartOf="@id/locationNavIcon"
+                        app:layout_constraintTop_toBottomOf="@+id/metadataDescriptionItem" />
+
+                    <TextView
+                        android:id="@+id/locationValue"
+                        style="@style/ValueText"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/dp_8"
+                        android:layout_marginEnd="@dimen/dp_8"
+                        android:ellipsize="middle"
+                        android:maxLines="1"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="@dimen/sp_14"
+                        app:layout_constraintEnd_toStartOf="@id/locationNavIcon"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/locationHeader"
+                        tools:text="Root > Private" />
+
+                    <ImageView
+                        android:id="@+id/locationNavIcon"
+                        android:layout_width="@dimen/dp_8"
+                        android:layout_height="@dimen/dp_16"
+                        android:background="?selectableItemBackgroundBorderless"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/ic_arrow_right"
+                        app:layout_constraintBottom_toBottomOf="@id/locationValue"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@id/locationHeader"
+                        app:tint="@color/icon_tint" />
+
+                    <TextView
+                        android:id="@+id/tagsHeader"
+                        style="@style/Heading"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/dp_16"
+                        android:text="@string/resource_details_tags_header"
+                        android:textColor="@color/text_primary"
+                        android:textSize="@dimen/sp_12"
+                        app:drawableTint="@color/icon_tint"
+                        app:layout_constraintTop_toBottomOf="@id/locationValue" />
+
+                    <TextView
+                        android:id="@+id/tagsValue"
+                        style="@style/ValueText"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/dp_8"
+                        android:layout_marginEnd="@dimen/dp_8"
+                        android:ellipsize="middle"
+                        android:maxLines="1"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="@dimen/sp_14"
+                        app:layout_constraintEnd_toStartOf="@id/tagsNavIcon"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/tagsClickableArea"
+                        tools:text="Tag, Tag2" />
+
+                    <ImageView
+                        android:id="@+id/tagsNavIcon"
+                        android:layout_width="@dimen/dp_8"
+                        android:layout_height="@dimen/dp_16"
+                        android:background="?selectableItemBackgroundBorderless"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/ic_arrow_right"
+                        app:layout_constraintBottom_toBottomOf="@id/tagsValue"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@id/tagsHeader"
+                        app:tint="@color/icon_tint" />
+
+                    <View
+                        android:id="@+id/tagsClickableArea"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:layout_marginEnd="@dimen/dp_8"
+                        app:layout_constraintBottom_toBottomOf="@id/tagsValue"
+                        app:layout_constraintEnd_toStartOf="@id/tagsNavIcon"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/tagsHeader" />
+
+                    <com.passbolt.mobile.android.core.ui.itemwithheaderandaction.ItemWithHeaderAndActionView
+                        android:id="@+id/expiryItem"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/dp_16"
+                        app:itemWithHeaderAndActionView_title="@string/resource_details_expiry_header"
+                        app:layout_constraintTop_toBottomOf="@id/tagsValue" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <TextView
                     android:id="@+id/sharedWithLabel"
-                    style="@style/Heading"
+                    style="@style/Section"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/dp_32"
+                    android:layout_marginTop="@dimen/dp_24"
                     android:text="@string/shared_with"
-                    android:textColor="@color/text_primary"
-                    android:textSize="@dimen/sp_12"
-                    android:visibility="invisible"
-                    app:layout_constraintStart_toStartOf="@id/guideline"
-                    app:layout_constraintTop_toBottomOf="@+id/locationValue" />
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/metadataContainer" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/sharedWithRecycler"
@@ -353,19 +400,17 @@
                     android:layout_height="@dimen/dp_40"
                     android:layout_marginTop="@dimen/dp_16"
                     android:layout_marginEnd="@dimen/dp_8"
-                    android:visibility="invisible"
                     app:layout_constraintEnd_toStartOf="@id/sharedWithNavIcon"
-                    app:layout_constraintStart_toStartOf="@id/guideline"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/sharedWithLabel" />
 
                 <View
                     android:id="@+id/sharedWithRecyclerClickableArea"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
-                    android:visibility="invisible"
                     app:layout_constraintBottom_toBottomOf="@id/sharedWithRecycler"
                     app:layout_constraintEnd_toStartOf="@id/sharedWithNavIcon"
-                    app:layout_constraintStart_toStartOf="@id/guideline"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="@id/sharedWithLabel" />
 
                 <ImageView
@@ -376,18 +421,10 @@
                     android:background="?selectableItemBackgroundBorderless"
                     android:scaleType="centerCrop"
                     android:src="@drawable/ic_arrow_right"
-                    android:visibility="invisible"
                     app:layout_constraintBottom_toBottomOf="@id/sharedWithRecycler"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@id/sharedWithRecycler"
                     app:tint="@color/icon_tint" />
-
-                <androidx.constraintlayout.widget.Guideline
-                    android:id="@+id/guideline"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    app:layout_constraintGuide_begin="@dimen/dp_16" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -62,11 +62,16 @@ sealed class ContentType(val slug: String) {
         V5DefaultWithTotp
     )
 
-    fun hasEncryptedDescription() = this in setOf(
+    fun hasSecureNote() = this in setOf(
         PasswordAndDescription,
         PasswordDescriptionTotp,
         V5Default,
         V5DefaultWithTotp
+    )
+
+    fun hasMetadataDescription() = this in setOf(
+        V5PasswordString,
+        PasswordString
     )
 
     fun hasPassword() = this in setOf(
@@ -103,6 +108,10 @@ object SupportedContentTypes {
         PasswordDescriptionTotp,
         V5PasswordString,
         V5Default,
+        V5DefaultWithTotp,
+        Totp,
+        PasswordDescriptionTotp,
+        V5TotpStandalone,
         V5DefaultWithTotp
     ).map { it.slug }.toSet()
 
