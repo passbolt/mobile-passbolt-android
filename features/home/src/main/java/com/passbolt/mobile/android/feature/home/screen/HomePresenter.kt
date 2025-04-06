@@ -685,7 +685,7 @@ class HomePresenter(
                 )
             } else {
                 performSecretPropertyAction(
-                    action = { secretPropertiesActionsInteractor.provideDescription() },
+                    action = { secretPropertiesActionsInteractor.provideSecureNote() },
                     doOnDecryptionFailure = { view?.showDecryptionFailure() },
                     doOnFetchFailure = { view?.showFetchFailure() },
                     doOnSuccess = { view?.addToClipboard(it.label, it.result, it.isSecret) }

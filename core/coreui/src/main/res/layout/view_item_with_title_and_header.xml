@@ -36,10 +36,24 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="?selectableItemBackgroundBorderless"
-        app:layout_constraintBottom_toBottomOf="@+id/value"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/header"
+        app:layout_constraintTop_toTopOf="parent"
         app:tint="@color/icon_tint"
         tools:src="@drawable/ic_copy" />
+
+    <ImageView
+        android:id="@+id/conceal"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@color/section_background"
+        android:minHeight="@dimen/dp_64"
+        android:scaleType="fitXY"
+        android:src="@drawable/image_concealed"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/value"
+        app:layout_constraintEnd_toEndOf="@id/value"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/title" />
 
 </merge>

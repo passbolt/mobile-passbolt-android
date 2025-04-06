@@ -216,9 +216,9 @@ class HomeMenuTest : KoinTest {
         }
         val resourceDescription = "desc"
         mockSecretPropertiesActionsInteractor.stub {
-            onBlocking { provideDescription() } doReturn flowOf(
+            onBlocking { provideSecureNote() } doReturn flowOf(
                 SecretPropertyActionResult.Success(
-                    SecretPropertiesActionsInteractor.DESCRIPTION_LABEL,
+                    SecretPropertiesActionsInteractor.SECURE_NOTE_LABEL,
                     isSecret = true,
                     resourceDescription
                 )
@@ -238,7 +238,7 @@ class HomeMenuTest : KoinTest {
         presenter.menuCopyDescriptionClick()
 
         verify(view).addToClipboard(
-            SecretPropertiesActionsInteractor.DESCRIPTION_LABEL,
+            SecretPropertiesActionsInteractor.SECURE_NOTE_LABEL,
             resourceDescription,
             isSecret = true
         )
@@ -274,7 +274,7 @@ class HomeMenuTest : KoinTest {
         presenter.menuCopyDescriptionClick()
 
         verify(view).addToClipboard(
-            SecretPropertiesActionsInteractor.DESCRIPTION_LABEL,
+            ResourcePropertiesActionsInteractor.DESCRIPTION_LABEL,
             RESOURCE_MODEL.metadataJsonModel.description.orEmpty(),
             isSecret = false
         )

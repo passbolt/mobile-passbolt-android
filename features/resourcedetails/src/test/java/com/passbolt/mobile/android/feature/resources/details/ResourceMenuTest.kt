@@ -172,7 +172,7 @@ class ResourceMenuTest : KoinTest {
         }
 
         presenter.argsReceived(
-            resourceModel.resourceId,
+            resourceModel,
             100,
             20f
         )
@@ -193,7 +193,7 @@ class ResourceMenuTest : KoinTest {
         }
 
         presenter.argsReceived(
-            resourceModel.resourceId,
+            resourceModel,
             100,
             20f
         )
@@ -220,7 +220,7 @@ class ResourceMenuTest : KoinTest {
         }
 
         presenter.argsReceived(
-            resourceModel.resourceId,
+            resourceModel,
             100,
             20f
         )
@@ -243,7 +243,7 @@ class ResourceMenuTest : KoinTest {
             )
         }
         presenter.argsReceived(
-            resourceModel.resourceId,
+            resourceModel,
             100,
             20f
         )
@@ -270,7 +270,7 @@ class ResourceMenuTest : KoinTest {
             )
         }
         presenter.argsReceived(
-            resourceModel.resourceId,
+            resourceModel,
             100,
             20f
         )

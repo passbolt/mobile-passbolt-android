@@ -32,7 +32,9 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.content.res.use
+import com.passbolt.mobile.android.core.extension.gone
 import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
+import com.passbolt.mobile.android.core.extension.visible
 import com.passbolt.mobile.android.core.ui.R
 import com.passbolt.mobile.android.core.ui.databinding.ViewItemWithTitleAndHeaderBinding
 
@@ -132,6 +134,14 @@ class ItemWithHeaderAndActionView @JvmOverloads constructor(
 
     fun setTextIsSelectable(isSelectable: Boolean) {
         binding.value.setTextIsSelectable(isSelectable)
+    }
+
+    fun conceal() {
+        binding.conceal.visible()
+    }
+
+    fun show() {
+        binding.conceal.gone()
     }
 
     private companion object {
