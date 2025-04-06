@@ -3,7 +3,8 @@ package com.passbolt.mobile.android.feature.resourceform.subform.totp
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
-import android.widget.LinearLayout
+import android.widget.FrameLayout
+import androidx.constraintlayout.widget.ConstraintLayout
 import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.ui.menu.OpenableSettingView
 import com.passbolt.mobile.android.core.ui.textinputfield.TextInputView
@@ -37,7 +38,7 @@ class TotpSubformView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyle: Int = 0
-) : LinearLayout(context, attrs, defStyle) {
+) : ConstraintLayout(context, attrs, defStyle) {
 
     private val binding = ViewTotpSubformBinding.inflate(LayoutInflater.from(context), this)
 
@@ -49,17 +50,27 @@ class TotpSubformView @JvmOverloads constructor(
             }
         }
 
+    var scanTotpClickListener: (() -> Unit)? = null
+        set(value) {
+            field = value
+            value?.let {
+                scanTotpButton.setDebouncingOnClick(action = it)
+            }
+        }
+
     val secretInput: TextInputView
         get() = binding.totpSectionView.findViewById(R.id.secretInput)
 
     val urlInput: TextInputView
         get() = binding.totpSectionView.findViewById(R.id.urlInput)
 
-    val moreSettings: OpenableSettingView
+    private val moreSettings: OpenableSettingView
         get() = binding.totpSectionView.findViewById(R.id.moreTotpSettings)
 
+    private val scanTotpButton: FrameLayout
+        get() = binding.totpSectionView.findViewById(R.id.scanTotpButton)
+
     init {
-        orientation = VERTICAL
         LayoutInflater.from(context).inflate(
             R.layout.view_totp_subform_fields,
             binding.totpSectionView.backgroundContainer,

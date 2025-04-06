@@ -19,6 +19,8 @@ import com.passbolt.mobile.android.core.ui.R
 import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
 import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
+import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpFragment
+import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpMode
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.password.PasswordFormFragment
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.securenote.SecureNoteFormFragment
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.TotpFormFragment
@@ -27,6 +29,7 @@ import com.passbolt.mobile.android.feature.resourceform.databinding.FragmentReso
 import com.passbolt.mobile.android.feature.resourceform.metadata.description.DescriptionFormFragment
 import com.passbolt.mobile.android.feature.resourceform.subform.password.PasswordSubformView
 import com.passbolt.mobile.android.feature.resourceform.subform.totp.TotpSubformView
+import com.passbolt.mobile.android.ui.OtpParseResult
 import com.passbolt.mobile.android.ui.PasswordStrength
 import com.passbolt.mobile.android.ui.PasswordUiModel
 import com.passbolt.mobile.android.ui.ResourceFormUiModel
@@ -106,6 +109,17 @@ class ResourceFormFragment :
         }
     }
 
+    private val totpScanQrReturned = { _: String, result: Bundle ->
+        presenter.totpScanned(
+            result.getBoolean(ScanOtpFragment.EXTRA_MANUAL_CREATION_CHOSEN),
+            BundleCompat.getParcelable(
+                result,
+                ScanOtpFragment.EXTRA_SCANNED_OTP,
+                OtpParseResult.OtpQr.TotpQr::class.java
+            )
+        )
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.resourceName.disableSavingInstanceState()
@@ -179,6 +193,13 @@ class ResourceFormFragment :
         )
     }
 
+    override fun navigateToScanTotp(scanMode: ScanOtpMode) {
+        setFragmentResultListener(ScanOtpFragment.REQUEST_SCAN_OTP_FOR_RESULT, totpScanQrReturned)
+        findNavController().navigate(
+            ResourceFormFragmentDirections.actionResourceFormFragmentToScanOtp(scanMode)
+        )
+    }
+
     override fun navigateToPassword(passwordUiModel: PasswordUiModel) {
         setFragmentResultListener(PasswordFormFragment.REQUEST_PASSWORD, passwordResult)
         findNavController().navigate(
@@ -208,7 +229,7 @@ class ResourceFormFragment :
     }
 
     override fun addTotpLeadingForm(totpUiModel: TotpUiModel) {
-        val totpSubformView = TotpSubformView(requireContext()).apply {
+        TotpSubformView(requireContext()).apply {
             tag = TAG_TOTP_SUBFORM
             secretInput.apply {
                 disableSavingInstanceState()
@@ -218,17 +239,19 @@ class ResourceFormFragment :
                 disableSavingInstanceState()
                 setTextChangeListener { presenter.totpUrlChanged(it) }
             }
-        }
-        totpSubformView.moreSettingsClickListener = {
-            setFragmentResultListener(TotpAdvancedSettingsFormFragment.REQUEST_TOTP_ADVANCED, totpAdvancedResult)
-            findNavController().navigate(
-                ResourceFormFragmentDirections.actionResourceFormFragmentToTotpAdvancedSettingsFormFragment(
-                    navArgs.mode,
-                    totpUiModel
+            scanTotpClickListener = { navigateToScanTotp(ScanOtpMode.SCAN_FOR_RESULT) }
+            moreSettingsClickListener = {
+                setFragmentResultListener(TotpAdvancedSettingsFormFragment.REQUEST_TOTP_ADVANCED, totpAdvancedResult)
+                findNavController().navigate(
+                    ResourceFormFragmentDirections.actionResourceFormFragmentToTotpAdvancedSettingsFormFragment(
+                        navArgs.mode,
+                        totpUiModel
+                    )
                 )
-            )
+            }
+        }.let {
+            binding.leadingTypeContainer.addView(it)
         }
-        binding.leadingTypeContainer.addView(totpSubformView)
     }
 
     override fun showTotpSecret(secret: String) {

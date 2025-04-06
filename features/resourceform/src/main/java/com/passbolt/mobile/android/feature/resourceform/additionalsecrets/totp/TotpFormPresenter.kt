@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp
 import com.passbolt.mobile.android.ui.Mode
 import com.passbolt.mobile.android.ui.Mode.CREATE
 import com.passbolt.mobile.android.ui.Mode.UPDATE
+import com.passbolt.mobile.android.ui.OtpParseResult
 import com.passbolt.mobile.android.ui.TotpUiModel
 
 /**
@@ -69,6 +70,23 @@ class TotpFormPresenter : TotpFormContract.Presenter {
                 length = totpModel.length,
                 algorithm = totpModel.algorithm
             )
+        }
+    }
+
+    override fun totpScanned(isManualCreationChosen: Boolean, scannedTotp: OtpParseResult.OtpQr.TotpQr?) {
+        // just stay on totp screen and allow manual input
+        if (isManualCreationChosen) return
+
+        scannedTotp?.let {
+            totpUiModel = TotpUiModel(
+                issuer = it.issuer.orEmpty(),
+                secret = it.secret,
+                algorithm = it.algorithm.name,
+                length = it.digits.toString(),
+                expiry = it.period.toString()
+            )
+            view?.showSecret(it.secret)
+            view?.showUrl(it.issuer.orEmpty())
         }
     }
 

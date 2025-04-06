@@ -103,6 +103,34 @@ class TotpFormPresenterTest : KoinTest {
         }
     }
 
+    @Test
+    fun `scan totp should apply changes and update ui`() {
+        val scannedTotp = OtpParseResult.OtpQr.TotpQr(
+            label = "label",
+            secret = "secret",
+            issuer = "issuer",
+            algorithm = OtpParseResult.OtpQr.Algorithm.SHA1,
+            digits = 6,
+            period = 30
+        )
+
+        presenter.attach(view)
+        presenter.argsRetrieved(Mode.CREATE, totp)
+        presenter.totpScanned(isManualCreationChosen = false, scannedTotp)
+        presenter.applyClick()
+
+        verify(view).showSecret(scannedTotp.secret)
+        verify(view).showUrl(scannedTotp.issuer.orEmpty())
+        argumentCaptor<TotpUiModel> {
+            verify(view).goBackWithResult(capture())
+            assertThat(firstValue.secret).isEqualTo(scannedTotp.secret)
+            assertThat(firstValue.issuer).isEqualTo(scannedTotp.issuer)
+            assertThat(firstValue.algorithm).isEqualTo(scannedTotp.algorithm.name)
+            assertThat(firstValue.length).isEqualTo(scannedTotp.digits.toString())
+            assertThat(firstValue.expiry).isEqualTo(scannedTotp.period.toString())
+        }
+    }
+
     private companion object {
         private const val MOCK_SECRET = "mock secret"
         private const val MOCK_ISSUER = "mock issuer"

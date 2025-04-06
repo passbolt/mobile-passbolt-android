@@ -24,6 +24,7 @@ dependencies {
     implementation project(':resourcetypes')
     implementation project(':resources')
     implementation project(':serializers')
+    implementation project(':scanotp')
 
     implementation libs.navigation.fragment
     implementation libs.navigation.ui

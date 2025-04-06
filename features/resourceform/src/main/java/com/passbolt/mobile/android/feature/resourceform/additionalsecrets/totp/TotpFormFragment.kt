@@ -11,8 +11,12 @@ import androidx.navigation.fragment.navArgs
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
 import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
+import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpFragment
+import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpMode
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.advanced.TotpAdvancedSettingsFormFragment
 import com.passbolt.mobile.android.feature.resourceform.databinding.FragmentTotpFormBinding
+import com.passbolt.mobile.android.feature.resourceform.main.ResourceFormFragmentDirections
+import com.passbolt.mobile.android.ui.OtpParseResult
 import com.passbolt.mobile.android.ui.TotpUiModel
 import org.koin.android.ext.android.inject
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
@@ -59,6 +63,17 @@ class TotpFormFragment :
         }
     }
 
+    private val totpScanQrReturned = { _: String, result: Bundle ->
+        presenter.totpScanned(
+            result.getBoolean(ScanOtpFragment.EXTRA_MANUAL_CREATION_CHOSEN),
+            BundleCompat.getParcelable(
+                result,
+                ScanOtpFragment.EXTRA_SCANNED_OTP,
+                OtpParseResult.OtpQr.TotpQr::class.java
+            )
+        )
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initDefaultToolbar(binding.toolbar)
@@ -71,6 +86,9 @@ class TotpFormFragment :
         with(binding) {
             totpSubformView.moreSettingsClickListener = {
                 presenter.moreSettingsClick()
+            }
+            totpSubformView.scanTotpClickListener = {
+                navigateToScanTotp(ScanOtpMode.SCAN_FOR_RESULT)
             }
             totpSubformView.secretInput.setTextChangeListener {
                 presenter.totpSecretChanged(it)
@@ -88,6 +106,13 @@ class TotpFormFragment :
         setFragmentResultListener(TotpAdvancedSettingsFormFragment.REQUEST_TOTP_ADVANCED, totpAdvancedResult)
         findNavController().navigate(
             TotpFormFragmentDirections.actionTotpFormFragmentToTotpAdvancedSettingsFormFragment(navArgs.mode, uiModel)
+        )
+    }
+
+    override fun navigateToScanTotp(scanMode: ScanOtpMode) {
+        setFragmentResultListener(ScanOtpFragment.REQUEST_SCAN_OTP_FOR_RESULT, totpScanQrReturned)
+        findNavController().navigate(
+            ResourceFormFragmentDirections.actionResourceFormFragmentToScanOtp(scanMode)
         )
     }
 
