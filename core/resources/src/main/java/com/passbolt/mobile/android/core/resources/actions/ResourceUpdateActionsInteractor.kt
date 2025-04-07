@@ -251,7 +251,7 @@ class ResourceUpdateActionsInteractor(
                 }
             },
             updateSecret = { decryptedSecret ->
-                val passwordChanged = decryptedSecret.secret != password
+                val passwordChanged = decryptedSecret.password != password
                 SecretInput(
                     secretJsonModel = decryptedSecret.apply {
                         this.password = password
