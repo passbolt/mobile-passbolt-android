@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.feature.resourceform.additionalsecrets.securenote
 
-import com.passbolt.mobile.android.ui.Mode
+import com.passbolt.mobile.android.ui.LeadingContentType
+import com.passbolt.mobile.android.ui.ResourceFormMode
 import org.junit.Rule
 import org.junit.Test
 import org.koin.core.logger.Level
@@ -50,7 +51,13 @@ class SecureNoteFormPresenterTest : KoinTest {
         val note = "mock note"
 
         presenter.attach(view)
-        presenter.argsRetrieved(Mode.CREATE, note)
+        presenter.argsRetrieved(
+            ResourceFormMode.Create(
+                leadingContentType = LeadingContentType.PASSWORD,
+                parentFolderId = null
+            ),
+            note
+        )
 
         verify(view).showCreateTitle()
         verify(view).showSecureNote(note)
@@ -63,7 +70,13 @@ class SecureNoteFormPresenterTest : KoinTest {
         val changedNote = "changed mock note"
 
         presenter.attach(view)
-        presenter.argsRetrieved(Mode.CREATE, note)
+        presenter.argsRetrieved(
+            ResourceFormMode.Create(
+                leadingContentType = LeadingContentType.PASSWORD,
+                parentFolderId = null
+            ),
+            note
+        )
         presenter.secureNoteTextChanged(changedNote)
         presenter.applyClick()
 

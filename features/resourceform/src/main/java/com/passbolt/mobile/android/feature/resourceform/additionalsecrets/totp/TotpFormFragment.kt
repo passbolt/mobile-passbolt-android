@@ -120,6 +120,10 @@ class TotpFormFragment :
         binding.toolbar.toolbarTitle = getString(LocalizationR.string.resource_form_create_totp)
     }
 
+    override fun showEditTitle(resourceName: String) {
+        binding.toolbar.toolbarTitle = getString(LocalizationR.string.resource_form_edit_resource, resourceName)
+    }
+
     override fun showSecret(secret: String) {
         binding.totpSubformView.secretInput.text = secret
     }

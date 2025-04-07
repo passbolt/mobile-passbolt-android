@@ -5,12 +5,12 @@ import android.view.View
 import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResult
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
+import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
 import com.passbolt.mobile.android.feature.resourceform.databinding.FragmentDescriptionFormBinding
 import org.koin.android.ext.android.inject
-import androidx.navigation.fragment.navArgs
-import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 /**
@@ -64,6 +64,10 @@ class DescriptionFormFragment :
 
     override fun showCreateTitle() {
         binding.toolbar.toolbarTitle = getString(LocalizationR.string.resource_form_create_metadata_description)
+    }
+
+    override fun showEditTitle(resourceName: String) {
+        binding.toolbar.toolbarTitle = getString(LocalizationR.string.resource_form_edit_resource, resourceName)
     }
 
     override fun showDescription(metadataDescription: String) {

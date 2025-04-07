@@ -1,18 +1,22 @@
 package com.passbolt.mobile.android.feature.resourceform.main.resourcemodelhandler.v4.leadingtotp
 
 import com.google.common.truth.Truth.assertThat
+import com.passbolt.mobile.android.core.fulldatarefresh.DataRefreshStatus
+import com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor.Output.Success
 import com.passbolt.mobile.android.feature.resourceform.main.ResourceFormContract
 import com.passbolt.mobile.android.feature.resourceform.main.ResourceModelHandler
+import com.passbolt.mobile.android.feature.resourceform.main.mockFullDataRefreshExecutor
 import com.passbolt.mobile.android.feature.resourceform.main.mockGetDefaultCreateContentTypeUseCase
 import com.passbolt.mobile.android.feature.resourceform.main.testResourceFormModule
 import com.passbolt.mobile.android.feature.resourceform.usecase.GetDefaultCreateContentTypeUseCase
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType
 import com.passbolt.mobile.android.ui.LeadingContentType
 import com.passbolt.mobile.android.ui.MetadataTypeModel
-import com.passbolt.mobile.android.ui.Mode
 import com.passbolt.mobile.android.ui.OtpParseResult
 import com.passbolt.mobile.android.ui.PasswordUiModel
+import com.passbolt.mobile.android.ui.ResourceFormMode
 import com.passbolt.mobile.android.ui.TotpUiModel
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
@@ -22,6 +26,7 @@ import org.koin.test.KoinTest
 import org.koin.test.KoinTestRule
 import org.koin.test.inject
 import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.stub
 import org.skyscreamer.jsonassert.JSONAssert
@@ -63,6 +68,9 @@ class V4TotpResourceFormPresenterTest : KoinTest {
 
     @Before
     fun setUp() = runTest {
+        mockFullDataRefreshExecutor.stub {
+            onBlocking { dataRefreshStatusFlow }.doReturn(flowOf(DataRefreshStatus.Finished(Success)))
+        }
         mockGetDefaultCreateContentTypeUseCase.stub {
             onBlocking { execute(any()) }.thenReturn(
                 GetDefaultCreateContentTypeUseCase.Output(
@@ -72,7 +80,12 @@ class V4TotpResourceFormPresenterTest : KoinTest {
             )
         }
         presenter.attach(view)
-        presenter.argsRetrieved(Mode.CREATE, LeadingContentType.TOTP, parentFolderId = null)
+        presenter.argsRetrieved(
+            ResourceFormMode.Create(
+                leadingContentType = LeadingContentType.TOTP,
+                parentFolderId = null
+            )
+        )
     }
 
     @Test

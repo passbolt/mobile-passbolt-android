@@ -5,14 +5,14 @@ import android.view.View
 import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResult
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
 import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
-import com.passbolt.mobile.android.feature.resourceform.databinding.FragmentTotpAdvancedSettingsFormBinding
-import org.koin.android.ext.android.inject
-import androidx.navigation.fragment.navArgs
 import com.passbolt.mobile.android.core.ui.textinputfield.StatefulInput
+import com.passbolt.mobile.android.feature.resourceform.databinding.FragmentTotpAdvancedSettingsFormBinding
 import com.passbolt.mobile.android.ui.TotpUiModel
+import org.koin.android.ext.android.inject
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 /**
@@ -55,6 +55,10 @@ class TotpAdvancedSettingsFormFragment :
 
     override fun showCreateTitle() {
         binding.toolbar.toolbarTitle = getString(LocalizationR.string.resource_form_create_totp)
+    }
+
+    override fun showEditTitle(resourceName: String) {
+        binding.toolbar.toolbarTitle = getString(LocalizationR.string.resource_form_edit_resource, resourceName)
     }
 
     private fun setListeners() {

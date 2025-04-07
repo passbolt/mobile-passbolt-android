@@ -64,6 +64,10 @@ class PasswordFormFragment :
         binding.toolbar.toolbarTitle = getString(LocalizationR.string.resource_form_create_password)
     }
 
+    override fun showEditTitle(resourceName: String) {
+        binding.toolbar.toolbarTitle = getString(LocalizationR.string.resource_form_edit_resource, resourceName)
+    }
+
     private fun setListeners() {
         with(binding) {
             passwordSubformView.mainUriInput.apply {

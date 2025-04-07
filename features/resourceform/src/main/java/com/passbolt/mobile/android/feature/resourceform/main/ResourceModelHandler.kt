@@ -1,15 +1,26 @@
 package com.passbolt.mobile.android.feature.resourceform.main
 
+import com.passbolt.mobile.android.core.mvp.authentication.UnauthenticatedReason
+import com.passbolt.mobile.android.core.resources.actions.SecretPropertiesActionsInteractor
+import com.passbolt.mobile.android.core.resources.actions.SecretPropertyActionResult
+import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUseCase
 import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.ResourceTypesUpdatesAdjacencyGraph2
 import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction2
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.SecretJsonModel
 import com.passbolt.mobile.android.feature.resourceform.usecase.GetDefaultCreateContentTypeUseCase
+import com.passbolt.mobile.android.feature.resourceform.usecase.GetEditContentTypeUseCase
 import com.passbolt.mobile.android.jsonmodel.delegates.TotpSecret
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType
 import com.passbolt.mobile.android.ui.LeadingContentType
 import com.passbolt.mobile.android.ui.MetadataJsonModel
 import com.passbolt.mobile.android.ui.MetadataTypeModel
 import com.passbolt.mobile.android.ui.OtpParseResult
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.single
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
+import org.koin.core.parameter.parametersOf
 import timber.log.Timber
 
 /**
@@ -36,15 +47,17 @@ import timber.log.Timber
  */
 class ResourceModelHandler(
     private val getDefaultCreateContentTypeUseCase: GetDefaultCreateContentTypeUseCase,
-    private val resourceActionsGraph: ResourceTypesUpdatesAdjacencyGraph2
-) {
+    private val getEditContentTypeUseCase: GetEditContentTypeUseCase,
+    private val resourceActionsGraph: ResourceTypesUpdatesAdjacencyGraph2,
+    private val getLocalResourceUseCase: GetLocalResourceUseCase
+) : KoinComponent {
 
     lateinit var resourceMetadata: MetadataJsonModel
     lateinit var resourceSecret: SecretJsonModel
     lateinit var metadataType: MetadataTypeModel
     lateinit var contentType: ContentType
 
-    suspend fun initializeModel(leadingContentType: LeadingContentType) {
+    suspend fun initializeModelForCreation(leadingContentType: LeadingContentType) {
         val initialContentTypeToCreate = getDefaultCreateContentTypeUseCase.execute(
             GetDefaultCreateContentTypeUseCase.Input(leadingContentType)
         )
@@ -57,7 +70,41 @@ class ResourceModelHandler(
             LeadingContentType.PASSWORD -> SecretJsonModel.emptyPassword()
         }
 
-        Timber.d("Initialized model with content type: $contentType and metadata type: $metadataType")
+        Timber.d("Initialized creation model with content type: $contentType and metadata type: $metadataType")
+    }
+
+    @Throws(Exception::class)
+    suspend fun initializeModelForEdition(
+        existingResourceId: String,
+        needSessionRefreshFlow: MutableStateFlow<UnauthenticatedReason?>,
+        sessionRefreshedFlow: StateFlow<Unit?>
+    ) {
+        try {
+            // init resource
+            val resource = getLocalResourceUseCase.execute(
+                GetLocalResourceUseCase.Input(existingResourceId)
+            ).resource
+            resourceMetadata = resource.metadataJsonModel
+
+            // init model fields
+            val initialEditContentType = getEditContentTypeUseCase.execute(
+                GetEditContentTypeUseCase.Input(resource.resourceTypeId)
+            )
+            contentType = initialEditContentType.contentType
+            metadataType = initialEditContentType.metadataType
+
+            // init secret
+            val secretPropertiesActionsInteractor: SecretPropertiesActionsInteractor = get {
+                parametersOf(resource, needSessionRefreshFlow, sessionRefreshedFlow)
+            }
+            val secret = secretPropertiesActionsInteractor.provideDecryptedSecret().single()
+            resourceSecret = (secret as SecretPropertyActionResult.Success<SecretJsonModel>).result
+
+            Timber.d("Initialized edition model with content type: $contentType and metadata type: $metadataType")
+        } catch (e: Exception) {
+            Timber.e(e, "Failed to initialize edition model")
+            throw e
+        }
     }
 
     fun applyModelChange(action: UpdateAction2, change: (MetadataJsonModel, SecretJsonModel) -> Unit) {

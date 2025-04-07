@@ -1,8 +1,6 @@
 package com.passbolt.mobile.android.feature.resourceform.metadata.description
 
-import com.passbolt.mobile.android.ui.Mode
-import com.passbolt.mobile.android.ui.Mode.CREATE
-import com.passbolt.mobile.android.ui.Mode.UPDATE
+import com.passbolt.mobile.android.ui.ResourceFormMode
 
 /**
  * Passbolt - Open source password manager for teams
@@ -37,10 +35,10 @@ class DescriptionFormPresenter : DescriptionFormContract.Presenter {
 
     private var metadataDescription: String = ""
 
-    override fun argsRetrieved(mode: Mode, metadataDescription: String) {
+    override fun argsRetrieved(mode: ResourceFormMode, metadataDescription: String) {
         when (mode) {
-            CREATE -> view?.showCreateTitle()
-            UPDATE -> throw NotImplementedError() // TODO
+            is ResourceFormMode.Create -> view?.showCreateTitle()
+            is ResourceFormMode.Edit -> view?.showEditTitle(mode.resourceName)
         }
 
         view?.showDescription(metadataDescription)

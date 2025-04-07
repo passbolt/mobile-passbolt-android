@@ -16,10 +16,7 @@
             app:uri="passbolt://resourceForm?mode={mode}&amp;leadingType={leadingContentType}" />
         <argument
             android:name="mode"
-            app:argType="com.passbolt.mobile.android.ui.Mode" />
-        <argument
-            android:name="leadingContentType"
-            app:argType="com.passbolt.mobile.android.ui.LeadingContentType" />
+            app:argType="com.passbolt.mobile.android.ui.ResourceFormMode" />
         <argument
             android:name="parentFolderId"
             android:defaultValue="@null"
@@ -65,7 +62,7 @@
         tools:layout="@layout/fragment_description_form">
         <argument
             android:name="mode"
-            app:argType="com.passbolt.mobile.android.ui.Mode" />
+            app:argType="com.passbolt.mobile.android.ui.ResourceFormMode" />
         <argument
             android:name="metadataDescription"
             app:argType="string" />
@@ -78,7 +75,7 @@
         tools:layout="@layout/fragment_totp_form">
         <argument
             android:name="mode"
-            app:argType="com.passbolt.mobile.android.ui.Mode" />
+            app:argType="com.passbolt.mobile.android.ui.ResourceFormMode" />
         <argument
             android:name="totpUiModel"
             app:argType="com.passbolt.mobile.android.ui.TotpUiModel" />
@@ -98,7 +95,7 @@
         tools:layout="@layout/fragment_secure_note_form">
         <argument
             android:name="mode"
-            app:argType="com.passbolt.mobile.android.ui.Mode" />
+            app:argType="com.passbolt.mobile.android.ui.ResourceFormMode" />
         <argument
             android:name="secureNote"
             app:argType="string" />
@@ -111,7 +108,7 @@
         tools:layout="@layout/fragment_totp_advanced_settings_form">
         <argument
             android:name="mode"
-            app:argType="com.passbolt.mobile.android.ui.Mode" />
+            app:argType="com.passbolt.mobile.android.ui.ResourceFormMode" />
         <argument
             android:name="totpUiModel"
             app:argType="com.passbolt.mobile.android.ui.TotpUiModel" />
@@ -124,7 +121,7 @@
         tools:layout="@layout/fragment_password_form">
         <argument
             android:name="mode"
-            app:argType="com.passbolt.mobile.android.ui.Mode" />
+            app:argType="com.passbolt.mobile.android.ui.ResourceFormMode" />
         <argument
             android:name="passwordModel"
             app:argType="com.passbolt.mobile.android.ui.PasswordUiModel" />

@@ -1,19 +1,23 @@
 package com.passbolt.mobile.android.feature.resourceform.main
 
 import com.google.common.truth.Truth.assertThat
+import com.passbolt.mobile.android.core.fulldatarefresh.DataRefreshStatus
+import com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor.Output.Success
 import com.passbolt.mobile.android.core.passwordgenerator.codepoints.toCodepoints
 import com.passbolt.mobile.android.feature.resourceform.usecase.GetDefaultCreateContentTypeUseCase
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType
 import com.passbolt.mobile.android.ui.LeadingContentType
 import com.passbolt.mobile.android.ui.MetadataTypeModel
-import com.passbolt.mobile.android.ui.Mode
 import com.passbolt.mobile.android.ui.OtpParseResult
 import com.passbolt.mobile.android.ui.PasswordStrength
+import com.passbolt.mobile.android.ui.ResourceFormMode
 import com.passbolt.mobile.android.ui.ResourceFormUiModel
 import com.passbolt.mobile.android.ui.ResourceFormUiModel.Secret.PASSWORD
 import com.passbolt.mobile.android.ui.ResourceFormUiModel.Secret.SECURE_NOTE
 import com.passbolt.mobile.android.ui.ResourceFormUiModel.Secret.TOTP
 import com.passbolt.mobile.android.ui.TotpUiModel
+import kotlinx.coroutines.flow.flowOf
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.koin.core.logger.Level
@@ -22,6 +26,7 @@ import org.koin.test.KoinTestRule
 import org.koin.test.inject
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
@@ -62,6 +67,13 @@ class ResourceFormPresenterTest : KoinTest {
         modules(testResourceFormModule)
     }
 
+    @Before
+    fun setUp() {
+        mockFullDataRefreshExecutor.stub {
+            onBlocking { dataRefreshStatusFlow }.doReturn(flowOf(DataRefreshStatus.Finished(Success)))
+        }
+    }
+
     @Test
     fun `view should show correct ui for create totp`() {
         mockGetDefaultCreateContentTypeUseCase.stub {
@@ -74,8 +86,14 @@ class ResourceFormPresenterTest : KoinTest {
         }
 
         presenter.attach(view)
-        presenter.argsRetrieved(Mode.CREATE, LeadingContentType.TOTP, parentFolderId = null)
+        presenter.argsRetrieved(
+            ResourceFormMode.Create(
+                leadingContentType = LeadingContentType.TOTP,
+                parentFolderId = null
+            )
+        )
 
+        verify(view).showInitializationProgress()
         verify(view).showCreateTotpTitle()
         verify(view).showName("")
         verify(view).showCreateButton()
@@ -89,6 +107,7 @@ class ResourceFormPresenterTest : KoinTest {
             assertThat(firstValue.expiry).isEqualTo(OtpParseResult.OtpQr.TotpQr.DEFAULT_PERIOD_SECONDS.toString())
             assertThat(firstValue.length).isEqualTo(OtpParseResult.OtpQr.TotpQr.DEFAULT_DIGITS.toString())
         }
+        verify(view).hideInitializationProgress()
         verifyNoMoreInteractions(view)
     }
 
@@ -107,8 +126,14 @@ class ResourceFormPresenterTest : KoinTest {
         }
 
         presenter.attach(view)
-        presenter.argsRetrieved(Mode.CREATE, LeadingContentType.PASSWORD, parentFolderId = null)
+        presenter.argsRetrieved(
+            ResourceFormMode.Create(
+                leadingContentType = LeadingContentType.PASSWORD,
+                parentFolderId = null
+            )
+        )
 
+        verify(view).showInitializationProgress()
         verify(view).showCreatePasswordTitle()
         verify(view).showName("")
         verify(view).showCreateButton()
@@ -116,6 +141,7 @@ class ResourceFormPresenterTest : KoinTest {
         verify(view).showPasswordUsername("")
         verify(view).addPasswordLeadingForm("", PasswordStrength.Empty, 0.0)
         verify(view).showPassword("".toCodepoints(), 0.0, PasswordStrength.Empty)
+        verify(view).hideInitializationProgress()
         verifyNoMoreInteractions(view)
     }
 
@@ -131,7 +157,12 @@ class ResourceFormPresenterTest : KoinTest {
         }
 
         presenter.attach(view)
-        presenter.argsRetrieved(Mode.CREATE, LeadingContentType.PASSWORD, parentFolderId = null)
+        presenter.argsRetrieved(
+            ResourceFormMode.Create(
+                leadingContentType = LeadingContentType.PASSWORD,
+                parentFolderId = null
+            )
+        )
         presenter.advancedSettingsClick()
 
         argumentCaptor<List<ResourceFormUiModel.Secret>> {
@@ -157,7 +188,12 @@ class ResourceFormPresenterTest : KoinTest {
         }
 
         presenter.attach(view)
-        presenter.argsRetrieved(Mode.CREATE, LeadingContentType.TOTP, parentFolderId = null)
+        presenter.argsRetrieved(
+            ResourceFormMode.Create(
+                leadingContentType = LeadingContentType.TOTP,
+                parentFolderId = null
+            )
+        )
         presenter.advancedSettingsClick()
 
         argumentCaptor<List<ResourceFormUiModel.Secret>> {
@@ -174,11 +210,20 @@ class ResourceFormPresenterTest : KoinTest {
     @Test
     fun `advanced settings should always once expanded`() {
         presenter.attach(view)
-        presenter.argsRetrieved(Mode.CREATE, LeadingContentType.TOTP, parentFolderId = null)
+        presenter.argsRetrieved(
+            ResourceFormMode.Create(
+                leadingContentType = LeadingContentType.PASSWORD,
+                parentFolderId = null
+            )
+        )
         presenter.advancedSettingsClick()
 
-        presenter.argsRetrieved(Mode.CREATE, LeadingContentType.TOTP, parentFolderId = null)
-
+        presenter.argsRetrieved(
+            ResourceFormMode.Create(
+                leadingContentType = LeadingContentType.PASSWORD,
+                parentFolderId = null
+            )
+        )
 
         verify(view, times(2)).hideAdvancedSettings()
         verify(view, times(2)).setupAdditionalSecrets(any())
@@ -200,7 +245,12 @@ class ResourceFormPresenterTest : KoinTest {
         }
 
         presenter.attach(view)
-        presenter.argsRetrieved(Mode.CREATE, LeadingContentType.PASSWORD, parentFolderId = null)
+        presenter.argsRetrieved(
+            ResourceFormMode.Create(
+                leadingContentType = LeadingContentType.PASSWORD,
+                parentFolderId = null
+            )
+        )
         presenter.passwordTextChanged("t")
         presenter.passwordTextChanged("te")
         presenter.passwordTextChanged("tes")

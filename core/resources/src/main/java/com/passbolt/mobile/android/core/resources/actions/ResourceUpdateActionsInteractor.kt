@@ -62,6 +62,34 @@ class ResourceUpdateActionsInteractor(
     private val idToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider
 ) : KoinComponent {
 
+    suspend fun updateGenericResource(
+        contentType: ContentType,
+        resourceModel: ResourceModel,
+        metadataJsonModel: MetadataJsonModel,
+        secretJsonModel: SecretJsonModel
+    ): Flow<ResourceUpdateActionResult> {
+        return updateResource2(
+            updateResource = {
+                UpdateResourceModel(
+                    contentType = contentType,
+                    resourceId = resource.resourceId,
+                    folderId = resourceModel.folderId,
+                    expiry = resourceModel.expiry,
+                    metadataKeyId = resourceModel.metadataKeyId,
+                    metadataKeyType = resourceModel.metadataKeyType,
+                    metadataJsonModel = metadataJsonModel
+                )
+            },
+            updateSecret = { decryptedSecret ->
+                val passwordChanged = decryptedSecret.secret != secretJsonModel.getPassword(contentType)
+                SecretInput(
+                    secretJsonModel = secretJsonModel,
+                    passwordChanged = passwordChanged
+                )
+            }
+        )
+    }
+
     suspend fun deleteTotpFromResource(): Flow<ResourceUpdateActionResult> =
         updateResource(
             updateAction = UpdateAction.REMOVE_TOTP,
@@ -370,6 +398,7 @@ class ResourceUpdateActionsInteractor(
             }
         )
 
+    @Deprecated("Use updateResource2 instead")
     private suspend fun updateResource(
         updateAction: UpdateAction,
         updateResource: (ContentType, MetadataTypeModel) -> UpdateResourceModel,
@@ -390,6 +419,34 @@ class ResourceUpdateActionsInteractor(
                                     newResourceType,
                                     if (newResourceType.isV5()) V5 else V4
                                 ),
+                                secretInput = updateSecret(decryptedSecret.result)
+                            )
+                        }
+                    is SecretPropertyActionResult.FetchFailure ->
+                        ResourceUpdateActionResult.FetchFailure
+                    is SecretPropertyActionResult.DecryptionFailure ->
+                        ResourceUpdateActionResult.CryptoFailure()
+                    else -> ResourceUpdateActionResult.Failure()
+                }
+            )
+        } catch (e: Exception) {
+            Timber.e(e, "Error updating resource")
+            flowOf(ResourceUpdateActionResult.Failure())
+        }
+    }
+
+    private suspend fun updateResource2(
+        updateResource: () -> UpdateResourceModel,
+        updateSecret: (SecretJsonModel) -> SecretInput
+    ): Flow<ResourceUpdateActionResult> {
+        return try {
+            val decryptedSecret = secretPropertiesActionsInteractor.provideDecryptedSecret().single()
+            flowOf(
+                when (decryptedSecret) {
+                    is SecretPropertyActionResult.Success ->
+                        runUpdateOperation {
+                            updateResourceInteractor.execute(
+                                resourceInput = updateResource(),
                                 secretInput = updateSecret(decryptedSecret.result)
                             )
                         }

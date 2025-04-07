@@ -2,9 +2,10 @@ package com.passbolt.mobile.android.feature.resourceform.additionalsecrets.passw
 
 import com.google.common.truth.Truth.assertThat
 import com.passbolt.mobile.android.core.passwordgenerator.codepoints.toCodepoints
-import com.passbolt.mobile.android.ui.Mode
+import com.passbolt.mobile.android.ui.LeadingContentType
 import com.passbolt.mobile.android.ui.PasswordStrength
 import com.passbolt.mobile.android.ui.PasswordUiModel
+import com.passbolt.mobile.android.ui.ResourceFormMode
 import org.junit.Rule
 import org.junit.Test
 import org.koin.core.logger.Level
@@ -60,7 +61,13 @@ class PasswordFormPresenterTest : KoinTest {
         }
 
         presenter.attach(view)
-        presenter.argsRetrieved(Mode.CREATE, password)
+        presenter.argsRetrieved(
+            ResourceFormMode.Create(
+                leadingContentType = LeadingContentType.PASSWORD,
+                parentFolderId = null
+            ),
+            password
+        )
 
         verify(view).showCreateTitle()
         verify(view).showPassword(password.password.toCodepoints(), 0.0, PasswordStrength.Empty)
@@ -76,7 +83,13 @@ class PasswordFormPresenterTest : KoinTest {
         }
 
         presenter.attach(view)
-        presenter.argsRetrieved(Mode.CREATE, password)
+        presenter.argsRetrieved(
+            ResourceFormMode.Create(
+                leadingContentType = LeadingContentType.PASSWORD,
+                parentFolderId = null
+            ),
+            password
+        )
         presenter.passwordTextChanged("t")
         presenter.passwordTextChanged("te")
         presenter.passwordTextChanged("tes")
@@ -92,7 +105,13 @@ class PasswordFormPresenterTest : KoinTest {
         val changedMainUsername = "changed main username"
 
         presenter.attach(view)
-        presenter.argsRetrieved(Mode.CREATE, password)
+        presenter.argsRetrieved(
+            ResourceFormMode.Create(
+                leadingContentType = LeadingContentType.PASSWORD,
+                parentFolderId = null
+            ),
+            password
+        )
         presenter.passwordTextChanged(changedPassword)
         presenter.passwordUsernameTextChanged(changedMainUsername)
         presenter.passwordMainUriTextChanged(changedMainUri)

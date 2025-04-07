@@ -1,5 +1,8 @@
 package com.passbolt.mobile.android.ui
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -22,7 +25,11 @@ package com.passbolt.mobile.android.ui
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-enum class Mode {
-    CREATE,
-    UPDATE
+
+@Parcelize
+sealed class ResourceFormMode : Parcelable {
+
+    data class Edit(val resourceId: String, val resourceName: String) : ResourceFormMode()
+
+    data class Create(val leadingContentType: LeadingContentType, val parentFolderId: String?) : ResourceFormMode()
 }

@@ -108,20 +108,6 @@ object NavDeepLinkProvider {
                     .build()
             ).build()
 
-    fun resourceFormDeepLinkRequest(modeName: String, leadingTypeName: String, parentFolderId: String? = null) =
-        NavDeepLinkRequest.Builder
-            .fromUri(
-                Uri.Builder()
-                    .scheme(NAV_DEEP_LINK_SCHEME)
-                    .authority(AUTHORITY_RESOURCE_FORM)
-                    .apply {
-                        appendQueryParameter(QUERY_RESOURCE_FORM_MODE, modeName)
-                        appendQueryParameter(QUERY_RESOURCE_FORM_LEADING_TYPE, leadingTypeName)
-                        appendQueryParameter(QUERY_RESOURCE_FORM_PARENT_FOLDER_ID, parentFolderId)
-                    }
-                    .build()
-            ).build()
-
     private const val NAV_DEEP_LINK_SCHEME = "passbolt"
 
     private const val AUTHORITY_PERMISSIONS = "permissions"
@@ -130,13 +116,9 @@ object NavDeepLinkProvider {
     private const val AUTHORITY_CREATE_FOLDER = "createFolder"
     private const val AUTHORITY_TAGS_DETAILS = "tagsDetails"
     private const val AUTHORITY_RESOURCE_PICKER = "resourcePicker"
-    private const val AUTHORITY_RESOURCE_FORM = "resourceForm"
 
     private const val QUERY_PERMISSIONS_MODE = "mode"
     private const val QUERY_NAVIGATION_ORIGIN = "navigationOrigin"
     private const val QUERY_PARENT_FOLDER_ID = "parentFolderId"
     private const val QUERY_SUGGESTION_URI = "suggestionUri"
-    private const val QUERY_RESOURCE_FORM_MODE = "mode"
-    private const val QUERY_RESOURCE_FORM_LEADING_TYPE = "leadingType"
-    private const val QUERY_RESOURCE_FORM_PARENT_FOLDER_ID = "parentFolderId"
 }
