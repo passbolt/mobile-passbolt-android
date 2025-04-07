@@ -1,17 +1,13 @@
 package com.passbolt.mobile.android.feature.resourceform.metadata.description
 
-import com.google.common.truth.Truth.assertThat
-import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.TotpFormContract
-import com.passbolt.mobile.android.ui.Mode
-import com.passbolt.mobile.android.ui.OtpParseResult
-import com.passbolt.mobile.android.ui.TotpUiModel
+import com.passbolt.mobile.android.ui.LeadingContentType
+import com.passbolt.mobile.android.ui.ResourceFormMode
 import org.junit.Rule
 import org.junit.Test
 import org.koin.core.logger.Level
 import org.koin.test.KoinTest
 import org.koin.test.KoinTestRule
 import org.koin.test.inject
-import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoMoreInteractions
@@ -55,7 +51,13 @@ class DescriptionFormPresenterTest : KoinTest {
         val description = "mock description"
 
         presenter.attach(view)
-        presenter.argsRetrieved(Mode.CREATE, description)
+        presenter.argsRetrieved(
+            ResourceFormMode.Create(
+                leadingContentType = LeadingContentType.PASSWORD,
+                parentFolderId = null
+            ),
+            description
+        )
 
         verify(view).showCreateTitle()
         verify(view).showDescription(description)
@@ -68,7 +70,13 @@ class DescriptionFormPresenterTest : KoinTest {
         val changedDescription = "changed description"
 
         presenter.attach(view)
-        presenter.argsRetrieved(Mode.CREATE, description)
+        presenter.argsRetrieved(
+            ResourceFormMode.Create(
+                leadingContentType = LeadingContentType.PASSWORD,
+                parentFolderId = null
+            ),
+            description
+        )
         presenter.onDescriptionChanged(changedDescription)
         presenter.applyClick()
 

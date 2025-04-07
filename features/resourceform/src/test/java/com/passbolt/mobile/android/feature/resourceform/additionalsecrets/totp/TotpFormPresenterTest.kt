@@ -2,8 +2,9 @@ package com.passbolt.mobile.android.feature.resourceform.additionalsecrets.secur
 
 import com.google.common.truth.Truth.assertThat
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.TotpFormContract
-import com.passbolt.mobile.android.ui.Mode
+import com.passbolt.mobile.android.ui.LeadingContentType
 import com.passbolt.mobile.android.ui.OtpParseResult
+import com.passbolt.mobile.android.ui.ResourceFormMode
 import com.passbolt.mobile.android.ui.TotpUiModel
 import org.junit.Rule
 import org.junit.Test
@@ -53,7 +54,13 @@ class TotpFormPresenterTest : KoinTest {
     @Test
     fun `view should show correct create title and totp on attach`() {
         presenter.attach(view)
-        presenter.argsRetrieved(Mode.CREATE, totp)
+        presenter.argsRetrieved(
+            ResourceFormMode.Create(
+                leadingContentType = LeadingContentType.TOTP,
+                parentFolderId = null
+            ),
+            totp
+        )
 
         verify(view).showCreateTitle()
         verify(view).showSecret(totp.secret)
@@ -67,7 +74,13 @@ class TotpFormPresenterTest : KoinTest {
         val changedIssuer = "changed issuer"
 
         presenter.attach(view)
-        presenter.argsRetrieved(Mode.CREATE, totp)
+        presenter.argsRetrieved(
+            ResourceFormMode.Create(
+                leadingContentType = LeadingContentType.TOTP,
+                parentFolderId = null
+            ),
+            totp
+        )
         presenter.totpSecretChanged(changedSecret)
         presenter.totpUrlChanged(changedIssuer)
         presenter.applyClick()
@@ -91,7 +104,13 @@ class TotpFormPresenterTest : KoinTest {
         )
 
         presenter.attach(view)
-        presenter.argsRetrieved(Mode.CREATE, totp)
+        presenter.argsRetrieved(
+            ResourceFormMode.Create(
+                leadingContentType = LeadingContentType.TOTP,
+                parentFolderId = null
+            ),
+            totp
+        )
         presenter.totpAdvancedSettingsChanged(changedAdvancedSettings)
         presenter.applyClick()
 
@@ -115,7 +134,13 @@ class TotpFormPresenterTest : KoinTest {
         )
 
         presenter.attach(view)
-        presenter.argsRetrieved(Mode.CREATE, totp)
+        presenter.argsRetrieved(
+            ResourceFormMode.Create(
+                leadingContentType = LeadingContentType.TOTP,
+                parentFolderId = null
+            ),
+            totp
+        )
         presenter.totpScanned(isManualCreationChosen = false, scannedTotp)
         presenter.applyClick()
 

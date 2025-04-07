@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.feature.resourceform.main
 
+import com.passbolt.mobile.android.core.fulldatarefresh.DataRefreshStatus
 import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReactivePresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.passwordgenerator.SecretGenerator
@@ -7,7 +8,10 @@ import com.passbolt.mobile.android.core.passwordgenerator.codepoints.toCodepoint
 import com.passbolt.mobile.android.core.passwordgenerator.entropy.EntropyCalculator
 import com.passbolt.mobile.android.core.policies.usecase.GetPasswordPoliciesUseCase
 import com.passbolt.mobile.android.core.resources.actions.ResourceCreateActionsInteractor
+import com.passbolt.mobile.android.core.resources.actions.ResourceUpdateActionsInteractor
 import com.passbolt.mobile.android.core.resources.actions.performResourceCreateAction
+import com.passbolt.mobile.android.core.resources.actions.performResourceUpdateAction
+import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUseCase
 import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction2.ADD_METADATA_DESCRIPTION
 import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction2.ADD_PASSWORD
 import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction2.ADD_SECURE_NOTE
@@ -29,17 +33,16 @@ import com.passbolt.mobile.android.ui.LeadingContentType.PASSWORD
 import com.passbolt.mobile.android.ui.LeadingContentType.TOTP
 import com.passbolt.mobile.android.ui.MetadataJsonModel
 import com.passbolt.mobile.android.ui.MetadataTypeModel
-import com.passbolt.mobile.android.ui.Mode
-import com.passbolt.mobile.android.ui.Mode.CREATE
-import com.passbolt.mobile.android.ui.Mode.UPDATE
 import com.passbolt.mobile.android.ui.OtpParseResult
 import com.passbolt.mobile.android.ui.PasswordGeneratorTypeModel
 import com.passbolt.mobile.android.ui.PasswordUiModel
+import com.passbolt.mobile.android.ui.ResourceFormMode
 import com.passbolt.mobile.android.ui.ResourceFormUiModel
 import com.passbolt.mobile.android.ui.TotpUiModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.koin.core.component.get
 import org.koin.core.parameter.parametersOf
@@ -79,6 +82,7 @@ class ResourceFormPresenter(
     private val entropyCalculator: EntropyCalculator,
     private val resourceFormMapper: ResourceFormMapper,
     private val resourceModelHandler: ResourceModelHandler,
+    private val getLocalResourceUseCase: GetLocalResourceUseCase,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : DataRefreshViewReactivePresenter<ResourceFormContract.View>(coroutineLaunchContext),
     ResourceFormContract.Presenter {
@@ -87,7 +91,7 @@ class ResourceFormPresenter(
     private val job = SupervisorJob()
     private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
 
-    private lateinit var mode: Mode
+    private lateinit var mode: ResourceFormMode
     private lateinit var uiModel: ResourceFormUiModel
     private var parentFolderId: String? = null
 
@@ -103,14 +107,34 @@ class ResourceFormPresenter(
     private var argsConsumed = false
     private var areAdvancedSettingsExpanded = false
 
-    override fun argsRetrieved(mode: Mode, leadingContentType: LeadingContentType, parentFolderId: String?) {
+    override fun argsRetrieved(mode: ResourceFormMode) {
         this.mode = mode
-        this.parentFolderId = parentFolderId
 
         scope.launch {
+            view?.showInitializationProgress()
+            fullDataRefreshExecutor.dataRefreshStatusFlow.first { it is DataRefreshStatus.Finished }
             if (!argsConsumed) {
-                Timber.d("Initializing model with leading content type: $leadingContentType")
-                resourceModelHandler.initializeModel(leadingContentType)
+                when (mode) {
+                    is ResourceFormMode.Create -> {
+                        Timber.d("Initializing model with leading content type: ${mode.leadingContentType}")
+                        parentFolderId = mode.parentFolderId
+                        resourceModelHandler.initializeModelForCreation(mode.leadingContentType)
+                    }
+                    is ResourceFormMode.Edit -> {
+                        Timber.d("Initializing model for edition")
+                        try {
+                            resourceModelHandler.initializeModelForEdition(
+                                mode.resourceId,
+                                needSessionRefreshFlow,
+                                sessionRefreshedFlow
+                            )
+                        } catch (e: Exception) {
+                            view?.showEditResourceInitializationError()
+                            view?.navigateBack()
+                            return@launch
+                        }
+                    }
+                }
                 argsConsumed = true
             }
 
@@ -119,6 +143,7 @@ class ResourceFormPresenter(
             setupAdvancedSettings()
             setupLeadingContentType(uiModel.leadingContentType)
             setupPrimaryButton(mode)
+            view?.hideInitializationProgress()
         }
     }
 
@@ -142,10 +167,10 @@ class ResourceFormPresenter(
         areAdvancedSettingsExpanded = true
     }
 
-    private fun setupPrimaryButton(mode: Mode) {
+    private fun setupPrimaryButton(mode: ResourceFormMode) {
         when (mode) {
-            CREATE -> view?.showCreateButton()
-            UPDATE -> view?.showSaveButton()
+            is ResourceFormMode.Create -> view?.showCreateButton()
+            is ResourceFormMode.Edit -> view?.showSaveButton()
         }
     }
 
@@ -376,6 +401,29 @@ class ResourceFormPresenter(
     }
 
     override fun updateResourceClick() {
-//        TODO("Not yet implemented")
+        scope.launch {
+            view?.showProgress()
+            val editedResource = getLocalResourceUseCase.execute(
+                GetLocalResourceUseCase.Input((mode as ResourceFormMode.Edit).resourceId)
+            ).resource
+            val resourceUpdateActionsInteractor = get<ResourceUpdateActionsInteractor> {
+                parametersOf(editedResource, needSessionRefreshFlow, sessionRefreshedFlow)
+            }
+            performResourceUpdateAction(
+                action = {
+                    resourceUpdateActionsInteractor.updateGenericResource(
+                        contentType,
+                        editedResource,
+                        resourceMetadata,
+                        resourceSecret
+                    )
+                },
+                doOnFailure = { view?.showGenericError() },
+                doOnCryptoFailure = { view?.showEncryptionError(it) },
+                doOnSchemaValidationFailure = ::handleSchemaValidationFailure,
+                doOnSuccess = { view?.navigateBackWithCreateSuccess() }
+            )
+            view?.hideProgress()
+        }
     }
 }

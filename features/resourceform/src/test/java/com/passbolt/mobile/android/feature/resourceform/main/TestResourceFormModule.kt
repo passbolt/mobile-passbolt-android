@@ -6,12 +6,15 @@ import com.jayway.jsonpath.Option
 import com.jayway.jsonpath.spi.json.GsonJsonProvider
 import com.jayway.jsonpath.spi.mapper.GsonMappingProvider
 import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
+import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.passwordgenerator.SecretGenerator
 import com.passbolt.mobile.android.core.passwordgenerator.entropy.EntropyCalculator
 import com.passbolt.mobile.android.core.policies.usecase.GetPasswordPoliciesUseCase
+import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUseCase
 import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.ResourceTypesUpdatesAdjacencyGraph2
 import com.passbolt.mobile.android.feature.resourceform.usecase.GetDefaultCreateContentTypeUseCase
+import com.passbolt.mobile.android.feature.resourceform.usecase.GetEditContentTypeUseCase
 import com.passbolt.mobile.android.jsonmodel.JSON_MODEL_GSON
 import com.passbolt.mobile.android.jsonmodel.jsonpathops.JsonPathJsonPathOps
 import com.passbolt.mobile.android.jsonmodel.jsonpathops.JsonPathsOps
@@ -22,7 +25,6 @@ import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
-import org.koin.dsl.binds
 import org.koin.dsl.module
 import org.mockito.Mockito.mock
 import java.util.EnumSet
@@ -54,6 +56,9 @@ internal val mockGetPasswordPoliciesUseCase = mock<GetPasswordPoliciesUseCase>()
 internal val mockSecretGenerator = mock<SecretGenerator>()
 internal val mockEntropyCalculator = mock<EntropyCalculator>()
 internal val mockGetDefaultCreateContentTypeUseCase = mock<GetDefaultCreateContentTypeUseCase>()
+internal val mockGetEditContentTypeUseCase = mock<GetEditContentTypeUseCase>()
+internal val mockGetLocalResourceUseCase = mock<GetLocalResourceUseCase>()
+internal val mockFullDataRefreshExecutor = mock<FullDataRefreshExecutor>()
 
 @OptIn(ExperimentalCoroutinesApi::class)
 internal val testResourceFormModule = module {
@@ -64,12 +69,16 @@ internal val testResourceFormModule = module {
     factoryOf(::ResourceTypesUpdatesAdjacencyGraph2)
 
     single { mockGetDefaultCreateContentTypeUseCase }
+    single { mockGetEditContentTypeUseCase }
+    single { mockGetLocalResourceUseCase }
+    single { mockFullDataRefreshExecutor }
 
     factory<ResourceFormContract.Presenter> {
         ResourceFormPresenter(
             getPasswordPoliciesUseCase = mockGetPasswordPoliciesUseCase,
             secretGenerator = mockSecretGenerator,
             entropyCalculator = mockEntropyCalculator,
+            getLocalResourceUseCase = get(),
             entropyViewMapper = get(),
             resourceFormMapper = get(),
             coroutineLaunchContext = get(),

@@ -2,9 +2,7 @@ package com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.
 
 import com.passbolt.mobile.android.common.validation.StringIsAPositiveIntegerNumber
 import com.passbolt.mobile.android.common.validation.validation
-import com.passbolt.mobile.android.ui.Mode
-import com.passbolt.mobile.android.ui.Mode.CREATE
-import com.passbolt.mobile.android.ui.Mode.UPDATE
+import com.passbolt.mobile.android.ui.ResourceFormMode
 import com.passbolt.mobile.android.ui.TotpUiModel
 
 /**
@@ -39,12 +37,12 @@ class TotpAdvancedSettingsFormPresenter : TotpAdvancedSettingsFormContract.Prese
     override var view: TotpAdvancedSettingsFormContract.View? = null
     private lateinit var totpModel: TotpUiModel
 
-    override fun argsRetrieved(mode: Mode, totpUiModel: TotpUiModel) {
+    override fun argsRetrieved(mode: ResourceFormMode, totpUiModel: TotpUiModel) {
         this.totpModel = totpUiModel
 
         when (mode) {
-            CREATE -> view?.showCreateTitle()
-            UPDATE -> throw NotImplementedError() // TODO
+            is ResourceFormMode.Create -> view?.showCreateTitle()
+            is ResourceFormMode.Edit -> view?.showEditTitle(mode.resourceName)
         }
 
         view?.apply {

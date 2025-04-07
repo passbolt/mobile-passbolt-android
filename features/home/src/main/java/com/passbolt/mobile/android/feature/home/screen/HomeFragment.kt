@@ -73,7 +73,7 @@ import com.passbolt.mobile.android.ui.FolderWithCountAndPath
 import com.passbolt.mobile.android.ui.GroupWithCount
 import com.passbolt.mobile.android.ui.HomeDisplayViewModel
 import com.passbolt.mobile.android.ui.LeadingContentType
-import com.passbolt.mobile.android.ui.Mode
+import com.passbolt.mobile.android.ui.ResourceFormMode
 import com.passbolt.mobile.android.ui.ResourceItemWrapper
 import com.passbolt.mobile.android.ui.ResourceListUiModel
 import com.passbolt.mobile.android.ui.ResourceModel
@@ -637,12 +637,13 @@ class HomeFragment :
     }
 
     override fun navigateToEdit(resourceModel: ResourceModel) {
-        resourceDetailsResult.launch(
-            ResourceActivity.newInstance(
-                requireContext(),
-                ResourceMode.EDIT,
-                resourceModel.folderId,
-                resourceModel
+        // TODO handle result on editing
+        findNavController().navigate(
+            HomeFragmentDirections.actionHomeToResourceForm(
+                ResourceFormMode.Edit(
+                    resourceModel.resourceId,
+                    resourceModel.metadataJsonModel.name
+                )
             )
         )
     }
@@ -849,10 +850,11 @@ class HomeFragment :
     override fun navigateToCreateResource(parentFolderId: String?) {
         // TODO handle result and refresh list
         findNavController().navigate(
-            NavDeepLinkProvider.resourceFormDeepLinkRequest(
-                Mode.CREATE.name,
-                LeadingContentType.PASSWORD.name,
-                parentFolderId
+            HomeFragmentDirections.actionHomeToResourceForm(
+                ResourceFormMode.Create(
+                    LeadingContentType.PASSWORD,
+                    parentFolderId
+                )
             )
         )
     }
@@ -860,10 +862,11 @@ class HomeFragment :
     override fun navigateToCreateTotpManually(parentFolderId: String?) {
         // TODO handle result and refresh list
         findNavController().navigate(
-            NavDeepLinkProvider.resourceFormDeepLinkRequest(
-                Mode.CREATE.name,
-                LeadingContentType.TOTP.name,
-                parentFolderId
+            HomeFragmentDirections.actionHomeToResourceForm(
+                ResourceFormMode.Create(
+                    LeadingContentType.TOTP,
+                    parentFolderId
+                )
             )
         )
     }

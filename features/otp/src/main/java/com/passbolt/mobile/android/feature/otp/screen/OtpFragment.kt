@@ -53,22 +53,23 @@ import com.passbolt.mobile.android.core.extension.visible
 import com.passbolt.mobile.android.core.localization.R
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppContext
-import com.passbolt.mobile.android.core.navigation.deeplinks.NavDeepLinkProvider
 import com.passbolt.mobile.android.core.ui.initialsicon.InitialsIconGenerator
 import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
 import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
 import com.passbolt.mobile.android.createresourcemenu.CreateResourceMenuFragment
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
+import com.passbolt.mobile.android.feature.home.screen.HomeFragmentDirections
 import com.passbolt.mobile.android.feature.home.switchaccount.SwitchAccountBottomSheetFragment
 import com.passbolt.mobile.android.feature.otp.databinding.FragmentOtpBinding
 import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpFragment
 import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpMode
 import com.passbolt.mobile.android.feature.otp.scanotp.scanotpsuccess.ScanOtpSuccessFragment
 import com.passbolt.mobile.android.feature.otp.screen.recycler.OtpItem
-import com.passbolt.mobile.android.ui.Mode
 import com.passbolt.mobile.android.otpmoremenu.OtpMoreMenuFragment
 import com.passbolt.mobile.android.ui.LeadingContentType
 import com.passbolt.mobile.android.ui.OtpItemWrapper
+import com.passbolt.mobile.android.ui.ResourceFormMode
+import com.passbolt.mobile.android.ui.ResourceModel
 import org.koin.android.ext.android.inject
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
@@ -131,17 +132,23 @@ class OtpFragment :
     override fun createPasswordClick() {
         // TODO implement listening for creation result;
         findNavController().navigate(
-            NavDeepLinkProvider.resourceFormDeepLinkRequest(Mode.CREATE.name, LeadingContentType.PASSWORD.name)
-
+            OtpFragmentDirections.actionHomeToResourceForm(
+                ResourceFormMode.Create(
+                    LeadingContentType.PASSWORD,
+                    parentFolderId = null
+                )
+            )
         )
     }
 
     override fun navigateToCreateTotpManually() {
         // TODO handle result and refresh list
         findNavController().navigate(
-            NavDeepLinkProvider.resourceFormDeepLinkRequest(
-                Mode.CREATE.name,
-                LeadingContentType.TOTP.name
+            OtpFragmentDirections.actionHomeToResourceForm(
+                ResourceFormMode.Create(
+                    LeadingContentType.TOTP,
+                    parentFolderId = null
+                )
             )
         )
     }
@@ -301,17 +308,6 @@ class OtpFragment :
         Toast.makeText(requireContext(), getString(LocalizationR.string.copied_info, label), Toast.LENGTH_SHORT).show()
     }
 
-    // TODO refine
-    override fun navigateToCreateOtpManually() {
-//        setFragmentResultListener(
-//            CreateOtpFragment.REQUEST_CREATE_OTP,
-//            otpCreatedResult
-//        )
-//        findNavController().navigate(
-//            NavDeepLinkProvider.otpManualFormDeepLinkRequest(null)
-//        )
-    }
-
     override fun showDecryptionFailure() {
         showSnackbar(LocalizationR.string.common_decryption_failure, backgroundColor = CoreUiR.color.red)
     }
@@ -407,6 +403,26 @@ class OtpFragment :
             LocalizationR.string.common_json_schema_secret_validation_error,
             backgroundColor = CoreUiR.color.red
         )
+    }
+
+    override fun menuEditOtpClick() {
+        presenter.menuEditOtpClick()
+    }
+
+    override fun navigateToEditResource(resourceModel: ResourceModel) {
+        // TODO handle result on editing
+        findNavController().navigate(
+            HomeFragmentDirections.actionHomeToResourceForm(
+                ResourceFormMode.Edit(
+                    resourceModel.resourceId,
+                    resourceModel.metadataJsonModel.name
+                )
+            )
+        )
+    }
+
+    override fun menuDeleteOtpClick() {
+        presenter.menuDeleteOtpClick()
     }
 
     private companion object {

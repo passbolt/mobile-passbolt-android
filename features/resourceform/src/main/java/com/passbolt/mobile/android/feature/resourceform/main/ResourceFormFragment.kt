@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.feature.resourceform.main
 
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.core.os.BundleCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResult
@@ -126,7 +127,7 @@ class ResourceFormFragment :
         initDefaultToolbar(binding.toolbar)
         setListeners()
         presenter.attach(this)
-        presenter.argsRetrieved(navArgs.mode, navArgs.leadingContentType, navArgs.parentFolderId)
+        presenter.argsRetrieved(navArgs.mode)
     }
 
     override fun onDestroyView() {
@@ -347,6 +348,22 @@ class ResourceFormFragment :
 
     override fun showRefreshProgress() {
 //        TODO("Not yet implemented")
+    }
+
+    override fun showInitializationProgress() {
+        binding.fullScreenProgressLayout.visible()
+    }
+
+    override fun hideInitializationProgress() {
+        binding.fullScreenProgressLayout.gone()
+    }
+
+    override fun showEditResourceInitializationError() {
+        Toast.makeText(requireContext(), LocalizationR.string.resource_form_edit_init_error, Toast.LENGTH_LONG).show()
+    }
+
+    override fun navigateBack() {
+        findNavController().popBackStack()
     }
 
     override fun showProgress() {

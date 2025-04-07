@@ -1,14 +1,13 @@
 package com.passbolt.mobile.android.feature.resourceform.main
 
 import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReactiveContract
-import com.passbolt.mobile.android.ui.PasswordStrength
 import com.passbolt.mobile.android.core.passwordgenerator.codepoints.Codepoint
 import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpMode
-import com.passbolt.mobile.android.ui.LeadingContentType
-import com.passbolt.mobile.android.ui.Mode
 import com.passbolt.mobile.android.ui.OtpParseResult
+import com.passbolt.mobile.android.ui.PasswordStrength
 import com.passbolt.mobile.android.ui.PasswordStrength.Empty
 import com.passbolt.mobile.android.ui.PasswordUiModel
+import com.passbolt.mobile.android.ui.ResourceFormMode
 import com.passbolt.mobile.android.ui.ResourceFormUiModel
 import com.passbolt.mobile.android.ui.TotpUiModel
 
@@ -71,10 +70,14 @@ interface ResourceFormContract {
         fun showJsonSecretSchemaValidationError()
         fun navigateBackWithCreateSuccess()
         fun navigateToScanTotp(scanMode: ScanOtpMode)
+        fun showInitializationProgress()
+        fun hideInitializationProgress()
+        fun showEditResourceInitializationError()
+        fun navigateBack()
     }
 
     interface Presenter : DataRefreshViewReactiveContract.Presenter<View> {
-        fun argsRetrieved(mode: Mode, leadingContentType: LeadingContentType, parentFolderId: String?)
+        fun argsRetrieved(mode: ResourceFormMode)
         fun createResourceClick()
         fun updateResourceClick()
         fun passwordGenerateClick()

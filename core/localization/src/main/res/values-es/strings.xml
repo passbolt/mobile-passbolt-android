@@ -401,7 +401,7 @@
     <string name="otp_invalid_itp_data_scanned">Se ha producido un error durante el escaneo del código QR TOTP</string>
     <string name="otp_more_copy_otp">Copiar TOTP</string>
     <string name="otp_more_show_otp">Mostrar TOTP</string>
-    <string name="otp_more_edit_otp">Editar TOTP</string>
+    <string name="otp_more_edit_resource">Editar TOTP</string>
     <string name="otp_more_delete_otp">Eliminar TOTP</string>
     <string name="otp_edit_title">Editar TOTP</string>
     <string name="otp_edit_scan_new">Escanear un nuevo código QR</string>

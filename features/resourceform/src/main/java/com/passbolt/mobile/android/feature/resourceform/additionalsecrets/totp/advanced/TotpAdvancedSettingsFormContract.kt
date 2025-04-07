@@ -1,7 +1,7 @@
 package com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.advanced
 
 import com.passbolt.mobile.android.core.mvp.BaseContract
-import com.passbolt.mobile.android.ui.Mode
+import com.passbolt.mobile.android.ui.ResourceFormMode
 import com.passbolt.mobile.android.ui.TotpUiModel
 
 /**
@@ -35,11 +35,12 @@ interface TotpAdvancedSettingsFormContract {
         fun showLength(length: String)
         fun showAlgorithm(algorithm: String)
         fun showTotpPeriodError()
+        fun showEditTitle(resourceName: String)
     }
 
     interface Presenter : BaseContract.Presenter<View> {
         fun applyClick()
-        fun argsRetrieved(mode: Mode, totpUiModel: TotpUiModel)
+        fun argsRetrieved(mode: ResourceFormMode, totpUiModel: TotpUiModel)
         fun totpPeriodChanged(period: String)
         fun totpDigitsChanged(digits: String)
         fun totpAlgorithmChanged(algorithm: String)

@@ -1,9 +1,7 @@
 package com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp
 
-import com.passbolt.mobile.android.ui.Mode
-import com.passbolt.mobile.android.ui.Mode.CREATE
-import com.passbolt.mobile.android.ui.Mode.UPDATE
 import com.passbolt.mobile.android.ui.OtpParseResult
+import com.passbolt.mobile.android.ui.ResourceFormMode
 import com.passbolt.mobile.android.ui.TotpUiModel
 
 /**
@@ -39,12 +37,12 @@ class TotpFormPresenter : TotpFormContract.Presenter {
 
     private lateinit var totpUiModel: TotpUiModel
 
-    override fun argsRetrieved(mode: Mode, totpUiModel: TotpUiModel) {
+    override fun argsRetrieved(mode: ResourceFormMode, totpUiModel: TotpUiModel) {
         this.totpUiModel = totpUiModel
 
         when (mode) {
-            CREATE -> view?.showCreateTitle()
-            UPDATE -> throw NotImplementedError() // TODO
+            is ResourceFormMode.Create -> view?.showCreateTitle()
+            is ResourceFormMode.Edit -> view?.showEditTitle(mode.resourceName)
         }
 
         view?.showSecret(totpUiModel.secret)
@@ -73,11 +71,11 @@ class TotpFormPresenter : TotpFormContract.Presenter {
         }
     }
 
-    override fun totpScanned(isManualCreationChosen: Boolean, scannedTotp: OtpParseResult.OtpQr.TotpQr?) {
+    override fun totpScanned(isManualCreationChosen: Boolean, totpQr: OtpParseResult.OtpQr.TotpQr?) {
         // just stay on totp screen and allow manual input
         if (isManualCreationChosen) return
 
-        scannedTotp?.let {
+        totpQr?.let {
             totpUiModel = TotpUiModel(
                 issuer = it.issuer.orEmpty(),
                 secret = it.secret,

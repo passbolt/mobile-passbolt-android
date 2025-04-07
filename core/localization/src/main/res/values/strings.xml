@@ -331,6 +331,7 @@
     <string name="resource_form_resource_name">Resource name</string>
     <string name="resource_form_name">Name</string>
     <string name="resource_form_create_password">Create a password</string>
+    <string name="resource_form_edit_resource">Edit %s</string>
     <string name="resource_form_create_totp">Create a TOTP</string>
     <string name="resource_form_view_advanced_settings">View advanced settings</string>
     <string name="resource_form_view_additional_secrets">Additional secrets</string>
@@ -338,6 +339,7 @@
     <string name="resource_form_view_additional_uris">Additional URIs</string>
     <string name="resource_form_create">Create</string>
     <string name="resource_form_save">Save</string>
+    <string name="resource_form_edit_init_error">Failed to initialize resource edition</string>
 
     <string name="settings_app_settings">App settings</string>
     <string name="settings_accounts">Accounts</string>
@@ -519,7 +521,7 @@
 
     <string name="otp_more_copy_otp">Copy TOTP</string>
     <string name="otp_more_show_otp">Show TOTP</string>
-    <string name="otp_more_edit_otp">Edit TOTP</string>
+    <string name="otp_more_edit_resource">Edit</string>
     <string name="otp_more_delete_otp">Delete TOTP</string>
 
     <string name="otp_edit_title">Edit TOTP</string>

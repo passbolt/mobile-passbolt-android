@@ -26,6 +26,7 @@ package com.passbolt.mobile.android.feature.otp.screen
 import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReactiveContract
 import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.ui.OtpItemWrapper
+import com.passbolt.mobile.android.ui.ResourceModel
 
 interface OtpContract {
 
@@ -43,7 +44,6 @@ interface OtpContract {
         fun clearSearchInput()
         fun showOtmMoreMenu(resourceId: String, resourceName: String)
         fun copySecretToClipBoard(label: String, value: String)
-        fun navigateToCreateOtpManually()
         fun showDecryptionFailure()
         fun showFetchFailure()
         fun showConfirmDeleteDialog()
@@ -63,6 +63,7 @@ interface OtpContract {
         fun showJsonResourceSchemaValidationError()
         fun showJsonSecretSchemaValidationError()
         fun navigateToCreateTotpManually()
+        fun navigateToEditResource(resourceModel: ResourceModel)
     }
 
     interface Presenter : DataRefreshViewReactiveContract.Presenter<View> {
@@ -77,10 +78,10 @@ interface OtpContract {
         fun menuCopyOtpClick()
         fun menuShowOtpClick()
         fun menuDeleteOtpClick()
-        fun createOtpManuallyClick()
         fun totpDeletionConfirmed()
         fun otpCreated()
         fun otpUpdated()
         fun otpQrScanReturned(isTotpCreated: Boolean, isManualCreationChosen: Boolean)
+        fun menuEditOtpClick()
     }
 }

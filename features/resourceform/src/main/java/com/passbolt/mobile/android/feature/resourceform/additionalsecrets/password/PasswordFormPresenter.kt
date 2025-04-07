@@ -7,11 +7,9 @@ import com.passbolt.mobile.android.core.passwordgenerator.entropy.EntropyCalcula
 import com.passbolt.mobile.android.core.policies.usecase.GetPasswordPoliciesUseCase
 import com.passbolt.mobile.android.mappers.EntropyViewMapper
 import com.passbolt.mobile.android.ui.Entropy
-import com.passbolt.mobile.android.ui.Mode
-import com.passbolt.mobile.android.ui.Mode.CREATE
-import com.passbolt.mobile.android.ui.Mode.UPDATE
 import com.passbolt.mobile.android.ui.PasswordGeneratorTypeModel
 import com.passbolt.mobile.android.ui.PasswordUiModel
+import com.passbolt.mobile.android.ui.ResourceFormMode
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
@@ -58,11 +56,11 @@ class PasswordFormPresenter(
 
     private lateinit var passwordModel: PasswordUiModel
 
-    override fun argsRetrieved(mode: Mode, passwordModel: PasswordUiModel) {
+    override fun argsRetrieved(mode: ResourceFormMode, passwordModel: PasswordUiModel) {
         this.passwordModel = passwordModel
         when (mode) {
-            CREATE -> view?.showCreateTitle()
-            UPDATE -> throw NotImplementedError() // TODO
+            is ResourceFormMode.Create -> view?.showCreateTitle()
+            is ResourceFormMode.Edit -> view?.showEditTitle(mode.resourceName)
         }
 
         scope.launch {

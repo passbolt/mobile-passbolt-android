@@ -367,8 +367,8 @@ class OtpPresenter(
         view?.showConfirmDeleteDialog()
     }
 
-    override fun createOtpManuallyClick() {
-        view?.navigateToCreateOtpManually()
+    override fun menuEditOtpClick() {
+        view?.navigateToEditResource(currentOtpItemForMenu!!.resource)
     }
 
     override fun totpDeletionConfirmed() {

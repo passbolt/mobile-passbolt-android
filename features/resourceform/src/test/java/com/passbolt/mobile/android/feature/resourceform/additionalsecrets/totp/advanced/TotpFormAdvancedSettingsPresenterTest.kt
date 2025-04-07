@@ -1,8 +1,9 @@
 package com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.advanced
 
 import com.google.common.truth.Truth.assertThat
-import com.passbolt.mobile.android.ui.Mode
+import com.passbolt.mobile.android.ui.LeadingContentType
 import com.passbolt.mobile.android.ui.OtpParseResult
+import com.passbolt.mobile.android.ui.ResourceFormMode
 import com.passbolt.mobile.android.ui.TotpUiModel
 import org.junit.Rule
 import org.junit.Test
@@ -52,7 +53,13 @@ class TotpFormAdvancedSettingsPresenterTest : KoinTest {
     @Test
     fun `view should show correct create title and totp advanced settings on attach`() {
         presenter.attach(view)
-        presenter.argsRetrieved(Mode.CREATE, totp)
+        presenter.argsRetrieved(
+            ResourceFormMode.Create(
+                leadingContentType = LeadingContentType.TOTP,
+                parentFolderId = null
+            ),
+            totp
+        )
 
         verify(view).showCreateTitle()
         verify(view).showExpiry(totp.expiry)
@@ -68,7 +75,13 @@ class TotpFormAdvancedSettingsPresenterTest : KoinTest {
         val changedAlgorithm = OtpParseResult.OtpQr.Algorithm.SHA1.name
 
         presenter.attach(view)
-        presenter.argsRetrieved(Mode.CREATE, totp)
+        presenter.argsRetrieved(
+            ResourceFormMode.Create(
+                leadingContentType = LeadingContentType.TOTP,
+                parentFolderId = null
+            ),
+            totp
+        )
         presenter.totpPeriodChanged(changedExpiry)
         presenter.totpDigitsChanged(changedLength)
         presenter.totpAlgorithmChanged(changedAlgorithm)

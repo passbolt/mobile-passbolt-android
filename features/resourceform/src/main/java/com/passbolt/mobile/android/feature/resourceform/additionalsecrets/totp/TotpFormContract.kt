@@ -2,8 +2,8 @@ package com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp
 
 import com.passbolt.mobile.android.core.mvp.BaseContract
 import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpMode
-import com.passbolt.mobile.android.ui.Mode
 import com.passbolt.mobile.android.ui.OtpParseResult
+import com.passbolt.mobile.android.ui.ResourceFormMode
 import com.passbolt.mobile.android.ui.TotpUiModel
 
 /**
@@ -37,11 +37,12 @@ interface TotpFormContract {
         fun showSecret(secret: String)
         fun showUrl(issuer: String)
         fun navigateToScanTotp(scanMode: ScanOtpMode)
+        fun showEditTitle(resourceName: String)
     }
 
     interface Presenter : BaseContract.Presenter<View> {
         fun moreSettingsClick()
-        fun argsRetrieved(mode: Mode, totpUiModel: TotpUiModel)
+        fun argsRetrieved(mode: ResourceFormMode, totpUiModel: TotpUiModel)
         fun totpAdvancedSettingsChanged(totpModel: TotpUiModel?)
         fun applyClick()
         fun totpSecretChanged(secret: String)

@@ -2,9 +2,9 @@ package com.passbolt.mobile.android.feature.resourceform.additionalsecrets.passw
 
 import com.passbolt.mobile.android.core.mvp.BaseContract
 import com.passbolt.mobile.android.core.passwordgenerator.codepoints.Codepoint
-import com.passbolt.mobile.android.ui.Mode
 import com.passbolt.mobile.android.ui.PasswordStrength
 import com.passbolt.mobile.android.ui.PasswordUiModel
+import com.passbolt.mobile.android.ui.ResourceFormMode
 
 /**
  * Passbolt - Open source password manager for teams
@@ -38,10 +38,11 @@ interface PasswordFormContract {
         fun showPassword(password: List<Codepoint>, entropy: Double, passwordStrength: PasswordStrength)
         fun showUnableToGeneratePassword(minimumEntropyBits: Int)
         fun showPasswordStrength(passwordStrength: PasswordStrength, entropy: Double)
+        fun showEditTitle(resourceName: String)
     }
 
     interface Presenter : BaseContract.Presenter<View> {
-        fun argsRetrieved(mode: Mode, passwordModel: PasswordUiModel)
+        fun argsRetrieved(mode: ResourceFormMode, passwordModel: PasswordUiModel)
         fun applyClick()
         fun passwordMainUriTextChanged(mainUri: String)
         fun passwordUsernameTextChanged(username: String)

@@ -7,6 +7,7 @@ import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.t
 import com.passbolt.mobile.android.feature.resourceform.main.resourceFormModule
 import com.passbolt.mobile.android.feature.resourceform.metadata.description.descriptionFormModule
 import com.passbolt.mobile.android.feature.resourceform.usecase.GetDefaultCreateContentTypeUseCase
+import com.passbolt.mobile.android.feature.resourceform.usecase.GetEditContentTypeUseCase
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 
@@ -42,4 +43,5 @@ val resourceFormModule = module {
     passwordFormModule()
 
     factoryOf(::GetDefaultCreateContentTypeUseCase)
+    factoryOf(::GetEditContentTypeUseCase)
 }

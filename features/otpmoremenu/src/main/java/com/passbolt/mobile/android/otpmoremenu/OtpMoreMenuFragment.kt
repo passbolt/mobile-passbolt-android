@@ -93,6 +93,8 @@ class OtpMoreMenuFragment :
         with(binding) {
             setDebouncingOnClickAndDismiss(showOtp) { listener?.menuShowOtpClick() }
             setDebouncingOnClickAndDismiss(copyOtp) { listener?.menuCopyOtpClick() }
+            setDebouncingOnClickAndDismiss(deleteOtp) { listener?.menuDeleteOtpClick() }
+            setDebouncingOnClickAndDismiss(editOtp) { listener?.menuEditOtpClick() }
             setDebouncingOnClickAndDismiss(close)
         }
     }
@@ -150,6 +152,8 @@ class OtpMoreMenuFragment :
     interface Listener {
         fun menuCopyOtpClick()
         fun menuShowOtpClick()
+        fun menuEditOtpClick()
+        fun menuDeleteOtpClick()
         fun otpMenuDismissed()
     }
 }
