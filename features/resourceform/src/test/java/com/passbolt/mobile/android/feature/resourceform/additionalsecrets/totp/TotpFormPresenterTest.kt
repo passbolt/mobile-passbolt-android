@@ -1,4 +1,4 @@
-package com.passbolt.mobile.android.feature.resourceform.additionalsecrets.securenote
+package com.passbolt.mobile.android.feature.resourceform.additionalsecrets.note
 
 import com.google.common.truth.Truth.assertThat
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.TotpFormContract

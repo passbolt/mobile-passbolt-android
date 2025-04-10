@@ -69,16 +69,16 @@ class ResourceTypesUpdatesAdjacencyGraph2 {
 
         map[passwordAndDescription] = listOf(
             ResourceTypeEdge2(passwordAndDescription, passwordAndDescription, UpdateAction2.EDIT_METADATA),
-            ResourceTypeEdge2(passwordAndDescription, passwordAndDescription, UpdateAction2.ADD_SECURE_NOTE),
-            ResourceTypeEdge2(passwordAndDescription, passwordAndDescription, UpdateAction2.REMOVE_SECURE_NOTE),
+            ResourceTypeEdge2(passwordAndDescription, passwordAndDescription, UpdateAction2.ADD_NOTE),
+            ResourceTypeEdge2(passwordAndDescription, passwordAndDescription, UpdateAction2.REMOVE_NOTE),
             ResourceTypeEdge2(passwordAndDescription, passwordAndDescription, UpdateAction2.ADD_PASSWORD),
             ResourceTypeEdge2(passwordAndDescription, passwordAndDescription, UpdateAction2.REMOVE_PASSWORD),
             ResourceTypeEdge2(passwordAndDescription, passwordDescriptionTotp, UpdateAction2.ADD_TOTP)
         )
         map[v5Default] = listOf(
             ResourceTypeEdge2(v5Default, v5Default, UpdateAction2.EDIT_METADATA),
-            ResourceTypeEdge2(v5Default, v5Default, UpdateAction2.ADD_SECURE_NOTE),
-            ResourceTypeEdge2(v5Default, v5Default, UpdateAction2.REMOVE_SECURE_NOTE),
+            ResourceTypeEdge2(v5Default, v5Default, UpdateAction2.ADD_NOTE),
+            ResourceTypeEdge2(v5Default, v5Default, UpdateAction2.REMOVE_NOTE),
             ResourceTypeEdge2(v5Default, v5Default, UpdateAction2.ADD_PASSWORD),
             ResourceTypeEdge2(v5Default, v5Default, UpdateAction2.REMOVE_PASSWORD),
             ResourceTypeEdge2(v5Default, v5DefaultWithTotp, UpdateAction2.ADD_TOTP)
@@ -86,37 +86,37 @@ class ResourceTypesUpdatesAdjacencyGraph2 {
 
         map[passwordDescriptionTotp] = listOf(
             ResourceTypeEdge2(passwordDescriptionTotp, passwordDescriptionTotp, UpdateAction2.EDIT_METADATA),
-            ResourceTypeEdge2(passwordDescriptionTotp, passwordDescriptionTotp, UpdateAction2.ADD_SECURE_NOTE),
-            ResourceTypeEdge2(passwordDescriptionTotp, passwordDescriptionTotp, UpdateAction2.REMOVE_SECURE_NOTE),
+            ResourceTypeEdge2(passwordDescriptionTotp, passwordDescriptionTotp, UpdateAction2.ADD_NOTE),
+            ResourceTypeEdge2(passwordDescriptionTotp, passwordDescriptionTotp, UpdateAction2.REMOVE_NOTE),
             ResourceTypeEdge2(passwordDescriptionTotp, passwordDescriptionTotp, UpdateAction2.ADD_TOTP),
             ResourceTypeEdge2(passwordDescriptionTotp, passwordAndDescription, UpdateAction2.REMOVE_TOTP),
             ResourceTypeEdge2(passwordDescriptionTotp, passwordDescriptionTotp, UpdateAction2.ADD_PASSWORD),
             ResourceTypeEdge2(passwordDescriptionTotp, passwordDescriptionTotp, UpdateAction2.REMOVE_PASSWORD),
-            ResourceTypeEdge2(passwordDescriptionTotp, totp, UpdateAction2.REMOVE_PASSWORD_AND_SECURE_NOTE)
+            ResourceTypeEdge2(passwordDescriptionTotp, totp, UpdateAction2.REMOVE_PASSWORD_AND_NOTE)
         )
         map[v5DefaultWithTotp] = listOf(
             ResourceTypeEdge2(v5DefaultWithTotp, v5DefaultWithTotp, UpdateAction2.EDIT_METADATA),
-            ResourceTypeEdge2(v5DefaultWithTotp, v5DefaultWithTotp, UpdateAction2.ADD_SECURE_NOTE),
-            ResourceTypeEdge2(v5DefaultWithTotp, v5DefaultWithTotp, UpdateAction2.REMOVE_SECURE_NOTE),
+            ResourceTypeEdge2(v5DefaultWithTotp, v5DefaultWithTotp, UpdateAction2.ADD_NOTE),
+            ResourceTypeEdge2(v5DefaultWithTotp, v5DefaultWithTotp, UpdateAction2.REMOVE_NOTE),
             ResourceTypeEdge2(v5DefaultWithTotp, v5DefaultWithTotp, UpdateAction2.ADD_TOTP),
             ResourceTypeEdge2(v5DefaultWithTotp, v5Default, UpdateAction2.REMOVE_TOTP),
             ResourceTypeEdge2(v5DefaultWithTotp, v5DefaultWithTotp, UpdateAction2.ADD_PASSWORD),
             ResourceTypeEdge2(v5DefaultWithTotp, v5DefaultWithTotp, UpdateAction2.REMOVE_PASSWORD),
-            ResourceTypeEdge2(v5DefaultWithTotp, v5Totp, UpdateAction2.REMOVE_PASSWORD_AND_SECURE_NOTE)
+            ResourceTypeEdge2(v5DefaultWithTotp, v5Totp, UpdateAction2.REMOVE_PASSWORD_AND_NOTE)
         )
 
         map[totp] = listOf(
             ResourceTypeEdge2(totp, totp, UpdateAction2.EDIT_METADATA),
             ResourceTypeEdge2(totp, totp, UpdateAction2.ADD_TOTP),
             ResourceTypeEdge2(totp, totp, UpdateAction2.REMOVE_TOTP),
-            ResourceTypeEdge2(totp, passwordDescriptionTotp, UpdateAction2.ADD_SECURE_NOTE),
+            ResourceTypeEdge2(totp, passwordDescriptionTotp, UpdateAction2.ADD_NOTE),
             ResourceTypeEdge2(totp, passwordDescriptionTotp, UpdateAction2.ADD_PASSWORD)
         )
         map[v5Totp] = listOf(
             ResourceTypeEdge2(v5Totp, v5Totp, UpdateAction2.EDIT_METADATA),
             ResourceTypeEdge2(v5Totp, v5Totp, UpdateAction2.ADD_TOTP),
             ResourceTypeEdge2(v5Totp, v5Totp, UpdateAction2.REMOVE_TOTP),
-            ResourceTypeEdge2(v5Totp, v5DefaultWithTotp, UpdateAction2.ADD_SECURE_NOTE),
+            ResourceTypeEdge2(v5Totp, v5DefaultWithTotp, UpdateAction2.ADD_NOTE),
             ResourceTypeEdge2(v5Totp, v5DefaultWithTotp, UpdateAction2.ADD_PASSWORD)
         )
 

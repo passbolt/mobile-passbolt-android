@@ -40,7 +40,7 @@ interface ResourceMoreMenuContract {
         fun notifyFavouriteClick(favouriteOption: ResourceMoreMenuModel.FavouriteOption)
         fun hideMenu()
         fun showCopyButton()
-        fun showCopySecureNoteButton()
+        fun showCopyNoteButton()
         fun showCopyMetadataDescriptionButton()
     }
 

@@ -15,7 +15,7 @@ import com.passbolt.mobile.android.ui.PasswordUiModel
 import com.passbolt.mobile.android.ui.ResourceFormUiModel
 import com.passbolt.mobile.android.ui.ResourceFormUiModel.Metadata.DESCRIPTION
 import com.passbolt.mobile.android.ui.ResourceFormUiModel.Secret.PASSWORD
-import com.passbolt.mobile.android.ui.ResourceFormUiModel.Secret.SECURE_NOTE
+import com.passbolt.mobile.android.ui.ResourceFormUiModel.Secret.NOTE
 import com.passbolt.mobile.android.ui.ResourceFormUiModel.Secret.TOTP
 import com.passbolt.mobile.android.ui.TotpUiModel
 
@@ -52,9 +52,9 @@ class ResourceFormMapper {
             },
             supportedAdditionalSecrets = when (contentType) {
                 PasswordString, V5PasswordString -> emptyList()
-                PasswordAndDescription, V5Default -> listOf(SECURE_NOTE, TOTP)
-                PasswordDescriptionTotp, V5DefaultWithTotp -> listOf(SECURE_NOTE, TOTP)
-                Totp, V5TotpStandalone -> listOf(PASSWORD, SECURE_NOTE)
+                PasswordAndDescription, V5Default -> listOf(NOTE, TOTP)
+                PasswordDescriptionTotp, V5DefaultWithTotp -> listOf(NOTE, TOTP)
+                Totp, V5TotpStandalone -> listOf(PASSWORD, NOTE)
             },
             supportedMetadata = when (contentType) {
                 PasswordString, V5PasswordString -> listOf(DESCRIPTION)

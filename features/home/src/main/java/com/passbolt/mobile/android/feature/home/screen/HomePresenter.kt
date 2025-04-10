@@ -679,10 +679,10 @@ class HomePresenter(
         }
     }
 
-    override fun menuCopySecureNoteClick() {
+    override fun menuCopyNoteClick() {
         coroutineScope.launch {
             performSecretPropertyAction(
-                action = { secretPropertiesActionsInteractor.provideSecureNote() },
+                action = { secretPropertiesActionsInteractor.provideNote() },
                 doOnDecryptionFailure = { view?.showDecryptionFailure() },
                 doOnFetchFailure = { view?.showFetchFailure() },
                 doOnSuccess = { view?.addToClipboard(it.label, it.result, it.isSecret) }

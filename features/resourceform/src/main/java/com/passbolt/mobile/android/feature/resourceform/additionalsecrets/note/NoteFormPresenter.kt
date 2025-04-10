@@ -1,26 +1,24 @@
-package com.passbolt.mobile.android.feature.resourceform.subform.securenote
+package com.passbolt.mobile.android.feature.resourceform.additionalsecrets.note
 
-import android.content.Context
-import android.util.AttributeSet
-import android.view.LayoutInflater
-import android.widget.LinearLayout
-import com.passbolt.mobile.android.core.ui.textinputfield.TextInputView
-import com.passbolt.mobile.android.feature.resourceform.R
-import com.passbolt.mobile.android.feature.resourceform.databinding.ViewSecureNoteSubformBinding
+import com.passbolt.mobile.android.ui.ResourceFormMode
 
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
  *
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
  * Public License (AGPL) as published by the Free Software Foundation version 3.
+ *
  *
  * The name "Passbolt" is a registered trademark of Passbolt SA, and Passbolt SA hereby declines to grant a trademark
  * license to "Passbolt" pursuant to the GNU Affero General Public License version 3 Section 7(e), without a separate
  * agreement with Passbolt SA.
  *
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See GNU Affero General Public License for more details.
+ *
  *
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see GNU Affero General Public License v3 (http://www.gnu.org/licenses/agpl-3.0.html).
@@ -31,23 +29,34 @@ import com.passbolt.mobile.android.feature.resourceform.databinding.ViewSecureNo
  * @since v1.0
  */
 
-class SecureNoteSubformView @JvmOverloads constructor(
-    context: Context,
-    attrs: AttributeSet? = null,
-    defStyle: Int = 0
-) : LinearLayout(context, attrs, defStyle) {
+class NoteFormPresenter : NoteFormContract.Presenter {
 
-    private val binding = ViewSecureNoteSubformBinding.inflate(LayoutInflater.from(context), this)
+    override var view: NoteFormContract.View? = null
 
-    val secureNoteInput: TextInputView
-        get() = binding.secureNoteSectionView.backgroundContainer.findViewById(R.id.secureNoteInput)
+    private var note: String = ""
 
-    init {
-        orientation = VERTICAL
-        LayoutInflater.from(context).inflate(
-            R.layout.view_secure_note_subform_fields,
-            binding.secureNoteSectionView.backgroundContainer,
-            true
-        )
+    override fun argsRetrieved(mode: ResourceFormMode, note: String) {
+        when (mode) {
+            is ResourceFormMode.Create -> view?.showCreateTitle()
+            is ResourceFormMode.Edit -> view?.showEditTitle(mode.resourceName)
+        }
+
+        view?.showNote(note)
+    }
+
+    override fun noteTextChanged(note: String) {
+        this.note = note
+    }
+
+    override fun removeNoteClick() {
+        view?.goBackWithResult(null)
+    }
+
+    override fun removeNoteClick() {
+        view?.goBackWithResult(null)
+    }
+
+    override fun applyClick() {
+        view?.goBackWithResult(note)
     }
 }

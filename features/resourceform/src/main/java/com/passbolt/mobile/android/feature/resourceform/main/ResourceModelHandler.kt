@@ -124,7 +124,7 @@ class ResourceModelHandler(
                 key = ""
             )
         }
-        if (contentType.hasSecureNote() && resourceSecret.description == null) {
+        if (contentType.hasNote() && resourceSecret.description == null) {
             resourceSecret.description = ""
         }
         if (contentType.hasPassword() && resourceSecret.getPassword(contentType) == null) {
@@ -136,7 +136,7 @@ class ResourceModelHandler(
         if (!contentType.hasTotp() && resourceSecret.totp != null) {
             resourceSecret.totp = null
         }
-        if (!contentType.hasSecureNote() && resourceSecret.description != null) {
+        if (!contentType.hasNote() && resourceSecret.description != null) {
             resourceSecret.description = null
         }
         if (!contentType.hasPassword() && resourceSecret.getPassword(contentType) != null) {
@@ -158,13 +158,13 @@ class ResourceModelHandler(
 
     private fun mergeActions(action: UpdateAction2): UpdateAction2 {
         if (contentType in setOf(ContentType.PasswordDescriptionTotp, ContentType.V5DefaultWithTotp)) {
-            if (action == UpdateAction2.REMOVE_PASSWORD && resourceHasNoSecureNote()) {
-                Timber.d("Merged REMOVE_PASSWORD into REMOVE_PASSWORD_AND_SECURE_NOTE")
-                return UpdateAction2.REMOVE_PASSWORD_AND_SECURE_NOTE
+            if (action == UpdateAction2.REMOVE_PASSWORD && resourceHasNoNote()) {
+                Timber.d("Merged REMOVE_PASSWORD into REMOVE_PASSWORD_AND_NOTE")
+                return UpdateAction2.REMOVE_PASSWORD_AND_NOTE
             }
-            if (action == UpdateAction2.REMOVE_SECURE_NOTE && resourceHasNoPassword()) {
-                Timber.d("Merged REMOVE_SECURE_NOTE into REMOVE_PASSWORD_AND_SECURE_NOTE")
-                return UpdateAction2.REMOVE_PASSWORD_AND_SECURE_NOTE
+            if (action == UpdateAction2.REMOVE_NOTE && resourceHasNoPassword()) {
+                Timber.d("Merged REMOVE_NOTE into REMOVE_PASSWORD_AND_NOTE")
+                return UpdateAction2.REMOVE_PASSWORD_AND_NOTE
             }
         }
         return action
@@ -173,6 +173,6 @@ class ResourceModelHandler(
     private fun resourceHasNoPassword(): Boolean =
         resourceSecret.getPassword(contentType).isNullOrBlank()
 
-    private fun resourceHasNoSecureNote(): Boolean =
+    private fun resourceHasNoNote(): Boolean =
         resourceSecret.description.isNullOrBlank()
 }

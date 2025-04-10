@@ -1,4 +1,4 @@
-package com.passbolt.mobile.android.feature.resourceform.additionalsecrets.securenote
+package com.passbolt.mobile.android.feature.resourceform.additionalsecrets.note
 
 import com.passbolt.mobile.android.ui.LeadingContentType
 import com.passbolt.mobile.android.ui.ResourceFormMode
@@ -35,15 +35,15 @@ import org.mockito.kotlin.verifyNoMoreInteractions
  * @since v1.0
  */
 
-class SecureNoteFormPresenterTest : KoinTest {
+class NoteFormPresenterTest : KoinTest {
 
-    private val presenter: SecureNoteFormContract.Presenter by inject()
-    private val view: SecureNoteFormContract.View = mock()
+    private val presenter: NoteFormContract.Presenter by inject()
+    private val view: NoteFormContract.View = mock()
 
     @get:Rule
     val koinTestRule = KoinTestRule.create {
         printLogger(Level.ERROR)
-        modules(secureNoteFormModule)
+        modules(noteFormModule)
     }
 
     @Test
@@ -60,12 +60,12 @@ class SecureNoteFormPresenterTest : KoinTest {
         )
 
         verify(view).showCreateTitle()
-        verify(view).showSecureNote(note)
+        verify(view).showNote(note)
         verifyNoMoreInteractions(view)
     }
 
     @Test
-    fun `secure note changes should be applied`() {
+    fun `note changes should be applied`() {
         val note = "mock note"
         val changedNote = "changed mock note"
 
@@ -77,11 +77,11 @@ class SecureNoteFormPresenterTest : KoinTest {
             ),
             note
         )
-        presenter.secureNoteTextChanged(changedNote)
+        presenter.noteTextChanged(changedNote)
         presenter.applyClick()
 
         verify(view).showCreateTitle()
-        verify(view).showSecureNote(note)
+        verify(view).showNote(note)
         verify(view).goBackWithResult(changedNote)
         verifyNoMoreInteractions(view)
     }

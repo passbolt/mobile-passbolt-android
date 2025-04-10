@@ -169,14 +169,14 @@ class V5TotpResourceFormPresenterTest : KoinTest {
     }
 
     @Test
-    fun `add secure note should change content type and apply changes`() = runTest {
+    fun `add note should change content type and apply changes`() = runTest {
         val mockName = "test name"
         val mockUrl = "test url"
         val mockTotpSecret = "test secret"
         val mockPeriod = "123"
         val mockDigits = "456"
         val mockAlgorithm = OtpParseResult.OtpQr.Algorithm.SHA512.name
-        val mockSecureNote = "test secure note"
+        val mockNote = "test note"
 
         presenter.nameTextChanged(mockName)
         presenter.totpUrlChanged(mockUrl)
@@ -190,7 +190,7 @@ class V5TotpResourceFormPresenterTest : KoinTest {
                 length = mockDigits
             )
         )
-        presenter.secureNoteChanged(mockSecureNote)
+        presenter.noteChanged(mockNote)
 
         assertThat(resourceModelHandler.contentType).isEqualTo(ContentType.V5DefaultWithTotp)
         JSONAssert.assertEquals(
@@ -205,7 +205,7 @@ class V5TotpResourceFormPresenterTest : KoinTest {
         JSONAssert.assertEquals(
             """
                 {
-                    "description": "$mockSecureNote",
+                    "description": "$mockNote",
                     "password": "",
                     "totp": {
                         "secret_key": "$mockTotpSecret",

@@ -16,10 +16,10 @@
         android:textSize="@dimen/sp_16"
         android:theme="@style/Theme.Passbolt.Toolbar"
         app:layout_constraintTop_toTopOf="parent"
-        tools:toolbarTitle="@string/resource_form_secure_note" />
+        tools:toolbarTitle="@string/resource_form_note" />
 
-    <com.passbolt.mobile.android.feature.resourceform.subform.securenote.SecureNoteSubformView
-        android:id="@+id/secureNoteSubformView"
+    <com.passbolt.mobile.android.feature.resourceform.subform.note.NoteSubformView
+        android:id="@+id/note_subform_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/dp_16"

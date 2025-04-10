@@ -1,4 +1,4 @@
-package com.passbolt.mobile.android.feature.resourceform.additionalsecrets.securenote
+package com.passbolt.mobile.android.feature.resourceform.additionalsecrets.note
 
 import android.os.Bundle
 import android.view.View
@@ -9,7 +9,7 @@ import androidx.navigation.fragment.navArgs
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
 import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
-import com.passbolt.mobile.android.feature.resourceform.databinding.FragmentSecureNoteFormBinding
+import com.passbolt.mobile.android.feature.resourceform.databinding.FragmentNoteFormBinding
 import org.koin.android.ext.android.inject
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
@@ -35,24 +35,24 @@ import com.passbolt.mobile.android.core.localization.R as LocalizationR
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class SecureNoteFormFragment :
-    BindingScopedFragment<FragmentSecureNoteFormBinding>(
-        FragmentSecureNoteFormBinding::inflate
-    ), SecureNoteFormContract.View {
+class NoteFormFragment :
+    BindingScopedFragment<FragmentNoteFormBinding>(
+        FragmentNoteFormBinding::inflate
+    ), NoteFormContract.View {
 
-    private val presenter: SecureNoteFormContract.Presenter by inject()
-    private val navArgs: SecureNoteFormFragmentArgs by navArgs()
+    private val presenter: NoteFormContract.Presenter by inject()
+    private val navArgs: NoteFormFragmentArgs by navArgs()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initDefaultToolbar(binding.toolbar)
         setListeners()
         presenter.attach(this)
-        presenter.argsRetrieved(navArgs.mode, navArgs.secureNote)
+        presenter.argsRetrieved(navArgs.mode, navArgs.note)
     }
 
     override fun showCreateTitle() {
-        binding.toolbar.toolbarTitle = getString(LocalizationR.string.resource_form_create_secure_note)
+        binding.toolbar.toolbarTitle = getString(LocalizationR.string.resource_form_create_note)
     }
 
     override fun showEditTitle(resourceName: String) {
@@ -61,8 +61,8 @@ class SecureNoteFormFragment :
 
     private fun setListeners() {
         with(binding) {
-            secureNoteSubformView.secureNoteInput.setTextChangeListener {
-                presenter.secureNoteTextChanged(it)
+            noteSubformView.noteInput.setTextChangeListener {
+                presenter.noteTextChanged(it)
             }
             removeNote.setDebouncingOnClick {
                 presenter.removeNoteClick()
@@ -73,21 +73,21 @@ class SecureNoteFormFragment :
         }
     }
 
-    override fun showSecureNote(secureNote: String) {
-        binding.secureNoteSubformView.secureNoteInput.text = secureNote
+    override fun showNote(note: String) {
+        binding.noteSubformView.noteInput.text = note
     }
 
-    override fun goBackWithResult(secureNote: String?) {
+    override fun goBackWithResult(note: String?) {
         setFragmentResult(
-            REQUEST_SECURE_NOTE,
-            bundleOf(EXTRA_SECURE_NOTE to secureNote)
+            REQUEST_NOTE,
+            bundleOf(EXTRA_NOTE to note)
         )
         findNavController().popBackStack()
     }
 
     companion object {
-        const val REQUEST_SECURE_NOTE = "SECURE_NOTE"
+        const val REQUEST_NOTE = "NOTE"
 
-        const val EXTRA_SECURE_NOTE = "secure_note"
+        const val EXTRA_NOTE = "note"
     }
 }

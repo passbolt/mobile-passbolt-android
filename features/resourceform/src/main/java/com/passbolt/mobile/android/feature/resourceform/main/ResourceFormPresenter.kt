@@ -15,12 +15,12 @@ import com.passbolt.mobile.android.core.resources.actions.performResourceUpdateA
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUseCase
 import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction2.ADD_METADATA_DESCRIPTION
 import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction2.ADD_PASSWORD
-import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction2.ADD_SECURE_NOTE
+import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction2.ADD_NOTE
 import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction2.ADD_TOTP
 import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction2.EDIT_METADATA
 import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction2.REMOVE_METADATA_DESCRIPTION
 import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction2.REMOVE_PASSWORD
-import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction2.REMOVE_SECURE_NOTE
+import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction2.REMOVE_NOTE
 import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction2.REMOVE_TOTP
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.SecretJsonModel
 import com.passbolt.mobile.android.jsonmodel.delegates.TotpSecret
@@ -259,8 +259,8 @@ class ResourceFormPresenter(
         }
     }
 
-    override fun additionalSecureNoteClick() {
-        view?.navigateToSecureNote(resourceSecret.description.orEmpty())
+    override fun additionalNoteClick() {
+        view?.navigateToNote(resourceSecret.description.orEmpty())
     }
 
     override fun totpSecretChanged(totpSecret: String) {
@@ -329,11 +329,11 @@ class ResourceFormPresenter(
         view?.navigateToMetadataDescription(resourceMetadata.description.orEmpty())
     }
 
-    override fun secureNoteChanged(secureNote: String?) {
+    override fun noteChanged(note: String?) {
         resourceModelHandler.applyModelChange(
-            if (secureNote.isNullOrBlank()) REMOVE_SECURE_NOTE else ADD_SECURE_NOTE
+            if (note.isNullOrBlank()) REMOVE_NOTE else ADD_NOTE
         ) { _, secret ->
-            secret.description = secureNote
+            secret.description = note
         }
     }
 

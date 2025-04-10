@@ -164,7 +164,7 @@ interface HomeContract {
         fun expiryClick()
         fun onCreateResourceClick()
         fun resourceFormReturned(isResourceCreated: Boolean, isResourceEdited: Boolean, resourceName: String?)
-        fun menuCopySecureNoteClick()
+        fun menuCopyNoteClick()
         fun resourceDetailsReturned(isResourceEdited: Boolean, isResourceDeleted: Boolean, resourceName: String?)
     }
 }

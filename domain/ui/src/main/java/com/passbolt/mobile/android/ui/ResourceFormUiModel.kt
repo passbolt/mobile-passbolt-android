@@ -34,7 +34,7 @@ data class ResourceFormUiModel(
 
     enum class Secret {
         PASSWORD,
-        SECURE_NOTE,
+        NOTE,
         TOTP
     }
 }

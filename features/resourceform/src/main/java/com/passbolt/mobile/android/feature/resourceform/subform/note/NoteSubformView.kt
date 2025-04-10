@@ -1,7 +1,12 @@
-package com.passbolt.mobile.android.feature.resourceform.additionalsecrets.securenote
+package com.passbolt.mobile.android.feature.resourceform.subform.note
 
-import com.passbolt.mobile.android.core.mvp.BaseContract
-import com.passbolt.mobile.android.ui.ResourceFormMode
+import android.content.Context
+import android.util.AttributeSet
+import android.view.LayoutInflater
+import android.widget.LinearLayout
+import com.passbolt.mobile.android.core.ui.textinputfield.TextInputView
+import com.passbolt.mobile.android.feature.resourceform.R
+import com.passbolt.mobile.android.feature.resourceform.databinding.ViewNoteSubformBinding
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,19 +30,24 @@ import com.passbolt.mobile.android.ui.ResourceFormMode
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-interface SecureNoteFormContract {
 
-    interface View : BaseContract.View {
-        fun showSecureNote(secureNote: String)
-        fun goBackWithResult(secureNote: String?)
-        fun showCreateTitle()
-        fun showEditTitle(resourceName: String)
-    }
+class NoteSubformView @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyle: Int = 0
+) : LinearLayout(context, attrs, defStyle) {
 
-    interface Presenter : BaseContract.Presenter<View> {
-        fun argsRetrieved(mode: ResourceFormMode, secureNote: String)
-        fun secureNoteTextChanged(secureNote: String)
-        fun applyClick()
-        fun removeNoteClick()
+    private val binding = ViewNoteSubformBinding.inflate(LayoutInflater.from(context), this)
+
+    val noteInput: TextInputView
+        get() = binding.noteSectionView.backgroundContainer.findViewById(R.id.noteInput)
+
+    init {
+        orientation = VERTICAL
+        LayoutInflater.from(context).inflate(
+            R.layout.view_note_subform_fields,
+            binding.noteSectionView.backgroundContainer,
+            true
+        )
     }
 }

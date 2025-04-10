@@ -68,13 +68,13 @@ class SecretPropertiesActionsInteractor(
                 }
             }
 
-    suspend fun provideSecureNote(): Flow<SecretPropertyActionResult<String>> =
+    suspend fun provideNote(): Flow<SecretPropertyActionResult<String>> =
         fetchAndDecrypt()
             .mapSuccess {
                 when (val description = secretParser.parseSecret(resource.resourceTypeId, it.secret)) {
                     is DecryptedSecretOrError.DecryptedSecret ->
                         SecretPropertyActionResult.Success(
-                            SECURE_NOTE_LABEL,
+                            NOTE_LABEL,
                             isSecret = true,
                             description.secret.description.orEmpty()
                         )
@@ -168,7 +168,7 @@ class SecretPropertiesActionsInteractor(
         const val SECRET_LABEL = "Secret"
 
         @VisibleForTesting
-        const val SECURE_NOTE_LABEL = "Secure Note"
+        const val NOTE_LABEL = "Note"
 
         @VisibleForTesting
         const val JSON_SECRET_LABEL = "JSON Secret"

@@ -1,24 +1,22 @@
-package com.passbolt.mobile.android.feature.resourceform.additionalsecrets.securenote
+package com.passbolt.mobile.android.feature.resourceform.additionalsecrets.note
 
-import com.passbolt.mobile.android.ui.ResourceFormMode
+import org.koin.core.module.dsl.factoryOf
+import org.koin.dsl.bind
+import org.koin.dsl.module
 
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
  *
- *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
  * Public License (AGPL) as published by the Free Software Foundation version 3.
- *
  *
  * The name "Passbolt" is a registered trademark of Passbolt SA, and Passbolt SA hereby declines to grant a trademark
  * license to "Passbolt" pursuant to the GNU Affero General Public License version 3 Section 7(e), without a separate
  * agreement with Passbolt SA.
  *
- *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See GNU Affero General Public License for more details.
- *
  *
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see GNU Affero General Public License v3 (http://www.gnu.org/licenses/agpl-3.0.html).
@@ -29,30 +27,6 @@ import com.passbolt.mobile.android.ui.ResourceFormMode
  * @since v1.0
  */
 
-class SecureNoteFormPresenter : SecureNoteFormContract.Presenter {
-
-    override var view: SecureNoteFormContract.View? = null
-
-    private var secureNote: String = ""
-
-    override fun argsRetrieved(mode: ResourceFormMode, secureNote: String) {
-        when (mode) {
-            is ResourceFormMode.Create -> view?.showCreateTitle()
-            is ResourceFormMode.Edit -> view?.showEditTitle(mode.resourceName)
-        }
-
-        view?.showSecureNote(secureNote)
-    }
-
-    override fun secureNoteTextChanged(secureNote: String) {
-        this.secureNote = secureNote
-    }
-
-    override fun removeNoteClick() {
-        view?.goBackWithResult(null)
-    }
-
-    override fun applyClick() {
-        view?.goBackWithResult(secureNote)
-    }
+internal val noteFormModule = module {
+    factoryOf(::NoteFormPresenter) bind NoteFormContract.Presenter::class
 }
