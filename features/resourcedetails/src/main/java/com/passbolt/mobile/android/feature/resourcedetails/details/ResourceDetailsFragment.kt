@@ -393,8 +393,12 @@ class ResourceDetailsFragment :
         presenter.copyPasswordClick()
     }
 
-    override fun menuCopyDescriptionClick() {
+    override fun menuCopyMetadataDescriptionClick() {
         presenter.copyMetadataDescriptionClick()
+    }
+
+    override fun menuCopySecureNoteClick() {
+        presenter.copySecureNoteClick()
     }
 
     override fun menuCopyUrlClick() {

@@ -71,8 +71,7 @@ fun Module.homeModule() {
                 getLocalFolderUseCase = get(),
                 deleteResourceIdlingResource = get(),
                 totpParametersProvider = get(),
-                getRbacRulesUseCase = get(),
-                idToSlugMappingProvider = get()
+                getRbacRulesUseCase = get()
             )
         }
         declareHomeListAdapters()

@@ -92,7 +92,8 @@ class ResourceMoreMenuFragment :
     private fun setListeners() {
         with(binding) {
             setDebouncingOnClickAndDismiss(copyPassword) { listener?.menuCopyPasswordClick() }
-            setDebouncingOnClickAndDismiss(copyDescription) { listener?.menuCopyDescriptionClick() }
+            setDebouncingOnClickAndDismiss(copyMetadataDescription) { listener?.menuCopyMetadataDescriptionClick() }
+            setDebouncingOnClickAndDismiss(copySecureNote) { listener?.menuCopySecureNoteClick() }
             setDebouncingOnClickAndDismiss(copyUrl) { listener?.menuCopyUrlClick() }
             setDebouncingOnClickAndDismiss(copyUsername) { listener?.menuCopyUsernameClick() }
             setDebouncingOnClickAndDismiss(launchWebsite) { listener?.menuLaunchWebsiteClick() }
@@ -159,6 +160,14 @@ class ResourceMoreMenuFragment :
         binding.copyPassword.visible()
     }
 
+    override fun showCopySecureNoteButton() {
+        binding.copySecureNote.visible()
+    }
+
+    override fun showCopyMetadataDescriptionButton() {
+        binding.copyMetadataDescription.visible()
+    }
+
     override fun hideMenu() {
         dismiss()
     }
@@ -193,7 +202,8 @@ class ResourceMoreMenuFragment :
 
     interface Listener {
         fun menuCopyPasswordClick()
-        fun menuCopyDescriptionClick()
+        fun menuCopyMetadataDescriptionClick()
+        fun menuCopySecureNoteClick()
         fun menuCopyUrlClick()
         fun menuCopyUsernameClick()
         fun menuLaunchWebsiteClick()

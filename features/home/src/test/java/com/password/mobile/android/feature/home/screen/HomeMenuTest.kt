@@ -20,6 +20,8 @@ import com.passbolt.mobile.android.ui.HomeDisplayViewModel
 import com.passbolt.mobile.android.ui.MetadataJsonModel
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
+import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.DescriptionOption.HAS_METADATA_DESCRIPTION
+import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.DescriptionOption.HAS_SECURE_NOTE
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.FavouriteOption.ADD_TO_FAVOURITES
 import com.passbolt.mobile.android.ui.ResourcePermission
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -208,7 +210,7 @@ class HomeMenuTest : KoinTest {
     }
 
     @Test
-    fun `view should copy description from secret after successful decrypt`() = runTest {
+    fun `view should copy secure note from secret after successful decrypt`() = runTest {
         mockIdToSlugMappingProvider.stub {
             onBlocking { provideMappingForSelectedAccount() }.doReturn(
                 mapOf(RESOURCE_TYPE_ID to ContentType.PasswordAndDescription.slug)
@@ -235,7 +237,7 @@ class HomeMenuTest : KoinTest {
         )
         presenter.resume(view)
         presenter.resourceMoreClick(RESOURCE_MODEL)
-        presenter.menuCopyDescriptionClick()
+        presenter.menuCopySecureNoteClick()
 
         verify(view).addToClipboard(
             SecretPropertiesActionsInteractor.SECURE_NOTE_LABEL,
@@ -271,7 +273,7 @@ class HomeMenuTest : KoinTest {
         )
         presenter.resume(view)
         presenter.resourceMoreClick(RESOURCE_MODEL)
-        presenter.menuCopyDescriptionClick()
+        presenter.menuCopyMetadataDescriptionClick()
 
         verify(view).addToClipboard(
             ResourcePropertiesActionsInteractor.DESCRIPTION_LABEL,
@@ -474,7 +476,8 @@ class HomeMenuTest : KoinTest {
             canDelete = true,
             canEdit = true,
             canShare = true,
-            favouriteOption = ADD_TO_FAVOURITES
+            favouriteOption = ADD_TO_FAVOURITES,
+            descriptionOption = HAS_SECURE_NOTE
         )
 
         private lateinit var RESOURCE_MODEL: ResourceModel

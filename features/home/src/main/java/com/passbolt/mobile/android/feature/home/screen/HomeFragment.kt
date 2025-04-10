@@ -534,8 +534,12 @@ class HomeFragment :
         presenter.menuCopyPasswordClick()
     }
 
-    override fun menuCopyDescriptionClick() {
-        presenter.menuCopyDescriptionClick()
+    override fun menuCopyMetadataDescriptionClick() {
+        presenter.menuCopyMetadataDescriptionClick()
+    }
+
+    override fun menuCopySecureNoteClick() {
+        presenter.menuCopySecureNoteClick()
     }
 
     override fun menuCopyUrlClick() {
