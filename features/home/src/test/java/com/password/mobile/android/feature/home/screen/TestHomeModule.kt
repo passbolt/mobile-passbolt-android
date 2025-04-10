@@ -110,8 +110,7 @@ val testHomeModule = module {
             getLocalFolderUseCase = mockGetLocalFolderUseCase,
             deleteResourceIdlingResource = get(),
             totpParametersProvider = mockTotpParametersProvider,
-            getRbacRulesUseCase = mockGetRbacRulesUseCase,
-            idToSlugMappingProvider = mockIdToSlugMappingProvider
+            getRbacRulesUseCase = mockGetRbacRulesUseCase
         )
     }
     factory { mockResourceCommonActionsInteractor }

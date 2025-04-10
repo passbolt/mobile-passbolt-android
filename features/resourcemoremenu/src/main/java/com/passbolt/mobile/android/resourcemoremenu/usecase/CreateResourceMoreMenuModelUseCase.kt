@@ -29,6 +29,7 @@ import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUse
 import com.passbolt.mobile.android.core.resourcetypes.graph.ResourceTypesUpdatesAdjacencyGraph
 import com.passbolt.mobile.android.core.resourcetypes.graph.UpdateAction
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType
 import com.passbolt.mobile.android.ui.RbacRuleModel.ALLOW
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
 import com.passbolt.mobile.android.ui.ResourcePermission
@@ -48,6 +49,7 @@ class CreateResourceMoreMenuModelUseCase(
         val copyRbac = getRbacRulesUseCase.execute(Unit).rbacModel.passwordCopyRule
         val slug = idToSlugMappingProvider.provideMappingForSelectedAccount()[UUID.fromString(resource.resourceTypeId)]
         val updateActionsMetadata = resourceTypesUpdatesAdjacencyGraph.getUpdateActionsMetadata(requireNotNull(slug))
+        val contentType = ContentType.fromSlug(slug)
 
         return Output(
             ResourceMoreMenuModel(
@@ -61,6 +63,13 @@ class CreateResourceMoreMenuModelUseCase(
                     ResourceMoreMenuModel.FavouriteOption.REMOVE_FROM_FAVOURITES
                 } else {
                     ResourceMoreMenuModel.FavouriteOption.ADD_TO_FAVOURITES
+                },
+                descriptionOption = if (contentType.hasMetadataDescription()) {
+                    ResourceMoreMenuModel.DescriptionOption.HAS_METADATA_DESCRIPTION
+                } else if (contentType.hasSecureNote()) {
+                    ResourceMoreMenuModel.DescriptionOption.HAS_SECURE_NOTE
+                } else {
+                    null
                 }
             )
         )

@@ -121,7 +121,7 @@ interface HomeContract {
         fun searchAvatarClick()
         fun userAuthenticated()
         fun searchClearClick()
-        fun menuCopyDescriptionClick()
+        fun menuCopyMetadataDescriptionClick()
         fun newResourceCreated(resourceId: String?)
         fun menuDeleteClick()
         fun resourceDeleted(resourceName: String)
@@ -164,5 +164,6 @@ interface HomeContract {
         fun expiryClick()
         fun onCreateResourceClick()
         fun resourceFormReturned(isResourceCreated: Boolean)
+        fun menuCopySecureNoteClick()
     }
 }

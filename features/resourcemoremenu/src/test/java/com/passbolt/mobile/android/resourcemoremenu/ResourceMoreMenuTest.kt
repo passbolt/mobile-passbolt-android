@@ -25,6 +25,7 @@ package com.passbolt.mobile.android.resourcemoremenu
 
 import com.passbolt.mobile.android.resourcemoremenu.usecase.CreateResourceMoreMenuModelUseCase
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
+import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.DescriptionOption.HAS_SECURE_NOTE
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.FavouriteOption.ADD_TO_FAVOURITES
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.FavouriteOption.REMOVE_FROM_FAVOURITES
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -64,7 +65,8 @@ class ResourceMoreMenuTest : KoinTest {
                             canDelete = true,
                             canEdit = true,
                             canShare = true,
-                            favouriteOption = ADD_TO_FAVOURITES
+                            favouriteOption = ADD_TO_FAVOURITES,
+                            descriptionOption = HAS_SECURE_NOTE
                         )
                     )
         }
@@ -94,7 +96,8 @@ class ResourceMoreMenuTest : KoinTest {
                         canDelete = false,
                         canEdit = false,
                         canShare = false,
-                        favouriteOption = REMOVE_FROM_FAVOURITES
+                        favouriteOption = REMOVE_FROM_FAVOURITES,
+                        descriptionOption = HAS_SECURE_NOTE
                     )
                 )
             )

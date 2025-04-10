@@ -57,13 +57,11 @@ import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesFi
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesWithGroupUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesWithTagUseCase
-import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
 import com.passbolt.mobile.android.core.tags.usecase.db.GetLocalTagsUseCase
 import com.passbolt.mobile.android.feature.home.screen.model.HeaderSectionConfiguration
 import com.passbolt.mobile.android.feature.home.screen.model.SearchInputEndIconMode
 import com.passbolt.mobile.android.jsonmodel.delegates.TotpSecret
 import com.passbolt.mobile.android.mappers.HomeDisplayViewMapper
-import com.passbolt.mobile.android.supportedresourceTypes.ContentType
 import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.homeSlugs
 import com.passbolt.mobile.android.ui.Folder
 import com.passbolt.mobile.android.ui.FolderMoreMenuModel
@@ -107,8 +105,7 @@ class HomePresenter(
     private val getLocalFolderUseCase: GetLocalFolderDetailsUseCase,
     private val deleteResourceIdlingResource: DeleteResourceIdlingResource,
     private val totpParametersProvider: TotpParametersProvider,
-    private val getRbacRulesUseCase: GetRbacRulesUseCase,
-    private val idToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider
+    private val getRbacRulesUseCase: GetRbacRulesUseCase
 ) : DataRefreshViewReactivePresenter<HomeContract.View>(coroutineLaunchContext), HomeContract.Presenter,
     KoinComponent {
 
@@ -563,12 +560,12 @@ class HomePresenter(
                 filteredSubFolderResources,
                 HeaderSectionConfiguration(
                     isInCurrentFolderSectionVisible =
-                    homeView is HomeDisplayViewModel.Folders && !areListsEmpty(filteredResources, filteredFolders),
+                        homeView is HomeDisplayViewModel.Folders && !areListsEmpty(filteredResources, filteredFolders),
                     isInSubFoldersSectionVisible =
-                    homeView is HomeDisplayViewModel.Folders && !areListsEmpty(
-                        filteredSubFolderResources,
-                        filteredSubFolders
-                    ),
+                        homeView is HomeDisplayViewModel.Folders && !areListsEmpty(
+                            filteredSubFolderResources,
+                            filteredSubFolders
+                        ),
                     (homeView as? HomeDisplayViewModel.Folders)?.activeFolderName,
                     isSuggestedSectionVisible = false,
                     isOtherItemsSectionVisible = false
@@ -673,24 +670,23 @@ class HomePresenter(
         }
     }
 
-    override fun menuCopyDescriptionClick() {
+    override fun menuCopyMetadataDescriptionClick() {
         coroutineScope.launch {
-            val slug = idToSlugMappingProvider.provideMappingForSelectedAccount()[
-                java.util.UUID.fromString(currentMoreMenuResource!!.resourceTypeId)
-            ]
-            if (ContentType.fromSlug(slug!!).isSimplePassword()) {
-                performResourcePropertyAction(
-                    action = { resourcePropertiesActionsInteractor.provideDescription() },
-                    doOnResult = { view?.addToClipboard(it.label, it.result, it.isSecret) }
-                )
-            } else {
-                performSecretPropertyAction(
-                    action = { secretPropertiesActionsInteractor.provideSecureNote() },
-                    doOnDecryptionFailure = { view?.showDecryptionFailure() },
-                    doOnFetchFailure = { view?.showFetchFailure() },
-                    doOnSuccess = { view?.addToClipboard(it.label, it.result, it.isSecret) }
-                )
-            }
+            performResourcePropertyAction(
+                action = { resourcePropertiesActionsInteractor.provideDescription() },
+                doOnResult = { view?.addToClipboard(it.label, it.result, it.isSecret) }
+            )
+        }
+    }
+
+    override fun menuCopySecureNoteClick() {
+        coroutineScope.launch {
+            performSecretPropertyAction(
+                action = { secretPropertiesActionsInteractor.provideSecureNote() },
+                doOnDecryptionFailure = { view?.showDecryptionFailure() },
+                doOnFetchFailure = { view?.showFetchFailure() },
+                doOnSuccess = { view?.addToClipboard(it.label, it.result, it.isSecret) }
+            )
         }
     }
 

@@ -40,6 +40,8 @@ interface ResourceMoreMenuContract {
         fun notifyFavouriteClick(favouriteOption: ResourceMoreMenuModel.FavouriteOption)
         fun hideMenu()
         fun showCopyButton()
+        fun showCopySecureNoteButton()
+        fun showCopyMetadataDescriptionButton()
     }
 
     interface Presenter : DataRefreshViewReactiveContract.Presenter<View> {

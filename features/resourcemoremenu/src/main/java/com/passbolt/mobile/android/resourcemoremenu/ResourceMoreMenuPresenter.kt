@@ -5,6 +5,8 @@ import com.passbolt.mobile.android.core.idlingresource.CreateMenuModelIdlingReso
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.resourcemoremenu.usecase.CreateResourceMoreMenuModelUseCase
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
+import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.DescriptionOption.HAS_METADATA_DESCRIPTION
+import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.DescriptionOption.HAS_SECURE_NOTE
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.FavouriteOption.ADD_TO_FAVOURITES
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.FavouriteOption.REMOVE_FROM_FAVOURITES
 import kotlinx.coroutines.CoroutineScope
@@ -64,6 +66,14 @@ class ResourceMoreMenuPresenter(
     private fun processDynamicButtons() {
         if (menuModel.canCopy) {
             view?.showCopyButton()
+        }
+
+        when (menuModel.descriptionOption) {
+            HAS_SECURE_NOTE -> view?.showCopySecureNoteButton()
+            HAS_METADATA_DESCRIPTION -> view?.showCopyMetadataDescriptionButton()
+            null -> {
+                // ignore - no description button is visible
+            }
         }
 
         if (menuModel.canDelete || menuModel.canEdit || menuModel.canShare) {
