@@ -82,7 +82,8 @@ internal val testResourceFormModule = module {
             entropyViewMapper = get(),
             resourceFormMapper = get(),
             coroutineLaunchContext = get(),
-            resourceModelHandler = get()
+            resourceModelHandler = get(),
+            fullDataRefreshExecutor = get()
         )
     }
 

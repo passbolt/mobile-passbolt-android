@@ -455,11 +455,15 @@ class ResourceDetailsPresenter(
         }
     }
 
-    override fun resourceEdited(resourceName: String) {
-        getResourcesAndPermissions()
-        view?.apply {
-            showResourceEditedSnackbar(resourceName)
-            setResourceEditedResult(resourceName)
+    override fun resourceEdited(resourceName: String?) {
+        coroutineScope.launch {
+            resourceModel = getLocalResourceUseCase.execute(GetLocalResourceUseCase.Input(resourceModel.resourceId))
+                .resource
+            getResourcesAndPermissions()
+            view?.apply {
+                showResourceEditedSnackbar(resourceName.orEmpty())
+                setResourceEditedResult(resourceName.orEmpty())
+            }
         }
     }
 

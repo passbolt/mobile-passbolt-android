@@ -4,18 +4,13 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.core.content.IntentCompat
-import androidx.navigation.fragment.NavHostFragment
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.extension.findNavHostFragment
 import com.passbolt.mobile.android.core.mvp.viewbinding.BindingActivity
-import com.passbolt.mobile.android.core.navigation.deeplinks.NavDeepLinkProvider
 import com.passbolt.mobile.android.core.security.flagsecure.FlagSecureSetter
 import com.passbolt.mobile.android.core.security.runtimeauth.RuntimeAuthenticatedFlag
 import com.passbolt.mobile.android.feature.resources.R
 import com.passbolt.mobile.android.feature.resources.databinding.ActivityResourcesBinding
-import com.passbolt.mobile.android.permissions.permissions.NavigationOrigin
-import com.passbolt.mobile.android.permissions.permissions.PermissionsItem
-import com.passbolt.mobile.android.permissions.permissions.PermissionsMode
 import com.passbolt.mobile.android.ui.ResourceModel
 import org.koin.android.ext.android.inject
 
@@ -67,27 +62,7 @@ class ResourceActivity : BindingActivity<ActivityResourcesBinding>(ActivityResou
             ResourceMode.DETAILS -> inflater.inflate(R.navigation.resources_details)
             ResourceMode.SHARE -> inflater.inflate(R.navigation.resources_details)
         }
-
         navHostFragment.navController.setGraph(graph, intent.extras)
-
-        if (mode == ResourceMode.SHARE) {
-            navigateToResourcePermissions(navHostFragment)
-        }
-    }
-
-    private fun navigateToResourcePermissions(navHostFragment: NavHostFragment) {
-        val resourceId = requireNotNull(
-            IntentCompat.getParcelableExtra(intent, EXTRA_RESOURCE_MODEL, ResourceModel::class.java)
-        ).resourceId
-
-        val request = NavDeepLinkProvider.permissionsDeepLinkRequest(
-            permissionItemName = PermissionsItem.RESOURCE.name,
-            permissionItemId = resourceId,
-            permissionsModeName = PermissionsMode.EDIT.name,
-            navigationOriginName = NavigationOrigin.HOME_RESOURCE_MORE_MENU.name
-        )
-
-        navHostFragment.navController.navigate(request)
     }
 
     companion object {

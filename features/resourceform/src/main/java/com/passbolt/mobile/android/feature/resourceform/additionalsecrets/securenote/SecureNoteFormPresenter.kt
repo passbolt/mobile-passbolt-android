@@ -48,6 +48,10 @@ class SecureNoteFormPresenter : SecureNoteFormContract.Presenter {
         this.secureNote = secureNote
     }
 
+    override fun removeNoteClick() {
+        view?.goBackWithResult(null)
+    }
+
     override fun applyClick() {
         view?.goBackWithResult(secureNote)
     }

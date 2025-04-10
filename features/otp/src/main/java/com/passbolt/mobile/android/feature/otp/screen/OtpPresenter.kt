@@ -303,7 +303,7 @@ class OtpPresenter(
     }
 
     override fun refreshClick() {
-        refreshData()
+        initRefresh()
     }
 
     override fun searchAvatarClick() {
@@ -403,7 +403,7 @@ class OtpPresenter(
             doOnFailure = { view?.showError(it) },
             doOnSuccess = {
                 view?.showResourceDeleted()
-                refreshData()
+                initRefresh()
             },
             doOnSchemaValidationFailure = ::handleSchemaValidationFailure,
             doOnFetchFailure = { view?.showFetchFailure() }
@@ -426,17 +426,17 @@ class OtpPresenter(
             doOnFailure = { view?.showFailedToDeleteResource() },
             doOnSuccess = {
                 view?.showResourceDeleted()
-                refreshData()
+                initRefresh()
             }
         )
     }
 
     override fun otpCreated() {
         view?.showNewOtpCreated()
-        refreshData()
+        initRefresh()
     }
 
-    private fun refreshData() {
+    private fun initRefresh() {
         fullDataRefreshExecutor.performFullDataRefresh()
         refreshInProgress = true
         view?.hideCreateButton()
@@ -444,16 +444,27 @@ class OtpPresenter(
 
     override fun otpUpdated() {
         view?.showOtpUpdate()
-        refreshData()
+        initRefresh()
     }
 
     override fun otpQrScanReturned(isTotpCreated: Boolean, isManualCreationChosen: Boolean) {
         if (isTotpCreated) {
-            refreshData()
+            initRefresh()
         } else {
             if (isManualCreationChosen) {
                 view?.navigateToCreateTotpManually()
             }
+        }
+    }
+
+    override fun resourceFormReturned(isResourceCreated: Boolean, isResourceEdited: Boolean, resourceName: String?) {
+        if (isResourceCreated) {
+            initRefresh()
+            view?.showResourceCreatedSnackbar()
+        }
+        if (isResourceEdited) {
+            initRefresh()
+            view?.showResourceEditedSnackbar(resourceName.orEmpty())
         }
     }
 }

@@ -64,6 +64,8 @@ interface OtpContract {
         fun showJsonSecretSchemaValidationError()
         fun navigateToCreateTotpManually()
         fun navigateToEditResource(resourceModel: ResourceModel)
+        fun showResourceCreatedSnackbar()
+        fun showResourceEditedSnackbar(resourceName: String)
     }
 
     interface Presenter : DataRefreshViewReactiveContract.Presenter<View> {
@@ -83,5 +85,6 @@ interface OtpContract {
         fun otpUpdated()
         fun otpQrScanReturned(isTotpCreated: Boolean, isManualCreationChosen: Boolean)
         fun menuEditOtpClick()
+        fun resourceFormReturned(isResourceCreated: Boolean, isResourceEdited: Boolean, resourceName: String?)
     }
 }

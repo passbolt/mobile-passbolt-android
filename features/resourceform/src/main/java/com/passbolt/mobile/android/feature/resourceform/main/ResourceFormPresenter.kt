@@ -1,7 +1,8 @@
 package com.passbolt.mobile.android.feature.resourceform.main
 
 import com.passbolt.mobile.android.core.fulldatarefresh.DataRefreshStatus
-import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReactivePresenter
+import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
+import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.passwordgenerator.SecretGenerator
 import com.passbolt.mobile.android.core.passwordgenerator.codepoints.toCodepoints
@@ -83,8 +84,9 @@ class ResourceFormPresenter(
     private val resourceFormMapper: ResourceFormMapper,
     private val resourceModelHandler: ResourceModelHandler,
     private val getLocalResourceUseCase: GetLocalResourceUseCase,
+    private val fullDataRefreshExecutor: FullDataRefreshExecutor,
     coroutineLaunchContext: CoroutineLaunchContext
-) : DataRefreshViewReactivePresenter<ResourceFormContract.View>(coroutineLaunchContext),
+) : BaseAuthenticatedPresenter<ResourceFormContract.View>(coroutineLaunchContext),
     ResourceFormContract.Presenter {
 
     override var view: ResourceFormContract.View? = null
@@ -157,7 +159,7 @@ class ResourceFormPresenter(
 
     override fun detach() {
         scope.coroutineContext.cancelChildren()
-        super<DataRefreshViewReactivePresenter>.detach()
+        super<BaseAuthenticatedPresenter>.detach()
     }
 
     override fun advancedSettingsClick() {
@@ -336,11 +338,12 @@ class ResourceFormPresenter(
     }
 
     override fun totpChanged(totpUiModel: TotpUiModel?) {
-        totpUiModel?.let {
-            val totpAction = if (totpUiModel.secret.isBlank()) REMOVE_TOTP else ADD_TOTP
-            resourceModelHandler.applyModelChange(totpAction) { _, secret ->
-                secret.totp = resourceFormMapper.mapToJsonModel(totpUiModel)
-            }
+        val totpAction = if (totpUiModel == null || totpUiModel.secret.isBlank()) REMOVE_TOTP else ADD_TOTP
+
+        resourceModelHandler.applyModelChange(totpAction) { _, secret ->
+            secret.totp = resourceFormMapper.mapToJsonModel(totpUiModel)
+        }
+        if (totpUiModel != null) {
             resourceModelHandler.applyModelChange(EDIT_METADATA) { metadata, _ ->
                 metadata.setMainUri(metadataType, totpUiModel.issuer)
             }
@@ -361,14 +364,6 @@ class ResourceFormPresenter(
         }
     }
 
-    override fun refreshSuccessAction() {
-        // TODO("Not yet implemented")
-    }
-
-    override fun refreshFailureAction() {
-        // TODO("Not yet implemented")
-    }
-
     override fun createResourceClick() {
         scope.launch {
             view?.showProgress()
@@ -387,7 +382,7 @@ class ResourceFormPresenter(
                 doOnFailure = { view?.showGenericError() },
                 doOnCryptoFailure = { view?.showEncryptionError(it) },
                 doOnSchemaValidationFailure = ::handleSchemaValidationFailure,
-                doOnSuccess = { view?.navigateBackWithCreateSuccess() }
+                doOnSuccess = { view?.navigateBackWithCreateSuccess(resourceMetadata.name) }
             )
             view?.hideProgress()
         }
@@ -421,7 +416,7 @@ class ResourceFormPresenter(
                 doOnFailure = { view?.showGenericError() },
                 doOnCryptoFailure = { view?.showEncryptionError(it) },
                 doOnSchemaValidationFailure = ::handleSchemaValidationFailure,
-                doOnSuccess = { view?.navigateBackWithCreateSuccess() }
+                doOnSuccess = { view?.navigateBackWithEditSuccess(resourceMetadata.name) }
             )
             view?.hideProgress()
         }

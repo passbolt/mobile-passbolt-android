@@ -88,6 +88,10 @@ class TotpFormPresenter : TotpFormContract.Presenter {
         }
     }
 
+    override fun removeTotpClick() {
+        view?.goBackWithResult(null)
+    }
+
     override fun applyClick() {
         view?.goBackWithResult(totpUiModel)
     }

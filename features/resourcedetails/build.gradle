@@ -43,6 +43,7 @@ dependencies {
     implementation project(':accounts')
     implementation project(':policies')
     implementation project(':jsonmodel')
+    implementation project(':resourceform')
 
     implementation libs.navigation.fragment
     implementation libs.navigation.ui

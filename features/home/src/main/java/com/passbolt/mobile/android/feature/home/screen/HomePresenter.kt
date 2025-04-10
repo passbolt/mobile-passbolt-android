@@ -724,16 +724,18 @@ class HomePresenter(
         view?.showResourceEditedSnackbar(resourceName)
     }
 
-    override fun resourceShared() {
-        initRefresh()
-        view?.showResourceSharedSnackbar()
+    override fun resourceShared(isShared: Boolean) {
+        if (isShared) {
+            initRefresh()
+            view?.showResourceSharedSnackbar()
+        }
     }
 
     override fun newResourceCreated(resourceId: String?) {
         resourceId?.let {
             initRefresh()
             view?.apply {
-                showResourceAddedSnackbar()
+                showResourceCreatedSnackbar()
                 resourcePostCreateAction(resourceId)
             }
         }
@@ -769,7 +771,7 @@ class HomePresenter(
     }
 
     override fun menuShareClick() {
-        view?.navigateToEditResourcePermissions(
+        view?.navigateToShare(
             requireNotNull(currentMoreMenuResource)
         )
     }
@@ -900,9 +902,25 @@ class HomePresenter(
         }
     }
 
-    override fun resourceFormReturned(isResourceCreated: Boolean) {
+    override fun resourceFormReturned(isResourceCreated: Boolean, isResourceEdited: Boolean, resourceName: String?) {
         if (isResourceCreated) {
             initRefresh()
+            view?.showResourceCreatedSnackbar()
+        }
+        if (isResourceEdited) {
+            initRefresh()
+            view?.showResourceEditedSnackbar(resourceName.orEmpty())
+        }
+    }
+
+    override fun resourceDetailsReturned(isResourceEdited: Boolean, isResourceDeleted: Boolean, resourceName: String?) {
+        if (isResourceEdited) {
+            initRefresh()
+            view?.showResourceEditedSnackbar(resourceName.orEmpty())
+        }
+        if (isResourceDeleted) {
+            initRefresh()
+            view?.showResourceDeletedSnackbar(resourceName.orEmpty())
         }
     }
 

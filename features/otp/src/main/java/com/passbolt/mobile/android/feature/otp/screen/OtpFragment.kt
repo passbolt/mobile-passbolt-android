@@ -65,6 +65,7 @@ import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpFragment
 import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpMode
 import com.passbolt.mobile.android.feature.otp.scanotp.scanotpsuccess.ScanOtpSuccessFragment
 import com.passbolt.mobile.android.feature.otp.screen.recycler.OtpItem
+import com.passbolt.mobile.android.feature.resourceform.main.ResourceFormFragment
 import com.passbolt.mobile.android.otpmoremenu.OtpMoreMenuFragment
 import com.passbolt.mobile.android.ui.LeadingContentType
 import com.passbolt.mobile.android.ui.OtpItemWrapper
@@ -103,6 +104,14 @@ class OtpFragment :
         )
     }
 
+    private val resourceFormReturned = { _: String, result: Bundle ->
+        presenter.resourceFormReturned(
+            result.getBoolean(ResourceFormFragment.EXTRA_RESOURCE_CREATED, false),
+            result.getBoolean(ResourceFormFragment.EXTRA_RESOURCE_EDITED, false),
+            result.getString(ResourceFormFragment.EXTRA_RESOURCE_NAME)
+        )
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setUpRecycler()
@@ -130,7 +139,7 @@ class OtpFragment :
     }
 
     override fun createPasswordClick() {
-        // TODO implement listening for creation result;
+
         findNavController().navigate(
             OtpFragmentDirections.actionHomeToResourceForm(
                 ResourceFormMode.Create(
@@ -142,7 +151,6 @@ class OtpFragment :
     }
 
     override fun navigateToCreateTotpManually() {
-        // TODO handle result and refresh list
         findNavController().navigate(
             OtpFragmentDirections.actionHomeToResourceForm(
                 ResourceFormMode.Create(
@@ -179,6 +187,18 @@ class OtpFragment :
                 showCreateResourceMenu()
             }
         }
+        setFragmentResultListeners()
+    }
+
+    private fun setFragmentResultListeners() {
+        setFragmentResultListener(
+            ScanOtpFragment.REQUEST_SCAN_OTP_FOR_RESULT,
+            otpScanQrReturned
+        )
+        setFragmentResultListener(
+            ResourceFormFragment.REQUEST_RESOURCE_FORM,
+            resourceFormReturned
+        )
     }
 
     private fun showCreateResourceMenu() {
@@ -347,11 +367,6 @@ class OtpFragment :
     }
 
     override fun navigateToScanOtpCodeForResult() {
-        // TODO implement listening for creation result;
-        setFragmentResultListener(
-            ScanOtpFragment.REQUEST_SCAN_OTP_FOR_RESULT,
-            otpScanQrReturned
-        )
         findNavController().navigate(
             OtpFragmentDirections.actionOtpFragmentToScanOtpFragment(ScanOtpMode.SCAN_WITH_SUCCESS_SCREEN)
         )
@@ -410,7 +425,6 @@ class OtpFragment :
     }
 
     override fun navigateToEditResource(resourceModel: ResourceModel) {
-        // TODO handle result on editing
         findNavController().navigate(
             HomeFragmentDirections.actionHomeToResourceForm(
                 ResourceFormMode.Edit(
@@ -423,6 +437,21 @@ class OtpFragment :
 
     override fun menuDeleteOtpClick() {
         presenter.menuDeleteOtpClick()
+    }
+
+    override fun showResourceCreatedSnackbar() {
+        showSnackbar(
+            LocalizationR.string.resource_update_create_success,
+            backgroundColor = CoreUiR.color.green
+        )
+    }
+
+    override fun showResourceEditedSnackbar(resourceName: String) {
+        showSnackbar(
+            messageResId = LocalizationR.string.common_message_resource_edited,
+            messageArgs = arrayOf(resourceName),
+            backgroundColor = CoreUiR.color.green
+        )
     }
 
     private companion object {

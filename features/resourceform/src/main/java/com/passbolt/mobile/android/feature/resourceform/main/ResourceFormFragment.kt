@@ -211,16 +211,6 @@ class ResourceFormFragment :
         )
     }
 
-    override fun onResume() {
-        super.onResume()
-        presenter.resume(this)
-    }
-
-    override fun onPause() {
-        presenter.pause()
-        super.onPause()
-    }
-
     override fun showCreatePasswordTitle() {
         binding.toolbar.toolbarTitle = getString(LocalizationR.string.resource_form_create_password)
     }
@@ -342,14 +332,6 @@ class ResourceFormFragment :
         unableToGeneratePasswordAlertDialog(requireContext(), minimumEntropyBits).show()
     }
 
-    override fun hideRefreshProgress() {
-//        TODO("Not yet implemented")
-    }
-
-    override fun showRefreshProgress() {
-//        TODO("Not yet implemented")
-    }
-
     override fun showInitializationProgress() {
         binding.fullScreenProgressLayout.visible()
     }
@@ -402,10 +384,21 @@ class ResourceFormFragment :
         )
     }
 
-    override fun navigateBackWithCreateSuccess() {
+    override fun navigateBackWithCreateSuccess(name: String) {
         setFragmentResult(
             REQUEST_RESOURCE_FORM, bundleOf(
-                EXTRA_RESOURCE_CREATED to true
+                EXTRA_RESOURCE_CREATED to true,
+                EXTRA_RESOURCE_NAME to name
+            )
+        )
+        findNavController().popBackStack()
+    }
+
+    override fun navigateBackWithEditSuccess(name: String) {
+        setFragmentResult(
+            REQUEST_RESOURCE_FORM, bundleOf(
+                EXTRA_RESOURCE_EDITED to true,
+                EXTRA_RESOURCE_NAME to name
             )
         )
         findNavController().popBackStack()
@@ -415,6 +408,8 @@ class ResourceFormFragment :
         const val REQUEST_RESOURCE_FORM = "RESOURCE_FORM"
 
         const val EXTRA_RESOURCE_CREATED = "RESOURCE_CREATED"
+        const val EXTRA_RESOURCE_EDITED = "RESOURCE_EDITED"
+        const val EXTRA_RESOURCE_NAME = "RESOURCE_NAME"
 
         private const val TAG_PASSWORD_SUBFORM = "PasswordSubform"
         private const val TAG_TOTP_SUBFORM = "TotpSubform"

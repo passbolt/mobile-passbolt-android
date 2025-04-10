@@ -11,11 +11,13 @@ import android.text.SpannableStringBuilder
 import android.text.format.DateUtils
 import android.view.View
 import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
+import androidx.core.os.bundleOf
 import androidx.core.view.doOnLayout
+import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
@@ -27,7 +29,6 @@ import com.passbolt.mobile.android.core.extension.gone
 import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.extension.showSnackbar
 import com.passbolt.mobile.android.core.extension.visible
-import com.passbolt.mobile.android.core.navigation.ActivityResults
 import com.passbolt.mobile.android.core.navigation.deeplinks.NavDeepLinkProvider
 import com.passbolt.mobile.android.core.ui.controller.TotpViewController
 import com.passbolt.mobile.android.core.ui.controller.TotpViewController.StateParameters
@@ -41,11 +42,10 @@ import com.passbolt.mobile.android.core.ui.recyclerview.OverlappingItemDecorator
 import com.passbolt.mobile.android.core.ui.recyclerview.OverlappingItemDecorator.Overlap
 import com.passbolt.mobile.android.core.ui.span.RoundedBackgroundSpan
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
-import com.passbolt.mobile.android.feature.resourcedetails.ResourceActivity
-import com.passbolt.mobile.android.feature.resourcedetails.ResourceMode
+import com.passbolt.mobile.android.feature.resourceform.main.ResourceFormFragment
+import com.passbolt.mobile.android.feature.resources.ResourcesDetailsDirections
 import com.passbolt.mobile.android.feature.resources.databinding.FragmentResourceDetailsBinding
 import com.passbolt.mobile.android.locationdetails.LocationItem
-import com.passbolt.mobile.android.permissions.permissions.NavigationOrigin
 import com.passbolt.mobile.android.permissions.permissions.PermissionsFragment
 import com.passbolt.mobile.android.permissions.permissions.PermissionsItem
 import com.passbolt.mobile.android.permissions.permissions.PermissionsMode
@@ -55,6 +55,7 @@ import com.passbolt.mobile.android.permissions.recycler.UserItem
 import com.passbolt.mobile.android.resourcemoremenu.ResourceMoreMenuFragment
 import com.passbolt.mobile.android.ui.OtpItemWrapper
 import com.passbolt.mobile.android.ui.PermissionModelUi
+import com.passbolt.mobile.android.ui.ResourceFormMode
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
 import org.koin.android.ext.android.inject
@@ -62,7 +63,6 @@ import org.koin.core.qualifier.named
 import java.time.ZonedDateTime
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
-import androidx.navigation.fragment.navArgs
 
 /**
  * Passbolt - Open source password manager for teams
@@ -121,13 +121,12 @@ class ResourceDetailsFragment :
     private val permissionsCounterItemAdapter: ItemAdapter<CounterItem> by inject(named(COUNTER_ITEM_ADAPTER))
 
     private val fastAdapter: FastAdapter<GenericItem> by inject()
-    private val resourceUpdateResult =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            if (it.resultCode == ActivityResults.RESULT_RESOURCE_EDITED) {
-                val name = it.data?.getStringExtra(ResourceActivity.EXTRA_RESOURCE_NAME)
-                presenter.resourceEdited(name.orEmpty())
-            }
+
+    private val resourceEditResult = { _: String, result: Bundle ->
+        if (result.containsKey(ResourceFormFragment.EXTRA_RESOURCE_EDITED)) {
+            presenter.resourceEdited(result.getString(ResourceFormFragment.EXTRA_RESOURCE_NAME))
         }
+    }
 
     private val resourceShareResult = { _: String, _: Bundle ->
         presenter.resourceShared()
@@ -461,19 +460,23 @@ class ResourceDetailsFragment :
     }
 
     override fun closeWithDeleteSuccessResult(name: String) {
-        with(requireActivity()) {
-            setResult(
-                ActivityResults.RESULT_RESOURCE_DELETED,
-                ResourceActivity.resourceNameResultIntent(name)
+        setFragmentResult(
+            REQUEST_RESOURCE_DETAILS,
+            bundleOf(
+                EXTRA_RESOURCE_DELETED to true,
+                EXTRA_RESOURCE_NAME to name
             )
-            finish()
-        }
+        )
+        findNavController().popBackStack()
     }
 
     override fun setResourceEditedResult(resourceName: String) {
-        requireActivity().setResult(
-            ActivityResults.RESULT_RESOURCE_EDITED,
-            ResourceActivity.resourceNameResultIntent(resourceName)
+        setFragmentResult(
+            REQUEST_RESOURCE_DETAILS,
+            bundleOf(
+                EXTRA_RESOURCE_EDITED to true,
+                EXTRA_RESOURCE_NAME to resourceName
+            )
         )
     }
 
@@ -500,12 +503,13 @@ class ResourceDetailsFragment :
     }
 
     override fun navigateToEditResource(resourceModel: ResourceModel) {
-        resourceUpdateResult.launch(
-            ResourceActivity.newInstance(
-                requireContext(),
-                ResourceMode.EDIT,
-                resourceModel.folderId,
-                resourceModel
+        setFragmentResultListener(ResourceFormFragment.REQUEST_RESOURCE_FORM, resourceEditResult)
+        findNavController().navigate(
+            ResourceDetailsFragmentDirections.actionResourceDetailsToResourceForm(
+                ResourceFormMode.Edit(
+                    resourceModel.resourceId,
+                    resourceModel.metadataJsonModel.name
+                )
             )
         )
     }
@@ -551,14 +555,13 @@ class ResourceDetailsFragment :
             resourceShareResult
         )
 
-        val request = NavDeepLinkProvider.permissionsDeepLinkRequest(
-            permissionItemName = PermissionsItem.RESOURCE.name,
-            permissionItemId = resourceId,
-            permissionsModeName = mode.name,
-            navigationOriginName = NavigationOrigin.RESOURCE_DETAILS_SCREEN.name
+        findNavController().navigate(
+            ResourcesDetailsDirections.actionResourceDetailsToResourcePermissions(
+                resourceId,
+                mode,
+                PermissionsItem.RESOURCE
+            )
         )
-
-        findNavController().navigate(request)
     }
 
     override fun showResourceSharedSnackbar() {
@@ -640,5 +643,13 @@ class ResourceDetailsFragment :
 
     override fun resourceMoreMenuDismissed() {
         presenter.resume(this)
+    }
+
+    companion object {
+        const val REQUEST_RESOURCE_DETAILS = "RESOURCE_DETAILS"
+
+        const val EXTRA_RESOURCE_EDITED = "RESOURCE_EDITED"
+        const val EXTRA_RESOURCE_DELETED = "RESOURCE_DELETED"
+        const val EXTRA_RESOURCE_NAME = "RESOURCE_NAME"
     }
 }

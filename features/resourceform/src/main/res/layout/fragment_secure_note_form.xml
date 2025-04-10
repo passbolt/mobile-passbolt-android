@@ -25,6 +25,19 @@
         android:layout_marginHorizontal="@dimen/dp_16"
         android:layout_marginTop="@dimen/dp_16" />
 
+    <TextView
+        android:id="@+id/removeNote"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/dp_32"
+        android:drawablePadding="@dimen/dp_8"
+        android:text="@string/resource_form_remove_note"
+        android:textFontWeight="600"
+        android:textSize="@dimen/sp_14"
+        app:drawableStartCompat="@drawable/ic_trash"
+        app:drawableTint="@color/icon_tint" />
+
     <Space
         android:layout_width="match_parent"
         android:layout_height="0dp"

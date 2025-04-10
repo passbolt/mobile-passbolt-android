@@ -37,7 +37,6 @@ import com.passbolt.mobile.android.core.extension.setSearchEndIconWithListener
 import com.passbolt.mobile.android.core.extension.showSnackbar
 import com.passbolt.mobile.android.core.extension.visible
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
-import com.passbolt.mobile.android.core.navigation.ActivityResults
 import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.core.navigation.deeplinks.NavDeepLinkProvider
 import com.passbolt.mobile.android.core.ui.initialsicon.InitialsIconGenerator
@@ -61,10 +60,12 @@ import com.passbolt.mobile.android.feature.home.switchaccount.SwitchAccountBotto
 import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpFragment
 import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpMode
 import com.passbolt.mobile.android.feature.otp.scanotp.scanotpsuccess.ScanOtpSuccessFragment
-import com.passbolt.mobile.android.feature.resourcedetails.ResourceActivity
-import com.passbolt.mobile.android.feature.resourcedetails.ResourceMode
+import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsFragment
 import com.passbolt.mobile.android.feature.resourceform.main.ResourceFormFragment
 import com.passbolt.mobile.android.moremenu.FolderMoreMenuFragment
+import com.passbolt.mobile.android.permissions.permissions.PermissionsFragment
+import com.passbolt.mobile.android.permissions.permissions.PermissionsItem
+import com.passbolt.mobile.android.permissions.permissions.PermissionsMode
 import com.passbolt.mobile.android.resourcemoremenu.ResourceMoreMenuFragment
 import com.passbolt.mobile.android.ui.FiltersMenuModel
 import com.passbolt.mobile.android.ui.Folder
@@ -183,24 +184,13 @@ class HomeFragment :
             }
         }
 
-    private val resourceDetailsResult =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            if (it.resultCode == ActivityResults.RESULT_RESOURCE_DELETED) {
-                val name = it.data?.getStringExtra(ResourceActivity.EXTRA_RESOURCE_NAME)
-                presenter.resourceDeleted(name.orEmpty())
-            }
-            if (it.resultCode == ActivityResults.RESULT_RESOURCE_EDITED) {
-                val name = it.data?.getStringExtra(ResourceActivity.EXTRA_RESOURCE_NAME)
-                presenter.resourceEdited(name.orEmpty())
-            }
-            if (it.resultCode == ActivityResults.RESULT_RESOURCE_CREATED) {
-                val resourceId = it.data?.getStringExtra(ResourceActivity.EXTRA_RESOURCE_ID)
-                presenter.newResourceCreated(resourceId)
-            }
-            if (it.resultCode == ActivityResults.RESULT_RESOURCE_SHARED) {
-                presenter.resourceShared()
-            }
-        }
+    private val detailsReturned = { _: String, result: Bundle ->
+        presenter.resourceDetailsReturned(
+            result.getBoolean(ResourceDetailsFragment.EXTRA_RESOURCE_EDITED, false),
+            result.getBoolean(ResourceDetailsFragment.EXTRA_RESOURCE_DELETED, false),
+            result.getString(ResourceFormFragment.EXTRA_RESOURCE_NAME)
+        )
+    }
 
     private val otpScanQrReturned = { _: String, result: Bundle ->
         presenter.otpQrScanReturned(
@@ -209,11 +199,18 @@ class HomeFragment :
         )
     }
 
-    // TODO support edited
     private val resourceFormReturned = { _: String, result: Bundle ->
         presenter.resourceFormReturned(
-            result.getBoolean(ResourceFormFragment.EXTRA_RESOURCE_CREATED, false)
+            result.getBoolean(ResourceFormFragment.EXTRA_RESOURCE_CREATED, false),
+            result.getBoolean(ResourceFormFragment.EXTRA_RESOURCE_EDITED, false),
+            result.getString(ResourceFormFragment.EXTRA_RESOURCE_NAME)
         )
+    }
+
+    private val shareReturned = { _: String, result: Bundle ->
+        if (result.containsKey(PermissionsFragment.EXTRA_RESOURCE_SHARED)) {
+            presenter.resourceShared(result.getBoolean(PermissionsFragment.EXTRA_RESOURCE_SHARED, false))
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -293,23 +290,24 @@ class HomeFragment :
             layoutManager = LinearLayoutManager(requireContext())
             adapter = fastAdapter
         }
-        fastAdapter.addEventHooks(listOf(
-            PasswordItem.ItemClick {
-                resourceHandlingStrategy.resourceItemClick(it)
-            },
-            PasswordItem.MoreClick {
-                presenter.resourceMoreClick(it)
-            },
-            FolderItem.ItemClick {
-                presenter.folderItemClick(it)
-            },
-            TagWithCountItem.ItemClick {
-                presenter.tagItemClick(it)
-            },
-            GroupWithCountItem.ItemClick {
-                presenter.groupItemClick(it)
-            }
-        ))
+        fastAdapter.addEventHooks(
+            listOf(
+                PasswordItem.ItemClick {
+                    resourceHandlingStrategy.resourceItemClick(it)
+                },
+                PasswordItem.MoreClick {
+                    presenter.resourceMoreClick(it)
+                },
+                FolderItem.ItemClick {
+                    presenter.folderItemClick(it)
+                },
+                TagWithCountItem.ItemClick {
+                    presenter.tagItemClick(it)
+                },
+                GroupWithCountItem.ItemClick {
+                    presenter.groupItemClick(it)
+                }
+            ))
     }
 
     override fun resourceItemClick(resourceModel: ResourceModel) {
@@ -375,6 +373,10 @@ class HomeFragment :
             }
         }
 
+        setFragmentResultListeners()
+    }
+
+    private fun setFragmentResultListeners() {
         setFragmentResultListener(
             CreateFolderFragment.REQUEST_CREATE_FOLDER,
             folderCreatedListener
@@ -386,6 +388,14 @@ class HomeFragment :
         setFragmentResultListener(
             ResourceFormFragment.REQUEST_RESOURCE_FORM,
             resourceFormReturned
+        )
+        setFragmentResultListener(
+            ResourceDetailsFragment.REQUEST_RESOURCE_DETAILS,
+            detailsReturned
+        )
+        setFragmentResultListener(
+            PermissionsFragment.REQUEST_UPDATE_PERMISSIONS,
+            shareReturned
         )
     }
 
@@ -512,8 +522,6 @@ class HomeFragment :
     }
 
     override fun navigateToDetails(resourceModel: ResourceModel) {
-        // TODO handle result on editing
-
         findNavController().navigate(
             HomeFragmentDirections.actionHomeToDetails(resourceModel)
         )
@@ -624,7 +632,7 @@ class HomeFragment :
         binding.searchEditText.setText("")
     }
 
-    override fun showResourceAddedSnackbar() {
+    override fun showResourceCreatedSnackbar() {
         showSnackbar(
             LocalizationR.string.resource_update_create_success,
             anchorView = snackbarAnchorView,
@@ -641,7 +649,6 @@ class HomeFragment :
     }
 
     override fun navigateToEdit(resourceModel: ResourceModel) {
-        // TODO handle result on editing
         findNavController().navigate(
             HomeFragmentDirections.actionHomeToResourceForm(
                 ResourceFormMode.Edit(
@@ -652,9 +659,13 @@ class HomeFragment :
         )
     }
 
-    override fun navigateToEditResourcePermissions(resource: ResourceModel) {
-        resourceDetailsResult.launch(
-            ResourceActivity.newInstance(requireContext(), ResourceMode.SHARE, existingResource = resource)
+    override fun navigateToShare(resource: ResourceModel) {
+        findNavController().navigate(
+            HomeFragmentDirections.actionHomeToResourcePermissions(
+                resource.resourceId,
+                PermissionsMode.EDIT,
+                PermissionsItem.RESOURCE
+            )
         )
     }
 
@@ -852,7 +863,6 @@ class HomeFragment :
     }
 
     override fun navigateToCreateResource(parentFolderId: String?) {
-        // TODO handle result and refresh list
         findNavController().navigate(
             HomeFragmentDirections.actionHomeToResourceForm(
                 ResourceFormMode.Create(
@@ -864,7 +874,6 @@ class HomeFragment :
     }
 
     override fun navigateToCreateTotpManually(parentFolderId: String?) {
-        // TODO handle result and refresh list
         findNavController().navigate(
             HomeFragmentDirections.actionHomeToResourceForm(
                 ResourceFormMode.Create(
