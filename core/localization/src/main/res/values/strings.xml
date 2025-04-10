@@ -59,6 +59,7 @@
     <string name="common_message_folder_created">New folder %s has been created!</string>
 
     <string name="validation_required_with_max_length">Length should be between 1 and %d</string>
+    <string name="validation_is_required">This input is required</string>
     <string name="validation_required_integer">Should be an integer number</string>
 
     <string name="fingerprint_biometric_error_generic">An error has occurred with the fingerprint sensor.</string>
@@ -326,6 +327,7 @@
     <string name="resource_form_edit_init_error">Failed to initialize resource edition</string>
     <string name="resource_form_remove_totp">Remove TOTP</string>
     <string name="resource_form_remove_note">Remove Note</string>
+    <string name="resource_form_no_name">no name</string>
 
     <string name="settings_app_settings">App settings</string>
     <string name="settings_accounts">Accounts</string>

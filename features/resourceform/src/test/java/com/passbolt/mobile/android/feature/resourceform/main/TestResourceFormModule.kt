@@ -7,6 +7,7 @@ import com.jayway.jsonpath.spi.json.GsonJsonProvider
 import com.jayway.jsonpath.spi.mapper.GsonMappingProvider
 import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
+import com.passbolt.mobile.android.core.localization.R
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.passwordgenerator.SecretGenerator
 import com.passbolt.mobile.android.core.passwordgenerator.entropy.EntropyCalculator
@@ -72,6 +73,11 @@ internal val testResourceFormModule = module {
     single { mockGetEditContentTypeUseCase }
     single { mockGetLocalResourceUseCase }
     single { mockFullDataRefreshExecutor }
+    single {
+        mapOf(
+            DefaultValue.NAME to "no name"
+        )
+    }
 
     factory<ResourceFormContract.Presenter> {
         ResourceFormPresenter(

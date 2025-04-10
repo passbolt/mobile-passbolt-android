@@ -19,6 +19,7 @@ import com.passbolt.mobile.android.core.passwordgenerator.codepoints.Codepoint
 import com.passbolt.mobile.android.core.ui.R
 import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
 import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
+import com.passbolt.mobile.android.core.ui.textinputfield.StatefulInput
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
 import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpFragment
 import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpMode
@@ -222,9 +223,13 @@ class ResourceFormFragment :
     override fun addTotpLeadingForm(totpUiModel: TotpUiModel) {
         TotpSubformView(requireContext()).apply {
             tag = TAG_TOTP_SUBFORM
+            isRequired = true
             secretInput.apply {
                 disableSavingInstanceState()
-                setTextChangeListener { presenter.totpSecretChanged(it) }
+                setTextChangeListener {
+                    setState(StatefulInput.State.Default)
+                    presenter.totpSecretChanged(it)
+                }
             }
             urlInput.apply {
                 disableSavingInstanceState()
@@ -242,6 +247,16 @@ class ResourceFormFragment :
             }
         }.let {
             binding.leadingTypeContainer.addView(it)
+        }
+    }
+
+    override fun showTotpRequired() {
+        binding.root.findViewWithTag<TotpSubformView>(TAG_TOTP_SUBFORM).apply {
+            secretInput.setState(
+                StatefulInput.State.Error(
+                    getString(LocalizationR.string.validation_is_required)
+                )
+            )
         }
     }
 

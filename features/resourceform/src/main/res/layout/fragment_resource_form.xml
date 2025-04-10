@@ -37,7 +37,6 @@
                 android:layout_marginTop="@dimen/dp_8"
                 android:paddingHorizontal="@dimen/dp_16"
                 app:inputHint="@string/resource_form_name"
-                app:inputIsRequired="true"
                 app:inputTitle="@string/resource_form_resource_name" />
 
             <FrameLayout

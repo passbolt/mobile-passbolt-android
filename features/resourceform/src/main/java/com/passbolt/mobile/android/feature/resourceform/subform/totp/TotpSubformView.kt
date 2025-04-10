@@ -58,6 +58,12 @@ class TotpSubformView @JvmOverloads constructor(
             }
         }
 
+    var isRequired: Boolean
+        get() = secretInput.isRequired
+        set(value) {
+            secretInput.isRequired = value
+        }
+
     val secretInput: TextInputView
         get() = binding.totpSectionView.findViewById(R.id.secretInput)
 
