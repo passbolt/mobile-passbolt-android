@@ -62,6 +62,8 @@ import com.passbolt.mobile.android.mappersModule
 import com.passbolt.mobile.android.metadata.metadataModule
 import com.passbolt.mobile.android.otpMainMoreMenuModule
 import com.passbolt.mobile.android.passboltapi.passboltApiModule
+import com.passbolt.mobile.android.permissions.permissions.permissionsModule
+import com.passbolt.mobile.android.permissions.permissionsModule
 import com.passbolt.mobile.android.pwnedpasswordsapi.pwnedPasswordsApiModule
 import com.passbolt.mobile.android.resourceMoreMenuModule
 import com.passbolt.mobile.android.resourcePickerModule
@@ -175,7 +177,8 @@ class KoinInitializer : Initializer<Unit> {
             passphraseMemoryCacheModule,
             jsonModelModule,
             createResourceMenuModule,
-            resourceFormModule
+            resourceFormModule,
+            permissionsModule
         )
     }
 }

@@ -26,8 +26,8 @@ package com.passbolt.mobile.android.core.resources.actions
 import com.passbolt.mobile.android.core.mvp.authentication.UnauthenticatedReason
 import com.passbolt.mobile.android.core.resources.interactor.update.UpdateResourceInteractor
 import com.passbolt.mobile.android.core.resources.usecase.db.UpdateLocalResourceUseCase
-import com.passbolt.mobile.android.core.resourcetypes.graph.ResourceTypesUpdatesAdjacencyGraph
-import com.passbolt.mobile.android.core.resourcetypes.graph.UpdateAction
+import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.ResourceTypesUpdatesAdjacencyGraph
+import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.SecretInput
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.SecretJsonModel
@@ -161,134 +161,6 @@ class ResourceUpdateActionsInteractor(
             }
         )
 
-    suspend fun updatePasswordAndDescriptionResource(
-        resourceName: String,
-        resourceUsername: String?,
-        resourceUri: String?,
-        resourceParentFolderId: String?,
-        password: String,
-        description: String?
-    ): Flow<ResourceUpdateActionResult> =
-        updateResource(
-            updateAction = UpdateAction.EDIT_PASSWORD,
-            updateResource = { newResourceType, metadataType ->
-                UpdateResourceModel(
-                    resourceId = resource.resourceId,
-                    contentType = newResourceType,
-                    folderId = resourceParentFolderId,
-                    expiry = resource.expiry,
-                    metadataJsonModel = MetadataJsonModel(resource.metadataJsonModel.json),
-                    metadataKeyId = resource.metadataKeyId,
-                    metadataKeyType = resource.metadataKeyType
-                ).apply {
-                    metadataJsonModel.name = resourceName
-                    metadataJsonModel.username = resourceUsername
-                    when (metadataType) {
-                        V4 -> this.metadataJsonModel.uri = resourceUri
-                        V5 -> this.metadataJsonModel.uris = if (resourceUri != null) {
-                            listOf(resourceUri)
-                        } else {
-                            emptyList()
-                        }
-                    }
-                }
-            },
-            updateSecret = { decryptedSecret ->
-                val passwordChanged = decryptedSecret.secret != password
-                SecretInput(
-                    secretJsonModel = decryptedSecret.apply {
-                        this.secret = password
-                        this.description = description
-                    },
-                    passwordChanged = passwordChanged
-                )
-            }
-        )
-
-    suspend fun updateStandaloneTotpResource(
-        label: String,
-        issuer: String?,
-        period: Long,
-        digits: Int,
-        algorithm: String,
-        secretKey: String
-    ): Flow<ResourceUpdateActionResult> =
-        updateResource(
-            updateAction = UpdateAction.EDIT_TOTP,
-            updateResource = { newResourceType, metadataType ->
-                UpdateResourceModel(
-                    resourceId = resource.resourceId,
-                    contentType = newResourceType,
-                    folderId = resource.folderId,
-                    expiry = resource.expiry,
-                    metadataJsonModel = MetadataJsonModel(resource.metadataJsonModel.json),
-                    metadataKeyId = resource.metadataKeyId,
-                    metadataKeyType = resource.metadataKeyType
-                ).apply {
-                    metadataJsonModel.name = label
-                    metadataJsonModel.username = resource.metadataJsonModel.username
-                    when (metadataType) {
-                        V4 -> this.metadataJsonModel.uri = issuer
-                        V5 -> this.metadataJsonModel.uris = if (issuer != null) listOf(issuer) else emptyList()
-                    }
-                }
-            },
-            updateSecret = { decryptedSecret ->
-                SecretInput(
-                    decryptedSecret.apply {
-                        totp = TotpSecret(
-                            algorithm,
-                            secretKey,
-                            digits,
-                            period
-                        )
-                    },
-                    passwordChanged = false
-                )
-            }
-        )
-
-    suspend fun updateSimplePasswordResource(
-        resourceName: String,
-        resourceUsername: String?,
-        resourceUri: String?,
-        resourceParentFolderId: String?,
-        password: String,
-        description: String?
-    ): Flow<ResourceUpdateActionResult> =
-        updateResource(
-            updateAction = UpdateAction.EDIT_PASSWORD,
-            updateResource = { newResourceType, metadataType ->
-                UpdateResourceModel(
-                    resourceId = resource.resourceId,
-                    contentType = newResourceType,
-                    folderId = resourceParentFolderId,
-                    expiry = resource.expiry,
-                    metadataJsonModel = MetadataJsonModel(resource.metadataJsonModel.json),
-                    metadataKeyId = resource.metadataKeyId,
-                    metadataKeyType = resource.metadataKeyType
-                ).apply {
-                    this.metadataJsonModel.name = resourceName
-                    this.metadataJsonModel.username = resourceUsername
-                    this.metadataJsonModel.description = description
-                    when (metadataType) {
-                        V4 -> this.metadataJsonModel.uri = resourceUri
-                        V5 -> this.metadataJsonModel.uris =
-                            if (resourceUri != null) listOf(resourceUri) else emptyList()
-                    }
-                }
-            },
-            updateSecret = { decryptedSecret ->
-                val passwordChanged = decryptedSecret.password != password
-                SecretInput(
-                    secretJsonModel = decryptedSecret.apply {
-                        this.password = password
-                    },
-                    passwordChanged = passwordChanged
-                )
-            }
-        )
-
     suspend fun updateLinkedTotpResourceTotpFields(
         label: String,
         issuer: String?,
@@ -298,7 +170,7 @@ class ResourceUpdateActionsInteractor(
         secretKey: String
     ): Flow<ResourceUpdateActionResult> =
         updateResource(
-            updateAction = UpdateAction.EDIT_TOTP,
+            updateAction = UpdateAction.ADD_TOTP,
             updateResource = { newResourceType, metadataType ->
                 UpdateResourceModel(
                     resourceId = resource.resourceId,
@@ -328,47 +200,6 @@ class ResourceUpdateActionsInteractor(
                         )
                     },
                     passwordChanged = false
-                )
-            }
-        )
-
-    suspend fun updateLinkedTotpResourcePasswordFields(
-        resourceName: String,
-        resourceUsername: String?,
-        resourceUri: String?,
-        resourceParentFolderId: String?,
-        password: String,
-        description: String?
-    ): Flow<ResourceUpdateActionResult> =
-        updateResource(
-            updateAction = UpdateAction.EDIT_PASSWORD,
-            updateResource = { newResourceType, metadataType ->
-                UpdateResourceModel(
-                    resourceId = resource.resourceId,
-                    contentType = newResourceType,
-                    folderId = resourceParentFolderId,
-                    expiry = resource.expiry,
-                    metadataJsonModel = MetadataJsonModel(resource.metadataJsonModel.json),
-                    metadataKeyId = resource.metadataKeyId,
-                    metadataKeyType = resource.metadataKeyType
-                ).apply {
-                    metadataJsonModel.name = resourceName
-                    metadataJsonModel.username = resourceUsername
-                    when (metadataType) {
-                        V4 -> this.metadataJsonModel.uri = resourceUri
-                        V5 -> this.metadataJsonModel.uris =
-                            if (resourceUri != null) listOf(resourceUri) else emptyList()
-                    }
-                }
-            },
-            updateSecret = { decryptedSecret ->
-                val passwordChanged = decryptedSecret.secret != password
-                SecretInput(
-                    secretJsonModel = decryptedSecret.apply {
-                        this.secret = password
-                        this.description = description.orEmpty()
-                    },
-                    passwordChanged = passwordChanged
                 )
             }
         )

@@ -1,3 +1,11 @@
+package com.passbolt.mobile.android.permissions
+
+import com.passbolt.mobile.android.permissions.grouppermissionsdetails.groupPermissionsModule
+import com.passbolt.mobile.android.permissions.permissionrecipients.permissionRecipientsModule
+import com.passbolt.mobile.android.permissions.permissions.permissionsModule
+import com.passbolt.mobile.android.permissions.userpermissionsdetails.userPermissionsModule
+import org.koin.dsl.module
+
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -21,13 +29,9 @@
  * @since v1.0
  */
 
-package com.passbolt.mobile.android.core.resourcetypes.graph
-
-@Deprecated("Use redesigned.UpdateAction2 instead")
-enum class UpdateAction {
-    EDIT_PASSWORD,
-    EDIT_TOTP,
-    ADD_TOTP,
-    REMOVE_TOTP,
-    EDIT_METADATA
+val permissionsModule = module {
+    permissionsModule()
+    groupPermissionsModule()
+    userPermissionsModule()
+    permissionRecipientsModule()
 }

@@ -52,10 +52,6 @@ class NoteFormPresenter : NoteFormContract.Presenter {
         view?.goBackWithResult(null)
     }
 
-    override fun removeNoteClick() {
-        view?.goBackWithResult(null)
-    }
-
     override fun applyClick() {
         view?.goBackWithResult(note)
     }
