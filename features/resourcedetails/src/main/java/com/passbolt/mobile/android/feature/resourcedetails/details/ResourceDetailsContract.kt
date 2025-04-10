@@ -105,7 +105,7 @@ interface ResourceDetailsContract {
         fun passwordActionClick()
         fun viewStopped()
         fun metadataDescriptionActionClick()
-        fun resourceEdited(resourceName: String)
+        fun resourceEdited(resourceName: String?)
         fun deleteResourceConfirmed()
         fun sharedWithClick()
         fun resourceShared()

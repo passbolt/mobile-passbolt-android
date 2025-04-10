@@ -29,7 +29,7 @@ interface SecureNoteFormContract {
 
     interface View : BaseContract.View {
         fun showSecureNote(secureNote: String)
-        fun goBackWithResult(secureNote: String)
+        fun goBackWithResult(secureNote: String?)
         fun showCreateTitle()
         fun showEditTitle(resourceName: String)
     }
@@ -38,5 +38,6 @@ interface SecureNoteFormContract {
         fun argsRetrieved(mode: ResourceFormMode, secureNote: String)
         fun secureNoteTextChanged(secureNote: String)
         fun applyClick()
+        fun removeNoteClick()
     }
 }

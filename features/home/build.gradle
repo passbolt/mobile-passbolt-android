@@ -46,6 +46,7 @@ dependencies {
     implementation project(':jsonmodel')
     implementation project(':createresourcemenu')
     implementation project(':resourceform')
+    implementation project(':permissions')
 
     implementation libs.navigation.fragment
     implementation libs.navigation.ui

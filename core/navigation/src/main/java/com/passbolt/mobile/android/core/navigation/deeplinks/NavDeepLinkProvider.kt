@@ -30,8 +30,7 @@ object NavDeepLinkProvider {
     fun permissionsDeepLinkRequest(
         permissionItemName: String,
         permissionItemId: String,
-        permissionsModeName: String,
-        navigationOriginName: String
+        permissionsModeName: String
     ) =
         NavDeepLinkRequest.Builder
             .fromUri(
@@ -41,7 +40,6 @@ object NavDeepLinkProvider {
                     .appendPath(permissionItemName)
                     .appendPath(permissionItemId)
                     .appendQueryParameter(QUERY_PERMISSIONS_MODE, permissionsModeName)
-                    .appendQueryParameter(QUERY_NAVIGATION_ORIGIN, navigationOriginName)
                     .build()
             ).build()
 
@@ -118,7 +116,6 @@ object NavDeepLinkProvider {
     private const val AUTHORITY_RESOURCE_PICKER = "resourcePicker"
 
     private const val QUERY_PERMISSIONS_MODE = "mode"
-    private const val QUERY_NAVIGATION_ORIGIN = "navigationOrigin"
     private const val QUERY_PARENT_FOLDER_ID = "parentFolderId"
     private const val QUERY_SUGGESTION_URI = "suggestionUri"
 }

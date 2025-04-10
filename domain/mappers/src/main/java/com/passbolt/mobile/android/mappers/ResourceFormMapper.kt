@@ -75,13 +75,15 @@ class ResourceFormMapper {
             )
         } ?: TotpUiModel.emptyWithDefaults(issuer)
 
-    fun mapToJsonModel(totpUiModel: TotpUiModel): TotpSecret =
-        TotpSecret(
-            key = totpUiModel.secret,
-            period = totpUiModel.expiry.toLong(),
-            digits = totpUiModel.length.toInt(),
-            algorithm = totpUiModel.algorithm
-        )
+    fun mapToJsonModel(totpUiModel: TotpUiModel?): TotpSecret? =
+        totpUiModel?.let {
+            TotpSecret(
+                key = totpUiModel.secret,
+                period = totpUiModel.expiry.toLong(),
+                digits = totpUiModel.length.toInt(),
+                algorithm = totpUiModel.algorithm
+            )
+        }
 
     fun mapToUiModel(password: String, mainUri: String, username: String) =
         PasswordUiModel(

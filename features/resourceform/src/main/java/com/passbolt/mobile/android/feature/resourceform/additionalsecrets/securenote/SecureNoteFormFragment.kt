@@ -64,6 +64,9 @@ class SecureNoteFormFragment :
             secureNoteSubformView.secureNoteInput.setTextChangeListener {
                 presenter.secureNoteTextChanged(it)
             }
+            removeNote.setDebouncingOnClick {
+                presenter.removeNoteClick()
+            }
             apply.setDebouncingOnClick {
                 presenter.applyClick()
             }
@@ -74,7 +77,7 @@ class SecureNoteFormFragment :
         binding.secureNoteSubformView.secureNoteInput.text = secureNote
     }
 
-    override fun goBackWithResult(secureNote: String) {
+    override fun goBackWithResult(secureNote: String?) {
         setFragmentResult(
             REQUEST_SECURE_NOTE,
             bundleOf(EXTRA_SECURE_NOTE to secureNote)

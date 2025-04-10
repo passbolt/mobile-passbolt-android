@@ -25,11 +25,9 @@ import org.koin.android.ext.android.inject
 import timber.log.Timber
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
+import com.passbolt.mobile.android.feature.home.R as HomeR
 import com.passbolt.mobile.android.feature.otp.R as OtpR
-import com.passbolt.mobile.android.feature.resourceform.R as ResourceFormR
-import com.passbolt.mobile.android.feature.resourcepicker.R as ResourcePickerR
-import com.passbolt.mobile.android.feature.scanotp.R as ScanOtpR
-import com.passbolt.mobile.android.feature.resources.R as ResourceDetailsR
+import com.passbolt.mobile.android.feature.settings.R as SettingsR
 
 class MainActivity :
     BindingScopedAuthenticatedActivity<ActivityMainBinding, MainContract.View>(ActivityMainBinding::inflate),
@@ -66,7 +64,7 @@ class MainActivity :
         }
 
         bottomNavController.addOnDestinationChangedListener { _, destination, _ ->
-            binding.mainNavigation.isVisible = !noBottomNavFragmentIds.contains(destination.id)
+            binding.mainNavigation.isVisible = bottomNavFragmentIds.contains(destination.id)
         }
     }
 
@@ -154,12 +152,11 @@ class MainActivity :
 
     private companion object {
         private const val REQUEST_APP_UPDATE = 8000
-        private val noBottomNavFragmentIds = listOf(
-            ScanOtpR.id.scanOtpFragment,
-            ScanOtpR.id.scanOtpSuccessFragment,
-            ResourceDetailsR.id.resourceDetails,
-            ResourcePickerR.id.resourcePickerFragment,
-            ResourceFormR.id.resourceFormFragment
+        private val bottomNavFragmentIds = listOf(
+            HomeR.id.home,
+            HomeR.id.homeChild,
+            OtpR.id.otpFragment,
+            SettingsR.id.settings
         )
     }
 }

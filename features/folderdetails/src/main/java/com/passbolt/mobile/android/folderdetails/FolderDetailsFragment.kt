@@ -22,7 +22,6 @@ import com.passbolt.mobile.android.core.ui.recyclerview.OverlappingItemDecorator
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
 import com.passbolt.mobile.android.feature.folderdetails.databinding.FragmentFolderDetailsBinding
 import com.passbolt.mobile.android.locationdetails.LocationItem
-import com.passbolt.mobile.android.permissions.permissions.NavigationOrigin
 import com.passbolt.mobile.android.permissions.permissions.PermissionsItem
 import com.passbolt.mobile.android.permissions.permissions.PermissionsMode
 import com.passbolt.mobile.android.permissions.recycler.CounterItem
@@ -168,8 +167,7 @@ class FolderDetailsFragment :
         val request = NavDeepLinkProvider.permissionsDeepLinkRequest(
             permissionItemName = PermissionsItem.FOLDER.name,
             permissionItemId = folderId,
-            permissionsModeName = mode.name,
-            navigationOriginName = NavigationOrigin.RESOURCE_DETAILS_SCREEN.name
+            permissionsModeName = mode.name
         )
         findNavController().navigate(request)
     }

@@ -1,6 +1,6 @@
 package com.passbolt.mobile.android.feature.resourceform.main
 
-import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReactiveContract
+import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
 import com.passbolt.mobile.android.core.passwordgenerator.codepoints.Codepoint
 import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpMode
 import com.passbolt.mobile.android.ui.OtpParseResult
@@ -35,7 +35,7 @@ import com.passbolt.mobile.android.ui.TotpUiModel
  */
 interface ResourceFormContract {
 
-    interface View : DataRefreshViewReactiveContract.View {
+    interface View : BaseAuthenticatedContract.View {
         fun addTotpLeadingForm(totpUiModel: TotpUiModel)
         fun addPasswordLeadingForm(
             password: String = "",
@@ -68,15 +68,16 @@ interface ResourceFormContract {
         fun showEncryptionError(error: String)
         fun showJsonResourceSchemaValidationError()
         fun showJsonSecretSchemaValidationError()
-        fun navigateBackWithCreateSuccess()
+        fun navigateBackWithCreateSuccess(name: String)
         fun navigateToScanTotp(scanMode: ScanOtpMode)
         fun showInitializationProgress()
         fun hideInitializationProgress()
         fun showEditResourceInitializationError()
         fun navigateBack()
+        fun navigateBackWithEditSuccess(name: String)
     }
 
-    interface Presenter : DataRefreshViewReactiveContract.Presenter<View> {
+    interface Presenter : BaseAuthenticatedContract.Presenter<View> {
         fun argsRetrieved(mode: ResourceFormMode)
         fun createResourceClick()
         fun updateResourceClick()

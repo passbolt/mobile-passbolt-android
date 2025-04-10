@@ -32,7 +32,7 @@ interface TotpFormContract {
 
     interface View : BaseContract.View {
         fun navigateToTotpAdvancedSettingsForm(uiModel: TotpUiModel)
-        fun goBackWithResult(totpUiModel: TotpUiModel)
+        fun goBackWithResult(totpUiModel: TotpUiModel?)
         fun showCreateTitle()
         fun showSecret(secret: String)
         fun showUrl(issuer: String)
@@ -48,5 +48,6 @@ interface TotpFormContract {
         fun totpSecretChanged(secret: String)
         fun totpUrlChanged(url: String)
         fun totpScanned(isManualCreationChosen: Boolean, totpQr: OtpParseResult.OtpQr.TotpQr?)
+        fun removeTotpClick()
     }
 }

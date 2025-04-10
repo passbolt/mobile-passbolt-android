@@ -96,6 +96,9 @@ class TotpFormFragment :
             totpSubformView.urlInput.setTextChangeListener {
                 presenter.totpUrlChanged(it)
             }
+            removeTotp.setDebouncingOnClick {
+                presenter.removeTotpClick()
+            }
             apply.setDebouncingOnClick {
                 presenter.applyClick()
             }
@@ -132,7 +135,7 @@ class TotpFormFragment :
         binding.totpSubformView.urlInput.text = issuer
     }
 
-    override fun goBackWithResult(totpUiModel: TotpUiModel) {
+    override fun goBackWithResult(totpUiModel: TotpUiModel?) {
         setFragmentResult(REQUEST_TOTP, bundleOf(EXTRA_TOTP to totpUiModel))
         findNavController().popBackStack()
     }
