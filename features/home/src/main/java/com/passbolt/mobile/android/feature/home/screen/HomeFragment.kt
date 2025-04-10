@@ -634,7 +634,7 @@ class HomeFragment :
 
     override fun showResourceCreatedSnackbar() {
         showSnackbar(
-            LocalizationR.string.resource_update_create_success,
+            LocalizationR.string.resource_form_create_success,
             anchorView = snackbarAnchorView,
             backgroundColor = CoreUiR.color.green
         )

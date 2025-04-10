@@ -4,8 +4,8 @@ import com.passbolt.mobile.android.core.mvp.authentication.UnauthenticatedReason
 import com.passbolt.mobile.android.core.resources.actions.SecretPropertiesActionsInteractor
 import com.passbolt.mobile.android.core.resources.actions.SecretPropertyActionResult
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUseCase
-import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.ResourceTypesUpdatesAdjacencyGraph2
-import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction2
+import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.ResourceTypesUpdatesAdjacencyGraph
+import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.SecretJsonModel
 import com.passbolt.mobile.android.feature.resourceform.usecase.GetDefaultCreateContentTypeUseCase
 import com.passbolt.mobile.android.feature.resourceform.usecase.GetEditContentTypeUseCase
@@ -48,7 +48,7 @@ import timber.log.Timber
 class ResourceModelHandler(
     private val getDefaultCreateContentTypeUseCase: GetDefaultCreateContentTypeUseCase,
     private val getEditContentTypeUseCase: GetEditContentTypeUseCase,
-    private val resourceActionsGraph: ResourceTypesUpdatesAdjacencyGraph2,
+    private val resourceActionsGraph: ResourceTypesUpdatesAdjacencyGraph,
     private val getLocalResourceUseCase: GetLocalResourceUseCase
 ) : KoinComponent {
 
@@ -107,7 +107,7 @@ class ResourceModelHandler(
         }
     }
 
-    fun applyModelChange(action: UpdateAction2, change: (MetadataJsonModel, SecretJsonModel) -> Unit) {
+    fun applyModelChange(action: UpdateAction, change: (MetadataJsonModel, SecretJsonModel) -> Unit) {
         if (processContentTypeEvent(action)) {
             change(resourceMetadata, resourceSecret)
             ensureRequiredFieldsAreSet()
@@ -144,9 +144,9 @@ class ResourceModelHandler(
         }
     }
 
-    private fun processContentTypeEvent(action: UpdateAction2): Boolean {
+    private fun processContentTypeEvent(action: UpdateAction): Boolean {
         val finalAction = mergeActions(action)
-        val allowedActions = resourceActionsGraph.getUpdateAction2sMetadata(contentType.slug).map { it.action }
+        val allowedActions = resourceActionsGraph.getUpdateActionsMetadata(contentType.slug).map { it.action }
         if (finalAction in allowedActions) {
             contentType = resourceActionsGraph.getResourceTypeSlugAfterUpdate(contentType.slug, finalAction)
             Timber.d("Allowed action $finalAction. Current content type is: $contentType")
@@ -156,15 +156,15 @@ class ResourceModelHandler(
         return false
     }
 
-    private fun mergeActions(action: UpdateAction2): UpdateAction2 {
+    private fun mergeActions(action: UpdateAction): UpdateAction {
         if (contentType in setOf(ContentType.PasswordDescriptionTotp, ContentType.V5DefaultWithTotp)) {
-            if (action == UpdateAction2.REMOVE_PASSWORD && resourceHasNoNote()) {
+            if (action == UpdateAction.REMOVE_PASSWORD && resourceHasNoNote()) {
                 Timber.d("Merged REMOVE_PASSWORD into REMOVE_PASSWORD_AND_NOTE")
-                return UpdateAction2.REMOVE_PASSWORD_AND_NOTE
+                return UpdateAction.REMOVE_PASSWORD_AND_NOTE
             }
-            if (action == UpdateAction2.REMOVE_NOTE && resourceHasNoPassword()) {
+            if (action == UpdateAction.REMOVE_NOTE && resourceHasNoPassword()) {
                 Timber.d("Merged REMOVE_NOTE into REMOVE_PASSWORD_AND_NOTE")
-                return UpdateAction2.REMOVE_PASSWORD_AND_NOTE
+                return UpdateAction.REMOVE_PASSWORD_AND_NOTE
             }
         }
         return action

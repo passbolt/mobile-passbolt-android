@@ -49,9 +49,7 @@ import com.passbolt.mobile.android.metadata.usecase.db.GetLocalMetadataKeysUseCa
 import com.passbolt.mobile.android.metadata.usecase.db.GetLocalMetadataKeysUseCase.MetadataKeyPurpose.ENCRYPT
 import com.passbolt.mobile.android.serializers.jsonschema.SchemaEntity
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType
-import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordAndDescription
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.Totp
-import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5Default
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5TotpStandalone
 import com.passbolt.mobile.android.ui.CreateResourceModel
 import com.passbolt.mobile.android.ui.MetadataJsonModel
@@ -103,45 +101,6 @@ class ResourceCreateActionsInteractor(
                 )
             },
             createSecret = { secretJsonModel }
-        )
-    }
-
-    suspend fun createPasswordAndDescriptionResource(
-        resourceName: String,
-        resourceUsername: String?,
-        resourceUris: List<String>?,
-        resourceParentFolderId: String?,
-        password: String,
-        description: String?
-    ): Flow<ResourceCreateActionResult> {
-        val (metadataKeyId, metadataKeyType) = getMetadataKeysParams(resourceParentFolderId)
-        return createResource(
-            createResource = { metadataType ->
-                CreateResourceModel(
-                    contentType = when (metadataType) {
-                        V4 -> PasswordAndDescription
-                        V5 -> V5Default
-                    },
-                    folderId = resourceParentFolderId,
-                    expiry = null,
-                    metadataKeyId = metadataKeyId,
-                    metadataKeyType = metadataKeyType,
-                    metadataJsonModel = MetadataJsonModel.empty()
-                ).apply {
-                    metadataJsonModel.name = resourceName
-                    metadataJsonModel.username = resourceUsername
-                    when (metadataType) {
-                        V4 -> this.metadataJsonModel.uri = resourceUris?.firstOrNull()
-                        V5 -> this.metadataJsonModel.uris = resourceUris
-                    }
-                }
-            },
-            createSecret = {
-                SecretJsonModel.emptyPassword().apply {
-                    this.secret = password
-                    this.description = description
-                }
-            }
         )
     }
 

@@ -289,24 +289,7 @@
     <string name="more_details_copy_password">Copy password</string>
     <string name="more_details_copy_description">Copy description</string>
 
-    <!--    TODO merge with below after redesign-->
-    <string name="resource_update_password_title">New password</string>
-    <string name="resource_update_password">Password</string>
-    <string name="resource_update_password_hint">Enter password</string>
-    <string name="resource_update_description">Description</string>
-    <string name="resource_update_description_hint">Enter description</string>
-    <string name="resource_update_empty_error">The %s cannot be empty</string>
-    <string name="resource_update_too_long_error">The maximum length has been exceeded</string>
-    <string name="resource_update_create_button">Create</string>
-    <string name="resource_update_create_success">New password was created!</string>
-    <string name="resource_update_edit_password_title">Edit password</string>
-    <string name="resource_update_field_password">Password</string>
-    <string name="resource_update_field_name">Resource name</string>
-    <string name="resource_update_field_uri">Main URI</string>
-    <string name="resource_update_field_username">Username</string>
-    <string name="resource_update_field_description">Description</string>
-    <string name="resource_update_invalid_secret_data">Invalid secret data types. Aborting edit.</string>
-
+    <string name="resource_form_create_success">New password was created!</string>
     <string name="resource_form_password">Password</string>
     <string name="resource_form_enter_password">Enter password</string>
     <string name="resource_form_main_uri">Main URI</string>

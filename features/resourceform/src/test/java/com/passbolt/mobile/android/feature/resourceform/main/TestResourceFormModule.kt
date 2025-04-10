@@ -12,7 +12,7 @@ import com.passbolt.mobile.android.core.passwordgenerator.SecretGenerator
 import com.passbolt.mobile.android.core.passwordgenerator.entropy.EntropyCalculator
 import com.passbolt.mobile.android.core.policies.usecase.GetPasswordPoliciesUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUseCase
-import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.ResourceTypesUpdatesAdjacencyGraph2
+import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.ResourceTypesUpdatesAdjacencyGraph
 import com.passbolt.mobile.android.feature.resourceform.usecase.GetDefaultCreateContentTypeUseCase
 import com.passbolt.mobile.android.feature.resourceform.usecase.GetEditContentTypeUseCase
 import com.passbolt.mobile.android.jsonmodel.JSON_MODEL_GSON
@@ -66,7 +66,7 @@ internal val testResourceFormModule = module {
     factoryOf(::ResourceFormMapper)
     factoryOf(::EntropyViewMapper)
     singleOf(::ResourceModelHandler)
-    factoryOf(::ResourceTypesUpdatesAdjacencyGraph2)
+    factoryOf(::ResourceTypesUpdatesAdjacencyGraph)
 
     single { mockGetDefaultCreateContentTypeUseCase }
     single { mockGetEditContentTypeUseCase }

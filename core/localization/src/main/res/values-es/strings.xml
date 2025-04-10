@@ -253,7 +253,7 @@
     <string name="resource_update_empty_error">El %s no puede estar vacío</string>
     <string name="resource_update_too_long_error">Se ha superado la longitud máxima</string>
     <string name="resource_update_create_button">Crear</string>
-    <string name="resource_update_create_success">¡La nueva contraseña fue creada!</string>
+    <string name="resource_form_create_success">¡La nueva contraseña fue creada!</string>
     <string name="resource_update_edit_password_title">Editar contraseña</string>
     <string name="resource_update_field_password">Contraseña</string>
     <string name="resource_update_field_name">Resource name</string>

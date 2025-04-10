@@ -441,7 +441,7 @@ class OtpFragment :
 
     override fun showResourceCreatedSnackbar() {
         showSnackbar(
-            LocalizationR.string.resource_update_create_success,
+            LocalizationR.string.resource_form_create_success,
             backgroundColor = CoreUiR.color.green
         )
     }

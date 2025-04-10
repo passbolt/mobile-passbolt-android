@@ -26,8 +26,6 @@ package com.passbolt.mobile.android.resourcemoremenu.usecase
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
 import com.passbolt.mobile.android.core.rbac.usecase.GetRbacRulesUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUseCase
-import com.passbolt.mobile.android.core.resourcetypes.graph.ResourceTypesUpdatesAdjacencyGraph
-import com.passbolt.mobile.android.core.resourcetypes.graph.UpdateAction
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType
 import com.passbolt.mobile.android.ui.RbacRuleModel.ALLOW
@@ -39,7 +37,6 @@ import java.util.UUID
 class CreateResourceMoreMenuModelUseCase(
     private val getLocalResourceUseCase: GetLocalResourceUseCase,
     private val getRbacRulesUseCase: GetRbacRulesUseCase,
-    private val resourceTypesUpdatesAdjacencyGraph: ResourceTypesUpdatesAdjacencyGraph,
     private val idToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider
 ) :
     AsyncUseCase<CreateResourceMoreMenuModelUseCase.Input, CreateResourceMoreMenuModelUseCase.Output> {
@@ -48,16 +45,14 @@ class CreateResourceMoreMenuModelUseCase(
         val resource = getLocalResourceUseCase.execute(GetLocalResourceUseCase.Input(input.resourceId)).resource
         val copyRbac = getRbacRulesUseCase.execute(Unit).rbacModel.passwordCopyRule
         val slug = idToSlugMappingProvider.provideMappingForSelectedAccount()[UUID.fromString(resource.resourceTypeId)]
-        val updateActionsMetadata = resourceTypesUpdatesAdjacencyGraph.getUpdateActionsMetadata(requireNotNull(slug))
-        val contentType = ContentType.fromSlug(slug)
+        val contentType = ContentType.fromSlug(slug!!)
 
         return Output(
             ResourceMoreMenuModel(
                 title = resource.metadataJsonModel.name,
                 canCopy = copyRbac == ALLOW,
                 canDelete = resource.permission in WRITE_PERMISSIONS,
-                canEdit = resource.permission in WRITE_PERMISSIONS &&
-                        updateActionsMetadata.any { it.action == UpdateAction.EDIT_PASSWORD },
+                canEdit = resource.permission in WRITE_PERMISSIONS,
                 canShare = resource.permission == ResourcePermission.OWNER,
                 favouriteOption = if (resource.isFavourite()) {
                     ResourceMoreMenuModel.FavouriteOption.REMOVE_FROM_FAVOURITES
