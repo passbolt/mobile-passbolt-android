@@ -61,6 +61,7 @@ import org.koin.core.component.get
 import org.koin.core.component.getOrCreateScope
 import org.koin.core.parameter.parametersOf
 import org.koin.core.scope.Scope
+import timber.log.Timber
 import java.util.UUID
 import kotlin.time.Duration.Companion.seconds
 
@@ -253,31 +254,37 @@ class OtpPresenter(
                 doOnDecryptionFailure = { view?.showDecryptionFailure() },
                 doOnFetchFailure = { view?.showFetchFailure() },
                 doOnSuccess = {
-                    view?.apply {
-                        val otpParameters = totpParametersProvider.provideOtpParameters(
-                            secretKey = it.result.key,
-                            digits = it.result.digits,
-                            period = it.result.period,
-                            algorithm = it.result.algorithm
-                        )
+                    if (it.result.key.isNotBlank()) {
+                        view?.apply {
+                            val otpParameters = totpParametersProvider.provideOtpParameters(
+                                secretKey = it.result.key,
+                                digits = it.result.digits,
+                                period = it.result.period,
+                                algorithm = it.result.algorithm
+                            )
 
-                        val newOtp = otpItemWrapper.copy(
-                            otpValue = otpParameters.otpValue,
-                            isVisible = true,
-                            otpExpirySeconds = it.result.period,
-                            remainingSecondsCounter = otpParameters.secondsValid,
-                            isRefreshing = false
-                        )
-                        with(newOtp) {
-                            val indexOfOld = otpList
-                                .indexOfFirst { it.resource.resourceId == otpItemWrapper.resource.resourceId }
-                            otpList[indexOfOld] = this
-                            visibleOtpId = otpItemWrapper.resource.resourceId
+                            val newOtp = otpItemWrapper.copy(
+                                otpValue = otpParameters.otpValue,
+                                isVisible = true,
+                                otpExpirySeconds = it.result.period,
+                                remainingSecondsCounter = otpParameters.secondsValid,
+                                isRefreshing = false
+                            )
+                            with(newOtp) {
+                                val indexOfOld = otpList
+                                    .indexOfFirst { it.resource.resourceId == otpItemWrapper.resource.resourceId }
+                                otpList[indexOfOld] = this
+                                visibleOtpId = otpItemWrapper.resource.resourceId
+                            }
+                            showOtps()
+                            if (copyToClipboard) {
+                                view?.copySecretToClipBoard(it.label, otpParameters.otpValue)
+                            }
                         }
-                        showOtps()
-                        if (copyToClipboard) {
-                            view?.copySecretToClipBoard(it.label, otpParameters.otpValue)
-                        }
+                    } else {
+                        val error = "Fetched totp key is empty"
+                        Timber.e(error)
+                        view?.showError(error)
                     }
                 }
             )
@@ -347,13 +354,19 @@ class OtpPresenter(
                 doOnDecryptionFailure = { view?.showDecryptionFailure() },
                 doOnFetchFailure = { view?.showFetchFailure() },
                 doOnSuccess = {
-                    val otpParameters = totpParametersProvider.provideOtpParameters(
-                        secretKey = it.result.key,
-                        digits = it.result.digits,
-                        period = it.result.period,
-                        algorithm = it.result.algorithm
-                    )
-                    view?.copySecretToClipBoard(it.label, otpParameters.otpValue)
+                    if (it.result.key.isNotBlank()) {
+                        val otpParameters = totpParametersProvider.provideOtpParameters(
+                            secretKey = it.result.key,
+                            digits = it.result.digits,
+                            period = it.result.period,
+                            algorithm = it.result.algorithm
+                        )
+                        view?.copySecretToClipBoard(it.label, otpParameters.otpValue)
+                    } else {
+                        val error = "Fetched totp key is empty"
+                        Timber.e(error)
+                        view?.showError(error)
+                    }
                 }
             )
         }

@@ -365,26 +365,28 @@ class ResourceFormPresenter(
     }
 
     override fun createResourceClick() {
-        scope.launch {
-            view?.showProgress()
-            val resourceCreateActionsInteractor = get<ResourceCreateActionsInteractor> {
-                parametersOf(needSessionRefreshFlow, sessionRefreshedFlow)
+        onValid {
+            scope.launch {
+                view?.showProgress()
+                val resourceCreateActionsInteractor = get<ResourceCreateActionsInteractor> {
+                    parametersOf(needSessionRefreshFlow, sessionRefreshedFlow)
+                }
+                performResourceCreateAction(
+                    action = {
+                        resourceCreateActionsInteractor.createGenericResourceResource(
+                            contentType,
+                            parentFolderId,
+                            resourceModelHandler.getResourceMetadataWithRequiredFields(),
+                            resourceModelHandler.getResourceSecretWithRequiredFields()
+                        )
+                    },
+                    doOnFailure = { view?.showGenericError() },
+                    doOnCryptoFailure = { view?.showEncryptionError(it) },
+                    doOnSchemaValidationFailure = ::handleSchemaValidationFailure,
+                    doOnSuccess = { view?.navigateBackWithCreateSuccess(resourceMetadata.name) }
+                )
+                view?.hideProgress()
             }
-            performResourceCreateAction(
-                action = {
-                    resourceCreateActionsInteractor.createGenericResourceResource(
-                        contentType,
-                        parentFolderId,
-                        resourceMetadata,
-                        resourceSecret
-                    )
-                },
-                doOnFailure = { view?.showGenericError() },
-                doOnCryptoFailure = { view?.showEncryptionError(it) },
-                doOnSchemaValidationFailure = ::handleSchemaValidationFailure,
-                doOnSuccess = { view?.navigateBackWithCreateSuccess(resourceMetadata.name) }
-            )
-            view?.hideProgress()
         }
     }
 
@@ -396,29 +398,39 @@ class ResourceFormPresenter(
     }
 
     override fun updateResourceClick() {
-        scope.launch {
-            view?.showProgress()
-            val editedResource = getLocalResourceUseCase.execute(
-                GetLocalResourceUseCase.Input((mode as ResourceFormMode.Edit).resourceId)
-            ).resource
-            val resourceUpdateActionsInteractor = get<ResourceUpdateActionsInteractor> {
-                parametersOf(editedResource, needSessionRefreshFlow, sessionRefreshedFlow)
+        onValid {
+            scope.launch {
+                view?.showProgress()
+                val editedResource = getLocalResourceUseCase.execute(
+                    GetLocalResourceUseCase.Input((mode as ResourceFormMode.Edit).resourceId)
+                ).resource
+                val resourceUpdateActionsInteractor = get<ResourceUpdateActionsInteractor> {
+                    parametersOf(editedResource, needSessionRefreshFlow, sessionRefreshedFlow)
+                }
+                performResourceUpdateAction(
+                    action = {
+                        resourceUpdateActionsInteractor.updateGenericResource(
+                            contentType,
+                            editedResource,
+                            resourceModelHandler.getResourceMetadataWithRequiredFields(),
+                            resourceModelHandler.getResourceSecretWithRequiredFields()
+                        )
+                    },
+                    doOnFailure = { view?.showGenericError() },
+                    doOnCryptoFailure = { view?.showEncryptionError(it) },
+                    doOnSchemaValidationFailure = ::handleSchemaValidationFailure,
+                    doOnSuccess = { view?.navigateBackWithEditSuccess(resourceMetadata.name) }
+                )
+                view?.hideProgress()
             }
-            performResourceUpdateAction(
-                action = {
-                    resourceUpdateActionsInteractor.updateGenericResource(
-                        contentType,
-                        editedResource,
-                        resourceMetadata,
-                        resourceSecret
-                    )
-                },
-                doOnFailure = { view?.showGenericError() },
-                doOnCryptoFailure = { view?.showEncryptionError(it) },
-                doOnSchemaValidationFailure = ::handleSchemaValidationFailure,
-                doOnSuccess = { view?.navigateBackWithEditSuccess(resourceMetadata.name) }
-            )
-            view?.hideProgress()
+        }
+    }
+
+    private fun onValid(action: () -> Unit) {
+        if (uiModel.leadingContentType == TOTP && resourceSecret.totp?.key.isNullOrBlank()) {
+            view?.showTotpRequired()
+        } else {
+            action()
         }
     }
 }

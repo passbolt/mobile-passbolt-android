@@ -35,6 +35,7 @@ import com.passbolt.mobile.android.ui.TotpUiModel
  */
 interface ResourceFormContract {
 
+    @Suppress("TooManyFunctions")
     interface View : BaseAuthenticatedContract.View {
         fun addTotpLeadingForm(totpUiModel: TotpUiModel)
         fun addPasswordLeadingForm(
@@ -75,6 +76,7 @@ interface ResourceFormContract {
         fun showEditResourceInitializationError()
         fun navigateBack()
         fun navigateBackWithEditSuccess(name: String)
+        fun showTotpRequired()
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {

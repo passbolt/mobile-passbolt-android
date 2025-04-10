@@ -33,7 +33,6 @@ package com.passbolt.mobile.android.feature.home.screen
 import com.passbolt.mobile.android.common.extension.areListsEmpty
 import com.passbolt.mobile.android.common.search.Searchable
 import com.passbolt.mobile.android.common.search.SearchableMatcher
-import com.passbolt.mobile.android.common.types.ClipboardLabel
 import com.passbolt.mobile.android.core.accounts.usecase.accountdata.GetSelectedAccountDataUseCase
 import com.passbolt.mobile.android.core.autofill.urlmatcher.AutofillUrlMatcher
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalFolderDetailsUseCase
@@ -60,7 +59,6 @@ import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesWi
 import com.passbolt.mobile.android.core.tags.usecase.db.GetLocalTagsUseCase
 import com.passbolt.mobile.android.feature.home.screen.model.HeaderSectionConfiguration
 import com.passbolt.mobile.android.feature.home.screen.model.SearchInputEndIconMode
-import com.passbolt.mobile.android.jsonmodel.delegates.TotpSecret
 import com.passbolt.mobile.android.mappers.HomeDisplayViewMapper
 import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.homeSlugs
 import com.passbolt.mobile.android.ui.Folder
@@ -925,31 +923,24 @@ class HomePresenter(
     }
 
     override fun menuCopyOtpClick() {
-        doAfterOtpFetchAndDecrypt { label, _, otpParameters ->
-            view?.addToClipboard(label, otpParameters.otpValue, isSecret = true)
-        }
-    }
-
-    private fun doAfterOtpFetchAndDecrypt(
-        action: (
-            ClipboardLabel,
-            TotpSecret,
-            TotpParametersProvider.OtpParameters
-        ) -> Unit
-    ) {
         coroutineScope.launch {
             performSecretPropertyAction(
                 action = { secretPropertiesActionsInteractor.provideOtp() },
                 doOnFetchFailure = { view?.showFetchFailure() },
                 doOnDecryptionFailure = { view?.showDecryptionFailure() },
                 doOnSuccess = {
-                    val otpParameters = totpParametersProvider.provideOtpParameters(
-                        secretKey = it.result.key,
-                        digits = it.result.digits,
-                        period = it.result.period,
-                        algorithm = it.result.algorithm
-                    )
-                    action(it.label, it.result, otpParameters)
+                    if (it.result.key.isNotBlank()) {
+                        val otpParameters = totpParametersProvider.provideOtpParameters(
+                            secretKey = it.result.key,
+                            digits = it.result.digits,
+                            period = it.result.period,
+                            algorithm = it.result.algorithm
+                        )
+                        view?.addToClipboard(it.label, otpParameters.otpValue, isSecret = true)
+                    } else {
+                        Timber.e("Fetched totp key is empty")
+                        view?.showGeneralError()
+                    }
                 }
             )
         }

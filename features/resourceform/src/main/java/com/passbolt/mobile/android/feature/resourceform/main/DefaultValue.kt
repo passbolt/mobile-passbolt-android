@@ -1,11 +1,5 @@
 package com.passbolt.mobile.android.feature.resourceform.main
 
-import org.koin.android.ext.koin.androidContext
-import org.koin.core.module.Module
-import org.koin.core.module.dsl.scopedOf
-import org.koin.dsl.bind
-import com.passbolt.mobile.android.core.localization.R as LocalizationR
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -28,16 +22,6 @@ import com.passbolt.mobile.android.core.localization.R as LocalizationR
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-
-fun Module.resourceFormModule() {
-    scope<ResourceFormFragment> {
-        scopedOf(::ResourceFormPresenter) bind ResourceFormContract.Presenter::class
-        scopedOf(::ResourceModelHandler)
-        scoped<Map<DefaultValue, String>> {
-            val context = androidContext()
-            mapOf(
-                DefaultValue.NAME to context.getString(LocalizationR.string.resource_form_no_name)
-            )
-        }
-    }
+enum class DefaultValue {
+    NAME
 }

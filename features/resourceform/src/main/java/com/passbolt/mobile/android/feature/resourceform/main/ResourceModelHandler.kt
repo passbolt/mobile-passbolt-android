@@ -11,6 +11,14 @@ import com.passbolt.mobile.android.feature.resourceform.usecase.GetDefaultCreate
 import com.passbolt.mobile.android.feature.resourceform.usecase.GetEditContentTypeUseCase
 import com.passbolt.mobile.android.jsonmodel.delegates.TotpSecret
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordAndDescription
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordDescriptionTotp
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordString
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.Totp
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5Default
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5DefaultWithTotp
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5PasswordString
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5TotpStandalone
 import com.passbolt.mobile.android.ui.LeadingContentType
 import com.passbolt.mobile.android.ui.MetadataJsonModel
 import com.passbolt.mobile.android.ui.MetadataTypeModel
@@ -49,7 +57,8 @@ class ResourceModelHandler(
     private val getDefaultCreateContentTypeUseCase: GetDefaultCreateContentTypeUseCase,
     private val getEditContentTypeUseCase: GetEditContentTypeUseCase,
     private val resourceActionsGraph: ResourceTypesUpdatesAdjacencyGraph,
-    private val getLocalResourceUseCase: GetLocalResourceUseCase
+    private val getLocalResourceUseCase: GetLocalResourceUseCase,
+    private val defaultValues: Map<DefaultValue, String>
 ) : KoinComponent {
 
     lateinit var resourceMetadata: MetadataJsonModel
@@ -157,7 +166,7 @@ class ResourceModelHandler(
     }
 
     private fun mergeActions(action: UpdateAction): UpdateAction {
-        if (contentType in setOf(ContentType.PasswordDescriptionTotp, ContentType.V5DefaultWithTotp)) {
+        if (contentType in setOf(PasswordDescriptionTotp, V5DefaultWithTotp)) {
             if (action == UpdateAction.REMOVE_PASSWORD && resourceHasNoNote()) {
                 Timber.d("Merged REMOVE_PASSWORD into REMOVE_PASSWORD_AND_NOTE")
                 return UpdateAction.REMOVE_PASSWORD_AND_NOTE
@@ -175,4 +184,37 @@ class ResourceModelHandler(
 
     private fun resourceHasNoNote(): Boolean =
         resourceSecret.description.isNullOrBlank()
+
+    fun getResourceSecretWithRequiredFields(): SecretJsonModel {
+        return SecretJsonModel(resourceSecret.json).apply {
+            when (contentType) {
+                PasswordString, V5PasswordString, PasswordAndDescription, V5Default -> {
+                    if (getPassword(contentType).isNullOrBlank()) {
+                        setPassword(contentType, "")
+                    }
+                }
+                Totp, V5TotpStandalone -> {
+                    if (totp == null || totp?.key.isNullOrBlank()) {
+                        Timber.e("Attempt to create or edit totp resource with empty totp")
+                    }
+                }
+                PasswordDescriptionTotp, V5DefaultWithTotp -> {
+                    if (getPassword(contentType).isNullOrBlank()) {
+                        setPassword(contentType, "")
+                    }
+                    if (totp == null || totp?.key.isNullOrBlank()) {
+                        Timber.e("Attempt to create or edit totp resource with empty totp")
+                    }
+                }
+            }
+        }
+    }
+
+    fun getResourceMetadataWithRequiredFields(): MetadataJsonModel {
+        return MetadataJsonModel(resourceMetadata.json).apply {
+            if (name.isBlank()) {
+                name = requireNotNull(defaultValues[DefaultValue.NAME])
+            }
+        }
+    }
 }
