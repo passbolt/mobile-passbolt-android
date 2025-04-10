@@ -1,4 +1,4 @@
-package com.passbolt.mobile.android.feature.resourceform.additionalsecrets.securenote
+package com.passbolt.mobile.android.feature.resourceform.additionalsecrets.note
 
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.scopedOf
@@ -27,8 +27,8 @@ import org.koin.dsl.bind
  * @since v1.0
  */
 
-fun Module.secureNoteFormModule() {
-    scope<SecureNoteFormFragment> {
-        scopedOf(::SecureNoteFormPresenter) bind SecureNoteFormContract.Presenter::class
+fun Module.noteFormModule() {
+    scope<NoteFormFragment> {
+        scopedOf(::NoteFormPresenter) bind NoteFormContract.Presenter::class
     }
 }

@@ -148,7 +148,7 @@ class ResourceDetailsFragment :
                 resources.getDimension(CoreUiR.dimen.dp_40)
             )
         }
-        binding.secureNoteItem.conceal()
+        binding.noteItem.conceal()
     }
 
     override fun onResume() {
@@ -196,9 +196,9 @@ class ResourceDetailsFragment :
                 setDebouncingOnClick { presenter.copyMetadataDescriptionClick() }
                 actionClickListener = { presenter.metadataDescriptionActionClick() }
             }
-            with(secureNoteItem) {
-                setDebouncingOnClick { presenter.copySecureNoteClick() }
-                actionClickListener = { presenter.secureNoteActionClick() }
+            with(noteItem) {
+                setDebouncingOnClick { presenter.copyNoteClick() }
+                actionClickListener = { presenter.noteActionClick() }
             }
             backArrow.setDebouncingOnClick { presenter.backArrowClick() }
             moreIcon.setDebouncingOnClick { presenter.moreClick() }
@@ -346,33 +346,33 @@ class ResourceDetailsFragment :
         binding.passwordItem.textValue = ""
     }
 
-    override fun clearSecureNoteInput() {
-        binding.secureNoteItem.textValue = ""
+    override fun clearNoteInput() {
+        binding.noteItem.textValue = ""
     }
 
-    override fun showSecureNote(secureNote: String) {
+    override fun showNote(note: String) {
         with(binding) {
-            secureNoteItem.show()
-            secureNoteItem.isValueSecret = true
-            secureNoteItem.textValue = secureNote
-            secureNoteItem.actionIcon = ActionIcon.HIDE
-            secureNoteItem.setTextIsSelectable(true)
-            secureNoteSectionTitle.visible()
-            secureNoteContainer.visible()
+            noteItem.show()
+            noteItem.isValueSecret = true
+            noteItem.textValue = note
+            noteItem.actionIcon = ActionIcon.HIDE
+            noteItem.setTextIsSelectable(true)
+            noteSectionTitle.visible()
+            noteContainer.visible()
         }
     }
 
-    override fun hideSecureNote() {
-        with(binding.secureNoteItem) {
+    override fun hideNote() {
+        with(binding.noteItem) {
             conceal()
             actionIcon = ActionIcon.VIEW
         }
     }
 
-    override fun disableSecureNote() {
+    override fun disableNote() {
         with(binding) {
-            secureNoteSectionTitle.gone()
-            secureNoteContainer.gone()
+            noteSectionTitle.gone()
+            noteContainer.gone()
         }
     }
 
@@ -396,8 +396,8 @@ class ResourceDetailsFragment :
         presenter.copyMetadataDescriptionClick()
     }
 
-    override fun menuCopySecureNoteClick() {
-        presenter.copySecureNoteClick()
+    override fun menuCopyNoteClick() {
+        presenter.copyNoteClick()
     }
 
     override fun menuCopyUrlClick() {

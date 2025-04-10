@@ -23,7 +23,7 @@ import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthentic
 import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpFragment
 import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpMode
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.password.PasswordFormFragment
-import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.securenote.SecureNoteFormFragment
+import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.note.NoteFormFragment
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.TotpFormFragment
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.advanced.TotpAdvancedSettingsFormFragment
 import com.passbolt.mobile.android.feature.resourceform.databinding.FragmentResourceFormBinding
@@ -70,9 +70,9 @@ class ResourceFormFragment :
     override val presenter: ResourceFormContract.Presenter by inject()
     private val navArgs: ResourceFormFragmentArgs by navArgs()
 
-    private val secureNoteResult = { _: String, result: Bundle ->
-        if (result.containsKey(SecureNoteFormFragment.EXTRA_SECURE_NOTE)) {
-            presenter.secureNoteChanged(result.getString(SecureNoteFormFragment.EXTRA_SECURE_NOTE))
+    private val noteResult = { _: String, result: Bundle ->
+        if (result.containsKey(NoteFormFragment.EXTRA_NOTE)) {
+            presenter.noteChanged(result.getString(NoteFormFragment.EXTRA_NOTE))
         }
     }
 
@@ -158,7 +158,7 @@ class ResourceFormFragment :
             setUp(supportedAdditionalSecrets)
             additionalPasswordClick = { presenter.additionalPasswordClick() }
             additionalTotpClick = { presenter.additionalTotpClick() }
-            additionalSecureNoteClick = { presenter.additionalSecureNoteClick() }
+            additionalNoteClick = { presenter.additionalNoteClick() }
         }
     }
 
@@ -180,10 +180,10 @@ class ResourceFormFragment :
         )
     }
 
-    override fun navigateToSecureNote(secureNote: String) {
-        setFragmentResultListener(SecureNoteFormFragment.REQUEST_SECURE_NOTE, secureNoteResult)
+    override fun navigateToNote(note: String) {
+        setFragmentResultListener(NoteFormFragment.REQUEST_NOTE, noteResult)
         findNavController().navigate(
-            ResourceFormFragmentDirections.actionResourceFormFragmentToSecureNoteFormFragment(navArgs.mode, secureNote)
+            ResourceFormFragmentDirections.actionResourceFormFragmentToNoteFormFragment(navArgs.mode, note)
         )
     }
 

@@ -62,7 +62,7 @@ sealed class ContentType(val slug: String) {
         V5DefaultWithTotp
     )
 
-    fun hasSecureNote() = this in setOf(
+    fun hasNote() = this in setOf(
         PasswordAndDescription,
         PasswordDescriptionTotp,
         V5Default,

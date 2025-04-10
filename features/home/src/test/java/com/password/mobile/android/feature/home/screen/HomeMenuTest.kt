@@ -20,8 +20,7 @@ import com.passbolt.mobile.android.ui.HomeDisplayViewModel
 import com.passbolt.mobile.android.ui.MetadataJsonModel
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
-import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.DescriptionOption.HAS_METADATA_DESCRIPTION
-import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.DescriptionOption.HAS_SECURE_NOTE
+import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.DescriptionOption.HAS_NOTE
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.FavouriteOption.ADD_TO_FAVOURITES
 import com.passbolt.mobile.android.ui.ResourcePermission
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -210,7 +209,7 @@ class HomeMenuTest : KoinTest {
     }
 
     @Test
-    fun `view should copy secure note from secret after successful decrypt`() = runTest {
+    fun `view should copy note from secret after successful decrypt`() = runTest {
         mockIdToSlugMappingProvider.stub {
             onBlocking { provideMappingForSelectedAccount() }.doReturn(
                 mapOf(RESOURCE_TYPE_ID to ContentType.PasswordAndDescription.slug)
@@ -218,9 +217,9 @@ class HomeMenuTest : KoinTest {
         }
         val resourceDescription = "desc"
         mockSecretPropertiesActionsInteractor.stub {
-            onBlocking { provideSecureNote() } doReturn flowOf(
+            onBlocking { provideNote() } doReturn flowOf(
                 SecretPropertyActionResult.Success(
-                    SecretPropertiesActionsInteractor.SECURE_NOTE_LABEL,
+                    SecretPropertiesActionsInteractor.NOTE_LABEL,
                     isSecret = true,
                     resourceDescription
                 )
@@ -237,10 +236,10 @@ class HomeMenuTest : KoinTest {
         )
         presenter.resume(view)
         presenter.resourceMoreClick(RESOURCE_MODEL)
-        presenter.menuCopySecureNoteClick()
+        presenter.menuCopyNoteClick()
 
         verify(view).addToClipboard(
-            SecretPropertiesActionsInteractor.SECURE_NOTE_LABEL,
+            SecretPropertiesActionsInteractor.NOTE_LABEL,
             resourceDescription,
             isSecret = true
         )
@@ -477,7 +476,7 @@ class HomeMenuTest : KoinTest {
             canEdit = true,
             canShare = true,
             favouriteOption = ADD_TO_FAVOURITES,
-            descriptionOption = HAS_SECURE_NOTE
+            descriptionOption = HAS_NOTE
         )
 
         private lateinit var RESOURCE_MODEL: ResourceModel

@@ -1,8 +1,7 @@
-package com.passbolt.mobile.android.feature.resourceform.additionalsecrets.securenote
+package com.passbolt.mobile.android.feature.resourceform.additionalsecrets.note
 
-import org.koin.core.module.dsl.factoryOf
-import org.koin.dsl.bind
-import org.koin.dsl.module
+import com.passbolt.mobile.android.core.mvp.BaseContract
+import com.passbolt.mobile.android.ui.ResourceFormMode
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,7 +25,19 @@ import org.koin.dsl.module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+interface NoteFormContract {
 
-internal val secureNoteFormModule = module {
-    factoryOf(::SecureNoteFormPresenter) bind SecureNoteFormContract.Presenter::class
+    interface View : BaseContract.View {
+        fun showNote(note: String)
+        fun goBackWithResult(note: String?)
+        fun showCreateTitle()
+        fun showEditTitle(resourceName: String)
+    }
+
+    interface Presenter : BaseContract.Presenter<View> {
+        fun argsRetrieved(mode: ResourceFormMode, note: String)
+        fun noteTextChanged(note: String)
+        fun applyClick()
+        fun removeNoteClick()
+    }
 }

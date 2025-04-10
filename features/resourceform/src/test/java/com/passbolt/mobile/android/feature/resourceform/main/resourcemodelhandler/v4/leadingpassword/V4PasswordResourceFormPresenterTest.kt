@@ -163,16 +163,16 @@ class V4PasswordResourceFormPresenterTest : KoinTest {
     }
 
     @Test
-    fun `add secure note should not change content type and apply changes`() = runTest {
-        val mockSecureNote = "secure note"
+    fun `add note should not change content type and apply changes`() = runTest {
+        val mockNote = "note"
 
-        presenter.secureNoteChanged(mockSecureNote)
+        presenter.noteChanged(mockNote)
 
         JSONAssert.assertEquals(
             """
                 {
                     "password": "",
-                    "description": "$mockSecureNote"
+                    "description": "$mockNote"
                 }
             """.trimIndent(),
             resourceModelHandler.resourceSecret.json, STRICT_MODE_ENABLED

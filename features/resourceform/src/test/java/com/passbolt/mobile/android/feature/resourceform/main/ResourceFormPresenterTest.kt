@@ -13,7 +13,7 @@ import com.passbolt.mobile.android.ui.PasswordStrength
 import com.passbolt.mobile.android.ui.ResourceFormMode
 import com.passbolt.mobile.android.ui.ResourceFormUiModel
 import com.passbolt.mobile.android.ui.ResourceFormUiModel.Secret.PASSWORD
-import com.passbolt.mobile.android.ui.ResourceFormUiModel.Secret.SECURE_NOTE
+import com.passbolt.mobile.android.ui.ResourceFormUiModel.Secret.NOTE
 import com.passbolt.mobile.android.ui.ResourceFormUiModel.Secret.TOTP
 import com.passbolt.mobile.android.ui.TotpUiModel
 import kotlinx.coroutines.flow.flowOf
@@ -167,7 +167,7 @@ class ResourceFormPresenterTest : KoinTest {
 
         argumentCaptor<List<ResourceFormUiModel.Secret>> {
             verify(view).setupAdditionalSecrets(capture())
-            assertThat(firstValue).containsExactly(SECURE_NOTE, TOTP)
+            assertThat(firstValue).containsExactly(NOTE, TOTP)
         }
         argumentCaptor<List<ResourceFormUiModel.Metadata>> {
             verify(view).setupMetadata(capture())
@@ -198,7 +198,7 @@ class ResourceFormPresenterTest : KoinTest {
 
         argumentCaptor<List<ResourceFormUiModel.Secret>> {
             verify(view).setupAdditionalSecrets(capture())
-            assertThat(firstValue).containsExactly(PASSWORD, SECURE_NOTE)
+            assertThat(firstValue).containsExactly(PASSWORD, NOTE)
         }
         argumentCaptor<List<ResourceFormUiModel.Metadata>> {
             verify(view).setupMetadata(capture())

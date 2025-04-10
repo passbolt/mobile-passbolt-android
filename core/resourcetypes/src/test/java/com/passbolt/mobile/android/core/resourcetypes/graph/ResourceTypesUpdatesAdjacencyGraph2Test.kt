@@ -59,8 +59,8 @@ class ResourceTypesUpdatesAdjacencyGraph2Test {
             assertThat(actions).hasSize(6)
             assertThat(actions.map { it.action }).containsExactly(
                 UpdateAction2.EDIT_METADATA,
-                UpdateAction2.ADD_SECURE_NOTE,
-                UpdateAction2.REMOVE_SECURE_NOTE,
+                UpdateAction2.ADD_NOTE,
+                UpdateAction2.REMOVE_NOTE,
                 UpdateAction2.ADD_PASSWORD,
                 UpdateAction2.REMOVE_PASSWORD,
                 UpdateAction2.ADD_TOTP
@@ -79,11 +79,11 @@ class ResourceTypesUpdatesAdjacencyGraph2Test {
                 UpdateAction2.EDIT_METADATA,
                 UpdateAction2.ADD_TOTP,
                 UpdateAction2.REMOVE_TOTP,
-                UpdateAction2.ADD_SECURE_NOTE,
-                UpdateAction2.REMOVE_SECURE_NOTE,
+                UpdateAction2.ADD_NOTE,
+                UpdateAction2.REMOVE_NOTE,
                 UpdateAction2.ADD_PASSWORD,
                 UpdateAction2.REMOVE_PASSWORD,
-                UpdateAction2.REMOVE_PASSWORD_AND_SECURE_NOTE
+                UpdateAction2.REMOVE_PASSWORD_AND_NOTE
             )
         }
     }
@@ -99,7 +99,7 @@ class ResourceTypesUpdatesAdjacencyGraph2Test {
                 UpdateAction2.EDIT_METADATA,
                 UpdateAction2.ADD_TOTP,
                 UpdateAction2.REMOVE_TOTP,
-                UpdateAction2.ADD_SECURE_NOTE,
+                UpdateAction2.ADD_NOTE,
                 UpdateAction2.ADD_PASSWORD,
             )
         }

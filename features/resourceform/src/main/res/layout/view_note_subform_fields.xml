@@ -8,15 +8,15 @@
     tools:parentTag="android.widget.LinearLayout">
 
     <com.passbolt.mobile.android.core.ui.textinputfield.MultilineInputView
-        android:id="@+id/secureNoteInput"
+        android:id="@+id/noteInput"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:inputHint="@string/resource_form_enter_note"
-        app:inputTitle="@string/resource_form_secure_note_content" />
+        app:inputTitle="@string/resource_form_note_content" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dp_8"
-        android:text="@string/resource_form_secure_note_info" />
+        android:text="@string/resource_form_note_info" />
 </merge>

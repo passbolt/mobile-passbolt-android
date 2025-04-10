@@ -6,7 +6,7 @@ import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchCont
 import com.passbolt.mobile.android.resourcemoremenu.usecase.CreateResourceMoreMenuModelUseCase
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.DescriptionOption.HAS_METADATA_DESCRIPTION
-import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.DescriptionOption.HAS_SECURE_NOTE
+import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.DescriptionOption.HAS_NOTE
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.FavouriteOption.ADD_TO_FAVOURITES
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.FavouriteOption.REMOVE_FROM_FAVOURITES
 import kotlinx.coroutines.CoroutineScope
@@ -69,7 +69,7 @@ class ResourceMoreMenuPresenter(
         }
 
         when (menuModel.descriptionOption) {
-            HAS_SECURE_NOTE -> view?.showCopySecureNoteButton()
+            HAS_NOTE -> view?.showCopyNoteButton()
             HAS_METADATA_DESCRIPTION -> view?.showCopyMetadataDescriptionButton()
             null -> {
                 // ignore - no description button is visible

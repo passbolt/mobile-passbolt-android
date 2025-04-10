@@ -546,8 +546,8 @@ class HomeFragment :
         presenter.menuCopyMetadataDescriptionClick()
     }
 
-    override fun menuCopySecureNoteClick() {
-        presenter.menuCopySecureNoteClick()
+    override fun menuCopyNoteClick() {
+        presenter.menuCopyNoteClick()
     }
 
     override fun menuCopyUrlClick() {

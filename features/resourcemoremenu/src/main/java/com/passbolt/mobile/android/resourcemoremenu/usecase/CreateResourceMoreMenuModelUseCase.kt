@@ -66,8 +66,8 @@ class CreateResourceMoreMenuModelUseCase(
                 },
                 descriptionOption = if (contentType.hasMetadataDescription()) {
                     ResourceMoreMenuModel.DescriptionOption.HAS_METADATA_DESCRIPTION
-                } else if (contentType.hasSecureNote()) {
-                    ResourceMoreMenuModel.DescriptionOption.HAS_SECURE_NOTE
+                } else if (contentType.hasNote()) {
+                    ResourceMoreMenuModel.DescriptionOption.HAS_NOTE
                 } else {
                     null
                 }

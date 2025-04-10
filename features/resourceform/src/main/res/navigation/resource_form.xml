@@ -37,8 +37,8 @@
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
         <action
-            android:id="@+id/action_resourceFormFragment_to_secureNoteFormFragment"
-            app:destination="@id/secureNoteFormFragment"
+            android:id="@+id/action_resourceFormFragment_to_noteFormFragment"
+            app:destination="@id/noteFormFragment"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
@@ -89,15 +89,15 @@
     </fragment>
 
     <fragment
-        android:id="@+id/secureNoteFormFragment"
-        android:name="com.passbolt.mobile.android.feature.resourceform.additionalsecrets.securenote.SecureNoteFormFragment"
-        android:label="SecureNoteFormFragment"
-        tools:layout="@layout/fragment_secure_note_form">
+        android:id="@+id/noteFormFragment"
+        android:name="com.passbolt.mobile.android.feature.resourceform.additionalsecrets.note.NoteFormFragment"
+        android:label="NoteFormFragment"
+        tools:layout="@layout/fragment_note_form">
         <argument
             android:name="mode"
             app:argType="com.passbolt.mobile.android.ui.ResourceFormMode" />
         <argument
-            android:name="secureNote"
+            android:name="note"
             app:argType="string" />
     </fragment>
 

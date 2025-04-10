@@ -1,7 +1,7 @@
 package com.passbolt.mobile.android.feature.resourceform
 
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.password.passwordFormModule
-import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.securenote.secureNoteFormModule
+import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.note.noteFormModule
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.advanced.totpAdvancedSettingsFormModule
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.totpFormModule
 import com.passbolt.mobile.android.feature.resourceform.main.resourceFormModule
@@ -39,7 +39,7 @@ val resourceFormModule = module {
     descriptionFormModule()
     totpFormModule()
     totpAdvancedSettingsFormModule()
-    secureNoteFormModule()
+    noteFormModule()
     passwordFormModule()
 
     factoryOf(::GetDefaultCreateContentTypeUseCase)

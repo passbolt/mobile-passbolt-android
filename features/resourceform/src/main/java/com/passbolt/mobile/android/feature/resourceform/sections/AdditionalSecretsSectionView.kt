@@ -12,7 +12,7 @@ import com.passbolt.mobile.android.feature.resourceform.R
 import com.passbolt.mobile.android.feature.resourceform.databinding.ViewAdditionalSecretsSectionBinding
 import com.passbolt.mobile.android.ui.ResourceFormUiModel
 import com.passbolt.mobile.android.ui.ResourceFormUiModel.Secret.PASSWORD
-import com.passbolt.mobile.android.ui.ResourceFormUiModel.Secret.SECURE_NOTE
+import com.passbolt.mobile.android.ui.ResourceFormUiModel.Secret.NOTE
 import com.passbolt.mobile.android.ui.ResourceFormUiModel.Secret.TOTP
 
 /**
@@ -60,11 +60,11 @@ class AdditionalSecretsSectionView @JvmOverloads constructor(
             }
         }
 
-    var additionalSecureNoteClick: (() -> Unit)? = null
+    var additionalNoteClick: (() -> Unit)? = null
         set(value) {
             field = value
             value?.let {
-                secureNoteAdditionalSecretSection.setDebouncingOnClick(action = value)
+                noteAdditionalSecretSection.setDebouncingOnClick(action = value)
             }
         }
 
@@ -76,8 +76,8 @@ class AdditionalSecretsSectionView @JvmOverloads constructor(
     private val totpAdditionalSecretSection: OpenableSettingView
         get() = binding.additionalSecretsSectionView.findViewById(R.id.additionalTotp)
 
-    private val secureNoteAdditionalSecretSection: OpenableSettingView
-        get() = binding.additionalSecretsSectionView.findViewById(R.id.additionalSecureNote)
+    private val noteAdditionalSecretSection: OpenableSettingView
+        get() = binding.additionalSecretsSectionView.findViewById(R.id.additionalNote)
 
     init {
         orientation = VERTICAL
@@ -94,7 +94,7 @@ class AdditionalSecretsSectionView @JvmOverloads constructor(
         } else {
             passwordAdditionalSecretSection.isVisible = fields.contains(PASSWORD)
             totpAdditionalSecretSection.isVisible = fields.contains(TOTP)
-            secureNoteAdditionalSecretSection.isVisible = fields.contains(SECURE_NOTE)
+            noteAdditionalSecretSection.isVisible = fields.contains(NOTE)
         }
     }
 }

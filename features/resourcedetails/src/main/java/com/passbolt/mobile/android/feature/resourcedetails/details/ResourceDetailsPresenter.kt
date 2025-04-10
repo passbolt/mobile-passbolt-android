@@ -89,7 +89,7 @@ class ResourceDetailsPresenter(
     private lateinit var resourceModel: ResourceModel
 
     private var isPasswordVisible = false
-    private var isSecureNoteVisible = false
+    private var isNoteVisible = false
     private var permissionsListWidth: Int = -1
     private var permissionItemWidth: Float = -1f
     private val missingItemExceptionHandler = CoroutineExceptionHandler { _, throwable ->
@@ -214,7 +214,7 @@ class ResourceDetailsPresenter(
             handleFavourite()
             handlePassword(resourceModel)
             handleTotpField(resourceModel)
-            handleDescriptionAndSecureNoteField(resourceModel)
+            handleDescriptionAndNoteField(resourceModel)
             handleFeatureFlagsAndRbac()
         }
     }
@@ -281,14 +281,14 @@ class ResourceDetailsPresenter(
         }
     }
 
-    private fun handleDescriptionAndSecureNoteField(resourceModel: ResourceModel) {
+    private fun handleDescriptionAndNoteField(resourceModel: ResourceModel) {
         coroutineScope.launch {
             val slug = idToSlugMappingProvider.provideMappingForSelectedAccount()[
                 UUID.fromString(resourceModel.resourceTypeId)
             ]
             val contentType = ContentType.fromSlug(slug!!)
-            if (!contentType.hasSecureNote()) {
-                view?.disableSecureNote()
+            if (!contentType.hasNote()) {
+                view?.disableNote()
             }
             if (contentType.hasMetadataDescription()) {
                 view?.showMetadataDescription(resourceModel.metadataJsonModel.description.orEmpty())
@@ -300,8 +300,8 @@ class ResourceDetailsPresenter(
 
     override fun viewStopped() {
         view?.apply {
-            clearSecureNoteInput()
-            hideSecureNote()
+            clearNoteInput()
+            hideNote()
             clearPasswordInput()
             hidePassword()
         }
@@ -357,18 +357,18 @@ class ResourceDetailsPresenter(
         }
     }
 
-    override fun secureNoteActionClick() {
-        if (isSecureNoteVisible) {
-            view?.hideSecureNote()
+    override fun noteActionClick() {
+        if (isNoteVisible) {
+            view?.hideNote()
         } else {
             coroutineScope.launch {
                 performSecretPropertyAction(
-                    action = { secretPropertiesActionsInteractor.provideSecureNote() },
+                    action = { secretPropertiesActionsInteractor.provideNote() },
                     doOnDecryptionFailure = { view?.showDecryptionFailure() },
                     doOnFetchFailure = { view?.showFetchFailure() },
                     doOnSuccess = {
-                        view?.showSecureNote(it.result)
-                        isSecureNoteVisible = true
+                        view?.showNote(it.result)
+                        isNoteVisible = true
                     }
                 )
             }
@@ -419,11 +419,11 @@ class ResourceDetailsPresenter(
         resourceDetailActionIdlingResource.setIdle(true)
     }
 
-    override fun copySecureNoteClick() {
+    override fun copyNoteClick() {
         resourceDetailActionIdlingResource.setIdle(false)
         coroutineScope.launch {
             performSecretPropertyAction(
-                action = { secretPropertiesActionsInteractor.provideSecureNote() },
+                action = { secretPropertiesActionsInteractor.provideNote() },
                 doOnFetchFailure = { view?.showFetchFailure() },
                 doOnDecryptionFailure = { view?.showDecryptionFailure() },
                 doOnSuccess = { view?.addToClipboard(it.label, it.result, it.isSecret) }

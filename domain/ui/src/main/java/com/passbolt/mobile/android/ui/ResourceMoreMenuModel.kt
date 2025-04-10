@@ -20,7 +20,7 @@ data class ResourceMoreMenuModel(
     }
 
     enum class DescriptionOption {
-        HAS_SECURE_NOTE,
+        HAS_NOTE,
         HAS_METADATA_DESCRIPTION
     }
 }

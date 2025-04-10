@@ -83,7 +83,7 @@
     <string name="more_copy_password">Copy password</string>
     <string name="more_copy_username">Copy username</string>
     <string name="more_copy_metadata_desc">Copy metadata description</string>
-    <string name="more_copy_secure_note">Copy secure note</string>
+    <string name="more_copy_note">Copy note</string>
     <string name="more_edit">Edit</string>
     <string name="more_delete">Delete</string>
     <string name="more_share">Share</string>
@@ -276,8 +276,8 @@
     <string name="resource_details_url_header">Main URI</string>
     <string name="resource_details_expiry_header">Expiry</string>
     <string name="resource_details_description_header">Description</string>
-    <string name="resource_details_secure_note_header">Secure note</string>
-    <string name="resource_details_secure_note_content">Content</string>
+    <string name="resource_details_note_header">Note</string>
+    <string name="resource_details_note_content">Content</string>
     <string name="resource_details_tags_header">Tags</string>
     <string name="hidden_secret"
         translatable="false">••••••••••••••••••</string>
@@ -323,11 +323,11 @@
     <string name="resource_form_enter_description">Enter description</string>
     <string name="resource_form_metadata_description">Metadata description</string>
     <string name="resource_form_create_metadata_description">Create metadata description</string>
-    <string name="resource_form_secure_note">Secure note</string>
-    <string name="resource_form_create_secure_note">Create secure note</string>
-    <string name="resource_form_secure_note_content">Content</string>
+    <string name="resource_form_note">Note</string>
+    <string name="resource_form_create_note">Create note</string>
+    <string name="resource_form_note_content">Content</string>
     <string name="resource_form_enter_note">Enter note</string>
-    <string name="resource_form_secure_note_info">The secure note is part of the secret if you want to be able to search this content, use metadata description.</string>
+    <string name="resource_form_note_info">The note is part of the secret if you want to be able to search this content, use metadata description.</string>
     <string name="resource_form_metadata_description_info">If you want the description to be part of the secret, use note instead.</string>
     <string name="resource_form_resource_name">Resource name</string>
     <string name="resource_form_name">Name</string>
