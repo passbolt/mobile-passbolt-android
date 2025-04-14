@@ -10,4 +10,5 @@
     <color name="input_box_stroke">@color/input_box_interior</color>
     <color name="icon_tint">#FFFFFF</color>
     <color name="elevated_background">#282828</color>
+    <color name="section_background">#1A1A1A</color>
 </resources>
