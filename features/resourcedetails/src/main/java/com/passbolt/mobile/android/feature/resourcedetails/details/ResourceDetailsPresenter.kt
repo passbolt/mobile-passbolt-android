@@ -361,6 +361,7 @@ class ResourceDetailsPresenter(
     override fun noteActionClick() {
         if (isNoteVisible) {
             view?.hideNote()
+            isNoteVisible = false
         } else {
             coroutineScope.launch {
                 performSecretPropertyAction(
