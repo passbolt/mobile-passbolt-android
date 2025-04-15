@@ -1,4 +1,4 @@
-# Passbolt 1.25.0-36 Android app release notes
+# Passbolt 2.0.0-36 Android app release notes
 
 ## Added
 - Redesigned the resource create and update form
