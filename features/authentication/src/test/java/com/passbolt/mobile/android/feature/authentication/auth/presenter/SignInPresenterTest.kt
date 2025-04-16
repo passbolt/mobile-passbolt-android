@@ -478,7 +478,7 @@ class SignInPresenterTest : KoinTest {
     }
 
     @Test
-    fun `view should show generic error when challenge cannot be verified`() {
+    fun `view should show challenge verification failure when challenge cannot be verified`() {
         mockVerifyPassphraseUseCase.stub {
             onBlocking { execute(any()) }.doReturn(VerifyPassphraseUseCase.Output(true))
         }
@@ -529,7 +529,7 @@ class SignInPresenterTest : KoinTest {
 
         verify(mockView).showProgress()
         verify(mockView).hideProgress()
-        verify(mockView).showGenericError()
+        verify(mockView).showChallengeVerificationFailure()
     }
 
     @Test
