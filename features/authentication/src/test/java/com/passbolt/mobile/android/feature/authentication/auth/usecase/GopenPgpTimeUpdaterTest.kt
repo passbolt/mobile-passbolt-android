@@ -47,7 +47,7 @@ class GopenPgpTimeUpdaterTest : KoinTest {
 
     @Before
     fun setup() {
-        whenever(mockOpenPgp.setTimeOffsetSecond(any())).then { }
+        whenever(mockOpenPgp.setTimeOffsetSeconds(any())).then { }
     }
 
     @Test

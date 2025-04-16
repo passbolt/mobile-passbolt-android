@@ -6,8 +6,6 @@ import com.passbolt.mobile.android.common.extension.encodeHex
 import com.passbolt.mobile.android.core.gopenpgp.test.R
 import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpResult
 import com.proton.gopenpgp.crypto.Crypto
-import com.proton.gopenpgp.crypto.PGPSplitMessage
-import com.proton.gopenpgp.crypto.PlainMessage
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Rule
@@ -188,14 +186,20 @@ class OpenPgpTest : KoinTest {
         val sessionKey = Crypto.generateSessionKeyAlgo(OpenPgp.SESSION_KEY_ALGORITHM)
         val sessionKeyHex = sessionKey.key.encodeHex()
 
-        val message = sessionKey.encrypt(PlainMessage(PLAIN_MESSAGE))
+        val message = Crypto.pgp().encryption()
+            .sessionKey(sessionKey)
+            .new_()
+            .encrypt(PLAIN_MESSAGE.toByteArray())
 
         val gracePk = Crypto.newKeyFromArmored(gracePublicKey)
         val gracePkRing = Crypto.newKeyRing(gracePk)
-        val encryptedSessionKey = gracePkRing.encryptSessionKey(sessionKey)
+        val encryptedSessionKey = Crypto.pgp().encryption()
+            .recipient(gracePk)
+            .new_()
+            .encryptSessionKey(sessionKey)
 
-        val splitMessage = PGPSplitMessage(encryptedSessionKey, message)
-        val splitMessageArmored = splitMessage.armored
+        val splitMessage = Crypto.newPGPSplitMessage(encryptedSessionKey, message.dataPacket)
+        val splitMessageArmored = splitMessage.armor()
 
         val decryptedSessionKey = openPgp.decryptSessionKey(
             String(gracePrivateKey), GRACE_KEY_CORRECT_PASSPHRASE, splitMessageArmored
@@ -209,14 +213,20 @@ class OpenPgpTest : KoinTest {
     fun test_decryptMessageArmoredWithSessionKeyShouldReturnMessage() = runBlocking {
         val sessionKey = Crypto.generateSessionKeyAlgo(OpenPgp.SESSION_KEY_ALGORITHM)
 
-        val message = sessionKey.encrypt(PlainMessage(PLAIN_MESSAGE))
+        val message = Crypto.pgp().encryption()
+            .sessionKey(sessionKey)
+            .new_()
+            .encrypt(PLAIN_MESSAGE.toByteArray())
 
         val gracePk = Crypto.newKeyFromArmored(gracePublicKey)
         val gracePkRing = Crypto.newKeyRing(gracePk)
-        val encryptedSessionKey = gracePkRing.encryptSessionKey(sessionKey)
+        val encryptedSessionKey = Crypto.pgp().encryption()
+            .recipient(gracePk)
+            .new_()
+            .encryptSessionKey(sessionKey)
 
-        val splitMessage = PGPSplitMessage(encryptedSessionKey, message)
-        val splitMessageArmored = splitMessage.armored
+        val splitMessage = Crypto.newPGPSplitMessage(encryptedSessionKey, message.dataPacket)
+        val splitMessageArmored = splitMessage.armor()
 
         val decryptedMessage = openPgp.decryptMessageArmored(
             String(gracePrivateKey), GRACE_KEY_CORRECT_PASSPHRASE, splitMessageArmored

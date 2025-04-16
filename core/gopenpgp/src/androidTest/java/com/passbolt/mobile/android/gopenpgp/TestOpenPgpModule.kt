@@ -1,6 +1,8 @@
 package com.passbolt.mobile.android.gopenpgp
 
 import com.passbolt.mobile.android.gopenpgp.exception.GopenPgpExceptionParser
+import com.proton.gopenpgp.crypto.Crypto
+import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
 /**
@@ -26,6 +28,7 @@ import org.koin.dsl.module
  * @since v1.0
  */
 internal val testOpenPgpModule = module {
-    single { GopenPgpExceptionParser() }
-    single { OpenPgp(gopenPgpExceptionParser = get()) }
+    single { Crypto.pgp() }
+    singleOf(::GopenPgpExceptionParser)
+    singleOf(::OpenPgp)
 }
