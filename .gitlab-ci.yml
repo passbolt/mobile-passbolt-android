@@ -28,7 +28,7 @@ Run verifications:
       unitTest
       lintRelease 
       licenseeRelease 
-      dependencyUpdates
+      snyk-test
   #     TODO uncomment when support added ready, currently it causes error
   #     The Dependency Analysis plugin is only known to work with versions of AGP between 8.0.0 and 8.4.0-alpha01. You are using 8.5.0.
   #     buildHealth

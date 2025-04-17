@@ -74,6 +74,7 @@ apacheCommonsCodec = "1.16.0"
 jsonSchemaFriend = "0.12.3"
 jsonPath = "2.9.0"
 jsonAssert = "2.0-rc1"
+snyk = "0.7.0"
 
 [libraries]
 desugar-jdklibs = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "desugarJdkLibs" }
@@ -179,3 +180,5 @@ dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 kotlin-ksp = { id = "com.google.devtools.ksp", version.ref = "kotlinKsp" }
 room = { id = "androidx.room", version.ref = "roomCore" }
+snyk = { id = "io.snyk.gradle.plugin.snykplugin", version.ref = "snyk" }
+
