@@ -220,6 +220,10 @@ class ResourceFormFragment :
         binding.toolbar.toolbarTitle = getString(LocalizationR.string.resource_form_create_totp)
     }
 
+    override fun showEditTitle(resourceName: String) {
+        binding.toolbar.toolbarTitle = getString(LocalizationR.string.resource_form_edit_resource, resourceName)
+    }
+
     override fun addTotpLeadingForm(totpUiModel: TotpUiModel) {
         TotpSubformView(requireContext()).apply {
             tag = TAG_TOTP_SUBFORM

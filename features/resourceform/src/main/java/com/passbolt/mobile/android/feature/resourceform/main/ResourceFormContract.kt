@@ -77,6 +77,7 @@ interface ResourceFormContract {
         fun navigateBack()
         fun navigateBackWithEditSuccess(name: String)
         fun showTotpRequired()
+        fun showEditTitle(resourceName: String)
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
