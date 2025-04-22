@@ -93,6 +93,9 @@ interface ResourceDetailsContract {
         fun hideNote()
         fun showPasswordSection()
         fun hidePasswordSection()
+        fun hideSharedWith()
+        fun hideTags()
+        fun hideLocation()
     }
 
     @Suppress("TooManyFunctions")

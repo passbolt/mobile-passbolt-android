@@ -641,6 +641,18 @@ class ResourceDetailsFragment :
         }
     }
 
+    override fun hideSharedWith() {
+        sharedWithFields.forEach { it.gone() }
+    }
+
+    override fun hideTags() {
+        tagsFields.forEach { it.gone() }
+    }
+
+    override fun hideLocation() {
+        locationFields.forEach { it.gone() }
+    }
+
     override fun resourceMoreMenuDismissed() {
         presenter.resume(this)
     }
