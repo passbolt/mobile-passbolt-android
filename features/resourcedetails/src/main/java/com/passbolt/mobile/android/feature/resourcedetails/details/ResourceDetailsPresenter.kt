@@ -172,6 +172,8 @@ class ResourceDetailsPresenter(
                 }
             }
             view?.showFolderLocation(resourceLocationPathSegments)
+        } else {
+            view?.hideLocation()
         }
     }
 
@@ -182,6 +184,8 @@ class ResourceDetailsPresenter(
                 .tags
                 .map { it.slug }
                 .let { view?.showTags(it) }
+        } else {
+            view?.hideTags()
         }
     }
 
@@ -200,6 +204,8 @@ class ResourceDetailsPresenter(
                 permissionsDisplayDataset.counterValue,
                 permissionsDisplayDataset.overlap
             )
+        } else {
+            view?.hideSharedWith()
         }
     }
 
