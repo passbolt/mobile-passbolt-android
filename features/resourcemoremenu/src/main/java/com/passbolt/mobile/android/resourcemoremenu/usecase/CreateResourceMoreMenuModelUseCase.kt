@@ -30,6 +30,10 @@ import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdT
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType
 import com.passbolt.mobile.android.ui.RbacRuleModel.ALLOW
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
+import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.DescriptionOption.HAS_METADATA_DESCRIPTION
+import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.DescriptionOption.HAS_NOTE
+import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.FavouriteOption.ADD_TO_FAVOURITES
+import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.FavouriteOption.REMOVE_FROM_FAVOURITES
 import com.passbolt.mobile.android.ui.ResourcePermission
 import com.passbolt.mobile.android.ui.isFavourite
 import java.util.UUID
@@ -55,16 +59,17 @@ class CreateResourceMoreMenuModelUseCase(
                 canEdit = resource.permission in WRITE_PERMISSIONS,
                 canShare = resource.permission == ResourcePermission.OWNER,
                 favouriteOption = if (resource.isFavourite()) {
-                    ResourceMoreMenuModel.FavouriteOption.REMOVE_FROM_FAVOURITES
+                    REMOVE_FROM_FAVOURITES
                 } else {
-                    ResourceMoreMenuModel.FavouriteOption.ADD_TO_FAVOURITES
+                    ADD_TO_FAVOURITES
                 },
-                descriptionOption = if (contentType.hasMetadataDescription()) {
-                    ResourceMoreMenuModel.DescriptionOption.HAS_METADATA_DESCRIPTION
-                } else if (contentType.hasNote()) {
-                    ResourceMoreMenuModel.DescriptionOption.HAS_NOTE
-                } else {
-                    null
+                descriptionOptions = buildList {
+                    if (contentType.hasMetadataDescription()) {
+                        add(HAS_METADATA_DESCRIPTION)
+                    }
+                    if (contentType.hasNote()) {
+                        add(HAS_NOTE)
+                    }
                 }
             )
         )

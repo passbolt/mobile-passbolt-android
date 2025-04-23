@@ -25,6 +25,7 @@ package com.passbolt.mobile.android.resourcemoremenu
 
 import com.passbolt.mobile.android.resourcemoremenu.usecase.CreateResourceMoreMenuModelUseCase
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
+import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.DescriptionOption.HAS_METADATA_DESCRIPTION
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.DescriptionOption.HAS_NOTE
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.FavouriteOption.ADD_TO_FAVOURITES
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.FavouriteOption.REMOVE_FROM_FAVOURITES
@@ -41,6 +42,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyNoMoreInteractions
 
 @ExperimentalCoroutinesApi
 class ResourceMoreMenuTest : KoinTest {
@@ -66,7 +68,7 @@ class ResourceMoreMenuTest : KoinTest {
                             canEdit = true,
                             canShare = true,
                             favouriteOption = ADD_TO_FAVOURITES,
-                            descriptionOption = HAS_NOTE
+                            descriptionOptions = listOf(HAS_NOTE, HAS_METADATA_DESCRIPTION)
                         )
                     )
         }
@@ -78,11 +80,15 @@ class ResourceMoreMenuTest : KoinTest {
         }
 
         verify(view).showTitle("title")
+        verify(view).showSeparator()
         verify(view).showCopyButton()
         verify(view).showDeleteButton()
         verify(view).showEditButton()
         verify(view).showShareButton()
         verify(view).showAddToFavouritesButton()
+        verify(view).showCopyNoteButton()
+        verify(view).showCopyMetadataDescriptionButton()
+        verifyNoMoreInteractions(view)
     }
 
     @Test
@@ -97,7 +103,7 @@ class ResourceMoreMenuTest : KoinTest {
                         canEdit = false,
                         canShare = false,
                         favouriteOption = REMOVE_FROM_FAVOURITES,
-                        descriptionOption = HAS_NOTE
+                        descriptionOptions = emptyList()
                     )
                 )
             )
@@ -115,6 +121,9 @@ class ResourceMoreMenuTest : KoinTest {
         verify(view, never()).showEditButton()
         verify(view, never()).showShareButton()
         verify(view, never()).showAddToFavouritesButton()
+        verify(view, never()).showCopyNoteButton()
+        verify(view, never()).showCopyMetadataDescriptionButton()
         verify(view).showRemoveFromFavouritesButton()
+        verifyNoMoreInteractions(view)
     }
 }

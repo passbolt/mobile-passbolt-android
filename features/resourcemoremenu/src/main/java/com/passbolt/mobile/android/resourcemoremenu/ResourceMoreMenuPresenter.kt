@@ -68,12 +68,12 @@ class ResourceMoreMenuPresenter(
             view?.showCopyButton()
         }
 
-        when (menuModel.descriptionOption) {
-            HAS_NOTE -> view?.showCopyNoteButton()
-            HAS_METADATA_DESCRIPTION -> view?.showCopyMetadataDescriptionButton()
-            null -> {
-                // ignore - no description button is visible
-            }
+        if (menuModel.descriptionOptions.contains(HAS_NOTE)) {
+            view?.showCopyNoteButton()
+        }
+
+        if (menuModel.descriptionOptions.contains(HAS_METADATA_DESCRIPTION)) {
+            view?.showCopyMetadataDescriptionButton()
         }
 
         if (menuModel.canDelete || menuModel.canEdit || menuModel.canShare) {

@@ -20,6 +20,7 @@ import com.passbolt.mobile.android.ui.HomeDisplayViewModel
 import com.passbolt.mobile.android.ui.MetadataJsonModel
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
+import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.DescriptionOption.HAS_METADATA_DESCRIPTION
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.DescriptionOption.HAS_NOTE
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.FavouriteOption.ADD_TO_FAVOURITES
 import com.passbolt.mobile.android.ui.ResourcePermission
@@ -476,7 +477,7 @@ class HomeMenuTest : KoinTest {
             canEdit = true,
             canShare = true,
             favouriteOption = ADD_TO_FAVOURITES,
-            descriptionOption = HAS_NOTE
+            descriptionOptions = listOf(HAS_NOTE, HAS_METADATA_DESCRIPTION)
         )
 
         private lateinit var RESOURCE_MODEL: ResourceModel

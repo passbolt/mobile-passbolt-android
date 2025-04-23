@@ -142,7 +142,7 @@ class ResourceFormPresenter(
                 argsConsumed = true
             }
 
-            uiModel = resourceFormMapper.map(resourceModelHandler.contentType)
+            uiModel = resourceModelHandler.getUiModel()
             view?.showName(resourceMetadata.name)
             setupAdvancedSettings()
             setupLeadingContentType(uiModel.leadingContentType)

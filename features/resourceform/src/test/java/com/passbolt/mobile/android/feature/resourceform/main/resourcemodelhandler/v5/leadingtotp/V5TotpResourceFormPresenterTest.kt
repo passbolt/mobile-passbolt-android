@@ -318,6 +318,42 @@ class V5TotpResourceFormPresenterTest : KoinTest {
         )
     }
 
+    @Test
+    fun `add metadata description should apply changes`() = runTest {
+        val mockName = "test name"
+        val mockUrl = "test url"
+        val mockMetadataDescription = "md desc"
+
+        presenter.nameTextChanged(mockName)
+        presenter.totpUrlChanged(mockUrl)
+        presenter.metadataDescriptionChanged(mockMetadataDescription)
+
+        assertThat(resourceModelHandler.contentType).isEqualTo(ContentType.V5TotpStandalone)
+        JSONAssert.assertEquals(
+            """
+                {
+                    "name": "$mockName",
+                    "uris": ["$mockUrl"],
+                    "description": "$mockMetadataDescription"
+                }
+            """.trimIndent(),
+            resourceModelHandler.resourceMetadata.json, STRICT_MODE_ENABLED
+        )
+        JSONAssert.assertEquals(
+            """
+                {
+                    "totp": {
+                        "secret_key": "",
+                        "period": ${OtpParseResult.OtpQr.TotpQr.DEFAULT_PERIOD_SECONDS},
+                        "digits": ${OtpParseResult.OtpQr.TotpQr.DEFAULT_DIGITS},
+                        "algorithm": ${OtpParseResult.OtpQr.Algorithm.DEFAULT.name}
+                    }
+                }
+            """.trimIndent(),
+            resourceModelHandler.resourceSecret.json, STRICT_MODE_ENABLED
+        )
+    }
+
     private companion object {
         private const val STRICT_MODE_ENABLED = true
     }
