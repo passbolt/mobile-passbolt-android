@@ -6,6 +6,14 @@ import com.passbolt.mobile.android.core.resources.actions.SecretPropertyActionRe
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUseCase
 import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.ResourceTypesUpdatesAdjacencyGraph
 import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction
+import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction.ADD_METADATA_DESCRIPTION
+import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction.ADD_NOTE
+import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction.ADD_PASSWORD
+import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction.ADD_TOTP
+import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction.REMOVE_METADATA_DESCRIPTION
+import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction.REMOVE_NOTE
+import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction.REMOVE_PASSWORD
+import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction.REMOVE_TOTP
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.SecretJsonModel
 import com.passbolt.mobile.android.feature.resourceform.usecase.GetDefaultCreateContentTypeUseCase
 import com.passbolt.mobile.android.feature.resourceform.usecase.GetEditContentTypeUseCase
@@ -23,6 +31,11 @@ import com.passbolt.mobile.android.ui.LeadingContentType
 import com.passbolt.mobile.android.ui.MetadataJsonModel
 import com.passbolt.mobile.android.ui.MetadataTypeModel
 import com.passbolt.mobile.android.ui.OtpParseResult
+import com.passbolt.mobile.android.ui.ResourceFormUiModel
+import com.passbolt.mobile.android.ui.ResourceFormUiModel.Metadata.DESCRIPTION
+import com.passbolt.mobile.android.ui.ResourceFormUiModel.Secret.NOTE
+import com.passbolt.mobile.android.ui.ResourceFormUiModel.Secret.PASSWORD
+import com.passbolt.mobile.android.ui.ResourceFormUiModel.Secret.TOTP
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.single
@@ -167,11 +180,11 @@ class ResourceModelHandler(
 
     private fun mergeActions(action: UpdateAction): UpdateAction {
         if (contentType in setOf(PasswordDescriptionTotp, V5DefaultWithTotp)) {
-            if (action == UpdateAction.REMOVE_PASSWORD && resourceHasNoNote()) {
+            if (action == REMOVE_PASSWORD && resourceHasNoNote()) {
                 Timber.d("Merged REMOVE_PASSWORD into REMOVE_PASSWORD_AND_NOTE")
                 return UpdateAction.REMOVE_PASSWORD_AND_NOTE
             }
-            if (action == UpdateAction.REMOVE_NOTE && resourceHasNoPassword()) {
+            if (action == REMOVE_NOTE && resourceHasNoPassword()) {
                 Timber.d("Merged REMOVE_NOTE into REMOVE_PASSWORD_AND_NOTE")
                 return UpdateAction.REMOVE_PASSWORD_AND_NOTE
             }
@@ -216,5 +229,43 @@ class ResourceModelHandler(
                 name = requireNotNull(defaultValues[DefaultValue.NAME])
             }
         }
+    }
+
+    fun getUiModel(): ResourceFormUiModel {
+        val contentTypeUpdateActions = resourceActionsGraph.getUpdateActionsMetadata(contentType.slug)
+            .map { it.action }
+        val leadingContentType = if (contentType in setOf(Totp, V5TotpStandalone)) {
+            LeadingContentType.TOTP
+        } else {
+            LeadingContentType.PASSWORD
+        }
+
+        return ResourceFormUiModel(
+            leadingContentType = leadingContentType,
+            supportedAdditionalSecrets = contentTypeUpdateActions.let {
+                val additionalSecrets = mutableListOf<ResourceFormUiModel.Secret>()
+                if (leadingContentType != LeadingContentType.TOTP &&
+                    (it.contains(ADD_TOTP) || it.contains(REMOVE_TOTP))
+                ) {
+                    additionalSecrets.add(TOTP)
+                }
+                if (it.contains(ADD_NOTE) || it.contains(REMOVE_NOTE)) {
+                    additionalSecrets.add(NOTE)
+                }
+                if (leadingContentType != LeadingContentType.PASSWORD &&
+                    (it.contains(ADD_PASSWORD) || it.contains(REMOVE_PASSWORD))
+                ) {
+                    additionalSecrets.add(PASSWORD)
+                }
+                additionalSecrets
+            },
+            supportedMetadata = contentTypeUpdateActions.let {
+                val metadata = mutableListOf<ResourceFormUiModel.Metadata>()
+                if (it.contains(ADD_METADATA_DESCRIPTION) || it.contains(REMOVE_METADATA_DESCRIPTION)) {
+                    metadata.add(DESCRIPTION)
+                }
+                metadata
+            }
+        )
     }
 }

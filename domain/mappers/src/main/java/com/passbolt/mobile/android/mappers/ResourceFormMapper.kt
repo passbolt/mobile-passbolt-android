@@ -1,22 +1,7 @@
 package com.passbolt.mobile.android.mappers
 
 import com.passbolt.mobile.android.jsonmodel.delegates.TotpSecret
-import com.passbolt.mobile.android.supportedresourceTypes.ContentType
-import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordAndDescription
-import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordDescriptionTotp
-import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordString
-import com.passbolt.mobile.android.supportedresourceTypes.ContentType.Totp
-import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5Default
-import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5DefaultWithTotp
-import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5PasswordString
-import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5TotpStandalone
-import com.passbolt.mobile.android.ui.LeadingContentType
 import com.passbolt.mobile.android.ui.PasswordUiModel
-import com.passbolt.mobile.android.ui.ResourceFormUiModel
-import com.passbolt.mobile.android.ui.ResourceFormUiModel.Metadata.DESCRIPTION
-import com.passbolt.mobile.android.ui.ResourceFormUiModel.Secret.PASSWORD
-import com.passbolt.mobile.android.ui.ResourceFormUiModel.Secret.NOTE
-import com.passbolt.mobile.android.ui.ResourceFormUiModel.Secret.TOTP
 import com.passbolt.mobile.android.ui.TotpUiModel
 
 /**
@@ -42,27 +27,6 @@ import com.passbolt.mobile.android.ui.TotpUiModel
  * @since v1.0
  */
 class ResourceFormMapper {
-
-    fun map(contentType: ContentType): ResourceFormUiModel =
-        ResourceFormUiModel(
-            leadingContentType = if (contentType in setOf(Totp, V5TotpStandalone)) {
-                LeadingContentType.TOTP
-            } else {
-                LeadingContentType.PASSWORD
-            },
-            supportedAdditionalSecrets = when (contentType) {
-                PasswordString, V5PasswordString -> emptyList()
-                PasswordAndDescription, V5Default -> listOf(NOTE, TOTP)
-                PasswordDescriptionTotp, V5DefaultWithTotp -> listOf(NOTE, TOTP)
-                Totp, V5TotpStandalone -> listOf(PASSWORD, NOTE)
-            },
-            supportedMetadata = when (contentType) {
-                PasswordString, V5PasswordString -> listOf(DESCRIPTION)
-                PasswordAndDescription, V5Default -> emptyList()
-                PasswordDescriptionTotp, V5DefaultWithTotp -> emptyList()
-                Totp, V5TotpStandalone -> emptyList()
-            }
-        )
 
     fun mapToUiModel(totp: TotpSecret?, issuer: String): TotpUiModel =
         totp?.let {

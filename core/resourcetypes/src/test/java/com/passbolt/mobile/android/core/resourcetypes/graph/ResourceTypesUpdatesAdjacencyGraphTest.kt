@@ -34,74 +34,130 @@ class ResourceTypesUpdatesAdjacencyGraphTest {
     private val graph = ResourceTypesUpdatesAdjacencyGraph()
 
     @Test
-    fun `actions are correct for v4,v5 password string`() {
-        val actionsV4 = graph.getUpdateActionsMetadata(ContentType.PasswordString.slug)
-        val actionsV5 = graph.getUpdateActionsMetadata(ContentType.V5PasswordString.slug)
+    fun `actions are correct for password-string`() {
+        val actions = graph.getUpdateActionsMetadata(ContentType.PasswordString.slug)
 
-        setOf(actionsV4, actionsV5).forEach { actions ->
-            assertThat(actions).hasSize(5)
-            assertThat(actions.map { it.action }).containsExactly(
-                UpdateAction.EDIT_METADATA,
-                UpdateAction.ADD_PASSWORD,
-                UpdateAction.REMOVE_PASSWORD,
-                UpdateAction.ADD_METADATA_DESCRIPTION,
-                UpdateAction.REMOVE_METADATA_DESCRIPTION
-            )
-        }
+        assertThat(actions).hasSize(5)
+        assertThat(actions.map { it.action }).containsExactly(
+            UpdateAction.EDIT_METADATA,
+            UpdateAction.ADD_PASSWORD,
+            UpdateAction.REMOVE_PASSWORD,
+            UpdateAction.ADD_METADATA_DESCRIPTION,
+            UpdateAction.REMOVE_METADATA_DESCRIPTION
+        )
     }
 
     @Test
-    fun `actions are correct for v4, v5 password and description`() {
-        val actionsv4 = graph.getUpdateActionsMetadata(ContentType.PasswordAndDescription.slug)
-        val actionsv5 = graph.getUpdateActionsMetadata(ContentType.V5Default.slug)
+    fun `actions are correct for v5-password-string`() {
+        val actions = graph.getUpdateActionsMetadata(ContentType.V5PasswordString.slug)
 
-        setOf(actionsv4, actionsv5).forEach { actions ->
-            assertThat(actions).hasSize(6)
-            assertThat(actions.map { it.action }).containsExactly(
-                UpdateAction.EDIT_METADATA,
-                UpdateAction.ADD_NOTE,
-                UpdateAction.REMOVE_NOTE,
-                UpdateAction.ADD_PASSWORD,
-                UpdateAction.REMOVE_PASSWORD,
-                UpdateAction.ADD_TOTP
-            )
-        }
+        assertThat(actions).hasSize(7)
+        assertThat(actions.map { it.action }).containsExactly(
+            UpdateAction.EDIT_METADATA,
+            UpdateAction.ADD_PASSWORD,
+            UpdateAction.REMOVE_PASSWORD,
+            UpdateAction.ADD_METADATA_DESCRIPTION,
+            UpdateAction.REMOVE_METADATA_DESCRIPTION,
+            UpdateAction.ADD_TOTP,
+            UpdateAction.ADD_NOTE
+        )
     }
 
     @Test
-    fun `actions are correct for v4, v5 password description totp`() {
-        val actionsV4 = graph.getUpdateActionsMetadata(ContentType.PasswordDescriptionTotp.slug)
-        val actionsV5 = graph.getUpdateActionsMetadata(ContentType.V5DefaultWithTotp.slug)
+    fun `actions are correct for password-and-description`() {
+        val actions = graph.getUpdateActionsMetadata(ContentType.PasswordAndDescription.slug)
 
-        setOf(actionsV4, actionsV5).forEach { actions ->
-            assertThat(actions).hasSize(8)
-            assertThat(actions.map { it.action }).containsExactly(
-                UpdateAction.EDIT_METADATA,
-                UpdateAction.ADD_TOTP,
-                UpdateAction.REMOVE_TOTP,
-                UpdateAction.ADD_NOTE,
-                UpdateAction.REMOVE_NOTE,
-                UpdateAction.ADD_PASSWORD,
-                UpdateAction.REMOVE_PASSWORD,
-                UpdateAction.REMOVE_PASSWORD_AND_NOTE
-            )
-        }
+        assertThat(actions).hasSize(6)
+        assertThat(actions.map { it.action }).containsExactly(
+            UpdateAction.EDIT_METADATA,
+            UpdateAction.ADD_NOTE,
+            UpdateAction.REMOVE_NOTE,
+            UpdateAction.ADD_PASSWORD,
+            UpdateAction.REMOVE_PASSWORD,
+            UpdateAction.ADD_TOTP
+        )
     }
 
     @Test
-    fun `actions are correct for v4, v5 totp`() {
-        val actionsV4 = graph.getUpdateActionsMetadata(ContentType.Totp.slug)
-        val actionsV5 = graph.getUpdateActionsMetadata(ContentType.V5TotpStandalone.slug)
+    fun `actions are correct for v5-default`() {
+        val actions = graph.getUpdateActionsMetadata(ContentType.V5Default.slug)
 
-        setOf(actionsV4, actionsV5).forEach { actions ->
-            assertThat(actions).hasSize(5)
-            assertThat(actions.map { it.action }).containsExactly(
-                UpdateAction.EDIT_METADATA,
-                UpdateAction.ADD_TOTP,
-                UpdateAction.REMOVE_TOTP,
-                UpdateAction.ADD_NOTE,
-                UpdateAction.ADD_PASSWORD,
-            )
-        }
+        assertThat(actions).hasSize(8)
+        assertThat(actions.map { it.action }).containsExactly(
+            UpdateAction.EDIT_METADATA,
+            UpdateAction.ADD_NOTE,
+            UpdateAction.REMOVE_NOTE,
+            UpdateAction.ADD_PASSWORD,
+            UpdateAction.REMOVE_PASSWORD,
+            UpdateAction.ADD_TOTP,
+            UpdateAction.ADD_METADATA_DESCRIPTION,
+            UpdateAction.REMOVE_METADATA_DESCRIPTION
+        )
+    }
+
+    @Test
+    fun `actions are correct for password-description-totp`() {
+        val actions = graph.getUpdateActionsMetadata(ContentType.PasswordDescriptionTotp.slug)
+
+        assertThat(actions).hasSize(8)
+        assertThat(actions.map { it.action }).containsExactly(
+            UpdateAction.EDIT_METADATA,
+            UpdateAction.ADD_TOTP,
+            UpdateAction.REMOVE_TOTP,
+            UpdateAction.ADD_NOTE,
+            UpdateAction.REMOVE_NOTE,
+            UpdateAction.ADD_PASSWORD,
+            UpdateAction.REMOVE_PASSWORD,
+            UpdateAction.REMOVE_PASSWORD_AND_NOTE
+        )
+    }
+
+    @Test
+    fun `actions are correct for v5-default-with-totp`() {
+        val actions = graph.getUpdateActionsMetadata(ContentType.V5DefaultWithTotp.slug)
+
+        assertThat(actions).hasSize(10)
+        assertThat(actions.map { it.action }).containsExactly(
+            UpdateAction.EDIT_METADATA,
+            UpdateAction.ADD_TOTP,
+            UpdateAction.REMOVE_TOTP,
+            UpdateAction.ADD_NOTE,
+            UpdateAction.REMOVE_NOTE,
+            UpdateAction.ADD_PASSWORD,
+            UpdateAction.REMOVE_PASSWORD,
+            UpdateAction.REMOVE_PASSWORD_AND_NOTE,
+            UpdateAction.ADD_METADATA_DESCRIPTION,
+            UpdateAction.REMOVE_METADATA_DESCRIPTION
+        )
+    }
+
+    @Test
+    fun `actions are correct for totp`() {
+        val actions = graph.getUpdateActionsMetadata(ContentType.Totp.slug)
+
+        assertThat(actions).hasSize(5)
+        assertThat(actions.map { it.action }).containsExactly(
+            UpdateAction.EDIT_METADATA,
+            UpdateAction.ADD_TOTP,
+            UpdateAction.REMOVE_TOTP,
+            UpdateAction.ADD_NOTE,
+            UpdateAction.ADD_PASSWORD,
+        )
+    }
+
+    @Test
+    fun `actions are correct for v5-totp-standalone`() {
+        val actions = graph.getUpdateActionsMetadata(ContentType.V5TotpStandalone.slug)
+
+        assertThat(actions).hasSize(7)
+        assertThat(actions.map { it.action }).containsExactly(
+            UpdateAction.EDIT_METADATA,
+            UpdateAction.ADD_TOTP,
+            UpdateAction.REMOVE_TOTP,
+            UpdateAction.ADD_NOTE,
+            UpdateAction.ADD_PASSWORD,
+            UpdateAction.REMOVE_METADATA_DESCRIPTION,
+            UpdateAction.ADD_METADATA_DESCRIPTION
+        )
     }
 }

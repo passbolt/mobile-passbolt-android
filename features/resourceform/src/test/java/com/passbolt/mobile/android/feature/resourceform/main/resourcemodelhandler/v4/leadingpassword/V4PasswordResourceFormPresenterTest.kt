@@ -226,6 +226,34 @@ class V4PasswordResourceFormPresenterTest : KoinTest {
         )
     }
 
+    @Test
+    fun `add metadata description to password should not be possible`() = runTest {
+        val mockName = "test name"
+        val mockMetadataDescription = "md description"
+
+        presenter.nameTextChanged(mockName)
+        presenter.metadataDescriptionChanged(mockMetadataDescription)
+
+        assertThat(resourceModelHandler.contentType).isEqualTo(ContentType.PasswordAndDescription)
+        JSONAssert.assertEquals(
+            """
+                {
+                    "name": "$mockName",
+                }
+            """.trimIndent(),
+            resourceModelHandler.resourceMetadata.json, STRICT_MODE_ENABLED
+        )
+        JSONAssert.assertEquals(
+            """
+                {
+                    "description": "",
+                    "password": "",
+                }
+            """.trimIndent(),
+            resourceModelHandler.resourceSecret.json, STRICT_MODE_ENABLED
+        )
+    }
+
     private companion object {
         private const val STRICT_MODE_ENABLED = true
     }

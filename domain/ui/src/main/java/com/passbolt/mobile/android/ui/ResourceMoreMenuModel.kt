@@ -11,7 +11,7 @@ data class ResourceMoreMenuModel(
     val canEdit: Boolean,
     val canShare: Boolean,
     val favouriteOption: FavouriteOption,
-    val descriptionOption: DescriptionOption?
+    val descriptionOptions: List<DescriptionOption>
 ) : Parcelable {
 
     enum class FavouriteOption {
