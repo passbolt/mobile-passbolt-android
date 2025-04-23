@@ -239,11 +239,6 @@ class HomePresenter(
 
     override fun refreshSuccessAction() {
         coroutineScope.launch {
-            if (shouldShowCreateButton()) {
-                view?.showCreateButton()
-            } else {
-                view?.hideCreateButton()
-            }
             refreshInProgress = false
             showActiveHomeView()
         }
@@ -251,6 +246,7 @@ class HomePresenter(
 
     override fun refreshFailureAction() {
         view?.showDataRefreshError()
+        view?.hideCreateButton()
     }
 
     private fun collectFilteringRefreshes() {
@@ -336,6 +332,11 @@ class HomePresenter(
     private fun showActiveHomeView() {
         coroutineScope.launch {
             view?.let { processScreenTitle(it) }
+            if (shouldShowCreateButton()) {
+                view?.showCreateButton()
+            } else {
+                view?.hideCreateButton()
+            }
             runWithHandlingMissingItem({
                 suggestedResourceList = if (shouldShowSuggested()) {
                     getLocalResourcesUseCase.execute(GetLocalResourcesUseCase.Input(homeSlugs))

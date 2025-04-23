@@ -176,7 +176,7 @@ class HomePresenterTest : KoinTest {
         verify(view).hideBackArrow()
         verify(view).hideCreateButton()
         verify(view).showRefreshProgress()
-        verify(view).showCreateButton()
+        verify(view, times(2)).showCreateButton()
         verify(view, times(2)).showItems(any(), any(), any(), any(), any(), any(), any(), any())
         verify(view).displaySearchAvatar(null)
         verify(view).hideRefreshProgress()
@@ -230,7 +230,7 @@ class HomePresenterTest : KoinTest {
         verify(view).hideCreateButton()
         verify(view).hideRefreshProgress()
         verify(view, times(2)).showItems(any(), any(), any(), any(), any(), any(), any(), any())
-        verify(view, times(1)).showCreateButton()
+        verify(view, times(2)).showCreateButton()
     }
 
     @Test
@@ -262,7 +262,7 @@ class HomePresenterTest : KoinTest {
 
         verify(view).hideCreateButton()
         verify(view).showSearchEmptyList()
-        verify(view).showCreateButton()
+        verify(view, times(2)).showCreateButton()
     }
 
     @Test
@@ -317,12 +317,11 @@ class HomePresenterTest : KoinTest {
         verify(view).hideBackArrow()
         verify(view).showHomeScreenTitle(HomeDisplayViewModel.AllItems)
         verify(view).showAllItemsSearchHint()
-        verify(view).hideCreateButton()
         verify(view).hideRefreshProgress()
         verify(view).showDataRefreshError()
         verify(view).displaySearchAvatar(null)
         verify(view).hideFolderMoreMenuIcon()
-        verify(view, never()).showCreateButton()
+        verify(view, times(2)).hideCreateButton()
     }
 
     @Test
@@ -435,7 +434,7 @@ class HomePresenterTest : KoinTest {
         presenter.resume(view)
 
         verify(view, times(2)).navigateToRootHomeFromChildHome(HomeDisplayViewModel.folderRoot())
-        verify(view).showCreateButton()
+        verify(view, times(2)).showCreateButton()
     }
 
     @Test
