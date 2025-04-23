@@ -241,6 +241,8 @@ class HomePresenter(
         coroutineScope.launch {
             if (shouldShowCreateButton()) {
                 view?.showCreateButton()
+            } else {
+                view?.hideCreateButton()
             }
             refreshInProgress = false
             showActiveHomeView()
