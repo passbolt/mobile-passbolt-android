@@ -338,9 +338,7 @@ class OpenPgp(
                     .sessionKey(pgpSessionKey)
                     .new_()
 
-                val decrypted = decryptionHandle.decrypt(
-                    Crypto.newPGPMessageFromArmored(message).dataPacket, Crypto.Armor
-                )
+                val decrypted = decryptionHandle.decrypt(message.toByteArray(), Crypto.Armor)
 
                 OpenPgpResult.Result(String(decrypted.bytes()))
             }
