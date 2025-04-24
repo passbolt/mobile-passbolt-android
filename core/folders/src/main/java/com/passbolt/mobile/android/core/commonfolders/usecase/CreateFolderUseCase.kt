@@ -79,7 +79,8 @@ class CreateFolderUseCase(
                 }
             }
 
-        data class Success(val folderWithAttributes: FolderModelWithAttributes) : Output()
+        data class Success(val folderWithAttributes: FolderModelWithAttributes) :
+            Output()
 
         data class Failure(val result: NetworkResult.Failure<*>) : Output()
     }

@@ -35,18 +35,18 @@ dependencies {
     implementation project(':folders')
     implementation project(':groups')
     implementation project(':tags')
-    implementation project(':otpcreatemoremenu')
     implementation project(':scanotp')
-    implementation project(':createotpmanually')
     implementation project(':otpmoremenu')
     implementation project(':otpcore')
-    implementation project(':otpeditmoremenu')
     implementation project(':rbac')
     implementation project(':serializers')
     implementation project(':autofill')
     implementation project(':accounts')
     implementation project(':preferences')
     implementation project(':jsonmodel')
+    implementation project(':createresourcemenu')
+    implementation project(':resourceform')
+    implementation project(':permissions')
 
     implementation libs.navigation.fragment
     implementation libs.navigation.ui
@@ -58,7 +58,6 @@ dependencies {
     implementation libs.textdrawable
     implementation libs.coil.core
     implementation libs.coil.base
-    implementation libs.fab.speeddial
     implementation libs.room.core
     implementation libs.espresso.idling.resource
 

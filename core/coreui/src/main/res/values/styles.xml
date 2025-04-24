@@ -40,6 +40,13 @@
     <style name="ButtonSmallText">
         <item name="android:textSize">@dimen/sp_14</item>
         <item name="android:textFontWeight">600</item>
+        <item name="android:textColor">@color/text_primary</item>
+    </style>
+
+    <style name="Section">
+        <item name="android:textFontWeight">700</item>
+        <item name="android:textSize">@dimen/sp_16</item>
+        <item name="android:textColor">@color/text_primary</item>
     </style>
 
     <style name="Heading">

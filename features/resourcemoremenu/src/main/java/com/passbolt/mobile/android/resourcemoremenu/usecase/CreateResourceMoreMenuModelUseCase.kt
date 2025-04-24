@@ -26,58 +26,50 @@ package com.passbolt.mobile.android.resourcemoremenu.usecase
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
 import com.passbolt.mobile.android.core.rbac.usecase.GetRbacRulesUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUseCase
-import com.passbolt.mobile.android.core.resourcetypes.graph.ResourceTypesUpdatesAdjacencyGraph
-import com.passbolt.mobile.android.core.resourcetypes.graph.UpdateAction
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
-import com.passbolt.mobile.android.featureflags.usecase.GetFeatureFlagsUseCase
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType
 import com.passbolt.mobile.android.ui.RbacRuleModel.ALLOW
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
-import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.TotpOption.ADD_TOTP
-import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.TotpOption.MANAGE_TOTP
-import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.TotpOption.NONE
+import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.DescriptionOption.HAS_METADATA_DESCRIPTION
+import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.DescriptionOption.HAS_NOTE
+import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.FavouriteOption.ADD_TO_FAVOURITES
+import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.FavouriteOption.REMOVE_FROM_FAVOURITES
 import com.passbolt.mobile.android.ui.ResourcePermission
 import com.passbolt.mobile.android.ui.isFavourite
 import java.util.UUID
 
 class CreateResourceMoreMenuModelUseCase(
     private val getLocalResourceUseCase: GetLocalResourceUseCase,
-    private val getFeatureFlagsUseCase: GetFeatureFlagsUseCase,
     private val getRbacRulesUseCase: GetRbacRulesUseCase,
-    private val resourceTypesUpdatesAdjacencyGraph: ResourceTypesUpdatesAdjacencyGraph,
     private val idToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider
 ) :
     AsyncUseCase<CreateResourceMoreMenuModelUseCase.Input, CreateResourceMoreMenuModelUseCase.Output> {
 
     override suspend fun execute(input: Input): Output {
         val resource = getLocalResourceUseCase.execute(GetLocalResourceUseCase.Input(input.resourceId)).resource
-        val isTotpFeatureFlagEnabled = getFeatureFlagsUseCase.execute(Unit).featureFlags.isTotpAvailable
         val copyRbac = getRbacRulesUseCase.execute(Unit).rbacModel.passwordCopyRule
         val slug = idToSlugMappingProvider.provideMappingForSelectedAccount()[UUID.fromString(resource.resourceTypeId)]
-        val updateActionsMetadata = resourceTypesUpdatesAdjacencyGraph.getUpdateActionsMetadata(requireNotNull(slug))
+        val contentType = ContentType.fromSlug(slug!!)
 
         return Output(
             ResourceMoreMenuModel(
-                title = resource.name,
+                title = resource.metadataJsonModel.name,
                 canCopy = copyRbac == ALLOW,
                 canDelete = resource.permission in WRITE_PERMISSIONS,
-                canEdit = resource.permission in WRITE_PERMISSIONS &&
-                        updateActionsMetadata.any { it.action == UpdateAction.EDIT_PASSWORD },
+                canEdit = resource.permission in WRITE_PERMISSIONS,
                 canShare = resource.permission == ResourcePermission.OWNER,
                 favouriteOption = if (resource.isFavourite()) {
-                    ResourceMoreMenuModel.FavouriteOption.REMOVE_FROM_FAVOURITES
+                    REMOVE_FROM_FAVOURITES
                 } else {
-                    ResourceMoreMenuModel.FavouriteOption.ADD_TO_FAVOURITES
+                    ADD_TO_FAVOURITES
                 },
-                totpOption = if (isTotpFeatureFlagEnabled && resource.permission in WRITE_PERMISSIONS) {
-                    if (updateActionsMetadata.any { it.action == UpdateAction.ADD_TOTP }) {
-                        ADD_TOTP
-                    } else if (updateActionsMetadata.any { it.action == UpdateAction.EDIT_TOTP }) {
-                        MANAGE_TOTP
-                    } else {
-                        NONE
+                descriptionOptions = buildList {
+                    if (contentType.hasMetadataDescription()) {
+                        add(HAS_METADATA_DESCRIPTION)
                     }
-                } else {
-                    NONE
+                    if (contentType.hasNote()) {
+                        add(HAS_NOTE)
+                    }
                 }
             )
         )

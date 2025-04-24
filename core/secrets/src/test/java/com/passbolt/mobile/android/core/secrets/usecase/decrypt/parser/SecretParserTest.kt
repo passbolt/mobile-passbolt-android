@@ -118,10 +118,10 @@ class SecretParserTest : KoinTest {
 
         assertThat(secretResult).isInstanceOf(DecryptedSecretOrError.DecryptedSecret::class.java)
         val parsedSecret = (secretResult as DecryptedSecretOrError.DecryptedSecret).secret
-        assertThat(parsedSecret.totp.digits).isEqualTo(6)
-        assertThat(parsedSecret.totp.period).isEqualTo(30)
-        assertThat(parsedSecret.totp.algorithm).isEqualTo("SHA256")
-        assertThat(parsedSecret.totp.key).isEqualTo("secret")
+        assertThat(parsedSecret.totp?.digits).isEqualTo(6)
+        assertThat(parsedSecret.totp?.period).isEqualTo(30)
+        assertThat(parsedSecret.totp?.algorithm).isEqualTo("SHA256")
+        assertThat(parsedSecret.totp?.key).isEqualTo("secret")
     }
 
     @Test
@@ -148,10 +148,10 @@ class SecretParserTest : KoinTest {
         val parsedSecret = (parsedSecretResult as DecryptedSecretOrError.DecryptedSecret).secret
         assertThat(parsedSecret.secret).isEqualTo("pass")
         assertThat(parsedSecret.description).isEqualTo("desc")
-        assertThat(parsedSecret.totp.digits).isEqualTo(6)
-        assertThat(parsedSecret.totp.period).isEqualTo(30)
-        assertThat(parsedSecret.totp.algorithm).isEqualTo("SHA256")
-        assertThat(parsedSecret.totp.key).isEqualTo("secret")
+        assertThat(parsedSecret.totp?.digits).isEqualTo(6)
+        assertThat(parsedSecret.totp?.period).isEqualTo(30)
+        assertThat(parsedSecret.totp?.algorithm).isEqualTo("SHA256")
+        assertThat(parsedSecret.totp?.key).isEqualTo("secret")
     }
 
     private companion object {

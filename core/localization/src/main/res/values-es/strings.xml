@@ -69,7 +69,7 @@
     <string name="more_copy_uri">Copiar URI</string>
     <string name="more_copy_password">Copiar contraseña</string>
     <string name="more_copy_username">Copiar nombre de usuario</string>
-    <string name="more_copy_desc">Copiar descripción</string>
+    <string name="more_copy_metadata_desc">Copiar descripción</string>
     <string name="more_edit">Editar contraseña</string>
     <string name="more_delete">Eliminar contraseña</string>
     <string name="more_share">Compartir contraseña</string>
@@ -253,7 +253,7 @@
     <string name="resource_update_empty_error">El %s no puede estar vacío</string>
     <string name="resource_update_too_long_error">Se ha superado la longitud máxima</string>
     <string name="resource_update_create_button">Crear</string>
-    <string name="resource_update_create_success">¡La nueva contraseña fue creada!</string>
+    <string name="resource_form_create_success">¡La nueva contraseña fue creada!</string>
     <string name="resource_update_edit_password_title">Editar contraseña</string>
     <string name="resource_update_field_password">Contraseña</string>
     <string name="resource_update_field_name">Resource name</string>
@@ -401,7 +401,7 @@
     <string name="otp_invalid_itp_data_scanned">Se ha producido un error durante el escaneo del código QR TOTP</string>
     <string name="otp_more_copy_otp">Copiar TOTP</string>
     <string name="otp_more_show_otp">Mostrar TOTP</string>
-    <string name="otp_more_edit_otp">Editar TOTP</string>
+    <string name="otp_more_edit_resource">Editar TOTP</string>
     <string name="otp_more_delete_otp">Eliminar TOTP</string>
     <string name="otp_edit_title">Editar TOTP</string>
     <string name="otp_edit_scan_new">Escanear un nuevo código QR</string>

@@ -73,7 +73,7 @@
         android:id="@+id/editOtp"
         style="@style/PasswordMenuItem"
         android:drawablePadding="@dimen/dp_16"
-        android:text="@string/otp_more_edit_otp"
+        android:text="@string/otp_more_edit_resource"
         android:visibility="gone"
         app:drawableStartCompat="@drawable/ic_edit"
         app:drawableTint="@color/icon_tint"

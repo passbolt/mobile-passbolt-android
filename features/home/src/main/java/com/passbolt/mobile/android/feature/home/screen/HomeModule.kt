@@ -11,7 +11,6 @@ import com.passbolt.mobile.android.feature.home.screen.recycler.PasswordHeaderIt
 import com.passbolt.mobile.android.feature.home.screen.recycler.PasswordItem
 import com.passbolt.mobile.android.feature.home.screen.recycler.TagWithCountItem
 import org.koin.core.module.Module
-import org.koin.core.module.dsl.scopedOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.ScopeDSL
 
@@ -72,11 +71,9 @@ fun Module.homeModule() {
                 getLocalFolderUseCase = get(),
                 deleteResourceIdlingResource = get(),
                 totpParametersProvider = get(),
-                getRbacRulesUseCase = get(),
-                idToSlugMappingProvider = get()
+                getRbacRulesUseCase = get()
             )
         }
-        scopedOf(::HomeSpeedDialFabFactory)
         declareHomeListAdapters()
         declareHomeListItemAdapters()
     }

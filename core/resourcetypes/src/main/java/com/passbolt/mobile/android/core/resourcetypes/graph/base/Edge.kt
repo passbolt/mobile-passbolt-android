@@ -23,7 +23,7 @@
 
 package com.passbolt.mobile.android.core.resourcetypes.graph.base
 
-import com.passbolt.mobile.android.core.resourcetypes.graph.UpdateAction
+import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction
 
 interface Edge<T> {
     val source: Vertex<T>

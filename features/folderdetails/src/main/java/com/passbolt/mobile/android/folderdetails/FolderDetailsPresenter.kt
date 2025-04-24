@@ -67,7 +67,7 @@ class FolderDetailsPresenter(
         showFolderDetails()
     }
 
-    override fun refreshAction() {
+    override fun refreshSuccessAction() {
         showFolderDetails()
     }
 

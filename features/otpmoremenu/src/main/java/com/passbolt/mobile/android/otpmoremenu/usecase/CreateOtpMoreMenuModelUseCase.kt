@@ -25,31 +25,22 @@ package com.passbolt.mobile.android.otpmoremenu.usecase
 
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUseCase
-import com.passbolt.mobile.android.core.resourcetypes.graph.ResourceTypesUpdatesAdjacencyGraph
-import com.passbolt.mobile.android.core.resourcetypes.graph.UpdateAction
-import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
 import com.passbolt.mobile.android.ui.OtpMoreMenuModel
 import com.passbolt.mobile.android.ui.ResourcePermission
-import java.util.UUID
 
 class CreateOtpMoreMenuModelUseCase(
-    private val getLocalResourceUseCase: GetLocalResourceUseCase,
-    private val resourceTypesUpdatesAdjacencyGraph: ResourceTypesUpdatesAdjacencyGraph,
-    private val idToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider
+    private val getLocalResourceUseCase: GetLocalResourceUseCase
 ) :
     AsyncUseCase<CreateOtpMoreMenuModelUseCase.Input, CreateOtpMoreMenuModelUseCase.Output> {
 
     override suspend fun execute(input: Input): Output {
         val resource = getLocalResourceUseCase.execute(GetLocalResourceUseCase.Input(input.resourceId)).resource
-        val slug = idToSlugMappingProvider.provideMappingForSelectedAccount()[UUID.fromString(resource.resourceTypeId)]
-        val updateActionsMetadata = resourceTypesUpdatesAdjacencyGraph.getUpdateActionsMetadata(requireNotNull(slug))
 
         return Output(
             OtpMoreMenuModel(
-                title = resource.name,
+                title = resource.metadataJsonModel.name,
                 canDelete = resource.permission in WRITE_PERMISSIONS,
-                canEdit = resource.permission in WRITE_PERMISSIONS &&
-                        updateActionsMetadata.any { it.action == UpdateAction.EDIT_TOTP }
+                canEdit = resource.permission in WRITE_PERMISSIONS
             )
         )
     }

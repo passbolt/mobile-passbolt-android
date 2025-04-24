@@ -14,10 +14,10 @@ import com.passbolt.mobile.android.core.coil.transformation.AlphaTransformation
 import com.passbolt.mobile.android.core.extension.asBinding
 import com.passbolt.mobile.android.core.extension.gone
 import com.passbolt.mobile.android.core.extension.visible
+import com.passbolt.mobile.android.core.ui.extensions.getPermissionTextValue
 import com.passbolt.mobile.android.feature.permissions.R
 import com.passbolt.mobile.android.feature.permissions.databinding.ItemPermissionBinding
 import com.passbolt.mobile.android.ui.PermissionModelUi
-import com.passbolt.mobile.android.ui.ResourcePermission
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
@@ -51,7 +51,7 @@ class PermissionItem(
         get() = R.id.permissionItem
 
     override fun bindView(binding: ItemPermissionBinding, payloads: List<Any>) {
-        binding.permissionValue.text = ResourcePermission.getPermissionTextValue(binding.root.context, model.permission)
+        binding.permissionValue.text = model.permission.getPermissionTextValue(binding.root.context)
         when (model) {
             is PermissionModelUi.GroupPermissionModel -> binding.bindGroupPermission(model)
             is PermissionModelUi.UserPermissionModel -> binding.bindUserPermission(model)

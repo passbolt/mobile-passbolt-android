@@ -5,6 +5,8 @@ import com.passbolt.mobile.android.core.idlingresource.CreateMenuModelIdlingReso
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.resourcemoremenu.usecase.CreateResourceMoreMenuModelUseCase
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
+import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.DescriptionOption.HAS_METADATA_DESCRIPTION
+import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.DescriptionOption.HAS_NOTE
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.FavouriteOption.ADD_TO_FAVOURITES
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.FavouriteOption.REMOVE_FROM_FAVOURITES
 import kotlinx.coroutines.CoroutineScope
@@ -36,7 +38,7 @@ class ResourceMoreMenuPresenter(
         this.resourceId = resourceId
     }
 
-    override fun refreshAction() {
+    override fun refreshSuccessAction() {
         menuModelIdlingResource.setIdle(false)
         coroutineScope.launch {
             try {
@@ -66,6 +68,14 @@ class ResourceMoreMenuPresenter(
             view?.showCopyButton()
         }
 
+        if (menuModel.descriptionOptions.contains(HAS_NOTE)) {
+            view?.showCopyNoteButton()
+        }
+
+        if (menuModel.descriptionOptions.contains(HAS_METADATA_DESCRIPTION)) {
+            view?.showCopyMetadataDescriptionButton()
+        }
+
         if (menuModel.canDelete || menuModel.canEdit || menuModel.canShare) {
             view?.showSeparator()
         }
@@ -80,13 +90,6 @@ class ResourceMoreMenuPresenter(
 
         if (menuModel.canEdit) {
             view?.showEditButton()
-            when (menuModel.totpOption) {
-                ResourceMoreMenuModel.TotpOption.MANAGE_TOTP -> view?.showManageTotpButton()
-                ResourceMoreMenuModel.TotpOption.ADD_TOTP -> view?.showAddTotpButton()
-                else -> {
-                    // do nothing - totp buttons are initially hidden
-                }
-            }
         }
     }
 

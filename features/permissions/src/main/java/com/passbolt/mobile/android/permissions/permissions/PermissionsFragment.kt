@@ -21,7 +21,6 @@ import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.extension.showSnackbar
 import com.passbolt.mobile.android.core.extension.visible
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
-import com.passbolt.mobile.android.core.navigation.ActivityResults
 import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
 import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
@@ -216,7 +215,7 @@ class PermissionsFragment :
     override fun navigateToSelfWithMode(resourceId: String, mode: PermissionsMode) {
         findNavController().navigate(
             PermissionsFragmentDirections.actionResourcePermissionsFragmentSelf(
-                resourceId, mode, args.navigationOrigin, args.permissionsItem
+                resourceId, mode, args.permissionsItem
             )
         )
     }
@@ -320,18 +319,12 @@ class PermissionsFragment :
     }
 
     override fun closeWithShareSuccessResult() {
-        when (args.navigationOrigin) {
-            NavigationOrigin.RESOURCE_DETAILS_SCREEN -> {
-                setFragmentResult(REQUEST_UPDATE_PERMISSIONS, bundleOf())
-                findNavController().popBackStack()
-            }
-            NavigationOrigin.HOME_RESOURCE_MORE_MENU -> {
-                with(requireActivity()) {
-                    setResult(ActivityResults.RESULT_RESOURCE_SHARED)
-                    finish()
-                }
-            }
-        }
+        setFragmentResult(
+            REQUEST_UPDATE_PERMISSIONS, bundleOf(
+                EXTRA_RESOURCE_SHARED to true
+            )
+        )
+        findNavController().popBackStack()
     }
 
     override fun showDataRefreshError() {
@@ -360,5 +353,7 @@ class PermissionsFragment :
 
     companion object {
         const val REQUEST_UPDATE_PERMISSIONS = "REQUEST_UPDATE_PERMISSIONS"
+
+        const val EXTRA_RESOURCE_SHARED = "RESOURCE_SHARED"
     }
 }

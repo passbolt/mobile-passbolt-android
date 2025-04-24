@@ -18,17 +18,16 @@ import com.passbolt.mobile.android.core.extension.getRootView
 import com.passbolt.mobile.android.core.extension.showSnackbar
 import com.passbolt.mobile.android.core.security.runtimeauth.RuntimeAuthenticatedFlag
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedActivity
-import com.passbolt.mobile.android.feature.main.mainscreen.encouragements.chromenativeautofill.EncourageChromeNativeAutofillServiceDialog
 import com.passbolt.mobile.android.feature.main.databinding.ActivityMainBinding
 import com.passbolt.mobile.android.feature.main.mainscreen.bottomnavigation.MainBottomNavigationModel
+import com.passbolt.mobile.android.feature.main.mainscreen.encouragements.chromenativeautofill.EncourageChromeNativeAutofillServiceDialog
 import org.koin.android.ext.android.inject
 import timber.log.Timber
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
-import com.passbolt.mobile.android.feature.createotpmanually.R as CreateOtpManuallyR
+import com.passbolt.mobile.android.feature.home.R as HomeR
 import com.passbolt.mobile.android.feature.otp.R as OtpR
-import com.passbolt.mobile.android.feature.resourcepicker.R as ResourcePickerR
-import com.passbolt.mobile.android.feature.scanotp.R as ScanOtpR
+import com.passbolt.mobile.android.feature.settings.R as SettingsR
 
 class MainActivity :
     BindingScopedAuthenticatedActivity<ActivityMainBinding, MainContract.View>(ActivityMainBinding::inflate),
@@ -65,7 +64,7 @@ class MainActivity :
         }
 
         bottomNavController.addOnDestinationChangedListener { _, destination, _ ->
-            binding.mainNavigation.isVisible = !noBottomNavFragmentIds.contains(destination.id)
+            binding.mainNavigation.isVisible = bottomNavFragmentIds.contains(destination.id)
         }
     }
 
@@ -153,12 +152,11 @@ class MainActivity :
 
     private companion object {
         private const val REQUEST_APP_UPDATE = 8000
-        private val noBottomNavFragmentIds = listOf(
-            ScanOtpR.id.scanOtpFragment,
-            CreateOtpManuallyR.id.createOtpManuallyFragment,
-            CreateOtpManuallyR.id.createOtpAdvancedSettingsFragment,
-            OtpR.id.scanOtpSuccessFragment,
-            ResourcePickerR.id.resourcePickerFragment
+        private val bottomNavFragmentIds = listOf(
+            HomeR.id.home,
+            HomeR.id.homeChild,
+            OtpR.id.otpFragment,
+            SettingsR.id.settings
         )
     }
 }

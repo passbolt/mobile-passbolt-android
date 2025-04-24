@@ -36,23 +36,20 @@ dependencies {
     implementation project(':users')
     implementation project(':supportedresourcetypes')
     implementation project(':networking')
-    implementation project(':resourcepicker')
-    implementation project(':resourcepicker')
     implementation project(':gopenpgp')
     implementation project(':resourcemoremenu')
-    implementation project(':otpeditmoremenu')
     implementation project(':scanotp')
     implementation project(':otpmoremenu')
-    implementation project(':createotpmanually')
     implementation project(':serializers')
     implementation project(':accounts')
     implementation project(':jsonmodel')
+    implementation project(':createresourcemenu')
+    implementation project(':resourceform')
 
     implementation libs.navigation.fragment
     implementation libs.navigation.ui
     implementation libs.koin
     implementation libs.swiperefresh
-    implementation libs.fab.speeddial
     implementation libs.fastadapter.core
     implementation libs.fastadapter.binding
     implementation libs.fastadapter.diff

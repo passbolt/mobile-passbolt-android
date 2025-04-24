@@ -33,7 +33,6 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
-import androidx.core.os.BundleCompat
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
@@ -42,7 +41,6 @@ import coil.ImageLoader
 import coil.request.ImageRequest
 import coil.transform.CircleCropTransformation
 import com.google.android.material.snackbar.Snackbar
-import com.leinardi.android.speeddial.SpeedDialView
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.ItemAdapter
@@ -55,21 +53,24 @@ import com.passbolt.mobile.android.core.extension.visible
 import com.passbolt.mobile.android.core.localization.R
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppContext
-import com.passbolt.mobile.android.core.navigation.deeplinks.NavDeepLinkProvider
 import com.passbolt.mobile.android.core.ui.initialsicon.InitialsIconGenerator
 import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
 import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
+import com.passbolt.mobile.android.createresourcemenu.CreateResourceMenuFragment
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
+import com.passbolt.mobile.android.feature.home.screen.HomeFragmentDirections
 import com.passbolt.mobile.android.feature.home.switchaccount.SwitchAccountBottomSheetFragment
-import com.passbolt.mobile.android.feature.otp.createotpmanually.CreateOtpFragment
 import com.passbolt.mobile.android.feature.otp.databinding.FragmentOtpBinding
 import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpFragment
-import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
-import com.passbolt.mobile.android.feature.otp.scanotpsuccess.ScanOtpSuccessFragment
+import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpMode
+import com.passbolt.mobile.android.feature.otp.scanotp.scanotpsuccess.ScanOtpSuccessFragment
 import com.passbolt.mobile.android.feature.otp.screen.recycler.OtpItem
-import com.passbolt.mobile.android.otpeditmoremenu.OtpUpdateMoreMenuFragment
+import com.passbolt.mobile.android.feature.resourceform.main.ResourceFormFragment
 import com.passbolt.mobile.android.otpmoremenu.OtpMoreMenuFragment
+import com.passbolt.mobile.android.ui.LeadingContentType
 import com.passbolt.mobile.android.ui.OtpItemWrapper
+import com.passbolt.mobile.android.ui.ResourceFormMode
+import com.passbolt.mobile.android.ui.ResourceModel
 import org.koin.android.ext.android.inject
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
@@ -78,7 +79,7 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
 class OtpFragment :
     BindingScopedAuthenticatedFragment<FragmentOtpBinding, OtpContract.View>(FragmentOtpBinding::inflate),
     OtpContract.View, SwitchAccountBottomSheetFragment.Listener, OtpMoreMenuFragment.Listener,
-    OtpUpdateMoreMenuFragment.Listener {
+    CreateResourceMenuFragment.Listener {
 
     override val presenter: OtpContract.Presenter by inject()
     private val otpAdapter: ItemAdapter<OtpItem> by inject()
@@ -86,8 +87,6 @@ class OtpFragment :
     private val initialsIconGenerator: InitialsIconGenerator by inject()
     private val imageLoader: ImageLoader by inject()
     private val clipboardManager: ClipboardManager? by inject()
-    private val speedDialFabFactory: OtpSpeedDialFabFactory by inject()
-    private var speedDialView: SpeedDialView? = null
 
     private val authenticationResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -98,39 +97,25 @@ class OtpFragment :
             }
         }
 
-    private val otpCreatedResult = { _: String, result: Bundle ->
-        if (result.containsKey(CreateOtpFragment.EXTRA_OTP_CREATED) &&
-            result.getBoolean(CreateOtpFragment.EXTRA_OTP_CREATED)
-        ) {
-            presenter.otpCreated()
-        }
+    private val otpScanQrReturned = { _: String, result: Bundle ->
+        presenter.otpQrScanReturned(
+            result.getBoolean(ScanOtpSuccessFragment.EXTRA_OTP_CREATED, false),
+            result.getBoolean(ScanOtpFragment.EXTRA_MANUAL_CREATION_CHOSEN)
+        )
     }
 
-    private val otpUpdatedResult = { _: String, result: Bundle ->
-        if (result.containsKey(CreateOtpFragment.EXTRA_OTP_UPDATED) &&
-            result.getBoolean(CreateOtpFragment.EXTRA_OTP_UPDATED)
-        ) {
-            presenter.otpUpdated()
-        }
-    }
-
-    private val otpQrScannedResult = { _: String, result: Bundle ->
-        if (result.containsKey(ScanOtpFragment.EXTRA_SCANNED_OTP)) {
-            presenter.otpQrScanned(
-                BundleCompat.getParcelable(
-                    result,
-                    ScanOtpFragment.EXTRA_SCANNED_OTP,
-                    OtpParseResult.OtpQr.TotpQr::class.java
-                )
-            )
-        }
+    private val resourceFormReturned = { _: String, result: Bundle ->
+        presenter.resourceFormReturned(
+            result.getBoolean(ResourceFormFragment.EXTRA_RESOURCE_CREATED, false),
+            result.getBoolean(ResourceFormFragment.EXTRA_RESOURCE_EDITED, false),
+            result.getString(ResourceFormFragment.EXTRA_RESOURCE_NAME)
+        )
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setUpRecycler()
         setupListeners()
-        initSpeedDialFab()
         presenter.attach(this)
     }
 
@@ -145,20 +130,35 @@ class OtpFragment :
     }
 
     override fun onDestroyView() {
-        speedDialView = null
         presenter.detach()
         super.onDestroyView()
     }
 
-    private fun initSpeedDialFab() {
-        with(speedDialFabFactory) {
-            scanQrCodeClick = { presenter.scanOtpQrCodeClick() }
-            createManuallyClick = { presenter.createOtpManuallyClick() }
+    override fun createTotpClick() {
+        navigateToScanOtpCodeForResult()
+    }
 
-            speedDialView = getSpeedDialFab(requireContext(), binding.overlay)
-            speedDialView?.gone()
-            binding.otpRootLayout.addView(speedDialView)
-        }
+    override fun createPasswordClick() {
+
+        findNavController().navigate(
+            OtpFragmentDirections.actionHomeToResourceForm(
+                ResourceFormMode.Create(
+                    LeadingContentType.PASSWORD,
+                    parentFolderId = null
+                )
+            )
+        )
+    }
+
+    override fun navigateToCreateTotpManually() {
+        findNavController().navigate(
+            OtpFragmentDirections.actionHomeToResourceForm(
+                ResourceFormMode.Create(
+                    LeadingContentType.TOTP,
+                    parentFolderId = null
+                )
+            )
+        )
     }
 
     private fun setUpRecycler() {
@@ -183,7 +183,27 @@ class OtpFragment :
             searchEditText.doAfterTextChanged {
                 presenter.searchTextChanged(it.toString())
             }
+            createResourceFab.setOnClickListener {
+                showCreateResourceMenu()
+            }
         }
+        setFragmentResultListeners()
+    }
+
+    private fun setFragmentResultListeners() {
+        setFragmentResultListener(
+            ScanOtpFragment.REQUEST_SCAN_OTP_FOR_RESULT,
+            otpScanQrReturned
+        )
+        setFragmentResultListener(
+            ResourceFormFragment.REQUEST_RESOURCE_FORM,
+            resourceFormReturned
+        )
+    }
+
+    private fun showCreateResourceMenu() {
+        CreateResourceMenuFragment.newInstance(homeDisplayViewModel = null)
+            .show(childFragmentManager, CreateResourceMenuFragment::class.java.name)
     }
 
     override fun hideRefreshProgress() {
@@ -231,11 +251,6 @@ class OtpFragment :
     override fun navigateToSwitchAccount(appContext: AppContext) {
         SwitchAccountBottomSheetFragment.newInstance(appContext)
             .show(childFragmentManager, SwitchAccountBottomSheetFragment::class.java.name)
-    }
-
-    override fun navigateToEditOtpMenu() {
-        OtpUpdateMoreMenuFragment()
-            .show(childFragmentManager, OtpUpdateMoreMenuFragment::class.java.name)
     }
 
     override fun showOtmMoreMenu(resourceId: String, resourceName: String) {
@@ -298,14 +313,6 @@ class OtpFragment :
         presenter.menuShowOtpClick()
     }
 
-    override fun menuEditOtpClick() {
-        presenter.menuEditOtpClick()
-    }
-
-    override fun menuDeleteOtpClick() {
-        presenter.menuDeleteOtpClick()
-    }
-
     override fun showTotpDeleted() {
         showSnackbar(LocalizationR.string.otp_deleted)
     }
@@ -319,26 +326,6 @@ class OtpFragment :
             }
         )
         Toast.makeText(requireContext(), getString(LocalizationR.string.copied_info, label), Toast.LENGTH_SHORT).show()
-    }
-
-    override fun navigateToScanOtpSuccess(totpQr: OtpParseResult.OtpQr.TotpQr) {
-        setFragmentResultListener(
-            ScanOtpSuccessFragment.REQUEST_SCAN_OTP,
-            otpCreatedResult
-        )
-        findNavController().navigate(
-            OtpFragmentDirections.actionOtpFragmentToScanOtpSuccessFragment(totpQr)
-        )
-    }
-
-    override fun navigateToCreateOtpManually() {
-        setFragmentResultListener(
-            CreateOtpFragment.REQUEST_CREATE_OTP,
-            otpCreatedResult
-        )
-        findNavController().navigate(
-            NavDeepLinkProvider.otpManualFormDeepLinkRequest(null)
-        )
     }
 
     override fun showDecryptionFailure() {
@@ -371,14 +358,6 @@ class OtpFragment :
         showSnackbar(LocalizationR.string.otp_otp_updated, backgroundColor = CoreUiR.color.green)
     }
 
-    override fun menuEditOtpManuallyClick() {
-        presenter.menuEditOtpManuallyClick()
-    }
-
-    override fun menuEditByNewOtpScanClick() {
-        presenter.menuEditByQrScanClick()
-    }
-
     override fun otpMenuDismissed() {
         presenter.resume(this)
     }
@@ -387,30 +366,9 @@ class OtpFragment :
         showProgressDialog(childFragmentManager)
     }
 
-    override fun navigateToEditOtpManually(resourceId: String) {
-        setFragmentResultListener(
-            CreateOtpFragment.REQUEST_UPDATE_OTP,
-            otpUpdatedResult
-        )
-        findNavController().navigate(
-            NavDeepLinkProvider.otpManualFormDeepLinkRequest(resourceId)
-        )
-    }
-
     override fun navigateToScanOtpCodeForResult() {
-        setFragmentResultListener(
-            ScanOtpFragment.REQUEST_SCAN_OTP_FOR_RESULT,
-            otpQrScannedResult
-        )
         findNavController().navigate(
-            OtpFragmentDirections.actionOtpFragmentToScanOtpFragment()
-        )
-    }
-
-    override fun showInvalidQrCodeDataScanned() {
-        showSnackbar(
-            messageResId = LocalizationR.string.otp_invalid_itp_data_scanned,
-            backgroundColor = CoreUiR.color.red
+            OtpFragmentDirections.actionOtpFragmentToScanOtpFragment(ScanOtpMode.SCAN_WITH_SUCCESS_SCREEN)
         )
     }
 
@@ -441,11 +399,11 @@ class OtpFragment :
     }
 
     override fun showCreateButton() {
-        speedDialView?.visible()
+        binding.createResourceFab.visible()
     }
 
     override fun hideCreateButton() {
-        speedDialView?.gone()
+        binding.createResourceFab.gone()
     }
 
     override fun showJsonResourceSchemaValidationError() {
@@ -459,6 +417,40 @@ class OtpFragment :
         showSnackbar(
             LocalizationR.string.common_json_schema_secret_validation_error,
             backgroundColor = CoreUiR.color.red
+        )
+    }
+
+    override fun menuEditOtpClick() {
+        presenter.menuEditOtpClick()
+    }
+
+    override fun navigateToEditResource(resourceModel: ResourceModel) {
+        findNavController().navigate(
+            HomeFragmentDirections.actionHomeToResourceForm(
+                ResourceFormMode.Edit(
+                    resourceModel.resourceId,
+                    resourceModel.metadataJsonModel.name
+                )
+            )
+        )
+    }
+
+    override fun menuDeleteOtpClick() {
+        presenter.menuDeleteOtpClick()
+    }
+
+    override fun showResourceCreatedSnackbar() {
+        showSnackbar(
+            LocalizationR.string.resource_form_create_success,
+            backgroundColor = CoreUiR.color.green
+        )
+    }
+
+    override fun showResourceEditedSnackbar(resourceName: String) {
+        showSnackbar(
+            messageResId = LocalizationR.string.common_message_resource_edited,
+            messageArgs = arrayOf(resourceName),
+            backgroundColor = CoreUiR.color.green
         )
     }
 

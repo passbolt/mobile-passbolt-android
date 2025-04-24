@@ -36,7 +36,7 @@ import com.passbolt.mobile.android.core.passphrasememorycache.PassphraseMemoryCa
 import com.passbolt.mobile.android.core.passphrasememorycache.PotentialPassphrase
 import com.passbolt.mobile.android.core.policies.usecase.GetPasswordExpirySettingsUseCase
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.GetResourceTypeIdToSlugMappingUseCase
-import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.SecretModel
+import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.SecretJsonModel
 import com.passbolt.mobile.android.dto.request.CreateV4ResourceDto
 import com.passbolt.mobile.android.dto.request.CreateV5ResourceDto
 import com.passbolt.mobile.android.dto.request.EncryptedSecret
@@ -76,7 +76,7 @@ class CreateResourceInteractor(
     private val metadataEncryptor: MetadataEncryptor
 ) : KoinComponent {
 
-    suspend fun execute(resourceInput: CreateResourceModel, secretInput: SecretModel): Output {
+    suspend fun execute(resourceInput: CreateResourceModel, secretInput: SecretJsonModel): Output {
         val passphrase = when (val result = passphraseMemoryCache.get()) {
             is PotentialPassphrase.Passphrase -> result.passphrase
             is PotentialPassphrase.PassphraseNotPresent -> return Output.PasswordExpired
@@ -85,12 +85,12 @@ class CreateResourceInteractor(
         if (resourceInput.contentType.slug in SupportedContentTypes.v5Slugs) {
             val resourceTypeId = getResourceTypeIdForSlug(resourceInput.contentType.slug)
             secretInput.apply {
-                this.objectType = "PASSBOLT_SECRET_V5"
+                this.objectType = "PASSBOLT_SECRET_DATA"
                 this.resourceTypeId = resourceTypeId
             }
             resourceInput.apply {
-                this.objectType = "PASSBOLT_RESOURCE_METADATA"
-                this.resourceTypeId = resourceTypeId
+                this.metadataJsonModel.objectType = "PASSBOLT_RESOURCE_METADATA"
+                this.metadataJsonModel.resourceTypeId = resourceTypeId
             }
         }
 
@@ -99,10 +99,10 @@ class CreateResourceInteractor(
                 .validationPlainSecret,
             resourceInput.contentType
         )
-        val isResourceValid = isResourceValid(resourceInput.json, resourceInput.contentType)
+        val isResourceValid = isResourceValid(resourceInput.metadataJsonModel.json, resourceInput.contentType)
 
         return if (isSecretValid && isResourceValid) {
-            when (val encryptedSecret = encryptSecret(secretInput.json, passphrase)) {
+            when (val encryptedSecret = encryptSecret(secretInput.json!!, passphrase)) {
                 is EncryptedSecretOrError.Error -> Output.OpenPgpError(encryptedSecret.message)
                 is EncryptedSecretOrError.EncryptedSecret -> {
                     createResource(resourceInput, encryptedSecret, passphrase)
@@ -124,13 +124,13 @@ class CreateResourceInteractor(
     ): Output {
         val createResourceDto = if (SupportedContentTypes.v4Slugs.contains(resourceInput.contentType.slug)) {
             CreateV4ResourceDto(
-                name = resourceInput.name,
+                name = resourceInput.metadataJsonModel.name,
                 resourceTypeId = getResourceTypeIdForSlug(resourceInput.contentType.slug),
                 // from API documentation: An array of secrets in object format - exactly one secret must be provided.
                 secrets = listOf(EncryptedSecret(encryptedSecret.userId, encryptedSecret.data)),
-                username = resourceInput.username,
-                uri = resourceInput.uri,
-                description = resourceInput.description,
+                username = resourceInput.metadataJsonModel.username,
+                uri = resourceInput.metadataJsonModel.uri,
+                description = resourceInput.metadataJsonModel.description,
                 folderParentId = resourceInput.folderId,
                 expiry = getResourceExpiry(resourceInput.contentType)
             )
@@ -138,7 +138,7 @@ class CreateResourceInteractor(
             val encryptedMetadata = metadataEncryptor.encryptMetadata(
                 resourceInput.metadataKeyType!!,
                 resourceInput.metadataKeyId!!,
-                resourceInput.json,
+                resourceInput.metadataJsonModel.json!!,
                 passphrase
             )
             when (encryptedMetadata) {
@@ -206,11 +206,12 @@ class CreateResourceInteractor(
         }
     }
 
-    private suspend fun isSecretValid(plainSecretJson: String, type: ContentType) =
-        jsonSchemaValidationRunner.isSecretValid(plainSecretJson, type.slug)
+    private suspend fun isSecretValid(plainSecretJson: String?, type: ContentType) =
+        plainSecretJson != null && jsonSchemaValidationRunner.isSecretValid(plainSecretJson, type.slug)
 
-    private suspend fun isResourceValid(plainResourceMetadataJson: String, type: ContentType) =
-        jsonSchemaValidationRunner.isResourceValid(plainResourceMetadataJson, type.slug)
+    private suspend fun isResourceValid(plainResourceMetadataJson: String?, type: ContentType) =
+        plainResourceMetadataJson != null &&
+                jsonSchemaValidationRunner.isResourceValid(plainResourceMetadataJson, type.slug)
 
     private suspend fun getResourceTypeIdForSlug(slug: String) =
         getResourceTypeIdToSlugMappingUseCase.execute(Unit)

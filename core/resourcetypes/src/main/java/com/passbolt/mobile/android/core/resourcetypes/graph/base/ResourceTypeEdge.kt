@@ -23,7 +23,7 @@
 
 package com.passbolt.mobile.android.core.resourcetypes.graph.base
 
-import com.passbolt.mobile.android.core.resourcetypes.graph.UpdateAction
+import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType
 
 class ResourceTypeEdge(

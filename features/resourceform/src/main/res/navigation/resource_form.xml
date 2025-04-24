@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/resourceFormNav"
+    app:startDestination="@id/resourceFormFragment">
+
+    <fragment
+        android:id="@+id/resourceFormFragment"
+        android:name="com.passbolt.mobile.android.feature.resourceform.main.ResourceFormFragment"
+        android:label="ResourceFormFragment"
+        tools:layout="@layout/fragment_resource_form">
+        <deepLink
+            android:id="@+id/deepLink"
+            app:uri="passbolt://resourceForm?mode={mode}&amp;leadingType={leadingContentType}" />
+        <argument
+            android:name="mode"
+            app:argType="com.passbolt.mobile.android.ui.ResourceFormMode" />
+        <argument
+            android:name="parentFolderId"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
+        <action
+            android:id="@+id/action_resourceFormFragment_to_descriptionFormFragment"
+            app:destination="@id/descriptionFormFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_resourceFormFragment_to_totpFormFragment"
+            app:destination="@id/totpFormFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_resourceFormFragment_to_noteFormFragment"
+            app:destination="@id/noteFormFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_resourceFormFragment_to_totpAdvancedSettingsFormFragment"
+            app:destination="@id/totpAdvancedSettingsFormFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_resourceFormFragment_to_passwordFormFragment"
+            app:destination="@id/passwordFormFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/descriptionFormFragment"
+        android:name="com.passbolt.mobile.android.feature.resourceform.metadata.description.DescriptionFormFragment"
+        android:label="DescriptionFormFragment"
+        tools:layout="@layout/fragment_description_form">
+        <argument
+            android:name="mode"
+            app:argType="com.passbolt.mobile.android.ui.ResourceFormMode" />
+        <argument
+            android:name="metadataDescription"
+            app:argType="string" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/totpFormFragment"
+        android:name="com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.TotpFormFragment"
+        android:label="TotpFormFragment"
+        tools:layout="@layout/fragment_totp_form">
+        <argument
+            android:name="mode"
+            app:argType="com.passbolt.mobile.android.ui.ResourceFormMode" />
+        <argument
+            android:name="totpUiModel"
+            app:argType="com.passbolt.mobile.android.ui.TotpUiModel" />
+        <action
+            android:id="@+id/action_totpFormFragment_to_totpAdvancedSettingsFormFragment"
+            app:destination="@id/totpAdvancedSettingsFormFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/noteFormFragment"
+        android:name="com.passbolt.mobile.android.feature.resourceform.additionalsecrets.note.NoteFormFragment"
+        android:label="NoteFormFragment"
+        tools:layout="@layout/fragment_note_form">
+        <argument
+            android:name="mode"
+            app:argType="com.passbolt.mobile.android.ui.ResourceFormMode" />
+        <argument
+            android:name="note"
+            app:argType="string" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/totpAdvancedSettingsFormFragment"
+        android:name="com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.advanced.TotpAdvancedSettingsFormFragment"
+        android:label="TotpAdvancedSettingsFormFragment"
+        tools:layout="@layout/fragment_totp_advanced_settings_form">
+        <argument
+            android:name="mode"
+            app:argType="com.passbolt.mobile.android.ui.ResourceFormMode" />
+        <argument
+            android:name="totpUiModel"
+            app:argType="com.passbolt.mobile.android.ui.TotpUiModel" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/passwordFormFragment"
+        android:name="com.passbolt.mobile.android.feature.resourceform.additionalsecrets.password.PasswordFormFragment"
+        android:label="PasswordFormFragment"
+        tools:layout="@layout/fragment_password_form">
+        <argument
+            android:name="mode"
+            app:argType="com.passbolt.mobile.android.ui.ResourceFormMode" />
+        <argument
+            android:name="passwordModel"
+            app:argType="com.passbolt.mobile.android.ui.PasswordUiModel" />
+    </fragment>
+
+    <action
+        android:id="@+id/action_resourceFormFragment_to_scanOtp"
+        app:destination="@id/scanOtpNav"
+        app:enterAnim="@anim/slide_in_right"
+        app:exitAnim="@anim/slide_out_left"
+        app:popEnterAnim="@anim/slide_in_left"
+        app:popExitAnim="@anim/slide_out_right">
+        <argument
+            android:name="scanOtpMode"
+            app:argType="com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpMode" />
+    </action>
+
+    <include app:graph="@navigation/scan_otp" />
+
+</navigation>

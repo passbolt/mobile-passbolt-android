@@ -27,7 +27,7 @@ import androidx.annotation.VisibleForTesting
 import com.passbolt.mobile.android.core.mvp.authentication.UnauthenticatedReason
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.SecretInteractor
-import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.SecretModel
+import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.SecretJsonModel
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.SecretParser
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
 import com.passbolt.mobile.android.jsonmodel.delegates.TotpSecret
@@ -52,7 +52,7 @@ class SecretPropertiesActionsInteractor(
     private val idToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider
 ) {
 
-    suspend fun provideDecryptedSecret(): Flow<SecretPropertyActionResult<SecretModel>> =
+    suspend fun provideDecryptedSecret(): Flow<SecretPropertyActionResult<SecretJsonModel>> =
         fetchAndDecrypt()
             .mapSuccess {
                 when (val secret = secretParser.parseSecret(resource.resourceTypeId, it.secret)) {
@@ -68,13 +68,13 @@ class SecretPropertiesActionsInteractor(
                 }
             }
 
-    suspend fun provideDescription(): Flow<SecretPropertyActionResult<String>> =
+    suspend fun provideNote(): Flow<SecretPropertyActionResult<String>> =
         fetchAndDecrypt()
             .mapSuccess {
                 when (val description = secretParser.parseSecret(resource.resourceTypeId, it.secret)) {
                     is DecryptedSecretOrError.DecryptedSecret ->
                         SecretPropertyActionResult.Success(
-                            DESCRIPTION_LABEL,
+                            NOTE_LABEL,
                             isSecret = true,
                             description.secret.description.orEmpty()
                         )
@@ -84,7 +84,7 @@ class SecretPropertiesActionsInteractor(
                 }
             }
 
-    suspend fun providePassword(): Flow<SecretPropertyActionResult<String>> =
+    suspend fun providePassword(): Flow<SecretPropertyActionResult<String?>> =
         fetchAndDecrypt()
             .mapSuccess {
                 val slug = idToSlugMappingProvider
@@ -94,11 +94,7 @@ class SecretPropertiesActionsInteractor(
                         SecretPropertyActionResult.Success(
                             SECRET_LABEL,
                             isSecret = true,
-                            if (ContentType.fromSlug(slug!!).isSimplePassword()) {
-                                password.secret.password
-                            } else {
-                                password.secret.secret
-                            }
+                            password.secret.getPassword(ContentType.fromSlug(slug!!))
                         )
                     is DecryptedSecretOrError.Error ->
                         SecretPropertyActionResult.DecryptionFailure()
@@ -113,7 +109,7 @@ class SecretPropertiesActionsInteractor(
                         SecretPropertyActionResult.Success(
                             OTP_LABEL,
                             isSecret = true,
-                            totp.secret.totp
+                            requireNotNull(totp.secret.totp)
                         )
                     is DecryptedSecretOrError.Error ->
                         SecretPropertyActionResult.DecryptionFailure()
@@ -172,7 +168,7 @@ class SecretPropertiesActionsInteractor(
         const val SECRET_LABEL = "Secret"
 
         @VisibleForTesting
-        const val DESCRIPTION_LABEL = "Description"
+        const val NOTE_LABEL = "Note"
 
         @VisibleForTesting
         const val JSON_SECRET_LABEL = "JSON Secret"

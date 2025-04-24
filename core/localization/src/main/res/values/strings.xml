@@ -53,12 +53,13 @@
     <string name="common_json_schema_secret_validation_error">There was an error during validation of secret. Enable logs for more details.</string>
     <string name="common_maybe_later">Maybe later</string>
 
-    <string name="common_message_resource_edited">%s password was successfully edited.</string>
-    <string name="common_message_resource_deleted">%s password was deleted.</string>
+    <string name="common_message_resource_edited">%s resource was successfully edited.</string>
+    <string name="common_message_resource_deleted">%s resource was deleted.</string>
     <string name="common_message_resource_shared">The resource permissions were updated.</string>
     <string name="common_message_folder_created">New folder %s has been created!</string>
 
     <string name="validation_required_with_max_length">Length should be between 1 and %d</string>
+    <string name="validation_is_required">This input is required</string>
     <string name="validation_required_integer">Should be an integer number</string>
 
     <string name="fingerprint_biometric_error_generic">An error has occurred with the fingerprint sensor.</string>
@@ -82,14 +83,13 @@
     <string name="more_copy_uri">Copy URI</string>
     <string name="more_copy_password">Copy password</string>
     <string name="more_copy_username">Copy username</string>
-    <string name="more_copy_desc">Copy description</string>
-    <string name="more_edit">Edit password</string>
-    <string name="more_delete">Delete password</string>
-    <string name="more_share">Share password</string>
+    <string name="more_copy_metadata_desc">Copy metadata description</string>
+    <string name="more_copy_note">Copy note</string>
+    <string name="more_edit">Edit</string>
+    <string name="more_delete">Delete</string>
+    <string name="more_share">Share</string>
     <string name="more_add_to_favourite">Add to favourite</string>
     <string name="more_remove_from_favourite">Remove from favourite</string>
-    <string name="more_add_totp">Add TOTP</string>
-    <string name="more_manage_totp">Manage TOTP</string>
 
     <string name="folder_more_see_details">See details</string>
 
@@ -277,32 +277,57 @@
     <string name="resource_details_url_header">Main URI</string>
     <string name="resource_details_expiry_header">Expiry</string>
     <string name="resource_details_description_header">Description</string>
+    <string name="resource_details_note_header">Note</string>
+    <string name="resource_details_note_content">Content</string>
     <string name="resource_details_tags_header">Tags</string>
     <string name="hidden_secret"
         translatable="false">••••••••••••••••••</string>
     <string name="resource_details_encrypted_description">Description is encrypted</string>
     <string name="resource_details_information">Information</string>
     <string name="resource_details_invalid_totp_scanned">Invalid TOTP QR code scanned</string>
+    <string name="resource_details_metadata_header">Metadata</string>
 
     <string name="more_details_copy_password">Copy password</string>
     <string name="more_details_copy_description">Copy description</string>
 
-    <string name="resource_update_password_title">New password</string>
-    <string name="resource_update_password">Password</string>
-    <string name="resource_update_password_hint">Enter password</string>
-    <string name="resource_update_description">Description</string>
-    <string name="resource_update_description_hint">Enter description</string>
-    <string name="resource_update_empty_error">The %s cannot be empty</string>
-    <string name="resource_update_too_long_error">The maximum length has been exceeded</string>
-    <string name="resource_update_create_button">Create</string>
-    <string name="resource_update_create_success">New password was created!</string>
-    <string name="resource_update_edit_password_title">Edit password</string>
-    <string name="resource_update_field_password">Password</string>
-    <string name="resource_update_field_name">Resource name</string>
-    <string name="resource_update_field_uri">Main URI</string>
-    <string name="resource_update_field_username">Username</string>
-    <string name="resource_update_field_description">Description</string>
-    <string name="resource_update_invalid_secret_data">Invalid secret data types. Aborting edit.</string>
+    <string name="resource_form_create_success">New password was created!</string>
+    <string name="resource_form_password">Password</string>
+    <string name="resource_form_enter_password">Enter password</string>
+    <string name="resource_form_main_uri">Main URI</string>
+    <string name="resource_form_enter_uri">Enter URI</string>
+    <string name="resource_form_username">Username</string>
+    <string name="resource_form_enter_username">Enter username</string>
+    <string name="resource_form_totp">TOTP</string>
+    <string name="resource_form_totp_secret">Secret</string>
+    <string name="resource_form_totp_url">URL</string>
+    <string name="resource_form_totp_url_issuer">URL (Issuer)</string>
+    <string name="resource_form_totp_more_settings">More TOTP settings</string>
+    <string name="resource_form_totp_settings">TOTP settings</string>
+    <string name="resource_form_description">Description</string>
+    <string name="resource_form_enter_description">Enter description</string>
+    <string name="resource_form_metadata_description">Metadata description</string>
+    <string name="resource_form_create_metadata_description">Create metadata description</string>
+    <string name="resource_form_note">Note</string>
+    <string name="resource_form_create_note">Create note</string>
+    <string name="resource_form_note_content">Content</string>
+    <string name="resource_form_enter_note">Enter note</string>
+    <string name="resource_form_note_info">The note is part of the secret if you want to be able to search this content, use metadata description.</string>
+    <string name="resource_form_metadata_description_info">If you want the description to be part of the secret, use note instead.</string>
+    <string name="resource_form_resource_name">Resource name</string>
+    <string name="resource_form_name">Name</string>
+    <string name="resource_form_create_password">Create a password</string>
+    <string name="resource_form_edit_resource">Edit %s</string>
+    <string name="resource_form_create_totp">Create a TOTP</string>
+    <string name="resource_form_view_advanced_settings">View advanced settings</string>
+    <string name="resource_form_view_additional_secrets">Additional secrets</string>
+    <string name="resource_form_view_metadata">Metadata</string>
+    <string name="resource_form_view_additional_uris">Additional URIs</string>
+    <string name="resource_form_create">Create</string>
+    <string name="resource_form_save">Save</string>
+    <string name="resource_form_edit_init_error">Failed to initialize resource edition</string>
+    <string name="resource_form_remove_totp">Remove TOTP</string>
+    <string name="resource_form_remove_note">Remove Note</string>
+    <string name="resource_form_no_name">no name</string>
 
     <string name="settings_app_settings">App settings</string>
     <string name="settings_accounts">Accounts</string>
@@ -384,6 +409,7 @@
     <string name="scan_qr_scanning_error">Error during scanning</string>
     <string name="scan_qr_camera_error">Camera error</string>
     <string name="scan_qr_update_transfer_error">There was an error during transfer update</string>
+    <string name="scan_qr_or_create_totp_manually">Or create TOTP manually</string>
 
     <string name="scan_qr_summary_success_title">Your information has been transferred!</string>
     <string name="scan_qr_summary_already_linked_title">Account  is already linked to the device</string>
@@ -483,7 +509,7 @@
 
     <string name="otp_more_copy_otp">Copy TOTP</string>
     <string name="otp_more_show_otp">Show TOTP</string>
-    <string name="otp_more_edit_otp">Edit TOTP</string>
+    <string name="otp_more_edit_resource">Edit</string>
     <string name="otp_more_delete_otp">Delete TOTP</string>
 
     <string name="otp_edit_title">Edit TOTP</string>
@@ -557,6 +583,11 @@
 
     <string name="password_generator_known_strength_format">%s (entropy: %.2f bits)</string>
     <string name="password_generator_unknown_strength_format">Strength (entropy: n/a bits)</string>
+
+    <string name="create_resource_menu_create_a_resource">Create a resource</string>
+    <string name="create_resource_menu_create_totp">TOTP</string>
+    <string name="create_resource_menu_create_password">Password</string>
+    <string name="create_resource_menu_create_folder">Folder</string>
 
     <!--
     arrays can be inconsistent when in other languages

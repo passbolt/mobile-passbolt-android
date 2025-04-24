@@ -71,11 +71,12 @@ abstract class DataRefreshViewReactivePresenter<V : DataRefreshViewReactiveContr
                                 }
                                 is HomeDataInteractor.Output.Success -> {
                                     Timber.d("Full data refresh succeeded - executing success action")
-                                    refreshAction()
+                                    refreshSuccessAction()
                                 }
                             }
                         }
                         DataRefreshStatus.InProgress -> {
+                            refreshStartAction()
                             this@DataRefreshViewReactivePresenter.view?.showRefreshProgress()
                         }
                     }
@@ -84,6 +85,10 @@ abstract class DataRefreshViewReactivePresenter<V : DataRefreshViewReactiveContr
                 }
             }
         }
+    }
+
+    override fun refreshStartAction() {
+        // do nothing by default
     }
 
     override fun pause() {

@@ -30,7 +30,7 @@ class RootRelativeJsonPathNullableStringListDelegateTest : KoinTest {
             }
             """
         val jsonModel = object : JsonModel {
-            override var json = jsonString
+            override var json: String? = jsonString
 
             var testListField by RootRelativeJsonPathNullableStringListDelegate(jsonPath = "testListField")
         }
@@ -48,7 +48,7 @@ class RootRelativeJsonPathNullableStringListDelegateTest : KoinTest {
             }
             """
         val jsonModel = object : JsonModel {
-            override var json = jsonString
+            override var json: String? = jsonString
 
             var testListField by RootRelativeJsonPathNullableStringListDelegate(jsonPath = "testListField")
         }
@@ -75,7 +75,7 @@ class RootRelativeJsonPathNullableStringListDelegateTest : KoinTest {
         val jsonModels = jsonStringInputs.map { jsonString ->
 
             object : JsonModel {
-                override var json = jsonString
+                override var json: String? = jsonString
 
                 var testListField by RootRelativeJsonPathNullableStringListDelegate(jsonPath = "testListField")
             }
@@ -103,7 +103,7 @@ class RootRelativeJsonPathNullableStringListDelegateTest : KoinTest {
             """
 
         val jsonModel = object : JsonModel {
-            override var json = jsonStringInput
+            override var json: String? = jsonStringInput
 
             var testListField by RootRelativeJsonPathNullableStringDelegate(jsonPath = "testListField")
         }
@@ -123,7 +123,7 @@ class RootRelativeJsonPathNullableStringListDelegateTest : KoinTest {
         """
 
         val jsonModel = object : JsonModel {
-            override var json = jsonString
+            override var json: String? = jsonString
 
             var testStringField by RootRelativeJsonPathNullableStringDelegate(jsonPath = "testStringField")
         }

@@ -25,10 +25,10 @@ package com.passbolt.mobile.android.resourcemoremenu
 
 import com.passbolt.mobile.android.resourcemoremenu.usecase.CreateResourceMoreMenuModelUseCase
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
+import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.DescriptionOption.HAS_METADATA_DESCRIPTION
+import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.DescriptionOption.HAS_NOTE
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.FavouriteOption.ADD_TO_FAVOURITES
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.FavouriteOption.REMOVE_FROM_FAVOURITES
-import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.TotpOption.ADD_TOTP
-import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.TotpOption.NONE
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Rule
 import org.junit.Test
@@ -42,6 +42,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyNoMoreInteractions
 
 @ExperimentalCoroutinesApi
 class ResourceMoreMenuTest : KoinTest {
@@ -64,10 +65,10 @@ class ResourceMoreMenuTest : KoinTest {
                             title = "title",
                             canCopy = true,
                             canDelete = true,
-                            canShare = true,
                             canEdit = true,
+                            canShare = true,
                             favouriteOption = ADD_TO_FAVOURITES,
-                            totpOption = ADD_TOTP
+                            descriptionOptions = listOf(HAS_NOTE, HAS_METADATA_DESCRIPTION)
                         )
                     )
         }
@@ -75,16 +76,19 @@ class ResourceMoreMenuTest : KoinTest {
         presenter.apply {
             attach(this@ResourceMoreMenuTest.view)
             argsRetrieved("resourceId")
-            refreshAction()
+            refreshSuccessAction()
         }
 
         verify(view).showTitle("title")
+        verify(view).showSeparator()
         verify(view).showCopyButton()
         verify(view).showDeleteButton()
         verify(view).showEditButton()
         verify(view).showShareButton()
         verify(view).showAddToFavouritesButton()
-        verify(view).showAddTotpButton()
+        verify(view).showCopyNoteButton()
+        verify(view).showCopyMetadataDescriptionButton()
+        verifyNoMoreInteractions(view)
     }
 
     @Test
@@ -96,10 +100,10 @@ class ResourceMoreMenuTest : KoinTest {
                         title = "title",
                         canCopy = false,
                         canDelete = false,
-                        canShare = false,
                         canEdit = false,
+                        canShare = false,
                         favouriteOption = REMOVE_FROM_FAVOURITES,
-                        totpOption = NONE
+                        descriptionOptions = emptyList()
                     )
                 )
             )
@@ -108,7 +112,7 @@ class ResourceMoreMenuTest : KoinTest {
         presenter.apply {
             attach(this@ResourceMoreMenuTest.view)
             argsRetrieved("resourceId")
-            refreshAction()
+            refreshSuccessAction()
         }
 
         verify(view).showTitle("title")
@@ -117,7 +121,9 @@ class ResourceMoreMenuTest : KoinTest {
         verify(view, never()).showEditButton()
         verify(view, never()).showShareButton()
         verify(view, never()).showAddToFavouritesButton()
-        verify(view, never()).showAddTotpButton()
+        verify(view, never()).showCopyNoteButton()
+        verify(view, never()).showCopyMetadataDescriptionButton()
         verify(view).showRemoveFromFavouritesButton()
+        verifyNoMoreInteractions(view)
     }
 }

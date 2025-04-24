@@ -92,15 +92,14 @@ class ResourceMoreMenuFragment :
     private fun setListeners() {
         with(binding) {
             setDebouncingOnClickAndDismiss(copyPassword) { listener?.menuCopyPasswordClick() }
-            setDebouncingOnClickAndDismiss(copyDescription) { listener?.menuCopyDescriptionClick() }
+            setDebouncingOnClickAndDismiss(copyMetadataDescription) { listener?.menuCopyMetadataDescriptionClick() }
+            setDebouncingOnClickAndDismiss(copyNote) { listener?.menuCopyNoteClick() }
             setDebouncingOnClickAndDismiss(copyUrl) { listener?.menuCopyUrlClick() }
             setDebouncingOnClickAndDismiss(copyUsername) { listener?.menuCopyUsernameClick() }
             setDebouncingOnClickAndDismiss(launchWebsite) { listener?.menuLaunchWebsiteClick() }
             setDebouncingOnClickAndDismiss(share) { listener?.menuShareClick() }
             setDebouncingOnClickAndDismiss(delete) { listener?.menuDeleteClick() }
-            setDebouncingOnClickAndDismiss(editPassword) { listener?.menuEditClick() }
-            setDebouncingOnClickAndDismiss(manageTotp) { listener?.menuManageTotpClick() }
-            setDebouncingOnClickAndDismiss(addTotp) { listener?.menuAddTotpClick() }
+            setDebouncingOnClickAndDismiss(edit) { listener?.menuEditClick() }
             setDebouncingOnClickAndDismiss(close)
             favourite.setDebouncingOnClick { presenter.menuFavouriteClick() }
         }
@@ -150,23 +149,23 @@ class ResourceMoreMenuFragment :
     }
 
     override fun showEditButton() {
-        binding.editPassword.visible()
+        binding.edit.visible()
     }
 
     override fun showShareButton() {
         binding.share.visible()
     }
 
-    override fun showManageTotpButton() {
-        binding.manageTotp.visible()
-    }
-
-    override fun showAddTotpButton() {
-        binding.addTotp.visible()
-    }
-
     override fun showCopyButton() {
         binding.copyPassword.visible()
+    }
+
+    override fun showCopyNoteButton() {
+        binding.copyNote.visible()
+    }
+
+    override fun showCopyMetadataDescriptionButton() {
+        binding.copyMetadataDescription.visible()
     }
 
     override fun hideMenu() {
@@ -203,7 +202,8 @@ class ResourceMoreMenuFragment :
 
     interface Listener {
         fun menuCopyPasswordClick()
-        fun menuCopyDescriptionClick()
+        fun menuCopyMetadataDescriptionClick()
+        fun menuCopyNoteClick()
         fun menuCopyUrlClick()
         fun menuCopyUsernameClick()
         fun menuLaunchWebsiteClick()
@@ -211,8 +211,6 @@ class ResourceMoreMenuFragment :
         fun menuEditClick()
         fun menuShareClick()
         fun menuFavouriteClick(option: ResourceMoreMenuModel.FavouriteOption)
-        fun menuAddTotpClick()
-        fun menuManageTotpClick()
         fun resourceMoreMenuDismissed()
     }
 }

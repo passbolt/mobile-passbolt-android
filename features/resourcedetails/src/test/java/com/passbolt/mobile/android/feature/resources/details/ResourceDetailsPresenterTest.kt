@@ -1,6 +1,5 @@
 package com.passbolt.mobile.android.feature.resources.details
 
-import com.google.gson.JsonObject
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalFolderLocationUseCase
 import com.passbolt.mobile.android.core.fulldatarefresh.DataRefreshStatus
 import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
@@ -17,6 +16,7 @@ import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetai
 import com.passbolt.mobile.android.featureflags.usecase.GetFeatureFlagsUseCase
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType
 import com.passbolt.mobile.android.ui.GroupModel
+import com.passbolt.mobile.android.ui.MetadataJsonModel
 import com.passbolt.mobile.android.ui.PermissionModelUi
 import com.passbolt.mobile.android.ui.RbacModel
 import com.passbolt.mobile.android.ui.RbacRuleModel.ALLOW
@@ -94,12 +94,16 @@ class ResourceDetailsPresenterTest : KoinTest {
             favouriteId = "fav-id",
             modified = ZonedDateTime.now(),
             expiry = null,
-            json = JsonObject().apply {
-                addProperty("name", NAME)
-                addProperty("username", USERNAME)
-                addProperty("uri", URL)
-                addProperty("description", DESCRIPTION)
-            }.toString(),
+            metadataJsonModel = MetadataJsonModel(
+                """
+                    {
+                        "name": "$NAME",
+                        "uri": "$URL",
+                        "username": "$USERNAME",
+                        "description": "$DESCRIPTION"
+                    }
+                """.trimIndent()
+            ),
             metadataKeyId = null,
             metadataKeyType = null
         )
@@ -111,12 +115,16 @@ class ResourceDetailsPresenterTest : KoinTest {
             favouriteId = "fav-id",
             modified = ZonedDateTime.now(),
             expiry = ZonedDateTime.now().minusDays(1),
-            json = JsonObject().apply {
-                addProperty("name", NAME)
-                addProperty("username", USERNAME)
-                addProperty("uri", URL)
-                addProperty("description", DESCRIPTION)
-            }.toString(),
+            metadataJsonModel = MetadataJsonModel(
+                """
+                    {
+                        "name": "$NAME",
+                        "uri": "$URL",
+                        "username": "$USERNAME",
+                        "description": "$DESCRIPTION"
+                    }
+                """.trimIndent()
+            ),
             metadataKeyId = null,
             metadataKeyType = null
         )
@@ -180,9 +188,15 @@ class ResourceDetailsPresenterTest : KoinTest {
     }
 
     @Test
-    fun `password details should be shown correct`() {
+    fun `password details should be shown correct for password and description`() {
+        mockResourceTypeIdToSlugMappingProvider.stub {
+            onBlocking { provideMappingForSelectedAccount() }.doReturn(
+                mapOf(RESOURCE_TYPE_ID to ContentType.PasswordAndDescription.slug)
+            )
+        }
+
         presenter.argsReceived(
-            resourceModel.resourceId,
+            resourceModel,
             100,
             20f
         )
@@ -198,9 +212,118 @@ class ResourceDetailsPresenterTest : KoinTest {
         verify(view, times(2)).hidePassword()
         verify(view, times(2)).showPermissions(eq(listOf(groupPermission)), eq(listOf(userPermission)), any(), any())
         verify(view, times(2)).showTags(RESOURCE_TAGS.map { it.slug })
-        verify(view, times(2)).hideDescription()
+        verify(view, times(2)).disableMetadataDescription()
         verify(view, times(2)).showFolderLocation(emptyList())
         verify(view, times(2)).hideTotpSection()
+        verify(view, times(2)).showPasswordSection()
+        verify(view, times(2)).showPasswordEyeIcon()
+        verify(view, times(2)).hideExpirySection()
+        verify(view).hideRefreshProgress()
+        verifyNoMoreInteractions(view)
+    }
+
+    @Test
+    fun `password details should be shown correct for password string`() {
+        mockResourceTypeIdToSlugMappingProvider.stub {
+            onBlocking { provideMappingForSelectedAccount() }.doReturn(
+                mapOf(RESOURCE_TYPE_ID to ContentType.PasswordString.slug)
+            )
+        }
+
+        presenter.argsReceived(
+            resourceModel,
+            100,
+            20f
+        )
+        presenter.resume(view)
+
+        verify(view, times(2)).showFavouriteStar()
+        verify(view, times(2)).displayTitle(NAME)
+        verify(view, never()).displayExpiryTitle(any())
+        verify(view, never()).displayExpirySection(any())
+        verify(view, times(2)).displayUsername(USERNAME)
+        verify(view, times(2)).displayInitialsIcon(NAME, "n")
+        verify(view, times(2)).displayUrl(URL)
+        verify(view, times(2)).hidePassword()
+        verify(view, times(2)).showPermissions(eq(listOf(groupPermission)), eq(listOf(userPermission)), any(), any())
+        verify(view, times(2)).showTags(RESOURCE_TAGS.map { it.slug })
+        verify(view, times(2)).showMetadataDescription(DESCRIPTION)
+        verify(view, times(2)).showFolderLocation(emptyList())
+        verify(view, times(2)).hideTotpSection()
+        verify(view, times(2)).disableNote()
+        verify(view, times(2)).showPasswordSection()
+        verify(view, times(2)).showPasswordEyeIcon()
+        verify(view, times(2)).hideExpirySection()
+        verify(view).hideRefreshProgress()
+        verifyNoMoreInteractions(view)
+    }
+
+    @Test
+    fun `password details should be shown correct for password description totp`() {
+        mockResourceTypeIdToSlugMappingProvider.stub {
+            onBlocking { provideMappingForSelectedAccount() }.doReturn(
+                mapOf(RESOURCE_TYPE_ID to ContentType.PasswordDescriptionTotp.slug)
+            )
+        }
+
+        presenter.argsReceived(
+            resourceModel,
+            100,
+            20f
+        )
+        presenter.resume(view)
+
+        verify(view, times(2)).showFavouriteStar()
+        verify(view, times(2)).displayTitle(NAME)
+        verify(view, never()).displayExpiryTitle(any())
+        verify(view, never()).displayExpirySection(any())
+        verify(view, times(2)).displayUsername(USERNAME)
+        verify(view, times(2)).displayInitialsIcon(NAME, "n")
+        verify(view, times(2)).displayUrl(URL)
+        verify(view, times(2)).hidePassword()
+        verify(view, times(2)).showPermissions(eq(listOf(groupPermission)), eq(listOf(userPermission)), any(), any())
+        verify(view, times(2)).showTags(RESOURCE_TAGS.map { it.slug })
+        verify(view, times(2)).showFolderLocation(emptyList())
+        verify(view, times(2)).showTotpSection()
+        verify(view, times(2)).showPasswordSection()
+        verify(view, times(2)).showPasswordEyeIcon()
+        verify(view, times(2)).disableMetadataDescription()
+        verify(view, times(2)).hideExpirySection()
+        verify(view).hideRefreshProgress()
+        verifyNoMoreInteractions(view)
+    }
+
+    @Test
+    fun `password details should be shown correct for standalone totp`() {
+        mockResourceTypeIdToSlugMappingProvider.stub {
+            onBlocking { provideMappingForSelectedAccount() }.doReturn(
+                mapOf(RESOURCE_TYPE_ID to ContentType.Totp.slug)
+            )
+        }
+
+        presenter.argsReceived(
+            resourceModel,
+            100,
+            20f
+        )
+        presenter.resume(view)
+
+        verify(view, times(2)).showFavouriteStar()
+        verify(view, times(2)).displayTitle(NAME)
+        verify(view, never()).displayExpiryTitle(any())
+        verify(view, never()).displayExpirySection(any())
+        verify(view, times(2)).displayUsername(USERNAME)
+        verify(view, times(2)).displayInitialsIcon(NAME, "n")
+        verify(view, times(2)).displayUrl(URL)
+        verify(view, times(2)).hidePassword()
+        verify(view, times(2)).showPermissions(eq(listOf(groupPermission)), eq(listOf(userPermission)), any(), any())
+        verify(view, times(2)).showTags(RESOURCE_TAGS.map { it.slug })
+        verify(view, times(2)).showFolderLocation(emptyList())
+        verify(view, times(2)).showTotpSection()
+        verify(view, times(2)).hidePasswordSection()
+        verify(view, times(2)).hidePassword()
+        verify(view, times(2)).disableMetadataDescription()
+        verify(view, times(2)).disableNote()
         verify(view, times(2)).showPasswordEyeIcon()
         verify(view, times(2)).hideExpirySection()
         verify(view).hideRefreshProgress()
@@ -219,7 +342,7 @@ class ResourceDetailsPresenterTest : KoinTest {
         }
 
         presenter.argsReceived(
-            resourceModelExpired.resourceId,
+            resourceModelExpired,
             100,
             20f
         )
@@ -236,66 +359,13 @@ class ResourceDetailsPresenterTest : KoinTest {
         verify(view, times(2)).hidePassword()
         verify(view, times(2)).showPermissions(eq(listOf(groupPermission)), eq(listOf(userPermission)), any(), any())
         verify(view, times(2)).showTags(RESOURCE_TAGS.map { it.slug })
-        verify(view, times(2)).hideDescription()
+        verify(view, times(2)).disableMetadataDescription()
+        verify(view, times(2)).showPasswordSection()
         verify(view, times(2)).showFolderLocation(emptyList())
         verify(view, times(2)).hideTotpSection()
         verify(view, times(2)).showPasswordEyeIcon()
         verify(view).hideRefreshProgress()
         verifyNoMoreInteractions(view)
-    }
-
-    @Test
-    fun `top should show on appropriate content type`() {
-        mockResourceTypeIdToSlugMappingProvider.stub {
-            onBlocking { provideMappingForSelectedAccount() }.doReturn(
-                mapOf(RESOURCE_TYPE_ID to ContentType.PasswordDescriptionTotp.slug)
-            )
-        }
-
-        presenter.argsReceived(
-            resourceModel.resourceId,
-            100,
-            20f
-        )
-        presenter.resume(view)
-
-        verify(view, times(2)).showTotpSection()
-    }
-
-    @Test
-    fun `password details description encryption state should be shown correct for simple password`() {
-        mockResourceTypeIdToSlugMappingProvider.stub {
-            onBlocking { provideMappingForSelectedAccount() }.doReturn(
-                mapOf(RESOURCE_TYPE_ID to ContentType.PasswordString.slug)
-            )
-        }
-
-        presenter.argsReceived(
-            resourceModel.resourceId,
-            100,
-            20f
-        )
-        presenter.resume(view)
-
-        verify(view, times(2)).showDescription(DESCRIPTION, isSecret = false)
-    }
-
-    @Test
-    fun `password details description encryption state should be shown correct for default password`() {
-        mockResourceTypeIdToSlugMappingProvider.stub {
-            onBlocking { provideMappingForSelectedAccount() }.doReturn(
-                mapOf(RESOURCE_TYPE_ID to ContentType.PasswordAndDescription.slug)
-            )
-        }
-
-        presenter.argsReceived(
-            resourceModel.resourceId,
-            100,
-            20f
-        )
-        presenter.resume(view)
-
-        verify(view, times(2)).hideDescription()
     }
 
     @Test
@@ -317,7 +387,7 @@ class ResourceDetailsPresenterTest : KoinTest {
         }
 
         presenter.argsReceived(
-            resourceModel.resourceId,
+            resourceModel,
             100,
             20f
         )
@@ -337,7 +407,7 @@ class ResourceDetailsPresenterTest : KoinTest {
         }
 
         presenter.argsReceived(
-            resourceModel.resourceId,
+            resourceModel,
             100,
             20f
         )
@@ -354,7 +424,7 @@ class ResourceDetailsPresenterTest : KoinTest {
         }
 
         presenter.argsReceived(
-            resourceModel.resourceId,
+            resourceModel,
             100,
             20f
         )
@@ -387,7 +457,7 @@ class ResourceDetailsPresenterTest : KoinTest {
         }
 
         presenter.argsReceived(
-            resourceModel.resourceId,
+            resourceModel,
             100,
             20f
         )
@@ -400,7 +470,7 @@ class ResourceDetailsPresenterTest : KoinTest {
     @Test
     fun `resource permissions should be displayed`() = runTest {
         presenter.argsReceived(
-            resourceModel.resourceId,
+            resourceModel,
             100,
             20f
         )
@@ -426,7 +496,7 @@ class ResourceDetailsPresenterTest : KoinTest {
         }
 
         presenter.argsReceived(
-            resourceModel.resourceId,
+            resourceModel,
             100,
             20f
         )

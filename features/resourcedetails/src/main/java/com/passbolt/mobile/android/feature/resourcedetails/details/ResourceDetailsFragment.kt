@@ -11,13 +11,13 @@ import android.text.SpannableStringBuilder
 import android.text.format.DateUtils
 import android.view.View
 import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
-import androidx.core.content.IntentCompat
-import androidx.core.os.BundleCompat
+import androidx.core.os.bundleOf
 import androidx.core.view.doOnLayout
+import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
@@ -25,13 +25,10 @@ import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
 import com.passbolt.mobile.android.common.ExternalDeeplinkHandler
 import com.passbolt.mobile.android.common.dialogs.confirmResourceDeletionAlertDialog
-import com.passbolt.mobile.android.common.dialogs.confirmTotpDeletionAlertDialog
-import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.extension.gone
 import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.extension.showSnackbar
 import com.passbolt.mobile.android.core.extension.visible
-import com.passbolt.mobile.android.core.navigation.ActivityResults
 import com.passbolt.mobile.android.core.navigation.deeplinks.NavDeepLinkProvider
 import com.passbolt.mobile.android.core.ui.controller.TotpViewController
 import com.passbolt.mobile.android.core.ui.controller.TotpViewController.StateParameters
@@ -45,17 +42,10 @@ import com.passbolt.mobile.android.core.ui.recyclerview.OverlappingItemDecorator
 import com.passbolt.mobile.android.core.ui.recyclerview.OverlappingItemDecorator.Overlap
 import com.passbolt.mobile.android.core.ui.span.RoundedBackgroundSpan
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
-import com.passbolt.mobile.android.feature.otp.createotpmanually.CreateOtpFragment
-import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpFragment
-import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
-import com.passbolt.mobile.android.feature.resourcedetails.ResourceActivity
-import com.passbolt.mobile.android.feature.resourcedetails.ResourceMode
+import com.passbolt.mobile.android.feature.resourceform.main.ResourceFormFragment
+import com.passbolt.mobile.android.feature.resources.ResourcesDetailsDirections
 import com.passbolt.mobile.android.feature.resources.databinding.FragmentResourceDetailsBinding
 import com.passbolt.mobile.android.locationdetails.LocationItem
-import com.passbolt.mobile.android.otpcreatemoremenu.OtpCreateMoreMenuFragment
-import com.passbolt.mobile.android.otpeditmoremenu.OtpUpdateMoreMenuFragment
-import com.passbolt.mobile.android.otpmoremenu.OtpMoreMenuFragment
-import com.passbolt.mobile.android.permissions.permissions.NavigationOrigin
 import com.passbolt.mobile.android.permissions.permissions.PermissionsFragment
 import com.passbolt.mobile.android.permissions.permissions.PermissionsItem
 import com.passbolt.mobile.android.permissions.permissions.PermissionsMode
@@ -65,6 +55,7 @@ import com.passbolt.mobile.android.permissions.recycler.UserItem
 import com.passbolt.mobile.android.resourcemoremenu.ResourceMoreMenuFragment
 import com.passbolt.mobile.android.ui.OtpItemWrapper
 import com.passbolt.mobile.android.ui.PermissionModelUi
+import com.passbolt.mobile.android.ui.ResourceFormMode
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
 import org.koin.android.ext.android.inject
@@ -99,21 +90,12 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
 class ResourceDetailsFragment :
     BindingScopedAuthenticatedFragment<FragmentResourceDetailsBinding, ResourceDetailsContract.View>(
         FragmentResourceDetailsBinding::inflate
-    ), ResourceDetailsContract.View, ResourceMoreMenuFragment.Listener, OtpCreateMoreMenuFragment.Listener,
-    OtpMoreMenuFragment.Listener, OtpUpdateMoreMenuFragment.Listener {
+    ), ResourceDetailsContract.View, ResourceMoreMenuFragment.Listener {
 
     override val presenter: ResourceDetailsContract.Presenter by inject()
     private val clipboardManager: ClipboardManager? by inject()
     private val initialsIconGenerator: InitialsIconGenerator by inject()
-    private val bundledResourceModel by lifecycleAwareLazy {
-        requireNotNull(
-            IntentCompat.getParcelableExtra(
-                requireActivity().intent,
-                ResourceActivity.EXTRA_RESOURCE_MODEL,
-                ResourceModel::class.java
-            )
-        )
-    }
+    private val navArgs: ResourceDetailsFragmentArgs by navArgs()
 
     private val sharedWithFields
         get() = listOf(
@@ -125,7 +107,7 @@ class ResourceDetailsFragment :
     private val sharedWithDecorator: OverlappingItemDecorator by inject()
 
     private val totpFields
-        get() = listOf(binding.totpHeader, binding.totpValue)
+        get() = listOf(binding.totpSectionTitle, binding.totpContainer)
 
     private val tagsFields
         get() = listOf(binding.tagsHeader, binding.tagsValue, binding.tagsClickableArea, binding.tagsNavIcon)
@@ -139,39 +121,18 @@ class ResourceDetailsFragment :
     private val permissionsCounterItemAdapter: ItemAdapter<CounterItem> by inject(named(COUNTER_ITEM_ADAPTER))
 
     private val fastAdapter: FastAdapter<GenericItem> by inject()
-    private val resourceUpdateResult =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            if (it.resultCode == ActivityResults.RESULT_RESOURCE_EDITED) {
-                val name = it.data?.getStringExtra(ResourceActivity.EXTRA_RESOURCE_NAME)
-                presenter.resourceEdited(name.orEmpty())
-            }
+
+    private val resourceEditResult = { _: String, result: Bundle ->
+        if (result.containsKey(ResourceFormFragment.EXTRA_RESOURCE_EDITED)) {
+            presenter.resourceEdited(result.getString(ResourceFormFragment.EXTRA_RESOURCE_NAME))
         }
+    }
 
     private val resourceShareResult = { _: String, _: Bundle ->
         presenter.resourceShared()
     }
 
     private val totpViewController: TotpViewController by inject()
-
-    private val otpQrScanned = { _: String, result: Bundle ->
-        if (result.containsKey(ScanOtpFragment.EXTRA_SCANNED_OTP)) {
-            presenter.otpScanned(
-                BundleCompat.getParcelable(
-                    result,
-                    ScanOtpFragment.EXTRA_SCANNED_OTP,
-                    OtpParseResult.OtpQr.TotpQr::class.java
-                )
-            )
-        }
-    }
-
-    private val otpEdited = { _: String, result: Bundle ->
-        if (result.containsKey(CreateOtpFragment.EXTRA_OTP_UPDATED) &&
-            result.containsKey(CreateOtpFragment.EXTRA_RESOURCE_NAME)
-        ) {
-            presenter.resourceEdited(result.getString(CreateOtpFragment.EXTRA_RESOURCE_NAME).orEmpty())
-        }
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -182,11 +143,12 @@ class ResourceDetailsFragment :
         binding.sharedWithRecycler.doOnLayout {
             binding.sharedWithRecycler.addItemDecoration(sharedWithDecorator)
             presenter.argsReceived(
-                bundledResourceModel.resourceId,
+                navArgs.resourceModel,
                 it.width,
                 resources.getDimension(CoreUiR.dimen.dp_40)
             )
         }
+        binding.noteItem.conceal()
     }
 
     override fun onResume() {
@@ -230,9 +192,13 @@ class ResourceDetailsFragment :
                 setDebouncingOnClick(action = urlCopyAction)
                 actionClickListener = urlCopyAction
             }
-            with(descriptionItem) {
-                setDebouncingOnClick { presenter.copyDescriptionClick() }
-                actionClickListener = { presenter.descriptionActionClick() }
+            with(metadataDescriptionItem) {
+                setDebouncingOnClick { presenter.copyMetadataDescriptionClick() }
+                actionClickListener = { presenter.metadataDescriptionActionClick() }
+            }
+            with(noteItem) {
+                setDebouncingOnClick { presenter.copyNoteClick() }
+                actionClickListener = { presenter.noteActionClick() }
             }
             backArrow.setDebouncingOnClick { presenter.backArrowClick() }
             moreIcon.setDebouncingOnClick { presenter.moreClick() }
@@ -290,15 +256,29 @@ class ResourceDetailsFragment :
     }
 
     override fun showTotpSection() {
-        (totpFields + binding.totpIcon).forEach { it.visible() }
+        totpFields.forEach { it.visible() }
     }
 
     override fun hideTotpSection() {
-        (totpFields + binding.totpIcon).forEach { it.gone() }
+        totpFields.forEach { it.gone() }
+    }
+
+    override fun hidePasswordSection() {
+        with(binding) {
+            passwordSectionTitle.gone()
+            passwordContainer.gone()
+        }
+    }
+
+    override fun showPasswordSection() {
+        with(binding) {
+            passwordSectionTitle.visible()
+            passwordContainer.visible()
+        }
     }
 
     override fun navigateBack() {
-        requireActivity().finish()
+        findNavController().popBackStack()
     }
 
     override fun navigateToMore(resourceId: String, resourceName: String) {
@@ -366,33 +346,58 @@ class ResourceDetailsFragment :
         binding.passwordItem.textValue = ""
     }
 
-    override fun clearDescriptionInput() {
-        binding.descriptionItem.textValue = ""
+    override fun clearNoteInput() {
+        binding.noteItem.textValue = ""
     }
 
-    override fun showDescription(description: String, isSecret: Boolean) {
-        with(binding.descriptionItem) {
-            isValueSecret = isSecret
+    override fun showNote(note: String) {
+        with(binding) {
+            noteItem.show()
+            noteItem.isValueSecret = true
+            noteItem.textValue = note
+            noteItem.actionIcon = ActionIcon.HIDE
+            noteItem.setTextIsSelectable(true)
+            noteSectionTitle.visible()
+            noteContainer.visible()
+        }
+    }
+
+    override fun hideNote() {
+        with(binding.noteItem) {
+            conceal()
+            actionIcon = ActionIcon.VIEW
+        }
+    }
+
+    override fun disableNote() {
+        with(binding) {
+            noteSectionTitle.gone()
+            noteContainer.gone()
+        }
+    }
+
+    override fun showMetadataDescription(description: String) {
+        with(binding.metadataDescriptionItem) {
+            visible()
             textValue = description
-            actionIcon = if (isSecret) ActionIcon.HIDE else ActionIcon.NONE
             setTextIsSelectable(true)
         }
     }
 
-    override fun hideDescription() {
-        with(binding.descriptionItem) {
-            isValueSecret = true
-            actionIcon = ActionIcon.VIEW
-            textValue = getString(LocalizationR.string.hidden_secret)
-        }
+    override fun disableMetadataDescription() {
+        binding.metadataDescriptionItem.gone()
     }
 
     override fun menuCopyPasswordClick() {
         presenter.copyPasswordClick()
     }
 
-    override fun menuCopyDescriptionClick() {
-        presenter.copyDescriptionClick()
+    override fun menuCopyMetadataDescriptionClick() {
+        presenter.copyMetadataDescriptionClick()
+    }
+
+    override fun menuCopyNoteClick() {
+        presenter.copyNoteClick()
     }
 
     override fun menuCopyUrlClick() {
@@ -413,25 +418,6 @@ class ResourceDetailsFragment :
 
     override fun menuEditClick() {
         presenter.editClick()
-    }
-
-    override fun menuAddTotpClick() {
-        presenter.menuAddTotpClick()
-    }
-
-    override fun navigateToOtpCreateMenu() {
-        OtpCreateMoreMenuFragment()
-            .show(childFragmentManager, OtpCreateMoreMenuFragment::class.java.name)
-    }
-
-    override fun menuManageTotpClick() {
-        presenter.manageTotpClick()
-    }
-
-    override fun navigateToOtpMoreMenu(resourceId: String, resourceName: String) {
-        presenter.pause()
-        OtpMoreMenuFragment.newInstance(resourceId, resourceName, canShowTotp = true)
-            .show(childFragmentManager, OtpMoreMenuFragment::class.java.name)
     }
 
     override fun menuFavouriteClick(option: ResourceMoreMenuModel.FavouriteOption) {
@@ -474,19 +460,23 @@ class ResourceDetailsFragment :
     }
 
     override fun closeWithDeleteSuccessResult(name: String) {
-        with(requireActivity()) {
-            setResult(
-                ActivityResults.RESULT_RESOURCE_DELETED,
-                ResourceActivity.resourceNameResultIntent(name)
+        setFragmentResult(
+            REQUEST_RESOURCE_DETAILS,
+            bundleOf(
+                EXTRA_RESOURCE_DELETED to true,
+                EXTRA_RESOURCE_NAME to name
             )
-            finish()
-        }
+        )
+        findNavController().popBackStack()
     }
 
     override fun setResourceEditedResult(resourceName: String) {
-        requireActivity().setResult(
-            ActivityResults.RESULT_RESOURCE_EDITED,
-            ResourceActivity.resourceNameResultIntent(resourceName)
+        setFragmentResult(
+            REQUEST_RESOURCE_DETAILS,
+            bundleOf(
+                EXTRA_RESOURCE_EDITED to true,
+                EXTRA_RESOURCE_NAME to resourceName
+            )
         )
     }
 
@@ -513,12 +503,13 @@ class ResourceDetailsFragment :
     }
 
     override fun navigateToEditResource(resourceModel: ResourceModel) {
-        resourceUpdateResult.launch(
-            ResourceActivity.newInstance(
-                requireContext(),
-                ResourceMode.EDIT,
-                resourceModel.folderId,
-                resourceModel
+        setFragmentResultListener(ResourceFormFragment.REQUEST_RESOURCE_FORM, resourceEditResult)
+        findNavController().navigate(
+            ResourceDetailsFragmentDirections.actionResourceDetailsToResourceForm(
+                ResourceFormMode.Edit(
+                    resourceModel.resourceId,
+                    resourceModel.metadataJsonModel.name
+                )
             )
         )
     }
@@ -544,13 +535,6 @@ class ResourceDetailsFragment :
             .show()
     }
 
-    override fun showTotpDeleteConfirmationDialog() {
-        confirmTotpDeletionAlertDialog(requireContext()) {
-            presenter.totpDeleteConfirmed()
-        }
-            .show()
-    }
-
     override fun showPermissions(
         groupPermissions: List<PermissionModelUi.GroupPermissionModel>,
         userPermissions: List<PermissionModelUi.UserPermissionModel>,
@@ -571,14 +555,13 @@ class ResourceDetailsFragment :
             resourceShareResult
         )
 
-        val request = NavDeepLinkProvider.permissionsDeepLinkRequest(
-            permissionItemName = PermissionsItem.RESOURCE.name,
-            permissionItemId = resourceId,
-            permissionsModeName = mode.name,
-            navigationOriginName = NavigationOrigin.RESOURCE_DETAILS_SCREEN.name
+        findNavController().navigate(
+            ResourcesDetailsDirections.actionResourceDetailsToResourcePermissions(
+                resourceId,
+                mode,
+                PermissionsItem.RESOURCE
+            )
         )
-
-        findNavController().navigate(request)
     }
 
     override fun showResourceSharedSnackbar() {
@@ -658,82 +641,27 @@ class ResourceDetailsFragment :
         }
     }
 
-    override fun menuCreateOtpManuallyClick() {
-        presenter.addTotpManuallyClick()
+    override fun hideSharedWith() {
+        sharedWithFields.forEach { it.gone() }
     }
 
-    override fun navigateToOtpCreate(resourceId: String) {
-        setFragmentResultListener(
-            CreateOtpFragment.REQUEST_UPDATE_OTP,
-            otpEdited
-        )
-        findNavController().navigate(
-            NavDeepLinkProvider.otpManualFormDeepLinkRequest(resourceId)
-        )
+    override fun hideTags() {
+        tagsFields.forEach { it.gone() }
     }
 
-    override fun menuCreateByNewOtpScanClick() {
-        navigateToScanOtpForResult()
-    }
-
-    override fun menuCopyOtpClick() {
-        presenter.menuCopyOtpClick()
-    }
-
-    override fun menuShowOtpClick() {
-        presenter.menuShowOtpClick()
-    }
-
-    override fun menuEditOtpClick() {
-        presenter.menuEditOtpClick()
-    }
-
-    override fun menuDeleteOtpClick() {
-        presenter.menuDeleteOtpClick()
-    }
-
-    override fun navigateToOtpEdit() {
-        OtpUpdateMoreMenuFragment()
-            .show(childFragmentManager, OtpUpdateMoreMenuFragment::class.java.name)
-    }
-
-    override fun menuEditOtpManuallyClick() {
-        presenter.editOtpManuallyClick()
-    }
-
-    override fun menuEditByNewOtpScanClick() {
-        navigateToScanOtpForResult()
+    override fun hideLocation() {
+        locationFields.forEach { it.gone() }
     }
 
     override fun resourceMoreMenuDismissed() {
         presenter.resume(this)
     }
 
-    override fun otpMenuDismissed() {
-        presenter.resume(this)
-    }
+    companion object {
+        const val REQUEST_RESOURCE_DETAILS = "RESOURCE_DETAILS"
 
-    private fun navigateToScanOtpForResult() {
-        setFragmentResultListener(
-            ScanOtpFragment.REQUEST_SCAN_OTP_FOR_RESULT,
-            otpQrScanned
-        )
-        findNavController().navigate(
-            ResourceDetailsFragmentDirections.actionResourceDetailsToScanOtp()
-        )
-    }
-
-    override fun showJsonResourceSchemaValidationError() {
-        showSnackbar(
-            LocalizationR.string.common_json_schema_resource_validation_error,
-            backgroundColor = CoreUiR.color.red
-        )
-    }
-
-    override fun showJsonSecretSchemaValidationError() {
-        showSnackbar(
-            LocalizationR.string.common_json_schema_secret_validation_error,
-            backgroundColor = CoreUiR.color.red
-        )
+        const val EXTRA_RESOURCE_EDITED = "RESOURCE_EDITED"
+        const val EXTRA_RESOURCE_DELETED = "RESOURCE_DELETED"
+        const val EXTRA_RESOURCE_NAME = "RESOURCE_NAME"
     }
 }

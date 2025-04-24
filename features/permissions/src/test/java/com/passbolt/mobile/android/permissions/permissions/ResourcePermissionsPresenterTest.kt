@@ -10,6 +10,7 @@ import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcePer
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUseCase
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType
 import com.passbolt.mobile.android.ui.GroupModel
+import com.passbolt.mobile.android.ui.MetadataJsonModel
 import com.passbolt.mobile.android.ui.PermissionModelUi
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourcePermission
@@ -28,7 +29,6 @@ import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.stub
-import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyBlocking
 import org.mockito.kotlin.whenever
@@ -81,12 +81,16 @@ class ResourcePermissionsPresenterTest : KoinTest {
             favouriteId = null,
             modified = ZonedDateTime.now(),
             expiry = null,
-            json = JsonObject().apply {
-                addProperty("name", NAME)
-                addProperty("username", USERNAME)
-                addProperty("uri", URL)
-                addProperty("description", DESCRIPTION)
-            }.toString(),
+            metadataJsonModel = MetadataJsonModel(
+                """
+                    {
+                        "name": "$NAME",
+                        "uri": "$URL",
+                        "username": "$USERNAME",
+                        "description": "$DESCRIPTION"
+                    }
+                """.trimIndent()
+            ),
             metadataKeyId = null,
             metadataKeyType = null
         )

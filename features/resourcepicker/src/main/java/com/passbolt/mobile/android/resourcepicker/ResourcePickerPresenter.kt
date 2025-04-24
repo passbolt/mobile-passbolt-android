@@ -81,7 +81,7 @@ class ResourcePickerPresenter(
         this.suggestionUri = suggestionUri
     }
 
-    override fun refreshAction() {
+    override fun refreshSuccessAction() {
         coroutineScope.launch {
             showResourcesFromDatabase()
             if (::pickedResource.isInitialized) {
@@ -174,8 +174,8 @@ class ResourcePickerPresenter(
         suggestionUri?.let { suggestionUri ->
             suggestedResourceList = resourceList
                 .filter {
-                    !it.resourceModel.uri.isNullOrBlank() &&
-                            it.resourceModel.uri!!.lowercase() == suggestionUri.lowercase()
+                    !it.resourceModel.metadataJsonModel.uri.isNullOrBlank() &&
+                            it.resourceModel.metadataJsonModel.uri!!.lowercase() == suggestionUri.lowercase()
                 }
         }
 

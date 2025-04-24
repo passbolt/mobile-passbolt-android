@@ -33,15 +33,17 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResult
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.passbolt.mobile.android.common.dialogs.cameraRequiredDialog
 import com.passbolt.mobile.android.common.dialogs.provideCameraPermissionInSettingsDialog
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
+import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
 import com.passbolt.mobile.android.core.qrscan.SCAN_MANAGER_SCOPE
 import com.passbolt.mobile.android.core.qrscan.manager.ScanManager
 import com.passbolt.mobile.android.core.security.flagsecure.FlagSecureSetter
-import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
 import com.passbolt.mobile.android.feature.scanotp.databinding.FragmentScanOtpBinding
+import com.passbolt.mobile.android.ui.OtpParseResult
 import org.koin.android.ext.android.getKoin
 import org.koin.android.ext.android.inject
 import org.koin.core.qualifier.named
@@ -52,6 +54,8 @@ class ScanOtpFragment : BindingScopedFragment<FragmentScanOtpBinding>(FragmentSc
     ScanOtpContract.View {
 
     private val presenter: ScanOtpContract.Presenter by inject()
+    private val navArgs: ScanOtpFragmentArgs by navArgs()
+
     private lateinit var scanManagerScope: Scope
     private lateinit var scanManager: ScanManager
     private val flagSecureSetter: FlagSecureSetter by inject()
@@ -70,8 +74,13 @@ class ScanOtpFragment : BindingScopedFragment<FragmentScanOtpBinding>(FragmentSc
         initDefaultToolbar(binding.toolbar)
         scanManagerScope = getKoin().getOrCreateScope(SCAN_MANAGER_SCOPE, named(SCAN_MANAGER_SCOPE))
         scanManager = scanManagerScope.get()
-
+        setListeners()
         presenter.attach(this)
+        presenter.argsRetrieved(navArgs.scanOtpMode)
+    }
+
+    private fun setListeners() {
+        binding.createTotpManuallyButton.setDebouncingOnClick(action = ::setCreateTotpManuallyResult)
     }
 
     override fun onResume() {
@@ -134,12 +143,29 @@ class ScanOtpFragment : BindingScopedFragment<FragmentScanOtpBinding>(FragmentSc
         flagSecureSetter.remove(requireActivity())
     }
 
+    private fun setCreateTotpManuallyResult() {
+        setFragmentResult(
+            REQUEST_SCAN_OTP_FOR_RESULT,
+            bundleOf(EXTRA_MANUAL_CREATION_CHOSEN to true)
+        )
+        findNavController().popBackStack()
+    }
+
     override fun setResultAndNavigateBack(parserResult: OtpParseResult.OtpQr.TotpQr) {
         setFragmentResult(
             REQUEST_SCAN_OTP_FOR_RESULT,
-            bundleOf(EXTRA_SCANNED_OTP to parserResult)
+            bundleOf(
+                EXTRA_MANUAL_CREATION_CHOSEN to false,
+                EXTRA_SCANNED_OTP to parserResult
+            )
         )
         findNavController().popBackStack()
+    }
+
+    override fun navigateToScanOtpSuccess(parserResult: OtpParseResult.OtpQr.TotpQr) {
+        findNavController().navigate(
+            ScanOtpFragmentDirections.actionScanOtpFragmentToScanOtpSuccessFragment(parserResult)
+        )
     }
 
     override fun showCameraRequiredDialog() {
@@ -168,6 +194,8 @@ class ScanOtpFragment : BindingScopedFragment<FragmentScanOtpBinding>(FragmentSc
 
     companion object {
         const val REQUEST_SCAN_OTP_FOR_RESULT = "SCAN_OTP_FOR_RESULT"
+
         const val EXTRA_SCANNED_OTP = "SCANNED_OTP"
+        const val EXTRA_MANUAL_CREATION_CHOSEN = "MANUAL_CREATION_CHOSEN"
     }
 }

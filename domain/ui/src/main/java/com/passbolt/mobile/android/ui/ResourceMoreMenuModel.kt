@@ -11,7 +11,7 @@ data class ResourceMoreMenuModel(
     val canEdit: Boolean,
     val canShare: Boolean,
     val favouriteOption: FavouriteOption,
-    val totpOption: TotpOption
+    val descriptionOptions: List<DescriptionOption>
 ) : Parcelable {
 
     enum class FavouriteOption {
@@ -19,9 +19,8 @@ data class ResourceMoreMenuModel(
         REMOVE_FROM_FAVOURITES
     }
 
-    enum class TotpOption {
-        NONE,
-        MANAGE_TOTP,
-        ADD_TOTP
+    enum class DescriptionOption {
+        HAS_NOTE,
+        HAS_METADATA_DESCRIPTION
     }
 }

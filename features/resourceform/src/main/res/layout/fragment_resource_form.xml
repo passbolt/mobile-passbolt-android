@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.passbolt.mobile.android.core.ui.toolbar.defaulttoolbar.TitleToolbar
+        android:id="@+id/toolbar"
+        style="@style/Heading"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingVertical="@dimen/dp_8"
+        android:textSize="@dimen/sp_16"
+        android:theme="@style/Theme.Passbolt.Toolbar"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:toolbarTitle="Create a TOTP" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:paddingBottom="@dimen/dp_96"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:animateLayoutChanges="true"
+            android:orientation="vertical">
+
+            <com.passbolt.mobile.android.core.ui.textinputfield.TextInputView
+                android:id="@+id/resourceName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp_8"
+                android:paddingHorizontal="@dimen/dp_16"
+                app:inputHint="@string/resource_form_name"
+                app:inputTitle="@string/resource_form_resource_name" />
+
+            <FrameLayout
+                android:id="@+id/leadingTypeContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp_16"
+                android:paddingHorizontal="@dimen/dp_16" />
+
+            <TextView
+                android:id="@+id/viewAdvancedSettings"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?selectableItemBackground"
+                android:gravity="center"
+                android:paddingHorizontal="@dimen/dp_16"
+                android:paddingVertical="@dimen/dp_24"
+                android:text="@string/resource_form_view_advanced_settings"
+                android:textFontWeight="600" />
+
+            <com.passbolt.mobile.android.feature.resourceform.sections.AdditionalSecretsSectionView
+                android:id="@+id/additionalSecretsSectionView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp_16"
+                android:paddingHorizontal="@dimen/dp_16"
+                android:visibility="gone"
+                tools:visibility="visible" />
+
+            <com.passbolt.mobile.android.feature.resourceform.sections.MetadataSectionView
+                android:id="@+id/metadataSectionView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp_16"
+                android:paddingHorizontal="@dimen/dp_16"
+                android:visibility="gone"
+                tools:visibility="visible" />
+        </LinearLayout>
+    </ScrollView>
+
+    <LinearLayout
+        android:id="@+id/primaryButtonLayout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_96"
+        android:background="@color/background"
+        android:elevation="@dimen/dp_24"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <Button
+            android:id="@+id/primaryButton"
+            style="@style/PrimaryButton"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_56"
+            android:layout_gravity="center_vertical"
+            android:layout_marginHorizontal="@dimen/dp_16"
+            android:backgroundTint="@color/primary_button_selector"
+            android:visibility="gone"
+            tools:visibility="visible" />
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/fullScreenProgressLayout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/background"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar">
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center" />
+
+    </FrameLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

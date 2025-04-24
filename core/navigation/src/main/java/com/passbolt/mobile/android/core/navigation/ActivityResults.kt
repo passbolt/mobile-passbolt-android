@@ -26,5 +26,4 @@ object ActivityResults {
     const val RESULT_RESOURCE_DELETED = 8000
     const val RESULT_RESOURCE_EDITED = 8001
     const val RESULT_RESOURCE_CREATED = 8002
-    const val RESULT_RESOURCE_SHARED = 8003
 }

@@ -11,21 +11,22 @@ import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
 class RootRelativeJsonPathTotpDelegate(private val jsonPath: String) :
-    ReadWriteProperty<JsonModel, TotpSecret>, KoinComponent {
+    ReadWriteProperty<JsonModel, TotpSecret?>, KoinComponent {
 
     private val gson: Gson by inject(named(JSON_MODEL_GSON))
     private val jsonPathsOps: JsonPathsOps by inject()
 
-    override fun getValue(thisRef: JsonModel, property: KProperty<*>): TotpSecret =
-        jsonPathsOps.read(thisRef) { "$.$jsonPath" }.let {
+    override fun getValue(thisRef: JsonModel, property: KProperty<*>): TotpSecret? =
+        jsonPathsOps.readOrNull(thisRef) { "$.$jsonPath" }?.let {
             gson.fromJson(it, TotpSecret::class.java)
         }
 
-    override fun setValue(thisRef: JsonModel, property: KProperty<*>, value: TotpSecret) {
-        jsonPathsOps.setOrCreate(thisRef, { jsonPath }, gson.toJsonTree(value))
-    }
-
-    fun delete(jsonModel: JsonModel) {
-        jsonPathsOps.delete(jsonModel) { "$.$jsonPath" }
+    override fun setValue(thisRef: JsonModel, property: KProperty<*>, value: TotpSecret?) {
+        if (value == null) {
+            // if totp is null remove the property from json
+            jsonPathsOps.delete(thisRef) { "$.$jsonPath" }
+        } else {
+            jsonPathsOps.setOrCreate(thisRef, { jsonPath }, gson.toJsonTree(value))
+        }
     }
 }

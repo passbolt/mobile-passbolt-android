@@ -151,7 +151,7 @@ class OtpMoreMenuFragment :
 
     interface Listener {
         fun menuCopyOtpClick()
-        fun menuShowOtpClick() {} // on some flows show OTP is hidden
+        fun menuShowOtpClick()
         fun menuEditOtpClick()
         fun menuDeleteOtpClick()
         fun otpMenuDismissed()

@@ -1,11 +1,6 @@
 package com.passbolt.mobile.android.feature.resourcedetails
 
 import com.passbolt.mobile.android.feature.resourcedetails.details.detailsModule
-import com.passbolt.mobile.android.feature.resourcedetails.update.updateResourceModule
-import com.passbolt.mobile.android.permissions.grouppermissionsdetails.groupPermissionsModule
-import com.passbolt.mobile.android.permissions.permissionrecipients.permissionRecipientsModule
-import com.passbolt.mobile.android.permissions.permissions.permissionsModule
-import com.passbolt.mobile.android.permissions.userpermissionsdetails.userPermissionsModule
 import org.koin.dsl.module
 
 /**
@@ -33,9 +28,4 @@ import org.koin.dsl.module
 
 val resourceDetailsModule = module {
     detailsModule()
-    updateResourceModule()
-    permissionsModule()
-    groupPermissionsModule()
-    userPermissionsModule()
-    permissionRecipientsModule()
 }

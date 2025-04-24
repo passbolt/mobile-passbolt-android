@@ -25,8 +25,8 @@ package com.passbolt.mobile.android.feature.otp.screen
 
 import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReactiveContract
 import com.passbolt.mobile.android.core.navigation.AppContext
-import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
 import com.passbolt.mobile.android.ui.OtpItemWrapper
+import com.passbolt.mobile.android.ui.ResourceModel
 
 interface OtpContract {
 
@@ -44,29 +44,28 @@ interface OtpContract {
         fun clearSearchInput()
         fun showOtmMoreMenu(resourceId: String, resourceName: String)
         fun copySecretToClipBoard(label: String, value: String)
-        fun navigateToCreateOtpManually()
         fun showDecryptionFailure()
         fun showFetchFailure()
         fun showConfirmDeleteDialog()
         fun showFailedToDeleteResource()
         fun showResourceDeleted()
         fun showNewOtpCreated()
-        fun navigateToEditOtpMenu()
         fun showProgress()
-        fun navigateToEditOtpManually(resourceId: String)
         fun hideProgress()
         fun showOtpUpdate()
         fun navigateToScanOtpCodeForResult()
-        fun showInvalidQrCodeDataScanned()
         fun showError(message: String)
         fun showEncryptionError(message: String)
         fun showCreateButton()
         fun hideCreateButton()
-        fun navigateToScanOtpSuccess(totpQr: OtpParseResult.OtpQr.TotpQr)
         fun showTotpDeleted()
         fun showDataRefreshError()
         fun showJsonResourceSchemaValidationError()
         fun showJsonSecretSchemaValidationError()
+        fun navigateToCreateTotpManually()
+        fun navigateToEditResource(resourceModel: ResourceModel)
+        fun showResourceCreatedSnackbar()
+        fun showResourceEditedSnackbar(resourceName: String)
     }
 
     interface Presenter : DataRefreshViewReactiveContract.Presenter<View> {
@@ -81,14 +80,11 @@ interface OtpContract {
         fun menuCopyOtpClick()
         fun menuShowOtpClick()
         fun menuDeleteOtpClick()
-        fun menuEditOtpClick()
-        fun scanOtpQrCodeClick()
-        fun createOtpManuallyClick()
         fun totpDeletionConfirmed()
         fun otpCreated()
-        fun menuEditByQrScanClick()
-        fun menuEditOtpManuallyClick()
         fun otpUpdated()
-        fun otpQrScanned(totpQr: OtpParseResult.OtpQr.TotpQr?)
+        fun otpQrScanReturned(isTotpCreated: Boolean, isManualCreationChosen: Boolean)
+        fun menuEditOtpClick()
+        fun resourceFormReturned(isResourceCreated: Boolean, isResourceEdited: Boolean, resourceName: String?)
     }
 }

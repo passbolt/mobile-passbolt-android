@@ -5,9 +5,10 @@ import com.passbolt.mobile.android.common.validation.UriIsOfAuthority
 import com.passbolt.mobile.android.common.validation.UriIsOfScheme
 import com.passbolt.mobile.android.common.validation.validation
 import com.passbolt.mobile.android.core.qrscan.analyzer.BarcodeScanResult
-import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult.UserResolvableError.ErrorType.MULTIPLE_BARCODES
-import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult.UserResolvableError.ErrorType.NOT_A_OTP_QR
-import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult.UserResolvableError.ErrorType.NO_BARCODES_IN_RANGE
+import com.passbolt.mobile.android.ui.OtpParseResult
+import com.passbolt.mobile.android.ui.OtpParseResult.UserResolvableError.ErrorType.MULTIPLE_BARCODES
+import com.passbolt.mobile.android.ui.OtpParseResult.UserResolvableError.ErrorType.NOT_A_OTP_QR
+import com.passbolt.mobile.android.ui.OtpParseResult.UserResolvableError.ErrorType.NO_BARCODES_IN_RANGE
 import timber.log.Timber
 import java.io.IOException
 import java.net.URI
@@ -38,8 +39,8 @@ class OtpQrScanResultsMapper {
             val secret = otpUri.getQueryParameter(OTP_URI_PARAMETER_SECRET)
             val issuer = otpUri.getQueryParameter(OTP_URI_PARAMETER_ISSUER)
             val algorithm = otpUri.getQueryParameter(OTP_URI_PARAMETER_ALGORITHM)?.let {
-                OtpAlgorithm.valueOf(it)
-            } ?: OtpAlgorithm.DEFAULT
+                OtpParseResult.OtpQr.Algorithm.valueOf(it)
+            } ?: OtpParseResult.OtpQr.Algorithm.DEFAULT
             val digits = otpUri.getQueryParameter(OTP_URI_PARAMETER_DIGITS)?.toInt()
                 ?: OtpParseResult.OtpQr.TotpQr.DEFAULT_DIGITS
             val period = otpUri.getQueryParameter(OTP_URI_PARAMETER_PERIOD)?.toLong()

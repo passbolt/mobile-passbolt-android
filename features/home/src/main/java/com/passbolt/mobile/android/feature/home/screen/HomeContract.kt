@@ -2,7 +2,7 @@ package com.passbolt.mobile.android.feature.home.screen
 
 import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReactiveContract
 import com.passbolt.mobile.android.feature.home.screen.model.HeaderSectionConfiguration
-import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
+import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpMode
 import com.passbolt.mobile.android.ui.Folder
 import com.passbolt.mobile.android.ui.FolderMoreMenuModel
 import com.passbolt.mobile.android.ui.FolderWithCountAndPath
@@ -61,13 +61,13 @@ interface HomeContract {
         fun navigateToSwitchAccount()
         fun displaySearchClearIcon()
         fun clearSearchInput()
-        fun showResourceAddedSnackbar()
+        fun showResourceCreatedSnackbar()
         fun showResourceDeletedSnackbar(name: String)
         fun showGeneralError(errorMessage: String? = null)
         fun navigateToEdit(resourceModel: ResourceModel)
         fun showResourceEditedSnackbar(resourceName: String)
-        fun hideAddButton()
-        fun showAddButton()
+        fun hideCreateButton()
+        fun showCreateButton()
         fun showDeleteConfirmationDialog()
         fun navigateToManageAccounts()
         fun showFiltersMenu(activeDisplayView: HomeDisplayViewModel)
@@ -81,7 +81,7 @@ interface HomeContract {
         fun showChildFolderTitle(activeFolderName: String, isShared: Boolean)
         fun showTagTitle(activeTagTitle: String, isShared: Boolean)
         fun showGroupTitle(groupName: String)
-        fun navigateToEditResourcePermissions(resource: ResourceModel)
+        fun navigateToShare(resource: ResourceModel)
         fun showResourceSharedSnackbar()
         fun showAllItemsSearchHint()
         fun showDefaultSearchHint()
@@ -92,7 +92,6 @@ interface HomeContract {
         fun showFolderMoreMenuIcon()
         fun hideFolderMoreMenuIcon()
         fun navigateToFolderDetails(childFolder: Folder.Child)
-        fun initSpeedDialFab(homeView: HomeDisplayViewModel)
         fun navigateToCreateFolder(folderId: String?)
         fun showFolderCreated(name: String)
         fun showContentNotAvailable()
@@ -102,17 +101,12 @@ interface HomeContract {
         fun showDeleteResourceFailure()
         fun showProgress()
         fun hideProgress()
-        fun showInvalidTotpScanned()
         fun showEncryptionError(message: String)
-        fun navigateToOtpCreate(resourceId: String)
-        fun navigateToOtpMoreMenu(resourceId: String, resourceName: String)
-        fun navigateToOtpEdit()
-        fun showDeleteTotpConfirmationDialog()
-        fun showTotpDeleted()
-        fun showTotpDeletionFailed()
         fun showJsonResourceSchemaValidationError()
         fun showJsonSecretSchemaValidationError()
-        fun navigateToOtpCreateMenu()
+        fun showCreateResourceMenu(homeView: HomeDisplayViewModel)
+        fun navigateToCreateTotpManually(parentFolderId: String?)
+        fun navigateToScanTotp(scanMode: ScanOtpMode)
     }
 
     interface Presenter : DataRefreshViewReactiveContract.Presenter<View> {
@@ -127,7 +121,7 @@ interface HomeContract {
         fun searchAvatarClick()
         fun userAuthenticated()
         fun searchClearClick()
-        fun menuCopyDescriptionClick()
+        fun menuCopyMetadataDescriptionClick()
         fun newResourceCreated(resourceId: String?)
         fun menuDeleteClick()
         fun resourceDeleted(resourceName: String)
@@ -157,7 +151,7 @@ interface HomeContract {
         fun groupsClick()
         fun groupItemClick(group: GroupWithCount)
         fun menuShareClick()
-        fun resourceShared()
+        fun resourceShared(isShared: Boolean)
         fun closeClick()
         fun menuFavouriteClick(option: ResourceMoreMenuModel.FavouriteOption)
         fun switchAccountClick()
@@ -165,15 +159,12 @@ interface HomeContract {
         fun seeFolderDetailsClick()
         fun createFolderClick()
         fun folderCreated(name: String)
-        fun otpScanned(totpQr: OtpParseResult.OtpQr.TotpQr?)
-        fun menuAddTotpManuallyClick()
-        fun manageTotpClick()
+        fun otpQrScanReturned(isTotpCreated: Boolean, isManualCreationChosen: Boolean)
         fun menuCopyOtpClick()
-        fun menuEditOtpClick()
-        fun editOtpManuallyClick()
-        fun menuDeleteOtpClick()
-        fun totpDeletionConfirmed()
         fun expiryClick()
-        fun menuAddTotpClick()
+        fun onCreateResourceClick()
+        fun resourceFormReturned(isResourceCreated: Boolean, isResourceEdited: Boolean, resourceName: String?)
+        fun menuCopyNoteClick()
+        fun resourceDetailsReturned(isResourceEdited: Boolean, isResourceDeleted: Boolean, resourceName: String?)
     }
 }

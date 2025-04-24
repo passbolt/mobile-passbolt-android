@@ -7,6 +7,8 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.updatePadding
 import com.google.android.material.radiobutton.MaterialRadioButton
+import com.passbolt.mobile.android.core.ui.extensions.getPermissionIcon
+import com.passbolt.mobile.android.core.ui.extensions.getPermissionTextValue
 import com.passbolt.mobile.android.ui.ResourcePermission
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
@@ -61,9 +63,9 @@ class PermissionSelectView @JvmOverloads constructor(
         MaterialRadioButton(context)
             .apply {
                 id = generateViewId()
-                text = ResourcePermission.getPermissionTextValue(context, permission)
+                text = permission.getPermissionTextValue(context)
                 setCompoundDrawablesWithIntrinsicBounds(
-                    ResourcePermission.getPermissionIcon(context, permission),
+                    permission.getPermissionIcon(context),
                     null,
                     ContextCompat.getDrawable(context, CoreUiR.drawable.radio_button_selector),
                     null

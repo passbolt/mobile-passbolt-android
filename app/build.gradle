@@ -179,7 +179,6 @@ dependencies {
     implementation project(':tags')
     implementation project(':scanotp')
     implementation project(':otpmoremenu')
-    implementation project(':createotpmanually')
     implementation project(':rbac')
     implementation project(':accounts')
     implementation project(':policies')
@@ -191,6 +190,9 @@ dependencies {
     implementation project(':preferences')
     implementation project(':passphrasememorycache')
     implementation project(':jsonmodel')
+    implementation project(':createresourcemenu')
+    implementation project(':resourceform')
+    implementation project(':permissions')
 
     debugImplementation libs.leakcanary
 
@@ -214,5 +216,4 @@ dependencies {
     androidTestImplementation libs.koin.test.junit
     androidTestImplementation libs.android.test.intents
     androidTestImplementation libs.mockito.android
-    androidTestImplementation libs.fab.speeddial
 }

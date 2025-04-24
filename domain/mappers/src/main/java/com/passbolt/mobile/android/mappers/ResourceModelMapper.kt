@@ -12,6 +12,7 @@ import com.passbolt.mobile.android.entity.resource.Resource
 import com.passbolt.mobile.android.entity.resource.ResourceMetadata
 import com.passbolt.mobile.android.entity.resource.ResourceUri
 import com.passbolt.mobile.android.entity.resource.ResourceWithMetadata
+import com.passbolt.mobile.android.ui.MetadataJsonModel
 import com.passbolt.mobile.android.ui.MetadataKeyTypeModel
 import com.passbolt.mobile.android.ui.ResourceModel
 import java.time.ZonedDateTime
@@ -52,7 +53,7 @@ class ResourceModelMapper(
                 favouriteId = resource.favorite?.id?.toString(),
                 modified = ZonedDateTime.parse(resource.modified),
                 expiry = resource.expired?.let { ZonedDateTime.parse(it) },
-                json = getV5Metadata(resource),
+                metadataJsonModel = getV5Metadata(resource),
                 metadataKeyId = null,
                 metadataKeyType = null
             )
@@ -66,7 +67,7 @@ class ResourceModelMapper(
                 favouriteId = resource.favorite?.id?.toString(),
                 modified = ZonedDateTime.parse(resource.modified),
                 expiry = resource.expired?.let { ZonedDateTime.parse(it) },
-                json = resource.metadata,
+                metadataJsonModel = MetadataJsonModel(resource.metadata),
                 metadataKeyId = resource.metadataKeyId.toString(),
                 metadataKeyType = map(resource.metadataKeyType)
             )
@@ -106,13 +107,13 @@ class ResourceModelMapper(
     fun mapResourceMetadata(resourceModel: ResourceModel): ResourceMetadata =
         ResourceMetadata(
             resourceId = resourceModel.resourceId,
-            metadataJson = resourceModel.json,
-            name = resourceModel.name,
-            username = resourceModel.username,
-            description = resourceModel.description
+            metadataJson = requireNotNull(resourceModel.metadataJsonModel.json),
+            name = resourceModel.metadataJsonModel.name,
+            username = resourceModel.metadataJsonModel.username,
+            description = resourceModel.metadataJsonModel.description
         )
 
-    fun mapResourceUri(resourceModel: ResourceModel) = resourceModel.uri?.let {
+    fun mapResourceUri(resourceModel: ResourceModel) = resourceModel.metadataJsonModel.uri?.let {
         ResourceUri(resourceId = resourceModel.resourceId, uri = it)
     }
 
@@ -125,16 +126,18 @@ class ResourceModelMapper(
             favouriteId = resourceEntity.favouriteId,
             modified = resourceEntity.modified,
             expiry = resourceEntity.expiry,
-            json = resourceEntity.metadataJson,
+            metadataJsonModel = MetadataJsonModel(resourceEntity.metadataJson),
             metadataKeyId = resourceEntity.metadataKeyId,
             metadataKeyType = map(resourceEntity.metadataKeyType)
         )
 
     private fun getV5Metadata(resourceModel: ResourceResponseV4Dto) =
-        JsonObject().apply {
-            addProperty("name", resourceModel.name)
-            addProperty("username", resourceModel.username)
-            addProperty("description", resourceModel.description)
-            addProperty("uri", resourceModel.uri)
-        }.toString()
+        MetadataJsonModel(
+            JsonObject().apply {
+                addProperty("name", resourceModel.name)
+                addProperty("username", resourceModel.username)
+                addProperty("description", resourceModel.description)
+                addProperty("uri", resourceModel.uri)
+            }.toString()
+        )
 }

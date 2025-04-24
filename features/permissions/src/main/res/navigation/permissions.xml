@@ -3,7 +3,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/permissions">
+    android:id="@+id/permissionsNav"
+    app:startDestination="@id/resourcePermissionsFragment">
 
     <fragment
         android:id="@+id/resourcePermissionsFragment"
@@ -24,15 +25,6 @@
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
-        <argument
-            android:name="id"
-            app:argType="string" />
-        <argument
-            android:name="mode"
-            app:argType="com.passbolt.mobile.android.permissions.permissions.PermissionsMode" />
-        <argument
-            android:name="navigationOrigin"
-            app:argType="com.passbolt.mobile.android.permissions.permissions.NavigationOrigin" />
         <action
             android:id="@+id/action_resourcePermissionsFragment_to_permissionRecipientsFragment"
             app:destination="@id/permissionRecipientsFragment"
@@ -50,11 +42,17 @@
             app:popUpTo="@id/resourcePermissionsFragment"
             app:popUpToInclusive="true" />
         <argument
+            android:name="id"
+            app:argType="string" />
+        <argument
+            android:name="mode"
+            app:argType="com.passbolt.mobile.android.permissions.permissions.PermissionsMode" />
+        <argument
             android:name="permissionsItem"
             app:argType="com.passbolt.mobile.android.permissions.permissions.PermissionsItem" />
         <deepLink
             android:id="@+id/deepLink"
-            app:uri="passbolt://permissions/{permissionsItem}/{id}?mode={mode}&amp;navigationOrigin={navigationOrigin}" />
+            app:uri="passbolt://permissions/{permissionsItem}/{id}?mode={mode}" />
     </fragment>
 
     <fragment

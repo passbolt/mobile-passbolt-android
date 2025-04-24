@@ -50,6 +50,11 @@ class MultilineInputView @JvmOverloads constructor(
                 gravity = Gravity.TOP
             }
         }
+    }
+
+    // TODO confirm if lock will be entirely removed
+    @Suppress("Unused")
+    fun addLockIcon() {
         with(binding.icon) {
             setImageResource(R.drawable.ic_lock)
             setDebouncingOnClick { showIconTooltip() }

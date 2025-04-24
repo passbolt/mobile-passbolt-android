@@ -27,7 +27,7 @@ class RootRelativeJsonPathStringDelegateTest : KoinTest {
             }
             """
         val jsonModel = object : JsonModel {
-            override var json = jsonString
+            override var json: String? = jsonString
 
             var testStringField by RootRelativeJsonPathStringDelegate(jsonPath = "testStringField")
         }
@@ -54,7 +54,7 @@ class RootRelativeJsonPathStringDelegateTest : KoinTest {
         val jsonModels = jsonStringInputs.map { jsonString ->
 
             object : JsonModel {
-                override var json = jsonString
+                override var json: String? = jsonString
 
                 var testStringField by RootRelativeJsonPathStringDelegate(jsonPath = "testStringField")
             }
@@ -79,7 +79,7 @@ class RootRelativeJsonPathStringDelegateTest : KoinTest {
             """
 
         val jsonModel = object : JsonModel {
-            override var json = jsonString
+            override var json: String? = jsonString
 
             var testStringField by RootRelativeJsonPathStringDelegate(jsonPath = "testStringField")
         }

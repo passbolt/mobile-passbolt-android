@@ -69,7 +69,7 @@ class LocationDetailsPresenter(
         }
     }
 
-    override fun refreshAction() {
+    override fun refreshSuccessAction() {
         showItemLocation()
     }
 
@@ -82,8 +82,8 @@ class LocationDetailsPresenter(
             getLocalResourceDetailsUseCase.execute(GetLocalResourceUseCase.Input(resourceId))
                 .resource
                 .let {
-                    view?.showFolderName(it.name)
-                    view?.displayInitialsIcon(it.name, it.initials)
+                    view?.showFolderName(it.metadataJsonModel.name)
+                    view?.displayInitialsIcon(it.metadataJsonModel.name, it.initials)
                     it
                 }
         }

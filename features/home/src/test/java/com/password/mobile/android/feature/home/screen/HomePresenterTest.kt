@@ -21,6 +21,7 @@ import com.passbolt.mobile.android.ui.DefaultFilterModel
 import com.passbolt.mobile.android.ui.Folder
 import com.passbolt.mobile.android.ui.FolderModel
 import com.passbolt.mobile.android.ui.HomeDisplayViewModel
+import com.passbolt.mobile.android.ui.MetadataJsonModel
 import com.passbolt.mobile.android.ui.RbacModel
 import com.passbolt.mobile.android.ui.RbacRuleModel.ALLOW
 import com.passbolt.mobile.android.ui.ResourceModel
@@ -50,7 +51,6 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
 import java.time.ZonedDateTime
-import java.util.EnumSet
 
 @ExperimentalCoroutinesApi
 class HomePresenterTest : KoinTest {
@@ -148,7 +148,10 @@ class HomePresenterTest : KoinTest {
     @Test
     fun `all fetched resources should be displayed when empty search text`() = runTest {
         whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
-            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
+            flowOf(
+                DataRefreshStatus.InProgress,
+                DataRefreshStatus.Finished(HomeDataInteractor.Output.Success)
+            )
         )
         whenever(mockResourcesInteractor.fetchAndSaveResources()).thenReturn(
             ResourceInteractor.Output.Success
@@ -171,13 +174,13 @@ class HomePresenterTest : KoinTest {
         verify(view, times(2)).showHomeScreenTitle(HomeDisplayViewModel.AllItems)
         verify(view).showAllItemsSearchHint()
         verify(view).hideBackArrow()
-        verify(view).hideAddButton()
-        verify(view).showAddButton()
+        verify(view).hideCreateButton()
+        verify(view).showRefreshProgress()
+        verify(view, times(2)).showCreateButton()
         verify(view, times(2)).showItems(any(), any(), any(), any(), any(), any(), any(), any())
         verify(view).displaySearchAvatar(null)
         verify(view).hideRefreshProgress()
         verify(view).hideFolderMoreMenuIcon()
-        verify(view).initSpeedDialFab(HomeDisplayViewModel.AllItems)
         verifyNoMoreInteractions(view)
     }
 
@@ -192,7 +195,10 @@ class HomePresenterTest : KoinTest {
         )
         mockAccountData(null)
         whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
-            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
+            flowOf(
+                DataRefreshStatus.InProgress,
+                DataRefreshStatus.Finished(HomeDataInteractor.Output.Success)
+            )
         )
         val refreshFlow = MutableStateFlow(
             DataRefreshStatus.Finished(
@@ -221,10 +227,10 @@ class HomePresenterTest : KoinTest {
         presenter.refreshSwipe()
 
 
-        verify(view, times(2)).hideAddButton()
+        verify(view).hideCreateButton()
         verify(view).hideRefreshProgress()
         verify(view, times(2)).showItems(any(), any(), any(), any(), any(), any(), any(), any())
-        verify(view, times(1)).showAddButton()
+        verify(view, times(2)).showCreateButton()
     }
 
     @Test
@@ -237,7 +243,10 @@ class HomePresenterTest : KoinTest {
         )
         mockAccountData(null)
         whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
-            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
+            flowOf(
+                DataRefreshStatus.InProgress,
+                DataRefreshStatus.Finished(HomeDataInteractor.Output.Success)
+            )
         )
 
         presenter.attach(view)
@@ -251,9 +260,9 @@ class HomePresenterTest : KoinTest {
         presenter.resume(view)
         presenter.searchTextChange("empty search")
 
-        verify(view).hideAddButton()
+        verify(view).hideCreateButton()
         verify(view).showSearchEmptyList()
-        verify(view).showAddButton()
+        verify(view, times(2)).showCreateButton()
     }
 
     @Test
@@ -285,7 +294,10 @@ class HomePresenterTest : KoinTest {
     @Test
     fun `error should be displayed when request failures`() = runTest {
         whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
-            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Failure(AuthenticationState.Authenticated)))
+            flowOf(
+                DataRefreshStatus.InProgress,
+                DataRefreshStatus.Finished(HomeDataInteractor.Output.Failure(AuthenticationState.Authenticated))
+            )
         )
         mockAccountData(null)
         whenever(mockGetLocalResourcesUseCase.execute(any())).thenReturn(
@@ -305,12 +317,11 @@ class HomePresenterTest : KoinTest {
         verify(view).hideBackArrow()
         verify(view).showHomeScreenTitle(HomeDisplayViewModel.AllItems)
         verify(view).showAllItemsSearchHint()
-        verify(view).hideAddButton()
         verify(view).hideRefreshProgress()
         verify(view).showDataRefreshError()
         verify(view).displaySearchAvatar(null)
         verify(view).hideFolderMoreMenuIcon()
-        verify(view, never()).showAddButton()
+        verify(view, times(2)).hideCreateButton()
     }
 
     @Test
@@ -348,7 +359,6 @@ class HomePresenterTest : KoinTest {
         presenter.resume(view)
 
         verify(view).hideBackArrow()
-        verify(view).hideAddButton()
         verify(view).hideRefreshProgress()
         verify(view).showDataRefreshError()
     }
@@ -369,12 +379,16 @@ class HomePresenterTest : KoinTest {
             favouriteId = null,
             modified = ZonedDateTime.now(),
             expiry = null,
-            json = JsonObject().apply {
-                addProperty("name", "")
-                addProperty("username", "")
-                addProperty("uri", "")
-                addProperty("description", "")
-            }.toString(),
+            metadataJsonModel = MetadataJsonModel(
+                """
+                        {
+                            "name": "",
+                            "uri": "",
+                            "username": "",
+                            "description": ""
+                        }
+                """.trimIndent()
+            ),
             metadataKeyId = null,
             metadataKeyType = null
         )
@@ -420,7 +434,7 @@ class HomePresenterTest : KoinTest {
         presenter.resume(view)
 
         verify(view, times(2)).navigateToRootHomeFromChildHome(HomeDisplayViewModel.folderRoot())
-        verify(view).showAddButton()
+        verify(view, times(2)).showCreateButton()
     }
 
     @Test
@@ -619,12 +633,16 @@ class HomePresenterTest : KoinTest {
             favouriteId = null,
             modified = ZonedDateTime.now(),
             expiry = null,
-            json = JsonObject().apply {
-                addProperty("name", "")
-                addProperty("username", "")
-                addProperty("uri", "")
-                addProperty("description", "")
-            }.toString(),
+            metadataJsonModel = MetadataJsonModel(
+                """
+                    {
+                        "name": "",
+                        "uri": "",
+                        "username": "",
+                        "description": ""
+                    }
+                """.trimIndent()
+            ),
             metadataKeyId = null,
             metadataKeyType = null
         ),
@@ -636,13 +654,16 @@ class HomePresenterTest : KoinTest {
             favouriteId = null,
             modified = ZonedDateTime.now(),
             expiry = null,
-            json = JsonObject().apply
-            {
-                addProperty("name", "")
-                addProperty("username", "")
-                addProperty("uri", "")
-                addProperty("description", "")
-            }.toString(),
+            metadataJsonModel = MetadataJsonModel(
+                """
+                    {
+                        "name": "",
+                        "uri": "",
+                        "username": "",
+                        "description": ""
+                    }
+                """.trimIndent()
+            ),
             metadataKeyId = null,
             metadataKeyType = null
         )

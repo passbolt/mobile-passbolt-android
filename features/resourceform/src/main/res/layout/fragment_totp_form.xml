@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <com.passbolt.mobile.android.core.ui.toolbar.defaulttoolbar.TitleToolbar
+        android:id="@+id/toolbar"
+        style="@style/Heading"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingVertical="@dimen/dp_8"
+        android:textSize="@dimen/sp_16"
+        android:theme="@style/Theme.Passbolt.Toolbar"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:toolbarTitle="@string/resource_form_totp" />
+
+    <com.passbolt.mobile.android.feature.resourceform.subform.totp.TotpSubformView
+        android:id="@+id/totpSubformView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/dp_16"
+        android:layout_marginTop="@dimen/dp_16" />
+
+    <TextView
+        android:id="@+id/removeTotp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/dp_32"
+        android:drawablePadding="@dimen/dp_8"
+        android:text="@string/resource_form_remove_totp"
+        android:textFontWeight="600"
+        android:textSize="@dimen/sp_14"
+        app:drawableStartCompat="@drawable/ic_trash"
+        app:drawableTint="@color/icon_tint" />
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <Button
+        android:id="@+id/apply"
+        style="@style/PrimaryButton"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_56"
+        android:layout_gravity="center"
+        android:layout_marginHorizontal="@dimen/dp_16"
+        android:backgroundTint="@color/primary_button_selector"
+        android:text="@string/apply" />
+
+</LinearLayout>

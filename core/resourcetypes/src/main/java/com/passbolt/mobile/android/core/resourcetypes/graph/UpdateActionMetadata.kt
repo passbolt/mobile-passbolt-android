@@ -23,6 +23,7 @@
 
 package com.passbolt.mobile.android.core.resourcetypes.graph
 
+import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType
 
 data class UpdateActionMetadata(

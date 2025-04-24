@@ -31,9 +31,10 @@ import com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor
 import com.passbolt.mobile.android.core.otpcore.TotpParametersProvider
 import com.passbolt.mobile.android.core.resources.actions.SecretPropertiesActionsInteractor
 import com.passbolt.mobile.android.core.resources.actions.SecretPropertyActionResult
-import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
 import com.passbolt.mobile.android.jsonmodel.delegates.TotpSecret
 import com.passbolt.mobile.android.mappers.OtpModelMapper
+import com.passbolt.mobile.android.ui.MetadataJsonModel
+import com.passbolt.mobile.android.ui.OtpParseResult
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourcePermission
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -95,12 +96,16 @@ class OtpMenuTest : KoinTest {
                 favouriteId = null,
                 modified = ZonedDateTime.now(),
                 expiry = null,
-                json = JsonObject().apply {
-                    addProperty("name", "")
-                    addProperty("username", "")
-                    addProperty("uri", "")
-                    addProperty("description", "")
-                }.toString(),
+                metadataJsonModel = MetadataJsonModel(
+                    """
+                        {
+                            "name": "",
+                            "uri": "",
+                            "username": "",
+                            "description": ""
+                        }
+                    """.trimIndent()
+                ),
                 metadataKeyId = null,
                 metadataKeyType = null
             )

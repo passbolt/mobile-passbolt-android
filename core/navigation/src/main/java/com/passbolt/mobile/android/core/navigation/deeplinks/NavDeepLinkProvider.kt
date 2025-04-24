@@ -30,8 +30,7 @@ object NavDeepLinkProvider {
     fun permissionsDeepLinkRequest(
         permissionItemName: String,
         permissionItemId: String,
-        permissionsModeName: String,
-        navigationOriginName: String
+        permissionsModeName: String
     ) =
         NavDeepLinkRequest.Builder
             .fromUri(
@@ -41,7 +40,6 @@ object NavDeepLinkProvider {
                     .appendPath(permissionItemName)
                     .appendPath(permissionItemId)
                     .appendQueryParameter(QUERY_PERMISSIONS_MODE, permissionsModeName)
-                    .appendQueryParameter(QUERY_NAVIGATION_ORIGIN, navigationOriginName)
                     .build()
             ).build()
 
@@ -108,20 +106,6 @@ object NavDeepLinkProvider {
                     .build()
             ).build()
 
-    fun otpManualFormDeepLinkRequest(editedResourceId: String?) =
-        NavDeepLinkRequest.Builder
-            .fromUri(
-                Uri.Builder()
-                    .scheme(NAV_DEEP_LINK_SCHEME)
-                    .authority(AUTHORITY_OTP_MANUAL_FORM)
-                    .apply {
-                        editedResourceId?.let {
-                            appendQueryParameter(QUERY_EDITED_RESOURCE_ID, editedResourceId)
-                        }
-                    }
-                    .build()
-            ).build()
-
     private const val NAV_DEEP_LINK_SCHEME = "passbolt"
 
     private const val AUTHORITY_PERMISSIONS = "permissions"
@@ -130,11 +114,8 @@ object NavDeepLinkProvider {
     private const val AUTHORITY_CREATE_FOLDER = "createFolder"
     private const val AUTHORITY_TAGS_DETAILS = "tagsDetails"
     private const val AUTHORITY_RESOURCE_PICKER = "resourcePicker"
-    private const val AUTHORITY_OTP_MANUAL_FORM = "otpManualForm"
 
     private const val QUERY_PERMISSIONS_MODE = "mode"
-    private const val QUERY_NAVIGATION_ORIGIN = "navigationOrigin"
     private const val QUERY_PARENT_FOLDER_ID = "parentFolderId"
     private const val QUERY_SUGGESTION_URI = "suggestionUri"
-    private const val QUERY_EDITED_RESOURCE_ID = "editedOtpResourceId"
 }

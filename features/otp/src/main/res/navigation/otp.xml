@@ -11,42 +11,35 @@
         android:name="com.passbolt.mobile.android.feature.otp.screen.OtpFragment"
         android:label="OtpFragment"
         tools:layout="@layout/fragment_otp">
-        <action
-            android:id="@+id/action_otpFragment_to_createOtpManuallyFragment"
-            app:destination="@id/createOtpManuallyNav"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left"
-            app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right" />
-        <action
-            android:id="@+id/action_otpFragment_to_scanOtpSuccessFragment"
-            app:destination="@id/scanOtpSuccessFragment"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left"
-            app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right" />
+
         <action
             android:id="@+id/action_otpFragment_to_scanOtpFragment"
             app:destination="@id/scanOtpNav"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right" />
+            app:popExitAnim="@anim/slide_out_right">
+
+            <argument
+                android:name="scanOtpMode"
+                app:argType="com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpMode" />
+        </action>
     </fragment>
 
-    <fragment
-        android:id="@+id/scanOtpSuccessFragment"
-        android:name="com.passbolt.mobile.android.feature.otp.scanotpsuccess.ScanOtpSuccessFragment"
-        android:label="CreateOtpSuccessFragment"
-        tools:layout="@layout/fragment_create_otp_success">
+    <action
+        android:id="@+id/action_home_to_resourceForm"
+        app:destination="@id/resourceFormNav"
+        app:enterAnim="@anim/slide_in_right"
+        app:exitAnim="@anim/slide_out_left"
+        app:popEnterAnim="@anim/slide_in_left"
+        app:popExitAnim="@anim/slide_out_right">
         <argument
-            android:name="scannedTotp"
-            app:argType="com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult$OtpQr$TotpQr" />
-    </fragment>
-
-    <include app:graph="@navigation/resource_picker" />
+            android:name="mode"
+            app:argType="com.passbolt.mobile.android.ui.ResourceFormMode" />
+    </action>
 
     <include app:graph="@navigation/scan_otp" />
 
-    <include app:graph="@navigation/createotpmanually"/>
+    <include app:graph="@navigation/resource_form" />
+
 </navigation>

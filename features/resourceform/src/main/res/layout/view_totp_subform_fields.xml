@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:parentTag="android.widget.LinearLayout">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <com.passbolt.mobile.android.core.ui.textinputfield.TextInputView
+            android:id="@+id/secretInput"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            app:inputHint="@string/resource_form_totp_secret"
+            app:inputTitle="@string/resource_form_totp_secret" />
+
+        <FrameLayout
+            android:id="@+id/scanTotpButton"
+            android:layout_width="@dimen/dp_56"
+            android:layout_height="@dimen/dp_56"
+            android:layout_gravity="bottom|end"
+            android:layout_marginStart="@dimen/dp_8"
+            android:background="@drawable/background_generate_password"
+            android:foreground="?attr/selectableItemBackground">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_camera" />
+        </FrameLayout>
+    </LinearLayout>
+
+    <com.passbolt.mobile.android.core.ui.textinputfield.TextInputView
+        android:id="@+id/urlInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_16"
+        app:inputHint="@string/resource_form_totp_url"
+        app:inputTitle="@string/resource_form_totp_url_issuer" />
+
+    <com.passbolt.mobile.android.core.ui.menu.OpenableSettingView
+        android:id="@+id/moreTotpSettings"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_16"
+        app:icon="@drawable/ic_cog"
+        app:name="@string/resource_form_totp_more_settings" />
+
+</merge>

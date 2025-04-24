@@ -6,7 +6,7 @@ class DummyReactPresenter(coroutineLaunchContext: CoroutineLaunchContext) :
     DummyReactContract.Presenter, DataRefreshViewReactivePresenter<DummyReactContract.View>(coroutineLaunchContext) {
     override var view: DummyReactContract.View? = null
 
-    override fun refreshAction() {
+    override fun refreshSuccessAction() {
         view?.refreshActionUiEffect()
     }
 

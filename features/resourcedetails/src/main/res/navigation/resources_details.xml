@@ -11,14 +11,42 @@
         android:name="com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsFragment"
         android:label="ResourceDetailsFragment"
         tools:layout="@layout/fragment_resource_details">
+
         <argument
             android:name="resourceModel"
             app:argType="com.passbolt.mobile.android.ui.ResourceModel" />
-        <action
-            android:id="@+id/action_resourceDetails_to_scanOtp"
-            app:destination="@id/scanOtpNav" />
 
     </fragment>
+
+    <action
+        android:id="@+id/action_resourceDetails_to_resourceForm"
+        app:destination="@id/resourceFormNav"
+        app:enterAnim="@anim/slide_in_right"
+        app:exitAnim="@anim/slide_out_left"
+        app:popEnterAnim="@anim/slide_in_left"
+        app:popExitAnim="@anim/slide_out_right">
+        <argument
+            android:name="mode"
+            app:argType="com.passbolt.mobile.android.ui.ResourceFormMode" />
+    </action>
+
+    <action
+        android:id="@+id/action_resourceDetails_to_resourcePermissions"
+        app:destination="@id/permissionsNav"
+        app:enterAnim="@anim/slide_in_right"
+        app:exitAnim="@anim/slide_out_left"
+        app:popEnterAnim="@anim/slide_in_left"
+        app:popExitAnim="@anim/slide_out_right">
+        <argument
+            android:name="id"
+            app:argType="string" />
+        <argument
+            android:name="mode"
+            app:argType="com.passbolt.mobile.android.permissions.permissions.PermissionsMode" />
+        <argument
+            android:name="permissionsItem"
+            app:argType="com.passbolt.mobile.android.permissions.permissions.PermissionsItem" />
+    </action>
 
     <include app:graph="@navigation/tags_details" />
 
@@ -26,7 +54,6 @@
 
     <include app:graph="@navigation/locationdetails" />
 
-    <include app:graph="@navigation/scan_otp" />
+    <include app:graph="@navigation/resource_form" />
 
-    <include app:graph="@navigation/createotpmanually" />
 </navigation>

@@ -43,10 +43,10 @@ class UpdateLocalResourceUseCase(
         resourcesDao.update(resourceModelMapper.map(input.resourceModel))
         resourceMetadataDao.updateMetadataForResource(
             resourceId = input.resourceModel.resourceId,
-            metadataJson = input.resourceModel.json,
-            name = input.resourceModel.name,
-            username = input.resourceModel.username,
-            description = input.resourceModel.description
+            metadataJson = requireNotNull(input.resourceModel.metadataJsonModel.json),
+            name = input.resourceModel.metadataJsonModel.name,
+            username = input.resourceModel.metadataJsonModel.username,
+            description = input.resourceModel.metadataJsonModel.description
         )
 
         resourceUriDao.apply {

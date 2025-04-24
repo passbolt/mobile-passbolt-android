@@ -19,6 +19,13 @@ import com.passbolt.mobile.android.core.extension.px
 import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.ui.R
 import com.passbolt.mobile.android.core.ui.databinding.ViewPasswordGeneratorInputBinding
+import com.passbolt.mobile.android.ui.PasswordStrength
+import com.passbolt.mobile.android.ui.PasswordStrength.Empty
+import com.passbolt.mobile.android.ui.PasswordStrength.Fair
+import com.passbolt.mobile.android.ui.PasswordStrength.Strong
+import com.passbolt.mobile.android.ui.PasswordStrength.VeryStrong
+import com.passbolt.mobile.android.ui.PasswordStrength.VeryWeak
+import com.passbolt.mobile.android.ui.PasswordStrength.Weak
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 /**
@@ -88,7 +95,7 @@ class PasswordGenerateInputView @JvmOverloads constructor(
         parseAttributes(attrs)
         setInitialState()
         setFocusChangeListener()
-        setPasswordStrength(PasswordStrength.Empty, passwordEntropy = 0.0)
+        setPasswordStrength(Empty, passwordEntropy = 0.0)
         setPasswordGenerateSize()
     }
 
@@ -104,26 +111,57 @@ class PasswordGenerateInputView @JvmOverloads constructor(
         }
     }
 
-    fun setPasswordStrength(passwordStrength: PasswordStrength, passwordEntropy: Double) = with(binding) {
+    fun setPasswordStrength(
+        passwordStrength: PasswordStrength,
+        passwordEntropy: Double
+    ) = with(binding) {
         progressBar.progress = passwordStrength.progress
         strengthDescription.text =
             if (passwordEntropy > Double.NEGATIVE_INFINITY && passwordEntropy < Double.POSITIVE_INFINITY) {
                 context.getString(
                     LocalizationR.string.password_generator_known_strength_format,
-                    context.getString(passwordStrength.text),
+                    context.getString(getEntropyText(passwordStrength)),
                     passwordEntropy
                 )
             } else {
                 context.getString(LocalizationR.string.password_generator_unknown_strength_format)
             }
-        strengthDescription.setTextColor(ContextCompat.getColor(context, passwordStrength.textColor))
+        strengthDescription.setTextColor(ContextCompat.getColor(context, getTextColor(passwordStrength)))
 
         val progressBarDrawable = progressBar.progressDrawable as LayerDrawable
         val progressDrawable = progressBarDrawable.getDrawable(PROGRESS_LAYER_INDEX)
-        progressDrawable.setTint(ContextCompat.getColor(context, passwordStrength.progressColor))
+        progressDrawable.setTint(ContextCompat.getColor(context, getProgressColor(passwordStrength)))
     }
 
-    fun showPassword(password: String, passwordStrength: PasswordStrength, entropyBits: Double) {
+    @ColorRes
+    private fun getTextColor(passwordStrength: PasswordStrength) = when (passwordStrength) {
+        Empty -> R.color.text_tertiary
+        else -> R.color.text_primary
+    }
+
+    @ColorRes
+    private fun getProgressColor(passwordStrength: PasswordStrength) = when (passwordStrength) {
+        Empty -> android.R.color.transparent
+        Fair, Strong -> R.color.orange
+        VeryStrong -> R.color.green
+        VeryWeak, Weak -> R.color.red
+    }
+
+    @StringRes
+    private fun getEntropyText(passwordStrength: PasswordStrength) = when (passwordStrength) {
+        Empty -> LocalizationR.string.password_strength_empty
+        Fair -> LocalizationR.string.password_strength_fair
+        Strong -> LocalizationR.string.password_strength_strong
+        VeryStrong -> LocalizationR.string.password_strength_very_strong
+        VeryWeak -> LocalizationR.string.password_strength_very_weak
+        Weak -> LocalizationR.string.password_strength_weak
+    }
+
+    fun showPassword(
+        password: String,
+        passwordStrength: PasswordStrength,
+        entropyBits: Double
+    ) {
         binding.input.setText(password)
         setPasswordStrength(passwordStrength, entropyBits)
     }
@@ -176,39 +214,8 @@ class PasswordGenerateInputView @JvmOverloads constructor(
         }
     }
 
-    @Suppress("MagicNumber")
-    sealed class PasswordStrength(
-        val progress: Int,
-        @StringRes val text: Int,
-        @ColorRes val progressColor: Int,
-        @ColorRes val textColor: Int = R.color.text_primary
-    ) {
-        data object Empty : PasswordStrength(
-            0,
-            LocalizationR.string.password_strength_empty,
-            android.R.color.transparent,
-            R.color.text_tertiary
-        )
-
-        data object VeryWeak : PasswordStrength(
-            20, LocalizationR.string.password_strength_very_weak, R.color.red
-        )
-
-        data object Weak : PasswordStrength(
-            40, LocalizationR.string.password_strength_weak, R.color.red
-        )
-
-        data object Fair : PasswordStrength(
-            60, LocalizationR.string.password_strength_fair, R.color.orange
-        )
-
-        data object Strong : PasswordStrength(
-            80, LocalizationR.string.password_strength_strong, R.color.orange
-        )
-
-        data object VeryStrong : PasswordStrength(
-            100, LocalizationR.string.password_strength_very_strong, R.color.green
-        )
+    fun disableSavingInstanceState() {
+        binding.input.isSaveEnabled = false
     }
 
     private companion object {

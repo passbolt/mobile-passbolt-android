@@ -34,7 +34,8 @@ interface DataRefreshViewReactiveContract {
     interface Presenter<T : View> : BaseAuthenticatedContract.Presenter<T> {
         fun resume(view: T)
         fun pause()
-        fun refreshAction()
+        fun refreshStartAction()
+        fun refreshSuccessAction()
         fun refreshFailureAction()
     }
 }

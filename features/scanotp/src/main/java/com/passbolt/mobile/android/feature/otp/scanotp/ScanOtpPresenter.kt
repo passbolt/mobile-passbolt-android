@@ -25,8 +25,10 @@ package com.passbolt.mobile.android.feature.otp.scanotp
 
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.qrscan.CameraInformationProvider
-import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
+import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpMode.SCAN_FOR_RESULT
+import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpMode.SCAN_WITH_SUCCESS_SCREEN
 import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpQrParser
+import com.passbolt.mobile.android.ui.OtpParseResult
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
@@ -40,9 +42,11 @@ class ScanOtpPresenter(
 ) : ScanOtpContract.Presenter {
 
     override var view: ScanOtpContract.View? = null
-
     private val job = SupervisorJob()
+
     private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
+
+    private lateinit var mode: ScanOtpMode
 
     override fun attach(view: ScanOtpContract.View) {
         super.attach(view)
@@ -53,6 +57,10 @@ class ScanOtpPresenter(
         } else {
             initQrScanning()
         }
+    }
+
+    override fun argsRetrieved(mode: ScanOtpMode) {
+        this.mode = mode
     }
 
     override fun cameraPermissionGranted() {
@@ -75,7 +83,10 @@ class ScanOtpPresenter(
             is OtpParseResult.OtpQr -> when (parserResult) {
                 is OtpParseResult.OtpQr.TotpQr -> {
                     scope.coroutineContext.cancelChildren()
-                    view?.setResultAndNavigateBack(parserResult)
+                    when (mode) {
+                        SCAN_FOR_RESULT -> view?.setResultAndNavigateBack(parserResult)
+                        SCAN_WITH_SUCCESS_SCREEN -> view?.navigateToScanOtpSuccess(parserResult)
+                    }
                 }
                 is OtpParseResult.OtpQr.HotpQr -> {} // HOTP is not supported yet
             }

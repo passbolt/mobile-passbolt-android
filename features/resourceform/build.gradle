@@ -1,0 +1,48 @@
+plugins {
+    alias libs.plugins.android.library
+    alias libs.plugins.kotlin.gradle
+    alias libs.plugins.navigation.safeargs
+}
+
+dependencies {
+    implementation project(':authentication')
+    implementation project(':fulldatarefresh')
+    implementation project(':architecture')
+    implementation project(':coreui')
+    implementation project(':ui')
+    implementation project(':localization')
+    implementation project(':policies')
+    implementation project(':passwordgenerator')
+    implementation project(':common')
+    implementation project(':accounts')
+    implementation project(':mappers')
+    implementation project(':navigation')
+    implementation project(':metadata')
+    implementation project(':supportedresourcetypes')
+    implementation project(':secrets')
+    implementation project(':jsonmodel')
+    implementation project(':resourcetypes')
+    implementation project(':resources')
+    implementation project(':serializers')
+    implementation project(':scanotp')
+
+    implementation libs.navigation.fragment
+    implementation libs.navigation.ui
+    implementation libs.koin
+
+    testImplementation project(':commontest')
+    testImplementation libs.gson
+    testImplementation libs.json.path
+    testImplementation libs.json.assert
+}
+
+android {
+    namespace = "com.passbolt.mobile.android.feature.resourceform"
+    buildFeatures {
+        viewBinding true
+    }
+}
+
+kotlin {
+    jvmToolchain(17)
+}
