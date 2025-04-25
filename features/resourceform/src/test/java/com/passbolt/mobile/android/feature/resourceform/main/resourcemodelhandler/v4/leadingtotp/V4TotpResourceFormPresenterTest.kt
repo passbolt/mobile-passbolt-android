@@ -317,6 +317,38 @@ class V4TotpResourceFormPresenterTest : KoinTest {
         )
     }
 
+    @Test
+    fun `add metadata description to totp description should not be possible`() = runTest {
+        val mockName = "test name"
+        val mockMetadataDescription = "md description"
+
+        presenter.nameTextChanged(mockName)
+        presenter.metadataDescriptionChanged(mockMetadataDescription)
+
+        assertThat(resourceModelHandler.contentType).isEqualTo(ContentType.Totp)
+        JSONAssert.assertEquals(
+            """
+                {
+                    "name": "$mockName",
+                }
+            """.trimIndent(),
+            resourceModelHandler.resourceMetadata.json, STRICT_MODE_ENABLED
+        )
+        JSONAssert.assertEquals(
+            """
+                {
+                    "totp": {
+                        "secret_key": "",
+                        "period": ${OtpParseResult.OtpQr.TotpQr.DEFAULT_PERIOD_SECONDS},
+                        "digits": ${OtpParseResult.OtpQr.TotpQr.DEFAULT_DIGITS},
+                        "algorithm": ${OtpParseResult.OtpQr.Algorithm.DEFAULT.name}
+                    }
+                }
+            """.trimIndent(),
+            resourceModelHandler.resourceSecret.json, STRICT_MODE_ENABLED
+        )
+    }
+
     private companion object {
         private const val STRICT_MODE_ENABLED = true
     }

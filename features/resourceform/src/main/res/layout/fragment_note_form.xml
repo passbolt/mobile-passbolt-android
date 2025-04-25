@@ -1,56 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:fillViewport="true">
 
-    <com.passbolt.mobile.android.core.ui.toolbar.defaulttoolbar.TitleToolbar
-        android:id="@+id/toolbar"
-        style="@style/Heading"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingVertical="@dimen/dp_8"
-        android:textSize="@dimen/sp_16"
-        android:theme="@style/Theme.Passbolt.Toolbar"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:toolbarTitle="@string/resource_form_note" />
+        android:orientation="vertical">
 
-    <com.passbolt.mobile.android.feature.resourceform.subform.note.NoteSubformView
-        android:id="@+id/note_subform_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/dp_16"
-        android:layout_marginTop="@dimen/dp_16" />
+        <com.passbolt.mobile.android.core.ui.toolbar.defaulttoolbar.TitleToolbar
+            android:id="@+id/toolbar"
+            style="@style/Heading"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingVertical="@dimen/dp_8"
+            android:textSize="@dimen/sp_16"
+            android:theme="@style/Theme.Passbolt.Toolbar"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:toolbarTitle="@string/resource_form_note" />
 
-    <TextView
-        android:id="@+id/removeNote"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="@dimen/dp_32"
-        android:drawablePadding="@dimen/dp_8"
-        android:text="@string/resource_form_remove_note"
-        android:textFontWeight="600"
-        android:textSize="@dimen/sp_14"
-        app:drawableStartCompat="@drawable/ic_trash"
-        app:drawableTint="@color/icon_tint" />
+        <com.passbolt.mobile.android.feature.resourceform.subform.note.NoteSubformView
+            android:id="@+id/note_subform_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/dp_16"
+            android:layout_marginTop="@dimen/dp_16" />
 
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
+        <TextView
+            android:id="@+id/removeNote"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/dp_32"
+            android:layout_marginBottom="@dimen/dp_16"
+            android:drawablePadding="@dimen/dp_8"
+            android:text="@string/resource_form_remove_note"
+            android:textFontWeight="600"
+            android:textSize="@dimen/sp_14"
+            app:drawableStartCompat="@drawable/ic_trash"
+            app:drawableTint="@color/icon_tint" />
 
-    <Button
-        android:id="@+id/apply"
-        style="@style/PrimaryButton"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/dp_56"
-        android:layout_gravity="center"
-        android:layout_marginHorizontal="@dimen/dp_16"
-        android:backgroundTint="@color/primary_button_selector"
-        android:text="@string/apply" />
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
 
-</LinearLayout>
+        <Button
+            android:id="@+id/apply"
+            style="@style/PrimaryButton"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_56"
+            android:layout_gravity="center"
+            android:layout_marginHorizontal="@dimen/dp_16"
+            android:backgroundTint="@color/primary_button_selector"
+            android:text="@string/apply" />
+
+    </LinearLayout>
+</ScrollView>

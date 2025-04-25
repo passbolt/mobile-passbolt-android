@@ -70,8 +70,11 @@ sealed class ContentType(val slug: String) {
     )
 
     fun hasMetadataDescription() = this in setOf(
+        PasswordString,
         V5PasswordString,
-        PasswordString
+        V5Default,
+        V5DefaultWithTotp,
+        V5TotpStandalone
     )
 
     fun hasPassword() = this in setOf(

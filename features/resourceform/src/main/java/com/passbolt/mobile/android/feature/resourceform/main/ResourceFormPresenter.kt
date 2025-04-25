@@ -38,6 +38,8 @@ import com.passbolt.mobile.android.ui.OtpParseResult
 import com.passbolt.mobile.android.ui.PasswordGeneratorTypeModel
 import com.passbolt.mobile.android.ui.PasswordUiModel
 import com.passbolt.mobile.android.ui.ResourceFormMode
+import com.passbolt.mobile.android.ui.ResourceFormMode.Create
+import com.passbolt.mobile.android.ui.ResourceFormMode.Edit
 import com.passbolt.mobile.android.ui.ResourceFormUiModel
 import com.passbolt.mobile.android.ui.TotpUiModel
 import kotlinx.coroutines.CoroutineScope
@@ -117,12 +119,12 @@ class ResourceFormPresenter(
             fullDataRefreshExecutor.dataRefreshStatusFlow.first { it is DataRefreshStatus.Finished }
             if (!argsConsumed) {
                 when (mode) {
-                    is ResourceFormMode.Create -> {
+                    is Create -> {
                         Timber.d("Initializing model with leading content type: ${mode.leadingContentType}")
                         parentFolderId = mode.parentFolderId
                         resourceModelHandler.initializeModelForCreation(mode.leadingContentType)
                     }
-                    is ResourceFormMode.Edit -> {
+                    is Edit -> {
                         Timber.d("Initializing model for edition")
                         try {
                             resourceModelHandler.initializeModelForEdition(
@@ -140,12 +142,25 @@ class ResourceFormPresenter(
                 argsConsumed = true
             }
 
-            uiModel = resourceFormMapper.map(resourceModelHandler.contentType)
+            uiModel = resourceModelHandler.getUiModel()
             view?.showName(resourceMetadata.name)
             setupAdvancedSettings()
             setupLeadingContentType(uiModel.leadingContentType)
             setupPrimaryButton(mode)
+            setupTitle()
             view?.hideInitializationProgress()
+        }
+    }
+
+    private fun setupTitle() {
+        mode.let {
+            when (it) {
+                is Create -> when (uiModel.leadingContentType) {
+                    TOTP -> view?.showCreateTotpTitle()
+                    PASSWORD -> view?.showCreatePasswordTitle()
+                }
+                is Edit -> view?.showEditTitle(it.resourceName)
+            }
         }
     }
 
@@ -171,15 +186,14 @@ class ResourceFormPresenter(
 
     private fun setupPrimaryButton(mode: ResourceFormMode) {
         when (mode) {
-            is ResourceFormMode.Create -> view?.showCreateButton()
-            is ResourceFormMode.Edit -> view?.showSaveButton()
+            is Create -> view?.showCreateButton()
+            is Edit -> view?.showSaveButton()
         }
     }
 
     private suspend fun setupLeadingContentType(leadingContentType: LeadingContentType) {
         when (leadingContentType) {
             TOTP -> {
-                view?.showCreateTotpTitle()
                 view?.addTotpLeadingForm(
                     resourceFormMapper.mapToUiModel(resourceSecret.totp, resourceMetadata.name)
                 )
@@ -187,7 +201,6 @@ class ResourceFormPresenter(
                 view?.showTotpSecret(resourceSecret.totp?.key.orEmpty())
             }
             PASSWORD -> {
-                view?.showCreatePasswordTitle()
                 view?.addPasswordLeadingForm()
                 view?.showPasswordUsername(resourceMetadata.username.orEmpty())
                 view?.showPasswordMainUri(resourceMetadata.getMainUri(metadataType))
@@ -402,7 +415,7 @@ class ResourceFormPresenter(
             scope.launch {
                 view?.showProgress()
                 val editedResource = getLocalResourceUseCase.execute(
-                    GetLocalResourceUseCase.Input((mode as ResourceFormMode.Edit).resourceId)
+                    GetLocalResourceUseCase.Input((mode as Edit).resourceId)
                 ).resource
                 val resourceUpdateActionsInteractor = get<ResourceUpdateActionsInteractor> {
                     parametersOf(editedResource, needSessionRefreshFlow, sessionRefreshedFlow)
