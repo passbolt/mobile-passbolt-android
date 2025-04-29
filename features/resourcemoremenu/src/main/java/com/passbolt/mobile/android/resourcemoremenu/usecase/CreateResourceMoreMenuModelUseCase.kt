@@ -47,17 +47,19 @@ class CreateResourceMoreMenuModelUseCase(
 
     override suspend fun execute(input: Input): Output {
         val resource = getLocalResourceUseCase.execute(GetLocalResourceUseCase.Input(input.resourceId)).resource
-        val copyRbac = getRbacRulesUseCase.execute(Unit).rbacModel.passwordCopyRule
+        val rbacModel = getRbacRulesUseCase.execute(Unit).rbacModel
+        val isCopyRbacAllowed = rbacModel.passwordCopyRule == ALLOW
+        val isShareRbacAllowed = rbacModel.shareViewRule == ALLOW
         val slug = idToSlugMappingProvider.provideMappingForSelectedAccount()[UUID.fromString(resource.resourceTypeId)]
         val contentType = ContentType.fromSlug(slug!!)
 
         return Output(
             ResourceMoreMenuModel(
                 title = resource.metadataJsonModel.name,
-                canCopy = copyRbac == ALLOW,
+                canCopy = isCopyRbacAllowed,
                 canDelete = resource.permission in WRITE_PERMISSIONS,
                 canEdit = resource.permission in WRITE_PERMISSIONS,
-                canShare = resource.permission == ResourcePermission.OWNER,
+                canShare = isShareRbacAllowed && resource.permission == ResourcePermission.OWNER,
                 favouriteOption = if (resource.isFavourite()) {
                     REMOVE_FROM_FAVOURITES
                 } else {
