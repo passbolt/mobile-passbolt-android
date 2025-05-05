@@ -52,6 +52,7 @@
     <string name="common_json_schema_resource_validation_error">There was an error during validation of resource. Enable logs for more details.</string>
     <string name="common_json_schema_secret_validation_error">There was an error during validation of secret. Enable logs for more details.</string>
     <string name="common_maybe_later">Maybe later</string>
+    <string name="common_cannot_create_resource_with_current_config">Cannot update a resource with current configuration</string>
 
     <string name="common_message_resource_edited">%s resource was successfully edited.</string>
     <string name="common_message_resource_deleted">%s resource was deleted.</string>

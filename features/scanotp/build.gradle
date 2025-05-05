@@ -34,6 +34,7 @@ dependencies {
     implementation project(':supportedresourcetypes')
     implementation project(':jsonmodel')
     implementation project(':resourcepicker')
+    implementation project(':secrets')
 
     implementation libs.navigation.fragment
     implementation libs.navigation.ui
@@ -43,6 +44,8 @@ dependencies {
     implementation libs.camerax.lifecycle
 
     testImplementation project(':commontest')
+    testImplementation libs.gson
+    testImplementation libs.json.path
 }
 
 android {

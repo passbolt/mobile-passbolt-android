@@ -14,6 +14,7 @@ dependencies {
     implementation project(':mappers')
     implementation project(':supportedresourcetypes')
     implementation project(':accounts')
+    implementation project(':ui')
 
     implementation libs.koin
     implementation libs.room.core

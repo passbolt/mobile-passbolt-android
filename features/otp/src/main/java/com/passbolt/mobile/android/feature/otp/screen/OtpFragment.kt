@@ -454,6 +454,13 @@ class OtpFragment :
         )
     }
 
+    override fun showCannotUpdateTotpWithCurrentConfig() {
+        showSnackbar(
+            messageResId = LocalizationR.string.common_cannot_create_resource_with_current_config,
+            backgroundColor = CoreUiR.color.red
+        )
+    }
+
     private companion object {
         private val AVATAR_SIZE = 30.px
     }

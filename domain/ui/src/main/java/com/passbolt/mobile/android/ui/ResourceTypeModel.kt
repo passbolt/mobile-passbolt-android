@@ -1,7 +1,7 @@
-package com.passbolt.mobile.android.core.resourcetypes.usecase.db
+package com.passbolt.mobile.android.ui
 
-import org.koin.core.module.Module
-import org.koin.core.module.dsl.singleOf
+import java.time.ZonedDateTime
+import java.util.UUID
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,10 +25,11 @@ import org.koin.core.module.dsl.singleOf
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-
-internal fun Module.resourceTypesDbModule() {
-    singleOf(::RebuildLocalResourceTypesUseCase)
-    singleOf(::GetResourceTypeIdToSlugMappingUseCase)
-    singleOf(::ResourceTypeIdToSlugMappingProvider)
-    singleOf(::GetLocalResourceTypesUseCase)
+data class ResourceTypeModel(
+    val id: UUID,
+    val slug: String,
+    val name: String,
+    val deleted: ZonedDateTime?
+) {
+    val isDeleted: Boolean = deleted != null
 }

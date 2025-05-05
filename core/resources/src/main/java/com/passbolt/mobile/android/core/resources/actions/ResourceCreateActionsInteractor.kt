@@ -27,6 +27,7 @@ import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalFolderP
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalParentFolderPermissionsToApplyToNewItemUseCase
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.ItemIdResourceId
 import com.passbolt.mobile.android.core.mvp.authentication.UnauthenticatedReason
+import com.passbolt.mobile.android.core.resources.actions.ResourceCreateActionResult.CannotCreateWithCurrentConfig
 import com.passbolt.mobile.android.core.resources.actions.ResourceCreateActionResult.CryptoFailure
 import com.passbolt.mobile.android.core.resources.actions.ResourceCreateActionResult.Failure
 import com.passbolt.mobile.android.core.resources.actions.ResourceCreateActionResult.FetchFailure
@@ -39,25 +40,21 @@ import com.passbolt.mobile.android.core.resources.interactor.create.CreateResour
 import com.passbolt.mobile.android.core.resources.usecase.ResourceShareInteractor
 import com.passbolt.mobile.android.core.resources.usecase.db.AddLocalResourcePermissionsUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.AddLocalResourceUseCase
+import com.passbolt.mobile.android.core.resourcetypes.usecase.db.GetLocalResourceTypesUseCase
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.SecretJsonModel
 import com.passbolt.mobile.android.core.users.usecase.db.GetLocalCurrentUserUseCase
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
-import com.passbolt.mobile.android.jsonmodel.delegates.TotpSecret
 import com.passbolt.mobile.android.metadata.usecase.GetMetadataKeysSettingsUseCase
 import com.passbolt.mobile.android.metadata.usecase.GetMetadataTypesSettingsUseCase
 import com.passbolt.mobile.android.metadata.usecase.db.GetLocalMetadataKeysUseCase
 import com.passbolt.mobile.android.metadata.usecase.db.GetLocalMetadataKeysUseCase.MetadataKeyPurpose.ENCRYPT
 import com.passbolt.mobile.android.serializers.jsonschema.SchemaEntity
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType
-import com.passbolt.mobile.android.supportedresourceTypes.ContentType.Totp
-import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5TotpStandalone
 import com.passbolt.mobile.android.ui.CreateResourceModel
 import com.passbolt.mobile.android.ui.MetadataJsonModel
 import com.passbolt.mobile.android.ui.MetadataKeyParamsModel
 import com.passbolt.mobile.android.ui.MetadataKeyTypeModel
 import com.passbolt.mobile.android.ui.MetadataTypeModel
-import com.passbolt.mobile.android.ui.MetadataTypeModel.V4
-import com.passbolt.mobile.android.ui.MetadataTypeModel.V5
 import com.passbolt.mobile.android.ui.ResourceModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -79,77 +76,43 @@ class ResourceCreateActionsInteractor(
     private val getMetadataKeysSettingsUseCase: GetMetadataKeysSettingsUseCase,
     private val getMetadataTypesSettingsUseCase: GetMetadataTypesSettingsUseCase,
     private val getMetadataKeysUseCase: GetLocalMetadataKeysUseCase,
-    private val getLocalCurrentUserUseCase: GetLocalCurrentUserUseCase
+    private val getLocalCurrentUserUseCase: GetLocalCurrentUserUseCase,
+    private val getLocalResourceTypesUseCase: GetLocalResourceTypesUseCase
 ) : KoinComponent {
 
-    suspend fun createGenericResourceResource(
+    suspend fun createGenericResource(
         contentType: ContentType,
         resourceParentFolderId: String?,
         metadataJsonModel: MetadataJsonModel,
         secretJsonModel: SecretJsonModel
     ): Flow<ResourceCreateActionResult> {
-        val (metadataKeyId, metadataKeyType) = getMetadataKeysParams(resourceParentFolderId)
-        return createResource(
-            createResource = {
-                CreateResourceModel(
-                    contentType = contentType,
-                    folderId = resourceParentFolderId,
-                    expiry = null,
-                    metadataKeyId = metadataKeyId,
-                    metadataKeyType = metadataKeyType,
-                    metadataJsonModel = metadataJsonModel
-                )
-            },
-            createSecret = { secretJsonModel }
-        )
+        return if (isDeleted(contentType)) {
+            flowOf(CannotCreateWithCurrentConfig)
+        } else {
+            val (metadataKeyId, metadataKeyType) = getMetadataKeysParams(resourceParentFolderId)
+
+            createResource(
+                createResource = {
+                    CreateResourceModel(
+                        contentType = contentType,
+                        folderId = resourceParentFolderId,
+                        expiry = null,
+                        metadataKeyId = metadataKeyId,
+                        metadataKeyType = metadataKeyType,
+                        metadataJsonModel = metadataJsonModel
+                    )
+                },
+                createSecret = { secretJsonModel }
+            )
+        }
     }
 
-    @Suppress("LongParameterList")
-    suspend fun createStandaloneTotpResource(
-        resourceUsername: String?,
-        resourceParentFolderId: String?,
-        label: String,
-        issuer: String?,
-        period: Long,
-        digits: Int,
-        algorithm: String,
-        secretKey: String
-    ): Flow<ResourceCreateActionResult> {
-        val (metadataKeyId, metadataKeyType) = getMetadataKeysParams(resourceParentFolderId)
-
-        return createResource(
-            createResource = { metadataType ->
-                CreateResourceModel(
-                    contentType = when (metadataType) {
-                        V4 -> Totp
-                        V5 -> V5TotpStandalone
-                    },
-                    folderId = resourceParentFolderId,
-                    expiry = null,
-                    metadataKeyId = metadataKeyId,
-                    metadataKeyType = metadataKeyType,
-                    metadataJsonModel = MetadataJsonModel.empty()
-                ).apply {
-                    metadataJsonModel.name = label
-                    metadataJsonModel.username = resourceUsername
-                    when (metadataType) {
-                        V4 -> this.metadataJsonModel.uri = issuer
-                        V5 -> this.metadataJsonModel.uris = issuer?.let { listOf(it) }
-                    }
-                }
-            },
-
-            createSecret = {
-                SecretJsonModel.emptyTotp().apply {
-                    this.totp = TotpSecret(
-                        algorithm = algorithm,
-                        key = secretKey,
-                        digits = digits,
-                        period = period
-                    )
-                }
-            }
-        )
+    private suspend fun isDeleted(contentType: ContentType): Boolean {
+        val deletedContentTypes = getLocalResourceTypesUseCase.execute(Unit)
+            .resourceTypes
+            .filter { it.isDeleted }
+            .map { ContentType.fromSlug(it.slug) }
+        return deletedContentTypes.contains(contentType)
     }
 
     private suspend fun getMetadataKeysParams(parentFolderId: String?): MetadataKeyParamsModel {
@@ -178,8 +141,6 @@ class ResourceCreateActionsInteractor(
         )
     }
 
-    // TODO: Confront with resource-types.json response
-    // TODO: there can be default v5 setting but no v5 content types in response
     private suspend fun getMetadataType() =
         getMetadataTypesSettingsUseCase.execute(Unit).metadataTypesSettingsModel.defaultMetadataType
 
@@ -267,6 +228,7 @@ suspend fun performResourceCreateAction(
     doOnFailure: (String) -> Unit,
     doOnSuccess: (Success) -> Unit,
     doOnSchemaValidationFailure: (SchemaEntity) -> Unit,
+    doOnCannotCreateWithCurrentConfig: () -> Unit,
     doOnFetchFailure: () -> Unit = {},
     doOnUnauthorized: () -> Unit = {},
     doOnShareFailure: (String) -> Unit = {}
@@ -281,6 +243,7 @@ suspend fun performResourceCreateAction(
             is JsonSchemaValidationFailure -> doOnSchemaValidationFailure(it.entity)
             is ShareFailure -> doOnShareFailure(it.message.orEmpty())
             is SimulateShareFailure -> doOnShareFailure(it.message.orEmpty())
+            is CannotCreateWithCurrentConfig -> doOnCannotCreateWithCurrentConfig()
         }
     }
 }

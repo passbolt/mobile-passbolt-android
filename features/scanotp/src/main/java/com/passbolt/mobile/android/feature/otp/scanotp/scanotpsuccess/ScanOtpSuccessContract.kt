@@ -40,6 +40,7 @@ interface ScanOtpSuccessContract {
         fun showError(message: String)
         fun showJsonResourceSchemaValidationError()
         fun showJsonSecretSchemaValidationError()
+        fun showCannotUpdateTotpWithCurrentConfig()
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {

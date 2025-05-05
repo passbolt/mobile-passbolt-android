@@ -105,7 +105,7 @@ class ResourceFormPresenter(
         get() = resourceModelHandler.resourceSecret
     private val metadataType: MetadataTypeModel
         get() = resourceModelHandler.metadataType
-    private val contentType: ContentType
+    private val newContentType: ContentType
         get() = resourceModelHandler.contentType
 
     private var argsConsumed = false
@@ -204,7 +204,7 @@ class ResourceFormPresenter(
                 view?.addPasswordLeadingForm()
                 view?.showPasswordUsername(resourceMetadata.username.orEmpty())
                 view?.showPasswordMainUri(resourceMetadata.getMainUri(metadataType))
-                showPassword(resourceSecret.getPassword(contentType).orEmpty())
+                showPassword(resourceSecret.getPassword(newContentType).orEmpty())
             }
         }
     }
@@ -238,7 +238,7 @@ class ResourceFormPresenter(
 
     override fun passwordTextChanged(password: String) {
         resourceModelHandler.applyModelChange(if (password.isBlank()) REMOVE_PASSWORD else ADD_PASSWORD) { _, secret ->
-            secret.setPassword(contentType, password)
+            secret.setPassword(newContentType, password)
 
             scope.launch {
                 val entropy = entropyCalculator.getSecretEntropy(password)
@@ -331,7 +331,7 @@ class ResourceFormPresenter(
     override fun additionalPasswordClick() {
         view?.navigateToPassword(
             resourceFormMapper.mapToUiModel(
-                resourceSecret.getPassword(contentType).orEmpty(),
+                resourceSecret.getPassword(newContentType).orEmpty(),
                 resourceMetadata.getMainUri(metadataType),
                 resourceMetadata.username.orEmpty()
             )
@@ -368,7 +368,7 @@ class ResourceFormPresenter(
             val passwordEvent = if (passwordUiModel.password.isBlank()) REMOVE_PASSWORD else ADD_PASSWORD
 
             resourceModelHandler.applyModelChange(passwordEvent) { _, secret ->
-                secret.setPassword(contentType, passwordUiModel.password)
+                secret.setPassword(newContentType, passwordUiModel.password)
             }
             resourceModelHandler.applyModelChange(EDIT_METADATA) { metadata, _ ->
                 metadata.username = passwordUiModel.username
@@ -386,8 +386,8 @@ class ResourceFormPresenter(
                 }
                 performResourceCreateAction(
                     action = {
-                        resourceCreateActionsInteractor.createGenericResourceResource(
-                            contentType,
+                        resourceCreateActionsInteractor.createGenericResource(
+                            newContentType,
                             parentFolderId,
                             resourceModelHandler.getResourceMetadataWithRequiredFields(),
                             resourceModelHandler.getResourceSecretWithRequiredFields()
@@ -396,7 +396,8 @@ class ResourceFormPresenter(
                     doOnFailure = { view?.showGenericError() },
                     doOnCryptoFailure = { view?.showEncryptionError(it) },
                     doOnSchemaValidationFailure = ::handleSchemaValidationFailure,
-                    doOnSuccess = { view?.navigateBackWithCreateSuccess(resourceMetadata.name) }
+                    doOnSuccess = { view?.navigateBackWithCreateSuccess(resourceMetadata.name) },
+                    doOnCannotCreateWithCurrentConfig = { view?.showCannotCreateTotpWithCurrentConfig() }
                 )
                 view?.hideProgress()
             }
@@ -423,16 +424,16 @@ class ResourceFormPresenter(
                 performResourceUpdateAction(
                     action = {
                         resourceUpdateActionsInteractor.updateGenericResource(
-                            contentType,
-                            editedResource,
-                            resourceModelHandler.getResourceMetadataWithRequiredFields(),
-                            resourceModelHandler.getResourceSecretWithRequiredFields()
+                            newContentType,
+                            { resourceModelHandler.getResourceMetadataWithRequiredFields() },
+                            { resourceModelHandler.getResourceSecretWithRequiredFields() }
                         )
                     },
                     doOnFailure = { view?.showGenericError() },
                     doOnCryptoFailure = { view?.showEncryptionError(it) },
                     doOnSchemaValidationFailure = ::handleSchemaValidationFailure,
-                    doOnSuccess = { view?.navigateBackWithEditSuccess(resourceMetadata.name) }
+                    doOnSuccess = { view?.navigateBackWithEditSuccess(resourceMetadata.name) },
+                    doOnCannotEditWithCurrentConfig = { view?.showCannotUpdateTotpWithCurrentConfig() }
                 )
                 view?.hideProgress()
             }

@@ -1,23 +1,18 @@
 package com.passbolt.mobile.android.feature.otp.scanotp.scanotpsuccess
 
-import com.passbolt.mobile.android.core.qrscan.analyzer.BarcodeScanResult
 import com.passbolt.mobile.android.core.resources.actions.ResourceCreateActionResult
-import com.passbolt.mobile.android.core.resources.actions.ResourceCreateActionsInteractor
 import com.passbolt.mobile.android.core.resources.actions.ResourceUpdateActionResult
+import com.passbolt.mobile.android.core.resources.usecase.GetDefaultCreateContentTypeUseCase
+import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction
 import com.passbolt.mobile.android.resourcepicker.model.PickResourceAction
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType
 import com.passbolt.mobile.android.ui.MetadataJsonModel
+import com.passbolt.mobile.android.ui.MetadataTypeModel
 import com.passbolt.mobile.android.ui.OtpParseResult
-import com.passbolt.mobile.android.ui.OtpParseResult.UserResolvableError.ErrorType.MULTIPLE_BARCODES
-import com.passbolt.mobile.android.ui.OtpParseResult.UserResolvableError.ErrorType.NOT_A_OTP_QR
-import com.passbolt.mobile.android.ui.OtpParseResult.UserResolvableError.ErrorType.NO_BARCODES_IN_RANGE
 import com.passbolt.mobile.android.ui.ResourceModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.runTest
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.koin.core.logger.Level
@@ -27,11 +22,10 @@ import org.koin.test.inject
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.stub
-import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
 import java.util.UUID
 
 /**
@@ -70,6 +64,14 @@ class ScanOtpSuccessPresenterTest : KoinTest {
 
     @Test
     fun `create standalone totp should create totp and navigate back`() = runBlocking {
+        mockGetDefaultCreateContentTypeUseCase.stub {
+            onBlocking { execute(any()) }.doReturn(
+                GetDefaultCreateContentTypeUseCase.Output(
+                    ContentType.V5TotpStandalone,
+                    MetadataTypeModel.V5
+                )
+            )
+        }
         val mockScannedTotp = OtpParseResult.OtpQr.TotpQr(
             label = "label",
             secret = "secret",
@@ -82,7 +84,7 @@ class ScanOtpSuccessPresenterTest : KoinTest {
         val mockResourceId = UUID.randomUUID()
         mockResourceCreateActionsInteractor.stub {
             onBlocking {
-                createStandaloneTotpResource(anyOrNull(), anyOrNull(), any(), anyOrNull(), any(), any(), any(), any())
+                createGenericResource(any(), anyOrNull(), any(), any())
             }
                 .doReturn(flowOf(ResourceCreateActionResult.Success(mockResourceId.toString(), mockResourceName)))
         }
@@ -119,7 +121,7 @@ class ScanOtpSuccessPresenterTest : KoinTest {
 
         mockResourceUpdateActionsInteractor.stub {
             onBlocking {
-                updateLinkedTotpResourceTotpFields(any(), anyOrNull(), any(), any(), any(), any())
+                updateGenericResource(eq(UpdateAction.ADD_TOTP), any(), any())
             }
                 .doReturn(flowOf(ResourceUpdateActionResult.Success(mockResourceId.toString(), mockResourceName)))
         }
@@ -162,7 +164,7 @@ class ScanOtpSuccessPresenterTest : KoinTest {
 
         mockResourceUpdateActionsInteractor.stub {
             onBlocking {
-                addTotpToResource(anyOrNull(), anyOrNull(), any(), any(), any(), any())
+                updateGenericResource(eq(UpdateAction.ADD_TOTP), any(), any())
             }
                 .doReturn(flowOf(ResourceUpdateActionResult.Success(mockResourceId.toString(), mockResourceName)))
         }

@@ -6,8 +6,8 @@ import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.a
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.totpFormModule
 import com.passbolt.mobile.android.feature.resourceform.main.resourceFormModule
 import com.passbolt.mobile.android.feature.resourceform.metadata.description.descriptionFormModule
-import com.passbolt.mobile.android.feature.resourceform.usecase.GetDefaultCreateContentTypeUseCase
-import com.passbolt.mobile.android.feature.resourceform.usecase.GetEditContentTypeUseCase
+import com.passbolt.mobile.android.core.resources.usecase.GetDefaultCreateContentTypeUseCase
+import com.passbolt.mobile.android.core.resources.usecase.GetEditContentTypeUseCase
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 

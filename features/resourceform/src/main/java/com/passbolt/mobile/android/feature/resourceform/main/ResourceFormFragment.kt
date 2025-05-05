@@ -363,6 +363,13 @@ class ResourceFormFragment :
         Toast.makeText(requireContext(), LocalizationR.string.resource_form_edit_init_error, Toast.LENGTH_LONG).show()
     }
 
+    override fun showCannotCreateTotpWithCurrentConfig() {
+        showSnackbar(
+            messageResId = LocalizationR.string.common_cannot_create_resource_with_current_config,
+            backgroundColor = R.color.red
+        )
+    }
+
     override fun navigateBack() {
         findNavController().popBackStack()
     }
@@ -421,6 +428,13 @@ class ResourceFormFragment :
             )
         )
         findNavController().popBackStack()
+    }
+
+    override fun showCannotUpdateTotpWithCurrentConfig() {
+        showSnackbar(
+            messageResId = LocalizationR.string.common_cannot_create_resource_with_current_config,
+            backgroundColor = R.color.red
+        )
     }
 
     companion object {

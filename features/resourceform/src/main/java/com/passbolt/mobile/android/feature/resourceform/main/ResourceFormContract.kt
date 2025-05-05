@@ -77,6 +77,8 @@ interface ResourceFormContract {
         fun navigateBack()
         fun navigateBackWithEditSuccess(name: String)
         fun showTotpRequired()
+        fun showCannotCreateTotpWithCurrentConfig()
+        fun showCannotUpdateTotpWithCurrentConfig()
         fun showEditTitle(resourceName: String)
     }
 
