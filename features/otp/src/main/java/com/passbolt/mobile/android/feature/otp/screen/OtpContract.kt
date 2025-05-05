@@ -66,6 +66,7 @@ interface OtpContract {
         fun navigateToEditResource(resourceModel: ResourceModel)
         fun showResourceCreatedSnackbar()
         fun showResourceEditedSnackbar(resourceName: String)
+        fun showCannotUpdateTotpWithCurrentConfig()
     }
 
     interface Presenter : DataRefreshViewReactiveContract.Presenter<View> {

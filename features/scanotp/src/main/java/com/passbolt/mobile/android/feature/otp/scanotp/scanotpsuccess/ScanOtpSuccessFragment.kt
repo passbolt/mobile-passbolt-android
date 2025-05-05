@@ -124,6 +124,13 @@ class ScanOtpSuccessFragment :
         )
     }
 
+    override fun showCannotUpdateTotpWithCurrentConfig() {
+        showSnackbar(
+            messageResId = LocalizationR.string.common_cannot_create_resource_with_current_config,
+            backgroundColor = CoreUiR.color.red
+        )
+    }
+
     override fun showEncryptionError(message: String) {
         showSnackbar(LocalizationR.string.common_encryption_failure, backgroundColor = CoreUiR.color.red)
     }

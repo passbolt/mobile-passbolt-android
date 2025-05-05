@@ -2,7 +2,9 @@ package com.passbolt.mobile.android.mappers
 
 import com.passbolt.mobile.android.dto.response.ResourceTypeDto
 import com.passbolt.mobile.android.entity.resource.ResourceType
+import com.passbolt.mobile.android.ui.ResourceTypeModel
 import java.time.ZonedDateTime
+import java.util.UUID
 
 /**
  * Passbolt - Open source password manager for teams
@@ -37,4 +39,12 @@ class ResourceTypesModelMapper {
             deleted = it.deleted?.let { deleted -> ZonedDateTime.parse(deleted) }
         )
     }
+
+    fun map(resourceTypesEntity: ResourceType): ResourceTypeModel =
+        ResourceTypeModel(
+            id = UUID.fromString(resourceTypesEntity.resourceTypeId),
+            slug = resourceTypesEntity.slug,
+            name = resourceTypesEntity.name,
+            deleted = resourceTypesEntity.deleted
+        )
 }

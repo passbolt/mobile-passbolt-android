@@ -26,6 +26,7 @@ package com.passbolt.mobile.android.serializers.resourcelistdeserializer.caching
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import com.passbolt.mobile.android.core.accounts.usecase.selectedaccount.GetSelectedAccountUseCase
+import com.passbolt.mobile.android.core.resourcetypes.usecase.db.GetLocalResourceTypesUseCase
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.GetResourceTypeIdToSlugMappingUseCase
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
 import com.passbolt.mobile.android.database.snapshot.ResourcesSnapshot
@@ -50,6 +51,7 @@ internal val mockMetadataDecryptor = mock<MetadataDecryptor>()
 internal val mockGetLocalMetadataKeysUseCase = mock<GetLocalMetadataKeysUseCase>()
 internal val mockResourcesSnapShot = mock<ResourcesSnapshot>()
 internal val mockJsonSchemaValidationRunner = mock<JsonSchemaValidationRunner>()
+internal val mockGetLocalResourceTypesUseCase = mock<GetLocalResourceTypesUseCase>()
 
 val resourceListItemDeserializationTestModule = module {
     singleOf(::JsonSchemaValidationRunner)
@@ -69,6 +71,7 @@ val resourceListItemDeserializationTestModule = module {
     single { mockResourcesSnapShot }
     single { mockIdToSlugMappingUseCase }
     factory { mockGetSelectedAccountUseCase }
+    single { mockGetLocalResourceTypesUseCase }
     single {
         GsonBuilder()
             .registerTypeAdapter(

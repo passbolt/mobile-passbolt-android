@@ -15,8 +15,8 @@ import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAct
 import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction.REMOVE_PASSWORD
 import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction.REMOVE_TOTP
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.SecretJsonModel
-import com.passbolt.mobile.android.feature.resourceform.usecase.GetDefaultCreateContentTypeUseCase
-import com.passbolt.mobile.android.feature.resourceform.usecase.GetEditContentTypeUseCase
+import com.passbolt.mobile.android.core.resources.usecase.GetDefaultCreateContentTypeUseCase
+import com.passbolt.mobile.android.core.resources.usecase.GetEditContentTypeUseCase
 import com.passbolt.mobile.android.jsonmodel.delegates.TotpSecret
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordAndDescription

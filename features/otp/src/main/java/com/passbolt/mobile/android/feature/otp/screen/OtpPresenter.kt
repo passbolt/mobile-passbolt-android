@@ -37,6 +37,7 @@ import com.passbolt.mobile.android.core.resources.actions.performCommonResourceA
 import com.passbolt.mobile.android.core.resources.actions.performResourceUpdateAction
 import com.passbolt.mobile.android.core.resources.actions.performSecretPropertyAction
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesUseCase
+import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
 import com.passbolt.mobile.android.feature.home.screen.model.SearchInputEndIconMode
 import com.passbolt.mobile.android.mappers.OtpModelMapper
@@ -410,7 +411,10 @@ class OtpPresenter(
 
         performResourceUpdateAction(
             action = {
-                resourceUpdateActionInteractor.deleteTotpFromResource()
+                resourceUpdateActionInteractor.updateGenericResource(
+                    UpdateAction.REMOVE_TOTP,
+                    secretModification = { it.apply { totp = null } }
+                )
             },
             doOnCryptoFailure = { view?.showEncryptionError(it) },
             doOnFailure = { view?.showError(it) },
@@ -419,7 +423,8 @@ class OtpPresenter(
                 initRefresh()
             },
             doOnSchemaValidationFailure = ::handleSchemaValidationFailure,
-            doOnFetchFailure = { view?.showFetchFailure() }
+            doOnFetchFailure = { view?.showFetchFailure() },
+            doOnCannotEditWithCurrentConfig = { view?.showCannotUpdateTotpWithCurrentConfig() }
         )
     }
 

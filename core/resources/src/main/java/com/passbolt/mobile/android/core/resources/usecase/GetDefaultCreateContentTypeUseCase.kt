@@ -1,11 +1,18 @@
-package com.passbolt.mobile.android.feature.resourceform.usecase
+package com.passbolt.mobile.android.core.resources.usecase
 
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
-import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
 import com.passbolt.mobile.android.metadata.usecase.GetMetadataTypesSettingsUseCase
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordAndDescription
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.Totp
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5Default
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5TotpStandalone
+import com.passbolt.mobile.android.ui.LeadingContentType
+import com.passbolt.mobile.android.ui.LeadingContentType.PASSWORD
+import com.passbolt.mobile.android.ui.LeadingContentType.TOTP
 import com.passbolt.mobile.android.ui.MetadataTypeModel
-import java.util.UUID
+import com.passbolt.mobile.android.ui.MetadataTypeModel.V4
+import com.passbolt.mobile.android.ui.MetadataTypeModel.V5
 
 /**
  * Passbolt - Open source password manager for teams
@@ -29,28 +36,32 @@ import java.util.UUID
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class GetEditContentTypeUseCase(
-    private val getMetadataTypesSettingsUseCase: GetMetadataTypesSettingsUseCase,
-    private val resourceTypeIdToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider
-) : AsyncUseCase<GetEditContentTypeUseCase.Input, GetEditContentTypeUseCase.Output> {
+class GetDefaultCreateContentTypeUseCase(
+    private val getMetadataTypesSettingsUseCase: GetMetadataTypesSettingsUseCase
+) : AsyncUseCase<GetDefaultCreateContentTypeUseCase.Input, GetDefaultCreateContentTypeUseCase.Output> {
 
     override suspend fun execute(input: Input): Output {
         val defaultMetadataType = getMetadataTypesSettingsUseCase.execute(Unit)
             .metadataTypesSettingsModel
             .defaultMetadataType
 
-        val slug = resourceTypeIdToSlugMappingProvider.provideMappingForSelectedAccount()[
-            UUID.fromString(input.editedResourceTypeId)
-        ]
-
         return Output(
             metadataType = defaultMetadataType,
-            contentType = ContentType.fromSlug(slug!!)
+            contentType = when (defaultMetadataType) {
+                V4 -> when (input.leadingContentType) {
+                    TOTP -> Totp
+                    PASSWORD -> PasswordAndDescription
+                }
+                V5 -> when (input.leadingContentType) {
+                    TOTP -> V5TotpStandalone
+                    PASSWORD -> V5Default
+                }
+            }
         )
     }
 
     data class Input(
-        val editedResourceTypeId: String
+        val leadingContentType: LeadingContentType
     )
 
     data class Output(

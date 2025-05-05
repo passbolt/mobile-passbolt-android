@@ -41,5 +41,7 @@ sealed class ResourceCreateActionResult {
 
     class CryptoFailure(val message: String? = null) : ResourceCreateActionResult()
 
+    data object CannotCreateWithCurrentConfig : ResourceCreateActionResult()
+
     class JsonSchemaValidationFailure(val entity: SchemaEntity) : ResourceCreateActionResult()
 }

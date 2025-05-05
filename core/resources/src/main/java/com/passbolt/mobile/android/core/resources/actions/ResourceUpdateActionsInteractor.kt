@@ -28,18 +28,15 @@ import com.passbolt.mobile.android.core.resources.interactor.update.UpdateResour
 import com.passbolt.mobile.android.core.resources.usecase.db.UpdateLocalResourceUseCase
 import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.ResourceTypesUpdatesAdjacencyGraph
 import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction
+import com.passbolt.mobile.android.core.resourcetypes.usecase.db.GetLocalResourceTypesUseCase
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.SecretInput
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.SecretJsonModel
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
-import com.passbolt.mobile.android.jsonmodel.delegates.TotpSecret
 import com.passbolt.mobile.android.serializers.jsonschema.SchemaEntity
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType
 import com.passbolt.mobile.android.ui.MetadataJsonModel
 import com.passbolt.mobile.android.ui.MetadataKeyTypeModel
-import com.passbolt.mobile.android.ui.MetadataTypeModel
-import com.passbolt.mobile.android.ui.MetadataTypeModel.V4
-import com.passbolt.mobile.android.ui.MetadataTypeModel.V5
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.UpdateResourceModel
 import kotlinx.coroutines.flow.Flow
@@ -52,173 +49,94 @@ import timber.log.Timber
 import java.util.UUID
 
 class ResourceUpdateActionsInteractor(
-    private val resource: ResourceModel,
+    private val existingResource: ResourceModel,
     private val needSessionRefreshFlow: MutableStateFlow<UnauthenticatedReason?>,
     private val sessionRefreshedFlow: StateFlow<Unit?>,
     private val secretPropertiesActionsInteractor: SecretPropertiesActionsInteractor,
     private val updateResourceInteractor: UpdateResourceInteractor,
     private val resourceTypesUpdateGraph: ResourceTypesUpdatesAdjacencyGraph,
     private val updateLocalResourceUseCase: UpdateLocalResourceUseCase,
-    private val idToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider
+    private val idToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider,
+    private val getLocalResourceTypesUseCase: GetLocalResourceTypesUseCase
 ) : KoinComponent {
 
     suspend fun updateGenericResource(
-        contentType: ContentType,
-        resourceModel: ResourceModel,
-        metadataJsonModel: MetadataJsonModel,
-        secretJsonModel: SecretJsonModel
+        newContentType: ContentType,
+        metadataModification: (MetadataJsonModel) -> MetadataJsonModel = { it },
+        secretModification: (SecretJsonModel) -> SecretJsonModel = { it }
     ): Flow<ResourceUpdateActionResult> {
-        return updateResource2(
-            updateResource = {
-                UpdateResourceModel(
-                    contentType = contentType,
-                    resourceId = resource.resourceId,
-                    folderId = resourceModel.folderId,
-                    expiry = resourceModel.expiry,
-                    metadataKeyId = resourceModel.metadataKeyId,
-                    metadataKeyType = resourceModel.metadataKeyType,
-                    metadataJsonModel = metadataJsonModel
-                )
-            },
-            updateSecret = { decryptedSecret ->
-                val passwordChanged = decryptedSecret.secret != secretJsonModel.getPassword(contentType)
-                SecretInput(
-                    secretJsonModel = secretJsonModel,
-                    passwordChanged = passwordChanged
-                )
-            }
-        )
+        return if (isDeleted(newContentType)) {
+            flowOf(ResourceUpdateActionResult.CannotUpdateWithCurrentConfig)
+        } else {
+            updateResource(
+                updateResource = {
+                    UpdateResourceModel(
+                        contentType = newContentType,
+                        resourceId = existingResource.resourceId,
+                        folderId = existingResource.folderId,
+                        expiry = existingResource.expiry,
+                        metadataKeyId = existingResource.metadataKeyId,
+                        metadataKeyType = existingResource.metadataKeyType,
+                        metadataJsonModel = metadataModification(existingResource.metadataJsonModel)
+                    )
+                },
+                updateSecret = { decryptedSecret ->
+                    val existingResourceContentType = ContentType.fromSlug(
+                        idToSlugMappingProvider.provideMappingForSelectedAccount()[
+                            UUID.fromString(existingResource.resourceTypeId)
+                        ]!!
+                    )
+                    val modifiedSecret = secretModification(decryptedSecret)
+                    val passwordChanged =
+                        decryptedSecret.getPassword(existingResourceContentType) != modifiedSecret.getPassword(
+                            newContentType
+                        )
+                    SecretInput(
+                        secretJsonModel = modifiedSecret,
+                        passwordChanged = passwordChanged
+                    )
+                }
+            )
+        }
     }
 
-    suspend fun deleteTotpFromResource(): Flow<ResourceUpdateActionResult> =
-        updateResource(
-            updateAction = UpdateAction.REMOVE_TOTP,
-            updateResource = { newResourceType, _ ->
-                UpdateResourceModel(
-                    resourceId = resource.resourceId,
-                    contentType = newResourceType,
-                    folderId = resource.folderId,
-                    expiry = resource.expiry,
-                    metadataJsonModel = MetadataJsonModel(resource.metadataJsonModel.json),
-                    metadataKeyId = resource.metadataKeyId,
-                    metadataKeyType = resource.metadataKeyType
-                )
-            },
-            updateSecret = { decryptedSecret ->
-                SecretInput(
-                    secretJsonModel = decryptedSecret.apply {
-                        totp = null
-                    },
-                    passwordChanged = false
-                )
-            }
+    suspend fun updateGenericResource(
+        updateAction: UpdateAction,
+        metadataModification: (MetadataJsonModel) -> MetadataJsonModel = { it },
+        secretModification: (SecretJsonModel) -> SecretJsonModel = { it }
+    ): Flow<ResourceUpdateActionResult> {
+        val newContentType = resourceTypesUpdateGraph.getResourceTypeSlugAfterUpdate(
+            idToSlugMappingProvider.provideMappingForSelectedAccount()[
+                UUID.fromString(existingResource.resourceTypeId)
+            ]!!,
+            updateAction
         )
-
-    suspend fun addTotpToResource(
-        overrideName: String?,
-        overrideUri: String?,
-        period: Long,
-        digits: Int,
-        algorithm: String,
-        secretKey: String
-    ): Flow<ResourceUpdateActionResult> =
-        updateResource(
-            updateAction = UpdateAction.ADD_TOTP,
-            updateResource = { newResourceType, metadataType ->
-                UpdateResourceModel(
-                    resourceId = resource.resourceId,
-                    contentType = newResourceType,
-                    folderId = resource.folderId,
-                    expiry = resource.expiry,
-                    metadataJsonModel = MetadataJsonModel(resource.metadataJsonModel.json),
-                    metadataKeyId = resource.metadataKeyId,
-                    metadataKeyType = resource.metadataKeyType
-                ).apply {
-                    metadataJsonModel.name = overrideName ?: resource.metadataJsonModel.name
-                    metadataJsonModel.username = resource.metadataJsonModel.username
-                    when (metadataType) {
-                        V4 -> this.metadataJsonModel.uri = overrideUri ?: resource.metadataJsonModel.uri
-                        V5 -> this.metadataJsonModel.uris = if (overrideUri != null) {
-                            listOf(overrideUri)
-                        } else {
-                            resource.metadataJsonModel.uris
-                        }
-                    }
-                }
-            },
-            updateSecret = { decryptedSecret ->
-                SecretInput(
-                    secretJsonModel = decryptedSecret.apply {
-                        totp = TotpSecret(
-                            algorithm,
-                            secretKey,
-                            digits,
-                            period
-                        )
-                    },
-                    passwordChanged = false
-                )
-            }
-        )
-
-    suspend fun updateLinkedTotpResourceTotpFields(
-        label: String,
-        issuer: String?,
-        period: Long,
-        digits: Int,
-        algorithm: String,
-        secretKey: String
-    ): Flow<ResourceUpdateActionResult> =
-        updateResource(
-            updateAction = UpdateAction.ADD_TOTP,
-            updateResource = { newResourceType, metadataType ->
-                UpdateResourceModel(
-                    resourceId = resource.resourceId,
-                    contentType = newResourceType,
-                    folderId = resource.folderId,
-                    expiry = resource.expiry,
-                    metadataJsonModel = MetadataJsonModel(resource.metadataJsonModel.json),
-                    metadataKeyId = resource.metadataKeyId,
-                    metadataKeyType = resource.metadataKeyType
-                ).apply {
-                    metadataJsonModel.name = label
-                    metadataJsonModel.username = resource.metadataJsonModel.username
-                    when (metadataType) {
-                        V4 -> this.metadataJsonModel.uri = issuer
-                        V5 -> this.metadataJsonModel.uris = if (issuer != null) listOf(issuer) else emptyList()
-                    }
-                }
-            },
-            updateSecret = { decryptedSecret ->
-                SecretInput(
-                    secretJsonModel = decryptedSecret.apply {
-                        totp = TotpSecret(
-                            algorithm,
-                            secretKey,
-                            digits,
-                            period
-                        )
-                    },
-                    passwordChanged = false
-                )
-            }
-        )
+        return if (isDeleted(newContentType)) {
+            flowOf(ResourceUpdateActionResult.CannotUpdateWithCurrentConfig)
+        } else {
+            updateGenericResource(newContentType, metadataModification, secretModification)
+        }
+    }
 
     suspend fun reEncryptResourceMetadata(
         metadataKeyId: String,
         metadataKeyType: MetadataKeyTypeModel
-    ): Flow<ResourceUpdateActionResult> =
-        updateResource(
-            updateAction = UpdateAction.EDIT_METADATA,
-            updateResource = { newResourceType, _ ->
+    ): Flow<ResourceUpdateActionResult> {
+        val contentType = ContentType.fromSlug(
+            idToSlugMappingProvider.provideMappingForSelectedAccount()[
+                UUID.fromString(existingResource.resourceTypeId)
+            ]!!
+        )
+        return updateResource(
+            updateResource = {
                 UpdateResourceModel(
-                    resourceId = resource.resourceId,
-                    contentType = newResourceType,
-                    folderId = resource.folderId,
-                    expiry = resource.expiry,
-                    metadataJsonModel = MetadataJsonModel(resource.metadataJsonModel.json),
+                    contentType = contentType,
+                    resourceId = existingResource.resourceId,
+                    folderId = existingResource.folderId,
+                    expiry = existingResource.expiry,
                     metadataKeyId = metadataKeyId,
-                    metadataKeyType = metadataKeyType
+                    metadataKeyType = metadataKeyType,
+                    metadataJsonModel = existingResource.metadataJsonModel
                 )
             },
             updateSecret = { decryptedSecret ->
@@ -228,47 +146,19 @@ class ResourceUpdateActionsInteractor(
                 )
             }
         )
-
-    @Deprecated("Use updateResource2 instead")
-    private suspend fun updateResource(
-        updateAction: UpdateAction,
-        updateResource: (ContentType, MetadataTypeModel) -> UpdateResourceModel,
-        updateSecret: (SecretJsonModel) -> SecretInput
-    ): Flow<ResourceUpdateActionResult> {
-        return try {
-            val decryptedSecret = secretPropertiesActionsInteractor.provideDecryptedSecret().single()
-            val newResourceType = resourceTypesUpdateGraph.getResourceTypeSlugAfterUpdate(
-                idToSlugMappingProvider.provideMappingForSelectedAccount()[UUID.fromString(resource.resourceTypeId)]!!,
-                updateAction
-            )
-            flowOf(
-                when (decryptedSecret) {
-                    is SecretPropertyActionResult.Success ->
-                        runUpdateOperation {
-                            updateResourceInteractor.execute(
-                                resourceInput = updateResource(
-                                    newResourceType,
-                                    if (newResourceType.isV5()) V5 else V4
-                                ),
-                                secretInput = updateSecret(decryptedSecret.result)
-                            )
-                        }
-                    is SecretPropertyActionResult.FetchFailure ->
-                        ResourceUpdateActionResult.FetchFailure
-                    is SecretPropertyActionResult.DecryptionFailure ->
-                        ResourceUpdateActionResult.CryptoFailure()
-                    else -> ResourceUpdateActionResult.Failure()
-                }
-            )
-        } catch (e: Exception) {
-            Timber.e(e, "Error updating resource")
-            flowOf(ResourceUpdateActionResult.Failure())
-        }
     }
 
-    private suspend fun updateResource2(
+    private suspend fun isDeleted(contentType: ContentType): Boolean {
+        val deletedContentTypes = getLocalResourceTypesUseCase.execute(Unit)
+            .resourceTypes
+            .filter { it.isDeleted }
+            .map { ContentType.fromSlug(it.slug) }
+        return deletedContentTypes.contains(contentType)
+    }
+
+    private suspend fun updateResource(
         updateResource: () -> UpdateResourceModel,
-        updateSecret: (SecretJsonModel) -> SecretInput
+        updateSecret: suspend (SecretJsonModel) -> SecretInput
     ): Flow<ResourceUpdateActionResult> {
         return try {
             val decryptedSecret = secretPropertiesActionsInteractor.provideDecryptedSecret().single()
@@ -324,12 +214,14 @@ class ResourceUpdateActionsInteractor(
     }
 }
 
+@Suppress("LongParameterList")
 suspend fun performResourceUpdateAction(
     action: suspend () -> Flow<ResourceUpdateActionResult>,
     doOnCryptoFailure: (String) -> Unit,
     doOnFailure: (String) -> Unit,
     doOnSuccess: (ResourceUpdateActionResult.Success) -> Unit,
     doOnSchemaValidationFailure: (SchemaEntity) -> Unit,
+    doOnCannotEditWithCurrentConfig: () -> Unit,
     doOnFetchFailure: () -> Unit = {},
     doOnUnauthorized: () -> Unit = {}
 ) {
@@ -341,6 +233,7 @@ suspend fun performResourceUpdateAction(
             is ResourceUpdateActionResult.Success -> doOnSuccess(it)
             is ResourceUpdateActionResult.Unauthorized -> doOnUnauthorized()
             is ResourceUpdateActionResult.JsonSchemaValidationFailure -> doOnSchemaValidationFailure(it.entity)
+            is ResourceUpdateActionResult.CannotUpdateWithCurrentConfig -> doOnCannotEditWithCurrentConfig()
         }
     }
 }

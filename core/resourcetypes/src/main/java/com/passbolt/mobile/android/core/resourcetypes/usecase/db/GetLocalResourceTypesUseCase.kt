@@ -1,7 +1,10 @@
 package com.passbolt.mobile.android.core.resourcetypes.usecase.db
 
-import org.koin.core.module.Module
-import org.koin.core.module.dsl.singleOf
+import com.passbolt.mobile.android.common.usecase.AsyncUseCase
+import com.passbolt.mobile.android.core.accounts.usecase.SelectedAccountUseCase
+import com.passbolt.mobile.android.database.DatabaseProvider
+import com.passbolt.mobile.android.mappers.ResourceTypesModelMapper
+import com.passbolt.mobile.android.ui.ResourceTypeModel
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,10 +28,22 @@ import org.koin.core.module.dsl.singleOf
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+class GetLocalResourceTypesUseCase(
+    private val databaseProvider: DatabaseProvider,
+    private val resourceTypesModelMapper: ResourceTypesModelMapper
+) : AsyncUseCase<Unit, GetLocalResourceTypesUseCase.Output>, SelectedAccountUseCase {
 
-internal fun Module.resourceTypesDbModule() {
-    singleOf(::RebuildLocalResourceTypesUseCase)
-    singleOf(::GetResourceTypeIdToSlugMappingUseCase)
-    singleOf(::ResourceTypeIdToSlugMappingProvider)
-    singleOf(::GetLocalResourceTypesUseCase)
+    override suspend fun execute(input: Unit): Output {
+        val resourceTypes = databaseProvider
+            .get(selectedAccountId)
+            .resourceTypesDao()
+            .getAll()
+            .map(resourceTypesModelMapper::map)
+
+        return Output(resourceTypes)
+    }
+
+    data class Output(
+        val resourceTypes: List<ResourceTypeModel>
+    )
 }

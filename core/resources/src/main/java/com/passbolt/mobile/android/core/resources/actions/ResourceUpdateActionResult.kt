@@ -37,5 +37,7 @@ sealed class ResourceUpdateActionResult {
 
     class CryptoFailure(val message: String? = null) : ResourceUpdateActionResult()
 
+    data object CannotUpdateWithCurrentConfig : ResourceUpdateActionResult()
+
     class JsonSchemaValidationFailure(val entity: SchemaEntity) : ResourceUpdateActionResult()
 }
