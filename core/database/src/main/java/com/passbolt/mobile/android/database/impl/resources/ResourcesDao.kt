@@ -237,7 +237,7 @@ interface ResourcesDao : BaseDao<Resource> {
                 "WHERE r.expiry IS NOT NULL AND r.expiry < :expiryTimestampMillis AND r.resourceTypeId IN(" +
                 "   SELECT resourceTypeId FROM ResourceType WHERE slug IN (:slugs)" +
                 ") " +
-                "ORDER BY modified DESC"
+                "ORDER BY expiry ASC"
     )
     suspend fun getExpiredResources(
         slugs: Set<String>,
