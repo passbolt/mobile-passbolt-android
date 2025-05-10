@@ -59,13 +59,19 @@ class MetadataMapper {
             id = dto.id,
             fingerprint = dto.fingerprint,
             armoredKey = dto.armoredKey,
+            modified = ZonedDateTime.parse(dto.modified),
             expired = dto.expired?.let { ZonedDateTime.parse(it) },
             deleted = dto.deleted?.let { ZonedDateTime.parse(it) },
             metadataPrivateKeys = dto.metadataPrivateKeys.map { metadataPrivateKey ->
                 MetadataPrivateKeyModel(
+                    id = metadataPrivateKey.id,
                     userId = metadataPrivateKey.userId,
-                    encryptedKeyData = metadataPrivateKey.encryptedKeyData,
-                    metadataKeyId = metadataPrivateKey.metadataKeyId
+                    pgpMessage = metadataPrivateKey.encryptedKeyData,
+                    metadataKeyId = metadataPrivateKey.metadataKeyId,
+                    created = metadataPrivateKey.created,
+                    createdBy = metadataPrivateKey.createdBy,
+                    modified = metadataPrivateKey.modified,
+                    modifiedBy = metadataPrivateKey.modifiedBy
                 )
             }
         )
@@ -74,15 +80,22 @@ class MetadataMapper {
         id = uiModel.id.toString(),
         fingerprint = uiModel.fingerprint,
         armoredKey = uiModel.armoredKey,
+        modified = uiModel.modified,
         expired = uiModel.expired,
         deleted = uiModel.deleted
     )
 
     fun map(uiModel: ParsedMetadataPrivateKeyModel, metadataKeyId: String) = MetadataPrivateKey(
+        id = uiModel.id.toString(),
         metadataKeyId = metadataKeyId,
         userId = uiModel.userId.toString(),
         data = uiModel.keyData,
-        passphrase = uiModel.passphrase
+        passphrase = uiModel.passphrase,
+        created = uiModel.created,
+        createdBy = uiModel.createdBy?.toString(),
+        modified = uiModel.modified,
+        modifiedBy = uiModel.modifiedBy?.toString(),
+        pgpMessage = uiModel.pgpMessage
     )
 
     private fun MetadataTypeDto.mapToUi() = when (this) {
@@ -151,13 +164,20 @@ class MetadataMapper {
             id = UUID.fromString(dao.metadataKey.id),
             fingerprint = dao.metadataKey.fingerprint,
             armoredKey = dao.metadataKey.armoredKey,
+            modified = dao.metadataKey.modified,
             expired = dao.metadataKey.expired,
             deleted = dao.metadataKey.deleted,
             metadataPrivateKeys = dao.metadataPrivateKeys.map {
                 ParsedMetadataPrivateKeyModel(
+                    id = UUID.fromString(it.id),
                     userId = UUID.fromString(it.userId),
                     keyData = it.data,
-                    passphrase = it.passphrase
+                    passphrase = it.passphrase,
+                    created = it.created,
+                    createdBy = it.createdBy?.let { UUID.fromString(it) },
+                    modified = it.modified,
+                    modifiedBy = it.modifiedBy?.let { UUID.fromString(it) },
+                    pgpMessage = it.pgpMessage
                 )
             }
         )

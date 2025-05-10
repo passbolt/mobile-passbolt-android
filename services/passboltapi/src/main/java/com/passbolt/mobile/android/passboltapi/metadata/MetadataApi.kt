@@ -10,6 +10,7 @@ import com.passbolt.mobile.android.dto.response.MetadataTypesSettingsResponseDto
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -43,6 +44,12 @@ internal interface MetadataApi {
         @Query(QUERY_CONTAIN_PRIVATE_KEYS) containPrivateKeys: Int? = 1
     ): BaseResponse<List<MetadataKeysResponseDto>>
 
+    @PUT(METADATA_KEYS_PRIVATE_UPDATE_ENDPOINT)
+    suspend fun putMetadataPrivateKey(
+        @Path(QUERY_UUID) uuid: String,
+        @Body request: EncryptedDataRequest
+    ): BaseResponse<Unit>
+
     @GET(METADATA_TYPES_SETTINGS)
     suspend fun getMetadataTypesSettings(): BaseResponse<MetadataTypesSettingsResponseDto>
 
@@ -72,7 +79,9 @@ internal interface MetadataApi {
         private const val METADATA_SESSION_KEYS_UPDATE_ENDPOINT = "$METADATA/$SESSION_KEYS/{$QUERY_UUID}.json"
         private const val METADATA_TYPES = "$METADATA/types"
         private const val METADATA_KEYS = "$METADATA/keys"
+        private const val METADATA_KEYS_PRIVATE = "$METADATA_KEYS/private"
         private const val METADATA_TYPES_SETTINGS = "$METADATA_TYPES/settings.json"
         private const val METADATA_KEYS_SETTINGS = "$METADATA_KEYS/settings.json"
+        private const val METADATA_KEYS_PRIVATE_UPDATE_ENDPOINT = "$METADATA_KEYS_PRIVATE/{$QUERY_UUID}.json"
     }
 }

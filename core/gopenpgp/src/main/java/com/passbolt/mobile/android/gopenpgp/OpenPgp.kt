@@ -6,7 +6,8 @@ import com.passbolt.mobile.android.common.extension.encodeHex
 import com.passbolt.mobile.android.common.extension.erase
 import com.passbolt.mobile.android.gopenpgp.exception.GopenPgpExceptionParser
 import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpResult
-import com.passbolt.mobile.android.gopenpgp.model.SignatureVerification
+import com.passbolt.mobile.android.gopenpgp.model.CleartextSignatureVerification
+import com.passbolt.mobile.android.gopenpgp.model.VerifiedMessage
 import com.proton.gopenpgp.constants.Constants.AES256
 import com.proton.gopenpgp.crypto.Crypto
 import com.proton.gopenpgp.crypto.Key
@@ -86,11 +87,12 @@ class OpenPgp(
             withContext(Dispatchers.IO) {
                 val passphraseCopy = passphrase.copyOf()
 
-                val recipientAndSigner = Crypto.newPrivateKeyFromArmored(privateKey, passphrase)
+                val signingKey = Crypto.newPrivateKeyFromArmored(privateKey, passphrase)
+                val recipient = signingKey.toPublic()
 
                 val encryptionHandle = pgpHandle.encryptionWithTimeOffset()
-                    .recipient(recipientAndSigner)
-                    .signingKey(recipientAndSigner)
+                    .signingKey(signingKey)
+                    .recipient(recipient)
                     .new_()
 
                 val encrypted = encryptionHandle.encrypt(
@@ -288,7 +290,7 @@ class OpenPgp(
     suspend fun verifyClearTextSignature(
         armoredPublicKey: String,
         pgpMessage: ByteArray
-    ): OpenPgpResult<SignatureVerification> {
+    ): OpenPgpResult<CleartextSignatureVerification> {
         return try {
             withContext(Dispatchers.IO) {
                 val keyFingerprint = (getKeyFingerprint(armoredPublicKey) as OpenPgpResult.Result<String>).result
@@ -300,7 +302,7 @@ class OpenPgp(
                 val verificationResult = verificationHandle.verifyCleartext(pgpMessage)
 
                 OpenPgpResult.Result(
-                    SignatureVerification(
+                    CleartextSignatureVerification(
                         isSignatureVerified = try {
                             // signatureError() throws exception if signature is not valid
                             // returns unit if the signature is valid
@@ -344,6 +346,40 @@ class OpenPgp(
             }
         } catch (exception: Exception) {
             Timber.e(exception, "There was an error during decryptMessageArmoredWithSessionKey")
+            return OpenPgpResult.Error(gopenPgpExceptionParser.parseGopenPgpException(exception))
+        } finally {
+            Mobile.freeOSMemory()
+        }
+    }
+
+    suspend fun verifySignature(
+        armoredPrivateKey: String,
+        passphrase: ByteArray,
+        armoredPublicKey: String,
+        pgpMessage: ByteArray
+    ): OpenPgpResult<VerifiedMessage> {
+        return try {
+            withContext(Dispatchers.IO) {
+                val decryptionHandle = pgpHandle.decryptionWithTimeOffset()
+                    .decryptionKey(Crypto.newPrivateKeyFromArmored(armoredPrivateKey, passphrase))
+                    .verificationKey(Crypto.newKeyFromArmored(armoredPublicKey))
+                    .new_()
+
+                val decryptionResult = decryptionHandle.decrypt(pgpMessage, Crypto.Armor)
+
+                // throws an exception if signature is not valid
+                decryptionResult.signatureError()
+                OpenPgpResult.Result(
+                    VerifiedMessage(
+                        decryptedMessage = String(decryptionResult.bytes()),
+                        signatureCreationTimestampSeconds = decryptionResult.signatureCreationTime(),
+                        signatureKeyFingerprint = decryptionResult.signedByKey().fingerprint,
+                        signatureKeyHexKeyID = decryptionResult.signedByKey().hexKeyID
+                    )
+                )
+            }
+        } catch (exception: Exception) {
+            Timber.e(exception, "There was an error during verifySignature")
             return OpenPgpResult.Error(gopenPgpExceptionParser.parseGopenPgpException(exception))
         } finally {
             Mobile.freeOSMemory()

@@ -41,10 +41,10 @@ interface MetadataKeysDao : BaseDao<MetadataKey> {
     suspend fun getDecryptionMetadataKeysWithPrivateKeys(): List<MetadataKeyWithPrivateKeys>
 
     @Transaction
-    @Query("SELECT * FROM MetadataKey WHERE (deleted IS NULL AND expired IS NULL)")
+    @Query("SELECT * FROM MetadataKey WHERE (deleted IS NULL AND expired IS NULL) ORDER BY modified DESC")
     suspend fun getEncryptionMetadataKeysWithPrivateKeys(): List<MetadataKeyWithPrivateKeys>
 
     @Transaction
-    @Query("DELETE FROM ResourceMetadata")
+    @Query("DELETE FROM MetadataKey")
     suspend fun deleteAll()
 }
