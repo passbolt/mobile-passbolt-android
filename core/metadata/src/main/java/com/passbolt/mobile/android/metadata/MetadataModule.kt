@@ -2,17 +2,23 @@ package com.passbolt.mobile.android.metadata
 
 import com.passbolt.mobile.android.metadata.interactor.MetadataKeysInteractor
 import com.passbolt.mobile.android.metadata.interactor.MetadataKeysSettingsInteractor
+import com.passbolt.mobile.android.metadata.interactor.MetadataPrivateKeysHelperInteractor
+import com.passbolt.mobile.android.metadata.interactor.MetadataPrivateKeysInteractor
 import com.passbolt.mobile.android.metadata.interactor.MetadataSessionKeysInteractor
 import com.passbolt.mobile.android.metadata.interactor.MetadataTypesSettingsInteractor
 import com.passbolt.mobile.android.metadata.privatekeys.MetadataPrivateKeysValidator
 import com.passbolt.mobile.android.metadata.sessionkeys.SessionKeysBundleMerger
 import com.passbolt.mobile.android.metadata.sessionkeys.SessionKeysBundleValidator
 import com.passbolt.mobile.android.metadata.sessionkeys.SessionKeysMemoryCache
+import com.passbolt.mobile.android.metadata.usecase.DeleteTrustedMetadataKeyUseCase
 import com.passbolt.mobile.android.metadata.usecase.FetchMetadataKeysSettingsUseCase
 import com.passbolt.mobile.android.metadata.usecase.FetchMetadataKeysUseCase
 import com.passbolt.mobile.android.metadata.usecase.FetchMetadataSessionKeysUseCase
 import com.passbolt.mobile.android.metadata.usecase.FetchMetadataTypesSettingsUseCase
+import com.passbolt.mobile.android.metadata.usecase.GetTrustedMetadataKeyUseCase
 import com.passbolt.mobile.android.metadata.usecase.PostMetadataSessionKeysUseCase
+import com.passbolt.mobile.android.metadata.usecase.SaveTrustedMetadataKeyUseCase
+import com.passbolt.mobile.android.metadata.usecase.UpdateMetadataPrivateKeyUseCase
 import com.passbolt.mobile.android.metadata.usecase.UpdateMetadataSessionKeysUseCase
 import com.passbolt.mobile.android.metadata.usecase.db.AddLocalMetadataKeysUseCase
 import com.passbolt.mobile.android.metadata.usecase.db.GetLocalMetadataKeyUseCase
@@ -83,4 +89,10 @@ val metadataModule = module {
             sessionKeysBundleValidator = get()
         )
     }
+    singleOf(::UpdateMetadataPrivateKeyUseCase)
+    singleOf(::GetTrustedMetadataKeyUseCase)
+    singleOf(::SaveTrustedMetadataKeyUseCase)
+    singleOf(::DeleteTrustedMetadataKeyUseCase)
+    singleOf(::MetadataPrivateKeysInteractor)
+    singleOf(::MetadataPrivateKeysHelperInteractor)
 }

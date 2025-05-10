@@ -31,21 +31,28 @@ data class MetadataKeyModel(
     val id: UUID,
     val fingerprint: String?,
     val armoredKey: String,
+    val modified: ZonedDateTime,
     val expired: ZonedDateTime?,
     val deleted: ZonedDateTime?,
     val metadataPrivateKeys: List<MetadataPrivateKeyModel>
 )
 
 data class MetadataPrivateKeyModel(
+    val id: UUID,
     val metadataKeyId: UUID,
     val userId: UUID,
-    val encryptedKeyData: String
+    val pgpMessage: String,
+    val created: String,
+    val createdBy: UUID?,
+    val modified: String,
+    val modifiedBy: UUID?
 )
 
 data class ParsedMetadataKeyModel(
     val id: UUID,
     val armoredKey: String,
     val fingerprint: String?,
+    val modified: ZonedDateTime,
     val expired: ZonedDateTime?,
     val deleted: ZonedDateTime?,
     val metadataPrivateKeys: List<ParsedMetadataPrivateKeyModel>
@@ -56,10 +63,23 @@ data class MetadataPrivateKeyJsonModel(
     val objectType: String,
     @SerializedName("armored_key")
     val armoredKey: String,
-    val passphrase: String
+    val passphrase: String,
+    val created: String,
+    @SerializedName("created_by")
+    val createdBy: UUID?,
+    val modified: String,
+    @SerializedName("modified_by")
+    val modifiedBy: UUID?
 )
+
 data class ParsedMetadataPrivateKeyModel(
+    val id: UUID,
     val userId: UUID,
     val keyData: String,
-    val passphrase: String
+    val passphrase: String,
+    val created: ZonedDateTime,
+    val createdBy: UUID?,
+    val modified: ZonedDateTime,
+    val modifiedBy: UUID?,
+    val pgpMessage: String
 )

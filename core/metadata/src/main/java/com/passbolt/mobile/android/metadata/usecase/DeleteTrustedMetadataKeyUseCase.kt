@@ -1,3 +1,9 @@
+package com.passbolt.mobile.android.metadata.usecase
+
+import com.passbolt.mobile.android.common.usecase.AsyncUseCase
+import com.passbolt.mobile.android.core.accounts.usecase.SelectedAccountUseCase
+import com.passbolt.mobile.android.encryptedstorage.EncryptedSharedPreferencesFactory
+
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -20,11 +26,18 @@
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+class DeleteTrustedMetadataKeyUseCase(
+    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory
+) : AsyncUseCase<Unit, Unit>,
+    SelectedAccountUseCase {
 
-package com.passbolt.mobile.android.gopenpgp.model
+    override suspend fun execute(input: Unit) {
+        val fileName = TrustedMetadataKeyFileName(selectedAccountId).name
+        val sharedPreferences = encryptedSharedPreferencesFactory.get("$fileName.xml")
 
-data class SignatureVerification(
-    val isSignatureVerified: Boolean,
-    val message: String,
-    val keyFingerprint: String
-)
+        with(sharedPreferences.edit()) {
+            clear()
+            apply()
+        }
+    }
+}

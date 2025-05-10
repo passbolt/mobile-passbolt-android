@@ -1,12 +1,3 @@
-package com.passbolt.mobile.android.passboltapi.metadata
-
-import com.passbolt.mobile.android.dto.request.EncryptedDataAndModifiedRequest
-import com.passbolt.mobile.android.dto.request.EncryptedDataRequest
-import com.passbolt.mobile.android.dto.response.MetadataKeysResponseDto
-import com.passbolt.mobile.android.dto.response.MetadataKeysSettingsResponseDto
-import com.passbolt.mobile.android.dto.response.MetadataSessionKeyResponseDto
-import com.passbolt.mobile.android.dto.response.MetadataTypesSettingsResponseDto
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -30,19 +21,10 @@ import com.passbolt.mobile.android.dto.response.MetadataTypesSettingsResponseDto
  * @since v1.0
  */
 
-interface MetadataDataSource {
+package com.passbolt.mobile.android.gopenpgp.model
 
-    suspend fun getMetadataKeys(): List<MetadataKeysResponseDto>
-
-    suspend fun putMetadataPrivateKey(uuid: String, request: EncryptedDataRequest)
-
-    suspend fun getMetadataTypesSettings(): MetadataTypesSettingsResponseDto
-
-    suspend fun getMetadataKeysSettings(): MetadataKeysSettingsResponseDto
-
-    suspend fun getMetadataSessionKeys(): List<MetadataSessionKeyResponseDto>
-
-    suspend fun postMetadataSessionKeys(request: EncryptedDataRequest)
-
-    suspend fun updateMetadataSessionKeys(uuid: String, request: EncryptedDataAndModifiedRequest)
-}
+data class CleartextSignatureVerification(
+    val isSignatureVerified: Boolean,
+    val message: String,
+    val keyFingerprint: String
+)

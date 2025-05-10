@@ -1,5 +1,6 @@
 [versions]
 androidGradlePlugin = "8.5.2"
+dexmakerMockitoInlineExtended = "2.28.4"
 gradleVersionsPlugin = "0.48.0"
 desugarJdkLibs = "2.0.4"
 kotlin = "2.0.0"
@@ -78,6 +79,7 @@ snyk = "0.7.0"
 
 [libraries]
 desugar-jdklibs = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "desugarJdkLibs" }
+dexmaker-mockito-inline-extended = { module = "com.linkedin.dexmaker:dexmaker-mockito-inline-extended", version.ref = "dexmakerMockitoInlineExtended" }
 licensee = { group = "app.cash.licensee", name = "licensee-gradle-plugin", version.ref = "licensee" }
 koin = { group = "io.insert-koin", name = "koin-android", version.ref = "koin" }
 koin-test = { group = "io.insert-koin", name = "koin-test", version.ref = "koin" }

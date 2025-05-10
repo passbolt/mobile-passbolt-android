@@ -36,6 +36,11 @@ class MetadataRepository(
         metadataDataSource.getMetadataKeys()
     }
 
+    suspend fun updateMetadataPrivateKey(uuid: String, request: EncryptedDataRequest) =
+        callWithHandler(responseHandler) {
+            metadataDataSource.putMetadataPrivateKey(uuid, request)
+        }
+
     suspend fun getMetadataTypesSettings() = callWithHandler(responseHandler) {
         metadataDataSource.getMetadataTypesSettings()
     }

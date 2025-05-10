@@ -36,6 +36,9 @@ internal class MetadataRemoteDataSource(
     override suspend fun getMetadataKeys(): List<MetadataKeysResponseDto> =
         metadataApi.getMetadataKeys().body
 
+    override suspend fun putMetadataPrivateKey(uuid: String, request: EncryptedDataRequest) =
+        metadataApi.putMetadataPrivateKey(uuid, request).body
+
     override suspend fun getMetadataTypesSettings(): MetadataTypesSettingsResponseDto =
         metadataApi.getMetadataTypesSettings().body
 

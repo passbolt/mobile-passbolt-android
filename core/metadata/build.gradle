@@ -16,14 +16,28 @@ dependencies {
     implementation project(':gopenpgp')
     implementation project(':dto')
     implementation project(':passphrasememorycache')
+    implementation project(':users')
 
     implementation libs.koin
     implementation libs.room.core
     implementation libs.gson
+
+    androidTestImplementation(name: "gopenpgp", ext: "aar")
+    androidTestImplementation libs.koin.test
+    androidTestImplementation libs.koin.test.junit
+    androidTestImplementation libs.kotlin.coroutines.test
+    androidTestImplementation libs.android.tests.runner
+    androidTestImplementation libs.android.test.rules
+    androidTestImplementation libs.dexmaker.mockito.inline.extended
+    androidTestImplementation libs.mockito.kotlin
 }
 
 android {
     namespace = "com.passbolt.mobile.android.core.metadata"
+
+    defaultConfig {
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
 }
 
 kotlin {

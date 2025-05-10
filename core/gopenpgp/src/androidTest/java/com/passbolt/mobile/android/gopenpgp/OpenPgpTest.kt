@@ -46,6 +46,7 @@ class OpenPgpTest : KoinTest {
     private lateinit var gracePrivateKey: ByteArray
     private lateinit var gracePublicKey: String
     private lateinit var adminPublicKey: String
+    private lateinit var adminPrivateKey: String
     private lateinit var pgpMessageSignedByAdmin: ByteArray
     private lateinit var pgpMessageSignedByGrace: ByteArray
 
@@ -61,6 +62,7 @@ class OpenPgpTest : KoinTest {
             gracePrivateKey = openRawResource(R.raw.grace_private_key).readBytes()
             gracePublicKey = String(openRawResource(R.raw.grace_public_key).readBytes())
             adminPublicKey = String(openRawResource(R.raw.admin_public_key).readBytes())
+            adminPrivateKey = String(openRawResource(R.raw.admin_private_key).readBytes())
             pgpMessageSignedByAdmin = openRawResource(R.raw.message_signed_by_admin).readBytes()
             pgpMessageSignedByGrace = openRawResource(R.raw.message_signed_by_grace).readBytes()
         }
@@ -192,7 +194,6 @@ class OpenPgpTest : KoinTest {
             .encrypt(PLAIN_MESSAGE.toByteArray())
 
         val gracePk = Crypto.newKeyFromArmored(gracePublicKey)
-        val gracePkRing = Crypto.newKeyRing(gracePk)
         val encryptedSessionKey = Crypto.pgp().encryption()
             .recipient(gracePk)
             .new_()
@@ -219,7 +220,6 @@ class OpenPgpTest : KoinTest {
             .encrypt(PLAIN_MESSAGE.toByteArray())
 
         val gracePk = Crypto.newKeyFromArmored(gracePublicKey)
-        val gracePkRing = Crypto.newKeyRing(gracePk)
         val encryptedSessionKey = Crypto.pgp().encryption()
             .recipient(gracePk)
             .new_()
@@ -236,6 +236,53 @@ class OpenPgpTest : KoinTest {
         assertThat(String((decryptedMessage as OpenPgpResult.Result).result)).isEqualTo(PLAIN_MESSAGE)
     }
 
+    @Test
+    fun test_verifyingMessageSignatureForCorrectData() = runBlocking {
+        val graceKey = Crypto.newPrivateKeyFromArmored(String(gracePrivateKey), GRACE_KEY_CORRECT_PASSPHRASE)
+
+        val encryptionResult = openPgp.encryptSignMessageArmored(
+            adminPublicKey,
+            String(gracePrivateKey),
+            GRACE_KEY_CORRECT_PASSPHRASE,
+            PLAIN_MESSAGE
+        )
+        val pgpMessage = (encryptionResult as OpenPgpResult.Result).result
+
+        val result = openPgp.verifySignature(
+            adminPrivateKey,
+            ADMIN_KEY_CORRECT_PASSPHRASE,
+            gracePublicKey,
+            pgpMessage.toByteArray()
+        )
+
+        assertIsOpenPgpSuccessResult(result)
+        val verifiedSignature = (result as OpenPgpResult.Result).result
+        assertThat(verifiedSignature.decryptedMessage).isEqualTo(PLAIN_MESSAGE)
+        assertThat(verifiedSignature.signatureCreationTimestampSeconds).isGreaterThan(0L)
+        assertThat(verifiedSignature.signatureKeyFingerprint).isEqualTo(graceKey.fingerprint)
+        assertThat(verifiedSignature.signatureKeyHexKeyID).isEqualTo(graceKey.hexKeyID)
+    }
+
+    @Test
+    fun test_verifyingMessageSignatureForIncorrectSignerShouldReturnFailure() = runBlocking {
+        val encryptionResult = openPgp.encryptSignMessageArmored(
+            gracePublicKey,
+            String(gracePrivateKey),
+            GRACE_KEY_CORRECT_PASSPHRASE,
+            PLAIN_MESSAGE
+        )
+        val pgpMessage = (encryptionResult as OpenPgpResult.Result).result
+
+        val result = openPgp.verifySignature(
+            adminPrivateKey,
+            ADMIN_KEY_CORRECT_PASSPHRASE,
+            gracePublicKey,
+            pgpMessage.toByteArray()
+        )
+
+        assertIsOpenPgpErrorResult(result)
+    }
+
     private fun <T> assertIsOpenPgpSuccessResult(value: OpenPgpResult<T>) {
         assertThat(value).isInstanceOf(OpenPgpResult.Result::class.java)
     }
@@ -247,6 +294,7 @@ class OpenPgpTest : KoinTest {
     private companion object {
         private const val PLAIN_MESSAGE = "test message"
         private val GRACE_KEY_CORRECT_PASSPHRASE = "grace@passbolt.com".toByteArray()
+        private val ADMIN_KEY_CORRECT_PASSPHRASE = "admin@passbolt.com".toByteArray()
         private val GRACE_KEY_WRONG_PASSPHRASE = "1111".toByteArray()
     }
 }
