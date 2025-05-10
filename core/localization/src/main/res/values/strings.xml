@@ -590,6 +590,12 @@
     <string name="create_resource_menu_create_password">Password</string>
     <string name="create_resource_menu_create_folder">Folder</string>
 
+    <string name="dialog_new_metadata_key_trust_changed">The metadata key has changed.</string>
+    <string name="dialog_new_metadata_key_trust_modified_by_user">The encryption key used to share metadata between users has been updated by %s.</string>
+    <string name="dialog_new_metadata_key_trust_key_rotation_info">If you weren’t expecting this, you can verify with your administrator.</string>
+    <string name="dialog_new_metadata_key_trust_key_rollback_info">This is unusual, please verify with your administrator.</string>
+    <string name="dialog_new_metadata_key_trust_key_fingerprint">Key fingerprint:</string>
+
     <!--
     arrays can be inconsistent when in other languages
     index / size is not used in code

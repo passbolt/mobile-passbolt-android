@@ -1,0 +1,26 @@
+plugins {
+    alias libs.plugins.android.library
+    alias libs.plugins.kotlin.gradle
+}
+
+dependencies {
+    implementation project(':ui')
+    implementation project(':coreui')
+    implementation project(':common')
+    implementation project(':localization')
+
+    implementation libs.fragment
+    implementation libs.koin
+    implementation libs.constraintlayout
+}
+
+android {
+    namespace = "com.passbolt.mobile.android.feature.metadatakeytrust"
+    buildFeatures {
+        viewBinding true
+    }
+}
+
+kotlin {
+    jvmToolchain(17)
+}
