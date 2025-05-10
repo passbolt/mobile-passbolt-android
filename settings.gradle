@@ -82,6 +82,7 @@ featureModule "scanotp"
 featureModule "otpmoremenu"
 featureModule "createresourcemenu"
 featureModule "resourceform"
+featureModule "metadatakeytrust"
 
 serviceModule "passboltapi"
 serviceModule "linksapi"
