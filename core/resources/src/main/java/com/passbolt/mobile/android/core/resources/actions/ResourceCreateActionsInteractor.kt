@@ -32,6 +32,8 @@ import com.passbolt.mobile.android.core.resources.actions.ResourceCreateActionRe
 import com.passbolt.mobile.android.core.resources.actions.ResourceCreateActionResult.Failure
 import com.passbolt.mobile.android.core.resources.actions.ResourceCreateActionResult.FetchFailure
 import com.passbolt.mobile.android.core.resources.actions.ResourceCreateActionResult.JsonSchemaValidationFailure
+import com.passbolt.mobile.android.core.resources.actions.ResourceCreateActionResult.MetadataKeyDeleted
+import com.passbolt.mobile.android.core.resources.actions.ResourceCreateActionResult.MetadataKeyModified
 import com.passbolt.mobile.android.core.resources.actions.ResourceCreateActionResult.ShareFailure
 import com.passbolt.mobile.android.core.resources.actions.ResourceCreateActionResult.SimulateShareFailure
 import com.passbolt.mobile.android.core.resources.actions.ResourceCreateActionResult.Success
@@ -44,6 +46,8 @@ import com.passbolt.mobile.android.core.resourcetypes.usecase.db.GetLocalResourc
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.SecretJsonModel
 import com.passbolt.mobile.android.core.users.usecase.db.GetLocalCurrentUserUseCase
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
+import com.passbolt.mobile.android.metadata.interactor.MetadataPrivateKeysInteractor
+import com.passbolt.mobile.android.metadata.interactor.MetadataPrivateKeysInteractor.Output.TrustedKeyDeleted
 import com.passbolt.mobile.android.metadata.usecase.GetMetadataKeysSettingsUseCase
 import com.passbolt.mobile.android.metadata.usecase.GetMetadataTypesSettingsUseCase
 import com.passbolt.mobile.android.metadata.usecase.db.GetLocalMetadataKeysUseCase
@@ -55,7 +59,9 @@ import com.passbolt.mobile.android.ui.MetadataJsonModel
 import com.passbolt.mobile.android.ui.MetadataKeyParamsModel
 import com.passbolt.mobile.android.ui.MetadataKeyTypeModel
 import com.passbolt.mobile.android.ui.MetadataTypeModel
+import com.passbolt.mobile.android.ui.NewMetadataKeyToTrustModel
 import com.passbolt.mobile.android.ui.ResourceModel
+import com.passbolt.mobile.android.ui.TrustedKeyDeletedModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -77,7 +83,8 @@ class ResourceCreateActionsInteractor(
     private val getMetadataTypesSettingsUseCase: GetMetadataTypesSettingsUseCase,
     private val getMetadataKeysUseCase: GetLocalMetadataKeysUseCase,
     private val getLocalCurrentUserUseCase: GetLocalCurrentUserUseCase,
-    private val getLocalResourceTypesUseCase: GetLocalResourceTypesUseCase
+    private val getLocalResourceTypesUseCase: GetLocalResourceTypesUseCase,
+    private val metadataPrivateKeysInteractor: MetadataPrivateKeysInteractor
 ) : KoinComponent {
 
     suspend fun createGenericResource(
@@ -89,21 +96,32 @@ class ResourceCreateActionsInteractor(
         return if (isDeleted(contentType)) {
             flowOf(CannotCreateWithCurrentConfig)
         } else {
-            val (metadataKeyId, metadataKeyType) = getMetadataKeysParams(resourceParentFolderId)
-
-            createResource(
-                createResource = {
-                    CreateResourceModel(
-                        contentType = contentType,
-                        folderId = resourceParentFolderId,
-                        expiry = null,
-                        metadataKeyId = metadataKeyId,
-                        metadataKeyType = metadataKeyType,
-                        metadataJsonModel = metadataJsonModel
+            when (val metadataKeyParams = getMetadataKeysParams(resourceParentFolderId)) {
+                is MetadataKeyParamsModel.ErrorDuringVerification -> {
+                    flowOf(ResourceCreateActionResult.MetadataKeyVerificationFailure)
+                }
+                is MetadataKeyParamsModel.NewMetadataKeyToTrust -> {
+                    flowOf(MetadataKeyModified(metadataKeyParams.newMetadataKeyToTrust))
+                }
+                is MetadataKeyParamsModel.TrustedKeyDeleted -> {
+                    flowOf(MetadataKeyDeleted(metadataKeyParams.trustedKeyDeleted))
+                }
+                is MetadataKeyParamsModel.ParamsModel -> {
+                    createResource(
+                        createResource = {
+                            CreateResourceModel(
+                                contentType = contentType,
+                                folderId = resourceParentFolderId,
+                                expiry = null,
+                                metadataKeyId = metadataKeyParams.metadataKeyId,
+                                metadataKeyType = metadataKeyParams.metadataKeyType,
+                                metadataJsonModel = metadataJsonModel
+                            )
+                        },
+                        createSecret = { secretJsonModel }
                     )
-                },
-                createSecret = { secretJsonModel }
-            )
+                }
+            }
         }
     }
 
@@ -115,7 +133,7 @@ class ResourceCreateActionsInteractor(
         return deletedContentTypes.contains(contentType)
     }
 
-    private suspend fun getMetadataKeysParams(parentFolderId: String?): MetadataKeyParamsModel {
+    private suspend fun shouldPersonalKeyBeUsed(parentFolderId: String?): Boolean {
         val isPersonalKeyAllowed = getMetadataKeysSettingsUseCase.execute(Unit)
             .metadataKeysSettingsModel.allowUsageOfPersonalKeys
         val isParentFolderShared = parentFolderId?.let {
@@ -123,22 +141,68 @@ class ResourceCreateActionsInteractor(
                 GetLocalFolderPermissionsUseCase.Input(parentFolderId)
             ).permissions.size > 1
         } ?: false
-        val metadataKeyType = if (isPersonalKeyAllowed && !isParentFolderShared) {
+
+        return isPersonalKeyAllowed && !isParentFolderShared
+    }
+
+    private suspend fun getMetadataKeysParams(parentFolderId: String?): MetadataKeyParamsModel {
+        val metadataKeyType = if (shouldPersonalKeyBeUsed(parentFolderId)) {
             MetadataKeyTypeModel.PERSONAL
         } else {
             MetadataKeyTypeModel.SHARED
         }
 
-        val metadataKeyId = if (metadataKeyType == MetadataKeyTypeModel.SHARED) {
-            getMetadataKeysUseCase.execute(GetLocalMetadataKeysUseCase.Input(ENCRYPT)).firstOrNull()?.id?.toString()
-        } else {
-            getLocalCurrentUserUseCase.execute(Unit).user.gpgKey.id
-        }
+        return when (metadataKeyType) {
+            MetadataKeyTypeModel.SHARED -> {
+                val verifyOutput = runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+                    metadataPrivateKeysInteractor.verifyMetadataPrivateKey()
+                }
 
-        return MetadataKeyParamsModel(
-            metadataKeyId = metadataKeyId,
-            metadataKeyType = metadataKeyType
-        )
+                when (verifyOutput) {
+                    is MetadataPrivateKeysInteractor.Output.Failure -> {
+                        MetadataKeyParamsModel.ErrorDuringVerification
+                    }
+                    is MetadataPrivateKeysInteractor.Output.NewKeyToTrust -> {
+                        MetadataKeyParamsModel.NewMetadataKeyToTrust(
+                            NewMetadataKeyToTrustModel(
+                                id = verifyOutput.metadataPrivateKey.id,
+                                signedUsername = verifyOutput.signedUsername,
+                                signedName = verifyOutput.signedName,
+                                signatureCreationTimestampSeconds = verifyOutput.signatureCreationTimestampSeconds,
+                                signatureKeyFingerprint = verifyOutput.signatureKeyFingerprint,
+                                metadataPrivateKey = verifyOutput.metadataPrivateKey,
+                                modificationKind = verifyOutput.modificationKind
+                            )
+                        )
+                    }
+                    is TrustedKeyDeleted -> {
+                        MetadataKeyParamsModel.TrustedKeyDeleted(
+                            TrustedKeyDeletedModel(
+                                keyFingerprint = verifyOutput.keyFingerprint,
+                                signedUsername = verifyOutput.signedUsername,
+                                signedName = verifyOutput.signedName,
+                                modificationKind = verifyOutput.modificationKind
+                            )
+                        )
+                    }
+                    else -> {
+                        // for cases when not able to verify (i.e. cannot get user, cannot validate signature)
+                        // do not block the user
+                        MetadataKeyParamsModel.ParamsModel(
+                            metadataKeyId = getMetadataKeysUseCase.execute(GetLocalMetadataKeysUseCase.Input(ENCRYPT))
+                                .firstOrNull()?.id?.toString(),
+                            metadataKeyType = MetadataKeyTypeModel.SHARED
+                        )
+                    }
+                }
+            }
+            MetadataKeyTypeModel.PERSONAL -> {
+                MetadataKeyParamsModel.ParamsModel(
+                    metadataKeyId = getLocalCurrentUserUseCase.execute(Unit).user.gpgKey.id,
+                    metadataKeyType = MetadataKeyTypeModel.PERSONAL
+                )
+            }
+        }
     }
 
     private suspend fun getMetadataType() =
@@ -229,9 +293,12 @@ suspend fun performResourceCreateAction(
     doOnSuccess: (Success) -> Unit,
     doOnSchemaValidationFailure: (SchemaEntity) -> Unit,
     doOnCannotCreateWithCurrentConfig: () -> Unit,
+    doOnMetadataKeyModified: (NewMetadataKeyToTrustModel) -> Unit,
+    doOnMetadataKeyDeleted: (TrustedKeyDeletedModel) -> Unit,
     doOnFetchFailure: () -> Unit = {},
     doOnUnauthorized: () -> Unit = {},
-    doOnShareFailure: (String) -> Unit = {}
+    doOnShareFailure: (String) -> Unit = {},
+    doOnMetadataKeyVerificationFailure: () -> Unit = {}
 ) {
     action().single().let {
         when (it) {
@@ -244,6 +311,9 @@ suspend fun performResourceCreateAction(
             is ShareFailure -> doOnShareFailure(it.message.orEmpty())
             is SimulateShareFailure -> doOnShareFailure(it.message.orEmpty())
             is CannotCreateWithCurrentConfig -> doOnCannotCreateWithCurrentConfig()
+            is MetadataKeyModified -> doOnMetadataKeyModified(it.keyToTrust)
+            is MetadataKeyDeleted -> doOnMetadataKeyDeleted(it.deletedKey)
+            is ResourceCreateActionResult.MetadataKeyVerificationFailure -> doOnMetadataKeyVerificationFailure()
         }
     }
 }

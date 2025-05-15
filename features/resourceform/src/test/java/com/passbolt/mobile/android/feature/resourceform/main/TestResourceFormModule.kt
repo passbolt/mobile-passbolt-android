@@ -20,6 +20,7 @@ import com.passbolt.mobile.android.jsonmodel.jsonpathops.JsonPathJsonPathOps
 import com.passbolt.mobile.android.jsonmodel.jsonpathops.JsonPathsOps
 import com.passbolt.mobile.android.mappers.EntropyViewMapper
 import com.passbolt.mobile.android.mappers.ResourceFormMapper
+import com.passbolt.mobile.android.metadata.interactor.MetadataPrivateKeysHelperInteractor
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
@@ -59,6 +60,7 @@ internal val mockGetDefaultCreateContentTypeUseCase = mock<GetDefaultCreateConte
 internal val mockGetEditContentTypeUseCase = mock<GetEditContentTypeUseCase>()
 internal val mockGetLocalResourceUseCase = mock<GetLocalResourceUseCase>()
 internal val mockFullDataRefreshExecutor = mock<FullDataRefreshExecutor>()
+internal val mockMetadataPrivateKeysHelperInteractor = mock<MetadataPrivateKeysHelperInteractor>()
 
 @OptIn(ExperimentalCoroutinesApi::class)
 internal val testResourceFormModule = module {
@@ -83,6 +85,7 @@ internal val testResourceFormModule = module {
             getPasswordPoliciesUseCase = mockGetPasswordPoliciesUseCase,
             secretGenerator = mockSecretGenerator,
             entropyCalculator = mockEntropyCalculator,
+            metadataPrivateKeysHelperInteractor = mockMetadataPrivateKeysHelperInteractor,
             getLocalResourceUseCase = get(),
             entropyViewMapper = get(),
             resourceFormMapper = get(),

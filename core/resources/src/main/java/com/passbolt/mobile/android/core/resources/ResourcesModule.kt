@@ -121,7 +121,13 @@ val resourcesModule = module {
             resourceTypesUpdateGraph = get(),
             updateLocalResourceUseCase = get(),
             idToSlugMappingProvider = get(),
-            getLocalResourceTypesUseCase = get()
+            getLocalResourceTypesUseCase = get(),
+            getLocalFolderPermissionsUseCase = get(),
+            getMetadataKeysSettingsUseCase = get(),
+            getMetadataKeysUseCase = get(),
+            getLocalCurrentUserUseCase = get(),
+            metadataPrivateKeysInteractor = get(),
+            getLocalResourcePermissionsUseCase = get()
         )
     }
     factory { (
@@ -141,7 +147,8 @@ val resourcesModule = module {
             getMetadataTypesSettingsUseCase = get(),
             getMetadataKeysUseCase = get(),
             getLocalCurrentUserUseCase = get(),
-            getLocalResourceTypesUseCase = get()
+            getLocalResourceTypesUseCase = get(),
+            metadataPrivateKeysInteractor = get()
         )
     }
 }

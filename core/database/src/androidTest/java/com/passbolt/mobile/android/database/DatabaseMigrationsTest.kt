@@ -426,7 +426,7 @@ class DatabaseMigrationsTest {
         helper.runMigrationsAndValidate(TEST_DB, 19, true, Migration18to19)
             .apply {
                 execSQL("INSERT INTO MetadataKey VALUES('id1', 'fingerprint', 'armoredKey', 1644909225833, 1644909225833, 1644909225833)")
-                execSQL("INSERT INTO MetadataPrivateKey VALUES('id','id1', 'userId', 'data', 'passphrase', 1644909225833, 'modifiedBy', 1644909225833, 'createdBy', 'pgpMessage')")
+                execSQL("INSERT INTO MetadataPrivateKey VALUES('id','id1', 'userId', 'data', 'passphrase', 1644909225833, 'modifiedBy', 1644909225833, 'createdBy', 'pgpMessage', 'fingerprint', 'domain')")
                 close()
             }
     }

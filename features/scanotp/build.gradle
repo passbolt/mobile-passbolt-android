@@ -35,6 +35,8 @@ dependencies {
     implementation project(':jsonmodel')
     implementation project(':resourcepicker')
     implementation project(':secrets')
+    implementation project(':metadatakeytrust')
+    implementation project(':metadata')
 
     implementation libs.navigation.fragment
     implementation libs.navigation.ui

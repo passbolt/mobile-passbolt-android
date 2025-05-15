@@ -25,6 +25,7 @@ dependencies {
     implementation project(':resources')
     implementation project(':serializers')
     implementation project(':scanotp')
+    implementation project(':metadatakeytrust')
 
     implementation libs.navigation.fragment
     implementation libs.navigation.ui

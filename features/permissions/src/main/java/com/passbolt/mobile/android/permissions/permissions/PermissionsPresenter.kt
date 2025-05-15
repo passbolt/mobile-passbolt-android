@@ -14,8 +14,6 @@ import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcePer
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUseCase
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
-import com.passbolt.mobile.android.metadata.usecase.db.GetLocalMetadataKeysUseCase
-import com.passbolt.mobile.android.metadata.usecase.db.GetLocalMetadataKeysUseCase.MetadataKeyPurpose.ENCRYPT
 import com.passbolt.mobile.android.permissions.permissions.validation.HasAtLeastOneOwnerPermission
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType
 import com.passbolt.mobile.android.ui.MetadataKeyTypeModel
@@ -30,7 +28,6 @@ import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.launch
 import org.koin.core.component.get
 import org.koin.core.parameter.parametersOf
-import timber.log.Timber
 import java.util.UUID
 
 /**
@@ -65,7 +62,6 @@ class PermissionsPresenter(
     private val resourceShareInteractor: ResourceShareInteractor,
     private val homeDataInteractor: HomeDataInteractor,
     private val resourceTypeIdToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider,
-    private val getLocalMetadataKeysUseCase: GetLocalMetadataKeysUseCase,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : PermissionsContract.Presenter,
     DataRefreshViewReactivePresenter<PermissionsContract.View>(coroutineLaunchContext) {
@@ -215,25 +211,10 @@ class PermissionsPresenter(
     }
 
     private suspend fun reEncryptUserResourceMetadataWithSharedKey(resource: ResourceModel) {
-        val metadataKeyId = getLocalMetadataKeysUseCase.execute(GetLocalMetadataKeysUseCase.Input(ENCRYPT))
-            .firstOrNull()
-            ?.id
-
         val resourceUpdateActionsInteractor = get<ResourceUpdateActionsInteractor> {
             parametersOf(resource, needSessionRefreshFlow, sessionRefreshedFlow)
         }
-        if (metadataKeyId == null) {
-            Timber.e(
-                "Resource metadata should be re-encrypted with shared key " +
-                        "but no valid ENCRYPT metadata shared key found "
-            )
-            view?.showReEncyptMetadataFailure()
-            return
-        }
-        when (resourceUpdateActionsInteractor.reEncryptResourceMetadata(
-            metadataKeyId = metadataKeyId.toString(),
-            metadataKeyType = MetadataKeyTypeModel.SHARED
-        ).single()) {
+        when (resourceUpdateActionsInteractor.reEncryptResourceMetadata().single()) {
             is ResourceUpdateActionResult.Success -> shareResource()
             else -> view?.showReEncyptMetadataFailure()
         }

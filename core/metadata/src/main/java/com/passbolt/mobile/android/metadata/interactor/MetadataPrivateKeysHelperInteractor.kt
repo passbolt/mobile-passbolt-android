@@ -1,17 +1,25 @@
 package com.passbolt.mobile.android.metadata.interactor
 
+import com.google.gson.Gson
 import com.passbolt.mobile.android.core.accounts.usecase.accountdata.GetSelectedAccountDataUseCase
+import com.passbolt.mobile.android.core.accounts.usecase.privatekey.GetSelectedUserPrivateKeyUseCase
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticatedUseCaseOutput
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
 import com.passbolt.mobile.android.core.networking.MfaTypeProvider
 import com.passbolt.mobile.android.core.networking.NetworkResult
+import com.passbolt.mobile.android.core.passphrasememorycache.PassphraseMemoryCache
+import com.passbolt.mobile.android.core.passphrasememorycache.PotentialPassphrase
 import com.passbolt.mobile.android.core.users.usecase.db.GetLocalUserUseCase
 import com.passbolt.mobile.android.gopenpgp.OpenPgp
 import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpError
 import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpResult
+import com.passbolt.mobile.android.metadata.usecase.DeleteTrustedMetadataKeyUseCase
 import com.passbolt.mobile.android.metadata.usecase.SaveTrustedMetadataKeyUseCase
 import com.passbolt.mobile.android.metadata.usecase.UpdateMetadataPrivateKeyUseCase
-import com.passbolt.mobile.android.ui.ParsedMetadataKeyModel
+import com.passbolt.mobile.android.ui.MetadataKeyModification
+import com.passbolt.mobile.android.ui.DecryptedMetadataPrivateKeyJsonModel
+import com.passbolt.mobile.android.ui.NewMetadataKeyToTrustModel
+import com.passbolt.mobile.android.ui.ParsedMetadataPrivateKeyModel
 import timber.log.Timber
 
 /**
@@ -42,7 +50,12 @@ class MetadataPrivateKeysHelperInteractor(
     private val openPgp: OpenPgp,
     private val getLocalUserUseCase: GetLocalUserUseCase,
     private val saveTrustedMetadataKeyUseCase: SaveTrustedMetadataKeyUseCase,
-    private val getSelectedAccountDataUseCase: GetSelectedAccountDataUseCase
+    private val getSelectedAccountDataUseCase: GetSelectedAccountDataUseCase,
+    private val deleteTrustedMetadataKeyUseCase: DeleteTrustedMetadataKeyUseCase,
+    private val passphraseMemoryCache: PassphraseMemoryCache,
+    private val getSelectedUserPrivateKeyUseCase: GetSelectedUserPrivateKeyUseCase,
+    private val metadataKeysInteractor: MetadataKeysInteractor,
+    private val gson: Gson
 ) {
 
     suspend fun saveTrustedKeyToLocalStorage(key: MetadataPrivateKeysInteractor.Output.NewKeyToTrust) {
@@ -65,9 +78,36 @@ class MetadataPrivateKeysHelperInteractor(
         )
     }
 
+    suspend fun trustNewKey(model: NewMetadataKeyToTrustModel): Output {
+        try {
+            val currentUserPrivateKey = requireNotNull(getSelectedUserPrivateKeyUseCase.execute(Unit).privateKey)
+            val currentUserSigningKey = requireNotNull(
+                (openPgp.generatePublicKey(currentUserPrivateKey) as? OpenPgpResult.Result)
+            ).result
+            val passphrase = requireNotNull(
+                (passphraseMemoryCache.get() as? PotentialPassphrase.Passphrase)?.passphrase
+            )
+
+            return signTheKeyAndAddToLocalStorageAndPushToBackend(
+                metadataPrivateKey = model.metadataPrivateKey,
+                privateKey = currentUserPrivateKey,
+                passphrase = passphrase,
+                publicKey = currentUserSigningKey
+            )
+        } catch (e: Exception) {
+            val errorMessage = "Error while preparing the signed metadata key"
+            Timber.e(e, errorMessage)
+            return Output.CryptoFailure(OpenPgpError(errorMessage))
+        }
+    }
+
+    suspend fun deletedTrustedMetadataPrivateKey() {
+        deleteTrustedMetadataKeyUseCase.execute(Unit)
+        Timber.d("Deleted trusted metadata private key")
+    }
+
     suspend fun signTheKeyAndAddToLocalStorageAndPushToBackend(
-        decryptedKey: String,
-        metadataKey: ParsedMetadataKeyModel,
+        metadataPrivateKey: ParsedMetadataPrivateKeyModel,
         privateKey: String,
         passphrase: ByteArray,
         publicKey: String
@@ -77,14 +117,22 @@ class MetadataPrivateKeysHelperInteractor(
         val pgpMessageSigned = openPgp.encryptSignMessageArmored(
             privateKey = privateKey,
             passphrase = passphrase,
-            message = decryptedKey
+            message = gson.toJson(
+                DecryptedMetadataPrivateKeyJsonModel(
+                    objectType = "PASSBOLT_METADATA_PRIVATE_KEY",
+                    armoredKey = metadataPrivateKey.keyData,
+                    passphrase = metadataPrivateKey.passphrase,
+                    fingerprint = metadataPrivateKey.fingerprint,
+                    domain = metadataPrivateKey.domain
+                )
+            )
         )
 
         return when (pgpMessageSigned) {
             is OpenPgpResult.Error -> Output.CryptoFailure(pgpMessageSigned.error)
             is OpenPgpResult.Result -> verifySignedSignatureAndSaveToLocalStorage(
                 pgpMessageSigned.result,
-                metadataKey,
+                metadataPrivateKey,
                 privateKey,
                 passphrase,
                 publicKey
@@ -94,7 +142,7 @@ class MetadataPrivateKeysHelperInteractor(
 
     private suspend fun verifySignedSignatureAndSaveToLocalStorage(
         pgpMessageSigned: String,
-        metadataKey: ParsedMetadataKeyModel,
+        metadataPrivateKey: ParsedMetadataPrivateKeyModel,
         privateKey: String,
         passphrase: ByteArray,
         publicKey: String
@@ -115,34 +163,46 @@ class MetadataPrivateKeysHelperInteractor(
                 Timber.d("Saving signed key to local storage")
                 saveTrustedKeyToLocalStorage(
                     MetadataPrivateKeysInteractor.Output.NewKeyToTrust(
-                        id = metadataKey.metadataPrivateKeys.first().id,
+                        id = metadataPrivateKey.id,
                         signedUsername = currentUser.userName,
                         signedName = currentUser.fullName,
                         signatureCreationTimestampSeconds = verifiedMessage.result.signatureCreationTimestampSeconds,
                         signatureKeyFingerprint = verifiedMessage.result.signatureKeyFingerprint,
-                        metadataPrivateKey = metadataKey.metadataPrivateKeys.first()
-                            .copy(pgpMessage = pgpMessageSigned)
+                        metadataPrivateKey = metadataPrivateKey.copy(pgpMessage = pgpMessageSigned),
+                        modificationKind = MetadataKeyModification.FORWARD_TRUST
                     )
                 )
+                Timber.d("Saved signed key to local storage")
 
-                pushKeyToBackend(metadataKey, pgpMessageSigned)
+                pushKeyToBackend(metadataPrivateKey, pgpMessageSigned)
             }
         }
     }
 
-    private suspend fun pushKeyToBackend(metadataKey: ParsedMetadataKeyModel, pgpMessageSigned: String): Output {
+    private suspend fun pushKeyToBackend(
+        metadataPrivateKey: ParsedMetadataPrivateKeyModel,
+        pgpMessageSigned: String
+    ): Output {
         Timber.d("Pushing the signed key to the backend")
 
         val result = updateMetadataPrivateKeyUseCase.execute(
             UpdateMetadataPrivateKeyUseCase.Input(
-                metadataPrivateKeyId = metadataKey.metadataPrivateKeys.first().id.toString(),
+                metadataPrivateKeyId = metadataPrivateKey.id.toString(),
                 privateKeyPgpMessage = pgpMessageSigned
             )
         )
 
         return when (result) {
             is UpdateMetadataPrivateKeyUseCase.Output.Failure<*> -> Output.KeyUploadFailure(result.response)
-            is UpdateMetadataPrivateKeyUseCase.Output.Success -> Output.Success
+            is UpdateMetadataPrivateKeyUseCase.Output.Success -> {
+                when (metadataKeysInteractor.fetchAndSaveMetadataKeys()) {
+                    is MetadataKeysInteractor.Output.Failure -> {
+                        Timber.e("Failed to refresh local keys; Manual refresh required")
+                        Output.Success
+                    }
+                    is MetadataKeysInteractor.Output.Success -> Output.Success
+                }
+            }
         }
     }
 

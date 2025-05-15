@@ -10,12 +10,13 @@ import com.passbolt.mobile.android.core.users.usecase.db.GetLocalUserUseCase
 import com.passbolt.mobile.android.gopenpgp.OpenPgp
 import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpResult
 import com.passbolt.mobile.android.gopenpgp.model.VerifiedMessage
-import com.passbolt.mobile.android.metadata.usecase.DeleteTrustedMetadataKeyUseCase
 import com.passbolt.mobile.android.metadata.usecase.GetTrustedMetadataKeyUseCase
 import com.passbolt.mobile.android.metadata.usecase.GetTrustedMetadataKeyUseCase.Output.NoTrustedKey
 import com.passbolt.mobile.android.metadata.usecase.GetTrustedMetadataKeyUseCase.Output.TrustedKey
 import com.passbolt.mobile.android.metadata.usecase.db.GetLocalMetadataKeysUseCase
 import com.passbolt.mobile.android.metadata.usecase.db.GetLocalMetadataKeysUseCase.MetadataKeyPurpose.ENCRYPT
+import com.passbolt.mobile.android.ui.MetadataKeyModification
+import com.passbolt.mobile.android.ui.MetadataKeyModification.DELETION
 import com.passbolt.mobile.android.ui.ParsedMetadataKeyModel
 import com.passbolt.mobile.android.ui.ParsedMetadataPrivateKeyModel
 import com.passbolt.mobile.android.ui.UserModel
@@ -52,7 +53,6 @@ class MetadataPrivateKeysInteractor(
     private val getSelectedUserPrivateKeyUseCase: GetSelectedUserPrivateKeyUseCase,
     private val passphraseMemoryCache: PassphraseMemoryCache,
     private val getTrustedMetadataKeyUseCase: GetTrustedMetadataKeyUseCase,
-    private val deleteTrustedMetadataKeyUseCase: DeleteTrustedMetadataKeyUseCase,
     private val metadataPrivateKeysHelperInteractor: MetadataPrivateKeysHelperInteractor
 ) {
 
@@ -96,9 +96,10 @@ class MetadataPrivateKeysInteractor(
     ): Output {
         Timber.d("Metadata key is present server-side")
 
+        val backendMetadataPrivateKey = backendMetadataKey.metadataPrivateKeys.first()
         val userWhoModifiedTheKey = runCatching {
             getLocalUserUseCase.execute(
-                GetLocalUserUseCase.Input(backendMetadataKey.metadataPrivateKeys.first().modifiedBy.toString())
+                GetLocalUserUseCase.Input(backendMetadataPrivateKey.modifiedBy.toString())
             ).user
         }.getOrNull()
         val currentUserPrivateKey = requireNotNull(getSelectedUserPrivateKeyUseCase.execute(Unit).privateKey)
@@ -146,7 +147,7 @@ class MetadataPrivateKeysInteractor(
                     currentUserSigningKeyFingerprint = currentUserSigningKeyFingerprint,
                     currentUserSigningKey = currentUserSigningKey,
                     verifiedMessage = verifiedMessage.result,
-                    backendMetadataKey = backendMetadataKey,
+                    backendMetadataPrivateKey = backendMetadataPrivateKey,
                     userWhoModifiedTheKey = userWhoModifiedTheKey
                 )
             }
@@ -161,7 +162,7 @@ class MetadataPrivateKeysInteractor(
         currentUserSigningKey: String,
         currentUserSigningKeyFingerprint: String,
         verifiedMessage: VerifiedMessage,
-        backendMetadataKey: ParsedMetadataKeyModel,
+        backendMetadataPrivateKey: ParsedMetadataPrivateKeyModel,
         userWhoModifiedTheKey: UserModel
     ): Output {
         Timber.d("Metadata key signature is valid")
@@ -173,12 +174,12 @@ class MetadataPrivateKeysInteractor(
                 currentUserSigningKey = currentUserSigningKey,
                 currentUserSigningKeyFingerprint = currentUserSigningKeyFingerprint,
                 verifiedKeyPgpMessage = verifiedMessage,
-                backendMetadataKey = backendMetadataKey,
+                backendMetadataPrivateKey = backendMetadataPrivateKey,
                 userWhoModifiedTheKey = userWhoModifiedTheKey
             )
             is TrustedKey -> verifyWithBackendKeyPresentWithValidSignatureAndWithLocalKey(
                 verifiedKeyPgpMessage = verifiedMessage,
-                backendMetadataKey = backendMetadataKey,
+                backendMetadataPrivateKey = backendMetadataPrivateKey,
                 userWhoModifiedTheKey = userWhoModifiedTheKey,
                 localTrustedKey = localTrustedKey
             )
@@ -188,7 +189,7 @@ class MetadataPrivateKeysInteractor(
     @Suppress("LongMethod")
     private suspend fun verifyWithBackendKeyPresentWithValidSignatureAndWithLocalKey(
         verifiedKeyPgpMessage: VerifiedMessage,
-        backendMetadataKey: ParsedMetadataKeyModel,
+        backendMetadataPrivateKey: ParsedMetadataPrivateKeyModel,
         userWhoModifiedTheKey: UserModel,
         localTrustedKey: TrustedKey
     ): Output {
@@ -208,21 +209,20 @@ class MetadataPrivateKeysInteractor(
         } else {
             Timber.d("Backend key and local key are not same")
 
-            val backendNewKeyToTrustOutput = Output.NewKeyToTrust(
-                id = backendMetadataKey.metadataPrivateKeys.first().id,
-                signedUsername = userWhoModifiedTheKey.userName,
-                signedName = userWhoModifiedTheKey.fullName,
-                signatureCreationTimestampSeconds = verifiedKeyPgpMessage.signatureCreationTimestampSeconds,
-                signatureKeyFingerprint = verifiedKeyPgpMessage.signatureKeyFingerprint,
-                metadataPrivateKey = backendMetadataKey.metadataPrivateKeys.first()
-            )
-
             if (!backendKeySigningKeyFingerprint.equals(localKeySigningKeyFingerprint, ignoreCase = true)) {
                 Timber.d(
                     "Backend key and local key are signed with different keys " +
                             "- backend key trust needs confirmation"
                 )
-                backendNewKeyToTrustOutput
+                Output.NewKeyToTrust(
+                    id = backendMetadataPrivateKey.id,
+                    signedUsername = userWhoModifiedTheKey.userName,
+                    signedName = userWhoModifiedTheKey.fullName,
+                    signatureCreationTimestampSeconds = verifiedKeyPgpMessage.signatureCreationTimestampSeconds,
+                    signatureKeyFingerprint = verifiedKeyPgpMessage.signatureKeyFingerprint,
+                    metadataPrivateKey = backendMetadataPrivateKey,
+                    modificationKind = MetadataKeyModification.ROTATION
+                )
             } else {
                 Timber.d("Key is signed by current user")
 
@@ -231,14 +231,32 @@ class MetadataPrivateKeysInteractor(
                         "Backend key signature is older than local key signature" +
                                 " - backend key needs confirmation"
                     )
-                    backendNewKeyToTrustOutput
+                    Output.NewKeyToTrust(
+                        id = backendMetadataPrivateKey.id,
+                        signedUsername = userWhoModifiedTheKey.userName,
+                        signedName = userWhoModifiedTheKey.fullName,
+                        signatureCreationTimestampSeconds = verifiedKeyPgpMessage.signatureCreationTimestampSeconds,
+                        signatureKeyFingerprint = verifiedKeyPgpMessage.signatureKeyFingerprint,
+                        metadataPrivateKey = backendMetadataPrivateKey,
+                        modificationKind = MetadataKeyModification.ROLLBACK
+                    )
                 } else {
                     Timber.d(
                         "Backend key signature is younger than local key signature " +
                                 "- trusting backend key locally"
                     )
 
-                    metadataPrivateKeysHelperInteractor.saveTrustedKeyToLocalStorage(backendNewKeyToTrustOutput)
+                    metadataPrivateKeysHelperInteractor.saveTrustedKeyToLocalStorage(
+                        Output.NewKeyToTrust(
+                            id = backendMetadataPrivateKey.id,
+                            signedUsername = userWhoModifiedTheKey.userName,
+                            signedName = userWhoModifiedTheKey.fullName,
+                            signatureCreationTimestampSeconds = verifiedKeyPgpMessage.signatureCreationTimestampSeconds,
+                            signatureKeyFingerprint = verifiedKeyPgpMessage.signatureKeyFingerprint,
+                            metadataPrivateKey = backendMetadataPrivateKey,
+                            modificationKind = MetadataKeyModification.FORWARD_TRUST
+                        )
+                    )
                     Timber.d("Saved server metadata key to local storage - key is trusted")
                     Output.KeyIsTrusted
                 }
@@ -252,7 +270,7 @@ class MetadataPrivateKeysInteractor(
         currentUserSigningKey: String,
         currentUserSigningKeyFingerprint: String,
         verifiedKeyPgpMessage: VerifiedMessage,
-        backendMetadataKey: ParsedMetadataKeyModel,
+        backendMetadataPrivateKey: ParsedMetadataPrivateKeyModel,
         userWhoModifiedTheKey: UserModel
     ): Output {
         Timber.d("There is no local trusted key")
@@ -262,12 +280,13 @@ class MetadataPrivateKeysInteractor(
             Timber.d("Server metadata key is already signed by current user")
             metadataPrivateKeysHelperInteractor.saveTrustedKeyToLocalStorage(
                 Output.NewKeyToTrust(
-                    id = backendMetadataKey.metadataPrivateKeys.first().id,
+                    id = backendMetadataPrivateKey.id,
                     signedUsername = userWhoModifiedTheKey.userName,
                     signedName = userWhoModifiedTheKey.fullName,
                     signatureCreationTimestampSeconds = verifiedKeyPgpMessage.signatureCreationTimestampSeconds,
                     signatureKeyFingerprint = verifiedKeyPgpMessage.signatureKeyFingerprint,
-                    metadataPrivateKey = backendMetadataKey.metadataPrivateKeys.first()
+                    metadataPrivateKey = backendMetadataPrivateKey,
+                    modificationKind = MetadataKeyModification.FORWARD_TRUST
                 )
             )
             Timber.d("Saved server metadata key to local storage - key is trusted")
@@ -275,8 +294,7 @@ class MetadataPrivateKeysInteractor(
         } else {
             Timber.d("Server metadata key is not signed by current user - TOFU")
             val result = metadataPrivateKeysHelperInteractor.signTheKeyAndAddToLocalStorageAndPushToBackend(
-                decryptedKey = verifiedKeyPgpMessage.decryptedMessage,
-                metadataKey = backendMetadataKey,
+                metadataPrivateKey = backendMetadataPrivateKey,
                 privateKey = currentUserPrivateKey,
                 passphrase = currentUserPrivateKeyPassphrase,
                 publicKey = currentUserSigningKey
@@ -299,12 +317,6 @@ class MetadataPrivateKeysInteractor(
         }
     }
 
-    // TODO use in UI layer
-    @Suppress("UnusedPrivateMember")
-    private suspend fun deletedTrustedMetadataPrivateKey() {
-        deleteTrustedMetadataKeyUseCase.execute(Unit)
-    }
-
     sealed class Output : AuthenticatedUseCaseOutput {
 
         override val authenticationState: AuthenticationState
@@ -319,7 +331,8 @@ class MetadataPrivateKeysInteractor(
         data class TrustedKeyDeleted(
             val keyFingerprint: String,
             val signedUsername: String,
-            val signedName: String
+            val signedName: String,
+            val modificationKind: MetadataKeyModification = DELETION
         ) : Output()
 
         data class NewKeyToTrust(
@@ -328,7 +341,8 @@ class MetadataPrivateKeysInteractor(
             val signedName: String,
             val signatureCreationTimestampSeconds: Long,
             val signatureKeyFingerprint: String,
-            val metadataPrivateKey: ParsedMetadataPrivateKeyModel
+            val metadataPrivateKey: ParsedMetadataPrivateKeyModel,
+            val modificationKind: MetadataKeyModification
         ) : Output()
 
         sealed class CannotValidateSignature : Output() {

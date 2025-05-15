@@ -74,8 +74,7 @@ internal val testResourcePermissionsModule = module {
             resourceShareInteractor = mockResourceShareInteractor,
             homeDataInteractor = mockHomeDataInteractor,
             coroutineLaunchContext = get(),
-            resourceTypeIdToSlugMappingProvider = mockResourceTypeIdToSlugMappingProvider,
-            getLocalMetadataKeysUseCase = mockGetLocalMetadataKeysUseCase
+            resourceTypeIdToSlugMappingProvider = mockResourceTypeIdToSlugMappingProvider
         )
     }
     single(named(JSON_MODEL_GSON)) { Gson() }
