@@ -86,7 +86,7 @@ class OpenPgpTest : KoinTest {
         )
 
         assertIsOpenPgpSuccessResult(decrypted)
-        assertThat(String((decrypted as OpenPgpResult.Result).result)).isEqualTo(PLAIN_MESSAGE)
+        assertThat((decrypted as OpenPgpResult.Result).result).isEqualTo(PLAIN_MESSAGE)
     }
 
     @Test
@@ -105,7 +105,7 @@ class OpenPgpTest : KoinTest {
         )
 
         assertIsOpenPgpSuccessResult(decrypted)
-        assertThat(String((decrypted as OpenPgpResult.Result).result)).isEqualTo(PLAIN_MESSAGE)
+        assertThat((decrypted as OpenPgpResult.Result).result).isEqualTo(PLAIN_MESSAGE)
     }
 
     @Test
@@ -233,7 +233,7 @@ class OpenPgpTest : KoinTest {
         )
 
         assertIsOpenPgpSuccessResult(decryptedMessage)
-        assertThat(String((decryptedMessage as OpenPgpResult.Result).result)).isEqualTo(PLAIN_MESSAGE)
+        assertThat((decryptedMessage as OpenPgpResult.Result).result).isEqualTo(PLAIN_MESSAGE)
     }
 
     @Test

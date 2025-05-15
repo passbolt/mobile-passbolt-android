@@ -116,7 +116,7 @@ class OpenPgp(
         privateKey: String,
         passphrase: ByteArray,
         cipherText: String
-    ): OpenPgpResult<ByteArray> {
+    ): OpenPgpResult<String> {
         return try {
             withContext(Dispatchers.IO) {
                 val passphraseCopy = passphrase.copyOf()
@@ -128,7 +128,7 @@ class OpenPgp(
 
                 val decrypted = decryptionHandle.decrypt(
                     cipherText.toByteArray(), Crypto.Armor
-                ).bytes()
+                ).string()
 
                 passphraseCopy.erase()
 
@@ -146,7 +146,7 @@ class OpenPgp(
         privateKey: String,
         passphrase: ByteArray,
         cipherText: String
-    ): OpenPgpResult<ByteArray> {
+    ): OpenPgpResult<String> {
         return try {
             withContext(Dispatchers.IO) {
                 val passphraseCopy = passphrase.copyOf()
@@ -161,7 +161,7 @@ class OpenPgp(
 
                 val decrypted = decryptionHandle.decrypt(
                     cipherText.toByteArray(), Crypto.Armor
-                ).bytes()
+                ).string()
 
                 passphraseCopy.erase()
 
@@ -201,7 +201,7 @@ class OpenPgp(
         privateKey: String,
         passphrase: ByteArray,
         cipherText: String
-    ): OpenPgpResult<ByteArray> {
+    ): OpenPgpResult<String> {
         return try {
             withContext(Dispatchers.IO) {
                 val passphraseCopy = passphrase.copyOf()
@@ -212,7 +212,7 @@ class OpenPgp(
 
                 val decrypted = decryptionHandle.decrypt(
                     cipherText.toByteArray(), Crypto.Armor
-                ).bytes()
+                ).string()
 
                 passphraseCopy.erase()
 

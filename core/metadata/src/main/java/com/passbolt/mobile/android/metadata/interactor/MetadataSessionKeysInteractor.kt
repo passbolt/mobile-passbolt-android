@@ -258,7 +258,7 @@ class MetadataSessionKeysInteractor(
                 is OpenPgpResult.Result -> {
                     Timber.d("Decrypted session keys bundle")
                     val parsedBundle = gson.fromJson(
-                        String(decryptedBundleResult.result),
+                        decryptedBundleResult.result,
                         SessionKeysBundleDto::class.java
                     )
                     if (sessionKeysBundleValidator.isValid(parsedBundle)) {

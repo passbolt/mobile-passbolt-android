@@ -81,19 +81,6 @@ class DecryptSecretUseCase(
 
         data class Failure(val exception: OpenPgpError) : Output()
 
-        data class DecryptedSecret(val decryptedSecret: ByteArray) : Output() {
-            override fun equals(other: Any?): Boolean {
-                if (this === other) return true
-                if (javaClass != other?.javaClass) return false
-
-                other as DecryptedSecret
-
-                return decryptedSecret.contentEquals(other.decryptedSecret)
-            }
-
-            override fun hashCode(): Int {
-                return decryptedSecret.contentHashCode()
-            }
-        }
+        data class DecryptedSecret(val decryptedSecret: String) : Output()
     }
 }
