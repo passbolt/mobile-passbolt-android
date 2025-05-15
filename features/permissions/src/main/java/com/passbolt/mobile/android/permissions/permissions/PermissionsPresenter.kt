@@ -28,6 +28,7 @@ import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.launch
 import org.koin.core.component.get
 import org.koin.core.parameter.parametersOf
+import timber.log.Timber
 import java.util.UUID
 
 /**
@@ -215,7 +216,9 @@ class PermissionsPresenter(
             parametersOf(resource, needSessionRefreshFlow, sessionRefreshedFlow)
         }
         when (resourceUpdateActionsInteractor.reEncryptResourceMetadata().single()) {
-            is ResourceUpdateActionResult.Success -> shareResource()
+            is ResourceUpdateActionResult.Success -> {
+                Timber.d("Resource metadata re-encrypted with shared key")
+            }
             else -> view?.showReEncyptMetadataFailure()
         }
     }
