@@ -45,9 +45,10 @@ object Migration18to19 : Migration(18, 19) {
             "`modifiedBy` TEXT, " +
             "`created` INTEGER NOT NULL, " +
             "`createdBy` TEXT, " +
+            "`domain` TEXT NOT NULL, " +
+            "`fingerprint` TEXT NOT NULL, " +
             "PRIMARY KEY(`id`), " +
-            "FOREIGN KEY(`metadataKeyId`) REFERENCES `MetadataKey`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE " +
-            ")"
+            "FOREIGN KEY(`metadataKeyId`) REFERENCES `MetadataKey`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )"
 
     override fun migrate(db: SupportSQLiteDatabase) {
         with(db) {

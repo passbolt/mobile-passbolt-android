@@ -14,7 +14,7 @@ import com.passbolt.mobile.android.metadata.privatekeys.MetadataPrivateKeysValid
 import com.passbolt.mobile.android.metadata.usecase.FetchMetadataKeysUseCase
 import com.passbolt.mobile.android.metadata.usecase.db.RebuildMetadataKeysTablesUseCase
 import com.passbolt.mobile.android.ui.MetadataKeyModel
-import com.passbolt.mobile.android.ui.MetadataPrivateKeyJsonModel
+import com.passbolt.mobile.android.ui.DecryptedMetadataPrivateKeyJsonModel
 import com.passbolt.mobile.android.ui.ParsedMetadataKeyModel
 import com.passbolt.mobile.android.ui.ParsedMetadataPrivateKeyModel
 import timber.log.Timber
@@ -96,7 +96,7 @@ class MetadataKeysInteractor(
                                 is OpenPgpResult.Result -> {
                                     val keyModel = gson.fromJson(
                                         String(decryptedKeyData.result),
-                                        MetadataPrivateKeyJsonModel::class.java
+                                        DecryptedMetadataPrivateKeyJsonModel::class.java
                                     )
                                     if (metadataPrivateKeysValidator.isValid(keyModel)) {
                                         ParsedMetadataPrivateKeyModel(
@@ -108,7 +108,9 @@ class MetadataKeysInteractor(
                                             created = ZonedDateTime.parse(metadataPrivateKey.created),
                                             createdBy = metadataPrivateKey.createdBy,
                                             modified = ZonedDateTime.parse(metadataPrivateKey.modified),
-                                            modifiedBy = metadataPrivateKey.modifiedBy
+                                            modifiedBy = metadataPrivateKey.modifiedBy,
+                                            fingerprint = keyModel.fingerprint,
+                                            domain = keyModel.domain
                                         )
                                     } else {
                                         Timber.e(

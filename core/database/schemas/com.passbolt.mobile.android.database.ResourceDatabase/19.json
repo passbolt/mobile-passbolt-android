@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 19,
-    "identityHash": "be3492103e2059247decce3f0d447a6a",
+    "identityHash": "72e42887f025d4c02a43a0123c5dd8d9",
     "entities": [
       {
         "tableName": "Resource",
@@ -845,7 +845,7 @@
       },
       {
         "tableName": "MetadataPrivateKey",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `pgpMessage` TEXT NOT NULL, `metadataKeyId` TEXT NOT NULL, `userId` TEXT, `data` TEXT NOT NULL, `passphrase` TEXT NOT NULL, `modified` INTEGER NOT NULL, `modifiedBy` TEXT, `created` INTEGER NOT NULL, `createdBy` TEXT, PRIMARY KEY(`id`), FOREIGN KEY(`metadataKeyId`) REFERENCES `MetadataKey`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `pgpMessage` TEXT NOT NULL, `metadataKeyId` TEXT NOT NULL, `userId` TEXT, `data` TEXT NOT NULL, `passphrase` TEXT NOT NULL, `modified` INTEGER NOT NULL, `modifiedBy` TEXT, `created` INTEGER NOT NULL, `createdBy` TEXT, `domain` TEXT NOT NULL, `fingerprint` TEXT NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`metadataKeyId`) REFERENCES `MetadataKey`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
@@ -906,6 +906,18 @@
             "columnName": "createdBy",
             "affinity": "TEXT",
             "notNull": false
+          },
+          {
+            "fieldPath": "domain",
+            "columnName": "domain",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "fingerprint",
+            "columnName": "fingerprint",
+            "affinity": "TEXT",
+            "notNull": true
           }
         ],
         "primaryKey": {
@@ -933,7 +945,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'be3492103e2059247decce3f0d447a6a')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '72e42887f025d4c02a43a0123c5dd8d9')"
     ]
   }
 }

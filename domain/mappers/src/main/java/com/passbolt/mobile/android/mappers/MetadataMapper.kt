@@ -95,7 +95,9 @@ class MetadataMapper {
         createdBy = uiModel.createdBy?.toString(),
         modified = uiModel.modified,
         modifiedBy = uiModel.modifiedBy?.toString(),
-        pgpMessage = uiModel.pgpMessage
+        pgpMessage = uiModel.pgpMessage,
+        domain = uiModel.domain,
+        fingerprint = uiModel.fingerprint
     )
 
     private fun MetadataTypeDto.mapToUi() = when (this) {
@@ -177,7 +179,9 @@ class MetadataMapper {
                     createdBy = it.createdBy?.let { UUID.fromString(it) },
                     modified = it.modified,
                     modifiedBy = it.modifiedBy?.let { UUID.fromString(it) },
-                    pgpMessage = it.pgpMessage
+                    pgpMessage = it.pgpMessage,
+                    domain = it.domain,
+                    fingerprint = it.fingerprint
                 )
             }
         )

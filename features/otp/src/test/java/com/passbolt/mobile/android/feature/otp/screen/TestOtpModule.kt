@@ -48,6 +48,7 @@ import com.passbolt.mobile.android.mappers.GroupsModelMapper
 import com.passbolt.mobile.android.mappers.OtpModelMapper
 import com.passbolt.mobile.android.mappers.PermissionsModelMapper
 import com.passbolt.mobile.android.mappers.UsersModelMapper
+import com.passbolt.mobile.android.metadata.interactor.MetadataPrivateKeysHelperInteractor
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
@@ -65,6 +66,7 @@ internal val mockResourceCommonActionsInteractor = mock<ResourceCommonActionsInt
 internal val mockResourceUpdateActionsInteractor = mock<ResourceUpdateActionsInteractor>()
 internal val mockGetLocalResourcesUseCase = mock<GetLocalResourcesUseCase>()
 internal val mockIdToSlugMappingProvider = mock<ResourceTypeIdToSlugMappingProvider>()
+internal val mockMetadataPrivateKeysHelperInteractor = mock<MetadataPrivateKeysHelperInteractor>()
 
 @ExperimentalCoroutinesApi
 internal val testOtpModule = module {
@@ -84,7 +86,8 @@ internal val testOtpModule = module {
             otpModelMapper = get(),
             totpParametersProvider = mockTotpParametersProvider,
             coroutineLaunchContext = get(),
-            idToSlugMappingProvider = mockIdToSlugMappingProvider
+            idToSlugMappingProvider = mockIdToSlugMappingProvider,
+            metadataPrivateKeysHelperInteractor = mockMetadataPrivateKeysHelperInteractor
         )
     }
     factory { mockResourceCommonActionsInteractor }

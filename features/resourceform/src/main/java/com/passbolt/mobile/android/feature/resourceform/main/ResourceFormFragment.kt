@@ -21,6 +21,8 @@ import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
 import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
 import com.passbolt.mobile.android.core.ui.textinputfield.StatefulInput
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
+import com.passbolt.mobile.android.feature.metadatakeytrust.ui.NewMetadataKeyTrustDialog
+import com.passbolt.mobile.android.feature.metadatakeytrust.ui.NewTrustedMetadataKeyDeletedDialog
 import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpFragment
 import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpMode
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.password.PasswordFormFragment
@@ -31,11 +33,13 @@ import com.passbolt.mobile.android.feature.resourceform.databinding.FragmentReso
 import com.passbolt.mobile.android.feature.resourceform.metadata.description.DescriptionFormFragment
 import com.passbolt.mobile.android.feature.resourceform.subform.password.PasswordSubformView
 import com.passbolt.mobile.android.feature.resourceform.subform.totp.TotpSubformView
+import com.passbolt.mobile.android.ui.NewMetadataKeyToTrustModel
 import com.passbolt.mobile.android.ui.OtpParseResult
 import com.passbolt.mobile.android.ui.PasswordStrength
 import com.passbolt.mobile.android.ui.PasswordUiModel
 import com.passbolt.mobile.android.ui.ResourceFormUiModel
 import com.passbolt.mobile.android.ui.TotpUiModel
+import com.passbolt.mobile.android.ui.TrustedKeyDeletedModel
 import org.koin.android.ext.android.inject
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
@@ -66,7 +70,7 @@ import com.passbolt.mobile.android.core.localization.R as LocalizationR
 class ResourceFormFragment :
     BindingScopedAuthenticatedFragment<FragmentResourceFormBinding, ResourceFormContract.View>(
         FragmentResourceFormBinding::inflate
-    ), ResourceFormContract.View {
+    ), ResourceFormContract.View, NewMetadataKeyTrustDialog.Listener, NewTrustedMetadataKeyDeletedDialog.Listener {
 
     override val presenter: ResourceFormContract.Presenter by inject()
     private val navArgs: ResourceFormFragmentArgs by navArgs()
@@ -435,6 +439,45 @@ class ResourceFormFragment :
             messageResId = LocalizationR.string.common_cannot_create_resource_with_current_config,
             backgroundColor = R.color.red
         )
+    }
+
+    override fun showMetadataKeyModifiedDialog(model: NewMetadataKeyToTrustModel) {
+        NewMetadataKeyTrustDialog.newInstance(model)
+            .show(childFragmentManager, NewMetadataKeyTrustDialog::class.java.name)
+    }
+
+    override fun showMetadataKeyDeletedDialog(model: TrustedKeyDeletedModel) {
+        NewTrustedMetadataKeyDeletedDialog.newInstance(model)
+            .show(childFragmentManager, NewTrustedMetadataKeyDeletedDialog::class.java.name)
+    }
+
+    override fun showFailedToVerifyMetadataKey() {
+        showSnackbar(
+            messageResId = LocalizationR.string.common_metadata_key_verification_failure,
+            backgroundColor = R.color.red
+        )
+    }
+
+    override fun showNewMetadataKeyIsTrusted() {
+        showSnackbar(
+            messageResId = LocalizationR.string.common_metadata_key_is_trusted,
+            backgroundColor = R.color.green
+        )
+    }
+
+    override fun showFailedToTrustMetadataKey() {
+        showSnackbar(
+            messageResId = LocalizationR.string.common_metadata_key_trust_failed,
+            backgroundColor = R.color.red
+        )
+    }
+
+    override fun trustNewMetadataKeyClick(newKeyToTrust: NewMetadataKeyToTrustModel) {
+        presenter.trustNewMetadataKey(newKeyToTrust)
+    }
+
+    override fun trustMetadataKeyDeletionClick(model: TrustedKeyDeletedModel) {
+        presenter.trustedMetadataKeyDeleted(model)
     }
 
     companion object {

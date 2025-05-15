@@ -50,5 +50,7 @@ data class MetadataPrivateKey(
     val modified: ZonedDateTime,
     val modifiedBy: String?,
     val created: ZonedDateTime,
-    val createdBy: String?
+    val createdBy: String?,
+    val domain: String,
+    val fingerprint: String
 )

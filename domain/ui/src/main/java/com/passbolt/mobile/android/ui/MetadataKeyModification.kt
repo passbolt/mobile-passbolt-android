@@ -24,6 +24,8 @@ package com.passbolt.mobile.android.ui
  */
 
 enum class MetadataKeyModification {
-    ROTATION,
-    ROLLBACK
+    ROTATION, // backend returns key signed by other user
+    ROLLBACK, // backend returns key signed by the same user but with older date
+    FORWARD_TRUST, // backend returns key signed by the same user but with younger date
+    DELETION // backend returns no key but there is key locally
 }

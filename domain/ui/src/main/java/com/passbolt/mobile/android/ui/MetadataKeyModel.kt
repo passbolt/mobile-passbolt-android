@@ -60,18 +60,14 @@ data class ParsedMetadataKeyModel(
     val metadataPrivateKeys: List<ParsedMetadataPrivateKeyModel>
 )
 
-data class MetadataPrivateKeyJsonModel(
+data class DecryptedMetadataPrivateKeyJsonModel(
     @SerializedName("object_type")
     val objectType: String,
     @SerializedName("armored_key")
     val armoredKey: String,
     val passphrase: String,
-    val created: String,
-    @SerializedName("created_by")
-    val createdBy: UUID?,
-    val modified: String,
-    @SerializedName("modified_by")
-    val modifiedBy: UUID?
+    val fingerprint: String,
+    val domain: String
 )
 
 @Parcelize
@@ -84,5 +80,7 @@ data class ParsedMetadataPrivateKeyModel(
     val createdBy: UUID?,
     val modified: ZonedDateTime,
     val modifiedBy: UUID?,
+    val fingerprint: String,
+    val domain: String,
     val pgpMessage: String
 ) : Parcelable

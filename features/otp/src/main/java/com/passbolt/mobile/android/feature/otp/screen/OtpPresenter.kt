@@ -39,8 +39,10 @@ import com.passbolt.mobile.android.core.resources.actions.performSecretPropertyA
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesUseCase
 import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
+import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
 import com.passbolt.mobile.android.feature.home.screen.model.SearchInputEndIconMode
 import com.passbolt.mobile.android.mappers.OtpModelMapper
+import com.passbolt.mobile.android.metadata.interactor.MetadataPrivateKeysHelperInteractor
 import com.passbolt.mobile.android.serializers.jsonschema.SchemaEntity
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordDescriptionTotp
@@ -48,8 +50,10 @@ import com.passbolt.mobile.android.supportedresourceTypes.ContentType.Totp
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5DefaultWithTotp
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5TotpStandalone
 import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.totpSlugs
+import com.passbolt.mobile.android.ui.NewMetadataKeyToTrustModel
 import com.passbolt.mobile.android.ui.OtpItemWrapper
 import com.passbolt.mobile.android.ui.ResourceModel
+import com.passbolt.mobile.android.ui.TrustedKeyDeletedModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
@@ -74,6 +78,7 @@ class OtpPresenter(
     private val otpModelMapper: OtpModelMapper,
     private val totpParametersProvider: TotpParametersProvider,
     private val idToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider,
+    private val metadataPrivateKeysHelperInteractor: MetadataPrivateKeysHelperInteractor,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : DataRefreshViewReactivePresenter<OtpContract.View>(coroutineLaunchContext), OtpContract.Presenter,
     KoinScopeComponent {
@@ -424,7 +429,10 @@ class OtpPresenter(
             },
             doOnSchemaValidationFailure = ::handleSchemaValidationFailure,
             doOnFetchFailure = { view?.showFetchFailure() },
-            doOnCannotEditWithCurrentConfig = { view?.showCannotUpdateTotpWithCurrentConfig() }
+            doOnCannotEditWithCurrentConfig = { view?.showCannotUpdateTotpWithCurrentConfig() },
+            doOnMetadataKeyModified = { view?.showMetadataKeyModifiedDialog(it) },
+            doOnMetadataKeyDeleted = { view?.showMetadataKeyDeletedDialog(it) },
+            doOnMetadataKeyVerificationFailure = { view?.showFailedToVerifyMetadataKey() }
         )
     }
 
@@ -483,6 +491,29 @@ class OtpPresenter(
         if (isResourceEdited) {
             initRefresh()
             view?.showResourceEditedSnackbar(resourceName.orEmpty())
+        }
+    }
+
+    override fun trustedMetadataKeyDeleted(model: TrustedKeyDeletedModel) {
+        presenterScope.launch {
+            metadataPrivateKeysHelperInteractor.deletedTrustedMetadataPrivateKey()
+        }
+    }
+
+    override fun trustNewMetadataKey(model: NewMetadataKeyToTrustModel) {
+        presenterScope.launch {
+            view?.showProgress()
+            when (val output = runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+                metadataPrivateKeysHelperInteractor.trustNewKey(model)
+            }) {
+                is MetadataPrivateKeysHelperInteractor.Output.Success ->
+                    view?.showNewMetadataKeyIsTrusted()
+                else -> {
+                    Timber.e("Failed to trust new metadata key: $output")
+                    view?.showFailedToTrustMetadataKey()
+                }
+            }
+            view?.hideProgress()
         }
     }
 }

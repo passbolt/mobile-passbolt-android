@@ -34,7 +34,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dp_40"
             android:gravity="center_horizontal"
-            android:text="@string/dialog_new_metadata_key_trust_changed"
+            android:text="@string/dialog_trusted_metadata_key_deleted"
             android:textColor="@color/text_primary" />
 
         <TextView
@@ -45,11 +45,11 @@
             android:layout_marginHorizontal="@dimen/dp_40"
             android:layout_marginTop="@dimen/dp_16"
             android:gravity="center_horizontal"
+            android:text="@string/dialog_trusted_metadata_key_deleted_main"
             android:textColor="@color/text_secondary"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/title"
-            tools:text="@string/dialog_new_metadata_key_trust_modified_by_user" />
+            app:layout_constraintTop_toBottomOf="@+id/title" />
 
         <TextView
             android:id="@+id/message2"
@@ -62,30 +62,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/title"
-            tools:text="@string/dialog_new_metadata_key_trust_key_rollback_info" />
-
-        <TextView
-            style="@style/BodyText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/dp_24"
-            android:gravity="center_horizontal"
-            android:text="@string/dialog_new_metadata_key_trust_key_fingerprint"
-            android:textColor="@color/text_secondary" />
-
-        <TextView
-            android:id="@+id/fingerprint"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginHorizontal="@dimen/dp_40"
-            android:layout_marginTop="@dimen/dp_60"
-            android:fontFamily="@font/inconsolata"
-            android:gravity="center_horizontal"
-            android:textColor="@color/text_primary"
-            android:textFontWeight="500"
-            android:textSize="@dimen/sp_18"
-            tools:text="9FDC 781B E555 39D4 CB50\n\nFF42 86DB 2BDD 17D3 34B1" />
+            tools:text="@string/dialog_trusted_metadata_key_deleted_info" />
     </LinearLayout>
 
     <LinearLayout
@@ -105,7 +82,8 @@
             android:layout_height="@dimen/dp_56"
             android:layout_marginHorizontal="@dimen/dp_16"
             android:layout_marginTop="@dimen/dp_16"
-            android:text="@string/dialog_new_metadata_key_trust_key_trust_the_key" />
+            android:background="@color/red"
+            android:text="@string/dialog_trusted_metadata_key_deleted_trust" />
 
         <TextView
             android:id="@+id/cancelButton"

@@ -24,6 +24,8 @@
 package com.passbolt.mobile.android.core.resources.actions
 
 import com.passbolt.mobile.android.serializers.jsonschema.SchemaEntity
+import com.passbolt.mobile.android.ui.NewMetadataKeyToTrustModel
+import com.passbolt.mobile.android.ui.TrustedKeyDeletedModel
 
 sealed class ResourceUpdateActionResult {
 
@@ -40,4 +42,10 @@ sealed class ResourceUpdateActionResult {
     data object CannotUpdateWithCurrentConfig : ResourceUpdateActionResult()
 
     class JsonSchemaValidationFailure(val entity: SchemaEntity) : ResourceUpdateActionResult()
+
+    data object MetadataKeyVerificationFailure : ResourceUpdateActionResult()
+
+    data class MetadataKeyModified(val keyToTrust: NewMetadataKeyToTrustModel) : ResourceUpdateActionResult()
+
+    data class MetadataKeyDeleted(val deletedKey: TrustedKeyDeletedModel) : ResourceUpdateActionResult()
 }

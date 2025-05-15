@@ -45,6 +45,8 @@ dependencies {
     implementation project(':jsonmodel')
     implementation project(':createresourcemenu')
     implementation project(':resourceform')
+    implementation project(':metadatakeytrust')
+    implementation project(':metadata')
 
     implementation libs.navigation.fragment
     implementation libs.navigation.ui

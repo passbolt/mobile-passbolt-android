@@ -90,6 +90,9 @@ class MetadataPrivateKeysInteractorTest : KoinTest {
             privateKeySignedByGrace = openRawResource(R.raw.message_signed_by_grace).readBytes()
         }
 
+        mockMetadataKeysInteractor.stub {
+            onBlocking { fetchAndSaveMetadataKeys() } doReturn MetadataKeysInteractor.Output.Success
+        }
         mockUpdateMetadataPrivateKeyUseCase.stub {
             onBlocking { execute(any()) } doReturn UpdateMetadataPrivateKeyUseCase.Output.Success
         }
@@ -243,7 +246,9 @@ class MetadataPrivateKeysInteractorTest : KoinTest {
                             createdBy = UUID.fromString(GRACE_USER_ID),
                             modified = ZonedDateTime.now(),
                             modifiedBy = UUID.fromString(GRACE_USER_ID),
-                            pgpMessage = String(privateKeySignedByGrace)
+                            pgpMessage = String(privateKeySignedByGrace),
+                            fingerprint = "",
+                            domain = ""
                         )
                     )
                 )
@@ -335,7 +340,9 @@ class MetadataPrivateKeysInteractorTest : KoinTest {
                             createdBy = UUID.fromString(ADMIN_USER_ID),
                             modified = ZonedDateTime.now(),
                             modifiedBy = UUID.fromString(ADMIN_USER_ID),
-                            pgpMessage = String(privateKeySignedByAdmin)
+                            pgpMessage = String(privateKeySignedByAdmin),
+                            fingerprint = "",
+                            domain = ""
                         )
                     )
                 )
@@ -389,7 +396,9 @@ class MetadataPrivateKeysInteractorTest : KoinTest {
                             createdBy = UUID.fromString(GRACE_USER_ID),
                             modified = ZonedDateTime.now(),
                             modifiedBy = UUID.fromString(GRACE_USER_ID),
-                            pgpMessage = String(privateKeySignedByGrace)
+                            pgpMessage = String(privateKeySignedByGrace),
+                            fingerprint = "",
+                            domain = ""
                         )
                     )
                 )
@@ -441,7 +450,9 @@ class MetadataPrivateKeysInteractorTest : KoinTest {
                             createdBy = UUID.fromString(ADMIN_USER_ID),
                             modified = ZonedDateTime.now(),
                             modifiedBy = UUID.fromString(ADMIN_USER_ID),
-                            pgpMessage = String(privateKeySignedByAdmin)
+                            pgpMessage = String(privateKeySignedByAdmin),
+                            fingerprint = "",
+                            domain = ""
                         )
                     )
                 )
@@ -507,7 +518,9 @@ class MetadataPrivateKeysInteractorTest : KoinTest {
                             createdBy = UUID.fromString(GRACE_USER_ID),
                             modified = ZonedDateTime.now(),
                             modifiedBy = UUID.fromString(GRACE_USER_ID),
-                            pgpMessage = String(privateKeySignedByGrace)
+                            pgpMessage = String(privateKeySignedByGrace),
+                            fingerprint = "",
+                            domain = ""
                         )
                     )
                 )
@@ -573,7 +586,9 @@ class MetadataPrivateKeysInteractorTest : KoinTest {
                             createdBy = UUID.fromString(GRACE_USER_ID),
                             modified = ZonedDateTime.now(),
                             modifiedBy = UUID.fromString(GRACE_USER_ID),
-                            pgpMessage = String(privateKeySignedByGrace)
+                            pgpMessage = String(privateKeySignedByGrace),
+                            fingerprint = "",
+                            domain = ""
                         )
                     )
                 )

@@ -28,7 +28,7 @@ import kotlinx.parcelize.Parcelize
 import java.util.UUID
 
 @Parcelize
-data class NewMetadataKeyToTrust(
+data class NewMetadataKeyToTrustModel(
     val id: UUID,
     val signedUsername: String,
     val signedName: String,

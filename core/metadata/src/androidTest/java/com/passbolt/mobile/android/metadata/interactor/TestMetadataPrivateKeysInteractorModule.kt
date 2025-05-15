@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.metadata.interactor
 
+import com.google.gson.Gson
 import com.passbolt.mobile.android.core.accounts.usecase.accountdata.GetSelectedAccountDataUseCase
 import com.passbolt.mobile.android.core.accounts.usecase.privatekey.GetSelectedUserPrivateKeyUseCase
 import com.passbolt.mobile.android.core.passphrasememorycache.PassphraseMemoryCache
@@ -49,18 +50,25 @@ internal val mockGetTrustedMetadataKeyUseCase = mock<GetTrustedMetadataKeyUseCas
 internal val mockSaveTrustedMetadataKeyUseCase = mock<SaveTrustedMetadataKeyUseCase>()
 internal val mockDeleteTrustedMetadataKeyUseCase = mock<DeleteTrustedMetadataKeyUseCase>()
 internal val mockGetSelectedAccountDataUseCase = mock<GetSelectedAccountDataUseCase>()
+internal val mockMetadataKeysInteractor = mock<MetadataKeysInteractor>()
 
 val testMetadataPrivateKeysInteractorModule = module {
     factory { Crypto.pgp() }
     singleOf(::GopenPgpExceptionParser)
     factoryOf(::OpenPgp)
+    factoryOf(::Gson)
     factory {
         MetadataPrivateKeysHelperInteractor(
             openPgp = get(),
             updateMetadataPrivateKeyUseCase = mockUpdateMetadataPrivateKeyUseCase,
             getLocalUserUseCase = mockGetLocalUserUseCase,
             saveTrustedMetadataKeyUseCase = mockSaveTrustedMetadataKeyUseCase,
-            getSelectedAccountDataUseCase = mockGetSelectedAccountDataUseCase
+            getSelectedAccountDataUseCase = mockGetSelectedAccountDataUseCase,
+            deleteTrustedMetadataKeyUseCase = mockDeleteTrustedMetadataKeyUseCase,
+            getSelectedUserPrivateKeyUseCase = mockGetSelectedUserPrivateKeyUseCase,
+            passphraseMemoryCache = mockPassphraseMemoryCache,
+            metadataKeysInteractor = mockMetadataKeysInteractor,
+            gson = get()
         )
     }
     factory {
@@ -72,7 +80,6 @@ val testMetadataPrivateKeysInteractorModule = module {
             getSelectedUserPrivateKeyUseCase = mockGetSelectedUserPrivateKeyUseCase,
             passphraseMemoryCache = mockPassphraseMemoryCache,
             getTrustedMetadataKeyUseCase = mockGetTrustedMetadataKeyUseCase,
-            deleteTrustedMetadataKeyUseCase = mockDeleteTrustedMetadataKeyUseCase,
         )
     }
 }

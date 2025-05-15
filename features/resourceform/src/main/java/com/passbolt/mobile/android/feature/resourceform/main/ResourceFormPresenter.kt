@@ -23,9 +23,11 @@ import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAct
 import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction.REMOVE_NOTE
 import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction.REMOVE_TOTP
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.SecretJsonModel
+import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
 import com.passbolt.mobile.android.jsonmodel.delegates.TotpSecret
 import com.passbolt.mobile.android.mappers.EntropyViewMapper
 import com.passbolt.mobile.android.mappers.ResourceFormMapper
+import com.passbolt.mobile.android.metadata.interactor.MetadataPrivateKeysHelperInteractor
 import com.passbolt.mobile.android.serializers.jsonschema.SchemaEntity
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType
 import com.passbolt.mobile.android.ui.Entropy
@@ -34,6 +36,7 @@ import com.passbolt.mobile.android.ui.LeadingContentType.PASSWORD
 import com.passbolt.mobile.android.ui.LeadingContentType.TOTP
 import com.passbolt.mobile.android.ui.MetadataJsonModel
 import com.passbolt.mobile.android.ui.MetadataTypeModel
+import com.passbolt.mobile.android.ui.NewMetadataKeyToTrustModel
 import com.passbolt.mobile.android.ui.OtpParseResult
 import com.passbolt.mobile.android.ui.PasswordGeneratorTypeModel
 import com.passbolt.mobile.android.ui.PasswordUiModel
@@ -42,6 +45,7 @@ import com.passbolt.mobile.android.ui.ResourceFormMode.Create
 import com.passbolt.mobile.android.ui.ResourceFormMode.Edit
 import com.passbolt.mobile.android.ui.ResourceFormUiModel
 import com.passbolt.mobile.android.ui.TotpUiModel
+import com.passbolt.mobile.android.ui.TrustedKeyDeletedModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
@@ -87,6 +91,7 @@ class ResourceFormPresenter(
     private val resourceModelHandler: ResourceModelHandler,
     private val getLocalResourceUseCase: GetLocalResourceUseCase,
     private val fullDataRefreshExecutor: FullDataRefreshExecutor,
+    private val metadataPrivateKeysHelperInteractor: MetadataPrivateKeysHelperInteractor,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : BaseAuthenticatedPresenter<ResourceFormContract.View>(coroutineLaunchContext),
     ResourceFormContract.Presenter {
@@ -397,7 +402,10 @@ class ResourceFormPresenter(
                     doOnCryptoFailure = { view?.showEncryptionError(it) },
                     doOnSchemaValidationFailure = ::handleSchemaValidationFailure,
                     doOnSuccess = { view?.navigateBackWithCreateSuccess(resourceMetadata.name) },
-                    doOnCannotCreateWithCurrentConfig = { view?.showCannotCreateTotpWithCurrentConfig() }
+                    doOnCannotCreateWithCurrentConfig = { view?.showCannotCreateTotpWithCurrentConfig() },
+                    doOnMetadataKeyModified = { view?.showMetadataKeyModifiedDialog(it) },
+                    doOnMetadataKeyDeleted = { view?.showMetadataKeyDeletedDialog(it) },
+                    doOnMetadataKeyVerificationFailure = { view?.showFailedToVerifyMetadataKey() }
                 )
                 view?.hideProgress()
             }
@@ -433,7 +441,10 @@ class ResourceFormPresenter(
                     doOnCryptoFailure = { view?.showEncryptionError(it) },
                     doOnSchemaValidationFailure = ::handleSchemaValidationFailure,
                     doOnSuccess = { view?.navigateBackWithEditSuccess(resourceMetadata.name) },
-                    doOnCannotEditWithCurrentConfig = { view?.showCannotUpdateTotpWithCurrentConfig() }
+                    doOnCannotEditWithCurrentConfig = { view?.showCannotUpdateTotpWithCurrentConfig() },
+                    doOnMetadataKeyModified = { view?.showMetadataKeyModifiedDialog(it) },
+                    doOnMetadataKeyDeleted = { view?.showMetadataKeyDeletedDialog(it) },
+                    doOnMetadataKeyVerificationFailure = { view?.showFailedToVerifyMetadataKey() }
                 )
                 view?.hideProgress()
             }
@@ -445,6 +456,29 @@ class ResourceFormPresenter(
             view?.showTotpRequired()
         } else {
             action()
+        }
+    }
+
+    override fun trustedMetadataKeyDeleted(model: TrustedKeyDeletedModel) {
+        scope.launch {
+            metadataPrivateKeysHelperInteractor.deletedTrustedMetadataPrivateKey()
+        }
+    }
+
+    override fun trustNewMetadataKey(model: NewMetadataKeyToTrustModel) {
+        scope.launch {
+            view?.showProgress()
+            when (val output = runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+                metadataPrivateKeysHelperInteractor.trustNewKey(model)
+            }) {
+                is MetadataPrivateKeysHelperInteractor.Output.Success ->
+                    view?.showNewMetadataKeyIsTrusted()
+                else -> {
+                    Timber.e("Failed to trust new metadata key: $output")
+                    view?.showFailedToTrustMetadataKey()
+                }
+            }
+            view?.hideProgress()
         }
     }
 }

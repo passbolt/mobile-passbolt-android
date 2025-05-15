@@ -37,6 +37,7 @@ import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdT
 import com.passbolt.mobile.android.jsonmodel.JSON_MODEL_GSON
 import com.passbolt.mobile.android.jsonmodel.jsonpathops.JsonPathJsonPathOps
 import com.passbolt.mobile.android.jsonmodel.jsonpathops.JsonPathsOps
+import com.passbolt.mobile.android.metadata.interactor.MetadataPrivateKeysHelperInteractor
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
@@ -50,6 +51,7 @@ internal val mockIdToSlugMappingProvider = mock<ResourceTypeIdToSlugMappingProvi
 internal val mockResourceCreateActionsInteractor = mock<ResourceCreateActionsInteractor>()
 internal val mockResourceUpdateActionsInteractor = mock<ResourceUpdateActionsInteractor>()
 internal val mockGetDefaultCreateContentTypeUseCase = mock<GetDefaultCreateContentTypeUseCase>()
+internal val mockMetadataPrivateKeysHelperInteractor = mock<MetadataPrivateKeysHelperInteractor>()
 
 @ExperimentalCoroutinesApi
 internal val testScanOtpSuccessModule = module {
@@ -61,6 +63,7 @@ internal val testScanOtpSuccessModule = module {
         ScanOtpSuccessPresenter(
             idToSlugMappingProvider = mockIdToSlugMappingProvider,
             getDefaultCreateContentTypeUseCase = mockGetDefaultCreateContentTypeUseCase,
+            metadataPrivateKeysHelperInteractor = mockMetadataPrivateKeysHelperInteractor,
             coroutineLaunchContext = get()
         )
     }

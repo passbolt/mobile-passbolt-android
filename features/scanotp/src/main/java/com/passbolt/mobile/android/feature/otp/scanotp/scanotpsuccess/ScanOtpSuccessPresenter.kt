@@ -33,7 +33,9 @@ import com.passbolt.mobile.android.core.resources.usecase.GetDefaultCreateConten
 import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.SecretJsonModel
+import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
 import com.passbolt.mobile.android.jsonmodel.delegates.TotpSecret
+import com.passbolt.mobile.android.metadata.interactor.MetadataPrivateKeysHelperInteractor
 import com.passbolt.mobile.android.resourcepicker.model.PickResourceAction
 import com.passbolt.mobile.android.serializers.jsonschema.SchemaEntity
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType
@@ -43,8 +45,10 @@ import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5Default
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5DefaultWithTotp
 import com.passbolt.mobile.android.ui.LeadingContentType
 import com.passbolt.mobile.android.ui.MetadataJsonModel
+import com.passbolt.mobile.android.ui.NewMetadataKeyToTrustModel
 import com.passbolt.mobile.android.ui.OtpParseResult
 import com.passbolt.mobile.android.ui.ResourceModel
+import com.passbolt.mobile.android.ui.TrustedKeyDeletedModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
@@ -52,11 +56,13 @@ import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import org.koin.core.parameter.parametersOf
+import timber.log.Timber
 import java.util.UUID
 
 class ScanOtpSuccessPresenter(
     private val idToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider,
     private val getDefaultCreateContentTypeUseCase: GetDefaultCreateContentTypeUseCase,
+    private val metadataPrivateKeysHelperInteractor: MetadataPrivateKeysHelperInteractor,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : BaseAuthenticatedPresenter<ScanOtpSuccessContract.View>(coroutineLaunchContext),
     ScanOtpSuccessContract.Presenter, KoinComponent {
@@ -105,7 +111,10 @@ class ScanOtpSuccessPresenter(
                 doOnCryptoFailure = { view?.showEncryptionError(it) },
                 doOnSchemaValidationFailure = ::handleSchemaValidationFailure,
                 doOnSuccess = { view?.navigateToOtpList(scannedTotp, otpCreated = true) },
-                doOnCannotCreateWithCurrentConfig = { view?.showCannotUpdateTotpWithCurrentConfig() }
+                doOnCannotCreateWithCurrentConfig = { view?.showCannotUpdateTotpWithCurrentConfig() },
+                doOnMetadataKeyModified = { view?.showMetadataKeyModifiedDialog(it) },
+                doOnMetadataKeyDeleted = { view?.showMetadataKeyDeletedDialog(it) },
+                doOnMetadataKeyVerificationFailure = { view?.showFailedToVerifyMetadataKey() }
             )
             view?.hideProgress()
         }
@@ -170,7 +179,10 @@ class ScanOtpSuccessPresenter(
                 doOnCryptoFailure = { view?.showEncryptionError(it) },
                 doOnSchemaValidationFailure = ::handleSchemaValidationFailure,
                 doOnSuccess = { view?.navigateToOtpList(totp = scannedTotp, otpCreated = true) },
-                doOnCannotEditWithCurrentConfig = { view?.showCannotUpdateTotpWithCurrentConfig() }
+                doOnCannotEditWithCurrentConfig = { view?.showCannotUpdateTotpWithCurrentConfig() },
+                doOnMetadataKeyModified = { view?.showMetadataKeyModifiedDialog(it) },
+                doOnMetadataKeyDeleted = { view?.showMetadataKeyDeletedDialog(it) },
+                doOnMetadataKeyVerificationFailure = { view?.showFailedToVerifyMetadataKey() }
             )
 
             view?.hideProgress()
@@ -184,5 +196,28 @@ class ScanOtpSuccessPresenter(
     override fun detach() {
         scope.coroutineContext.cancelChildren()
         super<BaseAuthenticatedPresenter>.detach()
+    }
+
+    override fun trustedMetadataKeyDeleted(model: TrustedKeyDeletedModel) {
+        scope.launch {
+            metadataPrivateKeysHelperInteractor.deletedTrustedMetadataPrivateKey()
+        }
+    }
+
+    override fun trustNewMetadataKey(model: NewMetadataKeyToTrustModel) {
+        scope.launch {
+            view?.showProgress()
+            when (val output = runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+                metadataPrivateKeysHelperInteractor.trustNewKey(model)
+            }) {
+                is MetadataPrivateKeysHelperInteractor.Output.Success ->
+                    view?.showNewMetadataKeyIsTrusted()
+                else -> {
+                    Timber.e("Failed to trust new metadata key: $output")
+                    view?.showFailedToTrustMetadataKey()
+                }
+            }
+            view?.hideProgress()
+        }
     }
 }
