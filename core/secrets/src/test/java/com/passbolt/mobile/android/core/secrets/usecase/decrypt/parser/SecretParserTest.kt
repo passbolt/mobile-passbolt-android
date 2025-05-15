@@ -69,7 +69,7 @@ class SecretParserTest : KoinTest {
 
     @Test
     fun `password should parse correct for password string secret`() = runTest {
-        val secret = "\\\"!@#_$%^&*()".toByteArray()
+        val secret = "\\\"!@#_$%^&*()"
         mockIdToSlugMappingProvider.stub {
             onBlocking { provideMappingForSelectedAccount() }.doReturn(
                 mapOf(resourceTypeId to ContentType.PasswordString.slug)
@@ -79,12 +79,12 @@ class SecretParserTest : KoinTest {
         val secretResult = secretParser.parseSecret(resourceTypeId.toString(), secret)
 
         assertThat(secretResult).isInstanceOf(DecryptedSecretOrError.DecryptedSecret::class.java)
-        assertThat((secretResult as DecryptedSecretOrError.DecryptedSecret).secret.password).isEqualTo(String(secret))
+        assertThat((secretResult as DecryptedSecretOrError.DecryptedSecret).secret.password).isEqualTo(secret)
     }
 
     @Test
     fun `password and description should parse correct for password description secret`() = runTest {
-        val secret = "{\"password\":\"\\\"!@#_\$%^&*()\", \"description\":\"desc\"}".toByteArray()
+        val secret = "{\"password\":\"\\\"!@#_\$%^&*()\", \"description\":\"desc\"}"
         mockIdToSlugMappingProvider.stub {
             onBlocking { provideMappingForSelectedAccount() }.doReturn(
                 mapOf(resourceTypeId to ContentType.PasswordAndDescription.slug)
@@ -107,7 +107,7 @@ class SecretParserTest : KoinTest {
                 "\"period\":30," +
                 "\"algorithm\":\"SHA256\"," +
                 "\"secret_key\":\"secret\"" + "}" +
-                "}").toByteArray()
+                "}")
         mockIdToSlugMappingProvider.stub {
             onBlocking { provideMappingForSelectedAccount() }.doReturn(
                 mapOf(resourceTypeId to ContentType.Totp.slug)
@@ -135,7 +135,7 @@ class SecretParserTest : KoinTest {
                 "\"algorithm\":\"SHA256\"," +
                 "\"secret_key\":\"secret\"" +
                 "}" +
-                "}").toByteArray()
+                "}")
         mockIdToSlugMappingProvider.stub {
             onBlocking { provideMappingForSelectedAccount() }.doReturn(
                 mapOf(resourceTypeId to ContentType.PasswordAndDescription.slug)

@@ -55,7 +55,7 @@ class ChallengeDecryptor(
                 passphraseCopy.erase()
                 Output.DecryptedChallenge(
                     gson.fromJson(
-                        String(decryptedChallenge.result),
+                        decryptedChallenge.result,
                         ChallengeResponseDto::class.java
                     )
                 )

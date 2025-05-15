@@ -153,7 +153,7 @@ class ResourceShareInteractor(
 
     private suspend fun prepareEncryptedSecretsData(
         passphrase: ByteArray,
-        decryptedSecret: ByteArray,
+        decryptedSecret: String,
         addedUsers: List<ShareRecipientDto>
     ): List<EncryptedSecretOrError> {
         val encryptedSecretsForAddedUsers = mutableListOf<EncryptedSecretOrError>()
@@ -168,7 +168,7 @@ class ResourceShareInteractor(
                     publicKey,
                     privateKey,
                     passphrase,
-                    String(decryptedSecret)
+                    decryptedSecret
                 )
 
                 encryptedSecretsForAddedUsers.add(
