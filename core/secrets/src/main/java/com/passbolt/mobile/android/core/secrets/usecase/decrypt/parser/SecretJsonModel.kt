@@ -24,9 +24,9 @@
 package com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser
 
 import com.passbolt.mobile.android.jsonmodel.JsonModel
+import com.passbolt.mobile.android.jsonmodel.delegates.NullableStringDelegate
 import com.passbolt.mobile.android.jsonmodel.delegates.RootRelativeJsonPathNullableStringDelegate
 import com.passbolt.mobile.android.jsonmodel.delegates.RootRelativeJsonPathTotpDelegate
-import com.passbolt.mobile.android.jsonmodel.delegates.NullableStringDelegate
 import com.passbolt.mobile.android.jsonmodel.delegates.TotpSecret
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType
 import com.passbolt.mobile.android.ui.OtpParseResult
@@ -69,20 +69,19 @@ class SecretJsonModel(override var json: String?) : JsonModel {
                 .trimIndent()
         )
 
-        fun emptyPasswordWithTotp(): SecretJsonModel = SecretJsonModel(
+        fun emptyTotp(): SecretJsonModel = SecretJsonModel(
             """
                 {
-                    "password": "",
                     ${emptyTotpObject()}
                 }
             """
                 .trimIndent()
         )
 
-        fun emptyTotp(): SecretJsonModel = SecretJsonModel(
+        fun emptyJsonModel(password: String?): SecretJsonModel = SecretJsonModel(
             """
                 {
-                    ${emptyTotpObject()}
+                    "password": "${password ?: ""}"
                 }
             """
                 .trimIndent()
