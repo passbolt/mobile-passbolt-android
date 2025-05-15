@@ -704,7 +704,7 @@ class HomePresenter(
     }
 
     override fun deleteResourceConfirmed() {
-        coroutineScope.launch {
+        runWhileShowingProgress {
             deleteResourceIdlingResource.setIdle(false)
             performCommonResourceAction(
                 action = { resourceCommonActionsInteractor.deleteResource() },
@@ -951,5 +951,13 @@ class HomePresenter(
 
     override fun onCreateResourceClick() {
         view?.showCreateResourceMenu(homeView)
+    }
+
+    private fun runWhileShowingProgress(action: suspend () -> Unit) {
+        coroutineScope.launch {
+            view?.showProgress()
+            action()
+            view?.hideProgress()
+        }
     }
 }

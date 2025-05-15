@@ -60,6 +60,7 @@ import com.passbolt.mobile.android.ui.MetadataKeyParamsModel
 import com.passbolt.mobile.android.ui.MetadataKeyTypeModel
 import com.passbolt.mobile.android.ui.MetadataTypeModel
 import com.passbolt.mobile.android.ui.NewMetadataKeyToTrustModel
+import com.passbolt.mobile.android.ui.PermissionModelUi
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.TrustedKeyDeletedModel
 import kotlinx.coroutines.flow.Flow
@@ -248,12 +249,26 @@ class ResourceCreateActionsInteractor(
                     AddLocalResourcePermissionsUseCase.Input(listOf(operationResult.resource))
                 )
 
-                operationResult.resource.resourceModel.folderId?.let {
-                    applyFolderPermissionsToCreatedResource(operationResult.resource.resourceModel, it)
-                } ?: Success(
-                    operationResult.resource.resourceModel.resourceId,
-                    operationResult.resource.resourceModel.metadataJsonModel.name
-                )
+                val newFolderPermissionsToApply = operationResult.resource.resourceModel.folderId?.let {
+                    getLocalParentFolderPermissionsToApplyUseCase.execute(
+                        GetLocalParentFolderPermissionsToApplyToNewItemUseCase.Input(
+                            it,
+                            ItemIdResourceId(operationResult.resource.resourceModel.resourceId)
+                        )
+                    ).permissions
+                }.orEmpty()
+
+                if (newFolderPermissionsToApply.size > 1) {
+                    applyFolderPermissionsToCreatedResource(
+                        operationResult.resource.resourceModel,
+                        newFolderPermissionsToApply
+                    )
+                } else {
+                    Success(
+                        operationResult.resource.resourceModel.resourceId,
+                        operationResult.resource.resourceModel.metadataJsonModel.name
+                    )
+                }
             }
             is CreateResourceInteractor.Output.JsonSchemaValidationFailure ->
                 JsonSchemaValidationFailure(operationResult.entity)
@@ -262,15 +277,8 @@ class ResourceCreateActionsInteractor(
 
     private suspend fun applyFolderPermissionsToCreatedResource(
         resource: ResourceModel,
-        resourceParentFolderId: String
+        newPermissionsToApply: List<PermissionModelUi>
     ): ResourceCreateActionResult {
-        val newPermissionsToApply = getLocalParentFolderPermissionsToApplyUseCase.execute(
-            GetLocalParentFolderPermissionsToApplyToNewItemUseCase.Input(
-                resourceParentFolderId,
-                ItemIdResourceId(resource.resourceId)
-            )
-        ).permissions
-
         return when (val shareResult = runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
             resourceShareInteractor.simulateAndShareResource(resource.resourceId, newPermissionsToApply)
         }) {
