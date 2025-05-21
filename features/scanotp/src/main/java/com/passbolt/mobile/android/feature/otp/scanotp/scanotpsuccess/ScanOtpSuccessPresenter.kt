@@ -68,12 +68,15 @@ class ScanOtpSuccessPresenter(
     ScanOtpSuccessContract.Presenter, KoinComponent {
 
     override var view: ScanOtpSuccessContract.View? = null
-    private lateinit var scannedTotp: OtpParseResult.OtpQr.TotpQr
     private val job = SupervisorJob()
     private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
 
-    override fun argsRetrieved(scannedTotp: OtpParseResult.OtpQr.TotpQr) {
+    private lateinit var scannedTotp: OtpParseResult.OtpQr.TotpQr
+    private var parentFolderId: String? = null
+
+    override fun argsRetrieved(scannedTotp: OtpParseResult.OtpQr.TotpQr, parentFolderId: String?) {
         this.scannedTotp = scannedTotp
+        this.parentFolderId = parentFolderId
     }
 
     override fun createStandaloneOtpClick() {
@@ -89,7 +92,7 @@ class ScanOtpSuccessPresenter(
             performResourceCreateAction(
                 action = {
                     resourceCreateActionsInteractor.createGenericResource(
-                        resourceParentFolderId = null,
+                        resourceParentFolderId = parentFolderId,
                         contentType = defaultType.contentType,
                         metadataJsonModel = MetadataJsonModel.empty().apply {
                             name = scannedTotp.label

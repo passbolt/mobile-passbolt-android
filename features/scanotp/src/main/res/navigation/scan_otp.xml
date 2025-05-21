@@ -11,14 +11,13 @@
         android:name="com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpFragment"
         android:label="ScanOtpFragment"
         tools:layout="@layout/fragment_scan_otp">
-
-        <deepLink
-            android:id="@+id/deepLink"
-            app:uri="passbolt://scanTotp?scanOtpMode={scanOtpMode}" />
-
         <argument
             android:name="scanOtpMode"
             app:argType="com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpMode" />
+        <argument
+            android:name="parentFolderId"
+            app:argType="string"
+            app:nullable="true" />
         <action
             android:id="@+id/action_scanOtpFragment_to_scanOtpSuccessFragment"
             app:destination="@id/scanOtpSuccessFragment"
@@ -36,6 +35,10 @@
         <argument
             android:name="scannedTotp"
             app:argType="com.passbolt.mobile.android.ui.OtpParseResult$OtpQr$TotpQr" />
+        <argument
+            android:name="parentFolderId"
+            app:argType="string"
+            app:nullable="true" />
     </fragment>
 
     <include app:graph="@navigation/resource_picker" />

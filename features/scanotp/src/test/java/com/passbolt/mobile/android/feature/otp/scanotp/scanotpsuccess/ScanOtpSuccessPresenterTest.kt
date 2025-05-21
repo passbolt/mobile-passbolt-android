@@ -90,7 +90,7 @@ class ScanOtpSuccessPresenterTest : KoinTest {
         }
 
         presenter.attach(view)
-        presenter.argsRetrieved(mockScannedTotp)
+        presenter.argsRetrieved(mockScannedTotp, null)
         presenter.createStandaloneOtpClick()
 
         verify(view).showProgress()
@@ -132,7 +132,7 @@ class ScanOtpSuccessPresenterTest : KoinTest {
         }
 
         presenter.attach(view)
-        presenter.argsRetrieved(mockScannedTotp)
+        presenter.argsRetrieved(mockScannedTotp, null)
         presenter.linkToResourceClick()
         presenter.linkedResourceReceived(PickResourceAction.TOTP_REPLACE, mockLinkResourceModel)
 
@@ -175,7 +175,7 @@ class ScanOtpSuccessPresenterTest : KoinTest {
         }
 
         presenter.attach(view)
-        presenter.argsRetrieved(mockScannedTotp)
+        presenter.argsRetrieved(mockScannedTotp, null)
         presenter.linkToResourceClick()
         presenter.linkedResourceReceived(PickResourceAction.TOTP_LINK, mockLinkResourceModel)
 

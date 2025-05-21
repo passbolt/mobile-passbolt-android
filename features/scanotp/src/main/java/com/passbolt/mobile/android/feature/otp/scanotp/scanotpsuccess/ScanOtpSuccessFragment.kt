@@ -78,7 +78,7 @@ class ScanOtpSuccessFragment :
         setupView()
         setListeners()
         presenter.attach(this)
-        presenter.argsRetrieved(navArgs.scannedTotp)
+        presenter.argsRetrieved(navArgs.scannedTotp, navArgs.parentFolderId)
     }
 
     override fun onDestroyView() {
