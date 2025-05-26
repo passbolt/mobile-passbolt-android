@@ -8,8 +8,6 @@ import com.passbolt.mobile.android.jsonmodel.delegates.RootRelativeJsonPathNulla
 import com.passbolt.mobile.android.jsonmodel.delegates.RootRelativeJsonPathNullableStringListDelegate
 import com.passbolt.mobile.android.jsonmodel.delegates.RootRelativeJsonPathStringDelegate
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType
-import com.passbolt.mobile.android.ui.MetadataTypeModel.V4
-import com.passbolt.mobile.android.ui.MetadataTypeModel.V5
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.koin.java.KoinJavaComponent.inject
@@ -128,16 +126,17 @@ data class MetadataJsonModel(override var json: String?) : JsonModel, Parcelable
     @IgnoredOnParcel
     override val searchCriteria: String = "$name${username.orEmpty()}${uri.orEmpty()}${uris.orEmpty().joinToString()}"
 
-    fun getMainUri(metadataType: MetadataTypeModel) = when (metadataType) {
-        V4 -> uri.orEmpty()
-        V5 -> uris?.firstOrNull().orEmpty()
-    }
+    fun getMainUri(contentType: ContentType) =
+        if (contentType.isV5()) {
+            uris?.firstOrNull()
+        } else {
+            uri
+        }.orEmpty()
 
     @Suppress("NestedBlockDepth")
-    fun setMainUri(metadataType: MetadataTypeModel, mainUri: String) {
-        when (metadataType) {
-            V4 -> uri = mainUri
-            V5 -> uris = uris.let {
+    fun setMainUri(contentType: ContentType, mainUri: String) {
+        if (contentType.isV5()) {
+            uris = uris.let {
                 if (it.isNullOrEmpty()) {
                     listOf(mainUri)
                 } else {
@@ -146,6 +145,8 @@ data class MetadataJsonModel(override var json: String?) : JsonModel, Parcelable
                     }
                 }
             }
+        } else {
+            uri = mainUri
         }
     }
 
