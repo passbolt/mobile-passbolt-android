@@ -23,11 +23,11 @@
 
 package com.passbolt.mobile.android.core.autofill.urlmatcher
 
+import com.passbolt.mobile.android.core.autofill.urlmatcher.UrlMetadata.ProtocolValue
 import com.passbolt.mobile.android.ui.ResourceModel
 import timber.log.Timber
-import java.net.URL
 
-class AutofillUrlMatcher {
+class AutofillUriMatcher {
 
     fun isMatching(autofillUrl: String?, resource: ResourceModel): Boolean {
         val resourceUris = resource.metadataJsonModel.uris.orEmpty() + resource.metadataJsonModel.uri.orEmpty()
@@ -38,24 +38,40 @@ class AutofillUrlMatcher {
         // not matching if any is null or empty
         if (autofillUrl.isNullOrEmpty() || resourceUrl.isNullOrEmpty()) return false
 
-        // not matching if the schemes are not allowed
-        if (allowedSchemes.none { autofillUrl.startsWith(it) } || allowedSchemes.none { resourceUrl.startsWith(it) }) {
-            return false
-        }
-
         return try {
-            val autofillURL = URL(autofillUrl)
-            val resourceURL = URL(resourceUrl)
-            val schemesMatch = autofillURL.protocol == resourceURL.protocol
-            val hostsMatch = autofillURL.host == resourceURL.host || autofillURL.host == "www.${resourceURL.host}"
-            schemesMatch && hostsMatch
+            val autofillUrlMetadata = UrlMetadata.parse(autofillUrl)
+            val resourceURL = UrlMetadata.parse(resourceUrl)
+
+            val schemesMatch = autofillUrlMetadata.protocolValue == resourceURL.protocolValue ||
+                    resourceURL.protocolValue == ProtocolValue.None
+            val hostsMatch = autofillUrlMetadata.host == resourceURL.host ||
+                    isSubdomain(autofillUrlMetadata.host, resourceURL.host)
+            val portsMatch = autofillUrlMetadata.port == resourceURL.port ||
+                    resourceURL.port == UrlMetadata.Port.None
+
+            schemesMatch && hostsMatch && portsMatch
         } catch (exception: Exception) {
             Timber.e(exception, "Error during URL parsing")
             false
         }
     }
 
-    companion object {
-        private val allowedSchemes = listOf("http", "https")
+    fun isSubdomain(child: String, parent: String): Boolean {
+        val autofillHostParts = child.split(".").reversed()
+        val resourceHostParts = parent.split(".").reversed()
+
+        var autofillHostsIsResourceHostSubdomain = true
+
+        try {
+            resourceHostParts.forEachIndexed { index, resourceHostPart ->
+                if (autofillHostParts[index] != resourceHostPart) {
+                    autofillHostsIsResourceHostSubdomain = false
+                }
+            }
+            return autofillHostsIsResourceHostSubdomain
+        } catch (_: Exception) {
+            // child has more parts than parent
+            return false
+        }
     }
 }

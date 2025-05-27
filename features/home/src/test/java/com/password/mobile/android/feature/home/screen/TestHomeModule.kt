@@ -10,7 +10,7 @@ import com.passbolt.mobile.android.common.search.SearchableMatcher
 import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.core.accounts.usecase.accountdata.GetSelectedAccountDataUseCase
 import com.passbolt.mobile.android.core.accounts.usecase.selectedaccount.GetSelectedAccountUseCase
-import com.passbolt.mobile.android.core.autofill.urlmatcher.AutofillUrlMatcher
+import com.passbolt.mobile.android.core.autofill.urlmatcher.AutofillUriMatcher
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalFolderDetailsUseCase
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalResourcesAndFoldersUseCase
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalSubFolderResourcesFilteredUseCase
@@ -86,7 +86,7 @@ val testHomeModule = module {
     single { mock<FullDataRefreshExecutor>() }
     factoryOf(::TestCoroutineLaunchContext) bind CoroutineLaunchContext::class
     factoryOf(::InitialsProvider)
-    factoryOf(::AutofillUrlMatcher)
+    factoryOf(::AutofillUriMatcher)
     factoryOf(::HomeDisplayViewMapper)
     factoryOf(::SearchableMatcher)
     singleOf(::DeleteResourceIdlingResource)
