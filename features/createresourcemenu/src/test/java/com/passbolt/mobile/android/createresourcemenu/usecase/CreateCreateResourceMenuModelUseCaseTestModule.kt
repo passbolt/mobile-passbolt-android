@@ -1,6 +1,8 @@
 package com.passbolt.mobile.android.createresourcemenu.usecase
 
+import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
 import com.passbolt.mobile.android.featureflags.usecase.GetFeatureFlagsUseCase
+import com.passbolt.mobile.android.metadata.usecase.GetMetadataTypesSettingsUseCase
 import org.koin.dsl.module
 import org.mockito.kotlin.mock
 
@@ -29,11 +31,15 @@ import org.mockito.kotlin.mock
  */
 
 internal val mockGetFeatureFlagsUseCase = mock<GetFeatureFlagsUseCase>()
+internal val mockGetMetadataTypesSettingsUseCase = mock<GetMetadataTypesSettingsUseCase>()
+internal val mockResourceTypeIdToSlugMappingProvider = mock<ResourceTypeIdToSlugMappingProvider>()
 
 internal val testCreateCreateResourceMenuModelUseCaseModule = module {
     factory {
         CreateCreateResourceMenuModelUseCase(
-            getFeatureFlagsUseCase = mockGetFeatureFlagsUseCase
+            getFeatureFlagsUseCase = mockGetFeatureFlagsUseCase,
+            getMetadataTypesSettingsUseCase = mockGetMetadataTypesSettingsUseCase,
+            idToSlugMappingProvider = mockResourceTypeIdToSlugMappingProvider
         )
     }
 }

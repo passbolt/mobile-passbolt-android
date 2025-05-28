@@ -4,6 +4,7 @@ import android.database.SQLException
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticatedUseCaseOutput
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.RebuildLocalResourceTypesUseCase
+import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
 import timber.log.Timber
 
 /**
@@ -30,7 +31,8 @@ import timber.log.Timber
  */
 class ResourceTypesInteractor(
     private val fetchResourceTypesUseCase: GetResourceTypesUseCase,
-    private val rebuildLocalResourceTypesUseCase: RebuildLocalResourceTypesUseCase
+    private val rebuildLocalResourceTypesUseCase: RebuildLocalResourceTypesUseCase,
+    private val resourceTypeIdToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider
 ) {
 
     suspend fun fetchAndSaveResourceTypes(): Output {
@@ -43,6 +45,7 @@ class ResourceTypesInteractor(
                             fetched.resourceTypes
                         )
                     )
+                    resourceTypeIdToSlugMappingProvider.invalidateSelectedUserMapping()
                     Output.Success
                 } catch (exception: SQLException) {
                     Timber.e(exception, "There was an error during resource types db insert")

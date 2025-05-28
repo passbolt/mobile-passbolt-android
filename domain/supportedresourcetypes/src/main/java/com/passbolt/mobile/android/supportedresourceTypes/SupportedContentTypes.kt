@@ -55,6 +55,8 @@ sealed class ContentType(val slug: String) {
 
     fun isV5() = this.slug in SupportedContentTypes.v5Slugs
 
+    fun isV4() = this.slug in SupportedContentTypes.v4Slugs
+
     fun hasTotp() = this in setOf(
         Totp,
         PasswordDescriptionTotp,

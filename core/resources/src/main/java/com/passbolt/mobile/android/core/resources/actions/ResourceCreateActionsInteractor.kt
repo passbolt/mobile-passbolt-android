@@ -42,7 +42,7 @@ import com.passbolt.mobile.android.core.resources.interactor.create.CreateResour
 import com.passbolt.mobile.android.core.resources.usecase.ResourceShareInteractor
 import com.passbolt.mobile.android.core.resources.usecase.db.AddLocalResourcePermissionsUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.AddLocalResourceUseCase
-import com.passbolt.mobile.android.core.resourcetypes.usecase.db.GetLocalResourceTypesUseCase
+import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.SecretJsonModel
 import com.passbolt.mobile.android.core.users.usecase.db.GetLocalCurrentUserUseCase
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
@@ -84,8 +84,8 @@ class ResourceCreateActionsInteractor(
     private val getMetadataTypesSettingsUseCase: GetMetadataTypesSettingsUseCase,
     private val getMetadataKeysUseCase: GetLocalMetadataKeysUseCase,
     private val getLocalCurrentUserUseCase: GetLocalCurrentUserUseCase,
-    private val getLocalResourceTypesUseCase: GetLocalResourceTypesUseCase,
-    private val metadataPrivateKeysInteractor: MetadataPrivateKeysInteractor
+    private val metadataPrivateKeysInteractor: MetadataPrivateKeysInteractor,
+    private val resourceTypeIdToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider
 ) : KoinComponent {
 
     suspend fun createGenericResource(
@@ -94,7 +94,7 @@ class ResourceCreateActionsInteractor(
         metadataJsonModel: MetadataJsonModel,
         secretJsonModel: SecretJsonModel
     ): Flow<ResourceCreateActionResult> {
-        return if (isDeleted(contentType)) {
+        return if (!isSupported(contentType)) {
             flowOf(CannotCreateWithCurrentConfig)
         } else {
             when (val metadataKeyParams = getMetadataKeysParams(resourceParentFolderId)) {
@@ -126,13 +126,10 @@ class ResourceCreateActionsInteractor(
         }
     }
 
-    private suspend fun isDeleted(contentType: ContentType): Boolean {
-        val deletedContentTypes = getLocalResourceTypesUseCase.execute(Unit)
-            .resourceTypes
-            .filter { it.isDeleted }
-            .map { ContentType.fromSlug(it.slug) }
-        return deletedContentTypes.contains(contentType)
-    }
+    private suspend fun isSupported(contentType: ContentType) =
+        resourceTypeIdToSlugMappingProvider.provideMappingForSelectedAccount()
+            .values
+            .contains(contentType.slug)
 
     private suspend fun shouldPersonalKeyBeUsed(parentFolderId: String?): Boolean {
         val isPersonalKeyAllowed = getMetadataKeysSettingsUseCase.execute(Unit)

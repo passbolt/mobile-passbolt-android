@@ -30,7 +30,6 @@ import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcePer
 import com.passbolt.mobile.android.core.resources.usecase.db.UpdateLocalResourceUseCase
 import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.ResourceTypesUpdatesAdjacencyGraph
 import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction
-import com.passbolt.mobile.android.core.resourcetypes.usecase.db.GetLocalResourceTypesUseCase
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.SecretInput
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.SecretJsonModel
@@ -68,13 +67,13 @@ class ResourceUpdateActionsInteractor(
     private val resourceTypesUpdateGraph: ResourceTypesUpdatesAdjacencyGraph,
     private val updateLocalResourceUseCase: UpdateLocalResourceUseCase,
     private val idToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider,
-    private val getLocalResourceTypesUseCase: GetLocalResourceTypesUseCase,
     private val getLocalCurrentUserUseCase: GetLocalCurrentUserUseCase,
     private val metadataPrivateKeysInteractor: MetadataPrivateKeysInteractor,
     private val getLocalFolderPermissionsUseCase: GetLocalFolderPermissionsUseCase,
     private val getLocalResourcePermissionsUseCase: GetLocalResourcePermissionsUseCase,
     private val getMetadataKeysSettingsUseCase: GetMetadataKeysSettingsUseCase,
-    private val getMetadataKeysUseCase: GetLocalMetadataKeysUseCase
+    private val getMetadataKeysUseCase: GetLocalMetadataKeysUseCase,
+    private val resourceTypeIdToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider
 ) : KoinComponent {
 
     suspend fun updateGenericResource(
@@ -83,7 +82,7 @@ class ResourceUpdateActionsInteractor(
         secretModification: (SecretJsonModel) -> SecretJsonModel = { it },
         forceMetadataSharedKey: Boolean = false
     ): Flow<ResourceUpdateActionResult> {
-        return if (isDeleted(newContentType)) {
+        return if (!isSupported(newContentType)) {
             flowOf(ResourceUpdateActionResult.CannotUpdateWithCurrentConfig)
         } else {
             when (val metadataKeyParams = getMetadataKeysParams(existingResource.folderId, forceMetadataSharedKey)) {
@@ -155,13 +154,10 @@ class ResourceUpdateActionsInteractor(
         return updateGenericResource(contentType, forceMetadataSharedKey = true)
     }
 
-    private suspend fun isDeleted(contentType: ContentType): Boolean {
-        val deletedContentTypes = getLocalResourceTypesUseCase.execute(Unit)
-            .resourceTypes
-            .filter { it.isDeleted }
-            .map { ContentType.fromSlug(it.slug) }
-        return deletedContentTypes.contains(contentType)
-    }
+    private suspend fun isSupported(contentType: ContentType) =
+        resourceTypeIdToSlugMappingProvider.provideMappingForSelectedAccount()
+            .values
+            .contains(contentType.slug)
 
     private suspend fun shouldPersonalKeyBeUsed(parentFolderId: String?, forceMetadataSharedKey: Boolean): Boolean {
         val isPersonalKeyAllowed = getMetadataKeysSettingsUseCase.execute(Unit)

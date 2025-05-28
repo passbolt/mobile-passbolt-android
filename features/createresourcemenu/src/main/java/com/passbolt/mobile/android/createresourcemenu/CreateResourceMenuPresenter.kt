@@ -35,6 +35,9 @@ class CreateResourceMenuPresenter(
                 CreateCreateResourceMenuModelUseCase.Input(homeDisplayViewModel)
             ).model
                 .apply {
+                    if (isPasswordEnabled) {
+                        view?.showPasswordButton()
+                    }
                     if (isTotpEnabled) {
                         view?.showTotpButton()
                     }

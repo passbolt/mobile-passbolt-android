@@ -32,6 +32,7 @@ interface CreateResourceMenuContract {
         fun showTotpButton()
         fun showFoldersButton()
         fun hideMenu()
+        fun showPasswordButton()
     }
 
     interface Presenter : BaseContract.Presenter<View> {
