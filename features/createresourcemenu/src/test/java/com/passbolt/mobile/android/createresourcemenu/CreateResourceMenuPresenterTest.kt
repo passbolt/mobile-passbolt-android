@@ -59,7 +59,8 @@ class CreateResourceMenuPresenterTest : KoinTest {
                 CreateCreateResourceMenuModelUseCase.Output(
                     CreateResourceMenuModel(
                         isTotpEnabled = true,
-                        isFolderEnabled = true
+                        isFolderEnabled = true,
+                        isPasswordEnabled = true
                     )
                 )
             )
@@ -70,6 +71,7 @@ class CreateResourceMenuPresenterTest : KoinTest {
 
         verify(view).showTotpButton()
         verify(view).showFoldersButton()
+        verify(view).showPasswordButton()
     }
 
     @Test
@@ -79,7 +81,8 @@ class CreateResourceMenuPresenterTest : KoinTest {
                 CreateCreateResourceMenuModelUseCase.Output(
                     CreateResourceMenuModel(
                         isTotpEnabled = false,
-                        isFolderEnabled = false
+                        isFolderEnabled = false,
+                        isPasswordEnabled = false
                     )
                 )
             )
@@ -89,5 +92,6 @@ class CreateResourceMenuPresenterTest : KoinTest {
 
         verify(view, never()).showTotpButton()
         verify(view, never()).showFoldersButton()
+        verify(view, never()).showPasswordButton()
     }
 }

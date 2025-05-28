@@ -26,7 +26,6 @@ package com.passbolt.mobile.android.serializers.gson
 import com.google.gson.JsonDeserializationContext
 import com.google.gson.JsonDeserializer
 import com.google.gson.JsonElement
-import com.passbolt.mobile.android.core.resourcetypes.usecase.db.GetLocalResourceTypesUseCase
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
 import com.passbolt.mobile.android.database.snapshot.ResourcesSnapshot
 import com.passbolt.mobile.android.dto.response.ResourceResponseDto
@@ -42,8 +41,7 @@ import java.lang.reflect.Type
 
 open class ResourceListDeserializer(
     private val resourceTypeIdToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider,
-    private val getLocalMetadataKeysUseCase: GetLocalMetadataKeysUseCase,
-    private val getLocalResourceTypesUseCase: GetLocalResourceTypesUseCase
+    private val getLocalMetadataKeysUseCase: GetLocalMetadataKeysUseCase
 ) : JsonDeserializer<List<ResourceResponseDto>>, KoinComponent {
 
     override fun deserialize(
@@ -60,13 +58,9 @@ open class ResourceListDeserializer(
         return runBlocking {
             val resourceTypeIdToSlugMapping = resourceTypeIdToSlugMappingProvider
                 .provideMappingForSelectedAccount()
-            val deletedResourceTypeSlugs = getLocalResourceTypesUseCase.execute(Unit)
-                .resourceTypes
-                .filter { it.isDeleted }
-                .map { it.slug }
 
             val supportedResourceTypesIds = resourceTypeIdToSlugMapping
-                .filter { it.value in allSlugs && it.value !in deletedResourceTypeSlugs }
+                .filter { it.value in allSlugs }
                 .keys
 
             val metadataKeys = getLocalMetadataKeysUseCase.execute(GetLocalMetadataKeysUseCase.Input(DECRYPT))

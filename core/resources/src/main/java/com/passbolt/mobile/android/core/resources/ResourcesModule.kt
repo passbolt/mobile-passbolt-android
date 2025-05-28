@@ -121,7 +121,7 @@ val resourcesModule = module {
             resourceTypesUpdateGraph = get(),
             updateLocalResourceUseCase = get(),
             idToSlugMappingProvider = get(),
-            getLocalResourceTypesUseCase = get(),
+            resourceTypeIdToSlugMappingProvider = get(),
             getLocalFolderPermissionsUseCase = get(),
             getMetadataKeysSettingsUseCase = get(),
             getMetadataKeysUseCase = get(),
@@ -147,7 +147,7 @@ val resourcesModule = module {
             getMetadataTypesSettingsUseCase = get(),
             getMetadataKeysUseCase = get(),
             getLocalCurrentUserUseCase = get(),
-            getLocalResourceTypesUseCase = get(),
+            resourceTypeIdToSlugMappingProvider = get(),
             metadataPrivateKeysInteractor = get()
         )
     }

@@ -13,6 +13,9 @@ dependencies {
     implementation project(':architecture')
     implementation project(':idlingresource')
     implementation project(':entity')
+    implementation project(':resourcetypes')
+    implementation project(':supportedresourcetypes')
+    implementation project(':metadata')
 
     implementation libs.androidx.core
     implementation libs.appcompat

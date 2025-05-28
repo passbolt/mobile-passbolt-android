@@ -2,6 +2,9 @@ package com.passbolt.mobile.android.createresourcemenu.usecase
 
 import com.passbolt.mobile.android.entity.featureflags.FeatureFlagsModel
 import com.passbolt.mobile.android.featureflags.usecase.GetFeatureFlagsUseCase
+import com.passbolt.mobile.android.metadata.usecase.GetMetadataTypesSettingsUseCase
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType
+import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes
 import com.passbolt.mobile.android.ui.HomeDisplayViewModel
 import com.passbolt.mobile.android.ui.HomeDisplayViewModel.AllItems
 import com.passbolt.mobile.android.ui.HomeDisplayViewModel.Expiry
@@ -9,7 +12,10 @@ import com.passbolt.mobile.android.ui.HomeDisplayViewModel.Favourites
 import com.passbolt.mobile.android.ui.HomeDisplayViewModel.OwnedByMe
 import com.passbolt.mobile.android.ui.HomeDisplayViewModel.RecentlyModified
 import com.passbolt.mobile.android.ui.HomeDisplayViewModel.SharedWithMe
+import com.passbolt.mobile.android.ui.MetadataTypeModel
+import com.passbolt.mobile.android.ui.MetadataTypesSettingsModel
 import kotlinx.coroutines.test.runTest
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.koin.core.logger.Level
@@ -18,6 +24,7 @@ import org.koin.test.KoinTestRule
 import org.koin.test.inject
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.stub
+import java.util.UUID
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -52,6 +59,54 @@ class CreateCreateResourceMenuModelUseCaseTest : KoinTest {
     val koinTestRule = KoinTestRule.create {
         printLogger(Level.ERROR)
         modules(testCreateCreateResourceMenuModelUseCaseModule)
+    }
+
+    @Before
+    fun setup() {
+        mockResourceTypeIdToSlugMappingProvider.stub {
+            onBlocking { provideMappingForSelectedAccount() }.doReturn(
+                buildMap {
+                    SupportedContentTypes.allSlugs.forEach {
+                        // only map values matter for the tests
+                        put(UUID.randomUUID(), it)
+                    }
+                }
+            )
+        }
+        mockGetMetadataTypesSettingsUseCase.stub {
+            onBlocking { execute(Unit) } doReturn GetMetadataTypesSettingsUseCase.Output(
+                metadataTypesSettingsModel = MetadataTypesSettingsModel(
+                    defaultMetadataType = MetadataTypeModel.V5,
+                    defaultFolderType = MetadataTypeModel.V5,
+                    defaultTagType = MetadataTypeModel.V5,
+                    allowCreationOfV5Resources = true,
+                    allowCreationOfV5Folders = false,
+                    allowCreationOfV5Tags = false,
+                    allowCreationOfV4Resources = true,
+                    allowCreationOfV4Folders = true,
+                    allowCreationOfV4Tags = true,
+                    allowV4V5Upgrade = false,
+                    allowV5V4Downgrade = false,
+                )
+            )
+        }
+        mockGetFeatureFlagsUseCase.stub {
+            onBlocking { execute(Unit) } doReturn GetFeatureFlagsUseCase.Output(
+                FeatureFlagsModel(
+                    privacyPolicyUrl = null,
+                    termsAndConditionsUrl = null,
+                    isPreviewPasswordAvailable = true,
+                    areFoldersAvailable = true,
+                    areTagsAvailable = true,
+                    isTotpAvailable = false,
+                    isRbacAvailable = true,
+                    isPasswordExpiryAvailable = true,
+                    arePasswordPoliciesAvailable = true,
+                    canUpdatePasswordPolicies = true,
+                    isV5MetadataAvailable = true
+                )
+            )
+        }
     }
 
     @Test
@@ -118,5 +173,153 @@ class CreateCreateResourceMenuModelUseCaseTest : KoinTest {
 
         assertTrue { foldersEnabledModel.isFolderEnabled }
         assert(foldersDisabledModel.all { !it.isFolderEnabled })
+    }
+
+    @Test
+    fun `password creation for v5 should be blocked if no v5 resource type supported`() = runTest {
+        mockResourceTypeIdToSlugMappingProvider.stub {
+            onBlocking { provideMappingForSelectedAccount() }.doReturn(
+                buildMap {
+                    SupportedContentTypes.allSlugs.forEach {
+                        // only map values matter for the tests
+                        if (ContentType.fromSlug(it) != ContentType.V5Default) {
+                            put(UUID.randomUUID(), it)
+                        }
+                    }
+                }
+            )
+        }
+        mockGetMetadataTypesSettingsUseCase.stub {
+            onBlocking { execute(Unit) } doReturn GetMetadataTypesSettingsUseCase.Output(
+                metadataTypesSettingsModel = MetadataTypesSettingsModel(
+                    defaultMetadataType = MetadataTypeModel.V5,
+                    defaultFolderType = MetadataTypeModel.V5,
+                    defaultTagType = MetadataTypeModel.V5,
+                    allowCreationOfV5Resources = true,
+                    allowCreationOfV5Folders = false,
+                    allowCreationOfV5Tags = false,
+                    allowCreationOfV4Resources = true,
+                    allowCreationOfV4Folders = true,
+                    allowCreationOfV4Tags = true,
+                    allowV4V5Upgrade = false,
+                    allowV5V4Downgrade = false,
+                )
+            )
+        }
+
+        val model = useCase.execute(CreateCreateResourceMenuModelUseCase.Input(null)).model
+
+        assertFalse { model.isPasswordEnabled }
+    }
+
+    @Test
+    fun `password creation for v4 should be blocked if no v4 resource type supported`() = runTest {
+        mockResourceTypeIdToSlugMappingProvider.stub {
+            onBlocking { provideMappingForSelectedAccount() }.doReturn(
+                buildMap {
+                    SupportedContentTypes.allSlugs.forEach {
+                        // only map values matter for the tests
+                        if (ContentType.fromSlug(it) != ContentType.PasswordAndDescription) {
+                            put(UUID.randomUUID(), it)
+                        }
+                    }
+                }
+            )
+        }
+        mockGetMetadataTypesSettingsUseCase.stub {
+            onBlocking { execute(Unit) } doReturn GetMetadataTypesSettingsUseCase.Output(
+                metadataTypesSettingsModel = MetadataTypesSettingsModel(
+                    defaultMetadataType = MetadataTypeModel.V4,
+                    defaultFolderType = MetadataTypeModel.V5,
+                    defaultTagType = MetadataTypeModel.V5,
+                    allowCreationOfV5Resources = true,
+                    allowCreationOfV5Folders = false,
+                    allowCreationOfV5Tags = false,
+                    allowCreationOfV4Resources = true,
+                    allowCreationOfV4Folders = true,
+                    allowCreationOfV4Tags = true,
+                    allowV4V5Upgrade = false,
+                    allowV5V4Downgrade = false,
+                )
+            )
+        }
+
+        val model = useCase.execute(CreateCreateResourceMenuModelUseCase.Input(null)).model
+
+        assertFalse { model.isPasswordEnabled }
+    }
+
+    @Test
+    fun `totp creation for v5 should be blocked if no v5 resource type supported`() = runTest {
+        mockResourceTypeIdToSlugMappingProvider.stub {
+            onBlocking { provideMappingForSelectedAccount() }.doReturn(
+                buildMap {
+                    SupportedContentTypes.allSlugs.forEach {
+                        // only map values matter for the tests
+                        if (ContentType.fromSlug(it) != ContentType.V5TotpStandalone) {
+                            put(UUID.randomUUID(), it)
+                        }
+                    }
+                }
+            )
+        }
+        mockGetMetadataTypesSettingsUseCase.stub {
+            onBlocking { execute(Unit) } doReturn GetMetadataTypesSettingsUseCase.Output(
+                metadataTypesSettingsModel = MetadataTypesSettingsModel(
+                    defaultMetadataType = MetadataTypeModel.V5,
+                    defaultFolderType = MetadataTypeModel.V5,
+                    defaultTagType = MetadataTypeModel.V5,
+                    allowCreationOfV5Resources = true,
+                    allowCreationOfV5Folders = false,
+                    allowCreationOfV5Tags = false,
+                    allowCreationOfV4Resources = true,
+                    allowCreationOfV4Folders = true,
+                    allowCreationOfV4Tags = true,
+                    allowV4V5Upgrade = false,
+                    allowV5V4Downgrade = false,
+                )
+            )
+        }
+
+        val model = useCase.execute(CreateCreateResourceMenuModelUseCase.Input(null)).model
+
+        assertFalse { model.isTotpEnabled }
+    }
+
+    @Test
+    fun `totp creation for v4 should be blocked if no v4 resource type supported`() = runTest {
+        mockResourceTypeIdToSlugMappingProvider.stub {
+            onBlocking { provideMappingForSelectedAccount() }.doReturn(
+                buildMap {
+                    SupportedContentTypes.allSlugs.forEach {
+                        // only map values matter for the tests
+                        if (ContentType.fromSlug(it) != ContentType.Totp) {
+                            put(UUID.randomUUID(), it)
+                        }
+                    }
+                }
+            )
+        }
+        mockGetMetadataTypesSettingsUseCase.stub {
+            onBlocking { execute(Unit) } doReturn GetMetadataTypesSettingsUseCase.Output(
+                metadataTypesSettingsModel = MetadataTypesSettingsModel(
+                    defaultMetadataType = MetadataTypeModel.V4,
+                    defaultFolderType = MetadataTypeModel.V5,
+                    defaultTagType = MetadataTypeModel.V5,
+                    allowCreationOfV5Resources = true,
+                    allowCreationOfV5Folders = false,
+                    allowCreationOfV5Tags = false,
+                    allowCreationOfV4Resources = true,
+                    allowCreationOfV4Folders = true,
+                    allowCreationOfV4Tags = true,
+                    allowV4V5Upgrade = false,
+                    allowV5V4Downgrade = false,
+                )
+            )
+        }
+
+        val model = useCase.execute(CreateCreateResourceMenuModelUseCase.Input(null)).model
+
+        assertFalse { model.isTotpEnabled }
     }
 }
