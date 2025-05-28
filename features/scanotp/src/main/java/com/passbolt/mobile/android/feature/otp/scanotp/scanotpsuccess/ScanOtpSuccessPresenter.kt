@@ -97,7 +97,7 @@ class ScanOtpSuccessPresenter(
                         metadataJsonModel = MetadataJsonModel.empty().apply {
                             name = scannedTotp.label
                             scannedTotp.issuer?.let {
-                                setMainUri(defaultType.metadataType, it)
+                                setMainUri(defaultType.contentType, it)
                             }
                         },
                         secretJsonModel = SecretJsonModel.emptyTotp().apply {

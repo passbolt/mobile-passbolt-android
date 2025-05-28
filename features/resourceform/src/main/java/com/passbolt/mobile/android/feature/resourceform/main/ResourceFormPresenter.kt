@@ -14,13 +14,13 @@ import com.passbolt.mobile.android.core.resources.actions.performResourceCreateA
 import com.passbolt.mobile.android.core.resources.actions.performResourceUpdateAction
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUseCase
 import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction.ADD_METADATA_DESCRIPTION
-import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction.ADD_PASSWORD
 import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction.ADD_NOTE
+import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction.ADD_PASSWORD
 import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction.ADD_TOTP
 import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction.EDIT_METADATA
 import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction.REMOVE_METADATA_DESCRIPTION
-import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction.REMOVE_PASSWORD
 import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction.REMOVE_NOTE
+import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction.REMOVE_PASSWORD
 import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction.REMOVE_TOTP
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.SecretJsonModel
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
@@ -35,7 +35,6 @@ import com.passbolt.mobile.android.ui.LeadingContentType
 import com.passbolt.mobile.android.ui.LeadingContentType.PASSWORD
 import com.passbolt.mobile.android.ui.LeadingContentType.TOTP
 import com.passbolt.mobile.android.ui.MetadataJsonModel
-import com.passbolt.mobile.android.ui.MetadataTypeModel
 import com.passbolt.mobile.android.ui.NewMetadataKeyToTrustModel
 import com.passbolt.mobile.android.ui.OtpParseResult
 import com.passbolt.mobile.android.ui.PasswordGeneratorTypeModel
@@ -108,8 +107,6 @@ class ResourceFormPresenter(
         get() = resourceModelHandler.resourceMetadata
     private val resourceSecret: SecretJsonModel
         get() = resourceModelHandler.resourceSecret
-    private val metadataType: MetadataTypeModel
-        get() = resourceModelHandler.metadataType
     private val newContentType: ContentType
         get() = resourceModelHandler.contentType
 
@@ -137,7 +134,7 @@ class ResourceFormPresenter(
                                 needSessionRefreshFlow,
                                 sessionRefreshedFlow
                             )
-                        } catch (e: Exception) {
+                        } catch (_: Exception) {
                             view?.showEditResourceInitializationError()
                             view?.navigateBack()
                             return@launch
@@ -202,13 +199,13 @@ class ResourceFormPresenter(
                 view?.addTotpLeadingForm(
                     resourceFormMapper.mapToUiModel(resourceSecret.totp, resourceMetadata.name)
                 )
-                view?.showTotpIssuer(resourceMetadata.getMainUri(metadataType))
+                view?.showTotpIssuer(resourceMetadata.getMainUri(newContentType))
                 view?.showTotpSecret(resourceSecret.totp?.key.orEmpty())
             }
             PASSWORD -> {
                 view?.addPasswordLeadingForm()
                 view?.showPasswordUsername(resourceMetadata.username.orEmpty())
-                view?.showPasswordMainUri(resourceMetadata.getMainUri(metadataType))
+                view?.showPasswordMainUri(resourceMetadata.getMainUri(newContentType))
                 showPassword(resourceSecret.getPassword(newContentType).orEmpty())
             }
         }
@@ -259,7 +256,7 @@ class ResourceFormPresenter(
 
     override fun passwordMainUriTextChanged(mainUri: String) {
         resourceModelHandler.applyModelChange(EDIT_METADATA) { metadata, _ ->
-            metadata.setMainUri(metadataType, mainUri)
+            metadata.setMainUri(newContentType, mainUri)
         }
     }
 
@@ -291,14 +288,14 @@ class ResourceFormPresenter(
 
     override fun totpUrlChanged(url: String) {
         resourceModelHandler.applyModelChange(EDIT_METADATA) { metadata, _ ->
-            metadata.setMainUri(metadataType, url)
+            metadata.setMainUri(newContentType, url)
         }
     }
 
     override fun totpAdvancedSettingsChanged(totpAdvancedSettings: TotpUiModel?) {
         resourceModelHandler.applyModelChange(ADD_TOTP) { _, secret ->
             val settings =
-                totpAdvancedSettings ?: TotpUiModel.emptyWithDefaults(resourceMetadata.getMainUri(metadataType))
+                totpAdvancedSettings ?: TotpUiModel.emptyWithDefaults(resourceMetadata.getMainUri(newContentType))
             secret.totp = requireNotNull(resourceSecret.totp).copy(
                 algorithm = settings.algorithm,
                 digits = settings.length.toInt(),
@@ -313,7 +310,7 @@ class ResourceFormPresenter(
 
         scannedTotp?.let {
             resourceModelHandler.applyModelChange(EDIT_METADATA) { metadata, _ ->
-                metadata.setMainUri(metadataType, it.issuer.orEmpty())
+                metadata.setMainUri(newContentType, it.issuer.orEmpty())
                 metadata.name = it.label
             }
             resourceModelHandler.applyModelChange(ADD_TOTP) { _, secret ->
@@ -329,7 +326,7 @@ class ResourceFormPresenter(
 
     override fun additionalTotpClick() {
         view?.navigateToTotp(
-            resourceFormMapper.mapToUiModel(resourceSecret.totp, resourceMetadata.getMainUri(metadataType))
+            resourceFormMapper.mapToUiModel(resourceSecret.totp, resourceMetadata.getMainUri(newContentType))
         )
     }
 
@@ -337,7 +334,7 @@ class ResourceFormPresenter(
         view?.navigateToPassword(
             resourceFormMapper.mapToUiModel(
                 resourceSecret.getPassword(newContentType).orEmpty(),
-                resourceMetadata.getMainUri(metadataType),
+                resourceMetadata.getMainUri(newContentType),
                 resourceMetadata.username.orEmpty()
             )
         )
@@ -363,7 +360,7 @@ class ResourceFormPresenter(
         }
         if (totpUiModel != null) {
             resourceModelHandler.applyModelChange(EDIT_METADATA) { metadata, _ ->
-                metadata.setMainUri(metadataType, totpUiModel.issuer)
+                metadata.setMainUri(newContentType, totpUiModel.issuer)
             }
         }
     }
@@ -377,7 +374,7 @@ class ResourceFormPresenter(
             }
             resourceModelHandler.applyModelChange(EDIT_METADATA) { metadata, _ ->
                 metadata.username = passwordUiModel.username
-                metadata.setMainUri(metadataType, passwordUiModel.mainUri)
+                metadata.setMainUri(newContentType, passwordUiModel.mainUri)
             }
         }
     }
