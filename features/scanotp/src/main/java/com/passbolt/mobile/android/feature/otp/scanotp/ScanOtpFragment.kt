@@ -164,7 +164,10 @@ class ScanOtpFragment : BindingScopedFragment<FragmentScanOtpBinding>(FragmentSc
 
     override fun navigateToScanOtpSuccess(parserResult: OtpParseResult.OtpQr.TotpQr) {
         findNavController().navigate(
-            ScanOtpFragmentDirections.actionScanOtpFragmentToScanOtpSuccessFragment(parserResult)
+            ScanOtpFragmentDirections.actionScanOtpFragmentToScanOtpSuccessFragment(
+                parserResult,
+                navArgs.parentFolderId
+            )
         )
     }
 

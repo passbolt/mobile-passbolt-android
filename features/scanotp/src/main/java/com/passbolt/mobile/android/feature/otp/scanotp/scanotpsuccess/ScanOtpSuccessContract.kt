@@ -52,7 +52,7 @@ interface ScanOtpSuccessContract {
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
         fun createStandaloneOtpClick()
-        fun argsRetrieved(scannedTotp: OtpParseResult.OtpQr.TotpQr)
+        fun argsRetrieved(scannedTotp: OtpParseResult.OtpQr.TotpQr, parentFolderId: String?)
         fun linkToResourceClick()
         fun linkedResourceReceived(action: PickResourceAction, resource: ResourceModel)
         fun trustedMetadataKeyDeleted(model: TrustedKeyDeletedModel)

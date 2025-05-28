@@ -239,7 +239,7 @@ class HomeFragment :
     }
 
     override fun createTotpClick() {
-        navigateToScanTotp(ScanOtpMode.SCAN_WITH_SUCCESS_SCREEN)
+        presenter.createTotpClick()
     }
 
     override fun createPasswordClick() {
@@ -973,9 +973,9 @@ class HomeFragment :
         hideProgressDialog(childFragmentManager)
     }
 
-    override fun navigateToScanTotp(scanMode: ScanOtpMode) {
+    override fun navigateToScanTotp(parentFolderId: String?) {
         findNavController().navigate(
-            HomeFragmentDirections.actionHomeToScanOtp(scanMode)
+            HomeFragmentDirections.actionHomeToScanOtp(parentFolderId, ScanOtpMode.SCAN_WITH_SUCCESS_SCREEN)
         )
     }
 

@@ -846,6 +846,11 @@ class HomePresenter(
         )
     }
 
+    override fun createTotpClick() {
+        val parentFolderId = (homeView as? HomeDisplayViewModel.Folders)?.activeFolder?.folderId
+        view?.navigateToScanTotp(parentFolderId)
+    }
+
     override fun closeClick() {
         view?.finish()
     }
