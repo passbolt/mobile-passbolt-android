@@ -585,7 +585,7 @@
     <string name="dialog_confirm_password_message_data_breach">The password is part of an exposed data breach.\n\nAre you sure you want to create this resource?</string>
     <string name="dialog_confirm_password_message_low_entropy">The password is very weak and might be part of an exposed data breach.\n\nAre you sure you want to create this resource?</string>
 
-    <string name="password_generator_known_strength_format">%s (entropy: %.2f bits)</string>
+    <string name="password_generator_known_strength_format">%1$s (entropy: %2$.2f bits)</string>
     <string name="password_generator_unknown_strength_format">Strength (entropy: n/a bits)</string>
 
     <string name="create_resource_menu_create_a_resource">Create a resource</string>

@@ -11,7 +11,7 @@
     <string name="copied_info">%s copiado!</string>
     <string name="stop_scanning">Detener el escaneo</string>
     <string name="delete">Eliminar</string>
-    <string name="are_you_sure">¿Estás seguro?</string>
+    <string name="are_you_sure">¿Está seguro?</string>
     <string name="default_home_search_hint">Buscar nombre, usuario o url</string>
     <string name="all_items_home_search_hint">Buscar nombre, usuario, url o etiqueta</string>
     <string name="user_search_hint">Buscar usuarios…</string>
@@ -42,26 +42,32 @@
     <string name="common_sign_out">Cerrar sesión</string>
     <string name="common_data_refresh_error">Se ha producido un error durante la actualización de datos</string>
     <string name="common_decryption_failure">Error durante el descifrado del secreto</string>
-    <string name="common_metadata_encryption_failure">Error during metadata encryption</string>
+    <string name="common_metadata_encryption_failure">Error durante el cifrado de metadatos</string>
     <string name="common_fetch_failure">Error durante la descarga del secreto</string>
     <string name="common_encryption_failure">Se ha producido un error durante el cifrado del secreto</string>
     <string name="common_json_schema_resource_validation_error">Se ha producido un error durante la validación del recurso. Habilite los registros para más detalles.</string>
     <string name="common_json_schema_secret_validation_error">Se ha producido un error durante la validación de secreto. Habilite los registros para más detalles.</string>
-    <string name="common_message_resource_edited">La contraseña %s se ha editado correctamente.</string>
-    <string name="common_message_resource_deleted">La contraseña %s fue eliminada.</string>
-    <string name="common_message_resource_shared">Los permisos de recursos fueron actualizados.</string>
+    <string name="common_maybe_later">Quizás más tarde</string>
+    <string name="common_cannot_create_resource_with_current_config">No se pudo actualizar un recurso con la configuración actual</string>
+    <string name="common_metadata_key_verification_failure">No se pudo verificar las claves de metadatos</string>
+    <string name="common_metadata_key_is_trusted">La nueva clave de metadatos es de confianza</string>
+    <string name="common_metadata_key_trust_failed">No se pudo confiar en la nueva clave de metadatos</string>
+    <string name="common_message_resource_edited">El recurso %s se ha editado correctamente.</string>
+    <string name="common_message_resource_deleted">El recurso %s fue eliminado.</string>
+    <string name="common_message_resource_shared">Se actualizaron los permisos del recurso.</string>
     <string name="common_message_folder_created">¡Se ha creado la nueva carpeta %s!</string>
     <string name="validation_required_with_max_length">La longitud debe estar entre 1 y %d</string>
+    <string name="validation_is_required">Se requiere este campo</string>
     <string name="validation_required_integer">Debe ser un número entero</string>
-    <string name="fingerprint_biometric_error_generic">Ha ocurrido un error con el sensor de huella dactilar.</string>
+    <string name="fingerprint_biometric_error_generic">Ha ocurrido un error con el sensor de huella digital.</string>
     <string name="fingerprint_biometric_error_too_many_attempts">La autorización biométrica ha sido bloqueada debido a demasiados intentos.</string>
     <string name="fingerprint_biometric_error_blocked">La autorización biométrica ha sido bloqueada durante 30 segundos.</string>
-    <string name="fingerprint_biometric_changed_title">Cambios de huella dactilar detectados</string>
-    <string name="fingerprint_biometric_changed_message">Tienes que iniciar sesión con la contraseña esta vez y activar la huella dactilar en Ajustes de nuevo.</string>
+    <string name="fingerprint_biometric_changed_title">Cambios de huella digital detectados</string>
+    <string name="fingerprint_biometric_changed_message">Tiene que iniciar sesión con la contraseña esta vez y activar la huella digital en Ajustes de nuevo.</string>
     <string name="fingerprint_authenticate_again">Por favor, inicia sesión con la contraseña de nuevo</string>
     <string name="settings_licenses_title">Licencias</string>
     <string name="settings_logs_title">Registros</string>
-    <string name="resource_will_be_deleted">Esto eliminará permanentemente esta contraseña de tu cuenta.</string>
+    <string name="resource_will_be_deleted">Esto eliminará permanentemente esta contraseña de su cuenta.</string>
     <string name="logout_dialog_message">Si cierra sesión necesitará iniciar sesión de nuevo.</string>
     <string name="logout_dialog_sign_out">Cerrar sesión</string>
     <string name="no_username">sin nombre de usuario</string>
@@ -69,14 +75,13 @@
     <string name="more_copy_uri">Copiar URI</string>
     <string name="more_copy_password">Copiar contraseña</string>
     <string name="more_copy_username">Copiar nombre de usuario</string>
-    <string name="more_copy_metadata_desc">Copiar descripción</string>
-    <string name="more_edit">Editar contraseña</string>
-    <string name="more_delete">Eliminar contraseña</string>
-    <string name="more_share">Compartir contraseña</string>
+    <string name="more_copy_metadata_desc">Copiar descripción de metadatos</string>
+    <string name="more_copy_note">Copiar nota</string>
+    <string name="more_edit">Editar</string>
+    <string name="more_delete">Eliminar</string>
+    <string name="more_share">Compartir</string>
     <string name="more_add_to_favourite">Añadir a favoritos</string>
     <string name="more_remove_from_favourite">Eliminar de favoritos</string>
-    <string name="more_add_totp">Añadir TOTP</string>
-    <string name="more_manage_totp">Gestionar TOTP</string>
     <string name="folder_more_see_details">Ver detalles</string>
     <string name="dialog_server_not_reachable_title">¡El servidor no es accesible!</string>
     <string name="dialog_server_not_reachable_message">No se puede acceder a %s. Por favor, inténtelo de nuevo</string>
@@ -123,17 +128,17 @@
     <string name="accounts_list_remove_account_message">Esto eliminará su cuenta de este dispositivo. Sus contraseñas no se eliminarán.</string>
     <string name="accounts_list_manage_accounts">Gestionar cuentas</string>
     <string name="accounts_list_account_removed">La cuenta se ha eliminado de este dispositivo.</string>
-    <string name="auth_password_title">Contraseña</string>
+    <string name="auth_password_title">Frase de contraseña</string>
     <string name="auth_sign_in">Iniciar sesión</string>
     <string name="auth_incorrect_passphrase">Contraseña incorrecta o error de descifrado. Por favor, inténtelo de nuevo.</string>
-    <string name="auth_forgot_password_button">Olvidé mi contraseña</string>
-    <string name="auth_forgot_password_title">¿Ha olvidado su contraseña?</string>
+    <string name="auth_forgot_password_button">Olvidé mi frase de contraseña</string>
+    <string name="auth_forgot_password_title">¿Ha olvidado su frase de contraseña?</string>
     <string name="auth_forgot_password_message">Lamentablemente no puede acceder a sus datos si no recuerda su contraseña. Por favor, póngase en contacto con su administrador para desbloquear su cuenta.</string>
-    <string name="auth_enter_passphrase">Introduzca su contraseña</string>
+    <string name="auth_enter_passphrase">Introduzca su frase de contraseña</string>
     <string name="auth_exit_dialog_message">Si sale, puede que necesite configurar su cuenta de nuevo.</string>
     <string name="auth_biometric_title">Confirme usando su huella digital</string>
     <string name="auth_reason_session_expired">Por favor, autentifíquese para actualizar la sesión</string>
-    <string name="auth_reason_passphrase_expired">Por favor, autentifique el acceso a la contraseña</string>
+    <string name="auth_reason_passphrase_expired">Por favor, autentifique el acceso a la frase de contraseña</string>
     <string name="auth_server_fingerprint_changed_title">Lo sentimos, la clave del servidor ha cambiado.</string>
     <string name="auth_server_fingerprint_changed_message">Por razones de seguridad, compruebe con su administrador que este es un cambio que iniciaron. La nueva huella digital:</string>
     <string name="auth_server_fingerprint_changed_button">Aceptar nueva clave</string>
@@ -170,7 +175,7 @@
     <string name="dialog_unable_to_generate_password_title">No se ha podido generar una contraseña segura</string>
     <string name="dialog_unable_to_generate_password_message">El generador de contraseñas no generará una contraseña lo suficientemente fuerte. Se requiere un mínimo de %d bits</string>
     <string name="autofill_service_name">Autocompletado de Passbolt</string>
-    <string name="dialog_encourage_autofill_header">¡Inicia sesión en tus aplicaciones favoritas en 3 segundos!</string>
+    <string name="dialog_encourage_autofill_header">¡Inicie sesión en sus aplicaciones favoritas en 3 segundos!</string>
     <string name="dialog_autofill_header">Autocompletar</string>
     <string name="dialog_encourage_autofill_accessibility_description">Para habilitar el autocompletado necesita ir a la configuración de su dispositivo. La ubicación de estas opciones puede diferir dependiendo del fabricante de su dispositivo y de la versión Android.</string>
     <string name="dialog_encourage_autofill_accessibility_samsung">Samsung</string>
@@ -185,9 +190,10 @@
     <string name="dialog_encourage_autofill_overlay_header">Activar permiso de superposición</string>
     <string name="dialog_encourage_autofill_overlay_description">En la pantalla de configuración de Android, habilite el permiso \'Dibujar sobre otras aplicaciones\' para Autocompletado de Passbolt,
     o compruebe la guía específica para su dispositivo:</string>
-    <string name="dialog_encourage_autofill_maybe_later">Quizás más tarde</string>
     <string name="dialog_encourage_autofill_autofill_not_supported_title">Autocompletado no compatible</string>
     <string name="dialog_encourage_autofill_autofill_not_supported_message">El autocompletado no es compatible con este dispositivo.</string>
+    <string name="dialog_encourage_chrome_autofill_title">Habilitar el autocompletado nativo de Chrome</string>
+    <string name="dialog_encourage_chrome_autofill_go_to_settings">Vaya a la configuración de Chrome</string>
     <string name="dialog_autofill_enabled_go_to_app">Ir a la aplicación</string>
     <string name="dialog_autofill_enabled_got_it">¡Lo tengo!</string>
     <string name="dialog_autofill_enabled_title">¡Autocompletado de Passbolt activado!</string>
@@ -233,34 +239,60 @@
     <string name="main_menu_home">Inicio</string>
     <string name="main_menu_settings">Ajustes</string>
     <string name="main_menu_otp">TOTP</string>
+    <string name="main_chrome_native_autofill_setup_success">Configuración de autocompletado de Chrome completada</string>
     <string name="resource_details_username_header">Nombre de usuario</string>
     <string name="resource_details_password_header">Contraseña</string>
     <string name="resource_details_totp_header">TOTP</string>
-    <string name="resource_details_url_header">Main URI</string>
+    <string name="resource_details_url_header">URI principal</string>
     <string name="resource_details_expiry_header">Caducidad</string>
     <string name="resource_details_description_header">Descripción</string>
+    <string name="resource_details_note_header">Nota</string>
+    <string name="resource_details_note_content">Contenido</string>
     <string name="resource_details_tags_header">Etiquetas</string>
     <string name="resource_details_encrypted_description">La descripción está cifrada</string>
     <string name="resource_details_information">Información</string>
     <string name="resource_details_invalid_totp_scanned">Código QR TOTP escaneado no válido</string>
+    <string name="resource_details_metadata_header">Metadatos</string>
     <string name="more_details_copy_password">Copiar contraseña</string>
     <string name="more_details_copy_description">Copiar descripción</string>
-    <string name="resource_update_password_title">Nueva contraseña</string>
-    <string name="resource_update_password">Contraseña</string>
-    <string name="resource_update_password_hint">Introduzca contraseña</string>
-    <string name="resource_update_description">Descripción</string>
-    <string name="resource_update_description_hint">Introduzca una descripción</string>
-    <string name="resource_update_empty_error">El %s no puede estar vacío</string>
-    <string name="resource_update_too_long_error">Se ha superado la longitud máxima</string>
-    <string name="resource_update_create_button">Crear</string>
     <string name="resource_form_create_success">¡La nueva contraseña fue creada!</string>
-    <string name="resource_update_edit_password_title">Editar contraseña</string>
-    <string name="resource_update_field_password">Contraseña</string>
-    <string name="resource_update_field_name">Resource name</string>
-    <string name="resource_update_field_uri">Main URI</string>
-    <string name="resource_update_field_username">Nombre de usuario</string>
-    <string name="resource_update_field_description">Descripción</string>
-    <string name="resource_update_invalid_secret_data">Tipos de datos secretos no válidos. Abortando la edición.</string>
+    <string name="resource_form_password">Contraseña</string>
+    <string name="resource_form_enter_password">Introduzca una contraseña</string>
+    <string name="resource_form_main_uri">URI principal</string>
+    <string name="resource_form_enter_uri">Introduzca una URI</string>
+    <string name="resource_form_username">Nombre de usuario</string>
+    <string name="resource_form_enter_username">Introduzca un nombre de usuario</string>
+    <string name="resource_form_totp">TOTP</string>
+    <string name="resource_form_totp_secret">Secreto</string>
+    <string name="resource_form_totp_url">URL</string>
+    <string name="resource_form_totp_url_issuer">URL (emisor)</string>
+    <string name="resource_form_totp_more_settings">Más ajustes del TOTP</string>
+    <string name="resource_form_totp_settings">Configuración del TOTP</string>
+    <string name="resource_form_description">Descripción</string>
+    <string name="resource_form_enter_description">Introduzca una descripción</string>
+    <string name="resource_form_metadata_description">Descripción de metadatos</string>
+    <string name="resource_form_create_metadata_description">Crear descripción de metadatos</string>
+    <string name="resource_form_note">Nota</string>
+    <string name="resource_form_create_note">Crear nota</string>
+    <string name="resource_form_note_content">Contenido</string>
+    <string name="resource_form_enter_note">Introducir nota</string>
+    <string name="resource_form_note_info">La nota es parte del secreto. Si quiere poder buscar este contenido, use la descripción de metadatos.</string>
+    <string name="resource_form_metadata_description_info">Si desea que la descripción sea parte del secreto, utilice la nota en su lugar.</string>
+    <string name="resource_form_resource_name">Nombre del recurso</string>
+    <string name="resource_form_name">Nombre</string>
+    <string name="resource_form_create_password">Crear una contraseña</string>
+    <string name="resource_form_edit_resource">Editar %s</string>
+    <string name="resource_form_create_totp">Crear un TOTP</string>
+    <string name="resource_form_view_advanced_settings">Ver configuración avanzada</string>
+    <string name="resource_form_view_additional_secrets">Secretos adicionales</string>
+    <string name="resource_form_view_metadata">Metadatos</string>
+    <string name="resource_form_view_additional_uris">URIs adicionales</string>
+    <string name="resource_form_create">Crear</string>
+    <string name="resource_form_save">Guardar</string>
+    <string name="resource_form_edit_init_error">No se pudo inicializar la edición de recursos</string>
+    <string name="resource_form_remove_totp">Eliminar TOTP</string>
+    <string name="resource_form_remove_note">Eliminar nota</string>
+    <string name="resource_form_no_name">sin nombre</string>
     <string name="settings_app_settings">Ajustes de la app</string>
     <string name="settings_accounts">Cuentas</string>
     <string name="settings_terms_and_licenses">Términos &amp; licencias</string>
@@ -268,7 +300,7 @@
     <string name="settings_disable">Desactivar</string>
     <string name="settings_sign_out">Cerrar sesión</string>
     <string name="settings_title">Ajustes</string>
-    <string name="settings_disable_fingerprint_confirmation_message">Después de desactivar la huella dactilar necesitará iniciar sesión usando su contraseña.</string>
+    <string name="settings_disable_fingerprint_confirmation_message">Después de desactivar la huella digital necesitará iniciar sesión usando su frase de contraseña.</string>
     <string name="settings_turn_on_biometric_title">Activar la autenticación con huella digital</string>
     <string name="settings_turn_on_biometric_subtitle">Toque el sensor de huella digital</string>
     <string name="settings_add_first_fingerprint">Por favor, añada su huella dactilar primero en la configuración del sistema</string>
@@ -286,7 +318,7 @@
     <string name="settings_terms_and_licenses_terms">Términos &amp; Condiciones</string>
     <string name="settings_app_settings_default_filter">Filtro por defecto</string>
     <string name="settings_app_settings_autofill">Autocompletar</string>
-    <string name="settings_app_settings_fingerprint">Huella dactilar</string>
+    <string name="settings_app_settings_fingerprint">Huella digital</string>
     <string name="settings_app_settings_biometry_error">Error de biometría. %s</string>
     <string name="settings_app_settings_expert_settings">Ajustes de experto</string>
     <string name="settings_app_settings_expert_settings_dev_mode">Modo desarrollador</string>
@@ -294,7 +326,10 @@
     <string name="settings_autofill_autofill_title">Aquí puede cambiar los métodos de autocompletado</string>
     <string name="settings_autofill_autofill_desc">Se recomienda utilizar el método Servicio de Autocompletado pero el rendimiento del Servicio puede depender de la configuración de su dispositivo y de la optimización de batería. \n\nSi el Servicio de Autocompletado no funciona de forma fiable en su dispositivo puede intentar habilitar el autocompletado basado en el Servicio de Accesibilidad.</string>
     <string name="settings_autofill_autofill_service">Servicio de completado (recomendado)</string>
+    <string name="settings_chrome_native_autofill_autofill_service">Autocompletado nativo de Chrome (recomendado)</string>
     <string name="settings_autofill_autofill_service_description">El autocompletado se basará en el servicio de Autocompletado recomendado</string>
+    <string name="settings_chrome_native_autofill_autofill_service_description">Chrome usará el Servicio de Autocompletado del sistema de Android en lugar del suyo, pero sólo si está habilitado en los ajustes del sistema.</string>
+    <string name="settings_chrome_native_autofill_not_supported">Su versión de Chrome no es compatible aún con esta función.</string>
     <string name="settings_autofill_accessibility">Servicio de accesibilidad (antiguo)</string>
     <string name="settings_autofill_accessibility_description">El autocompletado se basará en el servicio de accesibilidad. Necesitará aprobar permisos adicionales.</string>
     <string name="settings_autofill_autofill_service_not_supported">El servicio de autocompletado no es compatible con su dispositivo</string>
@@ -327,19 +362,19 @@
     <string name="scan_qr_scanning_error">Error durante el escaneo</string>
     <string name="scan_qr_camera_error">Error de cámara</string>
     <string name="scan_qr_update_transfer_error">Se produjo un error durante la actualización de la transferencia</string>
+    <string name="scan_qr_or_create_totp_manually">O crear TOTP manualmente</string>
     <string name="scan_qr_summary_success_title">¡Su información ha sido transferida!</string>
     <string name="scan_qr_summary_already_linked_title">La cuenta ya está vinculada al dispositivo</string>
     <string name="scan_qr_summary_http_not_supported_title">La conexión HTTP insegura no es compatible</string>
     <string name="scan_qr_summary_failure_title">¡Algo salió mal!</string>
     <string name="scan_qr_summary_no_network_title">Sin conexión a Internet</string>
-    <string name="fingerprint_setup_use_fingerprint_button">Usar huella dactilar</string>
-    <string name="fingerprint_setup_maybe_later_button">Quizás más tarde</string>
-    <string name="fingerprint_setup_configure_title">Configurar huella dactilar</string>
+    <string name="fingerprint_setup_use_fingerprint_button">Usar huella digial</string>
+    <string name="fingerprint_setup_configure_title">Configurar huella digital</string>
     <string name="fingerprint_setup_configure_description">Desbloquee sus secretos en un segundo.</string>
-    <string name="fingerprint_setup_use_title">Usar huella dactilar en vez de contraseña</string>
+    <string name="fingerprint_setup_use_title">Usar huella digital en vez de la frase de contraseña</string>
     <string name="fingerprint_setup_use_description">Desbloquee sus secretos en un segundo.</string>
-    <string name="fingerprint_setup_biometric_title">Confirme usando su huella dactilar</string>
-    <string name="fingerprint_setup_biometric_subtitle">Toque el sensor de huella dactilar</string>
+    <string name="fingerprint_setup_biometric_title">Confirme usando su huella digital</string>
+    <string name="fingerprint_setup_biometric_subtitle">Toque el sensor de huella digital</string>
     <string name="folder_root">Raíz</string>
     <string name="resource_permissions_can_read">Puede leer</string>
     <string name="resource_permissions_can_update">Puede actualizar</string>
@@ -401,7 +436,7 @@
     <string name="otp_invalid_itp_data_scanned">Se ha producido un error durante el escaneo del código QR TOTP</string>
     <string name="otp_more_copy_otp">Copiar TOTP</string>
     <string name="otp_more_show_otp">Mostrar TOTP</string>
-    <string name="otp_more_edit_resource">Editar TOTP</string>
+    <string name="otp_more_edit_resource">Editar</string>
     <string name="otp_more_delete_otp">Eliminar TOTP</string>
     <string name="otp_edit_title">Editar TOTP</string>
     <string name="otp_edit_scan_new">Escanear un nuevo código QR</string>
@@ -461,13 +496,28 @@
     <string name="dialog_confirm_password_title">Confirme su contraseña</string>
     <string name="dialog_confirm_password_message_data_breach">La contraseña es parte de una brecha de datos expuesta.\n\n¿Está seguro de que desea crear este recurso?</string>
     <string name="dialog_confirm_password_message_low_entropy">La contraseña es muy débil y puede ser parte de una brecha de datos expuesta.\n\n¿Está seguro de que desea crear este recurso?</string>
-    <string name="password_generator_known_strength_format">%s (entropía: %.2f bits)</string>
+    <string name="password_generator_known_strength_format">%1$s (entropía: %2$.2f bits)</string>
     <string name="password_generator_unknown_strength_format">Fortaleza (entropía: n/a bits)</string>
+    <string name="create_resource_menu_create_a_resource">Crear un recurso</string>
+    <string name="create_resource_menu_create_totp">TOTP</string>
+    <string name="create_resource_menu_create_password">Contraseña</string>
+    <string name="create_resource_menu_create_folder">Carpeta</string>
+    <string name="dialog_new_metadata_key_trust_changed">La clave de metadatos ha cambiado.</string>
+    <string name="dialog_new_metadata_key_trust_modified_by_user">La clave de cifrado utilizada para compartir metadatos entre usuarios ha sido actualizada por %s.</string>
+    <string name="dialog_new_metadata_key_trust_key_rotation_info">Si no esperaba esto, puede verificarlo con su administrador.</string>
+    <string name="dialog_new_metadata_key_trust_key_rollback_info">Esto es inusual. Por favor, verifique con su administrador.</string>
+    <string name="dialog_new_metadata_key_trust_key_fingerprint">Clave de huella digital:</string>
+    <string name="dialog_new_metadata_key_trust_key_trust_the_key">Confiar en la clave</string>
+    <string name="dialog_trusted_metadata_key_deleted">La clave de metadatos ha sido eliminada.</string>
+    <string name="dialog_trusted_metadata_key_deleted_main">La clave de cifrado de confianza utilizada para compartir metadatos entre usuarios ha sido eliminada.</string>
+    <string name="dialog_trusted_metadata_key_deleted_info">Si no esperaba esto, puede verificarlo con su administrador.</string>
+    <string name="dialog_trusted_metadata_key_deleted_trust">Confiar</string>
     <!--
     arrays can be inconsistent when in other languages
     index / size is not used in code
     -->
-    <string-array name="username_hint_values" tools:ignore="InconsistentArrays">
+    <string-array name="username_hint_values"
+        tools:ignore="InconsistentArrays">
         <item>correo</item>
         <item>nombre de usuario</item>
         <item>móvil</item>
@@ -478,14 +528,20 @@
       arrays can be inconsistent when in other languages
       index / size is not used in code
     -->
-    <string-array name="password_hint_values" tools:ignore="InconsistentArrays">
+    <string-array name="password_hint_values"
+        tools:ignore="InconsistentArrays">
         <item>contraseña</item>
         <item>secreto</item>
-        <item>contraseña</item>
+        <item>frase de contraseña</item>
     </string-array>
     <string-array name="dialog_encourage_autofill_setup_steps">
         <item>&lt;b&gt;Active los ajustes de autocompletado&lt;/b&gt;</item>
         <item>¡Elija &lt;b&gt;Passbolt!&lt;/b&gt;</item>
+    </string-array>
+    <string-array name="dialog_encourage_chrome_native_autofill_setup_steps">
+        <item>Asegúrese de que el autocompletado nativo de Passbolt está activado en los ajustes del sistema operativo Android</item>
+        <item>Vaya a &lt;b&gt;Configuración de Chrome&lt;/b&gt; y seleccione &lt;b&gt;Servicios de Autocompletado&lt;/b&gt;</item>
+        <item>Seleccione &lt;b&gt;Autocompletar usando otro servicio&lt;/b&gt;</item>
     </string-array>
     <string-array name="transfer_details_steps_array">
         <item>Inicie sesión usando la extensión del navegador</item>
