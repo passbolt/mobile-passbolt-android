@@ -42,16 +42,22 @@
     <string name="common_sign_out">Abmelden</string>
     <string name="common_data_refresh_error">Es gab einen Fehler beim Aktualisieren der Daten</string>
     <string name="common_decryption_failure">Fehler bei der Entschlüsselung des Geheimnisses</string>
-    <string name="common_metadata_encryption_failure">Error during metadata encryption</string>
+    <string name="common_metadata_encryption_failure">Fehler während der Verschlüsselung von Metadaten</string>
     <string name="common_fetch_failure">Fehler beim Herunterladen des Geheimnisses</string>
     <string name="common_encryption_failure">Es gab einen Fehler bei der geheimen Verschlüsselung</string>
     <string name="common_json_schema_resource_validation_error">Bei der Überprüfung der Ressource ist ein Fehler aufgetreten. Aktiviere Protokolle für weitere Details.</string>
     <string name="common_json_schema_secret_validation_error">Beim Überprüfen des Geheimnisses ist ein Fehler aufgetreten. Aktivieren Sie Protokolle für weitere Details.</string>
-    <string name="common_message_resource_edited">%s Passwort wurde erfolgreich bearbeitet.</string>
-    <string name="common_message_resource_deleted">%s Kennwort wurde gelöscht.</string>
+    <string name="common_maybe_later">Vielleicht später</string>
+    <string name="common_cannot_create_resource_with_current_config">Cannot update a resource with current configuration</string>
+    <string name="common_metadata_key_verification_failure">Could not verify metadata keys</string>
+    <string name="common_metadata_key_is_trusted">New metadata key is trusted</string>
+    <string name="common_metadata_key_trust_failed">Failed to trust new metadata key</string>
+    <string name="common_message_resource_edited">%s resource was successfully edited.</string>
+    <string name="common_message_resource_deleted">%s resource was deleted.</string>
     <string name="common_message_resource_shared">Die Berechtigungen für die Ressource wurden aktualisiert.</string>
     <string name="common_message_folder_created">Neuer Ordner %s wurde erstellt!</string>
     <string name="validation_required_with_max_length">Die Länge sollte zwischen 1 und %d liegen.</string>
+    <string name="validation_is_required">This input is required</string>
     <string name="validation_required_integer">Sollte eine Ganzzahl sein</string>
     <string name="fingerprint_biometric_error_generic">Es ist ein Fehler beim Fingerabdrucksensor aufgetreten.</string>
     <string name="fingerprint_biometric_error_too_many_attempts">Die biometrische Autorisierung wurde aufgrund von zu vielen Versuchen blockiert.</string>
@@ -69,14 +75,13 @@
     <string name="more_copy_uri">URI kopieren</string>
     <string name="more_copy_password">Passwort kopieren</string>
     <string name="more_copy_username">Benutzernamen kopieren</string>
-    <string name="more_copy_metadata_desc">Beschreibung kopieren</string>
-    <string name="more_edit">Passwort bearbeiten</string>
-    <string name="more_delete">Passwort löschen</string>
-    <string name="more_share">Passwort teilen</string>
+    <string name="more_copy_metadata_desc">Copy metadata description</string>
+    <string name="more_copy_note">Notiz kopieren</string>
+    <string name="more_edit">Bearbeiten</string>
+    <string name="more_delete">Löschen</string>
+    <string name="more_share">Freigeben</string>
     <string name="more_add_to_favourite">Zu Favoriten hinzufügen</string>
     <string name="more_remove_from_favourite">Aus Favoriten entfernen</string>
-    <string name="more_add_totp">TOTP hinzufügen</string>
-    <string name="more_manage_totp">TOTP verwalten</string>
     <string name="folder_more_see_details">Details anzeigen</string>
     <string name="dialog_server_not_reachable_title">Server wurde nicht erreicht!</string>
     <string name="dialog_server_not_reachable_message">%s kann nicht erreicht werden. Bitte versuchen Sie es erneut</string>
@@ -185,9 +190,10 @@
     <string name="dialog_encourage_autofill_overlay_header">Overlay-Erlaubnis einschalten</string>
     <string name="dialog_encourage_autofill_overlay_description">Aktivieren Sie die Overlay-BerechtigungAuf dem Android-Einstellungsbildschirm aktivieren Sie die Berechtigung \"Über andere Apps zeichnen\" für Passbolt Autofill,
     oder lesen Sie die spezifische Anleitung für Ihr Gerät:</string>
-    <string name="dialog_encourage_autofill_maybe_later">Vielleicht später</string>
     <string name="dialog_encourage_autofill_autofill_not_supported_title">Automatisch ausfüllen wird nicht unterstützt</string>
     <string name="dialog_encourage_autofill_autofill_not_supported_message">Automatisch ausfüllen wird nicht unterstützt.</string>
+    <string name="dialog_encourage_chrome_autofill_title">Chrome-native Autofill aktivieren</string>
+    <string name="dialog_encourage_chrome_autofill_go_to_settings">Zu den Chrome-Einstellungen</string>
     <string name="dialog_autofill_enabled_go_to_app">Zur App gehen</string>
     <string name="dialog_autofill_enabled_got_it">Verstanden!</string>
     <string name="dialog_autofill_enabled_title">Passbolt Autofill aktiviert!</string>
@@ -233,34 +239,60 @@
     <string name="main_menu_home">Start</string>
     <string name="main_menu_settings">Einstellungen</string>
     <string name="main_menu_otp">TOTP</string>
+    <string name="main_chrome_native_autofill_setup_success">Chrome-Autofill-Einrichtung erfolgreich</string>
     <string name="resource_details_username_header">Benutzername</string>
     <string name="resource_details_password_header">Passwort</string>
     <string name="resource_details_totp_header">Totp</string>
-    <string name="resource_details_url_header">Main URI</string>
+    <string name="resource_details_url_header">Haupt-URI</string>
     <string name="resource_details_expiry_header">Ablauf</string>
     <string name="resource_details_description_header">Beschreibung</string>
+    <string name="resource_details_note_header">Notiz</string>
+    <string name="resource_details_note_content">Inhalt</string>
     <string name="resource_details_tags_header">Tags</string>
     <string name="resource_details_encrypted_description">Beschreibung ist verschlüsselt</string>
     <string name="resource_details_information">Informationen</string>
     <string name="resource_details_invalid_totp_scanned">Ungültiger TOTP QR-Code gescannt</string>
+    <string name="resource_details_metadata_header">Metadaten</string>
     <string name="more_details_copy_password">Passwort kopieren</string>
     <string name="more_details_copy_description">Beschreibung kopieren</string>
-    <string name="resource_update_password_title">Neues Passwort</string>
-    <string name="resource_update_password">Passwort</string>
-    <string name="resource_update_password_hint">Passwort eingeben</string>
-    <string name="resource_update_description">Beschreibung</string>
-    <string name="resource_update_description_hint">Beschreibung eingeben</string>
-    <string name="resource_update_empty_error">Der %s kann nicht leer sein</string>
-    <string name="resource_update_too_long_error">Die maximale Länge wurde überschritten</string>
-    <string name="resource_update_create_button">Erstellen</string>
     <string name="resource_form_create_success">Neues Passwort wurde erstellt!</string>
-    <string name="resource_update_edit_password_title">Passwort bearbeiten</string>
-    <string name="resource_update_field_password">Passwort</string>
-    <string name="resource_update_field_name">Resource name</string>
-    <string name="resource_update_field_uri">Main URI</string>
-    <string name="resource_update_field_username">Benutzername</string>
-    <string name="resource_update_field_description">Beschreibung</string>
-    <string name="resource_update_invalid_secret_data">Ungültige geheimen Datentypen. Bearbeitung wird abgebrochen.</string>
+    <string name="resource_form_password">Passwort</string>
+    <string name="resource_form_enter_password">Passwort eingeben</string>
+    <string name="resource_form_main_uri">Main URI</string>
+    <string name="resource_form_enter_uri">URI eingeben</string>
+    <string name="resource_form_username">Benutzername</string>
+    <string name="resource_form_enter_username">Benutzernamen eingeben</string>
+    <string name="resource_form_totp">TOTP</string>
+    <string name="resource_form_totp_secret">Geheimnis</string>
+    <string name="resource_form_totp_url">URL</string>
+    <string name="resource_form_totp_url_issuer">URL (Aussteller)</string>
+    <string name="resource_form_totp_more_settings">Weitere TOTP-Einstellungen</string>
+    <string name="resource_form_totp_settings">TOTP-Einstellungen</string>
+    <string name="resource_form_description">Beschreibung</string>
+    <string name="resource_form_enter_description">Beschreibung eingeben</string>
+    <string name="resource_form_metadata_description">Metadatenbeschreibung</string>
+    <string name="resource_form_create_metadata_description">Create metadata description</string>
+    <string name="resource_form_note">Notiz</string>
+    <string name="resource_form_create_note">Create note</string>
+    <string name="resource_form_note_content">Inhalt</string>
+    <string name="resource_form_enter_note">Enter note</string>
+    <string name="resource_form_note_info">The note is part of the secret if you want to be able to search this content, use metadata description.</string>
+    <string name="resource_form_metadata_description_info">Wenn Sie möchten, dass die Beschreibung Teil des Geheimnisses ist, verwenden Sie stattdessen eine Notiz.</string>
+    <string name="resource_form_resource_name">Ressourcenname</string>
+    <string name="resource_form_name">Name</string>
+    <string name="resource_form_create_password">Ein Passwort erstellen</string>
+    <string name="resource_form_edit_resource">Bearbeite %s</string>
+    <string name="resource_form_create_totp">TOTP erstellen</string>
+    <string name="resource_form_view_advanced_settings">Erweiterte Einstellungen anzeigen</string>
+    <string name="resource_form_view_additional_secrets">Zusätzliche Geheimnisse</string>
+    <string name="resource_form_view_metadata">Metadaten</string>
+    <string name="resource_form_view_additional_uris">Zusätzliche URIs</string>
+    <string name="resource_form_create">Erstellen</string>
+    <string name="resource_form_save">Speichern</string>
+    <string name="resource_form_edit_init_error">Failed to initialize resource edition</string>
+    <string name="resource_form_remove_totp">Remove TOTP</string>
+    <string name="resource_form_remove_note">Remove Note</string>
+    <string name="resource_form_no_name">no name</string>
     <string name="settings_app_settings">App-Einstellungen</string>
     <string name="settings_accounts">Konten</string>
     <string name="settings_terms_and_licenses">Bedingungen &amp; Lizenzen</string>
@@ -294,7 +326,10 @@
     <string name="settings_autofill_autofill_title">Hier können Sie die Autofüllungsmethoden ändern</string>
     <string name="settings_autofill_autofill_desc">Es wird empfohlen, die Autofill-Service-Methode zu verwenden, aber die Leistung des Services kann von den Einstellungen Ihres Geräts und der Batterieoptimierung abhängen. \n\nWenn der Autofill-Service nicht zuverlässig auf Ihrem Gerät funktioniert, können Sie versuchen, Autofill basierend auf den Bedienungshilfen zu aktivieren.</string>
     <string name="settings_autofill_autofill_service">Autmatisches ausfüllen Service (empfohlen)</string>
+    <string name="settings_chrome_native_autofill_autofill_service">Chrome-native Autofill (empfohlen)</string>
     <string name="settings_autofill_autofill_service_description">Autofill basiert auf dem empfohlenen Autofill Service</string>
+    <string name="settings_chrome_native_autofill_autofill_service_description">Chrome wird den systemeigenen Autofill-Dienst von Android anstelle seines eigenen verwenden, aber nur, wenn er in den Systemeinstellungen aktiviert ist.</string>
+    <string name="settings_chrome_native_autofill_not_supported">Ihre Chrome-Version unterstützt diese Funktion noch nicht.</string>
     <string name="settings_autofill_accessibility">Bedienungshilfen (Legacy)</string>
     <string name="settings_autofill_accessibility_description">Autofill wird auf den Bedienungshilfen basieren. Sie müssen zusätzliche Berechtigungen genehmigen.</string>
     <string name="settings_autofill_autofill_service_not_supported">Der Autofill-Dienst wird auf Ihrem Gerät nicht unterstützt</string>
@@ -318,7 +353,7 @@
     <string name="transfer_details_camera_required_dialog_message">Leider benötigen Sie ein Gerät mit einer Kamera, um fortzufahren, da die Schlüsselübertragung über QR-Codes erfolgt.</string>
     <string name="transfer_details_camera_access_dialog_message">Bitte erteilen Sie der Passbolt-Anwendung in Ihren Einstellungen die Berechtigung zum Zugriff auf die Kamera.</string>
     <string name="scan_qr_exit_confirmation_dialog_message">Wenn Sie gehen, müssen Sie die QR-Codes erneut scannen.</string>
-    <string name="scan_qr_exit_information_dialog_message">You will see a sequence of QR codes. We will scan these codes until the progress bar is full. Then you will be able to login!</string>
+    <string name="scan_qr_exit_information_dialog_message">Sie werden eine Reihe von QR-Codes sehen. Wir scannen diese Codes, bis der Fortschrittsbalken voll ist. Dann können Sie sich anmelden!</string>
     <string name="scan_qr_exit_information_dialog_title">Scannen von QR-Codes</string>
     <string name="scan_qr_keep_going">Scannen von QR-Codes</string>
     <string name="scan_qr_aim_at_qr_code">Richten Sie die Kamera auf den QR-Code</string>
@@ -327,13 +362,13 @@
     <string name="scan_qr_scanning_error">Fehler beim Scannen</string>
     <string name="scan_qr_camera_error">Kamera-Fehler</string>
     <string name="scan_qr_update_transfer_error">Es ist ein Fehler bei der Aktualisierung der Übertragung aufgetreten</string>
+    <string name="scan_qr_or_create_totp_manually">Or create TOTP manually</string>
     <string name="scan_qr_summary_success_title">Ihre Daten wurden übertragen!</string>
     <string name="scan_qr_summary_already_linked_title">Konto ist bereits mit dem Gerät verknüpft</string>
     <string name="scan_qr_summary_http_not_supported_title">Unsichere HTTP-Verbindung wird nicht unterstützt</string>
     <string name="scan_qr_summary_failure_title">Etwas ist schief gelaufen!</string>
     <string name="scan_qr_summary_no_network_title">Keine Internetverbindung</string>
     <string name="fingerprint_setup_use_fingerprint_button">Fingerabdruck verwenden</string>
-    <string name="fingerprint_setup_maybe_later_button">Vielleicht später</string>
     <string name="fingerprint_setup_configure_title">Fingerabdruck konfigurieren</string>
     <string name="fingerprint_setup_configure_description">Entschlüsseln Sie Ihre Geheimnisse in einer Sekunde.</string>
     <string name="fingerprint_setup_use_title">Fingerabdruck anstelle der Passphrase verwenden</string>
@@ -401,7 +436,7 @@
     <string name="otp_invalid_itp_data_scanned">Beim Scannen des TOTP QR-Codes ist ein Fehler aufgetreten</string>
     <string name="otp_more_copy_otp">TOTP kopieren</string>
     <string name="otp_more_show_otp">TOTP anzeigen</string>
-    <string name="otp_more_edit_resource">TOTP bearbeiten</string>
+    <string name="otp_more_edit_resource">Bearbeiten</string>
     <string name="otp_more_delete_otp">TOTP löschen</string>
     <string name="otp_edit_title">TOTP bearbeiten</string>
     <string name="otp_edit_scan_new">Einen neuen QR-Code scannen</string>
@@ -461,8 +496,22 @@
     <string name="dialog_confirm_password_title">Passwort bestätigen</string>
     <string name="dialog_confirm_password_message_data_breach">Das Passwort ist Teil eines exponierten Datenbruchs.\n\nSind Sie sicher, dass Sie diese Ressource erstellen möchten?</string>
     <string name="dialog_confirm_password_message_low_entropy">Das Passwort ist sehr schwach und könnte Teil eines exponierten Datenbruchs sein.\n\nSind Sie sicher, dass Sie diese Ressource erstellen möchten?</string>
-    <string name="password_generator_known_strength_format">%s (Entropy: %.2f Bits)</string>
+    <string name="password_generator_known_strength_format">%1$s (Entropy: %2$.2f Bits)</string>
     <string name="password_generator_unknown_strength_format">Stärke (Entropy: n/a bits)</string>
+    <string name="create_resource_menu_create_a_resource">Eine Ressource erstellen</string>
+    <string name="create_resource_menu_create_totp">TOTP</string>
+    <string name="create_resource_menu_create_password">Passwort</string>
+    <string name="create_resource_menu_create_folder">Ordner</string>
+    <string name="dialog_new_metadata_key_trust_changed">The metadata key has changed.</string>
+    <string name="dialog_new_metadata_key_trust_modified_by_user">The encryption key used to share metadata between users has been updated by %s.</string>
+    <string name="dialog_new_metadata_key_trust_key_rotation_info">If you weren’t expecting this, you can verify with your administrator.</string>
+    <string name="dialog_new_metadata_key_trust_key_rollback_info">This is unusual, please verify with your administrator.</string>
+    <string name="dialog_new_metadata_key_trust_key_fingerprint">Key fingerprint:</string>
+    <string name="dialog_new_metadata_key_trust_key_trust_the_key">Trust the key</string>
+    <string name="dialog_trusted_metadata_key_deleted">The metadata key has been deleted.</string>
+    <string name="dialog_trusted_metadata_key_deleted_main">The trusted encryption key used to share metadata between users has been deleted.</string>
+    <string name="dialog_trusted_metadata_key_deleted_info">If you weren’t expecting this, you can verify with your administrator.</string>
+    <string name="dialog_trusted_metadata_key_deleted_trust">Trust</string>
     <!--
     arrays can be inconsistent when in other languages
     index / size is not used in code
@@ -486,6 +535,11 @@
     <string-array name="dialog_encourage_autofill_setup_steps">
         <item>&lt;b&gt;Einschalten der Autofill&lt;/b&gt; Einstellung</item>
         <item>Wähle &lt;b&gt;Passbolt!&lt;/b&gt;</item>
+    </string-array>
+    <string-array name="dialog_encourage_chrome_native_autofill_setup_steps">
+        <item>Stellen Sie sicher, dass Passbolt-native Autofill in den Android-Betriebssystemeinstellungen aktiviert ist</item>
+        <item>Gehen Sie zu &lt;b&gt;Chrome-Einstellungen&lt;/b&gt; und wählen Sie &lt;b&gt;Autofill-Dienste&lt;/b&gt;</item>
+        <item>Wählen Sie &lt;b&gt;Autofill über einen anderen Dienst&lt;/b&gt;</item>
     </string-array>
     <string-array name="transfer_details_steps_array">
         <item>Anmeldung über die Browsererweiterung</item>
