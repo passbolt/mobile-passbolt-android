@@ -25,9 +25,8 @@ import com.passbolt.mobile.android.feature.autofill.informationprovider.Autofill
  * @since v1.0
  */
 class AutofillTutorialPresenter(
-    private val autofillInformationProvider: AutofillInformationProvider
+    private val autofillInformationProvider: AutofillInformationProvider,
 ) : AutofillTutorialContract.Presenter {
-
     override var view: AutofillTutorialContract.View? = null
     private lateinit var tutorialMode: TutorialMode
 
@@ -36,10 +35,11 @@ class AutofillTutorialPresenter(
     }
 
     override fun resume() {
-        val shouldCloseDialog = when (tutorialMode) {
-            TutorialMode.Overlay -> autofillInformationProvider.isAccessibilityOverlayEnabled()
-            TutorialMode.Service -> autofillInformationProvider.isAccessibilityServiceEnabled()
-        }
+        val shouldCloseDialog =
+            when (tutorialMode) {
+                TutorialMode.Overlay -> autofillInformationProvider.isAccessibilityOverlayEnabled()
+                TutorialMode.Service -> autofillInformationProvider.isAccessibilityServiceEnabled()
+            }
         if (shouldCloseDialog) {
             view?.closeDialog()
         }

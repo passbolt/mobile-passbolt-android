@@ -37,14 +37,14 @@ data class MetadataKey(
     val armoredKey: String,
     val modified: ZonedDateTime,
     val expired: ZonedDateTime?,
-    val deleted: ZonedDateTime?
+    val deleted: ZonedDateTime?,
 )
 
 data class MetadataKeyWithPrivateKeys(
     @Embedded val metadataKey: MetadataKey,
     @Relation(
         parentColumn = "id",
-        entityColumn = "metadataKeyId"
+        entityColumn = "metadataKeyId",
     )
-    val metadataPrivateKeys: List<MetadataPrivateKey>
+    val metadataPrivateKeys: List<MetadataPrivateKey>,
 )

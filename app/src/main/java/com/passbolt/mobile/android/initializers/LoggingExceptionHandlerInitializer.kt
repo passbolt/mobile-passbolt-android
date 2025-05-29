@@ -1,12 +1,3 @@
-package com.passbolt.mobile.android.initializers
-
-import android.content.Context
-import androidx.startup.Initializer
-import com.passbolt.mobile.android.core.logger.exceptionhandler.LoggingExceptionHandler
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
-import org.koin.core.parameter.parametersOf
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -30,12 +21,22 @@ import org.koin.core.parameter.parametersOf
  * @since v1.0
  */
 
+package com.passbolt.mobile.android.initializers
+
+import android.content.Context
+import androidx.startup.Initializer
+import com.passbolt.mobile.android.core.logger.exceptionhandler.LoggingExceptionHandler
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
+import org.koin.core.parameter.parametersOf
+
 /**
  * Initializes the uncaught exception handler which logs exception to internal log file.
  *
  */
-class LoggingExceptionHandlerInitializer : Initializer<Unit>, KoinComponent {
-
+class LoggingExceptionHandlerInitializer :
+    Initializer<Unit>,
+    KoinComponent {
     private val loggingExceptionHandler: LoggingExceptionHandler by inject {
         parametersOf(Thread.getDefaultUncaughtExceptionHandler())
     }

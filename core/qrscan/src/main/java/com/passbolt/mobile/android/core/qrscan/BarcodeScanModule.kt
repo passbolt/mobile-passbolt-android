@@ -38,23 +38,25 @@ import org.koin.dsl.module
 
 const val SCAN_MANAGER_SCOPE = "SCAN_MANAGER_SCOPE"
 
-val barcodeScanModule = module {
-    factory {
-        CameraInformationProvider(
-            context = androidApplication()
-        )
-    }
-
-    scope(named(SCAN_MANAGER_SCOPE)) {
-        scopedOf(::ScanManager)
-        scopedOf(::QrCodeImageAnalyzer)
-        scopedOf(::QrCodeImageAnalyzerResultsConsumer)
-        scoped {
-            BarcodeScannerOptions.Builder()
-                .setBarcodeFormats(Barcode.FORMAT_QR_CODE)
-                .build()
+val barcodeScanModule =
+    module {
+        factory {
+            CameraInformationProvider(
+                context = androidApplication(),
+            )
         }
-        scoped { BarcodeScanning.getClient(get()) }
-        scoped { LifecycleCameraController(androidContext()) }
+
+        scope(named(SCAN_MANAGER_SCOPE)) {
+            scopedOf(::ScanManager)
+            scopedOf(::QrCodeImageAnalyzer)
+            scopedOf(::QrCodeImageAnalyzerResultsConsumer)
+            scoped {
+                BarcodeScannerOptions
+                    .Builder()
+                    .setBarcodeFormats(Barcode.FORMAT_QR_CODE)
+                    .build()
+            }
+            scoped { BarcodeScanning.getClient(get()) }
+            scoped { LifecycleCameraController(androidContext()) }
+        }
     }
-}

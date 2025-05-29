@@ -1,12 +1,9 @@
-package com.passbolt.mobile.android.feature.authentication
+package com.passbolt.mobile.android.feature.authentication.auth.challenge
 
 import com.google.gson.Gson
 import com.passbolt.mobile.android.common.UuidProvider
 import com.passbolt.mobile.android.common.time.TimeProvider
 import com.passbolt.mobile.android.core.accounts.usecase.privatekey.GetPrivateKeyUseCase
-import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeDecryptor
-import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeProvider
-import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeVerifier
 import com.passbolt.mobile.android.gopenpgp.OpenPgp
 import org.koin.dsl.module
 import org.mockito.kotlin.mock
@@ -39,29 +36,30 @@ internal val openPgp = mock<OpenPgp>()
 internal val timeProvider = mock<TimeProvider>()
 internal val uuidProvider = mock<UuidProvider>()
 
-val challengeTestModule = module {
-    factory { Gson() }
-    factory { getPrivateKeyUseCase }
-    factory { openPgp }
-    factory {
-        ChallengeDecryptor(
-            openPgp = get(),
-            getPrivateKeyUseCase = get(),
-            gson = get()
-        )
+val challengeTestModule =
+    module {
+        factory { Gson() }
+        factory { getPrivateKeyUseCase }
+        factory { openPgp }
+        factory {
+            ChallengeDecryptor(
+                openPgp = get(),
+                getPrivateKeyUseCase = get(),
+                gson = get(),
+            )
+        }
+        factory {
+            ChallengeProvider(
+                openPgp = get(),
+                privateKeyUseCase = get(),
+                gson = get(),
+                timeProvider = get(),
+                uuidProvider = get(),
+            )
+        }
+        factory {
+            ChallengeVerifier()
+        }
+        factory { timeProvider }
+        factory { uuidProvider }
     }
-    factory {
-        ChallengeProvider(
-            openPgp = get(),
-            privateKeyUseCase = get(),
-            gson = get(),
-            timeProvider = get(),
-            uuidProvider = get()
-        )
-    }
-    factory {
-        ChallengeVerifier()
-    }
-    factory { timeProvider }
-    factory { uuidProvider }
-}

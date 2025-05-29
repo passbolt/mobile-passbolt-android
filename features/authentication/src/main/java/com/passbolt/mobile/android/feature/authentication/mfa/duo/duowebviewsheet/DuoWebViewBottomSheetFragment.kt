@@ -40,7 +40,6 @@ import org.koin.android.ext.android.inject
 class DuoWebViewBottomSheetFragment :
     BindingScopedBottomSheetFragment<BottomSheetDuoWebViewBinding>(BottomSheetDuoWebViewBinding::inflate),
     DuoWebViewContract.View {
-
     private val presenter: DuoWebViewContract.Presenter by inject()
     private val duoWebViewClient: DuoWebViewClient by inject()
     private val bundledDuoPromptUrl by lifecycleAwareLazy {
@@ -48,7 +47,10 @@ class DuoWebViewBottomSheetFragment :
     }
     private var listener: Listener? = null
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         setListeners()
         setupWebView()
@@ -57,18 +59,19 @@ class DuoWebViewBottomSheetFragment :
     }
 
     private fun setListeners() {
-        binding.closeButton.setDebouncingOnClick {
+        requiredBinding.closeButton.setDebouncingOnClick {
             dismiss()
         }
     }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        listener = when {
-            activity is Listener -> activity as Listener
-            parentFragment is Listener -> parentFragment as Listener
-            else -> error("Parent must implement ${Listener::class.java.name}")
-        }
+        listener =
+            when {
+                activity is Listener -> activity as Listener
+                parentFragment is Listener -> parentFragment as Listener
+                else -> error("Parent must implement ${Listener::class.java.name}")
+            }
     }
 
     override fun onDetach() {
@@ -79,45 +82,48 @@ class DuoWebViewBottomSheetFragment :
 
     @SuppressLint("SetJavaScriptEnabled") // required for Duo to work
     private fun setupWebView() {
-        binding.webView.webViewClient = duoWebViewClient.apply {
-            onPageCommitVisible = {
-                binding.apply {
-                    configureDuoPageViaJs(webView)
-                    progressBar.gone()
-                    webView.visible()
+        requiredBinding.webView.webViewClient =
+            duoWebViewClient.apply {
+                onPageCommitVisible = {
+                    requiredBinding.apply {
+                        configureDuoPageViaJs(webView)
+                        progressBar.gone()
+                        webView.visible()
+                    }
+                }
+                onDuoAuthFinishedIntercepted = {
+                    listener?.duoAuthFinished(it)
+                    dismiss()
                 }
             }
-            onDuoAuthFinishedIntercepted = {
-                listener?.duoAuthFinished(it)
-                dismiss()
-            }
-        }
-        binding.webView.settings.javaScriptEnabled = true
+        requiredBinding.webView.settings.javaScriptEnabled = true
     }
 
     // duo page has gray background and mobile-unfriendly padding configured - remove it
     private fun configureDuoPageViaJs(webView: WebView) {
         webView.evaluateJavascript(
-            "document.body.children[0].style.margin='0 auto 0 auto';"
+            "document.body.children[0].style.margin='0 auto 0 auto';",
         ) {}
         webView.evaluateJavascript(
-            "document.body.style.background='#ffffff';"
+            "document.body.style.background='#ffffff';",
         ) {}
     }
 
     override fun loadUrl(duoPromptUrl: String) {
-        binding.webView.loadUrl(duoPromptUrl)
+        requiredBinding.webView.loadUrl(duoPromptUrl)
     }
 
     companion object {
         private const val EXTRA_DUO_PROMPT_URL = "DUO_PROMPT_URL"
 
-        fun newInstance(duoPromptUrl: String) = DuoWebViewBottomSheetFragment()
-            .apply {
-                arguments = bundleOf(
-                    EXTRA_DUO_PROMPT_URL to duoPromptUrl
-                )
-            }
+        fun newInstance(duoPromptUrl: String) =
+            DuoWebViewBottomSheetFragment()
+                .apply {
+                    arguments =
+                        bundleOf(
+                            EXTRA_DUO_PROMPT_URL to duoPromptUrl,
+                        )
+                }
     }
 
     interface Listener {

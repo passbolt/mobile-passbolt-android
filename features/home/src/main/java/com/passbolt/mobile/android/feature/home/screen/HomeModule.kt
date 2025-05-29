@@ -71,7 +71,7 @@ fun Module.homeModule() {
                 getLocalFolderUseCase = get(),
                 deleteResourceIdlingResource = get(),
                 totpParametersProvider = get(),
-                getRbacRulesUseCase = get()
+                getRbacRulesUseCase = get(),
             )
         }
         declareHomeListAdapters()
@@ -93,8 +93,8 @@ private fun ScopeDSL.declareHomeListItemAdapters() {
                 get<ItemAdapter<PasswordItem>>(named(RESOURCE_ITEM_ADAPTER)),
                 get<ItemAdapter<InSubFoldersHeaderItem>>(named(IN_SUB_FOLDERS_HEADER_ITEM_ADAPTER)),
                 get<ItemAdapter<FolderItem>>(named(SUB_FOLDER_ITEM_ADAPTER)),
-                get<ItemAdapter<PasswordItem>>(named(SUB_RESOURCE_ITEM_ADAPTER))
-            )
+                get<ItemAdapter<PasswordItem>>(named(SUB_RESOURCE_ITEM_ADAPTER)),
+            ),
         )
     }
 }

@@ -36,15 +36,15 @@ import org.mockito.kotlin.verifyNoMoreInteractions
  */
 
 class DescriptionFormPresenterTest : KoinTest {
-
     private val presenter: DescriptionFormContract.Presenter by inject()
     private val view: DescriptionFormContract.View = mock()
 
     @get:Rule
-    val koinTestRule = KoinTestRule.create {
-        printLogger(Level.ERROR)
-        modules(descriptionFormModule)
-    }
+    val koinTestRule =
+        KoinTestRule.create {
+            printLogger(Level.ERROR)
+            modules(descriptionFormModule)
+        }
 
     @Test
     fun `view should show correct create title and description on attach`() {
@@ -54,9 +54,9 @@ class DescriptionFormPresenterTest : KoinTest {
         presenter.argsRetrieved(
             ResourceFormMode.Create(
                 leadingContentType = LeadingContentType.PASSWORD,
-                parentFolderId = null
+                parentFolderId = null,
             ),
-            description
+            description,
         )
 
         verify(view).showCreateTitle()
@@ -73,9 +73,9 @@ class DescriptionFormPresenterTest : KoinTest {
         presenter.argsRetrieved(
             ResourceFormMode.Create(
                 leadingContentType = LeadingContentType.PASSWORD,
-                parentFolderId = null
+                parentFolderId = null,
             ),
-            description
+            description,
         )
         presenter.onDescriptionChanged(changedDescription)
         presenter.applyClick()

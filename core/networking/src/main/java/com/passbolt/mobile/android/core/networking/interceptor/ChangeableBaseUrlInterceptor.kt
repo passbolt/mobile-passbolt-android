@@ -28,9 +28,8 @@ import okhttp3.Response
  * @since v1.0
  */
 class ChangeableBaseUrlInterceptor(
-    private val getCurrentApiUrlUseCase: GetCurrentApiUrlUseCase
+    private val getCurrentApiUrlUseCase: GetCurrentApiUrlUseCase,
 ) : Interceptor {
-
     override fun intercept(chain: Interceptor.Chain): Response {
         val oldRequest = chain.request()
         val oldUrl = oldRequest.url
@@ -41,5 +40,4 @@ class ChangeableBaseUrlInterceptor(
     }
 }
 
-private fun String.replaceBaseUrlWithNew(newUrl: String) =
-    toString().replace(PLACEHOLDER_BASE_URL, newUrl)
+private fun String.replaceBaseUrlWithNew(newUrl: String) = toString().replace(PLACEHOLDER_BASE_URL, newUrl)

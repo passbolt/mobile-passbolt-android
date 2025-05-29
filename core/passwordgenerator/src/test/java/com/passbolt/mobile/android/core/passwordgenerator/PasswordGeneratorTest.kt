@@ -37,280 +37,303 @@ import org.koin.test.inject
 class PasswordGeneratorTest : KoinTest {
     @ExperimentalCoroutinesApi
     @get:Rule
-    val koinTestRule = KoinTestRule.create {
-        printLogger(Level.ERROR)
-        modules(passwordGeneratorTestModule)
-    }
+    val koinTestRule =
+        KoinTestRule.create {
+            printLogger(Level.ERROR)
+            modules(passwordGeneratorTestModule)
+        }
 
     private val passwordGenerator: PasswordGenerator by inject()
 
     @Test
-    fun `generate upper case letters passwords succeeds`() = runTest {
-        val length = 50
-        val settings = PasswordGeneratorSettingsModel(
-            length = length,
-            maskUpper = true,
-            maskLower = false,
-            maskDigit = false,
-            maskParenthesis = false,
-            maskEmoji = false,
-            maskChar1 = false,
-            maskChar2 = false,
-            maskChar3 = false,
-            maskChar4 = false,
-            maskChar5 = false,
-            excludeLookAlikeChars = false
-        )
+    fun `generate upper case letters passwords succeeds`() =
+        runTest {
+            val length = 50
+            val settings =
+                PasswordGeneratorSettingsModel(
+                    length = length,
+                    maskUpper = true,
+                    maskLower = false,
+                    maskDigit = false,
+                    maskParenthesis = false,
+                    maskEmoji = false,
+                    maskChar1 = false,
+                    maskChar2 = false,
+                    maskChar3 = false,
+                    maskChar4 = false,
+                    maskChar5 = false,
+                    excludeLookAlikeChars = false,
+                )
 
-        testPasswordAlphabetCorrectnessGeneration(
-            settings,
-            setOf(Alphabets.all[Alphabets.MASK_UPPER]!!)
-        )
-    }
-
-    @Test
-    fun `generate lower case letters passwords succeeds`() = runTest {
-        val length = 50
-        val settings = PasswordGeneratorSettingsModel(
-            length = length,
-            maskUpper = false,
-            maskLower = true,
-            maskDigit = false,
-            maskParenthesis = false,
-            maskEmoji = false,
-            maskChar1 = false,
-            maskChar2 = false,
-            maskChar3 = false,
-            maskChar4 = false,
-            maskChar5 = false,
-            excludeLookAlikeChars = false
-        )
-
-        testPasswordAlphabetCorrectnessGeneration(
-            settings,
-            setOf(Alphabets.all[Alphabets.MASK_LOWER]!!)
-        )
-    }
+            testPasswordAlphabetCorrectnessGeneration(
+                settings,
+                setOf(Alphabets.all[Alphabets.MASK_UPPER]!!),
+            )
+        }
 
     @Test
-    fun `generate digits passwords succeeds`() = runTest {
-        val length = 50
-        val settings = PasswordGeneratorSettingsModel(
-            length = length,
-            maskUpper = false,
-            maskLower = false,
-            maskDigit = true,
-            maskParenthesis = false,
-            maskEmoji = false,
-            maskChar1 = false,
-            maskChar2 = false,
-            maskChar3 = false,
-            maskChar4 = false,
-            maskChar5 = false,
-            excludeLookAlikeChars = false
-        )
+    fun `generate lower case letters passwords succeeds`() =
+        runTest {
+            val length = 50
+            val settings =
+                PasswordGeneratorSettingsModel(
+                    length = length,
+                    maskUpper = false,
+                    maskLower = true,
+                    maskDigit = false,
+                    maskParenthesis = false,
+                    maskEmoji = false,
+                    maskChar1 = false,
+                    maskChar2 = false,
+                    maskChar3 = false,
+                    maskChar4 = false,
+                    maskChar5 = false,
+                    excludeLookAlikeChars = false,
+                )
 
-        testPasswordAlphabetCorrectnessGeneration(
-            settings,
-            setOf(Alphabets.all[Alphabets.MASK_DIGIT]!!)
-        )
-    }
-
-    @Test
-    fun `generate parenthesis passwords succeeds`() = runTest {
-        val length = 50
-        val settings = PasswordGeneratorSettingsModel(
-            length = length,
-            maskUpper = false,
-            maskLower = false,
-            maskDigit = false,
-            maskParenthesis = true,
-            maskEmoji = false,
-            maskChar1 = false,
-            maskChar2 = false,
-            maskChar3 = false,
-            maskChar4 = false,
-            maskChar5 = false,
-            excludeLookAlikeChars = false
-        )
-
-        testPasswordAlphabetCorrectnessGeneration(
-            settings,
-            setOf(Alphabets.all[Alphabets.MASK_PARENTHESIS]!!)
-        )
-    }
+            testPasswordAlphabetCorrectnessGeneration(
+                settings,
+                setOf(Alphabets.all[Alphabets.MASK_LOWER]!!),
+            )
+        }
 
     @Test
-    fun `generate character set 1 passwords succeeds`() = runTest {
-        val length = 50
-        val settings = PasswordGeneratorSettingsModel(
-            length = length,
-            maskUpper = false,
-            maskLower = false,
-            maskDigit = false,
-            maskParenthesis = false,
-            maskEmoji = false,
-            maskChar1 = true,
-            maskChar2 = false,
-            maskChar3 = false,
-            maskChar4 = false,
-            maskChar5 = false,
-            excludeLookAlikeChars = false
-        )
+    fun `generate digits passwords succeeds`() =
+        runTest {
+            val length = 50
+            val settings =
+                PasswordGeneratorSettingsModel(
+                    length = length,
+                    maskUpper = false,
+                    maskLower = false,
+                    maskDigit = true,
+                    maskParenthesis = false,
+                    maskEmoji = false,
+                    maskChar1 = false,
+                    maskChar2 = false,
+                    maskChar3 = false,
+                    maskChar4 = false,
+                    maskChar5 = false,
+                    excludeLookAlikeChars = false,
+                )
 
-        testPasswordAlphabetCorrectnessGeneration(
-            settings,
-            setOf(Alphabets.all[Alphabets.MASK_SPECIAL_CHAR1]!!)
-        )
-    }
-
-    @Test
-    fun `generate character set 2 passwords succeeds`() = runTest {
-        val length = 50
-        val settings = PasswordGeneratorSettingsModel(
-            length = length,
-            maskUpper = false,
-            maskLower = false,
-            maskDigit = false,
-            maskParenthesis = false,
-            maskEmoji = false,
-            maskChar1 = false,
-            maskChar2 = true,
-            maskChar3 = false,
-            maskChar4 = false,
-            maskChar5 = false,
-            excludeLookAlikeChars = false
-        )
-
-        testPasswordAlphabetCorrectnessGeneration(
-            settings,
-            setOf(Alphabets.all[Alphabets.MASK_SPECIAL_CHAR2]!!)
-        )
-    }
+            testPasswordAlphabetCorrectnessGeneration(
+                settings,
+                setOf(Alphabets.all[Alphabets.MASK_DIGIT]!!),
+            )
+        }
 
     @Test
-    fun `generate character set 3 passwords succeeds`() = runTest {
-        val length = 100
-        val settings = PasswordGeneratorSettingsModel(
-            length = length,
-            maskUpper = false,
-            maskLower = false,
-            maskDigit = false,
-            maskParenthesis = false,
-            maskEmoji = false,
-            maskChar1 = false,
-            maskChar2 = false,
-            maskChar3 = true,
-            maskChar4 = false,
-            maskChar5 = false,
-            excludeLookAlikeChars = false
-        )
+    fun `generate parenthesis passwords succeeds`() =
+        runTest {
+            val length = 50
+            val settings =
+                PasswordGeneratorSettingsModel(
+                    length = length,
+                    maskUpper = false,
+                    maskLower = false,
+                    maskDigit = false,
+                    maskParenthesis = true,
+                    maskEmoji = false,
+                    maskChar1 = false,
+                    maskChar2 = false,
+                    maskChar3 = false,
+                    maskChar4 = false,
+                    maskChar5 = false,
+                    excludeLookAlikeChars = false,
+                )
 
-        testPasswordAlphabetCorrectnessGeneration(
-            settings,
-            setOf(Alphabets.all[Alphabets.MASK_SPECIAL_CHAR3]!!)
-        )
-    }
-
-    @Test
-    fun `generate character set 4 passwords succeeds`() = runTest {
-        val length = 50
-        val settings = PasswordGeneratorSettingsModel(
-            length = length,
-            maskUpper = false,
-            maskLower = false,
-            maskDigit = false,
-            maskParenthesis = false,
-            maskEmoji = false,
-            maskChar1 = false,
-            maskChar2 = false,
-            maskChar3 = false,
-            maskChar4 = true,
-            maskChar5 = false,
-            excludeLookAlikeChars = false
-        )
-
-        testPasswordAlphabetCorrectnessGeneration(
-            settings,
-            setOf(Alphabets.all[Alphabets.MASK_SPECIAL_CHAR4]!!)
-        )
-    }
+            testPasswordAlphabetCorrectnessGeneration(
+                settings,
+                setOf(Alphabets.all[Alphabets.MASK_PARENTHESIS]!!),
+            )
+        }
 
     @Test
-    fun `generate character set 5 passwords succeeds`() = runTest {
-        val length = 50
-        val settings = PasswordGeneratorSettingsModel(
-            length = length,
-            maskUpper = false,
-            maskLower = false,
-            maskDigit = false,
-            maskParenthesis = false,
-            maskEmoji = false,
-            maskChar1 = false,
-            maskChar2 = false,
-            maskChar3 = false,
-            maskChar4 = false,
-            maskChar5 = true,
-            excludeLookAlikeChars = false
-        )
+    fun `generate character set 1 passwords succeeds`() =
+        runTest {
+            val length = 50
+            val settings =
+                PasswordGeneratorSettingsModel(
+                    length = length,
+                    maskUpper = false,
+                    maskLower = false,
+                    maskDigit = false,
+                    maskParenthesis = false,
+                    maskEmoji = false,
+                    maskChar1 = true,
+                    maskChar2 = false,
+                    maskChar3 = false,
+                    maskChar4 = false,
+                    maskChar5 = false,
+                    excludeLookAlikeChars = false,
+                )
 
-        testPasswordAlphabetCorrectnessGeneration(
-            settings,
-            setOf(Alphabets.all[Alphabets.MASK_SPECIAL_CHAR5]!!)
-        )
-    }
-
-    @Test
-    fun `generate emoji passwords succeeds`() = runTest {
-        val length = 50
-        val settings = PasswordGeneratorSettingsModel(
-            length = length,
-            maskUpper = false,
-            maskLower = false,
-            maskDigit = false,
-            maskParenthesis = false,
-            maskEmoji = true,
-            maskChar1 = false,
-            maskChar2 = false,
-            maskChar3 = false,
-            maskChar4 = false,
-            maskChar5 = false,
-            excludeLookAlikeChars = false
-        )
-
-        testPasswordAlphabetCorrectnessGeneration(
-            settings,
-            setOf(Alphabets.all[Alphabets.MASK_EMOJI]!!)
-        )
-    }
+            testPasswordAlphabetCorrectnessGeneration(
+                settings,
+                setOf(Alphabets.all[Alphabets.MASK_SPECIAL_CHAR1]!!),
+            )
+        }
 
     @Test
-    fun `generate multi alphabet passwords succeeds`() = runTest {
-        val length = 50
-        val settings = PasswordGeneratorSettingsModel(
-            length = length,
-            maskUpper = true,
-            maskLower = true,
-            maskDigit = false,
-            maskParenthesis = false,
-            maskEmoji = false,
-            maskChar1 = false,
-            maskChar2 = false,
-            maskChar3 = false,
-            maskChar4 = false,
-            maskChar5 = false,
-            excludeLookAlikeChars = false
-        )
+    fun `generate character set 2 passwords succeeds`() =
+        runTest {
+            val length = 50
+            val settings =
+                PasswordGeneratorSettingsModel(
+                    length = length,
+                    maskUpper = false,
+                    maskLower = false,
+                    maskDigit = false,
+                    maskParenthesis = false,
+                    maskEmoji = false,
+                    maskChar1 = false,
+                    maskChar2 = true,
+                    maskChar3 = false,
+                    maskChar4 = false,
+                    maskChar5 = false,
+                    excludeLookAlikeChars = false,
+                )
 
-        testPasswordAlphabetCorrectnessGeneration(
-            settings,
-            setOf(Alphabets.all[Alphabets.MASK_UPPER]!!, Alphabets.all[Alphabets.MASK_LOWER]!!)
-        )
-    }
+            testPasswordAlphabetCorrectnessGeneration(
+                settings,
+                setOf(Alphabets.all[Alphabets.MASK_SPECIAL_CHAR2]!!),
+            )
+        }
+
+    @Test
+    fun `generate character set 3 passwords succeeds`() =
+        runTest {
+            val length = 100
+            val settings =
+                PasswordGeneratorSettingsModel(
+                    length = length,
+                    maskUpper = false,
+                    maskLower = false,
+                    maskDigit = false,
+                    maskParenthesis = false,
+                    maskEmoji = false,
+                    maskChar1 = false,
+                    maskChar2 = false,
+                    maskChar3 = true,
+                    maskChar4 = false,
+                    maskChar5 = false,
+                    excludeLookAlikeChars = false,
+                )
+
+            testPasswordAlphabetCorrectnessGeneration(
+                settings,
+                setOf(Alphabets.all[Alphabets.MASK_SPECIAL_CHAR3]!!),
+            )
+        }
+
+    @Test
+    fun `generate character set 4 passwords succeeds`() =
+        runTest {
+            val length = 50
+            val settings =
+                PasswordGeneratorSettingsModel(
+                    length = length,
+                    maskUpper = false,
+                    maskLower = false,
+                    maskDigit = false,
+                    maskParenthesis = false,
+                    maskEmoji = false,
+                    maskChar1 = false,
+                    maskChar2 = false,
+                    maskChar3 = false,
+                    maskChar4 = true,
+                    maskChar5 = false,
+                    excludeLookAlikeChars = false,
+                )
+
+            testPasswordAlphabetCorrectnessGeneration(
+                settings,
+                setOf(Alphabets.all[Alphabets.MASK_SPECIAL_CHAR4]!!),
+            )
+        }
+
+    @Test
+    fun `generate character set 5 passwords succeeds`() =
+        runTest {
+            val length = 50
+            val settings =
+                PasswordGeneratorSettingsModel(
+                    length = length,
+                    maskUpper = false,
+                    maskLower = false,
+                    maskDigit = false,
+                    maskParenthesis = false,
+                    maskEmoji = false,
+                    maskChar1 = false,
+                    maskChar2 = false,
+                    maskChar3 = false,
+                    maskChar4 = false,
+                    maskChar5 = true,
+                    excludeLookAlikeChars = false,
+                )
+
+            testPasswordAlphabetCorrectnessGeneration(
+                settings,
+                setOf(Alphabets.all[Alphabets.MASK_SPECIAL_CHAR5]!!),
+            )
+        }
+
+    @Test
+    fun `generate emoji passwords succeeds`() =
+        runTest {
+            val length = 50
+            val settings =
+                PasswordGeneratorSettingsModel(
+                    length = length,
+                    maskUpper = false,
+                    maskLower = false,
+                    maskDigit = false,
+                    maskParenthesis = false,
+                    maskEmoji = true,
+                    maskChar1 = false,
+                    maskChar2 = false,
+                    maskChar3 = false,
+                    maskChar4 = false,
+                    maskChar5 = false,
+                    excludeLookAlikeChars = false,
+                )
+
+            testPasswordAlphabetCorrectnessGeneration(
+                settings,
+                setOf(Alphabets.all[Alphabets.MASK_EMOJI]!!),
+            )
+        }
+
+    @Test
+    fun `generate multi alphabet passwords succeeds`() =
+        runTest {
+            val length = 50
+            val settings =
+                PasswordGeneratorSettingsModel(
+                    length = length,
+                    maskUpper = true,
+                    maskLower = true,
+                    maskDigit = false,
+                    maskParenthesis = false,
+                    maskEmoji = false,
+                    maskChar1 = false,
+                    maskChar2 = false,
+                    maskChar3 = false,
+                    maskChar4 = false,
+                    maskChar5 = false,
+                    excludeLookAlikeChars = false,
+                )
+
+            testPasswordAlphabetCorrectnessGeneration(
+                settings,
+                setOf(Alphabets.all[Alphabets.MASK_UPPER]!!, Alphabets.all[Alphabets.MASK_LOWER]!!),
+            )
+        }
 
     private suspend fun testPasswordAlphabetCorrectnessGeneration(
         settings: PasswordGeneratorSettingsModel,
-        alphabets: Set<CodepointSet>
+        alphabets: Set<CodepointSet>,
     ) {
         val password = passwordGenerator.generate(settings)
 

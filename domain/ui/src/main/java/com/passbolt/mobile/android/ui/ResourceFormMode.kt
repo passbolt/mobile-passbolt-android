@@ -28,8 +28,13 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 sealed class ResourceFormMode : Parcelable {
+    data class Edit(
+        val resourceId: String,
+        val resourceName: String,
+    ) : ResourceFormMode()
 
-    data class Edit(val resourceId: String, val resourceName: String) : ResourceFormMode()
-
-    data class Create(val leadingContentType: LeadingContentType, val parentFolderId: String?) : ResourceFormMode()
+    data class Create(
+        val leadingContentType: LeadingContentType,
+        val parentFolderId: String?,
+    ) : ResourceFormMode()
 }

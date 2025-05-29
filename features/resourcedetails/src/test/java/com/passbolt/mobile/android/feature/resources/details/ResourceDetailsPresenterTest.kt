@@ -72,62 +72,66 @@ import java.util.UUID
  */
 
 class ResourceDetailsPresenterTest : KoinTest {
-
     private val presenter: ResourceDetailsContract.Presenter by inject()
     private val view: ResourceDetailsContract.View = mock()
     private val mockFullDataRefreshExecutor: FullDataRefreshExecutor by inject()
 
     @ExperimentalCoroutinesApi
     @get:Rule
-    val koinTestRule = KoinTestRule.create {
-        printLogger(Level.ERROR)
-        modules(testResourceDetailsModule)
-    }
+    val koinTestRule =
+        KoinTestRule.create {
+            printLogger(Level.ERROR)
+            modules(testResourceDetailsModule)
+        }
 
     @Before
     fun setup() {
-        resourceModel = ResourceModel(
-            resourceId = ID,
-            resourceTypeId = RESOURCE_TYPE_ID.toString(),
-            folderId = FOLDER_ID_ID,
-            permission = ResourcePermission.READ,
-            favouriteId = "fav-id",
-            modified = ZonedDateTime.now(),
-            expiry = null,
-            metadataJsonModel = MetadataJsonModel(
-                """
-                    {
-                        "name": "$NAME",
-                        "uri": "$URL",
-                        "username": "$USERNAME",
-                        "description": "$DESCRIPTION"
-                    }
-                """.trimIndent()
-            ),
-            metadataKeyId = null,
-            metadataKeyType = null
-        )
-        resourceModelExpired = ResourceModel(
-            resourceId = ID_EXPIRED,
-            resourceTypeId = RESOURCE_TYPE_ID.toString(),
-            folderId = FOLDER_ID_ID,
-            permission = ResourcePermission.READ,
-            favouriteId = "fav-id",
-            modified = ZonedDateTime.now(),
-            expiry = ZonedDateTime.now().minusDays(1),
-            metadataJsonModel = MetadataJsonModel(
-                """
-                    {
-                        "name": "$NAME",
-                        "uri": "$URL",
-                        "username": "$USERNAME",
-                        "description": "$DESCRIPTION"
-                    }
-                """.trimIndent()
-            ),
-            metadataKeyId = null,
-            metadataKeyType = null
-        )
+        resourceModel =
+            ResourceModel(
+                resourceId = ID,
+                resourceTypeId = RESOURCE_TYPE_ID.toString(),
+                folderId = FOLDER_ID_ID,
+                permission = ResourcePermission.READ,
+                favouriteId = "fav-id",
+                modified = ZonedDateTime.now(),
+                expiry = null,
+                metadataJsonModel =
+                    MetadataJsonModel(
+                        """
+                        {
+                            "name": "$NAME",
+                            "uri": "$URL",
+                            "username": "$USERNAME",
+                            "description": "$DESCRIPTION"
+                        }
+                        """.trimIndent(),
+                    ),
+                metadataKeyId = null,
+                metadataKeyType = null,
+            )
+        resourceModelExpired =
+            ResourceModel(
+                resourceId = ID_EXPIRED,
+                resourceTypeId = RESOURCE_TYPE_ID.toString(),
+                folderId = FOLDER_ID_ID,
+                permission = ResourcePermission.READ,
+                favouriteId = "fav-id",
+                modified = ZonedDateTime.now(),
+                expiry = ZonedDateTime.now().minusDays(1),
+                metadataJsonModel =
+                    MetadataJsonModel(
+                        """
+                        {
+                            "name": "$NAME",
+                            "uri": "$URL",
+                            "username": "$USERNAME",
+                            "description": "$DESCRIPTION"
+                        }
+                        """.trimIndent(),
+                    ),
+                metadataKeyId = null,
+                metadataKeyType = null,
+            )
         mockGetLocalResourceUseCase.stub {
             onBlocking { execute(GetLocalResourceUseCase.Input(resourceModel.resourceId)) }
                 .doReturn(GetLocalResourceUseCase.Output(resourceModel))
@@ -137,21 +141,22 @@ class ResourceDetailsPresenterTest : KoinTest {
                 .doReturn(GetLocalResourcePermissionsUseCase.Output(listOf(groupPermission, userPermission)))
         }
         mockGetFeatureFlagsUseCase.stub {
-            onBlocking { execute(Unit) } doReturn GetFeatureFlagsUseCase.Output(
-                FeatureFlagsModel(
-                    privacyPolicyUrl = null,
-                    termsAndConditionsUrl = null,
-                    isPreviewPasswordAvailable = true,
-                    areFoldersAvailable = true,
-                    areTagsAvailable = true,
-                    isTotpAvailable = true,
-                    isRbacAvailable = true,
-                    isPasswordExpiryAvailable = true,
-                    arePasswordPoliciesAvailable = true,
-                    canUpdatePasswordPolicies = true,
-                    isV5MetadataAvailable = false
+            onBlocking { execute(Unit) } doReturn
+                GetFeatureFlagsUseCase.Output(
+                    FeatureFlagsModel(
+                        privacyPolicyUrl = null,
+                        termsAndConditionsUrl = null,
+                        isPreviewPasswordAvailable = true,
+                        areFoldersAvailable = true,
+                        areTagsAvailable = true,
+                        isTotpAvailable = true,
+                        isRbacAvailable = true,
+                        isPasswordExpiryAvailable = true,
+                        arePasswordPoliciesAvailable = true,
+                        canUpdatePasswordPolicies = true,
+                        isV5MetadataAvailable = false,
+                    ),
                 )
-            )
         }
         mockFavouritesInteractor.stub {
             onBlocking { addToFavouritesAndUpdateLocal(any()) }.doReturn(FavouritesInteractor.Output.Success)
@@ -161,14 +166,14 @@ class ResourceDetailsPresenterTest : KoinTest {
             onBlocking { execute(any()) }.doReturn(GetLocalResourceTagsUseCase.Output(RESOURCE_TAGS))
         }
         whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
-            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
+            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success)),
         )
         mockGetFolderLocationUseCase.stub {
             onBlocking { execute(any()) }.doReturn(GetLocalFolderLocationUseCase.Output(emptyList()))
         }
         mockResourceTypeIdToSlugMappingProvider.stub {
             onBlocking { provideMappingForSelectedAccount() }.doReturn(
-                mapOf(RESOURCE_TYPE_ID to ContentType.PasswordAndDescription.slug)
+                mapOf(RESOURCE_TYPE_ID to ContentType.PasswordAndDescription.slug),
             )
         }
         mockGetRbacRulesUseCase.stub {
@@ -179,9 +184,9 @@ class ResourceDetailsPresenterTest : KoinTest {
                         passwordCopyRule = ALLOW,
                         tagsUseRule = ALLOW,
                         shareViewRule = ALLOW,
-                        foldersUseRule = ALLOW
-                    )
-                )
+                        foldersUseRule = ALLOW,
+                    ),
+                ),
             )
         }
         presenter.attach(view)
@@ -191,14 +196,14 @@ class ResourceDetailsPresenterTest : KoinTest {
     fun `password details should be shown correct for password and description`() {
         mockResourceTypeIdToSlugMappingProvider.stub {
             onBlocking { provideMappingForSelectedAccount() }.doReturn(
-                mapOf(RESOURCE_TYPE_ID to ContentType.PasswordAndDescription.slug)
+                mapOf(RESOURCE_TYPE_ID to ContentType.PasswordAndDescription.slug),
             )
         }
 
         presenter.argsReceived(
             resourceModel,
             100,
-            20f
+            20f,
         )
         presenter.resume(view)
 
@@ -226,14 +231,14 @@ class ResourceDetailsPresenterTest : KoinTest {
     fun `password details should be shown correct for password string`() {
         mockResourceTypeIdToSlugMappingProvider.stub {
             onBlocking { provideMappingForSelectedAccount() }.doReturn(
-                mapOf(RESOURCE_TYPE_ID to ContentType.PasswordString.slug)
+                mapOf(RESOURCE_TYPE_ID to ContentType.PasswordString.slug),
             )
         }
 
         presenter.argsReceived(
             resourceModel,
             100,
-            20f
+            20f,
         )
         presenter.resume(view)
 
@@ -262,14 +267,14 @@ class ResourceDetailsPresenterTest : KoinTest {
     fun `password details should be shown correct for password description totp`() {
         mockResourceTypeIdToSlugMappingProvider.stub {
             onBlocking { provideMappingForSelectedAccount() }.doReturn(
-                mapOf(RESOURCE_TYPE_ID to ContentType.PasswordDescriptionTotp.slug)
+                mapOf(RESOURCE_TYPE_ID to ContentType.PasswordDescriptionTotp.slug),
             )
         }
 
         presenter.argsReceived(
             resourceModel,
             100,
-            20f
+            20f,
         )
         presenter.resume(view)
 
@@ -297,14 +302,14 @@ class ResourceDetailsPresenterTest : KoinTest {
     fun `password details should be shown correct for standalone totp`() {
         mockResourceTypeIdToSlugMappingProvider.stub {
             onBlocking { provideMappingForSelectedAccount() }.doReturn(
-                mapOf(RESOURCE_TYPE_ID to ContentType.Totp.slug)
+                mapOf(RESOURCE_TYPE_ID to ContentType.Totp.slug),
             )
         }
 
         presenter.argsReceived(
             resourceModel,
             100,
-            20f
+            20f,
         )
         presenter.resume(view)
 
@@ -344,7 +349,7 @@ class ResourceDetailsPresenterTest : KoinTest {
         presenter.argsReceived(
             resourceModelExpired,
             100,
-            20f
+            20f,
         )
         presenter.resume(view)
 
@@ -372,24 +377,25 @@ class ResourceDetailsPresenterTest : KoinTest {
     fun `eye icon should react to password visibility change correct`() {
         mockResourceTypeIdToSlugMappingProvider.stub {
             onBlocking { provideMappingForSelectedAccount() }.doReturn(
-                mapOf(RESOURCE_TYPE_ID to ContentType.PasswordAndDescription.slug)
+                mapOf(RESOURCE_TYPE_ID to ContentType.PasswordAndDescription.slug),
             )
         }
         val password = "pass"
         mockSecretPropertiesActionsInteractor.stub {
-            onBlocking { providePassword() } doReturn flowOf(
-                SecretPropertyActionResult.Success(
-                    SecretPropertiesActionsInteractor.SECRET_LABEL,
-                    isSecret = true,
-                    password
+            onBlocking { providePassword() } doReturn
+                flowOf(
+                    SecretPropertyActionResult.Success(
+                        SecretPropertiesActionsInteractor.SECRET_LABEL,
+                        isSecret = true,
+                        password,
+                    ),
                 )
-            )
         }
 
         presenter.argsReceived(
             resourceModel,
             100,
-            20f
+            20f,
         )
         presenter.resume(view)
         presenter.passwordActionClick()
@@ -401,21 +407,22 @@ class ResourceDetailsPresenterTest : KoinTest {
 
     @Test
     @ExperimentalCoroutinesApi
-    fun `view should show decrypt error correct`() = runTest {
-        mockSecretPropertiesActionsInteractor.stub {
-            onBlocking { providePassword() } doReturn flowOf(SecretPropertyActionResult.DecryptionFailure())
+    fun `view should show decrypt error correct`() =
+        runTest {
+            mockSecretPropertiesActionsInteractor.stub {
+                onBlocking { providePassword() } doReturn flowOf(SecretPropertyActionResult.DecryptionFailure())
+            }
+
+            presenter.argsReceived(
+                resourceModel,
+                100,
+                20f,
+            )
+            presenter.resume(view)
+            presenter.passwordActionClick()
+
+            verify(view).showDecryptionFailure()
         }
-
-        presenter.argsReceived(
-            resourceModel,
-            100,
-            20f
-        )
-        presenter.resume(view)
-        presenter.passwordActionClick()
-
-        verify(view).showDecryptionFailure()
-    }
 
     @Test
     fun `view should show fetch error correct`() {
@@ -426,7 +433,7 @@ class ResourceDetailsPresenterTest : KoinTest {
         presenter.argsReceived(
             resourceModel,
             100,
-            20f
+            20f,
         )
         presenter.resume(view)
         presenter.passwordActionClick()
@@ -450,16 +457,16 @@ class ResourceDetailsPresenterTest : KoinTest {
                         isPasswordExpiryAvailable = true,
                         arePasswordPoliciesAvailable = true,
                         canUpdatePasswordPolicies = true,
-                        isV5MetadataAvailable = false
-                    )
-                )
+                        isV5MetadataAvailable = false,
+                    ),
+                ),
             )
         }
 
         presenter.argsReceived(
             resourceModel,
             100,
-            20f
+            20f,
         )
         presenter.resume(view)
 
@@ -468,16 +475,17 @@ class ResourceDetailsPresenterTest : KoinTest {
 
     @ExperimentalCoroutinesApi
     @Test
-    fun `resource permissions should be displayed`() = runTest {
-        presenter.argsReceived(
-            resourceModel,
-            100,
-            20f
-        )
-        presenter.resume(view)
+    fun `resource permissions should be displayed`() =
+        runTest {
+            presenter.argsReceived(
+                resourceModel,
+                100,
+                20f,
+            )
+            presenter.resume(view)
 
-        verify(view, times(2)).showPermissions(eq(listOf(groupPermission)), eq(listOf(userPermission)), any(), any())
-    }
+            verify(view, times(2)).showPermissions(eq(listOf(groupPermission)), eq(listOf(userPermission)), any(), any())
+        }
 
     @Test
     fun `view should not show features disabled by rbac`() {
@@ -489,16 +497,16 @@ class ResourceDetailsPresenterTest : KoinTest {
                         passwordCopyRule = DENY,
                         tagsUseRule = DENY,
                         shareViewRule = DENY,
-                        foldersUseRule = DENY
-                    )
-                )
+                        foldersUseRule = DENY,
+                    ),
+                ),
             )
         }
 
         presenter.argsReceived(
             resourceModel,
             100,
-            20f
+            20f,
         )
         presenter.resume(view)
 
@@ -519,29 +527,34 @@ class ResourceDetailsPresenterTest : KoinTest {
         private const val FOLDER_ID_ID = "folderId"
         private lateinit var resourceModel: ResourceModel
         private lateinit var resourceModelExpired: ResourceModel
-        private val groupPermission = PermissionModelUi.GroupPermissionModel(
-            permission = ResourcePermission.READ,
-            permissionId = "permId1",
-            group = GroupModel(
-                groupId = "grId",
-                groupName = "grName"
+        private val groupPermission =
+            PermissionModelUi.GroupPermissionModel(
+                permission = ResourcePermission.READ,
+                permissionId = "permId1",
+                group =
+                    GroupModel(
+                        groupId = "grId",
+                        groupName = "grName",
+                    ),
             )
-        )
-        private val userPermission = PermissionModelUi.UserPermissionModel(
-            permission = ResourcePermission.OWNER,
-            permissionId = "permId2",
-            user = UserWithAvatar(
-                userId = "usId",
-                firstName = "first",
-                lastName = "last",
-                userName = "uName",
-                isDisabled = false,
-                avatarUrl = null
+        private val userPermission =
+            PermissionModelUi.UserPermissionModel(
+                permission = ResourcePermission.OWNER,
+                permissionId = "permId2",
+                user =
+                    UserWithAvatar(
+                        userId = "usId",
+                        firstName = "first",
+                        lastName = "last",
+                        userName = "uName",
+                        isDisabled = false,
+                        avatarUrl = null,
+                    ),
             )
-        )
-        private val RESOURCE_TAGS = listOf(
-            TagModel(id = "id1", slug = "tag1", isShared = false),
-            TagModel(id = "id2", slug = "tag2", isShared = false)
-        )
+        private val RESOURCE_TAGS =
+            listOf(
+                TagModel(id = "id1", slug = "tag1", isShared = false),
+                TagModel(id = "id2", slug = "tag2", isShared = false),
+            )
     }
 }

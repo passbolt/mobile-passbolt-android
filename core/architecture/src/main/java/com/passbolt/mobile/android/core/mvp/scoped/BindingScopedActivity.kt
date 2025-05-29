@@ -30,8 +30,9 @@ import org.koin.core.scope.Scope
  * @since v1.0
  */
 
-abstract class BindingScopedActivity<T : ViewBinding>(viewInflater: (LayoutInflater) -> T) :
-    BindingActivity<T>(viewInflater), AndroidScopeComponent {
-
+abstract class BindingScopedActivity<T : ViewBinding>(
+    viewInflater: (LayoutInflater) -> T,
+) : BindingActivity<T>(viewInflater),
+    AndroidScopeComponent {
     override val scope: Scope by activityScope()
 }

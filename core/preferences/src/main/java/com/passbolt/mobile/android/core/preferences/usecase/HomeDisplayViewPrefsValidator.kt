@@ -33,30 +33,33 @@ import kotlinx.coroutines.runBlocking
  */
 class HomeDisplayViewPrefsValidator(
     private val getFeatureFlagsUseCase: GetFeatureFlagsUseCase,
-    private val getRbacRulesUseCase: GetRbacRulesUseCase
+    private val getRbacRulesUseCase: GetRbacRulesUseCase,
 ) {
-
     fun validated(output: GetHomeDisplayViewPrefsUseCase.Output): GetHomeDisplayViewPrefsUseCase.Output {
         val featureFlags = runBlocking { getFeatureFlagsUseCase.execute(Unit).featureFlags }
         val rbac = runBlocking { getRbacRulesUseCase.execute(Unit).rbacModel }
-        val validatedLastUsedView = output.lastUsedHomeView.mutateIf(
-            { isNotAvailable(output.lastUsedHomeView, featureFlags, rbac) },
-            HomeDisplayView.ALL_ITEMS
-        )
-        val validatedUserSetView = output.userSetHomeView.mutateIf(
-            { isNotAvailable(output.userSetHomeView, featureFlags, rbac) },
-            DefaultFilterModel.ALL_ITEMS
-        )
+        val validatedLastUsedView =
+            output.lastUsedHomeView.mutateIf(
+                { isNotAvailable(output.lastUsedHomeView, featureFlags, rbac) },
+                HomeDisplayView.ALL_ITEMS,
+            )
+        val validatedUserSetView =
+            output.userSetHomeView.mutateIf(
+                { isNotAvailable(output.userSetHomeView, featureFlags, rbac) },
+                DefaultFilterModel.ALL_ITEMS,
+            )
         return output.copy(
             lastUsedHomeView = validatedLastUsedView,
-            userSetHomeView = validatedUserSetView
+            userSetHomeView = validatedUserSetView,
         )
     }
 
     fun validatedDefaultFiltersList(): List<DefaultFilterModel> {
         val featureFlags = runBlocking { getFeatureFlagsUseCase.execute(Unit).featureFlags }
         val rbac = runBlocking { getRbacRulesUseCase.execute(Unit).rbacModel }
-        return DefaultFilterModel.values().toMutableList()
+        return DefaultFilterModel
+            .values()
+            .toMutableList()
             .apply {
                 if (!featureFlags.areFoldersAvailable || rbac.foldersUseRule != ALLOW) {
                     remove(DefaultFilterModel.FOLDERS)
@@ -67,14 +70,22 @@ class HomeDisplayViewPrefsValidator(
             }
     }
 
-    private fun <T> T.mutateIf(condition: () -> Boolean, replacement: T) =
-        if (condition()) replacement else this
+    private fun <T> T.mutateIf(
+        condition: () -> Boolean,
+        replacement: T,
+    ) = if (condition()) replacement else this
 
-    private fun isNotAvailable(view: DefaultFilterModel, featureFlags: FeatureFlagsModel, rbac: RbacModel) =
-        (view == DefaultFilterModel.FOLDERS && (!featureFlags.areFoldersAvailable || rbac.foldersUseRule != ALLOW)) ||
-                (view == DefaultFilterModel.TAGS && (!featureFlags.areTagsAvailable || rbac.tagsUseRule != ALLOW))
+    private fun isNotAvailable(
+        view: DefaultFilterModel,
+        featureFlags: FeatureFlagsModel,
+        rbac: RbacModel,
+    ) = (view == DefaultFilterModel.FOLDERS && (!featureFlags.areFoldersAvailable || rbac.foldersUseRule != ALLOW)) ||
+        (view == DefaultFilterModel.TAGS && (!featureFlags.areTagsAvailable || rbac.tagsUseRule != ALLOW))
 
-    private fun isNotAvailable(view: HomeDisplayView, featureFlags: FeatureFlagsModel, rbac: RbacModel) =
-        (view == HomeDisplayView.FOLDERS && (!featureFlags.areFoldersAvailable || rbac.foldersUseRule != ALLOW)) ||
-                (view == HomeDisplayView.TAGS && (!featureFlags.areTagsAvailable || rbac.tagsUseRule != ALLOW))
+    private fun isNotAvailable(
+        view: HomeDisplayView,
+        featureFlags: FeatureFlagsModel,
+        rbac: RbacModel,
+    ) = (view == HomeDisplayView.FOLDERS && (!featureFlags.areFoldersAvailable || rbac.foldersUseRule != ALLOW)) ||
+        (view == HomeDisplayView.TAGS && (!featureFlags.areTagsAvailable || rbac.tagsUseRule != ALLOW))
 }

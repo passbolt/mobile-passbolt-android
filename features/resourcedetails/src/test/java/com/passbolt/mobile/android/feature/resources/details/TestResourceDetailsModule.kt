@@ -56,45 +56,47 @@ internal val mockGetRbacRulesUseCase = mock<GetRbacRulesUseCase>()
 internal val mockResourceTypeIdToSlugMappingProvider = mock<ResourceTypeIdToSlugMappingProvider>()
 
 @ExperimentalCoroutinesApi
-internal val testResourceDetailsModule = module {
-    single { mock<FullDataRefreshExecutor>() }
-    factoryOf(::TestCoroutineLaunchContext) bind CoroutineLaunchContext::class
-    factoryOf(::OtpModelMapper)
-    factoryOf(::InitialsProvider)
-    factoryOf(::PermissionsModelMapper)
-    factoryOf(::GroupsModelMapper)
-    factoryOf(::UsersModelMapper)
-    factory<ResourceDetailsContract.Presenter> {
-        ResourceDetailsPresenter(
-            getFeatureFlagsUseCase = mockGetFeatureFlagsUseCase,
-            getLocalResourceUseCase = mockGetLocalResourceUseCase,
-            getLocalResourcePermissionsUseCase = mockGetLocalResourcePermissionsUseCase,
-            getLocalResourceTagsUseCase = mockResourceTagsUseCase,
-            getLocalFolderLocation = mockGetFolderLocationUseCase,
-            totpParametersProvider = mockTotpParametersProvider,
-            otpModelMapper = get(),
-            coroutineLaunchContext = get(),
-            getRbacRulesUseCase = mockGetRbacRulesUseCase,
-            resourceDetailActionIdlingResource = mock(),
-            idToSlugMappingProvider = mockResourceTypeIdToSlugMappingProvider
-        )
+internal val testResourceDetailsModule =
+    module {
+        single { mock<FullDataRefreshExecutor>() }
+        factoryOf(::TestCoroutineLaunchContext) bind CoroutineLaunchContext::class
+        factoryOf(::OtpModelMapper)
+        factoryOf(::InitialsProvider)
+        factoryOf(::PermissionsModelMapper)
+        factoryOf(::GroupsModelMapper)
+        factoryOf(::UsersModelMapper)
+        factory<ResourceDetailsContract.Presenter> {
+            ResourceDetailsPresenter(
+                getFeatureFlagsUseCase = mockGetFeatureFlagsUseCase,
+                getLocalResourceUseCase = mockGetLocalResourceUseCase,
+                getLocalResourcePermissionsUseCase = mockGetLocalResourcePermissionsUseCase,
+                getLocalResourceTagsUseCase = mockResourceTagsUseCase,
+                getLocalFolderLocation = mockGetFolderLocationUseCase,
+                totpParametersProvider = mockTotpParametersProvider,
+                otpModelMapper = get(),
+                coroutineLaunchContext = get(),
+                getRbacRulesUseCase = mockGetRbacRulesUseCase,
+                resourceDetailActionIdlingResource = mock(),
+                idToSlugMappingProvider = mockResourceTypeIdToSlugMappingProvider,
+            )
+        }
+        factory { (resource: ResourceModel) ->
+            ResourcePropertiesActionsInteractor(
+                resource,
+                idToSlugMappingProvider = mockResourceTypeIdToSlugMappingProvider,
+            )
+        }
+        factory { mockResourceCommonActionsInteractor }
+        factory { mockSecretPropertiesActionsInteractor }
+        factory { mockResourceUpdateActionsInteractor }
+        single(named(JSON_MODEL_GSON)) { Gson() }
+        single {
+            Configuration
+                .builder()
+                .jsonProvider(GsonJsonProvider())
+                .mappingProvider(GsonMappingProvider())
+                .options(EnumSet.noneOf(Option::class.java))
+                .build()
+        }
+        singleOf(::JsonPathJsonPathOps) bind JsonPathsOps::class
     }
-    factory { (resource: ResourceModel) ->
-        ResourcePropertiesActionsInteractor(
-            resource,
-            idToSlugMappingProvider = mockResourceTypeIdToSlugMappingProvider
-        )
-    }
-    factory { mockResourceCommonActionsInteractor }
-    factory { mockSecretPropertiesActionsInteractor }
-    factory { mockResourceUpdateActionsInteractor }
-    single(named(JSON_MODEL_GSON)) { Gson() }
-    single {
-        Configuration.builder()
-            .jsonProvider(GsonJsonProvider())
-            .mappingProvider(GsonMappingProvider())
-            .options(EnumSet.noneOf(Option::class.java))
-            .build()
-    }
-    singleOf(::JsonPathJsonPathOps) bind JsonPathsOps::class
-}

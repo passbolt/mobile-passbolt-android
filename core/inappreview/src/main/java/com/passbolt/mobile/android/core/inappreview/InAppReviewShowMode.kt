@@ -24,9 +24,8 @@ package com.passbolt.mobile.android.core.inappreview
  */
 sealed class InAppReviewShowMode(
     val signInCount: Int,
-    val daysCount: Int
+    val daysCount: Int,
 ) {
-
     class FirstShow : InAppReviewShowMode(signInCount = 5, daysCount = 5)
 
     class ConsecutiveShow : InAppReviewShowMode(signInCount = 5, daysCount = 30)

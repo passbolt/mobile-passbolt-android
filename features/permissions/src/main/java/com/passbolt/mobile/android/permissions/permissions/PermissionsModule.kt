@@ -43,8 +43,8 @@ fun Module.permissionsModule() {
         scoped {
             FastAdapter.with(
                 listOf(
-                    get<ItemAdapter<PermissionItem>>(named(PERMISSIONS_ITEM_ADAPTER))
-                )
+                    get<ItemAdapter<PermissionItem>>(named(PERMISSIONS_ITEM_ADAPTER)),
+                ),
             )
         }
     }

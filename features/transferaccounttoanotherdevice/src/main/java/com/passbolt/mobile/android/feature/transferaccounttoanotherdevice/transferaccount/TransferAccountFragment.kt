@@ -43,19 +43,23 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 class TransferAccountFragment :
     BindingScopedAuthenticatedFragment<FragmentTransferAccountBinding, TransferAccountContract.View>(
-        FragmentTransferAccountBinding::inflate
-    ), TransferAccountContract.View {
-
+        FragmentTransferAccountBinding::inflate,
+    ),
+    TransferAccountContract.View {
     override val presenter: TransferAccountContract.Presenter by inject()
     private val barcodeEncoder: BarcodeEncoder by inject()
     private val qrCodeGenHints: HashMap<EncodeHintType, Any> by inject(named(QR_CODE_GEN_HINTS))
-    private val backPressedCallback = object : OnBackPressedCallback(true) {
-        override fun handleOnBackPressed() {
-            presenter.backClick()
+    private val backPressedCallback =
+        object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                presenter.backClick()
+            }
         }
-    }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         presenter.attach(this)
         setListeners()
@@ -68,7 +72,7 @@ class TransferAccountFragment :
     }
 
     private fun setListeners() {
-        binding.cancelTransferButton.setDebouncingOnClick {
+        requiredBinding.cancelTransferButton.setDebouncingOnClick {
             presenter.cancelTransferButtonClick()
         }
         requireActivity().onBackPressedDispatcher.addCallback(backPressedCallback)
@@ -81,20 +85,21 @@ class TransferAccountFragment :
     }
 
     override fun showQrCodeForData(qrCodeContent: String) {
-        val bitmap = barcodeEncoder.encodeBitmap(
-            qrCodeContent,
-            BarcodeFormat.QR_CODE,
-            QR_SQUARE_DIM_PX,
-            QR_SQUARE_DIM_PX,
-            qrCodeGenHints
-        )
-        binding.qrCode.setImageBitmap(bitmap)
+        val bitmap =
+            barcodeEncoder.encodeBitmap(
+                qrCodeContent,
+                BarcodeFormat.QR_CODE,
+                QR_SQUARE_DIM_PX,
+                QR_SQUARE_DIM_PX,
+                qrCodeGenHints,
+            )
+        requiredBinding.qrCode.setImageBitmap(bitmap)
     }
 
     override fun showCouldNotInitializeTransferParameters() {
         showSnackbar(
             LocalizationR.string.transfer_account_could_not_initialize_parameters,
-            backgroundColor = CoreUiR.color.red
+            backgroundColor = CoreUiR.color.red,
         )
     }
 
@@ -102,14 +107,14 @@ class TransferAccountFragment :
         showSnackbar(
             LocalizationR.string.transfer_account_could_not_create_transfer_format,
             backgroundColor = CoreUiR.color.red,
-            messageArgs = arrayOf(message)
+            messageArgs = arrayOf(message),
         )
     }
 
     override fun showCouldNotGenerateQrTransferData() {
         showSnackbar(
             LocalizationR.string.transfer_account_could_not_initialize_qr_code_page_data,
-            backgroundColor = CoreUiR.color.red
+            backgroundColor = CoreUiR.color.red,
         )
     }
 
@@ -117,13 +122,13 @@ class TransferAccountFragment :
         showSnackbar(
             LocalizationR.string.transfer_account_error_during_fetch_transfer_format,
             backgroundColor = CoreUiR.color.red,
-            messageArgs = arrayOf(message)
+            messageArgs = arrayOf(message),
         )
     }
 
     override fun navigateToResult(result: TransferAccountStatus) {
         findNavController().navigate(
-            TransferAccountFragmentDirections.actionTransferAccountToTransferAccountSummaryFragment(result)
+            TransferAccountFragmentDirections.actionTransferAccountToTransferAccountSummaryFragment(result),
         )
     }
 

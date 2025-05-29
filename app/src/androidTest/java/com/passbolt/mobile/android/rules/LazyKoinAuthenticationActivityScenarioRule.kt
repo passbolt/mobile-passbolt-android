@@ -20,9 +20,9 @@ import org.koin.core.module.Module
 class LazyKoinAuthenticationActivityScenarioRule<A : Activity>(
     private val launchActivity: Boolean,
     koinOverrideModules: List<Module>? = null,
-    startActivityIntentSupplier: () -> Intent
-) : ExternalResource(), KoinComponent {
-
+    startActivityIntentSupplier: () -> Intent,
+) : ExternalResource(),
+    KoinComponent {
     private var scenarioSupplier: () -> ActivityScenario<A>
     private var scenario: ActivityScenario<A>? = null
     private var scenarioLaunched: Boolean = false

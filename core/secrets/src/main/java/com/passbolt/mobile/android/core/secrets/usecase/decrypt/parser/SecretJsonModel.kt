@@ -31,8 +31,9 @@ import com.passbolt.mobile.android.jsonmodel.delegates.TotpSecret
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType
 import com.passbolt.mobile.android.ui.OtpParseResult
 
-class SecretJsonModel(override var json: String?) : JsonModel {
-
+class SecretJsonModel(
+    override var json: String?,
+) : JsonModel {
     var objectType: String? by RootRelativeJsonPathNullableStringDelegate(jsonPath = "object_type")
 
     var resourceTypeId: String? by RootRelativeJsonPathNullableStringDelegate(jsonPath = "resource_type_id")
@@ -46,12 +47,16 @@ class SecretJsonModel(override var json: String?) : JsonModel {
 
     var totp: TotpSecret? by RootRelativeJsonPathTotpDelegate(jsonPath = "totp")
 
-    fun getPassword(contentType: ContentType): String? = when (contentType) {
-        ContentType.PasswordString, ContentType.V5PasswordString -> password
-        else -> secret
-    }
+    fun getPassword(contentType: ContentType): String? =
+        when (contentType) {
+            ContentType.PasswordString, ContentType.V5PasswordString -> password
+            else -> secret
+        }
 
-    fun setPassword(contentType: ContentType, password: String?) {
+    fun setPassword(
+        contentType: ContentType,
+        password: String?,
+    ) {
         when (contentType) {
             ContentType.PasswordString, ContentType.V5PasswordString -> this.password = password
             else -> this.secret = password
@@ -59,33 +64,32 @@ class SecretJsonModel(override var json: String?) : JsonModel {
     }
 
     companion object {
-
-        fun emptyPassword(): SecretJsonModel = SecretJsonModel(
-            """
+        fun emptyPassword(): SecretJsonModel =
+            SecretJsonModel(
+                """
                 {
                     "password": ""
                 }
-            """
-                .trimIndent()
-        )
+                """.trimIndent(),
+            )
 
-        fun emptyTotp(): SecretJsonModel = SecretJsonModel(
-            """
+        fun emptyTotp(): SecretJsonModel =
+            SecretJsonModel(
+                """
                 {
                     ${emptyTotpObject()}
                 }
-            """
-                .trimIndent()
-        )
+                """.trimIndent(),
+            )
 
-        fun emptyJsonModel(password: String?): SecretJsonModel = SecretJsonModel(
-            """
+        fun emptyJsonModel(password: String?): SecretJsonModel =
+            SecretJsonModel(
+                """
                 {
                     "password": "${password ?: ""}"
                 }
-            """
-                .trimIndent()
-        )
+                """.trimIndent(),
+            )
 
         private fun emptyTotpObject() =
             """

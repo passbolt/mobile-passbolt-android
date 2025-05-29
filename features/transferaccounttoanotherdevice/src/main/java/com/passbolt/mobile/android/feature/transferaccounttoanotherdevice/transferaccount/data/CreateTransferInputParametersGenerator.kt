@@ -43,23 +43,24 @@ import kotlin.math.ceil
 class CreateTransferInputParametersGenerator(
     private val getSelectedAccountPrivateKeyUseCase: GetSelectedUserPrivateKeyUseCase,
     private val getSelectedAccountDataUseCase: GetSelectedAccountDataUseCase,
-    private val openPgp: OpenPgp
+    private val openPgp: OpenPgp,
 ) {
-
     suspend fun calculateCreateTransferParameters(): Output =
         try {
             val armoredPrivateKey = requireNotNull(getSelectedAccountPrivateKeyUseCase.execute(Unit).privateKey)
             val accountData = getSelectedAccountDataUseCase.execute(Unit)
             val userServerId = requireNotNull(accountData.serverId)
-            val privateKeyFingerprint = openPgp.getKeyFingerprint(armoredPrivateKey)
+            val privateKeyFingerprint =
+                openPgp.getKeyFingerprint(armoredPrivateKey)
                     as OpenPgpResult.Result<String>
-            val keyJson = Json.encodeToString(
-                AssembledKeyDto(
-                    armoredPrivateKey,
-                    UUID.fromString(userServerId),
-                    privateKeyFingerprint.result
+            val keyJson =
+                Json.encodeToString(
+                    AssembledKeyDto(
+                        armoredPrivateKey,
+                        UUID.fromString(userServerId),
+                        privateKeyFingerprint.result,
+                    ),
                 )
-            )
             Output.Parameters(keyJson, calculateTotalPageCount(keyJson), calculateHash(keyJson))
         } catch (exception: Exception) {
             Timber.e("Could not initialize transfer parameters", exception)
@@ -76,16 +77,14 @@ class CreateTransferInputParametersGenerator(
         Buffer()
             .apply {
                 write(keyJson.toByteArray())
-            }
-            .sha512()
+            }.sha512()
             .hex()
 
     sealed class Output {
-
         data class Parameters(
             val keyJson: String,
             val totalPagesCount: Int,
-            val pagesDataHash: String
+            val pagesDataHash: String,
         ) : Output()
 
         data object Error : Output()

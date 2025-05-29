@@ -24,7 +24,6 @@
 package com.passbolt.mobile.android.serializers.jsonschema.schamarepository
 
 interface JsonSchemaRepository<T> {
-
     fun loadLocalSchemas()
 
     fun schemaForResource(resourceSlug: String): T

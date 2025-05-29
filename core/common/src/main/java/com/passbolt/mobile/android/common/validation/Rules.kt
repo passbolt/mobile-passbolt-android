@@ -5,7 +5,9 @@ import java.net.MalformedURLException
 import java.net.URI
 import java.net.URL
 
-open class Rule<T>(val condition: (T) -> Boolean)
+open class Rule<T>(
+    val condition: (T) -> Boolean,
+)
 
 object StringNotBlank :
     Rule<String>({ it.isNotBlank() })
@@ -13,8 +15,9 @@ object StringNotBlank :
 object StringIsAPositiveIntegerNumber :
     Rule<String>({ (it.toIntOrNull() != null) && (it.toInt() > 0) })
 
-class StringMaxLength(length: Int) :
-    Rule<String>({ it.length <= length })
+class StringMaxLength(
+    length: Int,
+) : Rule<String>({ it.length <= length })
 
 object StringIsUuid :
     Rule<String>({ UUID_PATTERN.toRegex().matches(it) })
@@ -29,10 +32,12 @@ object StringIsHttpsWebUrl :
         }
     })
 
-class UriIsOfScheme(private val scheme: String) :
-    Rule<URI>({ scheme == it.scheme })
+class UriIsOfScheme(
+    private val scheme: String,
+) : Rule<URI>({ scheme == it.scheme })
 
-class UriIsOfAuthority(private val authority: String) :
-    Rule<URI>({ authority == it.authority })
+class UriIsOfAuthority(
+    private val authority: String,
+) : Rule<URI>({ authority == it.authority })
 
 private const val UUID_PATTERN = "^[{]?[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}[}]?$"

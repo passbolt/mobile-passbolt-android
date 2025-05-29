@@ -30,30 +30,53 @@ import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourcePickerListItem
 
 interface ResourcePickerContract {
-
     interface View : DataRefreshViewReactiveContract.View {
         fun showResources(
             suggestedResources: List<ResourcePickerListItem>,
-            resourceList: List<ResourcePickerListItem>
+            resourceList: List<ResourcePickerListItem>,
         )
+
         fun showEmptyState()
+
         fun hideEmptyState()
+
         fun hideSearchEndIcon()
+
         fun displaySearchClearEndIcon()
+
         fun showDataRefreshError()
+
         fun enableApplyButton()
+
         fun clearSearchInput()
-        fun showConfirmation(confirmationModel: ConfirmationModel, pickAction: PickResourceAction)
-        fun setResultAndNavigateBack(pickAction: PickResourceAction, resourceModel: ResourceModel)
+
+        fun showConfirmation(
+            confirmationModel: ConfirmationModel,
+            pickAction: PickResourceAction,
+        )
+
+        fun setResultAndNavigateBack(
+            pickAction: PickResourceAction,
+            resourceModel: ResourceModel,
+        )
     }
 
     interface Presenter : DataRefreshViewReactiveContract.Presenter<View> {
         fun searchTextChanged(text: String)
+
         fun searchClearClick()
+
         fun argsRetrieved(suggestionUri: String?)
+
         fun refreshSwipe()
-        fun resourcePicked(selectableResourceModel: ResourcePickerListItem, isSelected: Boolean)
+
+        fun resourcePicked(
+            selectableResourceModel: ResourcePickerListItem,
+            isSelected: Boolean,
+        )
+
         fun applyClick()
+
         fun otpLinkConfirmed(pickAction: PickResourceAction)
     }
 }

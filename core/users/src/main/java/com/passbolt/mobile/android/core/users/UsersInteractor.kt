@@ -31,11 +31,10 @@ import timber.log.Timber
  */
 class UsersInteractor(
     private val fetchUsersUseCase: FetchUsersUseCase,
-    private val rebuildLocalUsersUseCase: RebuildUsersTablesUseCase
+    private val rebuildLocalUsersUseCase: RebuildUsersTablesUseCase,
 ) {
-
-    suspend fun fetchAndSaveUsers(): Output {
-        return when (val fetched = fetchUsersUseCase.execute(FetchUsersUseCase.Input())) {
+    suspend fun fetchAndSaveUsers(): Output =
+        when (val fetched = fetchUsersUseCase.execute(FetchUsersUseCase.Input())) {
             is FetchUsersUseCase.Output.Failure<*> -> Output.Failure(fetched.authenticationState)
             is FetchUsersUseCase.Output.Success -> {
                 try {
@@ -47,15 +46,15 @@ class UsersInteractor(
                 }
             }
         }
-    }
 
     sealed class Output : AuthenticatedUseCaseOutput {
-
         data object Success : Output() {
             override val authenticationState: AuthenticationState
                 get() = AuthenticationState.Authenticated
         }
 
-        data class Failure(override val authenticationState: AuthenticationState) : Output()
+        data class Failure(
+            override val authenticationState: AuthenticationState,
+        ) : Output()
     }
 }

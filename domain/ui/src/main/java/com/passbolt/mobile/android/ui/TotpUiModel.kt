@@ -32,17 +32,20 @@ data class TotpUiModel(
     val issuer: String,
     val expiry: String,
     val length: String,
-    val algorithm: String
+    val algorithm: String,
 ) : Parcelable {
-
     companion object {
-
-        fun emptyWithDefaults(issuer: String) = TotpUiModel(
-            secret = "",
-            issuer = issuer,
-            expiry = OtpParseResult.OtpQr.TotpQr.DEFAULT_PERIOD_SECONDS.toString(),
-            length = OtpParseResult.OtpQr.TotpQr.DEFAULT_DIGITS.toString(),
-            algorithm = OtpParseResult.OtpQr.Algorithm.DEFAULT.name
-        )
+        fun emptyWithDefaults(issuer: String) =
+            TotpUiModel(
+                secret = "",
+                issuer = issuer,
+                expiry =
+                    OtpParseResult.OtpQr.TotpQr.DEFAULT_PERIOD_SECONDS
+                        .toString(),
+                length =
+                    OtpParseResult.OtpQr.TotpQr.DEFAULT_DIGITS
+                        .toString(),
+                algorithm = OtpParseResult.OtpQr.Algorithm.DEFAULT.name,
+            )
     }
 }

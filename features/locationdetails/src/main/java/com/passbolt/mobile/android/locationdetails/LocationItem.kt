@@ -24,5 +24,5 @@ package com.passbolt.mobile.android.locationdetails
  */
 enum class LocationItem {
     RESOURCE,
-    FOLDER
+    FOLDER,
 }

@@ -25,5 +25,5 @@ package com.passbolt.mobile.android.resourcepicker.model
 
 enum class PickResourceAction {
     TOTP_LINK,
-    TOTP_REPLACE
+    TOTP_REPLACE,
 }

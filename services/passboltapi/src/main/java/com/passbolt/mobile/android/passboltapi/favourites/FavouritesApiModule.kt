@@ -29,13 +29,13 @@ import org.koin.core.module.Module
 internal fun Module.favouritesApiModule() {
     single<FavouritesDataSource> {
         FavouritesRemoteDataSource(
-            favouritesApi = get()
+            favouritesApi = get(),
         )
     }
     single {
         FavouritesRepository(
             favouritesDataSource = get(),
-            responseHandler = get()
+            responseHandler = get(),
         )
     }
     single {

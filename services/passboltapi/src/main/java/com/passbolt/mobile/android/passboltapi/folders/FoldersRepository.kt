@@ -28,9 +28,8 @@ import com.passbolt.mobile.android.dto.request.CreateFolderRequestDto
  */
 class FoldersRepository(
     private val foldersDataSource: FoldersDataSource,
-    private val responseHandler: ResponseHandler
+    private val responseHandler: ResponseHandler,
 ) {
-
     suspend fun getFolders() =
         callWithHandler(responseHandler) {
             foldersDataSource.getFolders()

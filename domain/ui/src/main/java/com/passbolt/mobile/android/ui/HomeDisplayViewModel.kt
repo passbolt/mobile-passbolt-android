@@ -27,7 +27,6 @@ import kotlinx.parcelize.Parcelize
  */
 
 sealed class HomeDisplayViewModel : Parcelable {
-
     @Parcelize
     object AllItems : HomeDisplayViewModel(), Parcelable
 
@@ -50,24 +49,26 @@ sealed class HomeDisplayViewModel : Parcelable {
     data class Folders(
         val activeFolder: Folder,
         val activeFolderName: String? = null,
-        val isActiveFolderShared: Boolean? = null
-    ) : HomeDisplayViewModel(), Parcelable
+        val isActiveFolderShared: Boolean? = null,
+    ) : HomeDisplayViewModel(),
+        Parcelable
 
     @Parcelize
     data class Tags(
         val activeTagId: String? = null,
         val activeTagName: String? = null,
-        val isActiveTagShared: Boolean? = null
-    ) : HomeDisplayViewModel(), Parcelable
+        val isActiveTagShared: Boolean? = null,
+    ) : HomeDisplayViewModel(),
+        Parcelable
 
     @Parcelize
     data class Groups(
         val activeGroupId: String? = null,
-        val activeGroupName: String? = null
-    ) : HomeDisplayViewModel(), Parcelable
+        val activeGroupName: String? = null,
+    ) : HomeDisplayViewModel(),
+        Parcelable
 
     companion object {
-
         fun folderRoot() = Folders(Folder.Root)
 
         fun tagsRoot() = Tags()

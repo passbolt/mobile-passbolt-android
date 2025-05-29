@@ -24,5 +24,5 @@ package com.passbolt.mobile.android.dto.response
  */
 data class ServerPgpResponseDto(
     val fingerprint: String,
-    val keydata: String
+    val keydata: String,
 )

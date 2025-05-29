@@ -68,42 +68,42 @@ import kotlin.test.BeforeTest
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
-
 @RunWith(AndroidJUnit4::class)
 @MediumTest
 class UpdateExpiryTest : KoinTest {
-
     @get:Rule
-    val startUpActivityRule = lazyActivitySetupScenarioRule<AuthenticationMainActivity>(
-        koinOverrideModules = listOf(instrumentationTestsModule),
-        intentSupplier = {
-            ActivityIntents.authentication(
-                InstrumentationRegistry.getInstrumentation().targetContext,
-                ActivityIntents.AuthConfig.Startup,
-                AppContext.APP,
-                managedAccountIntentCreator.getUserLocalId()
-            )
-        }
-    )
+    val startUpActivityRule =
+        lazyActivitySetupScenarioRule<AuthenticationMainActivity>(
+            koinOverrideModules = listOf(instrumentationTestsModule),
+            intentSupplier = {
+                ActivityIntents.authentication(
+                    InstrumentationRegistry.getInstrumentation().targetContext,
+                    ActivityIntents.AuthConfig.Startup,
+                    AppContext.APP,
+                    managedAccountIntentCreator.getUserLocalId(),
+                )
+            },
+        )
 
     private val managedAccountIntentCreator: ManagedAccountIntentCreator by inject()
 
     private val resourcesFullRefreshIdlingResource: ResourcesFullRefreshIdlingResource by inject()
 
     @get:Rule
-    val idlingResourceRule = let {
-        val signInIdlingResource: SignInIdlingResource by inject()
-        val updateResourceIdlingResource: UpdateResourceIdlingResource by inject()
-        val createResourceIdlingResource: CreateResourceIdlingResource by inject()
-        IdlingResourceRule(
-            arrayOf(
-                signInIdlingResource,
-                resourcesFullRefreshIdlingResource,
-                updateResourceIdlingResource,
-                createResourceIdlingResource
+    val idlingResourceRule =
+        let {
+            val signInIdlingResource: SignInIdlingResource by inject()
+            val updateResourceIdlingResource: UpdateResourceIdlingResource by inject()
+            val createResourceIdlingResource: CreateResourceIdlingResource by inject()
+            IdlingResourceRule(
+                arrayOf(
+                    signInIdlingResource,
+                    resourcesFullRefreshIdlingResource,
+                    updateResourceIdlingResource,
+                    createResourceIdlingResource,
+                ),
             )
-        )
-    }
+        }
 
     @BeforeTest
     fun setup() {
@@ -111,8 +111,8 @@ class UpdateExpiryTest : KoinTest {
         chooseFilter(R.id.expiry)
     }
 
-    @Test
     //  https://passbolt.testrail.io/index.php?/cases/view/11937
+    @Test
     fun updateExpiryOfAResourceWhenSecretHasChanged() {
         // create a resource for future use - it will expire in 7 days
         // alternatively create expired resource in webExtension named ExpiringResource
@@ -120,7 +120,9 @@ class UpdateExpiryTest : KoinTest {
         //  Given  I am logged in as a Pro or Cloud user // Cloud
         //  And    automatic expiry is enabled on the server
         //  And    automatic expiry is set to <number of days> //7 days
-        onView(withId(com.passbolt.mobile.android.feature.otp.R.id.searchEditText)).perform(typeText("ExpiringR")) // search for a different but expired resource
+        onView(
+            withId(com.passbolt.mobile.android.feature.otp.R.id.searchEditText),
+        ).perform(typeText("ExpiringR")) // search for a different but expired resource
         onView(first(withId(com.passbolt.mobile.android.feature.otp.R.id.more))).perform(click())
         onView(withId(com.passbolt.mobile.android.feature.resourcemoremenu.R.id.editPassword)).perform(click())
         //    When   I edit a password of the resource
@@ -154,9 +156,10 @@ class UpdateExpiryTest : KoinTest {
         onView(withId(com.passbolt.mobile.android.feature.resourcemoremenu.R.id.editPassword)).perform(click())
         onView(withText(LocalizationR.string.resource_update_edit_password_title)).check(matches(isDisplayed()))
         val randomizedName = "StillExpired ${java.util.UUID.randomUUID().toString().take(5)}"
-        val fieldsToUpdate = EditableFieldInput.entries.filterNot {
-            it.hintName == EditableFieldInput.ENTER_NAME.hintName || it.hintName == EditableFieldInput.ENTER_PASSWORD.hintName
-        }
+        val fieldsToUpdate =
+            EditableFieldInput.entries.filterNot {
+                it.hintName == EditableFieldInput.ENTER_NAME.hintName || it.hintName == EditableFieldInput.ENTER_PASSWORD.hintName
+            }
         fieldsToUpdate.forEach { field ->
             onViewInputWithHintName(EditableFieldInput.ENTER_NAME.hintName).perform(replaceText(randomizedName))
             onViewInputWithHintName(field.hintName).perform(replaceText(field.textToReplace))

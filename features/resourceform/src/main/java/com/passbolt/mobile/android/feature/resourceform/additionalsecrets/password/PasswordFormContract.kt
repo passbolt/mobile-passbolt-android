@@ -29,24 +29,45 @@ import com.passbolt.mobile.android.ui.ResourceFormMode
  * @since v1.0
  */
 interface PasswordFormContract {
-
     interface View : BaseContract.View {
         fun goBackWithResult(password: PasswordUiModel)
+
         fun showCreateTitle()
+
         fun showPasswordUsername(username: String)
+
         fun showPasswordMainUri(mainUri: String)
-        fun showPassword(password: List<Codepoint>, entropy: Double, passwordStrength: PasswordStrength)
+
+        fun showPassword(
+            password: List<Codepoint>,
+            entropy: Double,
+            passwordStrength: PasswordStrength,
+        )
+
         fun showUnableToGeneratePassword(minimumEntropyBits: Int)
-        fun showPasswordStrength(passwordStrength: PasswordStrength, entropy: Double)
+
+        fun showPasswordStrength(
+            passwordStrength: PasswordStrength,
+            entropy: Double,
+        )
+
         fun showEditTitle(resourceName: String)
     }
 
     interface Presenter : BaseContract.Presenter<View> {
-        fun argsRetrieved(mode: ResourceFormMode, passwordModel: PasswordUiModel)
+        fun argsRetrieved(
+            mode: ResourceFormMode,
+            passwordModel: PasswordUiModel,
+        )
+
         fun applyClick()
+
         fun passwordMainUriTextChanged(mainUri: String)
+
         fun passwordUsernameTextChanged(username: String)
+
         fun passwordTextChanged(password: String)
+
         fun passwordGenerateClick()
     }
 }

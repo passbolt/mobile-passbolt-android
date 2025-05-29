@@ -25,9 +25,8 @@ import android.content.res.Resources
  * @since v1.0
  */
 class ResourceDimenProvider(
-    private val resources: Resources
+    private val resources: Resources,
 ) {
-
     fun getStatusBarHeight() = getSystemResourceDimenPx("status_bar_height")
 
     fun getNavigationBarHeight() = getSystemResourceDimenPx("navigation_bar_height")

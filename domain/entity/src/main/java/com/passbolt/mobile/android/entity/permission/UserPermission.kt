@@ -11,5 +11,5 @@ data class UserPermission(
     val avatarUrl: String?,
     val userName: String,
     val fingerprint: String,
-    val disabled: Boolean
+    val disabled: Boolean,
 )

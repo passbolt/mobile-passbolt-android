@@ -26,6 +26,7 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-val resourceTagsModule = module {
-    resourceTagsModule()
-}
+val resourceTagsModule =
+    module {
+        resourceTagsModule()
+    }

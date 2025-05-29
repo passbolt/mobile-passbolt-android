@@ -29,74 +29,153 @@ import javax.crypto.Cipher
  * @since v1.0
  */
 interface AuthContract {
-
     @Suppress("TooManyFunctions")
     interface View : BaseContract.View {
         fun showWrongPassphrase()
+
         fun showError(message: String)
+
         fun showFingerprintChangedError()
+
         fun navigateBack()
+
         fun showGenericError()
+
         fun showProgress()
+
         fun hideProgress()
+
         fun showLabel(name: String)
+
         fun showEmail(email: String)
+
         fun showAvatar(url: String)
+
         fun showDomain(domain: String)
+
         fun showForgotPasswordDialog()
+
         fun showTitle()
+
         fun disableAuthButton()
+
         fun enableAuthButton()
+
         fun authSuccess()
+
         fun hideKeyboard()
+
         fun showLeaveConfirmationDialog()
-        fun showBiometricPrompt(authReason: RefreshAuthReason?, fingeprintCipherCrypto: Cipher)
+
+        fun showBiometricPrompt(
+            authReason: RefreshAuthReason?,
+            fingeprintCipherCrypto: Cipher,
+        )
+
         fun setBiometricAuthButtonVisible()
+
         fun setBiometricAuthButtonGone()
-        fun showAuthenticationError(@StringRes errorMessage: Int)
+
+        fun showAuthenticationError(
+            @StringRes errorMessage: Int,
+        )
+
         fun clearPassphraseInput()
+
         fun showFeatureFlagsErrorDialog()
+
         fun closeFeatureFlagsFetchErrorDialog()
+
         fun showAuthenticationReason(reason: RefreshAuthReason)
-        fun showAccountDoesNotExistDialog(label: String, email: String?, url: String)
+
+        fun showAccountDoesNotExistDialog(
+            label: String,
+            email: String?,
+            url: String,
+        )
+
         fun navigateToAccountList()
+
         fun showServerFingerprintChanged(newFingerprint: String)
+
         fun showDecryptionError(message: String?)
+
         fun showServerNotReachable(serverDomain: String)
-        fun showTotpDialog(jwtToken: String?, hasOtherProviders: Boolean)
-        fun showYubikeyDialog(jwtToken: String?, hasOtherProviders: Boolean)
+
+        fun showTotpDialog(
+            jwtToken: String?,
+            hasOtherProviders: Boolean,
+        )
+
+        fun showYubikeyDialog(
+            jwtToken: String?,
+            hasOtherProviders: Boolean,
+        )
+
         fun showUnknownProvider()
+
         fun showDeviceRootedDialog()
+
         fun showHelpMenu()
+
         fun showChallengeInvalidSignature()
+
         fun showChallengeTokenExpired()
+
         fun showChallengeVerificationFailure()
+
         fun showFailedToFetchUserProfile(message: String?)
+
         fun showTimeIsOutOfSync()
 
         enum class RefreshAuthReason {
-            SESSION, PASSPHRASE
+            SESSION,
+            PASSPHRASE,
         }
 
-        fun showDuoDialog(jwtToken: String?, hasOtherProviders: Boolean)
+        fun showDuoDialog(
+            jwtToken: String?,
+            hasOtherProviders: Boolean,
+        )
     }
 
     interface Presenter : BaseContract.Presenter<View> {
         fun signInClick(passphrase: ByteArray)
+
         fun backClick(showConfirmationDialog: Boolean)
-        fun argsRetrieved(authConfig: ActivityIntents.AuthConfig, userId: String)
+
+        fun argsRetrieved(
+            authConfig: ActivityIntents.AuthConfig,
+            userId: String,
+        )
+
         fun forgotPasswordClick()
+
         fun passphraseInputIsEmpty(isEmpty: Boolean)
+
         fun viewCreated()
+
         fun leaveConfirmationClick()
+
         fun biometricAuthSuccess(authenticatedCipher: Cipher?)
+
         fun biometricAuthError(messageResId: Int)
+
         fun biometricAuthClick()
+
         fun connectToExistingAccountClick()
+
         fun fingerprintServerConfirmationClick(fingerprint: String)
+
         fun mfaSucceeded(mfaHeader: String?)
+
         fun onRootedDeviceAcknowledged()
+
         fun helpClick()
-        fun otherProviderClick(bearer: String?, currentProvider: MfaProvider)
+
+        fun otherProviderClick(
+            bearer: String?,
+            currentProvider: MfaProvider,
+        )
     }
 }

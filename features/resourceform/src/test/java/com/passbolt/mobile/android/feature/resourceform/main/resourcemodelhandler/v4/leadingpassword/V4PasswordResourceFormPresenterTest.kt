@@ -1,15 +1,15 @@
-package com.passbolt.mobile.android.feature.resourceform.main.resourcemodelhandler.v5.leadingpassword
+package com.passbolt.mobile.android.feature.resourceform.main.resourcemodelhandler.v4.leadingpassword
 
 import com.google.common.truth.Truth.assertThat
 import com.passbolt.mobile.android.core.fulldatarefresh.DataRefreshStatus
 import com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor.Output.Success
+import com.passbolt.mobile.android.core.resources.usecase.GetDefaultCreateContentTypeUseCase
 import com.passbolt.mobile.android.feature.resourceform.main.ResourceFormContract
 import com.passbolt.mobile.android.feature.resourceform.main.ResourceModelHandler
 import com.passbolt.mobile.android.feature.resourceform.main.mockEntropyCalculator
 import com.passbolt.mobile.android.feature.resourceform.main.mockFullDataRefreshExecutor
 import com.passbolt.mobile.android.feature.resourceform.main.mockGetDefaultCreateContentTypeUseCase
 import com.passbolt.mobile.android.feature.resourceform.main.testResourceFormModule
-import com.passbolt.mobile.android.core.resources.usecase.GetDefaultCreateContentTypeUseCase
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType
 import com.passbolt.mobile.android.ui.LeadingContentType
 import com.passbolt.mobile.android.ui.MetadataTypeModel
@@ -55,162 +55,175 @@ import org.skyscreamer.jsonassert.JSONAssert
  */
 
 class V4PasswordResourceFormPresenterTest : KoinTest {
-
     private val presenter: ResourceFormContract.Presenter by inject()
     private val view: ResourceFormContract.View = mock()
     private val resourceModelHandler: ResourceModelHandler by inject()
 
     @get:Rule
-    val koinTestRule = KoinTestRule.create {
-        printLogger(Level.ERROR)
-        modules(testResourceFormModule)
-    }
+    val koinTestRule =
+        KoinTestRule.create {
+            printLogger(Level.ERROR)
+            modules(testResourceFormModule)
+        }
 
     @Before
-    fun setUp() = runTest {
-        mockFullDataRefreshExecutor.stub {
-            onBlocking { dataRefreshStatusFlow }.doReturn(flowOf(DataRefreshStatus.Finished(Success)))
-        }
-        mockGetDefaultCreateContentTypeUseCase.stub {
-            onBlocking { execute(any()) }.thenReturn(
-                GetDefaultCreateContentTypeUseCase.Output(
-                    metadataType = MetadataTypeModel.V4,
-                    contentType = ContentType.PasswordAndDescription
+    fun setUp() =
+        runTest {
+            mockFullDataRefreshExecutor.stub {
+                onBlocking { dataRefreshStatusFlow }.doReturn(flowOf(DataRefreshStatus.Finished(Success)))
+            }
+            mockGetDefaultCreateContentTypeUseCase.stub {
+                onBlocking { execute(any()) }.thenReturn(
+                    GetDefaultCreateContentTypeUseCase.Output(
+                        metadataType = MetadataTypeModel.V4,
+                        contentType = ContentType.PasswordAndDescription,
+                    ),
                 )
-            )
-        }
-        mockEntropyCalculator.stub {
-            onBlocking { getSecretEntropy(any()) }.thenReturn(0.0)
-        }
+            }
+            mockEntropyCalculator.stub {
+                onBlocking { getSecretEntropy(any()) }.thenReturn(0.0)
+            }
 
-        presenter.attach(view)
-        presenter.argsRetrieved(
-            ResourceFormMode.Create(
-                leadingContentType = LeadingContentType.PASSWORD,
-                parentFolderId = null
+            presenter.attach(view)
+            presenter.argsRetrieved(
+                ResourceFormMode.Create(
+                    leadingContentType = LeadingContentType.PASSWORD,
+                    parentFolderId = null,
+                ),
             )
-        )
-    }
+        }
 
     @Test
-    fun `leading content type password should initialize empty password model`() = runTest {
-        assertThat(resourceModelHandler.contentType).isEqualTo(ContentType.PasswordAndDescription)
-        assertThat(resourceModelHandler.metadataType).isEqualTo(MetadataTypeModel.V4)
+    fun `leading content type password should initialize empty password model`() =
+        runTest {
+            assertThat(resourceModelHandler.contentType).isEqualTo(ContentType.PasswordAndDescription)
+            assertThat(resourceModelHandler.metadataType).isEqualTo(MetadataTypeModel.V4)
 
-        JSONAssert.assertEquals(
-            """
+            JSONAssert.assertEquals(
+                """
                 {
                     "name": ""
                 }
-            """.trimIndent(),
-            resourceModelHandler.resourceMetadata.json, STRICT_MODE_ENABLED
-        )
-        JSONAssert.assertEquals(
-            """
+                """.trimIndent(),
+                resourceModelHandler.resourceMetadata.json,
+                STRICT_MODE_ENABLED,
+            )
+            JSONAssert.assertEquals(
+                """
                 {
                     "password": ""
                 }
-            """.trimIndent(),
-            resourceModelHandler.resourceSecret.json, STRICT_MODE_ENABLED
-        )
-    }
+                """.trimIndent(),
+                resourceModelHandler.resourceSecret.json,
+                STRICT_MODE_ENABLED,
+            )
+        }
 
     @Test
-    fun `edit metadata should not change content type and apply changes`() = runTest {
-        val mockName = "test name"
-        val mockMainUri = "test uri"
-        val mockPassword = "test password"
+    fun `edit metadata should not change content type and apply changes`() =
+        runTest {
+            val mockName = "test name"
+            val mockMainUri = "test uri"
+            val mockPassword = "test password"
 
-        presenter.nameTextChanged(mockName)
-        presenter.passwordMainUriTextChanged(mockMainUri)
-        presenter.passwordTextChanged(mockPassword)
+            presenter.nameTextChanged(mockName)
+            presenter.passwordMainUriTextChanged(mockMainUri)
+            presenter.passwordTextChanged(mockPassword)
 
-        JSONAssert.assertEquals(
-            """
+            JSONAssert.assertEquals(
+                """
                 {
                     "name": "$mockName",
                     "uri": "$mockMainUri"
                 }
-            """.trimIndent(),
-            resourceModelHandler.resourceMetadata.json, STRICT_MODE_ENABLED
-        )
-        JSONAssert.assertEquals(
-            """
+                """.trimIndent(),
+                resourceModelHandler.resourceMetadata.json,
+                STRICT_MODE_ENABLED,
+            )
+            JSONAssert.assertEquals(
+                """
                 {
                     "password": "$mockPassword",
                     "description": ""
                 }
-            """.trimIndent(),
-            resourceModelHandler.resourceSecret.json, STRICT_MODE_ENABLED
-        )
-    }
+                """.trimIndent(),
+                resourceModelHandler.resourceSecret.json,
+                STRICT_MODE_ENABLED,
+            )
+        }
 
     @Test
-    fun `add password should not change content type and apply changes`() = runTest {
-        val mockPassword = "test password"
+    fun `add password should not change content type and apply changes`() =
+        runTest {
+            val mockPassword = "test password"
 
-        presenter.passwordTextChanged(mockPassword)
+            presenter.passwordTextChanged(mockPassword)
 
-        JSONAssert.assertEquals(
-            """
+            JSONAssert.assertEquals(
+                """
                 {
                     "password": "$mockPassword",
                     "description": ""
                 }
-            """.trimIndent(),
-            resourceModelHandler.resourceSecret.json, STRICT_MODE_ENABLED
-        )
-    }
+                """.trimIndent(),
+                resourceModelHandler.resourceSecret.json,
+                STRICT_MODE_ENABLED,
+            )
+        }
 
     @Test
-    fun `add note should not change content type and apply changes`() = runTest {
-        val mockNote = "note"
+    fun `add note should not change content type and apply changes`() =
+        runTest {
+            val mockNote = "note"
 
-        presenter.noteChanged(mockNote)
+            presenter.noteChanged(mockNote)
 
-        JSONAssert.assertEquals(
-            """
+            JSONAssert.assertEquals(
+                """
                 {
                     "password": "",
                     "description": "$mockNote"
                 }
-            """.trimIndent(),
-            resourceModelHandler.resourceSecret.json, STRICT_MODE_ENABLED
-        )
-    }
+                """.trimIndent(),
+                resourceModelHandler.resourceSecret.json,
+                STRICT_MODE_ENABLED,
+            )
+        }
 
     @Test
-    fun `add totp should change content type and apply changes`() = runTest {
-        val mockName = "test name"
-        val mockUrl = "test url"
-        val mockTotpSecret = "test secret"
-        val mockPeriod = "123"
-        val mockDigits = "456"
-        val mockAlgorithm = OtpParseResult.OtpQr.Algorithm.SHA512.name
+    fun `add totp should change content type and apply changes`() =
+        runTest {
+            val mockName = "test name"
+            val mockUrl = "test url"
+            val mockTotpSecret = "test secret"
+            val mockPeriod = "123"
+            val mockDigits = "456"
+            val mockAlgorithm = OtpParseResult.OtpQr.Algorithm.SHA512.name
 
-        presenter.nameTextChanged(mockName)
-        presenter.totpChanged(
-            TotpUiModel(
-                secret = mockTotpSecret,
-                issuer = mockUrl,
-                algorithm = mockAlgorithm,
-                expiry = mockPeriod,
-                length = mockDigits
+            presenter.nameTextChanged(mockName)
+            presenter.totpChanged(
+                TotpUiModel(
+                    secret = mockTotpSecret,
+                    issuer = mockUrl,
+                    algorithm = mockAlgorithm,
+                    expiry = mockPeriod,
+                    length = mockDigits,
+                ),
             )
-        )
 
-        assertThat(resourceModelHandler.contentType).isEqualTo(ContentType.PasswordDescriptionTotp)
-        JSONAssert.assertEquals(
-            """
+            assertThat(resourceModelHandler.contentType).isEqualTo(ContentType.PasswordDescriptionTotp)
+            JSONAssert.assertEquals(
+                """
                 {
                     "name": "$mockName",
                     "uri": "$mockUrl"
                 }
-            """.trimIndent(),
-            resourceModelHandler.resourceMetadata.json, STRICT_MODE_ENABLED
-        )
-        JSONAssert.assertEquals(
-            """
+                """.trimIndent(),
+                resourceModelHandler.resourceMetadata.json,
+                STRICT_MODE_ENABLED,
+            )
+            JSONAssert.assertEquals(
+                """
                 {
                     "description": "",
                     "password": "",
@@ -221,38 +234,42 @@ class V4PasswordResourceFormPresenterTest : KoinTest {
                         "algorithm": "$mockAlgorithm"
                     }
                 }
-            """.trimIndent(),
-            resourceModelHandler.resourceSecret.json, STRICT_MODE_ENABLED
-        )
-    }
+                """.trimIndent(),
+                resourceModelHandler.resourceSecret.json,
+                STRICT_MODE_ENABLED,
+            )
+        }
 
     @Test
-    fun `add metadata description to password should not be possible`() = runTest {
-        val mockName = "test name"
-        val mockMetadataDescription = "md description"
+    fun `add metadata description to password should not be possible`() =
+        runTest {
+            val mockName = "test name"
+            val mockMetadataDescription = "md description"
 
-        presenter.nameTextChanged(mockName)
-        presenter.metadataDescriptionChanged(mockMetadataDescription)
+            presenter.nameTextChanged(mockName)
+            presenter.metadataDescriptionChanged(mockMetadataDescription)
 
-        assertThat(resourceModelHandler.contentType).isEqualTo(ContentType.PasswordAndDescription)
-        JSONAssert.assertEquals(
-            """
+            assertThat(resourceModelHandler.contentType).isEqualTo(ContentType.PasswordAndDescription)
+            JSONAssert.assertEquals(
+                """
                 {
                     "name": "$mockName",
                 }
-            """.trimIndent(),
-            resourceModelHandler.resourceMetadata.json, STRICT_MODE_ENABLED
-        )
-        JSONAssert.assertEquals(
-            """
+                """.trimIndent(),
+                resourceModelHandler.resourceMetadata.json,
+                STRICT_MODE_ENABLED,
+            )
+            JSONAssert.assertEquals(
+                """
                 {
                     "description": "",
                     "password": "",
                 }
-            """.trimIndent(),
-            resourceModelHandler.resourceSecret.json, STRICT_MODE_ENABLED
-        )
-    }
+                """.trimIndent(),
+                resourceModelHandler.resourceSecret.json,
+                STRICT_MODE_ENABLED,
+            )
+        }
 
     private companion object {
         private const val STRICT_MODE_ENABLED = true

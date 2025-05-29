@@ -37,16 +37,17 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-val foldersModule = module {
-    foldersDbModule()
+val foldersModule =
+    module {
+        foldersDbModule()
 
-    factoryOf(::CreateFolderUseCase)
-    singleOf(::FetchUserFoldersUseCase)
-    singleOf(::FoldersInteractor)
-    singleOf(::RebuildFoldersTablesUseCase)
-    singleOf(::RemoveLocalFolderPermissionsUseCase)
-    singleOf(::AddLocalFolderPermissionsUseCase)
-    singleOf(::RebuildFolderPermissionsTablesUseCase)
-    singleOf(::ShareFolderUseCase)
-    singleOf(::FolderShareInteractor)
-}
+        factoryOf(::CreateFolderUseCase)
+        singleOf(::FetchUserFoldersUseCase)
+        singleOf(::FoldersInteractor)
+        singleOf(::RebuildFoldersTablesUseCase)
+        singleOf(::RemoveLocalFolderPermissionsUseCase)
+        singleOf(::AddLocalFolderPermissionsUseCase)
+        singleOf(::RebuildFolderPermissionsTablesUseCase)
+        singleOf(::ShareFolderUseCase)
+        singleOf(::FolderShareInteractor)
+    }

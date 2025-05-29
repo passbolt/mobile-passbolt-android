@@ -25,7 +25,5 @@ import java.util.UUID
  * @since v1.0
  */
 class UuidProvider {
-
-    fun get(): String =
-        UUID.randomUUID().toString()
+    fun get(): String = UUID.randomUUID().toString()
 }

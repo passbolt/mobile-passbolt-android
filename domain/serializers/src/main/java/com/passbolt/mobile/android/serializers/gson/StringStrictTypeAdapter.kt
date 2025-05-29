@@ -8,7 +8,6 @@ import com.passbolt.mobile.android.serializers.gson.exception.InvalidJsonTokenTy
 import java.io.IOException
 
 class StringStrictTypeAdapter : TypeAdapter<String?>() {
-
     @Throws(IOException::class)
     override fun read(input: JsonReader): String? {
         val peek = input.peek()
@@ -25,7 +24,10 @@ class StringStrictTypeAdapter : TypeAdapter<String?>() {
     }
 
     @Throws(IOException::class)
-    override fun write(out: JsonWriter, value: String?) {
+    override fun write(
+        out: JsonWriter,
+        value: String?,
+    ) {
         out.value(value)
     }
 }

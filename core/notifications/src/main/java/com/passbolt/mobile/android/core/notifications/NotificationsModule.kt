@@ -30,9 +30,10 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-val notificationsModule = module {
-    factory { androidContext().getSystemService(AutofillManager::class.java) }
-    factory { androidContext().getSystemService(NotificationManager::class.java) }
-    singleOf(::AccessibilityServiceNotificationFactory)
-    singleOf(::NotificationChannelManager)
-}
+val notificationsModule =
+    module {
+        factory { androidContext().getSystemService(AutofillManager::class.java) }
+        factory { androidContext().getSystemService(NotificationManager::class.java) }
+        singleOf(::AccessibilityServiceNotificationFactory)
+        singleOf(::NotificationChannelManager)
+    }

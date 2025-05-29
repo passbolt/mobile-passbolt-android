@@ -23,5 +23,7 @@ package com.passbolt.mobile.android.entity.resource
  * @since v1.0
  */
 enum class Permission {
-    READ, WRITE, OWNER
+    READ,
+    WRITE,
+    OWNER,
 }

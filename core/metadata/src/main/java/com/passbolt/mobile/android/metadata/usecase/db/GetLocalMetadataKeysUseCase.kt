@@ -32,14 +32,14 @@ import com.passbolt.mobile.android.ui.ParsedMetadataKeyModel
  */
 class GetLocalMetadataKeysUseCase(
     private val databaseProvider: DatabaseProvider,
-    private val metadataMapper: MetadataMapper
+    private val metadataMapper: MetadataMapper,
 ) : AsyncUseCase<GetLocalMetadataKeysUseCase.Input, List<ParsedMetadataKeyModel>>,
     SelectedAccountUseCase {
-
     override suspend fun execute(input: Input): List<ParsedMetadataKeyModel> {
-        val metadataKeysDao = databaseProvider
-            .get(selectedAccountId)
-            .metadataKeysDao()
+        val metadataKeysDao =
+            databaseProvider
+                .get(selectedAccountId)
+                .metadataKeysDao()
 
         return when (input.purpose) {
             ENCRYPT -> metadataKeysDao.getEncryptionMetadataKeysWithPrivateKeys()
@@ -47,7 +47,9 @@ class GetLocalMetadataKeysUseCase(
         }.map { metadataMapper.mapToUi(it) }
     }
 
-    data class Input(val purpose: MetadataKeyPurpose)
+    data class Input(
+        val purpose: MetadataKeyPurpose,
+    )
 
     enum class MetadataKeyPurpose {
         /**
@@ -58,6 +60,6 @@ class GetLocalMetadataKeysUseCase(
         /**
          * Metadata keys that may be expired. They may be used for decryption of not yet migrated items.
          */
-        DECRYPT
+        DECRYPT,
     }
 }

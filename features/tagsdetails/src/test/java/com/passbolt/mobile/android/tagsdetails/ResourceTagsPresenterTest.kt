@@ -1,6 +1,5 @@
 package com.passbolt.mobile.android.tagsdetails
 
-import com.google.gson.JsonObject
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceTagsUseCase.Output
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUseCase
 import com.passbolt.mobile.android.permissions.permissions.PermissionsMode
@@ -48,40 +47,42 @@ import java.time.ZonedDateTime
  */
 
 class ResourceTagsPresenterTest : KoinTest {
-
     private val presenter: ResourceTagsContract.Presenter by inject()
     private val view: ResourceTagsContract.View = mock()
 
     @ExperimentalCoroutinesApi
     @get:Rule
-    val koinTestRule = KoinTestRule.create {
-        printLogger(Level.ERROR)
-        modules(testResourceTagsModule)
-    }
+    val koinTestRule =
+        KoinTestRule.create {
+            printLogger(Level.ERROR)
+            modules(testResourceTagsModule)
+        }
 
     @Before
     fun setup() {
-        resourceModel = ResourceModel(
-            resourceId = ID,
-            resourceTypeId = RESOURCE_TYPE_ID,
-            folderId = FOLDER_ID_ID,
-            permission = ResourcePermission.READ,
-            favouriteId = "fav-id",
-            modified = ZonedDateTime.now(),
-            expiry = null,
-            metadataJsonModel = MetadataJsonModel(
-                """
-                    {
-                        "name": "$NAME",
-                        "uri": "$URL",
-                        "username": "$USERNAME",
-                        "description": "$DESCRIPTION"
-                    }
-                """.trimIndent()
-            ),
-            metadataKeyId = null,
-            metadataKeyType = null
-        )
+        resourceModel =
+            ResourceModel(
+                resourceId = ID,
+                resourceTypeId = RESOURCE_TYPE_ID,
+                folderId = FOLDER_ID_ID,
+                permission = ResourcePermission.READ,
+                favouriteId = "fav-id",
+                modified = ZonedDateTime.now(),
+                expiry = null,
+                metadataJsonModel =
+                    MetadataJsonModel(
+                        """
+                        {
+                            "name": "$NAME",
+                            "uri": "$URL",
+                            "username": "$USERNAME",
+                            "description": "$DESCRIPTION"
+                        }
+                        """.trimIndent(),
+                    ),
+                metadataKeyId = null,
+                metadataKeyType = null,
+            )
         mockGetLocalResourceUseCase.stub {
             onBlocking { execute(GetLocalResourceUseCase.Input(resourceModel.resourceId)) }
                 .doReturn(GetLocalResourceUseCase.Output(resourceModel))
@@ -96,7 +97,7 @@ class ResourceTagsPresenterTest : KoinTest {
     fun `resource header and tags list should be shown correct`() {
         presenter.argsRetrieved(
             resourceModel.resourceId,
-            PermissionsMode.VIEW
+            PermissionsMode.VIEW,
         )
 
         verify(view).showFavouriteStar()
@@ -115,9 +116,10 @@ class ResourceTagsPresenterTest : KoinTest {
         private const val RESOURCE_TYPE_ID = "resTypeId"
         private const val FOLDER_ID_ID = "folderId"
         private lateinit var resourceModel: ResourceModel
-        private val RESOURCE_TAGS = listOf(
-            TagModel("id1", "tag1", false),
-            TagModel("id2", "tag2", false)
-        )
+        private val RESOURCE_TAGS =
+            listOf(
+                TagModel("id1", "tag1", false),
+                TagModel("id2", "tag2", false),
+            )
     }
 }

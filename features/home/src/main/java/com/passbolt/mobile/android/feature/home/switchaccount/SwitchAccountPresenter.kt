@@ -47,9 +47,8 @@ class SwitchAccountPresenter(
     private val saveSelectedAccountUseCase: SaveSelectedAccountUseCase,
     private val fullDataRefreshExecutor: FullDataRefreshExecutor,
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
-    coroutineLaunchContext: CoroutineLaunchContext
+    coroutineLaunchContext: CoroutineLaunchContext,
 ) : SwitchAccountContract.Presenter {
-
     override var view: SwitchAccountContract.View? = null
     private val job = SupervisorJob()
     private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
@@ -58,7 +57,7 @@ class SwitchAccountPresenter(
     override fun argsRetrieved(appContext: AppContext) {
         this.appContext = appContext
         view?.showAccountsList(
-            prepareAccountList()
+            prepareAccountList(),
         )
     }
 
@@ -69,7 +68,7 @@ class SwitchAccountPresenter(
 
     override fun viewResumed() {
         view?.showAccountsList(
-            prepareAccountList()
+            prepareAccountList(),
         )
     }
 

@@ -43,9 +43,8 @@ class ResourceCommonActionsInteractor(
     private val sessionRefreshedFlow: StateFlow<Unit?>,
     private val resource: ResourceModel,
     private val favouritesInteractor: FavouritesInteractor,
-    private val deleteResourceUseCase: DeleteResourceUseCase
+    private val deleteResourceUseCase: DeleteResourceUseCase,
 ) {
-
     suspend fun toggleFavourite(favouriteOption: FavouriteOption): Flow<ResourceCommonActionResult> =
         when (favouriteOption) {
             ADD_TO_FAVOURITES ->
@@ -69,9 +68,12 @@ class ResourceCommonActionsInteractor(
         }
 
     suspend fun deleteResource(): Flow<ResourceCommonActionResult> =
-        when (val response = runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
-            deleteResourceUseCase.execute(DeleteResourceUseCase.Input(resource.resourceId))
-        }) {
+        when (
+            val response =
+                runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+                    deleteResourceUseCase.execute(DeleteResourceUseCase.Input(resource.resourceId))
+                }
+        ) {
             is DeleteResourceUseCase.Output.Success -> {
                 flowOf(ResourceCommonActionResult.Success(resource.metadataJsonModel.name))
             }
@@ -85,7 +87,7 @@ class ResourceCommonActionsInteractor(
 suspend fun performCommonResourceAction(
     action: suspend () -> Flow<ResourceCommonActionResult>,
     doOnSuccess: (ResourceCommonActionResult.Success) -> Unit,
-    doOnFailure: () -> Unit
+    doOnFailure: () -> Unit,
 ) {
     when (val result = action().single()) {
         is ResourceCommonActionResult.Failure -> doOnFailure()

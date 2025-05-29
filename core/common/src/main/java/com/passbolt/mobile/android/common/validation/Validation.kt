@@ -7,7 +7,10 @@ class Validation {
     private var onInvalid: () -> Unit = {}
     private val validations = mutableListOf<ValueValidation<*>>()
 
-    fun <T> of(value: T, block: ValueValidation<T>.() -> Unit) {
+    fun <T> of(
+        value: T,
+        block: ValueValidation<T>.() -> Unit,
+    ) {
         validations.add(ValueValidation(value).apply(block))
     }
 
@@ -31,8 +34,14 @@ class Validation {
     }
 
     @Suppress("SpreadOperator", "DataClassContainsFunctions")
-    data class ValueValidation<T>(val value: T, val ruleSets: MutableList<RuleSet<T>> = mutableListOf()) {
-        fun withRules(vararg rules: Rule<T>, block: RuleSet<T>.() -> Unit = {}) {
+    data class ValueValidation<T>(
+        val value: T,
+        val ruleSets: MutableList<RuleSet<T>> = mutableListOf(),
+    ) {
+        fun withRules(
+            vararg rules: Rule<T>,
+            block: RuleSet<T>.() -> Unit = {},
+        ) {
             val application = RuleSet(*rules).apply(block)
             ruleSets.add(application)
         }
@@ -41,7 +50,7 @@ class Validation {
     class RuleSet<T>(
         private vararg val rules: Rule<T>,
         var onValid: () -> Unit = {},
-        var onInvalid: () -> Unit = {}
+        var onInvalid: () -> Unit = {},
     ) {
         fun onValid(action: () -> Unit) {
             this.onValid = action

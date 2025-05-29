@@ -24,9 +24,8 @@
 package com.passbolt.mobile.android.core.resources.actions
 
 sealed class ResourceCommonActionResult {
-
     data class Success(
-        val resourceName: String
+        val resourceName: String,
     ) : ResourceCommonActionResult()
 
     data object Failure : ResourceCommonActionResult()

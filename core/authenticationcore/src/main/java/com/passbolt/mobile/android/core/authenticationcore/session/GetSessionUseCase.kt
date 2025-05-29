@@ -30,9 +30,8 @@ import com.passbolt.mobile.android.encryptedstorage.EncryptedSharedPreferencesFa
 
 class GetSessionUseCase(
     private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory,
-    private val getSelectedAccountUseCase: GetSelectedAccountUseCase
+    private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
 ) : UseCase<Unit, GetSessionUseCase.Output> {
-
     override fun execute(input: Unit): Output {
         val userId = getSelectedAccountUseCase.execute(Unit).selectedAccount
         userId?.let {
@@ -41,7 +40,7 @@ class GetSessionUseCase(
             return Output(
                 sharedPreferences.getString(ACCESS_TOKEN_KEY, null),
                 sharedPreferences.getString(REFRESH_TOKEN_KEY, null),
-                sharedPreferences.getString(MFA_TOKEN_KEY, null)
+                sharedPreferences.getString(MFA_TOKEN_KEY, null),
             )
         } ?: return Output(null, null, null)
     }
@@ -49,6 +48,6 @@ class GetSessionUseCase(
     data class Output(
         val accessToken: String?,
         val refreshToken: String?,
-        val mfaToken: String?
+        val mfaToken: String?,
     )
 }

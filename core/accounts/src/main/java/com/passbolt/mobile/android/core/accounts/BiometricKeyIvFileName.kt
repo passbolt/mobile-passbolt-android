@@ -23,8 +23,9 @@ package com.passbolt.mobile.android.core.accounts
  * @since v1.0
  */
 
-class BiometricKeyIvFileName(userId: String) {
-
+class BiometricKeyIvFileName(
+    userId: String,
+) {
     val name = BIOMETRIC_KEY_IV_FILE_NAME_FORMAT.format(userId)
 
     private companion object {

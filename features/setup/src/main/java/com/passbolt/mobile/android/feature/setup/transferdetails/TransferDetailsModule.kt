@@ -29,7 +29,7 @@ fun Module.transferDetailsModule() {
     scope(named<TransferDetailsFragment>()) {
         scoped<TransferDetailsContract.Presenter> {
             TransferDetailsPresenter(
-                cameraInformationProvider = get()
+                cameraInformationProvider = get(),
             )
         }
     }

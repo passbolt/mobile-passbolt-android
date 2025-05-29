@@ -1,8 +1,3 @@
-package com.passbolt.mobile.android.dto.response
-
-import com.google.gson.annotations.SerializedName
-import java.util.UUID
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -25,6 +20,11 @@ import java.util.UUID
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+
+package com.passbolt.mobile.android.dto.response
+
+import com.google.gson.annotations.SerializedName
+import java.util.UUID
 
 /**
  * A compatibility resource model - can eiter support v4 resource or v5 resource with metadata.
@@ -56,7 +56,7 @@ data class ResourceResponseV4Dto(
     override val modified: String,
     override val tags: List<TagDto>?,
     override val expired: String?,
-    override val permissions: List<PermissionWithGroupDto>?
+    override val permissions: List<PermissionWithGroupDto>?,
 ) : ResourceResponseDto()
 
 data class ResourceResponseV5Dto(
@@ -75,7 +75,7 @@ data class ResourceResponseV5Dto(
     override val modified: String,
     override val tags: List<TagDto>?,
     override val expired: String?,
-    override val permissions: List<PermissionWithGroupDto>?
+    override val permissions: List<PermissionWithGroupDto>?,
 ) : ResourceResponseDto()
 
 enum class MetadataKeyTypeDto {
@@ -83,16 +83,16 @@ enum class MetadataKeyTypeDto {
     SHARED,
 
     @SerializedName("user_key")
-    PERSONAL
+    PERSONAL,
 }
 
 data class TagDto(
     val id: UUID,
     val slug: String,
     @SerializedName("is_shared")
-    val isShared: Boolean
+    val isShared: Boolean,
 )
 
 data class FavouriteDto(
-    val id: UUID
+    val id: UUID,
 )

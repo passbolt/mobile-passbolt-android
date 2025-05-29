@@ -91,10 +91,9 @@ class ResourceFormPresenter(
     private val getLocalResourceUseCase: GetLocalResourceUseCase,
     private val fullDataRefreshExecutor: FullDataRefreshExecutor,
     private val metadataPrivateKeysHelperInteractor: MetadataPrivateKeysHelperInteractor,
-    coroutineLaunchContext: CoroutineLaunchContext
+    coroutineLaunchContext: CoroutineLaunchContext,
 ) : BaseAuthenticatedPresenter<ResourceFormContract.View>(coroutineLaunchContext),
     ResourceFormContract.Presenter {
-
     override var view: ResourceFormContract.View? = null
     private val job = SupervisorJob()
     private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
@@ -132,7 +131,7 @@ class ResourceFormPresenter(
                             resourceModelHandler.initializeModelForEdition(
                                 mode.resourceId,
                                 needSessionRefreshFlow,
-                                sessionRefreshedFlow
+                                sessionRefreshedFlow,
                             )
                         } catch (_: Exception) {
                             view?.showEditResourceInitializationError()
@@ -157,10 +156,11 @@ class ResourceFormPresenter(
     private fun setupTitle() {
         mode.let {
             when (it) {
-                is Create -> when (uiModel.leadingContentType) {
-                    TOTP -> view?.showCreateTotpTitle()
-                    PASSWORD -> view?.showCreatePasswordTitle()
-                }
+                is Create ->
+                    when (uiModel.leadingContentType) {
+                        TOTP -> view?.showCreateTotpTitle()
+                        PASSWORD -> view?.showCreatePasswordTitle()
+                    }
                 is Edit -> view?.showEditTitle(it.resourceName)
             }
         }
@@ -197,7 +197,7 @@ class ResourceFormPresenter(
         when (leadingContentType) {
             TOTP -> {
                 view?.addTotpLeadingForm(
-                    resourceFormMapper.mapToUiModel(resourceSecret.totp, resourceMetadata.name)
+                    resourceFormMapper.mapToUiModel(resourceSecret.totp, resourceMetadata.name),
                 )
                 view?.showTotpIssuer(resourceMetadata.getMainUri(newContentType))
                 view?.showTotpSecret(resourceSecret.totp?.key.orEmpty())
@@ -214,20 +214,22 @@ class ResourceFormPresenter(
     override fun passwordGenerateClick() {
         scope.launch {
             val passwordPolicies = getPasswordPoliciesUseCase.execute(Unit)
-            val secretGenerationResult = when (passwordPolicies.defaultGenerator) {
-                PasswordGeneratorTypeModel.PASSWORD ->
-                    secretGenerator.generatePassword(passwordPolicies.passwordGeneratorSettings)
-                PasswordGeneratorTypeModel.PASSPHRASE ->
-                    secretGenerator.generatePassphrase(passwordPolicies.passphraseGeneratorSettings)
-            }
+            val secretGenerationResult =
+                when (passwordPolicies.defaultGenerator) {
+                    PasswordGeneratorTypeModel.PASSWORD ->
+                        secretGenerator.generatePassword(passwordPolicies.passwordGeneratorSettings)
+                    PasswordGeneratorTypeModel.PASSPHRASE ->
+                        secretGenerator.generatePassphrase(passwordPolicies.passphraseGeneratorSettings)
+                }
             when (secretGenerationResult) {
                 is SecretGenerator.SecretGenerationResult.FailedToGenerateLowEntropy ->
                     view?.showUnableToGeneratePassword(secretGenerationResult.minimumEntropyBits)
-                is SecretGenerator.SecretGenerationResult.Success -> view?.showPassword(
-                    secretGenerationResult.password,
-                    secretGenerationResult.entropy,
-                    entropyViewMapper.map(Entropy.parse(secretGenerationResult.entropy))
-                )
+                is SecretGenerator.SecretGenerationResult.Success ->
+                    view?.showPassword(
+                        secretGenerationResult.password,
+                        secretGenerationResult.entropy,
+                        entropyViewMapper.map(Entropy.parse(secretGenerationResult.entropy)),
+                    )
             }
         }
     }
@@ -268,7 +270,7 @@ class ResourceFormPresenter(
 
     override fun metadataDescriptionChanged(metadataDescription: String?) {
         resourceModelHandler.applyModelChange(
-            if (metadataDescription.isNullOrBlank()) REMOVE_METADATA_DESCRIPTION else ADD_METADATA_DESCRIPTION
+            if (metadataDescription.isNullOrBlank()) REMOVE_METADATA_DESCRIPTION else ADD_METADATA_DESCRIPTION,
         ) { metadata, _ ->
             metadata.description = metadataDescription
         }
@@ -280,7 +282,7 @@ class ResourceFormPresenter(
 
     override fun totpSecretChanged(totpSecret: String) {
         resourceModelHandler.applyModelChange(
-            if (totpSecret.isBlank()) REMOVE_TOTP else ADD_TOTP
+            if (totpSecret.isBlank()) REMOVE_TOTP else ADD_TOTP,
         ) { _, secret ->
             secret.totp = requireNotNull(secret.totp).copy(key = totpSecret)
         }
@@ -296,15 +298,19 @@ class ResourceFormPresenter(
         resourceModelHandler.applyModelChange(ADD_TOTP) { _, secret ->
             val settings =
                 totpAdvancedSettings ?: TotpUiModel.emptyWithDefaults(resourceMetadata.getMainUri(newContentType))
-            secret.totp = requireNotNull(resourceSecret.totp).copy(
-                algorithm = settings.algorithm,
-                digits = settings.length.toInt(),
-                period = settings.expiry.toLong()
-            )
+            secret.totp =
+                requireNotNull(resourceSecret.totp).copy(
+                    algorithm = settings.algorithm,
+                    digits = settings.length.toInt(),
+                    period = settings.expiry.toLong(),
+                )
         }
     }
 
-    override fun totpScanned(isManualCreationChosen: Boolean, scannedTotp: OtpParseResult.OtpQr.TotpQr?) {
+    override fun totpScanned(
+        isManualCreationChosen: Boolean,
+        scannedTotp: OtpParseResult.OtpQr.TotpQr?,
+    ) {
         // just stay on totp screen and allow manual input
         if (isManualCreationChosen) return
 
@@ -314,19 +320,20 @@ class ResourceFormPresenter(
                 metadata.name = it.label
             }
             resourceModelHandler.applyModelChange(ADD_TOTP) { _, secret ->
-                secret.totp = TotpSecret(
-                    key = it.secret,
-                    algorithm = it.algorithm.name,
-                    digits = it.digits,
-                    period = it.period
-                )
+                secret.totp =
+                    TotpSecret(
+                        key = it.secret,
+                        algorithm = it.algorithm.name,
+                        digits = it.digits,
+                        period = it.period,
+                    )
             }
         }
     }
 
     override fun additionalTotpClick() {
         view?.navigateToTotp(
-            resourceFormMapper.mapToUiModel(resourceSecret.totp, resourceMetadata.getMainUri(newContentType))
+            resourceFormMapper.mapToUiModel(resourceSecret.totp, resourceMetadata.getMainUri(newContentType)),
         )
     }
 
@@ -335,8 +342,8 @@ class ResourceFormPresenter(
             resourceFormMapper.mapToUiModel(
                 resourceSecret.getPassword(newContentType).orEmpty(),
                 resourceMetadata.getMainUri(newContentType),
-                resourceMetadata.username.orEmpty()
-            )
+                resourceMetadata.username.orEmpty(),
+            ),
         )
     }
 
@@ -346,7 +353,7 @@ class ResourceFormPresenter(
 
     override fun noteChanged(note: String?) {
         resourceModelHandler.applyModelChange(
-            if (note.isNullOrBlank()) REMOVE_NOTE else ADD_NOTE
+            if (note.isNullOrBlank()) REMOVE_NOTE else ADD_NOTE,
         ) { _, secret ->
             secret.description = note
         }
@@ -383,16 +390,17 @@ class ResourceFormPresenter(
         onValid {
             scope.launch {
                 view?.showProgress()
-                val resourceCreateActionsInteractor = get<ResourceCreateActionsInteractor> {
-                    parametersOf(needSessionRefreshFlow, sessionRefreshedFlow)
-                }
+                val resourceCreateActionsInteractor =
+                    get<ResourceCreateActionsInteractor> {
+                        parametersOf(needSessionRefreshFlow, sessionRefreshedFlow)
+                    }
                 performResourceCreateAction(
                     action = {
                         resourceCreateActionsInteractor.createGenericResource(
                             newContentType,
                             parentFolderId,
                             resourceModelHandler.getResourceMetadataWithRequiredFields(),
-                            resourceModelHandler.getResourceSecretWithRequiredFields()
+                            resourceModelHandler.getResourceSecretWithRequiredFields(),
                         )
                     },
                     doOnFailure = { view?.showGenericError() },
@@ -402,7 +410,7 @@ class ResourceFormPresenter(
                     doOnCannotCreateWithCurrentConfig = { view?.showCannotCreateTotpWithCurrentConfig() },
                     doOnMetadataKeyModified = { view?.showMetadataKeyModifiedDialog(it) },
                     doOnMetadataKeyDeleted = { view?.showMetadataKeyDeletedDialog(it) },
-                    doOnMetadataKeyVerificationFailure = { view?.showFailedToVerifyMetadataKey() }
+                    doOnMetadataKeyVerificationFailure = { view?.showFailedToVerifyMetadataKey() },
                 )
                 view?.hideProgress()
             }
@@ -420,18 +428,21 @@ class ResourceFormPresenter(
         onValid {
             scope.launch {
                 view?.showProgress()
-                val editedResource = getLocalResourceUseCase.execute(
-                    GetLocalResourceUseCase.Input((mode as Edit).resourceId)
-                ).resource
-                val resourceUpdateActionsInteractor = get<ResourceUpdateActionsInteractor> {
-                    parametersOf(editedResource, needSessionRefreshFlow, sessionRefreshedFlow)
-                }
+                val editedResource =
+                    getLocalResourceUseCase
+                        .execute(
+                            GetLocalResourceUseCase.Input((mode as Edit).resourceId),
+                        ).resource
+                val resourceUpdateActionsInteractor =
+                    get<ResourceUpdateActionsInteractor> {
+                        parametersOf(editedResource, needSessionRefreshFlow, sessionRefreshedFlow)
+                    }
                 performResourceUpdateAction(
                     action = {
                         resourceUpdateActionsInteractor.updateGenericResource(
                             newContentType,
                             { resourceModelHandler.getResourceMetadataWithRequiredFields() },
-                            { resourceModelHandler.getResourceSecretWithRequiredFields() }
+                            { resourceModelHandler.getResourceSecretWithRequiredFields() },
                         )
                     },
                     doOnFailure = { view?.showGenericError() },
@@ -441,7 +452,7 @@ class ResourceFormPresenter(
                     doOnCannotEditWithCurrentConfig = { view?.showCannotUpdateTotpWithCurrentConfig() },
                     doOnMetadataKeyModified = { view?.showMetadataKeyModifiedDialog(it) },
                     doOnMetadataKeyDeleted = { view?.showMetadataKeyDeletedDialog(it) },
-                    doOnMetadataKeyVerificationFailure = { view?.showFailedToVerifyMetadataKey() }
+                    doOnMetadataKeyVerificationFailure = { view?.showFailedToVerifyMetadataKey() },
                 )
                 view?.hideProgress()
             }
@@ -465,9 +476,12 @@ class ResourceFormPresenter(
     override fun trustNewMetadataKey(model: NewMetadataKeyToTrustModel) {
         scope.launch {
             view?.showProgress()
-            when (val output = runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
-                metadataPrivateKeysHelperInteractor.trustNewKey(model)
-            }) {
+            when (
+                val output =
+                    runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+                        metadataPrivateKeysHelperInteractor.trustNewKey(model)
+                    }
+            ) {
                 is MetadataPrivateKeysHelperInteractor.Output.Success ->
                     view?.showNewMetadataKeyIsTrusted()
                 else -> {

@@ -38,13 +38,15 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
  * @since v1.0
  */
 class SwitchAccountItem(
-    val model: SwitchAccountUiModel.AccountItem
+    val model: SwitchAccountUiModel.AccountItem,
 ) : AbstractBindingItem<ItemSwitchAccountItemBinding>() {
-
     override val type: Int
         get() = R.id.switchAccountItem
 
-    override fun bindView(binding: ItemSwitchAccountItemBinding, payloads: List<Any>) {
+    override fun bindView(
+        binding: ItemSwitchAccountItemBinding,
+        payloads: List<Any>,
+    ) {
         with(binding) {
             title.text = model.label
             email.text = model.email
@@ -56,26 +58,25 @@ class SwitchAccountItem(
         }
     }
 
-    override fun createBinding(inflater: LayoutInflater, parent: ViewGroup?): ItemSwitchAccountItemBinding {
-        return ItemSwitchAccountItemBinding.inflate(inflater, parent, false)
-    }
+    override fun createBinding(
+        inflater: LayoutInflater,
+        parent: ViewGroup?,
+    ): ItemSwitchAccountItemBinding = ItemSwitchAccountItemBinding.inflate(inflater, parent, false)
 }
 
 class SwitchAccountClick(
-    private val clickAction: (SwitchAccountUiModel.AccountItem) -> Unit
+    private val clickAction: (SwitchAccountUiModel.AccountItem) -> Unit,
 ) : ClickEventHook<SwitchAccountItem>() {
-
-    override fun onBind(viewHolder: RecyclerView.ViewHolder): View? {
-        return viewHolder.asBinding<ItemSwitchAccountItemBinding> {
+    override fun onBind(viewHolder: RecyclerView.ViewHolder): View? =
+        viewHolder.asBinding<ItemSwitchAccountItemBinding> {
             it.root
         }
-    }
 
     override fun onClick(
         v: View,
         position: Int,
         fastAdapter: FastAdapter<SwitchAccountItem>,
-        item: SwitchAccountItem
+        item: SwitchAccountItem,
     ) {
         clickAction(item.model)
     }

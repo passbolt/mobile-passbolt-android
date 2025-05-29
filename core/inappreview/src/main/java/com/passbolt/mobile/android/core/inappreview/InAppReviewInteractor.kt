@@ -37,27 +37,30 @@ class InAppReviewInteractor(
     private val getInAppReviewShowModeUseCase: GetInAppReviewShowModeUseCase,
     private val saveInAppShowModeUseCase: SaveInAppShowModeUseCase,
     private val saveInAppReviewParametersUseCase: SaveInAppReviewParametersUseCase,
-    private val clock: Clock
+    private val clock: Clock,
 ) {
-
     fun shouldShowInAppReviewFlow(): Boolean {
         getInAppReviewParametersUseCase.execute(Unit).let {
             val showMode = getInAppReviewShowModeUseCase.execute(Unit).inAppReviewShowMode
-            val minimumIntervalPassed = it.inAppReviewShowIntervalStartDate != null && Period.between(
-                it.inAppReviewShowIntervalStartDate, LocalDate.now(clock)
-            ).days > showMode.daysCount
+            val minimumIntervalPassed =
+                it.inAppReviewShowIntervalStartDate != null &&
+                    Period
+                        .between(
+                            it.inAppReviewShowIntervalStartDate,
+                            LocalDate.now(clock),
+                        ).days > showMode.daysCount
             val minimumSignInsPassed = it.signInCount > showMode.signInCount
 
             Timber.d(
                 "Checking in app review show parameters. " +
-                        "Show mode is: %s. " +
-                        "Show interval start date: %s. " +
-                        "Sign in count is: %d. " +
-                        "Should show review: %s",
+                    "Show mode is: %s. " +
+                    "Show interval start date: %s. " +
+                    "Sign in count is: %d. " +
+                    "Should show review: %s",
                 showMode.javaClass.simpleName,
                 it.inAppReviewShowIntervalStartDate,
                 it.signInCount,
-                (minimumSignInsPassed && minimumIntervalPassed).toString()
+                (minimumSignInsPassed && minimumIntervalPassed).toString(),
             )
 
             return minimumSignInsPassed && minimumIntervalPassed
@@ -67,14 +70,14 @@ class InAppReviewInteractor(
     fun inAppReviewFlowShowed() {
         saveInAppShowModeUseCase.execute(
             SaveInAppShowModeUseCase.Input(
-                InAppReviewShowMode.ConsecutiveShow()
-            )
+                InAppReviewShowMode.ConsecutiveShow(),
+            ),
         )
         saveInAppReviewParametersUseCase.execute(
             SaveInAppReviewParametersUseCase.Input(
                 inAppReviewShowIntervalStartDate = null,
-                signInCount = 0
-            )
+                signInCount = 0,
+            ),
         )
     }
 
@@ -86,8 +89,8 @@ class InAppReviewInteractor(
         saveInAppReviewParametersUseCase.execute(
             SaveInAppReviewParametersUseCase.Input(
                 inAppReviewShowIntervalStartDate = newStartIntervalDate,
-                signInCount = newSignInCount
-            )
+                signInCount = newSignInCount,
+            ),
         )
     }
 }

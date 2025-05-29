@@ -33,22 +33,21 @@ import java.util.UUID
 
 class SecretParser(
     private val secretValidationRunner: JsonSchemaValidationRunner,
-    private val resourceTypeIdToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider
+    private val resourceTypeIdToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider,
 ) {
-
     suspend fun parseSecret(
         resourceTypeId: String,
-        decryptedSecret: String
+        decryptedSecret: String,
     ): DecryptedSecretOrError<SecretJsonModel> {
-
-        val slug = resourceTypeIdToSlugMappingProvider
-            .provideMappingForSelectedAccount()[UUID.fromString(resourceTypeId)]
+        val slug =
+            resourceTypeIdToSlugMappingProvider
+                .provideMappingForSelectedAccount()[UUID.fromString(resourceTypeId)]
 
         return try {
             // in case of simple password the backend returns a string (not a json string)
             if (secretValidationRunner.isSecretValid(
                     PlainSecretValidationWrapper(decryptedSecret, ContentType.fromSlug(slug!!)).validationPlainSecret,
-                    slug
+                    slug,
                 )
             ) {
                 val parsedSecret = SecretJsonModel(decryptedSecret)

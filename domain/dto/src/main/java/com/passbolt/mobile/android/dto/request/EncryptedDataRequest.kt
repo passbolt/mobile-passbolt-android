@@ -23,5 +23,5 @@ package com.passbolt.mobile.android.dto.request
  * @since v1.0
  */
 data class EncryptedDataRequest(
-    val data: String
+    val data: String,
 )

@@ -28,7 +28,8 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-val resourceMoreMenuModule = module {
-    singleOf(::CreateResourceMoreMenuModelUseCase)
-    resourceMoreMenuModule()
-}
+val resourceMoreMenuModule =
+    module {
+        singleOf(::CreateResourceMoreMenuModelUseCase)
+        resourceMoreMenuModule()
+    }

@@ -61,42 +61,42 @@ import com.google.android.material.R as MaterialR
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
-
 @RunWith(AndroidJUnit4::class)
 @MediumTest
 class SetupPassphraseTest : KoinTest {
-
     @get:Rule
-    val startUpActivityRule = lazyActivitySetupScenarioRule<AuthenticationMainActivity>(
-        koinOverrideModules = listOf(instrumentationTestsModule),
-        intentSupplier = {
-            ActivityIntents.authentication(
-                InstrumentationRegistry.getInstrumentation().targetContext,
-                ActivityIntents.AuthConfig.Setup,
-                AppContext.APP,
-                managedAccountIntentCreator.getUserLocalId()
-            )
-        }
-    )
+    val startUpActivityRule =
+        lazyActivitySetupScenarioRule<AuthenticationMainActivity>(
+            koinOverrideModules = listOf(instrumentationTestsModule),
+            intentSupplier = {
+                ActivityIntents.authentication(
+                    InstrumentationRegistry.getInstrumentation().targetContext,
+                    ActivityIntents.AuthConfig.Setup,
+                    AppContext.APP,
+                    managedAccountIntentCreator.getUserLocalId(),
+                )
+            },
+        )
 
     private val managedAccountIntentCreator: ManagedAccountIntentCreator by inject()
 
     @get:Rule
-    val idlingResourceRule = let {
-        val signInIdlingResource: SignInIdlingResource by inject()
-        IdlingResourceRule(
-            arrayOf(
-                signInIdlingResource
+    val idlingResourceRule =
+        let {
+            val signInIdlingResource: SignInIdlingResource by inject()
+            IdlingResourceRule(
+                arrayOf(
+                    signInIdlingResource,
+                ),
             )
-        )
-    }
+        }
 
     @BeforeTest
     fun setup() {
     }
 
-    @Test
     //    https://passbolt.testrail.io/index.php?/cases/view/2349
+    @Test
     fun asAMobileUserIShouldSeeTheEnterMyPassphraseScreenAfterISuccessfullyScannedQrCodes() {
         //    Given     the user is on the "Success feedback" screen at the end of the QR code scanning process
         //    When      the user clicks the "Continue" button
@@ -126,13 +126,13 @@ class SetupPassphraseTest : KoinTest {
         //    And       “I forgot my passphrase” link is presented
         onView(withId(com.passbolt.mobile.android.feature.authentication.R.id.forgotPasswordButton)).check(
             matches(
-                isDisplayed()
-            )
+                isDisplayed(),
+            ),
         )
     }
 
-    @Test
     //    https://passbolt.testrail.io/index.php?/cases/view/2353
+    @Test
     fun asAMobileUserICanPreviewMyPassphrase() {
         //    Given     I am on the "Enter your passphrase" page
         //    And       there is some <initial text> inside the passphrase field
@@ -148,8 +148,8 @@ class SetupPassphraseTest : KoinTest {
         onView(withText(managedAccountIntentCreator.getUsername())).check(matches(isDisplayed()))
     }
 
-    @Test
     //    https://passbolt.testrail.io/index.php?/cases/view/2354
+    @Test
     fun asAMobileUserICanSeeAFeedbackMessageIfIEnteredTheWrongPassphrase() {
         //    Given     I am on the “Enter your passphrase" page
         //    When      I submit a wrong passphrase
@@ -163,14 +163,17 @@ class SetupPassphraseTest : KoinTest {
         //    And       the toast is in red #Not automated
         //    And       the input and label are still in the same colors
         onView(withId(R.id.titleLabel)).check(matches(hasTextColor(CoreUiR.color.text_primary)))
-        onView(withId(CoreUiR.id.input)).check(matches(hasTextColor(com.google.android.gms.base.R.color.common_google_signin_btn_text_light_pressed)))
+        onView(
+            withId(CoreUiR.id.input),
+        ).check(matches(hasTextColor(com.google.android.gms.base.R.color.common_google_signin_btn_text_light_pressed)))
         //    And       the message says "Incorrect passphrase or decryption error. Please try again."
-        onView(withText("Incorrect passphrase or decryption error. Please try again.")).inRoot(hasToast())
+        onView(withText("Incorrect passphrase or decryption error. Please try again."))
+            .inRoot(hasToast())
             .check(matches(isDisplayed()))
     }
 
-    @Test
     //    https://passbolt.testrail.io/index.php?/cases/view/2352
+    @Test
     fun asAMobileUserICanGetSomeHelpIfIForgotMyPassphrase() {
         //    Given     I am on the "Enter your passphrase" page
         //    When      I click the "forgot my passphrase" link

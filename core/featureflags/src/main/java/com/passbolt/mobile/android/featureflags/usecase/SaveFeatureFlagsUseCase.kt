@@ -39,10 +39,9 @@ import com.passbolt.mobile.android.featureflags.usecase.Constants.V5_METADATA
  * @since v1.0
  */
 class SaveFeatureFlagsUseCase(
-    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory
+    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory,
 ) : AsyncUseCase<SaveFeatureFlagsUseCase.Input, Unit>,
     SelectedAccountUseCase {
-
     override suspend fun execute(input: Input) {
         val fileName = FeatureFlagsFileName(selectedAccountId).name
         val sharedPreferences = encryptedSharedPreferencesFactory.get("$fileName.xml")
@@ -62,5 +61,7 @@ class SaveFeatureFlagsUseCase(
         }
     }
 
-    data class Input(val featureFlags: FeatureFlagsModel)
+    data class Input(
+        val featureFlags: FeatureFlagsModel,
+    )
 }

@@ -29,10 +29,11 @@ import com.passbolt.mobile.android.feature.home.databinding.ItemInSubfoldersBind
  * @since v1.0
  */
 class InSubFoldersHeaderItem : AbstractBindingItem<ItemInSubfoldersBinding>() {
-
     override val type: Int
         get() = R.id.itemInSubFolders
 
-    override fun createBinding(inflater: LayoutInflater, parent: ViewGroup?) =
-        ItemInSubfoldersBinding.inflate(inflater, parent, false)
+    override fun createBinding(
+        inflater: LayoutInflater,
+        parent: ViewGroup?,
+    ) = ItemInSubfoldersBinding.inflate(inflater, parent, false)
 }

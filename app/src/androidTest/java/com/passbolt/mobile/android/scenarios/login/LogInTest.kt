@@ -55,32 +55,32 @@ import com.passbolt.mobile.android.feature.authentication.R as authR
 @RunWith(AndroidJUnit4::class)
 @LargeTest
 class LogInTest : KoinComponent {
-
     @get:Rule
-    val startUpActivityRule = lazyActivitySetupScenarioRule<AuthenticationMainActivity>(
-        koinOverrideModules = listOf(instrumentationTestsModule),
-        intentSupplier = {
-            ActivityIntents.authentication(
-                InstrumentationRegistry.getInstrumentation().targetContext,
-                ActivityIntents.AuthConfig.Startup,
-                AppContext.APP,
-                managedAccountIntentCreator.getUserLocalId()
-            )
-        }
-    )
+    val startUpActivityRule =
+        lazyActivitySetupScenarioRule<AuthenticationMainActivity>(
+            koinOverrideModules = listOf(instrumentationTestsModule),
+            intentSupplier = {
+                ActivityIntents.authentication(
+                    InstrumentationRegistry.getInstrumentation().targetContext,
+                    ActivityIntents.AuthConfig.Startup,
+                    AppContext.APP,
+                    managedAccountIntentCreator.getUserLocalId(),
+                )
+            },
+        )
 
     private val managedAccountIntentCreator: ManagedAccountIntentCreator by inject()
 
     @get:Rule
-    val idlingResourceRule = let {
-        val signInIdlingResource: SignInIdlingResource by inject()
-        val resourcesFullRefreshIdlingResource: ResourcesFullRefreshIdlingResource by inject()
-        IdlingResourceRule(arrayOf(signInIdlingResource, resourcesFullRefreshIdlingResource))
-    }
+    val idlingResourceRule =
+        let {
+            val signInIdlingResource: SignInIdlingResource by inject()
+            val resourcesFullRefreshIdlingResource: ResourcesFullRefreshIdlingResource by inject()
+            IdlingResourceRule(arrayOf(signInIdlingResource, resourcesFullRefreshIdlingResource))
+        }
 
-
+    //  https://passbolt.testrail.io/index.php?/cases/view/2368
     @Test
-//  https://passbolt.testrail.io/index.php?/cases/view/2368
     fun asAMobileUserWithoutBiometricsConfiguredIAmPromptedToEnterMyPassphraseToLogin() {
         //  Given  that I am a mobile user with the application installed
         //  And    I have only one account configured

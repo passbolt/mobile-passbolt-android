@@ -46,9 +46,11 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class EncourageAccessibilityAutofillDialog : DialogFragment(), EncourageAccessibilityAutofillContract.View,
-    AndroidScopeComponent, AutofillTutorialDialog.Listener {
-
+class EncourageAccessibilityAutofillDialog :
+    DialogFragment(),
+    EncourageAccessibilityAutofillContract.View,
+    AndroidScopeComponent,
+    AutofillTutorialDialog.Listener {
     override val scope by fragmentScope(useParentActivityScope = false)
     private var listener: Listener? = null
     private val presenter: EncourageAccessibilityAutofillContract.Presenter by scope.inject()
@@ -60,20 +62,23 @@ class EncourageAccessibilityAutofillDialog : DialogFragment(), EncourageAccessib
         setStyle(STYLE_NO_TITLE, CoreUiR.style.FullscreenDialogTheme)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
+    ): View {
         binding = DialogAccessibilityEncourageAutofillBinding.inflate(inflater)
         setupListeners()
         return binding.root
     }
 
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        return object : Dialog(requireContext(), theme) {
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog =
+        object : Dialog(requireContext(), theme) {
             override fun onBackPressed() {
                 dismiss()
                 presenter.backPressed()
             }
         }
-    }
 
     override fun onResume() {
         super.onResume()
@@ -82,11 +87,12 @@ class EncourageAccessibilityAutofillDialog : DialogFragment(), EncourageAccessib
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        listener = when {
-            activity is Listener -> activity as Listener
-            parentFragment is Listener -> parentFragment as Listener
-            else -> error("Parent must implement ${Listener::class.java.name}")
-        }
+        listener =
+            when {
+                activity is Listener -> activity as Listener
+                parentFragment is Listener -> parentFragment as Listener
+                else -> error("Parent must implement ${Listener::class.java.name}")
+            }
         presenter.attach(this)
     }
 
@@ -113,23 +119,29 @@ class EncourageAccessibilityAutofillDialog : DialogFragment(), EncourageAccessib
     }
 
     override fun navigateToOverlayTutorial() {
-        AutofillTutorialDialog().apply {
-            arguments = bundleOf(
-                AutofillTutorialDialog.TUTORIAL_MODE_KEY to TutorialMode.Overlay
+        AutofillTutorialDialog()
+            .apply {
+                arguments =
+                    bundleOf(
+                        AutofillTutorialDialog.TUTORIAL_MODE_KEY to TutorialMode.Overlay,
+                    )
+            }.show(
+                childFragmentManager,
+                EncourageAccessibilityAutofillDialog::class.java.name,
             )
-        }.show(
-            childFragmentManager, EncourageAccessibilityAutofillDialog::class.java.name
-        )
     }
 
     override fun navigateToServiceTutorial() {
-        AutofillTutorialDialog().apply {
-            arguments = bundleOf(
-                AutofillTutorialDialog.TUTORIAL_MODE_KEY to TutorialMode.Service
+        AutofillTutorialDialog()
+            .apply {
+                arguments =
+                    bundleOf(
+                        AutofillTutorialDialog.TUTORIAL_MODE_KEY to TutorialMode.Service,
+                    )
+            }.show(
+                childFragmentManager,
+                EncourageAccessibilityAutofillDialog::class.java.name,
             )
-        }.show(
-            childFragmentManager, EncourageAccessibilityAutofillDialog::class.java.name
-        )
     }
 
     override fun navigateToOverlaySettings() {
@@ -150,7 +162,8 @@ class EncourageAccessibilityAutofillDialog : DialogFragment(), EncourageAccessib
     }
 
     override fun showAutofillNotSupported() {
-        AlertDialog.Builder(requireContext())
+        AlertDialog
+            .Builder(requireContext())
             .setTitle(LocalizationR.string.dialog_encourage_autofill_autofill_not_supported_title)
             .setMessage(LocalizationR.string.dialog_encourage_autofill_autofill_not_supported_message)
             .setPositiveButton(LocalizationR.string.ok) { _, _ -> }
@@ -166,19 +179,20 @@ class EncourageAccessibilityAutofillDialog : DialogFragment(), EncourageAccessib
     }
 
     override fun showAutofillEnabledDialog() {
-        AutofillEnabledDialog.newInstance(DialogMode.Settings)
+        AutofillEnabledDialog
+            .newInstance(DialogMode.Settings)
             .show(childFragmentManager, AutofillEnabledDialog::class.java.name)
     }
 
     override fun showAccessibilityConsentDialog() {
         accessibilityServiceConsentDialog(requireContext()) {
             presenter.accessibilityServiceConsentGiven()
-        }
-            .show()
+        }.show()
     }
 
     interface Listener {
         fun setupAccessibilityLaterClick()
+
         fun accessibilitySettingsPossibleChange()
     }
 }

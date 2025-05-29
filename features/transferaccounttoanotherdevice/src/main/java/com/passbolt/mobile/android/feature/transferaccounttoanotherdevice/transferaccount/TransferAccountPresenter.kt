@@ -48,10 +48,9 @@ class TransferAccountPresenter(
     private val viewTransferUseCase: ViewTransferUseCase,
     private val getSessionUseCase: GetSessionUseCase,
     private val transferAccountIdlingResource: TransferAccountIdlingResource,
-    coroutineLaunchContext: CoroutineLaunchContext
-) : TransferAccountContract.Presenter,
-    BaseAuthenticatedPresenter<TransferAccountContract.View>(coroutineLaunchContext) {
-
+    coroutineLaunchContext: CoroutineLaunchContext,
+) : BaseAuthenticatedPresenter<TransferAccountContract.View>(coroutineLaunchContext),
+    TransferAccountContract.Presenter {
     override var view: TransferAccountContract.View? = null
     private val job = SupervisorJob()
     private val coroutineScope = CoroutineScope(job + coroutineLaunchContext.ui)
@@ -77,15 +76,17 @@ class TransferAccountPresenter(
     }
 
     private suspend fun createTransfer(parameters: CreateTransferInputParametersGenerator.Output.Parameters) {
-        when (val response =
-            runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
-                createTransferUseCase.execute(
-                    CreateTransferUseCase.Input(
-                        parameters.totalPagesCount,
-                        parameters.pagesDataHash
+        when (
+            val response =
+                runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+                    createTransferUseCase.execute(
+                        CreateTransferUseCase.Input(
+                            parameters.totalPagesCount,
+                            parameters.pagesDataHash,
+                        ),
                     )
-                )
-            }) {
+                }
+        ) {
             is CreateTransferUseCase.Output.Failure<*> -> {
                 val headerMessage = response.response.headerMessage
                 view?.showCouldNotCreateTransfer(headerMessage)
@@ -102,17 +103,18 @@ class TransferAccountPresenter(
 
     private suspend fun generateQrCodePagesData(
         response: CreateTransferUseCase.Output.Success,
-        parameters: CreateTransferInputParametersGenerator.Output.Parameters
+        parameters: CreateTransferInputParametersGenerator.Output.Parameters,
     ) {
-        val pagesDataResult = transferQrCodesDataGenerator.generateQrCodesDataPages(
-            TransferQrCodesDataGenerator.Input(
-                response.transfer.id,
-                response.transfer.authenticationToken,
-                parameters.totalPagesCount,
-                parameters.pagesDataHash,
-                parameters.keyJson
+        val pagesDataResult =
+            transferQrCodesDataGenerator.generateQrCodesDataPages(
+                TransferQrCodesDataGenerator.Input(
+                    response.transfer.id,
+                    response.transfer.authenticationToken,
+                    parameters.totalPagesCount,
+                    parameters.pagesDataHash,
+                    parameters.keyJson,
+                ),
             )
-        )
         when (pagesDataResult) {
             is TransferQrCodesDataGenerator.Output.Error ->
                 view?.showCouldNotGenerateQrTransferData()
@@ -122,18 +124,24 @@ class TransferAccountPresenter(
         }
     }
 
-    private fun startTransferPolling(transferId: String, totalPageCount: Int) {
+    private fun startTransferPolling(
+        transferId: String,
+        totalPageCount: Int,
+    ) {
         getTransferScope.launch {
             while (shouldLoopForTransfer(totalPageCount)) {
-                val accessToken = "Bearer %s".format(
-                    requireNotNull(getSessionUseCase.execute(Unit).accessToken)
-                )
+                val accessToken =
+                    "Bearer %s".format(
+                        requireNotNull(getSessionUseCase.execute(Unit).accessToken),
+                    )
                 val mfaCookie = getSessionUseCase.execute(Unit).mfaToken
 
                 delay(GET_TRANSFER_LOOP_INTERVAL_DELAY_MILLIS)
-                when (val response = runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
-                    viewTransferUseCase.execute(ViewTransferUseCase.Input(accessToken, mfaCookie, transferId))
-                }
+                when (
+                    val response =
+                        runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+                            viewTransferUseCase.execute(ViewTransferUseCase.Input(accessToken, mfaCookie, transferId))
+                        }
                 ) {
                     is ViewTransferUseCase.Output.Failure<*> -> {
                         Timber.e("Error during transfer details fetch: %s", response.response.headerMessage)
@@ -153,13 +161,14 @@ class TransferAccountPresenter(
     }
 
     private fun transferPollingFinished() {
-        val result = when (transferStatus) {
-            Status.ERROR -> TransferAccountStatus.Failure("")
-            Status.IN_PROGRESS -> TransferAccountStatus.Canceled()
-            Status.COMPLETE -> TransferAccountStatus.Success()
-            Status.CANCEL -> TransferAccountStatus.Canceled()
-            Status.START -> TransferAccountStatus.Canceled()
-        }
+        val result =
+            when (transferStatus) {
+                Status.ERROR -> TransferAccountStatus.Failure("")
+                Status.IN_PROGRESS -> TransferAccountStatus.Canceled()
+                Status.COMPLETE -> TransferAccountStatus.Success()
+                Status.CANCEL -> TransferAccountStatus.Canceled()
+                Status.START -> TransferAccountStatus.Canceled()
+            }
         view?.navigateToResult(result)
     }
 

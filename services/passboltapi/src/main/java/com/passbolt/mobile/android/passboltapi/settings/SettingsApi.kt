@@ -28,7 +28,6 @@ import retrofit2.http.GET
  */
 
 internal interface SettingsApi {
-
     @GET(GET_SETTINGS)
     suspend fun getSettings(): BaseResponse<SettingsResponseDto>
 

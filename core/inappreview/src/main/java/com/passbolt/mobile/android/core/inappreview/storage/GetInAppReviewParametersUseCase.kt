@@ -29,29 +29,30 @@ import java.time.LocalDate
  */
 class GetInAppReviewParametersUseCase(
     private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory,
-    private val getSelectedAccountUseCase: GetSelectedAccountUseCase
+    private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
 ) : UseCase<Unit, GetInAppReviewParametersUseCase.Output> {
-
     override fun execute(input: Unit): Output {
         val userId = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
         val fileName = InAppReviewFileName(userId).name
         return encryptedSharedPreferencesFactory.get("$fileName.xml").let {
             Output(
-                inAppReviewShowIntervalStartDate = it.getLong(KEY_IN_APP_REVIEW_INTERVAL_START_DATE, -1)
-                    .let { intervalStartEpochDaysDate ->
-                        if (intervalStartEpochDaysDate == -1L) {
-                            null
-                        } else {
-                            LocalDate.ofEpochDay(intervalStartEpochDaysDate)
-                        }
-                    },
-                signInCount = it.getInt(KEY_SIGN_IN_COUNT, 0)
+                inAppReviewShowIntervalStartDate =
+                    it
+                        .getLong(KEY_IN_APP_REVIEW_INTERVAL_START_DATE, -1)
+                        .let { intervalStartEpochDaysDate ->
+                            if (intervalStartEpochDaysDate == -1L) {
+                                null
+                            } else {
+                                LocalDate.ofEpochDay(intervalStartEpochDaysDate)
+                            }
+                        },
+                signInCount = it.getInt(KEY_SIGN_IN_COUNT, 0),
             )
         }
     }
 
     data class Output(
         val inAppReviewShowIntervalStartDate: LocalDate?,
-        val signInCount: Int
+        val signInCount: Int,
     )
 }

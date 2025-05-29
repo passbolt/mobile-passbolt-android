@@ -1,8 +1,8 @@
 package com.passbolt.mobile.android.core.preferences.usecase
 
 import com.passbolt.mobile.android.common.usecase.UseCase
-import com.passbolt.mobile.android.core.preferences.AccountPreferencesFileName
 import com.passbolt.mobile.android.core.accounts.usecase.SelectedAccountUseCase
+import com.passbolt.mobile.android.core.preferences.AccountPreferencesFileName
 import com.passbolt.mobile.android.encryptedstorage.EncryptedSharedPreferencesFactory
 import com.passbolt.mobile.android.entity.home.HomeDisplayView
 import com.passbolt.mobile.android.ui.DefaultFilterModel
@@ -32,10 +32,9 @@ import com.passbolt.mobile.android.ui.DefaultFilterModel
 
 class GetHomeDisplayViewPrefsUseCase(
     private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory,
-    private val homeDisplayViewPrefsValidator: HomeDisplayViewPrefsValidator
+    private val homeDisplayViewPrefsValidator: HomeDisplayViewPrefsValidator,
 ) : UseCase<Unit, GetHomeDisplayViewPrefsUseCase.Output>,
     SelectedAccountUseCase {
-
     override fun execute(input: Unit): Output {
         val fileName = AccountPreferencesFileName(selectedAccountId).name
         val sharedPreferences = encryptedSharedPreferencesFactory.get("$fileName.xml")
@@ -45,24 +44,25 @@ class GetHomeDisplayViewPrefsUseCase(
             val lastUsedHomeView = HomeDisplayView.values()[lastUsedHomeViewOrdinal]
 
             val userSetHomeViewOrdinal = getInt(KEY_USER_SET_HOME_VIEW, -1)
-            val userSetHomeView = if (userSetHomeViewOrdinal != -1) {
-                DefaultFilterModel.values()[userSetHomeViewOrdinal]
-            } else {
-                DefaultFilterModel.LAST_USED
-            }
+            val userSetHomeView =
+                if (userSetHomeViewOrdinal != -1) {
+                    DefaultFilterModel.values()[userSetHomeViewOrdinal]
+                } else {
+                    DefaultFilterModel.LAST_USED
+                }
 
             return homeDisplayViewPrefsValidator.validated(
                 Output(
                     lastUsedHomeView = lastUsedHomeView,
-                    userSetHomeView = userSetHomeView
-                )
+                    userSetHomeView = userSetHomeView,
+                ),
             )
         }
     }
 
     data class Output(
         val lastUsedHomeView: HomeDisplayView,
-        val userSetHomeView: DefaultFilterModel
+        val userSetHomeView: DefaultFilterModel,
     )
 
     private companion object {

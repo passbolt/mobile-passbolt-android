@@ -44,8 +44,10 @@ import com.passbolt.mobile.android.core.localization.R as LocalizationR
  * @since v1.0
  */
 
-class HelpMenuFragment : BottomSheetDialogFragment(), AndroidScopeComponent, HelpMenuContract.View {
-
+class HelpMenuFragment :
+    BottomSheetDialogFragment(),
+    AndroidScopeComponent,
+    HelpMenuContract.View {
     override val scope: Scope by fragmentScope(useParentActivityScope = false)
     private lateinit var binding: ViewHelpBottomsheetBinding
     private var listener: Listener? = null
@@ -54,11 +56,16 @@ class HelpMenuFragment : BottomSheetDialogFragment(), AndroidScopeComponent, Hel
         requireNotNull(BundleCompat.getParcelable(requireArguments(), EXTRA_HELP_MENU_MODEL, HelpMenuModel::class.java))
     }
     private val presenter: HelpMenuContract.Presenter by scope.inject()
-    private val enableLogsSwitchChangeListener = CompoundButton.OnCheckedChangeListener { _, isChecked ->
-        presenter.logsSettingChanged(isChecked)
-    }
+    private val enableLogsSwitchChangeListener =
+        CompoundButton.OnCheckedChangeListener { _, isChecked ->
+            presenter.logsSettingChanged(isChecked)
+        }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
+    ): View {
         binding = ViewHelpBottomsheetBinding.inflate(inflater)
         return binding.root
     }
@@ -69,7 +76,10 @@ class HelpMenuFragment : BottomSheetDialogFragment(), AndroidScopeComponent, Hel
         super.onDestroyView()
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         setListeners()
         presenter.attach(this)
@@ -78,11 +88,12 @@ class HelpMenuFragment : BottomSheetDialogFragment(), AndroidScopeComponent, Hel
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        listener = when {
-            activity is Listener -> activity as Listener
-            parentFragment is Listener -> parentFragment as Listener
-            else -> error("Parent must implement ${Listener::class.java.name}")
-        }
+        listener =
+            when {
+                activity is Listener -> activity as Listener
+                parentFragment is Listener -> parentFragment as Listener
+                else -> error("Parent must implement ${Listener::class.java.name}")
+            }
     }
 
     override fun onDetach() {
@@ -154,11 +165,13 @@ class HelpMenuFragment : BottomSheetDialogFragment(), AndroidScopeComponent, Hel
     companion object {
         private const val EXTRA_HELP_MENU_MODEL = "HELP_MENU_MODEL"
 
-        fun newInstance(helpMenuModel: HelpMenuModel) = HelpMenuFragment().apply {
-            arguments = bundleOf(
-                EXTRA_HELP_MENU_MODEL to helpMenuModel
-            )
-        }
+        fun newInstance(helpMenuModel: HelpMenuModel) =
+            HelpMenuFragment().apply {
+                arguments =
+                    bundleOf(
+                        EXTRA_HELP_MENU_MODEL to helpMenuModel,
+                    )
+            }
     }
 
     override fun enableAccessLogs() {
@@ -171,8 +184,11 @@ class HelpMenuFragment : BottomSheetDialogFragment(), AndroidScopeComponent, Hel
 
     interface Listener {
         fun menuShowLogsClick()
+
         fun menuWhyScanQrCodesClick() {}
+
         fun menuImportProfileManuallyClick() {}
+
         fun menuImportAccountKitClick() {}
     }
 }

@@ -11,7 +11,6 @@ import com.passbolt.mobile.android.ui.HomeDisplayViewModel
  * ordering and filtering types.
  */
 class HomeDisplayViewMapper {
-
     /**
      * @param homeView UI related resources display view type
      * @return Database related type for order or filter
@@ -22,9 +21,10 @@ class HomeDisplayViewMapper {
             is HomeDisplayViewModel.RecentlyModified -> ResourceDatabaseView.ByModifiedDateDescending
             is HomeDisplayViewModel.Favourites -> ResourceDatabaseView.IsFavourite
             is HomeDisplayViewModel.OwnedByMe -> ResourceDatabaseView.HasPermissions(setOf(Permission.OWNER))
-            is HomeDisplayViewModel.SharedWithMe -> ResourceDatabaseView.HasPermissions(
-                setOf(Permission.READ, Permission.WRITE)
-            )
+            is HomeDisplayViewModel.SharedWithMe ->
+                ResourceDatabaseView.HasPermissions(
+                    setOf(Permission.READ, Permission.WRITE),
+                )
             is HomeDisplayViewModel.Folders -> ResourceDatabaseView.ByModifiedDateDescending
             is HomeDisplayViewModel.Tags -> ResourceDatabaseView.ByModifiedDateDescending
             is HomeDisplayViewModel.Groups -> ResourceDatabaseView.ByModifiedDateDescending
@@ -44,7 +44,10 @@ class HomeDisplayViewMapper {
             HomeDisplayView.EXPIRY -> HomeDisplayViewModel.Expiry
         }
 
-    fun map(userSetHomeView: DefaultFilterModel, lastUsedHomeView: HomeDisplayView): HomeDisplayViewModel =
+    fun map(
+        userSetHomeView: DefaultFilterModel,
+        lastUsedHomeView: HomeDisplayView,
+    ): HomeDisplayViewModel =
         when (userSetHomeView) {
             DefaultFilterModel.LAST_USED -> map(lastUsedHomeView)
             DefaultFilterModel.ALL_ITEMS -> HomeDisplayViewModel.AllItems

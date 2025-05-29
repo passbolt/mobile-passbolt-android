@@ -35,13 +35,13 @@ data class UsersGroup(
     @PrimaryKey
     val groupId: String,
     @ColumnInfo(collate = ColumnInfo.NOCASE)
-    val name: String
+    val name: String,
 )
 
 data class UsersGroupWithChildItemsCount(
     val groupId: String,
     val name: String,
-    val childItemsCount: Int
+    val childItemsCount: Int,
 )
 
 data class GroupWithUsers(
@@ -49,7 +49,7 @@ data class GroupWithUsers(
     @Relation(
         parentColumn = "groupId",
         entityColumn = "id",
-        associateBy = Junction(UsersAndGroupCrossRef::class, parentColumn = "groupId", entityColumn = "userId")
+        associateBy = Junction(UsersAndGroupCrossRef::class, parentColumn = "groupId", entityColumn = "userId"),
     )
-    val users: List<User>
+    val users: List<User>,
 )

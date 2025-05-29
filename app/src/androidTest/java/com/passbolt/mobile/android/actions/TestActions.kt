@@ -17,7 +17,6 @@ import org.hamcrest.Matchers
 import com.google.android.material.R as MaterialR
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -42,32 +41,34 @@ import com.passbolt.mobile.android.core.localization.R as LocalizationR
  */
 
 internal fun clickOnPasswordToggle() {
-    Espresso.onView(
-        Matchers.allOf(
-            ViewMatchers.isDescendantOfA(withHint(Matchers.hasToString(getString(LocalizationR.string.resource_update_password_hint)))),
-            ViewMatchers.withId(MaterialR.id.text_input_end_icon)
-        )
-    ).perform(ViewActions.click())
+    Espresso
+        .onView(
+            Matchers.allOf(
+                ViewMatchers.isDescendantOfA(
+                    withHint(Matchers.hasToString(getString(LocalizationR.string.resource_update_password_hint))),
+                ),
+                ViewMatchers.withId(MaterialR.id.text_input_end_icon),
+            ),
+        ).perform(ViewActions.click())
 }
 
-internal fun setChecked(checked: Boolean) = object : ViewAction {
+internal fun setChecked(checked: Boolean) =
+    object : ViewAction {
+        override fun getDescription(): String = "checking the checkable view"
 
-    override fun getDescription(): String {
-        return "checking the checkable view"
-    }
+        override fun getConstraints(): Matcher<View> =
+            object : BaseMatcher<View>() {
+                override fun describeTo(description: Description?) {
+                    description?.appendText("is checkable")
+                }
 
-    override fun getConstraints(): Matcher<View> = object : BaseMatcher<View>() {
+                override fun matches(item: Any?): Boolean = isA(Checkable::class.java).matches(item)
+            }
 
-        override fun describeTo(description: Description?) {
-            description?.appendText("is checkable")
+        override fun perform(
+            uiController: UiController?,
+            view: View?,
+        ) {
+            (view as Checkable).isChecked = checked
         }
-
-        override fun matches(item: Any?): Boolean {
-            return isA(Checkable::class.java).matches(item)
-        }
     }
-
-    override fun perform(uiController: UiController?, view: View?) {
-        (view as Checkable).isChecked = checked
-    }
-}

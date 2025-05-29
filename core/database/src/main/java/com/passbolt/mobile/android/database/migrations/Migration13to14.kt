@@ -28,7 +28,6 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 
 @Suppress("MagicNumber")
 object Migration13to14 : Migration(13, 14) {
-
     private const val ADD_DISABLED_COLUMN =
         "ALTER TABLE User ADD COLUMN disabled INTEGER NOT NULL DEFAULT 0"
 

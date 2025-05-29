@@ -63,32 +63,32 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
 import com.passbolt.mobile.android.feature.home.R.id as homeID
 import com.passbolt.mobile.android.feature.otp.R.id as otpId
 
-
 @RunWith(AndroidJUnit4::class)
 @MediumTest
 class HomeSearchTest : KoinTest {
-
     @get:Rule
-    val startUpActivityRule = lazyActivitySetupScenarioRule<AuthenticationMainActivity>(
-        koinOverrideModules = listOf(instrumentationTestsModule),
-        intentSupplier = {
-            ActivityIntents.authentication(
-                InstrumentationRegistry.getInstrumentation().targetContext,
-                ActivityIntents.AuthConfig.Startup,
-                AppContext.APP,
-                managedAccountIntentCreator.getUserLocalId()
-            )
-        }
-    )
+    val startUpActivityRule =
+        lazyActivitySetupScenarioRule<AuthenticationMainActivity>(
+            koinOverrideModules = listOf(instrumentationTestsModule),
+            intentSupplier = {
+                ActivityIntents.authentication(
+                    InstrumentationRegistry.getInstrumentation().targetContext,
+                    ActivityIntents.AuthConfig.Startup,
+                    AppContext.APP,
+                    managedAccountIntentCreator.getUserLocalId(),
+                )
+            },
+        )
 
     private val managedAccountIntentCreator: ManagedAccountIntentCreator by inject()
 
     @get:Rule
-    val idlingResourceRule = let {
-        val signInIdlingResource: SignInIdlingResource by inject()
-        val resourcesFullRefreshIdlingResource: ResourcesFullRefreshIdlingResource by inject()
-        IdlingResourceRule(arrayOf(signInIdlingResource, resourcesFullRefreshIdlingResource))
-    }
+    val idlingResourceRule =
+        let {
+            val signInIdlingResource: SignInIdlingResource by inject()
+            val resourcesFullRefreshIdlingResource: ResourcesFullRefreshIdlingResource by inject()
+            IdlingResourceRule(arrayOf(signInIdlingResource, resourcesFullRefreshIdlingResource))
+        }
 
     @BeforeTest
     fun setup() {
@@ -117,16 +117,17 @@ class HomeSearchTest : KoinTest {
     @Test
     fun asALoggedInMobileUserOnTheHomepageICanSeeTheResourcesCorrespondingToMySearchQuery() {
         //      Given       the active filter is <filter>
-        val resourceNamesByFilter = mapOf(
-            ResourceFilterModel.ALL_ITEMS to "cakephp",
-            ResourceFilterModel.FAVOURITES to "cakephp",
-            ResourceFilterModel.RECENTLY_MODIFIED to "cakephp",
-            ResourceFilterModel.SHARED_WITH_ME to "Shared resource",
-            ResourceFilterModel.OWNED_BY_ME to "cakephp",
-            ResourceFilterModel.FOLDERS to "Automated tests folder",
-            ResourceFilterModel.TAGS to "cakephp",
-            ResourceFilterModel.GROUPS to "Automation Group",
-        )
+        val resourceNamesByFilter =
+            mapOf(
+                ResourceFilterModel.ALL_ITEMS to "cakephp",
+                ResourceFilterModel.FAVOURITES to "cakephp",
+                ResourceFilterModel.RECENTLY_MODIFIED to "cakephp",
+                ResourceFilterModel.SHARED_WITH_ME to "Shared resource",
+                ResourceFilterModel.OWNED_BY_ME to "cakephp",
+                ResourceFilterModel.FOLDERS to "Automated tests folder",
+                ResourceFilterModel.TAGS to "cakephp",
+                ResourceFilterModel.GROUPS to "Automation Group",
+            )
         resourceNamesByFilter.entries.forEach { (model, testedResourceName) ->
             chooseFilter(model.filterId)
             //      When        I type a query in the search bar
@@ -185,8 +186,8 @@ class HomeSearchTest : KoinTest {
         }
     }
 
-    @Test
     // https://passbolt.testrail.io/index.php?/cases/view/2627
+    @Test
     fun asALoggedInMobileUserOnTheHomepageICanSeeTheCurrentAvatarSwitchesToACloseButtonWhenIFocusTheSearchBar() {
         //      Given   that I am a logged in mobile user
         //      When    I focus the search bar and start typing
@@ -197,8 +198,8 @@ class HomeSearchTest : KoinTest {
         onView(withId(MaterialR.id.text_input_end_icon)).check(matches(hasDrawable(CoreUiR.drawable.ic_close)))
     }
 
-    @Test
     // https://passbolt.testrail.io/index.php?/cases/view/2628
+    @Test
     fun asALoggedInMobileUserOnTheHomepageICanCancelASearchAndGoBackToTheHomepage() {
         //      Given   I am a logged in mobile user
         //      And     the search bar is focused
@@ -212,8 +213,8 @@ class HomeSearchTest : KoinTest {
         onView(withId(otpId.emptyListImage)).check(matches(not(isDisplayed())))
     }
 
-    @Test
     // https://passbolt.testrail.io/index.php?/cases/view/2464
+    @Test
     fun asALoggedInMobileUserOnTheSearchFieldICanGoBackToTheHomepageWhenThereAreNoCharactersInTheSearchField() {
         //      Given   I am on the focused search field
         onView(withId(otpId.searchEditText)).perform(click())

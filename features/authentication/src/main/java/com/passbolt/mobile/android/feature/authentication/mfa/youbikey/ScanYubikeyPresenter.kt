@@ -14,9 +14,8 @@ class ScanYubikeyPresenter(
     private val signOutUseCase: SignOutUseCase,
     private val verifyYubikeyUseCase: VerifyYubikeyUseCase,
     private val refreshSessionUseCase: RefreshSessionUseCase,
-    coroutineLaunchContext: CoroutineLaunchContext
+    coroutineLaunchContext: CoroutineLaunchContext,
 ) : ScanYubikeyContract.Presenter {
-
     override var view: ScanYubikeyContract.View? = null
 
     private val job = SupervisorJob()
@@ -30,7 +29,11 @@ class ScanYubikeyPresenter(
         view?.showChangeProviderButton(bundledOtherProvider)
     }
 
-    override fun yubikeyScanned(otp: String?, authToken: String?, rememberChecked: Boolean) {
+    override fun yubikeyScanned(
+        otp: String?,
+        authToken: String?,
+        rememberChecked: Boolean,
+    ) {
         if (!otp.isNullOrBlank()) {
             verifyYubikey(otp, authToken, rememberChecked)
         } else {
@@ -38,12 +41,17 @@ class ScanYubikeyPresenter(
         }
     }
 
-    private fun verifyYubikey(otp: String, authToken: String?, rememberChecked: Boolean) {
+    private fun verifyYubikey(
+        otp: String,
+        authToken: String?,
+        rememberChecked: Boolean,
+    ) {
         Timber.d("Verifying Yubikey")
         view?.showProgress()
         scope.launch {
-            when (val result =
-                verifyYubikeyUseCase.execute(VerifyYubikeyUseCase.Input(otp, authToken, rememberChecked))
+            when (
+                val result =
+                    verifyYubikeyUseCase.execute(VerifyYubikeyUseCase.Input(otp, authToken, rememberChecked))
             ) {
                 is VerifyYubikeyUseCase.Output.Failure<*> -> view?.showError()
                 is VerifyYubikeyUseCase.Output.NetworkFailure -> view?.showError()
@@ -65,8 +73,7 @@ class ScanYubikeyPresenter(
         }
     }
 
-    private suspend fun backgroundSessionRefreshSucceeded() =
-        refreshSessionUseCase.execute(Unit) is RefreshSessionUseCase.Output.Success
+    private suspend fun backgroundSessionRefreshSucceeded() = refreshSessionUseCase.execute(Unit) is RefreshSessionUseCase.Output.Success
 
     override fun authenticationSucceeded() {
         view?.close()

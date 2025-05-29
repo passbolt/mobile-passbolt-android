@@ -37,15 +37,15 @@ import org.mockito.kotlin.verifyNoMoreInteractions
 
 @ExperimentalCoroutinesApi
 class AccountDetailsTest : KoinTest {
-
     private val presenter: AccountDetailsContract.Presenter by inject()
     private val view: AccountDetailsContract.View = mock()
 
     @get:Rule
-    val koinTestRule = KoinTestRule.create {
-        printLogger(Level.ERROR)
-        modules(testAccountDetailsModule)
-    }
+    val koinTestRule =
+        KoinTestRule.create {
+            printLogger(Level.ERROR)
+            modules(testAccountDetailsModule)
+        }
 
     @Test
     fun `account details should be shown`() {
@@ -71,8 +71,8 @@ class AccountDetailsTest : KoinTest {
         verify(mockUpdateAccountDataUseCase).execute(
             UpdateAccountDataUseCase.Input(
                 userId = SELECTED_ACCOUNT_ID,
-                label = newLabel
-            )
+                label = newLabel,
+            ),
         )
         verify(view).showLabelChanged()
     }

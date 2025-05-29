@@ -28,5 +28,5 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class SettingsFragmentModel(
     val isTermsAndConditionsVisible: Boolean,
-    val isPrivacyPolicyVisible: Boolean
+    val isPrivacyPolicyVisible: Boolean,
 ) : Parcelable

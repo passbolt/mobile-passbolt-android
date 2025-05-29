@@ -37,9 +37,9 @@ import com.passbolt.mobile.android.encryptedstorage.EncryptedSharedPreferencesFa
  */
 
 class GetSelectedAccountDataUseCase(
-    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory
-) : UseCase<Unit, GetSelectedAccountDataUseCase.Output>, SelectedAccountUseCase {
-
+    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory,
+) : UseCase<Unit, GetSelectedAccountDataUseCase.Output>,
+    SelectedAccountUseCase {
     override fun execute(input: Unit): Output {
         val fileName = AccountDataFileName(selectedAccountId).name
         val sharedPreferences = encryptedSharedPreferencesFactory.get("$fileName.xml")
@@ -52,7 +52,7 @@ class GetSelectedAccountDataUseCase(
             url = sharedPreferences.getString(URL_KEY, "").orEmpty(),
             serverId = sharedPreferences.getString(SERVER_ID_KEY, ""),
             label = sharedPreferences.getString(USER_LABEL_KEY, null),
-            role = sharedPreferences.getString(ROLE_KEY, null)
+            role = sharedPreferences.getString(ROLE_KEY, null),
         )
     }
 
@@ -64,6 +64,6 @@ class GetSelectedAccountDataUseCase(
         val url: String,
         val serverId: String?,
         val label: String?,
-        val role: String?
+        val role: String?,
     )
 }

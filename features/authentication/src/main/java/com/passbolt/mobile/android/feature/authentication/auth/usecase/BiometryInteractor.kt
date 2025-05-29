@@ -33,10 +33,12 @@ class BiometryInteractor(
     private val checkIfPassphraseFileExistsUseCase: CheckIfPassphraseFileExistsUseCase,
     private val removeAllAccountsPassphrasesUseCase: RemoveAllAccountsPassphrasesUseCase,
     private val removeBiometricKeyUseCase: RemoveBiometricKeyUseCase,
-    private val fingerprintInfoProvider: FingerprintInformationProvider
+    private val fingerprintInfoProvider: FingerprintInformationProvider,
 ) {
-
-    fun onBiometryReady(userId: String, onReady: () -> Unit) {
+    fun onBiometryReady(
+        userId: String,
+        onReady: () -> Unit,
+    ) {
         Timber.d("Checking biometry state")
         if (checkIfPassphraseFileExistsUseCase.execute(UserIdInput(userId)).passphraseFileExists) {
             if (fingerprintInfoProvider.hasBiometricSetUp()) {

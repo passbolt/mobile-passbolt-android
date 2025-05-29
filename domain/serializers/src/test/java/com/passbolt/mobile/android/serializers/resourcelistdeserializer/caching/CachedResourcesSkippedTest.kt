@@ -67,12 +67,12 @@ import java.time.ZonedDateTime
 import java.util.UUID
 
 class CachedResourcesSkippedTest : KoinTest {
-
     @get:Rule
-    val koinTestRule = KoinTestRule.create {
-        printLogger(Level.ERROR)
-        modules(resourceListItemDeserializationTestModule)
-    }
+    val koinTestRule =
+        KoinTestRule.create {
+            printLogger(Level.ERROR)
+            modules(resourceListItemDeserializationTestModule)
+        }
 
     private val gson: Gson by inject()
 
@@ -92,256 +92,268 @@ class CachedResourcesSkippedTest : KoinTest {
                         ResourceTypeModel(UUID.randomUUID(), Totp.slug, "", deleted = null),
                         ResourceTypeModel(UUID.randomUUID(), V5TotpStandalone.slug, "", deleted = null),
                         ResourceTypeModel(UUID.randomUUID(), PasswordDescriptionTotp.slug, "", deleted = null),
-                        ResourceTypeModel(UUID.randomUUID(), V5DefaultWithTotp.slug, "", deleted = null)
-                    )
-                )
+                        ResourceTypeModel(UUID.randomUUID(), V5DefaultWithTotp.slug, "", deleted = null),
+                    ),
+                ),
             )
         }
         reset(mockJsonSchemaValidationRunner)
     }
 
     @Test
-    fun `validation and decryption of backend resource with same modified date is skipped for v5`() = runTest {
-        val modifiedDate = ZonedDateTime.now()
-        val resourceId = UUID.randomUUID()
-        val localEncryptedMetadata = "local encrypted metadata"
+    fun `validation and decryption of backend resource with same modified date is skipped for v5`() =
+        runTest {
+            val modifiedDate = ZonedDateTime.now()
+            val resourceId = UUID.randomUUID()
+            val localEncryptedMetadata = "local encrypted metadata"
 
-        mockIdToSlugMappingUseCase.stub {
-            onBlocking { execute(Unit) }.doReturn(
-                GetResourceTypeIdToSlugMappingUseCase.Output(
-                    mapOf(testedResourceTypeUuid to V5DefaultWithTotp.slug)
+            mockIdToSlugMappingUseCase.stub {
+                onBlocking { execute(Unit) }.doReturn(
+                    GetResourceTypeIdToSlugMappingUseCase.Output(
+                        mapOf(testedResourceTypeUuid to V5DefaultWithTotp.slug),
+                    ),
                 )
-            )
-        }
-        val backendResource = listOf(
-            ResourceResponseV5Dto(
-                id = resourceId,
-                resourceTypeId = testedResourceTypeUuid,
-                resourceFolderId = null,
-                permission = PermissionDto(UUID.randomUUID(), 1, "", UUID.randomUUID(), "", UUID.randomUUID(), "", ""),
-                favorite = null,
-                modified = modifiedDate.toString(),
-                tags = emptyList(),
-                permissions = emptyList(),
-                expired = null,
-                metadataKeyType = MetadataKeyTypeDto.SHARED,
-                metadata = "encrypted metadata",
-                metadataKeyId = UUID.randomUUID()
-            )
-        )
-        whenever(mockResourcesSnapShot.getCachedResource(resourceId.toString())).thenReturn(
-            ResourceWithMetadata(
-                resourceId = resourceId.toString(),
-                folderId = null,
-                resourcePermission = Permission.READ,
-                resourceTypeId = testedResourceTypeUuid.toString(),
-                favouriteId = null,
-                modified = modifiedDate,
-                expiry = null,
-                metadataJson = localEncryptedMetadata,
-                metadataKeyId = UUID.randomUUID().toString(),
-                metadataKeyType = MetadataKeyType.SHARED
-            )
-        )
-
-        val listJson = gson.toJson(backendResource)
-        val resulList = gson.fromJson<List<ResourceResponseDto>>(
-            listJson,
-            object : TypeToken<List<@JvmSuppressWildcards ResourceResponseDto>>() {}.type
-        )
-
-        verify(mockMetadataDecryptor, never()).decryptMetadata(any())
-        verify(mockJsonSchemaValidationRunner, never()).isResourceValid(any(), any())
-
-        assertThat(resulList).hasSize(1)
-        assertThat((resulList[0] as ResourceResponseV5Dto).metadata).isEqualTo(localEncryptedMetadata)
-    }
-
-    @Test
-    fun `validation and decryption of backend resource with different modified date is not skipped for v5`() = runTest {
-        val resourceId = UUID.randomUUID()
-        val backendEncryptedMetadata = "backend encrypted metadata"
-
-        mockIdToSlugMappingUseCase.stub {
-            onBlocking { execute(Unit) }.doReturn(
-                GetResourceTypeIdToSlugMappingUseCase.Output(
-                    mapOf(testedResourceTypeUuid to V5DefaultWithTotp.slug)
-                )
-            )
-        }
-        val backendResource = listOf(
-            ResourceResponseV5Dto(
-                id = resourceId,
-                resourceTypeId = testedResourceTypeUuid,
-                resourceFolderId = null,
-                permission = PermissionDto(UUID.randomUUID(), 1, "", UUID.randomUUID(), "", UUID.randomUUID(), "", ""),
-                favorite = null,
-                modified = ZonedDateTime.now().plusDays(1).toString(),
-                tags = emptyList(),
-                permissions = emptyList(),
-                expired = null,
-                metadataKeyType = MetadataKeyTypeDto.SHARED,
-                metadata = backendEncryptedMetadata,
-                metadataKeyId = UUID.randomUUID()
-            )
-        )
-        whenever(mockResourcesSnapShot.getCachedResource(resourceId.toString())).thenReturn(
-            ResourceWithMetadata(
-                resourceId = resourceId.toString(),
-                folderId = null,
-                resourcePermission = Permission.READ,
-                resourceTypeId = testedResourceTypeUuid.toString(),
-                favouriteId = null,
-                modified = ZonedDateTime.now(),
-                expiry = null,
-                metadataJson = "local encrypted metadata",
-                metadataKeyId = UUID.randomUUID().toString(),
-                metadataKeyType = MetadataKeyType.SHARED
-            )
-        )
-
-        mockMetadataDecryptor.stub {
-            onBlocking { decryptMetadata(any()) }.doAnswer { invocation ->
-                val param = invocation.arguments[0] as ResourceResponseV5Dto
-                Success(param.metadata)
             }
+            val backendResource =
+                listOf(
+                    ResourceResponseV5Dto(
+                        id = resourceId,
+                        resourceTypeId = testedResourceTypeUuid,
+                        resourceFolderId = null,
+                        permission = PermissionDto(UUID.randomUUID(), 1, "", UUID.randomUUID(), "", UUID.randomUUID(), "", ""),
+                        favorite = null,
+                        modified = modifiedDate.toString(),
+                        tags = emptyList(),
+                        permissions = emptyList(),
+                        expired = null,
+                        metadataKeyType = MetadataKeyTypeDto.SHARED,
+                        metadata = "encrypted metadata",
+                        metadataKeyId = UUID.randomUUID(),
+                    ),
+                )
+            whenever(mockResourcesSnapShot.getCachedResource(resourceId.toString())).thenReturn(
+                ResourceWithMetadata(
+                    resourceId = resourceId.toString(),
+                    folderId = null,
+                    resourcePermission = Permission.READ,
+                    resourceTypeId = testedResourceTypeUuid.toString(),
+                    favouriteId = null,
+                    modified = modifiedDate,
+                    expiry = null,
+                    metadataJson = localEncryptedMetadata,
+                    metadataKeyId = UUID.randomUUID().toString(),
+                    metadataKeyType = MetadataKeyType.SHARED,
+                ),
+            )
+
+            val listJson = gson.toJson(backendResource)
+            val resulList =
+                gson.fromJson<List<ResourceResponseDto>>(
+                    listJson,
+                    object : TypeToken<List<@JvmSuppressWildcards ResourceResponseDto>>() {}.type,
+                )
+
+            verify(mockMetadataDecryptor, never()).decryptMetadata(any())
+            verify(mockJsonSchemaValidationRunner, never()).isResourceValid(any(), any())
+
+            assertThat(resulList).hasSize(1)
+            assertThat((resulList[0] as ResourceResponseV5Dto).metadata).isEqualTo(localEncryptedMetadata)
         }
-        mockJsonSchemaValidationRunner.stub {
-            onBlocking { isResourceValid(any(), any()) }.doReturn(true)
-        }
-
-        val listJson = gson.toJson(backendResource)
-        val resulList = gson.fromJson<List<ResourceResponseDto>>(
-            listJson,
-            object : TypeToken<List<@JvmSuppressWildcards ResourceResponseDto>>() {}.type
-        )
-
-        verify(mockMetadataDecryptor).decryptMetadata(any())
-        verify(mockJsonSchemaValidationRunner).isResourceValid(any(), any())
-
-        assertThat(resulList).hasSize(1)
-        assertThat((resulList[0] as ResourceResponseV5Dto).metadata).isEqualTo(backendEncryptedMetadata)
-    }
 
     @Test
-    fun `validation of backend resource with same modified date is skipped for v4`() = runTest {
-        val modifiedDate = ZonedDateTime.now()
-        val resourceId = UUID.randomUUID()
-        val localEncryptedMetadata = "local encrypted metadata"
+    fun `validation and decryption of backend resource with different modified date is not skipped for v5`() =
+        runTest {
+            val resourceId = UUID.randomUUID()
+            val backendEncryptedMetadata = "backend encrypted metadata"
 
-        mockIdToSlugMappingUseCase.stub {
-            onBlocking { execute(Unit) }.doReturn(
-                GetResourceTypeIdToSlugMappingUseCase.Output(
-                    mapOf(testedResourceTypeUuid to PasswordAndDescription.slug)
+            mockIdToSlugMappingUseCase.stub {
+                onBlocking { execute(Unit) }.doReturn(
+                    GetResourceTypeIdToSlugMappingUseCase.Output(
+                        mapOf(testedResourceTypeUuid to V5DefaultWithTotp.slug),
+                    ),
                 )
+            }
+            val backendResource =
+                listOf(
+                    ResourceResponseV5Dto(
+                        id = resourceId,
+                        resourceTypeId = testedResourceTypeUuid,
+                        resourceFolderId = null,
+                        permission = PermissionDto(UUID.randomUUID(), 1, "", UUID.randomUUID(), "", UUID.randomUUID(), "", ""),
+                        favorite = null,
+                        modified = ZonedDateTime.now().plusDays(1).toString(),
+                        tags = emptyList(),
+                        permissions = emptyList(),
+                        expired = null,
+                        metadataKeyType = MetadataKeyTypeDto.SHARED,
+                        metadata = backendEncryptedMetadata,
+                        metadataKeyId = UUID.randomUUID(),
+                    ),
+                )
+            whenever(mockResourcesSnapShot.getCachedResource(resourceId.toString())).thenReturn(
+                ResourceWithMetadata(
+                    resourceId = resourceId.toString(),
+                    folderId = null,
+                    resourcePermission = Permission.READ,
+                    resourceTypeId = testedResourceTypeUuid.toString(),
+                    favouriteId = null,
+                    modified = ZonedDateTime.now(),
+                    expiry = null,
+                    metadataJson = "local encrypted metadata",
+                    metadataKeyId = UUID.randomUUID().toString(),
+                    metadataKeyType = MetadataKeyType.SHARED,
+                ),
             )
+
+            mockMetadataDecryptor.stub {
+                onBlocking { decryptMetadata(any()) }.doAnswer { invocation ->
+                    val param = invocation.arguments[0] as ResourceResponseV5Dto
+                    Success(param.metadata)
+                }
+            }
+            mockJsonSchemaValidationRunner.stub {
+                onBlocking { isResourceValid(any(), any()) }.doReturn(true)
+            }
+
+            val listJson = gson.toJson(backendResource)
+            val resulList =
+                gson.fromJson<List<ResourceResponseDto>>(
+                    listJson,
+                    object : TypeToken<List<@JvmSuppressWildcards ResourceResponseDto>>() {}.type,
+                )
+
+            verify(mockMetadataDecryptor).decryptMetadata(any())
+            verify(mockJsonSchemaValidationRunner).isResourceValid(any(), any())
+
+            assertThat(resulList).hasSize(1)
+            assertThat((resulList[0] as ResourceResponseV5Dto).metadata).isEqualTo(backendEncryptedMetadata)
         }
-        val backendResource = listOf(
-            ResourceResponseV4Dto(
-                id = resourceId,
-                resourceTypeId = testedResourceTypeUuid,
-                resourceFolderId = null,
-                permission = PermissionDto(UUID.randomUUID(), 1, "", UUID.randomUUID(), "", UUID.randomUUID(), "", ""),
-                favorite = null,
-                modified = modifiedDate.toString(),
-                tags = emptyList(),
-                permissions = emptyList(),
-                expired = null,
-                name = "backend name",
-                uri = "backend uri",
-                description = "backend description",
-                username = "backend username"
-            )
-        )
-        whenever(mockResourcesSnapShot.getCachedResource(resourceId.toString())).thenReturn(
-            ResourceWithMetadata(
-                resourceId = resourceId.toString(),
-                folderId = null,
-                resourcePermission = Permission.READ,
-                resourceTypeId = testedResourceTypeUuid.toString(),
-                favouriteId = null,
-                modified = modifiedDate,
-                expiry = null,
-                metadataJson = localEncryptedMetadata,
-                metadataKeyId = null,
-                metadataKeyType = null
-            )
-        )
-
-        val listJson = gson.toJson(backendResource)
-        val resulList = gson.fromJson<List<ResourceResponseDto>>(
-            listJson,
-            object : TypeToken<List<@JvmSuppressWildcards ResourceResponseDto>>() {}.type
-        )
-
-        verify(mockJsonSchemaValidationRunner, never()).isResourceValid(any(), any())
-
-        assertThat(resulList).hasSize(1)
-        assertThat((resulList[0] as ResourceResponseV4Dto).name).isEqualTo("backend name")
-        assertThat((resulList[0] as ResourceResponseV4Dto).uri).isEqualTo("backend uri")
-        assertThat((resulList[0] as ResourceResponseV4Dto).description).isEqualTo("backend description")
-        assertThat((resulList[0] as ResourceResponseV4Dto).username).isEqualTo("backend username")
-    }
 
     @Test
-    fun `validation and decryption of backend resource with different modified date is not skipped for v4`() = runTest {
-        val resourceId = UUID.randomUUID()
+    fun `validation of backend resource with same modified date is skipped for v4`() =
+        runTest {
+            val modifiedDate = ZonedDateTime.now()
+            val resourceId = UUID.randomUUID()
+            val localEncryptedMetadata = "local encrypted metadata"
 
-        mockIdToSlugMappingUseCase.stub {
-            onBlocking { execute(Unit) }.doReturn(
-                GetResourceTypeIdToSlugMappingUseCase.Output(
-                    mapOf(testedResourceTypeUuid to PasswordAndDescription.slug)
+            mockIdToSlugMappingUseCase.stub {
+                onBlocking { execute(Unit) }.doReturn(
+                    GetResourceTypeIdToSlugMappingUseCase.Output(
+                        mapOf(testedResourceTypeUuid to PasswordAndDescription.slug),
+                    ),
                 )
+            }
+            val backendResource =
+                listOf(
+                    ResourceResponseV4Dto(
+                        id = resourceId,
+                        resourceTypeId = testedResourceTypeUuid,
+                        resourceFolderId = null,
+                        permission = PermissionDto(UUID.randomUUID(), 1, "", UUID.randomUUID(), "", UUID.randomUUID(), "", ""),
+                        favorite = null,
+                        modified = modifiedDate.toString(),
+                        tags = emptyList(),
+                        permissions = emptyList(),
+                        expired = null,
+                        name = "backend name",
+                        uri = "backend uri",
+                        description = "backend description",
+                        username = "backend username",
+                    ),
+                )
+            whenever(mockResourcesSnapShot.getCachedResource(resourceId.toString())).thenReturn(
+                ResourceWithMetadata(
+                    resourceId = resourceId.toString(),
+                    folderId = null,
+                    resourcePermission = Permission.READ,
+                    resourceTypeId = testedResourceTypeUuid.toString(),
+                    favouriteId = null,
+                    modified = modifiedDate,
+                    expiry = null,
+                    metadataJson = localEncryptedMetadata,
+                    metadataKeyId = null,
+                    metadataKeyType = null,
+                ),
             )
+
+            val listJson = gson.toJson(backendResource)
+            val resulList =
+                gson.fromJson<List<ResourceResponseDto>>(
+                    listJson,
+                    object : TypeToken<List<@JvmSuppressWildcards ResourceResponseDto>>() {}.type,
+                )
+
+            verify(mockJsonSchemaValidationRunner, never()).isResourceValid(any(), any())
+
+            assertThat(resulList).hasSize(1)
+            assertThat((resulList[0] as ResourceResponseV4Dto).name).isEqualTo("backend name")
+            assertThat((resulList[0] as ResourceResponseV4Dto).uri).isEqualTo("backend uri")
+            assertThat((resulList[0] as ResourceResponseV4Dto).description).isEqualTo("backend description")
+            assertThat((resulList[0] as ResourceResponseV4Dto).username).isEqualTo("backend username")
         }
-        val backendResource = listOf(
-            ResourceResponseV4Dto(
-                id = resourceId,
-                resourceTypeId = testedResourceTypeUuid,
-                resourceFolderId = null,
-                permission = PermissionDto(UUID.randomUUID(), 1, "", UUID.randomUUID(), "", UUID.randomUUID(), "", ""),
-                favorite = null,
-                modified = ZonedDateTime.now().plusDays(1).toString(),
-                tags = emptyList(),
-                permissions = emptyList(),
-                expired = null,
-                name = "backend name",
-                uri = "backend uri",
-                description = "backend description",
-                username = "backend username"
-            )
-        )
-        whenever(mockResourcesSnapShot.getCachedResource(resourceId.toString())).thenReturn(
-            ResourceWithMetadata(
-                resourceId = resourceId.toString(),
-                folderId = null,
-                resourcePermission = Permission.READ,
-                resourceTypeId = testedResourceTypeUuid.toString(),
-                favouriteId = null,
-                modified = ZonedDateTime.now(),
-                expiry = null,
-                metadataJson = "local encrypted metadata",
-                metadataKeyId = null,
-                metadataKeyType = null
-            )
-        )
 
-        mockJsonSchemaValidationRunner.stub {
-            onBlocking { isResourceValid(any(), any()) }.doReturn(true)
+    @Test
+    fun `validation and decryption of backend resource with different modified date is not skipped for v4`() =
+        runTest {
+            val resourceId = UUID.randomUUID()
+
+            mockIdToSlugMappingUseCase.stub {
+                onBlocking { execute(Unit) }.doReturn(
+                    GetResourceTypeIdToSlugMappingUseCase.Output(
+                        mapOf(testedResourceTypeUuid to PasswordAndDescription.slug),
+                    ),
+                )
+            }
+            val backendResource =
+                listOf(
+                    ResourceResponseV4Dto(
+                        id = resourceId,
+                        resourceTypeId = testedResourceTypeUuid,
+                        resourceFolderId = null,
+                        permission = PermissionDto(UUID.randomUUID(), 1, "", UUID.randomUUID(), "", UUID.randomUUID(), "", ""),
+                        favorite = null,
+                        modified = ZonedDateTime.now().plusDays(1).toString(),
+                        tags = emptyList(),
+                        permissions = emptyList(),
+                        expired = null,
+                        name = "backend name",
+                        uri = "backend uri",
+                        description = "backend description",
+                        username = "backend username",
+                    ),
+                )
+            whenever(mockResourcesSnapShot.getCachedResource(resourceId.toString())).thenReturn(
+                ResourceWithMetadata(
+                    resourceId = resourceId.toString(),
+                    folderId = null,
+                    resourcePermission = Permission.READ,
+                    resourceTypeId = testedResourceTypeUuid.toString(),
+                    favouriteId = null,
+                    modified = ZonedDateTime.now(),
+                    expiry = null,
+                    metadataJson = "local encrypted metadata",
+                    metadataKeyId = null,
+                    metadataKeyType = null,
+                ),
+            )
+
+            mockJsonSchemaValidationRunner.stub {
+                onBlocking { isResourceValid(any(), any()) }.doReturn(true)
+            }
+
+            val listJson = gson.toJson(backendResource)
+            val resulList =
+                gson.fromJson<List<ResourceResponseDto>>(
+                    listJson,
+                    object : TypeToken<List<@JvmSuppressWildcards ResourceResponseDto>>() {}.type,
+                )
+
+            verify(mockMetadataDecryptor, never()).decryptMetadata(any())
+            verify(mockJsonSchemaValidationRunner).isResourceValid(any(), any())
+
+            assertThat(resulList).hasSize(1)
+            assertThat((resulList[0] as ResourceResponseV4Dto).name).isEqualTo("backend name")
         }
-
-        val listJson = gson.toJson(backendResource)
-        val resulList = gson.fromJson<List<ResourceResponseDto>>(
-            listJson,
-            object : TypeToken<List<@JvmSuppressWildcards ResourceResponseDto>>() {}.type
-        )
-
-        verify(mockMetadataDecryptor, never()).decryptMetadata(any())
-        verify(mockJsonSchemaValidationRunner).isResourceValid(any(), any())
-
-        assertThat(resulList).hasSize(1)
-        assertThat((resulList[0] as ResourceResponseV4Dto).name).isEqualTo("backend name")
-    }
 
     private companion object {
         private val testedResourceTypeUuid = UUID.randomUUID()

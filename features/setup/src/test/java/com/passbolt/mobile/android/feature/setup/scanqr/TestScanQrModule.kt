@@ -54,39 +54,40 @@ internal val accountsInteractor = mock<AccountsInteractor>()
 internal val accountKitParser = mock<AccountKitParser>()
 internal val mockFetchFileContentUseCase = mock<FetchFileAsStringUseCase>()
 
-val testScanQrModule = module {
-    factory { httpsVerifier }
-    factory { updateTransferUseCase }
-    factory { saveCurrentApiUrlUseCase }
-    factory { uuidProvider }
-    factory { savePrivateKeyUseCase }
-    factory { updateAccountDataUseCase }
-    factory { addAccountUseCase }
-    factory { checkAccountExistsUseCase }
-    factory {
-        ScanQrParser(
-            coroutineLaunchContext = get(),
-            qrScanResultsMapper = get(),
-            keyAssembler = get()
-        )
+val testScanQrModule =
+    module {
+        factory { httpsVerifier }
+        factory { updateTransferUseCase }
+        factory { saveCurrentApiUrlUseCase }
+        factory { uuidProvider }
+        factory { savePrivateKeyUseCase }
+        factory { updateAccountDataUseCase }
+        factory { addAccountUseCase }
+        factory { checkAccountExistsUseCase }
+        factory {
+            ScanQrParser(
+                coroutineLaunchContext = get(),
+                qrScanResultsMapper = get(),
+                keyAssembler = get(),
+            )
+        }
+        factory { Json { ignoreUnknownKeys = true } }
+        factory { KeyAssembler(json = get()) }
+        factory { QrScanResultsMapper(json = get()) }
+        factory<ScanQrContract.Presenter> {
+            ScanQrPresenter(
+                coroutineLaunchContext = get(),
+                updateTransferUseCase = get(),
+                qrParser = qrParser,
+                uuidProvider = get(),
+                savePrivateKeyUseCase = get(),
+                updateAccountDataUseCase = get(),
+                checkAccountExistsUseCase = get(),
+                httpsVerifier = get(),
+                saveCurrentApiUrlUseCase = get(),
+                accountsInteractor = accountsInteractor,
+                accountKitParser = accountKitParser,
+                fetchFileAsStringUseCase = mockFetchFileContentUseCase,
+            )
+        }
     }
-    factory { Json { ignoreUnknownKeys = true } }
-    factory { KeyAssembler(json = get()) }
-    factory { QrScanResultsMapper(json = get()) }
-    factory<ScanQrContract.Presenter> {
-        ScanQrPresenter(
-            coroutineLaunchContext = get(),
-            updateTransferUseCase = get(),
-            qrParser = qrParser,
-            uuidProvider = get(),
-            savePrivateKeyUseCase = get(),
-            updateAccountDataUseCase = get(),
-            checkAccountExistsUseCase = get(),
-            httpsVerifier = get(),
-            saveCurrentApiUrlUseCase = get(),
-            accountsInteractor = accountsInteractor,
-            accountKitParser = accountKitParser,
-            fetchFileAsStringUseCase = mockFetchFileContentUseCase
-        )
-    }
-}

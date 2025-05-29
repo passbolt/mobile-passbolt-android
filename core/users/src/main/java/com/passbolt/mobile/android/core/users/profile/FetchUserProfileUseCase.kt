@@ -32,9 +32,8 @@ import timber.log.Timber
  */
 class FetchUserProfileUseCase(
     private val usersRepository: UsersRepository,
-    private val userProfileMapper: UserProfileMapper
+    private val userProfileMapper: UserProfileMapper,
 ) : AsyncUseCase<UserIdInput, FetchUserProfileUseCase.Output> {
-
     override suspend fun execute(input: UserIdInput): Output =
         when (val result = usersRepository.getMyProfile()) {
             is NetworkResult.Failure.NetworkError -> Output.Failure(result.exception.message)
@@ -51,12 +50,13 @@ class FetchUserProfileUseCase(
         }
 
     sealed class Output {
-
         data class Success(
             val profile: UserProfileModel,
-            val roleName: String?
+            val roleName: String?,
         ) : Output()
 
-        data class Failure(val message: String?) : Output()
+        data class Failure(
+            val message: String?,
+        ) : Output()
     }
 }

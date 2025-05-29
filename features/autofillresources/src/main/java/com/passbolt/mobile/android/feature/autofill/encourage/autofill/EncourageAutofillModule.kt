@@ -31,7 +31,7 @@ fun Module.encourageAutofillModule() {
     scope(named<EncourageAutofillServiceDialog>()) {
         scoped<EncourageAutofillContract.Presenter> {
             EncourageAutofillPresenter(
-                autofillInformationProvider = get()
+                autofillInformationProvider = get(),
             )
         }
     }

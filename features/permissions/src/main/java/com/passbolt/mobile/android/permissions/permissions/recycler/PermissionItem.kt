@@ -44,13 +44,15 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
  * @since v1.0
  */
 class PermissionItem(
-    val model: PermissionModelUi
+    val model: PermissionModelUi,
 ) : AbstractBindingItem<ItemPermissionBinding>() {
-
     override val type: Int
         get() = R.id.permissionItem
 
-    override fun bindView(binding: ItemPermissionBinding, payloads: List<Any>) {
+    override fun bindView(
+        binding: ItemPermissionBinding,
+        payloads: List<Any>,
+    ) {
         binding.permissionValue.text = model.permission.getPermissionTextValue(binding.root.context)
         when (model) {
             is PermissionModelUi.GroupPermissionModel -> binding.bindGroupPermission(model)
@@ -63,7 +65,7 @@ class PermissionItem(
             error(CoreUiR.drawable.ic_user_avatar)
             transformations(
                 CircleCropTransformation(),
-                AlphaTransformation(shouldLowerOpacity = model.user.isDisabled)
+                AlphaTransformation(shouldLowerOpacity = model.user.isDisabled),
             )
             placeholder(CoreUiR.drawable.ic_user_avatar)
         }
@@ -87,25 +89,24 @@ class PermissionItem(
         userName.gone()
     }
 
-    override fun createBinding(inflater: LayoutInflater, parent: ViewGroup?): ItemPermissionBinding {
-        return ItemPermissionBinding.inflate(inflater, parent, false)
-    }
+    override fun createBinding(
+        inflater: LayoutInflater,
+        parent: ViewGroup?,
+    ): ItemPermissionBinding = ItemPermissionBinding.inflate(inflater, parent, false)
 
     class ItemClick(
-        private val clickListener: (PermissionModelUi) -> Unit
+        private val clickListener: (PermissionModelUi) -> Unit,
     ) : ClickEventHook<PermissionItem>() {
-
-        override fun onBind(viewHolder: RecyclerView.ViewHolder): View? {
-            return viewHolder.asBinding<ItemPermissionBinding> {
+        override fun onBind(viewHolder: RecyclerView.ViewHolder): View? =
+            viewHolder.asBinding<ItemPermissionBinding> {
                 it.permissionItem
             }
-        }
 
         override fun onClick(
             v: View,
             position: Int,
             fastAdapter: FastAdapter<PermissionItem>,
-            item: PermissionItem
+            item: PermissionItem,
         ) {
             clickListener.invoke(item.model)
         }

@@ -31,25 +31,29 @@ import com.passbolt.mobile.android.dto.request.SignOutRequestDto
  */
 class AuthRepository(
     private val authDataSource: AuthDataSource,
-    private val responseHandler: ResponseHandler
+    private val responseHandler: ResponseHandler,
 ) {
-    suspend fun getServerPublicPgpKey() = callWithHandler(responseHandler) {
-        authDataSource.getServerPublicPgpKey()
-    }
-
-    suspend fun getServerPublicRsaKey() = callWithHandler(responseHandler) {
-        authDataSource.getServerPublicRsaKey()
-    }
-
-    suspend fun signIn(signInRequestDto: SignInRequestDto, mfaToken: String?) =
-        callWithLibraryResponseHandler(responseHandler) {
-            authDataSource.signIn(signInRequestDto, mfaToken)
+    suspend fun getServerPublicPgpKey() =
+        callWithHandler(responseHandler) {
+            authDataSource.getServerPublicPgpKey()
         }
 
-    suspend fun signOut(signOutRequestDto: SignOutRequestDto) = callWithHandler(responseHandler) {
-        authDataSource.signOut(signOutRequestDto)
+    suspend fun getServerPublicRsaKey() =
+        callWithHandler(responseHandler) {
+            authDataSource.getServerPublicRsaKey()
+        }
+
+    suspend fun signIn(
+        signInRequestDto: SignInRequestDto,
+        mfaToken: String?,
+    ) = callWithLibraryResponseHandler(responseHandler) {
+        authDataSource.signIn(signInRequestDto, mfaToken)
     }
 
-    suspend fun refreshSession(refreshSessionRequest: RefreshSessionRequest) =
-        authDataSource.refreshSession(refreshSessionRequest)
+    suspend fun signOut(signOutRequestDto: SignOutRequestDto) =
+        callWithHandler(responseHandler) {
+            authDataSource.signOut(signOutRequestDto)
+        }
+
+    suspend fun refreshSession(refreshSessionRequest: RefreshSessionRequest) = authDataSource.refreshSession(refreshSessionRequest)
 }

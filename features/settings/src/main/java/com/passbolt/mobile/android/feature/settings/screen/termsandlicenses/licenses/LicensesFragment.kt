@@ -37,18 +37,23 @@ import org.koin.core.qualifier.named
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class LicensesFragment : BindingScopedFragment<FragmentLicensesBinding>(FragmentLicensesBinding::inflate),
+class LicensesFragment :
+    BindingScopedFragment<FragmentLicensesBinding>(FragmentLicensesBinding::inflate),
     LicensesContract.View {
-
     private val presenter: LicensesContract.Presenter by inject()
     private val modelAdapter: ItemAdapter<LicenseItem> by inject()
     private val fastAdapter: FastAdapter<GenericItem> by inject(named<LicenseItem>())
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         setListeners()
         presenter.attach(this)
-        requireContext().assets.open(LICENSES_ASSET)
+        requireContext()
+            .assets
+            .open(LICENSES_ASSET)
             .bufferedReader()
             .readText()
             .let {
@@ -57,7 +62,7 @@ class LicensesFragment : BindingScopedFragment<FragmentLicensesBinding>(Fragment
     }
 
     private fun setListeners() {
-        with(binding) {
+        with(requiredBinding) {
             initDefaultToolbar((toolbar))
             licensesRecycler.apply {
                 itemAnimator = null

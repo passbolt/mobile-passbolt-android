@@ -27,17 +27,18 @@ import com.passbolt.mobile.android.database.DatabaseProvider
  * @since v1.0
  */
 class RemoveLocalTagsUseCase(
-    private val databaseProvider: DatabaseProvider
+    private val databaseProvider: DatabaseProvider,
 ) : AsyncUseCase<UserIdInput, Unit> {
-
     override suspend fun execute(input: UserIdInput) {
-        val tagsDao = databaseProvider
-            .get(input.userId)
-            .tagsDao()
+        val tagsDao =
+            databaseProvider
+                .get(input.userId)
+                .tagsDao()
 
-        val resourcesAndTagsCrossRefDao = databaseProvider
-            .get(input.userId)
-            .resourcesAndTagsCrossRefDao()
+        val resourcesAndTagsCrossRefDao =
+            databaseProvider
+                .get(input.userId)
+                .resourcesAndTagsCrossRefDao()
 
         tagsDao.deleteAll()
         resourcesAndTagsCrossRefDao.deleteAll()

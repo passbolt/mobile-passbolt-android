@@ -77,13 +77,12 @@ import com.passbolt.mobile.android.entity.user.User
         ResourceMetadata::class,
         ResourceUri::class,
         MetadataKey::class,
-        MetadataPrivateKey::class
+        MetadataPrivateKey::class,
     ],
-    version = 19
+    version = 19,
 )
 @TypeConverters(Converters::class)
 abstract class ResourceDatabase : RoomDatabase() {
-
     abstract fun resourcesDao(): ResourcesDao
 
     abstract fun resourceMetadataDao(): ResourceMetadataDao

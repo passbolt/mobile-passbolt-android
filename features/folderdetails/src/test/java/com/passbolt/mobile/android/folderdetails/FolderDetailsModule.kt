@@ -10,7 +10,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.dsl.module
 import org.mockito.kotlin.mock
 
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -40,17 +39,16 @@ val mockGetLocalFolderPermissionsUseCase = mock<GetLocalFolderPermissionsUseCase
 val mockGetRbacRulesUseCase = mock<GetRbacRulesUseCase>()
 
 @ExperimentalCoroutinesApi
-val testFolderDetailsModule = module {
-    factory<CoroutineLaunchContext> { TestCoroutineLaunchContext() }
-    factory<FolderDetailsContract.Presenter> {
-        FolderDetailsPresenter(
-            getLocalFolderDetailsUseCase = mockGetLocalFolderDetailsUseCase,
-            getLocalFolderLocation = mockGetFolderLocationUseCase,
-            getLocalFolderPermissionsUseCase = mockGetLocalFolderPermissionsUseCase,
-            getRbacRulesUseCase = mockGetRbacRulesUseCase,
-            coroutineLaunchContext = get()
-        )
+val testFolderDetailsModule =
+    module {
+        factory<CoroutineLaunchContext> { TestCoroutineLaunchContext() }
+        factory<FolderDetailsContract.Presenter> {
+            FolderDetailsPresenter(
+                getLocalFolderDetailsUseCase = mockGetLocalFolderDetailsUseCase,
+                getLocalFolderLocation = mockGetFolderLocationUseCase,
+                getLocalFolderPermissionsUseCase = mockGetLocalFolderPermissionsUseCase,
+                getRbacRulesUseCase = mockGetRbacRulesUseCase,
+                coroutineLaunchContext = get(),
+            )
+        }
     }
-}
-
-

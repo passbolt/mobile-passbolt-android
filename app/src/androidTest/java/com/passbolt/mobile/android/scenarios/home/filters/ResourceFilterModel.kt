@@ -32,51 +32,51 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
 enum class ResourceFilterModel(
     @IdRes val filterId: Int,
     @DrawableRes val filterIconId: Int,
-    @StringRes val filterNameId: Int
+    @StringRes val filterNameId: Int,
 ) {
     ALL_ITEMS(
         filterId = com.passbolt.mobile.android.feature.home.R.id.allItems,
         filterIconId = CoreUiR.drawable.ic_list,
-        filterNameId = LocalizationR.string.filters_menu_all_items
+        filterNameId = LocalizationR.string.filters_menu_all_items,
     ),
     FAVOURITES(
         filterId = com.passbolt.mobile.android.feature.home.R.id.favourites,
         filterIconId = CoreUiR.drawable.ic_star,
-        filterNameId = LocalizationR.string.filters_menu_favourites
+        filterNameId = LocalizationR.string.filters_menu_favourites,
     ),
     RECENTLY_MODIFIED(
         filterId = com.passbolt.mobile.android.feature.home.R.id.recentlyModified,
         filterIconId = CoreUiR.drawable.ic_clock,
-        filterNameId = LocalizationR.string.filters_menu_recently_modified
+        filterNameId = LocalizationR.string.filters_menu_recently_modified,
     ),
     SHARED_WITH_ME(
         filterId = com.passbolt.mobile.android.feature.home.R.id.sharedWithMe,
         filterIconId = CoreUiR.drawable.ic_share,
-        filterNameId = LocalizationR.string.filters_menu_shared_with_me
+        filterNameId = LocalizationR.string.filters_menu_shared_with_me,
     ),
     OWNED_BY_ME(
         filterId = com.passbolt.mobile.android.feature.home.R.id.ownedByMe,
         filterIconId = CoreUiR.drawable.ic_person,
-        filterNameId = LocalizationR.string.filters_menu_owned_by_me
+        filterNameId = LocalizationR.string.filters_menu_owned_by_me,
     ),
     EXPIRY(
         filterId = com.passbolt.mobile.android.feature.home.R.id.expiry,
-        filterIconId = CoreUiR.drawable.ic_calendar_clock ,
-        filterNameId = LocalizationR.string.filters_menu_expiry
+        filterIconId = CoreUiR.drawable.ic_calendar_clock,
+        filterNameId = LocalizationR.string.filters_menu_expiry,
     ),
     FOLDERS(
         filterId = com.passbolt.mobile.android.feature.home.R.id.folders,
         filterIconId = CoreUiR.drawable.ic_folder,
-        filterNameId = LocalizationR.string.filters_menu_folders
+        filterNameId = LocalizationR.string.filters_menu_folders,
     ),
     TAGS(
         filterId = com.passbolt.mobile.android.feature.home.R.id.tags,
         filterIconId = CoreUiR.drawable.ic_tag,
-        filterNameId = LocalizationR.string.filters_menu_tags
+        filterNameId = LocalizationR.string.filters_menu_tags,
     ),
     GROUPS(
         filterId = com.passbolt.mobile.android.feature.home.R.id.groups,
         filterIconId = CoreUiR.drawable.ic_group,
-        filterNameId = LocalizationR.string.filters_menu_groups
-    )
+        filterNameId = LocalizationR.string.filters_menu_groups,
+    ),
 }

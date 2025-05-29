@@ -60,26 +60,26 @@ import kotlin.test.BeforeTest
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
-
 @RunWith(AndroidJUnit4::class)
 @MediumTest
 class SetupAutofillNotConfiguredTest : KoinTest {
+    @get:Rule
+    val startActivityRule =
+        lazyActivityScenarioRule<StartUpActivity>(
+            koinOverrideModules = listOf(instrumentationTestsModule, autofillNotConfiguredModuleTests),
+            intentSupplier = {
+                managedAccountIntentCreator.createIntent(
+                    InstrumentationRegistry.getInstrumentation().targetContext,
+                )
+            },
+        )
 
     @get:Rule
-    val startActivityRule = lazyActivityScenarioRule<StartUpActivity>(
-        koinOverrideModules = listOf(instrumentationTestsModule, autofillNotConfiguredModuleTests),
-        intentSupplier = {
-            managedAccountIntentCreator.createIntent(
-                InstrumentationRegistry.getInstrumentation().targetContext
-            )
+    val idlingResourceRule =
+        let {
+            val signInIdlingResource: SignInIdlingResource by inject()
+            IdlingResourceRule(arrayOf(signInIdlingResource))
         }
-    )
-
-    @get:Rule
-    val idlingResourceRule = let {
-        val signInIdlingResource: SignInIdlingResource by inject()
-        IdlingResourceRule(arrayOf(signInIdlingResource))
-    }
 
     @get:Rule
     val permissionRule: GrantPermissionRule = GrantPermissionRule.grant(android.Manifest.permission.CAMERA)
@@ -103,8 +103,8 @@ class SetupAutofillNotConfiguredTest : KoinTest {
         accountDataCleaner.clearAccountData()
     }
 
-    @Test
     //    https://passbolt.testrail.io/index.php?/cases/view/2366
+    @Test
     fun asAMobileUserIShouldBePromptedToEnableTheSettingsOfTheAutofillDuringTheSetupProcess() {
         //    Given     Autofill is not configured for Passbolt
         //    When      I skip or finish the biometric configuration
@@ -119,8 +119,8 @@ class SetupAutofillNotConfiguredTest : KoinTest {
         onView(withId(R.id.maybeLaterButton)).check(matches(isDisplayed()))
     }
 
-    @Test
     //    https://passbolt.testrail.io/index.php?/cases/view/2364
+    @Test
     fun asAMobileUserIShouldBeAbleToSetupPassboltAutofillDuringTheSetupProcessIfItIsNotAlreadyConfigured() {
         Intents.init()
 
@@ -129,17 +129,18 @@ class SetupAutofillNotConfiguredTest : KoinTest {
         //    When      I click on the "Go to settings" button
         onView(withId(com.passbolt.mobile.android.feature.autofill.R.id.goToSettingsButton)).perform(click())
         //    Then      I am redirected to the settings of the page for Autofill or to the Settings where I can enable the autofill
-        val expectedIntent: Matcher<Intent> = AllOf.allOf(
-            IntentMatchers.hasAction(Settings.ACTION_REQUEST_SET_AUTOFILL_SERVICE),
-        )
+        val expectedIntent: Matcher<Intent> =
+            AllOf.allOf(
+                IntentMatchers.hasAction(Settings.ACTION_REQUEST_SET_AUTOFILL_SERVICE),
+            )
         Intents.intended(expectedIntent)
         //    And       I can go back to the application
 
         Intents.release()
     }
 
-    @Test
     //    https://passbolt.testrail.io/index.php?/cases/view/2367
+    @Test
     fun asAMobileUserIShouldBeAbleToSkipTheAutofillConfigurationDuringTheSetupProcess() {
         //    Given     I am on the Autofill setup page
         onView(withId(R.id.maybeLaterButton)).perform((click()))

@@ -30,24 +30,27 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton.OnV
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class ScrollAwareFabBehavior(context: Context, attrs: AttributeSet) : FloatingActionButton.Behavior(context, attrs) {
-
+class ScrollAwareFabBehavior(
+    context: Context,
+    attrs: AttributeSet,
+) : FloatingActionButton.Behavior(context, attrs) {
     override fun onStartNestedScroll(
         coordinatorLayout: CoordinatorLayout,
         child: FloatingActionButton,
         directTargetChild: View,
         target: View,
         axes: Int,
-        type: Int
+        type: Int,
     ): Boolean =
-        axes == ViewCompat.SCROLL_AXIS_VERTICAL || super.onStartNestedScroll(
-            coordinatorLayout,
-            child,
-            directTargetChild,
-            target,
-            axes,
-            type
-        )
+        axes == ViewCompat.SCROLL_AXIS_VERTICAL ||
+            super.onStartNestedScroll(
+                coordinatorLayout,
+                child,
+                directTargetChild,
+                target,
+                axes,
+                type,
+            )
 
     override fun onNestedScroll(
         coordinatorLayout: CoordinatorLayout,
@@ -58,7 +61,7 @@ class ScrollAwareFabBehavior(context: Context, attrs: AttributeSet) : FloatingAc
         dxUnconsumed: Int,
         dyUnconsumed: Int,
         type: Int,
-        consumed: IntArray
+        consumed: IntArray,
     ) {
         super.onNestedScroll(
             coordinatorLayout,
@@ -69,15 +72,17 @@ class ScrollAwareFabBehavior(context: Context, attrs: AttributeSet) : FloatingAc
             dxUnconsumed,
             dyUnconsumed,
             type,
-            consumed
+            consumed,
         )
         if (dyConsumed > 0 && child.visibility == View.VISIBLE) {
-            child.hide(object : OnVisibilityChangedListener() {
-                override fun onHidden(fab: FloatingActionButton) {
-                    super.onHidden(fab)
-                    fab.visibility = View.INVISIBLE
-                }
-            })
+            child.hide(
+                object : OnVisibilityChangedListener() {
+                    override fun onHidden(fab: FloatingActionButton) {
+                        super.onHidden(fab)
+                        fab.visibility = View.INVISIBLE
+                    }
+                },
+            )
         } else if (dyConsumed < 0 && child.visibility != View.VISIBLE) {
             child.show()
         }

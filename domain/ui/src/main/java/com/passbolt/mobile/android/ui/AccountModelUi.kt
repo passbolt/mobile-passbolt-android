@@ -23,7 +23,6 @@ package com.passbolt.mobile.android.ui
  * @since v1.0
  */
 sealed class AccountModelUi {
-
     data class AccountModel(
         val userId: String,
         val title: String,
@@ -32,7 +31,7 @@ sealed class AccountModelUi {
         val url: String,
         val isFirstItem: Boolean = false,
         val isTrashIconVisible: Boolean = false,
-        val isCurrentUser: Boolean = false
+        val isCurrentUser: Boolean = false,
     ) : AccountModelUi()
 
     data object AddNewAccount : AccountModelUi()

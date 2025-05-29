@@ -1,7 +1,6 @@
-package com.passbolt.mobile.android.feature.resourceform.additionalsecrets.note
+package com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp
 
 import com.google.common.truth.Truth.assertThat
-import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.TotpFormContract
 import com.passbolt.mobile.android.ui.LeadingContentType
 import com.passbolt.mobile.android.ui.OtpParseResult
 import com.passbolt.mobile.android.ui.ResourceFormMode
@@ -41,15 +40,15 @@ import org.mockito.kotlin.verifyNoMoreInteractions
  */
 
 class TotpFormPresenterTest : KoinTest {
-
     private val presenter: TotpFormContract.Presenter by inject()
     private val view: TotpFormContract.View = mock()
 
     @get:Rule
-    val koinTestRule = KoinTestRule.create {
-        printLogger(Level.ERROR)
-        modules(totpFormModule)
-    }
+    val koinTestRule =
+        KoinTestRule.create {
+            printLogger(Level.ERROR)
+            modules(totpFormModule)
+        }
 
     @Test
     fun `view should show correct create title and totp on attach`() {
@@ -57,9 +56,9 @@ class TotpFormPresenterTest : KoinTest {
         presenter.argsRetrieved(
             ResourceFormMode.Create(
                 leadingContentType = LeadingContentType.TOTP,
-                parentFolderId = null
+                parentFolderId = null,
             ),
-            totp
+            totp,
         )
 
         verify(view).showCreateTitle()
@@ -77,9 +76,9 @@ class TotpFormPresenterTest : KoinTest {
         presenter.argsRetrieved(
             ResourceFormMode.Create(
                 leadingContentType = LeadingContentType.TOTP,
-                parentFolderId = null
+                parentFolderId = null,
             ),
-            totp
+            totp,
         )
         presenter.totpSecretChanged(changedSecret)
         presenter.totpUrlChanged(changedIssuer)
@@ -97,19 +96,20 @@ class TotpFormPresenterTest : KoinTest {
         val changedExpiry = "31"
         val changedLength = "7"
         val changedAlgorithm = OtpParseResult.OtpQr.Algorithm.SHA1.name
-        val changedAdvancedSettings = totp.copy(
-            expiry = changedExpiry,
-            length = changedLength,
-            algorithm = changedAlgorithm
-        )
+        val changedAdvancedSettings =
+            totp.copy(
+                expiry = changedExpiry,
+                length = changedLength,
+                algorithm = changedAlgorithm,
+            )
 
         presenter.attach(view)
         presenter.argsRetrieved(
             ResourceFormMode.Create(
                 leadingContentType = LeadingContentType.TOTP,
-                parentFolderId = null
+                parentFolderId = null,
             ),
-            totp
+            totp,
         )
         presenter.totpAdvancedSettingsChanged(changedAdvancedSettings)
         presenter.applyClick()
@@ -124,22 +124,23 @@ class TotpFormPresenterTest : KoinTest {
 
     @Test
     fun `scan totp should apply changes and update ui`() {
-        val scannedTotp = OtpParseResult.OtpQr.TotpQr(
-            label = "label",
-            secret = "secret",
-            issuer = "issuer",
-            algorithm = OtpParseResult.OtpQr.Algorithm.SHA1,
-            digits = 6,
-            period = 30
-        )
+        val scannedTotp =
+            OtpParseResult.OtpQr.TotpQr(
+                label = "label",
+                secret = "secret",
+                issuer = "issuer",
+                algorithm = OtpParseResult.OtpQr.Algorithm.SHA1,
+                digits = 6,
+                period = 30,
+            )
 
         presenter.attach(view)
         presenter.argsRetrieved(
             ResourceFormMode.Create(
                 leadingContentType = LeadingContentType.TOTP,
-                parentFolderId = null
+                parentFolderId = null,
             ),
-            totp
+            totp,
         )
         presenter.totpScanned(isManualCreationChosen = false, scannedTotp)
         presenter.applyClick()
@@ -163,12 +164,13 @@ class TotpFormPresenterTest : KoinTest {
         private const val MOCK_LENGTH = "6"
         private val MOCK_ALGORITHM = OtpParseResult.OtpQr.Algorithm.SHA1.name
 
-        private val totp = TotpUiModel(
-            secret = MOCK_SECRET,
-            issuer = MOCK_ISSUER,
-            expiry = MOCK_EXPIRY,
-            length = MOCK_LENGTH,
-            algorithm = MOCK_ALGORITHM
-        )
+        private val totp =
+            TotpUiModel(
+                secret = MOCK_SECRET,
+                issuer = MOCK_ISSUER,
+                expiry = MOCK_EXPIRY,
+                length = MOCK_LENGTH,
+                algorithm = MOCK_ALGORITHM,
+            )
     }
 }

@@ -25,7 +25,5 @@ import com.passbolt.mobile.android.dto.request.SignOutRequestDto
  * @since v1.0
  */
 class SignOutMapper {
-
-    fun mapRequestToDto(refreshToken: String): SignOutRequestDto =
-        SignOutRequestDto(refreshToken)
+    fun mapRequestToDto(refreshToken: String): SignOutRequestDto = SignOutRequestDto(refreshToken)
 }

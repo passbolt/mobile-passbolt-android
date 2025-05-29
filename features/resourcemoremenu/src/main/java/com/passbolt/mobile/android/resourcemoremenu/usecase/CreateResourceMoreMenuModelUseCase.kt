@@ -41,10 +41,8 @@ import java.util.UUID
 class CreateResourceMoreMenuModelUseCase(
     private val getLocalResourceUseCase: GetLocalResourceUseCase,
     private val getRbacRulesUseCase: GetRbacRulesUseCase,
-    private val idToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider
-) :
-    AsyncUseCase<CreateResourceMoreMenuModelUseCase.Input, CreateResourceMoreMenuModelUseCase.Output> {
-
+    private val idToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider,
+) : AsyncUseCase<CreateResourceMoreMenuModelUseCase.Input, CreateResourceMoreMenuModelUseCase.Output> {
     override suspend fun execute(input: Input): Output {
         val resource = getLocalResourceUseCase.execute(GetLocalResourceUseCase.Input(input.resourceId)).resource
         val rbacModel = getRbacRulesUseCase.execute(Unit).rbacModel
@@ -60,35 +58,38 @@ class CreateResourceMoreMenuModelUseCase(
                 canDelete = resource.permission in WRITE_PERMISSIONS,
                 canEdit = resource.permission in WRITE_PERMISSIONS,
                 canShare = isShareRbacAllowed && resource.permission == ResourcePermission.OWNER,
-                favouriteOption = if (resource.isFavourite()) {
-                    REMOVE_FROM_FAVOURITES
-                } else {
-                    ADD_TO_FAVOURITES
-                },
-                descriptionOptions = buildList {
-                    if (contentType.hasMetadataDescription()) {
-                        add(HAS_METADATA_DESCRIPTION)
-                    }
-                    if (contentType.hasNote()) {
-                        add(HAS_NOTE)
-                    }
-                }
-            )
+                favouriteOption =
+                    if (resource.isFavourite()) {
+                        REMOVE_FROM_FAVOURITES
+                    } else {
+                        ADD_TO_FAVOURITES
+                    },
+                descriptionOptions =
+                    buildList {
+                        if (contentType.hasMetadataDescription()) {
+                            add(HAS_METADATA_DESCRIPTION)
+                        }
+                        if (contentType.hasNote()) {
+                            add(HAS_NOTE)
+                        }
+                    },
+            ),
         )
     }
 
     data class Input(
-        val resourceId: String
+        val resourceId: String,
     )
 
     data class Output(
-        val resourceMenuModel: ResourceMoreMenuModel
+        val resourceMenuModel: ResourceMoreMenuModel,
     )
 
     private companion object {
-        private val WRITE_PERMISSIONS = setOf(
-            ResourcePermission.OWNER,
-            ResourcePermission.UPDATE
-        )
+        private val WRITE_PERMISSIONS =
+            setOf(
+                ResourcePermission.OWNER,
+                ResourcePermission.UPDATE,
+            )
     }
 }

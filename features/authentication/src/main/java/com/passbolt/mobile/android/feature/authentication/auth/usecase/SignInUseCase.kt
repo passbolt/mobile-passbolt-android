@@ -35,29 +35,32 @@ typealias SignInFailureType = SignInUseCase.Output.Failure.FailureType
 class SignInUseCase(
     private val authRepository: AuthRepository,
     private val signInMapper: SignInMapper,
-    private val cookieExtractor: CookieExtractor
+    private val cookieExtractor: CookieExtractor,
 ) : AsyncUseCase<SignInUseCase.Input, SignInUseCase.Output> {
-
-    override suspend fun execute(input: Input): Output {
-        return when (val result = authRepository.signIn(
-            signInMapper.mapRequestToDto(input.userId, input.challenge),
-            input.mfaToken
-        )) {
-            is NetworkResult.Failure.NetworkError -> Output.Failure(
-                result.headerMessage,
-                Output.Failure.FailureType.OTHER
-            )
-            is NetworkResult.Failure.ServerError -> Output.Failure(
-                result.headerMessage,
-                getFailureType(result.errorCode)
-            )
+    override suspend fun execute(input: Input): Output =
+        when (
+            val result =
+                authRepository.signIn(
+                    signInMapper.mapRequestToDto(input.userId, input.challenge),
+                    input.mfaToken,
+                )
+        ) {
+            is NetworkResult.Failure.NetworkError ->
+                Output.Failure(
+                    result.headerMessage,
+                    Output.Failure.FailureType.OTHER,
+                )
+            is NetworkResult.Failure.ServerError ->
+                Output.Failure(
+                    result.headerMessage,
+                    getFailureType(result.errorCode),
+                )
             is NetworkResult.Success -> {
                 result.value.body()?.body?.challenge?.let {
                     Output.Success(it, cookieExtractor.get(result.value, CookieExtractor.MFA_COOKIE))
                 } ?: Output.Failure("", Output.Failure.FailureType.OTHER)
             }
         }
-    }
 
     private fun getFailureType(errorCode: Int?) =
         if (errorCode == HttpURLConnection.HTTP_NOT_FOUND) {
@@ -69,17 +72,16 @@ class SignInUseCase(
     sealed class Output {
         data class Success(
             val challenge: String,
-            val mfaToken: String?
+            val mfaToken: String?,
         ) : Output()
 
         data class Failure(
             val message: String,
-            val type: FailureType
+            val type: FailureType,
         ) : Output() {
-
             enum class FailureType {
                 ACCOUNT_DOES_NOT_EXIST,
-                OTHER
+                OTHER,
             }
         }
     }
@@ -87,6 +89,6 @@ class SignInUseCase(
     data class Input(
         val userId: String,
         val challenge: String,
-        val mfaToken: String?
+        val mfaToken: String?,
     )
 }

@@ -29,27 +29,28 @@ import com.passbolt.mobile.android.serializers.gson.BooleanStrictTypeAdapter
 import org.junit.Assert.assertThrows
 import org.junit.Test
 
-
 class BooleanStrictTypeAdapterTest {
+    private data class TestModel(
+        val testField: Boolean,
+    )
 
-    private data class TestModel(val testField: Boolean)
-
-    private val gson = GsonBuilder()
-        .registerTypeAdapter(
-            Boolean::class.java,
-            BooleanStrictTypeAdapter()
-        )
-        .create()
+    private val gson =
+        GsonBuilder()
+            .registerTypeAdapter(
+                Boolean::class.java,
+                BooleanStrictTypeAdapter(),
+            ).create()
 
     @Test
     fun `parsing invalid types should throw exception`() {
-        val invalidDataTypes = listOf(
-            "{\"testField\": 1}",
-            "{\"testField\": 1.0}",
-            "{\"testField\": \"true\"}",
-            "{\"testField\": {}}",
-            "{\"testField\": []}"
-        )
+        val invalidDataTypes =
+            listOf(
+                "{\"testField\": 1}",
+                "{\"testField\": 1.0}",
+                "{\"testField\": \"true\"}",
+                "{\"testField\": {}}",
+                "{\"testField\": []}",
+            )
 
         invalidDataTypes.forEach {
             assertThrows(Exception::class.java) {
@@ -60,10 +61,11 @@ class BooleanStrictTypeAdapterTest {
 
     @Test
     fun `parsing null should be allowed`() {
-        val nullDataTypes = listOf(
-            "{}",
-            "{\"testField\": null}",
-        )
+        val nullDataTypes =
+            listOf(
+                "{}",
+                "{\"testField\": null}",
+            )
 
         nullDataTypes.forEach {
             val parsed = gson.fromJson(it, TestModel::class.java)
@@ -74,10 +76,11 @@ class BooleanStrictTypeAdapterTest {
     @Test
     fun `parsing valid data type should work`() {
         val validParsedValues = listOf(true, false)
-        val validDataTypes = listOf(
-            "{\"testField\": true}",
-            "{\"testField\": false}"
-        )
+        val validDataTypes =
+            listOf(
+                "{\"testField\": true}",
+                "{\"testField\": false}",
+            )
 
         validDataTypes.forEachIndexed { index, value ->
             val parsed = gson.fromJson(value, TestModel::class.java)

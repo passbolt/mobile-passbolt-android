@@ -36,39 +36,40 @@ import com.passbolt.mobile.android.ui.ResourceFormUiModel.Metadata.DESCRIPTION
  * @since v1.0
  */
 
-class MetadataSectionView @JvmOverloads constructor(
-    context: Context,
-    attrs: AttributeSet? = null,
-    defStyle: Int = 0
-) : LinearLayout(context, attrs, defStyle) {
+class MetadataSectionView
+    @JvmOverloads
+    constructor(
+        context: Context,
+        attrs: AttributeSet? = null,
+        defStyle: Int = 0,
+    ) : LinearLayout(context, attrs, defStyle) {
+        var descriptionClick: (() -> Unit)? = null
+            set(value) {
+                field = value
+                value?.let {
+                    descriptionSection.setDebouncingOnClick(action = value)
+                }
+            }
 
-    var descriptionClick: (() -> Unit)? = null
-        set(value) {
-            field = value
-            value?.let {
-                descriptionSection.setDebouncingOnClick(action = value)
+        private val binding = ViewMetadataSectionBinding.inflate(LayoutInflater.from(context), this)
+
+        private val descriptionSection: OpenableSettingView
+            get() = binding.metadataSectionView.backgroundContainer.findViewById(R.id.description)
+
+        init {
+            orientation = VERTICAL
+            LayoutInflater.from(context).inflate(
+                R.layout.view_metadata_fields,
+                binding.metadataSectionView.backgroundContainer,
+                true,
+            )
+        }
+
+        fun setUp(fields: List<ResourceFormUiModel.Metadata>) {
+            if (fields.isEmpty()) {
+                gone()
+            } else {
+                descriptionSection.isVisible = fields.contains(DESCRIPTION)
             }
         }
-
-    private val binding = ViewMetadataSectionBinding.inflate(LayoutInflater.from(context), this)
-
-    private val descriptionSection: OpenableSettingView
-        get() = binding.metadataSectionView.backgroundContainer.findViewById(R.id.description)
-
-    init {
-        orientation = VERTICAL
-        LayoutInflater.from(context).inflate(
-            R.layout.view_metadata_fields,
-            binding.metadataSectionView.backgroundContainer,
-            true
-        )
     }
-
-    fun setUp(fields: List<ResourceFormUiModel.Metadata>) {
-        if (fields.isEmpty()) {
-            gone()
-        } else {
-            descriptionSection.isVisible = fields.contains(DESCRIPTION)
-        }
-    }
-}

@@ -26,5 +26,5 @@ package com.passbolt.mobile.android.ui
 data class PasswordExpirySettings(
     val automaticExpiry: Boolean,
     val automaticUpdate: Boolean,
-    val defaultExpiryPeriodDays: Int?
+    val defaultExpiryPeriodDays: Int?,
 )

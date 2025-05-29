@@ -23,7 +23,6 @@ package com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.summa
  * @since v1.0
  */
 class TransferAccountSummaryPresenter : TransferAccountSummaryContract.Presenter {
-
     override var view: TransferAccountSummaryContract.View? = null
     private lateinit var status: TransferAccountStatus
 

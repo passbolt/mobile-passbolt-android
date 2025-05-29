@@ -31,34 +31,37 @@ import com.passbolt.mobile.android.passboltapi.metadata.MetadataRepository
  * @since v1.0
  */
 class PostMetadataSessionKeysUseCase(
-    private val metadataRepository: MetadataRepository
+    private val metadataRepository: MetadataRepository,
 ) : AsyncUseCase<PostMetadataSessionKeysUseCase.Input, PostMetadataSessionKeysUseCase.Output> {
-
     override suspend fun execute(input: Input): Output =
         when (val response = metadataRepository.postMetadataSessionKeys(EncryptedDataRequest(input.encryptedData))) {
             is NetworkResult.Failure -> Output.Failure(response)
             is NetworkResult.Success -> Output.Success
         }
 
-    data class Input(val encryptedData: String)
+    data class Input(
+        val encryptedData: String,
+    )
 
     sealed class Output : AuthenticatedUseCaseOutput {
-
         override val authenticationState: AuthenticationState
-            get() = when {
-                this is Failure<*> && this.response.isUnauthorized ->
-                    AuthenticationState.Unauthenticated(AuthenticationState.Unauthenticated.Reason.Session)
-                this is Failure<*> && this.response.isMfaRequired -> {
-                    val providers = MfaTypeProvider.get(this.response)
-                    AuthenticationState.Unauthenticated(
-                        AuthenticationState.Unauthenticated.Reason.Mfa(providers)
-                    )
+            get() =
+                when {
+                    this is Failure<*> && this.response.isUnauthorized ->
+                        AuthenticationState.Unauthenticated(AuthenticationState.Unauthenticated.Reason.Session)
+                    this is Failure<*> && this.response.isMfaRequired -> {
+                        val providers = MfaTypeProvider.get(this.response)
+                        AuthenticationState.Unauthenticated(
+                            AuthenticationState.Unauthenticated.Reason.Mfa(providers),
+                        )
+                    }
+                    else -> AuthenticationState.Authenticated
                 }
-                else -> AuthenticationState.Authenticated
-            }
 
         data object Success : Output()
 
-        data class Failure<T : Any>(val response: NetworkResult.Failure<T>) : Output()
+        data class Failure<T : Any>(
+            val response: NetworkResult.Failure<T>,
+        ) : Output()
     }
 }

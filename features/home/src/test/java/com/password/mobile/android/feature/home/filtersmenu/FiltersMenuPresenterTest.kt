@@ -25,15 +25,15 @@ import org.mockito.kotlin.verify
 
 @ExperimentalCoroutinesApi
 class FiltersMenuPresenterTest : KoinTest {
-
     private val presenter: FiltersMenuContract.Presenter by inject()
     private val view: FiltersMenuContract.View = mock()
 
     @get:Rule
-    val koinTestRule = KoinTestRule.create {
-        printLogger(Level.ERROR)
-        modules(testFiltersMenuModule)
-    }
+    val koinTestRule =
+        KoinTestRule.create {
+            printLogger(Level.ERROR)
+            modules(testFiltersMenuModule)
+        }
 
     @Before
     fun setup() {
@@ -45,9 +45,9 @@ class FiltersMenuPresenterTest : KoinTest {
                         passwordCopyRule = ALLOW,
                         tagsUseRule = ALLOW,
                         shareViewRule = ALLOW,
-                        foldersUseRule = ALLOW
-                    )
-                )
+                        foldersUseRule = ALLOW,
+                    ),
+                ),
             )
         }
     }
@@ -55,21 +55,22 @@ class FiltersMenuPresenterTest : KoinTest {
     @Test
     fun `menu items should be visible based on feature flags`() {
         mockGetFeatureFlagsUseCase.stub {
-            onBlocking { execute(Unit) } doReturn GetFeatureFlagsUseCase.Output(
-                FeatureFlagsModel(
-                    privacyPolicyUrl = null,
-                    termsAndConditionsUrl = null,
-                    isPreviewPasswordAvailable = false,
-                    areFoldersAvailable = true,
-                    areTagsAvailable = true,
-                    isTotpAvailable = true,
-                    isRbacAvailable = true,
-                    isPasswordExpiryAvailable = true,
-                    arePasswordPoliciesAvailable = true,
-                    canUpdatePasswordPolicies = true,
-                    isV5MetadataAvailable = false
+            onBlocking { execute(Unit) } doReturn
+                GetFeatureFlagsUseCase.Output(
+                    FeatureFlagsModel(
+                        privacyPolicyUrl = null,
+                        termsAndConditionsUrl = null,
+                        isPreviewPasswordAvailable = false,
+                        areFoldersAvailable = true,
+                        areTagsAvailable = true,
+                        isTotpAvailable = true,
+                        isRbacAvailable = true,
+                        isPasswordExpiryAvailable = true,
+                        arePasswordPoliciesAvailable = true,
+                        canUpdatePasswordPolicies = true,
+                        isV5MetadataAvailable = false,
+                    ),
                 )
-            )
         }
 
         presenter.attach(view)
@@ -83,21 +84,22 @@ class FiltersMenuPresenterTest : KoinTest {
     @Test
     fun `correct menu item should be selected`() {
         mockGetFeatureFlagsUseCase.stub {
-            onBlocking { execute(Unit) } doReturn GetFeatureFlagsUseCase.Output(
-                FeatureFlagsModel(
-                    privacyPolicyUrl = null,
-                    termsAndConditionsUrl = null,
-                    isPreviewPasswordAvailable = false,
-                    areFoldersAvailable = true,
-                    areTagsAvailable = true,
-                    isTotpAvailable = true,
-                    isRbacAvailable = true,
-                    isPasswordExpiryAvailable = true,
-                    arePasswordPoliciesAvailable = true,
-                    canUpdatePasswordPolicies = true,
-                    isV5MetadataAvailable = false
+            onBlocking { execute(Unit) } doReturn
+                GetFeatureFlagsUseCase.Output(
+                    FeatureFlagsModel(
+                        privacyPolicyUrl = null,
+                        termsAndConditionsUrl = null,
+                        isPreviewPasswordAvailable = false,
+                        areFoldersAvailable = true,
+                        areTagsAvailable = true,
+                        isTotpAvailable = true,
+                        isRbacAvailable = true,
+                        isPasswordExpiryAvailable = true,
+                        arePasswordPoliciesAvailable = true,
+                        canUpdatePasswordPolicies = true,
+                        isV5MetadataAvailable = false,
+                    ),
                 )
-            )
         }
 
         presenter.attach(view)
@@ -131,9 +133,9 @@ class FiltersMenuPresenterTest : KoinTest {
                         passwordCopyRule = ALLOW,
                         tagsUseRule = DENY,
                         shareViewRule = ALLOW,
-                        foldersUseRule = DENY
-                    )
-                )
+                        foldersUseRule = DENY,
+                    ),
+                ),
             )
         }
 

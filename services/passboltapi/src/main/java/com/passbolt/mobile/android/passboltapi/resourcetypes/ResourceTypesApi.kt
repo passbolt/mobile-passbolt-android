@@ -28,7 +28,6 @@ import retrofit2.http.GET
  */
 
 internal interface ResourceTypesApi {
-
     @GET(GET_RESOURCE_TYPES)
     suspend fun getResourceTypes(): BaseResponse<List<ResourceTypeDto>>
 

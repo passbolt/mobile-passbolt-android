@@ -31,13 +31,13 @@ import org.koin.core.qualifier.named
 internal fun Module.mfaApiModule() {
     single<MfaDataSource> {
         MfaRemoteDataSource(
-            mfaApi = get()
+            mfaApi = get(),
         )
     }
     single {
         MfaRepository(
             mfaDataSource = get(),
-            responseHandler = get()
+            responseHandler = get(),
         )
     }
     single {

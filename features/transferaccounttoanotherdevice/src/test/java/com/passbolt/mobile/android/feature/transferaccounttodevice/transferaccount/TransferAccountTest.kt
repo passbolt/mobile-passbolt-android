@@ -47,15 +47,15 @@ import java.io.IOException
 
 @ExperimentalCoroutinesApi
 class TransferAccountTest : KoinTest {
-
     private val presenter: TransferAccountContract.Presenter by inject()
     private val view: TransferAccountContract.View = mock()
 
     @get:Rule
-    val koinTestRule = KoinTestRule.create {
-        printLogger(Level.ERROR)
-        modules(transferAccountModule, validSessionTestModule)
-    }
+    val koinTestRule =
+        KoinTestRule.create {
+            printLogger(Level.ERROR)
+            modules(transferAccountModule, validSessionTestModule)
+        }
 
     @Test
     fun `click cancel transfer button should display cancel transfer dialog`() {
@@ -82,7 +82,7 @@ class TransferAccountTest : KoinTest {
     fun `error during create transfer input parameters should be reflected on ui`() {
         mockCreateTransferInputParametersGenerator.stub {
             onBlocking { calculateCreateTransferParameters() }.doReturn(
-                CreateTransferInputParametersGenerator.Output.Error
+                CreateTransferInputParametersGenerator.Output.Error,
             )
         }
         presenter.attach(view)
@@ -98,9 +98,9 @@ class TransferAccountTest : KoinTest {
                 CreateTransferUseCase.Output.Failure(
                     NetworkResult.Failure.ServerError(
                         IOException(),
-                        headerMessage = errorMessage
-                    )
-                )
+                        headerMessage = errorMessage,
+                    ),
+                ),
             )
         }
         mockCreateTransferInputParametersGenerator.stub {
@@ -108,8 +108,8 @@ class TransferAccountTest : KoinTest {
                 CreateTransferInputParametersGenerator.Output.Parameters(
                     keyJson = "",
                     totalPagesCount = 10,
-                    pagesDataHash = ""
-                )
+                    pagesDataHash = "",
+                ),
             )
         }
         presenter.attach(view)

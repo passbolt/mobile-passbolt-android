@@ -5,8 +5,11 @@ import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.feature.authentication.auth.AuthFragment
 
 class AuthStrategyFactory {
-
-    fun get(type: ActivityIntents.AuthConfig, context: AppContext, view: AuthFragment?) = when (type) {
+    fun get(
+        type: ActivityIntents.AuthConfig,
+        context: AppContext,
+        view: AuthFragment?,
+    ) = when (type) {
         is ActivityIntents.AuthConfig.Startup -> StartupAuthStrategy(view, context)
         is ActivityIntents.AuthConfig.Setup -> SetupAuthStrategy(view, context)
         is ActivityIntents.AuthConfig.ManageAccount -> StartupAuthStrategy(view, context)

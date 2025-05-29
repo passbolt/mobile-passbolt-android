@@ -19,14 +19,18 @@ import org.koin.core.qualifier.named
 import java.io.File
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
-class LogsFragment : BindingScopedFragment<FragmentLogsBinding>(FragmentLogsBinding::inflate), LogsContract.View {
-
+class LogsFragment :
+    BindingScopedFragment<FragmentLogsBinding>(FragmentLogsBinding::inflate),
+    LogsContract.View {
     private val presenter: LogsContract.Presenter by inject()
     private val modelAdapter: ItemAdapter<LogItem> by inject()
     private val fastAdapter: FastAdapter<GenericItem> by inject(named<LogItem>())
     private val logFileManager: LogFilesManager by inject()
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         setListeners()
         presenter.attach(this)
@@ -34,7 +38,7 @@ class LogsFragment : BindingScopedFragment<FragmentLogsBinding>(FragmentLogsBind
     }
 
     private fun setListeners() {
-        with(binding) {
+        with(requiredBinding) {
             initDefaultToolbar(toolbar)
             with(logsRecycler) {
                 itemAnimator = null
@@ -52,30 +56,32 @@ class LogsFragment : BindingScopedFragment<FragmentLogsBinding>(FragmentLogsBind
     }
 
     override fun showShareSheet(logFile: File) {
-        val contentUri = getUriForFile(
-            requireContext(),
-            "com.passbolt.mobile.android.core.logger.logsfileprovider",
-            logFile
-        )
+        val contentUri =
+            getUriForFile(
+                requireContext(),
+                "com.passbolt.mobile.android.core.logger.logsfileprovider",
+                logFile,
+            )
 
-        val sendIntent = Intent().apply {
-            action = Intent.ACTION_SEND
-            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            type = LOGS_MIME_TYPE
+        val sendIntent =
+            Intent().apply {
+                action = Intent.ACTION_SEND
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                type = LOGS_MIME_TYPE
 
-            putExtra(Intent.EXTRA_STREAM, contentUri)
-        }
+                putExtra(Intent.EXTRA_STREAM, contentUri)
+            }
 
         startActivity(
             Intent.createChooser(
                 sendIntent,
-                getString(LocalizationR.string.logs_share_title)
-            )
+                getString(LocalizationR.string.logs_share_title),
+            ),
         )
     }
 
     override fun scrollLogsToPosition(position: Int) {
-        binding.logsRecycler.scrollToPosition(position)
+        requiredBinding.logsRecycler.scrollToPosition(position)
     }
 
     private companion object {

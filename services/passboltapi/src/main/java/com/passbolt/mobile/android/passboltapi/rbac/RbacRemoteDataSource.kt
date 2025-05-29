@@ -24,9 +24,7 @@
 package com.passbolt.mobile.android.passboltapi.rbac
 
 internal class RbacRemoteDataSource(
-    private val rbacApi: RbacApi
+    private val rbacApi: RbacApi,
 ) : RbacDataSource {
-
-    override suspend fun getMyRbacPermissions() =
-        rbacApi.getMyRbacPermissions().body
+    override suspend fun getMyRbacPermissions() = rbacApi.getMyRbacPermissions().body
 }

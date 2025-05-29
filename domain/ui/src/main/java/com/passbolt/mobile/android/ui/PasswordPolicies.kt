@@ -50,7 +50,7 @@ data class PasswordPolicies(
     val defaultGenerator: PasswordGeneratorTypeModel,
     val passwordGeneratorSettings: PasswordGeneratorSettingsModel,
     val passphraseGeneratorSettings: PassphraseGeneratorSettingsModel,
-    val isExternalDictionaryCheckEnabled: Boolean
+    val isExternalDictionaryCheckEnabled: Boolean,
 )
 
 data class PasswordGeneratorSettingsModel(
@@ -65,22 +65,22 @@ data class PasswordGeneratorSettingsModel(
     val maskChar3: Boolean,
     val maskChar4: Boolean,
     val maskChar5: Boolean,
-    val excludeLookAlikeChars: Boolean
+    val excludeLookAlikeChars: Boolean,
 )
 
 data class PassphraseGeneratorSettingsModel(
     val words: Int,
     val wordSeparator: String,
-    val wordCase: CaseTypeModel
+    val wordCase: CaseTypeModel,
 )
 
 enum class PasswordGeneratorTypeModel {
     PASSWORD,
-    PASSPHRASE
+    PASSPHRASE,
 }
 
 enum class CaseTypeModel {
     LOWERCASE,
     UPPERCASE,
-    CAMELCASE
+    CAMELCASE,
 }

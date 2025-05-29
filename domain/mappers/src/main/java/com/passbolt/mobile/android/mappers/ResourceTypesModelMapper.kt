@@ -30,21 +30,21 @@ import java.util.UUID
  */
 
 class ResourceTypesModelMapper {
-
-    fun map(resourceTypesDto: List<ResourceTypeDto>): List<ResourceType> = resourceTypesDto.map {
-        ResourceType(
-            resourceTypeId = it.id.toString(),
-            name = it.name,
-            slug = it.slug,
-            deleted = it.deleted?.let { deleted -> ZonedDateTime.parse(deleted) }
-        )
-    }
+    fun map(resourceTypesDto: List<ResourceTypeDto>): List<ResourceType> =
+        resourceTypesDto.map {
+            ResourceType(
+                resourceTypeId = it.id.toString(),
+                name = it.name,
+                slug = it.slug,
+                deleted = it.deleted?.let { deleted -> ZonedDateTime.parse(deleted) },
+            )
+        }
 
     fun map(resourceTypesEntity: ResourceType): ResourceTypeModel =
         ResourceTypeModel(
             id = UUID.fromString(resourceTypesEntity.resourceTypeId),
             slug = resourceTypesEntity.slug,
             name = resourceTypesEntity.name,
-            deleted = resourceTypesEntity.deleted
+            deleted = resourceTypesEntity.deleted,
         )
 }

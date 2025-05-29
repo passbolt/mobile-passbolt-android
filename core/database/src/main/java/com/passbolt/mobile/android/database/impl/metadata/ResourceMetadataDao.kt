@@ -30,22 +30,21 @@ import com.passbolt.mobile.android.entity.resource.ResourceMetadata
  */
 @Dao
 interface ResourceMetadataDao : BaseDao<ResourceMetadata> {
-
     @Transaction
     @Query(
         "UPDATE ResourceMetadata SET " +
-                "metadataJson = :metadataJson, " +
-                "name = :name, " +
-                "username = :username, " +
-                "description = :description " +
-                "WHERE resourceId = :resourceId"
+            "metadataJson = :metadataJson, " +
+            "name = :name, " +
+            "username = :username, " +
+            "description = :description " +
+            "WHERE resourceId = :resourceId",
     )
     suspend fun updateMetadataForResource(
         resourceId: String,
         metadataJson: String,
         name: String,
         username: String?,
-        description: String?
+        description: String?,
     )
 
     @Transaction

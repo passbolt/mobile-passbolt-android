@@ -31,13 +31,14 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-val securityModule = module {
-    single { FlagSecureSetter() }
-    factory { RootBeer(androidContext()) }
-    single<RootDetector> {
-        RootDetectorImpl(
-            rootBeer = get()
-        )
+val securityModule =
+    module {
+        single { FlagSecureSetter() }
+        factory { RootBeer(androidContext()) }
+        single<RootDetector> {
+            RootDetectorImpl(
+                rootBeer = get(),
+            )
+        }
+        single { RuntimeAuthenticatedFlag() }
     }
-    single { RuntimeAuthenticatedFlag() }
-}

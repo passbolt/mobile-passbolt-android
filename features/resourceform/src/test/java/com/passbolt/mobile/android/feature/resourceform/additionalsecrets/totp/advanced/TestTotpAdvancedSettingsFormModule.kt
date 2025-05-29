@@ -27,6 +27,7 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-internal val totpAdvancedFormModule = module {
-    factoryOf(::TotpAdvancedSettingsFormPresenter) bind TotpAdvancedSettingsFormContract.Presenter::class
-}
+internal val totpAdvancedFormModule =
+    module {
+        factoryOf(::TotpAdvancedSettingsFormPresenter) bind TotpAdvancedSettingsFormContract.Presenter::class
+    }

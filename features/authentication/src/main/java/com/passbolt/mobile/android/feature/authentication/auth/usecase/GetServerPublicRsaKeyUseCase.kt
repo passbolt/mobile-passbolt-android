@@ -27,9 +27,8 @@ import com.passbolt.mobile.android.encryptedstorage.EncryptedSharedPreferencesFa
  * @since v1.0
  */
 class GetServerPublicRsaKeyUseCase(
-    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory
+    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory,
 ) : UseCase<UserIdInput, GetServerPublicRsaKeyUseCase.Output> {
-
     override fun execute(input: UserIdInput): Output {
         val fileName = ServerRsaKeyFileName(input.userId).name
         val sharedPreferences = encryptedSharedPreferencesFactory.get("$fileName.xml")
@@ -37,6 +36,6 @@ class GetServerPublicRsaKeyUseCase(
     }
 
     data class Output(
-        val rsaKey: String?
+        val rsaKey: String?,
     )
 }

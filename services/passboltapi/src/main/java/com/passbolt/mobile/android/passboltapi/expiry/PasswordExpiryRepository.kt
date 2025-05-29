@@ -28,10 +28,10 @@ import com.passbolt.mobile.android.core.networking.callWithHandler
 
 class PasswordExpiryRepository(
     private val passwordExpiryDataSource: PasswordExpiryDataSource,
-    private val responseHandler: ResponseHandler
+    private val responseHandler: ResponseHandler,
 ) {
-
-    suspend fun getPasswordExpirySettings() = callWithHandler(responseHandler) {
-        passwordExpiryDataSource.getPasswordExpirySettings()
-    }
+    suspend fun getPasswordExpirySettings() =
+        callWithHandler(responseHandler) {
+            passwordExpiryDataSource.getPasswordExpirySettings()
+        }
 }

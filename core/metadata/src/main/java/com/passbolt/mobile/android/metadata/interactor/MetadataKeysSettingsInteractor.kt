@@ -31,18 +31,16 @@ import com.passbolt.mobile.android.ui.MetadataKeysSettingsModel
 
 class MetadataKeysSettingsInteractor(
     private val fetchMetadataKeysSettingsUseCase: FetchMetadataKeysSettingsUseCase,
-    private val saveMetadataKeysSettingsUseCase: SaveMetadataKeysSettingsUseCase
+    private val saveMetadataKeysSettingsUseCase: SaveMetadataKeysSettingsUseCase,
 ) {
-
-    suspend fun fetchAndSaveMetadataKeysSettings(): Output {
-        return when (val response = fetchMetadataKeysSettingsUseCase.execute(Unit)) {
+    suspend fun fetchAndSaveMetadataKeysSettings(): Output =
+        when (val response = fetchMetadataKeysSettingsUseCase.execute(Unit)) {
             is FetchMetadataKeysSettingsUseCase.Output.Success -> {
                 saveMetadataKeysSettings(response.metadataKeysSettings)
             }
             is FetchMetadataKeysSettingsUseCase.Output.Failure<*> ->
                 Output.Failure(response.authenticationState)
         }
-    }
 
     private suspend fun saveMetadataKeysSettings(metadataTypesSettingsModel: MetadataKeysSettingsModel): Output {
         saveMetadataKeysSettingsUseCase.execute(SaveMetadataKeysSettingsUseCase.Input(metadataTypesSettingsModel))
@@ -50,12 +48,13 @@ class MetadataKeysSettingsInteractor(
     }
 
     sealed class Output : AuthenticatedUseCaseOutput {
-
         data object Success : Output() {
             override val authenticationState: AuthenticationState
                 get() = AuthenticationState.Authenticated
         }
 
-        data class Failure(override val authenticationState: AuthenticationState) : Output()
+        data class Failure(
+            override val authenticationState: AuthenticationState,
+        ) : Output()
     }
 }

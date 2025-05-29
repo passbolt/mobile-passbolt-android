@@ -89,31 +89,39 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
 @Suppress("TooManyFunctions")
 class ResourceDetailsFragment :
     BindingScopedAuthenticatedFragment<FragmentResourceDetailsBinding, ResourceDetailsContract.View>(
-        FragmentResourceDetailsBinding::inflate
-    ), ResourceDetailsContract.View, ResourceMoreMenuFragment.Listener {
-
+        FragmentResourceDetailsBinding::inflate,
+    ),
+    ResourceDetailsContract.View,
+    ResourceMoreMenuFragment.Listener {
     override val presenter: ResourceDetailsContract.Presenter by inject()
     private val clipboardManager: ClipboardManager? by inject()
     private val initialsIconGenerator: InitialsIconGenerator by inject()
     private val navArgs: ResourceDetailsFragmentArgs by navArgs()
 
     private val sharedWithFields
-        get() = listOf(
-            binding.sharedWithLabel,
-            binding.sharedWithRecycler,
-            binding.sharedWithRecyclerClickableArea,
-            binding.sharedWithNavIcon
-        )
+        get() =
+            listOf(
+                requiredBinding.sharedWithLabel,
+                requiredBinding.sharedWithRecycler,
+                requiredBinding.sharedWithRecyclerClickableArea,
+                requiredBinding.sharedWithNavIcon,
+            )
     private val sharedWithDecorator: OverlappingItemDecorator by inject()
 
     private val totpFields
-        get() = listOf(binding.totpSectionTitle, binding.totpContainer)
+        get() = listOf(requiredBinding.totpSectionTitle, requiredBinding.totpContainer)
 
     private val tagsFields
-        get() = listOf(binding.tagsHeader, binding.tagsValue, binding.tagsClickableArea, binding.tagsNavIcon)
+        get() =
+            listOf(
+                requiredBinding.tagsHeader,
+                requiredBinding.tagsValue,
+                requiredBinding.tagsClickableArea,
+                requiredBinding.tagsNavIcon,
+            )
 
     private val locationFields
-        get() = listOf(binding.locationHeader, binding.locationValue, binding.locationNavIcon)
+        get() = listOf(requiredBinding.locationHeader, requiredBinding.locationValue, requiredBinding.locationNavIcon)
 
     private val externalDeeplinkHandler: ExternalDeeplinkHandler by inject()
     private val groupPermissionsItemAdapter: ItemAdapter<GroupItem> by inject(named(GROUP_ITEM_ADAPTER))
@@ -134,27 +142,30 @@ class ResourceDetailsFragment :
 
     private val totpViewController: TotpViewController by inject()
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
-        binding.swipeRefresh.isEnabled = false
+        requiredBinding.swipeRefresh.isEnabled = false
         setListeners()
         setUpPermissionsRecycler()
         presenter.attach(this)
-        binding.sharedWithRecycler.doOnLayout {
-            binding.sharedWithRecycler.addItemDecoration(sharedWithDecorator)
+        requiredBinding.sharedWithRecycler.doOnLayout {
+            requiredBinding.sharedWithRecycler.addItemDecoration(sharedWithDecorator)
             presenter.argsReceived(
                 navArgs.resourceModel,
                 it.width,
-                resources.getDimension(CoreUiR.dimen.dp_40)
+                resources.getDimension(CoreUiR.dimen.dp_40),
             )
         }
-        binding.noteItem.conceal()
+        requiredBinding.noteItem.conceal()
     }
 
     override fun onResume() {
         super.onResume()
         // has to be invoked using post to make sure binding.sharedWithRecycler.doOnLayout has finished
-        binding.sharedWithRecycler.post {
+        requiredBinding.sharedWithRecycler.post {
             presenter.resume(this)
         }
     }
@@ -170,14 +181,14 @@ class ResourceDetailsFragment :
     }
 
     override fun onDestroyView() {
-        binding.sharedWithRecycler.adapter = null
+        requiredBinding.sharedWithRecycler.adapter = null
         presenter.detach()
         super.onDestroyView()
     }
 
     @SuppressLint("ClickableViewAccessibility")
     private fun setListeners() {
-        with(binding) {
+        with(requiredBinding) {
             with(usernameItem) {
                 val usernameCopyAction = presenter::usernameCopyClick
                 setDebouncingOnClick(action = usernameCopyAction)
@@ -215,44 +226,47 @@ class ResourceDetailsFragment :
     }
 
     private fun setUpPermissionsRecycler() {
-        binding.sharedWithRecycler.apply {
-            layoutManager = object : LinearLayoutManager(context, HORIZONTAL, false) {
-                override fun canScrollHorizontally() = false
-            }
+        requiredBinding.sharedWithRecycler.apply {
+            layoutManager =
+                object : LinearLayoutManager(context, HORIZONTAL, false) {
+                    override fun canScrollHorizontally() = false
+                }
             adapter = fastAdapter
         }
     }
 
     override fun displayTitle(title: String) {
-        binding.name.text = title
+        requiredBinding.name.text = title
     }
 
     override fun displayExpiryTitle(name: String) {
-        binding.name.text = getString(LocalizationR.string.name_expired, name)
+        requiredBinding.name.text = getString(LocalizationR.string.name_expired, name)
     }
 
     override fun showExpiryIndicator() {
-        binding.indicatorIcon.setImageResource(CoreUiR.drawable.ic_excl_indicator)
+        requiredBinding.indicatorIcon.setImageResource(CoreUiR.drawable.ic_excl_indicator)
     }
 
     override fun displayExpirySection(expiry: ZonedDateTime) {
-        with(binding) {
+        with(requiredBinding) {
             expiryItem.visible()
-            expiryItem.textValue = DateUtils.getRelativeTimeSpanString(
-                expiry.toInstant().toEpochMilli(),
-                ZonedDateTime.now().toInstant().toEpochMilli(),
-                DateUtils.MINUTE_IN_MILLIS,
-                DateUtils.FORMAT_ABBREV_RELATIVE
-            ).toString()
+            expiryItem.textValue =
+                DateUtils
+                    .getRelativeTimeSpanString(
+                        expiry.toInstant().toEpochMilli(),
+                        ZonedDateTime.now().toInstant().toEpochMilli(),
+                        DateUtils.MINUTE_IN_MILLIS,
+                        DateUtils.FORMAT_ABBREV_RELATIVE,
+                    ).toString()
         }
     }
 
     override fun hideExpirySection() {
-        binding.expiryItem.gone()
+        requiredBinding.expiryItem.gone()
     }
 
     override fun displayUsername(username: String) {
-        binding.usernameItem.textValue = username
+        requiredBinding.usernameItem.textValue = username
     }
 
     override fun showTotpSection() {
@@ -264,14 +278,14 @@ class ResourceDetailsFragment :
     }
 
     override fun hidePasswordSection() {
-        with(binding) {
+        with(requiredBinding) {
             passwordSectionTitle.gone()
             passwordContainer.gone()
         }
     }
 
     override fun showPasswordSection() {
-        with(binding) {
+        with(requiredBinding) {
             passwordSectionTitle.visible()
             passwordContainer.visible()
         }
@@ -281,31 +295,43 @@ class ResourceDetailsFragment :
         findNavController().popBackStack()
     }
 
-    override fun navigateToMore(resourceId: String, resourceName: String) {
+    override fun navigateToMore(
+        resourceId: String,
+        resourceName: String,
+    ) {
         presenter.pause()
-        ResourceMoreMenuFragment.newInstance(resourceId, resourceName)
+        ResourceMoreMenuFragment
+            .newInstance(resourceId, resourceName)
             .show(childFragmentManager, ResourceMoreMenuFragment::class.java.name)
     }
 
     override fun displayUrl(url: String) {
-        with(binding) {
+        with(requiredBinding) {
             urlItem.textValue = url
         }
     }
 
-    override fun displayInitialsIcon(name: String, initials: String) {
-        binding.icon.setImageDrawable(
-            initialsIconGenerator.generate(name, initials)
+    override fun displayInitialsIcon(
+        name: String,
+        initials: String,
+    ) {
+        requiredBinding.icon.setImageDrawable(
+            initialsIconGenerator.generate(name, initials),
         )
     }
 
-    override fun addToClipboard(label: String, value: String, isSecret: Boolean) {
+    override fun addToClipboard(
+        label: String,
+        value: String,
+        isSecret: Boolean,
+    ) {
         clipboardManager?.setPrimaryClip(
             ClipData.newPlainText(label, value).apply {
-                description.extras = PersistableBundle().apply {
-                    putBoolean(ClipDescription.EXTRA_IS_SENSITIVE, isSecret)
-                }
-            }
+                description.extras =
+                    PersistableBundle().apply {
+                        putBoolean(ClipDescription.EXTRA_IS_SENSITIVE, isSecret)
+                    }
+            },
         )
         Toast.makeText(requireContext(), getString(LocalizationR.string.copied_info, label), Toast.LENGTH_SHORT).show()
     }
@@ -319,39 +345,41 @@ class ResourceDetailsFragment :
     }
 
     override fun showDecryptionFailure() {
-        Toast.makeText(requireContext(), LocalizationR.string.common_decryption_failure, Toast.LENGTH_SHORT)
+        Toast
+            .makeText(requireContext(), LocalizationR.string.common_decryption_failure, Toast.LENGTH_SHORT)
             .show()
     }
 
     override fun showFetchFailure() {
-        Toast.makeText(requireContext(), LocalizationR.string.common_fetch_failure, Toast.LENGTH_SHORT)
+        Toast
+            .makeText(requireContext(), LocalizationR.string.common_fetch_failure, Toast.LENGTH_SHORT)
             .show()
     }
 
     override fun showPassword(decryptedSecret: String) {
-        with(binding.passwordItem) {
+        with(requiredBinding.passwordItem) {
             actionIcon = ActionIcon.HIDE
             textValue = decryptedSecret
         }
     }
 
     override fun hidePassword() {
-        with(binding.passwordItem) {
+        with(requiredBinding.passwordItem) {
             actionIcon = ActionIcon.VIEW
             textValue = getString(LocalizationR.string.hidden_secret)
         }
     }
 
     override fun clearPasswordInput() {
-        binding.passwordItem.textValue = ""
+        requiredBinding.passwordItem.textValue = ""
     }
 
     override fun clearNoteInput() {
-        binding.noteItem.textValue = ""
+        requiredBinding.noteItem.textValue = ""
     }
 
     override fun showNote(note: String) {
-        with(binding) {
+        with(requiredBinding) {
             noteItem.show()
             noteItem.isValueSecret = true
             noteItem.textValue = note
@@ -363,21 +391,21 @@ class ResourceDetailsFragment :
     }
 
     override fun hideNote() {
-        with(binding.noteItem) {
+        with(requiredBinding.noteItem) {
             conceal()
             actionIcon = ActionIcon.VIEW
         }
     }
 
     override fun disableNote() {
-        with(binding) {
+        with(requiredBinding) {
             noteSectionTitle.gone()
             noteContainer.gone()
         }
     }
 
     override fun showMetadataDescription(description: String) {
-        with(binding.metadataDescriptionItem) {
+        with(requiredBinding.metadataDescriptionItem) {
             visible()
             textValue = description
             setTextIsSelectable(true)
@@ -385,7 +413,7 @@ class ResourceDetailsFragment :
     }
 
     override fun disableMetadataDescription() {
-        binding.metadataDescriptionItem.gone()
+        requiredBinding.metadataDescriptionItem.gone()
     }
 
     override fun menuCopyPasswordClick() {
@@ -427,7 +455,7 @@ class ResourceDetailsFragment :
     override fun showToggleFavouriteFailure() {
         showSnackbar(
             LocalizationR.string.favourites_failure,
-            backgroundColor = CoreUiR.color.red
+            backgroundColor = CoreUiR.color.red,
         )
     }
 
@@ -436,11 +464,11 @@ class ResourceDetailsFragment :
     }
 
     override fun showFavouriteStar() {
-        binding.favouriteIcon.visible()
+        requiredBinding.favouriteIcon.visible()
     }
 
     override fun hideFavouriteStar() {
-        binding.favouriteIcon.gone()
+        requiredBinding.favouriteIcon.gone()
     }
 
     override fun menuShareClick() {
@@ -452,11 +480,11 @@ class ResourceDetailsFragment :
     }
 
     override fun showPasswordEyeIcon() {
-        binding.passwordItem.actionIcon = ActionIcon.VIEW
+        requiredBinding.passwordItem.actionIcon = ActionIcon.VIEW
     }
 
     override fun hidePasswordEyeIcon() {
-        binding.passwordItem.actionIcon = ActionIcon.NONE
+        requiredBinding.passwordItem.actionIcon = ActionIcon.NONE
     }
 
     override fun closeWithDeleteSuccessResult(name: String) {
@@ -464,8 +492,8 @@ class ResourceDetailsFragment :
             REQUEST_RESOURCE_DETAILS,
             bundleOf(
                 EXTRA_RESOURCE_DELETED to true,
-                EXTRA_RESOURCE_NAME to name
-            )
+                EXTRA_RESOURCE_NAME to name,
+            ),
         )
         findNavController().popBackStack()
     }
@@ -475,8 +503,8 @@ class ResourceDetailsFragment :
             REQUEST_RESOURCE_DETAILS,
             bundleOf(
                 EXTRA_RESOURCE_EDITED to true,
-                EXTRA_RESOURCE_NAME to resourceName
-            )
+                EXTRA_RESOURCE_NAME to resourceName,
+            ),
         )
     }
 
@@ -484,21 +512,21 @@ class ResourceDetailsFragment :
         showSnackbar(
             LocalizationR.string.common_failure_format,
             backgroundColor = CoreUiR.color.red,
-            messageArgs = arrayOf(errorMessage.orEmpty())
+            messageArgs = arrayOf(errorMessage.orEmpty()),
         )
     }
 
     override fun showEncryptionError(message: String) {
         showSnackbar(
             LocalizationR.string.common_encryption_failure,
-            backgroundColor = CoreUiR.color.red
+            backgroundColor = CoreUiR.color.red,
         )
     }
 
     override fun showInvalidTotpScanned() {
         showSnackbar(
             LocalizationR.string.resource_details_invalid_totp_scanned,
-            backgroundColor = CoreUiR.color.red
+            backgroundColor = CoreUiR.color.red,
         )
     }
 
@@ -508,15 +536,18 @@ class ResourceDetailsFragment :
             ResourceDetailsFragmentDirections.actionResourceDetailsToResourceForm(
                 ResourceFormMode.Edit(
                     resourceModel.resourceId,
-                    resourceModel.metadataJsonModel.name
-                )
-            )
+                    resourceModel.metadataJsonModel.name,
+                ),
+            ),
         )
     }
 
-    override fun navigateToResourceTags(resourceId: String, mode: PermissionsMode) {
+    override fun navigateToResourceTags(
+        resourceId: String,
+        mode: PermissionsMode,
+    ) {
         findNavController().navigate(
-            NavDeepLinkProvider.resourceTagsDeepLinkRequest(resourceId, mode.name)
+            NavDeepLinkProvider.resourceTagsDeepLinkRequest(resourceId, mode.name),
         )
     }
 
@@ -524,22 +555,21 @@ class ResourceDetailsFragment :
         showSnackbar(
             messageResId = LocalizationR.string.common_message_resource_edited,
             messageArgs = arrayOf(resourceName),
-            backgroundColor = CoreUiR.color.green
+            backgroundColor = CoreUiR.color.green,
         )
     }
 
     override fun showDeleteConfirmationDialog() {
         confirmResourceDeletionAlertDialog(requireContext()) {
             presenter.deleteResourceConfirmed()
-        }
-            .show()
+        }.show()
     }
 
     override fun showPermissions(
         groupPermissions: List<PermissionModelUi.GroupPermissionModel>,
         userPermissions: List<PermissionModelUi.UserPermissionModel>,
         counterValue: List<String>,
-        overlapOffset: Int
+        overlapOffset: Int,
     ) {
         sharedWithFields.forEach { it.visible() }
         sharedWithDecorator.overlap = Overlap(left = overlapOffset)
@@ -549,25 +579,28 @@ class ResourceDetailsFragment :
         fastAdapter.notifyAdapterDataSetChanged()
     }
 
-    override fun navigateToResourcePermissions(resourceId: String, mode: PermissionsMode) {
+    override fun navigateToResourcePermissions(
+        resourceId: String,
+        mode: PermissionsMode,
+    ) {
         setFragmentResultListener(
             PermissionsFragment.REQUEST_UPDATE_PERMISSIONS,
-            resourceShareResult
+            resourceShareResult,
         )
 
         findNavController().navigate(
             ResourcesDetailsDirections.actionResourceDetailsToResourcePermissions(
                 resourceId,
                 mode,
-                PermissionsItem.RESOURCE
-            )
+                PermissionsItem.RESOURCE,
+            ),
         )
     }
 
     override fun showResourceSharedSnackbar() {
         showSnackbar(
             LocalizationR.string.common_message_resource_shared,
-            backgroundColor = CoreUiR.color.green
+            backgroundColor = CoreUiR.color.green,
         )
     }
 
@@ -578,48 +611,50 @@ class ResourceDetailsFragment :
             builder.setSpan(
                 RoundedBackgroundSpan(
                     ContextCompat.getColor(requireContext(), CoreUiR.color.divider),
-                    ContextCompat.getColor(requireContext(), CoreUiR.color.text_primary)
+                    ContextCompat.getColor(requireContext(), CoreUiR.color.text_primary),
                 ),
                 builder.length - it.length,
                 builder.length,
-                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE,
             )
         }
-        binding.tagsValue.text = builder
+        requiredBinding.tagsValue.text = builder
         tagsFields.forEach { it.visible() }
     }
 
     override fun showFolderLocation(locationPathSegments: List<String>) {
         locationFields.forEach { it.visible() }
-        binding.locationValue.text = locationPathSegments.let {
-            val mutable = it.toMutableList()
-            mutable.add(0, getString(LocalizationR.string.folder_root))
-            mutable.joinToString(
-                separator = " %s ".format(getString(LocalizationR.string.folder_details_location_separator))
-            )
-        }
+        requiredBinding.locationValue.text =
+            locationPathSegments.let {
+                val mutable = it.toMutableList()
+                mutable.add(0, getString(LocalizationR.string.folder_root))
+                mutable.joinToString(
+                    separator = " %s ".format(getString(LocalizationR.string.folder_details_location_separator)),
+                )
+            }
     }
 
     override fun navigateToResourceLocation(resourceId: String) {
-        val request = NavDeepLinkProvider.locationDetailsDeepLinkRequest(
-            locationDetailsItemName = LocationItem.RESOURCE.name,
-            locationDetailsItemId = resourceId
-        )
+        val request =
+            NavDeepLinkProvider.locationDetailsDeepLinkRequest(
+                locationDetailsItemName = LocationItem.RESOURCE.name,
+                locationDetailsItemId = resourceId,
+            )
         findNavController().navigate(request)
     }
 
     override fun hideRefreshProgress() {
-        binding.swipeRefresh.isRefreshing = false
+        requiredBinding.swipeRefresh.isRefreshing = false
     }
 
     override fun showRefreshProgress() {
-        binding.swipeRefresh.isRefreshing = true
+        requiredBinding.swipeRefresh.isRefreshing = true
     }
 
     override fun showDataRefreshError() {
         showSnackbar(
             LocalizationR.string.common_data_refresh_error,
-            backgroundColor = CoreUiR.color.red
+            backgroundColor = CoreUiR.color.red,
         )
     }
 
@@ -630,13 +665,13 @@ class ResourceDetailsFragment :
     override fun showTotp(otpWrapper: OtpItemWrapper?) {
         otpWrapper?.let { otpModel ->
             totpViewController.updateView(
-                ViewParameters(binding.totpProgress, binding.totpValue, binding.generationInProgress),
+                ViewParameters(requiredBinding.totpProgress, requiredBinding.totpValue, requiredBinding.generationInProgress),
                 StateParameters(otpModel.isRefreshing, otpModel.isVisible, otpModel.otpValue),
-                TimeParameters(otpModel.otpExpirySeconds, otpModel.remainingSecondsCounter)
+                TimeParameters(otpModel.otpExpirySeconds, otpModel.remainingSecondsCounter),
             )
 
-            binding.totpIcon.setImageResource(
-                if (otpModel.isVisible) CoreUiR.drawable.ic_eye_invisible else CoreUiR.drawable.ic_eye_visible
+            requiredBinding.totpIcon.setImageResource(
+                if (otpModel.isVisible) CoreUiR.drawable.ic_eye_invisible else CoreUiR.drawable.ic_eye_visible,
             )
         }
     }

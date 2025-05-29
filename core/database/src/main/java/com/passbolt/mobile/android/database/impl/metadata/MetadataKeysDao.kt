@@ -31,7 +31,6 @@ import com.passbolt.mobile.android.entity.metadata.MetadataKeyWithPrivateKeys
  */
 @Dao
 interface MetadataKeysDao : BaseDao<MetadataKey> {
-
     @Transaction
     @Query("SELECT * FROM MetadataKey WHERE id = :id")
     suspend fun getMetadataKey(id: String): MetadataKeyWithPrivateKeys

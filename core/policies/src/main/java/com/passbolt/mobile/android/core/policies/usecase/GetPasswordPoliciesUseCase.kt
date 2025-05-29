@@ -49,79 +49,95 @@ import com.passbolt.mobile.android.ui.PasswordGeneratorTypeModel
 import com.passbolt.mobile.android.ui.PasswordPolicies
 
 class GetPasswordPoliciesUseCase(
-    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory
-) : AsyncUseCase<Unit, PasswordPolicies>, com.passbolt.mobile.android.core.accounts.usecase.SelectedAccountUseCase {
-
+    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory,
+) : AsyncUseCase<Unit, PasswordPolicies>,
+    com.passbolt.mobile.android.core.accounts.usecase.SelectedAccountUseCase {
     @Suppress("LongMethod")
     override suspend fun execute(input: Unit): PasswordPolicies {
         val fileName = PasswordPoliciesFileName(selectedAccountId).name
         val sharedPreferences = encryptedSharedPreferencesFactory.get("$fileName.xml")
 
-        val defaultGenerator = PasswordGeneratorTypeModel.entries[
-            sharedPreferences.getInt(KEY_DEFAULT_GENERATOR, DEFAULT_PASS_GENERATOR_TYPE_ORDINAL)
-        ]
-        val passwordGeneratorLength = sharedPreferences.getInt(
-            KEY_PASSWORD_GENERATOR_LENGTH, DEFAULT_PASSWORD_GENERATOR_LENGTH
-        )
-        val passwordGeneratorMaskUpper = sharedPreferences.getBoolean(
-            KEY_PASSWORD_GENERATOR_MASK_UPPER_ENABLED,
-            DEFAULT_PASSWORD_GENERATOR_MASK_UPPER_ENABLED
-        )
-        val passwordGeneratorMaskLower = sharedPreferences.getBoolean(
-            KEY_PASSWORD_GENERATOR_MASK_LOWER_ENABLED,
-            DEFAULT_PASSWORD_GENERATOR_MASK_LOWER_ENABLED
-        )
-        val passwordGeneratorMaskDigit = sharedPreferences.getBoolean(
-            KEY_PASSWORD_GENERATOR_MASK_DIGIT_ENABLED,
-            DEFAULT_PASSWORD_GENERATOR_MASK_DIGIT_ENABLED
-        )
+        val defaultGenerator =
+            PasswordGeneratorTypeModel.entries[
+                sharedPreferences.getInt(KEY_DEFAULT_GENERATOR, DEFAULT_PASS_GENERATOR_TYPE_ORDINAL),
+            ]
+        val passwordGeneratorLength =
+            sharedPreferences.getInt(
+                KEY_PASSWORD_GENERATOR_LENGTH,
+                DEFAULT_PASSWORD_GENERATOR_LENGTH,
+            )
+        val passwordGeneratorMaskUpper =
+            sharedPreferences.getBoolean(
+                KEY_PASSWORD_GENERATOR_MASK_UPPER_ENABLED,
+                DEFAULT_PASSWORD_GENERATOR_MASK_UPPER_ENABLED,
+            )
+        val passwordGeneratorMaskLower =
+            sharedPreferences.getBoolean(
+                KEY_PASSWORD_GENERATOR_MASK_LOWER_ENABLED,
+                DEFAULT_PASSWORD_GENERATOR_MASK_LOWER_ENABLED,
+            )
+        val passwordGeneratorMaskDigit =
+            sharedPreferences.getBoolean(
+                KEY_PASSWORD_GENERATOR_MASK_DIGIT_ENABLED,
+                DEFAULT_PASSWORD_GENERATOR_MASK_DIGIT_ENABLED,
+            )
         val passwordGeneratorMaskParenthesis =
             sharedPreferences.getBoolean(
                 KEY_PASSWORD_GENERATOR_MASK_PARENTHESIS_ENABLED,
-                DEFAULT_PASSWORD_GENERATOR_MASK_PARENTHESIS_ENABLED
+                DEFAULT_PASSWORD_GENERATOR_MASK_PARENTHESIS_ENABLED,
             )
-        val passwordGeneratorMaskEmoji = sharedPreferences.getBoolean(
-            KEY_PASSWORD_GENERATOR_MASK_EMOJI_ENABLED,
-            DEFAULT_PASSWORD_GENERATOR_MASK_EMOJI_ENABLED
-        )
-        val passwordGeneratorMaskChar1 = sharedPreferences.getBoolean(
-            KEY_PASSWORD_GENERATOR_MASK_CHAR1_ENABLED,
-            DEFAULT_PASSWORD_GENERATOR_MASK_CHAR1_ENABLED
-        )
-        val passwordGeneratorMaskChar2 = sharedPreferences.getBoolean(
-            KEY_PASSWORD_GENERATOR_MASK_CHAR2_ENABLED,
-            DEFAULT_PASSWORD_GENERATOR_MASK_CHAR2_ENABLED
-        )
-        val passwordGeneratorMaskChar3 = sharedPreferences.getBoolean(
-            KEY_PASSWORD_GENERATOR_MASK_CHAR3_ENABLED,
-            DEFAULT_PASSWORD_GENERATOR_MASK_CHAR3_ENABLED
-        )
-        val passwordGeneratorMaskChar4 = sharedPreferences.getBoolean(
-            KEY_PASSWORD_GENERATOR_MASK_CHAR4_ENABLED,
-            DEFAULT_PASSWORD_GENERATOR_MASK_CHAR4_ENABLED
-        )
-        val passwordGeneratorMaskChar5 = sharedPreferences.getBoolean(
-            KEY_PASSWORD_GENERATOR_MASK_CHAR5_ENABLED,
-            DEFAULT_PASSWORD_GENERATOR_MASK_CHAR5_ENABLED
-        )
+        val passwordGeneratorMaskEmoji =
+            sharedPreferences.getBoolean(
+                KEY_PASSWORD_GENERATOR_MASK_EMOJI_ENABLED,
+                DEFAULT_PASSWORD_GENERATOR_MASK_EMOJI_ENABLED,
+            )
+        val passwordGeneratorMaskChar1 =
+            sharedPreferences.getBoolean(
+                KEY_PASSWORD_GENERATOR_MASK_CHAR1_ENABLED,
+                DEFAULT_PASSWORD_GENERATOR_MASK_CHAR1_ENABLED,
+            )
+        val passwordGeneratorMaskChar2 =
+            sharedPreferences.getBoolean(
+                KEY_PASSWORD_GENERATOR_MASK_CHAR2_ENABLED,
+                DEFAULT_PASSWORD_GENERATOR_MASK_CHAR2_ENABLED,
+            )
+        val passwordGeneratorMaskChar3 =
+            sharedPreferences.getBoolean(
+                KEY_PASSWORD_GENERATOR_MASK_CHAR3_ENABLED,
+                DEFAULT_PASSWORD_GENERATOR_MASK_CHAR3_ENABLED,
+            )
+        val passwordGeneratorMaskChar4 =
+            sharedPreferences.getBoolean(
+                KEY_PASSWORD_GENERATOR_MASK_CHAR4_ENABLED,
+                DEFAULT_PASSWORD_GENERATOR_MASK_CHAR4_ENABLED,
+            )
+        val passwordGeneratorMaskChar5 =
+            sharedPreferences.getBoolean(
+                KEY_PASSWORD_GENERATOR_MASK_CHAR5_ENABLED,
+                DEFAULT_PASSWORD_GENERATOR_MASK_CHAR5_ENABLED,
+            )
         val passwordGeneratorExcludeLookAlikeChars =
             sharedPreferences.getBoolean(
                 KEY_PASSWORD_GENERATOR_EXCLUDE_LOOK_ALIKE_ENABLED,
-                DEFAULT_PASSWORD_GENERATOR_EXCLUDE_LOOK_ALIKE_ENABLED
+                DEFAULT_PASSWORD_GENERATOR_EXCLUDE_LOOK_ALIKE_ENABLED,
             )
         val passphraseGeneratorWordsCount =
             sharedPreferences.getInt(KEY_PASSPHRASE_GENERATOR_WORDS_COUNT, DEFAULT_PASSPHRASE_GENERATOR_WORDS_COUNT)
         val passphraseGeneratorSeparator =
             sharedPreferences.getString(KEY_PASSPHRASE_GENERATOR_SEPARATOR, DEFAULT_PASSPHRASE_GENERATOR_SEPARATOR)
                 ?: DEFAULT_PASSPHRASE_GENERATOR_SEPARATOR
-        val passphraseGeneratorCase = CaseTypeModel.entries[sharedPreferences.getInt(
-            KEY_PASSPHRASE_GENERATOR_CASE,
-            DEFAULT_PASSPHRASE_GENERATOR_CASE_TYPE_ORDINAL
-        )]
-        val externalDictionaryCheckEnabled = sharedPreferences.getBoolean(
-            KEY_EXTERNAL_DICTIONARY_CHECK_ENABLED,
-            DEFAULT_EXTERNAL_DICTIONARY_CHECK_ENABLED
-        )
+        val passphraseGeneratorCase =
+            CaseTypeModel.entries[
+                sharedPreferences.getInt(
+                    KEY_PASSPHRASE_GENERATOR_CASE,
+                    DEFAULT_PASSPHRASE_GENERATOR_CASE_TYPE_ORDINAL,
+                ),
+            ]
+        val externalDictionaryCheckEnabled =
+            sharedPreferences.getBoolean(
+                KEY_EXTERNAL_DICTIONARY_CHECK_ENABLED,
+                DEFAULT_EXTERNAL_DICTIONARY_CHECK_ENABLED,
+            )
 
         return PasswordPolicies(
             defaultGenerator,
@@ -137,18 +153,20 @@ class GetPasswordPoliciesUseCase(
                 maskChar3 = passwordGeneratorMaskChar3,
                 maskChar4 = passwordGeneratorMaskChar4,
                 maskChar5 = passwordGeneratorMaskChar5,
-                excludeLookAlikeChars = passwordGeneratorExcludeLookAlikeChars
+                excludeLookAlikeChars = passwordGeneratorExcludeLookAlikeChars,
             ),
             PassphraseGeneratorSettingsModel(
                 words = passphraseGeneratorWordsCount,
                 wordSeparator = passphraseGeneratorSeparator,
-                wordCase = passphraseGeneratorCase
+                wordCase = passphraseGeneratorCase,
             ),
-            isExternalDictionaryCheckEnabled = externalDictionaryCheckEnabled
+            isExternalDictionaryCheckEnabled = externalDictionaryCheckEnabled,
         )
     }
 
-    data class Output(val passwordPolicies: PasswordPolicies)
+    data class Output(
+        val passwordPolicies: PasswordPolicies,
+    )
 
     private companion object {
         private const val DEFAULT_PASS_GENERATOR_TYPE_ORDINAL = 0

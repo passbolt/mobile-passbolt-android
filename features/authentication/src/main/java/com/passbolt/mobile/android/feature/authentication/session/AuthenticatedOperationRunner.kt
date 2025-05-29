@@ -51,16 +51,13 @@ private const val SESSION_DURATION_BEFORE_SKEW_SECONDS = 30L
  */
 class AuthenticatedOperationRunner(
     private val needAuthenticationRefreshedFlow: MutableStateFlow<UnauthenticatedReason?>,
-    private val authenticationRefreshedFlow: StateFlow<Unit?>
+    private val authenticationRefreshedFlow: StateFlow<Unit?>,
 ) : KoinComponent {
-
     private val refreshSessionUseCase: RefreshSessionUseCase by inject()
     private val getSessionExpiryUseCase: GetSessionExpiryUseCase by inject()
     private val passphraseMemoryCache: PassphraseMemoryCache by inject()
 
-    suspend fun <OUTPUT : AuthenticatedUseCaseOutput> runOperation(
-        request: suspend () -> OUTPUT
-    ): OUTPUT {
+    suspend fun <OUTPUT : AuthenticatedUseCaseOutput> runOperation(request: suspend () -> OUTPUT): OUTPUT {
         val needFullSignIn = isFullSignInNeeded()
         val needPassphraseRefresh = isPassphraseRefreshNeeded()
 
@@ -84,15 +81,16 @@ class AuthenticatedOperationRunner(
 
     private suspend fun refreshSessionProactively(
         needFullSignIn: Boolean,
-        needPassphraseRefresh: Boolean
+        needPassphraseRefresh: Boolean,
     ) {
-        val sessionRefreshReason = if (needFullSignIn) {
-            Reason.Session
-        } else if (needPassphraseRefresh) {
-            Reason.Passphrase
-        } else {
-            null
-        }
+        val sessionRefreshReason =
+            if (needFullSignIn) {
+                Reason.Session
+            } else if (needPassphraseRefresh) {
+                Reason.Passphrase
+            } else {
+                null
+            }
 
         sessionRefreshReason?.let {
             authenticateUsingSignInUi(it)
@@ -110,28 +108,29 @@ class AuthenticatedOperationRunner(
         }
     }
 
-    private suspend fun isFullSignInNeeded() = when (val sessionExpiry = getSessionExpiryUseCase.execute(Unit)) {
-        is GetSessionExpiryUseCase.Output.NoJwt -> {
-            Timber.d("Access token expiry is null")
-            true
-        }
-        is GetSessionExpiryUseCase.Output.JwtAlreadyExpired -> {
-            Timber.d("Session is expired, refreshing in background")
-            !backgroundRefreshSessionSessionSucceeded()
-        }
-        is GetSessionExpiryUseCase.Output.JwtWillExpire -> {
-            if (!sessionExpiry.accessTokenExpirySeconds.isAfter(
-                    ZonedDateTime.now().plusSeconds(SESSION_DURATION_BEFORE_SKEW_SECONDS)
-                )
-            ) {
-                Timber.d("Session may end before finishing current request, refreshing in background")
+    private suspend fun isFullSignInNeeded() =
+        when (val sessionExpiry = getSessionExpiryUseCase.execute(Unit)) {
+            is GetSessionExpiryUseCase.Output.NoJwt -> {
+                Timber.d("Access token expiry is null")
+                true
+            }
+            is GetSessionExpiryUseCase.Output.JwtAlreadyExpired -> {
+                Timber.d("Session is expired, refreshing in background")
                 !backgroundRefreshSessionSessionSucceeded()
-            } else {
-                Timber.d("Session is valid for request")
-                false
+            }
+            is GetSessionExpiryUseCase.Output.JwtWillExpire -> {
+                if (!sessionExpiry.accessTokenExpirySeconds.isAfter(
+                        ZonedDateTime.now().plusSeconds(SESSION_DURATION_BEFORE_SKEW_SECONDS),
+                    )
+                ) {
+                    Timber.d("Session may end before finishing current request, refreshing in background")
+                    !backgroundRefreshSessionSessionSucceeded()
+                } else {
+                    Timber.d("Session is valid for request")
+                    false
+                }
             }
         }
-    }
 
     private suspend fun backgroundRefreshSessionSessionSucceeded(): Boolean {
         Timber.d("Starting background session refresh")
@@ -166,8 +165,8 @@ class AuthenticatedOperationRunner(
 suspend fun <OUTPUT : AuthenticatedUseCaseOutput> runAuthenticatedOperation(
     needAuthenticationRefresh: MutableStateFlow<UnauthenticatedReason?>,
     authenticationRefreshedFlow: StateFlow<Unit?>,
-    request: suspend () -> OUTPUT
+    request: suspend () -> OUTPUT,
 ): OUTPUT =
     AuthenticatedOperationRunner(needAuthenticationRefresh, authenticationRefreshedFlow).runOperation(
-        request
+        request,
     )

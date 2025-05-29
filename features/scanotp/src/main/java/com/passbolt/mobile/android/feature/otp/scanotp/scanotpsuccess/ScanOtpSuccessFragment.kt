@@ -55,25 +55,32 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
  */
 class ScanOtpSuccessFragment :
     BindingScopedAuthenticatedFragment<FragmentCreateOtpSuccessBinding, ScanOtpSuccessContract.View>(
-        FragmentCreateOtpSuccessBinding::inflate
-    ), ScanOtpSuccessContract.View, NewMetadataKeyTrustDialog.Listener, NewTrustedMetadataKeyDeletedDialog.Listener {
-
+        FragmentCreateOtpSuccessBinding::inflate,
+    ),
+    ScanOtpSuccessContract.View,
+    NewMetadataKeyTrustDialog.Listener,
+    NewTrustedMetadataKeyDeletedDialog.Listener {
     override val presenter: ScanOtpSuccessContract.Presenter by inject()
     private val navArgs: ScanOtpSuccessFragmentArgs by navArgs()
 
     private val linkedResourceReceivedListener = { _: String, result: Bundle ->
         if (result.containsKey(RESULT_PICKED_ACTION) && result.containsKey(RESULT_PICKED_RESOURCE)) {
-            val action = requireNotNull(
-                BundleCompat.getSerializable(result, RESULT_PICKED_ACTION, PickResourceAction::class.java)
-            )
-            val resource = requireNotNull(
-                BundleCompat.getParcelable(result, RESULT_PICKED_RESOURCE, ResourceModel::class.java)
-            )
+            val action =
+                requireNotNull(
+                    BundleCompat.getSerializable(result, RESULT_PICKED_ACTION, PickResourceAction::class.java),
+                )
+            val resource =
+                requireNotNull(
+                    BundleCompat.getParcelable(result, RESULT_PICKED_RESOURCE, ResourceModel::class.java),
+                )
             presenter.linkedResourceReceived(action, resource)
         }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         setupView()
         setListeners()
@@ -87,7 +94,7 @@ class ScanOtpSuccessFragment :
     }
 
     private fun setupView() {
-        with(binding.resultView) {
+        with(requiredBinding.resultView) {
             setIcon(CoreUiR.drawable.ic_success)
             setTitle(getString(LocalizationR.string.otp_create_success))
             setButtonLabel(getString(LocalizationR.string.otp_create_totp_create_standalone))
@@ -95,7 +102,7 @@ class ScanOtpSuccessFragment :
     }
 
     private fun setListeners() {
-        with(binding) {
+        with(requiredBinding) {
             resultView.setButtonAction {
                 presenter.createStandaloneOtpClick()
             }
@@ -116,7 +123,7 @@ class ScanOtpSuccessFragment :
     override fun showGenericError() {
         showSnackbar(
             messageResId = LocalizationR.string.common_failure,
-            backgroundColor = CoreUiR.color.red
+            backgroundColor = CoreUiR.color.red,
         )
     }
 
@@ -124,14 +131,14 @@ class ScanOtpSuccessFragment :
         showSnackbar(
             messageResId = LocalizationR.string.common_failure_format,
             backgroundColor = CoreUiR.color.red,
-            messageArgs = arrayOf(message)
+            messageArgs = arrayOf(message),
         )
     }
 
     override fun showCannotUpdateTotpWithCurrentConfig() {
         showSnackbar(
             messageResId = LocalizationR.string.common_cannot_create_resource_with_current_config,
-            backgroundColor = CoreUiR.color.red
+            backgroundColor = CoreUiR.color.red,
         )
     }
 
@@ -139,13 +146,16 @@ class ScanOtpSuccessFragment :
         showSnackbar(LocalizationR.string.common_encryption_failure, backgroundColor = CoreUiR.color.red)
     }
 
-    override fun navigateToOtpList(totp: OtpParseResult.OtpQr.TotpQr, otpCreated: Boolean) {
+    override fun navigateToOtpList(
+        totp: OtpParseResult.OtpQr.TotpQr,
+        otpCreated: Boolean,
+    ) {
         setFragmentResult(
             ScanOtpFragment.REQUEST_SCAN_OTP_FOR_RESULT,
             bundleOf(
                 ScanOtpFragment.EXTRA_SCANNED_OTP to totp,
-                EXTRA_OTP_CREATED to otpCreated
-            )
+                EXTRA_OTP_CREATED to otpCreated,
+            ),
         )
         findNavController().popBackStack(destinationId = R.id.scanOtpFragment, true)
     }
@@ -153,41 +163,43 @@ class ScanOtpSuccessFragment :
     override fun navigateToResourcePicker() {
         setFragmentResultListener(
             ResourcePickerFragment.REQUEST_PICK_RESOURCE_FOR_RESULT,
-            linkedResourceReceivedListener
+            linkedResourceReceivedListener,
         )
         findNavController().navigate(
-            NavDeepLinkProvider.resourceResourcePickerDeepLinkRequest(null)
+            NavDeepLinkProvider.resourceResourcePickerDeepLinkRequest(null),
         )
     }
 
     override fun showJsonResourceSchemaValidationError() {
         showSnackbar(
             LocalizationR.string.common_json_schema_resource_validation_error,
-            backgroundColor = CoreUiR.color.red
+            backgroundColor = CoreUiR.color.red,
         )
     }
 
     override fun showJsonSecretSchemaValidationError() {
         showSnackbar(
             LocalizationR.string.common_json_schema_secret_validation_error,
-            backgroundColor = CoreUiR.color.red
+            backgroundColor = CoreUiR.color.red,
         )
     }
 
     override fun showMetadataKeyModifiedDialog(model: NewMetadataKeyToTrustModel) {
-        NewMetadataKeyTrustDialog.newInstance(model)
+        NewMetadataKeyTrustDialog
+            .newInstance(model)
             .show(childFragmentManager, NewMetadataKeyTrustDialog::class.java.name)
     }
 
     override fun showMetadataKeyDeletedDialog(model: TrustedKeyDeletedModel) {
-        NewTrustedMetadataKeyDeletedDialog.newInstance(model)
+        NewTrustedMetadataKeyDeletedDialog
+            .newInstance(model)
             .show(childFragmentManager, NewTrustedMetadataKeyDeletedDialog::class.java.name)
     }
 
     override fun showFailedToVerifyMetadataKey() {
         showSnackbar(
             messageResId = LocalizationR.string.common_metadata_key_verification_failure,
-            backgroundColor = CoreUiR.color.red
+            backgroundColor = CoreUiR.color.red,
         )
     }
 
@@ -202,14 +214,14 @@ class ScanOtpSuccessFragment :
     override fun showNewMetadataKeyIsTrusted() {
         showSnackbar(
             messageResId = LocalizationR.string.common_metadata_key_is_trusted,
-            backgroundColor = CoreUiR.color.green
+            backgroundColor = CoreUiR.color.green,
         )
     }
 
     override fun showFailedToTrustMetadataKey() {
         showSnackbar(
             messageResId = LocalizationR.string.common_metadata_key_trust_failed,
-            backgroundColor = CoreUiR.color.red
+            backgroundColor = CoreUiR.color.red,
         )
     }
 

@@ -27,5 +27,5 @@ import com.google.gson.annotations.SerializedName
 data class SignInRequestDto(
     @SerializedName("user_id")
     val userId: String,
-    val challenge: String
+    val challenge: String,
 )

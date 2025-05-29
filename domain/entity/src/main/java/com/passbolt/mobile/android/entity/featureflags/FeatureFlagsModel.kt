@@ -34,5 +34,5 @@ data class FeatureFlagsModel(
     val isPasswordExpiryAvailable: Boolean,
     val arePasswordPoliciesAvailable: Boolean,
     val canUpdatePasswordPolicies: Boolean,
-    val isV5MetadataAvailable: Boolean
+    val isV5MetadataAvailable: Boolean,
 )

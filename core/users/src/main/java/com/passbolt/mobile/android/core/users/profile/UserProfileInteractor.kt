@@ -29,9 +29,8 @@ import com.passbolt.mobile.android.core.accounts.usecase.selectedaccount.GetSele
 class UserProfileInteractor(
     private val fetchUserProfileUseCase: FetchUserProfileUseCase,
     private val updateAccountDataUseCase: UpdateAccountDataUseCase,
-    private val getSelectedAccountUseCase: GetSelectedAccountUseCase
+    private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
 ) {
-
     suspend fun fetchAndUpdateUserProfile(): Output {
         val userId = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
         return when (val result = fetchUserProfileUseCase.execute(UserIdInput(userId))) {
@@ -44,8 +43,8 @@ class UserProfileInteractor(
                         firstName = result.profile.firstName,
                         lastName = result.profile.lastName,
                         email = result.profile.username,
-                        role = result.roleName
-                    )
+                        role = result.roleName,
+                    ),
                 )
                 Output.Success
             }
@@ -53,9 +52,10 @@ class UserProfileInteractor(
     }
 
     sealed class Output {
-
         data object Success : Output()
 
-        data class Failure(val message: String?) : Output()
+        data class Failure(
+            val message: String?,
+        ) : Output()
     }
 }

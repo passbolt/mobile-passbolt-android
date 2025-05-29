@@ -32,17 +32,18 @@ import com.passbolt.mobile.android.feature.settings.databinding.FragmentAccounts
  * @since v1.0
  */
 
-class AccountsSettingsFragment :
-    BindingScopedFragment<FragmentAccountsSettingsBinding>(FragmentAccountsSettingsBinding::inflate) {
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+class AccountsSettingsFragment : BindingScopedFragment<FragmentAccountsSettingsBinding>(FragmentAccountsSettingsBinding::inflate) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
-        initDefaultToolbar(binding.toolbar)
+        initDefaultToolbar(requiredBinding.toolbar)
         setListeners()
     }
 
     private fun setListeners() {
-        with(binding) {
+        with(requiredBinding) {
             keyInspectorSetting.setDebouncingOnClick {
                 navigateToKeyInspector()
             }
@@ -60,13 +61,13 @@ class AccountsSettingsFragment :
 
     private fun navigateToAccoundDetails() {
         findNavController().navigate(
-            AccountsSettingsFragmentDirections.actionAccountsSettingsFragmentToAccountDetailsFragment()
+            AccountsSettingsFragmentDirections.actionAccountsSettingsFragmentToAccountDetailsFragment(),
         )
     }
 
     private fun navigateToKeyInspector() {
         findNavController().navigate(
-            AccountsSettingsFragmentDirections.actionAccountsSettingsFragmentToKeyInspectorFragment()
+            AccountsSettingsFragmentDirections.actionAccountsSettingsFragmentToKeyInspectorFragment(),
         )
     }
 

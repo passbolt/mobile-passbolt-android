@@ -10,9 +10,8 @@ import com.passbolt.mobile.android.ui.UserModel
 class RebuildUsersTablesUseCase(
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
     private val removeLocalUsersUseCase: RemoveLocalUsersUseCase,
-    private val addLocalUsersUseCase: AddLocalUsersUseCase
+    private val addLocalUsersUseCase: AddLocalUsersUseCase,
 ) : AsyncUseCase<RebuildUsersTablesUseCase.Input, Unit> {
-
     override suspend fun execute(input: Input) {
         val selectedAccount = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
         removeLocalUsersUseCase.execute(UserIdInput(selectedAccount))
@@ -20,6 +19,6 @@ class RebuildUsersTablesUseCase(
     }
 
     class Input(
-        val users: List<UserModel>
+        val users: List<UserModel>,
     )
 }

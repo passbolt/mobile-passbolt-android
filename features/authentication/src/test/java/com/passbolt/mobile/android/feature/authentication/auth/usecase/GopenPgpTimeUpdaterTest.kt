@@ -36,14 +36,14 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.whenever
 
 class GopenPgpTimeUpdaterTest : KoinTest {
-
     private val gopenPgpTimeUpdater: GopenPgpTimeUpdater by inject()
 
     @get:Rule
-    val koinTestRule = KoinTestRule.create {
-        printLogger(Level.ERROR)
-        modules(testSignInUseCaseModule)
-    }
+    val koinTestRule =
+        KoinTestRule.create {
+            printLogger(Level.ERROR)
+            modules(testSignInUseCaseModule)
+        }
 
     @Before
     fun setup() {

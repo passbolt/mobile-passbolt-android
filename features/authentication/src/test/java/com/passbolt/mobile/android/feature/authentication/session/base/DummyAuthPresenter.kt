@@ -6,8 +6,10 @@ import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPres
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
 
-class DummyAuthPresenter(coroutineLaunchContext: CoroutineLaunchContext) :
-    DummyAuthContract.Presenter, BaseAuthenticatedPresenter<DummyAuthContract.View>(coroutineLaunchContext) {
+class DummyAuthPresenter(
+    coroutineLaunchContext: CoroutineLaunchContext,
+) : BaseAuthenticatedPresenter<DummyAuthContract.View>(coroutineLaunchContext),
+    DummyAuthContract.Presenter {
     override var view: DummyAuthContract.View? = null
 
     override suspend fun authenticatedOperation() {

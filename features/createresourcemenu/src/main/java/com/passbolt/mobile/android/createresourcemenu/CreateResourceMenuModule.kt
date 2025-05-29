@@ -29,9 +29,10 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-val createResourceMenuModule = module {
-    singleOf(::CreateCreateResourceMenuModelUseCase)
-    scope<CreateResourceMenuFragment> {
-        scopedOf(::CreateResourceMenuPresenter) bind CreateResourceMenuContract.Presenter::class
+val createResourceMenuModule =
+    module {
+        singleOf(::CreateCreateResourceMenuModelUseCase)
+        scope<CreateResourceMenuFragment> {
+            scopedOf(::CreateResourceMenuPresenter) bind CreateResourceMenuContract.Presenter::class
+        }
     }
-}

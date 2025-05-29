@@ -60,34 +60,36 @@ import com.passbolt.mobile.android.feature.home.R.id as homeId
 @MediumTest
 class FolderWithoutWritePermissionTest : KoinTest {
     @get:Rule
-    val startUpActivityRule = lazyActivitySetupScenarioRule<AuthenticationMainActivity>(
-        koinOverrideModules = listOf(instrumentationTestsModule),
-        intentSupplier = {
-            ActivityIntents.authentication(
-                InstrumentationRegistry.getInstrumentation().targetContext,
-                ActivityIntents.AuthConfig.Startup,
-                AppContext.APP,
-                managedAccountIntentCreator.getUserLocalId()
-            )
-        }
-    )
+    val startUpActivityRule =
+        lazyActivitySetupScenarioRule<AuthenticationMainActivity>(
+            koinOverrideModules = listOf(instrumentationTestsModule),
+            intentSupplier = {
+                ActivityIntents.authentication(
+                    InstrumentationRegistry.getInstrumentation().targetContext,
+                    ActivityIntents.AuthConfig.Startup,
+                    AppContext.APP,
+                    managedAccountIntentCreator.getUserLocalId(),
+                )
+            },
+        )
 
     private val managedAccountIntentCreator: ManagedAccountIntentCreator by inject()
 
     private val resourcesFullRefreshIdlingResource: ResourcesFullRefreshIdlingResource by inject()
 
     @get:Rule
-    val idlingResourceRule = let {
-        val signInIdlingResource: SignInIdlingResource by inject()
-        val createFolderIdlingResource: CreateFolderIdlingResource by inject()
-        IdlingResourceRule(
-            arrayOf(
-                signInIdlingResource,
-                createFolderIdlingResource,
-                resourcesFullRefreshIdlingResource
+    val idlingResourceRule =
+        let {
+            val signInIdlingResource: SignInIdlingResource by inject()
+            val createFolderIdlingResource: CreateFolderIdlingResource by inject()
+            IdlingResourceRule(
+                arrayOf(
+                    signInIdlingResource,
+                    createFolderIdlingResource,
+                    resourcesFullRefreshIdlingResource,
+                ),
             )
-        )
-    }
+        }
 
     @BeforeTest
     fun setup() {
@@ -101,12 +103,13 @@ class FolderWithoutWritePermissionTest : KoinTest {
         //  And I have a folder which is shared with me
         //  And I do not have permission to create an item in this folder
         onView(withId(com.passbolt.mobile.android.feature.otp.R.id.searchEditText)).perform(
-            typeText("Shared without permission to add"), pressKey(KeyEvent.KEYCODE_ENTER)
+            typeText("Shared without permission to add"),
+            pressKey(KeyEvent.KEYCODE_ENTER),
         )
     }
 
-    @Test
     //  https://passbolt.testrail.io/index.php?/cases/view/11939
+    @Test
     fun viewFolderWithoutWritePermission() {
         //  Given  I have some subfolders in this folder
         //  And  I have some resources in it

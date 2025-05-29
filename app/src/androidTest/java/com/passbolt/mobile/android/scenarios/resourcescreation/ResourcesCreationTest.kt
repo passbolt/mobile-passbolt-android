@@ -83,40 +83,40 @@ import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
 import com.passbolt.mobile.android.feature.permissions.R.id as permissionsId
 
-
 @RunWith(AndroidJUnit4::class)
 @MediumTest
 class ResourcesCreationTest : KoinTest {
-
     @get:Rule
-    val startUpActivityRule = lazyActivitySetupScenarioRule<AuthenticationMainActivity>(
-        koinOverrideModules = listOf(instrumentationTestsModule),
-        intentSupplier = {
-            ActivityIntents.authentication(
-                InstrumentationRegistry.getInstrumentation().targetContext,
-                ActivityIntents.AuthConfig.Startup,
-                AppContext.APP,
-                managedAccountIntentCreator.getUserLocalId()
-            )
-        }
-    )
+    val startUpActivityRule =
+        lazyActivitySetupScenarioRule<AuthenticationMainActivity>(
+            koinOverrideModules = listOf(instrumentationTestsModule),
+            intentSupplier = {
+                ActivityIntents.authentication(
+                    InstrumentationRegistry.getInstrumentation().targetContext,
+                    ActivityIntents.AuthConfig.Startup,
+                    AppContext.APP,
+                    managedAccountIntentCreator.getUserLocalId(),
+                )
+            },
+        )
 
     private val managedAccountIntentCreator: ManagedAccountIntentCreator by inject()
 
     private val resourcesFullRefreshIdlingResource: ResourcesFullRefreshIdlingResource by inject()
 
     @get:Rule
-    val idlingResourceRule = let {
-        val signInIdlingResource: SignInIdlingResource by inject()
-        val createResourceIdlingResource: CreateResourceIdlingResource by inject()
-        IdlingResourceRule(
-            arrayOf(
-                signInIdlingResource,
-                resourcesFullRefreshIdlingResource,
-                createResourceIdlingResource
+    val idlingResourceRule =
+        let {
+            val signInIdlingResource: SignInIdlingResource by inject()
+            val createResourceIdlingResource: CreateResourceIdlingResource by inject()
+            IdlingResourceRule(
+                arrayOf(
+                    signInIdlingResource,
+                    resourcesFullRefreshIdlingResource,
+                    createResourceIdlingResource,
+                ),
             )
-        )
-    }
+        }
 
     @BeforeTest
     fun setup() {
@@ -125,8 +125,8 @@ class ResourcesCreationTest : KoinTest {
         onView(withId(com.passbolt.mobile.android.feature.home.R.id.allItems)).perform(click())
     }
 
+    //  https://passbolt.testrail.io/index.php?/cases/view/6348
     @Test
-//  https://passbolt.testrail.io/index.php?/cases/view/6348
     fun asALoggedInMobileUserOnThePasswordWorkspaceIShouldSeeACreateButton() {
         //    Given     that I am a logged in mobile user
         //    When      I am on the password workspace
@@ -163,8 +163,8 @@ class ResourcesCreationTest : KoinTest {
         }
     }
 
+    //  https://passbolt.testrail.io/index.php?/cases/view/8128
     @Test
-//  https://passbolt.testrail.io/index.php?/cases/view/8128
     fun asALoggedInMobileUserOnThePasswordWorkspaceIShouldSeeTheNewPasswordPage() {
         //    Given     I am a logged in mobile user
         //    And       I have at least the "can update" permission in the current context
@@ -195,10 +195,9 @@ class ResourcesCreationTest : KoinTest {
         onView(
             allOf(
                 isDescendantOfA(withHint(hasToString(EditableFieldInput.ENTER_PASSWORD.hintName))),
-                withId(MaterialR.id.text_input_end_icon)
-            )
-        )
-            .check(matches(isDisplayed()))
+                withId(MaterialR.id.text_input_end_icon),
+            ),
+        ).check(matches(isDisplayed()))
             .check(matches(withContentDescription(MaterialR.string.password_toggle_content_description)))
         //    And       I see a "Random" button on the right of the password field
         onView(withId(CoreUiR.id.generatePasswordLayout)).check(matches(isDisplayed()))
@@ -213,8 +212,8 @@ class ResourcesCreationTest : KoinTest {
         onView(withId(com.passbolt.mobile.android.feature.resources.R.id.updateButton)).check(matches(isDisplayed()))
     }
 
-    @Test
     //  https://passbolt.testrail.io/index.php?/cases/view/8130
+    @Test
     fun asALoggedInMobileUserOnTheNewPasswordPageIShouldSeeAToastMessageAfterCreationAPassword() {
         // unregister refresh idling resource after first refresh not to block the snackbar checks
         // (second refresh is during snackbar is showing)
@@ -226,13 +225,12 @@ class ResourcesCreationTest : KoinTest {
         onView(
             allOf(
                 isDescendantOfA(withHint(hasToString(EditableFieldInput.ENTER_NAME.hintName))),
-                withId(CoreUiR.id.input)
-            )
+                withId(CoreUiR.id.input),
+            ),
+        ).perform(
+            typeText("PasswordNameTest"),
+            closeSoftKeyboard(),
         )
-            .perform(
-                typeText("PasswordNameTest"),
-                closeSoftKeyboard(),
-            )
         onView(withId(CoreUiR.id.generatePasswordLayout)).perform(click())
         //    When      I click on the create button
         onView(withId(com.passbolt.mobile.android.feature.resources.R.id.updateButton))
@@ -244,8 +242,8 @@ class ResourcesCreationTest : KoinTest {
         onView(withId(permissionsId.rootLayout)).check(matches(isDisplayed()))
     }
 
+    //  https://passbolt.testrail.io/index.php?/cases/view/8131
     @Test
-//  https://passbolt.testrail.io/index.php?/cases/view/8131
     fun asALoggedInMobileUserOnTheNewPasswordPageIShouldSeeAnErrorMessageAfterClickingTheCreateButtonWithAnEmptyMandatoryField() {
         //    Given     I am a logged in mobile user on the new password page
         onView(withId(com.passbolt.mobile.android.feature.home.R.id.homeSpeedDialViewId)).perform(click())
@@ -259,17 +257,15 @@ class ResourcesCreationTest : KoinTest {
         onView(
             allOf(
                 isDescendantOfA(withHint(hasToString(EditableFieldInput.ENTER_NAME.hintName))),
-                isAssignableFrom(TextInputLayout::class.java)
-            )
-        )
-            .check(matches(withTextInputStrokeColorOf(CoreUiR.color.red)))
+                isAssignableFrom(TextInputLayout::class.java),
+            ),
+        ).check(matches(withTextInputStrokeColorOf(CoreUiR.color.red)))
         onView(
             allOf(
                 isDescendantOfA(withHint(hasToString(EditableFieldInput.ENTER_PASSWORD.hintName))),
-                isAssignableFrom(TextInputLayout::class.java)
-            )
-        )
-            .check(matches(withTextInputStrokeColorOf(CoreUiR.color.red)))
+                isAssignableFrom(TextInputLayout::class.java),
+            ),
+        ).check(matches(withTextInputStrokeColorOf(CoreUiR.color.red)))
         //    And       I see a error <Error> below the field in @red
         onView(withText("The name cannot be empty"))
             .check(matches(isDisplayed()))
@@ -282,8 +278,8 @@ class ResourcesCreationTest : KoinTest {
         //    | Password    | "The password cannot be empty"  |
     }
 
-    @Test
     //  https://passbolt.testrail.io/index.php?/cases/view/8132
+    @Test
     fun asALoggedInMobileUserOnTheNewPasswordPageICanGenerateARandomPassword() {
         //    Given     I am a logged in mobile user on the new password page
         onView(withId(com.passbolt.mobile.android.feature.home.R.id.homeSpeedDialViewId)).perform(click())
@@ -297,18 +293,17 @@ class ResourcesCreationTest : KoinTest {
         onView(
             allOf(
                 isDescendantOfA(isAssignableFrom(PasswordGenerateInputView::class.java)),
-                isAssignableFrom(ProgressBar::class.java)
-            )
-        )
-            .check(matches(isDisplayed()))
+                isAssignableFrom(ProgressBar::class.java),
+            ),
+        ).check(matches(isDisplayed()))
             .check(matches(withProgressBarOfMinimumProgress(VeryStrong.progress)))
         //    And       I see the "password strength" text is of format "%s (entropy: %.2f bits)", i.e. "Very strong (entropy: 209.25 bits)"
         val format = ".* \\(entropy: \\d+\\.\\d{2} bits\\)"
         onView(withId(CoreUiR.id.strengthDescription)).check(matches(withFormattedText(format)))
     }
 
-    @Test
     //  https://passbolt.testrail.io/index.php?/cases/view/8133
+    @Test
     fun asALoggedInMobileUserOnTheNewPasswordPageICanSwitchTheVisibilityOfThePassword() {
         val password = "password"
 
@@ -335,7 +330,7 @@ class ResourcesCreationTest : KoinTest {
         onView(
             allOf(
                 isDescendantOfA(withHint(equalTo(getString(LocalizationR.string.resource_update_password_hint)))),
-                withId(CoreUiR.id.input)
-            )
+                withId(CoreUiR.id.input),
+            ),
         )
 }

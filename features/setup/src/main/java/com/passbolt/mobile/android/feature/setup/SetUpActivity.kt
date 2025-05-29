@@ -1,14 +1,3 @@
-package com.passbolt.mobile.android.feature.setup
-
-import androidx.core.content.IntentCompat
-import androidx.navigation.findNavController
-import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
-import com.passbolt.mobile.android.core.mvp.viewbinding.BindingActivity
-import com.passbolt.mobile.android.core.navigation.AccountSetupDataModel
-import com.passbolt.mobile.android.core.navigation.ActivityIntents
-import com.passbolt.mobile.android.core.navigation.PartiallyAuthenticated
-import com.passbolt.mobile.android.feature.setup.databinding.ActivitySetupBinding
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -31,28 +20,44 @@ import com.passbolt.mobile.android.feature.setup.databinding.ActivitySetupBindin
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class SetUpActivity : BindingActivity<ActivitySetupBinding>(ActivitySetupBinding::inflate), PartiallyAuthenticated,
-    AccountSetupDataHolder {
 
+package com.passbolt.mobile.android.feature.setup
+
+import androidx.core.content.IntentCompat
+import androidx.navigation.findNavController
+import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
+import com.passbolt.mobile.android.core.mvp.viewbinding.BindingActivity
+import com.passbolt.mobile.android.core.navigation.AccountSetupDataModel
+import com.passbolt.mobile.android.core.navigation.ActivityIntents
+import com.passbolt.mobile.android.core.navigation.PartiallyAuthenticated
+import com.passbolt.mobile.android.feature.setup.databinding.ActivitySetupBinding
+
+// NOTE: When changing name or package read core/navigation/README.md
+class SetUpActivity :
+    BindingActivity<ActivitySetupBinding>(ActivitySetupBinding::inflate),
+    PartiallyAuthenticated,
+    AccountSetupDataHolder {
     override val isCurrentFragmentAuthenticated: Boolean
-        get() = !unauthenticatedFragmentIds.contains(
-            findNavController(binding.fragmentContainer.id).currentDestination?.id
-        )
+        get() =
+            !unauthenticatedFragmentIds.contains(
+                findNavController(requiredBinding.fragmentContainer.id).currentDestination?.id,
+            )
 
     override val unauthenticatedFragmentIds: List<Int>
-        get() = listOf(
-            R.id.welcomeFragment,
-            R.id.transferDetailsFragment,
-            R.id.scanQrFragment,
-            R.id.importProfileFragment,
-            com.passbolt.mobile.android.feature.logs.R.id.logsFragment
-        )
+        get() =
+            listOf(
+                R.id.welcomeFragment,
+                R.id.transferDetailsFragment,
+                R.id.scanQrFragment,
+                R.id.importProfileFragment,
+                com.passbolt.mobile.android.feature.logs.R.id.logsFragment,
+            )
 
     override val bundledAccountSetupData: AccountSetupDataModel? by lifecycleAwareLazy {
         IntentCompat.getParcelableExtra(
             intent,
             ActivityIntents.EXTRA_ACCOUNT_SETUP_DATA,
-            AccountSetupDataModel::class.java
+            AccountSetupDataModel::class.java,
         )
     }
 }

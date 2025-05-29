@@ -33,11 +33,13 @@ import com.passbolt.mobile.android.ui.TotpUiModel
  */
 
 class TotpAdvancedSettingsFormPresenter : TotpAdvancedSettingsFormContract.Presenter {
-
     override var view: TotpAdvancedSettingsFormContract.View? = null
     private lateinit var totpModel: TotpUiModel
 
-    override fun argsRetrieved(mode: ResourceFormMode, totpUiModel: TotpUiModel) {
+    override fun argsRetrieved(
+        mode: ResourceFormMode,
+        totpUiModel: TotpUiModel,
+    ) {
         this.totpModel = totpUiModel
 
         when (mode) {

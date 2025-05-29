@@ -29,5 +29,5 @@ import com.passbolt.mobile.android.supportedresourceTypes.ContentType
 class ResourceTypeEdge(
     override val source: ResourceTypeVertex,
     override val destination: ResourceTypeVertex,
-    override val updateAction: UpdateAction
+    override val updateAction: UpdateAction,
 ) : Edge<ContentType>

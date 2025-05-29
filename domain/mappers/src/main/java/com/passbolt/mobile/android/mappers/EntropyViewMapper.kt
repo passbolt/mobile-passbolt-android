@@ -26,7 +26,6 @@ import com.passbolt.mobile.android.ui.PasswordStrength
  * @since v1.0
  */
 class EntropyViewMapper {
-
     fun map(entropy: Entropy): PasswordStrength =
         when (entropy) {
             Entropy.ZERO -> PasswordStrength.Empty

@@ -38,21 +38,26 @@ import com.passbolt.mobile.android.core.localization.R as LocalizationR
  * @since v1.0
  */
 
-class TransferAccountOnboardingFragment : BindingScopedFragment<FragmentTransferAccountOnboardingBinding>(
-    FragmentTransferAccountOnboardingBinding::inflate
-), TransferAccountOnboardingContract.View {
-
+class TransferAccountOnboardingFragment :
+    BindingScopedFragment<FragmentTransferAccountOnboardingBinding>(
+        FragmentTransferAccountOnboardingBinding::inflate,
+    ),
+    TransferAccountOnboardingContract.View {
     private val presenter: TransferAccountOnboardingContract.Presenter by inject()
-    private val authenticationResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-        if (it.resultCode == Activity.RESULT_OK) {
-            presenter.authenticationSucceeded()
+    private val authenticationResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            if (it.resultCode == Activity.RESULT_OK) {
+                presenter.authenticationSucceeded()
+            }
         }
-    }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         presenter.attach(this)
-        initDefaultToolbar(binding.toolbar)
+        initDefaultToolbar(requiredBinding.toolbar)
         setListeners()
         addSteps()
     }
@@ -64,7 +69,7 @@ class TransferAccountOnboardingFragment : BindingScopedFragment<FragmentTransfer
 
     override fun navigateToTransferAccount() {
         findNavController().navigate(
-            TransferAccountOnboardingFragmentDirections.actionTransferAccountOnboardingFragmentToTransferAccount()
+            TransferAccountOnboardingFragmentDirections.actionTransferAccountOnboardingFragmentToTransferAccount(),
         )
     }
 
@@ -72,22 +77,24 @@ class TransferAccountOnboardingFragment : BindingScopedFragment<FragmentTransfer
         authenticationResult.launch(
             ActivityIntents.authentication(
                 requireContext(),
-                ActivityIntents.AuthConfig.RefreshSession
-            )
+                ActivityIntents.AuthConfig.RefreshSession,
+            ),
         )
     }
 
     private fun setListeners() {
-        binding.startTransferButton.setDebouncingOnClick {
+        requiredBinding.startTransferButton.setDebouncingOnClick {
             presenter.startTransferButtonClick()
         }
-        binding.toolbar.setNavigationOnClickListener { requireActivity().finish() }
+        requiredBinding.toolbar.setNavigationOnClickListener { requireActivity().finish() }
     }
 
     private fun addSteps() {
-        binding.steps.addList(
-            requireContext().resources.getStringArray(LocalizationR.array.transfer_account_onboarding_steps_array)
-                .map { CircleStepItemModel(it.fromHtml()) }
+        requiredBinding.steps.addList(
+            requireContext()
+                .resources
+                .getStringArray(LocalizationR.array.transfer_account_onboarding_steps_array)
+                .map { CircleStepItemModel(it.fromHtml()) },
         )
     }
 }

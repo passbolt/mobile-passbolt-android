@@ -51,7 +51,6 @@ import org.mockito.kotlin.whenever
  */
 
 class PassphrasePresenterTest : KoinTest {
-
     private val presenter: AuthContract.Presenter by inject {
         parametersOf(ActivityIntents.AuthConfig.RefreshPassphrase)
     }
@@ -59,10 +58,11 @@ class PassphrasePresenterTest : KoinTest {
 
     @ExperimentalCoroutinesApi
     @get:Rule
-    val koinTestRule = KoinTestRule.create {
-        printLogger(Level.ERROR)
-        modules(testAuthModule)
-    }
+    val koinTestRule =
+        KoinTestRule.create {
+            printLogger(Level.ERROR)
+            modules(testAuthModule)
+        }
 
     @Before
     fun setup() {
@@ -70,9 +70,11 @@ class PassphrasePresenterTest : KoinTest {
         whenever(mockGetGlobalPreferencesUseCase.execute(Unit))
             .doReturn(
                 GetGlobalPreferencesUseCase.Output(
-                    areDebugLogsEnabled = false, debugLogFileCreationDateTime = null,
-                    isDeveloperModeEnabled = false, isHideRootDialogEnabled = false
-                )
+                    areDebugLogsEnabled = false,
+                    debugLogFileCreationDateTime = null,
+                    isDeveloperModeEnabled = false,
+                    isHideRootDialogEnabled = false,
+                ),
             )
     }
 
@@ -205,9 +207,11 @@ class PassphrasePresenterTest : KoinTest {
         whenever(mockGetGlobalPreferencesUseCase.execute(Unit))
             .doReturn(
                 GetGlobalPreferencesUseCase.Output(
-                    areDebugLogsEnabled = false, debugLogFileCreationDateTime = null,
-                    isDeveloperModeEnabled = true, isHideRootDialogEnabled = false
-                )
+                    areDebugLogsEnabled = false,
+                    debugLogFileCreationDateTime = null,
+                    isDeveloperModeEnabled = true,
+                    isHideRootDialogEnabled = false,
+                ),
             )
 
         presenter.argsRetrieved(ActivityIntents.AuthConfig.RefreshPassphrase, ACCOUNT)
@@ -225,9 +229,11 @@ class PassphrasePresenterTest : KoinTest {
         whenever(mockGetGlobalPreferencesUseCase.execute(Unit))
             .doReturn(
                 GetGlobalPreferencesUseCase.Output(
-                    areDebugLogsEnabled = false, debugLogFileCreationDateTime = null,
-                    isDeveloperModeEnabled = true, isHideRootDialogEnabled = true
-                )
+                    areDebugLogsEnabled = false,
+                    debugLogFileCreationDateTime = null,
+                    isDeveloperModeEnabled = true,
+                    isHideRootDialogEnabled = true,
+                ),
             )
 
         presenter.argsRetrieved(ActivityIntents.AuthConfig.RefreshPassphrase, ACCOUNT)

@@ -61,66 +61,73 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
 @Suppress("TooManyFunctions")
 class PermissionsFragment :
     BindingScopedAuthenticatedFragment<FragmentResourcePermissionsBinding, PermissionsContract.View>(
-        FragmentResourcePermissionsBinding::inflate
-    ), PermissionsContract.View {
-
+        FragmentResourcePermissionsBinding::inflate,
+    ),
+    PermissionsContract.View {
     override val presenter: PermissionsContract.Presenter by inject()
     private val permissionsItemAdapter: ItemAdapter<PermissionItem> by inject(named(PERMISSIONS_ITEM_ADAPTER))
     private val fastAdapter: FastAdapter<GenericItem> by inject()
     private val args: PermissionsFragmentArgs by navArgs()
     private val snackbarAnchorView: View
-        get() = binding.addPermissionButton
+        get() = requiredBinding.addPermissionButton
     private val newRecipientsAddedListener = { _: String, bundle: Bundle ->
         presenter.shareRecipientsAdded(
             BundleCompat.getParcelableArrayList(
                 bundle,
                 PermissionRecipientsFragment.EXTRA_NEW_PERMISSIONS,
-                PermissionModelUi::class.java
-            )
+                PermissionModelUi::class.java,
+            ),
         )
     }
     private val userPermissionUpdatedListener = { _: String, bundle: Bundle ->
-        BundleCompat.getParcelable(
-            bundle,
-            UserPermissionsFragment.EXTRA_UPDATED_USER_PERMISSION,
-            PermissionModelUi.UserPermissionModel::class.java
-        )?.let { permission ->
-            presenter.userPermissionModified(permission)
-        }
+        BundleCompat
+            .getParcelable(
+                bundle,
+                UserPermissionsFragment.EXTRA_UPDATED_USER_PERMISSION,
+                PermissionModelUi.UserPermissionModel::class.java,
+            )?.let { permission ->
+                presenter.userPermissionModified(permission)
+            }
 
-        BundleCompat.getParcelable(
-            bundle,
-            UserPermissionsFragment.EXTRA_DELETED_USER_PERMISSION,
-            PermissionModelUi.UserPermissionModel::class.java
-        )?.let { permission ->
-            presenter.userPermissionDeleted(permission)
-        }
+        BundleCompat
+            .getParcelable(
+                bundle,
+                UserPermissionsFragment.EXTRA_DELETED_USER_PERMISSION,
+                PermissionModelUi.UserPermissionModel::class.java,
+            )?.let { permission ->
+                presenter.userPermissionDeleted(permission)
+            }
 
         Unit
     }
     private val groupPermissionUpdatedListener = { _: String, bundle: Bundle ->
-        BundleCompat.getParcelable(
-            bundle,
-            GroupPermissionsFragment.EXTRA_UPDATED_GROUP_PERMISSION,
-            PermissionModelUi.GroupPermissionModel::class.java
-        )?.let { permission ->
-            presenter.groupPermissionModified(permission)
-        }
+        BundleCompat
+            .getParcelable(
+                bundle,
+                GroupPermissionsFragment.EXTRA_UPDATED_GROUP_PERMISSION,
+                PermissionModelUi.GroupPermissionModel::class.java,
+            )?.let { permission ->
+                presenter.groupPermissionModified(permission)
+            }
 
-        BundleCompat.getParcelable(
-            bundle,
-            GroupPermissionsFragment.EXTRA_DELETED_GROUP_PERMISSION,
-            PermissionModelUi.GroupPermissionModel::class.java
-        )?.let { permission ->
-            presenter.groupPermissionDeleted(permission)
-        }
+        BundleCompat
+            .getParcelable(
+                bundle,
+                GroupPermissionsFragment.EXTRA_DELETED_GROUP_PERMISSION,
+                PermissionModelUi.GroupPermissionModel::class.java,
+            )?.let { permission ->
+                presenter.groupPermissionDeleted(permission)
+            }
 
         Unit
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
-        initDefaultToolbar(binding.toolbar)
+        initDefaultToolbar(requiredBinding.toolbar)
         setListeners()
         initPermissionsRecycler()
         presenter.attach(this)
@@ -139,7 +146,7 @@ class PermissionsFragment :
     }
 
     private fun setListeners() {
-        with(binding) {
+        with(requiredBinding) {
             actionButton.setDebouncingOnClick {
                 presenter.actionButtonClick()
             }
@@ -150,73 +157,79 @@ class PermissionsFragment :
     }
 
     override fun onDestroyView() {
-        binding.permissionsRecycler.adapter = null
+        requiredBinding.permissionsRecycler.adapter = null
         presenter.detach()
         super.onDestroyView()
     }
 
     private fun initPermissionsRecycler() {
-        with(binding.permissionsRecycler) {
+        with(requiredBinding.permissionsRecycler) {
             layoutManager = LinearLayoutManager(context)
             adapter = fastAdapter
         }
         fastAdapter.addEventHook(
-            PermissionItem.ItemClick { presenter.permissionClick(it) }
+            PermissionItem.ItemClick { presenter.permissionClick(it) },
         )
     }
 
     override fun navigateToGroupPermissionDetails(
         permission: PermissionModelUi.GroupPermissionModel,
-        mode: PermissionsMode
+        mode: PermissionsMode,
     ) {
         setFragmentResultListener(
             GroupPermissionsFragment.REQUEST_UPDATE_GROUP_PERMISSION,
-            groupPermissionUpdatedListener
+            groupPermissionUpdatedListener,
         )
         findNavController().navigate(
             PermissionsFragmentDirections.actionResourcePermissionsFragmentToGroupPermissionsFragment(
                 permission,
-                mode
-            )
+                mode,
+            ),
         )
     }
 
     override fun navigateToUserPermissionDetails(
         permission: PermissionModelUi.UserPermissionModel,
-        mode: PermissionsMode
+        mode: PermissionsMode,
     ) {
         setFragmentResultListener(
             UserPermissionsFragment.REQUEST_UPDATE_USER_PERMISSIONS,
-            userPermissionUpdatedListener
+            userPermissionUpdatedListener,
         )
         findNavController().navigate(
             PermissionsFragmentDirections.actionResourcePermissionsFragmentToUserPermissionsFragment(
                 permission,
-                mode
-            )
+                mode,
+            ),
         )
     }
 
     override fun navigateToSelectShareRecipients(
         groupPermissions: List<PermissionModelUi.GroupPermissionModel>,
-        userPermissions: List<PermissionModelUi.UserPermissionModel>
+        userPermissions: List<PermissionModelUi.UserPermissionModel>,
     ) {
         setFragmentResultListener(
             PermissionRecipientsFragment.EXTRA_NEW_PERMISSIONS_BUNDLE_KEY,
-            newRecipientsAddedListener
+            newRecipientsAddedListener,
         )
         findNavController().navigate(
             PermissionsFragmentDirections.actionResourcePermissionsFragmentToPermissionRecipientsFragment(
-                userPermissions.toTypedArray(), groupPermissions.toTypedArray()
-            )
+                userPermissions.toTypedArray(),
+                groupPermissions.toTypedArray(),
+            ),
         )
     }
 
-    override fun navigateToSelfWithMode(resourceId: String, mode: PermissionsMode) {
+    override fun navigateToSelfWithMode(
+        resourceId: String,
+        mode: PermissionsMode,
+    ) {
         findNavController().navigate(
             PermissionsFragmentDirections.actionResourcePermissionsFragmentSelf(
-                resourceId, mode, args.permissionsItem
-            )
+                resourceId,
+                mode,
+                args.permissionsItem,
+            ),
         )
     }
 
@@ -227,11 +240,11 @@ class PermissionsFragment :
 
     override fun showSaveButton() {
         showActionButtonLayout()
-        binding.actionButton.text = getString(LocalizationR.string.save)
+        requiredBinding.actionButton.text = getString(LocalizationR.string.save)
     }
 
     private fun showActionButtonLayout() {
-        with(binding) {
+        with(requiredBinding) {
             permissionsRecycler.updatePadding(bottom = resources.getDimension(CoreUiR.dimen.dp_96).toInt())
             actionButtonLayout.visible()
         }
@@ -239,34 +252,34 @@ class PermissionsFragment :
 
     override fun showEditButton() {
         showActionButtonLayout()
-        binding.actionButton.text = getString(LocalizationR.string.resource_permissions_edit_permissions)
+        requiredBinding.actionButton.text = getString(LocalizationR.string.resource_permissions_edit_permissions)
     }
 
     override fun showOneOwnerSnackbar() {
         showSnackbar(
             LocalizationR.string.resource_permissions_one_owner,
             anchorView = snackbarAnchorView,
-            backgroundColor = CoreUiR.color.red
+            backgroundColor = CoreUiR.color.red,
         )
     }
 
     override fun showAddUserButton() {
-        binding.addPermissionButton.visible()
+        requiredBinding.addPermissionButton.visible()
     }
 
     override fun showEmptyState() {
-        binding.emptyState.visible()
+        requiredBinding.emptyState.visible()
     }
 
     override fun hideEmptyState() {
-        binding.emptyState.gone()
+        requiredBinding.emptyState.gone()
     }
 
     override fun showShareSimulationFailure() {
         showSnackbar(
             LocalizationR.string.resource_permissions_share_simulation_failed,
             anchorView = snackbarAnchorView,
-            backgroundColor = CoreUiR.color.red
+            backgroundColor = CoreUiR.color.red,
         )
     }
 
@@ -274,7 +287,7 @@ class PermissionsFragment :
         showSnackbar(
             LocalizationR.string.resource_permissions_share_failed,
             anchorView = snackbarAnchorView,
-            backgroundColor = CoreUiR.color.red
+            backgroundColor = CoreUiR.color.red,
         )
     }
 
@@ -282,7 +295,7 @@ class PermissionsFragment :
         showSnackbar(
             LocalizationR.string.common_fetch_failure,
             anchorView = snackbarAnchorView,
-            backgroundColor = CoreUiR.color.red
+            backgroundColor = CoreUiR.color.red,
         )
     }
 
@@ -290,7 +303,7 @@ class PermissionsFragment :
         showSnackbar(
             LocalizationR.string.common_encryption_failure,
             anchorView = snackbarAnchorView,
-            backgroundColor = CoreUiR.color.red
+            backgroundColor = CoreUiR.color.red,
         )
     }
 
@@ -298,7 +311,7 @@ class PermissionsFragment :
         showSnackbar(
             LocalizationR.string.common_decryption_failure,
             anchorView = snackbarAnchorView,
-            backgroundColor = CoreUiR.color.red
+            backgroundColor = CoreUiR.color.red,
         )
     }
 
@@ -306,7 +319,7 @@ class PermissionsFragment :
         showSnackbar(
             LocalizationR.string.common_metadata_encryption_failure,
             anchorView = snackbarAnchorView,
-            backgroundColor = CoreUiR.color.red
+            backgroundColor = CoreUiR.color.red,
         )
     }
 
@@ -320,9 +333,10 @@ class PermissionsFragment :
 
     override fun closeWithShareSuccessResult() {
         setFragmentResult(
-            REQUEST_UPDATE_PERMISSIONS, bundleOf(
-                EXTRA_RESOURCE_SHARED to true
-            )
+            REQUEST_UPDATE_PERMISSIONS,
+            bundleOf(
+                EXTRA_RESOURCE_SHARED to true,
+            ),
         )
         findNavController().popBackStack()
     }
@@ -331,16 +345,16 @@ class PermissionsFragment :
         showSnackbar(
             LocalizationR.string.common_data_refresh_error,
             anchorView = snackbarAnchorView,
-            backgroundColor = CoreUiR.color.red
+            backgroundColor = CoreUiR.color.red,
         )
     }
 
     override fun hideRefreshProgress() {
-        binding.fullScreenProgressLayout.gone()
+        requiredBinding.fullScreenProgressLayout.gone()
     }
 
     override fun showRefreshProgress() {
-        binding.fullScreenProgressLayout.visible()
+        requiredBinding.fullScreenProgressLayout.visible()
     }
 
     override fun showContentNotAvailable() {

@@ -27,17 +27,18 @@ import com.passbolt.mobile.android.database.DatabaseProvider
  * @since v1.0
  */
 class RemoveLocalMetadataKeysUseCase(
-    private val databaseProvider: DatabaseProvider
+    private val databaseProvider: DatabaseProvider,
 ) : AsyncUseCase<UserIdInput, Unit> {
-
     override suspend fun execute(input: UserIdInput) {
-        val metadataKeysDao = databaseProvider
-            .get(input.userId)
-            .metadataKeysDao()
+        val metadataKeysDao =
+            databaseProvider
+                .get(input.userId)
+                .metadataKeysDao()
 
-        val metadataPrivateKeysDao = databaseProvider
-            .get(input.userId)
-            .metadataPrivateKeysDao()
+        val metadataPrivateKeysDao =
+            databaseProvider
+                .get(input.userId)
+                .metadataPrivateKeysDao()
 
         metadataPrivateKeysDao.deleteAll()
         metadataKeysDao.deleteAll()

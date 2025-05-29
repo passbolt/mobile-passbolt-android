@@ -28,7 +28,6 @@ import timber.log.Timber
  * @since v1.0
  */
 class AssistStructureParser {
-
     fun parse(assistStructure: AssistStructure): ParsedStructures {
         val structuresRef = mutableSetOf<ParsedStructure>()
 
@@ -45,7 +44,7 @@ class AssistStructureParser {
         return ParsedStructures(
             domainBuilder.toString(),
             packageIdBuilder.toString(),
-            structuresRef
+            structuresRef,
         )
     }
 
@@ -53,7 +52,7 @@ class AssistStructureParser {
         viewNode: AssistStructure.ViewNode,
         structuresRef: MutableSet<ParsedStructure>,
         domainBuilder: StringBuilder,
-        packageIdBuilder: StringBuilder
+        packageIdBuilder: StringBuilder,
     ) {
         parseNode(viewNode, domainBuilder, packageIdBuilder)
             ?.let { structuresRef.add(it) }
@@ -67,7 +66,7 @@ class AssistStructureParser {
     private fun parseNode(
         viewNode: AssistStructure.ViewNode,
         domainBuilder: StringBuilder,
-        packageIdBuilder: StringBuilder
+        packageIdBuilder: StringBuilder,
     ): ParsedStructure? {
         logNodeVisit(viewNode)
 
@@ -78,15 +77,19 @@ class AssistStructureParser {
         processDomain(viewNode.webScheme, viewNode.webDomain, domainBuilder)
         processPackageId(viewNode.idPackage, packageIdBuilder)
 
-        val heuristicAutofillHints = if (!autofillHints.isNullOrEmpty()) {
-            autofillHints.toList()
-        } else {
-            gatherHtmlHints(viewNode) + gatherHintHints(viewNode) + gatherContentDescriptionHints(viewNode)
-        }
+        val heuristicAutofillHints =
+            if (!autofillHints.isNullOrEmpty()) {
+                autofillHints.toList()
+            } else {
+                gatherHtmlHints(viewNode) + gatherHintHints(viewNode) + gatherContentDescriptionHints(viewNode)
+            }
         return ParsedStructure(autofillId, heuristicAutofillHints, inputType)
     }
 
-    private fun processPackageId(idPackage: String?, packageIdBuilder: StringBuilder) {
+    private fun processPackageId(
+        idPackage: String?,
+        packageIdBuilder: StringBuilder,
+    ) {
         if (idPackage != null) {
             with(packageIdBuilder) {
                 clear()
@@ -95,14 +98,19 @@ class AssistStructureParser {
         }
     }
 
-    private fun processDomain(webScheme: String?, webDomain: String?, domainBuilder: StringBuilder) {
-        val domain = webScheme.orEmpty().let {
-            if (it.isEmpty()) {
-                webDomain
-            } else {
-                "%s://%s".format(it, webDomain)
+    private fun processDomain(
+        webScheme: String?,
+        webDomain: String?,
+        domainBuilder: StringBuilder,
+    ) {
+        val domain =
+            webScheme.orEmpty().let {
+                if (it.isEmpty()) {
+                    webDomain
+                } else {
+                    "%s://%s".format(it, webDomain)
+                }
             }
-        }
         if (domain != null) {
             with(domainBuilder) {
                 clear()
@@ -111,48 +119,46 @@ class AssistStructureParser {
         }
     }
 
-    private fun gatherContentDescriptionHints(viewNode: AssistStructure.ViewNode): List<String> {
-        return viewNode.contentDescription.let {
+    private fun gatherContentDescriptionHints(viewNode: AssistStructure.ViewNode): List<String> =
+        viewNode.contentDescription.let {
             if (it != null) {
                 listOf(it.toString())
             } else {
                 emptyList()
             }
         }
-    }
 
-    private fun gatherHintHints(viewNode: AssistStructure.ViewNode): List<String> {
-        return viewNode.hint.let {
+    private fun gatherHintHints(viewNode: AssistStructure.ViewNode): List<String> =
+        viewNode.hint.let {
             if (it != null) {
                 listOf(it)
             } else {
                 emptyList()
             }
         }
-    }
 
-    private fun gatherHtmlHints(viewNode: AssistStructure.ViewNode): List<String> {
-        return if (viewNode.htmlInfo.hasAttribute(HTML_AUTOCOMPLETE_ATTR)) {
-            viewNode.htmlInfo.getAttribute(HTML_AUTOCOMPLETE_ATTR)
+    private fun gatherHtmlHints(viewNode: AssistStructure.ViewNode): List<String> =
+        if (viewNode.htmlInfo.hasAttribute(HTML_AUTOCOMPLETE_ATTR)) {
+            viewNode.htmlInfo
+                .getAttribute(HTML_AUTOCOMPLETE_ATTR)
                 ?.split(HTML_AUTOCOMPLETE_ATTR_VALUES_DELIMITER)
                 ?.filter { it.isBlank() } ?: emptyList()
         } else {
             emptyList()
         }
-    }
 
     @SuppressLint("BinaryOperationInTimber")
     private fun logNodeVisit(viewNode: AssistStructure.ViewNode) {
         Timber.d(
             "Visiting view node with id: %d " +
-                    "scheme + domain: %s://%s " +
-                    "package: %s " +
-                    "content description: %s " +
-                    "autofill hints %s " +
-                    "hint: %s " +
-                    "html autocomplete attr: %s " +
-                    "important for autofill: %d " +
-                    "input type: %d ",
+                "scheme + domain: %s://%s " +
+                "package: %s " +
+                "content description: %s " +
+                "autofill hints %s " +
+                "hint: %s " +
+                "html autocomplete attr: %s " +
+                "important for autofill: %d " +
+                "input type: %d ",
             viewNode.id,
             viewNode.webScheme,
             viewNode.webDomain,
@@ -162,15 +168,13 @@ class AssistStructureParser {
             viewNode.hint,
             viewNode.htmlInfo.getAttribute("autocomplete"),
             viewNode.importantForAutofill,
-            viewNode.inputType
+            viewNode.inputType,
         )
     }
 
-    private fun ViewStructure.HtmlInfo?.getAttribute(name: String) =
-        this?.attributes?.firstOrNull { it.first == name }?.second
+    private fun ViewStructure.HtmlInfo?.getAttribute(name: String) = this?.attributes?.firstOrNull { it.first == name }?.second
 
-    private fun ViewStructure.HtmlInfo?.hasAttribute(name: String) =
-        this?.attributes?.any { it.first == name } == true
+    private fun ViewStructure.HtmlInfo?.hasAttribute(name: String) = this?.attributes?.any { it.first == name } == true
 
     private companion object {
         private const val HTML_AUTOCOMPLETE_ATTR = "autocomplete"

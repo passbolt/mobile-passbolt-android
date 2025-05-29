@@ -32,12 +32,13 @@ import org.koin.core.component.KoinComponent
 import timber.log.Timber
 import java.lang.reflect.Type
 
-open class ResourceTypesListDeserializer : JsonDeserializer<List<ResourceTypeDto>>, KoinComponent {
-
+open class ResourceTypesListDeserializer :
+    JsonDeserializer<List<ResourceTypeDto>>,
+    KoinComponent {
     override fun deserialize(
         json: JsonElement?,
         typeOfT: Type?,
-        context: JsonDeserializationContext?
+        context: JsonDeserializationContext?,
     ): List<ResourceTypeDto> {
         if (json == null || context == null) {
             Timber.e("Json element or deserialization context was null: (${json == null}), (${context == null}")
@@ -47,9 +48,11 @@ open class ResourceTypesListDeserializer : JsonDeserializer<List<ResourceTypeDto
         return if (json.isJsonArray) {
             json.asJsonArray.mapNotNullTo(mutableListOf()) { jsonElement ->
                 if (!jsonElement.isJsonNull) {
-                    val resourceType = context.deserialize<ResourceTypeDto>(
-                        jsonElement, ResourceTypeDto::class.java
-                    )
+                    val resourceType =
+                        context.deserialize<ResourceTypeDto>(
+                            jsonElement,
+                            ResourceTypeDto::class.java,
+                        )
 
                     if (isSupported(resourceType.slug)) {
                         resourceType
@@ -67,6 +70,5 @@ open class ResourceTypesListDeserializer : JsonDeserializer<List<ResourceTypeDto
         }
     }
 
-    private fun isSupported(resourceTypeSlug: String) =
-        allSlugs.contains(resourceTypeSlug)
+    private fun isSupported(resourceTypeSlug: String) = allSlugs.contains(resourceTypeSlug)
 }

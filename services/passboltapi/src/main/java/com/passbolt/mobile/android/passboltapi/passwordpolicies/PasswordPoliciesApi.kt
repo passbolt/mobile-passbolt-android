@@ -28,7 +28,6 @@ import com.passbolt.mobile.android.dto.response.PasswordPoliciesDto
 import retrofit2.http.GET
 
 internal interface PasswordPoliciesApi {
-
     @GET(PASSWORD_POLICIES_SETTINGS)
     suspend fun getPasswordPolicies(): BaseResponse<PasswordPoliciesDto>
 

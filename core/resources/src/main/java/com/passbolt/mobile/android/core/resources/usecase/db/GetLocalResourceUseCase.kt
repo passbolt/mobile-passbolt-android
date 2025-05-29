@@ -31,9 +31,8 @@ import com.passbolt.mobile.android.ui.ResourceModel
 class GetLocalResourceUseCase(
     private val databaseProvider: DatabaseProvider,
     private val resourceModelMapper: ResourceModelMapper,
-    private val getSelectedAccountUseCase: GetSelectedAccountUseCase
+    private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
 ) : AsyncUseCase<GetLocalResourceUseCase.Input, GetLocalResourceUseCase.Output> {
-
     override suspend fun execute(input: Input): Output {
         val userId = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
         return Output(
@@ -41,15 +40,15 @@ class GetLocalResourceUseCase(
                 .get(userId)
                 .resourcesDao()
                 .get(input.resourceId)
-                .let { resourceModelMapper.map(it) }
+                .let { resourceModelMapper.map(it) },
         )
     }
 
     data class Input(
-        val resourceId: String
+        val resourceId: String,
     )
 
     data class Output(
-        val resource: ResourceModel
+        val resource: ResourceModel,
     )
 }

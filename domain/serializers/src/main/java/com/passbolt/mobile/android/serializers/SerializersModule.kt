@@ -51,78 +51,79 @@ import java.util.UUID
 
 const val STRICT_ADAPTERS_ONLY_GSON = "RESOURCE_DTO_GSON"
 
-val serializersModule = module {
-    jsonSchemaModule()
+val serializersModule =
+    module {
+        jsonSchemaModule()
 
-    singleOf(::JsonSchemaValidationRunner)
-    singleOf(::ResourceListDeserializer)
-    singleOf(::ResourceTypesListDeserializer)
-    singleOf(::ZonedDateTimeSerializer)
-    factory {
-        SingleResourceDeserializer(
-            resourceTypeIdToSlugMappingProvider = get(),
-            jsonSchemaValidationRunner = get(),
-            getLocalMetadataKeys = get(),
-            gson = get(named(STRICT_ADAPTERS_ONLY_GSON))
-        )
-    }
-    factory { (
-                  resourceTypeIdToSlugMapping: Map<UUID, String>,
-                  supportedResourceTypesIds: Set<UUID>,
-                  metadataKeys: List<ParsedMetadataKeyModel>,
-                  resourcesSnapshot: ResourcesSnapshot
-              ) ->
-        ResourceListItemDeserializer(
-            jsonSchemaValidationRunner = get(),
-            gson = get(named(STRICT_ADAPTERS_ONLY_GSON)),
-            metadataDecryptor = get<MetadataDecryptor> { parametersOf(metadataKeys) },
-            resourceTypeIdToSlugMapping = resourceTypeIdToSlugMapping,
-            supportedResourceTypesIds = supportedResourceTypesIds,
-            resourcesSnapshot = resourcesSnapshot
-        )
-    }
-    factory { (metadataKeys: List<ParsedMetadataKeyModel>) ->
-        MetadataDecryptor(
-            getSelectedUserPrivateKeyUseCase = get(),
-            passphraseMemoryCache = get(),
-            openPgp = get(),
-            sessionKeysCache = get(),
-            metadataKeys = metadataKeys
-        )
-    }
-    factoryOf(::MetadataEncryptor)
-    single {
-        GsonBuilder()
-            .serializeNulls()
-            .apply {
-                strictTypeAdapters.forEach {
-                    registerTypeAdapter(it.key, it.value)
-                }
-                registerTypeAdapter(
-                    object : TypeToken<List<@JvmSuppressWildcards ResourceResponseDto>>() {}.type,
-                    get<ResourceListDeserializer>()
-                )
-                registerTypeAdapter(
-                    object : TypeToken<List<@JvmSuppressWildcards ResourceTypeDto>>() {}.type,
-                    get<ResourceTypesListDeserializer>()
-                )
-                registerTypeAdapter(ZonedDateTime::class.java, get<ZonedDateTimeSerializer>())
-                registerTypeAdapter(
-                    ResourceResponseDto::class.java,
-                    get<SingleResourceDeserializer>()
-                )
-                registerTypeAdapter(CreateResourceDto::class.java, CreateResourceModelSerializer())
-            }
-            .create()
-    }
+        singleOf(::JsonSchemaValidationRunner)
+        singleOf(::ResourceListDeserializer)
+        singleOf(::ResourceTypesListDeserializer)
+        singleOf(::ZonedDateTimeSerializer)
+        factory {
+            SingleResourceDeserializer(
+                resourceTypeIdToSlugMappingProvider = get(),
+                jsonSchemaValidationRunner = get(),
+                getLocalMetadataKeys = get(),
+                gson = get(named(STRICT_ADAPTERS_ONLY_GSON)),
+            )
+        }
+        factory {
+            (
+                resourceTypeIdToSlugMapping: Map<UUID, String>,
+                supportedResourceTypesIds: Set<UUID>,
+                metadataKeys: List<ParsedMetadataKeyModel>,
+                resourcesSnapshot: ResourcesSnapshot,
+            ),
+            ->
+            ResourceListItemDeserializer(
+                jsonSchemaValidationRunner = get(),
+                gson = get(named(STRICT_ADAPTERS_ONLY_GSON)),
+                metadataDecryptor = get<MetadataDecryptor> { parametersOf(metadataKeys) },
+                resourceTypeIdToSlugMapping = resourceTypeIdToSlugMapping,
+                supportedResourceTypesIds = supportedResourceTypesIds,
+                resourcesSnapshot = resourcesSnapshot,
+            )
+        }
+        factory { (metadataKeys: List<ParsedMetadataKeyModel>) ->
+            MetadataDecryptor(
+                getSelectedUserPrivateKeyUseCase = get(),
+                passphraseMemoryCache = get(),
+                openPgp = get(),
+                sessionKeysCache = get(),
+                metadataKeys = metadataKeys,
+            )
+        }
+        factoryOf(::MetadataEncryptor)
+        single {
+            GsonBuilder()
+                .serializeNulls()
+                .apply {
+                    strictTypeAdapters.forEach {
+                        registerTypeAdapter(it.key, it.value)
+                    }
+                    registerTypeAdapter(
+                        object : TypeToken<List<@JvmSuppressWildcards ResourceResponseDto>>() {}.type,
+                        get<ResourceListDeserializer>(),
+                    )
+                    registerTypeAdapter(
+                        object : TypeToken<List<@JvmSuppressWildcards ResourceTypeDto>>() {}.type,
+                        get<ResourceTypesListDeserializer>(),
+                    )
+                    registerTypeAdapter(ZonedDateTime::class.java, get<ZonedDateTimeSerializer>())
+                    registerTypeAdapter(
+                        ResourceResponseDto::class.java,
+                        get<SingleResourceDeserializer>(),
+                    )
+                    registerTypeAdapter(CreateResourceDto::class.java, CreateResourceModelSerializer())
+                }.create()
+        }
 
-    single(named(STRICT_ADAPTERS_ONLY_GSON)) {
-        GsonBuilder()
-            .apply {
-                strictTypeAdapters.forEach {
-                    registerTypeAdapter(it.key, it.value)
-                }
-            }
-            .create()
+        single(named(STRICT_ADAPTERS_ONLY_GSON)) {
+            GsonBuilder()
+                .apply {
+                    strictTypeAdapters.forEach {
+                        registerTypeAdapter(it.key, it.value)
+                    }
+                }.create()
+        }
     }
-}

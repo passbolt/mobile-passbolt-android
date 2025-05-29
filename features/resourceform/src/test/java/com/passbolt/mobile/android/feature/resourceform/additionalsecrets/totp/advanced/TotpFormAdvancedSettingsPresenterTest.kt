@@ -40,15 +40,15 @@ import org.mockito.kotlin.verifyNoMoreInteractions
  */
 
 class TotpFormAdvancedSettingsPresenterTest : KoinTest {
-
     private val presenter: TotpAdvancedSettingsFormContract.Presenter by inject()
     private val view: TotpAdvancedSettingsFormContract.View = mock()
 
     @get:Rule
-    val koinTestRule = KoinTestRule.create {
-        printLogger(Level.ERROR)
-        modules(totpAdvancedFormModule)
-    }
+    val koinTestRule =
+        KoinTestRule.create {
+            printLogger(Level.ERROR)
+            modules(totpAdvancedFormModule)
+        }
 
     @Test
     fun `view should show correct create title and totp advanced settings on attach`() {
@@ -56,9 +56,9 @@ class TotpFormAdvancedSettingsPresenterTest : KoinTest {
         presenter.argsRetrieved(
             ResourceFormMode.Create(
                 leadingContentType = LeadingContentType.TOTP,
-                parentFolderId = null
+                parentFolderId = null,
             ),
-            totp
+            totp,
         )
 
         verify(view).showCreateTitle()
@@ -78,9 +78,9 @@ class TotpFormAdvancedSettingsPresenterTest : KoinTest {
         presenter.argsRetrieved(
             ResourceFormMode.Create(
                 leadingContentType = LeadingContentType.TOTP,
-                parentFolderId = null
+                parentFolderId = null,
             ),
-            totp
+            totp,
         )
         presenter.totpPeriodChanged(changedExpiry)
         presenter.totpDigitsChanged(changedLength)
@@ -102,12 +102,13 @@ class TotpFormAdvancedSettingsPresenterTest : KoinTest {
         private const val MOCK_LENGTH = "6"
         private val MOCK_ALGORITHM = OtpParseResult.OtpQr.Algorithm.SHA1.name
 
-        private val totp = TotpUiModel(
-            secret = MOCK_SECRET,
-            issuer = MOCK_ISSUER,
-            expiry = MOCK_EXPIRY,
-            length = MOCK_LENGTH,
-            algorithm = MOCK_ALGORITHM
-        )
+        private val totp =
+            TotpUiModel(
+                secret = MOCK_SECRET,
+                issuer = MOCK_ISSUER,
+                expiry = MOCK_EXPIRY,
+                length = MOCK_LENGTH,
+                algorithm = MOCK_ALGORITHM,
+            )
     }
 }

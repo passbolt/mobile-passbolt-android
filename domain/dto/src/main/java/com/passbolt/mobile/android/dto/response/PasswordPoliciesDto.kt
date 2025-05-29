@@ -35,7 +35,7 @@ data class PasswordPoliciesDto(
     @SerializedName("passphrase_generator_settings")
     val passphraseGeneratorSettings: PassphraseGeneratorSettings,
     @SerializedName("external_dictionary_check")
-    val externalDictionaryCheck: Boolean
+    val externalDictionaryCheck: Boolean,
 )
 
 data class PasswordGeneratorSettings(
@@ -61,7 +61,7 @@ data class PasswordGeneratorSettings(
     @SerializedName("mask_char5")
     val maskChar5: Boolean,
     @SerializedName("exclude_look_alike_chars")
-    val excludeLookAlikeChars: Boolean
+    val excludeLookAlikeChars: Boolean,
 )
 
 data class PassphraseGeneratorSettings(
@@ -69,7 +69,7 @@ data class PassphraseGeneratorSettings(
     @SerializedName("word_separator")
     val wordSeparator: String,
     @SerializedName("word_case")
-    val wordCase: CaseType
+    val wordCase: CaseType,
 )
 
 enum class PasswordGeneratorType {
@@ -77,7 +77,7 @@ enum class PasswordGeneratorType {
     PASSWORD,
 
     @SerializedName("passphrase")
-    PASSPHRASE
+    PASSPHRASE,
 }
 
 enum class CaseType {
@@ -88,5 +88,5 @@ enum class CaseType {
     LOWERCASE,
 
     @SerializedName("camelcase")
-    CAMELCASE
+    CAMELCASE,
 }

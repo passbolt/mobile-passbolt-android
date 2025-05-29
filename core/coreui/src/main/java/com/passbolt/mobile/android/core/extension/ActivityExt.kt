@@ -29,8 +29,8 @@ import androidx.navigation.fragment.NavHostFragment
  * @since v1.0
  */
 
-fun AppCompatActivity.findNavHostFragment(@IdRes id: Int) =
-    (supportFragmentManager.findFragmentById(id) as NavHostFragment)
+fun AppCompatActivity.findNavHostFragment(
+    @IdRes id: Int,
+) = (supportFragmentManager.findFragmentById(id) as NavHostFragment)
 
-fun Activity.getRootView(): View =
-    findViewById(android.R.id.content)
+fun Activity.getRootView(): View = findViewById(android.R.id.content)

@@ -31,9 +31,7 @@ import org.junit.Test
 import java.time.ZonedDateTime
 import java.util.UUID
 
-
 class SessionKeysCacheTest {
-
     private val sessionKeysBundleMerger = SessionKeysBundleMerger()
     private val sessionKeysCache = SessionKeysMemoryCache()
 
@@ -42,19 +40,21 @@ class SessionKeysCacheTest {
         val keys1 = emptyList<SessionKeyDto>()
         val keys2 = emptyList<SessionKeyDto>()
         val bundle1Id = UUID.randomUUID()
-        val bundle1 = DecryptedMetadataSessionKeysBundleModel(
-            id = bundle1Id,
-            created = ZonedDateTime.now(),
-            modified = ZonedDateTime.now(),
-            bundle = SessionKeysBundleDto("PASSBOLT_SESSION_KEYS", keys1)
-        )
+        val bundle1 =
+            DecryptedMetadataSessionKeysBundleModel(
+                id = bundle1Id,
+                created = ZonedDateTime.now(),
+                modified = ZonedDateTime.now(),
+                bundle = SessionKeysBundleDto("PASSBOLT_SESSION_KEYS", keys1),
+            )
         val bundle2Id = UUID.randomUUID()
-        val bundle2 = DecryptedMetadataSessionKeysBundleModel(
-            id = bundle2Id,
-            created = ZonedDateTime.now().plusDays(1),
-            modified = ZonedDateTime.now().plusDays(1),
-            bundle = SessionKeysBundleDto("PASSBOLT_SESSION_KEYS", keys2)
-        )
+        val bundle2 =
+            DecryptedMetadataSessionKeysBundleModel(
+                id = bundle2Id,
+                created = ZonedDateTime.now().plusDays(1),
+                modified = ZonedDateTime.now().plusDays(1),
+                bundle = SessionKeysBundleDto("PASSBOLT_SESSION_KEYS", keys2),
+            )
 
         val result = sessionKeysBundleMerger.merge(listOf(bundle1, bundle2))
         sessionKeysCache.value = result

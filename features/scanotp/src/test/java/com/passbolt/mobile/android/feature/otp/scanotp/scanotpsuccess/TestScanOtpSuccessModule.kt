@@ -54,26 +54,28 @@ internal val mockGetDefaultCreateContentTypeUseCase = mock<GetDefaultCreateConte
 internal val mockMetadataPrivateKeysHelperInteractor = mock<MetadataPrivateKeysHelperInteractor>()
 
 @ExperimentalCoroutinesApi
-internal val testScanOtpSuccessModule = module {
-    factoryOf(::TestCoroutineLaunchContext) bind CoroutineLaunchContext::class
-    single { mockResourceCreateActionsInteractor }
-    single { mockResourceUpdateActionsInteractor }
+internal val testScanOtpSuccessModule =
+    module {
+        factoryOf(::TestCoroutineLaunchContext) bind CoroutineLaunchContext::class
+        single { mockResourceCreateActionsInteractor }
+        single { mockResourceUpdateActionsInteractor }
 
-    factory<ScanOtpSuccessContract.Presenter> {
-        ScanOtpSuccessPresenter(
-            idToSlugMappingProvider = mockIdToSlugMappingProvider,
-            getDefaultCreateContentTypeUseCase = mockGetDefaultCreateContentTypeUseCase,
-            metadataPrivateKeysHelperInteractor = mockMetadataPrivateKeysHelperInteractor,
-            coroutineLaunchContext = get()
-        )
+        factory<ScanOtpSuccessContract.Presenter> {
+            ScanOtpSuccessPresenter(
+                idToSlugMappingProvider = mockIdToSlugMappingProvider,
+                getDefaultCreateContentTypeUseCase = mockGetDefaultCreateContentTypeUseCase,
+                metadataPrivateKeysHelperInteractor = mockMetadataPrivateKeysHelperInteractor,
+                coroutineLaunchContext = get(),
+            )
+        }
+        single(named(JSON_MODEL_GSON)) { Gson() }
+        single {
+            Configuration
+                .builder()
+                .jsonProvider(GsonJsonProvider())
+                .mappingProvider(GsonMappingProvider())
+                .options(EnumSet.noneOf(Option::class.java))
+                .build()
+        }
+        singleOf(::JsonPathJsonPathOps) bind JsonPathsOps::class
     }
-    single(named(JSON_MODEL_GSON)) { Gson() }
-    single {
-        Configuration.builder()
-            .jsonProvider(GsonJsonProvider())
-            .mappingProvider(GsonMappingProvider())
-            .options(EnumSet.noneOf(Option::class.java))
-            .build()
-    }
-    singleOf(::JsonPathJsonPathOps) bind JsonPathsOps::class
-}

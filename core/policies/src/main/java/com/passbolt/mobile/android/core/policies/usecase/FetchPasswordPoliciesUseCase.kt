@@ -31,9 +31,8 @@ import com.passbolt.mobile.android.ui.PasswordPolicies
 
 class FetchPasswordPoliciesUseCase(
     private val passwordPoliciesRepository: PasswordPoliciesRepository,
-    private val passwordPoliciesMapper: PasswordPoliciesMapper
+    private val passwordPoliciesMapper: PasswordPoliciesMapper,
 ) : AsyncUseCase<Unit, FetchPasswordPoliciesUseCase.Output> {
-
     override suspend fun execute(input: Unit): Output =
         when (val response = passwordPoliciesRepository.getPasswordPoliciesSettings()) {
             is NetworkResult.Failure -> Output.Failure(response)
@@ -41,11 +40,12 @@ class FetchPasswordPoliciesUseCase(
         }
 
     sealed class Output {
-
         data class Success(
-            val passwordPolicies: PasswordPolicies
+            val passwordPolicies: PasswordPolicies,
         ) : Output()
 
-        data class Failure<T : Any>(val response: NetworkResult.Failure<T>) : Output()
+        data class Failure<T : Any>(
+            val response: NetworkResult.Failure<T>,
+        ) : Output()
     }
 }

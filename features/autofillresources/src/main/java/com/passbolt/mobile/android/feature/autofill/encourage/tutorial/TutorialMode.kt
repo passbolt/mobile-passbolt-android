@@ -28,7 +28,7 @@ import com.passbolt.mobile.android.core.localization.R as LocalizationR
  */
 sealed class TutorialMode(
     @StringRes val title: Int,
-    @StringRes val description: Int
+    @StringRes val description: Int,
 ) : Serializable {
     val samsungUrl: String = "https://www.passbolt.com/help/mobile/android/autofill/samsung"
     val xiaomiUrl: String = "https://www.passbolt.com/help/mobile/android/autofill/xiaomi"
@@ -37,11 +37,11 @@ sealed class TutorialMode(
 
     data object Overlay : TutorialMode(
         LocalizationR.string.dialog_encourage_autofill_overlay_header,
-        LocalizationR.string.dialog_encourage_autofill_overlay_description
+        LocalizationR.string.dialog_encourage_autofill_overlay_description,
     )
 
     data object Service : TutorialMode(
         LocalizationR.string.dialog_encourage_autofill_service_header,
-        LocalizationR.string.dialog_encourage_autofill_service_description
+        LocalizationR.string.dialog_encourage_autofill_service_description,
     )
 }

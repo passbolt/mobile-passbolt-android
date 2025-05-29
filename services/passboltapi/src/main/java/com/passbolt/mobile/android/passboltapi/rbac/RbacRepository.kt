@@ -28,10 +28,10 @@ import com.passbolt.mobile.android.core.networking.callWithHandler
 
 class RbacRepository(
     private val rbacDataSource: RbacDataSource,
-    private val responseHandler: ResponseHandler
+    private val responseHandler: ResponseHandler,
 ) {
-
-    suspend fun getMyRbacPermissions() = callWithHandler(responseHandler) {
-        rbacDataSource.getMyRbacPermissions()
-    }
+    suspend fun getMyRbacPermissions() =
+        callWithHandler(responseHandler) {
+            rbacDataSource.getMyRbacPermissions()
+        }
 }

@@ -38,10 +38,11 @@ class GetLocalParentFolderPermissionsToApplyToNewItemUseCase(
     private val databaseProvider: DatabaseProvider,
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
     private val permissionsModelMapper: PermissionsModelMapper,
-    private val getSelectedAccountDataUseCase: GetSelectedAccountDataUseCase
-) : AsyncUseCase<GetLocalParentFolderPermissionsToApplyToNewItemUseCase.Input,
-        GetLocalParentFolderPermissionsToApplyToNewItemUseCase.Output> {
-
+    private val getSelectedAccountDataUseCase: GetSelectedAccountDataUseCase,
+) : AsyncUseCase<
+        GetLocalParentFolderPermissionsToApplyToNewItemUseCase.Input,
+        GetLocalParentFolderPermissionsToApplyToNewItemUseCase.Output,
+    > {
     /**
      * Gets folder permissions which are to be copied and applied to a newly created resource or folder in that folder.
      *
@@ -51,60 +52,69 @@ class GetLocalParentFolderPermissionsToApplyToNewItemUseCase(
         val currentAccount = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
         val currentAccountServerId = requireNotNull(getSelectedAccountDataUseCase.execute(Unit).serverId)
 
-        val foldersDao = databaseProvider
-            .get(currentAccount)
-            .foldersDao()
+        val foldersDao =
+            databaseProvider
+                .get(currentAccount)
+                .foldersDao()
 
-        val resourcesDao = databaseProvider
-            .get(currentAccount)
-            .resourcesDao()
+        val resourcesDao =
+            databaseProvider
+                .get(currentAccount)
+                .resourcesDao()
 
-        val groupsPermissions = foldersDao.getFolderGroupsPermissions(input.parentFolderId)
-            .map { it.copy(permissionId = SharePermissionsModelMapper.TEMPORARY_NEW_PERMISSION_ID) }
-        val usersPermissions = foldersDao.getFolderUsersPermissions(input.parentFolderId)
-            .map {
-                if (it.userId != currentAccountServerId) {
-                    // new permissions from parent folder to inherit
-                    it.copy(permissionId = SharePermissionsModelMapper.TEMPORARY_NEW_PERMISSION_ID)
-                } else {
-                    // special case: permission for current user
-                    //
-                    // use permission values from parent folder to apply but overwrite the permission id
-                    val currentUserPermissions = when (val itemId = input.itemId) {
-                        is Input.ItemId.FolderId -> foldersDao.getFolderUsersPermissions(itemId.folderId)
-                        is Input.ItemId.ResourceId -> resourcesDao.getResourceUsersPermissions(itemId.resourceId)
-                    }
+        val groupsPermissions =
+            foldersDao
+                .getFolderGroupsPermissions(input.parentFolderId)
+                .map { it.copy(permissionId = SharePermissionsModelMapper.TEMPORARY_NEW_PERMISSION_ID) }
+        val usersPermissions =
+            foldersDao
+                .getFolderUsersPermissions(input.parentFolderId)
+                .map {
+                    if (it.userId != currentAccountServerId) {
+                        // new permissions from parent folder to inherit
+                        it.copy(permissionId = SharePermissionsModelMapper.TEMPORARY_NEW_PERMISSION_ID)
+                    } else {
+                        // special case: permission for current user
+                        //
+                        // use permission values from parent folder to apply but overwrite the permission id
+                        val currentUserPermissions =
+                            when (val itemId = input.itemId) {
+                                is Input.ItemId.FolderId -> foldersDao.getFolderUsersPermissions(itemId.folderId)
+                                is Input.ItemId.ResourceId -> resourcesDao.getResourceUsersPermissions(itemId.resourceId)
+                            }
 
-                    require(currentUserPermissions.size == 1) {
-                        "On newly created item there should be exactly one permission" +
+                        require(currentUserPermissions.size == 1) {
+                            "On newly created item there should be exactly one permission" +
                                 " - only for the current user (the one who just created the item)"
+                        }
+                        it.copy(permissionId = currentUserPermissions[0].permissionId)
                     }
-                    it.copy(permissionId = currentUserPermissions[0].permissionId)
                 }
-            }
 
         return Output(
             permissionsModelMapper.map(
                 groupsPermissions,
-                usersPermissions
-            )
+                usersPermissions,
+            ),
         )
     }
 
     data class Input(
         val parentFolderId: String,
-        val itemId: ItemId
+        val itemId: ItemId,
     ) {
-
         sealed class ItemId {
+            data class ResourceId(
+                val resourceId: String,
+            ) : ItemId()
 
-            data class ResourceId(val resourceId: String) : ItemId()
-
-            data class FolderId(val folderId: String) : ItemId()
+            data class FolderId(
+                val folderId: String,
+            ) : ItemId()
         }
     }
 
     data class Output(
-        val permissions: List<PermissionModelUi>
+        val permissions: List<PermissionModelUi>,
     )
 }

@@ -46,31 +46,31 @@ import org.mockito.kotlin.verifyNoMoreInteractions
 
 @ExperimentalCoroutinesApi
 class ResourceMoreMenuTest : KoinTest {
-
     private val presenter: ResourceMoreMenuContract.Presenter by inject()
     private val view = mock<ResourceMoreMenuContract.View>()
 
     @get:Rule
-    val koinTestRule = KoinTestRule.create {
-        printLogger(Level.ERROR)
-        modules(testModule)
-    }
+    val koinTestRule =
+        KoinTestRule.create {
+            printLogger(Level.ERROR)
+            modules(testModule)
+        }
 
     @Test
     fun `all enabled items should be displayed`() {
         mockCreateResourceMoreMenuModelUseCase.stub {
             onBlocking { execute(any()) } doReturn
-                    CreateResourceMoreMenuModelUseCase.Output(
-                        ResourceMoreMenuModel(
-                            title = "title",
-                            canCopy = true,
-                            canDelete = true,
-                            canEdit = true,
-                            canShare = true,
-                            favouriteOption = ADD_TO_FAVOURITES,
-                            descriptionOptions = listOf(HAS_NOTE, HAS_METADATA_DESCRIPTION)
-                        )
-                    )
+                CreateResourceMoreMenuModelUseCase.Output(
+                    ResourceMoreMenuModel(
+                        title = "title",
+                        canCopy = true,
+                        canDelete = true,
+                        canEdit = true,
+                        canShare = true,
+                        favouriteOption = ADD_TO_FAVOURITES,
+                        descriptionOptions = listOf(HAS_NOTE, HAS_METADATA_DESCRIPTION),
+                    ),
+                )
         }
 
         presenter.apply {
@@ -103,9 +103,9 @@ class ResourceMoreMenuTest : KoinTest {
                         canEdit = false,
                         canShare = false,
                         favouriteOption = REMOVE_FROM_FAVOURITES,
-                        descriptionOptions = emptyList()
-                    )
-                )
+                        descriptionOptions = emptyList(),
+                    ),
+                ),
             )
         }
 

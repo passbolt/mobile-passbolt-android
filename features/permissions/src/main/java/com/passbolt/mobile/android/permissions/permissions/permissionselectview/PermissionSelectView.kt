@@ -34,33 +34,34 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class PermissionSelectView @JvmOverloads constructor(
-    context: Context,
-    attrs: AttributeSet? = null
-) : RadioGroup(context, attrs) {
-
-    var onPermissionSelectedListener: ((ResourcePermission) -> Unit)? = null
-
-    private val buttons = hashMapOf<ResourcePermission, Int>()
-    private var selectedPermission: ResourcePermission? = null
-
-    init {
-        createChoices(context)
-        setChangeListener()
-    }
-
-    private fun createChoices(context: Context) {
-        ResourcePermission.values()
-            .forEach {
-                addView(createRadioButton(context, it))
-            }
-    }
-
-    private fun createRadioButton(
+class PermissionSelectView
+    @JvmOverloads
+    constructor(
         context: Context,
-        permission: ResourcePermission
-    ) =
-        MaterialRadioButton(context)
+        attrs: AttributeSet? = null,
+    ) : RadioGroup(context, attrs) {
+        var onPermissionSelectedListener: ((ResourcePermission) -> Unit)? = null
+
+        private val buttons = hashMapOf<ResourcePermission, Int>()
+        private var selectedPermission: ResourcePermission? = null
+
+        init {
+            createChoices(context)
+            setChangeListener()
+        }
+
+        private fun createChoices(context: Context) {
+            ResourcePermission
+                .values()
+                .forEach {
+                    addView(createRadioButton(context, it))
+                }
+        }
+
+        private fun createRadioButton(
+            context: Context,
+            permission: ResourcePermission,
+        ) = MaterialRadioButton(context)
             .apply {
                 id = generateViewId()
                 text = permission.getPermissionTextValue(context)
@@ -68,12 +69,13 @@ class PermissionSelectView @JvmOverloads constructor(
                     permission.getPermissionIcon(context),
                     null,
                     ContextCompat.getDrawable(context, CoreUiR.drawable.radio_button_selector),
-                    null
+                    null,
                 )
-                layoutParams = LayoutParams(
-                    LayoutParams.MATCH_PARENT,
-                    LayoutParams.WRAP_CONTENT
-                )
+                layoutParams =
+                    LayoutParams(
+                        LayoutParams.MATCH_PARENT,
+                        LayoutParams.WRAP_CONTENT,
+                    )
                 updatePadding(right = resources.getDimension(CoreUiR.dimen.dp_16).toInt())
                 compoundDrawablePadding = context.resources.getDimension(CoreUiR.dimen.dp_12).toInt()
                 typeface = ResourcesCompat.getFont(context, CoreUiR.font.inter_semi_bold)
@@ -82,19 +84,22 @@ class PermissionSelectView @JvmOverloads constructor(
                 buttons[permission] = id
             }
 
-    private fun setChangeListener() {
-        setOnCheckedChangeListener { _, buttonId ->
-            val permission = buttons.keys.first { buttons[it] == buttonId }
-            selectPermission(permission)
+        private fun setChangeListener() {
+            setOnCheckedChangeListener { _, buttonId ->
+                val permission = buttons.keys.first { buttons[it] == buttonId }
+                selectPermission(permission)
+            }
         }
-    }
 
-    fun selectPermission(resourcePermission: ResourcePermission, silently: Boolean = false) {
-        val buttonId = requireNotNull(buttons[resourcePermission])
-        findViewById<MaterialRadioButton>(buttonId).isChecked = true
-        selectedPermission = resourcePermission
-        if (!silently) {
-            onPermissionSelectedListener?.invoke(resourcePermission)
+        fun selectPermission(
+            resourcePermission: ResourcePermission,
+            silently: Boolean = false,
+        ) {
+            val buttonId = requireNotNull(buttons[resourcePermission])
+            findViewById<MaterialRadioButton>(buttonId).isChecked = true
+            selectedPermission = resourcePermission
+            if (!silently) {
+                onPermissionSelectedListener?.invoke(resourcePermission)
+            }
         }
     }
-}

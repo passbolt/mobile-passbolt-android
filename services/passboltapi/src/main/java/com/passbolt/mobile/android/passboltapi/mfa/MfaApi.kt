@@ -33,13 +33,12 @@ import retrofit2.http.Query
  */
 
 internal interface MfaApi {
-
     @POST(MFA_VERIFICATION_TOTP)
     suspend fun verifyTotp(
         @Body totpRequest: TotpRequest,
         // auth header needs to be added manually because this request
         // requires auth token and is before user is signed in
-        @Header(MFA_AUTH_HEADER) authHeader: String?
+        @Header(MFA_AUTH_HEADER) authHeader: String?,
     ): Response<Void>
 
     @POST(MFA_VERIFICATION_YUBIKEY)
@@ -47,7 +46,7 @@ internal interface MfaApi {
         @Body hotpRequest: HotpRequest,
         // auth header needs to be added manually because this request
         // requires auth token and is before user is signed in
-        @Header(MFA_AUTH_HEADER) authHeader: String?
+        @Header(MFA_AUTH_HEADER) authHeader: String?,
     ): Response<Void>
 
     @POST(MFA_VERIFICATION_DUO_PROMPT)
@@ -55,7 +54,7 @@ internal interface MfaApi {
         // auth header needs to be added manually because this request
         // requires auth token and is before user is signed in
         @Header(MFA_AUTH_HEADER) authHeader: String?,
-        @Query(QUERY_MOBILE) isMobile: Int = 1
+        @Query(QUERY_MOBILE) isMobile: Int = 1,
     ): Response<Void>
 
     @GET(MFA_VERIFICATION_DUO_CALLBACK)
@@ -66,7 +65,7 @@ internal interface MfaApi {
         @Query(QUERY_STATE) state: String?,
         @Query(QUERY_DUO_CODE) code: String?,
         @Header("Cookie") passboltDuoState: String?,
-        @Query(QUERY_MOBILE) isMobile: Int = 1
+        @Query(QUERY_MOBILE) isMobile: Int = 1,
     ): Response<Void>
 
     private companion object {

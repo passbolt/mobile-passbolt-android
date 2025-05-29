@@ -27,18 +27,29 @@ import com.passbolt.mobile.android.ui.TagModel
  * @since v1.0
  */
 interface ResourceTagsContract {
-
     interface Presenter : DataRefreshViewReactiveContract.Presenter<View> {
-        fun argsRetrieved(resourceId: String, mode: PermissionsMode)
+        fun argsRetrieved(
+            resourceId: String,
+            mode: PermissionsMode,
+        )
     }
 
     interface View : DataRefreshViewReactiveContract.View {
         fun displayTitle(name: String)
-        fun displayInitialsIcon(name: String, initials: String)
+
+        fun displayInitialsIcon(
+            name: String,
+            initials: String,
+        )
+
         fun showFavouriteStar()
+
         fun showTags(tags: List<TagModel>)
+
         fun showDataRefreshError()
+
         fun showContentNotAvailable()
+
         fun navigateToHome()
     }
 }

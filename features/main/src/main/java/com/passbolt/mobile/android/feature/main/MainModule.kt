@@ -28,8 +28,9 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-val mainModule = module {
-    mainModule()
-    encouragementsModule()
-    encourageChromeNativeAutofillModule()
-}
+val mainModule =
+    module {
+        mainModule()
+        encouragementsModule()
+        encourageChromeNativeAutofillModule()
+    }

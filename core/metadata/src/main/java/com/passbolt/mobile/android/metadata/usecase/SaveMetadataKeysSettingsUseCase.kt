@@ -29,25 +29,26 @@ import com.passbolt.mobile.android.ui.MetadataKeysSettingsModel
  * @since v1.0
  */
 class SaveMetadataKeysSettingsUseCase(
-    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory
+    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory,
 ) : AsyncUseCase<SaveMetadataKeysSettingsUseCase.Input, Unit>,
     com.passbolt.mobile.android.core.accounts.usecase.SelectedAccountUseCase {
-
     override suspend fun execute(input: Input) {
         val fileName = MetadataSettingsFileName(selectedAccountId).name
         val sharedPreferences = encryptedSharedPreferencesFactory.get("$fileName.xml")
         with(sharedPreferences.edit()) {
             putBoolean(
                 ALLOW_USAGE_OF_PERSONAL_KEYS,
-                input.metadataKeysSettingsModel.allowUsageOfPersonalKeys
+                input.metadataKeysSettingsModel.allowUsageOfPersonalKeys,
             )
             putBoolean(
                 ZERO_KNOWLEDGE_KEY_SHARE,
-                input.metadataKeysSettingsModel.zeroKnowledgeKeyShare
+                input.metadataKeysSettingsModel.zeroKnowledgeKeyShare,
             )
             apply()
         }
     }
 
-    data class Input(val metadataKeysSettingsModel: MetadataKeysSettingsModel)
+    data class Input(
+        val metadataKeysSettingsModel: MetadataKeysSettingsModel,
+    )
 }

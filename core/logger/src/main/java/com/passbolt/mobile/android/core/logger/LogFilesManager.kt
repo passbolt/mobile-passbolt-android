@@ -34,9 +34,8 @@ class LogFilesManager(
     private val appContext: Context,
     private val envInfoProvider: EnvInfoProvider,
     private val getGlobalPreferencesUseCase: GetGlobalPreferencesUseCase,
-    private val updateGlobalPreferencesUseCase: UpdateGlobalPreferencesUseCase
+    private val updateGlobalPreferencesUseCase: UpdateGlobalPreferencesUseCase,
 ) {
-
     /**
      * Initializes the log file. If no file exists a new one is created. If a log file exists, expiry time is checked -
      * if still valid the current log file is returned, if not the current log file is deleted and a new one is created.
@@ -65,19 +64,20 @@ class LogFilesManager(
         File(logFileDirectory(), LOG_FILE_NAME)
             .absolutePath
 
-    private fun logFileDirectory() =
-        File(appContext.filesDir, LOG_DIR_NAME)
+    private fun logFileDirectory() = File(appContext.filesDir, LOG_DIR_NAME)
 
     private fun createNewLogFile(): String {
         val directory = logFileDirectory().apply { mkdir() }
-        val logFilePath = File(directory, LOG_FILE_NAME).apply {
-            createNewFile()
-            writeText(prepareInfoHeader())
-        }.absolutePath
+        val logFilePath =
+            File(directory, LOG_FILE_NAME)
+                .apply {
+                    createNewFile()
+                    writeText(prepareInfoHeader())
+                }.absolutePath
         updateGlobalPreferencesUseCase.execute(
             UpdateGlobalPreferencesUseCase.Input(
-                debugLogFileCreationDateTime = LocalDateTime.now()
-            )
+                debugLogFileCreationDateTime = LocalDateTime.now(),
+            ),
         )
         return logFilePath
     }
@@ -88,9 +88,8 @@ class LogFilesManager(
             "Device: %s".format(envInfo.deviceName),
             "Android %s".format(envInfo.osName),
             "Passbolt %s".format(envInfo.appName),
-            System.lineSeparator()
-        )
-            .joinToString(separator = System.lineSeparator())
+            System.lineSeparator(),
+        ).joinToString(separator = System.lineSeparator())
     }
 
     companion object {

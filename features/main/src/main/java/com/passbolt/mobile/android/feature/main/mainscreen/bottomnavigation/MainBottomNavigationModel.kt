@@ -23,4 +23,6 @@
 
 package com.passbolt.mobile.android.feature.main.mainscreen.bottomnavigation
 
-data class MainBottomNavigationModel(val isOtpTabVisible: Boolean)
+data class MainBottomNavigationModel(
+    val isOtpTabVisible: Boolean,
+)

@@ -63,26 +63,30 @@ class PermissionsPresenter(
     private val resourceShareInteractor: ResourceShareInteractor,
     private val homeDataInteractor: HomeDataInteractor,
     private val resourceTypeIdToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider,
-    coroutineLaunchContext: CoroutineLaunchContext
-) : PermissionsContract.Presenter,
-    DataRefreshViewReactivePresenter<PermissionsContract.View>(coroutineLaunchContext) {
-
+    coroutineLaunchContext: CoroutineLaunchContext,
+) : DataRefreshViewReactivePresenter<PermissionsContract.View>(coroutineLaunchContext),
+    PermissionsContract.Presenter {
     override var view: PermissionsContract.View? = null
     private val job = SupervisorJob()
     private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
-    private val missingItemHandler = CoroutineExceptionHandler { _, throwable ->
-        if (throwable is NullPointerException) {
-            view?.showContentNotAvailable()
-            view?.navigateToHome()
+    private val missingItemHandler =
+        CoroutineExceptionHandler { _, throwable ->
+            if (throwable is NullPointerException) {
+                view?.showContentNotAvailable()
+                view?.navigateToHome()
+            }
         }
-    }
 
     private lateinit var mode: PermissionsMode
     private lateinit var permissionsItem: PermissionsItem
     private lateinit var id: String
     private lateinit var recipients: MutableList<PermissionModelUi>
 
-    override fun argsReceived(permissionsItem: PermissionsItem, id: String, mode: PermissionsMode) {
+    override fun argsReceived(
+        permissionsItem: PermissionsItem,
+        id: String,
+        mode: PermissionsMode,
+    ) {
         this.mode = mode
         this.id = id
         this.permissionsItem = permissionsItem
@@ -101,26 +105,30 @@ class PermissionsPresenter(
         view?.showDataRefreshError()
     }
 
-    private fun getPermissions(permissionsItem: PermissionsItem, id: String) {
+    private fun getPermissions(
+        permissionsItem: PermissionsItem,
+        id: String,
+    ) {
         scope.launch(missingItemHandler) {
             if (!::recipients.isInitialized) {
-                recipients = when (permissionsItem) {
-                    PermissionsItem.RESOURCE ->
-                        getLocalResourcePermissionsUseCase
-                            .execute(GetLocalResourcePermissionsUseCase.Input(id))
-                            .permissions
-                            .toMutableList()
-                    PermissionsItem.FOLDER ->
-                        getLocalFolderPermissionsUseCase
-                            .execute(GetLocalFolderPermissionsUseCase.Input(id))
-                            .permissions
-                            .toMutableList()
-                }
+                recipients =
+                    when (permissionsItem) {
+                        PermissionsItem.RESOURCE ->
+                            getLocalResourcePermissionsUseCase
+                                .execute(GetLocalResourcePermissionsUseCase.Input(id))
+                                .permissions
+                                .toMutableList()
+                        PermissionsItem.FOLDER ->
+                            getLocalFolderPermissionsUseCase
+                                .execute(GetLocalFolderPermissionsUseCase.Input(id))
+                                .permissions
+                                .toMutableList()
+                    }
             }
             view?.showPermissions(
                 recipients.apply {
                     sortWith(permissionModelUiComparator)
-                }
+                },
             )
             if (recipients.isEmpty()) {
                 view?.showEmptyState()
@@ -134,14 +142,17 @@ class PermissionsPresenter(
         when (mode) {
             PermissionsMode.VIEW -> {
                 scope.launch(missingItemHandler) {
-                    val isOwner = when (permissionsItem) {
-                        PermissionsItem.RESOURCE ->
-                            getLocalResourceUseCase.execute(GetLocalResourceUseCase.Input(id))
-                                .resource.permission == ResourcePermission.OWNER
-                        PermissionsItem.FOLDER ->
-                            getLocalFolderUseCase.execute(GetLocalFolderDetailsUseCase.Input(id))
-                                .folder.permission == ResourcePermission.OWNER
-                    }
+                    val isOwner =
+                        when (permissionsItem) {
+                            PermissionsItem.RESOURCE ->
+                                getLocalResourceUseCase
+                                    .execute(GetLocalResourceUseCase.Input(id))
+                                    .resource.permission == ResourcePermission.OWNER
+                            PermissionsItem.FOLDER ->
+                                getLocalFolderUseCase
+                                    .execute(GetLocalFolderDetailsUseCase.Input(id))
+                                    .folder.permission == ResourcePermission.OWNER
+                        }
                     // currently enable edit only on resource
                     if (isOwner && permissionsItem == PermissionsItem.RESOURCE) {
                         view?.showEditButton()
@@ -188,19 +199,19 @@ class PermissionsPresenter(
 
     private fun shouldReEncryptUserResourceMetadataWithSharedKey(
         contentType: ContentType,
-        resource: ResourceModel
-    ) =
-        contentType.isV5() && resource.metadataKeyType == MetadataKeyTypeModel.PERSONAL && recipients.size > 1
+        resource: ResourceModel,
+    ) = contentType.isV5() && resource.metadataKeyType == MetadataKeyTypeModel.PERSONAL && recipients.size > 1
 
     private fun updateIfNeededAndShareResource() {
         view?.showProgress()
         scope.launch {
             val resource = getLocalResourceUseCase.execute(GetLocalResourceUseCase.Input(id)).resource
-            val contentType = ContentType.fromSlug(
-                resourceTypeIdToSlugMappingProvider.provideMappingForSelectedAccount()[
-                    UUID.fromString(resource.resourceTypeId)
-                ]!!
-            )
+            val contentType =
+                ContentType.fromSlug(
+                    resourceTypeIdToSlugMappingProvider.provideMappingForSelectedAccount()[
+                        UUID.fromString(resource.resourceTypeId),
+                    ]!!,
+                )
 
             if (shouldReEncryptUserResourceMetadataWithSharedKey(contentType, resource)) {
                 reEncryptUserResourceMetadataWithSharedKey(resource)
@@ -212,9 +223,10 @@ class PermissionsPresenter(
     }
 
     private suspend fun reEncryptUserResourceMetadataWithSharedKey(resource: ResourceModel) {
-        val resourceUpdateActionsInteractor = get<ResourceUpdateActionsInteractor> {
-            parametersOf(resource, needSessionRefreshFlow, sessionRefreshedFlow)
-        }
+        val resourceUpdateActionsInteractor =
+            get<ResourceUpdateActionsInteractor> {
+                parametersOf(resource, needSessionRefreshFlow, sessionRefreshedFlow)
+            }
         when (resourceUpdateActionsInteractor.reEncryptResourceMetadata().single()) {
             is ResourceUpdateActionResult.Success -> {
                 Timber.d("Resource metadata re-encrypted with shared key")
@@ -224,9 +236,11 @@ class PermissionsPresenter(
     }
 
     private suspend fun shareResource() {
-        when (runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
-            resourceShareInteractor.simulateAndShareResource(id, recipients)
-        }) {
+        when (
+            runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+                resourceShareInteractor.simulateAndShareResource(id, recipients)
+            }
+        ) {
             is Output.SecretDecryptFailure -> view?.showSecretDecryptFailure()
             is Output.SecretEncryptFailure -> view?.showSecretEncryptFailure()
             is Output.SecretFetchFailure -> view?.showSecretFetchFailure()
@@ -234,7 +248,7 @@ class PermissionsPresenter(
             is Output.SimulateShareFailure -> view?.showShareSimulationFailure()
             is Output.Success -> shareSuccess()
             is Output.Unauthorized -> {
-                /* not interested */
+                // not interested
             }
         }
     }
@@ -249,7 +263,7 @@ class PermissionsPresenter(
     override fun addPermissionClick() {
         view?.navigateToSelectShareRecipients(
             recipients.filterIsInstance<PermissionModelUi.GroupPermissionModel>(),
-            recipients.filterIsInstance<PermissionModelUi.UserPermissionModel>()
+            recipients.filterIsInstance<PermissionModelUi.UserPermissionModel>(),
         )
     }
 
@@ -269,7 +283,7 @@ class PermissionsPresenter(
                     PermissionModelUi.UserPermissionModel(
                         permission.permission,
                         permission.permissionId,
-                        existingPermission.user.copy()
+                        existingPermission.user.copy(),
                     )
             }
     }
@@ -291,7 +305,7 @@ class PermissionsPresenter(
                     PermissionModelUi.GroupPermissionModel(
                         permission.permission,
                         permission.permissionId,
-                        existingPermission.group.copy()
+                        existingPermission.group.copy(),
                     )
             }
     }

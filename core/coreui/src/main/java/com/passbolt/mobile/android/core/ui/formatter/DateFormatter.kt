@@ -27,9 +27,7 @@ import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
 class DateFormatter(
-    private val dateTimeFormatter: DateTimeFormatter
+    private val dateTimeFormatter: DateTimeFormatter,
 ) {
-
-    fun format(date: ZonedDateTime) =
-        dateTimeFormatter.format(date)
+    fun format(date: ZonedDateTime) = dateTimeFormatter.format(date)
 }

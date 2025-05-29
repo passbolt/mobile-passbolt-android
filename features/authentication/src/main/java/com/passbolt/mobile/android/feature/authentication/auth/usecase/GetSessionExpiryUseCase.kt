@@ -38,9 +38,8 @@ import java.time.ZonedDateTime
 class GetSessionExpiryUseCase(
     private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory,
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
-    private val getServerRsaPublicKeyUseCase: GetServerPublicRsaKeyUseCase
+    private val getServerRsaPublicKeyUseCase: GetServerPublicRsaKeyUseCase,
 ) : UseCase<Unit, GetSessionExpiryUseCase.Output> {
-
     override fun execute(input: Unit): Output {
         val userId = getSelectedAccountUseCase.execute(Unit).selectedAccount
         userId?.let {
@@ -65,7 +64,9 @@ class GetSessionExpiryUseCase(
     sealed class Output {
         data object JwtAlreadyExpired : Output()
 
-        data class JwtWillExpire(val accessTokenExpirySeconds: ZonedDateTime) : Output()
+        data class JwtWillExpire(
+            val accessTokenExpirySeconds: ZonedDateTime,
+        ) : Output()
 
         data object NoJwt : Output()
     }

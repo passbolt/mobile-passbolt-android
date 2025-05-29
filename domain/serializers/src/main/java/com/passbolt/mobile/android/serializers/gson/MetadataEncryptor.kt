@@ -10,39 +10,41 @@ import timber.log.Timber
 class MetadataEncryptor(
     private val getSelectedUserPrivateKeyUseCase: GetSelectedUserPrivateKeyUseCase,
     private val getLocalMetadataKeyUseCase: GetLocalMetadataKeyUseCase,
-    private val openPgp: OpenPgp
+    private val openPgp: OpenPgp,
 ) {
-
     suspend fun encryptMetadata(
         metadataKeyTypeModel: MetadataKeyTypeModel,
         metadataKeyId: String,
         metadataJsonString: String,
-        usersPrivateKeyPassphrase: ByteArray
-    ): Output {
-        return try {
-            val (key, passphrase) = when (metadataKeyTypeModel) {
-                MetadataKeyTypeModel.PERSONAL -> {
-                    val privateKey = getSelectedUserPrivateKeyUseCase.execute(Unit).privateKey
-                    require(privateKey != null) { "Selected user private key not found" }
-                    privateKey to usersPrivateKeyPassphrase
-                }
-                MetadataKeyTypeModel.SHARED -> {
-                    val metadataPrivateKey = getLocalMetadataKeyUseCase.execute(
-                        GetLocalMetadataKeyUseCase.Input(metadataKeyId)
-                    )
-                        .metadataPrivateKeys
-                        .firstOrNull()
+        usersPrivateKeyPassphrase: ByteArray,
+    ): Output =
+        try {
+            val (key, passphrase) =
+                when (metadataKeyTypeModel) {
+                    MetadataKeyTypeModel.PERSONAL -> {
+                        val privateKey = getSelectedUserPrivateKeyUseCase.execute(Unit).privateKey
+                        require(privateKey != null) { "Selected user private key not found" }
+                        privateKey to usersPrivateKeyPassphrase
+                    }
+                    MetadataKeyTypeModel.SHARED -> {
+                        val metadataPrivateKey =
+                            getLocalMetadataKeyUseCase
+                                .execute(
+                                    GetLocalMetadataKeyUseCase.Input(metadataKeyId),
+                                ).metadataPrivateKeys
+                                .firstOrNull()
 
-                    require(metadataPrivateKey != null) { "Metadata private key not found" }
+                        require(metadataPrivateKey != null) { "Metadata private key not found" }
 
-                    metadataPrivateKey.keyData to metadataPrivateKey.passphrase.toByteArray()
+                        metadataPrivateKey.keyData to metadataPrivateKey.passphrase.toByteArray()
+                    }
                 }
-            }
-            val encryptedMeta = openPgp.encryptSignMessageArmored(
-                key,
-                passphrase,
-                metadataJsonString
-            )
+            val encryptedMeta =
+                openPgp.encryptSignMessageArmored(
+                    key,
+                    passphrase,
+                    metadataJsonString,
+                )
 
             when (encryptedMeta) {
                 is OpenPgpResult.Error -> Output.Failure(RuntimeException(encryptedMeta.error.message))
@@ -52,11 +54,14 @@ class MetadataEncryptor(
             Timber.e(exception, "Exception during metadata encryption")
             Output.Failure(exception)
         }
-    }
 
     sealed class Output {
-        data class Success(val encryptedMetadata: String) : Output()
+        data class Success(
+            val encryptedMetadata: String,
+        ) : Output()
 
-        data class Failure(val error: Throwable?) : Output()
+        data class Failure(
+            val error: Throwable?,
+        ) : Output()
     }
 }

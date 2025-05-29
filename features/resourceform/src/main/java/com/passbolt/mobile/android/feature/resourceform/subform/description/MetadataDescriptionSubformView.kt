@@ -31,23 +31,24 @@ import com.passbolt.mobile.android.feature.resourceform.databinding.ViewMetadata
  * @since v1.0
  */
 
-class MetadataDescriptionSubformView @JvmOverloads constructor(
-    context: Context,
-    attrs: AttributeSet? = null,
-    defStyle: Int = 0
-) : LinearLayout(context, attrs, defStyle) {
+class MetadataDescriptionSubformView
+    @JvmOverloads
+    constructor(
+        context: Context,
+        attrs: AttributeSet? = null,
+        defStyle: Int = 0,
+    ) : LinearLayout(context, attrs, defStyle) {
+        private val binding = ViewMetadataDescriptionSubformBinding.inflate(LayoutInflater.from(context), this)
 
-    private val binding = ViewMetadataDescriptionSubformBinding.inflate(LayoutInflater.from(context), this)
+        val descriptionInput: TextInputView
+            get() = binding.descriptionSectionView.backgroundContainer.findViewById(R.id.descriptionInput)
 
-    val descriptionInput: TextInputView
-        get() = binding.descriptionSectionView.backgroundContainer.findViewById(R.id.descriptionInput)
-
-    init {
-        orientation = VERTICAL
-        LayoutInflater.from(context).inflate(
-            R.layout.view_metadata_description_subform_fields,
-            binding.descriptionSectionView.backgroundContainer,
-            true
-        )
+        init {
+            orientation = VERTICAL
+            LayoutInflater.from(context).inflate(
+                R.layout.view_metadata_description_subform_fields,
+                binding.descriptionSectionView.backgroundContainer,
+                true,
+            )
+        }
     }
-}

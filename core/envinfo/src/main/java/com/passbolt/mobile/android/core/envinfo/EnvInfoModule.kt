@@ -27,10 +27,11 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-val envInfoModule = module {
-    factory {
-        val appContext = androidContext()
-        appContext.packageManager.getPackageInfo(appContext.packageName, 0)
+val envInfoModule =
+    module {
+        factory {
+            val appContext = androidContext()
+            appContext.packageManager.getPackageInfo(appContext.packageName, 0)
+        }
+        singleOf(::EnvInfoProvider)
     }
-    singleOf(::EnvInfoProvider)
-}

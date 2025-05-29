@@ -7,12 +7,12 @@ import org.junit.Test
 import java.io.IOException
 
 class OtpQrScanResultsMapperTest {
-
     private val mapper = OtpQrScanResultsMapper()
 
     @Test
     fun `mapperShouldMapACorrectFullTotpUri`() {
-        val correctFullUri = "otpauth://totp/ACME%20Co:john.doe@email.com" +
+        val correctFullUri =
+            "otpauth://totp/ACME%20Co:john.doe@email.com" +
                 "?secret=HXDMVJECJJWSRB3HWIZR4IFUGFTMXBOZ" +
                 "&issuer=ACME%20Co" +
                 "&algorithm=SHA256" +
@@ -33,7 +33,8 @@ class OtpQrScanResultsMapperTest {
 
     @Test
     fun `mapperShouldMapToIncompleteParametersWhenRequiredParametersAreMissing`() {
-        val secretMissingUri = "otpauth://totp/ACME%20Co:john.doe@email.com" +
+        val secretMissingUri =
+            "otpauth://totp/ACME%20Co:john.doe@email.com" +
                 "?issuer=ACME%20Co" +
                 "&algorithm=SHA256" +
                 "&digits=6" +
@@ -54,28 +55,32 @@ class OtpQrScanResultsMapperTest {
     @Test
     fun `mapperShouldMapToInvalidOtpWhenRequiredParametersCausingParsingErrorAreMissing`() {
         // missing label path
-        val labelMissingUri = "otpauth://totp" +
+        val labelMissingUri =
+            "otpauth://totp" +
                 "&issuer=ACME%20Co" +
                 "&algorithm=SHA256" +
                 "&digits=6" +
                 "&period=60"
-        val incorrectSchemeUri = "http://totp/ACME%20Co:john.doe@email.com" +
+        val incorrectSchemeUri =
+            "http://totp/ACME%20Co:john.doe@email.com" +
                 "?secret=HXDMVJECJJWSRB3HWIZR4IFUGFTMXBOZ" +
                 "&issuer=ACME%20Co" +
                 "&algorithm=SHA256" +
                 "&digits=6" +
                 "&period=60"
-        val incorrectTypeUri = "otpauth://wrong_type/ACME%20Co:john.doe@email.com" +
+        val incorrectTypeUri =
+            "otpauth://wrong_type/ACME%20Co:john.doe@email.com" +
                 "?secret=HXDMVJECJJWSRB3HWIZR4IFUGFTMXBOZ" +
                 "&issuer=ACME%20Co" +
                 "&algorithm=SHA256" +
                 "&digits=6" +
                 "&period=60"
-        val results = listOf(
-            mapper.apply(BarcodeScanResult.SingleBarcode(labelMissingUri.toByteArray())),
-            mapper.apply(BarcodeScanResult.SingleBarcode(incorrectSchemeUri.toByteArray())),
-            mapper.apply(BarcodeScanResult.SingleBarcode(incorrectTypeUri.toByteArray()))
-        )
+        val results =
+            listOf(
+                mapper.apply(BarcodeScanResult.SingleBarcode(labelMissingUri.toByteArray())),
+                mapper.apply(BarcodeScanResult.SingleBarcode(incorrectSchemeUri.toByteArray())),
+                mapper.apply(BarcodeScanResult.SingleBarcode(incorrectTypeUri.toByteArray())),
+            )
 
         results.forEach { result ->
             assertThat(result).isInstanceOf(OtpParseResult.UserResolvableError::class.java)
@@ -111,7 +116,8 @@ class OtpQrScanResultsMapperTest {
 
     @Test
     fun `mapperShouldApplyDefaultValuesIfNotPresentInCode`() {
-        val correctFullUri = "otpauth://totp/ACME%20Co:john.doe@email.com" +
+        val correctFullUri =
+            "otpauth://totp/ACME%20Co:john.doe@email.com" +
                 "?secret=HXDMVJECJJWSRB3HWIZR4IFUGFTMXBOZ" +
                 "&issuer=ACME%20Co"
         val result = mapper.apply(BarcodeScanResult.SingleBarcode(correctFullUri.toByteArray()))

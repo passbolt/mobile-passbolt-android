@@ -1,8 +1,9 @@
 package com.passbolt.mobile.android.ui
 
 @Suppress("MagicNumber")
-sealed class PasswordStrength(val progress: Int) {
-
+sealed class PasswordStrength(
+    val progress: Int,
+) {
     data object Empty : PasswordStrength(progress = 0)
 
     data object VeryWeak : PasswordStrength(progress = 20)

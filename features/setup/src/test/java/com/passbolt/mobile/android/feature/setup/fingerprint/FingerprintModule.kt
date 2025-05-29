@@ -40,31 +40,33 @@ internal val fingerprintInformationProvider = mock<FingerprintInformationProvide
 internal val autofillInformationProvider = mock<AutofillInformationProvider>()
 internal val passphraseMemoryCache = mock<PassphraseMemoryCache>()
 internal val savePassphraseUseCase = mock<SavePassphraseUseCase>()
-internal val mockCipher = mock<Cipher> {
-    on { iv }.doReturn(ByteArray(0))
-}
-internal val biometricCipher = mock<BiometricCipher> {
-    on { getBiometricEncryptCipher() }.doReturn(mockCipher)
-}
+internal val mockCipher =
+    mock<Cipher> {
+        on { iv }.doReturn(ByteArray(0))
+    }
+internal val biometricCipher =
+    mock<BiometricCipher> {
+        on { getBiometricEncryptCipher() }.doReturn(mockCipher)
+    }
 internal val saveBiometricKayIvUseCase = mock<SaveBiometricKeyIvUseCase>()
 internal val mockBiometryInteractor = mock<BiometryInteractor>()
 internal val mockEncouragementsInteractor = mock<EncouragementsInteractor>()
 
-
-val fingerprintModule = module {
-    factory<FingerprintContract.Presenter> {
-        FingerprintPresenter(
-            fingerprintInformationProvider = get(),
-            autofillInformationProvider = get(),
-            passphraseMemoryCache = get(),
-            savePassphraseUseCase = savePassphraseUseCase,
-            biometricCipher = biometricCipher,
-            saveBiometricKeyIvUseCase = saveBiometricKayIvUseCase,
-            biometryInteractor = mockBiometryInteractor,
-            encouragementsInteractor = mockEncouragementsInteractor
-        )
+val fingerprintModule =
+    module {
+        factory<FingerprintContract.Presenter> {
+            FingerprintPresenter(
+                fingerprintInformationProvider = get(),
+                autofillInformationProvider = get(),
+                passphraseMemoryCache = get(),
+                savePassphraseUseCase = savePassphraseUseCase,
+                biometricCipher = biometricCipher,
+                saveBiometricKeyIvUseCase = saveBiometricKayIvUseCase,
+                biometryInteractor = mockBiometryInteractor,
+                encouragementsInteractor = mockEncouragementsInteractor,
+            )
+        }
+        factory { fingerprintInformationProvider }
+        factory { passphraseMemoryCache }
+        factory { autofillInformationProvider }
     }
-    factory { fingerprintInformationProvider }
-    factory { passphraseMemoryCache }
-    factory { autofillInformationProvider }
-}

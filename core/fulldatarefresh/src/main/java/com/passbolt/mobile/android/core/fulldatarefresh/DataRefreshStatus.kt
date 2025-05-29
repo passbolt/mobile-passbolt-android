@@ -1,5 +1,3 @@
-package com.passbolt.mobile.android.core.fulldatarefresh
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -23,14 +21,15 @@ package com.passbolt.mobile.android.core.fulldatarefresh
  * @since v1.0
  */
 
+package com.passbolt.mobile.android.core.fulldatarefresh
+
 /**
  * Class representing status of all home data refresh.
  */
 sealed class DataRefreshStatus {
-
     data object InProgress : DataRefreshStatus()
 
     data class Finished(
-        val output: HomeDataInteractor.Output
+        val output: HomeDataInteractor.Output,
     ) : DataRefreshStatus()
 }

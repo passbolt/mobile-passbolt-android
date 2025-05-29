@@ -3,7 +3,6 @@ package com.passbolt.mobile.android.logs
 import java.io.File
 
 class LogsPresenter : LogsContract.Presenter {
-
     override var view: LogsContract.View? = null
     private lateinit var logLines: List<String>
     private lateinit var logFile: File

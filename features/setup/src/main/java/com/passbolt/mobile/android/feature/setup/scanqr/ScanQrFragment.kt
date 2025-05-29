@@ -51,20 +51,22 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
  * @since v1.0
  */
 
-class ScanQrFragment : BindingScopedFragment<FragmentScanQrBinding>(FragmentScanQrBinding::inflate),
-    ScanQrContract.View, HelpMenuFragment.Listener {
-
+class ScanQrFragment :
+    BindingScopedFragment<FragmentScanQrBinding>(FragmentScanQrBinding::inflate),
+    ScanQrContract.View,
+    HelpMenuFragment.Listener {
     private val presenter: ScanQrContract.Presenter by inject()
     private lateinit var scanManagerScope: Scope
     private lateinit var scanManager: ScanManager
     private var serverNotReachableDialog: AlertDialog? = null
     private val flagSecureSetter: FlagSecureSetter by inject()
 
-    private val backPressedCallback = object : OnBackPressedCallback(true) {
-        override fun handleOnBackPressed() {
-            presenter.backClick()
+    private val backPressedCallback =
+        object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                presenter.backClick()
+            }
         }
-    }
 
     private val accountKitFileChosenResult =
         registerForActivityResult(ActivityResultContracts.OpenDocument()) {
@@ -77,7 +79,10 @@ class ScanQrFragment : BindingScopedFragment<FragmentScanQrBinding>(FragmentScan
             }
         }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initToolbar()
         activity?.onBackPressedDispatcher?.addCallback(viewLifecycleOwner, backPressedCallback)
@@ -117,7 +122,7 @@ class ScanQrFragment : BindingScopedFragment<FragmentScanQrBinding>(FragmentScan
     }
 
     private fun initToolbar() {
-        with(binding.progressToolbar) {
+        with(requiredBinding.progressToolbar) {
             setNavigationIcon(CoreUiR.drawable.ic_back)
             setNavigationOnClickListener { presenter.backClick() }
             addIconEnd(CoreUiR.drawable.ic_help) { presenter.infoIconClick() }
@@ -125,61 +130,64 @@ class ScanQrFragment : BindingScopedFragment<FragmentScanQrBinding>(FragmentScan
     }
 
     override fun initializeProgress(totalPages: Int) {
-        with(binding.progressToolbar) {
+        with(requiredBinding.progressToolbar) {
             initializeProgressBar(0, totalPages)
             setCurrentProgress(0)
         }
     }
 
     override fun setProgress(progress: Int) {
-        binding.progressToolbar.setCurrentProgress(progress)
+        requiredBinding.progressToolbar.setCurrentProgress(progress)
     }
 
     override fun startAnalysis() {
         try {
-            scanManager.attach(this, binding.cameraPreview)
+            scanManager.attach(this, requiredBinding.cameraPreview)
         } catch (exception: Exception) {
             presenter.startCameraError(exception)
         }
     }
 
     override fun showStartCameraError() {
-        binding.tooltip.text = getString(LocalizationR.string.scan_qr_camera_error)
+        requiredBinding.tooltip.text = getString(LocalizationR.string.scan_qr_camera_error)
     }
 
     override fun showBarcodeScanError(message: String?) {
-        val messageBuilder = StringBuilder(getString(LocalizationR.string.scan_qr_scanning_error)).apply {
-            if (!message.isNullOrBlank()) {
-                append("(%s)".format(message))
+        val messageBuilder =
+            StringBuilder(getString(LocalizationR.string.scan_qr_scanning_error)).apply {
+                if (!message.isNullOrBlank()) {
+                    append("(%s)".format(message))
+                }
             }
-        }
-        binding.tooltip.text = messageBuilder.toString()
+        requiredBinding.tooltip.text = messageBuilder.toString()
     }
 
     override fun showMultipleCodesInRange() {
-        binding.tooltip.text = getString(LocalizationR.string.scan_qr_multiple_codes_in_range)
+        requiredBinding.tooltip.text = getString(LocalizationR.string.scan_qr_multiple_codes_in_range)
     }
 
     override fun showCenterCameraOnBarcode() {
-        binding.tooltip.text = getString(LocalizationR.string.scan_qr_aim_at_qr_code)
+        requiredBinding.tooltip.text = getString(LocalizationR.string.scan_qr_aim_at_qr_code)
     }
 
     override fun showKeepGoing() {
-        binding.tooltip.text = getString(LocalizationR.string.scan_qr_keep_going)
+        requiredBinding.tooltip.text = getString(LocalizationR.string.scan_qr_keep_going)
     }
 
     override fun showUpdateTransferError(headerMessage: String) {
-        val messageBuilder = StringBuilder(getString(LocalizationR.string.scan_qr_update_transfer_error)).apply {
-            if (headerMessage.isNotBlank()) {
-                append("(%s)".format(headerMessage))
+        val messageBuilder =
+            StringBuilder(getString(LocalizationR.string.scan_qr_update_transfer_error)).apply {
+                if (headerMessage.isNotBlank()) {
+                    append("(%s)".format(headerMessage))
+                }
             }
-        }
-        Toast.makeText(requireContext(), messageBuilder.toString(), Toast.LENGTH_LONG)
+        Toast
+            .makeText(requireContext(), messageBuilder.toString(), Toast.LENGTH_LONG)
             .show()
     }
 
     override fun showNotAPassboltQr() {
-        binding.tooltip.text = getString(LocalizationR.string.scan_qr_not_a_passbolt_qr)
+        requiredBinding.tooltip.text = getString(LocalizationR.string.scan_qr_not_a_passbolt_qr)
     }
 
     override fun navigateBack() {
@@ -188,7 +196,7 @@ class ScanQrFragment : BindingScopedFragment<FragmentScanQrBinding>(FragmentScan
 
     override fun navigateToSummary(status: ResultStatus) {
         findNavController().navigate(
-            ScanQrFragmentDirections.actionScanQrFragmentToSummaryFragment(status)
+            ScanQrFragmentDirections.actionScanQrFragmentToSummaryFragment(status),
         )
     }
 
@@ -208,19 +216,19 @@ class ScanQrFragment : BindingScopedFragment<FragmentScanQrBinding>(FragmentScan
     }
 
     override fun showHelpMenu() {
-        HelpMenuFragment.newInstance(
-            HelpMenuModel(
-                shouldShowShowQrCodesHelp = true,
-                shouldShowImportProfile = true,
-                shouldShowImportAccountKit = true
-            )
-        )
-            .show(childFragmentManager, HelpMenuFragment::class.java.name)
+        HelpMenuFragment
+            .newInstance(
+                HelpMenuModel(
+                    shouldShowShowQrCodesHelp = true,
+                    shouldShowImportProfile = true,
+                    shouldShowImportAccountKit = true,
+                ),
+            ).show(childFragmentManager, HelpMenuFragment::class.java.name)
     }
 
     override fun menuShowLogsClick() {
         findNavController().navigate(
-            ScanQrFragmentDirections.actionScanQrFragmentToLogs()
+            ScanQrFragmentDirections.actionScanQrFragmentToLogs(),
         )
     }
 
@@ -238,7 +246,7 @@ class ScanQrFragment : BindingScopedFragment<FragmentScanQrBinding>(FragmentScan
 
     override fun navigateToImportProfile() {
         findNavController().navigate(
-            ScanQrFragmentDirections.actionScanQrFragmentToImportProfileFragment()
+            ScanQrFragmentDirections.actionScanQrFragmentToImportProfileFragment(),
         )
     }
 

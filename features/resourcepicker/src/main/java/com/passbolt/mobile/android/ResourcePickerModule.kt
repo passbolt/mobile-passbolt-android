@@ -26,6 +26,7 @@ package com.passbolt.mobile.android
 import com.passbolt.mobile.android.resourcepicker.resourcePickerScreenModule
 import org.koin.dsl.module
 
-val resourcePickerModule = module {
-    resourcePickerScreenModule()
-}
+val resourcePickerModule =
+    module {
+        resourcePickerScreenModule()
+    }

@@ -23,9 +23,8 @@ package com.passbolt.mobile.android.core.passphrasememorycache
  * @since v1.0
  */
 sealed class PotentialPassphrase {
-
     data class Passphrase(
-        val passphrase: ByteArray
+        val passphrase: ByteArray,
     ) : PotentialPassphrase() {
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
@@ -36,17 +35,15 @@ sealed class PotentialPassphrase {
             return passphrase.contentEquals(other.passphrase)
         }
 
-        override fun hashCode(): Int {
-            return passphrase.contentHashCode()
-        }
+        override fun hashCode(): Int = passphrase.contentHashCode()
     }
 
     class PassphraseNotPresent(
-        val keyStatus: KeyStatus = KeyStatus.VALID
+        val keyStatus: KeyStatus = KeyStatus.VALID,
     ) : PotentialPassphrase()
 
     enum class KeyStatus {
         VALID,
-        INVALID
+        INVALID,
     }
 }

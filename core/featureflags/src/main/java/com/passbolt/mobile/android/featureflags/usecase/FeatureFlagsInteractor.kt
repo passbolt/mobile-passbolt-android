@@ -27,17 +27,15 @@ import com.passbolt.mobile.android.entity.featureflags.FeatureFlagsModel
 
 class FeatureFlagsInteractor(
     private val fetchFeatureFlagsUseCase: FetchFeatureFlagsUseCase,
-    private val saveFeatureFlagsUseCase: SaveFeatureFlagsUseCase
+    private val saveFeatureFlagsUseCase: SaveFeatureFlagsUseCase,
 ) {
-
-    suspend fun fetchAndSaveFeatureFlags(): Output {
-        return when (val response = fetchFeatureFlagsUseCase.execute(Unit)) {
+    suspend fun fetchAndSaveFeatureFlags(): Output =
+        when (val response = fetchFeatureFlagsUseCase.execute(Unit)) {
             is FetchFeatureFlagsUseCase.Output.Success ->
                 saveFeatureFlags(response.featureFlags)
             is FetchFeatureFlagsUseCase.Output.Failure<*> ->
                 Output.Failure
         }
-    }
 
     private suspend fun saveFeatureFlags(featureFlags: FeatureFlagsModel): Output {
         saveFeatureFlagsUseCase.execute(SaveFeatureFlagsUseCase.Input(featureFlags))
@@ -45,8 +43,9 @@ class FeatureFlagsInteractor(
     }
 
     sealed class Output {
-
-        data class Success(val featureFlags: FeatureFlagsModel) : Output()
+        data class Success(
+            val featureFlags: FeatureFlagsModel,
+        ) : Output()
 
         data object Failure : Output()
     }

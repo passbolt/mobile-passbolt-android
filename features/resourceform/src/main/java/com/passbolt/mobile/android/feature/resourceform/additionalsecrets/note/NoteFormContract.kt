@@ -26,18 +26,26 @@ import com.passbolt.mobile.android.ui.ResourceFormMode
  * @since v1.0
  */
 interface NoteFormContract {
-
     interface View : BaseContract.View {
         fun showNote(note: String)
+
         fun goBackWithResult(note: String?)
+
         fun showCreateTitle()
+
         fun showEditTitle(resourceName: String)
     }
 
     interface Presenter : BaseContract.Presenter<View> {
-        fun argsRetrieved(mode: ResourceFormMode, note: String)
+        fun argsRetrieved(
+            mode: ResourceFormMode,
+            note: String,
+        )
+
         fun noteTextChanged(note: String)
+
         fun applyClick()
+
         fun removeNoteClick()
     }
 }

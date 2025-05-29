@@ -66,58 +66,65 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 class PermissionRecipientsFragment :
     BindingScopedAuthenticatedFragment<FragmentPermissionRecipientsBinding, PermissionRecipientsContract.View>(
-        FragmentPermissionRecipientsBinding::inflate
-    ), PermissionRecipientsContract.View {
-
+        FragmentPermissionRecipientsBinding::inflate,
+    ),
+    PermissionRecipientsContract.View {
     override val presenter: PermissionRecipientsContract.Presenter by inject()
 
     private val groupRecipientItemAdapter: ItemAdapter<GenericItem> by inject(named(GROUP_ITEM_ADAPTER))
     private val userRecipientItemAdapter: ItemAdapter<GenericItem> by inject(named(USER_ITEM_ADAPTER))
     private val existingUsersAndGroupsItemAdapter: ItemAdapter<PermissionItem> by inject(
-        named(EXISTING_USERS_AND_GROUPS_ITEM_ADAPTER)
+        named(EXISTING_USERS_AND_GROUPS_ITEM_ADAPTER),
     )
     private val existingUsersAndGroupsHeaderItemAdapter: ItemAdapter<ExistingUsersAndGroupsHeaderItem> by inject(
-        named(EXISTING_USERS_AND_GROUPS_HEADER_ITEM_ADAPTER)
+        named(EXISTING_USERS_AND_GROUPS_HEADER_ITEM_ADAPTER),
     )
     private val usersAndGroupsFastAdapter: FastAdapter<GenericItem> by inject(named(USERS_AND_GROUPS_ADAPTER))
     private val alreadyAddedGroupsItemAdapter: ItemAdapter<GroupItem> by inject(
-        named(ALREADY_ADDED_GROUP_ITEM_ADAPTER)
+        named(ALREADY_ADDED_GROUP_ITEM_ADAPTER),
     )
     private val alreadyAddedUsersItemAdapter: ItemAdapter<UserItem> by inject(
-        named(ALREADY_ADDED_USER_ITEM_ADAPTER)
+        named(ALREADY_ADDED_USER_ITEM_ADAPTER),
     )
     private val alreadyAddedCounterItemAdapter: ItemAdapter<CounterItem> by inject(
-        named(ALREADY_ADDED_COUNTER_ITEM_ADAPTER)
+        named(ALREADY_ADDED_COUNTER_ITEM_ADAPTER),
     )
     private val alreadyAddedFastAdapter: FastAdapter<GenericItem> by inject(named(ALREADY_ADDED_ADAPTER))
     private val alreadyAddedItemDecorator: OverlappingItemDecorator by inject()
 
     private val args: PermissionRecipientsFragmentArgs by navArgs()
 
-    private val userOrGroupSelectedListener = object : ISelectionListener<GenericItem> {
-        override fun onSelectionChanged(item: GenericItem, selected: Boolean) {
-            when (item) {
-                is GroupRecipientItem -> presenter.groupRecipientSelectionChanged(item.model, selected)
-                is UserRecipientItem -> presenter.userRecipientSelectionChanged(item.model, selected)
-                else -> Timber.d("Ignored selecting item: $item")
+    private val userOrGroupSelectedListener =
+        object : ISelectionListener<GenericItem> {
+            override fun onSelectionChanged(
+                item: GenericItem,
+                selected: Boolean,
+            ) {
+                when (item) {
+                    is GroupRecipientItem -> presenter.groupRecipientSelectionChanged(item.model, selected)
+                    is UserRecipientItem -> presenter.userRecipientSelectionChanged(item.model, selected)
+                    else -> Timber.d("Ignored selecting item: $item")
+                }
             }
         }
-    }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
-        initDefaultToolbar(binding.toolbar)
+        initDefaultToolbar(requiredBinding.toolbar)
         setListeners()
         initRecipientsRecycler(savedInstanceState)
         initAlreadyAddedRecycler()
         presenter.attach(this)
-        binding.alreadyAddedRecycler.doOnLayout {
-            binding.alreadyAddedRecycler.addItemDecoration(alreadyAddedItemDecorator)
+        requiredBinding.alreadyAddedRecycler.doOnLayout {
+            requiredBinding.alreadyAddedRecycler.addItemDecoration(alreadyAddedItemDecorator)
             presenter.argsReceived(
                 args.groupPermissions.toList(),
                 args.userPermissions.toList(),
                 it.width,
-                resources.getDimension(CoreUiR.dimen.dp_40)
+                resources.getDimension(CoreUiR.dimen.dp_40),
             )
         }
     }
@@ -128,7 +135,7 @@ class PermissionRecipientsFragment :
     }
 
     override fun onDestroyView() {
-        with(binding) {
+        with(requiredBinding) {
             recipientsRecycler.adapter = null
             alreadyAddedRecycler.adapter = null
         }
@@ -138,16 +145,17 @@ class PermissionRecipientsFragment :
     }
 
     private fun initAlreadyAddedRecycler() {
-        binding.alreadyAddedRecycler.apply {
-            layoutManager = object : LinearLayoutManager(context, HORIZONTAL, false) {
-                override fun canScrollHorizontally() = false
-            }
+        requiredBinding.alreadyAddedRecycler.apply {
+            layoutManager =
+                object : LinearLayoutManager(context, HORIZONTAL, false) {
+                    override fun canScrollHorizontally() = false
+                }
             adapter = alreadyAddedFastAdapter
         }
     }
 
     private fun setListeners() {
-        with(binding) {
+        with(requiredBinding) {
             searchEditText.doAfterTextChanged {
                 presenter.searchTextChange(it.toString())
             }
@@ -168,7 +176,7 @@ class PermissionRecipientsFragment :
             withSavedInstanceState(savedInstanceState, BUNDLE_USERS_AND_GROUPS_ADAPTER_SELECTIONS)
         }
 
-        with(binding.recipientsRecycler) {
+        with(requiredBinding.recipientsRecycler) {
             layoutManager = LinearLayoutManager(context)
             adapter = usersAndGroupsFastAdapter
         }
@@ -177,15 +185,19 @@ class PermissionRecipientsFragment :
     override fun showExistingUsersAndGroups(list: List<PermissionModelUi>) {
         FastAdapterDiffUtil.calculateDiff(
             existingUsersAndGroupsHeaderItemAdapter,
-            if (list.isEmpty()) emptyList() else listOf(ExistingUsersAndGroupsHeaderItem())
+            if (list.isEmpty()) emptyList() else listOf(ExistingUsersAndGroupsHeaderItem()),
         )
         FastAdapterDiffUtil.calculateDiff(
             existingUsersAndGroupsItemAdapter,
-            list.map { PermissionItem(it) })
+            list.map { PermissionItem(it) },
+        )
         usersAndGroupsFastAdapter.notifyAdapterDataSetChanged()
     }
 
-    override fun showRecipients(groups: List<GroupModel>, users: List<UserModel>) {
+    override fun showRecipients(
+        groups: List<GroupModel>,
+        users: List<UserModel>,
+    ) {
         FastAdapterDiffUtil.calculateDiff(groupRecipientItemAdapter, groups.map { GroupRecipientItem(it) })
         FastAdapterDiffUtil.calculateDiff(userRecipientItemAdapter, users.map { UserRecipientItem(it) })
         usersAndGroupsFastAdapter.notifyAdapterDataSetChanged()
@@ -195,7 +207,7 @@ class PermissionRecipientsFragment :
         groupPermissions: List<PermissionModelUi.GroupPermissionModel>,
         userPermissions: List<PermissionModelUi.UserPermissionModel>,
         counterValue: List<String>,
-        overlap: Int
+        overlap: Int,
     ) {
         alreadyAddedItemDecorator.overlap = Overlap(left = overlap)
         FastAdapterDiffUtil.calculateDiff(alreadyAddedGroupsItemAdapter, groupPermissions.map { GroupItem(it) })
@@ -205,18 +217,18 @@ class PermissionRecipientsFragment :
     }
 
     override fun showClearSearchIcon() {
-        binding.searchTextInput.setSearchEndIconWithListener(
+        requiredBinding.searchTextInput.setSearchEndIconWithListener(
             ContextCompat.getDrawable(requireContext(), CoreUiR.drawable.ic_close)!!,
-            presenter::searchClearClick
+            presenter::searchClearClick,
         )
     }
 
     override fun hideClearSearchIcon() {
-        binding.searchTextInput.clearEndIcon()
+        requiredBinding.searchTextInput.clearEndIcon()
     }
 
     override fun clearSearch() {
-        binding.searchEditText.setText("")
+        requiredBinding.searchEditText.setText("")
         userRecipientItemAdapter.filter(null)
         groupRecipientItemAdapter.filter(null)
     }
@@ -224,7 +236,7 @@ class PermissionRecipientsFragment :
     override fun setSelectedPermissionsResult(selectedPermissions: List<PermissionModelUi>) {
         setFragmentResult(
             EXTRA_NEW_PERMISSIONS_BUNDLE_KEY,
-            bundleOf(EXTRA_NEW_PERMISSIONS to ArrayList(selectedPermissions))
+            bundleOf(EXTRA_NEW_PERMISSIONS to ArrayList(selectedPermissions)),
         )
     }
 
@@ -233,11 +245,11 @@ class PermissionRecipientsFragment :
     }
 
     override fun showEmptyState() {
-        binding.emptyState.visible()
+        requiredBinding.emptyState.visible()
     }
 
     override fun hideEmptyState() {
-        binding.emptyState.gone()
+        requiredBinding.emptyState.gone()
     }
 
     companion object {

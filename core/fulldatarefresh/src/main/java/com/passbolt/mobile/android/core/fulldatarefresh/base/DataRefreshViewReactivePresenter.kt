@@ -38,10 +38,10 @@ import timber.log.Timber
  */
 
 abstract class DataRefreshViewReactivePresenter<V : DataRefreshViewReactiveContract.View>(
-    coroutineLaunchContext: CoroutineLaunchContext
+    coroutineLaunchContext: CoroutineLaunchContext,
 ) : BaseAuthenticatedPresenter<V>(coroutineLaunchContext),
-    DataRefreshViewReactiveContract.Presenter<V>, KoinComponent {
-
+    DataRefreshViewReactiveContract.Presenter<V>,
+    KoinComponent {
     protected val fullDataRefreshExecutor: FullDataRefreshExecutor by inject()
 
     private val job = SupervisorJob()
@@ -98,6 +98,6 @@ abstract class DataRefreshViewReactivePresenter<V : DataRefreshViewReactiveContr
 
     private data class LatestStatusUpdateCollection(
         val className: String,
-        val statusName: String
+        val statusName: String,
     )
 }

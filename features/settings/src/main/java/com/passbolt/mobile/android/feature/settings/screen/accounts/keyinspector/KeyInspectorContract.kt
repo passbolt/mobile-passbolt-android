@@ -27,24 +27,38 @@ import com.passbolt.mobile.android.common.types.ClipboardLabel
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
 
 interface KeyInspectorContract {
-
     interface View : BaseAuthenticatedContract.View {
         fun showProgress()
+
         fun hideProgress()
+
         fun showError(message: String?)
+
         fun showUid(uid: String)
+
         fun showFingerprint(fingerprint: String)
+
         fun showCreationDate(keyCreationDate: String)
+
         fun showExpirationDate(keyExpirationDate: String)
+
         fun showLength(bits: String)
+
         fun showAlgorithm(algorithm: String)
+
         fun showAvatar(avatarUrl: String?)
+
         fun showLabel(label: String)
-        fun addToClipboard(clipboardLabel: ClipboardLabel, value: String)
+
+        fun addToClipboard(
+            clipboardLabel: ClipboardLabel,
+            value: String,
+        )
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
         fun uidCopyClick()
+
         fun fingerprintCopyClick()
     }
 }

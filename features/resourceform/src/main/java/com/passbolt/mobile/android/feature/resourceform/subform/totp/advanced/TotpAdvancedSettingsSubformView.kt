@@ -34,35 +34,38 @@ import com.passbolt.mobile.android.ui.OtpParseResult
  * @since v1.0
  */
 
-class TotpAdvancedSettingsSubformView @JvmOverloads constructor(
-    context: Context,
-    attrs: AttributeSet? = null,
-    defStyle: Int = 0
-) : ConstraintLayout(context, attrs, defStyle) {
+class TotpAdvancedSettingsSubformView
+    @JvmOverloads
+    constructor(
+        context: Context,
+        attrs: AttributeSet? = null,
+        defStyle: Int = 0,
+    ) : ConstraintLayout(context, attrs, defStyle) {
+        private val binding = ViewTotpAdvancedSettingsSubformBinding.inflate(LayoutInflater.from(context), this)
 
-    private val binding = ViewTotpAdvancedSettingsSubformBinding.inflate(LayoutInflater.from(context), this)
+        val totpPeriodInput: TextInputView
+            get() = binding.totpSettingsSectionView.findViewById(R.id.totpPeriodInput)
 
-    val totpPeriodInput: TextInputView
-        get() = binding.totpSettingsSectionView.findViewById(R.id.totpPeriodInput)
+        val algorithmDropdown: DropDownInputView
+            get() = binding.totpSettingsSectionView.findViewById(R.id.algorithmDropdown)
 
-    val algorithmDropdown: DropDownInputView
-        get() = binding.totpSettingsSectionView.findViewById(R.id.algorithmDropdown)
+        val digitsDropdown: DropDownInputView
+            get() = binding.totpSettingsSectionView.findViewById(R.id.digitsDropdown)
 
-    val digitsDropdown: DropDownInputView
-        get() = binding.totpSettingsSectionView.findViewById(R.id.digitsDropdown)
+        init {
+            LayoutInflater.from(context).inflate(
+                R.layout.view_totp_advanced_settings_subform_fields,
+                binding.totpSettingsSectionView.backgroundContainer,
+                true,
+            )
+            setupDropdowns()
+        }
 
-    init {
-        LayoutInflater.from(context).inflate(
-            R.layout.view_totp_advanced_settings_subform_fields,
-            binding.totpSettingsSectionView.backgroundContainer,
-            true
-        )
-        setupDropdowns()
+        private fun setupDropdowns() {
+            totpPeriodInput.setInputType(InputType.TYPE_CLASS_NUMBER)
+            algorithmDropdown.items =
+                OtpParseResult.OtpQr.Algorithm.entries
+                    .map { it.toString() }
+            digitsDropdown.items = OtpParseResult.OtpQr.digitsRange.map { it.toString() }
+        }
     }
-
-    private fun setupDropdowns() {
-        totpPeriodInput.setInputType(InputType.TYPE_CLASS_NUMBER)
-        algorithmDropdown.items = OtpParseResult.OtpQr.Algorithm.entries.map { it.toString() }
-        digitsDropdown.items = OtpParseResult.OtpQr.digitsRange.map { it.toString() }
-    }
-}

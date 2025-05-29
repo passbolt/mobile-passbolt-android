@@ -28,17 +28,18 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-val loggerModule = module {
-    singleOf(::FileLoggingTree)
-    single {
-        LogFilesManager(
-            appContext = androidContext(),
-            envInfoProvider = get(),
-            getGlobalPreferencesUseCase = get(),
-            updateGlobalPreferencesUseCase = get()
-        )
+val loggerModule =
+    module {
+        singleOf(::FileLoggingTree)
+        single {
+            LogFilesManager(
+                appContext = androidContext(),
+                envInfoProvider = get(),
+                getGlobalPreferencesUseCase = get(),
+                updateGlobalPreferencesUseCase = get(),
+            )
+        }
+        single { (defaultExceptionHandler: Thread.UncaughtExceptionHandler) ->
+            LoggingExceptionHandler(defaultExceptionHandler)
+        }
     }
-    single { (defaultExceptionHandler: Thread.UncaughtExceptionHandler) ->
-        LoggingExceptionHandler(defaultExceptionHandler)
-    }
-}

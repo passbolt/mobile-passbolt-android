@@ -54,19 +54,22 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
 class AppSettingsFragment :
     BindingScopedFragment<FragmentAppSettingsBinding>(FragmentAppSettingsBinding::inflate),
     AppSettingsContract.View {
-
     private val presenter: AppSettingsContract.Presenter by inject()
     private val biometricPromptBuilder: BiometricPrompt.PromptInfo.Builder by inject()
     private val executor: Executor by inject()
-    private val authenticationResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-        if (it.resultCode == Activity.RESULT_OK) {
-            presenter.getPassphraseSucceeded()
+    private val authenticationResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            if (it.resultCode == Activity.RESULT_OK) {
+                presenter.getPassphraseSucceeded()
+            }
         }
-    }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
-        initDefaultToolbar(binding.toolbar)
+        initDefaultToolbar(requiredBinding.toolbar)
         setListeners()
         presenter.attach(this)
     }
@@ -77,25 +80,29 @@ class AppSettingsFragment :
     }
 
     override fun showBiometricPrompt(fingerprintEncryptionCipher: Cipher) {
-        val biometricPrompt = BiometricPrompt(
-            this, executor, AuthBiometricCallback(
-                presenter::biometricAuthError,
-                presenter::biometricAuthSucceeded,
-                presenter::biometricAuthCanceled
+        val biometricPrompt =
+            BiometricPrompt(
+                this,
+                executor,
+                AuthBiometricCallback(
+                    presenter::biometricAuthError,
+                    presenter::biometricAuthSucceeded,
+                    presenter::biometricAuthCanceled,
+                ),
             )
-        )
 
-        val promptInfo = biometricPromptBuilder
-            .setTitle(getString(LocalizationR.string.settings_turn_on_biometric_title))
-            .setSubtitle(getString(LocalizationR.string.settings_turn_on_biometric_subtitle))
-            .setNegativeButtonText(getString(LocalizationR.string.cancel))
-            .setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_STRONG)
-            .build()
+        val promptInfo =
+            biometricPromptBuilder
+                .setTitle(getString(LocalizationR.string.settings_turn_on_biometric_title))
+                .setSubtitle(getString(LocalizationR.string.settings_turn_on_biometric_subtitle))
+                .setNegativeButtonText(getString(LocalizationR.string.cancel))
+                .setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_STRONG)
+                .build()
         biometricPrompt.authenticate(promptInfo, BiometricPrompt.CryptoObject(fingerprintEncryptionCipher))
     }
 
     private fun setListeners() {
-        with(binding) {
+        with(requiredBinding) {
             fingerprintSetting.onChanged = {
                 presenter.fingerprintSettingChanged(it)
             }
@@ -114,33 +121,32 @@ class AppSettingsFragment :
     override fun showConfigureFingerprintFirst() {
         configureFingerprintFirstDialog(
             requireContext(),
-            confirmAction = { presenter.systemSettingsClick() }
-        )
-            .show()
+            confirmAction = { presenter.systemSettingsClick() },
+        ).show()
     }
 
     override fun showDisableFingerprintConfirmationDialog() {
         disableFingerprintConfirmationDialog(
             requireContext(),
             confirmAction = { presenter.disableFingerprintConfirmed() },
-            cancelAction = { presenter.disableFingerprintCanceled() }
-        )
-            .show()
+            cancelAction = { presenter.disableFingerprintCanceled() },
+        ).show()
     }
 
     override fun showKeyChangesDetected() {
         keyChangesDetectedAlertDialog(
             requireContext(),
-            confirmAction = { presenter.keyChangesInfoConfirmClick() }
-        )
-            .show()
+            confirmAction = { presenter.keyChangesInfoConfirmClick() },
+        ).show()
     }
 
-    override fun showAuthenticationError(@StringRes errorMessage: Int) {
+    override fun showAuthenticationError(
+        @StringRes errorMessage: Int,
+    ) {
         showSnackbar(
             LocalizationR.string.common_failure,
             backgroundColor = CoreUiR.color.red,
-            length = Snackbar.LENGTH_LONG
+            length = Snackbar.LENGTH_LONG,
         )
     }
 
@@ -149,21 +155,21 @@ class AppSettingsFragment :
             LocalizationR.string.settings_app_settings_biometry_error,
             backgroundColor = CoreUiR.color.red,
             length = Snackbar.LENGTH_LONG,
-            messageArgs = if (message != null) arrayOf(message) else emptyArray()
+            messageArgs = if (message != null) arrayOf(message) else emptyArray(),
         )
     }
 
     override fun toggleFingerprintOn(silently: Boolean) {
-        binding.fingerprintSetting.turnOn(silently)
+        requiredBinding.fingerprintSetting.turnOn(silently)
     }
 
     override fun toggleFingerprintOff(silently: Boolean) {
-        binding.fingerprintSetting.turnOff(silently)
+        requiredBinding.fingerprintSetting.turnOff(silently)
     }
 
     override fun navigateToAuthGetPassphrase() {
         authenticationResult.launch(
-            ActivityIntents.authentication(requireContext(), ActivityIntents.AuthConfig.RefreshPassphrase)
+            ActivityIntents.authentication(requireContext(), ActivityIntents.AuthConfig.RefreshPassphrase),
         )
     }
 
@@ -173,19 +179,19 @@ class AppSettingsFragment :
 
     override fun navigateToDefaultFilterSettings(userSetHomeView: DefaultFilterModel) {
         findNavController().navigate(
-            AppSettingsFragmentDirections.actionAppSettingsFragmentToDefaultFilterFragment(userSetHomeView)
+            AppSettingsFragmentDirections.actionAppSettingsFragmentToDefaultFilterFragment(userSetHomeView),
         )
     }
 
     override fun navigateToAutofillSettings() {
         findNavController().navigate(
-            AppSettingsFragmentDirections.actionAppSettingsFragmentToSettingsAutofillFragment()
+            AppSettingsFragmentDirections.actionAppSettingsFragmentToSettingsAutofillFragment(),
         )
     }
 
     override fun navigateToExpertSettings() {
         findNavController().navigate(
-            AppSettingsFragmentDirections.actionAppSettingsFragmentToExpertSettingsFragment()
+            AppSettingsFragmentDirections.actionAppSettingsFragmentToExpertSettingsFragment(),
         )
     }
 }

@@ -19,9 +19,9 @@ class MainPresenter(
     private val fullDataRefreshExecutor: FullDataRefreshExecutor,
     private val getFeatureFlagsUseCase: GetFeatureFlagsUseCase,
     private val encouragementsInteractor: EncouragementsInteractor,
-    coroutineLaunchContext: CoroutineLaunchContext
-) : BaseAuthenticatedPresenter<MainContract.View>(coroutineLaunchContext), MainContract.Presenter {
-
+    coroutineLaunchContext: CoroutineLaunchContext,
+) : BaseAuthenticatedPresenter<MainContract.View>(coroutineLaunchContext),
+    MainContract.Presenter {
     override var view: MainContract.View? = null
     private val job = SupervisorJob()
     private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
@@ -44,7 +44,7 @@ class MainPresenter(
         scope.launch {
             val isTotpFeatureFlagEnabled = getFeatureFlagsUseCase.execute(Unit).featureFlags.isTotpAvailable
             view?.setupBottomNavigation(
-                MainBottomNavigationModel(isOtpTabVisible = isTotpFeatureFlagEnabled)
+                MainBottomNavigationModel(isOtpTabVisible = isTotpFeatureFlagEnabled),
             )
         }
     }

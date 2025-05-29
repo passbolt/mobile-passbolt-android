@@ -28,7 +28,6 @@ import com.passbolt.mobile.android.dto.response.FolderResponseDto
  */
 
 interface FoldersDataSource {
-
     suspend fun getFolders(): List<FolderResponseDto>
 
     suspend fun createFolder(createFolderRequestDto: CreateFolderRequestDto): CreateFolderResponseDto

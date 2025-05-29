@@ -31,9 +31,8 @@ data class UserModel(
     val disabled: Boolean,
     val gpgKey: GpgKeyModel,
     val profile: UserProfileModel,
-    override val searchCriteria: String = "$userName${profile.firstName.orEmpty()}${profile.lastName.orEmpty()}"
+    override val searchCriteria: String = "$userName${profile.firstName.orEmpty()}${profile.lastName.orEmpty()}",
 ) : Searchable {
-
     val fullName: String
         get() = "${profile.firstName.orEmpty()} ${profile.lastName.orEmpty()}"
 }
@@ -47,12 +46,12 @@ data class GpgKeyModel(
     val keyId: String,
     val type: String?,
     val keyExpirationDate: ZonedDateTime?,
-    val keyCreationDate: ZonedDateTime?
+    val keyCreationDate: ZonedDateTime?,
 )
 
 data class UserProfileModel(
     val username: String,
     val firstName: String?,
     val lastName: String?,
-    val avatarUrl: String?
+    val avatarUrl: String?,
 )

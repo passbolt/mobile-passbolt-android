@@ -48,32 +48,37 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
  */
 class OtpItem(
     val otpModel: OtpItemWrapper,
-    private val initialsIconGenerator: InitialsIconGenerator
-) : AbstractBindingItem<ItemOtpBinding>(), KoinComponent {
-
+    private val initialsIconGenerator: InitialsIconGenerator,
+) : AbstractBindingItem<ItemOtpBinding>(),
+    KoinComponent {
     override val type: Int
         get() = R.id.itemOtp
 
     private val totpViewController: TotpViewController by inject()
 
-    override fun createBinding(inflater: LayoutInflater, parent: ViewGroup?): ItemOtpBinding =
-        ItemOtpBinding.inflate(inflater, parent, false)
+    override fun createBinding(
+        inflater: LayoutInflater,
+        parent: ViewGroup?,
+    ): ItemOtpBinding = ItemOtpBinding.inflate(inflater, parent, false)
 
-    override fun bindView(binding: ItemOtpBinding, payloads: List<Any>) {
+    override fun bindView(
+        binding: ItemOtpBinding,
+        payloads: List<Any>,
+    ) {
         super.bindView(binding, payloads)
         with(binding) {
             setupTitleAndExpiry(this)
             icon.setImageDrawable(
                 initialsIconGenerator.generate(
                     otpModel.resource.metadataJsonModel.name,
-                    otpModel.resource.initials
-                )
+                    otpModel.resource.initials,
+                ),
             )
             eye.isVisible = !otpModel.isVisible && !otpModel.isRefreshing
             totpViewController.updateView(
                 ViewParameters(binding.progress, binding.otp, binding.generationInProgress),
                 StateParameters(otpModel.isRefreshing, otpModel.isVisible, otpModel.otpValue),
-                TimeParameters(otpModel.otpExpirySeconds, otpModel.remainingSecondsCounter)
+                TimeParameters(otpModel.otpExpirySeconds, otpModel.remainingSecondsCounter),
             )
         }
     }
@@ -84,54 +89,52 @@ class OtpItem(
                 binding.name.text = otpModel.resource.metadataJsonModel.name
                 binding.indicatorIcon.setImageDrawable(null)
             } else {
-                binding.name.text = binding.root.context.getString(
-                    LocalizationR.string.name_expired, otpModel.resource.metadataJsonModel.name
-                )
+                binding.name.text =
+                    binding.root.context.getString(
+                        LocalizationR.string.name_expired,
+                        otpModel.resource.metadataJsonModel.name,
+                    )
                 binding.indicatorIcon.setImageDrawable(
                     ContextCompat.getDrawable(
                         binding.root.context,
-                        CoreUiR.drawable.ic_excl_indicator
-                    )
+                        CoreUiR.drawable.ic_excl_indicator,
+                    ),
                 )
             }
         }
     }
 
     class ItemClick(
-        private val clickListener: (OtpItemWrapper) -> Unit
+        private val clickListener: (OtpItemWrapper) -> Unit,
     ) : ClickEventHook<OtpItem>() {
-
-        override fun onBind(viewHolder: RecyclerView.ViewHolder): View? {
-            return viewHolder.asBinding<ItemOtpBinding> {
+        override fun onBind(viewHolder: RecyclerView.ViewHolder): View? =
+            viewHolder.asBinding<ItemOtpBinding> {
                 it.itemOtp
             }
-        }
 
         override fun onClick(
             v: View,
             position: Int,
             fastAdapter: FastAdapter<OtpItem>,
-            item: OtpItem
+            item: OtpItem,
         ) {
             clickListener.invoke(item.otpModel)
         }
     }
 
     class ItemMoreClick(
-        private val clickListener: (OtpItemWrapper) -> Unit
+        private val clickListener: (OtpItemWrapper) -> Unit,
     ) : ClickEventHook<OtpItem>() {
-
-        override fun onBind(viewHolder: RecyclerView.ViewHolder): View? {
-            return viewHolder.asBinding<ItemOtpBinding> {
+        override fun onBind(viewHolder: RecyclerView.ViewHolder): View? =
+            viewHolder.asBinding<ItemOtpBinding> {
                 it.more
             }
-        }
 
         override fun onClick(
             v: View,
             position: Int,
             fastAdapter: FastAdapter<OtpItem>,
-            item: OtpItem
+            item: OtpItem,
         ) {
             clickListener.invoke(item.otpModel)
         }

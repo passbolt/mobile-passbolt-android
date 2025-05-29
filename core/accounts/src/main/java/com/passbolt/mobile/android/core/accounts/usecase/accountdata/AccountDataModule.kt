@@ -28,12 +28,12 @@ import org.koin.core.module.Module
 internal fun Module.accountDataModule() {
     single {
         GetAccountDataUseCase(
-            encryptedSharedPreferencesFactory = get()
+            encryptedSharedPreferencesFactory = get(),
         )
     }
     single {
         GetSelectedAccountDataUseCase(
-            encryptedSharedPreferencesFactory = get()
+            encryptedSharedPreferencesFactory = get(),
         )
     }
     factory {
@@ -41,17 +41,17 @@ internal fun Module.accountDataModule() {
     }
     single {
         UpdateAccountDataUseCase(
-            encryptedSharedPreferencesFactory = get()
+            encryptedSharedPreferencesFactory = get(),
         )
     }
     single {
         IsServerFingerprintCorrectUseCase(
-            encryptedSharedPreferencesFactory = get()
+            encryptedSharedPreferencesFactory = get(),
         )
     }
     single {
         SaveServerFingerprintUseCase(
-            encryptedSharedPreferencesFactory = get()
+            encryptedSharedPreferencesFactory = get(),
         )
     }
 }

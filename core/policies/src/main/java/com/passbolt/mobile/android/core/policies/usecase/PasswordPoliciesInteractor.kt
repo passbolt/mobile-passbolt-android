@@ -29,16 +29,14 @@ import com.passbolt.mobile.android.ui.PasswordPolicies
 class PasswordPoliciesInteractor(
     private val fetchPasswordPoliciesUseCase: FetchPasswordPoliciesUseCase,
     private val savePasswordPoliciesUseCase: SavePasswordPoliciesUseCase,
-    private val passwordPoliciesValidator: PasswordPoliciesValidator
+    private val passwordPoliciesValidator: PasswordPoliciesValidator,
 ) {
-
-    suspend fun fetchAndSavePasswordPolicies(): Output {
-        return when (val response = fetchPasswordPoliciesUseCase.execute(Unit)) {
+    suspend fun fetchAndSavePasswordPolicies(): Output =
+        when (val response = fetchPasswordPoliciesUseCase.execute(Unit)) {
             is FetchPasswordPoliciesUseCase.Output.Failure<*> -> Output.Failure.FetchFailure
             is FetchPasswordPoliciesUseCase.Output.Success ->
                 validatePasswordPolicies(response.passwordPolicies)
         }
-    }
 
     private suspend fun validatePasswordPolicies(passwordPolicies: PasswordPolicies): Output {
         val arePasswordPoliciesValid = passwordPoliciesValidator.arePasswordPoliciesValid(passwordPolicies)
@@ -55,13 +53,11 @@ class PasswordPoliciesInteractor(
     }
 
     sealed class Output {
-
         data class Success(
-            val passwordPolicies: PasswordPolicies
+            val passwordPolicies: PasswordPolicies,
         ) : Output()
 
         sealed class Failure : Output() {
-
             data object FetchFailure : Failure()
 
             data object ValidationFailure : Failure()

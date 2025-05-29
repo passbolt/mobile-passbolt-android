@@ -23,35 +23,36 @@ import org.mockito.kotlin.whenever
 
 @ExperimentalCoroutinesApi
 class SwitchAccountTest : KoinTest {
-
     private val presenter: SwitchAccountContract.Presenter by inject()
     private val view: SwitchAccountContract.View = mock()
 
     @get:Rule
-    val koinTestRule = KoinTestRule.create {
-        printLogger(Level.ERROR)
-        modules(testSwitchAccountModule)
-    }
+    val koinTestRule =
+        KoinTestRule.create {
+            printLogger(Level.ERROR)
+            modules(testSwitchAccountModule)
+        }
 
     @Before
     fun setUp() {
         whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
-            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
+            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success)),
         )
     }
 
     @Test
-    fun `sign out click should sign out the user`() = runTest {
-        presenter.attach(view)
-        presenter.signOutClick()
-        presenter.signOutConfirmed()
+    fun `sign out click should sign out the user`() =
+        runTest {
+            presenter.attach(view)
+            presenter.signOutClick()
+            presenter.signOutConfirmed()
 
-        verify(view).showSignOutDialog()
-        verify(mockSignOutUseCase).execute(Unit)
-        verify(view, times(2)).showProgress()
-        verify(view, times(2)).hideProgress()
-        verify(view).navigateToStartup()
-    }
+            verify(view).showSignOutDialog()
+            verify(mockSignOutUseCase).execute(Unit)
+            verify(view, times(2)).showProgress()
+            verify(view, times(2)).hideProgress()
+            verify(view).navigateToStartup()
+        }
 
     @Test
     fun `account list should be shown on ui`() {

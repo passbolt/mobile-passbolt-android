@@ -55,7 +55,7 @@ fun Module.permissionRecipientsModule() {
                 getLocalUsersUseCase = get(),
                 permissionsModelMapper = get(),
                 searchableMatcher = get(),
-                coroutineLaunchContext = get()
+                coroutineLaunchContext = get(),
             )
         }
         usersAndGroupsRecyclerDependencies()
@@ -78,8 +78,8 @@ private fun ScopeDSL.alreadyAddedRecyclerDependencies() {
             listOf(
                 get<ItemAdapter<GroupItem>>(named(ALREADY_ADDED_GROUP_ITEM_ADAPTER)),
                 get<ItemAdapter<UserItem>>(named(ALREADY_ADDED_USER_ITEM_ADAPTER)),
-                get<ItemAdapter<CounterItem>>(named(ALREADY_ADDED_COUNTER_ITEM_ADAPTER))
-            )
+                get<ItemAdapter<CounterItem>>(named(ALREADY_ADDED_COUNTER_ITEM_ADAPTER)),
+            ),
         )
     }
 }
@@ -101,18 +101,18 @@ private fun ScopeDSL.usersAndGroupsRecyclerDependencies() {
         FastAdapter.with(
             listOf(
                 get<ItemAdapter<GroupRecipientItem>>(
-                    named(GROUP_ITEM_ADAPTER)
+                    named(GROUP_ITEM_ADAPTER),
                 ),
                 get<ItemAdapter<UserRecipientItem>>(
-                    named(USER_ITEM_ADAPTER)
+                    named(USER_ITEM_ADAPTER),
                 ),
                 get<ItemAdapter<ExistingUsersAndGroupsHeaderItem>>(
-                    named(EXISTING_USERS_AND_GROUPS_HEADER_ITEM_ADAPTER)
+                    named(EXISTING_USERS_AND_GROUPS_HEADER_ITEM_ADAPTER),
                 ),
                 get<ItemAdapter<PermissionItem>>(
-                    named(EXISTING_USERS_AND_GROUPS_ITEM_ADAPTER)
-                )
-            )
+                    named(EXISTING_USERS_AND_GROUPS_ITEM_ADAPTER),
+                ),
+            ),
         )
     }
 }

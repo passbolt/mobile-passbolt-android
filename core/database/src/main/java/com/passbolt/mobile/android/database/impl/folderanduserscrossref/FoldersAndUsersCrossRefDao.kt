@@ -30,7 +30,6 @@ import com.passbolt.mobile.android.entity.folder.FolderAndUsersCrossRef
  */
 @Dao
 interface FoldersAndUsersCrossRefDao : BaseDao<FolderAndUsersCrossRef> {
-
     @Transaction
     @Query("DELETE FROM FolderAndUsersCrossRef")
     suspend fun deleteAll()

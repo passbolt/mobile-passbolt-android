@@ -6,7 +6,9 @@ import android.graphics.Paint
 import coil.size.Size
 import coil.transform.Transformation
 
-class AlphaTransformation(private val shouldLowerOpacity: Boolean) : Transformation {
+class AlphaTransformation(
+    private val shouldLowerOpacity: Boolean,
+) : Transformation {
     override val cacheKey: String
         get() = javaClass.name + "$transformAlpha"
 
@@ -15,7 +17,10 @@ class AlphaTransformation(private val shouldLowerOpacity: Boolean) : Transformat
 
     private val alphaPaint = Paint().apply { alpha = transformAlpha }
 
-    override suspend fun transform(input: Bitmap, size: Size): Bitmap {
+    override suspend fun transform(
+        input: Bitmap,
+        size: Size,
+    ): Bitmap {
         val newBitmap = Bitmap.createBitmap(input.width, input.height, Bitmap.Config.ARGB_8888)
         Canvas(newBitmap).drawBitmap(input, 0f, 0f, alphaPaint)
         return newBitmap

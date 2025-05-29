@@ -31,5 +31,5 @@ enum class HomeDisplayView {
     EXPIRY,
     FOLDERS,
     TAGS,
-    GROUPS
+    GROUPS,
 }

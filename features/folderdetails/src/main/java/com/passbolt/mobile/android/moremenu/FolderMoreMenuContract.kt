@@ -27,7 +27,6 @@ import com.passbolt.mobile.android.ui.FolderMoreMenuModel
  */
 
 interface FolderMoreMenuContract {
-
     interface View : BaseContract.View {
         fun showTitle(title: String?)
     }

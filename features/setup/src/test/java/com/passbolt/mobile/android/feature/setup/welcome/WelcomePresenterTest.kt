@@ -40,24 +40,26 @@ import org.mockito.kotlin.whenever
  */
 @ExperimentalCoroutinesApi
 class WelcomePresenterTest : KoinTest {
-
     private val presenter: WelcomeContract.Presenter by inject()
     private var view: WelcomeContract.View = mock()
 
     @get:Rule
-    val koinTestRule = KoinTestRule.create {
-        printLogger(Level.ERROR)
-        modules(testModule, welcomeModule)
-    }
+    val koinTestRule =
+        KoinTestRule.create {
+            printLogger(Level.ERROR)
+            modules(testModule, welcomeModule)
+        }
 
     @Before
     fun setup() {
         whenever(mockGetGlobalPreferencesUseCase.execute(Unit))
             .doReturn(
                 GetGlobalPreferencesUseCase.Output(
-                    areDebugLogsEnabled = false, debugLogFileCreationDateTime = null,
-                    isDeveloperModeEnabled = false, isHideRootDialogEnabled = false
-                )
+                    areDebugLogsEnabled = false,
+                    debugLogFileCreationDateTime = null,
+                    isDeveloperModeEnabled = false,
+                    isHideRootDialogEnabled = false,
+                ),
             )
     }
 

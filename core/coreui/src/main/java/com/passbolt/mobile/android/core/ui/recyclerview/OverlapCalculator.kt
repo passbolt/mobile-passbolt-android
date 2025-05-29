@@ -28,15 +28,14 @@ class OverlapCalculator(
     private val availableWidth: Int,
     private val itemWidth: Float,
     private val itemCount: Int,
-    private val minOverlap: Float = (itemWidth / 2)
+    private val minOverlap: Float = (itemWidth / 2),
 ) {
-
     fun calculateLeftOverlapOffset(): ItemOverlapResult {
         if (itemCount * itemWidth < availableWidth) {
             return ItemOverlapResult(
                 allItemsFit = true,
                 visibleItems = itemCount,
-                overlap = 0
+                overlap = 0,
             )
         } else {
             var overlap = 0f
@@ -45,12 +44,13 @@ class OverlapCalculator(
             }
             return ItemOverlapResult(
                 allItemsFit = itemsFit(overlap),
-                visibleItems = if (itemsFit(overlap)) {
-                    itemCount
-                } else {
-                    (availableWidth / (itemWidth - overlap)).toInt()
-                },
-                overlap = -overlap.roundToInt()
+                visibleItems =
+                    if (itemsFit(overlap)) {
+                        itemCount
+                    } else {
+                        (availableWidth / (itemWidth - overlap)).toInt()
+                    },
+                overlap = -overlap.roundToInt(),
             )
         }
     }
@@ -62,13 +62,12 @@ class OverlapCalculator(
      * @param overlap current overlap
      * @return true if items fit, false otherwise
      */
-    private fun itemsFit(overlap: Float) =
-        (itemCount * itemWidth) - ((itemCount - 1) * overlap) < availableWidth
+    private fun itemsFit(overlap: Float) = (itemCount * itemWidth) - ((itemCount - 1) * overlap) < availableWidth
 
     data class ItemOverlapResult(
         val allItemsFit: Boolean,
         val visibleItems: Int,
-        val overlap: Int
+        val overlap: Int,
     )
 
     private companion object {

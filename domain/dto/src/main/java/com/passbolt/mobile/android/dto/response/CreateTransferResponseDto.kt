@@ -36,11 +36,11 @@ data class CreateTransferResponseDto(
     val hash: String,
     val status: StatusResponse,
     @SerializedName("authentication_token")
-    val authToken: AuthToken
+    val authToken: AuthToken,
 )
 
 data class AuthToken(
     val token: String,
     val active: Boolean,
-    val type: String
+    val type: String,
 )

@@ -29,5 +29,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class AccountKitPageDto(
     @SerialName("account_kit_url")
-    val accountKitUrl: String
+    val accountKitUrl: String,
 )

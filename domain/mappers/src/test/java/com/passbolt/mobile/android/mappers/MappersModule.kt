@@ -26,28 +26,28 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-
-val testMappersModule = module {
-    factory {
-        AccountModelMapper()
+val testMappersModule =
+    module {
+        factory {
+            AccountModelMapper()
+        }
+        factory {
+            GsonBuilder().create()
+        }
+        factory {
+            ResourceTypesModelMapper()
+        }
+        factory {
+            SharePermissionsModelMapper(
+                permissionsModelMapper = get(),
+            )
+        }
+        factory {
+            PermissionsModelMapper(
+                groupsModelMapper = get(),
+                usersModelMapper = get(),
+            )
+        }
+        factory { GroupsModelMapper() }
+        factory { UsersModelMapper() }
     }
-    factory {
-        GsonBuilder().create()
-    }
-    factory {
-        ResourceTypesModelMapper()
-    }
-    factory {
-        SharePermissionsModelMapper(
-            permissionsModelMapper = get()
-        )
-    }
-    factory {
-        PermissionsModelMapper(
-            groupsModelMapper = get(),
-            usersModelMapper = get()
-        )
-    }
-    factory { GroupsModelMapper() }
-    factory { UsersModelMapper() }
-}

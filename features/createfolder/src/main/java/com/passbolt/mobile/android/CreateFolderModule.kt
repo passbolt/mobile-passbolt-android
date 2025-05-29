@@ -26,6 +26,7 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-val createFolderModule = module {
-    createFolderModule()
-}
+val createFolderModule =
+    module {
+        createFolderModule()
+    }

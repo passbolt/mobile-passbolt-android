@@ -36,72 +36,78 @@ import org.koin.test.KoinTestRule
 import org.koin.test.inject
 import kotlin.test.Test
 
-
 class DiceTest : KoinTest {
     @OptIn(ExperimentalCoroutinesApi::class)
     @get:Rule
-    val koinTestRule = KoinTestRule.create {
-        printLogger(Level.ERROR)
-        modules(passwordGeneratorTestModule)
-    }
+    val koinTestRule =
+        KoinTestRule.create {
+            printLogger(Level.ERROR)
+            modules(passwordGeneratorTestModule)
+        }
 
     private val dice: Dice by inject()
 
     @Test
-    fun `dice file should be parsed correct`() = runTest {
-        assertThat(dice.getWord(11111)).isEqualTo("abacus")
-        assertThat(dice.getWord(66666)).isEqualTo("zoom")
-    }
+    fun `dice file should be parsed correct`() =
+        runTest {
+            assertThat(dice.getWord(11111)).isEqualTo("abacus")
+            assertThat(dice.getWord(66666)).isEqualTo("zoom")
+        }
 
     @Test
-    fun `invalid number should cause an exception`() = runTest {
-        assertThrows(IllegalArgumentException::class.java) { dice.getWord(0) }
-    }
+    fun `invalid number should cause an exception`() =
+        runTest {
+            assertThrows(IllegalArgumentException::class.java) { dice.getWord(0) }
+        }
 
     @Test
-    fun `passphrase should be generated correctly with default separator`() = runTest {
-        val wordsCount = 6
-        val passphrase = dice.generatePassphrase(wordsCount, case = CaseTypeModel.LOWERCASE)
+    fun `passphrase should be generated correctly with default separator`() =
+        runTest {
+            val wordsCount = 6
+            val passphrase = dice.generatePassphrase(wordsCount, case = CaseTypeModel.LOWERCASE)
 
-        val words = passphrase.split(Dice.DEFAULT_WORD_SEPARATOR)
+            val words = passphrase.split(Dice.DEFAULT_WORD_SEPARATOR)
 
-        assertThat(words.size).isEqualTo(wordsCount)
-        assertThat(words.all { it.isNotBlank() }).isTrue()
-    }
-
-    @Test
-    fun `passphrase should be generated correctly with custom separator`() = runTest {
-        val separator = ";"
-        val wordsCount = 8
-        val passphrase = dice.generatePassphrase(wordsCount, case = CaseTypeModel.LOWERCASE, wordsSeparator = separator)
-
-        val words = passphrase.split(separator)
-
-        assertThat(words.size).isEqualTo(wordsCount)
-        assertThat(words.all { it.isNotBlank() }).isTrue()
-    }
+            assertThat(words.size).isEqualTo(wordsCount)
+            assertThat(words.all { it.isNotBlank() }).isTrue()
+        }
 
     @Test
-    fun `passphrase should be generated correctly with camelcase`() = runTest {
-        val separator = ";"
-        val wordsCount = 8
-        val passphrase = dice.generatePassphrase(wordsCount, case = CaseTypeModel.CAMELCASE, wordsSeparator = separator)
+    fun `passphrase should be generated correctly with custom separator`() =
+        runTest {
+            val separator = ";"
+            val wordsCount = 8
+            val passphrase = dice.generatePassphrase(wordsCount, case = CaseTypeModel.LOWERCASE, wordsSeparator = separator)
 
-        val words = passphrase.split(separator).map { it.replace(separator, "") }
+            val words = passphrase.split(separator)
 
-        assertThat(words.size).isEqualTo(wordsCount)
-        assertThat(words.all { it.first().isUpperCase() }).isTrue()
-    }
+            assertThat(words.size).isEqualTo(wordsCount)
+            assertThat(words.all { it.isNotBlank() }).isTrue()
+        }
 
     @Test
-    fun `passphrase should be generated correctly with uppercase`() = runTest {
-        val separator = ";"
-        val wordsCount = 8
-        val passphrase = dice.generatePassphrase(wordsCount, case = CaseTypeModel.UPPERCASE, wordsSeparator = separator)
+    fun `passphrase should be generated correctly with camelcase`() =
+        runTest {
+            val separator = ";"
+            val wordsCount = 8
+            val passphrase = dice.generatePassphrase(wordsCount, case = CaseTypeModel.CAMELCASE, wordsSeparator = separator)
 
-        val words = passphrase.split(separator).map { it.replace(separator, "") }
+            val words = passphrase.split(separator).map { it.replace(separator, "") }
 
-        assertThat(words.size).isEqualTo(wordsCount)
-        assertThat(words.all { it.all { letter -> letter.isUpperCase() } }).isTrue()
-    }
+            assertThat(words.size).isEqualTo(wordsCount)
+            assertThat(words.all { it.first().isUpperCase() }).isTrue()
+        }
+
+    @Test
+    fun `passphrase should be generated correctly with uppercase`() =
+        runTest {
+            val separator = ";"
+            val wordsCount = 8
+            val passphrase = dice.generatePassphrase(wordsCount, case = CaseTypeModel.UPPERCASE, wordsSeparator = separator)
+
+            val words = passphrase.split(separator).map { it.replace(separator, "") }
+
+            assertThat(words.size).isEqualTo(wordsCount)
+            assertThat(words.all { it.all { letter -> letter.isUpperCase() } }).isTrue()
+        }
 }

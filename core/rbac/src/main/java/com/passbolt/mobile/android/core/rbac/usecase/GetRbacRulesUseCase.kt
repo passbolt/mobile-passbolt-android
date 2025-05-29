@@ -30,10 +30,9 @@ import com.passbolt.mobile.android.ui.RbacModel
 import com.passbolt.mobile.android.ui.RbacRuleModel
 
 class GetRbacRulesUseCase(
-    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory
+    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory,
 ) : AsyncUseCase<Unit, GetRbacRulesUseCase.Output>,
     SelectedAccountUseCase {
-
     override suspend fun execute(input: Unit): Output {
         val fileName = RbacRulesFileName(selectedAccountId).name
         return encryptedSharedPreferencesFactory.get("$fileName.xml").let {
@@ -48,11 +47,13 @@ class GetRbacRulesUseCase(
                     passwordCopyRule = RbacRuleModel.valueOf(isCopyPasswordAllowed),
                     tagsUseRule = RbacRuleModel.valueOf(isUseTagsAllowed),
                     shareViewRule = RbacRuleModel.valueOf(isViewShareAllowed),
-                    foldersUseRule = RbacRuleModel.valueOf(isUseFoldersAllowed)
-                )
+                    foldersUseRule = RbacRuleModel.valueOf(isUseFoldersAllowed),
+                ),
             )
         }
     }
 
-    data class Output(val rbacModel: RbacModel)
+    data class Output(
+        val rbacModel: RbacModel,
+    )
 }

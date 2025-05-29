@@ -32,13 +32,14 @@ import org.koin.dsl.module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-val authenticationModule = module {
-    accountsListModule()
-    authenticationMainModule()
-    authModule()
-    scanYubikeyModule()
-    enterTotpModuleModule()
-    unknownProviderModule()
-    authWithDuoModule()
-    duoWebViewModule()
-}
+val authenticationModule =
+    module {
+        accountsListModule()
+        authenticationMainModule()
+        authModule()
+        scanYubikeyModule()
+        enterTotpModuleModule()
+        unknownProviderModule()
+        authWithDuoModule()
+        duoWebViewModule()
+    }

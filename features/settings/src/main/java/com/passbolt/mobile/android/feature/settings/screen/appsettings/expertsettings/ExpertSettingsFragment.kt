@@ -33,18 +33,20 @@ import org.koin.android.ext.android.inject
 class ExpertSettingsFragment :
     BindingScopedFragment<FragmentExpertSettingsBinding>(FragmentExpertSettingsBinding::inflate),
     ExpertSettingsContract.View {
-
     private val presenter: ExpertSettingsContract.Presenter by inject()
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
-        initDefaultToolbar(binding.toolbar)
+        initDefaultToolbar(requiredBinding.toolbar)
         setListeners()
         presenter.attach(this)
     }
 
     private fun setListeners() {
-        with(binding) {
+        with(requiredBinding) {
             developerModeSetting.onChanged = {
                 presenter.onDeveloperModeStateChanged(it)
             }
@@ -55,26 +57,26 @@ class ExpertSettingsFragment :
     }
 
     override fun setDeveloperModeSwitchToOn() {
-        binding.developerModeSetting.turnOn(silently = true)
+        requiredBinding.developerModeSetting.turnOn(silently = true)
     }
 
     override fun setDeveloperModeSwitchToOff() {
-        binding.developerModeSetting.turnOff(silently = true)
+        requiredBinding.developerModeSetting.turnOff(silently = true)
     }
 
     override fun setHideRootDialogSwitchToOn() {
-        binding.hideRootWarningSetting.turnOn(silently = true)
+        requiredBinding.hideRootWarningSetting.turnOn(silently = true)
     }
 
     override fun setHideRootDialogSwitchToOff() {
-        binding.hideRootWarningSetting.turnOff(silently = true)
+        requiredBinding.hideRootWarningSetting.turnOff(silently = true)
     }
 
     override fun enableHideRootSwitch() {
-        binding.hideRootWarningSetting.isEnabled = true
+        requiredBinding.hideRootWarningSetting.isEnabled = true
     }
 
     override fun disableHideRootSwitch() {
-        binding.hideRootWarningSetting.isEnabled = false
+        requiredBinding.hideRootWarningSetting.isEnabled = false
     }
 }

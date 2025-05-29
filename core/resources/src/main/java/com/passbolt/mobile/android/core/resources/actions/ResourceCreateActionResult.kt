@@ -28,28 +28,44 @@ import com.passbolt.mobile.android.ui.NewMetadataKeyToTrustModel
 import com.passbolt.mobile.android.ui.TrustedKeyDeletedModel
 
 sealed class ResourceCreateActionResult {
+    data class Success(
+        val resourceId: String,
+        val resourceName: String,
+    ) : ResourceCreateActionResult()
 
-    data class Success(val resourceId: String, val resourceName: String) : ResourceCreateActionResult()
-
-    data class Failure(val message: String? = null) : ResourceCreateActionResult()
+    data class Failure(
+        val message: String? = null,
+    ) : ResourceCreateActionResult()
 
     data object FetchFailure : ResourceCreateActionResult()
 
     data object Unauthorized : ResourceCreateActionResult()
 
-    data class ShareFailure(val message: String? = null) : ResourceCreateActionResult()
+    data class ShareFailure(
+        val message: String? = null,
+    ) : ResourceCreateActionResult()
 
-    data class SimulateShareFailure(val message: String? = null) : ResourceCreateActionResult()
+    data class SimulateShareFailure(
+        val message: String? = null,
+    ) : ResourceCreateActionResult()
 
     data object MetadataKeyVerificationFailure : ResourceCreateActionResult()
 
-    data class MetadataKeyModified(val keyToTrust: NewMetadataKeyToTrustModel) : ResourceCreateActionResult()
+    data class MetadataKeyModified(
+        val keyToTrust: NewMetadataKeyToTrustModel,
+    ) : ResourceCreateActionResult()
 
-    data class MetadataKeyDeleted(val deletedKey: TrustedKeyDeletedModel) : ResourceCreateActionResult()
+    data class MetadataKeyDeleted(
+        val deletedKey: TrustedKeyDeletedModel,
+    ) : ResourceCreateActionResult()
 
-    class CryptoFailure(val message: String? = null) : ResourceCreateActionResult()
+    class CryptoFailure(
+        val message: String? = null,
+    ) : ResourceCreateActionResult()
 
     data object CannotCreateWithCurrentConfig : ResourceCreateActionResult()
 
-    class JsonSchemaValidationFailure(val entity: SchemaEntity) : ResourceCreateActionResult()
+    class JsonSchemaValidationFailure(
+        val entity: SchemaEntity,
+    ) : ResourceCreateActionResult()
 }

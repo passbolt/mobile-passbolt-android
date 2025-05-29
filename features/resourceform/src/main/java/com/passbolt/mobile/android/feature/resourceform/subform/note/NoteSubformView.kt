@@ -31,23 +31,24 @@ import com.passbolt.mobile.android.feature.resourceform.databinding.ViewNoteSubf
  * @since v1.0
  */
 
-class NoteSubformView @JvmOverloads constructor(
-    context: Context,
-    attrs: AttributeSet? = null,
-    defStyle: Int = 0
-) : LinearLayout(context, attrs, defStyle) {
+class NoteSubformView
+    @JvmOverloads
+    constructor(
+        context: Context,
+        attrs: AttributeSet? = null,
+        defStyle: Int = 0,
+    ) : LinearLayout(context, attrs, defStyle) {
+        private val binding = ViewNoteSubformBinding.inflate(LayoutInflater.from(context), this)
 
-    private val binding = ViewNoteSubformBinding.inflate(LayoutInflater.from(context), this)
+        val noteInput: TextInputView
+            get() = binding.noteSectionView.backgroundContainer.findViewById(R.id.noteInput)
 
-    val noteInput: TextInputView
-        get() = binding.noteSectionView.backgroundContainer.findViewById(R.id.noteInput)
-
-    init {
-        orientation = VERTICAL
-        LayoutInflater.from(context).inflate(
-            R.layout.view_note_subform_fields,
-            binding.noteSectionView.backgroundContainer,
-            true
-        )
+        init {
+            orientation = VERTICAL
+            LayoutInflater.from(context).inflate(
+                R.layout.view_note_subform_fields,
+                binding.noteSectionView.backgroundContainer,
+                true,
+            )
+        }
     }
-}

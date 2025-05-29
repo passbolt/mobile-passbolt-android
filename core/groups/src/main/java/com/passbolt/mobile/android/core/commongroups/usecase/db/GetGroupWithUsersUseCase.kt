@@ -33,9 +33,8 @@ class GetGroupWithUsersUseCase(
     private val databaseProvider: DatabaseProvider,
     private val groupModelMapper: GroupsModelMapper,
     private val usersModelMapper: UsersModelMapper,
-    private val getSelectedAccountUseCase: GetSelectedAccountUseCase
+    private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
 ) : AsyncUseCase<GetGroupWithUsersUseCase.Input, GetGroupWithUsersUseCase.Output> {
-
     override suspend fun execute(input: Input): Output =
         databaseProvider
             .get(requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount))
@@ -45,16 +44,16 @@ class GetGroupWithUsersUseCase(
                 Output(
                     GroupWithUsersModel(
                         groupModelMapper.map(it.group),
-                        it.users.map(usersModelMapper::map)
-                    )
+                        it.users.map(usersModelMapper::map),
+                    ),
                 )
             }
 
     data class Input(
-        val groupId: String
+        val groupId: String,
     )
 
     data class Output(
-        val groupWithUsers: GroupWithUsersModel
+        val groupWithUsers: GroupWithUsersModel,
     )
 }

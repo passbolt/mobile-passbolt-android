@@ -35,17 +35,18 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-val settingsModule = module {
-    settingsModule()
+val settingsModule =
+    module {
+        settingsModule()
 
-    appSettingsModule()
-    debugLogsSettingsModule()
-    termsAndLicensesSettingsModule()
-    expertSettingsModule()
+        appSettingsModule()
+        debugLogsSettingsModule()
+        termsAndLicensesSettingsModule()
+        expertSettingsModule()
 
-    settingsAutofillModule()
-    licensesModule()
-    defaultFilterModule()
-    keyInspectorModule()
-    keyInspectorMoreMenuModule()
-}
+        settingsAutofillModule()
+        licensesModule()
+        defaultFilterModule()
+        keyInspectorModule()
+        keyInspectorMoreMenuModule()
+    }

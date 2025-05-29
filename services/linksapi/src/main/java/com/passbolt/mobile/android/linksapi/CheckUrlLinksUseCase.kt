@@ -26,9 +26,8 @@ import com.passbolt.mobile.android.core.networking.NetworkResult
  * @since v1.0
  */
 class CheckUrlLinksUseCase(
-    private val checkUrlLinksRepository: CheckUrlLinksRepository
+    private val checkUrlLinksRepository: CheckUrlLinksRepository,
 ) : AsyncUseCase<CheckUrlLinksUseCase.Input, CheckUrlLinksUseCase.Output> {
-
     override suspend fun execute(input: Input) =
         when (val response = checkUrlLinksRepository.getAssetLinks(input.domain)) {
             is NetworkResult.Failure -> Output.Failure
@@ -36,12 +35,12 @@ class CheckUrlLinksUseCase(
         }
 
     data class Input(
-        val domain: String
+        val domain: String,
     )
 
     sealed class Output {
         data class Success(
-            val assets: List<AssetLink>
+            val assets: List<AssetLink>,
         ) : Output()
 
         data object Failure : Output()

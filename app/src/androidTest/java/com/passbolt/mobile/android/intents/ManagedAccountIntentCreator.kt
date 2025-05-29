@@ -31,7 +31,6 @@ import java.util.Properties
  */
 
 class ManagedAccountIntentCreator {
-
     private val accountProperties = Properties()
 
     // environment variables have to be set - see README.md
@@ -45,15 +44,16 @@ class ManagedAccountIntentCreator {
                 PROPERTY_LAST_NAME to BuildConfig.PROPERTY_LAST_NAME,
                 PROPERTY_AVATAR_URL to BuildConfig.PROPERTY_AVATAR_URL,
                 PROPERTY_KEY_FINGERPRINT to BuildConfig.PROPERTY_KEY_FINGERPRINT,
-                PROPERTY_ARMORED_KEY to String(
-                    Base64.decode(
-                        BuildConfig.PROPERTY_ARMORED_KEY_BASE_64,
-                        Base64.DEFAULT
-                    )
-                ),
+                PROPERTY_ARMORED_KEY to
+                    String(
+                        Base64.decode(
+                            BuildConfig.PROPERTY_ARMORED_KEY_BASE_64,
+                            Base64.DEFAULT,
+                        ),
+                    ),
                 PROPERTY_PASSPHRASE to BuildConfig.PROPERTY_PASSPHRASE,
-                PROPERTY_LOCAL_USER_UUID to BuildConfig.PROPERTY_LOCAL_USER_UUID
-            )
+                PROPERTY_LOCAL_USER_UUID to BuildConfig.PROPERTY_LOCAL_USER_UUID,
+            ),
         )
     }
 

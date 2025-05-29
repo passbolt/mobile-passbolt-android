@@ -41,19 +41,20 @@ internal val mockSecretGenerator = mock<SecretGenerator>()
 internal val mockEntropyCalculator = mock<EntropyCalculator>()
 
 @OptIn(ExperimentalCoroutinesApi::class)
-internal val testPasswordFormModule = module {
-    factoryOf(::TestCoroutineLaunchContext) bind CoroutineLaunchContext::class
-    factoryOf(::ResourceFormMapper)
-    factoryOf(::EntropyViewMapper)
+internal val testPasswordFormModule =
+    module {
+        factoryOf(::TestCoroutineLaunchContext) bind CoroutineLaunchContext::class
+        factoryOf(::ResourceFormMapper)
+        factoryOf(::EntropyViewMapper)
 
-    factory<PasswordFormContract.Presenter> {
-        PasswordFormPresenter(
-            getPasswordPoliciesUseCase = mockGetPasswordPoliciesUseCase,
-            secretGenerator = mockSecretGenerator,
-            entropyCalculator = mockEntropyCalculator,
-            entropyViewMapper = get(),
-            coroutineLaunchContext = get()
-        )
+        factory<PasswordFormContract.Presenter> {
+            PasswordFormPresenter(
+                getPasswordPoliciesUseCase = mockGetPasswordPoliciesUseCase,
+                secretGenerator = mockSecretGenerator,
+                entropyCalculator = mockEntropyCalculator,
+                entropyViewMapper = get(),
+                coroutineLaunchContext = get(),
+            )
+        }
+        factoryOf(::PasswordFormPresenter) bind PasswordFormPresenter::class
     }
-    factoryOf(::PasswordFormPresenter) bind PasswordFormPresenter::class
-}

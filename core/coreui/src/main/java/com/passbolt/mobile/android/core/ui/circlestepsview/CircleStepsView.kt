@@ -30,28 +30,29 @@ import com.passbolt.mobile.android.core.ui.databinding.ViewCircleStepRowBinding
  * @since v1.0
  */
 
-class CircleStepsView @JvmOverloads constructor(
-    context: Context,
-    attrs: AttributeSet? = null,
-    defStyle: Int = 0
-) : LinearLayout(context, attrs, defStyle) {
+class CircleStepsView
+    @JvmOverloads
+    constructor(
+        context: Context,
+        attrs: AttributeSet? = null,
+        defStyle: Int = 0,
+    ) : LinearLayout(context, attrs, defStyle) {
+        init {
+            orientation = VERTICAL
+        }
 
-    init {
-        orientation = VERTICAL
-    }
-
-    fun addList(list: List<CircleStepItemModel>) {
-        list.forEachIndexed { index, model ->
-            val row = ViewCircleStepRowBinding.inflate(LayoutInflater.from(context))
-            row.titleLabel.text = model.text
-            with(row.circle) {
-                setText("${index + 1}")
-                model.icon?.let { setImageResource(it) }
+        fun addList(list: List<CircleStepItemModel>) {
+            list.forEachIndexed { index, model ->
+                val row = ViewCircleStepRowBinding.inflate(LayoutInflater.from(context))
+                row.titleLabel.text = model.text
+                with(row.circle) {
+                    setText("${index + 1}")
+                    model.icon?.let { setImageResource(it) }
+                }
+                if (index == list.size - 1) {
+                    row.line.isVisible = false
+                }
+                addView(row.root)
             }
-            if (index == list.size - 1) {
-                row.line.isVisible = false
-            }
-            addView(row.root)
         }
     }
-}

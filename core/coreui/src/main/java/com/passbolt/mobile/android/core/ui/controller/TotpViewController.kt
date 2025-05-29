@@ -16,24 +16,27 @@ import org.koin.core.component.inject
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 class TotpViewController : KoinComponent {
-
     @Suppress("MagicNumber")
-    private val rotateAnimation = RotateAnimation(
-        0f, 180f,
-        Animation.RELATIVE_TO_SELF, 0.5f,
-        Animation.RELATIVE_TO_SELF, 0.5f
-    ).apply {
-        interpolator = FastOutSlowInInterpolator()
-        duration = 500
-        repeatCount = Animation.INFINITE
-    }
+    private val rotateAnimation =
+        RotateAnimation(
+            0f,
+            180f,
+            Animation.RELATIVE_TO_SELF,
+            0.5f,
+            Animation.RELATIVE_TO_SELF,
+            0.5f,
+        ).apply {
+            interpolator = FastOutSlowInInterpolator()
+            duration = 500
+            repeatCount = Animation.INFINITE
+        }
 
     private val otpFormatter: OtpFormatter by inject()
 
     fun updateView(
         viewParameters: ViewParameters,
         stateParameters: StateParameters,
-        timeParameters: TimeParameters
+        timeParameters: TimeParameters,
     ) {
         with(viewParameters.progressIndicator) {
             min = 0
@@ -41,28 +44,32 @@ class TotpViewController : KoinComponent {
             progress = timeParameters.remainingSecondsCounter?.let { (it.toInt() + 1) * ANIMATION_MULTIPLIER } ?: 0
         }
 
-        viewParameters.otpText.text = otpFormatter.format(
-            stateParameters.otpValue ?: viewParameters.otpText.context.getString(LocalizationR.string.otp_hide_otp)
-        )
+        viewParameters.otpText.text =
+            otpFormatter.format(
+                stateParameters.otpValue ?: viewParameters.otpText.context.getString(LocalizationR.string.otp_hide_otp),
+            )
         viewParameters.progressIndicator.isVisible = stateParameters.isOtpVisible
 
         updateIsRefreshing(
             viewParameters.generationInProgressImage,
-            stateParameters.isOtpRefreshing
+            stateParameters.isOtpRefreshing,
         )
         updateProgress(
             viewParameters.progressIndicator,
-            timeParameters.remainingSecondsCounter
+            timeParameters.remainingSecondsCounter,
         )
         updateColors(
             viewParameters.otpText,
             viewParameters.progressIndicator,
             timeParameters.otpExpirySeconds,
-            timeParameters.remainingSecondsCounter
+            timeParameters.remainingSecondsCounter,
         )
     }
 
-    private fun updateIsRefreshing(generationInProgressImage: ImageView, isOtpRefreshing: Boolean) {
+    private fun updateIsRefreshing(
+        generationInProgressImage: ImageView,
+        isOtpRefreshing: Boolean,
+    ) {
         generationInProgressImage.let { inProgressView ->
             inProgressView.isVisible = isOtpRefreshing
             if (isOtpRefreshing) {
@@ -73,15 +80,20 @@ class TotpViewController : KoinComponent {
         }
     }
 
-    private fun updateProgress(progressIndicator: CircularProgressIndicator, remainingSecondsCounter: Long?) {
-        val progressAnimator = ObjectAnimator.ofInt(
-            progressIndicator,
-            PROPERTY_PROGRESS,
-            remainingSecondsCounter?.let { it.toInt() * ANIMATION_MULTIPLIER } ?: 0
-        ).apply {
-            duration = PROGRESS_ANIMATION_DURATION_MILLIS
-            interpolator = LinearInterpolator()
-        }
+    private fun updateProgress(
+        progressIndicator: CircularProgressIndicator,
+        remainingSecondsCounter: Long?,
+    ) {
+        val progressAnimator =
+            ObjectAnimator
+                .ofInt(
+                    progressIndicator,
+                    PROPERTY_PROGRESS,
+                    remainingSecondsCounter?.let { it.toInt() * ANIMATION_MULTIPLIER } ?: 0,
+                ).apply {
+                    duration = PROGRESS_ANIMATION_DURATION_MILLIS
+                    interpolator = LinearInterpolator()
+                }
         progressAnimator.start()
     }
 
@@ -92,7 +104,7 @@ class TotpViewController : KoinComponent {
         otpText: TextView,
         progressIndicator: CircularProgressIndicator,
         otpExpirySeconds: Long?,
-        remainingSecondsCounter: Long?
+        remainingSecondsCounter: Long?,
     ) {
         val progressPercentage =
             if (remainingSecondsCounter != null && otpExpirySeconds != null) {
@@ -112,18 +124,18 @@ class TotpViewController : KoinComponent {
     data class ViewParameters(
         val progressIndicator: CircularProgressIndicator,
         val otpText: TextView,
-        val generationInProgressImage: ImageView
+        val generationInProgressImage: ImageView,
     )
 
     data class StateParameters(
         val isOtpRefreshing: Boolean,
         val isOtpVisible: Boolean,
-        val otpValue: String?
+        val otpValue: String?,
     )
 
     data class TimeParameters(
         val otpExpirySeconds: Long?,
-        val remainingSecondsCounter: Long?
+        val remainingSecondsCounter: Long?,
     )
 
     private companion object {

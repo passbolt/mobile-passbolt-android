@@ -36,10 +36,9 @@ import com.passbolt.mobile.android.featureflags.usecase.Constants.TOTP_KEY
  * @since v1.0
  */
 class GetFeatureFlagsUseCase(
-    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory
+    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory,
 ) : AsyncUseCase<Unit, GetFeatureFlagsUseCase.Output>,
     SelectedAccountUseCase {
-
     override suspend fun execute(input: Unit): Output {
         val fileName = FeatureFlagsFileName(selectedAccountId).name
         encryptedSharedPreferencesFactory.get("$fileName.xml").let {
@@ -51,14 +50,16 @@ class GetFeatureFlagsUseCase(
             val isTotpAvailable = it.getBoolean(TOTP_KEY, Defaults.IS_TOTP_AVAILABLE)
             val isRbacAvailable = it.getBoolean(RBAC_KEY, Defaults.IS_RBAC_AVAILABLE)
             val isPasswordExpiryAvailable = it.getBoolean(PASSWORD_EXPIRY_KEY, Defaults.IS_PASSWORD_EXPIRY_AVAILABLE)
-            val arePasswordPoliciesAvailable = it.getBoolean(
-                Constants.PASSWORD_POLICIES_KEY,
-                Defaults.ARE_PASSWORD_POLICIES_AVAILABLE
-            )
-            val canUpdatePasswordPolicies = it.getBoolean(
-                Constants.PASSWORD_POLICIES_UPDATE_KEY,
-                Defaults.CAN_UPDATE_PASSWORD_POLICIES
-            )
+            val arePasswordPoliciesAvailable =
+                it.getBoolean(
+                    Constants.PASSWORD_POLICIES_KEY,
+                    Defaults.ARE_PASSWORD_POLICIES_AVAILABLE,
+                )
+            val canUpdatePasswordPolicies =
+                it.getBoolean(
+                    Constants.PASSWORD_POLICIES_UPDATE_KEY,
+                    Defaults.CAN_UPDATE_PASSWORD_POLICIES,
+                )
             val isV5MetadataAvailable = it.getBoolean(Constants.V5_METADATA, Defaults.IS_V5_METADATA_AVAILABLE)
             return Output(
                 FeatureFlagsModel(
@@ -72,11 +73,13 @@ class GetFeatureFlagsUseCase(
                     isPasswordExpiryAvailable = isPasswordExpiryAvailable,
                     arePasswordPoliciesAvailable = arePasswordPoliciesAvailable,
                     canUpdatePasswordPolicies = canUpdatePasswordPolicies,
-                    isV5MetadataAvailable = isV5MetadataAvailable
-                )
+                    isV5MetadataAvailable = isV5MetadataAvailable,
+                ),
             )
         }
     }
 
-    data class Output(val featureFlags: FeatureFlagsModel)
+    data class Output(
+        val featureFlags: FeatureFlagsModel,
+    )
 }

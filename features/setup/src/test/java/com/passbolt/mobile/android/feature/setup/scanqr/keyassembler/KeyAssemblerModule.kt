@@ -28,7 +28,8 @@ import kotlinx.serialization.json.Json
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 
-val keyAssemblerModule = module {
-    factoryOf(::KeyAssembler)
-    factory { Json { ignoreUnknownKeys = true } }
-}
+val keyAssemblerModule =
+    module {
+        factoryOf(::KeyAssembler)
+        factory { Json { ignoreUnknownKeys = true } }
+    }

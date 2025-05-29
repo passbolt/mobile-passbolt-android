@@ -27,5 +27,5 @@ import com.google.gson.annotations.SerializedName
 data class UpdateTransferRequestDto(
     @SerializedName("current_page")
     val currentPage: Int,
-    val status: StatusRequest
+    val status: StatusRequest,
 )

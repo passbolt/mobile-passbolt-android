@@ -36,82 +36,154 @@ import com.passbolt.mobile.android.ui.TrustedKeyDeletedModel
  * @since v1.0
  */
 interface ResourceFormContract {
-
     @Suppress("TooManyFunctions")
     interface View : BaseAuthenticatedContract.View {
         fun addTotpLeadingForm(totpUiModel: TotpUiModel)
+
         fun addPasswordLeadingForm(
             password: String = "",
             passwordStrength: PasswordStrength = Empty,
-            passwordEntropyBits: Double = 0.0
+            passwordEntropyBits: Double = 0.0,
         )
 
         fun showCreatePasswordTitle()
+
         fun showCreateTotpTitle()
+
         fun showCreateButton()
+
         fun showSaveButton()
+
         fun showUnableToGeneratePassword(minimumEntropyBits: Int)
-        fun showPassword(password: List<Codepoint>, entropy: Double, passwordStrength: PasswordStrength)
-        fun showPasswordStrength(strength: PasswordStrength, entropyBits: Double)
+
+        fun showPassword(
+            password: List<Codepoint>,
+            entropy: Double,
+            passwordStrength: PasswordStrength,
+        )
+
+        fun showPasswordStrength(
+            strength: PasswordStrength,
+            entropyBits: Double,
+        )
+
         fun setupAdditionalSecrets(supportedAdditionalSecrets: List<ResourceFormUiModel.Secret>)
+
         fun setupMetadata(supportedMetadata: List<ResourceFormUiModel.Metadata>)
+
         fun hideAdvancedSettings()
+
         fun navigateToNote(note: String)
+
         fun navigateToTotp(totpUiModel: TotpUiModel)
+
         fun navigateToMetadataDescription(metadataDescription: String)
+
         fun showName(name: String)
+
         fun showPasswordUsername(username: String)
+
         fun showPasswordMainUri(mainUri: String)
+
         fun showTotpSecret(secret: String)
+
         fun showTotpIssuer(issuer: String)
+
         fun navigateToPassword(passwordUiModel: PasswordUiModel)
+
         fun showProgress()
+
         fun hideProgress()
+
         fun showGenericError()
+
         fun showEncryptionError(error: String)
+
         fun showJsonResourceSchemaValidationError()
+
         fun showJsonSecretSchemaValidationError()
+
         fun navigateBackWithCreateSuccess(name: String)
+
         fun navigateToScanTotp(scanMode: ScanOtpMode)
+
         fun showInitializationProgress()
+
         fun hideInitializationProgress()
+
         fun showEditResourceInitializationError()
+
         fun navigateBack()
+
         fun navigateBackWithEditSuccess(name: String)
+
         fun showTotpRequired()
+
         fun showCannotCreateTotpWithCurrentConfig()
+
         fun showCannotUpdateTotpWithCurrentConfig()
+
         fun showEditTitle(resourceName: String)
+
         fun showMetadataKeyModifiedDialog(model: NewMetadataKeyToTrustModel)
+
         fun showMetadataKeyDeletedDialog(model: TrustedKeyDeletedModel)
+
         fun showFailedToVerifyMetadataKey()
+
         fun showNewMetadataKeyIsTrusted()
+
         fun showFailedToTrustMetadataKey()
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
         fun argsRetrieved(mode: ResourceFormMode)
+
         fun createResourceClick()
+
         fun updateResourceClick()
+
         fun passwordGenerateClick()
+
         fun passwordTextChanged(password: String)
+
         fun advancedSettingsClick()
+
         fun nameTextChanged(name: String)
+
         fun passwordMainUriTextChanged(mainUri: String)
+
         fun passwordUsernameTextChanged(username: String)
+
         fun additionalNoteClick()
+
         fun additionalTotpClick()
+
         fun metadataDescriptionClick()
+
         fun noteChanged(note: String?)
+
         fun metadataDescriptionChanged(metadataDescription: String?)
+
         fun totpChanged(totpUiModel: TotpUiModel?)
+
         fun totpSecretChanged(totpSecret: String)
+
         fun totpUrlChanged(url: String)
+
         fun totpAdvancedSettingsChanged(totpAdvancedSettings: TotpUiModel?)
+
         fun additionalPasswordClick()
+
         fun passwordChanged(passwordUiModel: PasswordUiModel?)
-        fun totpScanned(isManualCreationChosen: Boolean, scannedTotp: OtpParseResult.OtpQr.TotpQr?)
+
+        fun totpScanned(
+            isManualCreationChosen: Boolean,
+            scannedTotp: OtpParseResult.OtpQr.TotpQr?,
+        )
+
         fun trustedMetadataKeyDeleted(model: TrustedKeyDeletedModel)
+
         fun trustNewMetadataKey(model: NewMetadataKeyToTrustModel)
     }
 }

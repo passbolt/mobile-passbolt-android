@@ -40,85 +40,226 @@ object Alphabets {
     const val MASK_SPECIAL_CHAR5 = "special_char5"
     const val MASK_EMOJI = "emoji"
 
-    val all = mapOf(
-        MASK_UPPER to CodepointSet(
-            label = "A-Z",
-            name = MASK_UPPER,
-            codepoints = listOf(
-                "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O",
-                "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"
-            )
-                .map { Codepoint(it.codePointAt(0)) }
-        ),
-        MASK_LOWER to CodepointSet(
-            label = "a-z",
-            name = MASK_LOWER,
-            codepoints = listOf(
-                "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o",
-                "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"
-            )
-                .map { Codepoint(it.codePointAt(0)) }
-        ),
-        MASK_DIGIT to CodepointSet(
-            label = "0-9",
-            name = MASK_DIGIT,
-            codepoints = listOf("0", "1", "2", "3", "4", "5", "6", "7", "8", "9")
-                .map { Codepoint(it.codePointAt(0)) }
-        ),
-        MASK_PARENTHESIS to CodepointSet(
-            label = "{ [ ( | ) ] ] }",
-            name = MASK_PARENTHESIS,
-            codepoints = listOf("{", "(", "[", "|", "]", ")", "}")
-                .map { Codepoint(it.codePointAt(0)) }
-        ),
-        MASK_SPECIAL_CHAR1 to CodepointSet(
-            label = "# $ % & @ ^ ~",
-            name = MASK_SPECIAL_CHAR1,
-            codepoints = listOf("#", "$", "%", "&", "@", "^", "~")
-                .map { Codepoint(it.codePointAt(0)) }
-        ),
-        MASK_SPECIAL_CHAR2 to CodepointSet(
-            label = ". , : ;",
-            name = MASK_SPECIAL_CHAR2,
-            codepoints = listOf(".", ",", ":", ";")
-                .map { Codepoint(it.codePointAt(0)) }
-        ),
-        MASK_SPECIAL_CHAR3 to CodepointSet(
-            label = "' \" `",
-            name = MASK_SPECIAL_CHAR3,
-            codepoints = listOf("\'", "\"", "`")
-                .map { Codepoint(it.codePointAt(0)) }
-        ),
-        MASK_SPECIAL_CHAR4 to CodepointSet(
-            label = "/ \\\\ _ -",
-            name = MASK_SPECIAL_CHAR4,
-            codepoints = listOf("/", "\\\\", "_", "-")
-                .map { Codepoint(it.codePointAt(0)) }
-        ),
-        MASK_SPECIAL_CHAR5 to CodepointSet(
-            label = "< * + ! ? =",
-            name = MASK_SPECIAL_CHAR5,
-            codepoints = listOf("<", "*", "+", "!", "?", "=")
-                .map { Codepoint(it.codePointAt(0)) }
-        ),
-        MASK_EMOJI to CodepointSet(
-            label = "😘",
-            name = MASK_EMOJI,
-            codepoints = listOf(
-                "😀", "😁", "😂", "😃", "😄", "😅", "😆", "😇", "😈", "😉",
-                "😊", "😋", "😌", "😍", "😎", "😏", "😐", "😑", "😒", "😓",
-                "😔", "😕", "😖", "😗", "😘", "😙", "😚", "😛", "😜", "😝",
-                "😞", "😟", "😠", "😡", "😢", "😣", "😤", "😥", "😦", "😧",
-                "😨", "😩", "😪", "😫", "😬", "😭", "😮", "😯", "😰", "😱",
-                "😲", "😳", "😴", "😵", "😶", "😷", "😸", "😹", "😺", "😻",
-                "😼", "😽", "😾", "😿", "🙀", "🙁", "🙂", "🙃", "🙄", "🙅",
-                "🙆", "🙇", "🙈", "🙉", "🙊", "🙋", "🙌", "🙍", "🙎", "🙏"
-            ).map { Codepoint(it.codePointAt(0)) }
+    val all =
+        mapOf(
+            MASK_UPPER to
+                CodepointSet(
+                    label = "A-Z",
+                    name = MASK_UPPER,
+                    codepoints =
+                        listOf(
+                            "A",
+                            "B",
+                            "C",
+                            "D",
+                            "E",
+                            "F",
+                            "G",
+                            "H",
+                            "I",
+                            "J",
+                            "K",
+                            "L",
+                            "M",
+                            "N",
+                            "O",
+                            "P",
+                            "Q",
+                            "R",
+                            "S",
+                            "T",
+                            "U",
+                            "V",
+                            "W",
+                            "X",
+                            "Y",
+                            "Z",
+                        ).map { Codepoint(it.codePointAt(0)) },
+                ),
+            MASK_LOWER to
+                CodepointSet(
+                    label = "a-z",
+                    name = MASK_LOWER,
+                    codepoints =
+                        listOf(
+                            "a",
+                            "b",
+                            "c",
+                            "d",
+                            "e",
+                            "f",
+                            "g",
+                            "h",
+                            "i",
+                            "j",
+                            "k",
+                            "l",
+                            "m",
+                            "n",
+                            "o",
+                            "p",
+                            "q",
+                            "r",
+                            "s",
+                            "t",
+                            "u",
+                            "v",
+                            "w",
+                            "x",
+                            "y",
+                            "z",
+                        ).map { Codepoint(it.codePointAt(0)) },
+                ),
+            MASK_DIGIT to
+                CodepointSet(
+                    label = "0-9",
+                    name = MASK_DIGIT,
+                    codepoints =
+                        listOf("0", "1", "2", "3", "4", "5", "6", "7", "8", "9")
+                            .map { Codepoint(it.codePointAt(0)) },
+                ),
+            MASK_PARENTHESIS to
+                CodepointSet(
+                    label = "{ [ ( | ) ] ] }",
+                    name = MASK_PARENTHESIS,
+                    codepoints =
+                        listOf("{", "(", "[", "|", "]", ")", "}")
+                            .map { Codepoint(it.codePointAt(0)) },
+                ),
+            MASK_SPECIAL_CHAR1 to
+                CodepointSet(
+                    label = "# $ % & @ ^ ~",
+                    name = MASK_SPECIAL_CHAR1,
+                    codepoints =
+                        listOf("#", "$", "%", "&", "@", "^", "~")
+                            .map { Codepoint(it.codePointAt(0)) },
+                ),
+            MASK_SPECIAL_CHAR2 to
+                CodepointSet(
+                    label = ". , : ;",
+                    name = MASK_SPECIAL_CHAR2,
+                    codepoints =
+                        listOf(".", ",", ":", ";")
+                            .map { Codepoint(it.codePointAt(0)) },
+                ),
+            MASK_SPECIAL_CHAR3 to
+                CodepointSet(
+                    label = "' \" `",
+                    name = MASK_SPECIAL_CHAR3,
+                    codepoints =
+                        listOf("\'", "\"", "`")
+                            .map { Codepoint(it.codePointAt(0)) },
+                ),
+            MASK_SPECIAL_CHAR4 to
+                CodepointSet(
+                    label = "/ \\\\ _ -",
+                    name = MASK_SPECIAL_CHAR4,
+                    codepoints =
+                        listOf("/", "\\\\", "_", "-")
+                            .map { Codepoint(it.codePointAt(0)) },
+                ),
+            MASK_SPECIAL_CHAR5 to
+                CodepointSet(
+                    label = "< * + ! ? =",
+                    name = MASK_SPECIAL_CHAR5,
+                    codepoints =
+                        listOf("<", "*", "+", "!", "?", "=")
+                            .map { Codepoint(it.codePointAt(0)) },
+                ),
+            MASK_EMOJI to
+                CodepointSet(
+                    label = "😘",
+                    name = MASK_EMOJI,
+                    codepoints =
+                        listOf(
+                            "😀",
+                            "😁",
+                            "😂",
+                            "😃",
+                            "😄",
+                            "😅",
+                            "😆",
+                            "😇",
+                            "😈",
+                            "😉",
+                            "😊",
+                            "😋",
+                            "😌",
+                            "😍",
+                            "😎",
+                            "😏",
+                            "😐",
+                            "😑",
+                            "😒",
+                            "😓",
+                            "😔",
+                            "😕",
+                            "😖",
+                            "😗",
+                            "😘",
+                            "😙",
+                            "😚",
+                            "😛",
+                            "😜",
+                            "😝",
+                            "😞",
+                            "😟",
+                            "😠",
+                            "😡",
+                            "😢",
+                            "😣",
+                            "😤",
+                            "😥",
+                            "😦",
+                            "😧",
+                            "😨",
+                            "😩",
+                            "😪",
+                            "😫",
+                            "😬",
+                            "😭",
+                            "😮",
+                            "😯",
+                            "😰",
+                            "😱",
+                            "😲",
+                            "😳",
+                            "😴",
+                            "😵",
+                            "😶",
+                            "😷",
+                            "😸",
+                            "😹",
+                            "😺",
+                            "😻",
+                            "😼",
+                            "😽",
+                            "😾",
+                            "😿",
+                            "🙀",
+                            "🙁",
+                            "🙂",
+                            "🙃",
+                            "🙄",
+                            "🙅",
+                            "🙆",
+                            "🙇",
+                            "🙈",
+                            "🙉",
+                            "🙊",
+                            "🙋",
+                            "🙌",
+                            "🙍",
+                            "🙎",
+                            "🙏",
+                        ).map { Codepoint(it.codePointAt(0)) },
+                ),
         )
-    )
 
-    private fun getAlphabetByName(name: String, excludeLookAlike: Boolean): CodepointSet =
-        all[name]!!.withLookAlikeExcluded(excludeLookAlike)
+    private fun getAlphabetByName(
+        name: String,
+        excludeLookAlike: Boolean,
+    ): CodepointSet = all[name]!!.withLookAlikeExcluded(excludeLookAlike)
 
     fun getCodepointSetsForModel(model: PasswordGeneratorSettingsModel): Set<CodepointSet> {
         val result = mutableSetOf<CodepointSet>()

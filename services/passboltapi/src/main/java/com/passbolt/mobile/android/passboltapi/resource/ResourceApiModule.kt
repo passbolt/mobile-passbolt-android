@@ -29,13 +29,13 @@ import org.koin.core.module.Module
 internal fun Module.resourceApiModule() {
     single<ResourceDataSource> {
         ResourceRemoteDataSource(
-            resourceApi = get()
+            resourceApi = get(),
         )
     }
     single {
         ResourceRepository(
             resourceDataSource = get(),
-            responseHandler = get()
+            responseHandler = get(),
         )
     }
     single {

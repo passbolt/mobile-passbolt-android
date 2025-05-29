@@ -32,12 +32,14 @@ import com.passbolt.mobile.android.ui.TotpUiModel
  */
 
 class TotpFormPresenter : TotpFormContract.Presenter {
-
     override var view: TotpFormContract.View? = null
 
     private lateinit var totpUiModel: TotpUiModel
 
-    override fun argsRetrieved(mode: ResourceFormMode, totpUiModel: TotpUiModel) {
+    override fun argsRetrieved(
+        mode: ResourceFormMode,
+        totpUiModel: TotpUiModel,
+    ) {
         this.totpUiModel = totpUiModel
 
         when (mode) {
@@ -63,26 +65,31 @@ class TotpFormPresenter : TotpFormContract.Presenter {
 
     override fun totpAdvancedSettingsChanged(totpModel: TotpUiModel?) {
         totpModel?.let {
-            totpUiModel = it.copy(
-                expiry = totpModel.expiry,
-                length = totpModel.length,
-                algorithm = totpModel.algorithm
-            )
+            totpUiModel =
+                it.copy(
+                    expiry = totpModel.expiry,
+                    length = totpModel.length,
+                    algorithm = totpModel.algorithm,
+                )
         }
     }
 
-    override fun totpScanned(isManualCreationChosen: Boolean, totpQr: OtpParseResult.OtpQr.TotpQr?) {
+    override fun totpScanned(
+        isManualCreationChosen: Boolean,
+        totpQr: OtpParseResult.OtpQr.TotpQr?,
+    ) {
         // just stay on totp screen and allow manual input
         if (isManualCreationChosen) return
 
         totpQr?.let {
-            totpUiModel = TotpUiModel(
-                issuer = it.issuer.orEmpty(),
-                secret = it.secret,
-                algorithm = it.algorithm.name,
-                length = it.digits.toString(),
-                expiry = it.period.toString()
-            )
+            totpUiModel =
+                TotpUiModel(
+                    issuer = it.issuer.orEmpty(),
+                    secret = it.secret,
+                    algorithm = it.algorithm.name,
+                    length = it.digits.toString(),
+                    expiry = it.period.toString(),
+                )
             view?.showSecret(it.secret)
             view?.showUrl(it.issuer.orEmpty())
         }

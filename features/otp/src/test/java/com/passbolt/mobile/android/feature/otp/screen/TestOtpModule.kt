@@ -69,38 +69,40 @@ internal val mockIdToSlugMappingProvider = mock<ResourceTypeIdToSlugMappingProvi
 internal val mockMetadataPrivateKeysHelperInteractor = mock<MetadataPrivateKeysHelperInteractor>()
 
 @ExperimentalCoroutinesApi
-internal val testOtpModule = module {
-    factoryOf(::TestCoroutineLaunchContext) bind CoroutineLaunchContext::class
-    factoryOf(::SearchableMatcher)
-    factoryOf(::OtpModelMapper)
-    factoryOf(::UsersModelMapper)
-    factoryOf(::GroupsModelMapper)
-    factoryOf(::PermissionsModelMapper)
-    factoryOf(::InitialsProvider)
-    single { mock<FullDataRefreshExecutor>() }
-    factory<OtpContract.Presenter> {
-        OtpPresenter(
-            getSelectedAccountDataUseCase = mockSelectedAccountDataCase,
-            searchableMatcher = get(),
-            getLocalResourcesUseCase = mockGetLocalResourcesUseCase,
-            otpModelMapper = get(),
-            totpParametersProvider = mockTotpParametersProvider,
-            coroutineLaunchContext = get(),
-            idToSlugMappingProvider = mockIdToSlugMappingProvider,
-            metadataPrivateKeysHelperInteractor = mockMetadataPrivateKeysHelperInteractor
-        )
+internal val testOtpModule =
+    module {
+        factoryOf(::TestCoroutineLaunchContext) bind CoroutineLaunchContext::class
+        factoryOf(::SearchableMatcher)
+        factoryOf(::OtpModelMapper)
+        factoryOf(::UsersModelMapper)
+        factoryOf(::GroupsModelMapper)
+        factoryOf(::PermissionsModelMapper)
+        factoryOf(::InitialsProvider)
+        single { mock<FullDataRefreshExecutor>() }
+        factory<OtpContract.Presenter> {
+            OtpPresenter(
+                getSelectedAccountDataUseCase = mockSelectedAccountDataCase,
+                searchableMatcher = get(),
+                getLocalResourcesUseCase = mockGetLocalResourcesUseCase,
+                otpModelMapper = get(),
+                totpParametersProvider = mockTotpParametersProvider,
+                coroutineLaunchContext = get(),
+                idToSlugMappingProvider = mockIdToSlugMappingProvider,
+                metadataPrivateKeysHelperInteractor = mockMetadataPrivateKeysHelperInteractor,
+            )
+        }
+        factory { mockResourceCommonActionsInteractor }
+        factory { mockResourcePropertiesActionsInteractor }
+        factory { mockSecretPropertiesActionsInteractor }
+        factory { mockResourceUpdateActionsInteractor }
+        single(named(JSON_MODEL_GSON)) { Gson() }
+        single {
+            Configuration
+                .builder()
+                .jsonProvider(GsonJsonProvider())
+                .mappingProvider(GsonMappingProvider())
+                .options(EnumSet.noneOf(Option::class.java))
+                .build()
+        }
+        singleOf(::JsonPathJsonPathOps) bind JsonPathsOps::class
     }
-    factory { mockResourceCommonActionsInteractor }
-    factory { mockResourcePropertiesActionsInteractor }
-    factory { mockSecretPropertiesActionsInteractor }
-    factory { mockResourceUpdateActionsInteractor }
-    single(named(JSON_MODEL_GSON)) { Gson() }
-    single {
-        Configuration.builder()
-            .jsonProvider(GsonJsonProvider())
-            .mappingProvider(GsonMappingProvider())
-            .options(EnumSet.noneOf(Option::class.java))
-            .build()
-    }
-    singleOf(::JsonPathJsonPathOps) bind JsonPathsOps::class
-}

@@ -40,13 +40,17 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
  */
 class SettingsAutofillFragment :
     BindingScopedFragment<FragmentSettingsAutofillBinding>(FragmentSettingsAutofillBinding::inflate),
-    SettingsAutofillContract.View, EncourageAutofillServiceDialog.Listener,
-    EncourageAccessibilityAutofillDialog.Listener, AutofillEnabledDialog.Listener {
-
+    SettingsAutofillContract.View,
+    EncourageAutofillServiceDialog.Listener,
+    EncourageAccessibilityAutofillDialog.Listener,
+    AutofillEnabledDialog.Listener {
     private val presenter: SettingsAutofillContract.Presenter by inject()
     private val externalDeeplinkHandler: ExternalDeeplinkHandler by inject()
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         setListeners()
     }
@@ -57,7 +61,7 @@ class SettingsAutofillFragment :
     }
 
     private fun setListeners() {
-        with(binding) {
+        with(requiredBinding) {
             autofillServiceSwitchContainer.setOnClickListener {
                 presenter.autofillServiceSwitchClick()
             }
@@ -72,60 +76,61 @@ class SettingsAutofillFragment :
     }
 
     override fun setAccessibilitySwitchOn() {
-        binding.accessibilityServiceSwitch.isChecked = true
+        requiredBinding.accessibilityServiceSwitch.isChecked = true
     }
 
     override fun setAccessibilitySwitchOff() {
-        binding.accessibilityServiceSwitch.isChecked = false
+        requiredBinding.accessibilityServiceSwitch.isChecked = false
     }
 
     override fun disableChromeNativeAutofillLayout() {
-        binding.chromeNativeAutofillServiceSwitchContainer.isEnabled = false
+        requiredBinding.chromeNativeAutofillServiceSwitchContainer.isEnabled = false
     }
 
     override fun showChromeNativeAutofillNotSupported() {
-        binding.chromeNativeAutofillServiceSwitch.apply {
+        requiredBinding.chromeNativeAutofillServiceSwitch.apply {
             isChecked = false
-            text = String.format(
-                "%s\n%s",
-                getString(LocalizationR.string.settings_chrome_native_autofill_autofill_service_description),
-                getString(LocalizationR.string.settings_chrome_native_autofill_not_supported)
-            )
+            text =
+                String.format(
+                    "%s\n%s",
+                    getString(LocalizationR.string.settings_chrome_native_autofill_autofill_service_description),
+                    getString(LocalizationR.string.settings_chrome_native_autofill_not_supported),
+                )
         }
     }
 
     override fun setChromeNativeAutofillSwitchOn() {
-        binding.chromeNativeAutofillServiceSwitch.isChecked = true
+        requiredBinding.chromeNativeAutofillServiceSwitch.isChecked = true
     }
 
     override fun setChromeNativeAutofillSwitchOff() {
-        binding.chromeNativeAutofillServiceSwitch.isChecked = false
+        requiredBinding.chromeNativeAutofillServiceSwitch.isChecked = false
     }
 
     override fun enableChromeNativeAutofillLayout() {
-        binding.chromeNativeAutofillServiceSwitchContainer.isEnabled = true
+        requiredBinding.chromeNativeAutofillServiceSwitchContainer.isEnabled = true
     }
 
     override fun showAutofillServiceNotSupported() {
         showSnackbar(
             LocalizationR.string.settings_autofill_autofill_service_not_supported,
-            backgroundColor = CoreUiR.color.red
+            backgroundColor = CoreUiR.color.red,
         )
     }
 
     override fun setAutofillSwitchOff() {
-        binding.autofillServiceSwitch.isChecked = false
+        requiredBinding.autofillServiceSwitch.isChecked = false
     }
 
     override fun setAutofillSwitchOn() {
-        binding.autofillServiceSwitch.isChecked = true
+        requiredBinding.autofillServiceSwitch.isChecked = true
     }
 
     override fun showEncourageAutofillService() {
         showDialog(
             childFragmentManager,
             EncourageAutofillServiceDialog(),
-            EncourageAutofillServiceDialog::class.java.name
+            EncourageAutofillServiceDialog::class.java.name,
         )
     }
 
@@ -141,7 +146,7 @@ class SettingsAutofillFragment :
         showDialog(
             childFragmentManager,
             EncourageAccessibilityAutofillDialog(),
-            EncourageAccessibilityAutofillDialog::class.java.name
+            EncourageAccessibilityAutofillDialog::class.java.name,
         )
     }
 
@@ -154,7 +159,8 @@ class SettingsAutofillFragment :
     }
 
     override fun showAutofillFeatureEnabledSuccess() {
-        AutofillEnabledDialog.newInstance(DialogMode.Settings)
+        AutofillEnabledDialog
+            .newInstance(DialogMode.Settings)
             .show(childFragmentManager, AutofillEnabledDialog::class.java.name)
     }
 

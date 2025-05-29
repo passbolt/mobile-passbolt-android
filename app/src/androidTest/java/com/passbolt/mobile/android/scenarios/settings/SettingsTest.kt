@@ -76,37 +76,38 @@ import kotlin.test.BeforeTest
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
-
 @RunWith(AndroidJUnit4::class)
 @LargeTest
 class SettingsTest : KoinTest {
-
     @get:Rule
-    val startUpActivityRule = lazyActivitySetupScenarioRule<AuthenticationMainActivity>(
-        koinOverrideModules = listOf(
-            instrumentationTestsModule,
-            biometricSetupUnavailableModuleTests,
-            autofillConfiguredModuleTests
-        ),
-        intentSupplier = {
-            ActivityIntents.authentication(
-                getInstrumentation().targetContext,
-                ActivityIntents.AuthConfig.Startup,
-                AppContext.APP,
-                managedAccountIntentCreator.getUserLocalId()
-            )
-        }
-    )
+    val startUpActivityRule =
+        lazyActivitySetupScenarioRule<AuthenticationMainActivity>(
+            koinOverrideModules =
+                listOf(
+                    instrumentationTestsModule,
+                    biometricSetupUnavailableModuleTests,
+                    autofillConfiguredModuleTests,
+                ),
+            intentSupplier = {
+                ActivityIntents.authentication(
+                    getInstrumentation().targetContext,
+                    ActivityIntents.AuthConfig.Startup,
+                    AppContext.APP,
+                    managedAccountIntentCreator.getUserLocalId(),
+                )
+            },
+        )
 
     private val managedAccountIntentCreator: ManagedAccountIntentCreator by inject()
 
     @get:Rule
-    val idlingResourceRule = let {
-        val signInIdlingResource: SignInIdlingResource by inject()
-        val signOutIdlingResource: SignOutIdlingResource by inject()
-        val resourcesFullRefreshIdlingResource: ResourcesFullRefreshIdlingResource by inject()
-        IdlingResourceRule(arrayOf(signInIdlingResource, resourcesFullRefreshIdlingResource, signOutIdlingResource))
-    }
+    val idlingResourceRule =
+        let {
+            val signInIdlingResource: SignInIdlingResource by inject()
+            val signOutIdlingResource: SignOutIdlingResource by inject()
+            val resourcesFullRefreshIdlingResource: ResourcesFullRefreshIdlingResource by inject()
+            IdlingResourceRule(arrayOf(signInIdlingResource, resourcesFullRefreshIdlingResource, signOutIdlingResource))
+        }
 
     @BeforeTest
     fun setup() {
@@ -131,8 +132,8 @@ class SettingsTest : KoinTest {
         onView(withId(com.passbolt.mobile.android.feature.settings.R.id.settingsRoot)).check(matches(isDisplayed()))
     }
 
+    //    https://passbolt.testrail.io/index.php?/cases/view/2438
     @Test
-//    https://passbolt.testrail.io/index.php?/cases/view/2438
     fun asAMobileUserOnTheMainSettingsPageICanSeeTheListOfSettingsIHaveAccessTo() {
         //    Given     that I am #MOBILE_USER_ON_SETTINGS_PAGE
         //    When      I’m staying on the Settings page
@@ -150,10 +151,9 @@ class SettingsTest : KoinTest {
             onView(
                 allOf(
                     isDescendantOfA(withId(settingsItem.settingsItemId)),
-                    withId(CoreUiR.id.iconImage)
-                )
-            )
-                .check(matches(hasDrawable(id = settingsItem.settingsItemIconId, tint = CoreUiR.color.icon_tint)))
+                    withId(CoreUiR.id.iconImage),
+                ),
+            ).check(matches(hasDrawable(id = settingsItem.settingsItemIconId, tint = CoreUiR.color.icon_tint)))
         }
     }
 
@@ -167,10 +167,9 @@ class SettingsTest : KoinTest {
         onView(
             allOf(
                 isDescendantOfA(withId(com.passbolt.mobile.android.feature.setup.R.id.toolbar)),
-                withText(LocalizationR.string.settings_app_settings)
-            )
-        )
-            .check(matches(isDisplayed()))
+                withText(LocalizationR.string.settings_app_settings),
+            ),
+        ).check(matches(isDisplayed()))
         //    And	    I see a back button to go to the main settings page
         onView(isAssignableFrom(Toolbar::class.java))
             .check(CastedViewAssertion<Toolbar> { it.navigationIcon != null })
@@ -198,10 +197,9 @@ class SettingsTest : KoinTest {
         onView(
             allOf(
                 isDescendantOfA(withId(com.passbolt.mobile.android.feature.setup.R.id.toolbar)),
-                withText(LocalizationR.string.settings_app_settings_expert_settings)
-            )
-        )
-            .check(matches(isDisplayed()))
+                withText(LocalizationR.string.settings_app_settings_expert_settings),
+            ),
+        ).check(matches(isDisplayed()))
         //    And 	    I see the back button to go to the main settings page
         onView(isAssignableFrom(Toolbar::class.java))
             .check(CastedViewAssertion<Toolbar> { it.navigationIcon != null })
@@ -288,11 +286,11 @@ class SettingsTest : KoinTest {
         onView(
             withTagValue(
                 `is`(
-                    getInstrumentation().targetContext.resources.getString(LocalizationR.string.settings_app_settings_fingerprint)
-                )
-            )
+                    getInstrumentation().targetContext.resources.getString(LocalizationR.string.settings_app_settings_fingerprint),
+                ),
+            ),
         ).perform(
-            click()
+            click(),
         )
         //    Then      I am prompted to configure biometrics in the device settings
         onView(withText(LocalizationR.string.settings_add_first_fingerprint_title)).check(matches(isDisplayed()))
@@ -367,10 +365,9 @@ class SettingsTest : KoinTest {
         onView(
             allOf(
                 isDescendantOfA(withId(com.passbolt.mobile.android.feature.setup.R.id.toolbar)),
-                withText(LocalizationR.string.settings_debug_logs)
-            )
-        )
-            .check(matches(isDisplayed()))
+                withText(LocalizationR.string.settings_debug_logs),
+            ),
+        ).check(matches(isDisplayed()))
         //    And 	    I see the back button to go to the main settings page
         onView(isAssignableFrom(Toolbar::class.java))
             .check(CastedViewAssertion<Toolbar> { it.navigationIcon != null })
@@ -384,9 +381,9 @@ class SettingsTest : KoinTest {
                     matches(
                         hasDrawable(
                             id = debugLogsSettingsItem.settingsItemIconId,
-                            tint = CoreUiR.color.icon_tint
-                        )
-                    )
+                            tint = CoreUiR.color.icon_tint,
+                        ),
+                    ),
                 )
         }
     }
@@ -430,8 +427,10 @@ class SettingsTest : KoinTest {
         onView(withId(com.passbolt.mobile.android.feature.settings.R.id.signOut)).check(matches(isDisplayed()))
     }
 
-    private fun isChildSwitchOfSetting(@IdRes id: Int) = allOf(
+    private fun isChildSwitchOfSetting(
+        @IdRes id: Int,
+    ) = allOf(
         isDescendantOfA(withId(id)),
-        isAssignableFrom(SwitchMaterial::class.java)
+        isAssignableFrom(SwitchMaterial::class.java),
     )
 }

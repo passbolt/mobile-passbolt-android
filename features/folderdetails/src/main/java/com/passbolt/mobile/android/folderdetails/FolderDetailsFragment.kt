@@ -58,9 +58,9 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 class FolderDetailsFragment :
     BindingScopedAuthenticatedFragment<FragmentFolderDetailsBinding, FolderDetailsContract.View>(
-        FragmentFolderDetailsBinding::inflate
-    ), FolderDetailsContract.View {
-
+        FragmentFolderDetailsBinding::inflate,
+    ),
+    FolderDetailsContract.View {
     override val presenter: FolderDetailsContract.Presenter by inject()
     private val args: FolderDetailsFragmentArgs by navArgs()
     private val groupPermissionsItemAdapter: ItemAdapter<GroupItem> by inject(named(GROUP_ITEM_ADAPTER))
@@ -68,29 +68,33 @@ class FolderDetailsFragment :
     private val permissionsCounterItemAdapter: ItemAdapter<CounterItem> by inject(named(COUNTER_ITEM_ADAPTER))
     private val fastAdapter: FastAdapter<GenericItem> by inject()
     private val sharedWithFields
-        get() = listOf(
-            binding.sharedWithLabel,
-            binding.sharedWithRecycler,
-            binding.sharedWithRecyclerClickableArea,
-            binding.sharedWithNavIcon
-        )
+        get() =
+            listOf(
+                requiredBinding.sharedWithLabel,
+                requiredBinding.sharedWithRecycler,
+                requiredBinding.sharedWithRecyclerClickableArea,
+                requiredBinding.sharedWithNavIcon,
+            )
     private val sharedWithDecorator: OverlappingItemDecorator by inject()
     private val locationFields
-        get() = listOf(binding.locationHeader, binding.locationValue, binding.locationNavIcon)
+        get() = listOf(requiredBinding.locationHeader, requiredBinding.locationValue, requiredBinding.locationNavIcon)
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
-        binding.swipeRefresh.isEnabled = false
-        initDefaultToolbar(binding.toolbar)
+        requiredBinding.swipeRefresh.isEnabled = false
+        initDefaultToolbar(requiredBinding.toolbar)
         initSharedWithRecycler()
         initListeners()
         presenter.attach(this)
-        binding.sharedWithRecycler.doOnLayout {
-            binding.sharedWithRecycler.addItemDecoration(sharedWithDecorator)
+        requiredBinding.sharedWithRecycler.doOnLayout {
+            requiredBinding.sharedWithRecycler.addItemDecoration(sharedWithDecorator)
             presenter.argsRetrieved(
                 args.folderId,
                 it.width,
-                resources.getDimension(CoreUiR.dimen.dp_40)
+                resources.getDimension(CoreUiR.dimen.dp_40),
             )
         }
     }
@@ -98,7 +102,7 @@ class FolderDetailsFragment :
     override fun onResume() {
         super.onResume()
         // has to be invoked using post to make sure binding.sharedWithRecycler.doOnLayout has finished
-        binding.sharedWithRecycler.post {
+        requiredBinding.sharedWithRecycler.post {
             presenter.resume(this)
         }
     }
@@ -118,42 +122,44 @@ class FolderDetailsFragment :
     }
 
     private fun initSharedWithRecycler() {
-        with(binding.sharedWithRecycler) {
-            layoutManager = object : LinearLayoutManager(context, HORIZONTAL, false) {
-                override fun canScrollHorizontally() = false
-            }
+        with(requiredBinding.sharedWithRecycler) {
+            layoutManager =
+                object : LinearLayoutManager(context, HORIZONTAL, false) {
+                    override fun canScrollHorizontally() = false
+                }
             adapter = fastAdapter
         }
     }
 
     override fun showFolderName(name: String) {
-        binding.name.text = name
-        binding.folderNameValue.text = name
+        requiredBinding.name.text = name
+        requiredBinding.folderNameValue.text = name
     }
 
     override fun showFolderSharedIcon() {
-        binding.icon.setImageResource(CoreUiR.drawable.ic_filled_shared_folder_with_bg)
+        requiredBinding.icon.setImageResource(CoreUiR.drawable.ic_filled_shared_folder_with_bg)
     }
 
     override fun showFolderIcon() {
-        binding.icon.setImageResource(CoreUiR.drawable.ic_filled_folder_with_bg)
+        requiredBinding.icon.setImageResource(CoreUiR.drawable.ic_filled_folder_with_bg)
     }
 
     override fun showFolderLocation(parentFolders: List<String>) {
-        binding.locationValue.text = parentFolders.let {
-            val mutable = it.toMutableList()
-            mutable.add(0, getString(LocalizationR.string.folder_root))
-            mutable.joinToString(
-                separator = " %s ".format(getString(LocalizationR.string.folder_details_location_separator))
-            )
-        }
+        requiredBinding.locationValue.text =
+            parentFolders.let {
+                val mutable = it.toMutableList()
+                mutable.add(0, getString(LocalizationR.string.folder_root))
+                mutable.joinToString(
+                    separator = " %s ".format(getString(LocalizationR.string.folder_details_location_separator)),
+                )
+            }
     }
 
     override fun showPermissions(
         groupPermissions: List<PermissionModelUi.GroupPermissionModel>,
         userPermissions: List<PermissionModelUi.UserPermissionModel>,
         counterValue: List<String>,
-        overlap: Int
+        overlap: Int,
     ) {
         sharedWithFields.forEach { it.visible() }
         sharedWithDecorator.overlap = Overlap(left = overlap)
@@ -163,29 +169,34 @@ class FolderDetailsFragment :
         fastAdapter.notifyAdapterDataSetChanged()
     }
 
-    override fun navigateToFolderPermissions(folderId: String, mode: PermissionsMode) {
-        val request = NavDeepLinkProvider.permissionsDeepLinkRequest(
-            permissionItemName = PermissionsItem.FOLDER.name,
-            permissionItemId = folderId,
-            permissionsModeName = mode.name
-        )
+    override fun navigateToFolderPermissions(
+        folderId: String,
+        mode: PermissionsMode,
+    ) {
+        val request =
+            NavDeepLinkProvider.permissionsDeepLinkRequest(
+                permissionItemName = PermissionsItem.FOLDER.name,
+                permissionItemId = folderId,
+                permissionsModeName = mode.name,
+            )
         findNavController().navigate(request)
     }
 
     override fun navigateToFolderLocation(folderId: String) {
-        val request = NavDeepLinkProvider.locationDetailsDeepLinkRequest(
-            locationDetailsItemName = LocationItem.FOLDER.name,
-            locationDetailsItemId = folderId
-        )
+        val request =
+            NavDeepLinkProvider.locationDetailsDeepLinkRequest(
+                locationDetailsItemName = LocationItem.FOLDER.name,
+                locationDetailsItemId = folderId,
+            )
         findNavController().navigate(request)
     }
 
     override fun hideRefreshProgress() {
-        binding.swipeRefresh.isRefreshing = false
+        requiredBinding.swipeRefresh.isRefreshing = false
     }
 
     override fun showRefreshProgress() {
-        binding.swipeRefresh.isRefreshing = true
+        requiredBinding.swipeRefresh.isRefreshing = true
     }
 
     override fun showDataRefreshError() {

@@ -31,15 +31,14 @@ import java.io.File
  */
 
 class CheckIfPassphraseFileExistsUseCase(
-    private val appContext: Context
+    private val appContext: Context,
 ) : UseCase<UserIdInput, CheckIfPassphraseFileExistsUseCase.Output> {
-
     override fun execute(input: UserIdInput): Output {
         val fileName = PassphraseFileName(input.userId).name
         return Output(File(EncryptedFileBaseDirectory(appContext).baseDirectory, fileName).exists())
     }
 
     data class Output(
-        val passphraseFileExists: Boolean
+        val passphraseFileExists: Boolean,
     )
 }

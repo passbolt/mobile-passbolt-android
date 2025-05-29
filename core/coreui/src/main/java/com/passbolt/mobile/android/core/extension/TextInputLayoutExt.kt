@@ -26,7 +26,10 @@ import com.google.android.material.textfield.TextInputLayout
  * @since v1.0
  */
 
-fun TextInputLayout.setSearchEndIconWithListener(icon: Drawable, listener: () -> Unit) {
+fun TextInputLayout.setSearchEndIconWithListener(
+    icon: Drawable,
+    listener: () -> Unit,
+) {
     endIconMode = TextInputLayout.END_ICON_CUSTOM
     endIconDrawable = icon
     setEndIconOnClickListener {

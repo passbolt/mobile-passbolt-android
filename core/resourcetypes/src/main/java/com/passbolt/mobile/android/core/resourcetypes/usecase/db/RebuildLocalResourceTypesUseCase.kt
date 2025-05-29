@@ -31,24 +31,25 @@ import com.passbolt.mobile.android.mappers.ResourceTypesModelMapper
 class RebuildLocalResourceTypesUseCase(
     private val databaseProvider: DatabaseProvider,
     private val resourceTypesModelMapper: ResourceTypesModelMapper,
-    private val getSelectedAccountUseCase: GetSelectedAccountUseCase
+    private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
 ) : AsyncUseCase<RebuildLocalResourceTypesUseCase.Input, Unit> {
-
     override suspend fun execute(input: Input) {
         val selectedAccount = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
 
-        val resourceTypesDao = databaseProvider
-            .get(selectedAccount)
-            .resourceTypesDao()
+        val resourceTypesDao =
+            databaseProvider
+                .get(selectedAccount)
+                .resourceTypesDao()
 
-        val resourceTypeDbModel = resourceTypesModelMapper
-            .map(input.resourceTypesDto)
+        val resourceTypeDbModel =
+            resourceTypesModelMapper
+                .map(input.resourceTypesDto)
 
         resourceTypesDao.deleteAll()
         resourceTypesDao.insertAll(resourceTypeDbModel)
     }
 
     data class Input(
-        val resourceTypesDto: List<ResourceTypeDto>
+        val resourceTypesDto: List<ResourceTypeDto>,
     )
 }

@@ -41,25 +41,25 @@ class SignInVerifyInteractor(
     private val getSessionUseCase: GetSessionUseCase,
     private val signInUseCase: SignInUseCase,
     private val challengeDecryptor: ChallengeDecryptor,
-    private val challengeVerifier: ChallengeVerifier
+    private val challengeVerifier: ChallengeVerifier,
 ) {
-
     suspend fun signInVerify(
         serverPgpPublicKey: String,
         passphrase: ByteArray,
         userId: String,
         serverRsaKey: String,
         onError: (Error) -> Unit,
-        onSuccess: suspend (Success) -> Unit
+        onSuccess: suspend (Success) -> Unit,
     ) {
         Timber.d("Preparing sign in challenge")
         val accountData = getAccountDataUseCase.execute(UserIdInput(userId))
-        val challenge = challengeProvider.get(
-            domain = accountData.url,
-            serverPublicKey = serverPgpPublicKey,
-            passphrase = passphrase,
-            userId = userId
-        )
+        val challenge =
+            challengeProvider.get(
+                domain = accountData.url,
+                serverPublicKey = serverPgpPublicKey,
+                passphrase = passphrase,
+                userId = userId,
+            )
         when (challenge) {
             is ChallengeProvider.Output.Success -> {
                 Timber.d("Prepared sign in challenge")
@@ -72,7 +72,7 @@ class SignInVerifyInteractor(
                     requireNotNull(accountData.serverId),
                     accountData,
                     onError,
-                    onSuccess
+                    onSuccess,
                 )
             }
             ChallengeProvider.Output.WrongPassphrase -> {
@@ -92,28 +92,29 @@ class SignInVerifyInteractor(
         serverId: String,
         accountData: GetAccountDataUseCase.Output,
         onError: (Error) -> Unit,
-        onSuccess: suspend (Success) -> Unit
+        onSuccess: suspend (Success) -> Unit,
     ) {
         Timber.d("Signing in")
         val currentMfaToken = getSessionUseCase.execute(Unit).mfaToken
         when (val result = signInUseCase.execute(SignInUseCase.Input(serverId, challenge, currentMfaToken))) {
             is SignInUseCase.Output.Failure -> {
                 Timber.e("Failure during sign in: ${result.message}")
-                val error = when (result.type) {
-                    SignInFailureType.ACCOUNT_DOES_NOT_EXIST -> {
-                        Error.AccountDoesNotExist(
-                            accountData.label ?: AccountModelMapper.defaultLabel(
-                                accountData.firstName,
-                                accountData.lastName
-                            ),
-                            accountData.email,
-                            accountData.url
-                        )
+                val error =
+                    when (result.type) {
+                        SignInFailureType.ACCOUNT_DOES_NOT_EXIST -> {
+                            Error.AccountDoesNotExist(
+                                accountData.label ?: AccountModelMapper.defaultLabel(
+                                    accountData.firstName,
+                                    accountData.lastName,
+                                ),
+                                accountData.email,
+                                accountData.url,
+                            )
+                        }
+                        SignInFailureType.OTHER -> {
+                            Error.SignInFailure(result.message)
+                        }
                     }
-                    SignInFailureType.OTHER -> {
-                        Error.SignInFailure(result.message)
-                    }
-                }
                 onError(error)
             }
             is SignInUseCase.Output.Success -> {
@@ -126,7 +127,7 @@ class SignInVerifyInteractor(
                     result,
                     rsaKey,
                     onSuccess,
-                    onError
+                    onError,
                 )
             }
         }
@@ -141,15 +142,16 @@ class SignInVerifyInteractor(
         result: SignInUseCase.Output.Success,
         rsaKey: String,
         onSuccess: suspend (Success) -> Unit,
-        onError: (Error) -> Unit
+        onError: (Error) -> Unit,
     ) {
         Timber.d("Decrypting challenge.")
-        val challengeDecryptResult = challengeDecryptor.decrypt(
-            serverPublicKey,
-            passphrase,
-            userId,
-            result.challenge
-        )
+        val challengeDecryptResult =
+            challengeDecryptor.decrypt(
+                serverPublicKey,
+                passphrase,
+                userId,
+                result.challenge,
+            )
         when (challengeDecryptResult) {
             is ChallengeDecryptor.Output.DecryptedChallenge -> {
                 Timber.d("Challenge decrypted successfully")
@@ -159,7 +161,7 @@ class SignInVerifyInteractor(
                     currentMfaToken,
                     rsaKey,
                     onError,
-                    onSuccess
+                    onSuccess,
                 )
             }
             is ChallengeDecryptor.Output.DecryptionError -> {
@@ -177,7 +179,7 @@ class SignInVerifyInteractor(
         currentMfaToken: String?,
         rsaKey: String,
         onError: (Error) -> Unit,
-        onSuccess: suspend (Success) -> Unit
+        onSuccess: suspend (Success) -> Unit,
     ) {
         Timber.d("Verifying challenge")
         when (val result = challengeVerifier.verify(challengeResponseDto, rsaKey)) {
@@ -201,8 +203,8 @@ class SignInVerifyInteractor(
                         result.accessToken,
                         result.refreshToken,
                         mfaToken,
-                        currentMfaToken
-                    )
+                        currentMfaToken,
+                    ),
                 )
             }
         }
@@ -213,19 +215,33 @@ class SignInVerifyInteractor(
         val accessToken: String,
         val refreshToken: String,
         val mfaToken: String?,
-        val currentMfaToken: String?
+        val currentMfaToken: String?,
     )
 
     sealed class Error {
         data object IncorrectPassphrase : Error()
-        data class AccountDoesNotExist(val label: String, val email: String?, val serverUrl: String) : Error()
-        data class SignInFailure(val message: String) : Error()
-        data class ChallengeDecryptionError(val message: String?) : Error()
-        data class ChallengeVerificationError(val type: Type) : Error() {
+
+        data class AccountDoesNotExist(
+            val label: String,
+            val email: String?,
+            val serverUrl: String,
+        ) : Error()
+
+        data class SignInFailure(
+            val message: String,
+        ) : Error()
+
+        data class ChallengeDecryptionError(
+            val message: String?,
+        ) : Error()
+
+        data class ChallengeVerificationError(
+            val type: Type,
+        ) : Error() {
             enum class Type {
                 INVALID_SIGNATURE,
                 TOKEN_EXPIRED,
-                FAILURE
+                FAILURE,
             }
         }
     }

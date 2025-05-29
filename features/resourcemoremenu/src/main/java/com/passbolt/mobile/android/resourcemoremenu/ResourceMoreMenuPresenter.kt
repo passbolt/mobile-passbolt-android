@@ -18,10 +18,9 @@ import timber.log.Timber
 class ResourceMoreMenuPresenter(
     private val createResourceMoreMenuModelUseCase: CreateResourceMoreMenuModelUseCase,
     private val menuModelIdlingResource: CreateMenuModelIdlingResource,
-    coroutineLaunchContext: CoroutineLaunchContext
+    coroutineLaunchContext: CoroutineLaunchContext,
 ) : DataRefreshViewReactivePresenter<ResourceMoreMenuContract.View>(coroutineLaunchContext),
     ResourceMoreMenuContract.Presenter {
-
     override var view: ResourceMoreMenuContract.View? = null
     private val job = SupervisorJob()
     private val coroutineScope = CoroutineScope(job + coroutineLaunchContext.ui)
@@ -42,9 +41,11 @@ class ResourceMoreMenuPresenter(
         menuModelIdlingResource.setIdle(false)
         coroutineScope.launch {
             try {
-                menuModel = createResourceMoreMenuModelUseCase.execute(
-                    CreateResourceMoreMenuModelUseCase.Input(resourceId)
-                ).resourceMenuModel
+                menuModel =
+                    createResourceMoreMenuModelUseCase
+                        .execute(
+                            CreateResourceMoreMenuModelUseCase.Input(resourceId),
+                        ).resourceMenuModel
                 view?.showTitle(menuModel.title)
                 processDynamicButtons()
                 when (menuModel.favouriteOption) {

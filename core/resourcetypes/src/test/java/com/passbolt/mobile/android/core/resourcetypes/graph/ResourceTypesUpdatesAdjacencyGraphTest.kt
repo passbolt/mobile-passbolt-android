@@ -29,7 +29,6 @@ import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAct
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType
 import org.junit.Test
 
-
 class ResourceTypesUpdatesAdjacencyGraphTest {
     private val graph = ResourceTypesUpdatesAdjacencyGraph()
 
@@ -43,7 +42,7 @@ class ResourceTypesUpdatesAdjacencyGraphTest {
             UpdateAction.ADD_PASSWORD,
             UpdateAction.REMOVE_PASSWORD,
             UpdateAction.ADD_METADATA_DESCRIPTION,
-            UpdateAction.REMOVE_METADATA_DESCRIPTION
+            UpdateAction.REMOVE_METADATA_DESCRIPTION,
         )
     }
 
@@ -59,7 +58,7 @@ class ResourceTypesUpdatesAdjacencyGraphTest {
             UpdateAction.ADD_METADATA_DESCRIPTION,
             UpdateAction.REMOVE_METADATA_DESCRIPTION,
             UpdateAction.ADD_TOTP,
-            UpdateAction.ADD_NOTE
+            UpdateAction.ADD_NOTE,
         )
     }
 
@@ -74,7 +73,7 @@ class ResourceTypesUpdatesAdjacencyGraphTest {
             UpdateAction.REMOVE_NOTE,
             UpdateAction.ADD_PASSWORD,
             UpdateAction.REMOVE_PASSWORD,
-            UpdateAction.ADD_TOTP
+            UpdateAction.ADD_TOTP,
         )
     }
 
@@ -91,7 +90,7 @@ class ResourceTypesUpdatesAdjacencyGraphTest {
             UpdateAction.REMOVE_PASSWORD,
             UpdateAction.ADD_TOTP,
             UpdateAction.ADD_METADATA_DESCRIPTION,
-            UpdateAction.REMOVE_METADATA_DESCRIPTION
+            UpdateAction.REMOVE_METADATA_DESCRIPTION,
         )
     }
 
@@ -108,7 +107,7 @@ class ResourceTypesUpdatesAdjacencyGraphTest {
             UpdateAction.REMOVE_NOTE,
             UpdateAction.ADD_PASSWORD,
             UpdateAction.REMOVE_PASSWORD,
-            UpdateAction.REMOVE_PASSWORD_AND_NOTE
+            UpdateAction.REMOVE_PASSWORD_AND_NOTE,
         )
     }
 
@@ -127,7 +126,7 @@ class ResourceTypesUpdatesAdjacencyGraphTest {
             UpdateAction.REMOVE_PASSWORD,
             UpdateAction.REMOVE_PASSWORD_AND_NOTE,
             UpdateAction.ADD_METADATA_DESCRIPTION,
-            UpdateAction.REMOVE_METADATA_DESCRIPTION
+            UpdateAction.REMOVE_METADATA_DESCRIPTION,
         )
     }
 
@@ -157,7 +156,7 @@ class ResourceTypesUpdatesAdjacencyGraphTest {
             UpdateAction.ADD_NOTE,
             UpdateAction.ADD_PASSWORD,
             UpdateAction.REMOVE_METADATA_DESCRIPTION,
-            UpdateAction.ADD_METADATA_DESCRIPTION
+            UpdateAction.ADD_METADATA_DESCRIPTION,
         )
     }
 }

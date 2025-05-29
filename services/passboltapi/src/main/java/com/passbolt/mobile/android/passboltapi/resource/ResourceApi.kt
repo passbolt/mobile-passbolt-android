@@ -35,7 +35,6 @@ import retrofit2.http.Query
  */
 
 internal interface ResourceApi {
-
     @GET(RESOURCES)
     suspend fun getResources(
         // always return index with current user permission
@@ -45,24 +44,25 @@ internal interface ResourceApi {
         // always return index with tag info
         @Query(QUERY_CONTAIN_TAG) containingTag: Int? = 1,
         // always return index with all permissions
-        @Query(QUERY_CONTAIN_PERMISSIONS) containingGroup: Int? = 1
+        @Query(QUERY_CONTAIN_PERMISSIONS) containingGroup: Int? = 1,
     ): BaseResponse<List<ResourceResponseDto>>
 
     @DELETE(RESOURCE_BY_ID)
     suspend fun deleteResource(
-        @Path(PATH_RESOURCE_ID) resourceId: String
+        @Path(PATH_RESOURCE_ID) resourceId: String,
     ): BaseResponse<String?>
 
     @POST(RESOURCES)
     suspend fun createResource(
         @Body createResourceDto: CreateResourceDto,
-        @Query(QUERY_CONTAIN_PERMISSION) containingPermissions: Int? = 1 // always return index with permissions
+        // always return index with permissions
+        @Query(QUERY_CONTAIN_PERMISSION) containingPermissions: Int? = 1,
     ): BaseResponse<ResourceResponseDto>
 
     @PUT(RESOURCE_BY_ID)
     suspend fun updateResource(
         @Path(PATH_RESOURCE_ID) resourceId: String,
-        @Body createResourceDto: CreateResourceDto
+        @Body createResourceDto: CreateResourceDto,
     ): BaseResponse<ResourceResponseDto>
 
     private companion object {

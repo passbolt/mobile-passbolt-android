@@ -31,14 +31,14 @@ import com.passbolt.mobile.android.ui.PermissionModelUi
 class GetLocalResourcePermissionsUseCase(
     private val databaseProvider: DatabaseProvider,
     private val permissionsModelMapper: PermissionsModelMapper,
-    private val getSelectedAccountUseCase: GetSelectedAccountUseCase
+    private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
 ) : AsyncUseCase<GetLocalResourcePermissionsUseCase.Input, GetLocalResourcePermissionsUseCase.Output> {
-
     override suspend fun execute(input: Input): Output {
         val userId = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
-        val resourcesDao = databaseProvider
-            .get(userId)
-            .resourcesDao()
+        val resourcesDao =
+            databaseProvider
+                .get(userId)
+                .resourcesDao()
 
         val groupsPermissions = resourcesDao.getResourceGroupsPermissions(input.resourceId)
         val usersPermissions = resourcesDao.getResourceUsersPermissions(input.resourceId)
@@ -47,10 +47,10 @@ class GetLocalResourcePermissionsUseCase(
     }
 
     data class Input(
-        val resourceId: String
+        val resourceId: String,
     )
 
     data class Output(
-        val permissions: List<PermissionModelUi>
+        val permissions: List<PermissionModelUi>,
     )
 }

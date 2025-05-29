@@ -51,16 +51,16 @@ internal interface AuthApi {
     @POST(AUTH_SIGN_IN)
     suspend fun signIn(
         @Body signInRequestDto: SignInRequestDto,
-        @Header("Cookie") authHeader: String?
+        @Header("Cookie") authHeader: String?,
     ): Response<BaseResponse<SignInResponseDto>>
 
     @POST(AUTH_SIGN_OUT)
     suspend fun signOut(
-        @Body signOutRequestDto: SignOutRequestDto
+        @Body signOutRequestDto: SignOutRequestDto,
     ): BaseResponse<Unit>
 
     @POST(AUTH_JWT_REFRESH)
     suspend fun refreshSession(
-        @Body refreshSessionRequest: RefreshSessionRequest
+        @Body refreshSessionRequest: RefreshSessionRequest,
     ): Response<BaseResponse<RefreshSessionResponse>>
 }

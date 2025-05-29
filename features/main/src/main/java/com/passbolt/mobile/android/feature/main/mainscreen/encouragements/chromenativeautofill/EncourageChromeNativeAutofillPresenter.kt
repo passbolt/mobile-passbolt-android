@@ -6,9 +6,8 @@ import com.passbolt.mobile.android.feature.main.mainscreen.encouragements.Encour
 
 class EncourageChromeNativeAutofillPresenter(
     private val encouragementsInteractor: EncouragementsInteractor,
-    private val autofillInformationProvider: AutofillInformationProvider
+    private val autofillInformationProvider: AutofillInformationProvider,
 ) : EncourageChromeNativeAutofillContract.Presenter {
-
     override var view: EncourageChromeNativeAutofillContract.View? = null
 
     override fun attach(view: EncourageChromeNativeAutofillContract.View) {

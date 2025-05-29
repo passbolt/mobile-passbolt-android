@@ -12,7 +12,6 @@ class AccountDataCleaner(
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
     private val getAccountsUseCase: GetAccountsUseCase,
 ) : KoinComponent {
-
     fun clearAccountData() {
         runBlocking {
             get<GetAccountsUseCase>().execute(Unit).users.forEach {

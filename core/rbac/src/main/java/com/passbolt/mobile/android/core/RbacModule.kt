@@ -30,9 +30,10 @@ import com.passbolt.mobile.android.core.rbac.usecase.SaveRbacRulesUseCase
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
-val rbacModule = module {
-    singleOf(::FetchRbacPermissionsUseCase)
-    singleOf(::SaveRbacRulesUseCase)
-    singleOf(::RbacInteractor)
-    singleOf(::GetRbacRulesUseCase)
-}
+val rbacModule =
+    module {
+        singleOf(::FetchRbacPermissionsUseCase)
+        singleOf(::SaveRbacRulesUseCase)
+        singleOf(::RbacInteractor)
+        singleOf(::GetRbacRulesUseCase)
+    }

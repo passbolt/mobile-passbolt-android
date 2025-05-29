@@ -26,5 +26,5 @@ import java.time.ZonedDateTime
  */
 data class EncryptedDataAndModifiedRequest(
     val data: String,
-    val modified: ZonedDateTime
+    val modified: ZonedDateTime,
 )

@@ -29,10 +29,9 @@ import com.passbolt.mobile.android.encryptedstorage.EncryptedSharedPreferencesFa
 import com.passbolt.mobile.android.ui.PasswordExpirySettings
 
 class SavePasswordExpirySettingsUseCase(
-    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory
+    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory,
 ) : AsyncUseCase<SavePasswordExpirySettingsUseCase.Input, Unit>,
     SelectedAccountUseCase {
-
     override suspend fun execute(input: Input) {
         val fileName = PasswordExpirySettingsFileName(selectedAccountId).name
         val sharedPreferences = encryptedSharedPreferencesFactory.get("$fileName.xml")
@@ -46,5 +45,7 @@ class SavePasswordExpirySettingsUseCase(
         }
     }
 
-    data class Input(val passwordExpirySettings: PasswordExpirySettings)
+    data class Input(
+        val passwordExpirySettings: PasswordExpirySettings,
+    )
 }

@@ -6,16 +6,21 @@ import org.apache.commons.codec.binary.Base32
 import java.util.concurrent.TimeUnit
 
 class TotpParametersProvider(
-    private val otpMapper: OtpMapper
+    private val otpMapper: OtpMapper,
 ) {
-
-    fun provideOtpParameters(secretKey: String, digits: Int, period: Long, algorithm: String): OtpParameters {
-        val generatorConfig = TimeBasedOneTimePasswordConfig(
-            codeDigits = digits,
-            hmacAlgorithm = otpMapper.mapAlgorithmToLibraryAlgorithm(algorithm),
-            timeStep = period,
-            timeStepUnit = TimeUnit.SECONDS
-        )
+    fun provideOtpParameters(
+        secretKey: String,
+        digits: Int,
+        period: Long,
+        algorithm: String,
+    ): OtpParameters {
+        val generatorConfig =
+            TimeBasedOneTimePasswordConfig(
+                codeDigits = digits,
+                hmacAlgorithm = otpMapper.mapAlgorithmToLibraryAlgorithm(algorithm),
+                timeStep = period,
+                timeStepUnit = TimeUnit.SECONDS,
+            )
 
         val decodedSecret = Base32().decode(secretKey)
         val totpGenerator = TimeBasedOneTimePasswordGenerator(decodedSecret, generatorConfig)
@@ -31,6 +36,6 @@ class TotpParametersProvider(
 
     data class OtpParameters(
         val otpValue: String,
-        val secondsValid: Long
+        val secondsValid: Long,
     )
 }

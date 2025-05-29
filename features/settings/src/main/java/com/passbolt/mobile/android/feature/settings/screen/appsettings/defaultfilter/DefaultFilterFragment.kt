@@ -42,20 +42,26 @@ import org.koin.android.ext.android.inject
 class DefaultFilterFragment :
     BindingScopedFragment<FragmentDefaultFilterBinding>(FragmentDefaultFilterBinding::inflate),
     DefaultFilterContract.View {
-
     private val presenter: DefaultFilterContract.Presenter by inject()
     private val fastAdapter: FastAdapter<DefaultFilterItem> by inject()
     private val itemAdapter: ItemAdapter<DefaultFilterItem> by inject()
-    private val defaultFilterSelectedListener = object : ISelectionListener<DefaultFilterItem> {
-        override fun onSelectionChanged(item: DefaultFilterItem, selected: Boolean) {
-            presenter.defaultFilterSelectionChanged(item.filterModel, selected)
+    private val defaultFilterSelectedListener =
+        object : ISelectionListener<DefaultFilterItem> {
+            override fun onSelectionChanged(
+                item: DefaultFilterItem,
+                selected: Boolean,
+            ) {
+                presenter.defaultFilterSelectionChanged(item.filterModel, selected)
+            }
         }
-    }
     private val args: DefaultFilterFragmentArgs by navArgs()
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
-        initDefaultToolbar(binding.toolbar)
+        initDefaultToolbar(requiredBinding.toolbar)
         initRecycler(savedInstanceState)
         presenter.attach(this)
         presenter.argsRetrieved(args.selectedFilter)
@@ -82,7 +88,7 @@ class DefaultFilterFragment :
             withSavedInstanceState(savedInstanceState, BUNDLE_DEFAULT_FILTER_SELECTION)
         }
 
-        with(binding.defaultFilterRecycler) {
+        with(requiredBinding.defaultFilterRecycler) {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = fastAdapter
         }

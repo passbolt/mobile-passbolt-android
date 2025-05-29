@@ -7,17 +7,20 @@ import com.passbolt.mobile.android.feature.logs.R
 import com.passbolt.mobile.android.feature.logs.databinding.ItemLogBinding
 
 class LogItem(
-    private val logLine: String
+    private val logLine: String,
 ) : AbstractBindingItem<ItemLogBinding>() {
-
     override val type: Int
         get() = R.id.itemLog
 
-    override fun createBinding(inflater: LayoutInflater, parent: ViewGroup?): ItemLogBinding {
-        return ItemLogBinding.inflate(inflater, parent, false)
-    }
+    override fun createBinding(
+        inflater: LayoutInflater,
+        parent: ViewGroup?,
+    ): ItemLogBinding = ItemLogBinding.inflate(inflater, parent, false)
 
-    override fun bindView(binding: ItemLogBinding, payloads: List<Any>) {
+    override fun bindView(
+        binding: ItemLogBinding,
+        payloads: List<Any>,
+    ) {
         super.bindView(binding, payloads)
         with(binding) {
             itemLog.text = logLine

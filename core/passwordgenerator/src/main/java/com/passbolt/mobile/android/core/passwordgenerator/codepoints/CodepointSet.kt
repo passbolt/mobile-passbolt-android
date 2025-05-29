@@ -25,22 +25,26 @@ package com.passbolt.mobile.android.core.passwordgenerator.codepoints
 data class CodepointSet(
     val label: String,
     val name: String,
-    val codepoints: List<Codepoint>
+    val codepoints: List<Codepoint>,
 ) {
     companion object {
-
-        fun CodepointSet.withLookAlikeExcluded(excludeLookAlike: Boolean): CodepointSet = if (excludeLookAlike) {
-            this.copy(codepoints = this.codepoints.filter { codepoint ->
-                !lookAlikeCodepoints.contains(codepoint.value)
-            })
-        } else {
-            this
-        }
+        fun CodepointSet.withLookAlikeExcluded(excludeLookAlike: Boolean): CodepointSet =
+            if (excludeLookAlike) {
+                this.copy(
+                    codepoints =
+                        this.codepoints.filter { codepoint ->
+                            !lookAlikeCodepoints.contains(codepoint.value)
+                        },
+                )
+            } else {
+                this
+            }
     }
 }
 
-data class Codepoint(val value: Int) {
-
+data class Codepoint(
+    val value: Int,
+) {
     val characterCount: Int
         get() = Character.charCount(value)
 }
@@ -57,6 +61,12 @@ fun String.toCodepoints(): List<Codepoint> {
     return result
 }
 
-private val lookAlikeCodepoints = listOf(
-    "O", "l", "|", "I", "0", "1"
-).map { it.codePointAt(0) }
+private val lookAlikeCodepoints =
+    listOf(
+        "O",
+        "l",
+        "|",
+        "I",
+        "0",
+        "1",
+    ).map { it.codePointAt(0) }

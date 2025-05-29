@@ -30,9 +30,8 @@ import com.passbolt.mobile.android.encryptedstorage.EncryptedSharedPreferencesFa
 class SaveInAppShowModeUseCase(
     private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory,
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
-    private val inAppReviewShowModeSerializer: InAppReviewShowSerializer
+    private val inAppReviewShowModeSerializer: InAppReviewShowSerializer,
 ) : UseCase<SaveInAppShowModeUseCase.Input, Unit> {
-
     override fun execute(input: Input) {
         val userId = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
         val fileName = InAppReviewFileName(userId).name
@@ -41,13 +40,13 @@ class SaveInAppShowModeUseCase(
         with(sharedPreferences.edit()) {
             putInt(
                 KEY_IN_APP_REVIEW_SHOW_MODE,
-                inAppReviewShowModeSerializer.serialize(input.inAppReviewShowMode)
+                inAppReviewShowModeSerializer.serialize(input.inAppReviewShowMode),
             )
             apply()
         }
     }
 
     data class Input(
-        val inAppReviewShowMode: InAppReviewShowMode
+        val inAppReviewShowMode: InAppReviewShowMode,
     )
 }

@@ -50,7 +50,7 @@ fun Module.createFolderModule() {
                 getLocalCurrentUserUseCase = get(),
                 usersModelMapper = get(),
                 coroutineLaunchContext = get(),
-                createFolderIdlingResource = get()
+                createFolderIdlingResource = get(),
             )
         }
         scoped<ItemAdapter<GroupItem>>(named(GROUP_ITEM_ADAPTER)) {
@@ -67,8 +67,8 @@ fun Module.createFolderModule() {
                 listOf(
                     get<ItemAdapter<GroupItem>>(named(GROUP_ITEM_ADAPTER)),
                     get<ItemAdapter<UserItem>>(named(USER_ITEM_ADAPTER)),
-                    get<ItemAdapter<CounterItem>>(named(COUNTER_ITEM_ADAPTER))
-                )
+                    get<ItemAdapter<CounterItem>>(named(COUNTER_ITEM_ADAPTER)),
+                ),
             )
         }
     }

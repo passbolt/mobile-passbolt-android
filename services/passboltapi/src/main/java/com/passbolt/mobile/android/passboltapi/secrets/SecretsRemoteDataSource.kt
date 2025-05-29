@@ -23,9 +23,7 @@ package com.passbolt.mobile.android.passboltapi.secrets
  * @since v1.0
  */
 internal class SecretsRemoteDataSource(
-    private val secretsApi: SecretsApi
+    private val secretsApi: SecretsApi,
 ) : SecretsDataSource {
-
-    override suspend fun getSecret(resourceId: String) =
-        secretsApi.getSecret(resourceId)
+    override suspend fun getSecret(resourceId: String) = secretsApi.getSecret(resourceId)
 }

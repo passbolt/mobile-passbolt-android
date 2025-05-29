@@ -26,7 +26,6 @@ package com.passbolt.mobile.android.core.otpcore
 import dev.turingcomplete.kotlinonetimepassword.HmacAlgorithm
 
 class OtpMapper {
-
     fun mapAlgorithmToLibraryAlgorithm(algorithm: String) =
         when (algorithm) {
             "SHA1" -> HmacAlgorithm.SHA1

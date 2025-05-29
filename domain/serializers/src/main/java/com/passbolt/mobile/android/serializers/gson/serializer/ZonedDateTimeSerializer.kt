@@ -32,7 +32,11 @@ import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
 class ZonedDateTimeSerializer : JsonSerializer<ZonedDateTime> {
-    override fun serialize(src: ZonedDateTime?, typeOfSrc: Type?, context: JsonSerializationContext?): JsonElement {
+    override fun serialize(
+        src: ZonedDateTime?,
+        typeOfSrc: Type?,
+        context: JsonSerializationContext?,
+    ): JsonElement {
         val formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME
         return JsonPrimitive(formatter.format(src))
     }

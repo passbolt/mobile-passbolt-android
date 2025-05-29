@@ -26,18 +26,23 @@ package com.passbolt.mobile.android.feature.settings.screen.appsettings.expertse
 import com.passbolt.mobile.android.core.mvp.BaseContract
 
 interface ExpertSettingsContract {
-
     interface View : BaseContract.View {
         fun setDeveloperModeSwitchToOn()
+
         fun setDeveloperModeSwitchToOff()
+
         fun setHideRootDialogSwitchToOn()
+
         fun setHideRootDialogSwitchToOff()
+
         fun enableHideRootSwitch()
+
         fun disableHideRootSwitch()
     }
 
     interface Presenter : BaseContract.Presenter<View> {
         fun onDeveloperModeStateChanged(isDeveloperModeEnabled: Boolean)
+
         fun onHideRootChanged(isHideRootDialogEnabled: Boolean)
     }
 }

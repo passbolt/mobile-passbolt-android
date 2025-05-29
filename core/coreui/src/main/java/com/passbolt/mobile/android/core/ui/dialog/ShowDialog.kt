@@ -26,7 +26,11 @@ import androidx.fragment.app.FragmentManager
  * @since v1.0
  */
 
-fun showDialog(fragmentManager: FragmentManager, dialog: DialogFragment, tag: String) {
+fun showDialog(
+    fragmentManager: FragmentManager,
+    dialog: DialogFragment,
+    tag: String,
+) {
     with(fragmentManager) {
         val dialogFragment = findFragmentByTag(tag)
         if (dialogFragment?.isAdded != true) {
@@ -36,7 +40,10 @@ fun showDialog(fragmentManager: FragmentManager, dialog: DialogFragment, tag: St
     }
 }
 
-fun hideDialog(fragmentManager: FragmentManager, tag: String) {
+fun hideDialog(
+    fragmentManager: FragmentManager,
+    tag: String,
+) {
     with(fragmentManager) {
         val dialogFragment = findFragmentByTag(tag)
         dialogFragment?.let {

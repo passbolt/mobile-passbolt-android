@@ -12,19 +12,19 @@ import com.passbolt.mobile.android.entity.resource.Permission
             entity = Folder::class,
             parentColumns = ["folderId"],
             childColumns = ["folderId"],
-            onDelete = ForeignKey.CASCADE
+            onDelete = ForeignKey.CASCADE,
         ),
         ForeignKey(
             entity = UsersGroup::class,
             parentColumns = ["groupId"],
             childColumns = ["groupId"],
-            onDelete = ForeignKey.CASCADE
-        )
-    ]
+            onDelete = ForeignKey.CASCADE,
+        ),
+    ],
 )
 data class FolderAndGroupsCrossRef(
     val folderId: String,
     val groupId: String,
     val permission: Permission,
-    val permissionId: String
+    val permissionId: String,
 )

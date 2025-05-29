@@ -8,8 +8,9 @@ import org.mockito.kotlin.mock
 
 internal val mockAutofillInformationProvider = mock<AutofillInformationProvider>()
 
-val encourageAutofillModule = module {
-    factory<EncourageAutofillContract.Presenter> {
-        EncourageAutofillPresenter(mockAutofillInformationProvider)
+val encourageAutofillModule =
+    module {
+        factory<EncourageAutofillContract.Presenter> {
+            EncourageAutofillPresenter(mockAutofillInformationProvider)
+        }
     }
-}

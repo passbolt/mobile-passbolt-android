@@ -8,10 +8,12 @@ import kotlin.math.abs
 
 class GopenPgpTimeUpdater(
     private val openPgp: OpenPgp,
-    private val timeProvider: TimeProvider
+    private val timeProvider: TimeProvider,
 ) {
-
-    fun updateTimeIfNeeded(serverTimeSeconds: Long, getTimeRequestDurationSeconds: Long): Result {
+    fun updateTimeIfNeeded(
+        serverTimeSeconds: Long,
+        getTimeRequestDurationSeconds: Long,
+    ): Result {
         val deviceTimeSeconds = timeProvider.getCurrentEpochSeconds()
         val timeDeltaSeconds = serverTimeSeconds - deviceTimeSeconds - getTimeRequestDurationSeconds
 
@@ -26,7 +28,8 @@ class GopenPgpTimeUpdater(
     }
 
     enum class Result {
-        TIME_SYNCED, TIME_DELTA_TOO_BIG_FOR_SYNC
+        TIME_SYNCED,
+        TIME_DELTA_TOO_BIG_FOR_SYNC,
     }
 
     companion object {

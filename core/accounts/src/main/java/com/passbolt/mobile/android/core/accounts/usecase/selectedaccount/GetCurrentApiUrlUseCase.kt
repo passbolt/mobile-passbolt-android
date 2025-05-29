@@ -29,9 +29,8 @@ import com.passbolt.mobile.android.encryptedstorage.EncryptedSharedPreferencesFa
  */
 
 class GetCurrentApiUrlUseCase(
-    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory
+    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory,
 ) : UseCase<Unit, GetCurrentApiUrlUseCase.Output> {
-
     override fun execute(input: Unit): Output {
         val sharedPreferences =
             encryptedSharedPreferencesFactory.get("$CURRENT_URL_ALIAS.xml")
@@ -46,6 +45,6 @@ class GetCurrentApiUrlUseCase(
     }
 
     data class Output(
-        val currentUrl: String
+        val currentUrl: String,
     )
 }

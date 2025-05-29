@@ -23,11 +23,13 @@ package com.passbolt.mobile.android.core.ui.textinputfield
  * @since v1.0
  */
 interface StatefulInput {
-
     fun setState(state: State)
 
     sealed class State {
         data object Default : State()
-        class Error(val message: String) : State()
+
+        class Error(
+            val message: String,
+        ) : State()
     }
 }

@@ -28,11 +28,10 @@ import com.passbolt.mobile.android.ui.PasswordGeneratorSettingsModel
 import com.passbolt.mobile.android.ui.PasswordPolicies
 
 class PasswordPoliciesValidator {
-
     fun arePasswordPoliciesValid(passwordPolicies: PasswordPolicies) =
         isPasswordLengthValid(passwordPolicies.passwordGeneratorSettings.length) &&
-                isAtLeasOnePasswordMaskSet(passwordPolicies.passwordGeneratorSettings) &&
-                isPassphraseWordCountValid(passwordPolicies.passphraseGeneratorSettings)
+            isAtLeasOnePasswordMaskSet(passwordPolicies.passwordGeneratorSettings) &&
+            isPassphraseWordCountValid(passwordPolicies.passphraseGeneratorSettings)
 
     private fun isPassphraseWordCountValid(passphraseGeneratorSettings: PassphraseGeneratorSettingsModel) =
         passphraseGeneratorSettings.words in PASSPHRASE_GEN_MIN_WORDS..PASSPHRASE_GEN_MAX_WORDS
@@ -48,7 +47,7 @@ class PasswordPoliciesValidator {
             passwordGeneratorSettingsModel.maskDigit,
             passwordGeneratorSettingsModel.maskParenthesis,
             passwordGeneratorSettingsModel.maskLower,
-            passwordGeneratorSettingsModel.maskUpper
+            passwordGeneratorSettingsModel.maskUpper,
         ).any()
 
     private fun isPasswordLengthValid(passwordLength: Int) =

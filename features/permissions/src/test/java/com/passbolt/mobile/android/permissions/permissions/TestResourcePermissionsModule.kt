@@ -60,30 +60,32 @@ internal val mockResourceTypeIdToSlugMappingProvider = mock<ResourceTypeIdToSlug
 internal val mockGetLocalMetadataKeysUseCase = mock<GetLocalMetadataKeysUseCase>()
 
 @ExperimentalCoroutinesApi
-internal val testResourcePermissionsModule = module {
-    factory<CoroutineLaunchContext> { TestCoroutineLaunchContext() }
-    factory { PermissionModelUiComparator() }
-    single { mock<FullDataRefreshExecutor>() }
-    factory<PermissionsContract.Presenter> {
-        PermissionsPresenter(
-            getLocalResourcePermissionsUseCase = mockGetLocalResourcePermissionsUseCase,
-            getLocalResourceUseCase = mockGetLocalResourceUseCase,
-            getLocalFolderPermissionsUseCase = mockGetLocalFolderPermissionsUseCase,
-            permissionModelUiComparator = get(),
-            getLocalFolderUseCase = mockGetLocalFolderUseCase,
-            resourceShareInteractor = mockResourceShareInteractor,
-            homeDataInteractor = mockHomeDataInteractor,
-            coroutineLaunchContext = get(),
-            resourceTypeIdToSlugMappingProvider = mockResourceTypeIdToSlugMappingProvider
-        )
+internal val testResourcePermissionsModule =
+    module {
+        factory<CoroutineLaunchContext> { TestCoroutineLaunchContext() }
+        factory { PermissionModelUiComparator() }
+        single { mock<FullDataRefreshExecutor>() }
+        factory<PermissionsContract.Presenter> {
+            PermissionsPresenter(
+                getLocalResourcePermissionsUseCase = mockGetLocalResourcePermissionsUseCase,
+                getLocalResourceUseCase = mockGetLocalResourceUseCase,
+                getLocalFolderPermissionsUseCase = mockGetLocalFolderPermissionsUseCase,
+                permissionModelUiComparator = get(),
+                getLocalFolderUseCase = mockGetLocalFolderUseCase,
+                resourceShareInteractor = mockResourceShareInteractor,
+                homeDataInteractor = mockHomeDataInteractor,
+                coroutineLaunchContext = get(),
+                resourceTypeIdToSlugMappingProvider = mockResourceTypeIdToSlugMappingProvider,
+            )
+        }
+        single(named(JSON_MODEL_GSON)) { Gson() }
+        single {
+            Configuration
+                .builder()
+                .jsonProvider(GsonJsonProvider())
+                .mappingProvider(GsonMappingProvider())
+                .options(EnumSet.noneOf(Option::class.java))
+                .build()
+        }
+        singleOf(::JsonPathJsonPathOps) bind JsonPathsOps::class
     }
-    single(named(JSON_MODEL_GSON)) { Gson() }
-    single {
-        Configuration.builder()
-            .jsonProvider(GsonJsonProvider())
-            .mappingProvider(GsonMappingProvider())
-            .options(EnumSet.noneOf(Option::class.java))
-            .build()
-    }
-    singleOf(::JsonPathJsonPathOps) bind JsonPathsOps::class
-}

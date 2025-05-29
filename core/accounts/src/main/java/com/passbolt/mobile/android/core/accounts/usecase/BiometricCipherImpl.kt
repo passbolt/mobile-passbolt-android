@@ -33,25 +33,26 @@ import javax.crypto.spec.IvParameterSpec
 
 class BiometricCipherImpl(
     private val keyStoreWrapper: KeyStoreWrapper,
-    private val getBiometricKeyIvUseCase: GetBiometricKeyIvUseCase
+    private val getBiometricKeyIvUseCase: GetBiometricKeyIvUseCase,
 ) : BiometricCipher {
+    override fun getBiometricEncryptCipher(): Cipher =
+        newSymmetricCipher().apply {
+            val biometricKey = keyStoreWrapper.getOrCreateSymmetricKey(BIOMETRIC_KEY_ALIAS)
+            init(Cipher.ENCRYPT_MODE, biometricKey)
+        }
 
-    override fun getBiometricEncryptCipher(): Cipher = newSymmetricCipher().apply {
-        val biometricKey = keyStoreWrapper.getOrCreateSymmetricKey(BIOMETRIC_KEY_ALIAS)
-        init(Cipher.ENCRYPT_MODE, biometricKey)
-    }
-
-    override fun getBiometricDecryptCipher(userId: String): Cipher = newSymmetricCipher().apply {
-        val key = keyStoreWrapper.getSymmetricKey(BIOMETRIC_KEY_ALIAS)
-            ?: throw SecurityException("Unable to decrypt: No keys found")
-        val ivOutput = getBiometricKeyIvUseCase.execute(UserIdInput(userId))
-        init(Cipher.DECRYPT_MODE, key, IvParameterSpec(ivOutput.iv))
-    }
+    override fun getBiometricDecryptCipher(userId: String): Cipher =
+        newSymmetricCipher().apply {
+            val key =
+                keyStoreWrapper.getSymmetricKey(BIOMETRIC_KEY_ALIAS)
+                    ?: throw SecurityException("Unable to decrypt: No keys found")
+            val ivOutput = getBiometricKeyIvUseCase.execute(UserIdInput(userId))
+            init(Cipher.DECRYPT_MODE, key, IvParameterSpec(ivOutput.iv))
+        }
 
     companion object {
         private const val TRANSFORMATION_SYMMETRIC = "AES/CBC/PKCS7Padding"
 
-        private fun newSymmetricCipher() =
-            Cipher.getInstance(TRANSFORMATION_SYMMETRIC)
+        private fun newSymmetricCipher() = Cipher.getInstance(TRANSFORMATION_SYMMETRIC)
     }
 }

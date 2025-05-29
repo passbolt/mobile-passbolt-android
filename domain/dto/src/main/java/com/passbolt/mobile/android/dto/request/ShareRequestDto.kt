@@ -25,16 +25,16 @@ import com.google.gson.annotations.SerializedName
  * @since v1.0
  */
 data class SimulateShareRequest(
-    val permissions: List<SharePermission>
+    val permissions: List<SharePermission>,
 )
 
 data class ResourceShareRequest(
     val permissions: List<SharePermission>,
-    val secrets: List<EncryptedSharedSecret>
+    val secrets: List<EncryptedSharedSecret>,
 )
 
 data class FolderShareRequest(
-    val permissions: List<SharePermission>
+    val permissions: List<SharePermission>,
 )
 
 data class EncryptedSharedSecret(
@@ -42,7 +42,7 @@ data class EncryptedSharedSecret(
     val resourceId: String,
     @SerializedName("user_id")
     val userId: String,
-    val data: String
+    val data: String,
 )
 
 sealed class SharePermission(
@@ -52,23 +52,22 @@ sealed class SharePermission(
     val aco: String,
     @SerializedName("aco_foreign_key")
     val acoForeignKey: String,
-    val type: Int
+    val type: Int,
 ) {
-
     class UpdatedSharePermission(
         val id: String,
         aro: String,
         aroForeignKey: String,
         aco: String,
         acoForeignKey: String,
-        type: Int
+        type: Int,
     ) : SharePermission(
-        aro,
-        aroForeignKey,
-        aco,
-        acoForeignKey,
-        type
-    )
+            aro,
+            aroForeignKey,
+            aco,
+            acoForeignKey,
+            type,
+        )
 
     class DeletedSharePermission(
         val delete: Boolean = true,
@@ -77,14 +76,14 @@ sealed class SharePermission(
         aroForeignKey: String,
         aco: String,
         acoForeignKey: String,
-        type: Int
+        type: Int,
     ) : SharePermission(
-        aro,
-        aroForeignKey,
-        aco,
-        acoForeignKey,
-        type
-    )
+            aro,
+            aroForeignKey,
+            aco,
+            acoForeignKey,
+            type,
+        )
 
     class NewSharePermission(
         @SerializedName("is_new")
@@ -93,12 +92,12 @@ sealed class SharePermission(
         aroForeignKey: String,
         aco: String,
         acoForeignKey: String,
-        type: Int
+        type: Int,
     ) : SharePermission(
-        aro,
-        aroForeignKey,
-        aco,
-        acoForeignKey,
-        type
-    )
+            aro,
+            aroForeignKey,
+            aco,
+            acoForeignKey,
+            type,
+        )
 }

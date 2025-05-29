@@ -10,5 +10,5 @@ enum class DefaultFilterModel {
     EXPIRY,
     FOLDERS,
     TAGS,
-    GROUPS
+    GROUPS,
 }

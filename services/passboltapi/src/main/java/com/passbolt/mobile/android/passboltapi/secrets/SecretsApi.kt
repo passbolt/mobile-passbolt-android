@@ -29,10 +29,9 @@ import retrofit2.http.Path
  */
 
 internal interface SecretsApi {
-
     @GET(RESOURCE_SECRET_BY_ID)
     suspend fun getSecret(
-        @Path(RESOURCE_ID) resourceId: String
+        @Path(RESOURCE_ID) resourceId: String,
     ): BaseResponse<SecretResponseDto>
 
     private companion object {

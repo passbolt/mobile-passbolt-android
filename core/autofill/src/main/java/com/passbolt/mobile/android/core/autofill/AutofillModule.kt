@@ -32,14 +32,15 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-val autofillModule = module {
-    factoryOf(::FillableInputsFinder)
-    singleOf(::AccessibilityOperationsProvider)
-    singleOf(::AutofillUriMatcher)
-    factory {
-        AutofillHintsFactory(
-            resources = get(),
-            appContext = androidContext()
-        )
+val autofillModule =
+    module {
+        factoryOf(::FillableInputsFinder)
+        singleOf(::AccessibilityOperationsProvider)
+        singleOf(::AutofillUriMatcher)
+        factory {
+            AutofillHintsFactory(
+                resources = get(),
+                appContext = androidContext(),
+            )
+        }
     }
-}

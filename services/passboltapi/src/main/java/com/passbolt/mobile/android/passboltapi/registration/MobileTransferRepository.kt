@@ -29,13 +29,13 @@ import com.passbolt.mobile.android.dto.request.UpdateTransferRequestDto
  */
 class MobileTransferRepository(
     private val mobileTransferDataSource: MobileTransferDataSource,
-    private val responseHandler: ResponseHandler
+    private val responseHandler: ResponseHandler,
 ) {
     suspend fun turnPage(
         uuid: String,
         authToken: String,
         pageRequestDto: UpdateTransferRequestDto,
-        userProfile: String?
+        userProfile: String?,
     ) = callWithHandler(responseHandler) {
         mobileTransferDataSource.updateTransfer(uuid, authToken, pageRequestDto, userProfile)
     }
@@ -45,8 +45,11 @@ class MobileTransferRepository(
             mobileTransferDataSource.createTransfer(createTransferRequest)
         }
 
-    suspend fun viewTransfer(authToken: String, mfaCookie: String?, uuid: String) =
-        callWithHandler(responseHandler) {
-            mobileTransferDataSource.viewTransfer(authToken, mfaCookie, uuid)
-        }
+    suspend fun viewTransfer(
+        authToken: String,
+        mfaCookie: String?,
+        uuid: String,
+    ) = callWithHandler(responseHandler) {
+        mobileTransferDataSource.viewTransfer(authToken, mfaCookie, uuid)
+    }
 }

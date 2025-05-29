@@ -27,5 +27,5 @@ import com.google.gson.annotations.SerializedName
 data class CreateFolderRequestDto(
     @SerializedName("folder_parent_id")
     val parentFolderId: String?,
-    val name: String
+    val name: String,
 )

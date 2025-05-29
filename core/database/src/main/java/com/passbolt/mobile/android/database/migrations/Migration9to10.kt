@@ -28,9 +28,9 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 
 @Suppress("MagicNumber")
 object Migration9to10 : Migration(9, 10) {
-
     private const val DROP_RESOURCES_TABLE = "DROP TABLE Resource"
-    private const val CREATE_RESOURCE_TABLE = "CREATE TABLE IF NOT EXISTS Resource (" +
+    private const val CREATE_RESOURCE_TABLE =
+        "CREATE TABLE IF NOT EXISTS Resource (" +
             "`resourceId` TEXT NOT NULL, " +
             "`folderId` TEXT, " +
             "`resourceName` TEXT NOT NULL, " +

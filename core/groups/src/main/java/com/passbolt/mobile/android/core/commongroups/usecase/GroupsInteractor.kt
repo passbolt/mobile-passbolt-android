@@ -29,11 +29,10 @@ import timber.log.Timber
  */
 class GroupsInteractor(
     private val fetchUserGroupsUseCase: FetchUserGroupsUseCase,
-    private val rebuildLocalGroupsUseCase: RebuildGroupsTablesUseCase
+    private val rebuildLocalGroupsUseCase: RebuildGroupsTablesUseCase,
 ) {
-
-    suspend fun fetchAndSaveGroups(): Output {
-        return when (val fetched = fetchUserGroupsUseCase.execute(Unit)) {
+    suspend fun fetchAndSaveGroups(): Output =
+        when (val fetched = fetchUserGroupsUseCase.execute(Unit)) {
             is FetchUserGroupsUseCase.Output.Failure -> Output.Failure(fetched.authenticationState)
             is FetchUserGroupsUseCase.Output.Success -> {
                 try {
@@ -45,15 +44,15 @@ class GroupsInteractor(
                 }
             }
         }
-    }
 
     sealed class Output : AuthenticatedUseCaseOutput {
-
         data object Success : Output() {
             override val authenticationState: AuthenticationState
                 get() = AuthenticationState.Authenticated
         }
 
-        data class Failure(override val authenticationState: AuthenticationState) : Output()
+        data class Failure(
+            override val authenticationState: AuthenticationState,
+        ) : Output()
     }
 }

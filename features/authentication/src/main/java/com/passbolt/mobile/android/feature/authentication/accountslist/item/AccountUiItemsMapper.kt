@@ -26,7 +26,6 @@ import com.passbolt.mobile.android.ui.AccountModelUi
  * @since v1.0
  */
 class AccountUiItemsMapper {
-
     fun mapModelToItem(model: AccountModelUi): GenericItem =
         when (model) {
             is AccountModelUi.AccountModel -> AccountItem(model)

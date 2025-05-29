@@ -26,24 +26,35 @@ import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedCont
  */
 
 interface AccountDetailsContract {
-
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
         fun labelInputChanged(label: String)
+
         fun saveClick()
+
         fun transferAccountClick()
     }
 
     interface View : BaseAuthenticatedContract.View {
         fun showEmail(email: String)
+
         fun showName(name: String)
+
         fun showOrgUrl(orgUrl: String)
+
         fun showAvatar(avatarUrl: String?)
+
         fun showLabel(label: String)
+
         fun showRole(roleName: String)
+
         fun clearValidationErrors()
+
         fun showLabelLengthError(labelMaxLength: Int)
+
         fun showLabelChanged()
+
         fun setLabel(label: String)
+
         fun navigateToTransferAccountOnboarding()
     }
 }

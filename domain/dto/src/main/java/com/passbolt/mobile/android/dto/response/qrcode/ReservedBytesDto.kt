@@ -25,9 +25,7 @@ package com.passbolt.mobile.android.dto.response.qrcode
 
 data class ReservedBytesDto(
     val version: Int,
-    val page: Int
+    val page: Int,
 ) {
-
-    fun encodeToString() =
-        version.toString() + "%02x".format(page)
+    fun encodeToString() = version.toString() + "%02x".format(page)
 }

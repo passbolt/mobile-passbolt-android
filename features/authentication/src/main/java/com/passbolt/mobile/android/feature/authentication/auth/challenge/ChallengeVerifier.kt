@@ -31,39 +31,43 @@ import timber.log.Timber
  * @since v1.0
  */
 class ChallengeVerifier {
+    fun verify(
+        challengeResponseDto: ChallengeResponseDto,
+        rsaPublicKey: String,
+    ): Output =
+        try {
+            val verifier: Verifier = RSAVerifier.newVerifier(rsaPublicKey)
+            val jwt: JWT = JWT.getDecoder().decode(challengeResponseDto.accessToken, verifier)
 
-    fun verify(challengeResponseDto: ChallengeResponseDto, rsaPublicKey: String): Output = try {
+            if (jwt.isExpired) {
+                Output.TokenExpired
+            }
 
-        val verifier: Verifier = RSAVerifier.newVerifier(rsaPublicKey)
-        val jwt: JWT = JWT.getDecoder().decode(challengeResponseDto.accessToken, verifier)
-
-        if (jwt.isExpired) {
+            Output.Verified(
+                challengeResponseDto.accessToken,
+                challengeResponseDto.refreshToken,
+            )
+        } catch (exception: InvalidJWTSignatureException) {
+            Timber.e(exception)
+            Output.InvalidSignature
+        } catch (exception: JWTExpiredException) {
+            Timber.e(exception)
             Output.TokenExpired
+        } catch (exception: Exception) {
+            Timber.e(exception)
+            Output.Failure
         }
-
-        Output.Verified(
-            challengeResponseDto.accessToken,
-            challengeResponseDto.refreshToken
-        )
-    } catch (exception: InvalidJWTSignatureException) {
-        Timber.e(exception)
-        Output.InvalidSignature
-    } catch (exception: JWTExpiredException) {
-        Timber.e(exception)
-        Output.TokenExpired
-    } catch (exception: Exception) {
-        Timber.e(exception)
-        Output.Failure
-    }
 
     sealed class Output {
         data object TokenExpired : Output()
+
         data class Verified(
             val accessToken: String,
-            val refreshToken: String
+            val refreshToken: String,
         ) : Output()
 
         data object InvalidSignature : Output()
+
         data object Failure : Output()
     }
 }

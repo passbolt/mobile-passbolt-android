@@ -30,7 +30,7 @@ data class SessionKeysBundleDto(
     @SerializedName("object_type")
     val objectType: String,
     @SerializedName("session_keys")
-    val sessionKeys: List<SessionKeyDto> = emptyList()
+    val sessionKeys: List<SessionKeyDto> = emptyList(),
 )
 
 data class SessionKeyDto(
@@ -41,5 +41,5 @@ data class SessionKeyDto(
     @SerializedName("session_key")
     val sessionKey: String,
     @SerializedName("modified")
-    val modified: String?
+    val modified: String?,
 )

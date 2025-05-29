@@ -16,15 +16,16 @@ internal val mockGetFeatureFlagsUseCase = mock<GetFeatureFlagsUseCase>()
 internal val mockEncouragementsInteractor = mock<EncouragementsInteractor>()
 
 @OptIn(ExperimentalCoroutinesApi::class)
-val testMainModule = module {
-    factory<CoroutineLaunchContext> { TestCoroutineLaunchContext() }
-    factory<MainContract.Presenter> {
-        MainPresenter(
-            inAppReviewInteractor = mockInAppReviewInteractor,
-            fullDataRefreshExecutor = mockFullDataRefreshExecutor,
-            getFeatureFlagsUseCase = mockGetFeatureFlagsUseCase,
-            encouragementsInteractor = mockEncouragementsInteractor,
-            coroutineLaunchContext = get()
-        )
+val testMainModule =
+    module {
+        factory<CoroutineLaunchContext> { TestCoroutineLaunchContext() }
+        factory<MainContract.Presenter> {
+            MainPresenter(
+                inAppReviewInteractor = mockInAppReviewInteractor,
+                fullDataRefreshExecutor = mockFullDataRefreshExecutor,
+                getFeatureFlagsUseCase = mockGetFeatureFlagsUseCase,
+                encouragementsInteractor = mockEncouragementsInteractor,
+                coroutineLaunchContext = get(),
+            )
+        }
     }
-}

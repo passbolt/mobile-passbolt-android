@@ -23,12 +23,9 @@ package com.passbolt.mobile.android.passboltapi.users
  * @since v1.0
  */
 internal class UsersRemoteDataSource(
-    private val usersApi: UsersApi
+    private val usersApi: UsersApi,
 ) : UsersDataSource {
+    override suspend fun getUsers(hasAccessTo: List<String>?) = usersApi.getUsers(hasAccessTo).body
 
-    override suspend fun getUsers(hasAccessTo: List<String>?) =
-        usersApi.getUsers(hasAccessTo).body
-
-    override suspend fun getMyProfile() =
-        usersApi.getMyProfile().body
+    override suspend fun getMyProfile() = usersApi.getMyProfile().body
 }

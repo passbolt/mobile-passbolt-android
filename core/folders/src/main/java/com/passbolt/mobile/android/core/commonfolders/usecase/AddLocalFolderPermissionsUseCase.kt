@@ -33,49 +33,54 @@ import com.passbolt.mobile.android.ui.PermissionModel
  */
 class AddLocalFolderPermissionsUseCase(
     private val databaseProvider: DatabaseProvider,
-    private val permissionsModelMapper: PermissionsModelMapper
+    private val permissionsModelMapper: PermissionsModelMapper,
 ) : AsyncUseCase<AddLocalFolderPermissionsUseCase.Input, Unit>,
     SelectedAccountUseCase {
-
     override suspend fun execute(input: Input) {
         val db = databaseProvider.get(selectedAccountId)
         val foldersAndGroupsCrossRefDao = db.folderAndGroupsCrossRefDao()
         val foldersAndUsersCrossRefDao = db.folderAndUsersCrossRefDao()
 
         input.foldersWithAttributes.apply {
-            val folderGroupsPermissions = map {
-                it.folderModel.folderId to it.folderPermissions
-                    .filterIsInstance<PermissionModel.GroupPermissionModel>()
-            }
-
-            val folderUsersPermissions = map {
-                it.folderModel.folderId to it.folderPermissions
-                    .filterIsInstance<PermissionModel.UserPermissionModel>()
-            }
-
-            val folderAndGroupCrossRefs = folderGroupsPermissions
-                .flatMap { (folderId, groupPermissions) ->
-                    groupPermissions.map { groupPermission ->
-                        FolderAndGroupsCrossRef(
-                            folderId,
-                            groupPermission.group.groupId,
-                            permissionsModelMapper.map(groupPermission.permission),
-                            groupPermission.permissionId
-                        )
-                    }
+            val folderGroupsPermissions =
+                map {
+                    it.folderModel.folderId to
+                        it.folderPermissions
+                            .filterIsInstance<PermissionModel.GroupPermissionModel>()
                 }
 
-            val folderAndUsersCrossRefs = folderUsersPermissions
-                .flatMap { (folderId, userPermissions) ->
-                    userPermissions.map { userPermission ->
-                        FolderAndUsersCrossRef(
-                            folderId,
-                            userPermission.userId,
-                            permissionsModelMapper.map(userPermission.permission),
-                            userPermission.permissionId
-                        )
-                    }
+            val folderUsersPermissions =
+                map {
+                    it.folderModel.folderId to
+                        it.folderPermissions
+                            .filterIsInstance<PermissionModel.UserPermissionModel>()
                 }
+
+            val folderAndGroupCrossRefs =
+                folderGroupsPermissions
+                    .flatMap { (folderId, groupPermissions) ->
+                        groupPermissions.map { groupPermission ->
+                            FolderAndGroupsCrossRef(
+                                folderId,
+                                groupPermission.group.groupId,
+                                permissionsModelMapper.map(groupPermission.permission),
+                                groupPermission.permissionId,
+                            )
+                        }
+                    }
+
+            val folderAndUsersCrossRefs =
+                folderUsersPermissions
+                    .flatMap { (folderId, userPermissions) ->
+                        userPermissions.map { userPermission ->
+                            FolderAndUsersCrossRef(
+                                folderId,
+                                userPermission.userId,
+                                permissionsModelMapper.map(userPermission.permission),
+                                userPermission.permissionId,
+                            )
+                        }
+                    }
 
             foldersAndGroupsCrossRefDao.insertAll(folderAndGroupCrossRefs)
             foldersAndUsersCrossRefDao.insertAll(folderAndUsersCrossRefs)
@@ -83,6 +88,6 @@ class AddLocalFolderPermissionsUseCase(
     }
 
     data class Input(
-        val foldersWithAttributes: List<FolderModelWithAttributes>
+        val foldersWithAttributes: List<FolderModelWithAttributes>,
     )
 }

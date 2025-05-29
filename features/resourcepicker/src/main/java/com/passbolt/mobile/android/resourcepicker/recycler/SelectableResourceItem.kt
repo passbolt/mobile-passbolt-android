@@ -17,16 +17,20 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 class SelectableResourceItem(
     val resourcePickerListItem: ResourcePickerListItem,
-    private val initialsIconGenerator: InitialsIconGenerator
+    private val initialsIconGenerator: InitialsIconGenerator,
 ) : AbstractBindingItem<ItemSelectableResourceBinding>() {
-
     override val type: Int
         get() = R.id.itemSelectableResource
 
-    override fun createBinding(inflater: LayoutInflater, parent: ViewGroup?) =
-        ItemSelectableResourceBinding.inflate(inflater, parent, false)
+    override fun createBinding(
+        inflater: LayoutInflater,
+        parent: ViewGroup?,
+    ) = ItemSelectableResourceBinding.inflate(inflater, parent, false)
 
-    override fun bindView(binding: ItemSelectableResourceBinding, payloads: List<Any>) {
+    override fun bindView(
+        binding: ItemSelectableResourceBinding,
+        payloads: List<Any>,
+    ) {
         super.bindView(binding, payloads)
         with(binding) {
             selectionRadioButton.isChecked = resourcePickerListItem.isSelected
@@ -44,14 +48,16 @@ class SelectableResourceItem(
                 binding.title.text = resourcePickerListItem.resourceModel.metadataJsonModel.name
                 binding.indicatorIcon.setImageDrawable(null)
             } else {
-                binding.title.text = binding.root.context.getString(
-                    LocalizationR.string.name_expired, resourcePickerListItem.resourceModel.metadataJsonModel.name
-                )
+                binding.title.text =
+                    binding.root.context.getString(
+                        LocalizationR.string.name_expired,
+                        resourcePickerListItem.resourceModel.metadataJsonModel.name,
+                    )
                 binding.indicatorIcon.setImageDrawable(
                     ContextCompat.getDrawable(
                         binding.root.context,
-                        CoreUiR.drawable.ic_excl_indicator
-                    )
+                        CoreUiR.drawable.ic_excl_indicator,
+                    ),
                 )
             }
         }
@@ -66,25 +72,29 @@ class SelectableResourceItem(
     }
 
     private fun setupInitialsIcon(binding: ItemSelectableResourceBinding) {
-        initialsIconGenerator.generate(
-            resourcePickerListItem.resourceModel.metadataJsonModel.name,
-            resourcePickerListItem.resourceModel.initials
-        ).apply {
-            binding.icon.setImageDrawable(this)
-        }
+        initialsIconGenerator
+            .generate(
+                resourcePickerListItem.resourceModel.metadataJsonModel.name,
+                resourcePickerListItem.resourceModel.initials,
+            ).apply {
+                binding.icon.setImageDrawable(this)
+            }
     }
 
-    private fun setupUsername(binding: ItemSelectableResourceBinding) = with(binding) {
-        val fontFamily = ResourcesCompat.getFont(binding.root.context, CoreUiR.font.inter)
+    private fun setupUsername(binding: ItemSelectableResourceBinding) =
+        with(binding) {
+            val fontFamily = ResourcesCompat.getFont(binding.root.context, CoreUiR.font.inter)
 
-        if (resourcePickerListItem.resourceModel.metadataJsonModel.username.isNullOrBlank()) {
-            subtitle.typeface = Typeface.create(fontFamily, FONT_WEIGHT, true)
-            subtitle.text = binding.root.context.getString(LocalizationR.string.no_username)
-        } else {
-            subtitle.typeface = Typeface.create(fontFamily, FONT_WEIGHT, false)
-            subtitle.text = resourcePickerListItem.resourceModel.metadataJsonModel.username
+            if (resourcePickerListItem.resourceModel.metadataJsonModel.username
+                    .isNullOrBlank()
+            ) {
+                subtitle.typeface = Typeface.create(fontFamily, FONT_WEIGHT, true)
+                subtitle.text = binding.root.context.getString(LocalizationR.string.no_username)
+            } else {
+                subtitle.typeface = Typeface.create(fontFamily, FONT_WEIGHT, false)
+                subtitle.text = resourcePickerListItem.resourceModel.metadataJsonModel.username
+            }
         }
-    }
 
     companion object {
         private const val FONT_WEIGHT = 400

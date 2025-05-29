@@ -33,9 +33,10 @@ import org.koin.android.scope.AndroidScopeComponent
 import org.koin.androidx.scope.fragmentScope
 import org.koin.core.qualifier.named
 
-class SwitchAccountBottomSheetFragment : BottomSheetDialogFragment(), AndroidScopeComponent,
+class SwitchAccountBottomSheetFragment :
+    BottomSheetDialogFragment(),
+    AndroidScopeComponent,
     SwitchAccountContract.View {
-
     override val scope by fragmentScope(useParentActivityScope = false)
     private val presenter: SwitchAccountContract.Presenter by scope.inject()
     private lateinit var binding: FragmentSwitchAccountBinding
@@ -46,20 +47,23 @@ class SwitchAccountBottomSheetFragment : BottomSheetDialogFragment(), AndroidSco
     private val switchAccountUiModelMapper: SwitchAccountUiItemsMapper by inject()
     private val bundledAppContext by lifecycleAwareLazy {
         requireNotNull(
-            BundleCompat.getSerializable(requireArguments(), EXTRA_APP_CONTEXT, AppContext::class.java)
+            BundleCompat.getSerializable(requireArguments(), EXTRA_APP_CONTEXT, AppContext::class.java),
         )
     }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentSwitchAccountBinding.inflate(inflater)
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         setListeners()
         presenter.attach(this)
@@ -68,11 +72,12 @@ class SwitchAccountBottomSheetFragment : BottomSheetDialogFragment(), AndroidSco
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        listener = when {
-            activity is Listener -> activity as Listener
-            parentFragment is Listener -> parentFragment as Listener
-            else -> error("Parent must implement ${Listener::class.java.name}")
-        }
+        listener =
+            when {
+                activity is Listener -> activity as Listener
+                parentFragment is Listener -> parentFragment as Listener
+                else -> error("Parent must implement ${Listener::class.java.name}")
+            }
     }
 
     override fun onResume() {
@@ -101,8 +106,8 @@ class SwitchAccountBottomSheetFragment : BottomSheetDialogFragment(), AndroidSco
                         HeaderSeeDetailsClick { presenter.seeDetailsClick() },
                         HeaderSignOutClick { presenter.signOutClick() },
                         ManageAccountsClick { listener?.switchAccountManageAccountClick() },
-                        SwitchAccountClick { presenter.switchAccountClick(it) }
-                    )
+                        SwitchAccountClick { presenter.switchAccountClick(it) },
+                    ),
                 )
             }
             close.setDebouncingOnClick {
@@ -114,7 +119,7 @@ class SwitchAccountBottomSheetFragment : BottomSheetDialogFragment(), AndroidSco
     override fun showAccountsList(accountsList: List<SwitchAccountUiModel>) {
         FastAdapterDiffUtil.calculateDiff(
             modelAdapter,
-            accountsList.map { switchAccountUiModelMapper.mapModelToItem(it) }
+            accountsList.map { switchAccountUiModelMapper.mapModelToItem(it) },
         )
         fastAdapter.notifyAdapterDataSetChanged()
     }
@@ -130,8 +135,8 @@ class SwitchAccountBottomSheetFragment : BottomSheetDialogFragment(), AndroidSco
         startActivity(
             ActivityIntents.authentication(
                 requireContext(),
-                ActivityIntents.AuthConfig.Startup
-            )
+                ActivityIntents.AuthConfig.Startup,
+            ),
         )
     }
 
@@ -154,17 +159,20 @@ class SwitchAccountBottomSheetFragment : BottomSheetDialogFragment(), AndroidSco
 
     interface Listener {
         fun switchAccountManageAccountClick()
+
         fun switchAccountClick()
     }
 
     companion object {
         private const val EXTRA_APP_CONTEXT = "APP_CONTEXT"
 
-        fun newInstance(appContext: AppContext) = SwitchAccountBottomSheetFragment()
-            .apply {
-                arguments = bundleOf(
-                    EXTRA_APP_CONTEXT to appContext
-                )
-            }
+        fun newInstance(appContext: AppContext) =
+            SwitchAccountBottomSheetFragment()
+                .apply {
+                    arguments =
+                        bundleOf(
+                            EXTRA_APP_CONTEXT to appContext,
+                        )
+                }
     }
 }

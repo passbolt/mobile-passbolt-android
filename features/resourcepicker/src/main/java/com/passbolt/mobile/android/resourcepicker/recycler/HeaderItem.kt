@@ -32,24 +32,29 @@ import com.passbolt.mobile.android.resourcepicker.model.HeaderType
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 class HeaderItem(
-    private val headerType: HeaderType
+    private val headerType: HeaderType,
 ) : AbstractBindingItem<ItemHeaderBinding>() {
-
     override val type: Int
         get() = R.id.itemHeader
 
-    override fun createBinding(inflater: LayoutInflater, parent: ViewGroup?) =
-        ItemHeaderBinding.inflate(inflater, parent, false)
+    override fun createBinding(
+        inflater: LayoutInflater,
+        parent: ViewGroup?,
+    ) = ItemHeaderBinding.inflate(inflater, parent, false)
 
-    override fun bindView(binding: ItemHeaderBinding, payloads: List<Any>) {
+    override fun bindView(
+        binding: ItemHeaderBinding,
+        payloads: List<Any>,
+    ) {
         super.bindView(binding, payloads)
         with(binding) {
-            title.text = title.context.getString(
-                when (headerType) {
-                    HeaderType.OTHER -> LocalizationR.string.other
-                    HeaderType.SUGGESTED -> LocalizationR.string.suggested
-                }
-            )
+            title.text =
+                title.context.getString(
+                    when (headerType) {
+                        HeaderType.OTHER -> LocalizationR.string.other
+                        HeaderType.SUGGESTED -> LocalizationR.string.suggested
+                    },
+                )
         }
     }
 }

@@ -27,53 +27,58 @@ import com.google.android.material.switchmaterial.SwitchMaterial
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class SwitchSettingView @JvmOverloads constructor(
-    context: Context,
-    attrs: AttributeSet? = null,
-    defStyle: Int = 0
-) : SettingView(context, attrs, defStyle) {
+class SwitchSettingView
+    @JvmOverloads
+    constructor(
+        context: Context,
+        attrs: AttributeSet? = null,
+        defStyle: Int = 0,
+    ) : SettingView(context, attrs, defStyle) {
+        var onChanged: ((Boolean) -> Unit)? = null
 
-    var onChanged: ((Boolean) -> Unit)? = null
+        private val switch =
+            SwitchMaterial(context).apply {
+                tag = name
+            }
+        private var silentCheckChangedModeOn = false
 
-    private val switch = SwitchMaterial(context).apply {
-        tag = name
-    }
-    private var silentCheckChangedModeOn = false
+        init {
+            binding.root.addView(switch)
+            switch.setOnCheckedChangeListener { _, isChecked ->
+                if (!silentCheckChangedModeOn) {
+                    onChanged?.invoke(isChecked)
+                }
+            }
+        }
 
-    init {
-        binding.root.addView(switch)
-        switch.setOnCheckedChangeListener { _, isChecked ->
-            if (!silentCheckChangedModeOn) {
-                onChanged?.invoke(isChecked)
+        override fun onDetachedFromWindow() {
+            switch.setOnCheckedChangeListener(null)
+            super.onDetachedFromWindow()
+        }
+
+        fun turnOn(silently: Boolean) {
+            executeCheckChange(silently, checkChangeValue = true)
+        }
+
+        fun turnOff(silently: Boolean) {
+            executeCheckChange(silently, checkChangeValue = false)
+        }
+
+        private fun executeCheckChange(
+            silently: Boolean,
+            checkChangeValue: Boolean,
+        ) {
+            silentCheckChangedModeOn = silently
+            switch.isChecked = checkChangeValue
+            silentCheckChangedModeOn = false
+        }
+
+        override fun setEnabled(enabled: Boolean) {
+            binding.root.children.forEach {
+                if (it != switch) { // don't change alpha for switch as it's not visible well in dark mode
+                    it.alpha = if (enabled) ALPHA_FULLY_VISIBLE else ALPHA_GREYED_OUT
+                }
+                it.isEnabled = enabled
             }
         }
     }
-
-    override fun onDetachedFromWindow() {
-        switch.setOnCheckedChangeListener(null)
-        super.onDetachedFromWindow()
-    }
-
-    fun turnOn(silently: Boolean) {
-        executeCheckChange(silently, checkChangeValue = true)
-    }
-
-    fun turnOff(silently: Boolean) {
-        executeCheckChange(silently, checkChangeValue = false)
-    }
-
-    private fun executeCheckChange(silently: Boolean, checkChangeValue: Boolean) {
-        silentCheckChangedModeOn = silently
-        switch.isChecked = checkChangeValue
-        silentCheckChangedModeOn = false
-    }
-
-    override fun setEnabled(enabled: Boolean) {
-        binding.root.children.forEach {
-            if (it != switch) { // don't change alpha for switch as it's not visible well in dark mode
-                it.alpha = if (enabled) ALPHA_FULLY_VISIBLE else ALPHA_GREYED_OUT
-            }
-            it.isEnabled = enabled
-        }
-    }
-}

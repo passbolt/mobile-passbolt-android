@@ -36,25 +36,25 @@ import org.koin.dsl.module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-val setupModule = module {
-    welcomeModule()
-    scanQrModule()
-    importProfileModule()
-    summaryModule()
-    transferDetailsModule()
-    fingerprintModule()
-    single {
-        FingerprintInformationProvider(
-            biometric = get()
-        )
+val setupModule =
+    module {
+        welcomeModule()
+        scanQrModule()
+        importProfileModule()
+        summaryModule()
+        transferDetailsModule()
+        fingerprintModule()
+        single {
+            FingerprintInformationProvider(
+                biometric = get(),
+            )
+        }
+        single<Biometric> {
+            BiometricImpl(
+                biometricManager = get(),
+            )
+        }
+        single { provideBiometricManager(androidContext()) }
     }
-    single<Biometric> {
-        BiometricImpl(
-            biometricManager = get()
-        )
-    }
-    single { provideBiometricManager(androidContext()) }
-}
 
-private fun provideBiometricManager(context: Context) =
-    BiometricManager.from(context)
+private fun provideBiometricManager(context: Context) = BiometricManager.from(context)

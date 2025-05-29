@@ -28,23 +28,33 @@ import com.passbolt.mobile.android.ui.SwitchAccountUiModel
  */
 
 interface SwitchAccountContract {
-
     interface Presenter : BaseContract.Presenter<View> {
         fun seeDetailsClick()
+
         fun signOutClick()
+
         fun signOutConfirmed()
+
         fun switchAccountClick(account: SwitchAccountUiModel.AccountItem)
+
         fun viewResumed()
+
         fun argsRetrieved(appContext: AppContext)
     }
 
     interface View : BaseContract.View {
         fun showAccountsList(accountsList: List<SwitchAccountUiModel>)
+
         fun showSignOutDialog()
+
         fun showProgress()
+
         fun hideProgress()
+
         fun navigateToStartup()
+
         fun navigateToSignInForAccount()
+
         fun navigateToAccountDetails()
     }
 }

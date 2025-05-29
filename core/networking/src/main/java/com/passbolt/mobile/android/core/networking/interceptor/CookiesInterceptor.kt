@@ -30,9 +30,8 @@ import okhttp3.Response
  * @since v1.0
  */
 class CookiesInterceptor {
-
     class ReceivedCookiesInterceptor(
-        private val cookieExtractor: CookieExtractor
+        private val cookieExtractor: CookieExtractor,
     ) : Interceptor {
         override fun intercept(chain: Interceptor.Chain): Response {
             val originalResponse: Response = chain.proceed(chain.request())
@@ -49,7 +48,9 @@ class CookiesInterceptor {
             val request = chain.request()
             val newBuilder = request.newBuilder()
             if (ANONYMOUS_PATHS.none { request.url.encodedPath == it } &&
-                !request.url.encodedPath.contains(AVATAR_PATH) && !request.url.encodedPath.contains(TRANSFER_PATH)) {
+                !request.url.encodedPath.contains(AVATAR_PATH) &&
+                !request.url.encodedPath.contains(TRANSFER_PATH)
+            ) {
                 mfaCookie?.let {
                     newBuilder.addHeader(COOKIE_HEADER, it)
                 }
@@ -63,14 +64,15 @@ class CookiesInterceptor {
 
         private var mfaCookie: String? = null
 
-        private val ANONYMOUS_PATHS = setOf(
-            AuthPaths.AUTH_SIGN_IN,
-            AuthPaths.AUTH_RSA,
-            AuthPaths.MFA_VERIFICATION_TOTP,
-            AuthPaths.MFA_VERIFICATION_YUBIKEY,
-            AuthPaths.MFA_VERIFICATION_DUO_PROMPT,
-            AuthPaths.MFA_VERIFICATION_DUO_VERIFY,
-            AuthPaths.AUTH_VERIFY
-        )
+        private val ANONYMOUS_PATHS =
+            setOf(
+                AuthPaths.AUTH_SIGN_IN,
+                AuthPaths.AUTH_RSA,
+                AuthPaths.MFA_VERIFICATION_TOTP,
+                AuthPaths.MFA_VERIFICATION_YUBIKEY,
+                AuthPaths.MFA_VERIFICATION_DUO_PROMPT,
+                AuthPaths.MFA_VERIFICATION_DUO_VERIFY,
+                AuthPaths.AUTH_VERIFY,
+            )
     }
 }

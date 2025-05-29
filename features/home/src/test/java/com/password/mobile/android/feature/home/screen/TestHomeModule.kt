@@ -77,54 +77,56 @@ internal val mockGetRbacRulesUseCase = mock<GetRbacRulesUseCase>()
 internal val mockIdToSlugMappingProvider = mock<ResourceTypeIdToSlugMappingProvider>()
 
 @ExperimentalCoroutinesApi
-val testHomeModule = module {
-    factory { mockResourcesInteractor }
-    factory { mockGetSelectedAccountDataUseCase }
-    factory { mockFetchAndUpdateDatabaseUseCase }
-    factory { mockSecretParser }
-    factory { mockCreateResourceMoreMenuModelUseCase }
-    single { mock<FullDataRefreshExecutor>() }
-    factoryOf(::TestCoroutineLaunchContext) bind CoroutineLaunchContext::class
-    factoryOf(::InitialsProvider)
-    factoryOf(::AutofillUriMatcher)
-    factoryOf(::HomeDisplayViewMapper)
-    factoryOf(::SearchableMatcher)
-    singleOf(::DeleteResourceIdlingResource)
-    factory<HomeContract.Presenter> {
-        HomePresenter(
-            coroutineLaunchContext = get(),
-            getSelectedAccountDataUseCase = get(),
-            searchableMatcher = get(),
-            getLocalResourcesUseCase = mockGetLocalResourcesUseCase,
-            getLocalResourcesFilteredByTag = mockGetLocalResourcesFilteredByTagUseCase,
-            getLocalSubFoldersForFolderUseCase = mockGetSubFoldersUseCase,
-            getLocalResourcesAndFoldersUseCase = mockGetLocalResourcesAndFoldersUseCase,
-            getLocalResourcesFiltered = mockGetSubFoldersResourcesUseCase,
-            getLocalTagsUseCase = mockGetLocalTagsUseCase,
-            getLocalResourcesWithTagUseCase = mockGetLocalResourcesWithTagsUseCase,
-            getLocalGroupsWithShareItemsCountUseCase = mockGetLocalGroupsWithItemCountUseCase,
-            getLocalResourcesWithGroupsUseCase = mockGetLocalResourcesWithGroupsUseCase,
-            getHomeDisplayViewPrefsUseCase = mockGetHomeDisplayPrefsUseCase,
-            homeModelMapper = get(),
-            autofillMatcher = get(),
-            getLocalFolderUseCase = mockGetLocalFolderUseCase,
-            deleteResourceIdlingResource = get(),
-            totpParametersProvider = mockTotpParametersProvider,
-            getRbacRulesUseCase = mockGetRbacRulesUseCase
-        )
-    }
-    factory { mockResourceCommonActionsInteractor }
-    factory { mockResourcePropertiesActionsInteractor }
-    factory { mockSecretPropertiesActionsInteractor }
-    factory { mockResourceUpdateActionsInteractor }
+val testHomeModule =
+    module {
+        factory { mockResourcesInteractor }
+        factory { mockGetSelectedAccountDataUseCase }
+        factory { mockFetchAndUpdateDatabaseUseCase }
+        factory { mockSecretParser }
+        factory { mockCreateResourceMoreMenuModelUseCase }
+        single { mock<FullDataRefreshExecutor>() }
+        factoryOf(::TestCoroutineLaunchContext) bind CoroutineLaunchContext::class
+        factoryOf(::InitialsProvider)
+        factoryOf(::AutofillUriMatcher)
+        factoryOf(::HomeDisplayViewMapper)
+        factoryOf(::SearchableMatcher)
+        singleOf(::DeleteResourceIdlingResource)
+        factory<HomeContract.Presenter> {
+            HomePresenter(
+                coroutineLaunchContext = get(),
+                getSelectedAccountDataUseCase = get(),
+                searchableMatcher = get(),
+                getLocalResourcesUseCase = mockGetLocalResourcesUseCase,
+                getLocalResourcesFilteredByTag = mockGetLocalResourcesFilteredByTagUseCase,
+                getLocalSubFoldersForFolderUseCase = mockGetSubFoldersUseCase,
+                getLocalResourcesAndFoldersUseCase = mockGetLocalResourcesAndFoldersUseCase,
+                getLocalResourcesFiltered = mockGetSubFoldersResourcesUseCase,
+                getLocalTagsUseCase = mockGetLocalTagsUseCase,
+                getLocalResourcesWithTagUseCase = mockGetLocalResourcesWithTagsUseCase,
+                getLocalGroupsWithShareItemsCountUseCase = mockGetLocalGroupsWithItemCountUseCase,
+                getLocalResourcesWithGroupsUseCase = mockGetLocalResourcesWithGroupsUseCase,
+                getHomeDisplayViewPrefsUseCase = mockGetHomeDisplayPrefsUseCase,
+                homeModelMapper = get(),
+                autofillMatcher = get(),
+                getLocalFolderUseCase = mockGetLocalFolderUseCase,
+                deleteResourceIdlingResource = get(),
+                totpParametersProvider = mockTotpParametersProvider,
+                getRbacRulesUseCase = mockGetRbacRulesUseCase,
+            )
+        }
+        factory { mockResourceCommonActionsInteractor }
+        factory { mockResourcePropertiesActionsInteractor }
+        factory { mockSecretPropertiesActionsInteractor }
+        factory { mockResourceUpdateActionsInteractor }
 
-    single(named(JSON_MODEL_GSON)) { Gson() }
-    single {
-        Configuration.builder()
-            .jsonProvider(GsonJsonProvider())
-            .mappingProvider(GsonMappingProvider())
-            .options(EnumSet.noneOf(Option::class.java))
-            .build()
+        single(named(JSON_MODEL_GSON)) { Gson() }
+        single {
+            Configuration
+                .builder()
+                .jsonProvider(GsonJsonProvider())
+                .mappingProvider(GsonMappingProvider())
+                .options(EnumSet.noneOf(Option::class.java))
+                .build()
+        }
+        singleOf(::JsonPathJsonPathOps) bind JsonPathsOps::class
     }
-    singleOf(::JsonPathJsonPathOps) bind JsonPathsOps::class
-}

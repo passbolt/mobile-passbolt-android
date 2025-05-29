@@ -27,14 +27,13 @@ import com.passbolt.mobile.android.core.localization.R as LocalizationR
  * @since v1.0
  */
 sealed class DialogMode(
-    @StringRes val buttonTextIdRes: Int
+    @StringRes val buttonTextIdRes: Int,
 ) : Serializable {
-
     data object Settings : DialogMode(
-        LocalizationR.string.dialog_autofill_enabled_go_to_app
+        LocalizationR.string.dialog_autofill_enabled_go_to_app,
     )
 
     data object Setup : DialogMode(
-        LocalizationR.string.dialog_autofill_enabled_got_it
+        LocalizationR.string.dialog_autofill_enabled_got_it,
     )
 }

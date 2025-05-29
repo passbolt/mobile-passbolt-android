@@ -36,35 +36,38 @@ import kotlinx.coroutines.withContext
 class UpdateTransferUseCase(
     private val mobileTransferRepository: MobileTransferRepository,
     private val transferMapper: TransferMapper,
-    private val coroutineContext: CoroutineLaunchContext
+    private val coroutineContext: CoroutineLaunchContext,
 ) : AsyncUseCase<UpdateTransferUseCase.Input, UpdateTransferUseCase.Output> {
-
-    override suspend fun execute(input: Input): Output = withContext(coroutineContext.io) {
-        val response = mobileTransferRepository.turnPage(
-            input.uuid,
-            input.authToken,
-            transferMapper.mapRequestToDto(input.currentPage, input.status),
-            if (input.status == Status.COMPLETE) PROFILE_INFO_REQUIRED else null
-        )
-        when (response) {
-            is NetworkResult.Failure -> Output.Failure(response)
-            is NetworkResult.Success -> Output.Success(transferMapper.mapUpdateResponseToUi(response.value.body))
+    override suspend fun execute(input: Input): Output =
+        withContext(coroutineContext.io) {
+            val response =
+                mobileTransferRepository.turnPage(
+                    input.uuid,
+                    input.authToken,
+                    transferMapper.mapRequestToDto(input.currentPage, input.status),
+                    if (input.status == Status.COMPLETE) PROFILE_INFO_REQUIRED else null,
+                )
+            when (response) {
+                is NetworkResult.Failure -> Output.Failure(response)
+                is NetworkResult.Success -> Output.Success(transferMapper.mapUpdateResponseToUi(response.value.body))
+            }
         }
-    }
 
     data class Input(
         val uuid: String,
         val authToken: String,
         val currentPage: Int,
-        val status: Status
+        val status: Status,
     )
 
     sealed class Output {
         data class Success(
-            val updateTransferModel: UpdateTransferModel
+            val updateTransferModel: UpdateTransferModel,
         ) : Output()
 
-        data class Failure(val error: NetworkResult.Failure<BaseResponse<TransferResponseDto>>) : Output()
+        data class Failure(
+            val error: NetworkResult.Failure<BaseResponse<TransferResponseDto>>,
+        ) : Output()
     }
 
     companion object {

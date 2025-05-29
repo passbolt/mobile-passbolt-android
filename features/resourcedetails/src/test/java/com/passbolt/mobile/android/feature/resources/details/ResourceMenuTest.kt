@@ -68,41 +68,43 @@ import java.util.UUID
  */
 
 class ResourceMenuTest : KoinTest {
-
     private val presenter: ResourceDetailsContract.Presenter by inject()
     private val view: ResourceDetailsContract.View = mock()
     private val mockFullDataRefreshExecutor: FullDataRefreshExecutor by inject()
 
     @ExperimentalCoroutinesApi
     @get:Rule
-    val koinTestRule = KoinTestRule.create {
-        printLogger(Level.ERROR)
-        modules(testResourceDetailsModule)
-    }
+    val koinTestRule =
+        KoinTestRule.create {
+            printLogger(Level.ERROR)
+            modules(testResourceDetailsModule)
+        }
 
     @Before
     fun setup() {
-        resourceModel = ResourceModel(
-            resourceId = ID,
-            resourceTypeId = RESOURCE_TYPE_ID.toString(),
-            folderId = FOLDER_ID_ID,
-            permission = ResourcePermission.READ,
-            favouriteId = "fav-id",
-            modified = ZonedDateTime.now(),
-            expiry = null,
-            metadataJsonModel = MetadataJsonModel(
-                """
-                    {
-                        "name": "$NAME",
-                        "uri": "$URL",
-                        "username": "$USERNAME",
-                        "description": "$DESCRIPTION"
-                    }
-                """.trimIndent()
-            ),
-            metadataKeyType = null,
-            metadataKeyId = null
-        )
+        resourceModel =
+            ResourceModel(
+                resourceId = ID,
+                resourceTypeId = RESOURCE_TYPE_ID.toString(),
+                folderId = FOLDER_ID_ID,
+                permission = ResourcePermission.READ,
+                favouriteId = "fav-id",
+                modified = ZonedDateTime.now(),
+                expiry = null,
+                metadataJsonModel =
+                    MetadataJsonModel(
+                        """
+                        {
+                            "name": "$NAME",
+                            "uri": "$URL",
+                            "username": "$USERNAME",
+                            "description": "$DESCRIPTION"
+                        }
+                        """.trimIndent(),
+                    ),
+                metadataKeyType = null,
+                metadataKeyId = null,
+            )
         mockGetLocalResourceUseCase.stub {
             onBlocking { execute(GetLocalResourceUseCase.Input(resourceModel.resourceId)) }
                 .doReturn(GetLocalResourceUseCase.Output(resourceModel))
@@ -112,21 +114,22 @@ class ResourceMenuTest : KoinTest {
                 .doReturn(GetLocalResourcePermissionsUseCase.Output(listOf(groupPermission, userPermission)))
         }
         mockGetFeatureFlagsUseCase.stub {
-            onBlocking { execute(Unit) } doReturn GetFeatureFlagsUseCase.Output(
-                FeatureFlagsModel(
-                    privacyPolicyUrl = null,
-                    termsAndConditionsUrl = null,
-                    isPreviewPasswordAvailable = true,
-                    areFoldersAvailable = true,
-                    areTagsAvailable = true,
-                    isTotpAvailable = true,
-                    isRbacAvailable = true,
-                    isPasswordExpiryAvailable = true,
-                    arePasswordPoliciesAvailable = true,
-                    canUpdatePasswordPolicies = true,
-                    isV5MetadataAvailable = false
+            onBlocking { execute(Unit) } doReturn
+                GetFeatureFlagsUseCase.Output(
+                    FeatureFlagsModel(
+                        privacyPolicyUrl = null,
+                        termsAndConditionsUrl = null,
+                        isPreviewPasswordAvailable = true,
+                        areFoldersAvailable = true,
+                        areTagsAvailable = true,
+                        isTotpAvailable = true,
+                        isRbacAvailable = true,
+                        isPasswordExpiryAvailable = true,
+                        arePasswordPoliciesAvailable = true,
+                        canUpdatePasswordPolicies = true,
+                        isV5MetadataAvailable = false,
+                    ),
                 )
-            )
         }
         mockGetRbacRulesUseCase.stub {
             onBlocking { execute(Unit) }.doReturn(
@@ -136,9 +139,9 @@ class ResourceMenuTest : KoinTest {
                         passwordCopyRule = RbacRuleModel.ALLOW,
                         tagsUseRule = RbacRuleModel.ALLOW,
                         shareViewRule = RbacRuleModel.ALLOW,
-                        foldersUseRule = RbacRuleModel.ALLOW
-                    )
-                )
+                        foldersUseRule = RbacRuleModel.ALLOW,
+                    ),
+                ),
             )
         }
         mockFavouritesInteractor.stub {
@@ -149,14 +152,14 @@ class ResourceMenuTest : KoinTest {
             onBlocking { execute(any()) }.doReturn(GetLocalResourceTagsUseCase.Output(RESOURCE_TAGS))
         }
         whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
-            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
+            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success)),
         )
         mockGetFolderLocationUseCase.stub {
             onBlocking { execute(any()) }.doReturn(GetLocalFolderLocationUseCase.Output(emptyList()))
         }
         mockResourceTypeIdToSlugMappingProvider.stub {
             onBlocking { provideMappingForSelectedAccount() }.doReturn(
-                mapOf(RESOURCE_TYPE_ID to ContentType.PasswordString.slug)
+                mapOf(RESOURCE_TYPE_ID to ContentType.PasswordString.slug),
             )
         }
         presenter.attach(view)
@@ -164,88 +167,94 @@ class ResourceMenuTest : KoinTest {
 
     @ExperimentalCoroutinesApi
     @Test
-    fun `delete resource should show confirmation dialog, delete and close details`() = runTest {
-        mockResourceCommonActionsInteractor.stub {
-            onBlocking { deleteResource() } doReturn flowOf(
-                ResourceCommonActionResult.Success(resourceModel.metadataJsonModel.name)
+    fun `delete resource should show confirmation dialog, delete and close details`() =
+        runTest {
+            mockResourceCommonActionsInteractor.stub {
+                onBlocking { deleteResource() } doReturn
+                    flowOf(
+                        ResourceCommonActionResult.Success(resourceModel.metadataJsonModel.name),
+                    )
+            }
+
+            presenter.argsReceived(
+                resourceModel,
+                100,
+                20f,
             )
+            presenter.resume(view)
+            presenter.moreClick()
+            presenter.deleteClick()
+            presenter.deleteResourceConfirmed()
+
+            verify(view).showDeleteConfirmationDialog()
+            verify(view).closeWithDeleteSuccessResult(resourceModel.metadataJsonModel.name)
         }
-
-        presenter.argsReceived(
-            resourceModel,
-            100,
-            20f
-        )
-        presenter.resume(view)
-        presenter.moreClick()
-        presenter.deleteClick()
-        presenter.deleteResourceConfirmed()
-
-        verify(view).showDeleteConfirmationDialog()
-        verify(view).closeWithDeleteSuccessResult(resourceModel.metadataJsonModel.name)
-    }
 
     @ExperimentalCoroutinesApi
     @Test
-    fun `delete resource should show error when there is deletion error`() = runTest {
-        mockResourceCommonActionsInteractor.stub {
-            onBlocking { deleteResource() } doReturn flowOf(ResourceCommonActionResult.Failure)
+    fun `delete resource should show error when there is deletion error`() =
+        runTest {
+            mockResourceCommonActionsInteractor.stub {
+                onBlocking { deleteResource() } doReturn flowOf(ResourceCommonActionResult.Failure)
+            }
+
+            presenter.argsReceived(
+                resourceModel,
+                100,
+                20f,
+            )
+            presenter.resume(view)
+            presenter.moreClick()
+            presenter.deleteClick()
+            presenter.deleteResourceConfirmed()
+
+            verify(view).showDeleteConfirmationDialog()
+            verify(view).showGeneralError()
         }
-
-        presenter.argsReceived(
-            resourceModel,
-            100,
-            20f
-        )
-        presenter.resume(view)
-        presenter.moreClick()
-        presenter.deleteClick()
-        presenter.deleteResourceConfirmed()
-
-        verify(view).showDeleteConfirmationDialog()
-        verify(view).showGeneralError()
-    }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `resource url website should be opened if not empty`() = runTest {
-        mockResourcePropertiesActionsInteractor.stub {
-            onBlocking { provideWebsiteUrl() } doReturn flowOf(
-                ResourcePropertyActionResult(
-                    ResourcePropertiesActionsInteractor.URL_LABEL,
-                    isSecret = false,
-                    resourceModel.metadataJsonModel.uri.orEmpty()
-                )
+    fun `resource url website should be opened if not empty`() =
+        runTest {
+            mockResourcePropertiesActionsInteractor.stub {
+                onBlocking { provideWebsiteUrl() } doReturn
+                    flowOf(
+                        ResourcePropertyActionResult(
+                            ResourcePropertiesActionsInteractor.URL_LABEL,
+                            isSecret = false,
+                            resourceModel.metadataJsonModel.uri.orEmpty(),
+                        ),
+                    )
+            }
+
+            presenter.argsReceived(
+                resourceModel,
+                100,
+                20f,
             )
+            presenter.resume(view)
+            presenter.moreClick()
+            presenter.launchWebsiteClick()
+
+            verify(view).openWebsite(resourceModel.metadataJsonModel.uri.orEmpty())
         }
-
-        presenter.argsReceived(
-            resourceModel,
-            100,
-            20f
-        )
-        presenter.resume(view)
-        presenter.moreClick()
-        presenter.launchWebsiteClick()
-
-        verify(view).openWebsite(resourceModel.metadataJsonModel.uri.orEmpty())
-    }
 
     @Test
     fun `resource username should be copied correct if not empty`() {
         mockResourcePropertiesActionsInteractor.stub {
-            onBlocking { provideUsername() } doReturn flowOf(
-                ResourcePropertyActionResult(
-                    ResourcePropertiesActionsInteractor.USERNAME_LABEL,
-                    isSecret = false,
-                    resourceModel.metadataJsonModel.username.orEmpty()
+            onBlocking { provideUsername() } doReturn
+                flowOf(
+                    ResourcePropertyActionResult(
+                        ResourcePropertiesActionsInteractor.USERNAME_LABEL,
+                        isSecret = false,
+                        resourceModel.metadataJsonModel.username.orEmpty(),
+                    ),
                 )
-            )
         }
         presenter.argsReceived(
             resourceModel,
             100,
-            20f
+            20f,
         )
         presenter.resume(view)
         presenter.moreClick()
@@ -254,25 +263,26 @@ class ResourceMenuTest : KoinTest {
         verify(view).addToClipboard(
             ResourcePropertiesActionsInteractor.USERNAME_LABEL,
             resourceModel.metadataJsonModel.username.orEmpty(),
-            isSecret = false
+            isSecret = false,
         )
     }
 
     @Test
     fun `resource url should be copied correct if not empty`() {
         mockResourcePropertiesActionsInteractor.stub {
-            onBlocking { provideWebsiteUrl() } doReturn flowOf(
-                ResourcePropertyActionResult(
-                    ResourcePropertiesActionsInteractor.URL_LABEL,
-                    isSecret = false,
-                    resourceModel.metadataJsonModel.uri.orEmpty()
+            onBlocking { provideWebsiteUrl() } doReturn
+                flowOf(
+                    ResourcePropertyActionResult(
+                        ResourcePropertiesActionsInteractor.URL_LABEL,
+                        isSecret = false,
+                        resourceModel.metadataJsonModel.uri.orEmpty(),
+                    ),
                 )
-            )
         }
         presenter.argsReceived(
             resourceModel,
             100,
-            20f
+            20f,
         )
         presenter.resume(view)
         presenter.moreClick()
@@ -281,7 +291,7 @@ class ResourceMenuTest : KoinTest {
         verify(view).addToClipboard(
             ResourcePropertiesActionsInteractor.URL_LABEL,
             resourceModel.metadataJsonModel.uri.orEmpty(),
-            isSecret = false
+            isSecret = false,
         )
     }
 
@@ -294,24 +304,30 @@ class ResourceMenuTest : KoinTest {
         private val RESOURCE_TYPE_ID = UUID.randomUUID()
         private const val FOLDER_ID_ID = "folderId"
         private lateinit var resourceModel: ResourceModel
-        private val groupPermission = PermissionModelUi.GroupPermissionModel(
-            permission = ResourcePermission.READ, permissionId = "permId1", group = GroupModel("grId", "grName")
-        )
-        private val userPermission = PermissionModelUi.UserPermissionModel(
-            permission = ResourcePermission.OWNER,
-            permissionId = "permId2",
-            user = UserWithAvatar(
-                userId = "usId",
-                firstName = "first",
-                lastName = "last",
-                userName = "uName",
-                isDisabled = false,
-                avatarUrl = null
+        private val groupPermission =
+            PermissionModelUi.GroupPermissionModel(
+                permission = ResourcePermission.READ,
+                permissionId = "permId1",
+                group = GroupModel("grId", "grName"),
             )
-        )
-        private val RESOURCE_TAGS = listOf(
-            TagModel(id = "id1", slug = "tag1", isShared = false),
-            TagModel(id = "id2", slug = "tag2", isShared = false)
-        )
+        private val userPermission =
+            PermissionModelUi.UserPermissionModel(
+                permission = ResourcePermission.OWNER,
+                permissionId = "permId2",
+                user =
+                    UserWithAvatar(
+                        userId = "usId",
+                        firstName = "first",
+                        lastName = "last",
+                        userName = "uName",
+                        isDisabled = false,
+                        avatarUrl = null,
+                    ),
+            )
+        private val RESOURCE_TAGS =
+            listOf(
+                TagModel(id = "id1", slug = "tag1", isShared = false),
+                TagModel(id = "id2", slug = "tag2", isShared = false),
+            )
     }
 }

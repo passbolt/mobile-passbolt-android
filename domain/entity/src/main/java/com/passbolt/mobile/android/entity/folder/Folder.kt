@@ -35,7 +35,7 @@ data class Folder(
     val name: String,
     val permission: Permission,
     val parentId: String?,
-    val isShared: Boolean
+    val isShared: Boolean,
 )
 
 data class FolderWithChildItemsCountAndPath(
@@ -45,5 +45,5 @@ data class FolderWithChildItemsCountAndPath(
     val parentId: String?,
     val isShared: Boolean,
     val childItemsCount: Int,
-    val path: String?
+    val path: String?,
 )

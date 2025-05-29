@@ -29,12 +29,12 @@ internal fun Module.sessionModule() {
     single {
         GetSessionUseCase(
             encryptedSharedPreferencesFactory = get(),
-            getSelectedAccountUseCase = get()
+            getSelectedAccountUseCase = get(),
         )
     }
     single {
         SaveSessionUseCase(
-            encryptedSharedPreferencesFactory = get()
+            encryptedSharedPreferencesFactory = get(),
         )
     }
     factory {

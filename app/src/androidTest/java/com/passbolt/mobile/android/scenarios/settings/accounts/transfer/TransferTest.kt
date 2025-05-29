@@ -63,41 +63,42 @@ import com.google.android.material.R as MaterialR
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
-
 @RunWith(AndroidJUnit4::class)
 @LargeTest
 class TransferTest : KoinTest {
-
     @get:Rule
-    val startUpActivityRule = lazyActivitySetupScenarioRule<AuthenticationMainActivity>(
-        koinOverrideModules = listOf(
-            instrumentationTestsModule,
-            biometricSetupUnavailableModuleTests
-        ),
-        intentSupplier = {
-            ActivityIntents.authentication(
-                getInstrumentation().targetContext,
-                ActivityIntents.AuthConfig.Startup,
-                AppContext.APP,
-                managedAccountIntentCreator.getUserLocalId()
-            )
-        }
-    )
+    val startUpActivityRule =
+        lazyActivitySetupScenarioRule<AuthenticationMainActivity>(
+            koinOverrideModules =
+                listOf(
+                    instrumentationTestsModule,
+                    biometricSetupUnavailableModuleTests,
+                ),
+            intentSupplier = {
+                ActivityIntents.authentication(
+                    getInstrumentation().targetContext,
+                    ActivityIntents.AuthConfig.Startup,
+                    AppContext.APP,
+                    managedAccountIntentCreator.getUserLocalId(),
+                )
+            },
+        )
 
     private val managedAccountIntentCreator: ManagedAccountIntentCreator by inject()
 
     @get:Rule
-    val idlingResourceRule = let {
-        val signInIdlingResource: SignInIdlingResource by inject()
-        val transferAccountIdlingResource: TransferAccountIdlingResource by inject()
+    val idlingResourceRule =
+        let {
+            val signInIdlingResource: SignInIdlingResource by inject()
+            val transferAccountIdlingResource: TransferAccountIdlingResource by inject()
 
-        IdlingResourceRule(
-            arrayOf(
-                signInIdlingResource,
-                transferAccountIdlingResource
+            IdlingResourceRule(
+                arrayOf(
+                    signInIdlingResource,
+                    transferAccountIdlingResource,
+                ),
             )
-        )
-    }
+        }
 
     @BeforeTest
     fun setup() {
@@ -111,8 +112,8 @@ class TransferTest : KoinTest {
         onView(withId(com.passbolt.mobile.android.feature.settings.R.id.transferAccountSetting)).perform(click())
     }
 
-    @Test
     // https://passbolt.testrail.io/index.php?/cases/view/8147
+    @Test
     fun asAUserICanSeeAnExplanationOnHowToTransferAnExistingAccount() {
         //      Given   I’m logged in user on <page> screen
         //      When    I click “Transfer account to another device”
@@ -126,15 +127,18 @@ class TransferTest : KoinTest {
         //      And     an illustration giving some context about the process
         onView(withId(com.passbolt.mobile.android.feature.setup.R.id.qrCode)).check(matches(isDisplayed()))
         //      And     a "Start transfer" primary action button
-        onView(withId(com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.R.id.startTransferButton)).check(matches(isDisplayed()))
+        onView(
+            withId(com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.R.id.startTransferButton),
+        ).check(matches(isDisplayed()))
         //
         //          | page            |
         //          | Account details |
         //          | Accounts        |
     }
 
-    @Test @FlakyTest(detail = "On Huawei Mate 30 Pro it is not working when iterated in a group")
     // https://passbolt.testrail.io/index.php?/cases/view/8150
+    @Test
+    @FlakyTest(detail = "On Huawei Mate 30 Pro it is not working when iterated in a group")
     fun asAMobileUserIShouldSeeEnterYourPassphraseScreenWhenTransferStarted() {
         //      Given   I’m on mobile without any biometry enabled for the Passbolt app
         //      And     I’m logged in user on “Transfer account details” screen
@@ -167,8 +171,8 @@ class TransferTest : KoinTest {
         onView(withId(com.passbolt.mobile.android.feature.authentication.R.id.authButton)).check(matches(isDisplayed()))
     }
 
-    @Test
     // https://passbolt.testrail.io/index.php?/cases/view/8151
+    @Test
     fun asAUserIShouldSeeTransferringYourAccountDetailsScreen() {
         //      Given    I’m on “Transfer account details” process
         //      And      I am on the "Enter your passphrase" page
@@ -179,16 +183,20 @@ class TransferTest : KoinTest {
         //      Then     I see a “Transferring your account details” page with corresponding title
         onView(withText(LocalizationR.string.transfer_account_title)).check(matches(isDisplayed()))
         //      And      I see a first QR code
-        /* check if any image is loaded into the QR code image view */
-        onView(withId(com.passbolt.mobile.android.feature.setup.R.id.qrCode)).check(matches(
-            withImageViewContainingAnyImage()
-        ))
+        // check if any image is loaded into the QR code image view
+        onView(withId(com.passbolt.mobile.android.feature.setup.R.id.qrCode)).check(
+            matches(
+                withImageViewContainingAnyImage(),
+            ),
+        )
         //      And      I see a “Cancel transfer” primary action button
-        onView(withId(com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.R.id.cancelTransferButton)).check(matches(isDisplayed()))
+        onView(
+            withId(com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.R.id.cancelTransferButton),
+        ).check(matches(isDisplayed()))
     }
 
-    @Test
     // https://passbolt.testrail.io/index.php?/cases/view/8153
+    @Test
     fun asAUserINeedToConfirmToStopTheQrCodePresentation() {
         //      Given   I’m on a “Transferring your account details” page
         onView(withId(com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.R.id.startTransferButton)).perform(click())
@@ -211,8 +219,8 @@ class TransferTest : KoinTest {
             .check(matches(ViewMatchers.isClickable()))
     }
 
-    @Test
     // https://passbolt.testrail.io/index.php?/cases/view/8154
+    @Test
     fun asAUserICanStopTheQrCodePresentation() {
         //       Given   I’m on a “Transferring your account details” page
         //       And     I see a prompt with “Cancel”                   // ** tested before
@@ -230,8 +238,8 @@ class TransferTest : KoinTest {
         onView(withText(LocalizationR.string.transfer_account_summary_cancelled)).check(matches(isDisplayed()))
     }
 
-    @Test
     // https://passbolt.testrail.io/index.php?/cases/view/8156
+    @Test
     fun asAUserIShouldSeeAFailedFeedbackInCaseOfErrorDuringQrCodesSequence() {
         //      Given   I’m on a “Transferring your account details” page
         //      When    there is an error during the transfer process
@@ -248,8 +256,8 @@ class TransferTest : KoinTest {
         onView(withId(com.passbolt.mobile.android.feature.autofill.R.id.button)).check(matches(isDisplayed()))
     }
 
-    @Test
     // https://passbolt.testrail.io/index.php?/cases/view/C8157
+    @Test
     fun asAUserICouldGoBackFromAFailedFeedbackInCaseOfErrorDuringQrCodesSequence() {
         //      Given   I’m on a “Transferring your account details” page
         //      And     there was an error during the transfer process

@@ -34,14 +34,14 @@ import javax.xml.validation.Schema
  * Initializes the local JSON schema repository.
  */
 @Suppress("unused")
-class LocalJsonSchemasInitializer : Initializer<Unit>, KoinComponent {
-
+class LocalJsonSchemasInitializer :
+    Initializer<Unit>,
+    KoinComponent {
     private val jsonSchemaRepository: JsonSchemaRepository<Schema> by inject()
 
     override fun create(context: Context) {
         jsonSchemaRepository.loadLocalSchemas()
     }
 
-    override fun dependencies(): MutableList<Class<out Initializer<*>>> =
-        mutableListOf(KoinInitializer::class.java)
+    override fun dependencies(): MutableList<Class<out Initializer<*>>> = mutableListOf(KoinInitializer::class.java)
 }

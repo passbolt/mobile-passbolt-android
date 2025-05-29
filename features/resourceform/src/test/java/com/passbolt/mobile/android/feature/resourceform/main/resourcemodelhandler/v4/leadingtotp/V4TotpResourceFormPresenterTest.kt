@@ -3,12 +3,12 @@ package com.passbolt.mobile.android.feature.resourceform.main.resourcemodelhandl
 import com.google.common.truth.Truth.assertThat
 import com.passbolt.mobile.android.core.fulldatarefresh.DataRefreshStatus
 import com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor.Output.Success
+import com.passbolt.mobile.android.core.resources.usecase.GetDefaultCreateContentTypeUseCase
 import com.passbolt.mobile.android.feature.resourceform.main.ResourceFormContract
 import com.passbolt.mobile.android.feature.resourceform.main.ResourceModelHandler
 import com.passbolt.mobile.android.feature.resourceform.main.mockFullDataRefreshExecutor
 import com.passbolt.mobile.android.feature.resourceform.main.mockGetDefaultCreateContentTypeUseCase
 import com.passbolt.mobile.android.feature.resourceform.main.testResourceFormModule
-import com.passbolt.mobile.android.core.resources.usecase.GetDefaultCreateContentTypeUseCase
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType
 import com.passbolt.mobile.android.ui.LeadingContentType
 import com.passbolt.mobile.android.ui.MetadataTypeModel
@@ -55,54 +55,57 @@ import org.skyscreamer.jsonassert.JSONAssert
  */
 
 class V4TotpResourceFormPresenterTest : KoinTest {
-
     private val presenter: ResourceFormContract.Presenter by inject()
     private val view: ResourceFormContract.View = mock()
     private val resourceModelHandler: ResourceModelHandler by inject()
 
     @get:Rule
-    val koinTestRule = KoinTestRule.create {
-        printLogger(Level.ERROR)
-        modules(testResourceFormModule)
-    }
+    val koinTestRule =
+        KoinTestRule.create {
+            printLogger(Level.ERROR)
+            modules(testResourceFormModule)
+        }
 
     @Before
-    fun setUp() = runTest {
-        mockFullDataRefreshExecutor.stub {
-            onBlocking { dataRefreshStatusFlow }.doReturn(flowOf(DataRefreshStatus.Finished(Success)))
-        }
-        mockGetDefaultCreateContentTypeUseCase.stub {
-            onBlocking { execute(any()) }.thenReturn(
-                GetDefaultCreateContentTypeUseCase.Output(
-                    metadataType = MetadataTypeModel.V4,
-                    contentType = ContentType.Totp
+    fun setUp() =
+        runTest {
+            mockFullDataRefreshExecutor.stub {
+                onBlocking { dataRefreshStatusFlow }.doReturn(flowOf(DataRefreshStatus.Finished(Success)))
+            }
+            mockGetDefaultCreateContentTypeUseCase.stub {
+                onBlocking { execute(any()) }.thenReturn(
+                    GetDefaultCreateContentTypeUseCase.Output(
+                        metadataType = MetadataTypeModel.V4,
+                        contentType = ContentType.Totp,
+                    ),
                 )
+            }
+            presenter.attach(view)
+            presenter.argsRetrieved(
+                ResourceFormMode.Create(
+                    leadingContentType = LeadingContentType.TOTP,
+                    parentFolderId = null,
+                ),
             )
         }
-        presenter.attach(view)
-        presenter.argsRetrieved(
-            ResourceFormMode.Create(
-                leadingContentType = LeadingContentType.TOTP,
-                parentFolderId = null
-            )
-        )
-    }
 
     @Test
-    fun `leading content type totp should initialize empty totp model`() = runTest {
-        assertThat(resourceModelHandler.contentType).isEqualTo(ContentType.Totp)
-        assertThat(resourceModelHandler.metadataType).isEqualTo(MetadataTypeModel.V4)
+    fun `leading content type totp should initialize empty totp model`() =
+        runTest {
+            assertThat(resourceModelHandler.contentType).isEqualTo(ContentType.Totp)
+            assertThat(resourceModelHandler.metadataType).isEqualTo(MetadataTypeModel.V4)
 
-        JSONAssert.assertEquals(
-            """
+            JSONAssert.assertEquals(
+                """
                 {
                     "name": ""
                 }
-            """.trimIndent(),
-            resourceModelHandler.resourceMetadata.json, STRICT_MODE_ENABLED
-        )
-        JSONAssert.assertEquals(
-            """
+                """.trimIndent(),
+                resourceModelHandler.resourceMetadata.json,
+                STRICT_MODE_ENABLED,
+            )
+            JSONAssert.assertEquals(
+                """
                 {
                     "totp": {
                         "secret_key": "",
@@ -111,50 +114,54 @@ class V4TotpResourceFormPresenterTest : KoinTest {
                         "algorithm": ${OtpParseResult.OtpQr.Algorithm.DEFAULT.name}
                     }
                 }
-            """.trimIndent(),
-            resourceModelHandler.resourceSecret.json, STRICT_MODE_ENABLED
-        )
-    }
+                """.trimIndent(),
+                resourceModelHandler.resourceSecret.json,
+                STRICT_MODE_ENABLED,
+            )
+        }
 
     @Test
-    fun `edit metadata should not change content type and apply changes`() = runTest {
-        val mockName = "test name"
-        val mockMainUri = "test uri"
+    fun `edit metadata should not change content type and apply changes`() =
+        runTest {
+            val mockName = "test name"
+            val mockMainUri = "test uri"
 
-        presenter.nameTextChanged(mockName)
-        presenter.totpUrlChanged(mockMainUri)
+            presenter.nameTextChanged(mockName)
+            presenter.totpUrlChanged(mockMainUri)
 
-        JSONAssert.assertEquals(
-            """
+            JSONAssert.assertEquals(
+                """
                 {
                     "name": "$mockName",
                     "uri": "$mockMainUri"
                 }
-            """.trimIndent(),
-            resourceModelHandler.resourceMetadata.json, STRICT_MODE_ENABLED
-        )
-    }
+                """.trimIndent(),
+                resourceModelHandler.resourceMetadata.json,
+                STRICT_MODE_ENABLED,
+            )
+        }
 
     @Test
-    fun `add totp should not change content type and apply changes`() = runTest {
-        val mockTotpSecret = "test secret"
-        val mockPeriod = "123"
-        val mockDigits = "456"
-        val mockAlgorithm = OtpParseResult.OtpQr.Algorithm.SHA512.name
+    fun `add totp should not change content type and apply changes`() =
+        runTest {
+            val mockTotpSecret = "test secret"
+            val mockPeriod = "123"
+            val mockDigits = "456"
+            val mockAlgorithm = OtpParseResult.OtpQr.Algorithm.SHA512.name
 
-        presenter.totpSecretChanged(mockTotpSecret)
-        presenter.totpAdvancedSettingsChanged(
-            TotpUiModel(
-                secret = "",
-                issuer = "",
-                algorithm = mockAlgorithm,
-                expiry = mockPeriod,
-                length = mockDigits
+            presenter.totpSecretChanged(mockTotpSecret)
+            presenter.totpAdvancedSettingsChanged(
+                TotpUiModel(
+                    secret = "",
+                    issuer = "",
+                    algorithm = mockAlgorithm,
+                    expiry = mockPeriod,
+                    length = mockDigits,
+                ),
             )
-        )
 
-        JSONAssert.assertEquals(
-            """
+            JSONAssert.assertEquals(
+                """
                 {
                     "totp": {
                         "secret_key": "$mockTotpSecret",
@@ -163,47 +170,50 @@ class V4TotpResourceFormPresenterTest : KoinTest {
                         "algorithm": "$mockAlgorithm"
                     }
                 }
-            """.trimIndent(),
-            resourceModelHandler.resourceSecret.json, STRICT_MODE_ENABLED
-        )
-    }
+                """.trimIndent(),
+                resourceModelHandler.resourceSecret.json,
+                STRICT_MODE_ENABLED,
+            )
+        }
 
     @Test
-    fun `add note should change content type and apply changes`() = runTest {
-        val mockName = "test name"
-        val mockUrl = "test url"
-        val mockTotpSecret = "test secret"
-        val mockPeriod = "123"
-        val mockDigits = "456"
-        val mockAlgorithm = OtpParseResult.OtpQr.Algorithm.SHA512.name
-        val mockNote = "test note"
+    fun `add note should change content type and apply changes`() =
+        runTest {
+            val mockName = "test name"
+            val mockUrl = "test url"
+            val mockTotpSecret = "test secret"
+            val mockPeriod = "123"
+            val mockDigits = "456"
+            val mockAlgorithm = OtpParseResult.OtpQr.Algorithm.SHA512.name
+            val mockNote = "test note"
 
-        presenter.nameTextChanged(mockName)
-        presenter.totpUrlChanged(mockUrl)
-        presenter.totpSecretChanged(mockTotpSecret)
-        presenter.totpAdvancedSettingsChanged(
-            TotpUiModel(
-                secret = "",
-                issuer = "",
-                algorithm = mockAlgorithm,
-                expiry = mockPeriod,
-                length = mockDigits
+            presenter.nameTextChanged(mockName)
+            presenter.totpUrlChanged(mockUrl)
+            presenter.totpSecretChanged(mockTotpSecret)
+            presenter.totpAdvancedSettingsChanged(
+                TotpUiModel(
+                    secret = "",
+                    issuer = "",
+                    algorithm = mockAlgorithm,
+                    expiry = mockPeriod,
+                    length = mockDigits,
+                ),
             )
-        )
-        presenter.noteChanged(mockNote)
+            presenter.noteChanged(mockNote)
 
-        assertThat(resourceModelHandler.contentType).isEqualTo(ContentType.PasswordDescriptionTotp)
-        JSONAssert.assertEquals(
-            """
+            assertThat(resourceModelHandler.contentType).isEqualTo(ContentType.PasswordDescriptionTotp)
+            JSONAssert.assertEquals(
+                """
                 {
                     "name": "$mockName",
                     "uri": "$mockUrl"
                 }
-            """.trimIndent(),
-            resourceModelHandler.resourceMetadata.json, STRICT_MODE_ENABLED
-        )
-        JSONAssert.assertEquals(
-            """
+                """.trimIndent(),
+                resourceModelHandler.resourceMetadata.json,
+                STRICT_MODE_ENABLED,
+            )
+            JSONAssert.assertEquals(
+                """
                 {
                     "description": "$mockNote",
                     "password": "",
@@ -214,56 +224,59 @@ class V4TotpResourceFormPresenterTest : KoinTest {
                         "algorithm": "$mockAlgorithm"
                     }
                 }
-            """.trimIndent(),
-            resourceModelHandler.resourceSecret.json, STRICT_MODE_ENABLED
-        )
-    }
+                """.trimIndent(),
+                resourceModelHandler.resourceSecret.json,
+                STRICT_MODE_ENABLED,
+            )
+        }
 
     @Test
-    fun `add password should change content type and apply changes`() = runTest {
-        val mockName = "test name"
-        val mockUrl = "test url"
-        val mockTotpSecret = "test secret"
-        val mockPeriod = "123"
-        val mockDigits = "456"
-        val mockAlgorithm = OtpParseResult.OtpQr.Algorithm.SHA512.name
-        val mockPassword = "test password"
-        val mockMainUri = "test url changed"
-        val mockUsername = "test username"
+    fun `add password should change content type and apply changes`() =
+        runTest {
+            val mockName = "test name"
+            val mockUrl = "test url"
+            val mockTotpSecret = "test secret"
+            val mockPeriod = "123"
+            val mockDigits = "456"
+            val mockAlgorithm = OtpParseResult.OtpQr.Algorithm.SHA512.name
+            val mockPassword = "test password"
+            val mockMainUri = "test url changed"
+            val mockUsername = "test username"
 
-        presenter.nameTextChanged(mockName)
-        presenter.totpUrlChanged(mockUrl)
-        presenter.totpSecretChanged(mockTotpSecret)
-        presenter.totpAdvancedSettingsChanged(
-            TotpUiModel(
-                secret = "",
-                issuer = "",
-                algorithm = mockAlgorithm,
-                expiry = mockPeriod,
-                length = mockDigits
+            presenter.nameTextChanged(mockName)
+            presenter.totpUrlChanged(mockUrl)
+            presenter.totpSecretChanged(mockTotpSecret)
+            presenter.totpAdvancedSettingsChanged(
+                TotpUiModel(
+                    secret = "",
+                    issuer = "",
+                    algorithm = mockAlgorithm,
+                    expiry = mockPeriod,
+                    length = mockDigits,
+                ),
             )
-        )
-        presenter.passwordChanged(
-            PasswordUiModel(
-                password = mockPassword,
-                mainUri = mockMainUri,
-                username = mockUsername
+            presenter.passwordChanged(
+                PasswordUiModel(
+                    password = mockPassword,
+                    mainUri = mockMainUri,
+                    username = mockUsername,
+                ),
             )
-        )
 
-        assertThat(resourceModelHandler.contentType).isEqualTo(ContentType.PasswordDescriptionTotp)
-        JSONAssert.assertEquals(
-            """
+            assertThat(resourceModelHandler.contentType).isEqualTo(ContentType.PasswordDescriptionTotp)
+            JSONAssert.assertEquals(
+                """
                 {
                     "name": "$mockName",
                     "username": "$mockUsername",
                     "uri": "$mockMainUri"
                 }
-            """.trimIndent(),
-            resourceModelHandler.resourceMetadata.json, STRICT_MODE_ENABLED
-        )
-        JSONAssert.assertEquals(
-            """
+                """.trimIndent(),
+                resourceModelHandler.resourceMetadata.json,
+                STRICT_MODE_ENABLED,
+            )
+            JSONAssert.assertEquals(
+                """
                 {
                     "description": "",
                     "password": "$mockPassword",
@@ -274,36 +287,40 @@ class V4TotpResourceFormPresenterTest : KoinTest {
                         "algorithm": "$mockAlgorithm"
                     }
                 }
-            """.trimIndent(),
-            resourceModelHandler.resourceSecret.json, STRICT_MODE_ENABLED
-        )
-    }
+                """.trimIndent(),
+                resourceModelHandler.resourceSecret.json,
+                STRICT_MODE_ENABLED,
+            )
+        }
 
     @Test
-    fun `scan totp should apply model changes`() = runTest {
-        val scannedTotp = OtpParseResult.OtpQr.TotpQr(
-            label = "label",
-            secret = "secret",
-            issuer = "issuer",
-            algorithm = OtpParseResult.OtpQr.Algorithm.SHA1,
-            digits = 6,
-            period = 30
-        )
+    fun `scan totp should apply model changes`() =
+        runTest {
+            val scannedTotp =
+                OtpParseResult.OtpQr.TotpQr(
+                    label = "label",
+                    secret = "secret",
+                    issuer = "issuer",
+                    algorithm = OtpParseResult.OtpQr.Algorithm.SHA1,
+                    digits = 6,
+                    period = 30,
+                )
 
-        presenter.totpScanned(isManualCreationChosen = false, scannedTotp = scannedTotp)
+            presenter.totpScanned(isManualCreationChosen = false, scannedTotp = scannedTotp)
 
-        assertThat(resourceModelHandler.contentType).isEqualTo(ContentType.Totp)
-        JSONAssert.assertEquals(
-            """
+            assertThat(resourceModelHandler.contentType).isEqualTo(ContentType.Totp)
+            JSONAssert.assertEquals(
+                """
                 {
                     "name": "${scannedTotp.label}",
                     "uri": "${scannedTotp.issuer}"
                 }
-            """.trimIndent(),
-            resourceModelHandler.resourceMetadata.json, STRICT_MODE_ENABLED
-        )
-        JSONAssert.assertEquals(
-            """
+                """.trimIndent(),
+                resourceModelHandler.resourceMetadata.json,
+                STRICT_MODE_ENABLED,
+            )
+            JSONAssert.assertEquals(
+                """
                 {
                     "totp": {
                         "secret_key": "${scannedTotp.secret}",
@@ -312,30 +329,33 @@ class V4TotpResourceFormPresenterTest : KoinTest {
                         "algorithm": "${scannedTotp.algorithm.name}"
                     }
                 }
-            """.trimIndent(),
-            resourceModelHandler.resourceSecret.json, STRICT_MODE_ENABLED
-        )
-    }
+                """.trimIndent(),
+                resourceModelHandler.resourceSecret.json,
+                STRICT_MODE_ENABLED,
+            )
+        }
 
     @Test
-    fun `add metadata description to totp description should not be possible`() = runTest {
-        val mockName = "test name"
-        val mockMetadataDescription = "md description"
+    fun `add metadata description to totp description should not be possible`() =
+        runTest {
+            val mockName = "test name"
+            val mockMetadataDescription = "md description"
 
-        presenter.nameTextChanged(mockName)
-        presenter.metadataDescriptionChanged(mockMetadataDescription)
+            presenter.nameTextChanged(mockName)
+            presenter.metadataDescriptionChanged(mockMetadataDescription)
 
-        assertThat(resourceModelHandler.contentType).isEqualTo(ContentType.Totp)
-        JSONAssert.assertEquals(
-            """
+            assertThat(resourceModelHandler.contentType).isEqualTo(ContentType.Totp)
+            JSONAssert.assertEquals(
+                """
                 {
                     "name": "$mockName",
                 }
-            """.trimIndent(),
-            resourceModelHandler.resourceMetadata.json, STRICT_MODE_ENABLED
-        )
-        JSONAssert.assertEquals(
-            """
+                """.trimIndent(),
+                resourceModelHandler.resourceMetadata.json,
+                STRICT_MODE_ENABLED,
+            )
+            JSONAssert.assertEquals(
+                """
                 {
                     "totp": {
                         "secret_key": "",
@@ -344,10 +364,11 @@ class V4TotpResourceFormPresenterTest : KoinTest {
                         "algorithm": ${OtpParseResult.OtpQr.Algorithm.DEFAULT.name}
                     }
                 }
-            """.trimIndent(),
-            resourceModelHandler.resourceSecret.json, STRICT_MODE_ENABLED
-        )
-    }
+                """.trimIndent(),
+                resourceModelHandler.resourceSecret.json,
+                STRICT_MODE_ENABLED,
+            )
+        }
 
     private companion object {
         private const val STRICT_MODE_ENABLED = true

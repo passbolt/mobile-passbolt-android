@@ -44,7 +44,7 @@ fun Module.resourceTagsModule() {
         }
         scoped(named(TAGS_ADAPTER)) {
             FastAdapter.with(
-                get<ItemAdapter<GroupItem>>(named(TAGS_ITEM_ADAPTER))
+                get<ItemAdapter<GroupItem>>(named(TAGS_ITEM_ADAPTER)),
             )
         }
     }

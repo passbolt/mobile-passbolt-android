@@ -43,24 +43,23 @@ import org.mockito.kotlin.whenever
 
 @ExperimentalCoroutinesApi
 class SettingsPresenterTest : KoinTest {
-
     private val presenter: SettingsContract.Presenter by inject()
     private val view = mock<SettingsContract.View>()
 
     @get:Rule
-    val koinTestRule = KoinTestRule.create {
-        printLogger(Level.ERROR)
-        modules(testModule)
-    }
+    val koinTestRule =
+        KoinTestRule.create {
+            printLogger(Level.ERROR)
+            modules(testModule)
+        }
 
     @Before
     fun setup() {
         whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
-            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
+            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success)),
         )
         presenter.attach(view)
     }
-
 
     @Test
     fun `navigation should work correct`() {

@@ -40,7 +40,6 @@ import kotlin.test.assertTrue
  */
 
 class OpenPgpTest : KoinTest {
-
     private val openPgp: OpenPgp by inject()
 
     private lateinit var gracePrivateKey: ByteArray
@@ -51,10 +50,11 @@ class OpenPgpTest : KoinTest {
     private lateinit var pgpMessageSignedByGrace: ByteArray
 
     @get:Rule
-    val koinTestRule = KoinTestRule.create {
-        printLogger(Level.ERROR)
-        modules(testOpenPgpModule)
-    }
+    val koinTestRule =
+        KoinTestRule.create {
+            printLogger(Level.ERROR)
+            modules(testOpenPgpModule)
+        }
 
     @Before
     fun setup() {
@@ -69,219 +69,264 @@ class OpenPgpTest : KoinTest {
     }
 
     @Test
-    fun test_messageEncryptionDecryption() = runBlocking {
-        val encrypted = openPgp.encryptSignMessageArmored(
-            gracePublicKey,
-            String(gracePrivateKey),
-            GRACE_KEY_CORRECT_PASSPHRASE,
-            PLAIN_MESSAGE
-        )
+    fun test_messageEncryptionDecryption() =
+        runBlocking {
+            val encrypted =
+                openPgp.encryptSignMessageArmored(
+                    gracePublicKey,
+                    String(gracePrivateKey),
+                    GRACE_KEY_CORRECT_PASSPHRASE,
+                    PLAIN_MESSAGE,
+                )
 
-        assertIsOpenPgpSuccessResult(encrypted)
-        val decrypted = openPgp.decryptVerifyMessageArmored(
-            gracePublicKey,
-            String(gracePrivateKey),
-            GRACE_KEY_CORRECT_PASSPHRASE,
-            (encrypted as OpenPgpResult.Result).result
-        )
+            assertIsOpenPgpSuccessResult(encrypted)
+            val decrypted =
+                openPgp.decryptVerifyMessageArmored(
+                    gracePublicKey,
+                    String(gracePrivateKey),
+                    GRACE_KEY_CORRECT_PASSPHRASE,
+                    (encrypted as OpenPgpResult.Result).result,
+                )
 
-        assertIsOpenPgpSuccessResult(decrypted)
-        assertThat((decrypted as OpenPgpResult.Result).result).isEqualTo(PLAIN_MESSAGE)
-    }
-
-    @Test
-    fun test_messageEncryptionDecryptionWithPkGeneration() = runBlocking {
-        val encrypted = openPgp.encryptSignMessageArmored(
-            String(gracePrivateKey),
-            GRACE_KEY_CORRECT_PASSPHRASE,
-            PLAIN_MESSAGE
-        )
-
-        assertIsOpenPgpSuccessResult(encrypted)
-        val decrypted = openPgp.decryptVerifyMessageArmored(
-            String(gracePrivateKey),
-            GRACE_KEY_CORRECT_PASSPHRASE,
-            (encrypted as OpenPgpResult.Result).result
-        )
-
-        assertIsOpenPgpSuccessResult(decrypted)
-        assertThat((decrypted as OpenPgpResult.Result).result).isEqualTo(PLAIN_MESSAGE)
-    }
+            assertIsOpenPgpSuccessResult(decrypted)
+            assertThat((decrypted as OpenPgpResult.Result).result).isEqualTo(PLAIN_MESSAGE)
+        }
 
     @Test
-    fun test_messageDecryptionWithIncorrectPassphraseFailsWithCorrectException() = runBlocking {
-        val encrypted = openPgp.encryptSignMessageArmored(
-            gracePublicKey,
-            String(gracePrivateKey),
-            GRACE_KEY_CORRECT_PASSPHRASE,
-            PLAIN_MESSAGE
-        )
-        assertIsOpenPgpSuccessResult(encrypted)
+    fun test_messageEncryptionDecryptionWithPkGeneration() =
+        runBlocking {
+            val encrypted =
+                openPgp.encryptSignMessageArmored(
+                    String(gracePrivateKey),
+                    GRACE_KEY_CORRECT_PASSPHRASE,
+                    PLAIN_MESSAGE,
+                )
 
-        val result = openPgp.decryptVerifyMessageArmored(
-            gracePublicKey,
-            String(gracePrivateKey),
-            GRACE_KEY_WRONG_PASSPHRASE,
-            (encrypted as OpenPgpResult.Result).result
-        )
+            assertIsOpenPgpSuccessResult(encrypted)
+            val decrypted =
+                openPgp.decryptVerifyMessageArmored(
+                    String(gracePrivateKey),
+                    GRACE_KEY_CORRECT_PASSPHRASE,
+                    (encrypted as OpenPgpResult.Result).result,
+                )
 
-        assertIsOpenPgpErrorResult(result)
-    }
-
-    @Test
-    fun test_messageEncryptionWithIncorrectPassphraseFailsWithCorrectException() = runBlocking {
-        val result = openPgp.encryptSignMessageArmored(
-            gracePublicKey,
-            String(gracePrivateKey),
-            GRACE_KEY_WRONG_PASSPHRASE,
-            PLAIN_MESSAGE
-        )
-
-        assertIsOpenPgpErrorResult(result)
-    }
+            assertIsOpenPgpSuccessResult(decrypted)
+            assertThat((decrypted as OpenPgpResult.Result).result).isEqualTo(PLAIN_MESSAGE)
+        }
 
     @Test
-    fun test_keyShouldBeUnlockedWithCorrectPassphrase() = runBlocking {
-        val isUnlocked = openPgp.unlockKey(
-            String(gracePrivateKey),
-            GRACE_KEY_CORRECT_PASSPHRASE
-        )
-        assertIsOpenPgpSuccessResult(isUnlocked)
-        assertTrue((isUnlocked as OpenPgpResult.Result).result)
-    }
+    fun test_messageDecryptionWithIncorrectPassphraseFailsWithCorrectException() =
+        runBlocking {
+            val encrypted =
+                openPgp.encryptSignMessageArmored(
+                    gracePublicKey,
+                    String(gracePrivateKey),
+                    GRACE_KEY_CORRECT_PASSPHRASE,
+                    PLAIN_MESSAGE,
+                )
+            assertIsOpenPgpSuccessResult(encrypted)
+
+            val result =
+                openPgp.decryptVerifyMessageArmored(
+                    gracePublicKey,
+                    String(gracePrivateKey),
+                    GRACE_KEY_WRONG_PASSPHRASE,
+                    (encrypted as OpenPgpResult.Result).result,
+                )
+
+            assertIsOpenPgpErrorResult(result)
+        }
 
     @Test
-    fun test_keyShouldNotBeUnlockedWithWrongPassphrase() = runBlocking {
-        val result = openPgp.unlockKey(
-            String(gracePrivateKey),
-            GRACE_KEY_WRONG_PASSPHRASE
-        )
+    fun test_messageEncryptionWithIncorrectPassphraseFailsWithCorrectException() =
+        runBlocking {
+            val result =
+                openPgp.encryptSignMessageArmored(
+                    gracePublicKey,
+                    String(gracePrivateKey),
+                    GRACE_KEY_WRONG_PASSPHRASE,
+                    PLAIN_MESSAGE,
+                )
 
-        assertIsOpenPgpErrorResult(result)
-    }
-
-    @Test
-    fun test_messageSignatureShouldBeValidForCorrectData() = runBlocking {
-        val result = openPgp.verifyClearTextSignature(
-            adminPublicKey,
-            pgpMessageSignedByAdmin
-        )
-
-        assertIsOpenPgpSuccessResult(result)
-        val verificationResult = (result as OpenPgpResult.Result).result
-        assertThat(verificationResult.isSignatureVerified).isTrue()
-        assertThat(verificationResult.message).isEqualTo(PLAIN_MESSAGE)
-    }
+            assertIsOpenPgpErrorResult(result)
+        }
 
     @Test
-    fun test_messageSignatureShouldBeInvalidForMessageSignedByOther() = runBlocking {
-        val result = openPgp.verifyClearTextSignature(
-            adminPublicKey,
-            pgpMessageSignedByGrace
-        )
-
-        assertIsOpenPgpErrorResult(result)
-    }
-
-    @Test
-    fun test_decryptSessionKeyShouldReturnCorrectKey() = runBlocking {
-        val sessionKey = Crypto.generateSessionKeyAlgo(OpenPgp.SESSION_KEY_ALGORITHM)
-        val sessionKeyHex = sessionKey.key.encodeHex()
-
-        val message = Crypto.pgp().encryption()
-            .sessionKey(sessionKey)
-            .new_()
-            .encrypt(PLAIN_MESSAGE.toByteArray())
-
-        val gracePk = Crypto.newKeyFromArmored(gracePublicKey)
-        val encryptedSessionKey = Crypto.pgp().encryption()
-            .recipient(gracePk)
-            .new_()
-            .encryptSessionKey(sessionKey)
-
-        val splitMessage = Crypto.newPGPSplitMessage(encryptedSessionKey, message.dataPacket)
-        val splitMessageArmored = splitMessage.armor()
-
-        val decryptedSessionKey = openPgp.decryptSessionKey(
-            String(gracePrivateKey), GRACE_KEY_CORRECT_PASSPHRASE, splitMessageArmored
-        )
-
-        assertIsOpenPgpSuccessResult(decryptedSessionKey)
-        assertThat((decryptedSessionKey as OpenPgpResult.Result).result).isEqualTo(sessionKeyHex)
-    }
+    fun test_keyShouldBeUnlockedWithCorrectPassphrase() =
+        runBlocking {
+            val isUnlocked =
+                openPgp.unlockKey(
+                    String(gracePrivateKey),
+                    GRACE_KEY_CORRECT_PASSPHRASE,
+                )
+            assertIsOpenPgpSuccessResult(isUnlocked)
+            assertTrue((isUnlocked as OpenPgpResult.Result).result)
+        }
 
     @Test
-    fun test_decryptMessageArmoredWithSessionKeyShouldReturnMessage() = runBlocking {
-        val sessionKey = Crypto.generateSessionKeyAlgo(OpenPgp.SESSION_KEY_ALGORITHM)
+    fun test_keyShouldNotBeUnlockedWithWrongPassphrase() =
+        runBlocking {
+            val result =
+                openPgp.unlockKey(
+                    String(gracePrivateKey),
+                    GRACE_KEY_WRONG_PASSPHRASE,
+                )
 
-        val message = Crypto.pgp().encryption()
-            .sessionKey(sessionKey)
-            .new_()
-            .encrypt(PLAIN_MESSAGE.toByteArray())
-
-        val gracePk = Crypto.newKeyFromArmored(gracePublicKey)
-        val encryptedSessionKey = Crypto.pgp().encryption()
-            .recipient(gracePk)
-            .new_()
-            .encryptSessionKey(sessionKey)
-
-        val splitMessage = Crypto.newPGPSplitMessage(encryptedSessionKey, message.dataPacket)
-        val splitMessageArmored = splitMessage.armor()
-
-        val decryptedMessage = openPgp.decryptMessageArmored(
-            String(gracePrivateKey), GRACE_KEY_CORRECT_PASSPHRASE, splitMessageArmored
-        )
-
-        assertIsOpenPgpSuccessResult(decryptedMessage)
-        assertThat((decryptedMessage as OpenPgpResult.Result).result).isEqualTo(PLAIN_MESSAGE)
-    }
+            assertIsOpenPgpErrorResult(result)
+        }
 
     @Test
-    fun test_verifyingMessageSignatureForCorrectData() = runBlocking {
-        val graceKey = Crypto.newPrivateKeyFromArmored(String(gracePrivateKey), GRACE_KEY_CORRECT_PASSPHRASE)
+    fun test_messageSignatureShouldBeValidForCorrectData() =
+        runBlocking {
+            val result =
+                openPgp.verifyClearTextSignature(
+                    adminPublicKey,
+                    pgpMessageSignedByAdmin,
+                )
 
-        val encryptionResult = openPgp.encryptSignMessageArmored(
-            adminPublicKey,
-            String(gracePrivateKey),
-            GRACE_KEY_CORRECT_PASSPHRASE,
-            PLAIN_MESSAGE
-        )
-        val pgpMessage = (encryptionResult as OpenPgpResult.Result).result
-
-        val result = openPgp.verifySignature(
-            adminPrivateKey,
-            ADMIN_KEY_CORRECT_PASSPHRASE,
-            gracePublicKey,
-            pgpMessage.toByteArray()
-        )
-
-        assertIsOpenPgpSuccessResult(result)
-        val verifiedSignature = (result as OpenPgpResult.Result).result
-        assertThat(verifiedSignature.decryptedMessage).isEqualTo(PLAIN_MESSAGE)
-        assertThat(verifiedSignature.signatureCreationTimestampSeconds).isGreaterThan(0L)
-        assertThat(verifiedSignature.signatureKeyFingerprint).isEqualTo(graceKey.fingerprint)
-        assertThat(verifiedSignature.signatureKeyHexKeyID).isEqualTo(graceKey.hexKeyID)
-    }
+            assertIsOpenPgpSuccessResult(result)
+            val verificationResult = (result as OpenPgpResult.Result).result
+            assertThat(verificationResult.isSignatureVerified).isTrue()
+            assertThat(verificationResult.message).isEqualTo(PLAIN_MESSAGE)
+        }
 
     @Test
-    fun test_verifyingMessageSignatureForIncorrectSignerShouldReturnFailure() = runBlocking {
-        val encryptionResult = openPgp.encryptSignMessageArmored(
-            gracePublicKey,
-            String(gracePrivateKey),
-            GRACE_KEY_CORRECT_PASSPHRASE,
-            PLAIN_MESSAGE
-        )
-        val pgpMessage = (encryptionResult as OpenPgpResult.Result).result
+    fun test_messageSignatureShouldBeInvalidForMessageSignedByOther() =
+        runBlocking {
+            val result =
+                openPgp.verifyClearTextSignature(
+                    adminPublicKey,
+                    pgpMessageSignedByGrace,
+                )
 
-        val result = openPgp.verifySignature(
-            adminPrivateKey,
-            ADMIN_KEY_CORRECT_PASSPHRASE,
-            gracePublicKey,
-            pgpMessage.toByteArray()
-        )
+            assertIsOpenPgpErrorResult(result)
+        }
 
-        assertIsOpenPgpErrorResult(result)
-    }
+    @Test
+    fun test_decryptSessionKeyShouldReturnCorrectKey() =
+        runBlocking {
+            val sessionKey = Crypto.generateSessionKeyAlgo(OpenPgp.SESSION_KEY_ALGORITHM)
+            val sessionKeyHex = sessionKey.key.encodeHex()
+
+            val message =
+                Crypto
+                    .pgp()
+                    .encryption()
+                    .sessionKey(sessionKey)
+                    .new_()
+                    .encrypt(PLAIN_MESSAGE.toByteArray())
+
+            val gracePk = Crypto.newKeyFromArmored(gracePublicKey)
+            val encryptedSessionKey =
+                Crypto
+                    .pgp()
+                    .encryption()
+                    .recipient(gracePk)
+                    .new_()
+                    .encryptSessionKey(sessionKey)
+
+            val splitMessage = Crypto.newPGPSplitMessage(encryptedSessionKey, message.dataPacket)
+            val splitMessageArmored = splitMessage.armor()
+
+            val decryptedSessionKey =
+                openPgp.decryptSessionKey(
+                    String(gracePrivateKey),
+                    GRACE_KEY_CORRECT_PASSPHRASE,
+                    splitMessageArmored,
+                )
+
+            assertIsOpenPgpSuccessResult(decryptedSessionKey)
+            assertThat((decryptedSessionKey as OpenPgpResult.Result).result).isEqualTo(sessionKeyHex)
+        }
+
+    @Test
+    fun test_decryptMessageArmoredWithSessionKeyShouldReturnMessage() =
+        runBlocking {
+            val sessionKey = Crypto.generateSessionKeyAlgo(OpenPgp.SESSION_KEY_ALGORITHM)
+
+            val message =
+                Crypto
+                    .pgp()
+                    .encryption()
+                    .sessionKey(sessionKey)
+                    .new_()
+                    .encrypt(PLAIN_MESSAGE.toByteArray())
+
+            val gracePk = Crypto.newKeyFromArmored(gracePublicKey)
+            val encryptedSessionKey =
+                Crypto
+                    .pgp()
+                    .encryption()
+                    .recipient(gracePk)
+                    .new_()
+                    .encryptSessionKey(sessionKey)
+
+            val splitMessage = Crypto.newPGPSplitMessage(encryptedSessionKey, message.dataPacket)
+            val splitMessageArmored = splitMessage.armor()
+
+            val decryptedMessage =
+                openPgp.decryptMessageArmored(
+                    String(gracePrivateKey),
+                    GRACE_KEY_CORRECT_PASSPHRASE,
+                    splitMessageArmored,
+                )
+
+            assertIsOpenPgpSuccessResult(decryptedMessage)
+            assertThat((decryptedMessage as OpenPgpResult.Result).result).isEqualTo(PLAIN_MESSAGE)
+        }
+
+    @Test
+    fun test_verifyingMessageSignatureForCorrectData() =
+        runBlocking {
+            val graceKey = Crypto.newPrivateKeyFromArmored(String(gracePrivateKey), GRACE_KEY_CORRECT_PASSPHRASE)
+
+            val encryptionResult =
+                openPgp.encryptSignMessageArmored(
+                    adminPublicKey,
+                    String(gracePrivateKey),
+                    GRACE_KEY_CORRECT_PASSPHRASE,
+                    PLAIN_MESSAGE,
+                )
+            val pgpMessage = (encryptionResult as OpenPgpResult.Result).result
+
+            val result =
+                openPgp.verifySignature(
+                    adminPrivateKey,
+                    ADMIN_KEY_CORRECT_PASSPHRASE,
+                    gracePublicKey,
+                    pgpMessage.toByteArray(),
+                )
+
+            assertIsOpenPgpSuccessResult(result)
+            val verifiedSignature = (result as OpenPgpResult.Result).result
+            assertThat(verifiedSignature.decryptedMessage).isEqualTo(PLAIN_MESSAGE)
+            assertThat(verifiedSignature.signatureCreationTimestampSeconds).isGreaterThan(0L)
+            assertThat(verifiedSignature.signatureKeyFingerprint).isEqualTo(graceKey.fingerprint)
+            assertThat(verifiedSignature.signatureKeyHexKeyID).isEqualTo(graceKey.hexKeyID)
+        }
+
+    @Test
+    fun test_verifyingMessageSignatureForIncorrectSignerShouldReturnFailure() =
+        runBlocking {
+            val encryptionResult =
+                openPgp.encryptSignMessageArmored(
+                    gracePublicKey,
+                    String(gracePrivateKey),
+                    GRACE_KEY_CORRECT_PASSPHRASE,
+                    PLAIN_MESSAGE,
+                )
+            val pgpMessage = (encryptionResult as OpenPgpResult.Result).result
+
+            val result =
+                openPgp.verifySignature(
+                    adminPrivateKey,
+                    ADMIN_KEY_CORRECT_PASSPHRASE,
+                    gracePublicKey,
+                    pgpMessage.toByteArray(),
+                )
+
+            assertIsOpenPgpErrorResult(result)
+        }
 
     private fun <T> assertIsOpenPgpSuccessResult(value: OpenPgpResult<T>) {
         assertThat(value).isInstanceOf(OpenPgpResult.Result::class.java)

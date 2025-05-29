@@ -30,12 +30,12 @@ internal fun Module.usersApiModule() {
     single {
         UsersRepository(
             usersDataSource = get(),
-            responseHandler = get()
+            responseHandler = get(),
         )
     }
     single<UsersDataSource> {
         UsersRemoteDataSource(
-            usersApi = get()
+            usersApi = get(),
         )
     }
     single {

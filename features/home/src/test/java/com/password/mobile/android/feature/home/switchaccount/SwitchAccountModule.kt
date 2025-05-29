@@ -16,34 +16,51 @@ import org.koin.dsl.module
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 
-internal val accountsList = listOf(
-    Account(
-        "selected", "first", "last", "acc@passbolt.com", null, "pasbolt.com", "id1", "label1"
-    ),
-    Account(
-        "second", "second", "last", "acc@passbolt.com", null, "pasbolt.com", "id2", "label2"
+internal val accountsList =
+    listOf(
+        Account(
+            "selected",
+            "first",
+            "last",
+            "acc@passbolt.com",
+            null,
+            "pasbolt.com",
+            "id1",
+            "label1",
+        ),
+        Account(
+            "second",
+            "second",
+            "last",
+            "acc@passbolt.com",
+            null,
+            "pasbolt.com",
+            "id2",
+            "label2",
+        ),
     )
-)
-internal val mockGetAllAccountsDataUseCase = mock<GetAllAccountsDataUseCase> {
-    on { execute(Unit) }.doReturn(GetAllAccountsDataUseCase.Output(accountsList))
-}
+internal val mockGetAllAccountsDataUseCase =
+    mock<GetAllAccountsDataUseCase> {
+        on { execute(Unit) }.doReturn(GetAllAccountsDataUseCase.Output(accountsList))
+    }
 internal val mockSignOutUseCase = mock<SignOutUseCase>()
 internal val mockGetSelectedAccountUseCase = mock<GetSelectedAccountUseCase>()
 internal val switchAccountModelMapper = SwitchAccountModelMapper(SwitchAccountUiModelComparator())
 internal val mockFullDataRefreshExecutor = mock<FullDataRefreshExecutor>()
 
 @ExperimentalCoroutinesApi
-val testSwitchAccountModule = module {
-    factory<CoroutineLaunchContext> { TestCoroutineLaunchContext() }
-    factory<SwitchAccountContract.Presenter> {
-        SwitchAccountPresenter(
-            coroutineLaunchContext = get(),
-            getAllAccountsDataUseCase = mockGetAllAccountsDataUseCase,
-            switchAccountModelMapper = switchAccountModelMapper,
-            signOutUseCase = mockSignOutUseCase,
-            saveSelectedAccountUseCase = mock(),
-            fullDataRefreshExecutor = mockFullDataRefreshExecutor,
-            getSelectedAccountUseCase = mockGetSelectedAccountUseCase
-        )
+val testSwitchAccountModule =
+    module {
+        factory<CoroutineLaunchContext> { TestCoroutineLaunchContext() }
+        factory<SwitchAccountContract.Presenter> {
+            SwitchAccountPresenter(
+                coroutineLaunchContext = get(),
+                getAllAccountsDataUseCase = mockGetAllAccountsDataUseCase,
+                switchAccountModelMapper = switchAccountModelMapper,
+                signOutUseCase = mockSignOutUseCase,
+                saveSelectedAccountUseCase = mock(),
+                fullDataRefreshExecutor = mockFullDataRefreshExecutor,
+                getSelectedAccountUseCase = mockGetSelectedAccountUseCase,
+            )
+        }
     }
-}

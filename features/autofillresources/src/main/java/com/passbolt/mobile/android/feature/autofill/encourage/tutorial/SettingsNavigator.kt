@@ -28,7 +28,6 @@ import android.provider.Settings
  * @since v1.0
  */
 class SettingsNavigator {
-
     fun navigateToAppSettings(context: Context) {
         val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)

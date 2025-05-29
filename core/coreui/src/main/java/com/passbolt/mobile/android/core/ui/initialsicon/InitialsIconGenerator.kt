@@ -8,15 +8,18 @@ import com.amulyakhare.textdrawable.TextDrawable
 import com.amulyakhare.textdrawable.util.ColorGenerator
 
 class InitialsIconGenerator(
-    private val font: Typeface
+    private val font: Typeface,
 ) {
-
-    fun generate(name: String, initials: String): Drawable {
+    fun generate(
+        name: String,
+        initials: String,
+    ): Drawable {
         val generator = ColorGenerator.MATERIAL
         val generatedColor = generator.getColor(name)
         val color = ColorUtils.blendARGB(generatedColor, Color.WHITE, LIGHT_RATIO)
 
-        return TextDrawable.builder()
+        return TextDrawable
+            .builder()
             .beginConfig()
             .textColor(ColorUtils.blendARGB(color, generatedColor, DARK_RATIO))
             .useFont(font)

@@ -27,22 +27,34 @@ import com.passbolt.mobile.android.ui.TotpUiModel
  * @since v1.0
  */
 interface TotpAdvancedSettingsFormContract {
-
     interface View : BaseContract.View {
         fun goBackWithResult(totpModel: TotpUiModel)
+
         fun showCreateTitle()
+
         fun showExpiry(expiry: String)
+
         fun showLength(length: String)
+
         fun showAlgorithm(algorithm: String)
+
         fun showTotpPeriodError()
+
         fun showEditTitle(resourceName: String)
     }
 
     interface Presenter : BaseContract.Presenter<View> {
         fun applyClick()
-        fun argsRetrieved(mode: ResourceFormMode, totpUiModel: TotpUiModel)
+
+        fun argsRetrieved(
+            mode: ResourceFormMode,
+            totpUiModel: TotpUiModel,
+        )
+
         fun totpPeriodChanged(period: String)
+
         fun totpDigitsChanged(digits: String)
+
         fun totpAlgorithmChanged(algorithm: String)
     }
 }

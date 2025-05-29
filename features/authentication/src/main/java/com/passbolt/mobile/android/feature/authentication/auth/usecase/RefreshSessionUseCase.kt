@@ -41,41 +41,45 @@ class RefreshSessionUseCase(
     private val getAccountDataUseCase: GetAccountDataUseCase,
     private val getSessionUseCase: GetSessionUseCase,
     private val saveSessionUseCase: SaveSessionUseCase,
-    private val cookieExtractor: CookieExtractor
+    private val cookieExtractor: CookieExtractor,
 ) : AsyncUseCase<Unit, RefreshSessionUseCase.Output> {
+    override suspend fun execute(input: Unit): Output =
+        try {
+            val userId = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
+            val serverUserId = requireNotNull(getAccountDataUseCase.execute(UserIdInput(userId)).serverId)
+            val refreshToken = requireNotNull(getSessionUseCase.execute(Unit).refreshToken)
+            val refreshSessionRequest = RefreshSessionRequest(refreshToken, serverUserId)
 
-    override suspend fun execute(input: Unit): Output = try {
-        val userId = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
-        val serverUserId = requireNotNull(getAccountDataUseCase.execute(UserIdInput(userId)).serverId)
-        val refreshToken = requireNotNull(getSessionUseCase.execute(Unit).refreshToken)
-        val refreshSessionRequest = RefreshSessionRequest(refreshToken, serverUserId)
+            val response = authRepository.refreshSession(refreshSessionRequest)
+            if (response.code() == HttpURLConnection.HTTP_OK) {
+                val newAccessToken =
+                    requireNotNull(
+                        response.body(),
+                    ).body.accessToken
+                val newRefreshToken =
+                    requireNotNull(
+                        cookieExtractor.getCookieValue(response, CookieExtractor.REFRESH_TOKEN_COOKIE),
+                    )
+                val mfaToken = cookieExtractor.get(response, CookieExtractor.MFA_COOKIE)
 
-        val response = authRepository.refreshSession(refreshSessionRequest)
-        if (response.code() == HttpURLConnection.HTTP_OK) {
-            val newAccessToken = requireNotNull(
-                response.body()
-            ).body.accessToken
-            val newRefreshToken = requireNotNull(
-                cookieExtractor.getCookieValue(response, CookieExtractor.REFRESH_TOKEN_COOKIE)
-            )
-            val mfaToken = cookieExtractor.get(response, CookieExtractor.MFA_COOKIE)
-
-            saveSessionUseCase.execute(
-                SaveSessionUseCase.Input(
-                    userId, newRefreshToken, newAccessToken, mfaToken
+                saveSessionUseCase.execute(
+                    SaveSessionUseCase.Input(
+                        userId,
+                        newRefreshToken,
+                        newAccessToken,
+                        mfaToken,
+                    ),
                 )
-            )
-            Output.Success
-        } else {
-            throw HttpException(response)
+                Output.Success
+            } else {
+                throw HttpException(response)
+            }
+        } catch (throwable: Throwable) {
+            Timber.e(throwable)
+            Output.Failure
         }
-    } catch (throwable: Throwable) {
-        Timber.e(throwable)
-        Output.Failure
-    }
 
     sealed class Output {
-
         data object Success : Output()
 
         data object Failure : Output()

@@ -46,15 +46,15 @@ import org.mockito.kotlin.whenever
 
 @ExperimentalCoroutinesApi
 class AuthenticationMainPresenterTest : KoinTest {
-
     private val presenter: AuthenticationMainContract.Presenter by inject()
     private val mockView = mock<AuthenticationMainContract.View>()
 
     @get:Rule
-    val koinTestRule = KoinTestRule.create {
-        printLogger(Level.ERROR)
-        modules(testAuthenticationMainModule)
-    }
+    val koinTestRule =
+        KoinTestRule.create {
+            printLogger(Level.ERROR)
+            modules(testAuthenticationMainModule)
+        }
 
     @Before
     fun setup() {
@@ -67,34 +67,37 @@ class AuthenticationMainPresenterTest : KoinTest {
     }
 
     @Test
-    fun `view should be initialized with no account list if on setup`() = runTest {
-        whenever(mockGetSelectedAccountUseCase.execute(Unit))
-            .doReturn(GetSelectedAccountUseCase.Output(null))
+    fun `view should be initialized with no account list if on setup`() =
+        runTest {
+            whenever(mockGetSelectedAccountUseCase.execute(Unit))
+                .doReturn(GetSelectedAccountUseCase.Output(null))
 
-        presenter.bundleRetrieved(ActivityIntents.AuthConfig.Setup, USER_ID)
+            presenter.bundleRetrieved(ActivityIntents.AuthConfig.Setup, USER_ID)
 
-        verify(mockView).initNavWithoutAccountList(USER_ID)
-        verifyNoMoreInteractions(mockView)
-    }
-
-    @Test
-    fun `view should be initialized with account list if not on setup`() = runTest {
-        whenever(mockGetSelectedAccountUseCase.execute(Unit))
-            .doReturn(GetSelectedAccountUseCase.Output(null))
-
-        val testForConfigurationValue: (config: ActivityIntents.AuthConfig) -> Unit = {
-            reset(mockView)
-            presenter.bundleRetrieved(it, null)
-            verify(mockView).initNavWithAccountList()
+            verify(mockView).initNavWithoutAccountList(USER_ID)
             verifyNoMoreInteractions(mockView)
         }
 
-        ActivityIntents.AuthConfig::class.nestedClasses
-            .filter { it.objectInstance != null }
-            .map { it.objectInstance as ActivityIntents.AuthConfig }
-            .filter { it !is ActivityIntents.AuthConfig.Setup }
-            .forEach { testForConfigurationValue(it) }
-    }
+    @Test
+    fun `view should be initialized with account list if not on setup`() =
+        runTest {
+            whenever(mockGetSelectedAccountUseCase.execute(Unit))
+                .doReturn(GetSelectedAccountUseCase.Output(null))
+
+            val testForConfigurationValue: (config: ActivityIntents.AuthConfig) -> Unit = {
+                reset(mockView)
+                presenter.bundleRetrieved(it, null)
+                verify(mockView).initNavWithAccountList()
+                verifyNoMoreInteractions(mockView)
+            }
+
+            ActivityIntents.AuthConfig::class
+                .nestedClasses
+                .filter { it.objectInstance != null }
+                .map { it.objectInstance as ActivityIntents.AuthConfig }
+                .filter { it !is ActivityIntents.AuthConfig.Setup }
+                .forEach { testForConfigurationValue(it) }
+        }
 
     @Test
     fun `view should be initialized with account list and navigate to auth if selected account during auth`() =
@@ -111,8 +114,8 @@ class AuthenticationMainPresenterTest : KoinTest {
                         serverId = "serverId",
                         url = "https://passbolt.com",
                         label = "label",
-                        role = "user"
-                    )
+                        role = "user",
+                    ),
                 )
 
             val testForConfigurationValue: (config: ActivityIntents.AuthConfig) -> Unit = {
@@ -123,16 +126,17 @@ class AuthenticationMainPresenterTest : KoinTest {
                 verifyNoMoreInteractions(mockView)
             }
 
-            ActivityIntents.AuthConfig::class.nestedClasses
+            ActivityIntents.AuthConfig::class
+                .nestedClasses
                 .filter { it.objectInstance != null }
                 .map { it.objectInstance as ActivityIntents.AuthConfig }
                 .filter {
-                    it !in setOf(
-                        ActivityIntents.AuthConfig.ManageAccount,
-                        ActivityIntents.AuthConfig.Setup
-                    )
-                }
-                .forEach { testForConfigurationValue(it) }
+                    it !in
+                        setOf(
+                            ActivityIntents.AuthConfig.ManageAccount,
+                            ActivityIntents.AuthConfig.Setup,
+                        )
+                }.forEach { testForConfigurationValue(it) }
         }
 
     private companion object {

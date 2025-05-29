@@ -28,17 +28,17 @@ import org.koin.core.module.Module
 internal fun Module.biometricKeyIvModule() {
     factory {
         GetBiometricKeyIvUseCase(
-            encryptedSharedPreferencesFactory = get()
+            encryptedSharedPreferencesFactory = get(),
         )
     }
     factory {
         SaveBiometricKeyIvUseCase(
-            encryptedSharedPreferencesFactory = get()
+            encryptedSharedPreferencesFactory = get(),
         )
     }
     factory {
         RemoveBiometricKeyUseCase(
-            keyStoreWrapper = get()
+            keyStoreWrapper = get(),
         )
     }
 }

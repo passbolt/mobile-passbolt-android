@@ -24,8 +24,5 @@ package com.passbolt.mobile.android.pwnedpasswordsapi.range
  */
 
 interface PwnedPasswordDataSource {
-
-    suspend fun getPwnedPasswordsSuffixes(
-        passwordPartialHash: String
-    ): String
+    suspend fun getPwnedPasswordsSuffixes(passwordPartialHash: String): String
 }

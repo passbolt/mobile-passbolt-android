@@ -28,7 +28,6 @@ import org.junit.Test
 
 // Supported protocols: http, https, ftp
 class AutofillUriMatcherTest {
-
     private val autofillUriMatcher = AutofillUriMatcher()
 
     @Test
@@ -37,16 +36,14 @@ class AutofillUriMatcherTest {
             "http://www.passbolt.com" to "http://www.passbolt.com",
             "https://www.passbolt.com" to "https://www.passbolt.com",
             "ftp://www.passbolt.com" to "ftp://www.passbolt.com",
-            "https://www.passbolt.com:443" to "https://www.passbolt.com:443"
-        )
-            .map { (autofillUrl, resourceUrl) ->
-                autofillUriMatcher.isMatching(autofillUrl, resourceUrl) to listOf(autofillUrl, resourceUrl)
-            }
-            .forEach { (result, uris) ->
-                assertWithMessage("${uris[0]} should match ${uris[1]}")
-                    .that(result)
-                    .isTrue()
-            }
+            "https://www.passbolt.com:443" to "https://www.passbolt.com:443",
+        ).map { (autofillUrl, resourceUrl) ->
+            autofillUriMatcher.isMatching(autofillUrl, resourceUrl) to listOf(autofillUrl, resourceUrl)
+        }.forEach { (result, uris) ->
+            assertWithMessage("${uris[0]} should match ${uris[1]}")
+                .that(result)
+                .isTrue()
+        }
     }
 
     @Test
@@ -55,16 +52,14 @@ class AutofillUriMatcherTest {
             "https://àáâãäåæçèéêëìíîïðñòóôõöøùúûüýþÿ.com" to "https://àáâãäåæçèéêëìíîïðñòóôõöøùúûüýþÿ.com",
             "https://الش.com" to "https://الش.com",
             "https://Ид.com" to "https://Ид.com",
-            "https://完善.com" to "https://完善.com"
-        )
-            .map { (autofillUrl, resourceUrl) ->
-                autofillUriMatcher.isMatching(autofillUrl, resourceUrl) to listOf(autofillUrl, resourceUrl)
-            }
-            .forEach { (result, uris) ->
-                assertWithMessage("${uris[0]} should match ${uris[1]}")
-                    .that(result)
-                    .isTrue()
-            }
+            "https://完善.com" to "https://完善.com",
+        ).map { (autofillUrl, resourceUrl) ->
+            autofillUriMatcher.isMatching(autofillUrl, resourceUrl) to listOf(autofillUrl, resourceUrl)
+        }.forEach { (result, uris) ->
+            assertWithMessage("${uris[0]} should match ${uris[1]}")
+                .that(result)
+                .isTrue()
+        }
     }
 
     @Test
@@ -77,16 +72,14 @@ class AutofillUriMatcherTest {
             "ftp://[0:0:0:0:0:0:0:1]" to "ftp://[0:0:0:0:0:0:0:1]",
             "ftp://127.0.0.1" to "ftp://127.0.0.1",
             "https://[0:0:0:0:0:0:0:1]:443" to "https://[0:0:0:0:0:0:0:1]:443",
-            "https://127.0.0.1:443" to "https://127.0.0.1:443"
-        )
-            .map { (autofillUrl, resourceUrl) ->
-                autofillUriMatcher.isMatching(autofillUrl, resourceUrl) to listOf(autofillUrl, resourceUrl)
-            }
-            .forEach { (result, uris) ->
-                assertWithMessage("${uris[0]} should match ${uris[1]}")
-                    .that(result)
-                    .isTrue()
-            }
+            "https://127.0.0.1:443" to "https://127.0.0.1:443",
+        ).map { (autofillUrl, resourceUrl) ->
+            autofillUriMatcher.isMatching(autofillUrl, resourceUrl) to listOf(autofillUrl, resourceUrl)
+        }.forEach { (result, uris) ->
+            assertWithMessage("${uris[0]} should match ${uris[1]}")
+                .that(result)
+                .isTrue()
+        }
     }
 
     @Test
@@ -98,31 +91,27 @@ class AutofillUriMatcherTest {
             "https://www.passbolt.com" to "www.passbolt.com",
             "ftp://127.0.0.1" to "127.0.0.1",
             "ftp://www.passbolt.com" to "www.passbolt.com",
-        )
-            .map { (autofillUrl, resourceUrl) ->
-                autofillUriMatcher.isMatching(autofillUrl, resourceUrl) to listOf(autofillUrl, resourceUrl)
-            }
-            .forEach { (result, uris) ->
-                assertWithMessage("${uris[0]} should match ${uris[1]}")
-                    .that(result)
-                    .isTrue()
-            }
+        ).map { (autofillUrl, resourceUrl) ->
+            autofillUriMatcher.isMatching(autofillUrl, resourceUrl) to listOf(autofillUrl, resourceUrl)
+        }.forEach { (result, uris) ->
+            assertWithMessage("${uris[0]} should match ${uris[1]}")
+                .that(result)
+                .isTrue()
+        }
     }
 
     @Test
     fun `should suggest urls without defined port`() {
         listOf(
             "http://127.0.0.1:8080" to "127.0.0.1",
-            "http://127.0.0.1:4443" to "127.0.0.1"
-        )
-            .map { (autofillUrl, resourceUrl) ->
-                autofillUriMatcher.isMatching(autofillUrl, resourceUrl) to listOf(autofillUrl, resourceUrl)
-            }
-            .forEach { (result, uris) ->
-                assertWithMessage("${uris[0]} should match ${uris[1]}")
-                    .that(result)
-                    .isTrue()
-            }
+            "http://127.0.0.1:4443" to "127.0.0.1",
+        ).map { (autofillUrl, resourceUrl) ->
+            autofillUriMatcher.isMatching(autofillUrl, resourceUrl) to listOf(autofillUrl, resourceUrl)
+        }.forEach { (result, uris) ->
+            assertWithMessage("${uris[0]} should match ${uris[1]}")
+                .that(result)
+                .isTrue()
+        }
     }
 
     @Test
@@ -130,16 +119,14 @@ class AutofillUriMatcherTest {
         listOf(
             "https://www.passbolt.com" to "passbolt.com",
             "https://www.passbolt.com" to "https://passbolt.com",
-            "https://billing.admin.passbolt.com" to "passbolt.com"
-        )
-            .map { (autofillUrl, resourceUrl) ->
-                autofillUriMatcher.isMatching(autofillUrl, resourceUrl) to listOf(autofillUrl, resourceUrl)
-            }
-            .forEach { (result, uris) ->
-                assertWithMessage("${uris[0]} should match ${uris[1]}")
-                    .that(result)
-                    .isTrue()
-            }
+            "https://billing.admin.passbolt.com" to "passbolt.com",
+        ).map { (autofillUrl, resourceUrl) ->
+            autofillUriMatcher.isMatching(autofillUrl, resourceUrl) to listOf(autofillUrl, resourceUrl)
+        }.forEach { (result, uris) ->
+            assertWithMessage("${uris[0]} should match ${uris[1]}")
+                .that(result)
+                .isTrue()
+        }
     }
 
     @Test
@@ -151,16 +138,14 @@ class AutofillUriMatcherTest {
             "https://www.attacker-passbolt.com" to "passbolt.com",
             "https://titan.email" to "email",
             "https://email" to "http://email",
-            "https://titan.email" to "https://email"
-        )
-            .map { (autofillUrl, resourceUrl) ->
-                autofillUriMatcher.isMatching(autofillUrl, resourceUrl) to listOf(autofillUrl, resourceUrl)
-            }
-            .forEach { (result, uris) ->
-                assertWithMessage("${uris[0]} should NOT match ${uris[1]}")
-                    .that(result)
-                    .isFalse()
-            }
+            "https://titan.email" to "https://email",
+        ).map { (autofillUrl, resourceUrl) ->
+            autofillUriMatcher.isMatching(autofillUrl, resourceUrl) to listOf(autofillUrl, resourceUrl)
+        }.forEach { (result, uris) ->
+            assertWithMessage("${uris[0]} should NOT match ${uris[1]}")
+                .that(result)
+                .isFalse()
+        }
     }
 
     @Test
@@ -169,48 +154,42 @@ class AutofillUriMatcherTest {
             // fake IPs url with a subdomain "fake" trying to phish a suggested IP url.
             "https://fake.127.0.0.1" to "127.0.0.1",
             // fake IPs url with a subdomain "127", only composed of digit,  trying to phish a suggested IP url.
-            "https://127.127.0.0.1" to "127.0.0.1"
-        )
-            .map { (autofillUrl, resourceUrl) ->
-                autofillUriMatcher.isMatching(autofillUrl, resourceUrl) to listOf(autofillUrl, resourceUrl)
-            }
-            .forEach { (result, uris) ->
-                assertWithMessage("${uris[0]} should NOT match ${uris[1]}")
-                    .that(result)
-                    .isFalse()
-            }
+            "https://127.127.0.0.1" to "127.0.0.1",
+        ).map { (autofillUrl, resourceUrl) ->
+            autofillUriMatcher.isMatching(autofillUrl, resourceUrl) to listOf(autofillUrl, resourceUrl)
+        }.forEach { (result, uris) ->
+            assertWithMessage("${uris[0]} should NOT match ${uris[1]}")
+                .that(result)
+                .isFalse()
+        }
     }
 
     @Test
     fun `should NOT suggest urls with not matching subdomain to parent urls`() {
         listOf(
             "https://passbolt.com" to "www.passbolt.com",
-            "https://passbolt.com" to "https://www.passbolt.com"
-        )
-            .map { (autofillUrl, resourceUrl) ->
-                autofillUriMatcher.isMatching(autofillUrl, resourceUrl) to listOf(autofillUrl, resourceUrl)
-            }
-            .forEach { (result, uris) ->
-                assertWithMessage("${uris[0]} should NOT match ${uris[1]}")
-                    .that(result)
-                    .isFalse()
-            }
+            "https://passbolt.com" to "https://www.passbolt.com",
+        ).map { (autofillUrl, resourceUrl) ->
+            autofillUriMatcher.isMatching(autofillUrl, resourceUrl) to listOf(autofillUrl, resourceUrl)
+        }.forEach { (result, uris) ->
+            assertWithMessage("${uris[0]} should NOT match ${uris[1]}")
+                .that(result)
+                .isFalse()
+        }
     }
 
     @Test
     fun `should NOT suggest urls to an attacker url containing a subdomain looking alike a stored password url`() {
         listOf(
             "https://www.passbolt.com.attacker.com" to "passbolt.com",
-            "https://www.passbolt.com-attacker.com" to "passbolt.com"
-        )
-            .map { (autofillUrl, resourceUrl) ->
-                autofillUriMatcher.isMatching(autofillUrl, resourceUrl) to listOf(autofillUrl, resourceUrl)
-            }
-            .forEach { (result, uris) ->
-                assertWithMessage("${uris[0]} should NOT match ${uris[1]}")
-                    .that(result)
-                    .isFalse()
-            }
+            "https://www.passbolt.com-attacker.com" to "passbolt.com",
+        ).map { (autofillUrl, resourceUrl) ->
+            autofillUriMatcher.isMatching(autofillUrl, resourceUrl) to listOf(autofillUrl, resourceUrl)
+        }.forEach { (result, uris) ->
+            assertWithMessage("${uris[0]} should NOT match ${uris[1]}")
+                .that(result)
+                .isFalse()
+        }
     }
 
     @Test
@@ -218,16 +197,14 @@ class AutofillUriMatcherTest {
         listOf(
             "https://attacker.com?passbolt.com" to "passbolt.com",
             "https://attacker.com?passbolt.com" to "passbolt.com",
-            "https://attacker.com?url=https://passbolt.com" to "passbolt.com"
-        )
-            .map { (autofillUrl, resourceUrl) ->
-                autofillUriMatcher.isMatching(autofillUrl, resourceUrl) to listOf(autofillUrl, resourceUrl)
-            }
-            .forEach { (result, uris) ->
-                assertWithMessage("${uris[0]} should NOT match ${uris[1]}")
-                    .that(result)
-                    .isFalse()
-            }
+            "https://attacker.com?url=https://passbolt.com" to "passbolt.com",
+        ).map { (autofillUrl, resourceUrl) ->
+            autofillUriMatcher.isMatching(autofillUrl, resourceUrl) to listOf(autofillUrl, resourceUrl)
+        }.forEach { (result, uris) ->
+            assertWithMessage("${uris[0]} should NOT match ${uris[1]}")
+                .that(result)
+                .isFalse()
+        }
     }
 
     @Test
@@ -235,31 +212,27 @@ class AutofillUriMatcherTest {
         listOf(
             "https://attacker.com#passbolt.com" to "passbolt.com",
             "https://attacker.com#passbolt.com" to "passbolt.com",
-            "https://attacker.com#url=https://passbolt.com" to "passbolt.com"
-        )
-            .map { (autofillUrl, resourceUrl) ->
-                autofillUriMatcher.isMatching(autofillUrl, resourceUrl) to listOf(autofillUrl, resourceUrl)
-            }
-            .forEach { (result, uris) ->
-                assertWithMessage("${uris[0]} should NOT match ${uris[1]}")
-                    .that(result)
-                    .isFalse()
-            }
+            "https://attacker.com#url=https://passbolt.com" to "passbolt.com",
+        ).map { (autofillUrl, resourceUrl) ->
+            autofillUriMatcher.isMatching(autofillUrl, resourceUrl) to listOf(autofillUrl, resourceUrl)
+        }.forEach { (result, uris) ->
+            assertWithMessage("${uris[0]} should NOT match ${uris[1]}")
+                .that(result)
+                .isFalse()
+        }
     }
 
     @Test
     fun `should NOT suggest urls with a port looking alike a stored password url`() {
         listOf(
-            "https://www.attacker.com:www.passbolt.com" to "passbolt.com"
-        )
-            .map { (autofillUrl, resourceUrl) ->
-                autofillUriMatcher.isMatching(autofillUrl, resourceUrl) to listOf(autofillUrl, resourceUrl)
-            }
-            .forEach { (result, uris) ->
-                assertWithMessage("${uris[0]} should NOT match ${uris[1]}")
-                    .that(result)
-                    .isFalse()
-            }
+            "https://www.attacker.com:www.passbolt.com" to "passbolt.com",
+        ).map { (autofillUrl, resourceUrl) ->
+            autofillUriMatcher.isMatching(autofillUrl, resourceUrl) to listOf(autofillUrl, resourceUrl)
+        }.forEach { (result, uris) ->
+            assertWithMessage("${uris[0]} should NOT match ${uris[1]}")
+                .that(result)
+                .isFalse()
+        }
     }
 
     @Test
@@ -268,16 +241,14 @@ class AutofillUriMatcherTest {
             "https://[::1]" to "[::2]",
             "https://[2001:4860:4860::8844]" to "[2001:4860:4860::8888]",
             "https://127.0.0.1" to "127.0.0.2",
-            "https://127.1" to "127.2"
-        )
-            .map { (autofillUrl, resourceUrl) ->
-                autofillUriMatcher.isMatching(autofillUrl, resourceUrl) to listOf(autofillUrl, resourceUrl)
-            }
-            .forEach { (result, uris) ->
-                assertWithMessage("${uris[0]} should NOT match ${uris[1]}")
-                    .that(result)
-                    .isFalse()
-            }
+            "https://127.1" to "127.2",
+        ).map { (autofillUrl, resourceUrl) ->
+            autofillUriMatcher.isMatching(autofillUrl, resourceUrl) to listOf(autofillUrl, resourceUrl)
+        }.forEach { (result, uris) ->
+            assertWithMessage("${uris[0]} should NOT match ${uris[1]}")
+                .that(result)
+                .isFalse()
+        }
     }
 
     @Test
@@ -288,16 +259,14 @@ class AutofillUriMatcherTest {
             "http://[::1]" to "https://[::1]",
             "https://[::1]" to "http://[::1]",
             "http://www.passbolt.com" to "https://www.passbolt.com",
-            "https://www.passbolt.com" to "http://www.passbolt.com"
-        )
-            .map { (autofillUrl, resourceUrl) ->
-                autofillUriMatcher.isMatching(autofillUrl, resourceUrl) to listOf(autofillUrl, resourceUrl)
-            }
-            .forEach { (result, uris) ->
-                assertWithMessage("${uris[0]} should NOT match ${uris[1]}")
-                    .that(result)
-                    .isFalse()
-            }
+            "https://www.passbolt.com" to "http://www.passbolt.com",
+        ).map { (autofillUrl, resourceUrl) ->
+            autofillUriMatcher.isMatching(autofillUrl, resourceUrl) to listOf(autofillUrl, resourceUrl)
+        }.forEach { (result, uris) ->
+            assertWithMessage("${uris[0]} should NOT match ${uris[1]}")
+                .that(result)
+                .isFalse()
+        }
     }
 
     @Test
@@ -310,37 +279,33 @@ class AutofillUriMatcherTest {
             "https://127.0.0.1:444" to "127.0.0.1:443",
             "https://www.passbolt.com:444" to "www.passbolt.com:443",
             /*
-                * Ports are not deducted from urls schemes, that's why we expect http scheme to not match an url with a defined
-                * port, even if it is the correct one.
-            */
+             * Ports are not deducted from urls schemes, that's why we expect http scheme to not match an url with a defined
+             * port, even if it is the correct one.
+             */
             "http://127.0.0.1" to "127.0.0.1:80",
-            "https://www.passbolt.com" to "www.passbolt.com:443"
-        )
-            .map { (autofillUrl, resourceUrl) ->
-                autofillUriMatcher.isMatching(autofillUrl, resourceUrl) to listOf(autofillUrl, resourceUrl)
-            }
-            .forEach { (result, uris) ->
-                assertWithMessage("${uris[0]} should NOT match ${uris[1]}")
-                    .that(result)
-                    .isFalse()
-            }
+            "https://www.passbolt.com" to "www.passbolt.com:443",
+        ).map { (autofillUrl, resourceUrl) ->
+            autofillUriMatcher.isMatching(autofillUrl, resourceUrl) to listOf(autofillUrl, resourceUrl)
+        }.forEach { (result, uris) ->
+            assertWithMessage("${uris[0]} should NOT match ${uris[1]}")
+                .that(result)
+                .isFalse()
+        }
     }
 
     @Test
     fun `should NOT suggest urls with no hostname to url with no hostname`() {
         listOf(
             "https://no%20identified%20domain%20url.com" to
-                    "no%20identified%20domain%20url",
+                "no%20identified%20domain%20url",
             "about:addons" to "about:addons",
-            "about:addons" to "no%20identified%20domain%20url"
-        )
-            .map { (autofillUrl, resourceUrl) ->
-                autofillUriMatcher.isMatching(autofillUrl, resourceUrl) to listOf(autofillUrl, resourceUrl)
-            }
-            .forEach { (result, uris) ->
-                assertWithMessage("${uris[0]} should NOT match ${uris[1]}")
-                    .that(result)
-                    .isFalse()
-            }
+            "about:addons" to "no%20identified%20domain%20url",
+        ).map { (autofillUrl, resourceUrl) ->
+            autofillUriMatcher.isMatching(autofillUrl, resourceUrl) to listOf(autofillUrl, resourceUrl)
+        }.forEach { (result, uris) ->
+            assertWithMessage("${uris[0]} should NOT match ${uris[1]}")
+                .that(result)
+                .isFalse()
+        }
     }
 }

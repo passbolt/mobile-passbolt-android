@@ -27,19 +27,31 @@ import com.passbolt.mobile.android.ui.FolderModel
  */
 
 interface LocationDetailsContract {
-
     interface View : DataRefreshViewReactiveContract.View {
         fun showFolderName(name: String)
+
         fun showFolderSharedIcon()
+
         fun showFolderIcon()
+
         fun showFolderLocation(parentFolders: List<FolderModel>)
-        fun displayInitialsIcon(name: String, initials: String)
+
+        fun displayInitialsIcon(
+            name: String,
+            initials: String,
+        )
+
         fun showDataRefreshError()
+
         fun showContentNotAvailable()
+
         fun navigateToHome()
     }
 
     interface Presenter : DataRefreshViewReactiveContract.Presenter<View> {
-        fun argsRetrieved(locationItem: LocationItem, id: String)
+        fun argsRetrieved(
+            locationItem: LocationItem,
+            id: String,
+        )
     }
 }

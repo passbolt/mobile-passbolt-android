@@ -27,10 +27,10 @@ import com.passbolt.mobile.android.core.networking.callWithHandler
  */
 class ResourceTypesRepository(
     private val resourceTypesDataSource: ResourceTypesDataSource,
-    private val responseHandler: ResponseHandler
+    private val responseHandler: ResponseHandler,
 ) {
-
-    suspend fun getResourceTypes() = callWithHandler(responseHandler) {
-        resourceTypesDataSource.getResourceTypes()
-    }
+    suspend fun getResourceTypes() =
+        callWithHandler(responseHandler) {
+            resourceTypesDataSource.getResourceTypes()
+        }
 }

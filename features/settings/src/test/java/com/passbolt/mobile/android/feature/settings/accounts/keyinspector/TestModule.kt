@@ -26,11 +26,9 @@ package com.passbolt.mobile.android.feature.settings.accounts.keyinspector
 import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.core.accounts.usecase.accountdata.GetSelectedAccountDataUseCase
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
-import com.passbolt.mobile.android.core.passphrasememorycache.PassphraseMemoryCache
 import com.passbolt.mobile.android.core.ui.formatter.DateFormatter
 import com.passbolt.mobile.android.core.ui.formatter.FingerprintFormatter
 import com.passbolt.mobile.android.core.users.user.FetchCurrentUserUseCase
-import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetSessionExpiryUseCase
 import com.passbolt.mobile.android.feature.settings.screen.accounts.keyinspector.KeyInspectorContract
 import com.passbolt.mobile.android.feature.settings.screen.accounts.keyinspector.KeyInspectorPresenter
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -45,17 +43,18 @@ internal val mockFingerprintFormatter = mock<FingerprintFormatter>()
 internal val mockDateFormatter = mock<DateFormatter>()
 
 @OptIn(ExperimentalCoroutinesApi::class)
-val testKeyInspectorModule = module {
-    factoryOf(::FingerprintFormatter)
-    factoryOf(::DateFormatter)
-    factoryOf(::TestCoroutineLaunchContext) bind CoroutineLaunchContext::class
-    factory<KeyInspectorContract.Presenter> {
-        KeyInspectorPresenter(
-            fetchCurrentUserUseCase = mockFetchCurrentUserUseCase,
-            getSelectedAccountDataUseCase = mockGetSelectedAccountDataUseCase,
-            dateFormatter = mockDateFormatter,
-            fingerprintFormatter = mockFingerprintFormatter,
-            coroutineLaunchContext = get()
-        )
+val testKeyInspectorModule =
+    module {
+        factoryOf(::FingerprintFormatter)
+        factoryOf(::DateFormatter)
+        factoryOf(::TestCoroutineLaunchContext) bind CoroutineLaunchContext::class
+        factory<KeyInspectorContract.Presenter> {
+            KeyInspectorPresenter(
+                fetchCurrentUserUseCase = mockFetchCurrentUserUseCase,
+                getSelectedAccountDataUseCase = mockGetSelectedAccountDataUseCase,
+                dateFormatter = mockDateFormatter,
+                fingerprintFormatter = mockFingerprintFormatter,
+                coroutineLaunchContext = get(),
+            )
+        }
     }
-}

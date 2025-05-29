@@ -31,31 +31,58 @@ import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.TrustedKeyDeletedModel
 
 interface ScanOtpSuccessContract {
-
     interface View : BaseAuthenticatedContract.View {
         fun showGenericError()
+
         fun showEncryptionError(message: String)
-        fun navigateToOtpList(totp: OtpParseResult.OtpQr.TotpQr, otpCreated: Boolean)
+
+        fun navigateToOtpList(
+            totp: OtpParseResult.OtpQr.TotpQr,
+            otpCreated: Boolean,
+        )
+
         fun showProgress()
+
         fun hideProgress()
+
         fun navigateToResourcePicker()
+
         fun showError(message: String)
+
         fun showJsonResourceSchemaValidationError()
+
         fun showJsonSecretSchemaValidationError()
+
         fun showCannotUpdateTotpWithCurrentConfig()
+
         fun showMetadataKeyModifiedDialog(model: NewMetadataKeyToTrustModel)
+
         fun showMetadataKeyDeletedDialog(model: TrustedKeyDeletedModel)
+
         fun showFailedToVerifyMetadataKey()
+
         fun showNewMetadataKeyIsTrusted()
+
         fun showFailedToTrustMetadataKey()
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
         fun createStandaloneOtpClick()
-        fun argsRetrieved(scannedTotp: OtpParseResult.OtpQr.TotpQr, parentFolderId: String?)
+
+        fun argsRetrieved(
+            scannedTotp: OtpParseResult.OtpQr.TotpQr,
+            parentFolderId: String?,
+        )
+
         fun linkToResourceClick()
-        fun linkedResourceReceived(action: PickResourceAction, resource: ResourceModel)
+
+        fun linkedResourceReceived(
+            action: PickResourceAction,
+            resource: ResourceModel,
+        )
+
         fun trustedMetadataKeyDeleted(model: TrustedKeyDeletedModel)
+
         fun trustNewMetadataKey(model: NewMetadataKeyToTrustModel)
     }
 }

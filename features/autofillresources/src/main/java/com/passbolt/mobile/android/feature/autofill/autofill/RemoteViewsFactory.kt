@@ -30,17 +30,18 @@ import com.passbolt.mobile.android.core.localization.R as LocalizationR
  */
 
 class RemoteViewsFactory(
-    private val appContext: Context
+    private val appContext: Context,
 ) {
-
     fun getAutofillSelectDropdown(packageName: String) =
         createAutofillDropdownWithText(packageName, LocalizationR.string.autofill_dropdown_select)
 
     fun getAutofillFillDropdown(packageName: String) =
         createAutofillDropdownWithText(packageName, LocalizationR.string.autofill_dropdown_fill)
 
-    private fun createAutofillDropdownWithText(packageName: String, @StringRes textResId: Int) =
-        RemoteViews(packageName, R.layout.view_autofill_auth_required_dropdown).apply {
-            setTextViewText(R.id.title, appContext.getString(textResId))
-        }
+    private fun createAutofillDropdownWithText(
+        packageName: String,
+        @StringRes textResId: Int,
+    ) = RemoteViews(packageName, R.layout.view_autofill_auth_required_dropdown).apply {
+        setTextViewText(R.id.title, appContext.getString(textResId))
+    }
 }

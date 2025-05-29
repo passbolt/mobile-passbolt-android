@@ -21,7 +21,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import coil.ImageLoader
 import coil.request.ImageRequest
 import coil.transform.CircleCropTransformation
-import com.gaelmarhic.quadrant.Autofillresources
 import com.google.android.material.snackbar.Snackbar
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
@@ -38,6 +37,7 @@ import com.passbolt.mobile.android.core.extension.showSnackbar
 import com.passbolt.mobile.android.core.extension.visible
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppContext
+import com.passbolt.mobile.android.core.navigation.constants.Autofillresources
 import com.passbolt.mobile.android.core.navigation.deeplinks.NavDeepLinkProvider
 import com.passbolt.mobile.android.core.ui.initialsicon.InitialsIconGenerator
 import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
@@ -110,17 +110,20 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
 @Suppress("TooManyFunctions", "LargeClass") // TODO MOB-321
 class HomeFragment :
     BindingScopedAuthenticatedFragment<FragmentHomeBinding, HomeContract.View>(FragmentHomeBinding::inflate),
-    HomeContract.View, ResourceMoreMenuFragment.Listener, SwitchAccountBottomSheetFragment.Listener,
-    FiltersMenuFragment.Listener, FolderMoreMenuFragment.Listener, CreateResourceMenuFragment.Listener {
-
+    HomeContract.View,
+    ResourceMoreMenuFragment.Listener,
+    SwitchAccountBottomSheetFragment.Listener,
+    FiltersMenuFragment.Listener,
+    FolderMoreMenuFragment.Listener,
+    CreateResourceMenuFragment.Listener {
     override val presenter: HomeContract.Presenter by inject()
     override val appContext = AppContext.APP
     private val suggestedHeaderItemAdapter: ItemAdapter<PasswordHeaderItem> by inject(
-        named(SUGGESTED_HEADER_ITEM_ADAPTER)
+        named(SUGGESTED_HEADER_ITEM_ADAPTER),
     )
     private val suggestedItemsItemAdapter: ItemAdapter<PasswordItem> by inject(named(SUGGESTED_ITEMS_ITEM_ADAPTER))
     private val otherItemsItemAdapter: ItemAdapter<PasswordHeaderItem> by inject(
-        named(OTHER_ITEMS_HEADER_ITEM_ADAPTER)
+        named(OTHER_ITEMS_HEADER_ITEM_ADAPTER),
     )
     private val passwordItemAdapter: ItemAdapter<PasswordItem> by inject(named(RESOURCE_ITEM_ADAPTER))
     private val childrenPasswordItemAdapter: ItemAdapter<PasswordItem> by inject(named(SUB_RESOURCE_ITEM_ADAPTER))
@@ -129,16 +132,16 @@ class HomeFragment :
     private val tagsItemAdapter: ItemAdapter<TagWithCountItem> by inject(named(TAGS_ITEM_ADAPTER))
     private val groupsItemAdapter: ItemAdapter<GroupWithCountItem> by inject(named(GROUPS_ITEM_ADAPTER))
     private val inSubFoldersHeaderItemAdapter: ItemAdapter<InSubFoldersHeaderItem> by inject(
-        named(IN_SUB_FOLDERS_HEADER_ITEM_ADAPTER)
+        named(IN_SUB_FOLDERS_HEADER_ITEM_ADAPTER),
     )
     private val inCurrentFoldersHeaderItemAdapter: ItemAdapter<InCurrentFoldersHeaderItem> by inject(
-        named(IN_CURRENT_FOLDER_HEADER_ITEM_ADAPTER)
+        named(IN_CURRENT_FOLDER_HEADER_ITEM_ADAPTER),
     )
     private val initialsIconGenerator: InitialsIconGenerator by inject()
 
     private val snackbarAnchorView: View?
         get() {
-            return binding.createResourceFab.let {
+            return requiredBinding.createResourceFab.let {
                 if (it.isVisible) {
                     it
                 } else {
@@ -179,7 +182,7 @@ class HomeFragment :
                     homeDisplayView = null,
                     hasPreviousEntry,
                     resourceHandlingStrategy.shouldShowCloseButton(),
-                    resourceHandlingStrategy.shouldShowResourceMoreMenu()
+                    resourceHandlingStrategy.shouldShowResourceMoreMenu(),
                 )
             }
         }
@@ -188,14 +191,14 @@ class HomeFragment :
         presenter.resourceDetailsReturned(
             result.getBoolean(ResourceDetailsFragment.EXTRA_RESOURCE_EDITED, false),
             result.getBoolean(ResourceDetailsFragment.EXTRA_RESOURCE_DELETED, false),
-            result.getString(ResourceFormFragment.EXTRA_RESOURCE_NAME)
+            result.getString(ResourceFormFragment.EXTRA_RESOURCE_NAME),
         )
     }
 
     private val otpScanQrReturned = { _: String, result: Bundle ->
         presenter.otpQrScanReturned(
             result.getBoolean(ScanOtpSuccessFragment.EXTRA_OTP_CREATED, false),
-            result.getBoolean(ScanOtpFragment.EXTRA_MANUAL_CREATION_CHOSEN)
+            result.getBoolean(ScanOtpFragment.EXTRA_MANUAL_CREATION_CHOSEN),
         )
     }
 
@@ -203,7 +206,7 @@ class HomeFragment :
         presenter.resourceFormReturned(
             result.getBoolean(ResourceFormFragment.EXTRA_RESOURCE_CREATED, false),
             result.getBoolean(ResourceFormFragment.EXTRA_RESOURCE_EDITED, false),
-            result.getString(ResourceFormFragment.EXTRA_RESOURCE_NAME)
+            result.getString(ResourceFormFragment.EXTRA_RESOURCE_NAME),
         )
     }
 
@@ -213,7 +216,10 @@ class HomeFragment :
         }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initAdapter()
         setListeners()
@@ -224,7 +230,7 @@ class HomeFragment :
             arguments.homeView,
             hasPreviousEntry,
             resourceHandlingStrategy.shouldShowCloseButton(),
-            resourceHandlingStrategy.shouldShowResourceMoreMenu()
+            resourceHandlingStrategy.shouldShowResourceMoreMenu(),
         )
     }
 
@@ -251,41 +257,42 @@ class HomeFragment :
     }
 
     override fun onDestroyView() {
-        binding.recyclerView.adapter = null
+        requiredBinding.recyclerView.adapter = null
         presenter.detach()
         super.onDestroyView()
     }
 
     override fun displaySearchAvatar(url: String?) {
-        val request = ImageRequest.Builder(requireContext())
-            .data(url)
-            .transformations(CircleCropTransformation())
-            .size(AVATAR_SIZE, AVATAR_SIZE)
-            .placeholder(CoreUiR.drawable.ic_avatar_placeholder)
-            .target(
-                onError = {
-                    binding.searchTextInput.setSearchEndIconWithListener(
-                        ContextCompat.getDrawable(requireContext(), CoreUiR.drawable.ic_avatar_placeholder)!!,
-                        presenter::searchAvatarClick
-                    )
-                },
-                onSuccess = {
-                    binding.searchTextInput.setSearchEndIconWithListener(it, presenter::searchAvatarClick)
-                }
-            )
-            .build()
+        val request =
+            ImageRequest
+                .Builder(requireContext())
+                .data(url)
+                .transformations(CircleCropTransformation())
+                .size(AVATAR_SIZE, AVATAR_SIZE)
+                .placeholder(CoreUiR.drawable.ic_avatar_placeholder)
+                .target(
+                    onError = {
+                        requiredBinding.searchTextInput.setSearchEndIconWithListener(
+                            ContextCompat.getDrawable(requireContext(), CoreUiR.drawable.ic_avatar_placeholder)!!,
+                            presenter::searchAvatarClick,
+                        )
+                    },
+                    onSuccess = {
+                        requiredBinding.searchTextInput.setSearchEndIconWithListener(it, presenter::searchAvatarClick)
+                    },
+                ).build()
         imageLoader.enqueue(request)
     }
 
     override fun displaySearchClearIcon() {
-        binding.searchTextInput.setSearchEndIconWithListener(
+        requiredBinding.searchTextInput.setSearchEndIconWithListener(
             ContextCompat.getDrawable(requireContext(), CoreUiR.drawable.ic_close)!!,
-            presenter::searchClearClick
+            presenter::searchClearClick,
         )
     }
 
     private fun initAdapter() {
-        binding.recyclerView.apply {
+        requiredBinding.recyclerView.apply {
             itemAnimator = null
             layoutManager = LinearLayoutManager(requireContext())
             adapter = fastAdapter
@@ -306,8 +313,9 @@ class HomeFragment :
                 },
                 GroupWithCountItem.ItemClick {
                     presenter.groupItemClick(it)
-                }
-            ))
+                },
+            ),
+        )
     }
 
     override fun resourceItemClick(resourceModel: ResourceModel) {
@@ -318,8 +326,7 @@ class HomeFragment :
 
     override fun shouldShowFolderMoreMenu() = true
 
-    override fun showSuggestedModel() =
-        ShowSuggestedModel.DoNotShow
+    override fun showSuggestedModel() = ShowSuggestedModel.DoNotShow
 
     override fun resourcePostCreateAction(resourceId: String) {
         // nothing more to do after creating resource on home fragment
@@ -328,28 +335,28 @@ class HomeFragment :
     override fun shouldShowCloseButton() = false
 
     private fun setState(state: State) {
-        with(binding) {
+        with(requiredBinding) {
             recyclerView.isVisible = state.listVisible
             emptyListContainer.isVisible = state.emptyVisible
         }
     }
 
     override fun showCloseButton() {
-        binding.closeButton.visible()
+        requiredBinding.closeButton.visible()
     }
 
     override fun showEmptyList() {
         setState(State.EMPTY)
-        binding.appBar.setExpanded(true)
+        requiredBinding.appBar.setExpanded(true)
     }
 
     override fun showSearchEmptyList() {
         setState(State.SEARCH_EMPTY)
-        binding.appBar.setExpanded(true)
+        requiredBinding.appBar.setExpanded(true)
     }
 
     private fun setListeners() {
-        with(binding) {
+        with(requiredBinding) {
             swipeRefresh.setOnRefreshListener {
                 presenter.refreshSwipe()
             }
@@ -379,28 +386,29 @@ class HomeFragment :
     private fun setFragmentResultListeners() {
         setFragmentResultListener(
             CreateFolderFragment.REQUEST_CREATE_FOLDER,
-            folderCreatedListener
+            folderCreatedListener,
         )
         setFragmentResultListener(
             ScanOtpFragment.REQUEST_SCAN_OTP_FOR_RESULT,
-            otpScanQrReturned
+            otpScanQrReturned,
         )
         setFragmentResultListener(
             ResourceFormFragment.REQUEST_RESOURCE_FORM,
-            resourceFormReturned
+            resourceFormReturned,
         )
         setFragmentResultListener(
             ResourceDetailsFragment.REQUEST_RESOURCE_DETAILS,
-            detailsReturned
+            detailsReturned,
         )
         setFragmentResultListener(
             PermissionsFragment.REQUEST_UPDATE_PERMISSIONS,
-            shareReturned
+            shareReturned,
         )
     }
 
     override fun showCreateResourceMenu(homeView: HomeDisplayViewModel) {
-        CreateResourceMenuFragment.newInstance(homeView)
+        CreateResourceMenuFragment
+            .newInstance(homeView)
             .show(childFragmentManager, CreateResourceMenuFragment::class.java.name)
     }
 
@@ -413,7 +421,7 @@ class HomeFragment :
         groupsList: List<GroupWithCount>,
         filteredSubFoldersList: List<FolderWithCountAndPath>,
         filteredSubFolderResourceList: List<ResourceModel>,
-        sectionsConfiguration: HeaderSectionConfiguration
+        sectionsConfiguration: HeaderSectionConfiguration,
     ) {
         setState(State.SUCCESS)
         // suggested header
@@ -423,7 +431,7 @@ class HomeFragment :
                 listOf(PasswordHeaderItem(ResourceListUiModel.Header(getString(LocalizationR.string.suggested))))
             } else {
                 emptyList()
-            }
+            },
         )
         // suggested items
         FastAdapterDiffUtil.calculateDiff(
@@ -432,9 +440,9 @@ class HomeFragment :
                 PasswordItem(
                     ResourceItemWrapper(resourceModel),
                     initialsIconGenerator,
-                    resourceHandlingStrategy.shouldShowResourceMoreMenu()
+                    resourceHandlingStrategy.shouldShowResourceMoreMenu(),
                 )
-            }
+            },
         )
         // other items header
         FastAdapterDiffUtil.calculateDiff(
@@ -443,12 +451,12 @@ class HomeFragment :
                 listOf(PasswordHeaderItem(ResourceListUiModel.Header(getString(LocalizationR.string.other))))
             } else {
                 emptyList()
-            }
+            },
         )
         // "in current folder" header
         FastAdapterDiffUtil.calculateDiff(
             inCurrentFoldersHeaderItemAdapter,
-            createCurrentFolderSection(sectionsConfiguration)
+            createCurrentFolderSection(sectionsConfiguration),
         )
         // current folder folders
         FastAdapterDiffUtil.calculateDiff(folderItemAdapter, foldersList.map { FolderItem(it) })
@@ -463,13 +471,14 @@ class HomeFragment :
                 PasswordItem(
                     ResourceItemWrapper(resourceModel),
                     initialsIconGenerator,
-                    dotsVisible = resourceHandlingStrategy.shouldShowResourceMoreMenu()
+                    dotsVisible = resourceHandlingStrategy.shouldShowResourceMoreMenu(),
                 )
-            })
+            },
+        )
         // "in sub-folders" header
         FastAdapterDiffUtil.calculateDiff(
             inSubFoldersHeaderItemAdapter,
-            createInSubFoldersSection(sectionsConfiguration)
+            createInSubFoldersSection(sectionsConfiguration),
         )
         // sub-folders folders
         FastAdapterDiffUtil.calculateDiff(childrenFolderItemAdapter, filteredSubFoldersList.map { FolderItem(it) })
@@ -480,9 +489,10 @@ class HomeFragment :
                 PasswordItem(
                     ResourceItemWrapper(resourceModel),
                     initialsIconGenerator,
-                    dotsVisible = resourceHandlingStrategy.shouldShowResourceMoreMenu()
+                    dotsVisible = resourceHandlingStrategy.shouldShowResourceMoreMenu(),
                 )
-            })
+            },
+        )
         fastAdapter.notifyAdapterDataSetChanged()
     }
 
@@ -499,41 +509,50 @@ class HomeFragment :
                 InCurrentFoldersHeaderItem(
                     getString(
                         LocalizationR.string.home_in_current_folder,
-                        sectionsConfiguration.currentFolderName ?: getString(LocalizationR.string.folder_root)
-                    )
-                )
+                        sectionsConfiguration.currentFolderName ?: getString(LocalizationR.string.folder_root),
+                    ),
+                ),
             )
         } else {
             emptyList()
         }
 
     override fun hideRefreshProgress() {
-        binding.swipeRefresh.isRefreshing = false
+        requiredBinding.swipeRefresh.isRefreshing = false
     }
 
     override fun showRefreshProgress() {
-        binding.swipeRefresh.isRefreshing = true
+        requiredBinding.swipeRefresh.isRefreshing = true
     }
 
-    override fun navigateToMore(resourceId: String, resourceName: String) {
+    override fun navigateToMore(
+        resourceId: String,
+        resourceName: String,
+    ) {
         presenter.pause()
-        ResourceMoreMenuFragment.newInstance(resourceId, resourceName)
+        ResourceMoreMenuFragment
+            .newInstance(resourceId, resourceName)
             .show(this@HomeFragment.childFragmentManager, ResourceMoreMenuFragment::class.java.name)
     }
 
     override fun navigateToDetails(resourceModel: ResourceModel) {
         findNavController().navigate(
-            HomeFragmentDirections.actionHomeToDetails(resourceModel)
+            HomeFragmentDirections.actionHomeToDetails(resourceModel),
         )
     }
 
-    override fun addToClipboard(label: String, value: String, isSecret: Boolean) {
+    override fun addToClipboard(
+        label: String,
+        value: String,
+        isSecret: Boolean,
+    ) {
         clipboardManager?.setPrimaryClip(
             ClipData.newPlainText(label, value).apply {
-                description.extras = PersistableBundle().apply {
-                    putBoolean(ClipDescription.EXTRA_IS_SENSITIVE, isSecret)
-                }
-            }
+                description.extras =
+                    PersistableBundle().apply {
+                        putBoolean(ClipDescription.EXTRA_IS_SENSITIVE, isSecret)
+                    }
+            },
         )
         Toast.makeText(requireContext(), getString(LocalizationR.string.copied_info, label), Toast.LENGTH_SHORT).show()
     }
@@ -579,12 +598,14 @@ class HomeFragment :
     }
 
     override fun showDecryptionFailure() {
-        Toast.makeText(requireContext(), LocalizationR.string.common_decryption_failure, Toast.LENGTH_SHORT)
+        Toast
+            .makeText(requireContext(), LocalizationR.string.common_decryption_failure, Toast.LENGTH_SHORT)
             .show()
     }
 
     override fun showFetchFailure() {
-        Toast.makeText(requireContext(), LocalizationR.string.common_fetch_failure, Toast.LENGTH_SHORT)
+        Toast
+            .makeText(requireContext(), LocalizationR.string.common_fetch_failure, Toast.LENGTH_SHORT)
             .show()
     }
 
@@ -593,7 +614,7 @@ class HomeFragment :
             LocalizationR.string.common_failure_format,
             anchorView = snackbarAnchorView,
             backgroundColor = CoreUiR.color.red,
-            messageArgs = arrayOf(errorMessage.orEmpty())
+            messageArgs = arrayOf(errorMessage.orEmpty()),
         )
     }
 
@@ -602,7 +623,7 @@ class HomeFragment :
             messageResId = LocalizationR.string.common_message_resource_deleted,
             messageArgs = arrayOf(name),
             anchorView = snackbarAnchorView,
-            backgroundColor = CoreUiR.color.green
+            backgroundColor = CoreUiR.color.green,
         )
     }
 
@@ -611,7 +632,7 @@ class HomeFragment :
             messageResId = LocalizationR.string.common_message_resource_edited,
             messageArgs = arrayOf(resourceName),
             anchorView = snackbarAnchorView,
-            backgroundColor = CoreUiR.color.green
+            backgroundColor = CoreUiR.color.green,
         )
     }
 
@@ -619,24 +640,25 @@ class HomeFragment :
         showSnackbar(
             LocalizationR.string.common_message_resource_shared,
             anchorView = snackbarAnchorView,
-            backgroundColor = CoreUiR.color.green
+            backgroundColor = CoreUiR.color.green,
         )
     }
 
     override fun navigateToSwitchAccount() {
-        SwitchAccountBottomSheetFragment.newInstance(resourceHandlingStrategy.appContext)
+        SwitchAccountBottomSheetFragment
+            .newInstance(resourceHandlingStrategy.appContext)
             .show(childFragmentManager, SwitchAccountBottomSheetFragment::class.java.name)
     }
 
     override fun clearSearchInput() {
-        binding.searchEditText.setText("")
+        requiredBinding.searchEditText.setText("")
     }
 
     override fun showResourceCreatedSnackbar() {
         showSnackbar(
             LocalizationR.string.resource_form_create_success,
             anchorView = snackbarAnchorView,
-            backgroundColor = CoreUiR.color.green
+            backgroundColor = CoreUiR.color.green,
         )
     }
 
@@ -653,9 +675,9 @@ class HomeFragment :
             HomeFragmentDirections.actionHomeToResourceForm(
                 ResourceFormMode.Edit(
                     resourceModel.resourceId,
-                    resourceModel.metadataJsonModel.name
-                )
-            )
+                    resourceModel.metadataJsonModel.name,
+                ),
+            ),
         )
     }
 
@@ -664,24 +686,23 @@ class HomeFragment :
             HomeFragmentDirections.actionHomeToResourcePermissions(
                 resource.resourceId,
                 PermissionsMode.EDIT,
-                PermissionsItem.RESOURCE
-            )
+                PermissionsItem.RESOURCE,
+            ),
         )
     }
 
     override fun hideCreateButton() {
-        binding.createResourceFab.gone()
+        requiredBinding.createResourceFab.gone()
     }
 
     override fun showCreateButton() {
-        binding.createResourceFab.visible()
+        requiredBinding.createResourceFab.visible()
     }
 
     override fun showDeleteConfirmationDialog() {
         confirmResourceDeletionAlertDialog(requireContext()) {
             presenter.deleteResourceConfirmed()
-        }
-            .show()
+        }.show()
     }
 
     override fun switchAccountManageAccountClick() {
@@ -696,8 +717,8 @@ class HomeFragment :
         authenticationResult.launch(
             ActivityIntents.authentication(
                 requireContext(),
-                ActivityIntents.AuthConfig.ManageAccount
-            )
+                ActivityIntents.AuthConfig.ManageAccount,
+            ),
         )
     }
 
@@ -712,13 +733,14 @@ class HomeFragment :
                     AppContext.APP -> ActivityIntents.AuthConfig.Startup
                     AppContext.AUTOFILL -> ActivityIntents.AuthConfig.RefreshSession
                 },
-                appContext = resourceHandlingStrategy.appContext
-            )
+                appContext = resourceHandlingStrategy.appContext,
+            ),
         )
     }
 
     override fun showFiltersMenu(activeDisplayView: HomeDisplayViewModel) {
-        FiltersMenuFragment.newInstance(FiltersMenuModel(activeDisplayView))
+        FiltersMenuFragment
+            .newInstance(FiltersMenuModel(activeDisplayView))
             .show(childFragmentManager, FiltersMenuFragment::class.java.name)
     }
 
@@ -759,65 +781,80 @@ class HomeFragment :
     }
 
     override fun showAllItemsSearchHint() {
-        binding.searchEditText.hint = getString(LocalizationR.string.all_items_home_search_hint)
+        requiredBinding.searchEditText.hint = getString(LocalizationR.string.all_items_home_search_hint)
     }
 
     override fun showDefaultSearchHint() {
-        binding.searchEditText.hint = getString(LocalizationR.string.default_home_search_hint)
+        requiredBinding.searchEditText.hint = getString(LocalizationR.string.default_home_search_hint)
     }
 
     override fun showHomeScreenTitle(view: HomeDisplayViewModel) {
         when (view) {
-            is HomeDisplayViewModel.AllItems -> showScreenTitleWithStartIcon(
-                LocalizationR.string.filters_menu_all_items,
-                CoreUiR.drawable.ic_list
-            )
-            is HomeDisplayViewModel.Favourites -> showScreenTitleWithStartIcon(
-                LocalizationR.string.filters_menu_favourites,
-                CoreUiR.drawable.ic_star
-            )
-            is HomeDisplayViewModel.RecentlyModified -> showScreenTitleWithStartIcon(
-                LocalizationR.string.filters_menu_recently_modified,
-                CoreUiR.drawable.ic_clock
-            )
-            is HomeDisplayViewModel.SharedWithMe -> showScreenTitleWithStartIcon(
-                LocalizationR.string.filters_menu_shared_with_me,
-                CoreUiR.drawable.ic_share
-            )
-            is HomeDisplayViewModel.OwnedByMe -> showScreenTitleWithStartIcon(
-                LocalizationR.string.filters_menu_owned_by_me,
-                CoreUiR.drawable.ic_person
-            )
-            is HomeDisplayViewModel.Folders -> showScreenTitleWithStartIcon(
-                LocalizationR.string.filters_menu_folders,
-                CoreUiR.drawable.ic_folder
-            )
-            is HomeDisplayViewModel.Tags -> showScreenTitleWithStartIcon(
-                LocalizationR.string.filters_menu_tags,
-                CoreUiR.drawable.ic_tag
-            )
-            is HomeDisplayViewModel.Groups -> showScreenTitleWithStartIcon(
-                LocalizationR.string.filters_menu_groups,
-                CoreUiR.drawable.ic_group
-            )
-            HomeDisplayViewModel.Expiry -> showScreenTitleWithStartIcon(
-                LocalizationR.string.filters_menu_expiry,
-                CoreUiR.drawable.ic_calendar_clock
-            )
+            is HomeDisplayViewModel.AllItems ->
+                showScreenTitleWithStartIcon(
+                    LocalizationR.string.filters_menu_all_items,
+                    CoreUiR.drawable.ic_list,
+                )
+            is HomeDisplayViewModel.Favourites ->
+                showScreenTitleWithStartIcon(
+                    LocalizationR.string.filters_menu_favourites,
+                    CoreUiR.drawable.ic_star,
+                )
+            is HomeDisplayViewModel.RecentlyModified ->
+                showScreenTitleWithStartIcon(
+                    LocalizationR.string.filters_menu_recently_modified,
+                    CoreUiR.drawable.ic_clock,
+                )
+            is HomeDisplayViewModel.SharedWithMe ->
+                showScreenTitleWithStartIcon(
+                    LocalizationR.string.filters_menu_shared_with_me,
+                    CoreUiR.drawable.ic_share,
+                )
+            is HomeDisplayViewModel.OwnedByMe ->
+                showScreenTitleWithStartIcon(
+                    LocalizationR.string.filters_menu_owned_by_me,
+                    CoreUiR.drawable.ic_person,
+                )
+            is HomeDisplayViewModel.Folders ->
+                showScreenTitleWithStartIcon(
+                    LocalizationR.string.filters_menu_folders,
+                    CoreUiR.drawable.ic_folder,
+                )
+            is HomeDisplayViewModel.Tags ->
+                showScreenTitleWithStartIcon(
+                    LocalizationR.string.filters_menu_tags,
+                    CoreUiR.drawable.ic_tag,
+                )
+            is HomeDisplayViewModel.Groups ->
+                showScreenTitleWithStartIcon(
+                    LocalizationR.string.filters_menu_groups,
+                    CoreUiR.drawable.ic_group,
+                )
+            HomeDisplayViewModel.Expiry ->
+                showScreenTitleWithStartIcon(
+                    LocalizationR.string.filters_menu_expiry,
+                    CoreUiR.drawable.ic_calendar_clock,
+                )
         }
     }
 
-    override fun showChildFolderTitle(activeFolderName: String, isShared: Boolean) {
+    override fun showChildFolderTitle(
+        activeFolderName: String,
+        isShared: Boolean,
+    ) {
         showScreenTitleWithStartIcon(
             activeFolderName,
-            if (isShared) CoreUiR.drawable.ic_shared_folder else CoreUiR.drawable.ic_folder
+            if (isShared) CoreUiR.drawable.ic_shared_folder else CoreUiR.drawable.ic_folder,
         )
     }
 
-    override fun showTagTitle(activeTagTitle: String, isShared: Boolean) {
+    override fun showTagTitle(
+        activeTagTitle: String,
+        isShared: Boolean,
+    ) {
         showScreenTitleWithStartIcon(
             activeTagTitle,
-            if (isShared) CoreUiR.drawable.ic_shared_tag else CoreUiR.drawable.ic_tag
+            if (isShared) CoreUiR.drawable.ic_shared_tag else CoreUiR.drawable.ic_tag,
         )
     }
 
@@ -825,12 +862,18 @@ class HomeFragment :
         showScreenTitleWithStartIcon(groupName, CoreUiR.drawable.ic_group)
     }
 
-    private fun showScreenTitleWithStartIcon(@StringRes titleRes: Int, @DrawableRes iconRes: Int) {
+    private fun showScreenTitleWithStartIcon(
+        @StringRes titleRes: Int,
+        @DrawableRes iconRes: Int,
+    ) {
         showScreenTitleWithStartIcon(getString(titleRes), iconRes)
     }
 
-    private fun showScreenTitleWithStartIcon(title: String, @DrawableRes iconRes: Int) {
-        with(binding) {
+    private fun showScreenTitleWithStartIcon(
+        title: String,
+        @DrawableRes iconRes: Int,
+    ) {
+        with(requiredBinding) {
             screenTitleLabel.text = title
             titleDrawable.setImageResource(iconRes)
         }
@@ -838,28 +881,28 @@ class HomeFragment :
 
     override fun navigateToChild(homeView: HomeDisplayViewModel) {
         navController.navigate(
-            HomeFragmentDirections.actionHomeToHomeChild(homeView)
+            HomeFragmentDirections.actionHomeToHomeChild(homeView),
         )
     }
 
     override fun navigateToRootHomeFromChildHome(homeView: HomeDisplayViewModel) {
         navController.navigate(
-            HomeFragmentDirections.actionHomeChildToHome(homeView)
+            HomeFragmentDirections.actionHomeChildToHome(homeView),
         )
     }
 
     override fun navigateRootHomeFromRootHome(homeView: HomeDisplayViewModel) {
         navController.navigate(
-            HomeFragmentDirections.actionHomeToHome(homeView)
+            HomeFragmentDirections.actionHomeToHome(homeView),
         )
     }
 
     override fun showBackArrow() {
-        binding.backButton.visible()
+        requiredBinding.backButton.visible()
     }
 
     override fun hideBackArrow() {
-        binding.backButton.gone()
+        requiredBinding.backButton.gone()
     }
 
     override fun navigateToCreateResource(parentFolderId: String?) {
@@ -867,9 +910,9 @@ class HomeFragment :
             HomeFragmentDirections.actionHomeToResourceForm(
                 ResourceFormMode.Create(
                     LeadingContentType.PASSWORD,
-                    parentFolderId
-                )
-            )
+                    parentFolderId,
+                ),
+            ),
         )
     }
 
@@ -878,9 +921,9 @@ class HomeFragment :
             HomeFragmentDirections.actionHomeToResourceForm(
                 ResourceFormMode.Create(
                     LeadingContentType.TOTP,
-                    parentFolderId
-                )
-            )
+                    parentFolderId,
+                ),
+            ),
         )
     }
 
@@ -892,7 +935,7 @@ class HomeFragment :
         showSnackbar(
             LocalizationR.string.favourites_failure,
             anchorView = snackbarAnchorView,
-            backgroundColor = CoreUiR.color.red
+            backgroundColor = CoreUiR.color.red,
         )
     }
 
@@ -900,16 +943,16 @@ class HomeFragment :
         showSnackbar(
             LocalizationR.string.delete_failure,
             anchorView = snackbarAnchorView,
-            backgroundColor = CoreUiR.color.red
+            backgroundColor = CoreUiR.color.red,
         )
     }
 
     override fun showFolderMoreMenuIcon() {
-        binding.moreButton.visible()
+        requiredBinding.moreButton.visible()
     }
 
     override fun hideFolderMoreMenuIcon() {
-        binding.moreButton.gone()
+        requiredBinding.moreButton.gone()
     }
 
     override fun menuSeeFolderDetailsClick() {
@@ -917,19 +960,20 @@ class HomeFragment :
     }
 
     override fun navigateToFolderMoreMenu(folderMoreMenuModel: FolderMoreMenuModel) {
-        FolderMoreMenuFragment.newInstance(folderMoreMenuModel)
+        FolderMoreMenuFragment
+            .newInstance(folderMoreMenuModel)
             .show(childFragmentManager, FolderMoreMenuModel::class.java.name)
     }
 
     override fun navigateToFolderDetails(childFolder: Folder.Child) {
         findNavController().navigate(
-            NavDeepLinkProvider.folderDetailsDeepLinkRequest(childFolder.folderId)
+            NavDeepLinkProvider.folderDetailsDeepLinkRequest(childFolder.folderId),
         )
     }
 
     override fun navigateToCreateFolder(folderId: String?) {
         findNavController().navigate(
-            NavDeepLinkProvider.createFolderDeepLinkRequest(folderId)
+            NavDeepLinkProvider.createFolderDeepLinkRequest(folderId),
         )
     }
 
@@ -938,7 +982,7 @@ class HomeFragment :
             messageResId = LocalizationR.string.common_message_folder_created,
             messageArgs = arrayOf(name),
             anchorView = snackbarAnchorView,
-            backgroundColor = CoreUiR.color.green
+            backgroundColor = CoreUiR.color.green,
         )
     }
 
@@ -954,14 +998,14 @@ class HomeFragment :
         showSnackbar(
             messageResId = LocalizationR.string.common_data_refresh_error,
             backgroundColor = CoreUiR.color.red,
-            length = Snackbar.LENGTH_LONG
+            length = Snackbar.LENGTH_LONG,
         )
     }
 
     override fun showEncryptionError(message: String) {
         showSnackbar(
             LocalizationR.string.common_encryption_failure,
-            backgroundColor = CoreUiR.color.red
+            backgroundColor = CoreUiR.color.red,
         )
     }
 
@@ -975,21 +1019,21 @@ class HomeFragment :
 
     override fun navigateToScanTotp(parentFolderId: String?) {
         findNavController().navigate(
-            HomeFragmentDirections.actionHomeToScanOtp(parentFolderId, ScanOtpMode.SCAN_WITH_SUCCESS_SCREEN)
+            HomeFragmentDirections.actionHomeToScanOtp(parentFolderId, ScanOtpMode.SCAN_WITH_SUCCESS_SCREEN),
         )
     }
 
     override fun showJsonResourceSchemaValidationError() {
         showSnackbar(
             LocalizationR.string.common_json_schema_resource_validation_error,
-            backgroundColor = CoreUiR.color.red
+            backgroundColor = CoreUiR.color.red,
         )
     }
 
     override fun showJsonSecretSchemaValidationError() {
         showSnackbar(
             LocalizationR.string.common_json_schema_secret_validation_error,
-            backgroundColor = CoreUiR.color.red
+            backgroundColor = CoreUiR.color.red,
         )
     }
 

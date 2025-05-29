@@ -27,11 +27,11 @@ import com.google.gson.Gson
 import com.google.gson.JsonDeserializationContext
 import com.google.gson.JsonDeserializer
 import com.google.gson.JsonElement
+import com.passbolt.mobile.android.database.snapshot.ResourcesSnapshot
 import com.passbolt.mobile.android.dto.PassphraseNotInCacheException
 import com.passbolt.mobile.android.dto.response.ResourceResponseDto
 import com.passbolt.mobile.android.dto.response.ResourceResponseV4Dto
 import com.passbolt.mobile.android.dto.response.ResourceResponseV5Dto
-import com.passbolt.mobile.android.database.snapshot.ResourcesSnapshot
 import com.passbolt.mobile.android.entity.resource.ResourceWithMetadata
 import com.passbolt.mobile.android.serializers.gson.validation.JsonSchemaValidationRunner
 import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes
@@ -54,13 +54,13 @@ open class ResourceListItemDeserializer(
     private val metadataDecryptor: MetadataDecryptor,
     private val resourceTypeIdToSlugMapping: Map<UUID, String>,
     private val supportedResourceTypesIds: Set<UUID>,
-    private val resourcesSnapshot: ResourcesSnapshot
-) : JsonDeserializer<ResourceResponseDto?>, KoinComponent {
-
+    private val resourcesSnapshot: ResourcesSnapshot,
+) : JsonDeserializer<ResourceResponseDto?>,
+    KoinComponent {
     override fun deserialize(
         json: JsonElement,
         typeOfT: Type?,
-        context: JsonDeserializationContext
+        context: JsonDeserializationContext,
     ): ResourceResponseDto? {
         // done on the parser thread
 
@@ -96,10 +96,11 @@ open class ResourceListItemDeserializer(
                         } else {
                             val decryptedMetadataResult = metadataDecryptor.decryptMetadata(resource)
 
-                            if (decryptedMetadataResult is MetadataDecryptor.Output.Success && isValid(
+                            if (decryptedMetadataResult is MetadataDecryptor.Output.Success &&
+                                isValid(
                                     resource.resourceTypeId,
                                     decryptedMetadataResult.decryptedMetadata,
-                                    resourceTypeIdToSlugMapping
+                                    resourceTypeIdToSlugMapping,
                                 )
                             ) {
                                 resource.copy(metadata = decryptedMetadataResult.decryptedMetadata)
@@ -128,7 +129,7 @@ open class ResourceListItemDeserializer(
     @OptIn(ExperimentalContracts::class)
     private fun canSkipDecryptionAndValidation(
         resource: ResourceResponseDto,
-        cachedResource: ResourceWithMetadata?
+        cachedResource: ResourceWithMetadata?,
     ): Boolean {
         contract { returns(true) implies (cachedResource != null) }
         if (cachedResource == null) return false
@@ -138,7 +139,7 @@ open class ResourceListItemDeserializer(
     private suspend fun isValid(
         resourceTypeId: UUID,
         resourceJson: String,
-        resourceTypeIdToSlugMapping: Map<UUID, String>
+        resourceTypeIdToSlugMapping: Map<UUID, String>,
     ): Boolean {
         val resourceTypeSlug = resourceTypeIdToSlugMapping[resourceTypeId]
         return if (resourceTypeSlug != null) {
@@ -148,6 +149,8 @@ open class ResourceListItemDeserializer(
         }
     }
 
-    private fun isSupported(resourceTypeId: String, supportedResourceTypesIds: Set<UUID>) =
-        UUID.fromString(resourceTypeId) in supportedResourceTypesIds
+    private fun isSupported(
+        resourceTypeId: String,
+        supportedResourceTypesIds: Set<UUID>,
+    ) = UUID.fromString(resourceTypeId) in supportedResourceTypesIds
 }

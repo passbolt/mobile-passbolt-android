@@ -30,25 +30,49 @@ import com.passbolt.mobile.android.ui.ResourceModel
  */
 
 interface AutofillResourcesContract {
-
-    interface View : BaseAuthenticatedContract.View, ResourceHandlingStrategy {
+    interface View :
+        BaseAuthenticatedContract.View,
+        ResourceHandlingStrategy {
         fun navigateToAuth()
+
         fun navigateToSetup()
+
         fun navigateToAutofillHome()
+
         fun finishAutofill()
+
         fun getAutofillStructure(): AssistStructure
-        fun autofillReturn(username: String, password: String, uri: String?)
-        fun setResultAndFinish(result: Int, resultIntent: Intent)
+
+        fun autofillReturn(
+            username: String,
+            password: String,
+            uri: String?,
+        )
+
+        fun setResultAndFinish(
+            result: Int,
+            resultIntent: Intent,
+        )
+
         fun showProgress()
+
         fun hideProgress()
+
         fun showFetchFailure()
+
         fun showDecryptionFailure()
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
-        fun argsReceived(uri: String?, isRecreated: Boolean)
+        fun argsReceived(
+            uri: String?,
+            isRecreated: Boolean,
+        )
+
         fun userAuthenticated()
+
         fun itemClick(resourceModel: ResourceModel)
+
         fun newResourceCreated(resourceId: String)
     }
 }

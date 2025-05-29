@@ -25,16 +25,20 @@ import androidx.annotation.IdRes
  * @since v1.0
  */
 
-enum class VisibleCreateButton(@IdRes val filterId: Int){
+enum class VisibleCreateButton(
+    @IdRes val filterId: Int,
+) {
     ALL_ITEMS(com.passbolt.mobile.android.feature.home.R.id.allItems),
     FAVOURITES(com.passbolt.mobile.android.feature.home.R.id.favourites),
     RECENTLY_MODIFIED(com.passbolt.mobile.android.feature.home.R.id.recentlyModified),
     SHARED_WITH_ME(com.passbolt.mobile.android.feature.home.R.id.sharedWithMe),
     OWNED_BY_ME(com.passbolt.mobile.android.feature.home.R.id.ownedByMe),
-    FOLDERS(com.passbolt.mobile.android.feature.home.R.id.folders)
+    FOLDERS(com.passbolt.mobile.android.feature.home.R.id.folders),
 }
 
-enum class HiddenCreateButton(@IdRes val filterId: Int){
+enum class HiddenCreateButton(
+    @IdRes val filterId: Int,
+) {
     TAGS(com.passbolt.mobile.android.feature.home.R.id.tags),
-    GROUPS(com.passbolt.mobile.android.feature.home.R.id.groups)
+    GROUPS(com.passbolt.mobile.android.feature.home.R.id.groups),
 }

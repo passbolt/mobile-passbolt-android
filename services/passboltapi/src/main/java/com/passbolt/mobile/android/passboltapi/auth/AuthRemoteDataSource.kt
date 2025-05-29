@@ -32,24 +32,18 @@ import retrofit2.Response
  * @since v1.0
  */
 internal class AuthRemoteDataSource(
-    private val authApi: AuthApi
+    private val authApi: AuthApi,
 ) : AuthDataSource {
+    override suspend fun getServerPublicPgpKey(): BaseResponse<ServerPgpResponseDto> = authApi.getServerPublicPgpKey()
 
-    override suspend fun getServerPublicPgpKey(): BaseResponse<ServerPgpResponseDto> =
-        authApi.getServerPublicPgpKey()
-
-    override suspend fun getServerPublicRsaKey(): BaseResponse<ServerRsaResponseDto> =
-        authApi.getServerPublicRsaKey()
+    override suspend fun getServerPublicRsaKey(): BaseResponse<ServerRsaResponseDto> = authApi.getServerPublicRsaKey()
 
     override suspend fun signIn(
         signInRequestDto: SignInRequestDto,
-        mfaToken: String?
-    ): Response<BaseResponse<SignInResponseDto>> =
-        authApi.signIn(signInRequestDto, mfaToken)
+        mfaToken: String?,
+    ): Response<BaseResponse<SignInResponseDto>> = authApi.signIn(signInRequestDto, mfaToken)
 
-    override suspend fun signOut(signOutRequestDto: SignOutRequestDto): BaseResponse<Unit> =
-        authApi.signOut(signOutRequestDto)
+    override suspend fun signOut(signOutRequestDto: SignOutRequestDto): BaseResponse<Unit> = authApi.signOut(signOutRequestDto)
 
-    override suspend fun refreshSession(refreshSessionRequest: RefreshSessionRequest) =
-        authApi.refreshSession(refreshSessionRequest)
+    override suspend fun refreshSession(refreshSessionRequest: RefreshSessionRequest) = authApi.refreshSession(refreshSessionRequest)
 }

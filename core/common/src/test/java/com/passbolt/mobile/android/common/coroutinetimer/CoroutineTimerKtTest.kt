@@ -29,17 +29,17 @@ import kotlin.time.ExperimentalTime
  */
 @ExperimentalTime
 class CoroutineTimerKtTest {
-
     @Test
-    fun `test if timer is ticking fine`() = runBlocking {
-        val timer = timerFlow(TICK_COUNT, TIMER_TICK_MILLIS)
-        val expectedTickCount = 10
+    fun `test if timer is ticking fine`() =
+        runBlocking {
+            val timer = timerFlow(TICK_COUNT, TIMER_TICK_MILLIS)
+            val expectedTickCount = 10
 
-        timer.test {
-            repeat(expectedTickCount) { expectItem() }
-            expectComplete()
+            timer.test {
+                repeat(expectedTickCount) { expectItem() }
+                expectComplete()
+            }
         }
-    }
 
     private companion object {
         private const val TIMER_DURATION_MILLIS = 1_000L

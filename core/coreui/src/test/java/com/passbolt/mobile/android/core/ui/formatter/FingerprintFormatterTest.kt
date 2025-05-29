@@ -26,9 +26,7 @@ package com.passbolt.mobile.android.core.ui.formatter
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test
 
-
 class FingerprintFormatterTest {
-
     private val fingerprintFormatter = FingerprintFormatter()
 
     @Test
@@ -49,9 +47,10 @@ class FingerprintFormatterTest {
 
     @Test
     fun `format should format fingerprint correct with no spacing`() {
-        val fingerprint = buildString {
-            repeat((0 until FingerprintFormatter.FINGERPRINT_LENGTH).count()) { append("A") }
-        }
+        val fingerprint =
+            buildString {
+                repeat((0 until FingerprintFormatter.FINGERPRINT_LENGTH).count()) { append("A") }
+            }
 
         assertThat(fingerprintFormatter.formatWithRawFallback(fingerprint, appendMiddleSpacing = false))
             .isEqualTo("AAAA AAAA AAAA AAAA AAAA\nAAAA AAAA AAAA AAAA AAAA")
@@ -59,9 +58,10 @@ class FingerprintFormatterTest {
 
     @Test
     fun `format should format fingerprint correct with extra spacing`() {
-        val fingerprint = buildString {
-            repeat((0 until FingerprintFormatter.FINGERPRINT_LENGTH).count()) { append("A") }
-        }
+        val fingerprint =
+            buildString {
+                repeat((0 until FingerprintFormatter.FINGERPRINT_LENGTH).count()) { append("A") }
+            }
 
         assertThat(fingerprintFormatter.formatWithRawFallback(fingerprint, appendMiddleSpacing = true))
             .isEqualTo("AAAA AAAA AAAA AAAA AAAA\n\nAAAA AAAA AAAA AAAA AAAA")

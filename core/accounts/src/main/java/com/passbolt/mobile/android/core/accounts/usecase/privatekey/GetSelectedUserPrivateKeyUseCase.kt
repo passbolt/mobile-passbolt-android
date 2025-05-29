@@ -31,12 +31,11 @@ import java.io.IOException
  */
 
 class GetSelectedUserPrivateKeyUseCase(
-    private val encryptedFileFactory: EncryptedFileFactory
+    private val encryptedFileFactory: EncryptedFileFactory,
 ) : UseCase<Unit, GetSelectedUserPrivateKeyUseCase.Output>,
     SelectedAccountUseCase {
-
-    override fun execute(input: Unit): Output {
-        return try {
+    override fun execute(input: Unit): Output =
+        try {
             val name = PrivateKeyFileName(selectedAccountId).name
             val encryptedFile = encryptedFileFactory.get(name)
             encryptedFile.openFileInput().use {
@@ -47,9 +46,8 @@ class GetSelectedUserPrivateKeyUseCase(
             Timber.e(exception)
             Output(null)
         }
-    }
 
     data class Output(
-        val privateKey: String?
+        val privateKey: String?,
     )
 }

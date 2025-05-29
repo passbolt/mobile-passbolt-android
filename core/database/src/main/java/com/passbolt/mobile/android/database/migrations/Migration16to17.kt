@@ -34,7 +34,8 @@ object Migration16to17 : Migration(16, 17) {
     private const val DROP_RESOURCES = "DROP TABLE Resource"
 
     @Suppress("MaxLineLength")
-    private const val CREATE_RESOURCES = "CREATE TABLE IF NOT EXISTS Resource (" +
+    private const val CREATE_RESOURCES =
+        "CREATE TABLE IF NOT EXISTS Resource (" +
             "`resourceId` TEXT NOT NULL, " +
             "`folderId` TEXT, " +
             "`resourcePermission` TEXT NOT NULL, " +
@@ -48,7 +49,8 @@ object Migration16to17 : Migration(16, 17) {
             "FOREIGN KEY(`folderId`) REFERENCES `Folder`(`folderId`) ON UPDATE NO ACTION ON DELETE SET NULL , " +
             "FOREIGN KEY(`resourceTypeId`) REFERENCES `ResourceType`(`resourceTypeId`) ON UPDATE NO ACTION ON DELETE NO ACTION " +
             ")"
-    private const val CREATE_METADATA_KEYS = "CREATE TABLE IF NOT EXISTS MetadataKey (" +
+    private const val CREATE_METADATA_KEYS =
+        "CREATE TABLE IF NOT EXISTS MetadataKey (" +
             "`id` TEXT NOT NULL, " +
             "`fingerprint` TEXT, " +
             "`armoredKey` TEXT NOT NULL, " +
@@ -56,14 +58,16 @@ object Migration16to17 : Migration(16, 17) {
             "`deleted` INTEGER, " +
             "PRIMARY KEY(`id`)" +
             ")"
-    private const val CREATE_METADATA_PRIVATE_KEYS = "CREATE TABLE IF NOT EXISTS MetadataPrivateKey (" +
+    private const val CREATE_METADATA_PRIVATE_KEYS =
+        "CREATE TABLE IF NOT EXISTS MetadataPrivateKey (" +
             "`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
             "`metadataKeyId` TEXT NOT NULL, " +
             "`userId` TEXT, " +
             "`data` TEXT NOT NULL, " +
             "FOREIGN KEY(`metadataKeyId`) REFERENCES `MetadataKey`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE " +
             ")"
-    private const val CREATE_RESOURCE_TYPE = "CREATE TABLE IF NOT EXISTS ResourceType (" +
+    private const val CREATE_RESOURCE_TYPE =
+        "CREATE TABLE IF NOT EXISTS ResourceType (" +
             "`resourceTypeId` TEXT NOT NULL, " +
             "`name` TEXT NOT NULL, " +
             "`slug` TEXT NOT NULL, " +

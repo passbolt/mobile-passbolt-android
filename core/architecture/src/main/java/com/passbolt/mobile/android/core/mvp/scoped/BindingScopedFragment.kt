@@ -31,8 +31,9 @@ import org.koin.core.scope.Scope
  * @since v1.0
  */
 
-abstract class BindingScopedFragment<T : ViewBinding>(viewInflater: (LayoutInflater, ViewGroup?, Boolean) -> T) :
-    BindingFragment<T>(viewInflater), AndroidScopeComponent {
-
+abstract class BindingScopedFragment<T : ViewBinding>(
+    viewInflater: (LayoutInflater, ViewGroup?, Boolean) -> T,
+) : BindingFragment<T>(viewInflater),
+    AndroidScopeComponent {
     override val scope: Scope by fragmentScope(useParentActivityScope = false)
 }

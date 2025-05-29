@@ -8,7 +8,7 @@ kotlin = "2.0.0"
 kotlinKsp = "2.0.0-1.0.22"
 coroutines = "1.8.0"
 koin = "3.4.3"
-quadrant = "1.7"
+composeLifecycleViewModel = "2.8.5"
 junit = "4.13.2"
 mockitoCore = "5.12.0"
 mockitoKotlin = "5.3.1"
@@ -22,8 +22,8 @@ androidTestKtx = "1.6.1"
 androidTestIntents = "3.6.1"
 mockitoAndroid = "5.12.0"
 espressoIdlingResource = "3.6.1"
-ktlint = "0.36.0"
-detekt = "1.23.1"
+ktlint = "12.2.0"
+detekt = "1.23.8"
 leakcanary = "2.12"
 kover = "0.5.1"
 dependencyAnalysis = "1.32.0"
@@ -77,6 +77,8 @@ jsonSchemaFriend = "0.12.5"
 jsonPath = "2.9.0"
 jsonAssert = "2.0-rc1"
 snyk = "0.7.0"
+androidxComposeBom = "2025.04.00"
+nlopez-compose-rulset = "0.4.22"
 
 [libraries]
 commons-validator = { module = "commons-validator:commons-validator", version.ref = "commonsValidator" }
@@ -84,6 +86,7 @@ desugar-jdklibs = { group = "com.android.tools", name = "desugar_jdk_libs", vers
 dexmaker-mockito-inline-extended = { module = "com.linkedin.dexmaker:dexmaker-mockito-inline-extended", version.ref = "dexmakerMockitoInlineExtended" }
 licensee = { group = "app.cash.licensee", name = "licensee-gradle-plugin", version.ref = "licensee" }
 koin = { group = "io.insert-koin", name = "koin-android", version.ref = "koin" }
+koin-compose = { group = "io.insert-koin", name = "koin-androidx-compose", version.ref = "koin" }
 koin-test = { group = "io.insert-koin", name = "koin-test", version.ref = "koin" }
 koin-test-junit = { group = "io.insert-koin", name = "koin-test-junit4", version.ref = "koin" }
 kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin" }
@@ -104,7 +107,6 @@ android-test-rules = { group = "androidx.test", name = "rules", version.ref = "a
 android-test-ktx = { group = "androidx.test", name = "core-ktx", version.ref = "androidTestKtx" }
 android-test-intents = { group = "androidx.test.espresso", name = "espresso-intents", version.ref = "androidTestIntents" }
 espresso-idling-resource = { group = "androidx.test.espresso", name = "espresso-idling-resource", version.ref = "espressoIdlingResource" }
-ktlint = { group = "com.pinterest", name = "ktlint", version.ref = "ktlint" }
 leakcanary = { group = "com.squareup.leakcanary", name = "leakcanary-android", version.ref = "leakcanary" }
 androidx-core = { group = "androidx.core", name = "core-ktx", version.ref = "androidXcore" }
 appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
@@ -165,15 +167,24 @@ otp = { group = "dev.turingcomplete", name = "kotlin-onetimepassword", version.r
 apache-commons-codec = { group = "commons-codec", name = "commons-codec", version.ref = "apacheCommonsCodec" }
 jsonschema-friend = { group = "net.jimblackler.jsonschemafriend", name = "core", version.ref = "jsonSchemaFriend" }
 json-path = { group = "com.jayway.jsonpath", name = "json-path", version.ref = "jsonPath" }
-json-assert = {group="org.skyscreamer", name="jsonassert", version.ref="jsonAssert" }
+json-assert = { group = "org.skyscreamer", name = "jsonassert", version.ref = "jsonAssert" }
+compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "androidxComposeBom" }
+compose-foundation = { module = "androidx.compose.foundation:foundation" }
+compose-material3 = { module = "androidx.compose.material3:material3" }
+compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
+compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
+compose-lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "composeLifecycleViewModel" }
+compose-ui-graphics = { module = "androidx.compose.ui:ui-graphics-android" }
+ktlint-compose-rulset = { module = "io.nlopez.compose.rules:ktlint", version.ref="nlopez-compose-rulset" }
+detekt-compose-rulset = { module = "io.nlopez.compose.rules:detekt", version.ref="nlopez-compose-rulset" }
 
 [plugins]
 android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
 kotlin-gradle = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 gradle-versions = { id = "com.github.ben-manes.versions", version.ref = "gradleVersionsPlugin" }
-quadrant = { id = "com.gaelmarhic.quadrant", version.ref = "quadrant" }
 navigation-safeargs = { id = "androidx.navigation.safeargs.kotlin", version.ref = "navigation" }
 app-distribution = { id = "com.google.firebase.appdistribution", version.ref = "appDistribution" }
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
@@ -185,4 +196,4 @@ detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 kotlin-ksp = { id = "com.google.devtools.ksp", version.ref = "kotlinKsp" }
 room = { id = "androidx.room", version.ref = "roomCore" }
 snyk = { id = "io.snyk.gradle.plugin.snykplugin", version.ref = "snyk" }
-
+ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }

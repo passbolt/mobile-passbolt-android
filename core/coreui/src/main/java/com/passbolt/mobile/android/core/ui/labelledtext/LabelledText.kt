@@ -37,65 +37,66 @@ import com.passbolt.mobile.android.core.ui.R
 import com.passbolt.mobile.android.core.ui.databinding.ViewLabelledTextBinding
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
-class LabelledText @JvmOverloads constructor(
-    context: Context,
-    attrs: AttributeSet? = null,
-    defStyle: Int = 0
-) : ConstraintLayout(context, attrs, defStyle) {
+class LabelledText
+    @JvmOverloads
+    constructor(
+        context: Context,
+        attrs: AttributeSet? = null,
+        defStyle: Int = 0,
+    ) : ConstraintLayout(context, attrs, defStyle) {
+        var label = ""
+            set(value) {
+                field = value
+                binding.label.text = value
+            }
+        var text = ""
+            set(value) {
+                field = value
+                binding.text.text = value
+            }
+        var endActionButton: LabelledTextEndAction? = null
+            set(value) {
+                field = value
+                setEndAction(value)
+            }
 
-    var label = ""
-        set(value) {
-            field = value
-            binding.label.text = value
+        private val binding = ViewLabelledTextBinding.inflate(LayoutInflater.from(context), this)
+
+        init {
+            parseAttributes(attrs)
         }
-    var text = ""
-        set(value) {
-            field = value
-            binding.text.text = value
-        }
-    var endActionButton: LabelledTextEndAction? = null
-        set(value) {
-            field = value
-            setEndAction(value)
-        }
 
-    private val binding = ViewLabelledTextBinding.inflate(LayoutInflater.from(context), this)
-
-    init {
-        parseAttributes(attrs)
-    }
-
-    private fun parseAttributes(attrs: AttributeSet?) {
-        attrs?.let {
-            context.obtainStyledAttributes(attrs, R.styleable.LabelledText, 0, 0).use {
-                label = it.getString(R.styleable.LabelledText_labelledText_label).orEmpty()
-                text = it.getString(R.styleable.LabelledText_labelledText_text).orEmpty()
-                if (it.getBoolean(R.styleable.LabelledText_labelledText_use_monospace_font, false)) {
-                    val fontFamily = ResourcesCompat.getFont(binding.root.context, R.font.inconsolata)
-                    binding.text.typeface = Typeface.create(fontFamily, MONOSPACED_FONT_WEIGHT, false)
-                    binding.text.textSize = MONOSPACED_FONT_TEXT_SIZE_SP
+        private fun parseAttributes(attrs: AttributeSet?) {
+            attrs?.let {
+                context.obtainStyledAttributes(attrs, R.styleable.LabelledText, 0, 0).use {
+                    label = it.getString(R.styleable.LabelledText_labelledText_label).orEmpty()
+                    text = it.getString(R.styleable.LabelledText_labelledText_text).orEmpty()
+                    if (it.getBoolean(R.styleable.LabelledText_labelledText_use_monospace_font, false)) {
+                        val fontFamily = ResourcesCompat.getFont(binding.root.context, R.font.inconsolata)
+                        binding.text.typeface = Typeface.create(fontFamily, MONOSPACED_FONT_WEIGHT, false)
+                        binding.text.textSize = MONOSPACED_FONT_TEXT_SIZE_SP
+                    }
                 }
             }
         }
-    }
 
-    private fun setEndAction(model: LabelledTextEndAction?) {
-        model?.let {
-            ImageView(context)
-                .apply {
-                    setImageResource(model.icon)
-                    setBackgroundResource(context.selectableBackgroundBorderlessResourceId())
-                    setColorFilter(context.getColor(CoreUiR.color.icon_tint), android.graphics.PorterDuff.Mode.SRC_IN)
-                    setDebouncingOnClick { model.action.invoke() }
-                    binding.actionsContainer.addView(this)
-                }
-        } ?: kotlin.run {
-            binding.actionsContainer.removeAllViews()
+        private fun setEndAction(model: LabelledTextEndAction?) {
+            model?.let {
+                ImageView(context)
+                    .apply {
+                        setImageResource(model.icon)
+                        setBackgroundResource(context.selectableBackgroundBorderlessResourceId())
+                        setColorFilter(context.getColor(CoreUiR.color.icon_tint), android.graphics.PorterDuff.Mode.SRC_IN)
+                        setDebouncingOnClick { model.action.invoke() }
+                        binding.actionsContainer.addView(this)
+                    }
+            } ?: kotlin.run {
+                binding.actionsContainer.removeAllViews()
+            }
+        }
+
+        private companion object {
+            private const val MONOSPACED_FONT_WEIGHT = 500
+            private const val MONOSPACED_FONT_TEXT_SIZE_SP = 16f
         }
     }
-
-    private companion object {
-        private const val MONOSPACED_FONT_WEIGHT = 500
-        private const val MONOSPACED_FONT_TEXT_SIZE_SP = 16f
-    }
-}

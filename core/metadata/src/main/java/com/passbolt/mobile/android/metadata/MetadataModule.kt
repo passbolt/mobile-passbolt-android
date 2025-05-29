@@ -52,47 +52,48 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-val metadataModule = module {
-    metadataSettingsModule()
+val metadataModule =
+    module {
+        metadataSettingsModule()
 
-    singleOf(::FetchMetadataKeysUseCase)
-    singleOf(::MetadataKeysInteractor)
-    singleOf(::AddLocalMetadataKeysUseCase)
-    singleOf(::GetLocalMetadataKeysUseCase)
-    singleOf(::GetLocalMetadataKeyUseCase)
-    singleOf(::RebuildMetadataKeysTablesUseCase)
-    singleOf(::RemoveLocalMetadataKeysUseCase)
-    singleOf(::FetchMetadataTypesSettingsUseCase)
-    singleOf(::MetadataTypesSettingsInteractor)
-    singleOf(::FetchMetadataKeysUseCase)
-    singleOf(::FetchMetadataKeysSettingsUseCase)
-    singleOf(::MetadataKeysSettingsInteractor)
-    singleOf(::FetchMetadataSessionKeysUseCase)
-    singleOf(::SessionKeysBundleMerger)
-    singleOf(::SessionKeysMemoryCache)
-    singleOf(::SessionKeysBundleValidator)
-    singleOf(::MetadataPrivateKeysValidator)
-    singleOf(::PostMetadataSessionKeysUseCase)
-    singleOf(::UpdateMetadataSessionKeysUseCase)
-    single {
-        MetadataSessionKeysInteractor(
-            fetchMetadataSessionKeysUseCase = get(),
-            postMetadataSessionKeysUseCase = get(),
-            updateMetadataSessionKeysUseCase = get(),
-            passphraseMemoryCache = get(),
-            getPrivateKeyUseCase = get(),
-            openPgp = get(),
-            sessionKeysBundleMerger = get(),
-            sessionKeysMemoryCache = get(),
-            metadataMapper = get(),
-            gson = get(),
-            sessionKeysBundleValidator = get()
-        )
+        singleOf(::FetchMetadataKeysUseCase)
+        singleOf(::MetadataKeysInteractor)
+        singleOf(::AddLocalMetadataKeysUseCase)
+        singleOf(::GetLocalMetadataKeysUseCase)
+        singleOf(::GetLocalMetadataKeyUseCase)
+        singleOf(::RebuildMetadataKeysTablesUseCase)
+        singleOf(::RemoveLocalMetadataKeysUseCase)
+        singleOf(::FetchMetadataTypesSettingsUseCase)
+        singleOf(::MetadataTypesSettingsInteractor)
+        singleOf(::FetchMetadataKeysUseCase)
+        singleOf(::FetchMetadataKeysSettingsUseCase)
+        singleOf(::MetadataKeysSettingsInteractor)
+        singleOf(::FetchMetadataSessionKeysUseCase)
+        singleOf(::SessionKeysBundleMerger)
+        singleOf(::SessionKeysMemoryCache)
+        singleOf(::SessionKeysBundleValidator)
+        singleOf(::MetadataPrivateKeysValidator)
+        singleOf(::PostMetadataSessionKeysUseCase)
+        singleOf(::UpdateMetadataSessionKeysUseCase)
+        single {
+            MetadataSessionKeysInteractor(
+                fetchMetadataSessionKeysUseCase = get(),
+                postMetadataSessionKeysUseCase = get(),
+                updateMetadataSessionKeysUseCase = get(),
+                passphraseMemoryCache = get(),
+                getPrivateKeyUseCase = get(),
+                openPgp = get(),
+                sessionKeysBundleMerger = get(),
+                sessionKeysMemoryCache = get(),
+                metadataMapper = get(),
+                gson = get(),
+                sessionKeysBundleValidator = get(),
+            )
+        }
+        singleOf(::UpdateMetadataPrivateKeyUseCase)
+        singleOf(::GetTrustedMetadataKeyUseCase)
+        singleOf(::SaveTrustedMetadataKeyUseCase)
+        singleOf(::DeleteTrustedMetadataKeyUseCase)
+        singleOf(::MetadataPrivateKeysInteractor)
+        singleOf(::MetadataPrivateKeysHelperInteractor)
     }
-    singleOf(::UpdateMetadataPrivateKeyUseCase)
-    singleOf(::GetTrustedMetadataKeyUseCase)
-    singleOf(::SaveTrustedMetadataKeyUseCase)
-    singleOf(::DeleteTrustedMetadataKeyUseCase)
-    singleOf(::MetadataPrivateKeysInteractor)
-    singleOf(::MetadataPrivateKeysHelperInteractor)
-}

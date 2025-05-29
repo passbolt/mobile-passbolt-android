@@ -26,18 +26,23 @@ import com.passbolt.mobile.android.core.mvp.BaseContract
  */
 
 interface TransferDetailsContract {
-
     interface View : BaseContract.View {
         fun showCameraPermissionRequiredDialog()
+
         fun navigateToAppSettings()
+
         fun showCameraRequiredDialog()
+
         fun requestCameraPermission()
+
         fun navigateToScanQr()
     }
 
     interface Presenter : BaseContract.Presenter<View> {
         fun scanQrCodesButtonClick()
+
         fun permissionRejectedClick()
+
         fun settingsButtonClick()
     }
 }

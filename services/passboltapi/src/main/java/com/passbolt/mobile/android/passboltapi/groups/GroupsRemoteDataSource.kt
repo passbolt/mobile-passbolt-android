@@ -23,9 +23,7 @@ package com.passbolt.mobile.android.passboltapi.groups
  * @since v1.0
  */
 internal class GroupsRemoteDataSource(
-    private val groupsApi: GroupsApi
+    private val groupsApi: GroupsApi,
 ) : GroupsDataSource {
-
-    override suspend fun getGroups() =
-        groupsApi.getGroups().body
+    override suspend fun getGroups() = groupsApi.getGroups().body
 }

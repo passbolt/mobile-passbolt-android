@@ -27,5 +27,5 @@ data class VerifiedMessage(
     val decryptedMessage: String,
     val signatureCreationTimestampSeconds: Long,
     val signatureKeyFingerprint: String,
-    val signatureKeyHexKeyID: String
+    val signatureKeyHexKeyID: String,
 )

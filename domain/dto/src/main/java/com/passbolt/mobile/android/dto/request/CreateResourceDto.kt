@@ -44,7 +44,7 @@ data class CreateV4ResourceDto(
     @SerializedName("folder_parent_id")
     override val folderParentId: String?,
     @SerializedName("expired")
-    override val expiry: ZonedDateTime?
+    override val expiry: ZonedDateTime?,
 ) : CreateResourceDto()
 
 data class CreateV5ResourceDto(
@@ -59,34 +59,34 @@ data class CreateV5ResourceDto(
     @SerializedName("metadata_key_id")
     val metadataKeyId: String?,
     @SerializedName("metadata_key_type")
-    val metadataKeyType: MetadataKeyTypeDto?
+    val metadataKeyType: MetadataKeyTypeDto?,
 ) : CreateResourceDto()
 
 data class EncryptedSecret(
     @SerializedName("user_id")
     val userId: String,
-    val data: String
+    val data: String,
 )
 
 data class SecretsDto(
     val password: String,
-    val description: String
+    val description: String,
 )
 
 data class TotpSecretsDto(
-    val totp: Totp
+    val totp: Totp,
 ) {
     data class Totp(
         val algorithm: String,
         @SerializedName("secret_key")
         val key: String,
         val digits: Int,
-        val period: Long
+        val period: Long,
     )
 }
 
 data class PasswordDescriptionTotpSecretsDto(
     val password: String,
     val description: String,
-    val totp: TotpSecretsDto.Totp
+    val totp: TotpSecretsDto.Totp,
 )

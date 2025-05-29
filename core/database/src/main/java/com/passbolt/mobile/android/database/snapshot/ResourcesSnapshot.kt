@@ -29,21 +29,21 @@ import com.passbolt.mobile.android.entity.resource.ResourceWithMetadata
 
 class ResourcesSnapshot(
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
-    private val databaseProvider: DatabaseProvider
+    private val databaseProvider: DatabaseProvider,
 ) {
     private var hashedSnapshot = mapOf<String, ResourceWithMetadata>()
 
     suspend fun populateForCurrentAccount() {
         val currentUser = getSelectedAccountUseCase.execute(Unit).selectedAccount!!
-        hashedSnapshot = databaseProvider
-            .get(currentUser)
-            .resourcesDao()
-            .getAll()
-            .associateBy { it.resourceId }
+        hashedSnapshot =
+            databaseProvider
+                .get(currentUser)
+                .resourcesDao()
+                .getAll()
+                .associateBy { it.resourceId }
     }
 
-    fun getCachedResource(resourceId: String): ResourceWithMetadata? =
-        hashedSnapshot[resourceId]
+    fun getCachedResource(resourceId: String): ResourceWithMetadata? = hashedSnapshot[resourceId]
 
     fun clear() {
         hashedSnapshot = emptyMap()

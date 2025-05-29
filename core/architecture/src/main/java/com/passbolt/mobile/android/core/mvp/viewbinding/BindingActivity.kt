@@ -28,21 +28,22 @@ import androidx.viewbinding.ViewBinding
  * @since v1.0
  */
 
-abstract class BindingActivity<T : ViewBinding>(private val viewInflater: (LayoutInflater) -> T) :
-    AppCompatActivity() {
+abstract class BindingActivity<T : ViewBinding>(
+    private val viewInflater: (LayoutInflater) -> T,
+) : AppCompatActivity() {
+    private var binding: T? = null
 
-    private var _binding: T? = null
-    protected open val binding: T
-        get() = _binding!!
+    protected open val requiredBinding: T
+        get() = requireNotNull(binding)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        _binding = viewInflater(layoutInflater)
-        setContentView(binding.root)
+        binding = viewInflater(layoutInflater)
+        setContentView(requiredBinding.root)
     }
 
     override fun onDestroy() {
-        _binding = null
+        binding = null
         super.onDestroy()
     }
 }

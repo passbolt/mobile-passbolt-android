@@ -28,5 +28,5 @@ import com.passbolt.mobile.android.common.types.ClipboardLabel
 data class ResourcePropertyActionResult<T>(
     val label: ClipboardLabel,
     val isSecret: Boolean,
-    val result: T
+    val result: T,
 )

@@ -46,36 +46,38 @@ import kotlin.time.ExperimentalTime
 @ExperimentalTime
 @ExperimentalCoroutinesApi
 class QrParserTest : KoinTest {
-
     private val scanQrParser: ScanQrParser by inject()
     private val mockScanningFlow = MutableSharedFlow<BarcodeScanResult>()
     private lateinit var scanningJob: Job
 
     @get:Rule
-    val koinTestRule = KoinTestRule.create {
-        printLogger(Level.ERROR)
-        modules(testModule, testParserModule)
-    }
+    val koinTestRule =
+        KoinTestRule.create {
+            printLogger(Level.ERROR)
+            modules(testModule, testParserModule)
+        }
 
     @Test
-    fun `parser should parse user resolvable states correct`() = runTest {
-        scanningJob = launch {
-            scanQrParser.startParsing(mockScanningFlow)
-        }
+    fun `parser should parse user resolvable states correct`() =
+        runTest {
+            scanningJob =
+                launch {
+                    scanQrParser.startParsing(mockScanningFlow)
+                }
 
-        launch {
-            scanQrParser.parseResultFlow.test {
-                assertNoBarcodesInRange(expectItem())
-                assertMultipleBarcodesItem(expectItem())
-                assertNotAPassboltQrCode(expectItem())
-                cancelAndIgnoreRemainingEvents()
+            launch {
+                scanQrParser.parseResultFlow.test {
+                    assertNoBarcodesInRange(expectItem())
+                    assertMultipleBarcodesItem(expectItem())
+                    assertNotAPassboltQrCode(expectItem())
+                    cancelAndIgnoreRemainingEvents()
+                }
             }
-        }
-        mockScanningFlow.emit(BarcodeScanResult.MultipleBarcodes)
-        mockScanningFlow.emit(BarcodeScanResult.SingleBarcode(SAMPLE_BYTE_ARRAY))
+            mockScanningFlow.emit(BarcodeScanResult.MultipleBarcodes)
+            mockScanningFlow.emit(BarcodeScanResult.SingleBarcode(SAMPLE_BYTE_ARRAY))
 
-        scanningJob.cancel()
-    }
+            scanningJob.cancel()
+        }
 
     private fun assertNotAPassboltQrCode(item: ParseResult) {
         assertThat(item).isInstanceOf(ParseResult.UserResolvableError::class.java)
@@ -96,143 +98,157 @@ class QrParserTest : KoinTest {
     }
 
     @Test
-    fun `parser should parse passbolt qr correct`() = runTest {
-        scanningJob = launch {
-            scanQrParser.startParsing(mockScanningFlow)
-        }
+    fun `parser should parse passbolt qr correct`() =
+        runTest {
+            scanningJob =
+                launch {
+                    scanQrParser.startParsing(mockScanningFlow)
+                }
 
-        launch {
-            scanQrParser.parseResultFlow.test {
-                assertNoBarcodesInRange(expectItem())
-                assertPassboltQrFirstPage(expectItem())
-                assertPassboltQrSubsequentPage(expectItem())
-                cancelAndIgnoreRemainingEvents()
+            launch {
+                scanQrParser.parseResultFlow.test {
+                    assertNoBarcodesInRange(expectItem())
+                    assertPassboltQrFirstPage(expectItem())
+                    assertPassboltQrSubsequentPage(expectItem())
+                    cancelAndIgnoreRemainingEvents()
+                }
             }
-        }
-        mockScanningFlow.emit(BarcodeScanResult.SingleBarcode(PASSBOLT_FIRST_PAGE_SCAN))
-        mockScanningFlow.emit(BarcodeScanResult.SingleBarcode(PASSBOLT_SUBSEQUENT_PAGE_SCAN))
+            mockScanningFlow.emit(BarcodeScanResult.SingleBarcode(PASSBOLT_FIRST_PAGE_SCAN))
+            mockScanningFlow.emit(BarcodeScanResult.SingleBarcode(PASSBOLT_SUBSEQUENT_PAGE_SCAN))
 
-        scanningJob.cancel()
-    }
+            scanningJob.cancel()
+        }
 
     @Test
-    fun `parser should not react to already parsed first page qr`() = runTest {
-        scanningJob = launch {
-            scanQrParser.startParsing(mockScanningFlow)
-        }
+    fun `parser should not react to already parsed first page qr`() =
+        runTest {
+            scanningJob =
+                launch {
+                    scanQrParser.startParsing(mockScanningFlow)
+                }
 
-        launch {
-            scanQrParser.parseResultFlow.test {
-                assertNoBarcodesInRange(expectItem())
-                assertPassboltQrFirstPage(expectItem())
-                assertNoBarcodesInRange(expectItem())
-                expectComplete()
+            launch {
+                scanQrParser.parseResultFlow.test {
+                    assertNoBarcodesInRange(expectItem())
+                    assertPassboltQrFirstPage(expectItem())
+                    assertNoBarcodesInRange(expectItem())
+                    expectComplete()
+                }
             }
-        }
-        mockScanningFlow.emit(BarcodeScanResult.SingleBarcode(PASSBOLT_FIRST_PAGE_SCAN))
-        mockScanningFlow.emit(BarcodeScanResult.SingleBarcode(PASSBOLT_FIRST_PAGE_SCAN))
-        mockScanningFlow.emit(BarcodeScanResult.NoBarcodeInRange)
-        mockScanningFlow.emit(BarcodeScanResult.SingleBarcode(PASSBOLT_FIRST_PAGE_SCAN))
-        mockScanningFlow.emit(BarcodeScanResult.SingleBarcode(PASSBOLT_FIRST_PAGE_SCAN))
+            mockScanningFlow.emit(BarcodeScanResult.SingleBarcode(PASSBOLT_FIRST_PAGE_SCAN))
+            mockScanningFlow.emit(BarcodeScanResult.SingleBarcode(PASSBOLT_FIRST_PAGE_SCAN))
+            mockScanningFlow.emit(BarcodeScanResult.NoBarcodeInRange)
+            mockScanningFlow.emit(BarcodeScanResult.SingleBarcode(PASSBOLT_FIRST_PAGE_SCAN))
+            mockScanningFlow.emit(BarcodeScanResult.SingleBarcode(PASSBOLT_FIRST_PAGE_SCAN))
 
-        scanningJob.cancel()
-    }
+            scanningJob.cancel()
+        }
 
     @Test
-    fun `parser should not react to already parsed subsequent page qr`() = runTest {
-        scanningJob = launch {
-            scanQrParser.startParsing(mockScanningFlow)
-        }
+    fun `parser should not react to already parsed subsequent page qr`() =
+        runTest {
+            scanningJob =
+                launch {
+                    scanQrParser.startParsing(mockScanningFlow)
+                }
 
-        launch {
-            scanQrParser.parseResultFlow.test {
-                assertNoBarcodesInRange(expectItem())
-                assertPassboltQrFirstPage(expectItem())
-                assertPassboltQrSubsequentPage(expectItem())
-                assertNoBarcodesInRange(expectItem())
-                expectComplete()
+            launch {
+                scanQrParser.parseResultFlow.test {
+                    assertNoBarcodesInRange(expectItem())
+                    assertPassboltQrFirstPage(expectItem())
+                    assertPassboltQrSubsequentPage(expectItem())
+                    assertNoBarcodesInRange(expectItem())
+                    expectComplete()
+                }
             }
-        }
-        mockScanningFlow.emit(BarcodeScanResult.SingleBarcode(PASSBOLT_FIRST_PAGE_SCAN))
-        mockScanningFlow.emit(BarcodeScanResult.SingleBarcode(PASSBOLT_SUBSEQUENT_PAGE_SCAN))
-        mockScanningFlow.emit(BarcodeScanResult.NoBarcodeInRange)
-        mockScanningFlow.emit(BarcodeScanResult.SingleBarcode(PASSBOLT_SUBSEQUENT_PAGE_SCAN))
-        mockScanningFlow.emit(BarcodeScanResult.SingleBarcode(PASSBOLT_SUBSEQUENT_PAGE_SCAN))
+            mockScanningFlow.emit(BarcodeScanResult.SingleBarcode(PASSBOLT_FIRST_PAGE_SCAN))
+            mockScanningFlow.emit(BarcodeScanResult.SingleBarcode(PASSBOLT_SUBSEQUENT_PAGE_SCAN))
+            mockScanningFlow.emit(BarcodeScanResult.NoBarcodeInRange)
+            mockScanningFlow.emit(BarcodeScanResult.SingleBarcode(PASSBOLT_SUBSEQUENT_PAGE_SCAN))
+            mockScanningFlow.emit(BarcodeScanResult.SingleBarcode(PASSBOLT_SUBSEQUENT_PAGE_SCAN))
 
-        scanningJob.cancel()
-    }
+            scanningJob.cancel()
+        }
 
     @Test
-    fun `parser should report error when subsequent page scaned without first page`() = runTest {
-        scanningJob = launch {
-            scanQrParser.startParsing(mockScanningFlow)
-        }
+    fun `parser should report error when subsequent page scaned without first page`() =
+        runTest {
+            scanningJob =
+                launch {
+                    scanQrParser.startParsing(mockScanningFlow)
+                }
 
-        launch {
-            scanQrParser.parseResultFlow.test {
-                assertNoBarcodesInRange(expectItem())
-                assertParserError(expectItem())
-                expectComplete()
+            launch {
+                scanQrParser.parseResultFlow.test {
+                    assertNoBarcodesInRange(expectItem())
+                    assertParserError(expectItem())
+                    expectComplete()
+                }
             }
-        }
-        mockScanningFlow.emit(BarcodeScanResult.SingleBarcode(PASSBOLT_SUBSEQUENT_PAGE_SCAN))
+            mockScanningFlow.emit(BarcodeScanResult.SingleBarcode(PASSBOLT_SUBSEQUENT_PAGE_SCAN))
 
-        scanningJob.cancel()
-    }
+            scanningJob.cancel()
+        }
 
     @Test
-    fun `parser should handle exceptions correct`() = runTest {
-        scanningJob = launch {
-            scanQrParser.startParsing(mockScanningFlow)
-        }
+    fun `parser should handle exceptions correct`() =
+        runTest {
+            scanningJob =
+                launch {
+                    scanQrParser.startParsing(mockScanningFlow)
+                }
 
-        launch {
-            scanQrParser.parseResultFlow.test {
-                assertNoBarcodesInRange(expectItem())
-                assertFailWithScanException(expectItem())
-                cancelAndIgnoreRemainingEvents()
+            launch {
+                scanQrParser.parseResultFlow.test {
+                    assertNoBarcodesInRange(expectItem())
+                    assertFailWithScanException(expectItem())
+                    cancelAndIgnoreRemainingEvents()
+                }
             }
-        }
-        mockScanningFlow.emit(BarcodeScanResult.Failure(TEST_EXCEPTION))
+            mockScanningFlow.emit(BarcodeScanResult.Failure(TEST_EXCEPTION))
 
-        scanningJob.cancel()
-    }
+            scanningJob.cancel()
+        }
 
     @Test
-    fun `parser should return error when invalid uuid found`() = runTest {
-        scanningJob = launch {
-            scanQrParser.startParsing(mockScanningFlow)
-        }
+    fun `parser should return error when invalid uuid found`() =
+        runTest {
+            scanningJob =
+                launch {
+                    scanQrParser.startParsing(mockScanningFlow)
+                }
 
-        launch {
-            scanQrParser.parseResultFlow.test {
-                assertNoBarcodesInRange(expectItem())
-                assertParserError(expectItem())
-                expectComplete()
+            launch {
+                scanQrParser.parseResultFlow.test {
+                    assertNoBarcodesInRange(expectItem())
+                    assertParserError(expectItem())
+                    expectComplete()
+                }
             }
-        }
-        mockScanningFlow.emit(BarcodeScanResult.SingleBarcode(PASSBOLT_SUBSEQUENT_PAGE_SCAN))
+            mockScanningFlow.emit(BarcodeScanResult.SingleBarcode(PASSBOLT_SUBSEQUENT_PAGE_SCAN))
 
-        scanningJob.cancel()
-    }
+            scanningJob.cancel()
+        }
 
     @Test
-    fun `parser should parse account kit transfer page qr correct`() = runTest {
-        scanningJob = launch {
-            scanQrParser.startParsing(mockScanningFlow)
-        }
+    fun `parser should parse account kit transfer page qr correct`() =
+        runTest {
+            scanningJob =
+                launch {
+                    scanQrParser.startParsing(mockScanningFlow)
+                }
 
-        launch {
-            scanQrParser.parseResultFlow.test {
-                assertNoBarcodesInRange(expectItem())
-                assertPassboltAccountKitPage(expectItem())
-                cancelAndIgnoreRemainingEvents()
+            launch {
+                scanQrParser.parseResultFlow.test {
+                    assertNoBarcodesInRange(expectItem())
+                    assertPassboltAccountKitPage(expectItem())
+                    cancelAndIgnoreRemainingEvents()
+                }
             }
-        }
-        mockScanningFlow.emit(BarcodeScanResult.SingleBarcode(PASSBOLT_ACCOUNT_KIT_PAGE_SCAN))
+            mockScanningFlow.emit(BarcodeScanResult.SingleBarcode(PASSBOLT_ACCOUNT_KIT_PAGE_SCAN))
 
-        scanningJob.cancel()
-    }
+            scanningJob.cancel()
+        }
 
     private fun assertPassboltQrFirstPage(item: ParseResult) {
         assertThat(item).isInstanceOf(ParseResult.PassboltQr.FirstPage::class.java)

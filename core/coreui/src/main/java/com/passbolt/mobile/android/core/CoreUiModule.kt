@@ -37,21 +37,22 @@ import java.time.format.DateTimeFormatter
  * @since v1.0
  */
 
-val coreUiModule = module {
-    fontModule()
+val coreUiModule =
+    module {
+        fontModule()
 
-    singleOf(::TotpViewController)
-    singleOf(::OtpFormatter)
-    singleOf(::FingerprintFormatter)
-    singleOf(::DateFormatter)
-    factoryOf(::OverlappingItemDecorator)
+        singleOf(::TotpViewController)
+        singleOf(::OtpFormatter)
+        singleOf(::FingerprintFormatter)
+        singleOf(::DateFormatter)
+        factoryOf(::OverlappingItemDecorator)
 
-    single {
-        DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm O")
+        single {
+            DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm O")
+        }
+        factory {
+            InitialsIconGenerator(
+                font = get(named<Font.InterMedium>()),
+            )
+        }
     }
-    factory {
-        InitialsIconGenerator(
-            font = get(named<Font.InterMedium>())
-        )
-    }
-}

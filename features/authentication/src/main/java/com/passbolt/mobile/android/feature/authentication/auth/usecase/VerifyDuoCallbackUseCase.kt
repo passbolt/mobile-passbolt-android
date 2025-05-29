@@ -34,16 +34,18 @@ import timber.log.Timber
 
 class VerifyDuoCallbackUseCase(
     private val cookieExtractor: CookieExtractor,
-    private val mfaRepository: MfaRepository
+    private val mfaRepository: MfaRepository,
 ) : AsyncUseCase<VerifyDuoCallbackUseCase.Input, VerifyDuoCallbackUseCase.Output> {
-
     override suspend fun execute(input: Input): Output =
-        when (val result = mfaRepository.verifyDuoCallback(
-            passboltDuoStateUuid = input.passboltDuoCookieUuid,
-            authHeader = "Bearer ${input.jwtHeader}",
-            state = input.duoState,
-            code = input.duoCode
-        )) {
+        when (
+            val result =
+                mfaRepository.verifyDuoCallback(
+                    passboltDuoStateUuid = input.passboltDuoCookieUuid,
+                    authHeader = "Bearer ${input.jwtHeader}",
+                    state = input.duoState,
+                    code = input.duoCode,
+                )
+        ) {
             is NetworkResult.Failure.NetworkError -> Output.Failure(result)
             is NetworkResult.Failure.ServerError -> Output.Failure(result)
             is NetworkResult.Success -> {
@@ -62,31 +64,37 @@ class VerifyDuoCallbackUseCase(
         val jwtHeader: String,
         val passboltDuoCookieUuid: String,
         val duoState: String?,
-        val duoCode: String?
+        val duoCode: String?,
     )
 
     sealed class Output : AuthenticatedUseCaseOutput {
-
         override val authenticationState: AuthenticationState
-            get() = when {
-                this is Failure<*> && this.response.isUnauthorized ->
-                    AuthenticationState.Unauthenticated(AuthenticationState.Unauthenticated.Reason.Session)
-                this is Failure<*> && this.response.isMfaRequired -> {
-                    val providers = MfaTypeProvider.get(this.response)
+            get() =
+                when {
+                    this is Failure<*> && this.response.isUnauthorized ->
+                        AuthenticationState.Unauthenticated(AuthenticationState.Unauthenticated.Reason.Session)
+                    this is Failure<*> && this.response.isMfaRequired -> {
+                        val providers = MfaTypeProvider.get(this.response)
 
-                    AuthenticationState.Unauthenticated(
-                        AuthenticationState.Unauthenticated.Reason.Mfa(providers)
-                    )
+                        AuthenticationState.Unauthenticated(
+                            AuthenticationState.Unauthenticated.Reason.Mfa(providers),
+                        )
+                    }
+                    else -> AuthenticationState.Authenticated
                 }
-                else -> AuthenticationState.Authenticated
-            }
 
-        data class Success(val mfaHeader: String?) : Output()
+        data class Success(
+            val mfaHeader: String?,
+        ) : Output()
 
         data object Unauthorized : Output()
 
-        class Failure<T : Any>(val response: NetworkResult.Failure<T>) : Output()
+        class Failure<T : Any>(
+            val response: NetworkResult.Failure<T>,
+        ) : Output()
 
-        class Error(val message: String) : Output()
+        class Error(
+            val message: String,
+        ) : Output()
     }
 }

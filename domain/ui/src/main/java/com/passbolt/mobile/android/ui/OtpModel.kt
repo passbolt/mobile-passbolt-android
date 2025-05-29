@@ -36,7 +36,7 @@ data class OtpResourceModel(
     val issuer: String?,
     val algorithm: String,
     val digits: Int,
-    val period: Long
+    val period: Long,
 ) : Parcelable
 
 data class OtpItemWrapper(
@@ -45,12 +45,12 @@ data class OtpItemWrapper(
     val isRefreshing: Boolean,
     val otpExpirySeconds: Long?,
     val otpValue: String?,
-    val remainingSecondsCounter: Long? = otpExpirySeconds
+    val remainingSecondsCounter: Long? = otpExpirySeconds,
 ) : Searchable by resource
 
 @Parcelize
 data class OtpAdvancedSettingsModel(
     val period: Long,
     val algorithm: String,
-    val digits: Int
+    val digits: Int,
 ) : Parcelable

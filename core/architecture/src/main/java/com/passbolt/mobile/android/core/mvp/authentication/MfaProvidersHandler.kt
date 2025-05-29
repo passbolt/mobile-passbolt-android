@@ -3,7 +3,6 @@ package com.passbolt.mobile.android.core.mvp.authentication
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated.Reason.Mfa.MfaProvider
 
 class MfaProvidersHandler {
-
     private lateinit var providers: List<MfaProvider?>
 
     fun setProviders(providers: List<MfaProvider?>) {

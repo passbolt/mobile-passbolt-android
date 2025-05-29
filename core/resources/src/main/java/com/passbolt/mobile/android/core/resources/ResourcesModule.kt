@@ -50,105 +50,115 @@ import org.koin.dsl.module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-val resourcesModule = module {
-    resourcesDbModule()
+val resourcesModule =
+    module {
+        resourcesDbModule()
 
-    singleOf(::GetResourcesUseCase)
-    singleOf(::ResourceInteractor)
-    singleOf(::SearchableMatcher)
-    singleOf(::DeleteResourceUseCase)
-    singleOf(::RebuildResourceTablesUseCase)
-    singleOf(::RebuildResourcePermissionsTablesUseCase)
-    singleOf(::SimulateShareResourceUseCase)
-    singleOf(::ShareResourceUseCase)
-    singleOf(::AddToFavouritesUseCase)
-    singleOf(::RemoveFromFavouritesUseCase)
-    singleOf(::FavouritesInteractor)
-    singleOf(::ResourceShareInteractor)
-    singleOf(::UpdateResourceInteractor)
-    singleOf(::CreateResourceInteractor)
+        singleOf(::GetResourcesUseCase)
+        singleOf(::ResourceInteractor)
+        singleOf(::SearchableMatcher)
+        singleOf(::DeleteResourceUseCase)
+        singleOf(::RebuildResourceTablesUseCase)
+        singleOf(::RebuildResourcePermissionsTablesUseCase)
+        singleOf(::SimulateShareResourceUseCase)
+        singleOf(::ShareResourceUseCase)
+        singleOf(::AddToFavouritesUseCase)
+        singleOf(::RemoveFromFavouritesUseCase)
+        singleOf(::FavouritesInteractor)
+        singleOf(::ResourceShareInteractor)
+        singleOf(::UpdateResourceInteractor)
+        singleOf(::CreateResourceInteractor)
 
-    factory { (resource: ResourceModel) ->
-        ResourcePropertiesActionsInteractor(
-            resource,
-            idToSlugMappingProvider = get()
-        )
+        factory { (resource: ResourceModel) ->
+            ResourcePropertiesActionsInteractor(
+                resource,
+                idToSlugMappingProvider = get(),
+            )
+        }
+        factory {
+            (
+                resource: ResourceModel,
+                needSessionRefreshFlow: MutableStateFlow<UnauthenticatedReason?>,
+                sessionRefreshedFlow: StateFlow<Unit?>,
+            ),
+            ->
+            ResourceCommonActionsInteractor(
+                needSessionRefreshFlow,
+                sessionRefreshedFlow,
+                resource,
+                favouritesInteractor = get(),
+                deleteResourceUseCase = get(),
+            )
+        }
+        factory {
+            (
+                resource: ResourceModel,
+                needSessionRefreshFlow: MutableStateFlow<UnauthenticatedReason?>,
+                sessionRefreshedFlow: StateFlow<Unit?>,
+            ),
+            ->
+            SecretPropertiesActionsInteractor(
+                needSessionRefreshFlow,
+                sessionRefreshedFlow,
+                resource,
+                secretParser = get(),
+                secretInteractor = get(),
+                idToSlugMappingProvider = get(),
+            )
+        }
+        factory {
+            (
+                resource: ResourceModel,
+                needSessionRefreshFlow: MutableStateFlow<UnauthenticatedReason?>,
+                sessionRefreshedFlow: StateFlow<Unit?>,
+            ),
+            ->
+            ResourceUpdateActionsInteractor(
+                resource,
+                needSessionRefreshFlow,
+                sessionRefreshedFlow,
+                secretPropertiesActionsInteractor =
+                    get {
+                        parametersOf(
+                            resource,
+                            needSessionRefreshFlow,
+                            sessionRefreshedFlow,
+                        )
+                    },
+                updateResourceInteractor = get(),
+                resourceTypesUpdateGraph = get(),
+                updateLocalResourceUseCase = get(),
+                idToSlugMappingProvider = get(),
+                getLocalFolderPermissionsUseCase = get(),
+                getMetadataKeysSettingsUseCase = get(),
+                getMetadataKeysUseCase = get(),
+                getLocalCurrentUserUseCase = get(),
+                metadataPrivateKeysInteractor = get(),
+                getLocalResourcePermissionsUseCase = get(),
+                resourceTypeIdToSlugMappingProvider = get(),
+            )
+        }
+        factory {
+            (
+                needSessionRefreshFlow: MutableStateFlow<UnauthenticatedReason?>,
+                sessionRefreshedFlow: StateFlow<Unit?>,
+            ),
+            ->
+            ResourceCreateActionsInteractor(
+                needSessionRefreshFlow,
+                sessionRefreshedFlow,
+                createResourceInteractor = get(),
+                addLocalResourceUseCase = get(),
+                addLocalResourcePermissionsUseCase = get(),
+                resourceShareInteractor = get(),
+                getLocalParentFolderPermissionsToApplyUseCase = get(),
+                getLocalFolderPermissionsUseCase = get(),
+                getMetadataKeysSettingsUseCase = get(),
+                getMetadataTypesSettingsUseCase = get(),
+                getMetadataKeysUseCase = get(),
+                getLocalCurrentUserUseCase = get(),
+                metadataPrivateKeysInteractor = get(),
+                resourceTypeIdToSlugMappingProvider = get(),
+            )
+        }
     }
-    factory { (
-                  resource: ResourceModel,
-                  needSessionRefreshFlow: MutableStateFlow<UnauthenticatedReason?>,
-                  sessionRefreshedFlow: StateFlow<Unit?>
-              ) ->
-        ResourceCommonActionsInteractor(
-            needSessionRefreshFlow,
-            sessionRefreshedFlow,
-            resource,
-            favouritesInteractor = get(),
-            deleteResourceUseCase = get()
-        )
-    }
-    factory { (
-                  resource: ResourceModel,
-                  needSessionRefreshFlow: MutableStateFlow<UnauthenticatedReason?>,
-                  sessionRefreshedFlow: StateFlow<Unit?>
-              ) ->
-        SecretPropertiesActionsInteractor(
-            needSessionRefreshFlow,
-            sessionRefreshedFlow,
-            resource,
-            secretParser = get(),
-            secretInteractor = get(),
-            idToSlugMappingProvider = get()
-        )
-    }
-    factory { (
-                  resource: ResourceModel,
-                  needSessionRefreshFlow: MutableStateFlow<UnauthenticatedReason?>,
-                  sessionRefreshedFlow: StateFlow<Unit?>
-              ) ->
-        ResourceUpdateActionsInteractor(
-            resource,
-            needSessionRefreshFlow,
-            sessionRefreshedFlow,
-            secretPropertiesActionsInteractor = get {
-                parametersOf(
-                    resource,
-                    needSessionRefreshFlow,
-                    sessionRefreshedFlow
-                )
-            },
-            updateResourceInteractor = get(),
-            resourceTypesUpdateGraph = get(),
-            updateLocalResourceUseCase = get(),
-            idToSlugMappingProvider = get(),
-            resourceTypeIdToSlugMappingProvider = get(),
-            getLocalFolderPermissionsUseCase = get(),
-            getMetadataKeysSettingsUseCase = get(),
-            getMetadataKeysUseCase = get(),
-            getLocalCurrentUserUseCase = get(),
-            metadataPrivateKeysInteractor = get(),
-            getLocalResourcePermissionsUseCase = get()
-        )
-    }
-    factory { (
-                  needSessionRefreshFlow: MutableStateFlow<UnauthenticatedReason?>,
-                  sessionRefreshedFlow: StateFlow<Unit?>
-              ) ->
-        ResourceCreateActionsInteractor(
-            needSessionRefreshFlow,
-            sessionRefreshedFlow,
-            createResourceInteractor = get(),
-            addLocalResourceUseCase = get(),
-            addLocalResourcePermissionsUseCase = get(),
-            resourceShareInteractor = get(),
-            getLocalParentFolderPermissionsToApplyUseCase = get(),
-            getLocalFolderPermissionsUseCase = get(),
-            getMetadataKeysSettingsUseCase = get(),
-            getMetadataTypesSettingsUseCase = get(),
-            getMetadataKeysUseCase = get(),
-            getLocalCurrentUserUseCase = get(),
-            resourceTypeIdToSlugMappingProvider = get(),
-            metadataPrivateKeysInteractor = get()
-        )
-    }
-}

@@ -37,13 +37,14 @@ internal val mockGetAccountDataUseCase = mock<GetAccountDataUseCase>()
 internal val mockSaveCurrentApiUrlUseCase = mock<SaveCurrentApiUrlUseCase>()
 
 @ExperimentalCoroutinesApi
-val testAuthenticationMainModule = module {
-    factory<AuthenticationMainContract.Presenter> {
-        AuthenticationMainPresenter(
-            getSelectedAccountUseCase = mockGetSelectedAccountUseCase,
-            getAccountDataUseCase = mockGetAccountDataUseCase,
-            saveCurrentApiUrlUseCase = mockSaveCurrentApiUrlUseCase
-        )
+val testAuthenticationMainModule =
+    module {
+        factory<AuthenticationMainContract.Presenter> {
+            AuthenticationMainPresenter(
+                getSelectedAccountUseCase = mockGetSelectedAccountUseCase,
+                getAccountDataUseCase = mockGetAccountDataUseCase,
+                saveCurrentApiUrlUseCase = mockSaveCurrentApiUrlUseCase,
+            )
+        }
+        factory<CoroutineLaunchContext> { TestCoroutineLaunchContext() }
     }
-    factory<CoroutineLaunchContext> { TestCoroutineLaunchContext() }
-}

@@ -28,29 +28,45 @@ import com.passbolt.mobile.android.ui.PermissionModelUi
  */
 
 interface FolderDetailsContract {
-
     interface View : DataRefreshViewReactiveContract.View {
         fun showFolderName(name: String)
+
         fun showFolderSharedIcon()
+
         fun showFolderIcon()
+
         fun showFolderLocation(parentFolders: List<String>)
+
         fun showPermissions(
             groupPermissions: List<PermissionModelUi.GroupPermissionModel>,
             userPermissions: List<PermissionModelUi.UserPermissionModel>,
             counterValue: List<String>,
-            overlap: Int
+            overlap: Int,
         )
 
-        fun navigateToFolderPermissions(folderId: String, mode: PermissionsMode)
+        fun navigateToFolderPermissions(
+            folderId: String,
+            mode: PermissionsMode,
+        )
+
         fun navigateToFolderLocation(folderId: String)
+
         fun showDataRefreshError()
+
         fun showContentNotAvailable()
+
         fun navigateToHome()
     }
 
     interface Presenter : DataRefreshViewReactiveContract.Presenter<View> {
-        fun argsRetrieved(folderId: String, permissionsListWidth: Int, permissionItemWidth: Float)
+        fun argsRetrieved(
+            folderId: String,
+            permissionsListWidth: Int,
+            permissionItemWidth: Float,
+        )
+
         fun sharedWithClick()
+
         fun locationClick()
     }
 }

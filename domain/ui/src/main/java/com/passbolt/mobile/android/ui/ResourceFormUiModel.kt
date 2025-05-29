@@ -25,16 +25,15 @@ package com.passbolt.mobile.android.ui
 data class ResourceFormUiModel(
     val leadingContentType: LeadingContentType,
     val supportedMetadata: List<Metadata>,
-    val supportedAdditionalSecrets: List<Secret>
+    val supportedAdditionalSecrets: List<Secret>,
 ) {
-
     enum class Metadata {
-        DESCRIPTION
+        DESCRIPTION,
     }
 
     enum class Secret {
         PASSWORD,
         NOTE,
-        TOTP
+        TOTP,
     }
 }

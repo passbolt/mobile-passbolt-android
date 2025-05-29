@@ -27,5 +27,5 @@ data class UpdateTransferModel(
     val firstName: String?,
     val lastName: String?,
     val avatarUrl: String?,
-    val email: String?
+    val email: String?,
 )

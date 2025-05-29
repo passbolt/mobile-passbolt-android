@@ -27,20 +27,27 @@ import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.summar
  */
 
 interface TransferAccountContract {
-
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
         fun cancelTransferButtonClick()
+
         fun stopTransferClick()
+
         fun backClick()
     }
 
     interface View : BaseAuthenticatedContract.View {
         fun showCancelTransferDialog()
+
         fun showCouldNotInitializeTransferParameters()
+
         fun showCouldNotCreateTransfer(message: String)
+
         fun showCouldNotGenerateQrTransferData()
+
         fun showQrCodeForData(qrCodeContent: String)
+
         fun showErrorDuringTransferDetailsFetch(message: String)
+
         fun navigateToResult(result: TransferAccountStatus)
     }
 }

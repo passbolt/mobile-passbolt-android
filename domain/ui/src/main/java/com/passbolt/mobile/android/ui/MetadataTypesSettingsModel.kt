@@ -36,7 +36,7 @@ data class MetadataTypesSettingsModel(
     val allowCreationOfV4Folders: Boolean,
     val allowCreationOfV4Tags: Boolean,
     val allowV4V5Upgrade: Boolean,
-    val allowV5V4Downgrade: Boolean
+    val allowV5V4Downgrade: Boolean,
 )
 
 enum class MetadataTypeModel {
@@ -44,5 +44,5 @@ enum class MetadataTypeModel {
     V4,
 
     @SerializedName("v5")
-    V5
+    V5,
 }

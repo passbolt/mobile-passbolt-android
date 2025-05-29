@@ -40,54 +40,58 @@ import org.mockito.kotlin.stub
 class CheckPasswordPropertiesUseCaseTest : KoinTest {
     @ExperimentalCoroutinesApi
     @get:Rule
-    val koinTestRule = KoinTestRule.create {
-        printLogger(Level.ERROR)
-        modules(passwordGeneratorTestModule)
-    }
+    val koinTestRule =
+        KoinTestRule.create {
+            printLogger(Level.ERROR)
+            modules(passwordGeneratorTestModule)
+        }
 
     private val checkPasswordPropertiesUseCase: CheckPasswordPropertiesUseCase by inject()
 
     @Test
-    fun `pwned password is evaluated correct`() = runTest {
-        val password = "test1234567890"
-        mockPwnedPasswordRepository.stub {
-            onBlocking { getPwnedPasswordsSuffixes(any()) }.thenReturn(
-                NetworkResult.Success(
-                    "08f70a062457f0763adc66e0c0fe17a150a:10"
+    fun `pwned password is evaluated correct`() =
+        runTest {
+            val password = "test1234567890"
+            mockPwnedPasswordRepository.stub {
+                onBlocking { getPwnedPasswordsSuffixes(any()) }.thenReturn(
+                    NetworkResult.Success(
+                        "08f70a062457f0763adc66e0c0fe17a150a:10",
+                    ),
                 )
-            )
+            }
+
+            val result = checkPasswordPropertiesUseCase.execute(CheckPasswordPropertiesUseCase.Input(password))
+
+            assertThat(result).isInstanceOf(CheckPasswordPropertiesUseCase.Output.Pwned::class.java)
+            assertThat((result as CheckPasswordPropertiesUseCase.Output.Pwned).dataBreachesCount).isEqualTo(10)
         }
 
-        val result = checkPasswordPropertiesUseCase.execute(CheckPasswordPropertiesUseCase.Input(password))
-
-        assertThat(result).isInstanceOf(CheckPasswordPropertiesUseCase.Output.Pwned::class.java)
-        assertThat((result as CheckPasswordPropertiesUseCase.Output.Pwned).dataBreachesCount).isEqualTo(10)
-    }
-
     @Test
-    fun `not pwned password is evaluated correct`() = runTest {
-        val password = "test1234567890"
-        mockPwnedPasswordRepository.stub {
-            onBlocking { getPwnedPasswordsSuffixes(any()) }.thenReturn(
-                NetworkResult.Success(
-                    "08f70a062457f0763adc66e0c0fe17a150b:10\n" +
+    fun `not pwned password is evaluated correct`() =
+        runTest {
+            val password = "test1234567890"
+            mockPwnedPasswordRepository.stub {
+                onBlocking { getPwnedPasswordsSuffixes(any()) }.thenReturn(
+                    NetworkResult.Success(
+                        "08f70a062457f0763adc66e0c0fe17a150b:10\n" +
                             "08f70a062457f0763adc66e0c0fe17a150c:10\n" +
-                            "08f70a062457f0763adc66e0c0fe17a150d:10"
+                            "08f70a062457f0763adc66e0c0fe17a150d:10",
+                    ),
                 )
-            )
+            }
+
+            val result = checkPasswordPropertiesUseCase.execute(CheckPasswordPropertiesUseCase.Input(password))
+
+            assertThat(result).isInstanceOf(CheckPasswordPropertiesUseCase.Output.Fine::class.java)
         }
 
-        val result = checkPasswordPropertiesUseCase.execute(CheckPasswordPropertiesUseCase.Input(password))
-
-        assertThat(result).isInstanceOf(CheckPasswordPropertiesUseCase.Output.Fine::class.java)
-    }
-
     @Test
-    fun `weak password is evaluated correct`() = runTest {
-        val password = "test"
+    fun `weak password is evaluated correct`() =
+        runTest {
+            val password = "test"
 
-        val result = checkPasswordPropertiesUseCase.execute(CheckPasswordPropertiesUseCase.Input(password))
+            val result = checkPasswordPropertiesUseCase.execute(CheckPasswordPropertiesUseCase.Input(password))
 
-        assertThat(result).isInstanceOf(CheckPasswordPropertiesUseCase.Output.Weak::class.java)
-    }
+            assertThat(result).isInstanceOf(CheckPasswordPropertiesUseCase.Output.Weak::class.java)
+        }
 }

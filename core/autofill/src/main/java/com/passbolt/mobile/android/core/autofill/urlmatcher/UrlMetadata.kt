@@ -6,20 +6,22 @@ import java.net.URL
 data class UrlMetadata(
     val protocolValue: ProtocolValue,
     val host: String,
-    val port: Port
+    val port: Port,
 ) {
     sealed class ProtocolValue {
-
         data object None : ProtocolValue()
 
-        data class Protocol(val protocol: String) : ProtocolValue()
+        data class Protocol(
+            val protocol: String,
+        ) : ProtocolValue()
     }
 
     sealed class Port {
-
         data object None : Port()
 
-        data class Number(val port: Int) : Port()
+        data class Number(
+            val port: Int,
+        ) : Port()
     }
 
     companion object {
@@ -39,7 +41,7 @@ data class UrlMetadata(
             return UrlMetadata(
                 protocolValue = if (hasProtocol) ProtocolValue.Protocol(url.protocol) else ProtocolValue.None,
                 host = url.host,
-                port = if (url.port == NO_PORT) Port.None else Port.Number(url.port)
+                port = if (url.port == NO_PORT) Port.None else Port.Number(url.port),
             )
         }
 

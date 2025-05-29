@@ -70,40 +70,40 @@ import com.google.android.material.R as MaterialR
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
-
 @RunWith(AndroidJUnit4::class)
 @MediumTest
 class FolderCreationTest : KoinTest {
-
     @get:Rule
-    val startUpActivityRule = lazyActivitySetupScenarioRule<AuthenticationMainActivity>(
-        koinOverrideModules = listOf(instrumentationTestsModule),
-        intentSupplier = {
-            ActivityIntents.authentication(
-                InstrumentationRegistry.getInstrumentation().targetContext,
-                ActivityIntents.AuthConfig.Startup,
-                AppContext.APP,
-                managedAccountIntentCreator.getUserLocalId()
-            )
-        }
-    )
+    val startUpActivityRule =
+        lazyActivitySetupScenarioRule<AuthenticationMainActivity>(
+            koinOverrideModules = listOf(instrumentationTestsModule),
+            intentSupplier = {
+                ActivityIntents.authentication(
+                    InstrumentationRegistry.getInstrumentation().targetContext,
+                    ActivityIntents.AuthConfig.Startup,
+                    AppContext.APP,
+                    managedAccountIntentCreator.getUserLocalId(),
+                )
+            },
+        )
 
     private val managedAccountIntentCreator: ManagedAccountIntentCreator by inject()
 
     private val resourcesFullRefreshIdlingResource: ResourcesFullRefreshIdlingResource by inject()
 
     @get:Rule
-    val idlingResourceRule = let {
-        val signInIdlingResource: SignInIdlingResource by inject()
-        val createFolderIdlingResource: CreateFolderIdlingResource by inject()
-        IdlingResourceRule(
-            arrayOf(
-                signInIdlingResource,
-                createFolderIdlingResource,
-                resourcesFullRefreshIdlingResource
+    val idlingResourceRule =
+        let {
+            val signInIdlingResource: SignInIdlingResource by inject()
+            val createFolderIdlingResource: CreateFolderIdlingResource by inject()
+            IdlingResourceRule(
+                arrayOf(
+                    signInIdlingResource,
+                    createFolderIdlingResource,
+                    resourcesFullRefreshIdlingResource,
+                ),
             )
-        )
-    }
+        }
 
     @BeforeTest
     fun setup() {
@@ -121,8 +121,8 @@ class FolderCreationTest : KoinTest {
         onView(withId(com.passbolt.mobile.android.feature.home.R.id.folders)).perform(click())
     }
 
+    //    https://passbolt.testrail.io/index.php?/cases/view/8160
     @Test
-//    https://passbolt.testrail.io/index.php?/cases/view/8160
     fun onTheFoldersWorkspaceICanClickCreateButton() {
         //    Given     that I am on #PRO_FOLDER_CREATION_WITH_PERMISSION
         //    And       I see a create button with an icon in @blue
@@ -136,42 +136,38 @@ class FolderCreationTest : KoinTest {
             allOf(
                 isDescendantOfA(withId(com.passbolt.mobile.android.feature.home.R.id.homeSpeedDialViewAddFolderId)),
                 withId(
-                    com.leinardi.android.speeddial.R.id.sd_fab
-                )
-            )
-        )
-            .check(matches(isDisplayed()))
+                    com.leinardi.android.speeddial.R.id.sd_fab,
+                ),
+            ),
+        ).check(matches(isDisplayed()))
             .check(matches(hasDrawable(id = CoreUiR.drawable.ic_folder, tint = CoreUiR.color.icon_tint)))
         onView(
             allOf(
                 isDescendantOfA(withId(com.passbolt.mobile.android.feature.home.R.id.homeSpeedDialViewAddFolderId)),
                 withId(
-                    com.leinardi.android.speeddial.R.id.sd_label
-                )
-            )
-        )
-            .check(matches(isDisplayed()))
+                    com.leinardi.android.speeddial.R.id.sd_label,
+                ),
+            ),
+        ).check(matches(isDisplayed()))
             .check(matches(withText(LocalizationR.string.home_speed_dial_add_folder)))
         //    And       I see ‘Add password’ with key icon
         onView(
             allOf(
                 isDescendantOfA(withId(com.passbolt.mobile.android.feature.home.R.id.homeSpeedDialViewAddPasswordId)),
                 withId(
-                    com.leinardi.android.speeddial.R.id.sd_fab
-                )
-            )
-        )
-            .check(matches(isDisplayed()))
+                    com.leinardi.android.speeddial.R.id.sd_fab,
+                ),
+            ),
+        ).check(matches(isDisplayed()))
             .check(matches(hasDrawable(id = CoreUiR.drawable.ic_key, tint = CoreUiR.color.icon_tint)))
         onView(
             allOf(
                 isDescendantOfA(withId(com.passbolt.mobile.android.feature.home.R.id.homeSpeedDialViewAddPasswordId)),
                 withId(
-                    com.leinardi.android.speeddial.R.id.sd_label
-                )
-            )
-        )
-            .check(matches(isDisplayed()))
+                    com.leinardi.android.speeddial.R.id.sd_label,
+                ),
+            ),
+        ).check(matches(isDisplayed()))
             .check(matches(withText(LocalizationR.string.home_speed_dial_add_password)))
         //    And       And I see ‘X’ close button (Note: this is actually the "plus" icon but rotated 45 degrees)
         onView(withId(com.passbolt.mobile.android.feature.home.R.id.homeSpeedDialViewId))
@@ -179,8 +175,8 @@ class FolderCreationTest : KoinTest {
             .check(matches(hasDrawable(id = CoreUiR.drawable.ic_plus, tint = CoreUiR.color.icon_tint)))
     }
 
+    //    https://passbolt.testrail.io/index.php?/cases/view/8161
     @Test
-//    https://passbolt.testrail.io/index.php?/cases/view/8161
     fun onTheFoldersWorkspaceICanClickAddPasswordAndOpenNewPasswordWorkspace() {
         //    Given     that I am on #PRO_FOLDER_CREATION_WITH_PERMISSION
         onView(withId(com.passbolt.mobile.android.feature.home.R.id.homeSpeedDialViewId))
@@ -194,14 +190,13 @@ class FolderCreationTest : KoinTest {
         onView(
             allOf(
                 isDescendantOfA(withId(R.id.toolbar)),
-                withText(LocalizationR.string.resource_update_password_title)
-            )
-        )
-            .check(matches(isDisplayed()))
+                withText(LocalizationR.string.resource_update_password_title),
+            ),
+        ).check(matches(isDisplayed()))
     }
 
+    //    https://passbolt.testrail.io/index.php?/cases/view/8162
     @Test
-//    https://passbolt.testrail.io/index.php?/cases/view/8162
     fun onTheFolderWorkspaceICanCancelCreationProcess() {
         //    Given     that I am on #PRO_FOLDER_CREATION_WITH_PERMISSION
         //    And       I see a create button with an icon in @blue
@@ -215,14 +210,13 @@ class FolderCreationTest : KoinTest {
         onView(
             allOf(
                 withId(com.passbolt.mobile.android.feature.home.R.id.homeSpeedDialViewId),
-                isAssignableFrom(SpeedDialView::class.java)
-            )
-        )
-            .check(matches(withSpeedDialViewOpenState(isOpen = true)))
+                isAssignableFrom(SpeedDialView::class.java),
+            ),
+        ).check(matches(withSpeedDialViewOpenState(isOpen = true)))
     }
 
+    //    https://passbolt.testrail.io/index.php?/cases/view/8163
     @Test
-//    https://passbolt.testrail.io/index.php?/cases/view/8163
     fun onTheFolderWorkspaceICanClickAddFolderAndOpenCreateFolderWorkspace() {
         //    Given     that I am on #PRO_FOLDER_CREATION_WITH_PERMISSION
         onView(withId(com.passbolt.mobile.android.feature.home.R.id.homeSpeedDialViewId))
@@ -236,10 +230,9 @@ class FolderCreationTest : KoinTest {
         onView(
             allOf(
                 isDescendantOfA(withId(R.id.toolbar)),
-                withText(LocalizationR.string.create_folder_title)
-            )
-        )
-            .check(matches(isDisplayed()))
+                withText(LocalizationR.string.create_folder_title),
+            ),
+        ).check(matches(isDisplayed()))
         //    And       I see a back arrow to go back to the previous page
         onView(isAssignableFrom(Toolbar::class.java)).check(CastedViewAssertion<Toolbar> { it.navigationIcon != null })
         //    And       I see a mandatory input text field with a ‘Name’ label
@@ -253,8 +246,8 @@ class FolderCreationTest : KoinTest {
         onView(withText(LocalizationR.string.save)).check(matches(isDisplayed()))
     }
 
+    //    https://passbolt.testrail.io/index.php?/cases/view/8164
     @Test
-//    https://passbolt.testrail.io/index.php?/cases/view/8164
     fun onTheRootFolderWorkspaceIWillSeeAnErrorWhenSavingFolderWithoutItsName() {
         //    Given     that I am on #PRO_FOLDER_CREATION_WITH_PERMISSION
         onView(withId(com.passbolt.mobile.android.feature.home.R.id.homeSpeedDialViewId))
@@ -280,8 +273,8 @@ class FolderCreationTest : KoinTest {
             .check(matches(hasTextColor(CoreUiR.color.red)))
     }
 
+    //    https://passbolt.testrail.io/index.php?/cases/view/8165
     @Test
-//    https://passbolt.testrail.io/index.php?/cases/view/8165
     fun onTheRootFolderWorkspaceICanSaveNewFolder() {
         // unregister refresh idling resource after first refresh not to block the snackbar checks
         // (second refresh is during snackbar is showing)
@@ -309,22 +302,23 @@ class FolderCreationTest : KoinTest {
                     withText(
                         getString(
                             LocalizationR.string.common_message_folder_created,
-                            NEW_TEST_FOLDER_NAME
-                        )
-                    )
-                )
+                            NEW_TEST_FOLDER_NAME,
+                        ),
+                    ),
+                ),
             )
     }
 
+    //    https://passbolt.testrail.io/index.php?/cases/view/8166
     @Test
-//    https://passbolt.testrail.io/index.php?/cases/view/8166
     fun onTheFolderWorkspaceICanOpenFolder() {
         createFolderForOpening()
 
         //    Given     that I am on #PRO_FOLDER_CREATION_WITH_PERMISSION
         //    And       And I have at least the "can update" permission in the current context
         onView(withId(com.passbolt.mobile.android.feature.otp.R.id.searchEditText)).perform(
-            replaceText(NEW_TEST_FOLDER_NAME), pressKey(KeyEvent.KEYCODE_ENTER)
+            replaceText(NEW_TEST_FOLDER_NAME),
+            pressKey(KeyEvent.KEYCODE_ENTER),
         )
         //    When      I can click a folder which I created before
         onView(withIndex(0, withId(com.passbolt.mobile.android.feature.home.R.id.itemFolder))).perform(click())

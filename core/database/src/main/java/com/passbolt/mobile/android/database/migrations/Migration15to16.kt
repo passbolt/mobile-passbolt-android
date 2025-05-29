@@ -28,11 +28,11 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 
 @Suppress("MagicNumber")
 object Migration15to16 : Migration(15, 16) {
-
     private const val DROP_RESOURCES = "DROP TABLE Resource"
 
     @Suppress("MaxLineLength")
-    private const val CREATE_RESOURCES = "CREATE TABLE IF NOT EXISTS Resource (" +
+    private const val CREATE_RESOURCES =
+        "CREATE TABLE IF NOT EXISTS Resource (" +
             "`resourceId` TEXT NOT NULL, " +
             "`folderId` TEXT, " +
             "`resourcePermission` TEXT NOT NULL, " +
@@ -43,7 +43,8 @@ object Migration15to16 : Migration(15, 16) {
             "FOREIGN KEY(`folderId`) REFERENCES `Folder`(`folderId`) ON UPDATE NO ACTION ON DELETE SET NULL , " +
             "FOREIGN KEY(`resourceTypeId`) REFERENCES `ResourceType`(`resourceTypeId`) ON UPDATE NO ACTION ON DELETE NO ACTION " +
             ")"
-    private const val ADD_RESOURCE_METADATA = "CREATE TABLE IF NOT EXISTS ResourceMetadata (" +
+    private const val ADD_RESOURCE_METADATA =
+        "CREATE TABLE IF NOT EXISTS ResourceMetadata (" +
             "`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
             "`resourceId` TEXT NOT NULL, " +
             "`metadataJson` TEXT NOT NULL, " +
@@ -52,7 +53,8 @@ object Migration15to16 : Migration(15, 16) {
             "`description` TEXT, " +
             "FOREIGN KEY(`resourceId`) REFERENCES `Resource`(`resourceId`) ON UPDATE NO ACTION ON DELETE CASCADE " +
             ")"
-    private const val ADD_RESOURCE_URIS = "CREATE TABLE IF NOT EXISTS ResourceUri (" +
+    private const val ADD_RESOURCE_URIS =
+        "CREATE TABLE IF NOT EXISTS ResourceUri (" +
             "`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
             "`resourceId` TEXT NOT NULL, " +
             "`uri` TEXT NOT NULL, " +

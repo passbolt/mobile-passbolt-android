@@ -38,19 +38,20 @@ import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
 
-val accountsCoreModule = module {
-    accountModule()
-    accountsModule()
-    accountDataModule()
-    privateKeyModule()
-    biometricKeyIvModule()
-    selectedAccountModule()
+val accountsCoreModule =
+    module {
+        accountModule()
+        accountsModule()
+        accountDataModule()
+        privateKeyModule()
+        biometricKeyIvModule()
+        selectedAccountModule()
 
-    singleOf(::AccountsInteractor)
-    singleOf(::AccountKitParser)
-    factoryOf(::BiometricCipherImpl) bind BiometricCipher::class
+        singleOf(::AccountsInteractor)
+        singleOf(::AccountKitParser)
+        factoryOf(::BiometricCipherImpl) bind BiometricCipher::class
 
-    single {
-        androidApplication().getSharedPreferences("user-accounts", Context.MODE_PRIVATE)
+        single {
+            androidApplication().getSharedPreferences("user-accounts", Context.MODE_PRIVATE)
+        }
     }
-}

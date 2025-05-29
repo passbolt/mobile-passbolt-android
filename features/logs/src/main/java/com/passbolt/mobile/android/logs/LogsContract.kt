@@ -26,15 +26,17 @@ import java.io.File
  * @since v1.0
  */
 interface LogsContract {
-
     interface View : BaseContract.View {
         fun showLogs(logLines: List<String>)
+
         fun showShareSheet(logFile: File)
+
         fun scrollLogsToPosition(position: Int)
     }
 
     interface Presenter : BaseContract.Presenter<View> {
         fun argsRetrieved(logFilePath: String?)
+
         fun shareClick()
     }
 }

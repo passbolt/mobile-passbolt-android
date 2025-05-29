@@ -33,11 +33,12 @@ import org.mockito.kotlin.mock
 internal val mockGetGlobalPreferencesUseCase = mock<GetGlobalPreferencesUseCase>()
 internal val mockUpdateGlobalPreferencesUseCase = mock<UpdateGlobalPreferencesUseCase>()
 
-val testExpertSettingsModule = module {
-    factory<ExpertSettingsContract.Presenter> {
-        ExpertSettingsPresenter(
-            getGlobalPreferencesUseCase = mockGetGlobalPreferencesUseCase,
-            updateGlobalPreferencesUseCase = mockUpdateGlobalPreferencesUseCase
-        )
+val testExpertSettingsModule =
+    module {
+        factory<ExpertSettingsContract.Presenter> {
+            ExpertSettingsPresenter(
+                getGlobalPreferencesUseCase = mockGetGlobalPreferencesUseCase,
+                updateGlobalPreferencesUseCase = mockUpdateGlobalPreferencesUseCase,
+            )
+        }
     }
-}

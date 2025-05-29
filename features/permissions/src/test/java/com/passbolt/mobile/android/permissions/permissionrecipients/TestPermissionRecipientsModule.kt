@@ -1,4 +1,4 @@
-package com.passbolt.mobile.android.feature.resources.userspermissiondetails
+package com.passbolt.mobile.android.permissions.permissionrecipients
 
 import com.passbolt.mobile.android.common.search.SearchableMatcher
 import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
@@ -8,8 +8,6 @@ import com.passbolt.mobile.android.core.users.usecase.db.GetLocalUsersUseCase
 import com.passbolt.mobile.android.mappers.GroupsModelMapper
 import com.passbolt.mobile.android.mappers.PermissionsModelMapper
 import com.passbolt.mobile.android.mappers.UsersModelMapper
-import com.passbolt.mobile.android.permissions.permissionrecipients.PermissionRecipientsContract
-import com.passbolt.mobile.android.permissions.permissionrecipients.PermissionRecipientsPresenter
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.dsl.module
 import org.mockito.kotlin.mock
@@ -41,19 +39,20 @@ internal val mockGetLocalGroupsUseCase = mock<GetLocalGroupsUseCase>()
 internal val mockGetLocalUsersUseCase = mock<GetLocalUsersUseCase>()
 
 @ExperimentalCoroutinesApi
-internal val testPermissionRecipientsModule = module {
-    factory<CoroutineLaunchContext> { TestCoroutineLaunchContext() }
-    factory { GroupsModelMapper() }
-    factory { UsersModelMapper() }
-    factory { PermissionsModelMapper(groupsModelMapper = get(), usersModelMapper = get()) }
-    factory { SearchableMatcher() }
-    factory<PermissionRecipientsContract.Presenter> {
-        PermissionRecipientsPresenter(
-            coroutineLaunchContext = get(),
-            getLocalGroupsUseCase = mockGetLocalGroupsUseCase,
-            getLocalUsersUseCase = mockGetLocalUsersUseCase,
-            permissionsModelMapper = get(),
-            searchableMatcher = get()
-        )
+internal val testPermissionRecipientsModule =
+    module {
+        factory<CoroutineLaunchContext> { TestCoroutineLaunchContext() }
+        factory { GroupsModelMapper() }
+        factory { UsersModelMapper() }
+        factory { PermissionsModelMapper(groupsModelMapper = get(), usersModelMapper = get()) }
+        factory { SearchableMatcher() }
+        factory<PermissionRecipientsContract.Presenter> {
+            PermissionRecipientsPresenter(
+                coroutineLaunchContext = get(),
+                getLocalGroupsUseCase = mockGetLocalGroupsUseCase,
+                getLocalUsersUseCase = mockGetLocalUsersUseCase,
+                permissionsModelMapper = get(),
+                searchableMatcher = get(),
+            )
+        }
     }
-}

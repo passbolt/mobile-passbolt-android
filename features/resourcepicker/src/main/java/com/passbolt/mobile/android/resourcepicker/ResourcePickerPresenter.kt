@@ -50,10 +50,9 @@ class ResourcePickerPresenter(
     private val searchableMatcher: SearchableMatcher,
     private val resourcePickerMapper: ResourcePickerMapper,
     private val getResourceTypeIdToSlugMappingUseCase: GetResourceTypeIdToSlugMappingUseCase,
-    coroutineLaunchContext: CoroutineLaunchContext
-) : ResourcePickerContract.Presenter,
-    DataRefreshViewReactivePresenter<ResourcePickerContract.View>(coroutineLaunchContext) {
-
+    coroutineLaunchContext: CoroutineLaunchContext,
+) : DataRefreshViewReactivePresenter<ResourcePickerContract.View>(coroutineLaunchContext),
+    ResourcePickerContract.Presenter {
     override var view: ResourcePickerContract.View? = null
     private val job = SupervisorJob()
     private val coroutineScope = CoroutineScope(job + coroutineLaunchContext.ui)
@@ -98,7 +97,10 @@ class ResourcePickerPresenter(
         fullDataRefreshExecutor.performFullDataRefresh()
     }
 
-    override fun resourcePicked(selectableResourceModel: ResourcePickerListItem, isSelected: Boolean) {
+    override fun resourcePicked(
+        selectableResourceModel: ResourcePickerListItem,
+        isSelected: Boolean,
+    ) {
         if (selectableResourceModel.isSelectable && isSelected) {
             pickedResource = selectableResourceModel
             suggestedResourceList =
@@ -111,14 +113,14 @@ class ResourcePickerPresenter(
 
     private fun List<ResourcePickerListItem>.updatedAfterSelectedResource(
         resource: ResourcePickerListItem,
-        isSelected: Boolean
-    ) =
-        map {
-            it.copy(
-                isSelected = it.resourceModel.resourceId == resource.resourceModel.resourceId &&
-                        isSelected
-            )
-        }
+        isSelected: Boolean,
+    ) = map {
+        it.copy(
+            isSelected =
+                it.resourceModel.resourceId == resource.resourceModel.resourceId &&
+                    isSelected,
+        )
+    }
 
     override fun searchTextChanged(text: String) {
         currentSearchText.value = text
@@ -148,8 +150,9 @@ class ResourcePickerPresenter(
     }
 
     private fun filterHomeData() {
-        val filtered = resourceList
-            .filter { searchableMatcher.matches(it, currentSearchText.value) }
+        val filtered =
+            resourceList
+                .filter { searchableMatcher.matches(it, currentSearchText.value) }
 
         if (filtered.isEmpty()) {
             view?.showEmptyState()
@@ -160,23 +163,29 @@ class ResourcePickerPresenter(
     }
 
     private suspend fun showResourcesFromDatabase() {
-        val selectableResourceTypesIds = getResourceTypeIdToSlugMappingUseCase.execute(Unit)
-            .idToSlugMapping
-            .filter { it.value in selectableResourceTypesSlugs }
-            .keys
+        val selectableResourceTypesIds =
+            getResourceTypeIdToSlugMappingUseCase
+                .execute(Unit)
+                .idToSlugMapping
+                .filter { it.value in selectableResourceTypesSlugs }
+                .keys
 
-        resourceList = getLocalResourcesUseCase.execute(
-            GetLocalResourcesUseCase.Input(allSlugs)
-        )
-            .resources
-            .map { resourcePickerMapper.map(it, selectableResourceTypesIds) }
+        resourceList =
+            getLocalResourcesUseCase
+                .execute(
+                    GetLocalResourcesUseCase.Input(allSlugs),
+                ).resources
+                .map { resourcePickerMapper.map(it, selectableResourceTypesIds) }
 
         suggestionUri?.let { suggestionUri ->
-            suggestedResourceList = resourceList
-                .filter {
-                    !it.resourceModel.metadataJsonModel.uri.isNullOrBlank() &&
-                            it.resourceModel.metadataJsonModel.uri!!.lowercase() == suggestionUri.lowercase()
-                }
+            suggestedResourceList =
+                resourceList
+                    .filter {
+                        !it.resourceModel.metadataJsonModel.uri
+                            .isNullOrBlank() &&
+                            it.resourceModel.metadataJsonModel.uri!!
+                                .lowercase() == suggestionUri.lowercase()
+                    }
         }
 
         if (resourceList.isEmpty()) {
@@ -189,9 +198,11 @@ class ResourcePickerPresenter(
 
     override fun applyClick() {
         coroutineScope.launch {
-            val selectableIdToSlugMapping = getResourceTypeIdToSlugMappingUseCase.execute(Unit)
-                .idToSlugMapping
-                .filter { it.value in selectableResourceTypesSlugs }
+            val selectableIdToSlugMapping =
+                getResourceTypeIdToSlugMappingUseCase
+                    .execute(Unit)
+                    .idToSlugMapping
+                    .filter { it.value in selectableResourceTypesSlugs }
 
             require(pickedResourceResourceTypeId in selectableIdToSlugMapping.keys)
             val (pickAction, confirmationModel) =
@@ -218,11 +229,12 @@ class ResourcePickerPresenter(
     }
 
     private companion object {
-        private val selectableResourceTypesSlugs = listOf(
-            ContentType.PasswordAndDescription.slug,
-            ContentType.V5Default.slug,
-            ContentType.PasswordDescriptionTotp.slug,
-            ContentType.V5DefaultWithTotp.slug
-        )
+        private val selectableResourceTypesSlugs =
+            listOf(
+                ContentType.PasswordAndDescription.slug,
+                ContentType.V5Default.slug,
+                ContentType.PasswordDescriptionTotp.slug,
+                ContentType.V5DefaultWithTotp.slug,
+            )
     }
 }

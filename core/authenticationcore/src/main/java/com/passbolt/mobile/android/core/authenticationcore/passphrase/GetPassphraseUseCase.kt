@@ -33,15 +33,17 @@ import javax.crypto.Cipher
 
 class GetPassphraseUseCase(
     private val biometricCrypto: BiometricCrypto,
-    private val appContext: Context
+    private val appContext: Context,
 ) : UseCase<GetPassphraseUseCase.Input, GetPassphraseUseCase.Output> {
-
     override fun execute(input: Input): Output {
         val fileName = PassphraseFileName(input.userId).name
-        val file = File(
-            com.passbolt.mobile.android.encryptedstorage.EncryptedFileBaseDirectory(appContext).baseDirectory,
-            fileName
-        )
+        val file =
+            File(
+                com.passbolt.mobile.android.encryptedstorage
+                    .EncryptedFileBaseDirectory(appContext)
+                    .baseDirectory,
+                fileName,
+            )
 
         file.readText().let {
             return if (it.isNotEmpty()) {
@@ -55,10 +57,10 @@ class GetPassphraseUseCase(
 
     data class Input(
         val userId: String,
-        val authenticatedCipher: Cipher
+        val authenticatedCipher: Cipher,
     )
 
     data class Output(
-        val potentialPassphrase: PotentialPassphrase
+        val potentialPassphrase: PotentialPassphrase,
     )
 }

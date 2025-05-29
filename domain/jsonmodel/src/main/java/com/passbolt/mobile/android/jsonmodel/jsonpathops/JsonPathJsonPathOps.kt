@@ -6,14 +6,20 @@ import com.jayway.jsonpath.JsonPath
 import com.jayway.jsonpath.PathNotFoundException
 import com.passbolt.mobile.android.jsonmodel.JsonModel
 
-class JsonPathJsonPathOps(jsonPathConfig: Configuration) : JsonPathsOps {
-
+class JsonPathJsonPathOps(
+    jsonPathConfig: Configuration,
+) : JsonPathsOps {
     private val parseContext = JsonPath.using(jsonPathConfig)
 
-    override fun read(model: JsonModel, pathProvider: () -> String): JsonElement =
-        parseContext.parse(model.json).read(pathProvider())
+    override fun read(
+        model: JsonModel,
+        pathProvider: () -> String,
+    ): JsonElement = parseContext.parse(model.json).read(pathProvider())
 
-    override fun readOrNull(model: JsonModel, pathProvider: () -> String): JsonElement? =
+    override fun readOrNull(
+        model: JsonModel,
+        pathProvider: () -> String,
+    ): JsonElement? =
         try {
             val value = parseContext.parse(model.json).read<JsonElement>(pathProvider())
             if (value.isJsonNull) null else value
@@ -21,15 +27,23 @@ class JsonPathJsonPathOps(jsonPathConfig: Configuration) : JsonPathsOps {
             null
         }
 
-    override fun setOrCreate(model: JsonModel, pathProvider: () -> String, value: JsonElement) {
-        model.json = try {
-            parseContext.parse(model.json).set(pathProvider(), value).jsonString()
-        } catch (exception: PathNotFoundException) {
-            parseContext.parse(model.json).put(ROOT_PATH, pathProvider(), value).jsonString()
-        }
+    override fun setOrCreate(
+        model: JsonModel,
+        pathProvider: () -> String,
+        value: JsonElement,
+    ) {
+        model.json =
+            try {
+                parseContext.parse(model.json).set(pathProvider(), value).jsonString()
+            } catch (exception: PathNotFoundException) {
+                parseContext.parse(model.json).put(ROOT_PATH, pathProvider(), value).jsonString()
+            }
     }
 
-    override fun delete(model: JsonModel, pathProvider: () -> String) {
+    override fun delete(
+        model: JsonModel,
+        pathProvider: () -> String,
+    ) {
         model.json = parseContext.parse(model.json).delete(pathProvider()).jsonString()
     }
 

@@ -24,17 +24,19 @@ package com.passbolt.mobile.android.ui
  */
 
 sealed class DecryptedSecretOrError<out T> {
-
     data class DecryptedSecret<out T>(
-        val secret: T
+        val secret: T,
     ) : DecryptedSecretOrError<T>()
 
     sealed class Error<out T>(
-        val message: String
+        val message: String,
     ) : DecryptedSecretOrError<T>() {
+        class ParsingError<out T>(
+            message: String,
+        ) : Error<T>(message)
 
-        class ParsingError<out T>(message: String) : Error<T>(message)
-
-        class ValidationError<out T>(message: String) : Error<T>(message)
+        class ValidationError<out T>(
+            message: String,
+        ) : Error<T>(message)
     }
 }

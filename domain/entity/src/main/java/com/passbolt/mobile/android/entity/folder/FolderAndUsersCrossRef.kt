@@ -12,19 +12,19 @@ import com.passbolt.mobile.android.entity.user.User
             entity = Folder::class,
             parentColumns = ["folderId"],
             childColumns = ["folderId"],
-            onDelete = ForeignKey.CASCADE
+            onDelete = ForeignKey.CASCADE,
         ),
         ForeignKey(
             entity = User::class,
             parentColumns = ["id"],
             childColumns = ["userId"],
-            onDelete = ForeignKey.CASCADE
-        )
-    ]
+            onDelete = ForeignKey.CASCADE,
+        ),
+    ],
 )
 data class FolderAndUsersCrossRef(
     val folderId: String,
     val userId: String,
     val permission: Permission,
-    val permissionId: String
+    val permissionId: String,
 )

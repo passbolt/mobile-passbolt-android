@@ -26,9 +26,8 @@ import com.passbolt.mobile.android.feature.authentication.accountslist.AccountsL
  * @since v1.0
  */
 class AuthAccountListStrategy(
-    override var accountListFragment: AccountsListFragment?
+    override var accountListFragment: AccountsListFragment?,
 ) : AccountListStrategy {
-
     override fun toolbarVisibility() = View.GONE
 
     override fun getTitleRes(): Int? = null

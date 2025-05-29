@@ -34,9 +34,8 @@ import java.net.HttpURLConnection
 
 class GetDuoPromptUseCase(
     private val cookieExtractor: CookieExtractor,
-    private val mfaRepository: MfaRepository
+    private val mfaRepository: MfaRepository,
 ) : AsyncUseCase<GetDuoPromptUseCase.Input, GetDuoPromptUseCase.Output> {
-
     override suspend fun execute(input: Input): Output =
         when (val result = mfaRepository.getDuoPromptUrl("Bearer ${input.jwtHeader}")) {
             is NetworkResult.Failure.NetworkError -> Output.Failure(result)
@@ -63,37 +62,39 @@ class GetDuoPromptUseCase(
         }
 
     data class Input(
-        val jwtHeader: String
+        val jwtHeader: String,
     )
 
     sealed class Output : AuthenticatedUseCaseOutput {
-
         override val authenticationState: AuthenticationState
-            get() = when {
-                this is Failure<*> && this.response.isUnauthorized ->
-                    AuthenticationState.Unauthenticated(AuthenticationState.Unauthenticated.Reason.Session)
-                this is Failure<*> && this.response.isMfaRequired -> {
-                    val providers = MfaTypeProvider.get(this.response)
+            get() =
+                when {
+                    this is Failure<*> && this.response.isUnauthorized ->
+                        AuthenticationState.Unauthenticated(AuthenticationState.Unauthenticated.Reason.Session)
+                    this is Failure<*> && this.response.isMfaRequired -> {
+                        val providers = MfaTypeProvider.get(this.response)
 
-                    AuthenticationState.Unauthenticated(
-                        AuthenticationState.Unauthenticated.Reason.Mfa(providers)
-                    )
+                        AuthenticationState.Unauthenticated(
+                            AuthenticationState.Unauthenticated.Reason.Mfa(providers),
+                        )
+                    }
+                    else -> AuthenticationState.Authenticated
                 }
-                else -> AuthenticationState.Authenticated
-            }
 
         data class Success(
             val duoPromptUrl: String,
-            val passboltDuoCookieUuid: String
+            val passboltDuoCookieUuid: String,
         ) : Output()
 
         data class NetworkFailure(
-            val errorCode: Int
+            val errorCode: Int,
         ) : Output()
 
         data object Unauthorized : Output()
 
-        class Failure<T : Any>(val response: NetworkResult.Failure<T>) : Output()
+        class Failure<T : Any>(
+            val response: NetworkResult.Failure<T>,
+        ) : Output()
 
         data object DuoPromptUrlNotFound : Output()
     }

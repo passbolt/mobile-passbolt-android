@@ -9,9 +9,8 @@ import timber.log.Timber
 class HelpMenuPresenter(
     private val getGlobalPreferencesUseCase: GetGlobalPreferencesUseCase,
     private val updateGlobalPreferencesUseCase: UpdateGlobalPreferencesUseCase,
-    private val fileLoggingTree: FileLoggingTree
+    private val fileLoggingTree: FileLoggingTree,
 ) : HelpMenuContract.Presenter {
-
     override var view: HelpMenuContract.View? = null
 
     override fun argsRetrieved(helpMenuModel: HelpMenuModel) {

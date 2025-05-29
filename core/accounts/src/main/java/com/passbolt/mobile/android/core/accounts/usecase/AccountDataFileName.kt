@@ -23,8 +23,9 @@ package com.passbolt.mobile.android.core.accounts.usecase
  * @since v1.0
  */
 
-class AccountDataFileName(userId: String) {
-
+class AccountDataFileName(
+    userId: String,
+) {
     val name = ACCOUNT_DATA_FILE_NAME_FORMAT.format(userId)
 
     private companion object {

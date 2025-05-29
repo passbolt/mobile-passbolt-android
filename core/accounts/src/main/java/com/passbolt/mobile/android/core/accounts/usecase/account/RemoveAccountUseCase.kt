@@ -29,15 +29,16 @@ import com.passbolt.mobile.android.core.accounts.usecase.ACCOUNTS_ALIAS
  */
 
 class RemoveAccountUseCase(
-    private val sharedPreferences: SharedPreferences
+    private val sharedPreferences: SharedPreferences,
 ) : UseCase<UserIdInput, Unit> {
-
     override fun execute(input: UserIdInput) {
         with(sharedPreferences.edit()) {
-            val modifiedAccountsSet = sharedPreferences
-                .getStringSet(ACCOUNTS_ALIAS, emptySet()).orEmpty()
-                .toMutableSet()
-                .apply { remove(input.userId) }
+            val modifiedAccountsSet =
+                sharedPreferences
+                    .getStringSet(ACCOUNTS_ALIAS, emptySet())
+                    .orEmpty()
+                    .toMutableSet()
+                    .apply { remove(input.userId) }
 
             putStringSet(ACCOUNTS_ALIAS, modifiedAccountsSet)
             apply()

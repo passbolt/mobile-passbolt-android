@@ -1,7 +1,8 @@
 package com.passbolt.mobile.android.featureflags.usecase
 
-class FeatureFlagsFileName(userId: String) {
-
+class FeatureFlagsFileName(
+    userId: String,
+) {
     val name = FEATURE_FLAGS_FILE_NAME_FORMAT.format(userId)
 
     private companion object {

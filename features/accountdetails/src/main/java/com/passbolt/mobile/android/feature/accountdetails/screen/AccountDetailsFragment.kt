@@ -47,13 +47,16 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 class AccountDetailsFragment :
     BindingScopedAuthenticatedFragment<FragmentAccountDetailsBinding, AccountDetailsContract.View>(
-        FragmentAccountDetailsBinding::inflate
-    ), AccountDetailsContract.View {
-
+        FragmentAccountDetailsBinding::inflate,
+    ),
+    AccountDetailsContract.View {
     override val presenter: AccountDetailsContract.Presenter by inject()
     private var backNavStrategy: AccountDetailsBackNavStrategy? = null
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         setListeners()
         initBackNavStrategy()
@@ -61,11 +64,12 @@ class AccountDetailsFragment :
     }
 
     private fun initBackNavStrategy() {
-        backNavStrategy = if (context is AccountDetailsActivity) {
-            OwnActivityBackNavStrategy(requireActivity())
-        } else {
-            FragmentBackstackNavStrategy(findNavController())
-        }
+        backNavStrategy =
+            if (context is AccountDetailsActivity) {
+                OwnActivityBackNavStrategy(requireActivity())
+            } else {
+                FragmentBackstackNavStrategy(findNavController())
+            }
     }
 
     override fun onDestroyView() {
@@ -75,7 +79,7 @@ class AccountDetailsFragment :
     }
 
     private fun setListeners() {
-        with(binding) {
+        with(requiredBinding) {
             initDefaultToolbar(toolbar)
             toolbar.setNavigationOnClickListener { backNavStrategy?.backClick() }
             labelInput.setTextChangeListener {
@@ -91,19 +95,19 @@ class AccountDetailsFragment :
     }
 
     override fun showEmail(email: String) {
-        binding.emailLabel.text = email
+        requiredBinding.emailLabel.text = email
     }
 
     override fun showName(name: String) {
-        binding.nameLabel.text = name
+        requiredBinding.nameLabel.text = name
     }
 
     override fun showOrgUrl(orgUrl: String) {
-        binding.orgUrlLabel.text = orgUrl
+        requiredBinding.orgUrlLabel.text = orgUrl
     }
 
     override fun showRole(roleName: String) {
-        with(binding) {
+        with(requiredBinding) {
             roleLabel.text = roleName
             roleLabel.visible()
             roleHeading.visible()
@@ -111,7 +115,7 @@ class AccountDetailsFragment :
     }
 
     override fun showAvatar(avatarUrl: String?) {
-        binding.avatarImage.load(avatarUrl) {
+        requiredBinding.avatarImage.load(avatarUrl) {
             error(CoreUiR.drawable.ic_avatar_placeholder)
             transformations(CircleCropTransformation())
             placeholder(CoreUiR.drawable.ic_avatar_placeholder)
@@ -119,25 +123,25 @@ class AccountDetailsFragment :
     }
 
     override fun showLabel(label: String) {
-        binding.labelInput.text = label
+        requiredBinding.labelInput.text = label
     }
 
     override fun clearValidationErrors() {
-        binding.labelInput.setState(StatefulInput.State.Default)
+        requiredBinding.labelInput.setState(StatefulInput.State.Default)
     }
 
     override fun showLabelLengthError(labelMaxLength: Int) {
-        binding.labelInput.setState(
+        requiredBinding.labelInput.setState(
             StatefulInput.State.Error(
-                getString(LocalizationR.string.validation_required_with_max_length, labelMaxLength)
-            )
+                getString(LocalizationR.string.validation_required_with_max_length, labelMaxLength),
+            ),
         )
     }
 
     override fun showLabelChanged() {
         showSnackbar(
             LocalizationR.string.account_details_label_saved,
-            backgroundColor = CoreUiR.color.green
+            backgroundColor = CoreUiR.color.green,
         )
     }
 
@@ -146,6 +150,6 @@ class AccountDetailsFragment :
     }
 
     override fun setLabel(label: String) {
-        binding.labelInput.text = label
+        requiredBinding.labelInput.text = label
     }
 }

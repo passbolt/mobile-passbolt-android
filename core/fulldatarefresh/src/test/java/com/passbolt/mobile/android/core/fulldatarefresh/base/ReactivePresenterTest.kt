@@ -40,76 +40,78 @@ import org.mockito.Mockito.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
-
 @OptIn(ExperimentalCoroutinesApi::class)
 class ReactivePresenterTest {
-
     private val coroutineLaunchContext = TestCoroutineLaunchContext()
     private val presenter = DummyReactPresenter(coroutineLaunchContext)
     private val view = mock<DummyReactContract.View>()
     private val mockFullDataRefreshExecutor = mock<FullDataRefreshExecutor>()
 
     @get:Rule
-    val koinTestRule = KoinTestRule.create {
-        printLogger(Level.ERROR)
-        modules(
-            module {
-                single { mockFullDataRefreshExecutor }
-            }
-        )
-    }
-
-    @Test
-    fun `ui should execute refresh action after data refresh finishes`() = runTest {
-        val mockDataRefreshFlow = MutableSharedFlow<DataRefreshStatus>()
-        whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).thenReturn(mockDataRefreshFlow)
-
-        presenter.attach(view)
-        presenter.resume(view)
-        mockDataRefreshFlow.emit(DataRefreshStatus.InProgress)
-        mockDataRefreshFlow.emit(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
-
-        verify(view).showRefreshProgress()
-        verify(view).refreshActionUiEffect()
-        verify(view).hideRefreshProgress()
-    }
-
-    @Test
-    fun `ui should execute failure action after data refresh fails`() = runTest {
-        val mockDataRefreshFlow = MutableSharedFlow<DataRefreshStatus>()
-        whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).thenReturn(mockDataRefreshFlow)
-
-        presenter.attach(view)
-        presenter.resume(view)
-        mockDataRefreshFlow.emit(DataRefreshStatus.InProgress)
-        mockDataRefreshFlow.emit(
-            DataRefreshStatus.Finished(
-                HomeDataInteractor.Output.Failure(AuthenticationState.Authenticated)
+    val koinTestRule =
+        KoinTestRule.create {
+            printLogger(Level.ERROR)
+            modules(
+                module {
+                    single { mockFullDataRefreshExecutor }
+                },
             )
-        )
-
-        verify(view).showRefreshProgress()
-        verify(view).refreshFailureActionUiEffect()
-        verify(view).hideRefreshProgress()
-    }
+        }
 
     @Test
-    fun `ui should not execute failure action twice for the same presenter`() = runTest {
-        val mockDataRefreshFlow = MutableSharedFlow<DataRefreshStatus>()
-        whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).thenReturn(mockDataRefreshFlow)
+    fun `ui should execute refresh action after data refresh finishes`() =
+        runTest {
+            val mockDataRefreshFlow = MutableSharedFlow<DataRefreshStatus>()
+            whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).thenReturn(mockDataRefreshFlow)
 
-        presenter.attach(view)
-        presenter.resume(view)
-        mockDataRefreshFlow.emit(DataRefreshStatus.InProgress)
-        mockDataRefreshFlow.emit(
-            DataRefreshStatus.Finished(
-                HomeDataInteractor.Output.Failure(AuthenticationState.Authenticated)
+            presenter.attach(view)
+            presenter.resume(view)
+            mockDataRefreshFlow.emit(DataRefreshStatus.InProgress)
+            mockDataRefreshFlow.emit(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
+
+            verify(view).showRefreshProgress()
+            verify(view).refreshActionUiEffect()
+            verify(view).hideRefreshProgress()
+        }
+
+    @Test
+    fun `ui should execute failure action after data refresh fails`() =
+        runTest {
+            val mockDataRefreshFlow = MutableSharedFlow<DataRefreshStatus>()
+            whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).thenReturn(mockDataRefreshFlow)
+
+            presenter.attach(view)
+            presenter.resume(view)
+            mockDataRefreshFlow.emit(DataRefreshStatus.InProgress)
+            mockDataRefreshFlow.emit(
+                DataRefreshStatus.Finished(
+                    HomeDataInteractor.Output.Failure(AuthenticationState.Authenticated),
+                ),
             )
-        )
-        presenter.resume(view)
 
-        verify(view).showRefreshProgress()
-        verify(view).refreshFailureActionUiEffect()
-        verify(view).hideRefreshProgress()
-    }
+            verify(view).showRefreshProgress()
+            verify(view).refreshFailureActionUiEffect()
+            verify(view).hideRefreshProgress()
+        }
+
+    @Test
+    fun `ui should not execute failure action twice for the same presenter`() =
+        runTest {
+            val mockDataRefreshFlow = MutableSharedFlow<DataRefreshStatus>()
+            whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).thenReturn(mockDataRefreshFlow)
+
+            presenter.attach(view)
+            presenter.resume(view)
+            mockDataRefreshFlow.emit(DataRefreshStatus.InProgress)
+            mockDataRefreshFlow.emit(
+                DataRefreshStatus.Finished(
+                    HomeDataInteractor.Output.Failure(AuthenticationState.Authenticated),
+                ),
+            )
+            presenter.resume(view)
+
+            verify(view).showRefreshProgress()
+            verify(view).refreshFailureActionUiEffect()
+            verify(view).hideRefreshProgress()
+        }
 }

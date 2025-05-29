@@ -28,8 +28,9 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-val homeModule = module {
-    homeModule()
-    switchAccountModule()
-    filtersMenuModule()
-}
+val homeModule =
+    module {
+        homeModule()
+        switchAccountModule()
+        filtersMenuModule()
+    }

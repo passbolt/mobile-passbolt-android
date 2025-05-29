@@ -25,5 +25,5 @@ package com.passbolt.mobile.android.resourcepicker.model
 
 enum class SearchInputEndIconMode {
     NONE,
-    CLEAR
+    CLEAR,
 }

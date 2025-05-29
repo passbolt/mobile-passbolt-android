@@ -16,14 +16,15 @@ internal val mockUpdateHomeDisplayViewPrefsUseCase = mock<UpdateHomeDisplayViewP
 internal val mockGetRbacRulesUseCase = mock<GetRbacRulesUseCase>()
 
 @ExperimentalCoroutinesApi
-val testFiltersMenuModule = module {
-    factory<CoroutineLaunchContext> { TestCoroutineLaunchContext() }
-    factory<FiltersMenuContract.Presenter> {
-        FiltersMenuPresenter(
-            coroutineLaunchContext = get(),
-            getFeatureFlagsUseCase = mockGetFeatureFlagsUseCase,
-            updateHomeDisplayViewPrefsUseCase = mockUpdateHomeDisplayViewPrefsUseCase,
-            getRbacRulesUseCase = mockGetRbacRulesUseCase
-        )
+val testFiltersMenuModule =
+    module {
+        factory<CoroutineLaunchContext> { TestCoroutineLaunchContext() }
+        factory<FiltersMenuContract.Presenter> {
+            FiltersMenuPresenter(
+                coroutineLaunchContext = get(),
+                getFeatureFlagsUseCase = mockGetFeatureFlagsUseCase,
+                updateHomeDisplayViewPrefsUseCase = mockUpdateHomeDisplayViewPrefsUseCase,
+                getRbacRulesUseCase = mockGetRbacRulesUseCase,
+            )
+        }
     }
-}

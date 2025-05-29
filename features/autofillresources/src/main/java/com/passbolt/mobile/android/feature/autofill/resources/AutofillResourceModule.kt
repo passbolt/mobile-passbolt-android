@@ -47,23 +47,25 @@ fun Module.autofillResourcesModule() {
             ModelAdapter(accountUiItemsMapper::mapModelToItem)
         }
         scoped(named<ResourceListUiModel>()) {
-            FastAdapter.with(get<ModelAdapter<ResourceListUiModel, GenericItem>> {
-                parametersOf(get<ResourceUiItemsMapper>())
-            })
+            FastAdapter.with(
+                get<ModelAdapter<ResourceListUiModel, GenericItem>> {
+                    parametersOf(get<ResourceUiItemsMapper>())
+                },
+            )
         }
         scoped<ReturnAutofillDatasetStrategy>(
-            named(AutofillMode.AUTOFILL)
+            named(AutofillMode.AUTOFILL),
         ) { (view: AutofillResourcesContract.View) ->
             ReturnAutofillDataset(
                 view = view,
                 appContext = androidContext(),
                 assistStructureParser = get(),
                 fillableInputsFinder = get(),
-                remoteViewsFactory = get()
+                remoteViewsFactory = get(),
             )
         }
         scoped<ReturnAutofillDatasetStrategy>(
-            named(AutofillMode.ACCESSIBILITY)
+            named(AutofillMode.ACCESSIBILITY),
         ) { (view: AutofillResourcesContract.View) ->
             ReturnAccessibilityDataset(view)
         }

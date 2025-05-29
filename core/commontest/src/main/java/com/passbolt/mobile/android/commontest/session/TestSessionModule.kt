@@ -36,18 +36,19 @@ internal val mockPassphraseMemoryCache = mock<PassphraseMemoryCache>()
 
 private const val VALID_SESSION_DURATION_SECONDS = 60L
 
-val validSessionTestModule = module {
-    single {
-        mockGetSessionExpiryUseCase.stub {
-            onBlocking { execute(Unit) }.thenReturn(
-                GetSessionExpiryUseCase.Output.JwtWillExpire(
-                    ZonedDateTime.now().plusSeconds(VALID_SESSION_DURATION_SECONDS)
+val validSessionTestModule =
+    module {
+        single {
+            mockGetSessionExpiryUseCase.stub {
+                onBlocking { execute(Unit) }.thenReturn(
+                    GetSessionExpiryUseCase.Output.JwtWillExpire(
+                        ZonedDateTime.now().plusSeconds(VALID_SESSION_DURATION_SECONDS),
+                    ),
                 )
-            )
+            }
+        }
+        single {
+            whenever(mockPassphraseMemoryCache.getSessionDurationSeconds()).thenReturn(VALID_SESSION_DURATION_SECONDS)
+            mockPassphraseMemoryCache
         }
     }
-    single {
-        whenever(mockPassphraseMemoryCache.getSessionDurationSeconds()).thenReturn(VALID_SESSION_DURATION_SECONDS)
-        mockPassphraseMemoryCache
-    }
-}

@@ -44,9 +44,9 @@ class FingerprintPresenter(
     private val biometricCipher: BiometricCipher,
     private val saveBiometricKeyIvUseCase: SaveBiometricKeyIvUseCase,
     private val biometryInteractor: BiometryInteractor,
-    private val encouragementsInteractor: EncouragementsInteractor
-) : FingerprintContract.Presenter, KoinComponent {
-
+    private val encouragementsInteractor: EncouragementsInteractor,
+) : FingerprintContract.Presenter,
+    KoinComponent {
     override var view: FingerprintContract.View? = null
 
     override fun resume() {
@@ -101,11 +101,11 @@ class FingerprintPresenter(
                     savePassphraseUseCase.execute(
                         SavePassphraseUseCase.Input(
                             cachedPassphrase.passphrase,
-                            it
-                        )
+                            it,
+                        ),
                     )
                     saveBiometricKeyIvUseCase.execute(
-                        SaveBiometricKeyIvUseCase.Input(authenticatedCipher.iv)
+                        SaveBiometricKeyIvUseCase.Input(authenticatedCipher.iv),
                     )
                 }
                 if (autofillInformationProvider.isAutofillServiceSupported() &&

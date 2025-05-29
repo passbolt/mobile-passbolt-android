@@ -38,13 +38,15 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
  * @since v1.0
  */
 class GroupMemberItem(
-    val model: UserModel
+    val model: UserModel,
 ) : AbstractBindingItem<ItemGroupMemberBinding>() {
-
     override val type: Int
         get() = R.id.groupMemberItem
 
-    override fun bindView(binding: ItemGroupMemberBinding, payloads: List<Any>) {
+    override fun bindView(
+        binding: ItemGroupMemberBinding,
+        payloads: List<Any>,
+    ) {
         with(binding) {
             icon.load(model.profile.avatarUrl) {
                 error(CoreUiR.drawable.ic_user_avatar)
@@ -58,25 +60,24 @@ class GroupMemberItem(
         }
     }
 
-    override fun createBinding(inflater: LayoutInflater, parent: ViewGroup?): ItemGroupMemberBinding {
-        return ItemGroupMemberBinding.inflate(inflater, parent, false)
-    }
+    override fun createBinding(
+        inflater: LayoutInflater,
+        parent: ViewGroup?,
+    ): ItemGroupMemberBinding = ItemGroupMemberBinding.inflate(inflater, parent, false)
 
     class ItemClick(
-        private val clickListener: (UserModel) -> Unit
+        private val clickListener: (UserModel) -> Unit,
     ) : ClickEventHook<GroupMemberItem>() {
-
-        override fun onBind(viewHolder: RecyclerView.ViewHolder): View? {
-            return viewHolder.asBinding<ItemGroupMemberBinding> {
+        override fun onBind(viewHolder: RecyclerView.ViewHolder): View? =
+            viewHolder.asBinding<ItemGroupMemberBinding> {
                 it.groupMemberItem
             }
-        }
 
         override fun onClick(
             v: View,
             position: Int,
             fastAdapter: FastAdapter<GroupMemberItem>,
-            item: GroupMemberItem
+            item: GroupMemberItem,
         ) {
             clickListener.invoke(item.model)
         }

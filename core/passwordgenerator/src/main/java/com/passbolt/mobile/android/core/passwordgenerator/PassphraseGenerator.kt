@@ -29,17 +29,18 @@ import kotlinx.coroutines.flow.takeWhile
  * @since v1.0
  */
 class PassphraseGenerator(
-    private val dice: Dice
+    private val dice: Dice,
 ) {
     suspend fun generate(settings: PassphraseGeneratorSettingsModel): List<Codepoint> {
         dice.apply {
             initialize()
             isInitializedFlow.takeWhile { !it }
         }
-        return dice.generatePassphrase(
-            wordsCount = settings.words,
-            wordsSeparator = settings.wordSeparator,
-            case = settings.wordCase
-        ).toCodepoints()
+        return dice
+            .generatePassphrase(
+                wordsCount = settings.words,
+                wordsSeparator = settings.wordSeparator,
+                case = settings.wordCase,
+            ).toCodepoints()
     }
 }

@@ -38,26 +38,23 @@ class TransferMapperTest {
     }
 
     @Test
-    fun `Mapping in progress status should returns proper dto`() =
-        verifyStatus(Status.IN_PROGRESS, StatusRequest.IN_PROGRESS)
+    fun `Mapping in progress status should returns proper dto`() = verifyStatus(Status.IN_PROGRESS, StatusRequest.IN_PROGRESS)
 
     @Test
-    fun `Mapping error status should returns proper dto`() =
-        verifyStatus(Status.ERROR, StatusRequest.ERROR)
+    fun `Mapping error status should returns proper dto`() = verifyStatus(Status.ERROR, StatusRequest.ERROR)
 
     @Test
-    fun `Mapping complete status should returns proper dto`() =
-        verifyStatus(Status.COMPLETE, StatusRequest.COMPLETE)
+    fun `Mapping complete status should returns proper dto`() = verifyStatus(Status.COMPLETE, StatusRequest.COMPLETE)
 
     @Test
-    fun `Mapping cancel status should returns proper dto`() =
-        verifyStatus(Status.CANCEL, StatusRequest.CANCEL)
+    fun `Mapping cancel status should returns proper dto`() = verifyStatus(Status.CANCEL, StatusRequest.CANCEL)
 
-    private fun verifyStatus(inputStatus: Status, expectedStatusRequest: StatusRequest) {
+    private fun verifyStatus(
+        inputStatus: Status,
+        expectedStatusRequest: StatusRequest,
+    ) {
         val result = mapper.mapRequestToDto(0, inputStatus)
         val expected = UpdateTransferRequestDto(0, expectedStatusRequest)
         assertThat(result).isEqualTo(expected)
     }
-
 }
-

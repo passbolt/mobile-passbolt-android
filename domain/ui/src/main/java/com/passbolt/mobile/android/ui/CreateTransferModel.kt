@@ -28,5 +28,5 @@ data class CreateTransferModel(
     val currentPage: Int,
     val totalPages: Int,
     val hash: String,
-    val authenticationToken: String
+    val authenticationToken: String,
 )

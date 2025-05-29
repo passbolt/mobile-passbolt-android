@@ -27,9 +27,8 @@ import com.passbolt.mobile.android.core.networking.callWithHandler
  */
 class PwnedPasswordRepository(
     private val pwnedPasswordDataSource: PwnedPasswordDataSource,
-    private val responseHandler: ResponseHandler
+    private val responseHandler: ResponseHandler,
 ) {
-
     suspend fun getPwnedPasswordsSuffixes(passwordPartialHash: String) =
         callWithHandler(responseHandler) {
             pwnedPasswordDataSource.getPwnedPasswordsSuffixes(passwordPartialHash)

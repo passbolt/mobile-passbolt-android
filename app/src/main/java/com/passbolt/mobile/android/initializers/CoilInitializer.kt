@@ -1,12 +1,3 @@
-package com.passbolt.mobile.android.initializers
-
-import android.content.Context
-import androidx.startup.Initializer
-import coil.Coil
-import coil.ImageLoader
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -30,6 +21,15 @@ import org.koin.core.component.inject
  * @since v1.0
  */
 
+package com.passbolt.mobile.android.initializers
+
+import android.content.Context
+import androidx.startup.Initializer
+import coil.Coil
+import coil.ImageLoader
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
+
 /**
  * Initializes the logging library.
  * Apart from default logger in DEBUG mode the application also uses a logger instance
@@ -39,14 +39,14 @@ import org.koin.core.component.inject
  * @property imageLoader an image loading service
  */
 @Suppress("unused")
-class CoilInitializer : Initializer<Unit>, KoinComponent {
-
+class CoilInitializer :
+    Initializer<Unit>,
+    KoinComponent {
     private val imageLoader: ImageLoader by inject()
 
     override fun create(context: Context) {
         Coil.setImageLoader(imageLoader)
     }
 
-    override fun dependencies(): MutableList<Class<out Initializer<*>>> =
-        mutableListOf(KoinInitializer::class.java)
+    override fun dependencies(): MutableList<Class<out Initializer<*>>> = mutableListOf(KoinInitializer::class.java)
 }

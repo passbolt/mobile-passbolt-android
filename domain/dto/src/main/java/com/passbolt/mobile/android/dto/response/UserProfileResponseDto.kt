@@ -9,13 +9,13 @@ data class UserProfileResponseDto(
     val firstName: String?,
     @SerializedName("last_name")
     val lastName: String?,
-    val avatar: AvatarResponseDto?
+    val avatar: AvatarResponseDto?,
 )
 
 data class AvatarResponseDto(
-    val url: UrlAvatarResponseDto?
+    val url: UrlAvatarResponseDto?,
 )
 
 data class UrlAvatarResponseDto(
-    val medium: String
+    val medium: String,
 )

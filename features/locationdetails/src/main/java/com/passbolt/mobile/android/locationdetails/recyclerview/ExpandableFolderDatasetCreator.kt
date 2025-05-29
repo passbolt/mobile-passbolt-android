@@ -28,9 +28,8 @@ import java.util.concurrent.atomic.AtomicLong
  * @since v1.0
  */
 class ExpandableFolderDatasetCreator(
-    private val fakeRootFolderName: String
+    private val fakeRootFolderName: String,
 ) {
-
     fun create(parentFolders: List<FolderModel>): Output {
         val items = ArrayList<GenericItem>()
         val identifier = AtomicLong(0)
@@ -64,8 +63,8 @@ class ExpandableFolderDatasetCreator(
                         parentFolderId = null,
                         name = fakeRootFolderName,
                         isShared = false,
-                        permission = ResourcePermission.OWNER
-                    )
+                        permission = ResourcePermission.OWNER,
+                    ),
                 )
                 map {
                     if (it == oldestParent) {
@@ -81,7 +80,7 @@ class ExpandableFolderDatasetCreator(
         start: AtomicLong,
         parent: ExpandableFolderItem,
         listItems: ArrayList<GenericItem>,
-        itemToBeExpanded: Array<ExpandableFolderItem>
+        itemToBeExpanded: Array<ExpandableFolderItem>,
     ) {
         start.getAndIncrement()
         val child = ExpandableFolderItem(items[start.get().toInt()], start.toInt())
@@ -96,7 +95,7 @@ class ExpandableFolderDatasetCreator(
 
     data class Output(
         val dataset: List<GenericItem>,
-        val expandToItem: ExpandableFolderItem
+        val expandToItem: ExpandableFolderItem,
     )
 
     private companion object {

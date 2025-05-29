@@ -39,7 +39,7 @@ fun Module.defaultFilterModule() {
         }
         scoped {
             FastAdapter.with(
-                get<ItemAdapter<DefaultFilterItem>>()
+                get<ItemAdapter<DefaultFilterItem>>(),
             )
         }
     }

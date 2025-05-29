@@ -46,11 +46,9 @@ class PermissionRecipientsPresenter(
     private val getLocalUsersUseCase: GetLocalUsersUseCase,
     private val permissionsModelMapper: PermissionsModelMapper,
     private val searchableMatcher: SearchableMatcher,
-    coroutineLaunchContext: CoroutineLaunchContext
-) :
-    PermissionRecipientsContract.Presenter,
-    BaseAuthenticatedPresenter<PermissionRecipientsContract.View>(coroutineLaunchContext) {
-
+    coroutineLaunchContext: CoroutineLaunchContext,
+) : BaseAuthenticatedPresenter<PermissionRecipientsContract.View>(coroutineLaunchContext),
+    PermissionRecipientsContract.Presenter {
     override var view: PermissionRecipientsContract.View? = null
     private val job = SupervisorJob()
     private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
@@ -76,7 +74,7 @@ class PermissionRecipientsPresenter(
         alreadyAddedGroupPermissions: List<PermissionModelUi.GroupPermissionModel>,
         alreadyAddedUserPermissions: List<PermissionModelUi.UserPermissionModel>,
         alreadyAddedListWidth: Int,
-        alreadyAddedItemWidth: Float
+        alreadyAddedItemWidth: Float,
     ) {
         this.alreadyAddedListWidth = alreadyAddedListWidth
         this.alreadyAddedItemWidth = alreadyAddedItemWidth
@@ -86,15 +84,21 @@ class PermissionRecipientsPresenter(
         scope.launch {
             showPermissions(alreadyAddedGroupPermissions + alreadyAddedUserPermissions)
 
-            groups = getLocalGroupsUseCase.execute(
-                GetLocalGroupsUseCase.Input(
-                    alreadyAddedGroupPermissions.map { it.group.groupId })
-            ).groups
+            groups =
+                getLocalGroupsUseCase
+                    .execute(
+                        GetLocalGroupsUseCase.Input(
+                            alreadyAddedGroupPermissions.map { it.group.groupId },
+                        ),
+                    ).groups
 
-            users = getLocalUsersUseCase.execute(
-                GetLocalUsersUseCase.Input(
-                    alreadyAddedUserPermissions.map { it.user.userId })
-            ).users
+            users =
+                getLocalUsersUseCase
+                    .execute(
+                        GetLocalUsersUseCase.Input(
+                            alreadyAddedUserPermissions.map { it.user.userId },
+                        ),
+                    ).users
 
             view?.showRecipients(groups, users)
         }
@@ -107,8 +111,9 @@ class PermissionRecipientsPresenter(
         view?.showRecipients(filteredGroups, filteredUsers)
 
         if (searchText.isNotBlank()) {
-            val filteredExistingUsersAndGroups = (alreadyAddedGroups + alreadyAddedUsers)
-                .filter { searchableMatcher.matches(it, searchText) }
+            val filteredExistingUsersAndGroups =
+                (alreadyAddedGroups + alreadyAddedUsers)
+                    .filter { searchableMatcher.matches(it, searchText) }
             view?.showExistingUsersAndGroups(filteredExistingUsersAndGroups)
             if (filteredEntitiesSize == 0 && filteredExistingUsersAndGroups.isEmpty()) {
                 view?.showEmptyState()
@@ -129,50 +134,64 @@ class PermissionRecipientsPresenter(
     }
 
     private fun showPermissions(permissions: List<PermissionModelUi>) {
-        val permissionsDisplayDataset = PermissionsDatasetCreator(
-            alreadyAddedListWidth,
-            alreadyAddedItemWidth
-        )
-            .prepareDataset(permissions)
+        val permissionsDisplayDataset =
+            PermissionsDatasetCreator(
+                alreadyAddedListWidth,
+                alreadyAddedItemWidth,
+            ).prepareDataset(permissions)
         view?.showPermissions(
             permissionsDisplayDataset.groupPermissions,
             permissionsDisplayDataset.userPermissions,
             permissionsDisplayDataset.counterValue,
-            permissionsDisplayDataset.overlap
+            permissionsDisplayDataset.overlap,
         )
     }
 
-    override fun groupRecipientSelectionChanged(model: GroupModel, isSelected: Boolean) {
-        val permissionModel = permissionsModelMapper.map(
-            model, DEFAULT_PERMISSIONS_FOR_NEW_RECIPIENTS, TEMPORARY_NEW_PERMISSION_ID
-        )
+    override fun groupRecipientSelectionChanged(
+        model: GroupModel,
+        isSelected: Boolean,
+    ) {
+        val permissionModel =
+            permissionsModelMapper.map(
+                model,
+                DEFAULT_PERMISSIONS_FOR_NEW_RECIPIENTS,
+                TEMPORARY_NEW_PERMISSION_ID,
+            )
         processSelection(isSelected, permissionModel)
     }
 
-    override fun userRecipientSelectionChanged(model: UserModel, isSelected: Boolean) {
-        val permissionModel = permissionsModelMapper.map(
-            model, DEFAULT_PERMISSIONS_FOR_NEW_RECIPIENTS, TEMPORARY_NEW_PERMISSION_ID
-        )
+    override fun userRecipientSelectionChanged(
+        model: UserModel,
+        isSelected: Boolean,
+    ) {
+        val permissionModel =
+            permissionsModelMapper.map(
+                model,
+                DEFAULT_PERMISSIONS_FOR_NEW_RECIPIENTS,
+                TEMPORARY_NEW_PERMISSION_ID,
+            )
         processSelection(isSelected, permissionModel)
     }
 
     private fun processSelection(
         isSelected: Boolean,
-        permissionModel: PermissionModelUi
+        permissionModel: PermissionModelUi,
     ) {
         if (isSelected) { // add permission to set
             selectedPermissions.add(permissionModel)
         } else { // remove permission from set
-            val permissionRecipientId = when (permissionModel) {
-                is PermissionModelUi.GroupPermissionModel -> permissionModel.group.groupId
-                is PermissionModelUi.UserPermissionModel -> permissionModel.user.userId
-            }
-            val selectedItem = selectedPermissions.first {
-                when (it) {
-                    is PermissionModelUi.GroupPermissionModel -> it.group.groupId == permissionRecipientId
-                    is PermissionModelUi.UserPermissionModel -> it.user.userId == permissionRecipientId
+            val permissionRecipientId =
+                when (permissionModel) {
+                    is PermissionModelUi.GroupPermissionModel -> permissionModel.group.groupId
+                    is PermissionModelUi.UserPermissionModel -> permissionModel.user.userId
                 }
-            }
+            val selectedItem =
+                selectedPermissions.first {
+                    when (it) {
+                        is PermissionModelUi.GroupPermissionModel -> it.group.groupId == permissionRecipientId
+                        is PermissionModelUi.UserPermissionModel -> it.user.userId == permissionRecipientId
+                    }
+                }
             selectedPermissions.remove(selectedItem)
         }
         showPermissions(alreadyAddedGroups + alreadyAddedUsers + selectedPermissions)

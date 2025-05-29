@@ -35,53 +35,56 @@ import com.passbolt.mobile.android.ui.FolderModelWithAttributes
  */
 class CreateFolderUseCase(
     private val foldersRepository: FoldersRepository,
-    private val permissionsModelMapper: PermissionsModelMapper
+    private val permissionsModelMapper: PermissionsModelMapper,
 ) : AsyncUseCase<CreateFolderUseCase.Input, CreateFolderUseCase.Output> {
-
     override suspend fun execute(input: Input): Output =
         when (val result = foldersRepository.createFolder(CreateFolderRequestDto(input.parentFolderId, input.name))) {
             is NetworkResult.Failure.NetworkError -> Output.Failure(result)
             is NetworkResult.Failure.ServerError -> Output.Failure(result)
-            is NetworkResult.Success -> Output.Success(
-                FolderModelWithAttributes(
-                    FolderModel(
-                        result.value.id.toString(),
-                        result.value.parentFolderId?.toString(),
-                        result.value.name,
-                        !result.value.personal,
-                        permissionsModelMapper.map(result.value.permission.type)
+            is NetworkResult.Success ->
+                Output.Success(
+                    FolderModelWithAttributes(
+                        FolderModel(
+                            result.value.id.toString(),
+                            result.value.parentFolderId?.toString(),
+                            result.value.name,
+                            !result.value.personal,
+                            permissionsModelMapper.map(result.value.permission.type),
+                        ),
+                        listOf(permissionsModelMapper.mapToUserPermission(result.value.permission)),
                     ),
-                    listOf(permissionsModelMapper.mapToUserPermission(result.value.permission))
                 )
-            )
         }
 
     data class Input(
         val name: String,
-        val parentFolderId: String?
+        val parentFolderId: String?,
     )
 
     sealed class Output : AuthenticatedUseCaseOutput {
-
         override val authenticationState: AuthenticationState
-            get() = when {
-                this is Failure && this.result.isUnauthorized -> {
-                    AuthenticationState.Unauthenticated(AuthenticationState.Unauthenticated.Reason.Session)
+            get() =
+                when {
+                    this is Failure && this.result.isUnauthorized -> {
+                        AuthenticationState.Unauthenticated(AuthenticationState.Unauthenticated.Reason.Session)
+                    }
+                    this is Failure && this.result.isMfaRequired -> {
+                        val providers = MfaTypeProvider.get(this.result)
+                        AuthenticationState.Unauthenticated(
+                            AuthenticationState.Unauthenticated.Reason.Mfa(providers),
+                        )
+                    }
+                    else -> {
+                        AuthenticationState.Authenticated
+                    }
                 }
-                this is Failure && this.result.isMfaRequired -> {
-                    val providers = MfaTypeProvider.get(this.result)
-                    AuthenticationState.Unauthenticated(
-                        AuthenticationState.Unauthenticated.Reason.Mfa(providers)
-                    )
-                }
-                else -> {
-                    AuthenticationState.Authenticated
-                }
-            }
 
-        data class Success(val folderWithAttributes: FolderModelWithAttributes) :
-            Output()
+        data class Success(
+            val folderWithAttributes: FolderModelWithAttributes,
+        ) : Output()
 
-        data class Failure(val result: NetworkResult.Failure<*>) : Output()
+        data class Failure(
+            val result: NetworkResult.Failure<*>,
+        ) : Output()
     }
 }

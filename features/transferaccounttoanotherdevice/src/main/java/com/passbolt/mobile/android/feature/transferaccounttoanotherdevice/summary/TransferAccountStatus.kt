@@ -31,26 +31,27 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
 sealed class TransferAccountStatus(
     @DrawableRes val icon: Int,
     @StringRes val title: Int,
-    @StringRes val buttonText: Int
+    @StringRes val buttonText: Int,
 ) : Serializable {
-
-    class Success : TransferAccountStatus(
-        CoreUiR.drawable.ic_success,
-        LocalizationR.string.transfer_account_summary_success,
-        LocalizationR.string.transfer_account_summary_go_back
-    )
+    class Success :
+        TransferAccountStatus(
+            CoreUiR.drawable.ic_success,
+            LocalizationR.string.transfer_account_summary_success,
+            LocalizationR.string.transfer_account_summary_go_back,
+        )
 
     class Failure(
-        val message: String
+        val message: String,
     ) : TransferAccountStatus(
-        CoreUiR.drawable.ic_failed,
-        LocalizationR.string.common_failure,
-        LocalizationR.string.transfer_account_summary_go_back
-    )
+            CoreUiR.drawable.ic_failed,
+            LocalizationR.string.common_failure,
+            LocalizationR.string.transfer_account_summary_go_back,
+        )
 
-    class Canceled : TransferAccountStatus(
-        CoreUiR.drawable.ic_failed,
-        LocalizationR.string.transfer_account_summary_cancelled,
-        LocalizationR.string.transfer_account_summary_go_back
-    )
+    class Canceled :
+        TransferAccountStatus(
+            CoreUiR.drawable.ic_failed,
+            LocalizationR.string.transfer_account_summary_cancelled,
+            LocalizationR.string.transfer_account_summary_go_back,
+        )
 }

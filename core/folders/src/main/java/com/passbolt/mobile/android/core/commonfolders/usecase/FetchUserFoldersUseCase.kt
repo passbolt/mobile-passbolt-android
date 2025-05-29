@@ -33,39 +33,42 @@ import com.passbolt.mobile.android.ui.FolderModelWithAttributes
  */
 class FetchUserFoldersUseCase(
     private val foldersRepository: FoldersRepository,
-    private val folderModelMapper: FolderModelMapper
+    private val folderModelMapper: FolderModelMapper,
 ) : AsyncUseCase<Unit, FetchUserFoldersUseCase.Output> {
-
     override suspend fun execute(input: Unit): Output =
         when (val result = foldersRepository.getFolders()) {
             is NetworkResult.Failure.NetworkError -> Output.Failure(result)
             is NetworkResult.Failure.ServerError -> Output.Failure(result)
-            is NetworkResult.Success -> Output.Success(
-                result.value.map { folderModelMapper.map(it) }
-            )
+            is NetworkResult.Success ->
+                Output.Success(
+                    result.value.map { folderModelMapper.map(it) },
+                )
         }
 
     sealed class Output : AuthenticatedUseCaseOutput {
-
         override val authenticationState: AuthenticationState
-            get() = when {
-                this is Failure && this.result.isUnauthorized -> {
-                    AuthenticationState.Unauthenticated(AuthenticationState.Unauthenticated.Reason.Session)
+            get() =
+                when {
+                    this is Failure && this.result.isUnauthorized -> {
+                        AuthenticationState.Unauthenticated(AuthenticationState.Unauthenticated.Reason.Session)
+                    }
+                    this is Failure && this.result.isMfaRequired -> {
+                        val providers = MfaTypeProvider.get(this.result)
+                        AuthenticationState.Unauthenticated(
+                            AuthenticationState.Unauthenticated.Reason.Mfa(providers),
+                        )
+                    }
+                    else -> {
+                        AuthenticationState.Authenticated
+                    }
                 }
-                this is Failure && this.result.isMfaRequired -> {
-                    val providers = MfaTypeProvider.get(this.result)
-                    AuthenticationState.Unauthenticated(
-                        AuthenticationState.Unauthenticated.Reason.Mfa(providers)
-                    )
-                }
-                else -> {
-                    AuthenticationState.Authenticated
-                }
-            }
 
-        data class Success(val foldersWithAttributes: List<FolderModelWithAttributes>) :
-            Output()
+        data class Success(
+            val foldersWithAttributes: List<FolderModelWithAttributes>,
+        ) : Output()
 
-        data class Failure(val result: NetworkResult.Failure<*>) : Output()
+        data class Failure(
+            val result: NetworkResult.Failure<*>,
+        ) : Output()
     }
 }
