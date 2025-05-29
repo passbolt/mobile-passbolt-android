@@ -29,11 +29,11 @@ import com.passbolt.mobile.android.feature.permissions.databinding.ItemExistingU
  * @since v1.0
  */
 class ExistingUsersAndGroupsHeaderItem : AbstractBindingItem<ItemExistingUsersAndGroupsHeaderBinding>() {
-
     override val type: Int
         get() = R.id.itemExistingUsersAndGroupsHeaderItem
 
-    override fun createBinding(inflater: LayoutInflater, parent: ViewGroup?): ItemExistingUsersAndGroupsHeaderBinding {
-        return ItemExistingUsersAndGroupsHeaderBinding.inflate(inflater, parent, false)
-    }
+    override fun createBinding(
+        inflater: LayoutInflater,
+        parent: ViewGroup?,
+    ): ItemExistingUsersAndGroupsHeaderBinding = ItemExistingUsersAndGroupsHeaderBinding.inflate(inflater, parent, false)
 }

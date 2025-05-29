@@ -8,10 +8,11 @@ import org.mockito.kotlin.mock
 
 internal val mockAutofillInformationProvider = mock<AutofillInformationProvider>()
 
-val testSettingsAutofillModule = module {
-    factory<SettingsAutofillContract.Presenter> {
-        SettingsAutofillPresenter(
-            autofillInformationProvider = mockAutofillInformationProvider
-        )
+val testSettingsAutofillModule =
+    module {
+        factory<SettingsAutofillContract.Presenter> {
+            SettingsAutofillPresenter(
+                autofillInformationProvider = mockAutofillInformationProvider,
+            )
+        }
     }
-}

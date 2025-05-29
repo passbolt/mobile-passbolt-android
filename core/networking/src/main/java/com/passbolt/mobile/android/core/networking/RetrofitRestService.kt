@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.core.networking
 import okhttp3.OkHttpClient
 import retrofit2.Converter
 import retrofit2.Retrofit
+
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -28,11 +29,11 @@ import retrofit2.Retrofit
 
 class RetrofitRestService(
     private val client: OkHttpClient,
-    private val converterFactory: Converter.Factory
+    private val converterFactory: Converter.Factory,
 ) : RestService {
-
     private val retrofit by lazy {
-        Retrofit.Builder()
+        Retrofit
+            .Builder()
             .baseUrl(PLACEHOLDER_BASE_URL)
             .client(client)
             .addConverterFactory(converterFactory)

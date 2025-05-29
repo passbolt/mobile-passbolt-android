@@ -29,15 +29,15 @@ import java.time.ZoneOffset
  */
 
 class GetGlobalPreferencesUseCase(
-    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory
+    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory,
 ) : UseCase<Unit, GetGlobalPreferencesUseCase.Output> {
-
     override fun execute(input: Unit): Output {
         val sharedPreferences = encryptedSharedPreferencesFactory.get("$GLOBAL_PREFERENCES_FILE_NAME.xml")
         val areDebugLogsEnabled = sharedPreferences.getBoolean(KEY_DEBUG_LOGS_ENABLED, false)
-        val debugLogsCreationDateTime = sharedPreferences.getLong(KEY_DEBUG_LOGS_FILE_CREATION_DATE_TIME, -1L).let {
-            if (it == -1L) null else LocalDateTime.ofEpochSecond(it, 0, ZoneOffset.UTC)
-        }
+        val debugLogsCreationDateTime =
+            sharedPreferences.getLong(KEY_DEBUG_LOGS_FILE_CREATION_DATE_TIME, -1L).let {
+                if (it == -1L) null else LocalDateTime.ofEpochSecond(it, 0, ZoneOffset.UTC)
+            }
         val isDeveloperModeEnabled = sharedPreferences.getBoolean(KEY_IS_DEVELOPER_MODE_ENABLED, false)
         val isHideRootDialogEnabled = sharedPreferences.getBoolean(KEY_IS_HIDE_ROOT_DIALOG_ENABLED, false)
         return Output(areDebugLogsEnabled, debugLogsCreationDateTime, isDeveloperModeEnabled, isHideRootDialogEnabled)
@@ -47,6 +47,6 @@ class GetGlobalPreferencesUseCase(
         val areDebugLogsEnabled: Boolean,
         val debugLogFileCreationDateTime: LocalDateTime?,
         val isDeveloperModeEnabled: Boolean,
-        val isHideRootDialogEnabled: Boolean
+        val isHideRootDialogEnabled: Boolean,
     )
 }

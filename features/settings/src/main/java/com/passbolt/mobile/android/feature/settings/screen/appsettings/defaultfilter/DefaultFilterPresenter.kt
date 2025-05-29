@@ -8,9 +8,8 @@ import com.passbolt.mobile.android.ui.DefaultFilterModel
 class DefaultFilterPresenter(
     private val updateHomeDisplayViewPrefsUseCase: UpdateHomeDisplayViewPrefsUseCase,
     private val homeDisplayViewPrefsValidator: HomeDisplayViewPrefsValidator,
-    private val getHomeDisplayViewPrefsUseCase: GetHomeDisplayViewPrefsUseCase
+    private val getHomeDisplayViewPrefsUseCase: GetHomeDisplayViewPrefsUseCase,
 ) : DefaultFilterContract.Presenter {
-
     override var view: DefaultFilterContract.View? = null
 
     override fun argsRetrieved(selectedFilter: DefaultFilterModel) {
@@ -22,14 +21,17 @@ class DefaultFilterPresenter(
 
     override fun viewResume() {
         view?.selectFilterSilently(
-            getHomeDisplayViewPrefsUseCase.execute(Unit).userSetHomeView
+            getHomeDisplayViewPrefsUseCase.execute(Unit).userSetHomeView,
         )
     }
 
-    override fun defaultFilterSelectionChanged(filterModel: DefaultFilterModel, isSelected: Boolean) {
+    override fun defaultFilterSelectionChanged(
+        filterModel: DefaultFilterModel,
+        isSelected: Boolean,
+    ) {
         if (isSelected) {
             updateHomeDisplayViewPrefsUseCase.execute(
-                UpdateHomeDisplayViewPrefsUseCase.Input(userSetHomeView = filterModel)
+                UpdateHomeDisplayViewPrefsUseCase.Input(userSetHomeView = filterModel),
             )
         }
     }

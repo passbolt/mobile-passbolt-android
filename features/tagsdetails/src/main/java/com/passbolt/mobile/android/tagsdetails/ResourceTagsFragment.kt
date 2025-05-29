@@ -24,19 +24,22 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 class ResourceTagsFragment :
     BindingScopedAuthenticatedFragment<FragmentResourceTagsBinding, ResourceTagsContract.View>(
-        FragmentResourceTagsBinding::inflate
-    ), ResourceTagsContract.View {
-
+        FragmentResourceTagsBinding::inflate,
+    ),
+    ResourceTagsContract.View {
     override val presenter: ResourceTagsContract.Presenter by inject()
     private val args: ResourceTagsFragmentArgs by navArgs()
     private val initialsIconGenerator: InitialsIconGenerator by inject()
     private val tagsItemAdapter: ItemAdapter<TagItem> by inject(named(TAGS_ITEM_ADAPTER))
     private val fastAdapter: FastAdapter<TagItem> by inject(named(TAGS_ADAPTER))
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
-        binding.swipeRefresh.isEnabled = false
-        initDefaultToolbar(binding.toolbar)
+        requiredBinding.swipeRefresh.isEnabled = false
+        initDefaultToolbar(requiredBinding.toolbar)
         setUpTagsRecycler()
         presenter.attach(this)
         presenter.argsRetrieved(args.resourceId, args.mode)
@@ -58,24 +61,27 @@ class ResourceTagsFragment :
     }
 
     private fun setUpTagsRecycler() {
-        with(binding.tagsRecycler) {
+        with(requiredBinding.tagsRecycler) {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = fastAdapter
         }
     }
 
     override fun displayTitle(name: String) {
-        binding.name.text = name
+        requiredBinding.name.text = name
     }
 
-    override fun displayInitialsIcon(name: String, initials: String) {
-        binding.icon.setImageDrawable(
-            initialsIconGenerator.generate(name, initials)
+    override fun displayInitialsIcon(
+        name: String,
+        initials: String,
+    ) {
+        requiredBinding.icon.setImageDrawable(
+            initialsIconGenerator.generate(name, initials),
         )
     }
 
     override fun showFavouriteStar() {
-        binding.favouriteIcon.visible()
+        requiredBinding.favouriteIcon.visible()
     }
 
     override fun showTags(tags: List<TagModel>) {
@@ -84,17 +90,17 @@ class ResourceTagsFragment :
     }
 
     override fun hideRefreshProgress() {
-        binding.swipeRefresh.isRefreshing = false
+        requiredBinding.swipeRefresh.isRefreshing = false
     }
 
     override fun showRefreshProgress() {
-        binding.swipeRefresh.isRefreshing = true
+        requiredBinding.swipeRefresh.isRefreshing = true
     }
 
     override fun showDataRefreshError() {
         showSnackbar(
             LocalizationR.string.common_data_refresh_error,
-            backgroundColor = CoreUiR.color.red
+            backgroundColor = CoreUiR.color.red,
         )
     }
 

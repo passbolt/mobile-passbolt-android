@@ -41,27 +41,27 @@ import org.mockito.kotlin.verify
 
 @ExperimentalCoroutinesApi
 class OtpMoreMenuTest : KoinTest {
-
     private val presenter: OtpMoreMenuContract.Presenter by inject()
     private val view = mock<OtpMoreMenuContract.View>()
 
     @get:Rule
-    val koinTestRule = KoinTestRule.create {
-        printLogger(Level.ERROR)
-        modules(testModule)
-    }
+    val koinTestRule =
+        KoinTestRule.create {
+            printLogger(Level.ERROR)
+            modules(testModule)
+        }
 
     @Test
     fun `all enabled items should be displayed`() {
         mockCreateResourceMoreMenuModelUseCase.stub {
             onBlocking { execute(any()) } doReturn
-                    CreateOtpMoreMenuModelUseCase.Output(
-                        OtpMoreMenuModel(
-                            title = "title",
-                            canDelete = true,
-                            canEdit = true,
-                        )
-                    )
+                CreateOtpMoreMenuModelUseCase.Output(
+                    OtpMoreMenuModel(
+                        title = "title",
+                        canDelete = true,
+                        canEdit = true,
+                    ),
+                )
         }
 
         presenter.apply {
@@ -80,13 +80,13 @@ class OtpMoreMenuTest : KoinTest {
     fun `disabled items should be not be displayed`() {
         mockCreateResourceMoreMenuModelUseCase.stub {
             onBlocking { execute(any()) } doReturn
-                    CreateOtpMoreMenuModelUseCase.Output(
-                        OtpMoreMenuModel(
-                            title = "title",
-                            canDelete = false,
-                            canEdit = false,
-                        )
-                    )
+                CreateOtpMoreMenuModelUseCase.Output(
+                    OtpMoreMenuModel(
+                        title = "title",
+                        canDelete = false,
+                        canEdit = false,
+                    ),
+                )
         }
 
         presenter.apply {

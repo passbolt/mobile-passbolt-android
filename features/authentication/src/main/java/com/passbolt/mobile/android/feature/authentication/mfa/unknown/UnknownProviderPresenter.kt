@@ -9,9 +9,8 @@ import kotlinx.coroutines.launch
 
 class UnknownProviderPresenter(
     private val signOutUseCase: SignOutUseCase,
-    coroutineLaunchContext: CoroutineLaunchContext
+    coroutineLaunchContext: CoroutineLaunchContext,
 ) : UnknownProviderContract.Presenter {
-
     override var view: UnknownProviderContract.View? = null
 
     private val job = SupervisorJob()

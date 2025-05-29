@@ -30,10 +30,9 @@ import java.util.UUID
  * @since v1.0
  */
 class GetTrustedMetadataKeyUseCase(
-    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory
+    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory,
 ) : AsyncUseCase<Unit, GetTrustedMetadataKeyUseCase.Output>,
     SelectedAccountUseCase {
-
     @Suppress("LongMethod")
     override suspend fun execute(input: Unit): Output {
         val fileName = TrustedMetadataKeyFileName(selectedAccountId).name
@@ -42,78 +41,91 @@ class GetTrustedMetadataKeyUseCase(
         return if (sharedPreferences.contains(MetadataTypesStorageConstants.TRUSTED_MD_KEY_KEY_PGP_MESSAGE)) {
             try {
                 Output.TrustedKey(
-                    id = UUID.fromString(
-                        sharedPreferences.getString(
-                            MetadataTypesStorageConstants.TRUSTED_MD_KEY_ID,
-                            ""
-                        ) ?: ""
-                    ),
-                    userId = UUID.fromString(
-                        sharedPreferences.getString(
-                            MetadataTypesStorageConstants.TRUSTED_MD_KEY_USER_ID,
-                            ""
-                        )
-                    ),
-                    keyData = sharedPreferences.getString(
-                        MetadataTypesStorageConstants.TRUSTED_MD_KEY_KEY_DATA,
-                        ""
-                    ) ?: "",
-                    passphrase = sharedPreferences.getString(
-                        MetadataTypesStorageConstants.TRUSTED_MD_KEY_PASSPHRASE,
-                        ""
-                    ) ?: "",
-                    created = ZonedDateTime.parse(
-                        sharedPreferences.getString(
-                            MetadataTypesStorageConstants.TRUSTED_MD_KEY_CREATED,
-                            ""
-                        ) ?: ""
-                    ),
-                    createdBy = try {
+                    id =
                         UUID.fromString(
                             sharedPreferences.getString(
-                                MetadataTypesStorageConstants.TRUSTED_MD_KEY_CREATED_BY,
-                                ""
-                            )
-                        )
-                    } catch (e: Exception) {
-                        null
-                    },
-                    modified = ZonedDateTime.parse(
-                        sharedPreferences.getString(
-                            MetadataTypesStorageConstants.TRUSTED_MD_KEY_MODIFIED,
-                            ""
-                        ) ?: ""
-                    ),
-                    modifiedBy = try {
+                                MetadataTypesStorageConstants.TRUSTED_MD_KEY_ID,
+                                "",
+                            ) ?: "",
+                        ),
+                    userId =
                         UUID.fromString(
                             sharedPreferences.getString(
-                                MetadataTypesStorageConstants.TRUSTED_MD_KEY_MODIFIED_BY,
-                                ""
+                                MetadataTypesStorageConstants.TRUSTED_MD_KEY_USER_ID,
+                                "",
+                            ),
+                        ),
+                    keyData =
+                        sharedPreferences.getString(
+                            MetadataTypesStorageConstants.TRUSTED_MD_KEY_KEY_DATA,
+                            "",
+                        ) ?: "",
+                    passphrase =
+                        sharedPreferences.getString(
+                            MetadataTypesStorageConstants.TRUSTED_MD_KEY_PASSPHRASE,
+                            "",
+                        ) ?: "",
+                    created =
+                        ZonedDateTime.parse(
+                            sharedPreferences.getString(
+                                MetadataTypesStorageConstants.TRUSTED_MD_KEY_CREATED,
+                                "",
+                            ) ?: "",
+                        ),
+                    createdBy =
+                        try {
+                            UUID.fromString(
+                                sharedPreferences.getString(
+                                    MetadataTypesStorageConstants.TRUSTED_MD_KEY_CREATED_BY,
+                                    "",
+                                ),
                             )
-                        )
-                    } catch (e: Exception) {
-                        null
-                    },
-                    keyPgpMessage = sharedPreferences.getString(
-                        MetadataTypesStorageConstants.TRUSTED_MD_KEY_KEY_PGP_MESSAGE,
-                        ""
-                    ) ?: "",
-                    signingKeyFingerprint = sharedPreferences.getString(
-                        MetadataTypesStorageConstants.TRUSTED_MD_KEY_SIGNING_KEY_FINGERPRINT,
-                        ""
-                    ) ?: "",
-                    signatureCreationTimestampSeconds = sharedPreferences.getLong(
-                        MetadataTypesStorageConstants.TRUSTED_MD_SIGNATURE_CREATION_TIMESTAMP,
-                        0L
-                    ),
-                    signedUsername = sharedPreferences.getString(
-                        MetadataTypesStorageConstants.TRUSTED_MD_KEY_SIGNED_USERNAME,
-                        ""
-                    ) ?: "",
-                    signedName = sharedPreferences.getString(
-                        MetadataTypesStorageConstants.TRUSTED_MD_KEY_SIGNED_NAME,
-                        ""
-                    ) ?: ""
+                        } catch (e: Exception) {
+                            null
+                        },
+                    modified =
+                        ZonedDateTime.parse(
+                            sharedPreferences.getString(
+                                MetadataTypesStorageConstants.TRUSTED_MD_KEY_MODIFIED,
+                                "",
+                            ) ?: "",
+                        ),
+                    modifiedBy =
+                        try {
+                            UUID.fromString(
+                                sharedPreferences.getString(
+                                    MetadataTypesStorageConstants.TRUSTED_MD_KEY_MODIFIED_BY,
+                                    "",
+                                ),
+                            )
+                        } catch (e: Exception) {
+                            null
+                        },
+                    keyPgpMessage =
+                        sharedPreferences.getString(
+                            MetadataTypesStorageConstants.TRUSTED_MD_KEY_KEY_PGP_MESSAGE,
+                            "",
+                        ) ?: "",
+                    signingKeyFingerprint =
+                        sharedPreferences.getString(
+                            MetadataTypesStorageConstants.TRUSTED_MD_KEY_SIGNING_KEY_FINGERPRINT,
+                            "",
+                        ) ?: "",
+                    signatureCreationTimestampSeconds =
+                        sharedPreferences.getLong(
+                            MetadataTypesStorageConstants.TRUSTED_MD_SIGNATURE_CREATION_TIMESTAMP,
+                            0L,
+                        ),
+                    signedUsername =
+                        sharedPreferences.getString(
+                            MetadataTypesStorageConstants.TRUSTED_MD_KEY_SIGNED_USERNAME,
+                            "",
+                        ) ?: "",
+                    signedName =
+                        sharedPreferences.getString(
+                            MetadataTypesStorageConstants.TRUSTED_MD_KEY_SIGNED_NAME,
+                            "",
+                        ) ?: "",
                 )
             } catch (e: Exception) {
                 Timber.e(e, "There was an error while getting the trusted metadata key")
@@ -138,7 +150,7 @@ class GetTrustedMetadataKeyUseCase(
             val signingKeyFingerprint: String,
             val signatureCreationTimestampSeconds: Long,
             val signedUsername: String,
-            val signedName: String
+            val signedName: String,
         ) : Output()
 
         data object NoTrustedKey : Output()

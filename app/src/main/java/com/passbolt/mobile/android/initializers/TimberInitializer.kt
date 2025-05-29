@@ -1,15 +1,3 @@
-package com.passbolt.mobile.android.initializers
-
-import android.content.Context
-import androidx.startup.Initializer
-import com.passbolt.mobile.android.BuildConfig
-import com.passbolt.mobile.android.core.logger.FileLoggingTree
-import com.passbolt.mobile.android.core.logger.LogFilesManager
-import com.passbolt.mobile.android.core.preferences.usecase.GetGlobalPreferencesUseCase
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
-import timber.log.Timber
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -33,6 +21,18 @@ import timber.log.Timber
  * @since v1.0
  */
 
+package com.passbolt.mobile.android.initializers
+
+import android.content.Context
+import androidx.startup.Initializer
+import com.passbolt.mobile.android.BuildConfig
+import com.passbolt.mobile.android.core.logger.FileLoggingTree
+import com.passbolt.mobile.android.core.logger.LogFilesManager
+import com.passbolt.mobile.android.core.preferences.usecase.GetGlobalPreferencesUseCase
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
+import timber.log.Timber
+
 /**
  * Initializes the logging library.
  * Apart from default logger in DEBUG mode the application also uses a logger instance
@@ -44,8 +44,9 @@ import timber.log.Timber
  * @property getGlobalPreferencesUseCase a use case for reading global application preferences
  */
 @Suppress("unused")
-class TimberInitializer : Initializer<Unit>, KoinComponent {
-
+class TimberInitializer :
+    Initializer<Unit>,
+    KoinComponent {
     private val fileLoggingTree: FileLoggingTree by inject()
     private val logFilesManager: LogFilesManager by inject()
     private val getGlobalPreferencesUseCase: GetGlobalPreferencesUseCase by inject()
@@ -64,6 +65,5 @@ class TimberInitializer : Initializer<Unit>, KoinComponent {
         }
     }
 
-    override fun dependencies(): MutableList<Class<out Initializer<*>>> =
-        mutableListOf(KoinInitializer::class.java)
+    override fun dependencies(): MutableList<Class<out Initializer<*>>> = mutableListOf(KoinInitializer::class.java)
 }

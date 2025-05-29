@@ -30,7 +30,7 @@ fun Module.userPermissionsModule() {
         scoped<UserPermissionsContract.Presenter> {
             UserPermissionsPresenter(
                 coroutineLaunchContext = get(),
-                getLocalUserUseCase = get()
+                getLocalUserUseCase = get(),
             )
         }
     }

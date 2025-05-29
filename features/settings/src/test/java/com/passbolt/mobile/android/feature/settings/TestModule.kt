@@ -38,15 +38,15 @@ import org.mockito.kotlin.mock
 internal val mockSignOutUseCase = mock<SignOutUseCase>()
 internal val mockFullDataRefreshExecutor = mock<FullDataRefreshExecutor>()
 
-
 @ExperimentalCoroutinesApi
-val testModule = module {
-    factoryOf(::TestCoroutineLaunchContext) bind CoroutineLaunchContext::class
-    factory<SettingsContract.Presenter> {
-        SettingsPresenter(
-            signOutUseCase = mockSignOutUseCase,
-            coroutineLaunchContext = get(),
-            fullDataRefreshExecutor = mockFullDataRefreshExecutor
-        )
+val testModule =
+    module {
+        factoryOf(::TestCoroutineLaunchContext) bind CoroutineLaunchContext::class
+        factory<SettingsContract.Presenter> {
+            SettingsPresenter(
+                signOutUseCase = mockSignOutUseCase,
+                coroutineLaunchContext = get(),
+                fullDataRefreshExecutor = mockFullDataRefreshExecutor,
+            )
+        }
     }
-}

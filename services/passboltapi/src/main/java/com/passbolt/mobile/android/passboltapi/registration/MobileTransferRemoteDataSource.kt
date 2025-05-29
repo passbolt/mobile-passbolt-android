@@ -28,24 +28,25 @@ import com.passbolt.mobile.android.dto.response.TransferResponseDto
  * @since v1.0
  */
 internal class MobileTransferRemoteDataSource(
-    private val mobileTransferApi: MobileTransferApi
+    private val mobileTransferApi: MobileTransferApi,
 ) : MobileTransferDataSource {
-
     override suspend fun updateTransfer(
         uuid: String,
         authToken: String,
         pageRequestDto: UpdateTransferRequestDto,
-        userProfile: String?
-    ): BaseResponse<TransferResponseDto> =
-        mobileTransferApi.updateTransfer(uuid, authToken, pageRequestDto, userProfile)
+        userProfile: String?,
+    ): BaseResponse<TransferResponseDto> = mobileTransferApi.updateTransfer(uuid, authToken, pageRequestDto, userProfile)
 
     override suspend fun createTransfer(createTransferRequest: CreateTransferRequestDto) =
         mobileTransferApi.createTransfer(createTransferRequest).body
 
-    override suspend fun viewTransfer(authToken: String, mfaCookie: String?, uuid: String) =
-        if (mfaCookie != null) {
-            mobileTransferApi.viewTransferWithMfa(authToken, mfaCookie, uuid).body
-        } else {
-            mobileTransferApi.viewTransfer(authToken, uuid).body
-        }
+    override suspend fun viewTransfer(
+        authToken: String,
+        mfaCookie: String?,
+        uuid: String,
+    ) = if (mfaCookie != null) {
+        mobileTransferApi.viewTransferWithMfa(authToken, mfaCookie, uuid).body
+    } else {
+        mobileTransferApi.viewTransfer(authToken, uuid).body
+    }
 }

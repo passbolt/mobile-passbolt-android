@@ -28,96 +28,96 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 
 @Suppress("MagicNumber", "MaxLineLength")
 object Migration11to12 : Migration(11, 12) {
-
-    private val TABLES_TO_DROP = listOf(
-        "ResourceAndTagsCrossRef",
-        "ResourceAndUsersCrossRef",
-        "ResourceAndGroupsCrossRef",
-        "FolderAndUsersCrossRef",
-        "ResourceTypesAndFieldsCrossRef",
-        "UsersAndGroupCrossRef",
-        "FolderAndGroupsCrossRef",
-        "Resource"
-    )
+    private val TABLES_TO_DROP =
+        listOf(
+            "ResourceAndTagsCrossRef",
+            "ResourceAndUsersCrossRef",
+            "ResourceAndGroupsCrossRef",
+            "FolderAndUsersCrossRef",
+            "ResourceTypesAndFieldsCrossRef",
+            "UsersAndGroupCrossRef",
+            "FolderAndGroupsCrossRef",
+            "Resource",
+        )
 
     private const val CREATE_RESOURCE_TABLE =
         "CREATE TABLE IF NOT EXISTS `Resource` (" +
-                "`resourceId` TEXT NOT NULL, " +
-                "`folderId` TEXT, " +
-                "`resourceName` TEXT NOT NULL, " +
-                "`resourcePermission` TEXT NOT NULL, " +
-                "`url` TEXT, `username` TEXT, " +
-                "`description` TEXT, " +
-                "`resourceTypeId` TEXT NOT NULL, " +
-                "`favouriteId` TEXT, " +
-                "`modified` INTEGER NOT NULL, " +
-                "PRIMARY KEY(`resourceId`), " +
-                "FOREIGN KEY(`folderId`) REFERENCES `Folder`(`folderId`) ON UPDATE NO ACTION ON DELETE SET NULL , " +
-                "FOREIGN KEY(`resourceTypeId`) REFERENCES `ResourceType`(`resourceTypeId`) ON UPDATE NO ACTION ON DELETE NO ACTION )"
+            "`resourceId` TEXT NOT NULL, " +
+            "`folderId` TEXT, " +
+            "`resourceName` TEXT NOT NULL, " +
+            "`resourcePermission` TEXT NOT NULL, " +
+            "`url` TEXT, `username` TEXT, " +
+            "`description` TEXT, " +
+            "`resourceTypeId` TEXT NOT NULL, " +
+            "`favouriteId` TEXT, " +
+            "`modified` INTEGER NOT NULL, " +
+            "PRIMARY KEY(`resourceId`), " +
+            "FOREIGN KEY(`folderId`) REFERENCES `Folder`(`folderId`) ON UPDATE NO ACTION ON DELETE SET NULL , " +
+            "FOREIGN KEY(`resourceTypeId`) REFERENCES `ResourceType`(`resourceTypeId`) ON UPDATE NO ACTION ON DELETE NO ACTION )"
 
     private const val CREATE_RESOURCE_TYPES_AND_FIELDS_CROSS_REF_TABLE =
         "CREATE TABLE IF NOT EXISTS `ResourceTypesAndFieldsCrossRef` (" +
-                "`resourceTypeId` TEXT NOT NULL, " +
-                "`resourceFieldId` INTEGER NOT NULL, " +
-                "PRIMARY KEY(`resourceTypeId`, `resourceFieldId`), " +
-                "FOREIGN KEY(`resourceTypeId`) REFERENCES `ResourceType`(`resourceTypeId`) ON UPDATE NO ACTION ON DELETE CASCADE , " +
-                "FOREIGN KEY(`resourceFieldId`) REFERENCES `ResourceField`(`resourceFieldId`) ON UPDATE NO ACTION ON DELETE CASCADE )"
+            "`resourceTypeId` TEXT NOT NULL, " +
+            "`resourceFieldId` INTEGER NOT NULL, " +
+            "PRIMARY KEY(`resourceTypeId`, `resourceFieldId`), " +
+            "FOREIGN KEY(`resourceTypeId`) REFERENCES `ResourceType`(`resourceTypeId`) ON UPDATE NO ACTION ON DELETE CASCADE , " +
+            "FOREIGN KEY(`resourceFieldId`) REFERENCES `ResourceField`(`resourceFieldId`) ON UPDATE NO ACTION ON DELETE CASCADE )"
 
     private const val CREATE_RESOURCE_AND_TAGS_CROSS_REF_TABLE =
         "CREATE TABLE IF NOT EXISTS `ResourceAndTagsCrossRef` (" +
-                "`tagId` TEXT NOT NULL, " +
-                "`resourceId` TEXT NOT NULL, " +
-                "PRIMARY KEY(`tagId`, `resourceId`), " +
-                "FOREIGN KEY(`tagId`) REFERENCES `Tag`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE , " +
-                "FOREIGN KEY(`resourceId`) REFERENCES `Resource`(`resourceId`) ON UPDATE NO ACTION ON DELETE CASCADE )"
+            "`tagId` TEXT NOT NULL, " +
+            "`resourceId` TEXT NOT NULL, " +
+            "PRIMARY KEY(`tagId`, `resourceId`), " +
+            "FOREIGN KEY(`tagId`) REFERENCES `Tag`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE , " +
+            "FOREIGN KEY(`resourceId`) REFERENCES `Resource`(`resourceId`) ON UPDATE NO ACTION ON DELETE CASCADE )"
 
     private const val CREATE_RESOURCE_AND_GROUPS_CROSS_REF_TABLE =
         "CREATE TABLE IF NOT EXISTS `ResourceAndGroupsCrossRef` (" +
-                "`resourceId` TEXT NOT NULL, " +
-                "`groupId` TEXT NOT NULL, " +
-                "`permission` TEXT NOT NULL, " +
-                "`permissionId` TEXT NOT NULL, " +
-                "PRIMARY KEY(`resourceId`, `groupId`), " +
-                "FOREIGN KEY(`resourceId`) REFERENCES `Resource`(`resourceId`) ON UPDATE NO ACTION ON DELETE CASCADE , " +
-                "FOREIGN KEY(`groupId`) REFERENCES `UsersGroup`(`groupId`) ON UPDATE NO ACTION ON DELETE CASCADE )"
+            "`resourceId` TEXT NOT NULL, " +
+            "`groupId` TEXT NOT NULL, " +
+            "`permission` TEXT NOT NULL, " +
+            "`permissionId` TEXT NOT NULL, " +
+            "PRIMARY KEY(`resourceId`, `groupId`), " +
+            "FOREIGN KEY(`resourceId`) REFERENCES `Resource`(`resourceId`) ON UPDATE NO ACTION ON DELETE CASCADE , " +
+            "FOREIGN KEY(`groupId`) REFERENCES `UsersGroup`(`groupId`) ON UPDATE NO ACTION ON DELETE CASCADE )"
 
     private const val CREATE_USERS_AND_GROUPS_CROSS_REF_TABLE =
         "CREATE TABLE IF NOT EXISTS `UsersAndGroupCrossRef` (" +
-                "`userId` TEXT NOT NULL, " +
-                "`groupId` TEXT NOT NULL, " +
-                "PRIMARY KEY(`userId`, `groupId`), " +
-                "FOREIGN KEY(`userId`) REFERENCES `User`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE , " +
-                "FOREIGN KEY(`groupId`) REFERENCES `UsersGroup`(`groupId`) ON UPDATE NO ACTION ON DELETE CASCADE )"
+            "`userId` TEXT NOT NULL, " +
+            "`groupId` TEXT NOT NULL, " +
+            "PRIMARY KEY(`userId`, `groupId`), " +
+            "FOREIGN KEY(`userId`) REFERENCES `User`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE , " +
+            "FOREIGN KEY(`groupId`) REFERENCES `UsersGroup`(`groupId`) ON UPDATE NO ACTION ON DELETE CASCADE )"
 
     private const val CREATE_RESOURCE_AND_USERS_CROSS_REF_TABLE =
         "CREATE TABLE IF NOT EXISTS `ResourceAndUsersCrossRef` (" +
-                "`resourceId` TEXT NOT NULL, " +
-                "`userId` TEXT NOT NULL, " +
-                "`permission` TEXT NOT NULL, " +
-                "`permissionId` TEXT NOT NULL, " +
-                "PRIMARY KEY(`resourceId`, `userId`), " +
-                "FOREIGN KEY(`resourceId`) REFERENCES `Resource`(`resourceId`) ON UPDATE NO ACTION ON DELETE CASCADE , " +
-                "FOREIGN KEY(`userId`) REFERENCES `User`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )"
+            "`resourceId` TEXT NOT NULL, " +
+            "`userId` TEXT NOT NULL, " +
+            "`permission` TEXT NOT NULL, " +
+            "`permissionId` TEXT NOT NULL, " +
+            "PRIMARY KEY(`resourceId`, `userId`), " +
+            "FOREIGN KEY(`resourceId`) REFERENCES `Resource`(`resourceId`) ON UPDATE NO ACTION ON DELETE CASCADE , " +
+            "FOREIGN KEY(`userId`) REFERENCES `User`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )"
 
     private const val CREATE_FOLDERS_AND_USERS_CROSS_REF_TABLE =
         "CREATE TABLE IF NOT EXISTS `FolderAndUsersCrossRef` (" +
-                "`folderId` TEXT NOT NULL, " +
-                "`userId` TEXT NOT NULL, " +
-                "`permission` TEXT NOT NULL, " +
-                "`permissionId` TEXT NOT NULL, " +
-                "PRIMARY KEY(`userId`, `folderId`), " +
-                "FOREIGN KEY(`folderId`) REFERENCES `Folder`(`folderId`) ON UPDATE NO ACTION ON DELETE CASCADE , " +
-                "FOREIGN KEY(`userId`) REFERENCES `User`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )"
+            "`folderId` TEXT NOT NULL, " +
+            "`userId` TEXT NOT NULL, " +
+            "`permission` TEXT NOT NULL, " +
+            "`permissionId` TEXT NOT NULL, " +
+            "PRIMARY KEY(`userId`, `folderId`), " +
+            "FOREIGN KEY(`folderId`) REFERENCES `Folder`(`folderId`) ON UPDATE NO ACTION ON DELETE CASCADE , " +
+            "FOREIGN KEY(`userId`) REFERENCES `User`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )"
 
     private const val CREATE_FOLDERS_AND_GROUPS_CROSS_REF_TABLE =
         "CREATE TABLE IF NOT EXISTS `FolderAndGroupsCrossRef` (" +
-                "`folderId` TEXT NOT NULL, " +
-                "`groupId` TEXT NOT NULL, " +
-                "`permission` TEXT NOT NULL, " +
-                "`permissionId` TEXT NOT NULL, " +
-                "PRIMARY KEY(`folderId`, `groupId`), " +
-                "FOREIGN KEY(`folderId`) REFERENCES `Folder`(`folderId`) ON UPDATE NO ACTION ON DELETE CASCADE , " +
-                "FOREIGN KEY(`groupId`) REFERENCES `UsersGroup`(`groupId`) ON UPDATE NO ACTION ON DELETE CASCADE )"
+            "`folderId` TEXT NOT NULL, " +
+            "`groupId` TEXT NOT NULL, " +
+            "`permission` TEXT NOT NULL, " +
+            "`permissionId` TEXT NOT NULL, " +
+            "PRIMARY KEY(`folderId`, `groupId`), " +
+            "FOREIGN KEY(`folderId`) REFERENCES `Folder`(`folderId`) ON UPDATE NO ACTION ON DELETE CASCADE , " +
+            "FOREIGN KEY(`groupId`) REFERENCES `UsersGroup`(`groupId`) ON UPDATE NO ACTION ON DELETE CASCADE )"
 
     override fun migrate(db: SupportSQLiteDatabase) {
         with(db) {

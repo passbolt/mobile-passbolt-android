@@ -31,9 +31,8 @@ import com.passbolt.mobile.android.ui.UserModel
 class GetLocalUserUseCase(
     private val databaseProvider: DatabaseProvider,
     private val userModelMapper: UsersModelMapper,
-    private val getSelectedAccountUseCase: GetSelectedAccountUseCase
+    private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
 ) : AsyncUseCase<GetLocalUserUseCase.Input, GetLocalUserUseCase.Output> {
-
     override suspend fun execute(input: Input) =
         databaseProvider
             .get(requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount))
@@ -42,10 +41,10 @@ class GetLocalUserUseCase(
             .let { Output(userModelMapper.map(it)) }
 
     data class Input(
-        val userId: String
+        val userId: String,
     )
 
     data class Output(
-        val user: UserModel
+        val user: UserModel,
     )
 }

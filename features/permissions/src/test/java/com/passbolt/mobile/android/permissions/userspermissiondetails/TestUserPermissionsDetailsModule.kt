@@ -35,12 +35,13 @@ import org.mockito.kotlin.mock
 internal val mockGetLocalUserUseCase = mock<GetLocalUserUseCase>()
 
 @ExperimentalCoroutinesApi
-internal val testUserPermissionsDetailsModule = module {
-    factory<CoroutineLaunchContext> { TestCoroutineLaunchContext() }
-    factory<UserPermissionsContract.Presenter> {
-        UserPermissionsPresenter(
-            coroutineLaunchContext = get(),
-            getLocalUserUseCase = mockGetLocalUserUseCase
-        )
+internal val testUserPermissionsDetailsModule =
+    module {
+        factory<CoroutineLaunchContext> { TestCoroutineLaunchContext() }
+        factory<UserPermissionsContract.Presenter> {
+            UserPermissionsPresenter(
+                coroutineLaunchContext = get(),
+                getLocalUserUseCase = mockGetLocalUserUseCase,
+            )
+        }
     }
-}

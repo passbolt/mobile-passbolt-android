@@ -32,27 +32,27 @@ class ResourceInteractor(
     private val getResourcesUseCase: GetResourcesUseCase,
     private val rebuildResourceTablesUseCase: RebuildResourceTablesUseCase,
     private val rebuildTagsTablesUseCase: RebuildTagsTablesUseCase,
-    private val rebuildResourcePermissionsTablesUseCase: RebuildResourcePermissionsTablesUseCase
+    private val rebuildResourcePermissionsTablesUseCase: RebuildResourcePermissionsTablesUseCase,
 ) {
-
     suspend fun fetchAndSaveResources(): Output {
         val resourcesResult = getResourcesUseCase.execute(Unit)
 
         return if (resourcesResult is GetResourcesUseCase.Output.Success) {
             try {
                 rebuildResourceTablesUseCase.execute(
-                    RebuildResourceTablesUseCase.Input(resourcesResult.resources.map { it.resourceModel })
+                    RebuildResourceTablesUseCase.Input(resourcesResult.resources.map { it.resourceModel }),
                 )
                 rebuildTagsTablesUseCase.execute(
-                    RebuildTagsTablesUseCase.Input(resourcesResult.resources)
+                    RebuildTagsTablesUseCase.Input(resourcesResult.resources),
                 )
                 rebuildResourcePermissionsTablesUseCase.execute(
-                    RebuildResourcePermissionsTablesUseCase.Input(resourcesResult.resources)
+                    RebuildResourcePermissionsTablesUseCase.Input(resourcesResult.resources),
                 )
                 Output.Success
             } catch (exception: SQLException) {
                 Timber.e(
-                    exception, "There was an error during resources, tags and resource permissions db insert"
+                    exception,
+                    "There was an error during resources, tags and resource permissions db insert",
                 )
                 Output.Failure(resourcesResult.authenticationState)
             }
@@ -62,12 +62,13 @@ class ResourceInteractor(
     }
 
     sealed class Output : AuthenticatedUseCaseOutput {
-
         data object Success : Output() {
             override val authenticationState: AuthenticationState
                 get() = AuthenticationState.Authenticated
         }
 
-        class Failure(override val authenticationState: AuthenticationState) : Output()
+        class Failure(
+            override val authenticationState: AuthenticationState,
+        ) : Output()
     }
 }

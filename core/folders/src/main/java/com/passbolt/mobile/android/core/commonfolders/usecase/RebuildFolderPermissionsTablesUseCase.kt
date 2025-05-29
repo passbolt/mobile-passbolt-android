@@ -29,16 +29,17 @@ import com.passbolt.mobile.android.ui.FolderModelWithAttributes
  */
 class RebuildFolderPermissionsTablesUseCase(
     private val removeLocalFolderPermissionsUseCase: RemoveLocalFolderPermissionsUseCase,
-    private val addLocalFolderPermissionsUseCase: AddLocalFolderPermissionsUseCase
+    private val addLocalFolderPermissionsUseCase: AddLocalFolderPermissionsUseCase,
 ) : AsyncUseCase<RebuildFolderPermissionsTablesUseCase.Input, Unit>,
     SelectedAccountUseCase {
-
     override suspend fun execute(input: Input) {
         removeLocalFolderPermissionsUseCase.execute(UserIdInput(selectedAccountId))
         addLocalFolderPermissionsUseCase.execute(
-            AddLocalFolderPermissionsUseCase.Input(input.foldersWithAttributes)
+            AddLocalFolderPermissionsUseCase.Input(input.foldersWithAttributes),
         )
     }
 
-    data class Input(val foldersWithAttributes: List<FolderModelWithAttributes>)
+    data class Input(
+        val foldersWithAttributes: List<FolderModelWithAttributes>,
+    )
 }

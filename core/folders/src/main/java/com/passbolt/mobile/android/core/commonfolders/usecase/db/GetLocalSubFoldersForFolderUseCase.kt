@@ -32,33 +32,36 @@ import com.passbolt.mobile.android.ui.FolderWithCountAndPath
 class GetLocalSubFoldersForFolderUseCase(
     private val databaseProvider: DatabaseProvider,
     private val folderModelMapper: FolderModelMapper,
-    private val getSelectedAccountUseCase: GetSelectedAccountUseCase
+    private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
 ) : AsyncUseCase<GetLocalSubFoldersForFolderUseCase.Input, GetLocalSubFoldersForFolderUseCase.Output> {
-
     override suspend fun execute(input: Input): Output {
         val userId = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
-        val foldersDao = databaseProvider
-            .get(userId)
-            .foldersDao()
+        val foldersDao =
+            databaseProvider
+                .get(userId)
+                .foldersDao()
 
-        val folders = foldersDao.let {
-            when (input.folder) {
-                // get all children recursively
-                is Folder.Child -> it.getFolderAllChildFoldersRecursively(input.folder.folderId)
-                // getting all children recursively for root == getting all possible children
-                // could also use it.getFolderAllChildFoldersRecursively(null), but UNION does not work with nulls
-                is Folder.Root -> it.getAllFolders()
+        val folders =
+            foldersDao.let {
+                when (input.folder) {
+                    // get all children recursively
+                    is Folder.Child -> it.getFolderAllChildFoldersRecursively(input.folder.folderId)
+                    // getting all children recursively for root == getting all possible children
+                    // could also use it.getFolderAllChildFoldersRecursively(null), but UNION does not work with nulls
+                    is Folder.Root -> it.getAllFolders()
+                }
             }
-        }
 
         return Output(
-            folders.map { folderModelMapper.map(it) }
+            folders.map { folderModelMapper.map(it) },
         )
     }
 
     data class Input(
-        val folder: Folder
+        val folder: Folder,
     )
 
-    data class Output(val folders: List<FolderWithCountAndPath>)
+    data class Output(
+        val folders: List<FolderWithCountAndPath>,
+    )
 }

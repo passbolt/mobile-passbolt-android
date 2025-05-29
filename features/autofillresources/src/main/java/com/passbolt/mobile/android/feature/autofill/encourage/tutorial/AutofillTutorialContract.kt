@@ -27,21 +27,33 @@ import com.passbolt.mobile.android.core.mvp.BaseContract
 class AutofillTutorialContract {
     interface View : BaseContract.View {
         fun closeDialog()
+
         fun openWebsite(url: String)
+
         fun navigateToOverlaySettings()
+
         fun navigateToServiceSettings()
+
         fun notifyAutofillSettingsPossibleChange()
     }
 
     interface Presenter : BaseContract.Presenter<View> {
         fun argsReceived(tutorialMode: TutorialMode)
+
         fun samsungClick()
+
         fun xiaomiClick()
+
         fun huaweiClick()
+
         fun otherClick()
+
         fun closeClick()
+
         fun goToSettingsClick()
+
         fun backClick()
+
         fun resume()
     }
 }

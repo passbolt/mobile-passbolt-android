@@ -39,15 +39,15 @@ import org.mockito.kotlin.whenever
  */
 
 class SettingsAutofillPresenterTest : KoinTest {
-
     private val presenter: SettingsAutofillContract.Presenter by inject()
     private val view = mock<SettingsAutofillContract.View>()
 
     @get:Rule
-    val koinTestRule = KoinTestRule.create {
-        printLogger(Level.ERROR)
-        modules(testSettingsAutofillModule)
-    }
+    val koinTestRule =
+        KoinTestRule.create {
+            printLogger(Level.ERROR)
+            modules(testSettingsAutofillModule)
+        }
 
     @Test
     fun `view should show info message when autofill is not supported`() {

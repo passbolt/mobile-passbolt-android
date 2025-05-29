@@ -36,7 +36,7 @@ fun Module.groupMembersModule() {
         scoped<GroupMembersContract.Presenter> {
             GroupMembersPresenter(
                 coroutineLaunchContext = get(),
-                getGroupWithUsersUseCase = get()
+                getGroupWithUsersUseCase = get(),
             )
         }
         scoped<ItemAdapter<GroupMemberItem>>(named(GROUP_MEMBER_ITEM_ADAPTER)) {
@@ -45,8 +45,8 @@ fun Module.groupMembersModule() {
         scoped {
             FastAdapter.with(
                 listOf(
-                    get<ItemAdapter<GroupMemberItem>>(named(GROUP_MEMBER_ITEM_ADAPTER))
-                )
+                    get<ItemAdapter<GroupMemberItem>>(named(GROUP_MEMBER_ITEM_ADAPTER)),
+                ),
             )
         }
     }

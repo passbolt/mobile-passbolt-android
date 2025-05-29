@@ -33,11 +33,9 @@ import java.net.UnknownHostException
  * @since v1.0
  */
 class ResponseHandler(
-    private val errorHeaderMapper: ErrorHeaderMapper
+    private val errorHeaderMapper: ErrorHeaderMapper,
 ) {
-
-    fun <T : Any> handleSuccess(data: T): NetworkResult<T> =
-        NetworkResult.Success(data)
+    fun <T : Any> handleSuccess(data: T): NetworkResult<T> = NetworkResult.Success(data)
 
     fun <T : Any> handleException(e: Exception): NetworkResult<T> =
         when (e) {
@@ -47,50 +45,54 @@ class ResponseHandler(
                     exception = e,
                     errorCode = e.code(),
                     headerMessage = getHeaderMessage(baseResponse),
-                    mfaStatus = checkIfMfaRequired(baseResponse)
+                    mfaStatus = checkIfMfaRequired(baseResponse),
                 )
             }
 
-            is UnknownHostException -> NetworkResult.Failure.NetworkError(
-                exception = e,
-                headerMessage = errorHeaderMapper.getMessage()
-            )
+            is UnknownHostException ->
+                NetworkResult.Failure.NetworkError(
+                    exception = e,
+                    headerMessage = errorHeaderMapper.getMessage(),
+                )
 
-            is ConnectException -> NetworkResult.Failure.NetworkError(
-                exception = e,
-                headerMessage = errorHeaderMapper.getMessage()
-            )
+            is ConnectException ->
+                NetworkResult.Failure.NetworkError(
+                    exception = e,
+                    headerMessage = errorHeaderMapper.getMessage(),
+                )
 
-            is SocketTimeoutException -> NetworkResult.Failure.ServerError(
-                exception = e,
-                headerMessage = errorHeaderMapper.getMessage()
-            )
+            is SocketTimeoutException ->
+                NetworkResult.Failure.ServerError(
+                    exception = e,
+                    headerMessage = errorHeaderMapper.getMessage(),
+                )
 
-            else -> NetworkResult.Failure.ServerError(
-                exception = e,
-                headerMessage = errorHeaderMapper.getMessage()
-            )
+            else ->
+                NetworkResult.Failure.ServerError(
+                    exception = e,
+                    headerMessage = errorHeaderMapper.getMessage(),
+                )
         }
 
-    fun checkIfMfaRequired(response: BaseResponse<*>?) =
-        errorHeaderMapper.checkMfaRequired(response)
+    fun checkIfMfaRequired(response: BaseResponse<*>?) = errorHeaderMapper.checkMfaRequired(response)
 
-    fun getHeaderMessage(response: BaseResponse<*>?) =
-        errorHeaderMapper.getMessage(response)
+    fun getHeaderMessage(response: BaseResponse<*>?) = errorHeaderMapper.getMessage(response)
 
-    fun parseErrorResponseBody(response: Response<*>?) =
-        errorHeaderMapper.getBaseResponse(response)
+    fun parseErrorResponseBody(response: Response<*>?) = errorHeaderMapper.getBaseResponse(response)
 }
 
 sealed class MfaStatus {
     class Required(
-        val providers: List<MfaProvider?>?
+        val providers: List<MfaProvider?>?,
     ) : MfaStatus()
 
     data object NotRequired : MfaStatus()
 }
 
-inline fun <T : Any> callWithHandler(responseHandler: ResponseHandler, apiCall: () -> T) = try {
+inline fun <T : Any> callWithHandler(
+    responseHandler: ResponseHandler,
+    apiCall: () -> T,
+) = try {
     responseHandler.handleSuccess(apiCall())
 } catch (e: Exception) {
     Timber.e(e)
@@ -99,7 +101,7 @@ inline fun <T : Any> callWithHandler(responseHandler: ResponseHandler, apiCall: 
 
 inline fun <T : Any> callWithLibraryResponseHandler(
     responseHandler: ResponseHandler,
-    apiCall: () -> Response<T>
+    apiCall: () -> Response<T>,
 ): NetworkResult<Response<T>> {
     val response = apiCall()
     return if (response.isSuccessful) {
@@ -111,12 +113,12 @@ inline fun <T : Any> callWithLibraryResponseHandler(
                 exception = IOException("There was an error during API invocation"),
                 errorCode = response.code(),
                 headerMessage = responseHandler.getHeaderMessage(errorResponse),
-                mfaStatus = responseHandler.checkIfMfaRequired(errorResponse)
+                mfaStatus = responseHandler.checkIfMfaRequired(errorResponse),
             )
         } catch (exception: Exception) {
             NetworkResult.Failure.ServerError(
                 exception = exception,
-                headerMessage = "There was an exception during sign in: ${exception.message}"
+                headerMessage = "There was an exception during sign in: ${exception.message}",
             )
         }
     }

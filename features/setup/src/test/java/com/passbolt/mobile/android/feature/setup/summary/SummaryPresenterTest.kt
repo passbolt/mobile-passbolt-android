@@ -37,16 +37,16 @@ import org.mockito.kotlin.verifyNoMoreInteractions
  * @since v1.0
  */
 @ExperimentalCoroutinesApi
-class ScanQrPresenterTest : KoinTest {
-
+class SummaryPresenterTest : KoinTest {
     private val presenter: SummaryContract.Presenter by inject()
     private var view: SummaryContract.View = mock()
 
     @get:Rule
-    val koinTestRule = KoinTestRule.create {
-        printLogger(Level.ERROR)
-        modules(testModule, summaryModule)
-    }
+    val koinTestRule =
+        KoinTestRule.create {
+            printLogger(Level.ERROR)
+            modules(testModule, summaryModule)
+        }
 
     @Before
     fun setUp() {
@@ -68,5 +68,4 @@ class ScanQrPresenterTest : KoinTest {
         presenter.start(ResultStatus.Failure(description))
         verify(view).setDescription(description)
     }
-
 }

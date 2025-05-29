@@ -28,34 +28,57 @@ import javax.crypto.Cipher
  */
 
 interface FingerprintContract {
-
     interface View : BaseContract.View {
         fun showUseFingerprint()
+
         fun showConfigureFingerprint()
+
         fun navigateToSystemSettings()
+
         fun showBiometricPrompt(fingerprintEncryptionCipher: Cipher)
-        fun showAuthenticationError(@StringRes errorMessage: Int)
+
+        fun showAuthenticationError(
+            @StringRes errorMessage: Int,
+        )
+
         fun showEncourageAutofillDialog()
+
         fun navigateToHome()
+
         fun showAutofillEnabledDialog()
+
         fun startAuthActivity()
+
         fun showKeyChangesDetected()
+
         fun showGenericError()
+
         fun showEncourageChromeNativeAutofillDialog()
     }
 
     interface Presenter : BaseContract.Presenter<View> {
         fun useFingerprintClick()
+
         fun resume()
+
         fun authenticationSucceeded(authenticatedCipher: Cipher? = null)
+
         fun authenticationError(errorMessage: Int)
+
         fun setupAutofillLaterClick()
+
         fun maybeLaterClick()
+
         fun goToTheAppClick()
+
         fun keyChangesInfoConfirmClick()
+
         fun getPassphraseSucceeded()
+
         fun autofillSetupSuccess()
+
         fun chromeNativeAutofillSetupClosed()
+
         fun chromeNativeAutofillSetupSuccessfully()
     }
 }

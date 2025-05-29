@@ -28,12 +28,11 @@ import com.passbolt.mobile.android.core.security.BuildConfig
  */
 
 class FlagSecureSetter {
-
     fun set(activity: Activity) {
         if (!BuildConfig.DEBUG) {
             activity.window.setFlags(
                 WindowManager.LayoutParams.FLAG_SECURE,
-                WindowManager.LayoutParams.FLAG_SECURE
+                WindowManager.LayoutParams.FLAG_SECURE,
             )
         }
     }
@@ -41,7 +40,7 @@ class FlagSecureSetter {
     fun remove(activity: Activity) {
         if (!BuildConfig.DEBUG) {
             activity.window.clearFlags(
-                WindowManager.LayoutParams.FLAG_SECURE
+                WindowManager.LayoutParams.FLAG_SECURE,
             )
         }
     }

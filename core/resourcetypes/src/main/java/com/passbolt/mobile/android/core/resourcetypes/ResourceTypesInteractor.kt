@@ -32,18 +32,17 @@ import timber.log.Timber
 class ResourceTypesInteractor(
     private val fetchResourceTypesUseCase: GetResourceTypesUseCase,
     private val rebuildLocalResourceTypesUseCase: RebuildLocalResourceTypesUseCase,
-    private val resourceTypeIdToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider
+    private val resourceTypeIdToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider,
 ) {
-
-    suspend fun fetchAndSaveResourceTypes(): Output {
-        return when (val fetched = fetchResourceTypesUseCase.execute(Unit)) {
+    suspend fun fetchAndSaveResourceTypes(): Output =
+        when (val fetched = fetchResourceTypesUseCase.execute(Unit)) {
             is GetResourceTypesUseCase.Output.Failure<*> -> Output.Failure(fetched.authenticationState)
             is GetResourceTypesUseCase.Output.Success -> {
                 try {
                     rebuildLocalResourceTypesUseCase.execute(
                         RebuildLocalResourceTypesUseCase.Input(
-                            fetched.resourceTypes
-                        )
+                            fetched.resourceTypes,
+                        ),
                     )
                     resourceTypeIdToSlugMappingProvider.invalidateSelectedUserMapping()
                     Output.Success
@@ -53,15 +52,15 @@ class ResourceTypesInteractor(
                 }
             }
         }
-    }
 
     sealed class Output : AuthenticatedUseCaseOutput {
-
         data object Success : Output() {
             override val authenticationState: AuthenticationState
                 get() = AuthenticationState.Authenticated
         }
 
-        data class Failure(override val authenticationState: AuthenticationState) : Output()
+        data class Failure(
+            override val authenticationState: AuthenticationState,
+        ) : Output()
     }
 }

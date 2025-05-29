@@ -43,25 +43,33 @@ import timber.log.Timber
  */
 
 @SuppressLint("UnspecifiedImmutableFlag")
-class PassboltAutofillService : AutofillService(), KoinComponent {
-
+class PassboltAutofillService :
+    AutofillService(),
+    KoinComponent {
     private val assistStructureParser: AssistStructureParser by inject()
     private val fillableInputsFinder: FillableInputsFinder by inject()
     private val remoteViewsFactory: RemoteViewsFactory by inject()
 
-    override fun onFillRequest(request: FillRequest, cancellationSignal: CancellationSignal, callback: FillCallback) {
+    override fun onFillRequest(
+        request: FillRequest,
+        cancellationSignal: CancellationSignal,
+        callback: FillCallback,
+    ) {
         Timber.d("Received fill request")
         runCatching {
-            val parsedAutofillStructures = assistStructureParser.parse(
-                request.fillContexts.last().structure
-            ).also {
-                Timber.d("Parsed domain: ${it.domain}")
-            }
+            val parsedAutofillStructures =
+                assistStructureParser
+                    .parse(
+                        request.fillContexts.last().structure,
+                    ).also {
+                        Timber.d("Parsed domain: ${it.domain}")
+                    }
 
-            val autofillableViews = arrayOf(
-                findAutofillableView(AutofillField.USERNAME, parsedAutofillStructures.structures),
-                findAutofillableView(AutofillField.PASSWORD, parsedAutofillStructures.structures)
-            )
+            val autofillableViews =
+                arrayOf(
+                    findAutofillableView(AutofillField.USERNAME, parsedAutofillStructures.structures),
+                    findAutofillableView(AutofillField.PASSWORD, parsedAutofillStructures.structures),
+                )
 
             // autofillable views not found
             if (autofillableViews.all { it == null }) {
@@ -69,37 +77,41 @@ class PassboltAutofillService : AutofillService(), KoinComponent {
                 null
             } else {
                 Timber.d("Showing authentication prompt")
-                FillResponse.Builder()
+                FillResponse
+                    .Builder()
                     .setAuthentication(
                         autofillableViews.filterNotNull().map { it.id }.toTypedArray(),
                         autofillResourcesPendingIntent(parsedAutofillStructures.domain).intentSender,
-                        remoteViewsFactory.getAutofillSelectDropdown(packageName)
-                    )
-                    .build()
+                        remoteViewsFactory.getAutofillSelectDropdown(packageName),
+                    ).build()
             }
+        }.onFailure {
+            Timber.e(it)
+            callback.onFailure(it.message)
+        }.onSuccess {
+            callback.onSuccess(it)
         }
-            .onFailure {
-                Timber.e(it)
-                callback.onFailure(it.message)
-            }
-            .onSuccess {
-                callback.onSuccess(it)
-            }
     }
 
-    override fun onSaveRequest(request: SaveRequest, callback: SaveCallback) {
+    override fun onSaveRequest(
+        request: SaveRequest,
+        callback: SaveCallback,
+    ) {
         // save is currently not supported
     }
 
-    private fun findAutofillableView(field: AutofillField, autofillStructure: Set<ParsedStructure>) =
-        fillableInputsFinder.findStructureForAutofillFields(field, autofillStructure)
+    private fun findAutofillableView(
+        field: AutofillField,
+        autofillStructure: Set<ParsedStructure>,
+    ) = fillableInputsFinder.findStructureForAutofillFields(field, autofillStructure)
 
-    private fun autofillResourcesPendingIntent(uri: String?): PendingIntent = PendingIntent.getActivity(
-        applicationContext,
-        AUTOFILL_RESOURCES_REQUEST_CODE,
-        ActivityIntents.autofill(this, AutofillMode.AUTOFILL.name, uri),
-        PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_MUTABLE
-    )
+    private fun autofillResourcesPendingIntent(uri: String?): PendingIntent =
+        PendingIntent.getActivity(
+            applicationContext,
+            AUTOFILL_RESOURCES_REQUEST_CODE,
+            ActivityIntents.autofill(this, AutofillMode.AUTOFILL.name, uri),
+            PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_MUTABLE,
+        )
 
     private companion object {
         private const val AUTOFILL_RESOURCES_REQUEST_CODE = 1001

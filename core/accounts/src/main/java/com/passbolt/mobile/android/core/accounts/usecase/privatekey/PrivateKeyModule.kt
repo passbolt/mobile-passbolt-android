@@ -29,12 +29,12 @@ import org.koin.core.module.Module
 internal fun Module.privateKeyModule() {
     single {
         GetSelectedUserPrivateKeyUseCase(
-            encryptedFileFactory = get()
+            encryptedFileFactory = get(),
         )
     }
     single {
         GetPrivateKeyUseCase(
-            encryptedFileFactory = get()
+            encryptedFileFactory = get(),
         )
     }
     factory {
@@ -42,7 +42,7 @@ internal fun Module.privateKeyModule() {
     }
     single {
         SavePrivateKeyUseCase(
-            encryptedFileFactory = get()
+            encryptedFileFactory = get(),
         )
     }
 }

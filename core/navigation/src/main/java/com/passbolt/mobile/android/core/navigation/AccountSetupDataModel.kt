@@ -1,8 +1,3 @@
-package com.passbolt.mobile.android.core.navigation
-
-import android.os.Parcelable
-import kotlinx.parcelize.Parcelize
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -25,6 +20,12 @@ import kotlinx.parcelize.Parcelize
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+
+package com.passbolt.mobile.android.core.navigation
+
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
 /**
  * This class is used as data transfer object of account data (private key, user data, etc) which is injected via the
  * launch arguments.
@@ -38,5 +39,5 @@ data class AccountSetupDataModel(
     val lastName: String,
     val avatarUrl: String?,
     val keyFingerprint: String,
-    val armoredKey: String
+    val armoredKey: String,
 ) : Parcelable

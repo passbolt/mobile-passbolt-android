@@ -28,5 +28,5 @@ import androidx.room.Entity
 @Entity
 data class ResourceTypeIdToSlugMapping(
     val resourceTypeId: String,
-    val slug: String
+    val slug: String,
 )

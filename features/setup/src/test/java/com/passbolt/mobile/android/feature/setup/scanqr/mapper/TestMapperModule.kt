@@ -27,7 +27,8 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-val testMapperModule = module {
-    factory { Json { ignoreUnknownKeys = true } }
-    factory { QrScanResultsMapper(json = get()) }
-}
+val testMapperModule =
+    module {
+        factory { Json { ignoreUnknownKeys = true } }
+        factory { QrScanResultsMapper(json = get()) }
+    }

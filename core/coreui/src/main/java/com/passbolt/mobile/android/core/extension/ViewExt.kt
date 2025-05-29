@@ -40,17 +40,23 @@ fun View.gone() {
     visibility = View.GONE
 }
 
-fun View.setDebouncingOnClick(debounceTime: Long = DEBOUNCE_DELAY_MILLIS, action: () -> Unit) {
-    this.setOnClickListener(object : View.OnClickListener {
-        private var lastClickTime: Long = 0
-        override fun onClick(v: View) {
-            if (shouldClickBeIgnored()) return else action()
+fun View.setDebouncingOnClick(
+    debounceTime: Long = DEBOUNCE_DELAY_MILLIS,
+    action: () -> Unit,
+) {
+    this.setOnClickListener(
+        object : View.OnClickListener {
+            private var lastClickTime: Long = 0
 
-            lastClickTime = SystemClock.elapsedRealtime()
-        }
+            override fun onClick(v: View) {
+                if (shouldClickBeIgnored()) return else action()
 
-        private fun shouldClickBeIgnored() = SystemClock.elapsedRealtime() - lastClickTime < debounceTime
-    })
+                lastClickTime = SystemClock.elapsedRealtime()
+            }
+
+            private fun shouldClickBeIgnored() = SystemClock.elapsedRealtime() - lastClickTime < debounceTime
+        },
+    )
 }
 
 fun View?.hideKeyboard() {

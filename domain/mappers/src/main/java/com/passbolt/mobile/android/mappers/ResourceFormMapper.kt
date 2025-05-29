@@ -27,15 +27,17 @@ import com.passbolt.mobile.android.ui.TotpUiModel
  * @since v1.0
  */
 class ResourceFormMapper {
-
-    fun mapToUiModel(totp: TotpSecret?, issuer: String): TotpUiModel =
+    fun mapToUiModel(
+        totp: TotpSecret?,
+        issuer: String,
+    ): TotpUiModel =
         totp?.let {
             TotpUiModel(
                 secret = it.key,
                 issuer = issuer,
                 expiry = it.period.toString(),
                 length = it.digits.toString(),
-                algorithm = it.algorithm
+                algorithm = it.algorithm,
             )
         } ?: TotpUiModel.emptyWithDefaults(issuer)
 
@@ -45,14 +47,17 @@ class ResourceFormMapper {
                 key = totpUiModel.secret,
                 period = totpUiModel.expiry.toLong(),
                 digits = totpUiModel.length.toInt(),
-                algorithm = totpUiModel.algorithm
+                algorithm = totpUiModel.algorithm,
             )
         }
 
-    fun mapToUiModel(password: String, mainUri: String, username: String) =
-        PasswordUiModel(
-            password = password,
-            mainUri = mainUri,
-            username = username
-        )
+    fun mapToUiModel(
+        password: String,
+        mainUri: String,
+        username: String,
+    ) = PasswordUiModel(
+        password = password,
+        mainUri = mainUri,
+        username = username,
+    )
 }

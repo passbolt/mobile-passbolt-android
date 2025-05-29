@@ -39,13 +39,15 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class AutofillTutorialDialog : DialogFragment(), AutofillTutorialContract.View, AndroidScopeComponent {
-
+class AutofillTutorialDialog :
+    DialogFragment(),
+    AutofillTutorialContract.View,
+    AndroidScopeComponent {
     override val scope by fragmentScope(useParentActivityScope = false)
     private val presenter: AutofillTutorialContract.Presenter by scope.inject()
     private val tutorialMode by lifecycleAwareLazy {
         requireNotNull(
-            BundleCompat.getSerializable(requireArguments(), TUTORIAL_MODE_KEY, TutorialMode::class.java)
+            BundleCompat.getSerializable(requireArguments(), TUTORIAL_MODE_KEY, TutorialMode::class.java),
         )
     }
     private val externalDeeplinkHandler: ExternalDeeplinkHandler by inject()
@@ -57,7 +59,11 @@ class AutofillTutorialDialog : DialogFragment(), AutofillTutorialContract.View, 
         setStyle(STYLE_NO_TITLE, CoreUiR.style.FullscreenDialogTheme)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
+    ): View {
         val binding = DialogAutofillTutorialBinding.inflate(inflater)
         setupView(binding)
         setupListeners(binding)
@@ -67,11 +73,12 @@ class AutofillTutorialDialog : DialogFragment(), AutofillTutorialContract.View, 
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        listener = when {
-            activity is Listener -> activity as Listener
-            parentFragment is Listener -> parentFragment as Listener
-            else -> error("Parent must implement ${AccountDoesNotExistDialog.Listener::class.java.name}")
-        }
+        listener =
+            when {
+                activity is Listener -> activity as Listener
+                parentFragment is Listener -> parentFragment as Listener
+                else -> error("Parent must implement ${AccountDoesNotExistDialog.Listener::class.java.name}")
+            }
         presenter.attach(this)
     }
 
@@ -80,24 +87,26 @@ class AutofillTutorialDialog : DialogFragment(), AutofillTutorialContract.View, 
         presenter.resume()
     }
 
-    private fun setupView(binding: DialogAutofillTutorialBinding) = with(binding) {
-        headerLabel.text = context?.getString(tutorialMode.title)
-        descriptionLabel.text = context?.getString(tutorialMode.description)
-    }
+    private fun setupView(binding: DialogAutofillTutorialBinding) =
+        with(binding) {
+            headerLabel.text = context?.getString(tutorialMode.title)
+            descriptionLabel.text = context?.getString(tutorialMode.description)
+        }
 
     override fun openWebsite(url: String) {
         externalDeeplinkHandler.openWebsite(requireContext(), url)
     }
 
-    private fun setupListeners(binding: DialogAutofillTutorialBinding) = with(binding) {
-        samsungContainer.setDebouncingOnClick { presenter.samsungClick() }
-        xiaomiContainer.setDebouncingOnClick { presenter.xiaomiClick() }
-        huaweiContainer.setDebouncingOnClick { presenter.huaweiClick() }
-        otherContainer.setDebouncingOnClick { presenter.otherClick() }
-        closeButton.setDebouncingOnClick { presenter.closeClick() }
-        backButton.setDebouncingOnClick { presenter.backClick() }
-        goToSettings.setDebouncingOnClick { presenter.goToSettingsClick() }
-    }
+    private fun setupListeners(binding: DialogAutofillTutorialBinding) =
+        with(binding) {
+            samsungContainer.setDebouncingOnClick { presenter.samsungClick() }
+            xiaomiContainer.setDebouncingOnClick { presenter.xiaomiClick() }
+            huaweiContainer.setDebouncingOnClick { presenter.huaweiClick() }
+            otherContainer.setDebouncingOnClick { presenter.otherClick() }
+            closeButton.setDebouncingOnClick { presenter.closeClick() }
+            backButton.setDebouncingOnClick { presenter.backClick() }
+            goToSettings.setDebouncingOnClick { presenter.goToSettingsClick() }
+        }
 
     override fun navigateToOverlaySettings() {
         settingsNavigator.navigateToAppSettings(requireActivity())

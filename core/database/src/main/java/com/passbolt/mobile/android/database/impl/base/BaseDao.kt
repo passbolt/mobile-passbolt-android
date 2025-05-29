@@ -1,9 +1,3 @@
-package com.passbolt.mobile.android.database.impl.base
-
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Update
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -26,11 +20,17 @@ import androidx.room.Update
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+
+package com.passbolt.mobile.android.database.impl.base
+
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Update
+
 /**
  * Base DAO class implementing simple CRUD ops.
  */
 interface BaseDao<T> {
-
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(entities: List<T>)
 

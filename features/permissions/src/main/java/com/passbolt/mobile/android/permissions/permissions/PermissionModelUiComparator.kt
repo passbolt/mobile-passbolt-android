@@ -26,16 +26,19 @@ import com.passbolt.mobile.android.ui.PermissionModelUi
  */
 
 class PermissionModelUiComparator : Comparator<PermissionModelUi> {
-
-    override fun compare(first: PermissionModelUi, second: PermissionModelUi): Int {
-        return order.indexOf(first::class.java)
+    override fun compare(
+        first: PermissionModelUi,
+        second: PermissionModelUi,
+    ): Int =
+        order
+            .indexOf(first::class.java)
             .compareTo(order.indexOf(second::class.java))
-    }
 
     private companion object {
-        private val order = listOf(
-            PermissionModelUi.GroupPermissionModel::class.java,
-            PermissionModelUi.UserPermissionModel::class.java
-        )
+        private val order =
+            listOf(
+                PermissionModelUi.GroupPermissionModel::class.java,
+                PermissionModelUi.UserPermissionModel::class.java,
+            )
     }
 }

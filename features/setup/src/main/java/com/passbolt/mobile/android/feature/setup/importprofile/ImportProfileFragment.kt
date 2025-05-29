@@ -38,13 +38,15 @@ import com.passbolt.mobile.android.core.localization.R as LocalizationR
 class ImportProfileFragment :
     BindingScopedFragment<FragmentImportProfileBinding>(FragmentImportProfileBinding::inflate),
     ImportProfileContract.View {
-
     private val presenter: ImportProfileContract.Presenter by inject()
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
-        initDefaultToolbar(binding.toolbar)
-        binding.accountUrlInput.setInputType(InputType.TYPE_TEXT_VARIATION_URI)
+        initDefaultToolbar(requiredBinding.toolbar)
+        requiredBinding.accountUrlInput.setInputType(InputType.TYPE_TEXT_VARIATION_URI)
         setUpListeners()
         presenter.attach(this)
     }
@@ -55,7 +57,7 @@ class ImportProfileFragment :
     }
 
     private fun setUpListeners() {
-        with(binding) {
+        with(requiredBinding) {
             userIdInput.setTextChangeListener {
                 presenter.userIdChanged(it)
             }
@@ -73,41 +75,41 @@ class ImportProfileFragment :
 
     override fun clearValidationErrors() {
         setOf(
-            binding.userIdInput,
-            binding.accountUrlInput,
-            binding.privateKeyInput
+            requiredBinding.userIdInput,
+            requiredBinding.accountUrlInput,
+            requiredBinding.privateKeyInput,
         ).forEach {
             it.setState(StatefulInput.State.Default)
         }
     }
 
     override fun showIncorrectUuid() {
-        binding.userIdInput.setState(
+        requiredBinding.userIdInput.setState(
             StatefulInput.State.Error(
-                getString(LocalizationR.string.import_profile_invalid_uuid)
-            )
+                getString(LocalizationR.string.import_profile_invalid_uuid),
+            ),
         )
     }
 
     override fun showIncorrectAccountUrl() {
-        binding.accountUrlInput.setState(
+        requiredBinding.accountUrlInput.setState(
             StatefulInput.State.Error(
-                getString(LocalizationR.string.import_profile_invalid_account_url)
-            )
+                getString(LocalizationR.string.import_profile_invalid_account_url),
+            ),
         )
     }
 
     override fun showIncorrectPrivateKey() {
-        binding.privateKeyInput.setState(
+        requiredBinding.privateKeyInput.setState(
             StatefulInput.State.Error(
-                getString(LocalizationR.string.import_profile_invalid_private_key)
-            )
+                getString(LocalizationR.string.import_profile_invalid_private_key),
+            ),
         )
     }
 
     override fun navigateToSummary(status: ResultStatus) {
         findNavController().navigate(
-            ImportProfileFragmentDirections.actionImportProfileFragmentToSummaryFragment(status)
+            ImportProfileFragmentDirections.actionImportProfileFragmentToSummaryFragment(status),
         )
     }
 }

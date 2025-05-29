@@ -31,7 +31,12 @@ import com.mikepenz.fastadapter.listeners.ClickEventHook
 abstract class DebounceClickEventHook<T : GenericItem> : ClickEventHook<T>() {
     private var lastClickTime: Long = 0
 
-    override fun onClick(v: View, position: Int, fastAdapter: FastAdapter<T>, item: T) {
+    override fun onClick(
+        v: View,
+        position: Int,
+        fastAdapter: FastAdapter<T>,
+        item: T,
+    ) {
         if (shouldClickBeIgnored()) return else onDebounceClick(v, position, fastAdapter, item)
 
         lastClickTime = SystemClock.elapsedRealtime()
@@ -39,7 +44,12 @@ abstract class DebounceClickEventHook<T : GenericItem> : ClickEventHook<T>() {
 
     private fun shouldClickBeIgnored() = SystemClock.elapsedRealtime() - lastClickTime < DEBOUNCE_DELAY_MILLIS
 
-    abstract fun onDebounceClick(v: View, position: Int, fastAdapter: FastAdapter<T>, item: T)
+    abstract fun onDebounceClick(
+        v: View,
+        position: Int,
+        fastAdapter: FastAdapter<T>,
+        item: T,
+    )
 }
 
 private const val DEBOUNCE_DELAY_MILLIS = 600L

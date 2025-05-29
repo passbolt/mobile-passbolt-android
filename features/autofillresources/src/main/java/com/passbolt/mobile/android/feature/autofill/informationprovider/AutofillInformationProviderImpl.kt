@@ -37,9 +37,8 @@ import com.passbolt.mobile.android.core.common.R as CommonR
 
 class AutofillInformationProviderImpl(
     private val autofillManager: AutofillManager,
-    private val context: Context
+    private val context: Context,
 ) : AutofillInformationProvider {
-
     override fun isAutofillServiceSupported() = autofillManager.isAutofillSupported
 
     override fun isPassboltAutofillServiceSet() = autofillManager.hasEnabledAutofillServices()
@@ -50,42 +49,45 @@ class AutofillInformationProviderImpl(
         val prefString =
             Settings.Secure.getString(context.contentResolver, Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES)
 
-        return prefString != null && prefString.contains(
-            context.packageName + "/" + AccessibilityService::class.java.name
-        )
+        return prefString != null &&
+            prefString.contains(
+                context.packageName + "/" + AccessibilityService::class.java.name,
+            )
     }
 
-    override fun isAccessibilityAutofillSetup() =
-        isAccessibilityOverlayEnabled() && isAccessibilityServiceEnabled()
+    override fun isAccessibilityAutofillSetup() = isAccessibilityOverlayEnabled() && isAccessibilityServiceEnabled()
 
     override fun getChromeNativeAutofillStatus(): ChromeNativeAutofillStatus {
         val chromeChannelPackage = context.getString(CommonR.string.chrome_native_autofill_target_package)
-        val uri = Uri.Builder()
-            .scheme(ContentResolver.SCHEME_CONTENT)
-            .authority(chromeChannelPackage + CHROME_AUTOFILL_PROVIDER_NAME)
-            .path(CHROME_PROVIDER_THIRD_PARTY_MODE_ACTIONS_URI_PATH)
-            .build()
+        val uri =
+            Uri
+                .Builder()
+                .scheme(ContentResolver.SCHEME_CONTENT)
+                .authority(chromeChannelPackage + CHROME_AUTOFILL_PROVIDER_NAME)
+                .path(CHROME_PROVIDER_THIRD_PARTY_MODE_ACTIONS_URI_PATH)
+                .build()
 
-        return context.contentResolver.query(
-            uri,
-            arrayOf(CHROME_PROVIDER_THIRD_PARTY_MODE_COLUMN),
-            null,
-            null,
-            null
-        ).use { cursor ->
-            if (cursor == null) {
-                NOT_SUPPORTED
-            } else {
-                cursor.moveToFirst()
-                val thirdPartyColumnIndex = cursor.getColumnIndex(CHROME_PROVIDER_THIRD_PARTY_MODE_COLUMN)
-
-                if (0 == cursor.getInt(thirdPartyColumnIndex)) {
-                    DISABLED
+        return context.contentResolver
+            .query(
+                uri,
+                arrayOf(CHROME_PROVIDER_THIRD_PARTY_MODE_COLUMN),
+                null,
+                null,
+                null,
+            ).use { cursor ->
+                if (cursor == null) {
+                    NOT_SUPPORTED
                 } else {
-                    ENABLED
+                    cursor.moveToFirst()
+                    val thirdPartyColumnIndex = cursor.getColumnIndex(CHROME_PROVIDER_THIRD_PARTY_MODE_COLUMN)
+
+                    if (0 == cursor.getInt(thirdPartyColumnIndex)) {
+                        DISABLED
+                    } else {
+                        ENABLED
+                    }
                 }
             }
-        }
     }
 
     private companion object {

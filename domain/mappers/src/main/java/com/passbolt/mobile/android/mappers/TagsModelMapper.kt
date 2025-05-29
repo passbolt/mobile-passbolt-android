@@ -29,12 +29,11 @@ import com.passbolt.mobile.android.ui.TagWithCount
  * @since v1.0
  */
 class TagsModelMapper {
-
     fun map(tag: TagDto): TagModel =
         TagModel(
             id = tag.id.toString(),
             slug = tag.slug,
-            isShared = tag.isShared
+            isShared = tag.isShared,
         )
 
     fun map(tagModels: List<TagModel>) =
@@ -42,7 +41,7 @@ class TagsModelMapper {
             Tag(
                 id = it.id,
                 slug = it.slug,
-                isShared = it.isShared
+                isShared = it.isShared,
             )
         }
 
@@ -50,7 +49,7 @@ class TagsModelMapper {
         TagModel(
             id = tagEntity.id,
             slug = tagEntity.slug,
-            isShared = tagEntity.isShared
+            isShared = tagEntity.isShared,
         )
 
     fun map(tag: TagWithTaggedItemsCount): TagWithCount =
@@ -58,6 +57,6 @@ class TagsModelMapper {
             tag.id,
             tag.slug,
             tag.isShared,
-            tag.taggedItemsCount
+            tag.taggedItemsCount,
         )
 }

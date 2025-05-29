@@ -1,13 +1,13 @@
 package com.passbolt.mobile.android.feature.resourceform
 
-import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.password.passwordFormModule
+import com.passbolt.mobile.android.core.resources.usecase.GetDefaultCreateContentTypeUseCase
+import com.passbolt.mobile.android.core.resources.usecase.GetEditContentTypeUseCase
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.note.noteFormModule
+import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.password.passwordFormModule
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.advanced.totpAdvancedSettingsFormModule
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.totpFormModule
 import com.passbolt.mobile.android.feature.resourceform.main.resourceFormModule
 import com.passbolt.mobile.android.feature.resourceform.metadata.description.descriptionFormModule
-import com.passbolt.mobile.android.core.resources.usecase.GetDefaultCreateContentTypeUseCase
-import com.passbolt.mobile.android.core.resources.usecase.GetEditContentTypeUseCase
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 
@@ -34,14 +34,15 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-val resourceFormModule = module {
-    resourceFormModule()
-    descriptionFormModule()
-    totpFormModule()
-    totpAdvancedSettingsFormModule()
-    noteFormModule()
-    passwordFormModule()
+val resourceFormModule =
+    module {
+        resourceFormModule()
+        descriptionFormModule()
+        totpFormModule()
+        totpAdvancedSettingsFormModule()
+        noteFormModule()
+        passwordFormModule()
 
-    factoryOf(::GetDefaultCreateContentTypeUseCase)
-    factoryOf(::GetEditContentTypeUseCase)
-}
+        factoryOf(::GetDefaultCreateContentTypeUseCase)
+        factoryOf(::GetEditContentTypeUseCase)
+    }

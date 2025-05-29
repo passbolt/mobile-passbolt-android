@@ -4,5 +4,5 @@ import java.util.UUID
 
 data class SessionKeyIdentifier(
     val foreignModel: String,
-    val foreignId: UUID
+    val foreignId: UUID,
 )

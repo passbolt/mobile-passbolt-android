@@ -22,4 +22,6 @@ package com.passbolt.mobile.android.core.security.runtimeauth
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class NoRuntimeAuthException(override val message: String) : RuntimeException(message)
+class NoRuntimeAuthException(
+    override val message: String,
+) : RuntimeException(message)

@@ -31,16 +31,20 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
  * @since v1.0
  */
 class TagItem(
-    private val tagModel: TagModel
+    private val tagModel: TagModel,
 ) : AbstractBindingItem<ItemTagBinding>() {
-
     override val type: Int
         get() = R.id.itemTag
 
-    override fun createBinding(inflater: LayoutInflater, parent: ViewGroup?): ItemTagBinding =
-        ItemTagBinding.inflate(inflater, parent, false)
+    override fun createBinding(
+        inflater: LayoutInflater,
+        parent: ViewGroup?,
+    ): ItemTagBinding = ItemTagBinding.inflate(inflater, parent, false)
 
-    override fun bindView(binding: ItemTagBinding, payloads: List<Any>) {
+    override fun bindView(
+        binding: ItemTagBinding,
+        payloads: List<Any>,
+    ) {
         super.bindView(binding, payloads)
         with(binding) {
             name.text = tagModel.slug
@@ -49,7 +53,7 @@ class TagItem(
                     CoreUiR.drawable.ic_filled_shared_tag_with_bg
                 } else {
                     CoreUiR.drawable.ic_filled_tag_with_bg
-                }
+                },
             )
         }
     }

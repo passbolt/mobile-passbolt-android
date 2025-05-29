@@ -11,12 +11,12 @@ import org.koin.test.KoinTest
 import org.koin.test.KoinTestRule
 
 class RootRelativeJsonPathTotpDelegateTest : KoinTest {
-
     @get:Rule
-    val koinTestRule = KoinTestRule.create {
-        printLogger(Level.ERROR)
-        modules(jsonPathDelegatesTestModule)
-    }
+    val koinTestRule =
+        KoinTestRule.create {
+            printLogger(Level.ERROR)
+            modules(jsonPathDelegatesTestModule)
+        }
 
     @Test
     fun `read should work as expected`() {
@@ -31,11 +31,12 @@ class RootRelativeJsonPathTotpDelegateTest : KoinTest {
                 }
             }
             """
-        val jsonModel = object : JsonModel {
-            override var json: String? = jsonString
+        val jsonModel =
+            object : JsonModel {
+                override var json: String? = jsonString
 
-            var testTotpField by RootRelativeJsonPathTotpDelegate(jsonPath = "testTotpField")
-        }
+                var testTotpField by RootRelativeJsonPathTotpDelegate(jsonPath = "testTotpField")
+            }
 
         assertThat(jsonModel.testTotpField?.algorithm).isEqualTo("testAlgo")
         assertThat(jsonModel.testTotpField?.key).isEqualTo("testKey")
@@ -45,21 +46,22 @@ class RootRelativeJsonPathTotpDelegateTest : KoinTest {
 
     @Test
     fun `field write should work as expected`() {
-        val jsonStringInputs = listOf(
-            // empty field write
-            """
+        val jsonStringInputs =
+            listOf(
+                // empty field write
+                """
             {
              "testTotpField" : {}
             }
             """,
-            // null field write
-            """
+                // null field write
+                """
             {
                 "testStringField": null
             }
             """,
-            // partial field
-            """
+                // partial field
+                """
             {
              "testTotpField" : {
                     "algorithm" : "valueAlgo",
@@ -67,24 +69,26 @@ class RootRelativeJsonPathTotpDelegateTest : KoinTest {
                     "digits" : 0
                 }
             }
-            """
-        )
-        val jsonModels = jsonStringInputs.map { jsonString ->
+            """,
+            )
+        val jsonModels =
+            jsonStringInputs.map { jsonString ->
 
-            object : JsonModel {
-                override var json: String? = jsonString
+                object : JsonModel {
+                    override var json: String? = jsonString
 
-                var testTotpField by RootRelativeJsonPathTotpDelegate(jsonPath = "testTotpField")
+                    var testTotpField by RootRelativeJsonPathTotpDelegate(jsonPath = "testTotpField")
+                }
             }
-        }
 
         jsonModels.forEach {
-            it.testTotpField = TotpSecret(
-                algorithm = "testAlgo",
-                key = "testKey",
-                digits = 6,
-                period = 30
-            )
+            it.testTotpField =
+                TotpSecret(
+                    algorithm = "testAlgo",
+                    key = "testKey",
+                    digits = 6,
+                    period = 30,
+                )
         }
 
         jsonModels.forEach {
@@ -105,18 +109,20 @@ class RootRelativeJsonPathTotpDelegateTest : KoinTest {
             {}
             """
 
-        val jsonModel = object : JsonModel {
-            override var json: String? = jsonString
+        val jsonModel =
+            object : JsonModel {
+                override var json: String? = jsonString
 
-            var testTotpField by RootRelativeJsonPathTotpDelegate(jsonPath = "testTotpField")
-        }
+                var testTotpField by RootRelativeJsonPathTotpDelegate(jsonPath = "testTotpField")
+            }
 
-        jsonModel.testTotpField = TotpSecret(
-            algorithm = "testAlgo",
-            key = "testKey",
-            digits = 6,
-            period = 30
-        )
+        jsonModel.testTotpField =
+            TotpSecret(
+                algorithm = "testAlgo",
+                key = "testKey",
+                digits = 6,
+                period = 30,
+            )
 
         val jsonObject = Gson().fromJson(jsonModel.json, JsonObject::class.java)
         val totp = Gson().fromJson(jsonObject.getAsJsonObject("testTotpField"), TotpSecret::class.java)
@@ -140,11 +146,12 @@ class RootRelativeJsonPathTotpDelegateTest : KoinTest {
                 }
             }
             """
-        val jsonModel = object : JsonModel {
-            override var json: String? = jsonString
+        val jsonModel =
+            object : JsonModel {
+                override var json: String? = jsonString
 
-            var testTotpField by RootRelativeJsonPathTotpDelegate(jsonPath = "testTotpField")
-        }
+                var testTotpField by RootRelativeJsonPathTotpDelegate(jsonPath = "testTotpField")
+            }
 
         jsonModel.testTotpField = null
 

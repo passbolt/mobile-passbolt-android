@@ -32,18 +32,18 @@ import kotlinx.coroutines.flow.map
  */
 
 class OtpQrParser(
-    private val otpQrScanResultsMapper: OtpQrScanResultsMapper
+    private val otpQrScanResultsMapper: OtpQrScanResultsMapper,
 ) {
-
     val parseResultFlow: SharedFlow<OtpParseResult>
-        get() = _pareResultFlow.asStateFlow()
-    private val _pareResultFlow = MutableStateFlow<OtpParseResult>(
-        OtpParseResult.UserResolvableError(NO_BARCODES_IN_RANGE)
-    )
+        get() = _parseResultFlow.asStateFlow()
+    private val _parseResultFlow =
+        MutableStateFlow<OtpParseResult>(
+            OtpParseResult.UserResolvableError(NO_BARCODES_IN_RANGE),
+        )
 
     suspend fun startParsing(scanFlow: SharedFlow<BarcodeScanResult>) {
         scanFlow
             .map { otpQrScanResultsMapper.apply(it) }
-            .collect(_pareResultFlow::tryEmit)
+            .collect(_parseResultFlow::tryEmit)
     }
 }

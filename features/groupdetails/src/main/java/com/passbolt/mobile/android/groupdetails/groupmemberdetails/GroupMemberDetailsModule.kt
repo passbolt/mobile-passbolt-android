@@ -30,7 +30,7 @@ fun Module.groupMemberDetailsModule() {
         scoped<GroupMemberDetailsContract.Presenter> {
             GroupMemberDetailsPresenter(
                 coroutineLaunchContext = get(),
-                getLocalUserUseCase = get()
+                getLocalUserUseCase = get(),
             )
         }
     }

@@ -26,6 +26,5 @@ import com.passbolt.mobile.android.dto.response.GroupsResponseDto
  */
 
 interface GroupsDataSource {
-
     suspend fun getGroups(): List<GroupsResponseDto>
 }

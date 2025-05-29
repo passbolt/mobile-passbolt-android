@@ -28,7 +28,6 @@ import com.passbolt.mobile.android.dto.response.PasswordExpirySettingsDto
 import retrofit2.http.GET
 
 internal interface PasswordExpiryApi {
-
     @GET(PASSWORD_EXPIRY_SETTINGS)
     suspend fun getPasswordExpirySettings(): BaseResponse<PasswordExpirySettingsDto>
 

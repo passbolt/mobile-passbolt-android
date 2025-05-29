@@ -16,8 +16,8 @@ import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpResult
 import com.passbolt.mobile.android.metadata.usecase.DeleteTrustedMetadataKeyUseCase
 import com.passbolt.mobile.android.metadata.usecase.SaveTrustedMetadataKeyUseCase
 import com.passbolt.mobile.android.metadata.usecase.UpdateMetadataPrivateKeyUseCase
-import com.passbolt.mobile.android.ui.MetadataKeyModification
 import com.passbolt.mobile.android.ui.DecryptedMetadataPrivateKeyJsonModel
+import com.passbolt.mobile.android.ui.MetadataKeyModification
 import com.passbolt.mobile.android.ui.NewMetadataKeyToTrustModel
 import com.passbolt.mobile.android.ui.ParsedMetadataPrivateKeyModel
 import timber.log.Timber
@@ -55,9 +55,8 @@ class MetadataPrivateKeysHelperInteractor(
     private val passphraseMemoryCache: PassphraseMemoryCache,
     private val getSelectedUserPrivateKeyUseCase: GetSelectedUserPrivateKeyUseCase,
     private val metadataKeysInteractor: MetadataKeysInteractor,
-    private val gson: Gson
+    private val gson: Gson,
 ) {
-
     suspend fun saveTrustedKeyToLocalStorage(key: MetadataPrivateKeysInteractor.Output.NewKeyToTrust) {
         saveTrustedMetadataKeyUseCase.execute(
             SaveTrustedMetadataKeyUseCase.Input(
@@ -73,26 +72,28 @@ class MetadataPrivateKeysHelperInteractor(
                 signingKeyFingerprint = key.signatureKeyFingerprint,
                 signatureCreationTimestampSeconds = key.signatureCreationTimestampSeconds,
                 signedUsername = key.signedUsername,
-                signedName = key.signedName
-            )
+                signedName = key.signedName,
+            ),
         )
     }
 
     suspend fun trustNewKey(model: NewMetadataKeyToTrustModel): Output {
         try {
             val currentUserPrivateKey = requireNotNull(getSelectedUserPrivateKeyUseCase.execute(Unit).privateKey)
-            val currentUserSigningKey = requireNotNull(
-                (openPgp.generatePublicKey(currentUserPrivateKey) as? OpenPgpResult.Result)
-            ).result
-            val passphrase = requireNotNull(
-                (passphraseMemoryCache.get() as? PotentialPassphrase.Passphrase)?.passphrase
-            )
+            val currentUserSigningKey =
+                requireNotNull(
+                    (openPgp.generatePublicKey(currentUserPrivateKey) as? OpenPgpResult.Result),
+                ).result
+            val passphrase =
+                requireNotNull(
+                    (passphraseMemoryCache.get() as? PotentialPassphrase.Passphrase)?.passphrase,
+                )
 
             return signTheKeyAndAddToLocalStorageAndPushToBackend(
                 metadataPrivateKey = model.metadataPrivateKey,
                 privateKey = currentUserPrivateKey,
                 passphrase = passphrase,
-                publicKey = currentUserSigningKey
+                publicKey = currentUserSigningKey,
             )
         } catch (e: Exception) {
             val errorMessage = "Error while preparing the signed metadata key"
@@ -110,33 +111,36 @@ class MetadataPrivateKeysHelperInteractor(
         metadataPrivateKey: ParsedMetadataPrivateKeyModel,
         privateKey: String,
         passphrase: ByteArray,
-        publicKey: String
+        publicKey: String,
     ): Output {
         Timber.d("Signing the server key with current user's key")
 
-        val pgpMessageSigned = openPgp.encryptSignMessageArmored(
-            privateKey = privateKey,
-            passphrase = passphrase,
-            message = gson.toJson(
-                DecryptedMetadataPrivateKeyJsonModel(
-                    objectType = "PASSBOLT_METADATA_PRIVATE_KEY",
-                    armoredKey = metadataPrivateKey.keyData,
-                    passphrase = metadataPrivateKey.passphrase,
-                    fingerprint = metadataPrivateKey.fingerprint,
-                    domain = metadataPrivateKey.domain
-                )
+        val pgpMessageSigned =
+            openPgp.encryptSignMessageArmored(
+                privateKey = privateKey,
+                passphrase = passphrase,
+                message =
+                    gson.toJson(
+                        DecryptedMetadataPrivateKeyJsonModel(
+                            objectType = "PASSBOLT_METADATA_PRIVATE_KEY",
+                            armoredKey = metadataPrivateKey.keyData,
+                            passphrase = metadataPrivateKey.passphrase,
+                            fingerprint = metadataPrivateKey.fingerprint,
+                            domain = metadataPrivateKey.domain,
+                        ),
+                    ),
             )
-        )
 
         return when (pgpMessageSigned) {
             is OpenPgpResult.Error -> Output.CryptoFailure(pgpMessageSigned.error)
-            is OpenPgpResult.Result -> verifySignedSignatureAndSaveToLocalStorage(
-                pgpMessageSigned.result,
-                metadataPrivateKey,
-                privateKey,
-                passphrase,
-                publicKey
-            )
+            is OpenPgpResult.Result ->
+                verifySignedSignatureAndSaveToLocalStorage(
+                    pgpMessageSigned.result,
+                    metadataPrivateKey,
+                    privateKey,
+                    passphrase,
+                    publicKey,
+                )
         }
     }
 
@@ -145,14 +149,15 @@ class MetadataPrivateKeysHelperInteractor(
         metadataPrivateKey: ParsedMetadataPrivateKeyModel,
         privateKey: String,
         passphrase: ByteArray,
-        publicKey: String
+        publicKey: String,
     ): Output {
-        val verifiedMessage = openPgp.verifySignature(
-            armoredPrivateKey = privateKey,
-            passphrase = passphrase,
-            armoredPublicKey = publicKey,
-            pgpMessage = pgpMessageSigned.toByteArray()
-        )
+        val verifiedMessage =
+            openPgp.verifySignature(
+                armoredPrivateKey = privateKey,
+                passphrase = passphrase,
+                armoredPublicKey = publicKey,
+                pgpMessage = pgpMessageSigned.toByteArray(),
+            )
 
         return when (verifiedMessage) {
             is OpenPgpResult.Error -> Output.CryptoFailure(verifiedMessage.error)
@@ -169,8 +174,8 @@ class MetadataPrivateKeysHelperInteractor(
                         signatureCreationTimestampSeconds = verifiedMessage.result.signatureCreationTimestampSeconds,
                         signatureKeyFingerprint = verifiedMessage.result.signatureKeyFingerprint,
                         metadataPrivateKey = metadataPrivateKey.copy(pgpMessage = pgpMessageSigned),
-                        modificationKind = MetadataKeyModification.FORWARD_TRUST
-                    )
+                        modificationKind = MetadataKeyModification.FORWARD_TRUST,
+                    ),
                 )
                 Timber.d("Saved signed key to local storage")
 
@@ -181,16 +186,17 @@ class MetadataPrivateKeysHelperInteractor(
 
     private suspend fun pushKeyToBackend(
         metadataPrivateKey: ParsedMetadataPrivateKeyModel,
-        pgpMessageSigned: String
+        pgpMessageSigned: String,
     ): Output {
         Timber.d("Pushing the signed key to the backend")
 
-        val result = updateMetadataPrivateKeyUseCase.execute(
-            UpdateMetadataPrivateKeyUseCase.Input(
-                metadataPrivateKeyId = metadataPrivateKey.id.toString(),
-                privateKeyPgpMessage = pgpMessageSigned
+        val result =
+            updateMetadataPrivateKeyUseCase.execute(
+                UpdateMetadataPrivateKeyUseCase.Input(
+                    metadataPrivateKeyId = metadataPrivateKey.id.toString(),
+                    privateKeyPgpMessage = pgpMessageSigned,
+                ),
             )
-        )
 
         return when (result) {
             is UpdateMetadataPrivateKeyUseCase.Output.Failure<*> -> Output.KeyUploadFailure(result.response)
@@ -207,27 +213,31 @@ class MetadataPrivateKeysHelperInteractor(
     }
 
     sealed class Output : AuthenticatedUseCaseOutput {
-
         override val authenticationState: AuthenticationState
-            get() = when {
-                this is KeyUploadFailure<*> && this.response.isUnauthorized ->
-                    AuthenticationState.Unauthenticated(AuthenticationState.Unauthenticated.Reason.Session)
-                this is KeyUploadFailure<*> && this.response.isMfaRequired -> {
-                    val providers = MfaTypeProvider.get(this.response)
+            get() =
+                when {
+                    this is KeyUploadFailure<*> && this.response.isUnauthorized ->
+                        AuthenticationState.Unauthenticated(AuthenticationState.Unauthenticated.Reason.Session)
+                    this is KeyUploadFailure<*> && this.response.isMfaRequired -> {
+                        val providers = MfaTypeProvider.get(this.response)
 
-                    AuthenticationState.Unauthenticated(
-                        AuthenticationState.Unauthenticated.Reason.Mfa(providers)
-                    )
+                        AuthenticationState.Unauthenticated(
+                            AuthenticationState.Unauthenticated.Reason.Mfa(providers),
+                        )
+                    }
+                    this is CryptoFailure ->
+                        AuthenticationState.Unauthenticated(AuthenticationState.Unauthenticated.Reason.Passphrase)
+                    else -> AuthenticationState.Authenticated
                 }
-                this is CryptoFailure ->
-                    AuthenticationState.Unauthenticated(AuthenticationState.Unauthenticated.Reason.Passphrase)
-                else -> AuthenticationState.Authenticated
-            }
 
         data object Success : Output()
 
-        data class CryptoFailure(val error: OpenPgpError) : Output()
+        data class CryptoFailure(
+            val error: OpenPgpError,
+        ) : Output()
 
-        data class KeyUploadFailure<T : Any>(val response: NetworkResult.Failure<T>) : Output()
+        data class KeyUploadFailure<T : Any>(
+            val response: NetworkResult.Failure<T>,
+        ) : Output()
     }
 }

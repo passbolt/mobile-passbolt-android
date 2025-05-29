@@ -29,20 +29,21 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-val featureFlagsModule = module {
-    featureFlagsModule()
+val featureFlagsModule =
+    module {
+        featureFlagsModule()
 
-    single {
-        FetchFeatureFlagsUseCase(
-            settingsRepository = get(),
-            featureFlagsMapper = get()
-        )
+        single {
+            FetchFeatureFlagsUseCase(
+                settingsRepository = get(),
+                featureFlagsMapper = get(),
+            )
+        }
+        single { FeatureFlagsMapper() }
+        single {
+            FeatureFlagsInteractor(
+                fetchFeatureFlagsUseCase = get(),
+                saveFeatureFlagsUseCase = get(),
+            )
+        }
     }
-    single { FeatureFlagsMapper() }
-    single {
-        FeatureFlagsInteractor(
-            fetchFeatureFlagsUseCase = get(),
-            saveFeatureFlagsUseCase = get()
-        )
-    }
-}

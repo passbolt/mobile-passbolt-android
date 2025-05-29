@@ -37,24 +37,26 @@ import org.mockito.kotlin.whenever
  */
 
 class ExpertSettingsPresenterTest : KoinTest {
-
     private val presenter: ExpertSettingsContract.Presenter by inject()
     private val view = mock<ExpertSettingsContract.View>()
 
     @get:Rule
-    val koinTestRule = KoinTestRule.create {
-        printLogger(Level.ERROR)
-        modules(testExpertSettingsModule)
-    }
+    val koinTestRule =
+        KoinTestRule.create {
+            printLogger(Level.ERROR)
+            modules(testExpertSettingsModule)
+        }
 
     @Test
     fun `turning developer settings off should disable and turn off all developer settings`() {
         whenever(mockGetGlobalPreferencesUseCase.execute(Unit))
             .doReturn(
                 GetGlobalPreferencesUseCase.Output(
-                    areDebugLogsEnabled = false, debugLogFileCreationDateTime = null,
-                    isDeveloperModeEnabled = true, isHideRootDialogEnabled = true
-                )
+                    areDebugLogsEnabled = false,
+                    debugLogFileCreationDateTime = null,
+                    isDeveloperModeEnabled = true,
+                    isHideRootDialogEnabled = true,
+                ),
             )
 
         presenter.attach(view)
@@ -69,9 +71,11 @@ class ExpertSettingsPresenterTest : KoinTest {
         whenever(mockGetGlobalPreferencesUseCase.execute(Unit))
             .doReturn(
                 GetGlobalPreferencesUseCase.Output(
-                    areDebugLogsEnabled = false, debugLogFileCreationDateTime = null,
-                    isDeveloperModeEnabled = false, isHideRootDialogEnabled = false
-                )
+                    areDebugLogsEnabled = false,
+                    debugLogFileCreationDateTime = null,
+                    isDeveloperModeEnabled = false,
+                    isHideRootDialogEnabled = false,
+                ),
             )
 
         presenter.attach(view)
@@ -88,8 +92,8 @@ class ExpertSettingsPresenterTest : KoinTest {
                     areDebugLogsEnabled = false,
                     debugLogFileCreationDateTime = null,
                     isDeveloperModeEnabled = false,
-                    isHideRootDialogEnabled = false
-                )
+                    isHideRootDialogEnabled = false,
+                ),
             )
 
         presenter.attach(view)
@@ -106,8 +110,8 @@ class ExpertSettingsPresenterTest : KoinTest {
                     areDebugLogsEnabled = false,
                     debugLogFileCreationDateTime = null,
                     isDeveloperModeEnabled = true,
-                    isHideRootDialogEnabled = true
-                )
+                    isHideRootDialogEnabled = true,
+                ),
             )
 
         presenter.attach(view)

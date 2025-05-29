@@ -36,7 +36,7 @@ fun Module.resourceFormModule() {
         scoped<Map<DefaultValue, String>> {
             val context = androidContext()
             mapOf(
-                DefaultValue.NAME to context.getString(LocalizationR.string.resource_form_no_name)
+                DefaultValue.NAME to context.getString(LocalizationR.string.resource_form_no_name),
             )
         }
     }

@@ -73,16 +73,15 @@ class ResourceUpdateActionsInteractor(
     private val getLocalResourcePermissionsUseCase: GetLocalResourcePermissionsUseCase,
     private val getMetadataKeysSettingsUseCase: GetMetadataKeysSettingsUseCase,
     private val getMetadataKeysUseCase: GetLocalMetadataKeysUseCase,
-    private val resourceTypeIdToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider
+    private val resourceTypeIdToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider,
 ) : KoinComponent {
-
     suspend fun updateGenericResource(
         newContentType: ContentType,
         metadataModification: (MetadataJsonModel) -> MetadataJsonModel = { it },
         secretModification: (SecretJsonModel) -> SecretJsonModel = { it },
-        forceMetadataSharedKey: Boolean = false
-    ): Flow<ResourceUpdateActionResult> {
-        return if (!isSupported(newContentType)) {
+        forceMetadataSharedKey: Boolean = false,
+    ): Flow<ResourceUpdateActionResult> =
+        if (!isSupported(newContentType)) {
             flowOf(ResourceUpdateActionResult.CannotUpdateWithCurrentConfig)
         } else {
             when (val metadataKeyParams = getMetadataKeysParams(existingResource.folderId, forceMetadataSharedKey)) {
@@ -105,90 +104,106 @@ class ResourceUpdateActionsInteractor(
                                 expiry = existingResource.expiry,
                                 metadataKeyId = metadataKeyParams.metadataKeyId,
                                 metadataKeyType = metadataKeyParams.metadataKeyType,
-                                metadataJsonModel = metadataModification(existingResource.metadataJsonModel)
+                                metadataJsonModel = metadataModification(existingResource.metadataJsonModel),
                             )
                         },
                         updateSecret = { decryptedSecret ->
-                            val existingResourceContentType = ContentType.fromSlug(
-                                idToSlugMappingProvider.provideMappingForSelectedAccount()[
-                                    UUID.fromString(existingResource.resourceTypeId)
-                                ]!!
-                            )
+                            val existingResourceContentType =
+                                ContentType.fromSlug(
+                                    idToSlugMappingProvider.provideMappingForSelectedAccount()[
+                                        UUID.fromString(existingResource.resourceTypeId),
+                                    ]!!,
+                                )
                             val modifiedSecret = secretModification(decryptedSecret)
                             val passwordChanged =
-                                decryptedSecret.getPassword(existingResourceContentType) != modifiedSecret.getPassword(
-                                    newContentType
-                                )
+                                decryptedSecret.getPassword(existingResourceContentType) !=
+                                    modifiedSecret.getPassword(
+                                        newContentType,
+                                    )
                             SecretInput(
                                 secretJsonModel = modifiedSecret,
-                                passwordChanged = passwordChanged
+                                passwordChanged = passwordChanged,
                             )
-                        }
+                        },
                     )
                 }
             }
         }
-    }
 
     suspend fun updateGenericResource(
         updateAction: UpdateAction,
         metadataModification: (MetadataJsonModel) -> MetadataJsonModel = { it },
-        secretModification: (SecretJsonModel) -> SecretJsonModel = { it }
+        secretModification: (SecretJsonModel) -> SecretJsonModel = { it },
     ): Flow<ResourceUpdateActionResult> {
-        val newContentType = resourceTypesUpdateGraph.getResourceTypeSlugAfterUpdate(
-            idToSlugMappingProvider.provideMappingForSelectedAccount()[
-                UUID.fromString(existingResource.resourceTypeId)
-            ]!!,
-            updateAction
-        )
+        val newContentType =
+            resourceTypesUpdateGraph.getResourceTypeSlugAfterUpdate(
+                idToSlugMappingProvider.provideMappingForSelectedAccount()[
+                    UUID.fromString(existingResource.resourceTypeId),
+                ]!!,
+                updateAction,
+            )
         return updateGenericResource(newContentType, metadataModification, secretModification)
     }
 
     suspend fun reEncryptResourceMetadata(): Flow<ResourceUpdateActionResult> {
-        val contentType = ContentType.fromSlug(
-            idToSlugMappingProvider.provideMappingForSelectedAccount()[
-                UUID.fromString(existingResource.resourceTypeId)
-            ]!!
-        )
+        val contentType =
+            ContentType.fromSlug(
+                idToSlugMappingProvider.provideMappingForSelectedAccount()[
+                    UUID.fromString(existingResource.resourceTypeId),
+                ]!!,
+            )
 
         return updateGenericResource(contentType, forceMetadataSharedKey = true)
     }
 
     private suspend fun isSupported(contentType: ContentType) =
-        resourceTypeIdToSlugMappingProvider.provideMappingForSelectedAccount()
+        resourceTypeIdToSlugMappingProvider
+            .provideMappingForSelectedAccount()
             .values
             .contains(contentType.slug)
 
-    private suspend fun shouldPersonalKeyBeUsed(parentFolderId: String?, forceMetadataSharedKey: Boolean): Boolean {
-        val isPersonalKeyAllowed = getMetadataKeysSettingsUseCase.execute(Unit)
-            .metadataKeysSettingsModel.allowUsageOfPersonalKeys
-        val isParentFolderShared = parentFolderId?.let {
-            getLocalFolderPermissionsUseCase.execute(
-                GetLocalFolderPermissionsUseCase.Input(parentFolderId)
-            ).permissions.size > 1
-        } ?: false
-        val isResourceShared = getLocalResourcePermissionsUseCase.execute(
-            GetLocalResourcePermissionsUseCase.Input(existingResource.resourceId)
-        ).permissions.size > 1
+    private suspend fun shouldPersonalKeyBeUsed(
+        parentFolderId: String?,
+        forceMetadataSharedKey: Boolean,
+    ): Boolean {
+        val isPersonalKeyAllowed =
+            getMetadataKeysSettingsUseCase
+                .execute(Unit)
+                .metadataKeysSettingsModel.allowUsageOfPersonalKeys
+        val isParentFolderShared =
+            parentFolderId?.let {
+                getLocalFolderPermissionsUseCase
+                    .execute(
+                        GetLocalFolderPermissionsUseCase.Input(parentFolderId),
+                    ).permissions.size > 1
+            } ?: false
+        val isResourceShared =
+            getLocalResourcePermissionsUseCase
+                .execute(
+                    GetLocalResourcePermissionsUseCase.Input(existingResource.resourceId),
+                ).permissions.size > 1
 
         return !forceMetadataSharedKey && isPersonalKeyAllowed && !isParentFolderShared && !isResourceShared
     }
 
+    @Suppress("LongMethod")
     private suspend fun getMetadataKeysParams(
         parentFolderId: String?,
-        forceMetadataSharedKey: Boolean
+        forceMetadataSharedKey: Boolean,
     ): MetadataKeyParamsModel {
-        val metadataKeyType = if (shouldPersonalKeyBeUsed(parentFolderId, forceMetadataSharedKey)) {
-            MetadataKeyTypeModel.PERSONAL
-        } else {
-            MetadataKeyTypeModel.SHARED
-        }
+        val metadataKeyType =
+            if (shouldPersonalKeyBeUsed(parentFolderId, forceMetadataSharedKey)) {
+                MetadataKeyTypeModel.PERSONAL
+            } else {
+                MetadataKeyTypeModel.SHARED
+            }
 
         return when (metadataKeyType) {
             MetadataKeyTypeModel.SHARED -> {
-                val verifyOutput = runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
-                    metadataPrivateKeysInteractor.verifyMetadataPrivateKey()
-                }
+                val verifyOutput =
+                    runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+                        metadataPrivateKeysInteractor.verifyMetadataPrivateKey()
+                    }
 
                 when (verifyOutput) {
                     is MetadataPrivateKeysInteractor.Output.Failure -> {
@@ -203,8 +218,8 @@ class ResourceUpdateActionsInteractor(
                                 signatureCreationTimestampSeconds = verifyOutput.signatureCreationTimestampSeconds,
                                 signatureKeyFingerprint = verifyOutput.signatureKeyFingerprint,
                                 metadataPrivateKey = verifyOutput.metadataPrivateKey,
-                                modificationKind = verifyOutput.modificationKind
-                            )
+                                modificationKind = verifyOutput.modificationKind,
+                            ),
                         )
                     }
                     is TrustedKeyDeleted -> {
@@ -213,25 +228,32 @@ class ResourceUpdateActionsInteractor(
                                 keyFingerprint = verifyOutput.keyFingerprint,
                                 signedUsername = verifyOutput.signedUsername,
                                 signedName = verifyOutput.signedName,
-                                modificationKind = verifyOutput.modificationKind
-                            )
+                                modificationKind = verifyOutput.modificationKind,
+                            ),
                         )
                     }
                     else -> {
                         // for cases when not able to verify (i.e. cannot get user, cannot validate signature)
                         // do not block the user
                         MetadataKeyParamsModel.ParamsModel(
-                            metadataKeyId = getMetadataKeysUseCase.execute(GetLocalMetadataKeysUseCase.Input(ENCRYPT))
-                                .firstOrNull()?.id?.toString(),
-                            metadataKeyType = MetadataKeyTypeModel.SHARED
+                            metadataKeyId =
+                                getMetadataKeysUseCase
+                                    .execute(GetLocalMetadataKeysUseCase.Input(ENCRYPT))
+                                    .firstOrNull()
+                                    ?.id
+                                    ?.toString(),
+                            metadataKeyType = MetadataKeyTypeModel.SHARED,
                         )
                     }
                 }
             }
             MetadataKeyTypeModel.PERSONAL -> {
                 MetadataKeyParamsModel.ParamsModel(
-                    metadataKeyId = getLocalCurrentUserUseCase.execute(Unit).user.gpgKey.id,
-                    metadataKeyType = MetadataKeyTypeModel.PERSONAL
+                    metadataKeyId =
+                        getLocalCurrentUserUseCase
+                            .execute(Unit)
+                            .user.gpgKey.id,
+                    metadataKeyType = MetadataKeyTypeModel.PERSONAL,
                 )
             }
         }
@@ -239,9 +261,9 @@ class ResourceUpdateActionsInteractor(
 
     private suspend fun updateResource(
         updateResource: () -> UpdateResourceModel,
-        updateSecret: suspend (SecretJsonModel) -> SecretInput
-    ): Flow<ResourceUpdateActionResult> {
-        return try {
+        updateSecret: suspend (SecretJsonModel) -> SecretInput,
+    ): Flow<ResourceUpdateActionResult> =
+        try {
             val decryptedSecret = secretPropertiesActionsInteractor.provideDecryptedSecret().single()
             flowOf(
                 when (decryptedSecret) {
@@ -249,7 +271,7 @@ class ResourceUpdateActionsInteractor(
                         runUpdateOperation {
                             updateResourceInteractor.execute(
                                 resourceInput = updateResource(),
-                                secretInput = updateSecret(decryptedSecret.result)
+                                secretInput = updateSecret(decryptedSecret.result),
                             )
                         }
                     is SecretPropertyActionResult.FetchFailure ->
@@ -257,20 +279,20 @@ class ResourceUpdateActionsInteractor(
                     is SecretPropertyActionResult.DecryptionFailure ->
                         ResourceUpdateActionResult.CryptoFailure()
                     else -> ResourceUpdateActionResult.Failure()
-                }
+                },
             )
         } catch (e: Exception) {
             Timber.e(e, "Error updating resource")
             flowOf(ResourceUpdateActionResult.Failure())
         }
-    }
 
-    private suspend fun runUpdateOperation(
-        operation: suspend () -> UpdateResourceInteractor.Output
-    ): ResourceUpdateActionResult {
-        return when (val operationResult = runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
-            operation()
-        }) {
+    private suspend fun runUpdateOperation(operation: suspend () -> UpdateResourceInteractor.Output): ResourceUpdateActionResult =
+        when (
+            val operationResult =
+                runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+                    operation()
+                }
+        ) {
             is UpdateResourceInteractor.Output.Failure<*> -> {
                 ResourceUpdateActionResult.Failure(operationResult.response.exception.message)
             }
@@ -282,17 +304,16 @@ class ResourceUpdateActionsInteractor(
             }
             is UpdateResourceInteractor.Output.Success -> {
                 updateLocalResourceUseCase.execute(
-                    UpdateLocalResourceUseCase.Input(operationResult.resource)
+                    UpdateLocalResourceUseCase.Input(operationResult.resource),
                 )
                 ResourceUpdateActionResult.Success(
                     operationResult.resource.resourceId,
-                    operationResult.resource.metadataJsonModel.name
+                    operationResult.resource.metadataJsonModel.name,
                 )
             }
             is UpdateResourceInteractor.Output.JsonSchemaValidationFailure ->
                 ResourceUpdateActionResult.JsonSchemaValidationFailure(operationResult.entity)
         }
-    }
 }
 
 @Suppress("LongParameterList")
@@ -307,7 +328,7 @@ suspend fun performResourceUpdateAction(
     doOnMetadataKeyDeleted: (TrustedKeyDeletedModel) -> Unit,
     doOnFetchFailure: () -> Unit = {},
     doOnUnauthorized: () -> Unit = {},
-    doOnMetadataKeyVerificationFailure: () -> Unit = {}
+    doOnMetadataKeyVerificationFailure: () -> Unit = {},
 ) {
     action().single().let {
         when (it) {

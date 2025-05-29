@@ -35,8 +35,9 @@ import com.passbolt.mobile.android.ui.TagWithCount
  */
 @Suppress("TooManyFunctions", "LongParameterList") // TODO MOB-321
 interface HomeContract {
-
-    interface View : DataRefreshViewReactiveContract.View, ResourceHandlingStrategy {
+    interface View :
+        DataRefreshViewReactiveContract.View,
+        ResourceHandlingStrategy {
         fun showItems(
             suggestedResources: List<ResourceModel>,
             resourceList: List<ResourceModel>,
@@ -45,126 +46,255 @@ interface HomeContract {
             groupsList: List<GroupWithCount>,
             filteredSubFoldersList: List<FolderWithCountAndPath>,
             filteredSubFolderResourceList: List<ResourceModel>,
-            sectionsConfiguration: HeaderSectionConfiguration
+            sectionsConfiguration: HeaderSectionConfiguration,
         )
 
-        fun navigateToMore(resourceId: String, resourceName: String)
+        fun navigateToMore(
+            resourceId: String,
+            resourceName: String,
+        )
+
         fun navigateToDetails(resourceModel: ResourceModel)
+
         fun showEmptyList()
+
         fun showSearchEmptyList()
+
         fun displaySearchAvatar(url: String?)
-        fun addToClipboard(label: String, value: String, isSecret: Boolean)
+
+        fun addToClipboard(
+            label: String,
+            value: String,
+            isSecret: Boolean,
+        )
+
         fun openWebsite(url: String)
+
         fun showDecryptionFailure()
+
         fun showFetchFailure()
+
         fun navigateToSwitchAccount()
+
         fun displaySearchClearIcon()
+
         fun clearSearchInput()
+
         fun showResourceCreatedSnackbar()
+
         fun showResourceDeletedSnackbar(name: String)
+
         fun showGeneralError(errorMessage: String? = null)
+
         fun navigateToEdit(resourceModel: ResourceModel)
+
         fun showResourceEditedSnackbar(resourceName: String)
+
         fun hideCreateButton()
+
         fun showCreateButton()
+
         fun showDeleteConfirmationDialog()
+
         fun navigateToManageAccounts()
+
         fun showFiltersMenu(activeDisplayView: HomeDisplayViewModel)
+
         fun showHomeScreenTitle(view: HomeDisplayViewModel)
+
         fun navigateToChild(homeView: HomeDisplayViewModel)
+
         fun showBackArrow()
+
         fun hideBackArrow()
+
         fun navigateToRootHomeFromChildHome(homeView: HomeDisplayViewModel)
+
         fun navigateRootHomeFromRootHome(homeView: HomeDisplayViewModel)
+
         fun navigateToCreateResource(parentFolderId: String?)
-        fun showChildFolderTitle(activeFolderName: String, isShared: Boolean)
-        fun showTagTitle(activeTagTitle: String, isShared: Boolean)
+
+        fun showChildFolderTitle(
+            activeFolderName: String,
+            isShared: Boolean,
+        )
+
+        fun showTagTitle(
+            activeTagTitle: String,
+            isShared: Boolean,
+        )
+
         fun showGroupTitle(groupName: String)
+
         fun navigateToShare(resource: ResourceModel)
+
         fun showResourceSharedSnackbar()
+
         fun showAllItemsSearchHint()
+
         fun showDefaultSearchHint()
+
         fun showCloseButton()
+
         fun showToggleFavouriteFailure()
+
         fun navigateToSwitchedAccountAuth()
+
         fun navigateToFolderMoreMenu(folderMoreMenuModel: FolderMoreMenuModel)
+
         fun showFolderMoreMenuIcon()
+
         fun hideFolderMoreMenuIcon()
+
         fun navigateToFolderDetails(childFolder: Folder.Child)
+
         fun navigateToCreateFolder(folderId: String?)
+
         fun showFolderCreated(name: String)
+
         fun showContentNotAvailable()
+
         fun showPleaseWaitForDataRefresh()
+
         fun finish()
+
         fun showDataRefreshError()
+
         fun showDeleteResourceFailure()
+
         fun showProgress()
+
         fun hideProgress()
+
         fun showEncryptionError(message: String)
+
         fun showJsonResourceSchemaValidationError()
+
         fun showJsonSecretSchemaValidationError()
+
         fun showCreateResourceMenu(homeView: HomeDisplayViewModel)
+
         fun navigateToCreateTotpManually(parentFolderId: String?)
+
         fun navigateToScanTotp(parentFolderId: String?)
     }
 
     interface Presenter : DataRefreshViewReactiveContract.Presenter<View> {
         fun resourceMoreClick(resourceModel: ResourceModel)
+
         fun itemClick(resourceModel: ResourceModel)
+
         fun refreshSwipe()
+
         fun searchTextChange(text: String)
+
         fun menuLaunchWebsiteClick()
+
         fun menuCopyUsernameClick()
+
         fun menuCopyUrlClick()
+
         fun menuCopyPasswordClick()
+
         fun searchAvatarClick()
+
         fun userAuthenticated()
+
         fun searchClearClick()
+
         fun menuCopyMetadataDescriptionClick()
+
         fun newResourceCreated(resourceId: String?)
+
         fun menuDeleteClick()
+
         fun resourceDeleted(resourceName: String)
+
         fun menuEditClick()
+
         fun resourceEdited(resourceName: String)
+
         fun deleteResourceConfirmed()
+
         fun switchAccountManageAccountClick()
+
         fun filtersClick()
+
         fun allItemsClick()
+
         fun favouritesClick()
+
         fun recentlyModifiedClick()
+
         fun sharedWithMeClick()
+
         fun ownedByMeClick()
+
         fun foldersClick()
+
         fun argsRetrieved(
             showSuggestedModel: ShowSuggestedModel,
             homeDisplayView: HomeDisplayViewModel?,
             hasPreviousEntry: Boolean,
             shouldShowCloseButton: Boolean,
-            shouldShowResourceMoreMenu: Boolean
+            shouldShowResourceMoreMenu: Boolean,
         )
 
         fun folderItemClick(folderModel: FolderWithCountAndPath)
+
         fun createResourceClick()
+
         fun tagsClick()
+
         fun tagItemClick(tag: TagWithCount)
+
         fun groupsClick()
+
         fun groupItemClick(group: GroupWithCount)
+
         fun menuShareClick()
+
         fun resourceShared(isShared: Boolean)
+
         fun closeClick()
+
         fun menuFavouriteClick(option: ResourceMoreMenuModel.FavouriteOption)
+
         fun switchAccountClick()
+
         fun moreClick()
+
         fun seeFolderDetailsClick()
+
         fun createFolderClick()
+
         fun folderCreated(name: String)
-        fun otpQrScanReturned(isTotpCreated: Boolean, isManualCreationChosen: Boolean)
+
+        fun otpQrScanReturned(
+            isTotpCreated: Boolean,
+            isManualCreationChosen: Boolean,
+        )
+
         fun menuCopyOtpClick()
+
         fun expiryClick()
+
         fun onCreateResourceClick()
-        fun resourceFormReturned(isResourceCreated: Boolean, isResourceEdited: Boolean, resourceName: String?)
+
+        fun resourceFormReturned(
+            isResourceCreated: Boolean,
+            isResourceEdited: Boolean,
+            resourceName: String?,
+        )
+
         fun menuCopyNoteClick()
-        fun resourceDetailsReturned(isResourceEdited: Boolean, isResourceDeleted: Boolean, resourceName: String?)
+
+        fun resourceDetailsReturned(
+            isResourceEdited: Boolean,
+            isResourceDeleted: Boolean,
+            resourceName: String?,
+        )
+
         fun createTotpClick()
     }
 }

@@ -27,5 +27,5 @@ import com.google.gson.annotations.SerializedName
 data class CreateTransferRequestDto(
     @SerializedName("total_pages")
     val totalPages: Int,
-    val hash: String
+    val hash: String,
 )

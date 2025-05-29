@@ -15,27 +15,32 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 class GroupMemberDetailsFragment :
     BindingScopedAuthenticatedFragment<FragmentGroupMemberDetailsBinding, GroupMemberDetailsContract.View>(
-        FragmentGroupMemberDetailsBinding::inflate
-    ), GroupMemberDetailsContract.View {
-
+        FragmentGroupMemberDetailsBinding::inflate,
+    ),
+    GroupMemberDetailsContract.View {
     override val presenter: GroupMemberDetailsContract.Presenter by inject()
     private val args: GroupMemberDetailsFragmentArgs by navArgs()
     private val fingerprintFormatter: FingerprintFormatter by inject()
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
-        initDefaultToolbar(binding.toolbar)
+        initDefaultToolbar(requiredBinding.toolbar)
         presenter.attach(this)
         presenter.argsRetrieved(args.userId)
     }
 
     override fun showUserData(user: UserModel) {
-        with(binding) {
+        with(requiredBinding) {
             nameLabel.text = String.format("%s %s", user.profile.firstName, user.profile.lastName)
             emailLabel.text = user.userName
-            fingerprintLabel.text = fingerprintFormatter.formatWithRawFallback(
-                user.gpgKey.fingerprint, appendMiddleSpacing = true
-            )
+            fingerprintLabel.text =
+                fingerprintFormatter.formatWithRawFallback(
+                    user.gpgKey.fingerprint,
+                    appendMiddleSpacing = true,
+                )
             avatarImage.load(user.profile.avatarUrl) {
                 error(CoreUiR.drawable.ic_user_avatar)
                 transformations(CircleCropTransformation())

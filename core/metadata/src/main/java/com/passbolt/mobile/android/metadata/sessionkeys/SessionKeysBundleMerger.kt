@@ -30,7 +30,6 @@ import com.passbolt.mobile.android.ui.SessionKeyModel
 import java.time.ZonedDateTime
 
 class SessionKeysBundleMerger {
-
     fun merge(input: List<DecryptedMetadataSessionKeysBundleModel>): MergedSessionKeys {
         val merged = hashMapOf<SessionKeyIdentifier, SessionKeyModel>()
 

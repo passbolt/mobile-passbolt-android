@@ -25,29 +25,45 @@ import com.passbolt.mobile.android.core.mvp.BaseContract
  * @since v1.0
  */
 interface SettingsAutofillContract {
-
     interface View : BaseContract.View {
         fun setAccessibilitySwitchOn()
+
         fun setAccessibilitySwitchOff()
+
         fun showAutofillServiceNotSupported()
+
         fun setAutofillSwitchOff()
+
         fun setAutofillSwitchOn()
+
         fun showEncourageAutofillService()
+
         fun showEncourageAccessibilityService()
+
         fun showAutofillFeatureEnabledSuccess()
+
         fun disableChromeNativeAutofillLayout()
+
         fun showChromeNativeAutofillNotSupported()
+
         fun setChromeNativeAutofillSwitchOn()
+
         fun setChromeNativeAutofillSwitchOff()
+
         fun enableChromeNativeAutofillLayout()
+
         fun launchChromeNativeAutofillDeeplink()
     }
 
     interface Presenter : BaseContract.Presenter<View> {
         fun autofillServiceSwitchClick()
+
         fun accessibilityServiceSwitchClick()
+
         fun viewResumed()
+
         fun autofillSetupSuccessfully()
+
         fun chromeNativeAutofillServiceSwitchClick()
     }
 }

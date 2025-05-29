@@ -11,10 +11,10 @@ import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchCont
 import com.passbolt.mobile.android.core.passwordgenerator.SecretGenerator
 import com.passbolt.mobile.android.core.passwordgenerator.entropy.EntropyCalculator
 import com.passbolt.mobile.android.core.policies.usecase.GetPasswordPoliciesUseCase
-import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUseCase
-import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.ResourceTypesUpdatesAdjacencyGraph
 import com.passbolt.mobile.android.core.resources.usecase.GetDefaultCreateContentTypeUseCase
 import com.passbolt.mobile.android.core.resources.usecase.GetEditContentTypeUseCase
+import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUseCase
+import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.ResourceTypesUpdatesAdjacencyGraph
 import com.passbolt.mobile.android.jsonmodel.JSON_MODEL_GSON
 import com.passbolt.mobile.android.jsonmodel.jsonpathops.JsonPathJsonPathOps
 import com.passbolt.mobile.android.jsonmodel.jsonpathops.JsonPathsOps
@@ -63,45 +63,47 @@ internal val mockFullDataRefreshExecutor = mock<FullDataRefreshExecutor>()
 internal val mockMetadataPrivateKeysHelperInteractor = mock<MetadataPrivateKeysHelperInteractor>()
 
 @OptIn(ExperimentalCoroutinesApi::class)
-internal val testResourceFormModule = module {
-    factoryOf(::TestCoroutineLaunchContext) bind CoroutineLaunchContext::class
-    factoryOf(::ResourceFormMapper)
-    factoryOf(::EntropyViewMapper)
-    singleOf(::ResourceModelHandler)
-    factoryOf(::ResourceTypesUpdatesAdjacencyGraph)
+internal val testResourceFormModule =
+    module {
+        factoryOf(::TestCoroutineLaunchContext) bind CoroutineLaunchContext::class
+        factoryOf(::ResourceFormMapper)
+        factoryOf(::EntropyViewMapper)
+        singleOf(::ResourceModelHandler)
+        factoryOf(::ResourceTypesUpdatesAdjacencyGraph)
 
-    single { mockGetDefaultCreateContentTypeUseCase }
-    single { mockGetEditContentTypeUseCase }
-    single { mockGetLocalResourceUseCase }
-    single { mockFullDataRefreshExecutor }
-    single {
-        mapOf(
-            DefaultValue.NAME to "no name"
-        )
-    }
+        single { mockGetDefaultCreateContentTypeUseCase }
+        single { mockGetEditContentTypeUseCase }
+        single { mockGetLocalResourceUseCase }
+        single { mockFullDataRefreshExecutor }
+        single {
+            mapOf(
+                DefaultValue.NAME to "no name",
+            )
+        }
 
-    factory<ResourceFormContract.Presenter> {
-        ResourceFormPresenter(
-            getPasswordPoliciesUseCase = mockGetPasswordPoliciesUseCase,
-            secretGenerator = mockSecretGenerator,
-            entropyCalculator = mockEntropyCalculator,
-            metadataPrivateKeysHelperInteractor = mockMetadataPrivateKeysHelperInteractor,
-            getLocalResourceUseCase = get(),
-            entropyViewMapper = get(),
-            resourceFormMapper = get(),
-            coroutineLaunchContext = get(),
-            resourceModelHandler = get(),
-            fullDataRefreshExecutor = get()
-        )
-    }
+        factory<ResourceFormContract.Presenter> {
+            ResourceFormPresenter(
+                getPasswordPoliciesUseCase = mockGetPasswordPoliciesUseCase,
+                secretGenerator = mockSecretGenerator,
+                entropyCalculator = mockEntropyCalculator,
+                metadataPrivateKeysHelperInteractor = mockMetadataPrivateKeysHelperInteractor,
+                getLocalResourceUseCase = get(),
+                entropyViewMapper = get(),
+                resourceFormMapper = get(),
+                coroutineLaunchContext = get(),
+                resourceModelHandler = get(),
+                fullDataRefreshExecutor = get(),
+            )
+        }
 
-    single(named(JSON_MODEL_GSON)) { Gson() }
-    single {
-        Configuration.builder()
-            .jsonProvider(GsonJsonProvider())
-            .mappingProvider(GsonMappingProvider())
-            .options(EnumSet.noneOf(Option::class.java))
-            .build()
+        single(named(JSON_MODEL_GSON)) { Gson() }
+        single {
+            Configuration
+                .builder()
+                .jsonProvider(GsonJsonProvider())
+                .mappingProvider(GsonMappingProvider())
+                .options(EnumSet.noneOf(Option::class.java))
+                .build()
+        }
+        singleOf(::JsonPathJsonPathOps) bind JsonPathsOps::class
     }
-    singleOf(::JsonPathJsonPathOps) bind JsonPathsOps::class
-}

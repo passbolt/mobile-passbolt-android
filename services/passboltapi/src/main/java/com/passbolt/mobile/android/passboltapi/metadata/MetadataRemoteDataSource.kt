@@ -30,30 +30,25 @@ import com.passbolt.mobile.android.dto.response.MetadataTypesSettingsResponseDto
  * @since v1.0
  */
 internal class MetadataRemoteDataSource(
-    private val metadataApi: MetadataApi
+    private val metadataApi: MetadataApi,
 ) : MetadataDataSource {
+    override suspend fun getMetadataKeys(): List<MetadataKeysResponseDto> = metadataApi.getMetadataKeys().body
 
-    override suspend fun getMetadataKeys(): List<MetadataKeysResponseDto> =
-        metadataApi.getMetadataKeys().body
+    override suspend fun putMetadataPrivateKey(
+        uuid: String,
+        request: EncryptedDataRequest,
+    ) = metadataApi.putMetadataPrivateKey(uuid, request).body
 
-    override suspend fun putMetadataPrivateKey(uuid: String, request: EncryptedDataRequest) =
-        metadataApi.putMetadataPrivateKey(uuid, request).body
+    override suspend fun getMetadataTypesSettings(): MetadataTypesSettingsResponseDto = metadataApi.getMetadataTypesSettings().body
 
-    override suspend fun getMetadataTypesSettings(): MetadataTypesSettingsResponseDto =
-        metadataApi.getMetadataTypesSettings().body
+    override suspend fun getMetadataKeysSettings(): MetadataKeysSettingsResponseDto = metadataApi.getMetadataKeysSettings().body
 
-    override suspend fun getMetadataKeysSettings(): MetadataKeysSettingsResponseDto =
-        metadataApi.getMetadataKeysSettings().body
+    override suspend fun getMetadataSessionKeys(): List<MetadataSessionKeyResponseDto> = metadataApi.getMetadataSessionKeys().body
 
-    override suspend fun getMetadataSessionKeys(): List<MetadataSessionKeyResponseDto> =
-        metadataApi.getMetadataSessionKeys().body
-
-    override suspend fun postMetadataSessionKeys(request: EncryptedDataRequest) =
-        metadataApi.postMetadataSessionKeys(request).body
+    override suspend fun postMetadataSessionKeys(request: EncryptedDataRequest) = metadataApi.postMetadataSessionKeys(request).body
 
     override suspend fun updateMetadataSessionKeys(
         uuid: String,
-        request: EncryptedDataAndModifiedRequest
-    ) =
-        metadataApi.updateMetadataSessionKeys(uuid, request).body
+        request: EncryptedDataAndModifiedRequest,
+    ) = metadataApi.updateMetadataSessionKeys(uuid, request).body
 }

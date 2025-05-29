@@ -29,5 +29,5 @@ data class MetadataKeysSettingsResponseDto(
     @SerializedName("allow_usage_of_personal_keys")
     val allowUsageOfPersonalKeys: Boolean,
     @SerializedName("zero_knowledge_key_share")
-    val zeroKnowledgeKeyShare: Boolean
+    val zeroKnowledgeKeyShare: Boolean,
 )

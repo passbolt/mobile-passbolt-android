@@ -37,22 +37,25 @@ import com.passbolt.mobile.android.core.localization.R as LocalizationR
  */
 class DescriptionFormFragment :
     BindingScopedFragment<FragmentDescriptionFormBinding>(
-        FragmentDescriptionFormBinding::inflate
-    ), DescriptionFormContract.View {
-
+        FragmentDescriptionFormBinding::inflate,
+    ),
+    DescriptionFormContract.View {
     private val presenter: DescriptionFormContract.Presenter by inject()
     private val navArgs: DescriptionFormFragmentArgs by navArgs()
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
-        initDefaultToolbar(binding.toolbar)
+        initDefaultToolbar(requiredBinding.toolbar)
         setListeners()
         presenter.attach(this)
         presenter.argsRetrieved(navArgs.mode, navArgs.metadataDescription)
     }
 
     private fun setListeners() {
-        with(binding) {
+        with(requiredBinding) {
             metadataDescriptionSubformView.descriptionInput.setTextChangeListener {
                 presenter.onDescriptionChanged(it)
             }
@@ -63,21 +66,21 @@ class DescriptionFormFragment :
     }
 
     override fun showCreateTitle() {
-        binding.toolbar.toolbarTitle = getString(LocalizationR.string.resource_form_create_metadata_description)
+        requiredBinding.toolbar.toolbarTitle = getString(LocalizationR.string.resource_form_create_metadata_description)
     }
 
     override fun showEditTitle(resourceName: String) {
-        binding.toolbar.toolbarTitle = getString(LocalizationR.string.resource_form_edit_resource, resourceName)
+        requiredBinding.toolbar.toolbarTitle = getString(LocalizationR.string.resource_form_edit_resource, resourceName)
     }
 
     override fun showDescription(metadataDescription: String) {
-        binding.metadataDescriptionSubformView.descriptionInput.text = metadataDescription
+        requiredBinding.metadataDescriptionSubformView.descriptionInput.text = metadataDescription
     }
 
     override fun goBackWithResult(metadataDescription: String) {
         setFragmentResult(
             REQUEST_METADATA_DESCRIPTION,
-            bundleOf(EXTRA_METADATA_DESCRIPTION to metadataDescription)
+            bundleOf(EXTRA_METADATA_DESCRIPTION to metadataDescription),
         )
         findNavController().popBackStack()
     }

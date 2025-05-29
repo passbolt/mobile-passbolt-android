@@ -26,17 +26,21 @@ import com.passbolt.mobile.android.core.mvp.BaseContract
  */
 
 interface EncourageChromeNativeAutofillContract {
-
     interface View : BaseContract.View {
         fun close()
+
         fun launchChromeNativeAutofillDeeplink()
+
         fun notifyChromeNativeAutofillSetUp()
     }
 
     interface Presenter : BaseContract.Presenter<View> {
         fun goToChromeNativeAutofillSettingsClick()
+
         fun closeClick()
+
         fun maybeLaterClick()
+
         fun resume()
     }
 }

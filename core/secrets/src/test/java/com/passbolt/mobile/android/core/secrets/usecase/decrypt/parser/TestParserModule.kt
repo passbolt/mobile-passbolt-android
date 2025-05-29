@@ -50,32 +50,34 @@ import java.util.EnumSet
 internal val mockJSFSchemaRepository = mock<JSFSchemaRepository>()
 internal val mockIdToSlugMappingProvider = mock<ResourceTypeIdToSlugMappingProvider>()
 
-val testParserModule = module {
-    single { GsonBuilder().create() }
-    singleOf(::JsonSchemaValidationRunner)
-    single { Validator() }
-    single<JsonSchemaRepository<Schema>> {
-        mockJSFSchemaRepository
+val testParserModule =
+    module {
+        single { GsonBuilder().create() }
+        singleOf(::JsonSchemaValidationRunner)
+        single { Validator() }
+        single<JsonSchemaRepository<Schema>> {
+            mockJSFSchemaRepository
+        }
+        single<JsonSchemaValidator> {
+            JSFJsonSchemaValidator(
+                schemaRepository = get(),
+                validator = get(),
+            )
+        }
+        single {
+            SecretParser(
+                secretValidationRunner = get(),
+                resourceTypeIdToSlugMappingProvider = mockIdToSlugMappingProvider,
+            )
+        }
+        single(named(JSON_MODEL_GSON)) { Gson() }
+        single {
+            Configuration
+                .builder()
+                .jsonProvider(GsonJsonProvider())
+                .mappingProvider(GsonMappingProvider())
+                .options(EnumSet.noneOf(Option::class.java))
+                .build()
+        }
+        singleOf(::JsonPathJsonPathOps) bind JsonPathsOps::class
     }
-    single<JsonSchemaValidator> {
-        JSFJsonSchemaValidator(
-            schemaRepository = get(),
-            validator = get()
-        )
-    }
-    single {
-        SecretParser(
-            secretValidationRunner = get(),
-            resourceTypeIdToSlugMappingProvider = mockIdToSlugMappingProvider
-        )
-    }
-    single(named(JSON_MODEL_GSON)) { Gson() }
-    single {
-        Configuration.builder()
-            .jsonProvider(GsonJsonProvider())
-            .mappingProvider(GsonMappingProvider())
-            .options(EnumSet.noneOf(Option::class.java))
-            .build()
-    }
-    singleOf(::JsonPathJsonPathOps) bind JsonPathsOps::class
-}

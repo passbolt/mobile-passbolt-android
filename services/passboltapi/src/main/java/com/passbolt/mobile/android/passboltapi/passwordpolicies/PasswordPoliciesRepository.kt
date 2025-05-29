@@ -28,10 +28,10 @@ import com.passbolt.mobile.android.core.networking.callWithHandler
 
 class PasswordPoliciesRepository(
     private val passwordPoliciesDataSource: PasswordPoliciesDataSource,
-    private val responseHandler: ResponseHandler
+    private val responseHandler: ResponseHandler,
 ) {
-
-    suspend fun getPasswordPoliciesSettings() = callWithHandler(responseHandler) {
-        passwordPoliciesDataSource.getPasswordPoliciesSettings()
-    }
+    suspend fun getPasswordPoliciesSettings() =
+        callWithHandler(responseHandler) {
+            passwordPoliciesDataSource.getPasswordPoliciesSettings()
+        }
 }

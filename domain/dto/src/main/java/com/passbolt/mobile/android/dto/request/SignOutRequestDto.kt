@@ -26,5 +26,5 @@ import com.google.gson.annotations.SerializedName
  */
 data class SignOutRequestDto(
     @SerializedName("refresh_token")
-    val refreshToken: String
+    val refreshToken: String,
 )

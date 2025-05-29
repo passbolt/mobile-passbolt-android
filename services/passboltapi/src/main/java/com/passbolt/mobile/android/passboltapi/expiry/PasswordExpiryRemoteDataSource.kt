@@ -24,9 +24,7 @@
 package com.passbolt.mobile.android.passboltapi.expiry
 
 internal class PasswordExpiryRemoteDataSource(
-    private val passwordExpiryApi: PasswordExpiryApi
+    private val passwordExpiryApi: PasswordExpiryApi,
 ) : PasswordExpiryDataSource {
-
-    override suspend fun getPasswordExpirySettings() =
-        passwordExpiryApi.getPasswordExpirySettings().body
+    override suspend fun getPasswordExpirySettings() = passwordExpiryApi.getPasswordExpirySettings().body
 }

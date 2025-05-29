@@ -7,9 +7,8 @@ import okhttp3.Request
 import okhttp3.Response
 
 internal class AuthInterceptor(
-    private val getSessionUseCase: GetSessionUseCase
+    private val getSessionUseCase: GetSessionUseCase,
 ) : Interceptor {
-
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()
         val newBuilder = request.newBuilder()
@@ -22,8 +21,7 @@ internal class AuthInterceptor(
         return chain.proceed(newBuilder.build())
     }
 
-    private fun isAnonymous(encodedPath: String) =
-        ANONYMOUS_PATHS.any { encodedPath.contains(it) }
+    private fun isAnonymous(encodedPath: String) = ANONYMOUS_PATHS.any { encodedPath.contains(it) }
 
     private fun addAuthTokens(builder: Request.Builder) {
         val accessToken = getSessionUseCase.execute(Unit).accessToken
@@ -33,16 +31,17 @@ internal class AuthInterceptor(
     }
 
     companion object {
-        private val ANONYMOUS_PATHS = setOf(
-            AuthPaths.AUTH_SIGN_IN,
-            AuthPaths.MFA_VERIFICATION_TOTP,
-            AuthPaths.MFA_VERIFICATION_YUBIKEY,
-            AuthPaths.MFA_VERIFICATION_DUO_PROMPT,
-            AuthPaths.MFA_VERIFICATION_DUO_VERIFY,
-            AuthPaths.AUTH_RSA,
-            AuthPaths.AUTH_VERIFY,
-            AuthPaths.AUTH_JWT_REFRESH
-        )
+        private val ANONYMOUS_PATHS =
+            setOf(
+                AuthPaths.AUTH_SIGN_IN,
+                AuthPaths.MFA_VERIFICATION_TOTP,
+                AuthPaths.MFA_VERIFICATION_YUBIKEY,
+                AuthPaths.MFA_VERIFICATION_DUO_PROMPT,
+                AuthPaths.MFA_VERIFICATION_DUO_VERIFY,
+                AuthPaths.AUTH_RSA,
+                AuthPaths.AUTH_VERIFY,
+                AuthPaths.AUTH_JWT_REFRESH,
+            )
         private const val AUTH_HEADER = "Authorization"
     }
 }

@@ -37,12 +37,13 @@ import org.mockito.kotlin.mock
 internal val getFeatureFlagsUseCase = mock<GetFeatureFlagsUseCase>()
 
 @ExperimentalCoroutinesApi
-val testTermsAndLicensesSettingsModule = module {
-    factoryOf(::TestCoroutineLaunchContext) bind CoroutineLaunchContext::class
-    factory<TermsAndLicensesSettingsContract.Presenter> {
-        TermsAndLicensesSettingsPresenter(
-            getFeatureFlagsUseCase = getFeatureFlagsUseCase,
-            coroutineLaunchContext = get()
-        )
+val testTermsAndLicensesSettingsModule =
+    module {
+        factoryOf(::TestCoroutineLaunchContext) bind CoroutineLaunchContext::class
+        factory<TermsAndLicensesSettingsContract.Presenter> {
+            TermsAndLicensesSettingsPresenter(
+                getFeatureFlagsUseCase = getFeatureFlagsUseCase,
+                coroutineLaunchContext = get(),
+            )
+        }
     }
-}

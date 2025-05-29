@@ -31,9 +31,8 @@ import com.passbolt.mobile.android.ui.TagWithCount
 class GetLocalTagsUseCase(
     private val databaseProvider: DatabaseProvider,
     private val tagModelMapper: TagsModelMapper,
-    private val getSelectedAccountUseCase: GetSelectedAccountUseCase
+    private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
 ) : AsyncUseCase<Unit, List<TagWithCount>> {
-
     override suspend fun execute(input: Unit) =
         databaseProvider
             .get(requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount))

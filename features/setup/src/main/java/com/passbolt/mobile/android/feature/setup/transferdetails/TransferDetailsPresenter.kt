@@ -25,9 +25,8 @@ import com.passbolt.mobile.android.core.qrscan.CameraInformationProvider
  * @since v1.0
  */
 class TransferDetailsPresenter(
-    private val cameraInformationProvider: CameraInformationProvider
+    private val cameraInformationProvider: CameraInformationProvider,
 ) : TransferDetailsContract.Presenter {
-
     override var view: TransferDetailsContract.View? = null
 
     override fun scanQrCodesButtonClick() {

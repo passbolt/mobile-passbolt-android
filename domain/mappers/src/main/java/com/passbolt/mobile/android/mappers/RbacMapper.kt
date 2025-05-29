@@ -31,19 +31,19 @@ import com.passbolt.mobile.android.ui.RbacRuleModel.DENY
 import com.passbolt.mobile.android.ui.RbacRuleModel.UNSUPPORTED_RULE
 
 class RbacMapper {
-
-    fun map(rbacs: List<RbacPermissionDto>) = RbacModel(
-        passwordCopyRule = findRuleOrDefault(COPY_PASSWORD_RULE, rbacs, ALLOW),
-        passwordPreviewRule = findRuleOrDefault(PREVIEW_PASSWORD_RULE, rbacs, ALLOW),
-        tagsUseRule = findRuleOrDefault(USE_TAGS_RULE, rbacs, ALLOW),
-        foldersUseRule = findRuleOrDefault(USE_FOLDERS_RULE, rbacs, ALLOW),
-        shareViewRule = findRuleOrDefault(VIEW_SHARE_RULE, rbacs, ALLOW)
-    )
+    fun map(rbacs: List<RbacPermissionDto>) =
+        RbacModel(
+            passwordCopyRule = findRuleOrDefault(COPY_PASSWORD_RULE, rbacs, ALLOW),
+            passwordPreviewRule = findRuleOrDefault(PREVIEW_PASSWORD_RULE, rbacs, ALLOW),
+            tagsUseRule = findRuleOrDefault(USE_TAGS_RULE, rbacs, ALLOW),
+            foldersUseRule = findRuleOrDefault(USE_FOLDERS_RULE, rbacs, ALLOW),
+            shareViewRule = findRuleOrDefault(VIEW_SHARE_RULE, rbacs, ALLOW),
+        )
 
     private fun findRuleOrDefault(
         ruleName: String,
         rules: List<RbacPermissionDto>,
-        defaultRule: RbacRuleModel
+        defaultRule: RbacRuleModel,
     ): RbacRuleModel {
         val rule = rules.find { it.uiAction?.name == ruleName }
         return map(rule?.controlFunction) ?: defaultRule

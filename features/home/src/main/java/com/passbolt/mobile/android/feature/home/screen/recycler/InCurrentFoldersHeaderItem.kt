@@ -29,16 +29,20 @@ import com.passbolt.mobile.android.feature.home.databinding.ItemInCurrentFolderB
  * @since v1.0
  */
 class InCurrentFoldersHeaderItem(
-    private val currentFolderLabel: String
+    private val currentFolderLabel: String,
 ) : AbstractBindingItem<ItemInCurrentFolderBinding>() {
-
     override val type: Int
         get() = R.id.itemInCurrentFolder
 
-    override fun createBinding(inflater: LayoutInflater, parent: ViewGroup?) =
-        ItemInCurrentFolderBinding.inflate(inflater, parent, false)
+    override fun createBinding(
+        inflater: LayoutInflater,
+        parent: ViewGroup?,
+    ) = ItemInCurrentFolderBinding.inflate(inflater, parent, false)
 
-    override fun bindView(binding: ItemInCurrentFolderBinding, payloads: List<Any>) {
+    override fun bindView(
+        binding: ItemInCurrentFolderBinding,
+        payloads: List<Any>,
+    ) {
         super.bindView(binding, payloads)
         binding.inFolderLabel.text = currentFolderLabel
     }

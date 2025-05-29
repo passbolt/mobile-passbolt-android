@@ -35,9 +35,8 @@ import kotlinx.coroutines.launch
 class SettingsPresenter(
     private val signOutUseCase: SignOutUseCase,
     private val fullDataRefreshExecutor: FullDataRefreshExecutor,
-    coroutineLaunchContext: CoroutineLaunchContext
+    coroutineLaunchContext: CoroutineLaunchContext,
 ) : SettingsContract.Presenter {
-
     override var view: SettingsContract.View? = null
     private val job = SupervisorJob()
     private val scope = CoroutineScope(job + coroutineLaunchContext.ui)

@@ -2,11 +2,6 @@ plugins {
     alias libs.plugins.android.library
     alias libs.plugins.kotlin.gradle
     alias libs.plugins.kotlin.parcelize
-    alias libs.plugins.quadrant
-}
-
-quadrantConfig {
-    perModule true
 }
 
 android {
@@ -23,8 +18,4 @@ kotlin {
 dependencies {
     implementation libs.navigation.fragment
     implementation libs.navigation.ui
-}
-
-tasks.named("dokkaHtmlPartial").configure {
-    dependsOn(tasks.named("generateActivityClassNameConstants"))
 }

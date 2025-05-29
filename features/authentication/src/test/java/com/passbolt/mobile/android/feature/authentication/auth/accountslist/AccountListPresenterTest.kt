@@ -50,16 +50,16 @@ import org.mockito.kotlin.whenever
  */
 @ExperimentalCoroutinesApi
 class AccountListPresenterTest : KoinTest {
-
     private val presenter: AccountsListContract.Presenter by inject()
     private val view = mock<AccountsListContract.View>()
     private val accountEntityToUiMapper: AccountModelMapper by inject()
 
     @get:Rule
-    val koinTestRule = KoinTestRule.create {
-        printLogger(Level.ERROR)
-        modules(testAccountListModule)
-    }
+    val koinTestRule =
+        KoinTestRule.create {
+            printLogger(Level.ERROR)
+            modules(testAccountListModule)
+        }
 
     @Before
     fun setUp() {
@@ -138,7 +138,7 @@ class AccountListPresenterTest : KoinTest {
     fun `test view shows updated account list after removal`() {
         val mutableAccountList = SAVED_ACCOUNTS.toMutableList()
         whenever(mockGetAllAccountsDataUseCase.execute(Unit)).doReturn(
-            GetAllAccountsDataUseCase.Output(mutableAccountList)
+            GetAllAccountsDataUseCase.Output(mutableAccountList),
         )
         mockRemoveAllAccountsDataUseCase.stub {
             onBlocking { execute(any()) }.then { mutableAccountList.removeAt(0) }
@@ -165,7 +165,7 @@ class AccountListPresenterTest : KoinTest {
     fun `test view show navigate to startup after last account is removed`() {
         val mutableAccountList = SAVED_ACCOUNT.toMutableList()
         whenever(mockGetAllAccountsDataUseCase.execute(Unit)).doReturn(
-            GetAllAccountsDataUseCase.Output(mutableAccountList)
+            GetAllAccountsDataUseCase.Output(mutableAccountList),
         )
         mockRemoveAllAccountsDataUseCase.stub {
             onBlocking { execute(any()) }.then { mutableAccountList.removeAt(0) }
@@ -179,15 +179,15 @@ class AccountListPresenterTest : KoinTest {
     }
 
     private companion object {
+        private val SAVED_ACCOUNT =
+            listOf(
+                Account(userId = "1", null, null, null, null, "dev.test", "server_id", "label"),
+            )
 
-        private val SAVED_ACCOUNT = listOf(
-            Account(userId = "1", null, null, null, null, "dev.test", "server_id", "label")
-        )
-
-        private val SAVED_ACCOUNTS = listOf(
-            Account(userId = "1", null, null, null, null, "dev.test", "server_id", "label"),
-            Account(userId = "2", null, null, null, null, "dev.test", "server_id", "label")
-        )
+        private val SAVED_ACCOUNTS =
+            listOf(
+                Account(userId = "1", null, null, null, null, "dev.test", "server_id", "label"),
+                Account(userId = "2", null, null, null, null, "dev.test", "server_id", "label"),
+            )
     }
-
 }

@@ -36,29 +36,34 @@ import com.passbolt.mobile.android.common.ResourceDimenProvider
  * @since v1.0
  */
 class AccessibilityOperationsProvider(
-    private val resourceDimenProvider: ResourceDimenProvider
+    private val resourceDimenProvider: ResourceDimenProvider,
 ) {
-
-    fun fillNode(node: AccessibilityNodeInfo, value: String) {
-        val bundle = Bundle().apply {
-            putString(AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, value)
-        }
+    fun fillNode(
+        node: AccessibilityNodeInfo,
+        value: String,
+    ) {
+        val bundle =
+            Bundle().apply {
+                putString(AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, value)
+            }
         node.performAction(ACTION_SET_TEXT, bundle)
     }
 
-    private fun isEditText(node: AccessibilityNodeInfo): Boolean =
-        (node.className != null) && node.className.contains("EditText")
+    private fun isEditText(node: AccessibilityNodeInfo): Boolean = (node.className != null) && node.className.contains("EditText")
 
     fun getAllNodes(
         node: AccessibilityNodeInfo,
-        event: AccessibilityEvent
+        event: AccessibilityEvent,
     ): List<AccessibilityNodeInfo> {
         val nodesList = mutableListOf<AccessibilityNodeInfo>()
         getNodes(node, event, nodesList)
         return nodesList
     }
 
-    fun isUsernameEditText(root: AccessibilityNodeInfo, event: AccessibilityEvent): Boolean {
+    fun isUsernameEditText(
+        root: AccessibilityNodeInfo,
+        event: AccessibilityEvent,
+    ): Boolean {
         val allNodes = getAllNodes(root, event)
         val passwordNode = getPasswordNode(allNodes)?.viewIdResourceName
         val usernameEditText = getUsernameNode(allNodes, passwordNode)
@@ -71,14 +76,20 @@ class AccessibilityOperationsProvider(
         return isUsernameEditText
     }
 
-    private fun isSameNode(node1: AccessibilityNodeInfo?, node2: AccessibilityNodeInfo?): Boolean {
+    private fun isSameNode(
+        node1: AccessibilityNodeInfo?,
+        node2: AccessibilityNodeInfo?,
+    ): Boolean {
         if (node1 != null && node2 != null) {
             return node1 == node2 || node1.hashCode() == node2.hashCode()
         }
         return false
     }
 
-    fun needToAutofill(credentials: AccessibilityCommunicator.Credentials?, currentUriString: String?): Boolean {
+    fun needToAutofill(
+        credentials: AccessibilityCommunicator.Credentials?,
+        currentUriString: String?,
+    ): Boolean {
         if (credentials == null) {
             return false
         }
@@ -91,16 +102,21 @@ class AccessibilityOperationsProvider(
         val uri = ANDROID_APP_PROTOCOL + root.packageName
         val browser = supportedBrowsers.find { it.packageName == root.packageName }
         if (browser != null) {
-            val addressNode = root.findAccessibilityNodeInfosByViewId(
-                "${root.packageName}:id/${browser.viewId}"
-            ).firstOrNull() ?: return null
+            val addressNode =
+                root
+                    .findAccessibilityNodeInfosByViewId(
+                        "${root.packageName}:id/${browser.viewId}",
+                    ).firstOrNull() ?: return null
 
             return extractUri(uri, addressNode)
         }
         return uri
     }
 
-    private fun extractUri(uri: String, addressNode: AccessibilityNodeInfo): String {
+    private fun extractUri(
+        uri: String,
+        addressNode: AccessibilityNodeInfo,
+    ): String {
         if (addressNode.text == null) {
             return uri
         }
@@ -131,7 +147,7 @@ class AccessibilityOperationsProvider(
     fun getOverlayAnchorPosition(
         anchorView: AccessibilityNodeInfo?,
         height: Int,
-        isOverlayAboveAnchor: Boolean
+        isOverlayAboveAnchor: Boolean,
     ): Point {
         val anchorViewRect = Rect()
         anchorView?.getBoundsInScreen(anchorViewRect)
@@ -171,7 +187,7 @@ class AccessibilityOperationsProvider(
         root: AccessibilityNodeInfo?,
         windows: List<AccessibilityWindowInfo>?,
         overlayViewHeight: Int,
-        isOverlayAboveAnchor: Boolean
+        isOverlayAboveAnchor: Boolean,
     ): OverlayPosition? {
         var point: OverlayPosition? = null
         if (anchorNode != null) {
@@ -193,48 +209,55 @@ class AccessibilityOperationsProvider(
         root: AccessibilityNodeInfo?,
         overlayViewHeight: Int,
         isOverlayAboveAnchor: Boolean,
-        inputMethodHeight: Int
+        inputMethodHeight: Int,
     ): OverlayPosition? {
         val minY = 0
         val rootNodeHeight = getNodeHeight(root)
         if (rootNodeHeight == -1) {
             return null
         }
-        val maxY = rootNodeHeight - resourceDimenProvider.getNavigationBarHeight() -
+        val maxY =
+            rootNodeHeight - resourceDimenProvider.getNavigationBarHeight() -
                 resourceDimenProvider.getStatusBarHeight() - inputMethodHeight
         val point = getOverlayAnchorPosition(anchorNode, overlayViewHeight, isOverlayAboveAnchor)
 
-        val position = if (point.y < minY) {
-            if (isOverlayAboveAnchor) {
-                OverlayPosition.InBoundsBottomAnchor
+        val position =
+            if (point.y < minY) {
+                if (isOverlayAboveAnchor) {
+                    OverlayPosition.InBoundsBottomAnchor
+                } else {
+                    OverlayPosition.OutBoundsHide
+                }
+            } else if (point.y > (maxY - overlayViewHeight)) {
+                if (isOverlayAboveAnchor) {
+                    OverlayPosition.OutBoundsHide
+                } else {
+                    OverlayPosition.InBoundsTopAnchor
+                }
+            } else if (isOverlayAboveAnchor && point.y < (maxY - (overlayViewHeight * 2) - getNodeHeight(anchorNode))) {
+                OverlayPosition.ForceBottom
             } else {
-                OverlayPosition.OutBoundsHide
+                OverlayPosition.Position(point.x, point.y)
             }
-        } else if (point.y > (maxY - overlayViewHeight)) {
-            if (isOverlayAboveAnchor) {
-                OverlayPosition.OutBoundsHide
-            } else {
-                OverlayPosition.InBoundsTopAnchor
-            }
-        } else if (isOverlayAboveAnchor && point.y < (maxY - (overlayViewHeight * 2) - getNodeHeight(anchorNode))) {
-            OverlayPosition.ForceBottom
-        } else OverlayPosition.Position(point.x, point.y)
         return position
     }
 
-    fun getPasswordNode(nodes: List<AccessibilityNodeInfo>): AccessibilityNodeInfo? {
-        return nodes.find {
+    fun getPasswordNode(nodes: List<AccessibilityNodeInfo>): AccessibilityNodeInfo? =
+        nodes.find {
             it.isPassword || it.hintText?.contains("pass", true) ?: false
         }
-    }
 
-    fun getUsernameNode(nodes: List<AccessibilityNodeInfo>, passwordNodeId: String?): AccessibilityNodeInfo? {
+    fun getUsernameNode(
+        nodes: List<AccessibilityNodeInfo>,
+        passwordNodeId: String?,
+    ): AccessibilityNodeInfo? {
         var usernameNode: AccessibilityNodeInfo?
 
-        usernameNode = nodes.find {
-            it.hintText?.contains("username", true) ?: false ||
+        usernameNode =
+            nodes.find {
+                it.hintText?.contains("username", true) ?: false ||
                     it.hintText?.contains("mail", true) ?: false
-        }
+            }
 
         // username node is usually one before the password node
         if (usernameNode == null) {
@@ -254,7 +277,7 @@ class AccessibilityOperationsProvider(
     private fun getNodes(
         node: AccessibilityNodeInfo,
         event: AccessibilityEvent,
-        result: MutableList<AccessibilityNodeInfo>
+        result: MutableList<AccessibilityNodeInfo>,
     ) {
         for (i in 0 until node.childCount) {
             val child = node.getChild(i)
@@ -268,55 +291,66 @@ class AccessibilityOperationsProvider(
     }
 
     fun createOverlayParams() =
-        WindowManager.LayoutParams(
-            WindowManager.LayoutParams.WRAP_CONTENT,
-            WindowManager.LayoutParams.WRAP_CONTENT,
-            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
-            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
-                    WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH, PixelFormat.TRANSPARENT
-        ).apply {
-            gravity = Gravity.TOP or Gravity.START
-        }
+        WindowManager
+            .LayoutParams(
+                WindowManager.LayoutParams.WRAP_CONTENT,
+                WindowManager.LayoutParams.WRAP_CONTENT,
+                WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
+                    WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH,
+                PixelFormat.TRANSPARENT,
+            ).apply {
+                gravity = Gravity.TOP or Gravity.START
+            }
 
-    fun shouldSkipPackage(eventPackageName: String?): Boolean {
-        return eventPackageName.isNullOrEmpty() ||
-                filteredPackageNames.any { it == eventPackageName } ||
-                eventPackageName.contains("launcher", true)
-    }
+    fun shouldSkipPackage(eventPackageName: String?): Boolean =
+        eventPackageName.isNullOrEmpty() ||
+            filteredPackageNames.any { it == eventPackageName } ||
+            eventPackageName.contains("launcher", true)
 
-    private val filteredPackageNames = hashSetOf(
-        "com.android.systemui",
-        "com.google.android.googlequicksearchbox"
-    )
+    private val filteredPackageNames =
+        hashSetOf(
+            "com.android.systemui",
+            "com.google.android.googlequicksearchbox",
+        )
 
-    private val supportedBrowsers = listOf(
-        Browser("com.android.browser", "url"),
-        Browser("com.android.chrome", "url_bar"),
-        Browser(
-            "org.mozilla.firefox", "mozac_browser_toolbar_url_view"
-        ),
-        Browser("org.mozilla.firefox_beta", "mozac_browser_toolbar_url_view"),
-        Browser("com.opera.browser", "url_field"),
-        Browser("com.opera.browser.beta", "url_field"),
-        Browser("com.opera.mini.native", "url_field"),
-        Browser("com.opera.mini.native.beta", "url_field"),
-        Browser("com.opera.touch", "addressbarEdit"),
-        Browser("com.brave.browser", "url_bar"),
-        Browser("com.brave.browser_beta", "url_bar"),
-        Browser("com.brave.browser_default", "url_bar"),
-        Browser("com.brave.browser_dev", "url_bar"),
-        Browser("com.brave.browser_nightly", "url_bar"),
-        Browser("com.chrome.beta", "url_bar"),
-        Browser("com.chrome.canary", "url_bar"),
-        Browser("com.chrome.dev", "url_bar")
-    )
+    private val supportedBrowsers =
+        listOf(
+            Browser("com.android.browser", "url"),
+            Browser("com.android.chrome", "url_bar"),
+            Browser(
+                "org.mozilla.firefox",
+                "mozac_browser_toolbar_url_view",
+            ),
+            Browser("org.mozilla.firefox_beta", "mozac_browser_toolbar_url_view"),
+            Browser("com.opera.browser", "url_field"),
+            Browser("com.opera.browser.beta", "url_field"),
+            Browser("com.opera.mini.native", "url_field"),
+            Browser("com.opera.mini.native.beta", "url_field"),
+            Browser("com.opera.touch", "addressbarEdit"),
+            Browser("com.brave.browser", "url_bar"),
+            Browser("com.brave.browser_beta", "url_bar"),
+            Browser("com.brave.browser_default", "url_bar"),
+            Browser("com.brave.browser_dev", "url_bar"),
+            Browser("com.brave.browser_nightly", "url_bar"),
+            Browser("com.chrome.beta", "url_bar"),
+            Browser("com.chrome.canary", "url_bar"),
+            Browser("com.chrome.dev", "url_bar"),
+        )
 
     sealed class OverlayPosition {
         data object InBoundsBottomAnchor : OverlayPosition()
+
         data object InBoundsTopAnchor : OverlayPosition()
+
         data object OutBoundsHide : OverlayPosition()
+
         data object ForceBottom : OverlayPosition()
-        class Position(val x: Int, val y: Int) : OverlayPosition()
+
+        class Position(
+            val x: Int,
+            val y: Int,
+        ) : OverlayPosition()
     }
 
     companion object {

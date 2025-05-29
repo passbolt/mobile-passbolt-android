@@ -33,9 +33,8 @@ import com.passbolt.mobile.android.core.localization.R as LocalizationR
  */
 class ErrorHeaderMapper(
     private val context: Context,
-    private val gson: Gson
+    private val gson: Gson,
 ) {
-
     fun getBaseResponse(response: Response<*>? = null) =
         response?.errorBody()?.charStream()?.let { charStream ->
             try {

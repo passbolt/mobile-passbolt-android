@@ -34,34 +34,35 @@ import com.passbolt.mobile.android.feature.home.databinding.ItemSwitchAccountMan
  * @since v1.0
  */
 class SwitchAccountManageAccountItem : AbstractBindingItem<ItemSwitchAccountManageAccountBinding>() {
-
     override val type: Int
         get() = R.id.manageAccountLabel
 
-    override fun bindView(binding: ItemSwitchAccountManageAccountBinding, payloads: List<Any>) {
+    override fun bindView(
+        binding: ItemSwitchAccountManageAccountBinding,
+        payloads: List<Any>,
+    ) {
         // no-op
     }
 
-    override fun createBinding(inflater: LayoutInflater, parent: ViewGroup?): ItemSwitchAccountManageAccountBinding {
-        return ItemSwitchAccountManageAccountBinding.inflate(inflater, parent, false)
-    }
+    override fun createBinding(
+        inflater: LayoutInflater,
+        parent: ViewGroup?,
+    ): ItemSwitchAccountManageAccountBinding = ItemSwitchAccountManageAccountBinding.inflate(inflater, parent, false)
 }
 
 class ManageAccountsClick(
-    private val clickAction: () -> Unit
+    private val clickAction: () -> Unit,
 ) : ClickEventHook<SwitchAccountManageAccountItem>() {
-
-    override fun onBind(viewHolder: RecyclerView.ViewHolder): View? {
-        return viewHolder.asBinding<ItemSwitchAccountManageAccountBinding> {
+    override fun onBind(viewHolder: RecyclerView.ViewHolder): View? =
+        viewHolder.asBinding<ItemSwitchAccountManageAccountBinding> {
             it.manageAccountLabel
         }
-    }
 
     override fun onClick(
         v: View,
         position: Int,
         fastAdapter: FastAdapter<SwitchAccountManageAccountItem>,
-        item: SwitchAccountManageAccountItem
+        item: SwitchAccountManageAccountItem,
     ) {
         clickAction()
     }

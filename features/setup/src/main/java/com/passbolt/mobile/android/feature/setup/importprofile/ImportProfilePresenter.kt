@@ -12,9 +12,8 @@ import com.passbolt.mobile.android.core.navigation.AccountSetupDataModel
 import com.passbolt.mobile.android.feature.setup.summary.ResultStatus
 
 class ImportProfilePresenter(
-    private val accountsInteractor: AccountsInteractor
+    private val accountsInteractor: AccountsInteractor,
 ) : ImportProfileContract.Presenter {
-
     override var view: ImportProfileContract.View? = null
     private var userId: String = ""
     private var accountUrl: String = ""
@@ -72,7 +71,7 @@ class ImportProfilePresenter(
                 lastName = "",
                 avatarUrl = "",
                 userName = "",
-                keyFingerprint = ""
+                keyFingerprint = "",
             ),
             onSuccess = { userId ->
                 view?.navigateToSummary(ResultStatus.Success(userId))
@@ -83,9 +82,9 @@ class ImportProfilePresenter(
                         ACCOUNT_ALREADY_LINKED -> ResultStatus.AlreadyLinked()
                         ERROR_NON_HTTPS_DOMAIN -> ResultStatus.HttpNotSupported()
                         ERROR_WHEN_SAVING_PRIVATE_KEY -> ResultStatus.Failure(failureType.name)
-                    }
+                    },
                 )
-            }
+            },
         )
     }
 }

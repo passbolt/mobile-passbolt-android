@@ -32,24 +32,24 @@ import org.junit.Test
 import java.time.ZonedDateTime
 import java.util.UUID
 
-
 class SessionKeysBundleMergerTest {
-
     private val sessionKeysBundleMerger = SessionKeysBundleMerger()
 
     @Test
     fun `single bundle should be kept in whole`() {
-        val keys = listOf(
-            SessionKeyDto("1", UUID.randomUUID(), "key1", ZonedDateTime.now().toString()),
-            SessionKeyDto("2", UUID.randomUUID(), "key2", ZonedDateTime.now().toString()),
-            SessionKeyDto("3", UUID.randomUUID(), "key3", ZonedDateTime.now().toString())
-        )
-        val bundle = DecryptedMetadataSessionKeysBundleModel(
-            id = UUID.randomUUID(),
-            created = ZonedDateTime.now(),
-            modified = ZonedDateTime.now(),
-            bundle = SessionKeysBundleDto("PASSBOLT_SESSION_KEYS", keys)
-        )
+        val keys =
+            listOf(
+                SessionKeyDto("1", UUID.randomUUID(), "key1", ZonedDateTime.now().toString()),
+                SessionKeyDto("2", UUID.randomUUID(), "key2", ZonedDateTime.now().toString()),
+                SessionKeyDto("3", UUID.randomUUID(), "key3", ZonedDateTime.now().toString()),
+            )
+        val bundle =
+            DecryptedMetadataSessionKeysBundleModel(
+                id = UUID.randomUUID(),
+                created = ZonedDateTime.now(),
+                modified = ZonedDateTime.now(),
+                bundle = SessionKeysBundleDto("PASSBOLT_SESSION_KEYS", keys),
+            )
 
         val result = sessionKeysBundleMerger.merge(listOf(bundle))
 
@@ -57,7 +57,7 @@ class SessionKeysBundleMergerTest {
         assertThat(result.keys.keys).containsExactly(
             SessionKeyIdentifier("1", keys[0].foreignId),
             SessionKeyIdentifier("2", keys[1].foreignId),
-            SessionKeyIdentifier("3", keys[2].foreignId)
+            SessionKeyIdentifier("3", keys[2].foreignId),
         )
         assertThat(result.keys.map { it.value.sessionKey }).containsExactly("key1", "key2", "key3")
     }
@@ -65,18 +65,20 @@ class SessionKeysBundleMergerTest {
     @Test
     fun `single bundle with duplicated models should be chosen by modified date`() {
         val sameForignModelId = UUID.randomUUID()
-        val keys = listOf(
-            SessionKeyDto("1", UUID.randomUUID(), "key1", ZonedDateTime.now().toString()),
-            SessionKeyDto("2", UUID.randomUUID(), "key2", ZonedDateTime.now().toString()),
-            SessionKeyDto("3", sameForignModelId, "key3", ZonedDateTime.now().toString()),
-            SessionKeyDto("3", sameForignModelId, "key4", ZonedDateTime.now().minusDays(1).toString())
-        )
-        val bundle = DecryptedMetadataSessionKeysBundleModel(
-            id = UUID.randomUUID(),
-            created = ZonedDateTime.now(),
-            modified = ZonedDateTime.now(),
-            bundle = SessionKeysBundleDto("PASSBOLT_SESSION_KEYS", keys)
-        )
+        val keys =
+            listOf(
+                SessionKeyDto("1", UUID.randomUUID(), "key1", ZonedDateTime.now().toString()),
+                SessionKeyDto("2", UUID.randomUUID(), "key2", ZonedDateTime.now().toString()),
+                SessionKeyDto("3", sameForignModelId, "key3", ZonedDateTime.now().toString()),
+                SessionKeyDto("3", sameForignModelId, "key4", ZonedDateTime.now().minusDays(1).toString()),
+            )
+        val bundle =
+            DecryptedMetadataSessionKeysBundleModel(
+                id = UUID.randomUUID(),
+                created = ZonedDateTime.now(),
+                modified = ZonedDateTime.now(),
+                bundle = SessionKeysBundleDto("PASSBOLT_SESSION_KEYS", keys),
+            )
 
         val result = sessionKeysBundleMerger.merge(listOf(bundle))
 
@@ -84,35 +86,39 @@ class SessionKeysBundleMergerTest {
         assertThat(result.keys.keys).containsExactly(
             SessionKeyIdentifier("1", keys[0].foreignId),
             SessionKeyIdentifier("2", keys[1].foreignId),
-            SessionKeyIdentifier("3", keys[2].foreignId)
+            SessionKeyIdentifier("3", keys[2].foreignId),
         )
         assertThat(result.keys.map { it.value.sessionKey }).containsExactly("key1", "key2", "key3")
     }
 
     @Test
     fun `multiple bundle should be kept in whole`() {
-        val keys1 = listOf(
-            SessionKeyDto("1", UUID.randomUUID(), "key1", ZonedDateTime.now().toString()),
-            SessionKeyDto("2", UUID.randomUUID(), "key2", ZonedDateTime.now().toString()),
-            SessionKeyDto("3", UUID.randomUUID(), "key3", ZonedDateTime.now().toString())
-        )
-        val keys2 = listOf(
-            SessionKeyDto("4", UUID.randomUUID(), "key4", ZonedDateTime.now().toString()),
-            SessionKeyDto("5", UUID.randomUUID(), "key5", ZonedDateTime.now().toString()),
-            SessionKeyDto("6", UUID.randomUUID(), "key6", ZonedDateTime.now().toString())
-        )
-        val bundle1 = DecryptedMetadataSessionKeysBundleModel(
-            id = UUID.randomUUID(),
-            created = ZonedDateTime.now(),
-            modified = ZonedDateTime.now(),
-            bundle = SessionKeysBundleDto("PASSBOLT_SESSION_KEYS", keys1)
-        )
-        val bundle2 = DecryptedMetadataSessionKeysBundleModel(
-            id = UUID.randomUUID(),
-            created = ZonedDateTime.now(),
-            modified = ZonedDateTime.now(),
-            bundle = SessionKeysBundleDto("PASSBOLT_SESSION_KEYS", keys2)
-        )
+        val keys1 =
+            listOf(
+                SessionKeyDto("1", UUID.randomUUID(), "key1", ZonedDateTime.now().toString()),
+                SessionKeyDto("2", UUID.randomUUID(), "key2", ZonedDateTime.now().toString()),
+                SessionKeyDto("3", UUID.randomUUID(), "key3", ZonedDateTime.now().toString()),
+            )
+        val keys2 =
+            listOf(
+                SessionKeyDto("4", UUID.randomUUID(), "key4", ZonedDateTime.now().toString()),
+                SessionKeyDto("5", UUID.randomUUID(), "key5", ZonedDateTime.now().toString()),
+                SessionKeyDto("6", UUID.randomUUID(), "key6", ZonedDateTime.now().toString()),
+            )
+        val bundle1 =
+            DecryptedMetadataSessionKeysBundleModel(
+                id = UUID.randomUUID(),
+                created = ZonedDateTime.now(),
+                modified = ZonedDateTime.now(),
+                bundle = SessionKeysBundleDto("PASSBOLT_SESSION_KEYS", keys1),
+            )
+        val bundle2 =
+            DecryptedMetadataSessionKeysBundleModel(
+                id = UUID.randomUUID(),
+                created = ZonedDateTime.now(),
+                modified = ZonedDateTime.now(),
+                bundle = SessionKeysBundleDto("PASSBOLT_SESSION_KEYS", keys2),
+            )
 
         val result = sessionKeysBundleMerger.merge(listOf(bundle1, bundle2))
 
@@ -123,38 +129,47 @@ class SessionKeysBundleMergerTest {
             SessionKeyIdentifier("3", keys1[2].foreignId),
             SessionKeyIdentifier("4", keys2[0].foreignId),
             SessionKeyIdentifier("5", keys2[1].foreignId),
-            SessionKeyIdentifier("6", keys2[2].foreignId)
+            SessionKeyIdentifier("6", keys2[2].foreignId),
         )
         assertThat(result.keys.map { it.value.sessionKey }).containsExactly(
-            "key1", "key2", "key3", "key4", "key5", "key6"
+            "key1",
+            "key2",
+            "key3",
+            "key4",
+            "key5",
+            "key6",
         )
     }
 
     @Test
     fun `multiple bundle with duplicated models should be chosen by modified date`() {
         val sameForeignModelId = UUID.randomUUID()
-        val keys1 = listOf(
-            SessionKeyDto("1", UUID.randomUUID(), "key1", ZonedDateTime.now().toString()),
-            SessionKeyDto("2", sameForeignModelId, "key2", ZonedDateTime.now().minusDays(1).toString()),
-            SessionKeyDto("3", UUID.randomUUID(), "key3", ZonedDateTime.now().toString())
-        )
-        val keys2 = listOf(
-            SessionKeyDto("4", UUID.randomUUID(), "key4", ZonedDateTime.now().toString()),
-            SessionKeyDto("2", sameForeignModelId, "key5", ZonedDateTime.now().toString()),
-            SessionKeyDto("6", UUID.randomUUID(), "key6", ZonedDateTime.now().toString())
-        )
-        val bundle1 = DecryptedMetadataSessionKeysBundleModel(
-            id = UUID.randomUUID(),
-            created = ZonedDateTime.now(),
-            modified = ZonedDateTime.now(),
-            bundle = SessionKeysBundleDto("PASSBOLT_SESSION_KEYS", keys1)
-        )
-        val bundle2 = DecryptedMetadataSessionKeysBundleModel(
-            id = UUID.randomUUID(),
-            created = ZonedDateTime.now(),
-            modified = ZonedDateTime.now(),
-            bundle = SessionKeysBundleDto("PASSBOLT_SESSION_KEYS", keys2)
-        )
+        val keys1 =
+            listOf(
+                SessionKeyDto("1", UUID.randomUUID(), "key1", ZonedDateTime.now().toString()),
+                SessionKeyDto("2", sameForeignModelId, "key2", ZonedDateTime.now().minusDays(1).toString()),
+                SessionKeyDto("3", UUID.randomUUID(), "key3", ZonedDateTime.now().toString()),
+            )
+        val keys2 =
+            listOf(
+                SessionKeyDto("4", UUID.randomUUID(), "key4", ZonedDateTime.now().toString()),
+                SessionKeyDto("2", sameForeignModelId, "key5", ZonedDateTime.now().toString()),
+                SessionKeyDto("6", UUID.randomUUID(), "key6", ZonedDateTime.now().toString()),
+            )
+        val bundle1 =
+            DecryptedMetadataSessionKeysBundleModel(
+                id = UUID.randomUUID(),
+                created = ZonedDateTime.now(),
+                modified = ZonedDateTime.now(),
+                bundle = SessionKeysBundleDto("PASSBOLT_SESSION_KEYS", keys1),
+            )
+        val bundle2 =
+            DecryptedMetadataSessionKeysBundleModel(
+                id = UUID.randomUUID(),
+                created = ZonedDateTime.now(),
+                modified = ZonedDateTime.now(),
+                bundle = SessionKeysBundleDto("PASSBOLT_SESSION_KEYS", keys2),
+            )
 
         val result = sessionKeysBundleMerger.merge(listOf(bundle1, bundle2))
 
@@ -164,10 +179,14 @@ class SessionKeysBundleMergerTest {
             SessionKeyIdentifier("2", keys2[1].foreignId),
             SessionKeyIdentifier("3", keys1[2].foreignId),
             SessionKeyIdentifier("4", keys2[0].foreignId),
-            SessionKeyIdentifier("6", keys2[2].foreignId)
+            SessionKeyIdentifier("6", keys2[2].foreignId),
         )
         assertThat(result.keys.map { it.value.sessionKey }).containsExactly(
-            "key1", "key3", "key4", "key5", "key6"
+            "key1",
+            "key3",
+            "key4",
+            "key5",
+            "key6",
         )
     }
 }

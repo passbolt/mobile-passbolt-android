@@ -59,41 +59,41 @@ import com.passbolt.mobile.android.feature.home.R.id as HomeId
 import com.passbolt.mobile.android.feature.permissions.R.id as permissionsId
 import com.passbolt.mobile.android.feature.resources.R.id as resourcesId
 
-
 @RunWith(Parameterized::class)
 @MediumTest
 class SharedWithSubsectionTest(
-    private val testedResource: String
+    private val testedResource: String,
 ) : KoinTest {
-
     @get:Rule
-    val startUpActivityRule = lazyActivitySetupScenarioRule<AuthenticationMainActivity>(
-        koinOverrideModules = listOf(instrumentationTestsModule),
-        intentSupplier = {
-            ActivityIntents.authentication(
-                InstrumentationRegistry.getInstrumentation().targetContext,
-                ActivityIntents.AuthConfig.Startup,
-                AppContext.APP,
-                managedAccountIntentCreator.getUserLocalId()
-            )
-        }
-    )
+    val startUpActivityRule =
+        lazyActivitySetupScenarioRule<AuthenticationMainActivity>(
+            koinOverrideModules = listOf(instrumentationTestsModule),
+            intentSupplier = {
+                ActivityIntents.authentication(
+                    InstrumentationRegistry.getInstrumentation().targetContext,
+                    ActivityIntents.AuthConfig.Startup,
+                    AppContext.APP,
+                    managedAccountIntentCreator.getUserLocalId(),
+                )
+            },
+        )
 
     private val managedAccountIntentCreator: ManagedAccountIntentCreator by inject()
 
     @get:Rule
-    val idlingResourceRule = let {
-        val signInIdlingResource: SignInIdlingResource by inject()
-        val resourcesFullRefreshIdlingResource: ResourcesFullRefreshIdlingResource by inject()
-        val resourceDetailActionIdlingResource: ResourceDetailActionIdlingResource by inject()
-        IdlingResourceRule(
-            arrayOf(
-                signInIdlingResource,
-                resourcesFullRefreshIdlingResource,
-                resourceDetailActionIdlingResource
+    val idlingResourceRule =
+        let {
+            val signInIdlingResource: SignInIdlingResource by inject()
+            val resourcesFullRefreshIdlingResource: ResourcesFullRefreshIdlingResource by inject()
+            val resourceDetailActionIdlingResource: ResourceDetailActionIdlingResource by inject()
+            IdlingResourceRule(
+                arrayOf(
+                    signInIdlingResource,
+                    resourcesFullRefreshIdlingResource,
+                    resourceDetailActionIdlingResource,
+                ),
             )
-        )
-    }
+        }
 
     @BeforeTest
     fun setup() {
@@ -101,8 +101,8 @@ class SharedWithSubsectionTest(
         signIn(managedAccountIntentCreator.getPassphrase())
     }
 
-    @Test
     //  https://passbolt.testrail.io/index.php?/cases/view/10599
+    @Test
     fun onTheResourceScreenICanSeeSharedWithSubsection() {
         onView(withId(MaterialR.id.text_input_start_icon)).perform(click())
         onView(withId(HomeId.allItems)).perform(click())
@@ -119,25 +119,26 @@ class SharedWithSubsectionTest(
         onView(
             allOf(
                 isDescendantOfA(withId(resourcesId.sharedWithRecycler)),
-                withId(permissionsId.userItem)
-            )
+                withId(permissionsId.userItem),
+            ),
         ).check(matches(isDisplayed()))
         //      And   Shared with subsection contains caret
         onView(withId(resourcesId.sharedWithNavIcon)).check(matches(isDisplayed()))
     }
 
     private companion object {
-        @JvmStatic
-        @Parameterized.Parameters(name = "Resource name: {0}")
         //  Examples:
         //    | resource |
         //    | Simple password             |
         //    | Password and description   |
         //    | Password description totp   |
-        fun resourceNames() = listOf(
-            "Simple password",
-            "Password and description",
-            "Password description totp"
-        )
+        @JvmStatic
+        @Parameterized.Parameters(name = "Resource name: {0}")
+        fun resourceNames() =
+            listOf(
+                "Simple password",
+                "Password and description",
+                "Password description totp",
+            )
     }
 }

@@ -28,8 +28,8 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 
 @Suppress("MagicNumber")
 object Migration7to8 : Migration(7, 8) {
-
-    private const val CREATE_USERS_TABLE = "CREATE TABLE IF NOT EXISTS User (" +
+    private const val CREATE_USERS_TABLE =
+        "CREATE TABLE IF NOT EXISTS User (" +
             "`id` TEXT NOT NULL, " +
             "`userName` TEXT NOT NULL, " +
             "`firstName` TEXT, " +
@@ -47,22 +47,23 @@ object Migration7to8 : Migration(7, 8) {
     private const val DROP_RESOURCE_AND_GROUPS_CROSS_REF_TABLE = "DROP TABLE ResourceAndGroupsCrossRef"
     private const val CREATE_RESOURCE_AND_GROUPS_CROSS_REF_TABLE =
         "CREATE TABLE IF NOT EXISTS ResourceAndGroupsCrossRef (" +
-                "`resourceId` TEXT NOT NULL, " +
-                "`groupId` TEXT NOT NULL, " +
-                "`permission` TEXT NOT NULL, " +
-                "PRIMARY KEY(`resourceId`, `groupId`))"
+            "`resourceId` TEXT NOT NULL, " +
+            "`groupId` TEXT NOT NULL, " +
+            "`permission` TEXT NOT NULL, " +
+            "PRIMARY KEY(`resourceId`, `groupId`))"
 
-    private const val CREATE_USERS_AND_GROUPS_CROSS_REF_TABLE = "CREATE TABLE IF NOT EXISTS UsersAndGroupCrossRef (" +
+    private const val CREATE_USERS_AND_GROUPS_CROSS_REF_TABLE =
+        "CREATE TABLE IF NOT EXISTS UsersAndGroupCrossRef (" +
             "`userId` TEXT NOT NULL, " +
             "`groupId` TEXT NOT NULL, " +
             "PRIMARY KEY(`userId`, `groupId`))"
 
     private const val CREATE_RESOURCE_AND_USERS_CROSS_REF_TABLE =
         "CREATE TABLE IF NOT EXISTS ResourceAndUsersCrossRef (" +
-                "`resourceId` TEXT NOT NULL, " +
-                "`userId` TEXT NOT NULL, " +
-                "`permission` TEXT NOT NULL, " +
-                "PRIMARY KEY(`resourceId`, `userId`))"
+            "`resourceId` TEXT NOT NULL, " +
+            "`userId` TEXT NOT NULL, " +
+            "`permission` TEXT NOT NULL, " +
+            "PRIMARY KEY(`resourceId`, `userId`))"
 
     override fun migrate(db: SupportSQLiteDatabase) {
         with(db) {

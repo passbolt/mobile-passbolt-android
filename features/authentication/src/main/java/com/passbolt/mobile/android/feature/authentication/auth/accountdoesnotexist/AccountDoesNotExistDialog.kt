@@ -35,7 +35,6 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
  * @since v1.0
  */
 class AccountDoesNotExistDialog : DialogFragment() {
-
     private var listener: Listener? = null
     private val bundledName by lifecycleAwareLazy {
         requireArguments().getString(EXTRA_NAME).orEmpty()
@@ -52,7 +51,11 @@ class AccountDoesNotExistDialog : DialogFragment() {
         setStyle(STYLE_NO_TITLE, CoreUiR.style.FullscreenDialogTheme)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
+    ): View {
         val binding = DialogAccountDoesNotExistBinding.inflate(inflater)
         setupListeners(binding)
         showAccountData(binding)
@@ -62,11 +65,12 @@ class AccountDoesNotExistDialog : DialogFragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        listener = when {
-            activity is Listener -> activity as Listener
-            parentFragment is Listener -> parentFragment as Listener
-            else -> error("Parent must implement ${Listener::class.java.name}")
-        }
+        listener =
+            when {
+                activity is Listener -> activity as Listener
+                parentFragment is Listener -> parentFragment as Listener
+                else -> error("Parent must implement ${Listener::class.java.name}")
+            }
     }
 
     override fun onDetach() {
@@ -98,18 +102,21 @@ class AccountDoesNotExistDialog : DialogFragment() {
     }
 
     companion object {
-
         private const val EXTRA_NAME = "NAME"
         private const val EXTRA_EMAIL = "EMAIL"
         private const val EXTRA_URL = "URL"
 
-        fun newInstance(name: String?, email: String?, url: String?) =
-            AccountDoesNotExistDialog().apply {
-                arguments = bundleOf(
+        fun newInstance(
+            name: String?,
+            email: String?,
+            url: String?,
+        ) = AccountDoesNotExistDialog().apply {
+            arguments =
+                bundleOf(
                     EXTRA_NAME to name.orEmpty(),
                     EXTRA_EMAIL to email.orEmpty(),
-                    EXTRA_URL to url.orEmpty()
+                    EXTRA_URL to url.orEmpty(),
                 )
-            }
+        }
     }
 }

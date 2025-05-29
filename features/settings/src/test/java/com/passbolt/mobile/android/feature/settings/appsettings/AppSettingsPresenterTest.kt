@@ -45,27 +45,26 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
-
 class AppSettingsPresenterTest : KoinTest {
-
     private val presenter: AppSettingsContract.Presenter by inject()
     private val view = mock<AppSettingsContract.View>()
 
     @get:Rule
-    val koinTestRule = KoinTestRule.create {
-        printLogger(Level.ERROR)
-        modules(testAppSettingsModule)
-    }
+    val koinTestRule =
+        KoinTestRule.create {
+            printLogger(Level.ERROR)
+            modules(testAppSettingsModule)
+        }
 
     @Before
     fun setup() {
         whenever(checkIfPassphraseFileExistsUseCase.execute(anyOrNull())).thenReturn(
             CheckIfPassphraseFileExistsUseCase.Output(
-                true
-            )
+                true,
+            ),
         )
         whenever(getSelectedAccountUseCase.execute(anyOrNull())).thenReturn(
-            GetSelectedAccountUseCase.Output("userId")
+            GetSelectedAccountUseCase.Output("userId"),
         )
     }
 
@@ -122,7 +121,7 @@ class AppSettingsPresenterTest : KoinTest {
     fun `re-enabling fingerprint should show proper ui`() {
         whenever(fingerprintInformationProvider.hasBiometricSetUp()).doReturn(true)
         whenever(checkIfPassphraseFileExistsUseCase.execute(anyOrNull())).thenReturn(
-            CheckIfPassphraseFileExistsUseCase.Output(passphraseFileExists = false)
+            CheckIfPassphraseFileExistsUseCase.Output(passphraseFileExists = false),
         )
         whenever(passphraseMemoryCache.get()).thenReturn(PotentialPassphrase.Passphrase(PASSPHRASE))
 
@@ -141,6 +140,5 @@ class AppSettingsPresenterTest : KoinTest {
 
     private companion object {
         private val PASSPHRASE = "passphrase".toByteArray()
-        private const val URL = "https://www.passbolt.com"
     }
 }

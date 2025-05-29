@@ -37,20 +37,22 @@ import retrofit2.converter.scalars.ScalarsConverterFactory
 
 const val PWNED_PASSWORDS_RETROFIT = "PWNED_PASSWORDS_RETROFIT"
 
-val pwnedPasswordsApiModule = module {
-    singleOf(::PwnedPasswordRepository)
-    singleOf(::PwnedPasswordRemoteDataSource) bind PwnedPasswordDataSource::class
+val pwnedPasswordsApiModule =
+    module {
+        singleOf(::PwnedPasswordRepository)
+        singleOf(::PwnedPasswordRemoteDataSource) bind PwnedPasswordDataSource::class
 
-    single(named(PWNED_PASSWORDS_RETROFIT)) {
-        Retrofit.Builder()
-            .baseUrl(Config.API_BASE_URL)
-            .client(OkHttpClient())
-            .addConverterFactory(ScalarsConverterFactory.create())
-            .build()
-    }
+        single(named(PWNED_PASSWORDS_RETROFIT)) {
+            Retrofit
+                .Builder()
+                .baseUrl(Config.API_BASE_URL)
+                .client(OkHttpClient())
+                .addConverterFactory(ScalarsConverterFactory.create())
+                .build()
+        }
 
-    single {
-        get<Retrofit>(named(PWNED_PASSWORDS_RETROFIT))
-            .create(PwnedPasswordsApi::class.java)
+        single {
+            get<Retrofit>(named(PWNED_PASSWORDS_RETROFIT))
+                .create(PwnedPasswordsApi::class.java)
+        }
     }
-}

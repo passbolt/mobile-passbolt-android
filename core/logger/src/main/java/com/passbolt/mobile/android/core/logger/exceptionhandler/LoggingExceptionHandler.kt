@@ -27,10 +27,12 @@ import java.lang.Thread.UncaughtExceptionHandler
  */
 
 class LoggingExceptionHandler(
-    private val defaultExceptionHandler: UncaughtExceptionHandler
+    private val defaultExceptionHandler: UncaughtExceptionHandler,
 ) : UncaughtExceptionHandler {
-
-    override fun uncaughtException(thread: Thread, throwable: Throwable) {
+    override fun uncaughtException(
+        thread: Thread,
+        throwable: Throwable,
+    ) {
         Timber.e(throwable, "Uncaught exception in thread: ${thread.name}")
         defaultExceptionHandler.uncaughtException(thread, throwable)
     }

@@ -64,8 +64,8 @@ private fun ScopeDSL.declareResourcePickerRecyclerDependencies() {
                 get<ItemAdapter<HeaderItem>>(named(SUGGESTED_HEADER_ITEM_ADAPTER)),
                 get<ItemAdapter<SelectableResourceItem>>(named(SUGGESTED_ITEMS_ITEM_ADAPTER)),
                 get<ItemAdapter<HeaderItem>>(named(OTHER_ITEMS_HEADER_ITEM_ADAPTER)),
-                get<ItemAdapter<SelectableResourceItem>>(named(RESOURCE_ITEM_ADAPTER))
-            )
+                get<ItemAdapter<SelectableResourceItem>>(named(RESOURCE_ITEM_ADAPTER)),
+            ),
         )
     }
 }

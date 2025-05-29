@@ -30,9 +30,8 @@ import com.passbolt.mobile.android.passboltapi.favourites.FavouritesRepository
  * @since v1.0
  */
 class RemoveFromFavouritesUseCase(
-    private val favouritesRepository: FavouritesRepository
+    private val favouritesRepository: FavouritesRepository,
 ) : AsyncUseCase<RemoveFromFavouritesUseCase.Input, RemoveFromFavouritesUseCase.Output> {
-
     override suspend fun execute(input: Input) =
         when (val response = favouritesRepository.removeFromFavourites(input.favouriteId)) {
             is NetworkResult.Failure -> Output.Failure(response)
@@ -40,29 +39,31 @@ class RemoveFromFavouritesUseCase(
         }
 
     sealed class Output : AuthenticatedUseCaseOutput {
-
         override val authenticationState: AuthenticationState
-            get() = when {
-                this is Failure<*> && this.response.isUnauthorized -> {
-                    AuthenticationState.Unauthenticated(AuthenticationState.Unauthenticated.Reason.Session)
+            get() =
+                when {
+                    this is Failure<*> && this.response.isUnauthorized -> {
+                        AuthenticationState.Unauthenticated(AuthenticationState.Unauthenticated.Reason.Session)
+                    }
+                    this is Failure<*> && this.response.isMfaRequired -> {
+                        val providers = MfaTypeProvider.get(this.response)
+                        AuthenticationState.Unauthenticated(
+                            AuthenticationState.Unauthenticated.Reason.Mfa(providers),
+                        )
+                    }
+                    else -> {
+                        AuthenticationState.Authenticated
+                    }
                 }
-                this is Failure<*> && this.response.isMfaRequired -> {
-                    val providers = MfaTypeProvider.get(this.response)
-                    AuthenticationState.Unauthenticated(
-                        AuthenticationState.Unauthenticated.Reason.Mfa(providers)
-                    )
-                }
-                else -> {
-                    AuthenticationState.Authenticated
-                }
-            }
 
         data object Success : Output()
 
-        data class Failure<T : Any>(val response: NetworkResult.Failure<T>) : Output()
+        data class Failure<T : Any>(
+            val response: NetworkResult.Failure<T>,
+        ) : Output()
     }
 
     data class Input(
-        val favouriteId: String
+        val favouriteId: String,
     )
 }

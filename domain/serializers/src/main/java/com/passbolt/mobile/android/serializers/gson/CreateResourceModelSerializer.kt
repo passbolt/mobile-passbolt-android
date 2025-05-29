@@ -12,7 +12,7 @@ class CreateResourceModelSerializer : JsonSerializer<CreateResourceDto> {
     override fun serialize(
         src: CreateResourceDto,
         typeOfSrc: Type,
-        context: JsonSerializationContext
+        context: JsonSerializationContext,
     ): JsonElement {
         when (src) {
             is CreateV4ResourceDto -> {

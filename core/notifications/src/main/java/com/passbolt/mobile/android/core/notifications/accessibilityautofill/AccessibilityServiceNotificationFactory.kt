@@ -29,15 +29,15 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
  * @since v1.0
  */
 class AccessibilityServiceNotificationFactory(
-    private val notificationChannelManager: NotificationChannelManager
+    private val notificationChannelManager: NotificationChannelManager,
 ) {
-
     fun getNotification(context: Context): Notification {
         notificationChannelManager.createNotificationChannel(
             CHANNEL_ID,
-            context.getString(LocalizationR.string.autofill_service_channel_name)
+            context.getString(LocalizationR.string.autofill_service_channel_name),
         )
-        return Notification.Builder(context, CHANNEL_ID)
+        return Notification
+            .Builder(context, CHANNEL_ID)
             .setContentTitle(context.getString(LocalizationR.string.autofill_service_title))
             .setContentText(context.getString(LocalizationR.string.autofill_service_content))
             .setSmallIcon(CoreUiR.drawable.ic_key)

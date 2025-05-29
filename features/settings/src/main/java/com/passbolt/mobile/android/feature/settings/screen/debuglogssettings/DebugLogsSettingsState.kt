@@ -1,7 +1,3 @@
-package com.passbolt.mobile.android.feature.settings.screen.debuglogssettings
-
-import com.passbolt.mobile.android.core.mvp.BaseContract
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -24,20 +20,10 @@ import com.passbolt.mobile.android.core.mvp.BaseContract
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-interface DebugLogsSettingsContract {
 
-    interface View : BaseContract.View {
-        fun navigateToLogs()
-        fun setEnableLogsSwitchOn()
-        fun enableAccessLogs()
-        fun disableAccessLogs()
-        fun setEnableLogsSwitchOff()
-        fun openHelpWebsite()
-    }
+package com.passbolt.mobile.android.feature.settings.screen.debuglogssettings
 
-    interface Presenter : BaseContract.Presenter<View> {
-        fun logsClick()
-        fun enableDebugLogsChanged(areLogsEnabled: Boolean)
-        fun visitHelpClick()
-    }
-}
+data class DebugLogsSettingsState(
+    val areDebugLogsEnabled: Boolean = false,
+    val isAccessLogsEnabled: Boolean = false,
+)

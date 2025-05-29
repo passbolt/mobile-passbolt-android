@@ -29,19 +29,21 @@ import com.passbolt.mobile.android.core.localization.R as LocalizationR
  * @since v1.0
  */
 
-fun ResourcePermission.getPermissionTextValue(context: Context) = context.getString(
-    when (this) {
-        ResourcePermission.READ -> LocalizationR.string.resource_permissions_can_read
-        ResourcePermission.UPDATE -> LocalizationR.string.resource_permissions_can_update
-        ResourcePermission.OWNER -> LocalizationR.string.resource_permissions_is_owner
-    }
-)
+fun ResourcePermission.getPermissionTextValue(context: Context) =
+    context.getString(
+        when (this) {
+            ResourcePermission.READ -> LocalizationR.string.resource_permissions_can_read
+            ResourcePermission.UPDATE -> LocalizationR.string.resource_permissions_can_update
+            ResourcePermission.OWNER -> LocalizationR.string.resource_permissions_is_owner
+        },
+    )
 
-fun ResourcePermission.getPermissionIcon(context: Context) = AppCompatResources.getDrawable(
-    context,
-    when (this) {
-        ResourcePermission.READ -> R.drawable.ic_permission_read
-        ResourcePermission.UPDATE -> R.drawable.ic_permission_edit
-        ResourcePermission.OWNER -> R.drawable.ic_permission_owner
-    }
-)
+fun ResourcePermission.getPermissionIcon(context: Context) =
+    AppCompatResources.getDrawable(
+        context,
+        when (this) {
+            ResourcePermission.READ -> R.drawable.ic_permission_read
+            ResourcePermission.UPDATE -> R.drawable.ic_permission_edit
+            ResourcePermission.OWNER -> R.drawable.ic_permission_owner
+        },
+    )

@@ -31,9 +31,8 @@ import java.io.IOException
  */
 
 class GetPrivateKeyUseCase(
-    private val encryptedFileFactory: EncryptedFileFactory
+    private val encryptedFileFactory: EncryptedFileFactory,
 ) : UseCase<UserIdInput, GetPrivateKeyUseCase.Output> {
-
     override fun execute(input: UserIdInput): Output {
         val name = PrivateKeyFileName(input.userId).name
         return try {
@@ -49,6 +48,6 @@ class GetPrivateKeyUseCase(
     }
 
     data class Output(
-        val privateKey: String
+        val privateKey: String,
     )
 }

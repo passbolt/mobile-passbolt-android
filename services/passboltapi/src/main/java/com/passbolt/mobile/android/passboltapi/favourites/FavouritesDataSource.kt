@@ -26,7 +26,6 @@ import com.passbolt.mobile.android.dto.response.AddToFavouritesResponseDto
  */
 
 interface FavouritesDataSource {
-
     suspend fun addToFavourites(resourceId: String): AddToFavouritesResponseDto
 
     suspend fun removeFromFavourites(favouriteId: String)

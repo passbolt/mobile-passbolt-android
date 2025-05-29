@@ -61,7 +61,7 @@ import java.security.SecureRandom
 class Dice(
     private val diceInputFileInputStream: InputStream,
     private val secureRandom: SecureRandom,
-    private val coroutineLaunchContext: CoroutineLaunchContext
+    private val coroutineLaunchContext: CoroutineLaunchContext,
 ) {
     private val _isInitializedFlow = MutableStateFlow(false)
     val isInitializedFlow: Flow<Boolean> = _isInitializedFlow.asStateFlow()
@@ -88,15 +88,14 @@ class Dice(
         numbersToWords[number]
             ?: throw IllegalArgumentException("Number $number not found in the dice input file")
 
-    fun getDescendingLengthSortedWords(): List<String> =
-        numbersToWords.values.sortedByDescending { it.length }
+    fun getDescendingLengthSortedWords(): List<String> = numbersToWords.values.sortedByDescending { it.length }
 
     // https://www.eff.org/dice; use long words list
     suspend fun generatePassphrase(
         wordsCount: Int,
         case: CaseTypeModel,
         wordsSeparator: String = DEFAULT_WORD_SEPARATOR,
-        diceCount: Int = DEFAULT_DICE_COUNT
+        diceCount: Int = DEFAULT_DICE_COUNT,
     ): String {
         val result = mutableListOf<String>()
         withContext(coroutineLaunchContext.io) {
@@ -113,7 +112,7 @@ class Dice(
                         CaseTypeModel.UPPERCASE -> word.uppercase()
                         CaseTypeModel.LOWERCASE -> word.lowercase()
                         CaseTypeModel.CAMELCASE -> word.replaceFirstChar { it.uppercase() }
-                    }
+                    },
                 )
             }
         }

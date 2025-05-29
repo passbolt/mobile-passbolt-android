@@ -40,7 +40,7 @@ fun Module.settingsAutofillModule() {
     factory<AutofillInformationProvider> {
         AutofillInformationProviderImpl(
             autofillManager = get(),
-            context = androidContext()
+            context = androidContext(),
         )
     }
 }

@@ -49,23 +49,25 @@ internal val mockGetLocalResourceUseCase = mock<GetLocalResourceUseCase>()
 internal val mockResourceTagsUseCase = mock<GetLocalResourceTagsUseCase>()
 
 @ExperimentalCoroutinesApi
-internal val testResourceTagsModule = module {
-    factoryOf(::InitialsProvider)
-    factoryOf(::TestCoroutineLaunchContext) bind CoroutineLaunchContext::class
-    factory<ResourceTagsContract.Presenter> {
-        ResourceTagsPresenter(
-            getLocalResourceUseCase = mockGetLocalResourceUseCase,
-            coroutineLaunchContext = get(),
-            getLocalResourceTags = mockResourceTagsUseCase
-        )
+internal val testResourceTagsModule =
+    module {
+        factoryOf(::InitialsProvider)
+        factoryOf(::TestCoroutineLaunchContext) bind CoroutineLaunchContext::class
+        factory<ResourceTagsContract.Presenter> {
+            ResourceTagsPresenter(
+                getLocalResourceUseCase = mockGetLocalResourceUseCase,
+                coroutineLaunchContext = get(),
+                getLocalResourceTags = mockResourceTagsUseCase,
+            )
+        }
+        single(named(JSON_MODEL_GSON)) { Gson() }
+        single {
+            Configuration
+                .builder()
+                .jsonProvider(GsonJsonProvider())
+                .mappingProvider(GsonMappingProvider())
+                .options(EnumSet.noneOf(Option::class.java))
+                .build()
+        }
+        singleOf(::JsonPathJsonPathOps) bind JsonPathsOps::class
     }
-    single(named(JSON_MODEL_GSON)) { Gson() }
-    single {
-        Configuration.builder()
-            .jsonProvider(GsonJsonProvider())
-            .mappingProvider(GsonMappingProvider())
-            .options(EnumSet.noneOf(Option::class.java))
-            .build()
-    }
-    singleOf(::JsonPathJsonPathOps) bind JsonPathsOps::class
-}

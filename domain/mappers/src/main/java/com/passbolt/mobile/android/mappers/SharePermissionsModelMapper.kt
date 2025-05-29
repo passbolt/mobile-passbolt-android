@@ -31,7 +31,7 @@ import com.passbolt.mobile.android.ui.PermissionModelUi
  */
 
 class SharePermissionsModelMapper(
-    private val permissionsModelMapper: PermissionsModelMapper
+    private val permissionsModelMapper: PermissionsModelMapper,
 ) {
     /**
      * Maps user chosen share recipients to simulate share request input.
@@ -44,10 +44,10 @@ class SharePermissionsModelMapper(
     fun mapForSimulation(
         item: ShareItem,
         recipients: List<PermissionModelUi>,
-        existingResourcePermissions: List<PermissionModelUi>
+        existingResourcePermissions: List<PermissionModelUi>,
     ): List<SharePermission> =
         extractNewPermissions(item, recipients) +
-                extractDeletedPermissions(item, existingResourcePermissions, recipients)
+            extractDeletedPermissions(item, existingResourcePermissions, recipients)
 
     /**
      * Maps user chosen share recipients to share request input.
@@ -60,11 +60,11 @@ class SharePermissionsModelMapper(
     fun mapForShare(
         item: ShareItem,
         recipients: List<PermissionModelUi>,
-        existingResourcePermissions: List<PermissionModelUi>
+        existingResourcePermissions: List<PermissionModelUi>,
     ): List<SharePermission> =
         extractUpdatedPermissions(item, existingResourcePermissions, recipients) +
-                extractNewPermissions(item, recipients) +
-                extractDeletedPermissions(item, existingResourcePermissions, recipients)
+            extractNewPermissions(item, recipients) +
+            extractDeletedPermissions(item, existingResourcePermissions, recipients)
 
     /**
      * Extracts permissions that had been already added to the resource but were updated by the user during sharing.
@@ -78,16 +78,16 @@ class SharePermissionsModelMapper(
     private fun extractUpdatedPermissions(
         item: ShareItem,
         existingResourcePermissions: List<PermissionModelUi>,
-        recipients: List<PermissionModelUi>
+        recipients: List<PermissionModelUi>,
     ) = recipients
         .filter { filteredPermission ->
             existingResourcePermissions
-                .map { it.permissionId }.contains(filteredPermission.permissionId) &&
-                    existingResourcePermissions
-                        .first { it.permissionId == filteredPermission.permissionId }
-                        .permission != filteredPermission.permission
-        }
-        .map { permission ->
+                .map { it.permissionId }
+                .contains(filteredPermission.permissionId) &&
+                existingResourcePermissions
+                    .first { it.permissionId == filteredPermission.permissionId }
+                    .permission != filteredPermission.permission
+        }.map { permission ->
             val (aro, aroId) = prepareAroWithIdFromPermission(permission)
             SharePermission.UpdatedSharePermission(
                 aro = aro,
@@ -95,7 +95,7 @@ class SharePermissionsModelMapper(
                 aco = item.aco,
                 acoForeignKey = item.id,
                 type = permissionsModelMapper.mapToPermissionInt(permission.permission),
-                id = permission.permissionId
+                id = permission.permissionId,
             )
         }
 
@@ -110,14 +110,13 @@ class SharePermissionsModelMapper(
     private fun extractDeletedPermissions(
         item: ShareItem,
         existingResourcePermissions: List<PermissionModelUi>,
-        recipients: List<PermissionModelUi>
+        recipients: List<PermissionModelUi>,
     ) = existingResourcePermissions
         .filter { existingPermission ->
             !recipients
                 .map { recipient -> recipient.permissionId }
                 .contains(existingPermission.permissionId)
-        }
-        .map { permission ->
+        }.map { permission ->
             val (aro, aroId) = prepareAroWithIdFromPermission(permission)
             SharePermission.DeletedSharePermission(
                 id = permission.permissionId,
@@ -125,7 +124,7 @@ class SharePermissionsModelMapper(
                 aroForeignKey = aroId,
                 aco = item.aco,
                 acoForeignKey = item.id,
-                type = permissionsModelMapper.mapToPermissionInt(permission.permission)
+                type = permissionsModelMapper.mapToPermissionInt(permission.permission),
             )
         }
 
@@ -138,7 +137,7 @@ class SharePermissionsModelMapper(
      */
     private fun extractNewPermissions(
         item: ShareItem,
-        recipients: List<PermissionModelUi>
+        recipients: List<PermissionModelUi>,
     ) = recipients
         .filter { it.permissionId == TEMPORARY_NEW_PERMISSION_ID }
         .map { permission ->
@@ -148,7 +147,7 @@ class SharePermissionsModelMapper(
                 aroForeignKey = aroId,
                 aco = item.aco,
                 acoForeignKey = item.id,
-                type = permissionsModelMapper.mapToPermissionInt(permission.permission)
+                type = permissionsModelMapper.mapToPermissionInt(permission.permission),
             )
         }
 
@@ -158,16 +157,18 @@ class SharePermissionsModelMapper(
             is PermissionModelUi.UserPermissionModel -> ARO_USER to permission.user.userId
         }
 
-    sealed class ShareItem(open val id: String, open val aco: String) {
-
+    sealed class ShareItem(
+        open val id: String,
+        open val aco: String,
+    ) {
         data class Folder(
             override val id: String,
-            override val aco: String = ACO_FOLDER
+            override val aco: String = ACO_FOLDER,
         ) : ShareItem(id, aco)
 
         data class Resource(
             override val id: String,
-            override val aco: String = ACO_RESOURCE
+            override val aco: String = ACO_RESOURCE,
         ) : ShareItem(id, aco)
     }
 

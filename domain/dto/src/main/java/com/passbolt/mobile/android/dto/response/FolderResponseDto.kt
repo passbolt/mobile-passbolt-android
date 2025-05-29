@@ -32,5 +32,5 @@ data class FolderResponseDto(
     val modified: String?,
     val name: String?,
     val permission: PermissionDto,
-    val permissions: List<PermissionWithGroupDto>
+    val permissions: List<PermissionWithGroupDto>,
 )

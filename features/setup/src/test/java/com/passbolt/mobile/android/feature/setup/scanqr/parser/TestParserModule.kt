@@ -28,9 +28,10 @@ import org.koin.dsl.module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-val testParserModule = module {
-    factory { ScanQrParser(get(), get(), get()) }
-    factory { Json { ignoreUnknownKeys = true } }
-    factory { KeyAssembler(json = get()) }
-    factory { QrScanResultsMapper(json = get()) }
-}
+val testParserModule =
+    module {
+        factory { ScanQrParser(get(), get(), get()) }
+        factory { Json { ignoreUnknownKeys = true } }
+        factory { KeyAssembler(json = get()) }
+        factory { QrScanResultsMapper(json = get()) }
+    }

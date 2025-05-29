@@ -30,16 +30,16 @@ import com.passbolt.mobile.android.ui.ResourceListUiModel
  * @since v1.0
  */
 class ResourceUiItemsMapper(
-    private val initialsIconGenerator: InitialsIconGenerator
+    private val initialsIconGenerator: InitialsIconGenerator,
 ) {
-
     fun mapModelToItem(model: ResourceListUiModel): GenericItem =
         when (model) {
-            is ResourceListUiModel.Data -> PasswordItem(
-                ResourceItemWrapper(model.resourceModel),
-                initialsIconGenerator,
-                dotsVisible = false
-            )
+            is ResourceListUiModel.Data ->
+                PasswordItem(
+                    ResourceItemWrapper(model.resourceModel),
+                    initialsIconGenerator,
+                    dotsVisible = false,
+                )
             is ResourceListUiModel.Header -> PasswordHeaderItem(model)
         }
 }

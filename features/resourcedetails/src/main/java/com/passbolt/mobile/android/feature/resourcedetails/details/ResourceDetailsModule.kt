@@ -49,7 +49,7 @@ fun Module.detailsModule() {
                 idToSlugMappingProvider = get(),
                 getRbacRulesUseCase = get(),
                 resourceDetailActionIdlingResource = get(),
-                coroutineLaunchContext = get()
+                coroutineLaunchContext = get(),
             )
         }
         scoped<ItemAdapter<GroupItem>>(named(GROUP_ITEM_ADAPTER)) {
@@ -66,8 +66,8 @@ fun Module.detailsModule() {
                 listOf(
                     get<ItemAdapter<GroupItem>>(named(GROUP_ITEM_ADAPTER)),
                     get<ItemAdapter<UserItem>>(named(USER_ITEM_ADAPTER)),
-                    get<ItemAdapter<CounterItem>>(named(COUNTER_ITEM_ADAPTER))
-                )
+                    get<ItemAdapter<CounterItem>>(named(COUNTER_ITEM_ADAPTER)),
+                ),
             )
         }
     }

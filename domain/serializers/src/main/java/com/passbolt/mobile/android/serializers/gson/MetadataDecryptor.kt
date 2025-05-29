@@ -41,21 +41,24 @@ class MetadataDecryptor(
     private val passphraseMemoryCache: PassphraseMemoryCache,
     private val metadataKeys: List<ParsedMetadataKeyModel>,
     private val openPgp: OpenPgp,
-    private val sessionKeysCache: SessionKeysMemoryCache
+    private val sessionKeysCache: SessionKeysMemoryCache,
 ) {
-
     suspend fun decryptMetadata(resource: ResourceResponseV5Dto): Output {
         return try {
             val (key, passphrase) = getKeyAndPassphrase(resource)
 
             // decrypt using cached session key
             if (sessionKeysCache.hasCachedKey(RESOURCE.value, resource.id)) {
-                val cachedSessionKey = requireNotNull( // not null because of hasCachedKey check
-                    sessionKeysCache.getSessionKeyHexString(RESOURCE.value, resource.id)
-                )
-                val decryptUsingCachedResult = openPgp.decryptMessageArmoredWithSessionKey(
-                    cachedSessionKey, resource.metadata
-                )
+                val cachedSessionKey =
+                    // not null because of hasCachedKey check
+                    requireNotNull(
+                        sessionKeysCache.getSessionKeyHexString(RESOURCE.value, resource.id),
+                    )
+                val decryptUsingCachedResult =
+                    openPgp.decryptMessageArmoredWithSessionKey(
+                        cachedSessionKey,
+                        resource.metadata,
+                    )
                 // if result is success, return it; otherwise, fallback to full decrypt
                 // session key may not be valid but we know it only when trying to use it and it fails
                 if (decryptUsingCachedResult is OpenPgpResult.Result) {
@@ -71,9 +74,11 @@ class MetadataDecryptor(
 
             sessionKeysCache.put(RESOURCE.value, resource.id, sessionKey.result)
 
-            val decryptedMetadata = openPgp.decryptMessageArmoredWithSessionKey(
-                sessionKey.result, resource.metadata
-            )
+            val decryptedMetadata =
+                openPgp.decryptMessageArmoredWithSessionKey(
+                    sessionKey.result,
+                    resource.metadata,
+                )
 
             require(decryptedMetadata is OpenPgpResult.Result) {
                 "Failed to decrypt resource id=(${resource.id}), skipping"
@@ -89,10 +94,11 @@ class MetadataDecryptor(
     private fun getKeyAndPassphrase(resource: ResourceResponseV5Dto): KeyToPassphrase =
         when (resource.metadataKeyType) {
             SHARED -> {
-                val metadataPrivateKey = metadataKeys
-                    .firstOrNull { it.id == resource.metadataKeyId }
-                    ?.metadataPrivateKeys
-                    ?.firstOrNull()
+                val metadataPrivateKey =
+                    metadataKeys
+                        .firstOrNull { it.id == resource.metadataKeyId }
+                        ?.metadataPrivateKeys
+                        ?.firstOrNull()
 
                 require(metadataPrivateKey != null) {
                     "Metadata private key for resource id=(${resource.id}) not found, skipping"
@@ -110,9 +116,12 @@ class MetadataDecryptor(
         }
 
     sealed class Output {
+        data class Success(
+            val decryptedMetadata: String,
+        ) : Output()
 
-        data class Success(val decryptedMetadata: String) : Output()
-
-        data class Failure(val error: Throwable?) : Output()
+        data class Failure(
+            val error: Throwable?,
+        ) : Output()
     }
 }

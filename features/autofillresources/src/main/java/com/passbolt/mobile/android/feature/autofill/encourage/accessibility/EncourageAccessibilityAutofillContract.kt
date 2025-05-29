@@ -26,29 +26,45 @@ import com.passbolt.mobile.android.core.mvp.BaseContract
  */
 
 interface EncourageAccessibilityAutofillContract {
-
     interface View : BaseContract.View {
         fun showAutofillNotSupported()
+
         fun dismissWithNotify()
+
         fun setOverlayEnabled(overlayEnabled: Boolean)
+
         fun navigateToOverlayTutorial()
+
         fun navigateToServiceTutorial()
+
         fun setAccessibilityServiceEnabled(accessibilityServiceEnabled: Boolean)
+
         fun notifyPossibleAutofillChange()
+
         fun dismissWithNoAction()
+
         fun showAutofillEnabledDialog()
+
         fun navigateToOverlaySettings()
+
         fun navigateToServiceSettings()
+
         fun showAccessibilityConsentDialog()
     }
 
     interface Presenter : BaseContract.Presenter<View> {
         fun closeClick()
+
         fun overlayClick()
+
         fun serviceClick()
+
         fun resume()
+
         fun backPressed()
+
         fun possibleAutofillChange()
+
         fun accessibilityServiceConsentGiven()
     }
 }

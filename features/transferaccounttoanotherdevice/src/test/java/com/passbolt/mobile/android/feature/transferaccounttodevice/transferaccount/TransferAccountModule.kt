@@ -41,28 +41,30 @@ internal val mockCreateTransferUseCase = mock<CreateTransferUseCase>()
 internal val mockViewTransferUseCase = mock<ViewTransferUseCase>()
 internal val mockCreateTransferInputParametersGenerator = mock<CreateTransferInputParametersGenerator>()
 internal val mockTransferQrCodesDataGenerator = mock<TransferQrCodesDataGenerator>()
-internal val mockGetSessionUseCase = mock<GetSessionUseCase> {
-    on { execute(Unit) }.doReturn(
-        GetSessionUseCase.Output(
-            accessToken = "accessToken",
-            refreshToken = "refreshToken",
-            mfaToken = "mfaToken"
-        )
-    )
-}
-
-@ExperimentalCoroutinesApi
-val transferAccountModule = module {
-    factory<TransferAccountContract.Presenter> {
-        TransferAccountPresenter(
-            coroutineLaunchContext = get(),
-            createTransferUseCase = mockCreateTransferUseCase,
-            viewTransferUseCase = mockViewTransferUseCase,
-            createTransferInputParametersGenerator = mockCreateTransferInputParametersGenerator,
-            transferQrCodesDataGenerator = mockTransferQrCodesDataGenerator,
-            getSessionUseCase = mockGetSessionUseCase,
-            transferAccountIdlingResource = mock()
+internal val mockGetSessionUseCase =
+    mock<GetSessionUseCase> {
+        on { execute(Unit) }.doReturn(
+            GetSessionUseCase.Output(
+                accessToken = "accessToken",
+                refreshToken = "refreshToken",
+                mfaToken = "mfaToken",
+            ),
         )
     }
-    factory<CoroutineLaunchContext> { TestCoroutineLaunchContext() }
-}
+
+@ExperimentalCoroutinesApi
+val transferAccountModule =
+    module {
+        factory<TransferAccountContract.Presenter> {
+            TransferAccountPresenter(
+                coroutineLaunchContext = get(),
+                createTransferUseCase = mockCreateTransferUseCase,
+                viewTransferUseCase = mockViewTransferUseCase,
+                createTransferInputParametersGenerator = mockCreateTransferInputParametersGenerator,
+                transferQrCodesDataGenerator = mockTransferQrCodesDataGenerator,
+                getSessionUseCase = mockGetSessionUseCase,
+                transferAccountIdlingResource = mock(),
+            )
+        }
+        factory<CoroutineLaunchContext> { TestCoroutineLaunchContext() }
+    }

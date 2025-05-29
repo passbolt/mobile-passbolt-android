@@ -31,22 +31,22 @@ import com.passbolt.mobile.android.ui.GroupModel
 class GetLocalGroupsUseCase(
     private val databaseProvider: DatabaseProvider,
     private val groupModelMapper: GroupsModelMapper,
-    private val getSelectedAccountUseCase: GetSelectedAccountUseCase
+    private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
 ) : AsyncUseCase<GetLocalGroupsUseCase.Input, GetLocalGroupsUseCase.Output> {
-
     override suspend fun execute(input: Input) =
-        Output(databaseProvider
-            .get(requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount))
-            .groupsDao()
-            .getAllExcluding(input.excludeByIds)
-            .map { groupModelMapper.map(it) }
+        Output(
+            databaseProvider
+                .get(requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount))
+                .groupsDao()
+                .getAllExcluding(input.excludeByIds)
+                .map { groupModelMapper.map(it) },
         )
 
     data class Input(
-        val excludeByIds: List<String> = emptyList()
+        val excludeByIds: List<String> = emptyList(),
     )
 
     data class Output(
-        val groups: List<GroupModel>
+        val groups: List<GroupModel>,
     )
 }

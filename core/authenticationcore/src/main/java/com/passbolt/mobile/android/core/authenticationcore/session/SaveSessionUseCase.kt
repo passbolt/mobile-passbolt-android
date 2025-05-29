@@ -28,9 +28,8 @@ import com.passbolt.mobile.android.encryptedstorage.EncryptedSharedPreferencesFa
  */
 
 class SaveSessionUseCase(
-    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory
+    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory,
 ) : UseCase<SaveSessionUseCase.Input, Unit> {
-
     override fun execute(input: Input) {
         val fileName = SessionFileName(input.userId).name
         val sharedPreferences = encryptedSharedPreferencesFactory.get("$fileName.xml")
@@ -46,6 +45,6 @@ class SaveSessionUseCase(
         val userId: String,
         val refreshToken: String,
         val accessToken: String,
-        val mfaToken: String? = null
+        val mfaToken: String? = null,
     )
 }

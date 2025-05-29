@@ -11,8 +11,8 @@ import com.passbolt.mobile.android.core.ui.menu.OpenableSettingView
 import com.passbolt.mobile.android.feature.resourceform.R
 import com.passbolt.mobile.android.feature.resourceform.databinding.ViewAdditionalSecretsSectionBinding
 import com.passbolt.mobile.android.ui.ResourceFormUiModel
-import com.passbolt.mobile.android.ui.ResourceFormUiModel.Secret.PASSWORD
 import com.passbolt.mobile.android.ui.ResourceFormUiModel.Secret.NOTE
+import com.passbolt.mobile.android.ui.ResourceFormUiModel.Secret.PASSWORD
 import com.passbolt.mobile.android.ui.ResourceFormUiModel.Secret.TOTP
 
 /**
@@ -38,63 +38,64 @@ import com.passbolt.mobile.android.ui.ResourceFormUiModel.Secret.TOTP
  * @since v1.0
  */
 
-class AdditionalSecretsSectionView @JvmOverloads constructor(
-    context: Context,
-    attrs: AttributeSet? = null,
-    defStyle: Int = 0
-) : LinearLayout(context, attrs, defStyle) {
-
-    var additionalPasswordClick: (() -> Unit)? = null
-        set(value) {
-            field = value
-            value?.let {
-                passwordAdditionalSecretSection.setDebouncingOnClick(action = value)
+class AdditionalSecretsSectionView
+    @JvmOverloads
+    constructor(
+        context: Context,
+        attrs: AttributeSet? = null,
+        defStyle: Int = 0,
+    ) : LinearLayout(context, attrs, defStyle) {
+        var additionalPasswordClick: (() -> Unit)? = null
+            set(value) {
+                field = value
+                value?.let {
+                    passwordAdditionalSecretSection.setDebouncingOnClick(action = value)
+                }
             }
+
+        var additionalTotpClick: (() -> Unit)? = null
+            set(value) {
+                field = value
+                value?.let {
+                    totpAdditionalSecretSection.setDebouncingOnClick(action = value)
+                }
+            }
+
+        var additionalNoteClick: (() -> Unit)? = null
+            set(value) {
+                field = value
+                value?.let {
+                    noteAdditionalSecretSection.setDebouncingOnClick(action = value)
+                }
+            }
+
+        private val binding = ViewAdditionalSecretsSectionBinding.inflate(LayoutInflater.from(context), this)
+
+        private val passwordAdditionalSecretSection: OpenableSettingView
+            get() = binding.additionalSecretsSectionView.findViewById(R.id.additionalPassword)
+
+        private val totpAdditionalSecretSection: OpenableSettingView
+            get() = binding.additionalSecretsSectionView.findViewById(R.id.additionalTotp)
+
+        private val noteAdditionalSecretSection: OpenableSettingView
+            get() = binding.additionalSecretsSectionView.findViewById(R.id.additionalNote)
+
+        init {
+            orientation = VERTICAL
+            LayoutInflater.from(context).inflate(
+                R.layout.view_additional_secrets_fields,
+                binding.additionalSecretsSectionView.backgroundContainer,
+                true,
+            )
         }
 
-    var additionalTotpClick: (() -> Unit)? = null
-        set(value) {
-            field = value
-            value?.let {
-                totpAdditionalSecretSection.setDebouncingOnClick(action = value)
+        fun setUp(fields: List<ResourceFormUiModel.Secret>) {
+            if (fields.isEmpty()) {
+                gone()
+            } else {
+                passwordAdditionalSecretSection.isVisible = fields.contains(PASSWORD)
+                totpAdditionalSecretSection.isVisible = fields.contains(TOTP)
+                noteAdditionalSecretSection.isVisible = fields.contains(NOTE)
             }
         }
-
-    var additionalNoteClick: (() -> Unit)? = null
-        set(value) {
-            field = value
-            value?.let {
-                noteAdditionalSecretSection.setDebouncingOnClick(action = value)
-            }
-        }
-
-    private val binding = ViewAdditionalSecretsSectionBinding.inflate(LayoutInflater.from(context), this)
-
-    private val passwordAdditionalSecretSection: OpenableSettingView
-        get() = binding.additionalSecretsSectionView.findViewById(R.id.additionalPassword)
-
-    private val totpAdditionalSecretSection: OpenableSettingView
-        get() = binding.additionalSecretsSectionView.findViewById(R.id.additionalTotp)
-
-    private val noteAdditionalSecretSection: OpenableSettingView
-        get() = binding.additionalSecretsSectionView.findViewById(R.id.additionalNote)
-
-    init {
-        orientation = VERTICAL
-        LayoutInflater.from(context).inflate(
-            R.layout.view_additional_secrets_fields,
-            binding.additionalSecretsSectionView.backgroundContainer,
-            true
-        )
     }
-
-    fun setUp(fields: List<ResourceFormUiModel.Secret>) {
-        if (fields.isEmpty()) {
-            gone()
-        } else {
-            passwordAdditionalSecretSection.isVisible = fields.contains(PASSWORD)
-            totpAdditionalSecretSection.isVisible = fields.contains(TOTP)
-            noteAdditionalSecretSection.isVisible = fields.contains(NOTE)
-        }
-    }
-}

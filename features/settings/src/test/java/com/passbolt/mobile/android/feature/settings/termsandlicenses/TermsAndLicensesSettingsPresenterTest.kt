@@ -40,18 +40,17 @@ import org.mockito.kotlin.reset
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.verify
 
-
 @ExperimentalCoroutinesApi
 class TermsAndLicensesSettingsPresenterTest : KoinTest {
-
     private val presenter: TermsAndLicensesSettingsContract.Presenter by inject()
     private val view = mock<TermsAndLicensesSettingsContract.View>()
 
     @get:Rule
-    val koinTestRule = KoinTestRule.create {
-        printLogger(Level.ERROR)
-        modules(testTermsAndLicensesSettingsModule)
-    }
+    val koinTestRule =
+        KoinTestRule.create {
+            printLogger(Level.ERROR)
+            modules(testTermsAndLicensesSettingsModule)
+        }
 
     @Before
     fun setup() {
@@ -69,9 +68,9 @@ class TermsAndLicensesSettingsPresenterTest : KoinTest {
                         isPasswordExpiryAvailable = true,
                         arePasswordPoliciesAvailable = true,
                         canUpdatePasswordPolicies = true,
-                        isV5MetadataAvailable = false
-                    )
-                )
+                        isV5MetadataAvailable = false,
+                    ),
+                ),
             )
         }
     }
@@ -92,9 +91,9 @@ class TermsAndLicensesSettingsPresenterTest : KoinTest {
                         isPasswordExpiryAvailable = true,
                         arePasswordPoliciesAvailable = true,
                         canUpdatePasswordPolicies = true,
-                        isV5MetadataAvailable = false
-                    )
-                )
+                        isV5MetadataAvailable = false,
+                    ),
+                ),
             )
         }
 
@@ -122,22 +121,23 @@ class TermsAndLicensesSettingsPresenterTest : KoinTest {
 
     @Test
     fun `refreshing feature flags should cause UI refresh`() {
-        val featureFlags = FeatureFlagsModel(
-            null,
-            null,
-            isPreviewPasswordAvailable = true,
-            areFoldersAvailable = false,
-            areTagsAvailable = false,
-            isTotpAvailable = true,
-            isRbacAvailable = true,
-            isPasswordExpiryAvailable = true,
-            arePasswordPoliciesAvailable = true,
-            canUpdatePasswordPolicies = true,
-            isV5MetadataAvailable = false
-        )
+        val featureFlags =
+            FeatureFlagsModel(
+                null,
+                null,
+                isPreviewPasswordAvailable = true,
+                areFoldersAvailable = false,
+                areTagsAvailable = false,
+                isTotpAvailable = true,
+                isRbacAvailable = true,
+                isPasswordExpiryAvailable = true,
+                arePasswordPoliciesAvailable = true,
+                canUpdatePasswordPolicies = true,
+                isV5MetadataAvailable = false,
+            )
         getFeatureFlagsUseCase.stub {
             onBlocking { execute(Unit) }.doReturn(
-                GetFeatureFlagsUseCase.Output(featureFlags)
+                GetFeatureFlagsUseCase.Output(featureFlags),
             )
         }
 
@@ -153,9 +153,9 @@ class TermsAndLicensesSettingsPresenterTest : KoinTest {
                     GetFeatureFlagsUseCase.Output(
                         featureFlags.copy(
                             privacyPolicyUrl = URL_PRIVACY_POLICY,
-                            termsAndConditionsUrl = URL_TERMS
-                        )
-                    )
+                            termsAndConditionsUrl = URL_TERMS,
+                        ),
+                    ),
                 )
             }
         }

@@ -1,8 +1,3 @@
-package com.passbolt.mobile.android.core.idlingresource.base
-
-import androidx.test.espresso.IdlingResource
-import java.util.concurrent.atomic.AtomicBoolean
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -26,11 +21,15 @@ import java.util.concurrent.atomic.AtomicBoolean
  * @since v1.0
  */
 
+package com.passbolt.mobile.android.core.idlingresource.base
+
+import androidx.test.espresso.IdlingResource
+import java.util.concurrent.atomic.AtomicBoolean
+
 /**
  * Base idling resource class for boolean flag resources.
  */
 abstract class FlaggedIdlingResource : IdlingResource {
-
     @Volatile
     private var callback: IdlingResource.ResourceCallback? = null
 

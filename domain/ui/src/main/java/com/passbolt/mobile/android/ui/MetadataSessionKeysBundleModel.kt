@@ -31,5 +31,5 @@ data class MetadataSessionKeysBundleModel(
     val userId: UUID,
     val data: String,
     val created: ZonedDateTime,
-    val modified: ZonedDateTime
+    val modified: ZonedDateTime,
 )

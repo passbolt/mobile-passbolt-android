@@ -33,9 +33,10 @@ import com.passbolt.mobile.android.ui.UpdateTransferModel
  * @since v1.0
  */
 class TransferMapper {
-
-    fun mapRequestToDto(currentPage: Int, status: Status): UpdateTransferRequestDto =
-        UpdateTransferRequestDto(currentPage, mapStatus(status))
+    fun mapRequestToDto(
+        currentPage: Int,
+        status: Status,
+    ): UpdateTransferRequestDto = UpdateTransferRequestDto(currentPage, mapStatus(status))
 
     fun mapUpdateResponseToUi(pageResponseDto: TransferResponseDto): UpdateTransferModel =
         UpdateTransferModel(
@@ -43,7 +44,12 @@ class TransferMapper {
             firstName = pageResponseDto.user?.profile?.firstName,
             lastName = pageResponseDto.user?.profile?.lastName,
             email = pageResponseDto.user?.email,
-            avatarUrl = pageResponseDto.user?.profile?.avatar?.url?.medium
+            avatarUrl =
+                pageResponseDto.user
+                    ?.profile
+                    ?.avatar
+                    ?.url
+                    ?.medium,
         )
 
     fun mapViewResponseToUi(transfer: TransferResponseDto): TransferModel =
@@ -52,7 +58,7 @@ class TransferMapper {
             status = mapStatus(transfer.status),
             currentPage = transfer.currentPage,
             totalPages = transfer.totalPages,
-            hash = transfer.hash
+            hash = transfer.hash,
         )
 
     fun mapCreateResponseToUi(transfer: CreateTransferResponseDto): CreateTransferModel =
@@ -62,22 +68,24 @@ class TransferMapper {
             currentPage = transfer.currentPage,
             totalPages = transfer.totalPages,
             hash = transfer.hash,
-            authenticationToken = transfer.authToken.token
+            authenticationToken = transfer.authToken.token,
         )
 
-    private fun mapStatus(status: StatusResponse) = when (status) {
-        StatusResponse.ERROR -> Status.ERROR
-        StatusResponse.IN_PROGRESS -> Status.IN_PROGRESS
-        StatusResponse.COMPLETE -> Status.COMPLETE
-        StatusResponse.CANCEL -> Status.CANCEL
-        StatusResponse.START -> Status.START
-    }
+    private fun mapStatus(status: StatusResponse) =
+        when (status) {
+            StatusResponse.ERROR -> Status.ERROR
+            StatusResponse.IN_PROGRESS -> Status.IN_PROGRESS
+            StatusResponse.COMPLETE -> Status.COMPLETE
+            StatusResponse.CANCEL -> Status.CANCEL
+            StatusResponse.START -> Status.START
+        }
 
-    private fun mapStatus(status: Status) = when (status) {
-        Status.ERROR -> StatusRequest.ERROR
-        Status.IN_PROGRESS -> StatusRequest.IN_PROGRESS
-        Status.COMPLETE -> StatusRequest.COMPLETE
-        Status.CANCEL -> StatusRequest.CANCEL
-        Status.START -> StatusRequest.START
-    }
+    private fun mapStatus(status: Status) =
+        when (status) {
+            Status.ERROR -> StatusRequest.ERROR
+            Status.IN_PROGRESS -> StatusRequest.IN_PROGRESS
+            Status.COMPLETE -> StatusRequest.COMPLETE
+            Status.CANCEL -> StatusRequest.CANCEL
+            Status.START -> StatusRequest.START
+        }
 }

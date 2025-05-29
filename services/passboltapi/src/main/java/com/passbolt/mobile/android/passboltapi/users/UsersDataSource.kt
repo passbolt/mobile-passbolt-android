@@ -26,7 +26,6 @@ import com.passbolt.mobile.android.dto.response.UserDto
  */
 
 interface UsersDataSource {
-
     suspend fun getUsers(hasAccessTo: List<String>? = null): List<UserDto>
 
     suspend fun getMyProfile(): UserDto

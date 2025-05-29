@@ -40,16 +40,18 @@ import java.time.ZonedDateTime
  */
 
 class SortByModifiedDateTest {
-
     private lateinit var resourcesDao: ResourcesDao
     private lateinit var db: ResourceDatabase
 
     @Before
     fun createDb() {
         val context = ApplicationProvider.getApplicationContext<Context>()
-        db = Room.inMemoryDatabaseBuilder(
-            context, ResourceDatabase::class.java
-        ).build()
+        db =
+            Room
+                .inMemoryDatabaseBuilder(
+                    context,
+                    ResourceDatabase::class.java,
+                ).build()
         resourcesDao = db.resourcesDao()
         runBlocking {
             db.resourceTypesDao().insert(RESOURCE_TYPE)
@@ -62,93 +64,99 @@ class SortByModifiedDateTest {
     }
 
     @Test
-    fun testSortingWithNoTimeZones() = runBlocking {
-        resourcesDao.insertAll(listOf(RESOURCE_1, RESOURCE_2, RESOURCE_3))
+    fun testSortingWithNoTimeZones() =
+        runBlocking {
+            resourcesDao.insertAll(listOf(RESOURCE_1, RESOURCE_2, RESOURCE_3))
 
-        val sortedByModifiedDate = resourcesDao.getAllOrderedByModifiedDate(setOf(PASSWORD_DESCRIPTION_SLUG))
+            val sortedByModifiedDate = resourcesDao.getAllOrderedByModifiedDate(setOf(PASSWORD_DESCRIPTION_SLUG))
 
-        assertThat(
-            sortedByModifiedDate.map { it.modified.toInstant().toEpochMilli() }
-        )
-            .isInOrder(compareByDescending<Long> { it })
-    }
+            assertThat(
+                sortedByModifiedDate.map { it.modified.toInstant().toEpochMilli() },
+            ).isInOrder(compareByDescending<Long> { it })
+        }
 
     @Test
-    fun testSortingWithTimeZones() = runBlocking {
-        resourcesDao.insertAll(listOf(RESOURCE_1, RESOURCE_2, RESOURCE_3, RESOURCE_1_ZONE_MINUS, RESOURCE_1_ZONE_PLUS))
+    fun testSortingWithTimeZones() =
+        runBlocking {
+            resourcesDao.insertAll(listOf(RESOURCE_1, RESOURCE_2, RESOURCE_3, RESOURCE_1_ZONE_MINUS, RESOURCE_1_ZONE_PLUS))
 
-        val sortedByModifiedDate = resourcesDao.getAllOrderedByModifiedDate(setOf(PASSWORD_DESCRIPTION_SLUG))
+            val sortedByModifiedDate = resourcesDao.getAllOrderedByModifiedDate(setOf(PASSWORD_DESCRIPTION_SLUG))
 
-        assertThat(
-            sortedByModifiedDate.map { it.modified.toInstant().toEpochMilli() }
-        )
-            .isInOrder(compareByDescending<Long> { it })
-    }
+            assertThat(
+                sortedByModifiedDate.map { it.modified.toInstant().toEpochMilli() },
+            ).isInOrder(compareByDescending<Long> { it })
+        }
 
     private companion object {
         private const val PASSWORD_DESCRIPTION_SLUG = "password-description"
 
-        private val RESOURCE_TYPE = ResourceType(
-            resourceTypeId = "1",
-            name = "password-description",
-            slug = PASSWORD_DESCRIPTION_SLUG,
-            deleted = null
-        )
+        private val RESOURCE_TYPE =
+            ResourceType(
+                resourceTypeId = "1",
+                name = "password-description",
+                slug = PASSWORD_DESCRIPTION_SLUG,
+                deleted = null,
+            )
 
-        private val RESOURCE_1 = Resource(
-            resourceId = "1",
-            folderId = "folderid",
-            resourcePermission = Permission.READ,
-            resourceTypeId = "1",
-            favouriteId = null,
-            modified = ZonedDateTime.now(),
-            expiry = null,
-            metadataKeyId = null,
-            metadataKeyType = null
-        )
-        private val RESOURCE_2 = Resource(
-            resourceId = "2",
-            folderId = "folderid",
-            resourcePermission = Permission.READ,
-            resourceTypeId = "1",
-            favouriteId = null,
-            modified = ZonedDateTime.now().plusDays(1),
-            expiry = null,
-            metadataKeyId = null,
-            metadataKeyType = null
-        )
-        private val RESOURCE_3 = Resource(
-            resourceId = "3",
-            folderId = "folderid",
-            resourcePermission = Permission.READ,
-            resourceTypeId = "1",
-            favouriteId = null,
-            modified = ZonedDateTime.now().plusDays(2),
-            expiry = null,
-            metadataKeyId = null,
-            metadataKeyType = null
-        )
-        private val RESOURCE_1_ZONE_MINUS = Resource(
-            resourceId = "4",
-            folderId = "folderid",
-            resourcePermission = Permission.READ,
-            resourceTypeId = "1",
-            favouriteId = null,
-            modified = LocalDateTime.now().atZone(ZoneOffset.of("-08:00")),
-            expiry = null,
-            metadataKeyId = null,
-            metadataKeyType = null
-        )
-        private val RESOURCE_1_ZONE_PLUS = Resource(
-            resourceId = "5",
-            folderId = "folderid",
-            resourcePermission = Permission.READ,
-            resourceTypeId = "1",
-            favouriteId = null,
-            modified = LocalDateTime.now().atZone(ZoneOffset.of("+08:00")),
-            expiry = null,
-            metadataKeyId = null,
-            metadataKeyType = null
-        )
+        private val RESOURCE_1 =
+            Resource(
+                resourceId = "1",
+                folderId = "folderid",
+                resourcePermission = Permission.READ,
+                resourceTypeId = "1",
+                favouriteId = null,
+                modified = ZonedDateTime.now(),
+                expiry = null,
+                metadataKeyId = null,
+                metadataKeyType = null,
+            )
+        private val RESOURCE_2 =
+            Resource(
+                resourceId = "2",
+                folderId = "folderid",
+                resourcePermission = Permission.READ,
+                resourceTypeId = "1",
+                favouriteId = null,
+                modified = ZonedDateTime.now().plusDays(1),
+                expiry = null,
+                metadataKeyId = null,
+                metadataKeyType = null,
+            )
+        private val RESOURCE_3 =
+            Resource(
+                resourceId = "3",
+                folderId = "folderid",
+                resourcePermission = Permission.READ,
+                resourceTypeId = "1",
+                favouriteId = null,
+                modified = ZonedDateTime.now().plusDays(2),
+                expiry = null,
+                metadataKeyId = null,
+                metadataKeyType = null,
+            )
+        private val RESOURCE_1_ZONE_MINUS =
+            Resource(
+                resourceId = "4",
+                folderId = "folderid",
+                resourcePermission = Permission.READ,
+                resourceTypeId = "1",
+                favouriteId = null,
+                modified = LocalDateTime.now().atZone(ZoneOffset.of("-08:00")),
+                expiry = null,
+                metadataKeyId = null,
+                metadataKeyType = null,
+            )
+        private val RESOURCE_1_ZONE_PLUS =
+            Resource(
+                resourceId = "5",
+                folderId = "folderid",
+                resourcePermission = Permission.READ,
+                resourceTypeId = "1",
+                favouriteId = null,
+                modified = LocalDateTime.now().atZone(ZoneOffset.of("+08:00")),
+                expiry = null,
+                metadataKeyId = null,
+                metadataKeyType = null,
+            )
     }
 }

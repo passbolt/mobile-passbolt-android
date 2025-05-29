@@ -44,15 +44,15 @@ import org.mockito.kotlin.verifyNoMoreInteractions
  */
 
 class PasswordFormPresenterTest : KoinTest {
-
     private val presenter: PasswordFormContract.Presenter by inject()
     private val view: PasswordFormContract.View = mock()
 
     @get:Rule
-    val koinTestRule = KoinTestRule.create {
-        printLogger(Level.ERROR)
-        modules(testPasswordFormModule)
-    }
+    val koinTestRule =
+        KoinTestRule.create {
+            printLogger(Level.ERROR)
+            modules(testPasswordFormModule)
+        }
 
     @Test
     fun `view should show correct create title and totp on attach`() {
@@ -64,9 +64,9 @@ class PasswordFormPresenterTest : KoinTest {
         presenter.argsRetrieved(
             ResourceFormMode.Create(
                 leadingContentType = LeadingContentType.PASSWORD,
-                parentFolderId = null
+                parentFolderId = null,
             ),
-            password
+            password,
         )
 
         verify(view).showCreateTitle()
@@ -86,9 +86,9 @@ class PasswordFormPresenterTest : KoinTest {
         presenter.argsRetrieved(
             ResourceFormMode.Create(
                 leadingContentType = LeadingContentType.PASSWORD,
-                parentFolderId = null
+                parentFolderId = null,
             ),
-            password
+            password,
         )
         presenter.passwordTextChanged("t")
         presenter.passwordTextChanged("te")
@@ -108,9 +108,9 @@ class PasswordFormPresenterTest : KoinTest {
         presenter.argsRetrieved(
             ResourceFormMode.Create(
                 leadingContentType = LeadingContentType.PASSWORD,
-                parentFolderId = null
+                parentFolderId = null,
             ),
-            password
+            password,
         )
         presenter.passwordTextChanged(changedPassword)
         presenter.passwordUsernameTextChanged(changedMainUsername)
@@ -130,10 +130,11 @@ class PasswordFormPresenterTest : KoinTest {
         private const val MOCK_MAIN_URI = "mock main uri"
         private const val MOCK_USERNAME = "mock username"
 
-        private val password = PasswordUiModel(
-            password = MOCK_PASSWORD,
-            mainUri = MOCK_MAIN_URI,
-            username = MOCK_USERNAME
-        )
+        private val password =
+            PasswordUiModel(
+                password = MOCK_PASSWORD,
+                mainUri = MOCK_MAIN_URI,
+                username = MOCK_USERNAME,
+            )
     }
 }

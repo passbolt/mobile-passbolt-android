@@ -30,39 +30,42 @@ import com.passbolt.mobile.android.core.localization.R as LocalizationR
 sealed class ResultStatus(
     @DrawableRes val icon: Int,
     @StringRes val title: Int,
-    @StringRes val buttonText: Int
+    @StringRes val buttonText: Int,
 ) : Serializable {
     class Success(
-        val userId: String
+        val userId: String,
     ) : ResultStatus(
-        com.passbolt.mobile.android.core.ui.R.drawable.ic_success,
-        LocalizationR.string.scan_qr_summary_success_title,
-        LocalizationR.string.continue_label
-    )
+            com.passbolt.mobile.android.core.ui.R.drawable.ic_success,
+            LocalizationR.string.scan_qr_summary_success_title,
+            LocalizationR.string.continue_label,
+        )
 
     class Failure(
-        val message: String
+        val message: String,
     ) : ResultStatus(
-        com.passbolt.mobile.android.core.ui.R.drawable.ic_failed,
-        LocalizationR.string.scan_qr_summary_failure_title,
-        LocalizationR.string.try_again
-    )
+            com.passbolt.mobile.android.core.ui.R.drawable.ic_failed,
+            LocalizationR.string.scan_qr_summary_failure_title,
+            LocalizationR.string.try_again,
+        )
 
-    class NoNetwork : ResultStatus(
-        com.passbolt.mobile.android.core.ui.R.drawable.ic_failed,
-        LocalizationR.string.scan_qr_summary_no_network_title,
-        LocalizationR.string.try_again
-    )
+    class NoNetwork :
+        ResultStatus(
+            com.passbolt.mobile.android.core.ui.R.drawable.ic_failed,
+            LocalizationR.string.scan_qr_summary_no_network_title,
+            LocalizationR.string.try_again,
+        )
 
-    class HttpNotSupported : ResultStatus(
-        com.passbolt.mobile.android.core.ui.R.drawable.ic_failed,
-        LocalizationR.string.scan_qr_summary_http_not_supported_title,
-        LocalizationR.string.try_again
-    )
+    class HttpNotSupported :
+        ResultStatus(
+            com.passbolt.mobile.android.core.ui.R.drawable.ic_failed,
+            LocalizationR.string.scan_qr_summary_http_not_supported_title,
+            LocalizationR.string.try_again,
+        )
 
-    class AlreadyLinked : ResultStatus(
-        com.passbolt.mobile.android.core.ui.R.drawable.ic_already_connected,
-        LocalizationR.string.scan_qr_summary_already_linked_title,
-        LocalizationR.string.continue_label
-    )
+    class AlreadyLinked :
+        ResultStatus(
+            com.passbolt.mobile.android.core.ui.R.drawable.ic_already_connected,
+            LocalizationR.string.scan_qr_summary_already_linked_title,
+            LocalizationR.string.continue_label,
+        )
 }

@@ -29,16 +29,18 @@ import com.passbolt.mobile.android.dto.response.SimulateShareResponse
  */
 
 interface ShareDataSource {
-
     suspend fun simulateShareResource(
         resourceId: String,
-        request: SimulateShareRequest
+        request: SimulateShareRequest,
     ): SimulateShareResponse
 
     suspend fun shareResource(
         resourceId: String,
-        request: ResourceShareRequest
+        request: ResourceShareRequest,
     )
 
-    suspend fun shareFolder(folderId: String, request: FolderShareRequest)
+    suspend fun shareFolder(
+        folderId: String,
+        request: FolderShareRequest,
+    )
 }

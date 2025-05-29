@@ -17,21 +17,20 @@ class AccountInitializer(
     private val updateAccountDataUseCase: UpdateAccountDataUseCase,
     private val savePrivateKeyUseCase: SavePrivateKeyUseCase,
     private val managedAccountIntentCreator: ManagedAccountIntentCreator,
-    private val saveAccountUseCase: SaveAccountUseCase
+    private val saveAccountUseCase: SaveAccountUseCase,
 ) : KoinComponent {
-
     fun initializeAccount() {
         saveCurrentApiUrlUseCase.execute(
-            SaveCurrentApiUrlUseCase.Input(managedAccountIntentCreator.getDomain())
+            SaveCurrentApiUrlUseCase.Input(managedAccountIntentCreator.getDomain()),
         )
         saveSelectedAccountUseCase.execute(
-            UserIdInput(managedAccountIntentCreator.getUserLocalId())
+            UserIdInput(managedAccountIntentCreator.getUserLocalId()),
         )
         saveAccountUseCase.execute(
-            UserIdInput(managedAccountIntentCreator.getUserLocalId())
+            UserIdInput(managedAccountIntentCreator.getUserLocalId()),
         )
         saveResourcesDatabasePassphraseUseCase.execute(
-            SaveResourcesDatabasePassphraseUseCase.Input(TEST_DATABASE_PASSWORD)
+            SaveResourcesDatabasePassphraseUseCase.Input(TEST_DATABASE_PASSWORD),
         )
         updateAccountDataUseCase.execute(
             UpdateAccountDataUseCase.Input(
@@ -40,14 +39,14 @@ class AccountInitializer(
                 firstName = managedAccountIntentCreator.getFirstName(),
                 lastName = managedAccountIntentCreator.getLastName(),
                 email = managedAccountIntentCreator.getUsername(),
-                serverId = managedAccountIntentCreator.getUserServerId()
-            )
+                serverId = managedAccountIntentCreator.getUserServerId(),
+            ),
         )
         savePrivateKeyUseCase.execute(
             SavePrivateKeyUseCase.Input(
                 managedAccountIntentCreator.getUserLocalId(),
-                managedAccountIntentCreator.getArmoredPrivateKey()
-            )
+                managedAccountIntentCreator.getArmoredPrivateKey(),
+            ),
         )
     }
 

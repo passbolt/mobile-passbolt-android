@@ -27,6 +27,5 @@ import com.passbolt.mobile.android.dto.response.ResourceTypeDto
  */
 
 interface ResourceTypesDataSource {
-
     suspend fun getResourceTypes(): BaseResponse<List<ResourceTypeDto>>
 }

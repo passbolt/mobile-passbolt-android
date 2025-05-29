@@ -6,9 +6,8 @@ import com.passbolt.mobile.android.feature.autofill.informationprovider.Autofill
 import com.passbolt.mobile.android.feature.autofill.informationprovider.AutofillInformationProvider.ChromeNativeAutofillStatus.NOT_SUPPORTED
 
 class SettingsAutofillPresenter(
-    private val autofillInformationProvider: AutofillInformationProvider
+    private val autofillInformationProvider: AutofillInformationProvider,
 ) : SettingsAutofillContract.Presenter {
-
     override var view: SettingsAutofillContract.View? = null
 
     override fun attach(view: SettingsAutofillContract.View) {

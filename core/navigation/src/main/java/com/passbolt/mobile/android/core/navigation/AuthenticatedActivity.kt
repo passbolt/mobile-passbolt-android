@@ -1,7 +1,7 @@
 package com.passbolt.mobile.android.core.navigation
 
 import android.app.Activity
-import com.gaelmarhic.quadrant.Startup
+import com.passbolt.mobile.android.core.navigation.constants.Startup
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,8 +26,9 @@ import com.gaelmarhic.quadrant.Startup
  * @since v1.0
  */
 
-fun Activity.isAuthenticated() = when {
-    this.javaClass.name == Startup.START_UP_ACTIVITY -> false
-    this is PartiallyAuthenticated -> (this as PartiallyAuthenticated).isCurrentFragmentAuthenticated
-    else -> true
-}
+fun Activity.isAuthenticated() =
+    when {
+        this.javaClass.name == Startup.START_UP_ACTIVITY -> false
+        this is PartiallyAuthenticated -> (this as PartiallyAuthenticated).isCurrentFragmentAuthenticated
+        else -> true
+    }

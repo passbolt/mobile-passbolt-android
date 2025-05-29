@@ -35,55 +35,59 @@ import com.passbolt.mobile.android.core.localization.R as LocalizationR
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class MultilineInputView @JvmOverloads constructor(
-    context: Context,
-    attrs: AttributeSet? = null,
-    defStyle: Int = 0
-) : TextInputView(context, attrs, defStyle) {
-
-    init {
-        with(binding.textLayout) {
-            editText?.apply {
-                isSingleLine = false
-                inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_MULTI_LINE
-                minLines = MIN_LINES
-                gravity = Gravity.TOP
+class MultilineInputView
+    @JvmOverloads
+    constructor(
+        context: Context,
+        attrs: AttributeSet? = null,
+        defStyle: Int = 0,
+    ) : TextInputView(context, attrs, defStyle) {
+        init {
+            with(binding.textLayout) {
+                editText?.apply {
+                    isSingleLine = false
+                    inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_MULTI_LINE
+                    minLines = MIN_LINES
+                    gravity = Gravity.TOP
+                }
             }
         }
-    }
 
-    // TODO confirm if lock will be entirely removed
-    @Suppress("Unused")
-    fun addLockIcon() {
-        with(binding.icon) {
-            setImageResource(R.drawable.ic_lock)
-            setDebouncingOnClick { showIconTooltip() }
-            visible()
+        // TODO confirm if lock will be entirely removed
+        @Suppress("Unused")
+        fun addLockIcon() {
+            with(binding.icon) {
+                setImageResource(R.drawable.ic_lock)
+                setDebouncingOnClick { showIconTooltip() }
+                visible()
+            }
+        }
+
+        fun updateLockIconVisibility(isSecret: Boolean) {
+            if (isSecret) {
+                binding.icon.setImageResource(R.drawable.ic_lock)
+            } else {
+                binding.icon.setImageResource(R.drawable.ic_lock_open)
+            }
+        }
+
+        private fun showIconTooltip() {
+            binding.icon.showAlignLeft(
+                createBalloon(context) {
+                    setArrowOrientation(ArrowOrientation.END)
+                    setTextResource(LocalizationR.string.password_description_encrypted)
+                    paddingBottom = TOOLTIP_PADDING
+                    paddingLeft = TOOLTIP_PADDING
+                    paddingTop = TOOLTIP_PADDING
+                    paddingRight = TOOLTIP_PADDING
+                },
+                TOOLTIP_ALIGN_PADDING,
+            )
+        }
+
+        companion object {
+            private const val MIN_LINES = 3
+            private val TOOLTIP_PADDING = 16.px
+            private val TOOLTIP_ALIGN_PADDING = (-8).px
         }
     }
-
-    fun updateLockIconVisibility(isSecret: Boolean) {
-        if (isSecret) {
-            binding.icon.setImageResource(R.drawable.ic_lock)
-        } else {
-            binding.icon.setImageResource(R.drawable.ic_lock_open)
-        }
-    }
-
-    private fun showIconTooltip() {
-        binding.icon.showAlignLeft(createBalloon(context) {
-            setArrowOrientation(ArrowOrientation.END)
-            setTextResource(LocalizationR.string.password_description_encrypted)
-            paddingBottom = TOOLTIP_PADDING
-            paddingLeft = TOOLTIP_PADDING
-            paddingTop = TOOLTIP_PADDING
-            paddingRight = TOOLTIP_PADDING
-        }, TOOLTIP_ALIGN_PADDING)
-    }
-
-    companion object {
-        private const val MIN_LINES = 3
-        private val TOOLTIP_PADDING = 16.px
-        private val TOOLTIP_ALIGN_PADDING = (-8).px
-    }
-}

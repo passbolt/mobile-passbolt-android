@@ -47,16 +47,18 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 class KeyInspectorFragment :
     BindingScopedAuthenticatedFragment<FragmentKeyInspectorBinding, KeyInspectorContract.View>(
-        FragmentKeyInspectorBinding::inflate
+        FragmentKeyInspectorBinding::inflate,
     ),
     KeyInspectorContract.View {
-
     override val presenter: KeyInspectorContract.Presenter by inject()
     private val clipboardManager: ClipboardManager? by inject()
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
-        initDefaultToolbar(binding.toolbar)
+        initDefaultToolbar(requiredBinding.toolbar)
         setListeners()
         presenter.attach(this)
     }
@@ -67,13 +69,15 @@ class KeyInspectorFragment :
     }
 
     private fun setListeners() {
-        with(binding) {
-            uidLabeledText.endActionButton = LabelledTextEndAction(CoreUiR.drawable.ic_copy) {
-                presenter.uidCopyClick()
-            }
-            fingerprintLabeledText.endActionButton = LabelledTextEndAction(CoreUiR.drawable.ic_copy) {
-                presenter.fingerprintCopyClick()
-            }
+        with(requiredBinding) {
+            uidLabeledText.endActionButton =
+                LabelledTextEndAction(CoreUiR.drawable.ic_copy) {
+                    presenter.uidCopyClick()
+                }
+            fingerprintLabeledText.endActionButton =
+                LabelledTextEndAction(CoreUiR.drawable.ic_copy) {
+                    presenter.fingerprintCopyClick()
+                }
             moreButton.setDebouncingOnClick {
                 navigateToKeyInspectorMoreMenu()
             }
@@ -97,48 +101,48 @@ class KeyInspectorFragment :
         showSnackbar(
             messageResId = LocalizationR.string.key_inspector_error_during_key_fetch,
             backgroundColor = CoreUiR.color.red,
-            messageArgs = arrayOf(message.orEmpty())
+            messageArgs = arrayOf(message.orEmpty()),
         )
     }
 
     override fun showUid(uid: String) {
-        with(binding.uidLabeledText) {
+        with(requiredBinding.uidLabeledText) {
             visible()
             text = uid
         }
     }
 
     override fun showFingerprint(fingerprint: String) {
-        binding.fingerprintLabeledText.text = fingerprint
+        requiredBinding.fingerprintLabeledText.text = fingerprint
     }
 
     override fun showCreationDate(keyCreationDate: String) {
-        with(binding.createdLabeledText) {
+        with(requiredBinding.createdLabeledText) {
             visible()
             text = keyCreationDate
         }
     }
 
     override fun showExpirationDate(keyExpirationDate: String) {
-        with(binding.expiresLabeledText) {
+        with(requiredBinding.expiresLabeledText) {
             visible()
             text = keyExpirationDate
         }
     }
 
     override fun showLength(bits: String) {
-        binding.lengthLabeledText.text = bits
+        requiredBinding.lengthLabeledText.text = bits
     }
 
     override fun showAlgorithm(algorithm: String) {
-        with(binding.algorithmLabeledText) {
+        with(requiredBinding.algorithmLabeledText) {
             visible()
             text = algorithm
         }
     }
 
     override fun showAvatar(avatarUrl: String?) {
-        binding.avatarImage.load(avatarUrl) {
+        requiredBinding.avatarImage.load(avatarUrl) {
             error(CoreUiR.drawable.ic_avatar_placeholder)
             transformations(CircleCropTransformation())
             placeholder(CoreUiR.drawable.ic_avatar_placeholder)
@@ -146,17 +150,21 @@ class KeyInspectorFragment :
     }
 
     override fun showLabel(label: String) {
-        binding.label.text = label
+        requiredBinding.label.text = label
     }
 
-    override fun addToClipboard(clipboardLabel: ClipboardLabel, value: String) {
+    override fun addToClipboard(
+        clipboardLabel: ClipboardLabel,
+        value: String,
+    ) {
         clipboardManager?.setPrimaryClip(
-            ClipData.newPlainText(clipboardLabel, value)
+            ClipData.newPlainText(clipboardLabel, value),
         )
-        Toast.makeText(
-            requireContext(),
-            getString(LocalizationR.string.copied_info, clipboardLabel),
-            Toast.LENGTH_SHORT
-        ).show()
+        Toast
+            .makeText(
+                requireContext(),
+                getString(LocalizationR.string.copied_info, clipboardLabel),
+                Toast.LENGTH_SHORT,
+            ).show()
     }
 }

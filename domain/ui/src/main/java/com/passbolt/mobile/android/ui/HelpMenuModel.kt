@@ -7,5 +7,5 @@ import kotlinx.parcelize.Parcelize
 data class HelpMenuModel(
     val shouldShowShowQrCodesHelp: Boolean,
     val shouldShowImportProfile: Boolean,
-    val shouldShowImportAccountKit: Boolean
+    val shouldShowImportAccountKit: Boolean,
 ) : Parcelable

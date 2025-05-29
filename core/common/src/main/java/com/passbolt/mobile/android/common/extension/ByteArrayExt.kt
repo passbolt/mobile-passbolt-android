@@ -29,6 +29,4 @@ fun ByteArray.erase() {
     Arrays.fill(this, 0)
 }
 
-fun ByteArray.encodeHex(): String {
-    return joinToString("") { "%02x".format(it) }
-}
+fun ByteArray.encodeHex(): String = joinToString("") { "%02x".format(it) }

@@ -29,7 +29,8 @@ import org.mockito.kotlin.mock
 
 val cameraInformationProvider = mock<CameraInformationProvider>()
 
-val transferDetailsModule = module {
-    factory { TransferDetailsPresenter(get()) }
-    factory { cameraInformationProvider }
-}
+val transferDetailsModule =
+    module {
+        factory { TransferDetailsPresenter(get()) }
+        factory { cameraInformationProvider }
+    }

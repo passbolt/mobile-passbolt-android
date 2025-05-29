@@ -33,41 +33,39 @@ import com.passbolt.mobile.android.ui.GroupWithCount
  * @since v1.0
  */
 class GroupsModelMapper {
-
     fun map(group: GroupsResponseDto): GroupModelWithUsers =
         GroupModelWithUsers(
             GroupModel(
                 groupId = group.id.toString(),
-                groupName = group.name
+                groupName = group.name,
             ),
-            group.users?.map { GroupUser(it.id.toString()) }.orEmpty()
+            group.users?.map { GroupUser(it.id.toString()) }.orEmpty(),
         )
 
     fun map(group: GroupModel): UsersGroup =
         UsersGroup(
             groupId = group.groupId,
-            name = group.groupName
+            name = group.groupName,
         )
 
     fun map(group: UsersGroupWithChildItemsCount) =
         GroupWithCount(
             groupId = group.groupId,
             groupName = group.name,
-            groupItemsCount = group.childItemsCount
+            groupItemsCount = group.childItemsCount,
         )
 
     fun map(permission: PermissionGroupDto) =
         GroupModel(
             permission.id.toString(),
-            permission.name
+            permission.name,
         )
 
     fun map(groupPermission: GroupPermission) =
         GroupModel(
             groupPermission.groupId,
-            groupPermission.groupName
+            groupPermission.groupName,
         )
 
-    fun map(group: UsersGroup) =
-        GroupModel(group.groupId, group.name)
+    fun map(group: UsersGroup) = GroupModel(group.groupId, group.name)
 }

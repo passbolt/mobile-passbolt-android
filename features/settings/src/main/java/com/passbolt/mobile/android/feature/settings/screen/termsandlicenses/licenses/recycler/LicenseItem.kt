@@ -30,33 +30,38 @@ import com.passbolt.mobile.android.ui.LicenseModelItem
  * @since v1.0
  */
 class LicenseItem(
-    private val resourceModel: LicenseModelItem
+    private val resourceModel: LicenseModelItem,
 ) : AbstractBindingItem<ItemLicenseBinding>() {
-
     override val type: Int
         get() = R.id.itemLicense
 
-    override fun createBinding(inflater: LayoutInflater, parent: ViewGroup?): ItemLicenseBinding {
-        return ItemLicenseBinding.inflate(inflater, parent, false)
-    }
+    override fun createBinding(
+        inflater: LayoutInflater,
+        parent: ViewGroup?,
+    ): ItemLicenseBinding = ItemLicenseBinding.inflate(inflater, parent, false)
 
-    override fun bindView(binding: ItemLicenseBinding, payloads: List<Any>) {
+    override fun bindView(
+        binding: ItemLicenseBinding,
+        payloads: List<Any>,
+    ) {
         super.bindView(binding, payloads)
         with(binding) {
             artifactLabel.text =
                 "%s:%s:%s".format(
                     resourceModel.groupId.orEmpty(),
                     resourceModel.artifactId.orEmpty(),
-                    resourceModel.version.orEmpty()
+                    resourceModel.version.orEmpty(),
                 )
             nameLabel.text = resourceModel.name.orEmpty()
-            licenseIdLabel.text = resourceModel.spdxLicenses
-                ?.mapNotNull { it.name }
-                ?.joinToString(separator = System.lineSeparator()) { "$BULLET $it" }
-            urlsLabel.text = resourceModel.spdxLicenses
-                ?.map { it.url }
-                ?.plus(resourceModel.scm?.url)
-                ?.joinToString(separator = System.lineSeparator()) { "$BULLET $it" }
+            licenseIdLabel.text =
+                resourceModel.spdxLicenses
+                    ?.mapNotNull { it.name }
+                    ?.joinToString(separator = System.lineSeparator()) { "$BULLET $it" }
+            urlsLabel.text =
+                resourceModel.spdxLicenses
+                    ?.map { it.url }
+                    ?.plus(resourceModel.scm?.url)
+                    ?.joinToString(separator = System.lineSeparator()) { "$BULLET $it" }
         }
     }
 

@@ -28,5 +28,5 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class FiltersMenuModel(
-    val activeDisplayView: HomeDisplayViewModel
+    val activeDisplayView: HomeDisplayViewModel,
 ) : Parcelable

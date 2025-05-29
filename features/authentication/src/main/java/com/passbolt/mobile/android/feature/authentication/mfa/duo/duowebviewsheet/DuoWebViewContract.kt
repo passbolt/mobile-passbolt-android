@@ -26,7 +26,6 @@ package com.passbolt.mobile.android.feature.authentication.mfa.duo.duowebviewshe
 import com.passbolt.mobile.android.core.mvp.BaseContract
 
 interface DuoWebViewContract {
-
     interface View : BaseContract.View {
         fun loadUrl(duoPromptUrl: String)
     }

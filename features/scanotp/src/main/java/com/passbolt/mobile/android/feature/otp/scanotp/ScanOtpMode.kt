@@ -32,5 +32,5 @@ enum class ScanOtpMode {
     /**
      * Scan OTP, show success screen (with option to create standalone TOTP) and return the result
      */
-    SCAN_WITH_SUCCESS_SCREEN
+    SCAN_WITH_SUCCESS_SCREEN,
 }

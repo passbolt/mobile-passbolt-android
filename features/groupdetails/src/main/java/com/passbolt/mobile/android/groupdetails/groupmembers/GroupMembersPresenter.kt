@@ -11,10 +11,9 @@ import kotlinx.coroutines.launch
 
 class GroupMembersPresenter(
     private val getGroupWithUsersUseCase: GetGroupWithUsersUseCase,
-    coroutineLaunchContext: CoroutineLaunchContext
-) : GroupMembersContract.Presenter,
-    BaseAuthenticatedPresenter<GroupMembersContract.View>(coroutineLaunchContext) {
-
+    coroutineLaunchContext: CoroutineLaunchContext,
+) : BaseAuthenticatedPresenter<GroupMembersContract.View>(coroutineLaunchContext),
+    GroupMembersContract.Presenter {
     override var view: GroupMembersContract.View? = null
     private val job = SupervisorJob()
     private val scope = CoroutineScope(job + coroutineLaunchContext.ui)

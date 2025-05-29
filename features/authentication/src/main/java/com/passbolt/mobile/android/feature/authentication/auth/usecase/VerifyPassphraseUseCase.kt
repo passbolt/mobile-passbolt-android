@@ -28,25 +28,23 @@ import timber.log.Timber
  * @since v1.0
  */
 class VerifyPassphraseUseCase(
-    private val openPgp: OpenPgp
+    private val openPgp: OpenPgp,
 ) : AsyncUseCase<VerifyPassphraseUseCase.Input, VerifyPassphraseUseCase.Output> {
-
-    override suspend fun execute(input: Input): Output {
-        return when (val isKeyUnlocked = openPgp.unlockKey(input.privateKey, input.passphrase)) {
+    override suspend fun execute(input: Input): Output =
+        when (val isKeyUnlocked = openPgp.unlockKey(input.privateKey, input.passphrase)) {
             is OpenPgpResult.Error -> {
                 Timber.e(isKeyUnlocked.error.message)
                 Output(false)
             }
             is OpenPgpResult.Result -> Output(isKeyUnlocked.result)
         }
-    }
 
     class Input(
         val privateKey: String,
-        val passphrase: ByteArray
+        val passphrase: ByteArray,
     )
 
     data class Output(
-        val isCorrect: Boolean
+        val isCorrect: Boolean,
     )
 }

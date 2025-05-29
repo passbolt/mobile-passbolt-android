@@ -31,30 +31,32 @@ import java.util.UUID
  */
 class GetEditContentTypeUseCase(
     private val getMetadataTypesSettingsUseCase: GetMetadataTypesSettingsUseCase,
-    private val resourceTypeIdToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider
+    private val resourceTypeIdToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider,
 ) : AsyncUseCase<GetEditContentTypeUseCase.Input, GetEditContentTypeUseCase.Output> {
-
     override suspend fun execute(input: Input): Output {
-        val defaultMetadataType = getMetadataTypesSettingsUseCase.execute(Unit)
-            .metadataTypesSettingsModel
-            .defaultMetadataType
+        val defaultMetadataType =
+            getMetadataTypesSettingsUseCase
+                .execute(Unit)
+                .metadataTypesSettingsModel
+                .defaultMetadataType
 
-        val slug = resourceTypeIdToSlugMappingProvider.provideMappingForSelectedAccount()[
-            UUID.fromString(input.editedResourceTypeId)
-        ]
+        val slug =
+            resourceTypeIdToSlugMappingProvider.provideMappingForSelectedAccount()[
+                UUID.fromString(input.editedResourceTypeId),
+            ]
 
         return Output(
             metadataType = defaultMetadataType,
-            contentType = ContentType.fromSlug(slug!!)
+            contentType = ContentType.fromSlug(slug!!),
         )
     }
 
     data class Input(
-        val editedResourceTypeId: String
+        val editedResourceTypeId: String,
     )
 
     data class Output(
         val contentType: ContentType,
-        val metadataType: MetadataTypeModel
+        val metadataType: MetadataTypeModel,
     )
 }

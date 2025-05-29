@@ -37,30 +37,33 @@ import com.passbolt.mobile.android.core.localization.R as LocalizationR
  */
 class NoteFormFragment :
     BindingScopedFragment<FragmentNoteFormBinding>(
-        FragmentNoteFormBinding::inflate
-    ), NoteFormContract.View {
-
+        FragmentNoteFormBinding::inflate,
+    ),
+    NoteFormContract.View {
     private val presenter: NoteFormContract.Presenter by inject()
     private val navArgs: NoteFormFragmentArgs by navArgs()
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
-        initDefaultToolbar(binding.toolbar)
+        initDefaultToolbar(requiredBinding.toolbar)
         setListeners()
         presenter.attach(this)
         presenter.argsRetrieved(navArgs.mode, navArgs.note)
     }
 
     override fun showCreateTitle() {
-        binding.toolbar.toolbarTitle = getString(LocalizationR.string.resource_form_create_note)
+        requiredBinding.toolbar.toolbarTitle = getString(LocalizationR.string.resource_form_create_note)
     }
 
     override fun showEditTitle(resourceName: String) {
-        binding.toolbar.toolbarTitle = getString(LocalizationR.string.resource_form_edit_resource, resourceName)
+        requiredBinding.toolbar.toolbarTitle = getString(LocalizationR.string.resource_form_edit_resource, resourceName)
     }
 
     private fun setListeners() {
-        with(binding) {
+        with(requiredBinding) {
             noteSubformView.noteInput.setTextChangeListener {
                 presenter.noteTextChanged(it)
             }
@@ -74,13 +77,13 @@ class NoteFormFragment :
     }
 
     override fun showNote(note: String) {
-        binding.noteSubformView.noteInput.text = note
+        requiredBinding.noteSubformView.noteInput.text = note
     }
 
     override fun goBackWithResult(note: String?) {
         setFragmentResult(
             REQUEST_NOTE,
-            bundleOf(EXTRA_NOTE to note)
+            bundleOf(EXTRA_NOTE to note),
         )
         findNavController().popBackStack()
     }

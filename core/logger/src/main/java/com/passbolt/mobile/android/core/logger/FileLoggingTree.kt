@@ -30,14 +30,18 @@ import java.util.Date
  * @since v1.0
  */
 class FileLoggingTree : Timber.Tree() {
-
     private lateinit var logFile: File
 
     fun initialize(logFilePath: String) {
         logFile = File(logFilePath)
     }
 
-    override fun log(priority: Int, tag: String?, message: String, throwable: Throwable?) {
+    override fun log(
+        priority: Int,
+        tag: String?,
+        message: String,
+        throwable: Throwable?,
+    ) {
         val logTime = timeFormat.format(Date())
         FileOutputStream(logFile, true).use {
             PrintWriter(it.writer()).use { printWriter ->

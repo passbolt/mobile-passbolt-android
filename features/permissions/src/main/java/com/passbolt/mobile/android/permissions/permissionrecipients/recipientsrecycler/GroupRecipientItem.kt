@@ -32,13 +32,15 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
  * @since v1.0
  */
 class GroupRecipientItem(
-    val model: GroupModel
+    val model: GroupModel,
 ) : AbstractBindingItem<ItemPermissionRecipientGroupBinding>() {
-
     override val type: Int
         get() = R.id.groupRecipientItem
 
-    override fun bindView(binding: ItemPermissionRecipientGroupBinding, payloads: List<Any>) {
+    override fun bindView(
+        binding: ItemPermissionRecipientGroupBinding,
+        payloads: List<Any>,
+    ) {
         with(binding) {
             icon.load(CoreUiR.drawable.ic_filled_group_with_bg)
             name.text = model.groupName
@@ -46,7 +48,8 @@ class GroupRecipientItem(
         }
     }
 
-    override fun createBinding(inflater: LayoutInflater, parent: ViewGroup?): ItemPermissionRecipientGroupBinding {
-        return ItemPermissionRecipientGroupBinding.inflate(inflater, parent, false)
-    }
+    override fun createBinding(
+        inflater: LayoutInflater,
+        parent: ViewGroup?,
+    ): ItemPermissionRecipientGroupBinding = ItemPermissionRecipientGroupBinding.inflate(inflater, parent, false)
 }

@@ -28,5 +28,5 @@ import com.passbolt.mobile.android.supportedresourceTypes.ContentType
 
 data class UpdateActionMetadata(
     val action: UpdateAction,
-    val newResourceType: ContentType
+    val newResourceType: ContentType,
 )

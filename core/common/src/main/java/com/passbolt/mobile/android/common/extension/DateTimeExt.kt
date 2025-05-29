@@ -25,8 +25,6 @@ package com.passbolt.mobile.android.common.extension
 
 import java.time.ZonedDateTime
 
-fun ZonedDateTime.isBeforeNow() =
-    isBefore(ZonedDateTime.now())
+fun ZonedDateTime.isBeforeNow() = isBefore(ZonedDateTime.now())
 
-fun ZonedDateTime.isInFuture() =
-    isAfter(ZonedDateTime.now())
+fun ZonedDateTime.isInFuture() = isAfter(ZonedDateTime.now())

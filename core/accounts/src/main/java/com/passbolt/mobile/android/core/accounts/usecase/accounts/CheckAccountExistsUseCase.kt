@@ -26,20 +26,19 @@ import com.passbolt.mobile.android.common.usecase.UseCase
  */
 
 class CheckAccountExistsUseCase(
-    private val getAllAccountsDataUseCase: GetAllAccountsDataUseCase
+    private val getAllAccountsDataUseCase: GetAllAccountsDataUseCase,
 ) : UseCase<CheckAccountExistsUseCase.Input, CheckAccountExistsUseCase.Output> {
-
     override fun execute(input: Input): Output {
         val result = getAllAccountsDataUseCase.execute(Unit).accounts.find { it.serverId == input.serverId }
         return Output(result != null, result?.userId)
     }
 
     data class Input(
-        val serverId: String
+        val serverId: String,
     )
 
     data class Output(
         val exist: Boolean,
-        val userId: String? = null
+        val userId: String? = null,
     )
 }

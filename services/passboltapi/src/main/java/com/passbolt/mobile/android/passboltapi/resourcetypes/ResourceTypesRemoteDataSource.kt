@@ -26,9 +26,7 @@ import com.passbolt.mobile.android.dto.response.ResourceTypeDto
  * @since v1.0
  */
 internal class ResourceTypesRemoteDataSource(
-    private val resourceTypesApi: ResourceTypesApi
+    private val resourceTypesApi: ResourceTypesApi,
 ) : ResourceTypesDataSource {
-
-    override suspend fun getResourceTypes(): BaseResponse<List<ResourceTypeDto>> =
-        resourceTypesApi.getResourceTypes()
+    override suspend fun getResourceTypes(): BaseResponse<List<ResourceTypeDto>> = resourceTypesApi.getResourceTypes()
 }

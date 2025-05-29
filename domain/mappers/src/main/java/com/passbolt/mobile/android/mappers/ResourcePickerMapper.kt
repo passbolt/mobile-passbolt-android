@@ -32,22 +32,24 @@ import com.passbolt.mobile.android.ui.ResourcePickerListItem.Selection.SELECTABL
 import java.util.UUID
 
 class ResourcePickerMapper {
-
-    fun map(resource: ResourceModel, selectableResourceTypeIds: Set<UUID>) =
-        ResourcePickerListItem(
-            resourceModel = resource,
-            selection = getSelection(
+    fun map(
+        resource: ResourceModel,
+        selectableResourceTypeIds: Set<UUID>,
+    ) = ResourcePickerListItem(
+        resourceModel = resource,
+        selection =
+            getSelection(
                 haveWritePermissions = haveWritePermissions(resource),
-                isAllowedResourceType = isAllowedResourceType(resource, selectableResourceTypeIds)
+                isAllowedResourceType = isAllowedResourceType(resource, selectableResourceTypeIds),
             ),
-            isSelected = false
-        )
+        isSelected = false,
+    )
 
     private fun getSelection(
         haveWritePermissions: Boolean,
-        isAllowedResourceType: Boolean
-    ): ResourcePickerListItem.Selection {
-        return if (haveWritePermissions && isAllowedResourceType) {
+        isAllowedResourceType: Boolean,
+    ): ResourcePickerListItem.Selection =
+        if (haveWritePermissions && isAllowedResourceType) {
             SELECTABLE
         } else {
             // if both are valid prefer invalid permission state
@@ -57,18 +59,19 @@ class ResourcePickerMapper {
                 NOT_SELECTABLE_UNSUPPORTED_RESOURCE_TYPE
             }
         }
-    }
 
-    private fun isAllowedResourceType(resource: ResourceModel, selectableResourceTypeIds: Set<UUID>) =
-        UUID.fromString(resource.resourceTypeId) in selectableResourceTypeIds
+    private fun isAllowedResourceType(
+        resource: ResourceModel,
+        selectableResourceTypeIds: Set<UUID>,
+    ) = UUID.fromString(resource.resourceTypeId) in selectableResourceTypeIds
 
-    private fun haveWritePermissions(resource: ResourceModel) =
-        resource.permission in WRITE_PERMISSIONS
+    private fun haveWritePermissions(resource: ResourceModel) = resource.permission in WRITE_PERMISSIONS
 
     private companion object {
-        private val WRITE_PERMISSIONS = setOf(
-            ResourcePermission.OWNER,
-            ResourcePermission.UPDATE
-        )
+        private val WRITE_PERMISSIONS =
+            setOf(
+                ResourcePermission.OWNER,
+                ResourcePermission.UPDATE,
+            )
     }
 }

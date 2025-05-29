@@ -51,16 +51,16 @@ import java.util.UUID
  */
 
 class GroupPermissionsDetailsPresenterTest : KoinTest {
-
     private val presenter: GroupPermissionsContract.Presenter by inject()
     private val view: GroupPermissionsContract.View = mock()
 
     @ExperimentalCoroutinesApi
     @get:Rule
-    val koinTestRule = KoinTestRule.create {
-        printLogger(Level.ERROR)
-        modules(testGroupPermissionsDetailsModule)
-    }
+    val koinTestRule =
+        KoinTestRule.create {
+            printLogger(Level.ERROR)
+            modules(testGroupPermissionsDetailsModule)
+        }
 
     @Before
     fun setup() {
@@ -77,7 +77,7 @@ class GroupPermissionsDetailsPresenterTest : KoinTest {
             GROUP_PERMISSION,
             PermissionsMode.VIEW,
             membersItemWidth = 10f,
-            membersRecyclerWidth = 100
+            membersRecyclerWidth = 100,
         )
 
         verify(view).showPermission(GROUP_PERMISSION.permission)
@@ -89,7 +89,7 @@ class GroupPermissionsDetailsPresenterTest : KoinTest {
             GROUP_PERMISSION,
             PermissionsMode.EDIT,
             membersItemWidth = 10f,
-            membersRecyclerWidth = 100
+            membersRecyclerWidth = 100,
         )
 
         verify(view).showPermissionChoices(GROUP_PERMISSION.permission)
@@ -102,7 +102,7 @@ class GroupPermissionsDetailsPresenterTest : KoinTest {
             GROUP_PERMISSION,
             PermissionsMode.EDIT,
             membersItemWidth = 10f,
-            membersRecyclerWidth = 100
+            membersRecyclerWidth = 100,
         )
 
         verify(view).showGroupName(GROUP_PERMISSION.group.groupName)
@@ -115,7 +115,7 @@ class GroupPermissionsDetailsPresenterTest : KoinTest {
             GROUP_PERMISSION,
             PermissionsMode.EDIT,
             membersItemWidth = 10f,
-            membersRecyclerWidth = 100
+            membersRecyclerWidth = 100,
         )
         presenter.onPermissionSelected(ResourcePermission.UPDATE)
         presenter.saveButtonClick()
@@ -133,7 +133,7 @@ class GroupPermissionsDetailsPresenterTest : KoinTest {
             GROUP_PERMISSION,
             PermissionsMode.EDIT,
             membersItemWidth = 10f,
-            membersRecyclerWidth = 100
+            membersRecyclerWidth = 100,
         )
         presenter.deletePermissionClick()
         presenter.permissionDeleteConfirmClick()
@@ -144,28 +144,31 @@ class GroupPermissionsDetailsPresenterTest : KoinTest {
     }
 
     private companion object {
-        private val USER = UserModel(
-            id = "userId",
-            userName = "userName",
-            disabled = false,
-            gpgKey = GpgKeyModel(
-                armoredKey = "keyData",
-                fingerprint = "fingerprint",
-                bits = 1,
-                uid = "uid",
-                keyId = "keyid",
-                type = "rsa",
-                keyExpirationDate = ZonedDateTime.now(),
-                keyCreationDate = ZonedDateTime.now(),
-                id = UUID.randomUUID().toString()
-            ),
-            profile = UserProfileModel(
-                username = "username",
-                firstName = "first",
-                lastName = "last",
-                avatarUrl = "avatarUrl"
+        private val USER =
+            UserModel(
+                id = "userId",
+                userName = "userName",
+                disabled = false,
+                gpgKey =
+                    GpgKeyModel(
+                        armoredKey = "keyData",
+                        fingerprint = "fingerprint",
+                        bits = 1,
+                        uid = "uid",
+                        keyId = "keyid",
+                        type = "rsa",
+                        keyExpirationDate = ZonedDateTime.now(),
+                        keyCreationDate = ZonedDateTime.now(),
+                        id = UUID.randomUUID().toString(),
+                    ),
+                profile =
+                    UserProfileModel(
+                        username = "username",
+                        firstName = "first",
+                        lastName = "last",
+                        avatarUrl = "avatarUrl",
+                    ),
             )
-        )
         private val GROUP = GroupModel("grId", "grName")
         private val GROUP_PERMISSION = PermissionModelUi.GroupPermissionModel(ResourcePermission.READ, "permId", GROUP)
         private val GROUP_WITH_USERS = GroupWithUsersModel(GROUP, listOf(USER))

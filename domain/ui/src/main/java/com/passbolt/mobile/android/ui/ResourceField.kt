@@ -27,5 +27,5 @@ data class ResourceField(
     val name: String,
     val isSecret: Boolean,
     val maxLength: Int?,
-    val isRequired: Boolean
+    val isRequired: Boolean,
 )

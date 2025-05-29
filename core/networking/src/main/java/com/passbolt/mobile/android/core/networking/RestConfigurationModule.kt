@@ -35,110 +35,115 @@ import java.time.Duration
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-val networkingModule = module {
-    single { provideLoggingInterceptor() }
-    single(named(DEFAULT_HTTP_CLIENT)) {
-        provideHttpClient(
-            loggingInterceptor = get(),
-            interceptors = listOf(
-                get<ChangeableBaseUrlInterceptor>(),
-                get<AuthInterceptor>(),
-                get<CookiesInterceptor.ReceivedCookiesInterceptor>(),
-                get<CookiesInterceptor.AddCookiesInterceptor>()
+val networkingModule =
+    module {
+        single { provideLoggingInterceptor() }
+        single(named(DEFAULT_HTTP_CLIENT)) {
+            provideHttpClient(
+                loggingInterceptor = get(),
+                interceptors =
+                    listOf(
+                        get<ChangeableBaseUrlInterceptor>(),
+                        get<AuthInterceptor>(),
+                        get<CookiesInterceptor.ReceivedCookiesInterceptor>(),
+                        get<CookiesInterceptor.AddCookiesInterceptor>(),
+                    ),
             )
-        )
-    }
-    single(named(COIL_HTTP_CLIENT)) {
-        provideHttpClient(
-            loggingInterceptor = get(),
-            interceptors = listOf(
-                get<ChangeableBaseUrlInterceptor>()
+        }
+        single(named(COIL_HTTP_CLIENT)) {
+            provideHttpClient(
+                loggingInterceptor = get(),
+                interceptors =
+                    listOf(
+                        get<ChangeableBaseUrlInterceptor>(),
+                    ),
             )
-        )
-    }
-    single(named(NO_REDIRECT_HTTP_CLIENT)) {
-        provideHttpClient(
-            loggingInterceptor = get(),
-            interceptors = listOf(
-                get<ChangeableBaseUrlInterceptor>(),
-                get<AuthInterceptor>(),
-                get<CookiesInterceptor.ReceivedCookiesInterceptor>(),
-                get<CookiesInterceptor.AddCookiesInterceptor>()
-            ),
-            followRedirects = false
-        )
-    }
-    single { ChangeableBaseUrlInterceptor(getCurrentApiUrlUseCase = get()) }
-    single {
-        AuthInterceptor(
-            getSessionUseCase = get()
-        )
-    }
-    single {
-        CookiesInterceptor.ReceivedCookiesInterceptor(
-            cookieExtractor = get()
-        )
-    }
-    single {
-        CookiesInterceptor.AddCookiesInterceptor()
-    }
-    single { CookieExtractor() }
+        }
+        single(named(NO_REDIRECT_HTTP_CLIENT)) {
+            provideHttpClient(
+                loggingInterceptor = get(),
+                interceptors =
+                    listOf(
+                        get<ChangeableBaseUrlInterceptor>(),
+                        get<AuthInterceptor>(),
+                        get<CookiesInterceptor.ReceivedCookiesInterceptor>(),
+                        get<CookiesInterceptor.AddCookiesInterceptor>(),
+                    ),
+                followRedirects = false,
+            )
+        }
+        single { ChangeableBaseUrlInterceptor(getCurrentApiUrlUseCase = get()) }
+        single {
+            AuthInterceptor(
+                getSessionUseCase = get(),
+            )
+        }
+        single {
+            CookiesInterceptor.ReceivedCookiesInterceptor(
+                cookieExtractor = get(),
+            )
+        }
+        single {
+            CookiesInterceptor.AddCookiesInterceptor()
+        }
+        single { CookieExtractor() }
 
-    single<RestService> {
-        RetrofitRestService(
-            client = get(named(DEFAULT_HTTP_CLIENT)),
-            converterFactory = GsonConverterFactory.create(
-                get()
+        single<RestService> {
+            RetrofitRestService(
+                client = get(named(DEFAULT_HTTP_CLIENT)),
+                converterFactory =
+                    GsonConverterFactory.create(
+                        get(),
+                    ),
             )
-        )
-    }
-    single<RestService>(named(NO_REDIRECT_RETROFIT_SERVICE)) {
-        RetrofitRestService(
-            client = get(named(NO_REDIRECT_HTTP_CLIENT)),
-            converterFactory = GsonConverterFactory.create(
-                get()
+        }
+        single<RestService>(named(NO_REDIRECT_RETROFIT_SERVICE)) {
+            RetrofitRestService(
+                client = get(named(NO_REDIRECT_HTTP_CLIENT)),
+                converterFactory =
+                    GsonConverterFactory.create(
+                        get(),
+                    ),
             )
-        )
+        }
+        single {
+            ResponseHandler(
+                errorHeaderMapper = get(),
+            )
+        }
+        single {
+            ErrorHeaderMapper(
+                gson = get(),
+                context = get(),
+            )
+        }
     }
-    single {
-        ResponseHandler(
-            errorHeaderMapper = get()
-        )
-    }
-    single {
-        ErrorHeaderMapper(
-            gson = get(),
-            context = get()
-        )
-    }
-}
 
-private fun provideLoggingInterceptor(): HttpLoggingInterceptor {
-    return HttpLoggingInterceptor(logger = provideHttpLogger())
+private fun provideLoggingInterceptor(): HttpLoggingInterceptor =
+    HttpLoggingInterceptor(logger = provideHttpLogger())
         .apply { level = HttpLoggingInterceptor.Level.BASIC }
-}
 
-private fun provideHttpLogger(): HttpLoggingInterceptor.Logger = object : HttpLoggingInterceptor.Logger {
-    override fun log(message: String) {
-        Timber.d(message)
+private fun provideHttpLogger(): HttpLoggingInterceptor.Logger =
+    object : HttpLoggingInterceptor.Logger {
+        override fun log(message: String) {
+            Timber.d(message)
+        }
     }
-}
 
 private fun provideHttpClient(
     loggingInterceptor: HttpLoggingInterceptor,
     interceptors: List<Interceptor> = emptyList(),
-    followRedirects: Boolean = true
-) =
-    OkHttpClient.Builder()
-        .addNetworkInterceptor(loggingInterceptor)
-        .connectTimeout(Duration.ofSeconds(TIMEOUT_SECONDS))
-        .writeTimeout(Duration.ofSeconds(TIMEOUT_SECONDS))
-        .readTimeout(Duration.ofSeconds(TIMEOUT_SECONDS))
-        .apply {
-            interceptors.forEach { addInterceptor(it) }
-        }
-        .followRedirects(followRedirects)
-        .build()
+    followRedirects: Boolean = true,
+) = OkHttpClient
+    .Builder()
+    .addNetworkInterceptor(loggingInterceptor)
+    .connectTimeout(Duration.ofSeconds(TIMEOUT_SECONDS))
+    .writeTimeout(Duration.ofSeconds(TIMEOUT_SECONDS))
+    .readTimeout(Duration.ofSeconds(TIMEOUT_SECONDS))
+    .apply {
+        interceptors.forEach { addInterceptor(it) }
+    }.followRedirects(followRedirects)
+    .build()
 
 const val DEFAULT_HTTP_CLIENT = "DEFAULT_HTTP_CLIENT"
 const val COIL_HTTP_CLIENT = "COIL_HTTP_CLIENT"

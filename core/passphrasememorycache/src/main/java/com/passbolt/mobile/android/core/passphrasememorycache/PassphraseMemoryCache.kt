@@ -38,9 +38,8 @@ import timber.log.Timber
 
 class PassphraseMemoryCache(
     coroutineLaunchContext: CoroutineLaunchContext,
-    private val lifecycleOwner: LifecycleOwner
+    private val lifecycleOwner: LifecycleOwner,
 ) : DefaultLifecycleObserver {
-
     private var value: PotentialPassphrase = PotentialPassphrase.PassphraseNotPresent()
 
     private val timerFlow = timerFlow(TIMER_REPEAT_TIMES, TIMER_TICK_MILLIS)
@@ -65,9 +64,10 @@ class PassphraseMemoryCache(
     fun get() = value
 
     @Suppress("MagicNumber") // second has 1000 millis
-    fun getSessionDurationSeconds() = currentTimerMillis?.let {
-        (CACHE_EXPIRATION_MILLIS - it) / 1000
-    }
+    fun getSessionDurationSeconds() =
+        currentTimerMillis?.let {
+            (CACHE_EXPIRATION_MILLIS - it) / 1000
+        }
 
     fun hasPassphrase() = value is PotentialPassphrase.Passphrase
 

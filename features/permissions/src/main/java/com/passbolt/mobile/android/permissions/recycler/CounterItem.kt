@@ -29,17 +29,20 @@ import com.passbolt.mobile.android.feature.permissions.databinding.ItemCounterBi
  * @since v1.0
  */
 class CounterItem(
-    val counterValue: String
+    val counterValue: String,
 ) : AbstractBindingItem<ItemCounterBinding>() {
-
     override val type: Int
         get() = R.id.counterItem
 
-    override fun bindView(binding: ItemCounterBinding, payloads: List<Any>) {
+    override fun bindView(
+        binding: ItemCounterBinding,
+        payloads: List<Any>,
+    ) {
         binding.counterItem.text = counterValue
     }
 
-    override fun createBinding(inflater: LayoutInflater, parent: ViewGroup?): ItemCounterBinding {
-        return ItemCounterBinding.inflate(inflater, parent, false)
-    }
+    override fun createBinding(
+        inflater: LayoutInflater,
+        parent: ViewGroup?,
+    ): ItemCounterBinding = ItemCounterBinding.inflate(inflater, parent, false)
 }

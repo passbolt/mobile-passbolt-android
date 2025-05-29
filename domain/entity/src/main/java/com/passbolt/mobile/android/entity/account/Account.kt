@@ -30,5 +30,5 @@ class Account(
     val avatarUrl: String?,
     val url: String,
     val serverId: String?,
-    val label: String?
+    val label: String?,
 )

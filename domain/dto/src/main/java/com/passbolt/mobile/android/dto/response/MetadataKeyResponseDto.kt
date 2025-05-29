@@ -35,7 +35,7 @@ data class MetadataKeysResponseDto(
     val expired: String?,
     val deleted: String?,
     @SerializedName("metadata_private_keys")
-    val metadataPrivateKeys: List<MetadataPrivateKeyDto>
+    val metadataPrivateKeys: List<MetadataPrivateKeyDto>,
 )
 
 data class MetadataPrivateKeyDto(
@@ -51,5 +51,5 @@ data class MetadataPrivateKeyDto(
     val createdBy: UUID?,
     val modified: String,
     @SerializedName("modified_by")
-    val modifiedBy: UUID?
+    val modifiedBy: UUID?,
 )

@@ -10,9 +10,8 @@ import com.passbolt.mobile.android.ui.ResourceModel
 class RebuildResourceTablesUseCase(
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
     private val removeLocalResourcesUseCase: RemoveLocalResourcesUseCase,
-    private val addLocalResourcesUseCase: AddLocalResourcesUseCase
+    private val addLocalResourcesUseCase: AddLocalResourcesUseCase,
 ) : AsyncUseCase<RebuildResourceTablesUseCase.Input, Unit> {
-
     override suspend fun execute(input: Input) {
         val selectedAccount = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
         removeLocalResourcesUseCase.execute(UserIdInput(selectedAccount))
@@ -20,6 +19,6 @@ class RebuildResourceTablesUseCase(
     }
 
     data class Input(
-        val resources: List<ResourceModel>
+        val resources: List<ResourceModel>,
     )
 }

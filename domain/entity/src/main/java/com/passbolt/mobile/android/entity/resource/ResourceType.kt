@@ -33,5 +33,5 @@ data class ResourceType(
     val resourceTypeId: String,
     val name: String,
     val slug: String,
-    val deleted: ZonedDateTime?
+    val deleted: ZonedDateTime?,
 )

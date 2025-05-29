@@ -33,9 +33,8 @@ import kotlin.math.roundToInt
 
 class RoundedBackgroundSpan(
     @ColorInt private val backgroundColor: Int,
-    @ColorInt private val textColor: Int
+    @ColorInt private val textColor: Int,
 ) : ReplacementSpan() {
-
     override fun draw(
         canvas: Canvas,
         text: CharSequence,
@@ -45,7 +44,7 @@ class RoundedBackgroundSpan(
         top: Int,
         y: Int,
         bottom: Int,
-        paint: Paint
+        paint: Paint,
     ) {
         drawBackgroundRoundedRect(x, top, paint, text, start, end, bottom, canvas)
         drawText(paint, canvas, text, start, end, x, y)
@@ -58,7 +57,7 @@ class RoundedBackgroundSpan(
         start: Int,
         end: Int,
         x: Float,
-        y: Int
+        y: Int,
     ) {
         paint.color = textColor
         canvas.drawText(
@@ -67,7 +66,7 @@ class RoundedBackgroundSpan(
             end,
             x + ADDITIONAL_IN_BOX_PADDING + ADDITIONAL_OUT_BOX_PADDING,
             y.toFloat(),
-            paint
+            paint,
         )
     }
 
@@ -80,21 +79,29 @@ class RoundedBackgroundSpan(
         start: Int,
         end: Int,
         bottom: Int,
-        canvas: Canvas
+        canvas: Canvas,
     ) {
-        val bgRect = RectF(
-            x + ADDITIONAL_OUT_BOX_PADDING,
-            top.toFloat(),
-            x + measureText(paint, text, start, end) +
+        val bgRect =
+            RectF(
+                x + ADDITIONAL_OUT_BOX_PADDING,
+                top.toFloat(),
+                x + measureText(paint, text, start, end) +
                     2 * ADDITIONAL_IN_BOX_PADDING + ADDITIONAL_OUT_BOX_PADDING,
-            bottom.toFloat()
-        )
+                bottom.toFloat(),
+            )
         paint.color = backgroundColor
         canvas.drawRoundRect(bgRect, CORNER_RADIUS.toFloat(), CORNER_RADIUS.toFloat(), paint)
     }
 
-    override fun getSize(paint: Paint, text: CharSequence?, start: Int, end: Int, fm: Paint.FontMetricsInt?): Int {
-        val width = paint.measureText(text, start, end).roundToInt() +
+    override fun getSize(
+        paint: Paint,
+        text: CharSequence?,
+        start: Int,
+        end: Int,
+        fm: Paint.FontMetricsInt?,
+    ): Int {
+        val width =
+            paint.measureText(text, start, end).roundToInt() +
                 2 * ADDITIONAL_IN_BOX_PADDING + 2 * ADDITIONAL_OUT_BOX_PADDING
         val metrics = paint.fontMetricsInt
         if (fm != null) {
@@ -106,8 +113,12 @@ class RoundedBackgroundSpan(
         return width
     }
 
-    private fun measureText(paint: Paint, text: CharSequence, start: Int, end: Int) =
-        paint.measureText(text, start, end)
+    private fun measureText(
+        paint: Paint,
+        text: CharSequence,
+        start: Int,
+        end: Int,
+    ) = paint.measureText(text, start, end)
 
     companion object {
         private val CORNER_RADIUS = 2.px

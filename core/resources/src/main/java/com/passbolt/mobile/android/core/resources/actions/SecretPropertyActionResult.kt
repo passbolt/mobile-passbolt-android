@@ -26,11 +26,10 @@ package com.passbolt.mobile.android.core.resources.actions
 import com.passbolt.mobile.android.common.types.ClipboardLabel
 
 sealed class SecretPropertyActionResult<T> {
-
     data class Success<T>(
         val label: ClipboardLabel,
         val isSecret: Boolean,
-        val result: T
+        val result: T,
     ) : SecretPropertyActionResult<T>()
 
     class FetchFailure<T> : SecretPropertyActionResult<T>()

@@ -29,7 +29,7 @@ data class ResourceTypeModel(
     val id: UUID,
     val slug: String,
     val name: String,
-    val deleted: ZonedDateTime?
+    val deleted: ZonedDateTime?,
 ) {
     val isDeleted: Boolean = deleted != null
 }

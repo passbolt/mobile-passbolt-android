@@ -24,5 +24,5 @@ package com.passbolt.mobile.android.core.autofill.accessibility
  */
 data class Browser(
     val packageName: String,
-    val viewId: String
+    val viewId: String,
 )

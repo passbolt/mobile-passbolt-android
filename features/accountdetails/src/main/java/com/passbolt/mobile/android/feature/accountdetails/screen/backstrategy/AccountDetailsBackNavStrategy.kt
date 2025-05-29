@@ -30,13 +30,17 @@ interface AccountDetailsBackNavStrategy {
     fun backClick()
 }
 
-class OwnActivityBackNavStrategy(private val activity: Activity) : AccountDetailsBackNavStrategy {
+class OwnActivityBackNavStrategy(
+    private val activity: Activity,
+) : AccountDetailsBackNavStrategy {
     override fun backClick() {
         activity.finish()
     }
 }
 
-class FragmentBackstackNavStrategy(private val navController: NavController) : AccountDetailsBackNavStrategy {
+class FragmentBackstackNavStrategy(
+    private val navController: NavController,
+) : AccountDetailsBackNavStrategy {
     override fun backClick() {
         navController.popBackStack()
     }

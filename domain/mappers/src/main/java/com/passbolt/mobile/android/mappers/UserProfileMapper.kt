@@ -26,13 +26,15 @@ import com.passbolt.mobile.android.ui.UserProfileModel
  * @since v1.0
  */
 class UserProfileMapper {
-
-    fun mapToUi(profileResponseDto: UserProfileResponseDto?, username: String) = profileResponseDto?.let {
+    fun mapToUi(
+        profileResponseDto: UserProfileResponseDto?,
+        username: String,
+    ) = profileResponseDto?.let {
         UserProfileModel(
             username = username,
             firstName = profileResponseDto.firstName,
             lastName = profileResponseDto.lastName,
-            avatarUrl = profileResponseDto.avatar?.url?.medium
+            avatarUrl = profileResponseDto.avatar?.url?.medium,
         )
     }
 }

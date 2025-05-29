@@ -27,11 +27,11 @@ import com.passbolt.mobile.android.core.networking.callWithHandler
  */
 class CheckUrlLinksRepository(
     private val restServiceProvider: RestServiceProvider,
-    private val responseHandler: ResponseHandler
+    private val responseHandler: ResponseHandler,
 ) {
-
-    suspend fun getAssetLinks(url: String) = callWithHandler(responseHandler) {
-        val api = restServiceProvider.get(url).create(AssetLinksApi::class.java)
-        api.getAssetLinks()
-    }
+    suspend fun getAssetLinks(url: String) =
+        callWithHandler(responseHandler) {
+            val api = restServiceProvider.get(url).create(AssetLinksApi::class.java)
+            api.getAssetLinks()
+        }
 }

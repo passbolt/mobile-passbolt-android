@@ -29,12 +29,11 @@ import androidx.core.content.ContextCompat
  * @since v1.0
  */
 class CameraInformationProvider(
-    private val context: Context
+    private val context: Context,
 ) {
-
     fun isCameraAvailable(): Boolean =
         context.packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA) &&
-                (context.getSystemService(Context.CAMERA_SERVICE) as CameraManager).cameraIdList.isNotEmpty()
+            (context.getSystemService(Context.CAMERA_SERVICE) as CameraManager).cameraIdList.isNotEmpty()
 
     fun isCameraPermissionGranted(): Boolean =
         ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED

@@ -26,15 +26,16 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-val idlingResourcesModule = module {
-    singleOf(::SignInIdlingResource)
-    singleOf(::ResourcesFullRefreshIdlingResource)
-    singleOf(::SignOutIdlingResource)
-    singleOf(::CreateResourceIdlingResource)
-    singleOf(::UpdateResourceIdlingResource)
-    singleOf(::DeleteResourceIdlingResource)
-    singleOf(::CreateFolderIdlingResource)
-    singleOf(::TransferAccountIdlingResource)
-    singleOf(::ResourceDetailActionIdlingResource)
-    singleOf(::CreateMenuModelIdlingResource)
-}
+val idlingResourcesModule =
+    module {
+        singleOf(::SignInIdlingResource)
+        singleOf(::ResourcesFullRefreshIdlingResource)
+        singleOf(::SignOutIdlingResource)
+        singleOf(::CreateResourceIdlingResource)
+        singleOf(::UpdateResourceIdlingResource)
+        singleOf(::DeleteResourceIdlingResource)
+        singleOf(::CreateFolderIdlingResource)
+        singleOf(::TransferAccountIdlingResource)
+        singleOf(::ResourceDetailActionIdlingResource)
+        singleOf(::CreateMenuModelIdlingResource)
+    }

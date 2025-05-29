@@ -26,7 +26,6 @@ import com.passbolt.mobile.android.ui.SwitchAccountUiModel
  * @since v1.0
  */
 class SwitchAccountUiItemsMapper {
-
     fun mapModelToItem(model: SwitchAccountUiModel): GenericItem =
         when (model) {
             is SwitchAccountUiModel.AccountItem -> SwitchAccountItem(model)

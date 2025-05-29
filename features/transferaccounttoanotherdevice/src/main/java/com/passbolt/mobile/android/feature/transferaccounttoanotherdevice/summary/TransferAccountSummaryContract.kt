@@ -27,21 +27,35 @@ import com.passbolt.mobile.android.core.mvp.BaseContract
  * @since v1.0
  */
 interface TransferAccountSummaryContract {
-
     interface View : BaseContract.View {
-        fun setTitle(@StringRes title: Int)
+        fun setTitle(
+            @StringRes title: Int,
+        )
+
         fun setDescription(message: String)
-        fun setButtonLabel(@StringRes text: Int)
-        fun setIcon(@DrawableRes icon: Int)
+
+        fun setButtonLabel(
+            @StringRes text: Int,
+        )
+
+        fun setIcon(
+            @DrawableRes icon: Int,
+        )
+
         fun finish()
+
         fun showTryAgain()
+
         fun navigateToTransferAccountStart()
     }
 
     interface Presenter : BaseContract.Presenter<View> {
         fun argsRetrieved(status: TransferAccountStatus)
+
         fun buttonClick()
+
         fun backClick()
+
         fun tryAgainClick()
     }
 }

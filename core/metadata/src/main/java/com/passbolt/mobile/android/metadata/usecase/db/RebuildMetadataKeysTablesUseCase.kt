@@ -7,16 +7,15 @@ import com.passbolt.mobile.android.ui.ParsedMetadataKeyModel
 
 class RebuildMetadataKeysTablesUseCase(
     private val removeLocalMetadataKeysUseCase: RemoveLocalMetadataKeysUseCase,
-    private val addLocalMetadataKeys: AddLocalMetadataKeysUseCase
+    private val addLocalMetadataKeys: AddLocalMetadataKeysUseCase,
 ) : AsyncUseCase<RebuildMetadataKeysTablesUseCase.Input, Unit>,
     SelectedAccountUseCase {
-
     override suspend fun execute(input: Input) {
         removeLocalMetadataKeysUseCase.execute(UserIdInput(selectedAccountId))
         addLocalMetadataKeys.execute(AddLocalMetadataKeysUseCase.Input(input.metadataKeys))
     }
 
     data class Input(
-        val metadataKeys: List<ParsedMetadataKeyModel>
+        val metadataKeys: List<ParsedMetadataKeyModel>,
     )
 }

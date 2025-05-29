@@ -33,13 +33,15 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
  * @since v1.0
  */
 class GroupUserItem(
-    val model: UserModel
+    val model: UserModel,
 ) : AbstractBindingItem<ItemGroupUserBinding>() {
-
     override val type: Int
         get() = R.id.groupUserItem
 
-    override fun bindView(binding: ItemGroupUserBinding, payloads: List<Any>) {
+    override fun bindView(
+        binding: ItemGroupUserBinding,
+        payloads: List<Any>,
+    ) {
         with(binding) {
             root.load(model.profile.avatarUrl) {
                 error(CoreUiR.drawable.ic_user_avatar)
@@ -49,7 +51,8 @@ class GroupUserItem(
         }
     }
 
-    override fun createBinding(inflater: LayoutInflater, parent: ViewGroup?): ItemGroupUserBinding {
-        return ItemGroupUserBinding.inflate(inflater, parent, false)
-    }
+    override fun createBinding(
+        inflater: LayoutInflater,
+        parent: ViewGroup?,
+    ): ItemGroupUserBinding = ItemGroupUserBinding.inflate(inflater, parent, false)
 }

@@ -33,5 +33,5 @@ data class PasswordExpirySettingsDto(
     @SerializedName("automatic_update")
     val automaticUpdate: Boolean,
     @SerializedName("default_expiry_period")
-    val defaultExpiryPeriod: Int?
+    val defaultExpiryPeriod: Int?,
 )

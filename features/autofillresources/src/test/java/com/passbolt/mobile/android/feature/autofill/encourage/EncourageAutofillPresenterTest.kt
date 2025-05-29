@@ -15,15 +15,15 @@ import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
 
 class EncourageAutofillPresenterTest : KoinTest {
-
     private val presenter: EncourageAutofillContract.Presenter by inject()
     private val view: EncourageAutofillContract.View = mock()
 
     @get:Rule
-    val koinTestRule = KoinTestRule.create {
-        printLogger(Level.ERROR)
-        modules(encourageAutofillModule)
-    }
+    val koinTestRule =
+        KoinTestRule.create {
+            printLogger(Level.ERROR)
+            modules(encourageAutofillModule)
+        }
 
     @Before
     fun setUp() {

@@ -51,15 +51,15 @@ import java.util.UUID
 
 @ExperimentalCoroutinesApi
 class UserPermissionsDetailsPresenterTest : KoinTest {
-
     private val presenter: UserPermissionsContract.Presenter by inject()
     private val view: UserPermissionsContract.View = mock()
 
     @get:Rule
-    val koinTestRule = KoinTestRule.create {
-        printLogger(Level.ERROR)
-        modules(testUserPermissionsDetailsModule)
-    }
+    val koinTestRule =
+        KoinTestRule.create {
+            printLogger(Level.ERROR)
+            modules(testUserPermissionsDetailsModule)
+        }
 
     @Before
     fun setup() {
@@ -74,7 +74,7 @@ class UserPermissionsDetailsPresenterTest : KoinTest {
     fun `read only permission should be shown in read mode`() {
         presenter.argsRetrieved(
             USER_PERMISSION,
-            PermissionsMode.VIEW
+            PermissionsMode.VIEW,
         )
 
         verify(view).showPermission(USER_PERMISSION.permission)
@@ -84,7 +84,7 @@ class UserPermissionsDetailsPresenterTest : KoinTest {
     fun `editable permission should be shown in edit mode`() {
         presenter.argsRetrieved(
             USER_PERMISSION,
-            PermissionsMode.EDIT
+            PermissionsMode.EDIT,
         )
 
         verify(view).showPermissionChoices(USER_PERMISSION.permission)
@@ -95,7 +95,7 @@ class UserPermissionsDetailsPresenterTest : KoinTest {
     fun `user details should be shown`() {
         presenter.argsRetrieved(
             USER_PERMISSION,
-            PermissionsMode.EDIT
+            PermissionsMode.EDIT,
         )
 
         verify(view).showUserData(USER)
@@ -105,7 +105,7 @@ class UserPermissionsDetailsPresenterTest : KoinTest {
     fun `permission update should be handled correct`() {
         presenter.argsRetrieved(
             USER_PERMISSION,
-            PermissionsMode.EDIT
+            PermissionsMode.EDIT,
         )
         presenter.onPermissionSelected(ResourcePermission.UPDATE)
         presenter.saveClick()
@@ -121,7 +121,7 @@ class UserPermissionsDetailsPresenterTest : KoinTest {
     fun `permission deletion should be handled correct`() {
         presenter.argsRetrieved(
             USER_PERMISSION,
-            PermissionsMode.EDIT
+            PermissionsMode.EDIT,
         )
         presenter.deletePermissionClick()
         presenter.permissionDeleteConfirmClick()
@@ -132,41 +132,45 @@ class UserPermissionsDetailsPresenterTest : KoinTest {
     }
 
     private companion object {
-        private val USER_WITH_AVATAR = UserWithAvatar(
-            userId = "userId",
-            firstName = "first",
-            lastName = "last",
-            userName = "userName",
-            isDisabled = false,
-            avatarUrl = "avartUrl"
-        )
-        private val USER = UserModel(
-            id = USER_WITH_AVATAR.userId,
-            userName = USER_WITH_AVATAR.userName,
-            disabled = false,
-            gpgKey = GpgKeyModel(
-                armoredKey = "keyData",
-                fingerprint = "fingerprint",
-                bits = 1,
-                uid = "uid",
-                keyId = "keyid",
-                type = "rsa",
-                keyExpirationDate = ZonedDateTime.now(),
-                keyCreationDate = ZonedDateTime.now(),
-                id = UUID.randomUUID().toString()
-            ),
-            profile = UserProfileModel(
-                username = "username",
-                firstName = USER_WITH_AVATAR.firstName,
-                lastName = USER_WITH_AVATAR.lastName,
-                avatarUrl = USER_WITH_AVATAR.avatarUrl
+        private val USER_WITH_AVATAR =
+            UserWithAvatar(
+                userId = "userId",
+                firstName = "first",
+                lastName = "last",
+                userName = "userName",
+                isDisabled = false,
+                avatarUrl = "avartUrl",
             )
-        )
+        private val USER =
+            UserModel(
+                id = USER_WITH_AVATAR.userId,
+                userName = USER_WITH_AVATAR.userName,
+                disabled = false,
+                gpgKey =
+                    GpgKeyModel(
+                        armoredKey = "keyData",
+                        fingerprint = "fingerprint",
+                        bits = 1,
+                        uid = "uid",
+                        keyId = "keyid",
+                        type = "rsa",
+                        keyExpirationDate = ZonedDateTime.now(),
+                        keyCreationDate = ZonedDateTime.now(),
+                        id = UUID.randomUUID().toString(),
+                    ),
+                profile =
+                    UserProfileModel(
+                        username = "username",
+                        firstName = USER_WITH_AVATAR.firstName,
+                        lastName = USER_WITH_AVATAR.lastName,
+                        avatarUrl = USER_WITH_AVATAR.avatarUrl,
+                    ),
+            )
         private val USER_PERMISSION =
             PermissionModelUi.UserPermissionModel(
                 permission = ResourcePermission.READ,
                 permissionId = "permId",
-                user = USER_WITH_AVATAR
+                user = USER_WITH_AVATAR,
             )
     }
 }

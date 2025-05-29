@@ -23,11 +23,9 @@ package com.passbolt.mobile.android.passboltapi.favourites
  * @since v1.0
  */
 internal class FavouritesRemoteDataSource(
-    private val favouritesApi: FavouritesApi
+    private val favouritesApi: FavouritesApi,
 ) : FavouritesDataSource {
-
-    override suspend fun addToFavourites(resourceId: String) =
-        favouritesApi.addToFavourites(resourceId).body
+    override suspend fun addToFavourites(resourceId: String) = favouritesApi.addToFavourites(resourceId).body
 
     override suspend fun removeFromFavourites(favouriteId: String) {
         favouritesApi.removeFromFavourites(favouriteId)

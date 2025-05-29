@@ -25,18 +25,19 @@ package com.passbolt.mobile.android.core.ui.formatter
 
 @Suppress("MagicNumber")
 class OtpFormatter {
-
     fun format(otp: String) =
         when (otp.length) {
-            6 -> "%s %s".format(
-                otp.substring(0..2),
-                otp.substring(3..5)
-            )
-            7, 8 -> "%s %s %s".format(
-                otp.substring(0..2),
-                otp.substring(3..5),
-                otp.substring(6)
-            )
+            6 ->
+                "%s %s".format(
+                    otp.substring(0..2),
+                    otp.substring(3..5),
+                )
+            7, 8 ->
+                "%s %s %s".format(
+                    otp.substring(0..2),
+                    otp.substring(3..5),
+                    otp.substring(6),
+                )
             else -> "%s".format(otp)
         }
 }

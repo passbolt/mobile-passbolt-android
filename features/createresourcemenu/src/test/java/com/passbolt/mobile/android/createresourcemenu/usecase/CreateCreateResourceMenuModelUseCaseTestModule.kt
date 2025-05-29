@@ -6,7 +6,6 @@ import com.passbolt.mobile.android.metadata.usecase.GetMetadataTypesSettingsUseC
 import org.koin.dsl.module
 import org.mockito.kotlin.mock
 
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -34,12 +33,13 @@ internal val mockGetFeatureFlagsUseCase = mock<GetFeatureFlagsUseCase>()
 internal val mockGetMetadataTypesSettingsUseCase = mock<GetMetadataTypesSettingsUseCase>()
 internal val mockResourceTypeIdToSlugMappingProvider = mock<ResourceTypeIdToSlugMappingProvider>()
 
-internal val testCreateCreateResourceMenuModelUseCaseModule = module {
-    factory {
-        CreateCreateResourceMenuModelUseCase(
-            getFeatureFlagsUseCase = mockGetFeatureFlagsUseCase,
-            getMetadataTypesSettingsUseCase = mockGetMetadataTypesSettingsUseCase,
-            idToSlugMappingProvider = mockResourceTypeIdToSlugMappingProvider
-        )
+internal val testCreateCreateResourceMenuModelUseCaseModule =
+    module {
+        factory {
+            CreateCreateResourceMenuModelUseCase(
+                getFeatureFlagsUseCase = mockGetFeatureFlagsUseCase,
+                getMetadataTypesSettingsUseCase = mockGetMetadataTypesSettingsUseCase,
+                idToSlugMappingProvider = mockResourceTypeIdToSlugMappingProvider,
+            )
+        }
     }
-}

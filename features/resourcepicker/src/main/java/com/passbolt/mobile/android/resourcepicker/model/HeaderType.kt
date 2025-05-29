@@ -25,5 +25,5 @@ package com.passbolt.mobile.android.resourcepicker.model
 
 enum class HeaderType {
     OTHER,
-    SUGGESTED
+    SUGGESTED,
 }

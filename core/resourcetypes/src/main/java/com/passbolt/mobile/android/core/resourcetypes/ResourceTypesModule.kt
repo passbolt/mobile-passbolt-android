@@ -28,12 +28,13 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-val resourceTypesModule = module {
-    resourceTypesDbModule()
+val resourceTypesModule =
+    module {
+        resourceTypesDbModule()
 
-    singleOf(::GetResourceTypesUseCase)
-    singleOf(::ResourceTypesInteractor)
+        singleOf(::GetResourceTypesUseCase)
+        singleOf(::ResourceTypesInteractor)
 
-    singleOf(::ResourceTypesUpdatesAdjacencyGraph)
-    singleOf(::ResourceTypesUpdatesAdjacencyGraph)
-}
+        singleOf(::ResourceTypesUpdatesAdjacencyGraph)
+        singleOf(::ResourceTypesUpdatesAdjacencyGraph)
+    }

@@ -32,7 +32,7 @@ fun Module.authenticationMainModule() {
             AuthenticationMainPresenter(
                 getSelectedAccountUseCase = get(),
                 getAccountDataUseCase = get(),
-                saveCurrentApiUrlUseCase = get()
+                saveCurrentApiUrlUseCase = get(),
             )
         }
     }
@@ -43,7 +43,7 @@ fun Module.authenticationMainModule() {
             getSessionUseCase = get(),
             saveSessionUseCase = get(),
             cookieExtractor = get(),
-            getAccountDataUseCase = get()
+            getAccountDataUseCase = get(),
         )
     }
 }

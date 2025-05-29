@@ -10,26 +10,26 @@ import kotlinx.serialization.json.Json
 import timber.log.Timber
 
 class QrScanResultsMapper(
-    private val json: Json
+    private val json: Json,
 ) {
+    fun apply(scanResult: BarcodeScanResult) =
+        when (scanResult) {
+            is BarcodeScanResult.Failure ->
+                ParseResult.ScanFailure(scanResult.throwable)
+            is BarcodeScanResult.MultipleBarcodes ->
+                ParseResult.UserResolvableError(MULTIPLE_BARCODES)
+            is BarcodeScanResult.NoBarcodeInRange ->
+                ParseResult.UserResolvableError(NO_BARCODES_IN_RANGE)
+            is BarcodeScanResult.SingleBarcode ->
+                if (isPassboltQr(scanResult.data)) {
+                    mapPassboltQr(scanResult.data)
+                } else {
+                    ParseResult.UserResolvableError(NOT_A_PASSBOLT_QR)
+                }
+        }
 
-    fun apply(scanResult: BarcodeScanResult) = when (scanResult) {
-        is BarcodeScanResult.Failure ->
-            ParseResult.ScanFailure(scanResult.throwable)
-        is BarcodeScanResult.MultipleBarcodes ->
-            ParseResult.UserResolvableError(MULTIPLE_BARCODES)
-        is BarcodeScanResult.NoBarcodeInRange ->
-            ParseResult.UserResolvableError(NO_BARCODES_IN_RANGE)
-        is BarcodeScanResult.SingleBarcode ->
-            if (isPassboltQr(scanResult.data)) {
-                mapPassboltQr(scanResult.data)
-            } else {
-                ParseResult.UserResolvableError(NOT_A_PASSBOLT_QR)
-            }
-    }
-
-    private fun mapPassboltQr(scanResult: ByteArray?): ParseResult {
-        return try {
+    private fun mapPassboltQr(scanResult: ByteArray?): ParseResult =
+        try {
             val data = requireNotNull(scanResult) // already checked for null during isPassboltQr
             val reservedBytesDto = createReservedBytesDto(data)
             val payloadBytes = ByteArray(data.size - RESERVED_BYTES_COUNT) { data[it + RESERVED_BYTES_COUNT] }
@@ -38,7 +38,8 @@ class QrScanResultsMapper(
                 QR_TRANSFER_PROTOCOL_VERSION -> {
                     if (reservedBytesDto.page == FIRST_PAGE_INDEX) {
                         ParseResult.PassboltQr.FirstPage(
-                            reservedBytesDto, json.decodeFromString(String(payloadBytes))
+                            reservedBytesDto,
+                            json.decodeFromString(String(payloadBytes)),
                         )
                     } else {
                         ParseResult.PassboltQr.SubsequentPage(reservedBytesDto, payloadBytes)
@@ -46,7 +47,8 @@ class QrScanResultsMapper(
                 }
                 ACCOUNT_KIT_TRANSFER_PROTOCOL_VERSION -> {
                     ParseResult.PassboltQr.AccountKitPage(
-                        reservedBytesDto, json.decodeFromString(String(payloadBytes))
+                        reservedBytesDto,
+                        json.decodeFromString(String(payloadBytes)),
                     )
                 }
                 else -> error("Unsupported protocol version: ${reservedBytesDto.version}")
@@ -55,7 +57,6 @@ class QrScanResultsMapper(
             Timber.e(exception)
             ParseResult.Failure(exception)
         }
-    }
 
     private fun createReservedBytesDto(bytes: ByteArray): ReservedBytesDto {
         // the first byte contains transfer protocol version
@@ -65,17 +66,18 @@ class QrScanResultsMapper(
         return ReservedBytesDto(version, pageNumber)
     }
 
-    private fun isPassboltQr(qrData: ByteArray?) = if (qrData == null) {
-        false
-    } else {
-        try {
-            val reservedBytes = createReservedBytesDto(qrData)
-            reservedBytes.version in supportedProtocolVersions && reservedBytes.page in (0..Short.MAX_VALUE)
-        } catch (exception: Exception) {
-            Timber.e(exception, "Could not process reserved bytes from QR code")
+    private fun isPassboltQr(qrData: ByteArray?) =
+        if (qrData == null) {
             false
+        } else {
+            try {
+                val reservedBytes = createReservedBytesDto(qrData)
+                reservedBytes.version in supportedProtocolVersions && reservedBytes.page in (0..Short.MAX_VALUE)
+            } catch (exception: Exception) {
+                Timber.e(exception, "Could not process reserved bytes from QR code")
+                false
+            }
         }
-    }
 
     companion object {
         @VisibleForTesting
@@ -92,9 +94,11 @@ class QrScanResultsMapper(
 
         const val FIRST_PAGE_INDEX = 0
 
-        private val supportedProtocolVersions = setOf(
-            QR_TRANSFER_PROTOCOL_VERSION, ACCOUNT_KIT_TRANSFER_PROTOCOL_VERSION
-        )
+        private val supportedProtocolVersions =
+            setOf(
+                QR_TRANSFER_PROTOCOL_VERSION,
+                ACCOUNT_KIT_TRANSFER_PROTOCOL_VERSION,
+            )
         private const val RESERVED_BYTES_NUMBER_RADIX = 16
         private const val RESERVED_BYTES_COUNT = 3
     }

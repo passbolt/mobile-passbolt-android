@@ -29,11 +29,11 @@ import kotlinx.parcelize.Parcelize
 sealed class ResourceListUiModel : Parcelable {
     @Parcelize
     class Data(
-        val resourceModel: ResourceModel
+        val resourceModel: ResourceModel,
     ) : ResourceListUiModel()
 
     @Parcelize
     class Header(
-        val title: String
+        val title: String,
     ) : ResourceListUiModel()
 }

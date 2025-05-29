@@ -28,10 +28,9 @@ import com.passbolt.mobile.android.encryptedstorage.EncryptedSharedPreferencesFa
  */
 
 class SaveResourcesDatabasePassphraseUseCase(
-    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory
+    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory,
 ) : UseCase<SaveResourcesDatabasePassphraseUseCase.Input, Unit>,
     SelectedAccountUseCase {
-
     override fun execute(input: Input) {
         val sharedPreferences =
             encryptedSharedPreferencesFactory.get("${RESOURCE_DATABASE_ALIAS}_$selectedAccountId.xml")
@@ -43,6 +42,6 @@ class SaveResourcesDatabasePassphraseUseCase(
     }
 
     data class Input(
-        val passphrase: String
+        val passphrase: String,
     )
 }

@@ -29,17 +29,29 @@ import com.passbolt.mobile.android.ui.UserModel
  * @since v1.0
  */
 interface GroupPermissionsContract {
-
     interface View : BaseAuthenticatedContract.View {
         fun showPermission(permission: ResourcePermission)
+
         fun showGroupName(groupName: String)
-        fun showGroupUsers(users: List<UserModel>, counterValue: List<String>, overlapOffset: Int)
+
+        fun showGroupUsers(
+            users: List<UserModel>,
+            counterValue: List<String>,
+            overlapOffset: Int,
+        )
+
         fun navigateToGroupMembers(groupId: String)
+
         fun showPermissionChoices(currentPermission: ResourcePermission)
+
         fun showSaveLayout()
+
         fun setUpdatedPermissionResult(permission: PermissionModelUi.GroupPermissionModel)
+
         fun navigateBack()
+
         fun showPermissionDeleteConfirmation()
+
         fun setDeletePermissionResult(groupPermission: PermissionModelUi.GroupPermissionModel)
     }
 
@@ -48,13 +60,17 @@ interface GroupPermissionsContract {
             permission: PermissionModelUi.GroupPermissionModel,
             mode: PermissionsMode,
             membersRecyclerWidth: Int,
-            membersItemWidth: Float
+            membersItemWidth: Float,
         )
 
         fun groupMembersRecyclerClick()
+
         fun onPermissionSelected(permission: ResourcePermission)
+
         fun saveButtonClick()
+
         fun deletePermissionClick()
+
         fun permissionDeleteConfirmClick()
     }
 }

@@ -31,12 +31,13 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-val usersModule = module {
-    userProfileModule()
-    usersDbModule()
+val usersModule =
+    module {
+        userProfileModule()
+        usersDbModule()
 
-    singleOf(::FetchCurrentUserUseCase)
-    singleOf(::FetchUsersUseCase)
-    singleOf(::RebuildUsersTablesUseCase)
-    singleOf(::UsersInteractor)
-}
+        singleOf(::FetchCurrentUserUseCase)
+        singleOf(::FetchUsersUseCase)
+        singleOf(::RebuildUsersTablesUseCase)
+        singleOf(::UsersInteractor)
+    }

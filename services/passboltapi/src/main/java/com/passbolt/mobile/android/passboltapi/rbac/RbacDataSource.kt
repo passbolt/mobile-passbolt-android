@@ -26,6 +26,5 @@ package com.passbolt.mobile.android.passboltapi.rbac
 import com.passbolt.mobile.android.dto.response.RbacPermissionDto
 
 interface RbacDataSource {
-
     suspend fun getMyRbacPermissions(): List<RbacPermissionDto>
 }

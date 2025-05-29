@@ -24,7 +24,7 @@ Run verifications:
     - >
       ./gradlew --no-daemon --build-cache 
       detekt 
-      ktlint 
+      ktlintCheck 
       unitTest
       lintRelease 
       licenseeRelease 

@@ -27,14 +27,15 @@ import com.passbolt.mobile.android.core.networking.callWithHandler
  */
 class UsersRepository(
     private val usersDataSource: UsersDataSource,
-    private val responseHandler: ResponseHandler
+    private val responseHandler: ResponseHandler,
 ) {
+    suspend fun getUsers(hasAccessTo: List<String>? = null) =
+        callWithHandler(responseHandler) {
+            usersDataSource.getUsers(hasAccessTo)
+        }
 
-    suspend fun getUsers(hasAccessTo: List<String>? = null) = callWithHandler(responseHandler) {
-        usersDataSource.getUsers(hasAccessTo)
-    }
-
-    suspend fun getMyProfile() = callWithHandler(responseHandler) {
-        usersDataSource.getMyProfile()
-    }
+    suspend fun getMyProfile() =
+        callWithHandler(responseHandler) {
+            usersDataSource.getMyProfile()
+        }
 }

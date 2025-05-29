@@ -23,8 +23,9 @@ package com.passbolt.mobile.android.core.accounts.usecase
  * @since v1.0
  */
 
-class PrivateKeyFileName(userId: String) {
-
+class PrivateKeyFileName(
+    userId: String,
+) {
     val name = PRIVATE_KEY_FILE_NAME_FORMAT.format(userId)
 
     private companion object {

@@ -37,15 +37,15 @@ import org.koin.test.inject
  */
 
 class QrMapperTest : KoinTest {
-
     private val qrMapper: QrScanResultsMapper by inject()
 
     @ExperimentalCoroutinesApi
     @get:Rule
-    val koinTestRule = KoinTestRule.create {
-        printLogger(Level.ERROR)
-        modules(testModule, testMapperModule)
-    }
+    val koinTestRule =
+        KoinTestRule.create {
+            printLogger(Level.ERROR)
+            modules(testModule, testMapperModule)
+        }
 
     @Test
     fun `mapper should return failure when qr input cannot be parsed`() {

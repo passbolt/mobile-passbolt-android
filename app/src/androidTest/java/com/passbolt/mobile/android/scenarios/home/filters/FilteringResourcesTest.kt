@@ -53,40 +53,44 @@ import org.koin.test.KoinTest
 import kotlin.test.BeforeTest
 import com.google.android.material.R as MaterialR
 
-
 @RunWith(AndroidJUnit4::class)
 @LargeTest
 class FilteringResourcesTest : KoinTest {
-
     @get:Rule
-    val startUpActivityRule = lazyActivitySetupScenarioRule<AuthenticationMainActivity>(koinOverrideModules = listOf(
-        instrumentationTestsModule
-    ), intentSupplier = {
-        ActivityIntents.authentication(
-            InstrumentationRegistry.getInstrumentation().targetContext,
-            ActivityIntents.AuthConfig.Startup,
-            AppContext.APP,
-            managedAccountIntentCreator.getUserLocalId()
+    val startUpActivityRule =
+        lazyActivitySetupScenarioRule<AuthenticationMainActivity>(
+            koinOverrideModules =
+                listOf(
+                    instrumentationTestsModule,
+                ),
+            intentSupplier = {
+                ActivityIntents.authentication(
+                    InstrumentationRegistry.getInstrumentation().targetContext,
+                    ActivityIntents.AuthConfig.Startup,
+                    AppContext.APP,
+                    managedAccountIntentCreator.getUserLocalId(),
+                )
+            },
         )
-    })
 
     private val managedAccountIntentCreator: ManagedAccountIntentCreator by inject()
 
     @get:Rule
-    val idlingResourceRule = let {
-        val signInIdlingResource: SignInIdlingResource by inject()
-        val resourcesFullRefreshIdlingResource: ResourcesFullRefreshIdlingResource by inject()
-        IdlingResourceRule(arrayOf(signInIdlingResource, resourcesFullRefreshIdlingResource))
-    }
+    val idlingResourceRule =
+        let {
+            val signInIdlingResource: SignInIdlingResource by inject()
+            val resourcesFullRefreshIdlingResource: ResourcesFullRefreshIdlingResource by inject()
+            IdlingResourceRule(arrayOf(signInIdlingResource, resourcesFullRefreshIdlingResource))
+        }
 
     @BeforeTest
     fun setup() {
         signIn(managedAccountIntentCreator.getPassphrase())
     }
 
+    //  https://passbolt.testrail.io/index.php?/cases/view/2621
     @Test
     @FlakyTest(detail = "It is currently failing nondeterministic on Android 12 - reason unknown")
-    //  https://passbolt.testrail.io/index.php?/cases/view/2621
     fun asALoggedInMobileUserOnTheHomepageICanChangeTheCurrentActiveFilter() {
         //        Given       that I am a logged in mobile user
         //        And         the active filter is   not   <filter>

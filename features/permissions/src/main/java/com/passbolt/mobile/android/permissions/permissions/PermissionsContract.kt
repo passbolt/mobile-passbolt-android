@@ -26,55 +26,89 @@ import com.passbolt.mobile.android.ui.PermissionModelUi
  * @since v1.0
  */
 interface PermissionsContract {
-
     interface View : DataRefreshViewReactiveContract.View {
         fun showPermissions(permissions: List<PermissionModelUi>)
+
         fun navigateToGroupPermissionDetails(
             permission: PermissionModelUi.GroupPermissionModel,
-            mode: PermissionsMode
+            mode: PermissionsMode,
         )
 
         fun navigateToUserPermissionDetails(
             permission: PermissionModelUi.UserPermissionModel,
-            mode: PermissionsMode
+            mode: PermissionsMode,
         )
 
         fun showAddUserButton()
+
         fun showSaveButton()
+
         fun navigateToSelectShareRecipients(
             groupPermissions: List<PermissionModelUi.GroupPermissionModel>,
-            userPermissions: List<PermissionModelUi.UserPermissionModel>
+            userPermissions: List<PermissionModelUi.UserPermissionModel>,
         )
 
         fun showOneOwnerSnackbar()
+
         fun showEmptyState()
+
         fun hideEmptyState()
+
         fun showShareSimulationFailure()
+
         fun showShareFailure()
+
         fun showSecretFetchFailure()
+
         fun showSecretEncryptFailure()
+
         fun showSecretDecryptFailure()
+
         fun showReEncyptMetadataFailure()
+
         fun showProgress()
+
         fun hideProgress()
+
         fun closeWithShareSuccessResult()
+
         fun showEditButton()
-        fun navigateToSelfWithMode(resourceId: String, mode: PermissionsMode)
+
+        fun navigateToSelfWithMode(
+            resourceId: String,
+            mode: PermissionsMode,
+        )
+
         fun showDataRefreshError()
+
         fun showContentNotAvailable()
+
         fun navigateToHome()
     }
 
     interface Presenter : DataRefreshViewReactiveContract.Presenter<View> {
-        fun argsReceived(permissionsItem: PermissionsItem, id: String, mode: PermissionsMode)
+        fun argsReceived(
+            permissionsItem: PermissionsItem,
+            id: String,
+            mode: PermissionsMode,
+        )
+
         fun permissionClick(permission: PermissionModelUi)
+
         fun actionButtonClick()
+
         fun addPermissionClick()
+
         fun shareRecipientsAdded(shareRecipients: ArrayList<PermissionModelUi>?)
+
         fun userPermissionModified(permission: PermissionModelUi.UserPermissionModel)
+
         fun groupPermissionModified(permission: PermissionModelUi.GroupPermissionModel)
+
         fun userPermissionDeleted(permission: PermissionModelUi.UserPermissionModel)
+
         fun groupPermissionDeleted(permission: PermissionModelUi.GroupPermissionModel)
+
         fun refreshPermissionsList()
     }
 }

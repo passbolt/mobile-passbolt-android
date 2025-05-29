@@ -38,60 +38,61 @@ class AccountModelMapperTest : KoinTest {
     private val mapper: AccountModelMapper by inject()
 
     @get:Rule
-    val koinTestRule = KoinTestRule.create {
-        printLogger(Level.ERROR)
-        modules(testMappersModule)
-    }
+    val koinTestRule =
+        KoinTestRule.create {
+            printLogger(Level.ERROR)
+            modules(testMappersModule)
+        }
 
     @Test
     fun `Mapping accounts entities should return proper models with add account`() {
-        val accountsList = listOf(
-            Account(
-                userId = "id1",
-                firstName = "firstName1",
-                lastName = "lastName1",
-                email = "email1",
-                avatarUrl = "avatarUrl1",
-                url = "url1",
-                serverId = "serverId1",
-                label = "label"
-            ),
-            Account(
-                userId = "id2",
-                firstName = "firstName2",
-                lastName = "lastName2",
-                email = "email2",
-                avatarUrl = "avatarUrl2",
-                url = "url2",
-                serverId = "serverId2",
-                label = "label"
+        val accountsList =
+            listOf(
+                Account(
+                    userId = "id1",
+                    firstName = "firstName1",
+                    lastName = "lastName1",
+                    email = "email1",
+                    avatarUrl = "avatarUrl1",
+                    url = "url1",
+                    serverId = "serverId1",
+                    label = "label",
+                ),
+                Account(
+                    userId = "id2",
+                    firstName = "firstName2",
+                    lastName = "lastName2",
+                    email = "email2",
+                    avatarUrl = "avatarUrl2",
+                    url = "url2",
+                    serverId = "serverId2",
+                    label = "label",
+                ),
             )
-        )
         val result = mapper.map(accountsList, currentAccount = "id1")
-        val expected = listOf(
-            AccountModelUi.AccountModel(
-                userId = "id1",
-                email = "email1",
-                title = "label",
-                isFirstItem = true,
-                isTrashIconVisible = false,
-                avatar = "avatarUrl1",
-                url = "url1",
-                isCurrentUser = true,
-            ),
-            AccountModelUi.AccountModel(
-                userId = "id2",
-                email = "email2",
-                title = "label",
-                isFirstItem = false,
-                isTrashIconVisible = false,
-                avatar = "avatarUrl2",
-                url = "url2"
-            ),
-            AccountModelUi.AddNewAccount
-        )
+        val expected =
+            listOf(
+                AccountModelUi.AccountModel(
+                    userId = "id1",
+                    email = "email1",
+                    title = "label",
+                    isFirstItem = true,
+                    isTrashIconVisible = false,
+                    avatar = "avatarUrl1",
+                    url = "url1",
+                    isCurrentUser = true,
+                ),
+                AccountModelUi.AccountModel(
+                    userId = "id2",
+                    email = "email2",
+                    title = "label",
+                    isFirstItem = false,
+                    isTrashIconVisible = false,
+                    avatar = "avatarUrl2",
+                    url = "url2",
+                ),
+                AccountModelUi.AddNewAccount,
+            )
         assertThat(result).isEqualTo(expected)
     }
-
 }
-

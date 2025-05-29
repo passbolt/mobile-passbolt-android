@@ -25,7 +25,5 @@ import android.webkit.URLUtil
  * @since v1.0
  */
 class HttpsVerifier {
-
-    fun isHttps(url: String) =
-        URLUtil.isHttpsUrl(url)
+    fun isHttps(url: String) = URLUtil.isHttpsUrl(url)
 }

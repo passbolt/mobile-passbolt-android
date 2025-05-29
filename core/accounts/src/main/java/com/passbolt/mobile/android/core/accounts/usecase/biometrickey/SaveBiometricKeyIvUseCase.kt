@@ -30,10 +30,9 @@ import com.passbolt.mobile.android.encryptedstorage.EncryptedSharedPreferencesFa
  * @since v1.0
  */
 class SaveBiometricKeyIvUseCase(
-    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory
+    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory,
 ) : UseCase<SaveBiometricKeyIvUseCase.Input, Unit>,
     SelectedAccountUseCase {
-
     override fun execute(input: Input) {
         val fileName = BiometricKeyIvFileName(selectedAccountId)
         with(encryptedSharedPreferencesFactory.get(fileName.name).edit()) {
@@ -43,5 +42,7 @@ class SaveBiometricKeyIvUseCase(
         }
     }
 
-    class Input(val iv: ByteArray)
+    class Input(
+        val iv: ByteArray,
+    )
 }

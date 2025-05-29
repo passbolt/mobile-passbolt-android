@@ -48,18 +48,21 @@ import org.koin.androidx.scope.fragmentScope
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
-class AuthWithDuoDialog : DialogFragment(), AndroidScopeComponent, AuthWithDuoContract.View,
+class AuthWithDuoDialog :
+    DialogFragment(),
+    AndroidScopeComponent,
+    AuthWithDuoContract.View,
     DuoWebViewBottomSheetFragment.Listener {
-
     override val scope by fragmentScope(useParentActivityScope = false)
     private var listener: AuthWithDuoListener? = null
     private val presenter: AuthWithDuoContract.Presenter by scope.inject()
     private lateinit var binding: DialogAuthWithDuoBinding
-    private val authenticationResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-        if (it.resultCode == Activity.RESULT_OK) {
-            presenter.authenticationSucceeded()
+    private val authenticationResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            if (it.resultCode == Activity.RESULT_OK) {
+                presenter.authenticationSucceeded()
+            }
         }
-    }
 
     private val bundledAuthToken by lifecycleAwareLazy {
         requireArguments().getString(EXTRA_AUTH_KEY)
@@ -73,13 +76,20 @@ class AuthWithDuoDialog : DialogFragment(), AndroidScopeComponent, AuthWithDuoCo
         setStyle(STYLE_NO_TITLE, CoreUiR.style.FullscreenDialogTheme)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         setupListeners()
         presenter.onViewCreated(bundledHasOtherProvider, bundledAuthToken)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
+    ): View {
         binding = DialogAuthWithDuoBinding.inflate(inflater)
         return binding.root
     }
@@ -87,11 +97,12 @@ class AuthWithDuoDialog : DialogFragment(), AndroidScopeComponent, AuthWithDuoCo
     override fun onAttach(context: Context) {
         super.onAttach(context)
         isCancelable = false
-        listener = when {
-            activity is AuthWithDuoListener -> activity as AuthWithDuoListener
-            parentFragment is AuthWithDuoListener -> parentFragment as AuthWithDuoListener
-            else -> error("Parent must implement ${AuthWithDuoListener::class.java.name}")
-        }
+        listener =
+            when {
+                activity is AuthWithDuoListener -> activity as AuthWithDuoListener
+                parentFragment is AuthWithDuoListener -> parentFragment as AuthWithDuoListener
+                else -> error("Parent must implement ${AuthWithDuoListener::class.java.name}")
+            }
         presenter.attach(this)
     }
 
@@ -106,8 +117,8 @@ class AuthWithDuoDialog : DialogFragment(), AndroidScopeComponent, AuthWithDuoCo
         authenticationResult.launch(
             ActivityIntents.authentication(
                 requireContext(),
-                ActivityIntents.AuthConfig.SignIn
-            )
+                ActivityIntents.AuthConfig.SignIn,
+            ),
         )
     }
 
@@ -116,7 +127,8 @@ class AuthWithDuoDialog : DialogFragment(), AndroidScopeComponent, AuthWithDuoCo
     }
 
     override fun navigateToDuoPrompt(duoPromptUrl: String) {
-        DuoWebViewBottomSheetFragment.newInstance(duoPromptUrl)
+        DuoWebViewBottomSheetFragment
+            .newInstance(duoPromptUrl)
             .show(childFragmentManager, DuoWebViewBottomSheetFragment::class.java.name)
     }
 
@@ -170,7 +182,8 @@ class AuthWithDuoDialog : DialogFragment(), AndroidScopeComponent, AuthWithDuoCo
     }
 
     override fun showError() {
-        Snackbar.make(binding.root, LocalizationR.string.unknown_error, Snackbar.LENGTH_LONG)
+        Snackbar
+            .make(binding.root, LocalizationR.string.unknown_error, Snackbar.LENGTH_LONG)
             .apply {
                 view.setBackgroundColor(context.getColor(CoreUiR.color.red))
                 show()
@@ -183,18 +196,19 @@ class AuthWithDuoDialog : DialogFragment(), AndroidScopeComponent, AuthWithDuoCo
 
         fun newInstance(
             token: String? = null,
-            hasOtherProvider: Boolean
-        ) =
-            AuthWithDuoDialog().apply {
-                arguments = bundleOf(
+            hasOtherProvider: Boolean,
+        ) = AuthWithDuoDialog().apply {
+            arguments =
+                bundleOf(
                     EXTRA_AUTH_KEY to token,
-                    EXTRA_OTHER_PROVIDER to hasOtherProvider
+                    EXTRA_OTHER_PROVIDER to hasOtherProvider,
                 )
-            }
+        }
     }
 }
 
 interface AuthWithDuoListener {
     fun duoOtherProviderClick(jwtToken: String?)
+
     fun duoAuthSucceeded(mfaHeader: String? = null)
 }

@@ -30,13 +30,13 @@ import org.koin.core.module.Module
 internal fun Module.passphraseModule() {
     factory {
         CheckIfPassphraseFileExistsUseCase(
-            appContext = androidContext()
+            appContext = androidContext(),
         )
     }
     single {
         GetPassphraseUseCase(
             biometricCrypto = get(),
-            appContext = androidApplication()
+            appContext = androidApplication(),
         )
     }
     factory {
@@ -45,13 +45,13 @@ internal fun Module.passphraseModule() {
     factory {
         RemoveAllAccountsPassphrasesUseCase(
             androidContext(),
-            getAllAccountsDataUseCase = get()
+            getAllAccountsDataUseCase = get(),
         )
     }
     single {
         SavePassphraseUseCase(
             biometricCrypto = get(),
-            appContext = androidApplication()
+            appContext = androidApplication(),
         )
     }
 }

@@ -32,9 +32,8 @@ import timber.log.Timber
  */
 
 class QrCodeImageAnalyzerResultsConsumer(
-    private val barcodeScanner: BarcodeScanner
+    private val barcodeScanner: BarcodeScanner,
 ) : Consumer<MlKitAnalyzer.Result> {
-
     val resultFlow: StateFlow<BarcodeScanResult>
         get() = _resultFlow.asStateFlow()
 
@@ -54,7 +53,7 @@ class QrCodeImageAnalyzerResultsConsumer(
                     value.isEmpty() -> BarcodeScanResult.NoBarcodeInRange
                     value.size == 1 -> BarcodeScanResult.SingleBarcode(value.first().rawBytes)
                     else -> BarcodeScanResult.MultipleBarcodes
-                }
+                },
             )
         }
     }

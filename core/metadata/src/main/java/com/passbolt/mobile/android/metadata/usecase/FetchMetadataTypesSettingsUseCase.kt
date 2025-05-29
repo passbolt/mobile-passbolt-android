@@ -33,9 +33,8 @@ import com.passbolt.mobile.android.ui.MetadataTypesSettingsModel
  */
 class FetchMetadataTypesSettingsUseCase(
     private val metadataRepository: MetadataRepository,
-    private val metadataMapper: MetadataMapper
+    private val metadataMapper: MetadataMapper,
 ) : AsyncUseCase<Unit, FetchMetadataTypesSettingsUseCase.Output> {
-
     override suspend fun execute(input: Unit): Output =
         when (val response = metadataRepository.getMetadataTypesSettings()) {
             is NetworkResult.Failure -> Output.Failure(response)
@@ -45,24 +44,26 @@ class FetchMetadataTypesSettingsUseCase(
         }
 
     sealed class Output : AuthenticatedUseCaseOutput {
-
         override val authenticationState: AuthenticationState
-            get() = when {
-                this is Failure<*> && this.response.isUnauthorized ->
-                    AuthenticationState.Unauthenticated(AuthenticationState.Unauthenticated.Reason.Session)
-                this is Failure<*> && this.response.isMfaRequired -> {
-                    val providers = MfaTypeProvider.get(this.response)
-                    AuthenticationState.Unauthenticated(
-                        AuthenticationState.Unauthenticated.Reason.Mfa(providers)
-                    )
+            get() =
+                when {
+                    this is Failure<*> && this.response.isUnauthorized ->
+                        AuthenticationState.Unauthenticated(AuthenticationState.Unauthenticated.Reason.Session)
+                    this is Failure<*> && this.response.isMfaRequired -> {
+                        val providers = MfaTypeProvider.get(this.response)
+                        AuthenticationState.Unauthenticated(
+                            AuthenticationState.Unauthenticated.Reason.Mfa(providers),
+                        )
+                    }
+                    else -> AuthenticationState.Authenticated
                 }
-                else -> AuthenticationState.Authenticated
-            }
 
         data class Success(
-            val metadataTypesSettings: MetadataTypesSettingsModel
+            val metadataTypesSettings: MetadataTypesSettingsModel,
         ) : Output()
 
-        data class Failure<T : Any>(val response: NetworkResult.Failure<T>) : Output()
+        data class Failure<T : Any>(
+            val response: NetworkResult.Failure<T>,
+        ) : Output()
     }
 }

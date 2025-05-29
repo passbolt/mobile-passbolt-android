@@ -25,7 +25,6 @@ import com.passbolt.mobile.android.dto.response.ChallengeResponseDto
  * @since v1.0
  */
 class MfaStatusProvider {
-
     private lateinit var state: MfaState
 
     fun setState(mfaState: MfaState) {
@@ -43,8 +42,7 @@ class MfaStatusProvider {
         }
     }
 
-    private fun currentMfaTokenIsValid() =
-        state.newMfaToken != null && state.newMfaToken == state.currentMfaToken
+    private fun currentMfaTokenIsValid() = state.newMfaToken != null && state.newMfaToken == state.currentMfaToken
 
     companion object {
         const val MFA_PROVIDER_TOTP = "totp"
@@ -55,6 +53,6 @@ class MfaStatusProvider {
     data class MfaState(
         val challengeResponseDto: ChallengeResponseDto,
         val newMfaToken: String?,
-        val currentMfaToken: String?
+        val currentMfaToken: String?,
     )
 }

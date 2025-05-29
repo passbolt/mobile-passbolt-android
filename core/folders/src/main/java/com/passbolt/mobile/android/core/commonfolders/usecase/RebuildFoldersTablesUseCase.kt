@@ -10,9 +10,8 @@ import com.passbolt.mobile.android.ui.FolderModel
 class RebuildFoldersTablesUseCase(
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
     private val removeLocalFoldersUseCase: RemoveLocalFoldersUseCase,
-    private val addLocalFoldersUseCase: AddLocalFoldersUseCase
+    private val addLocalFoldersUseCase: AddLocalFoldersUseCase,
 ) : AsyncUseCase<RebuildFoldersTablesUseCase.Input, Unit> {
-
     override suspend fun execute(input: Input) {
         val selectedAccount = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
         removeLocalFoldersUseCase.execute(UserIdInput(selectedAccount))
@@ -20,6 +19,6 @@ class RebuildFoldersTablesUseCase(
     }
 
     class Input(
-        val folders: List<FolderModel>
+        val folders: List<FolderModel>,
     )
 }

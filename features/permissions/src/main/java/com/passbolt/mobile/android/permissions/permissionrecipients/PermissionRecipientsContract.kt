@@ -28,42 +28,58 @@ import com.passbolt.mobile.android.ui.UserModel
  * @since v1.0
  */
 interface PermissionRecipientsContract {
-
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
-        fun groupRecipientSelectionChanged(model: GroupModel, isSelected: Boolean)
-        fun userRecipientSelectionChanged(model: UserModel, isSelected: Boolean)
+        fun groupRecipientSelectionChanged(
+            model: GroupModel,
+            isSelected: Boolean,
+        )
+
+        fun userRecipientSelectionChanged(
+            model: UserModel,
+            isSelected: Boolean,
+        )
+
         fun argsReceived(
             alreadyAddedGroupPermissions: List<PermissionModelUi.GroupPermissionModel>,
             alreadyAddedUserPermissions: List<PermissionModelUi.UserPermissionModel>,
             alreadyAddedListWidth: Int,
-            alreadyAddedItemWidth: Float
+            alreadyAddedItemWidth: Float,
         )
 
         fun searchTextChange(searchText: String)
+
         fun searchClearClick()
+
         fun saveButtonClick()
     }
 
     interface View : BaseAuthenticatedContract.View {
         fun showRecipients(
             groups: List<GroupModel>,
-            users: List<UserModel>
+            users: List<UserModel>,
         )
 
         fun showPermissions(
             groupPermissions: List<PermissionModelUi.GroupPermissionModel>,
             userPermissions: List<PermissionModelUi.UserPermissionModel>,
             counterValue: List<String>,
-            overlap: Int
+            overlap: Int,
         )
 
         fun showClearSearchIcon()
+
         fun hideClearSearchIcon()
+
         fun clearSearch()
+
         fun showExistingUsersAndGroups(list: List<PermissionModelUi>)
+
         fun setSelectedPermissionsResult(selectedPermissions: List<PermissionModelUi>)
+
         fun navigateBack()
+
         fun hideEmptyState()
+
         fun showEmptyState()
     }
 }

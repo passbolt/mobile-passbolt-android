@@ -53,25 +53,32 @@ class ResourceShareInteractor(
     private val secretInteractor: SecretInteractor,
     private val openPgp: OpenPgp,
     private val passphraseMemoryCache: PassphraseMemoryCache,
-    private val sharePermissionsModelMapper: SharePermissionsModelMapper
+    private val sharePermissionsModelMapper: SharePermissionsModelMapper,
 ) {
+    suspend fun simulateAndShareResource(
+        resourceId: String,
+        recipients: List<PermissionModelUi>,
+    ): Output {
+        val existingResourcePermissions =
+            getLocalResourcePermissionsUseCase
+                .execute(GetLocalResourcePermissionsUseCase.Input(resourceId))
+                .permissions
 
-    suspend fun simulateAndShareResource(resourceId: String, recipients: List<PermissionModelUi>): Output {
-        val existingResourcePermissions = getLocalResourcePermissionsUseCase
-            .execute(GetLocalResourcePermissionsUseCase.Input(resourceId))
-            .permissions
-
-        val simulateSharePermissions = sharePermissionsModelMapper
-            .mapForSimulation(
-                SharePermissionsModelMapper.ShareItem.Resource(resourceId),
-                recipients,
-                existingResourcePermissions
-            )
+        val simulateSharePermissions =
+            sharePermissionsModelMapper
+                .mapForSimulation(
+                    SharePermissionsModelMapper.ShareItem.Resource(resourceId),
+                    recipients,
+                    existingResourcePermissions,
+                )
 
         Timber.d("Starting share simulation")
-        return when (val simulateShareOutput = simulateShareUseCase.execute(
-            SimulateShareResourceUseCase.Input(resourceId, simulateSharePermissions)
-        )) {
+        return when (
+            val simulateShareOutput =
+                simulateShareUseCase.execute(
+                    SimulateShareResourceUseCase.Input(resourceId, simulateSharePermissions),
+                )
+        ) {
             is SimulateShareResourceUseCase.Output.Success -> {
                 Timber.d("Share simulation success; Starting to share resource")
                 shareResource(resourceId, recipients, existingResourcePermissions, simulateShareOutput.value.added)
@@ -80,18 +87,19 @@ class ResourceShareInteractor(
                 Timber.e(
                     simulateShareOutput.response.exception,
                     "Share simulation failure: %s",
-                    simulateShareOutput.response.headerMessage
+                    simulateShareOutput.response.headerMessage,
                 )
                 Output.SimulateShareFailure(simulateShareOutput.response.exception)
             }
         }
     }
 
+    @Suppress("LongMethod")
     private suspend fun shareResource(
         resourceId: String,
         recipients: List<PermissionModelUi>,
         existingPermissions: List<PermissionModelUi>,
-        newUsers: List<ShareRecipientDto>
+        newUsers: List<ShareRecipientDto>,
     ): Output {
         return when (val secretOutput = secretInteractor.fetchAndDecrypt(resourceId)) {
             is SecretInteractor.Output.DecryptFailure -> {
@@ -111,30 +119,37 @@ class ResourceShareInteractor(
                 val passphrase = passphraseMemoryCache.get()
                 if (passphrase is PotentialPassphrase.Passphrase) {
                     Timber.d("Using passphrase from cache")
-                    val sharePermissions = sharePermissionsModelMapper
-                        .mapForShare(
-                            SharePermissionsModelMapper.ShareItem.Resource(resourceId),
-                            recipients,
-                            existingPermissions
+                    val sharePermissions =
+                        sharePermissionsModelMapper
+                            .mapForShare(
+                                SharePermissionsModelMapper.ShareItem.Resource(resourceId),
+                                recipients,
+                                existingPermissions,
+                            )
+                    val secretsData =
+                        prepareEncryptedSecretsData(
+                            passphrase.passphrase,
+                            secretOutput.decryptedSecret,
+                            newUsers,
                         )
-                    val secretsData = prepareEncryptedSecretsData(
-                        passphrase.passphrase, secretOutput.decryptedSecret, newUsers
-                    )
                     if (secretsData.any { it is EncryptedSecretOrError.Error }) {
                         return Output.SecretEncryptFailure(
-                            secretsData.filterIsInstance<EncryptedSecretOrError.Error>().first().message
+                            secretsData.filterIsInstance<EncryptedSecretOrError.Error>().first().message,
                         )
                     }
                     val secrets = secretsData.filterIsInstance<EncryptedSecretOrError.EncryptedSecret>()
                     Timber.d("Executing share request")
-                    when (val shareOutput = shareResourceUseCase.execute(
-                        ShareResourceUseCase.Input(resourceId, sharePermissions, secrets)
-                    )) {
+                    when (
+                        val shareOutput =
+                            shareResourceUseCase.execute(
+                                ShareResourceUseCase.Input(resourceId, sharePermissions, secrets),
+                            )
+                    ) {
                         is ShareResourceUseCase.Output.Failure<*> -> {
                             Timber.e(
                                 shareOutput.response.exception,
                                 "Share resource failure: %s",
-                                shareOutput.response.headerMessage
+                                shareOutput.response.headerMessage,
                             )
                             Output.ShareFailure(shareOutput.response.exception)
                         }
@@ -154,7 +169,7 @@ class ResourceShareInteractor(
     private suspend fun prepareEncryptedSecretsData(
         passphrase: ByteArray,
         decryptedSecret: String,
-        addedUsers: List<ShareRecipientDto>
+        addedUsers: List<ShareRecipientDto>,
     ): List<EncryptedSecretOrError> {
         val encryptedSecretsForAddedUsers = mutableListOf<EncryptedSecretOrError>()
         addedUsers
@@ -164,56 +179,76 @@ class ResourceShareInteractor(
                 val privateKey = getPrivateKeyUseCase.execute(UserIdInput(currentUserId)).privateKey
                 val publicKey = user.gpgKey.armoredKey
 
-                val encryptedSecret = openPgp.encryptSignMessageArmored(
-                    publicKey,
-                    privateKey,
-                    passphrase,
-                    decryptedSecret
-                )
+                val encryptedSecret =
+                    openPgp.encryptSignMessageArmored(
+                        publicKey,
+                        privateKey,
+                        passphrase,
+                        decryptedSecret,
+                    )
 
                 encryptedSecretsForAddedUsers.add(
                     when (encryptedSecret) {
                         is OpenPgpResult.Error -> EncryptedSecretOrError.Error(encryptedSecret.error.message)
-                        is OpenPgpResult.Result -> EncryptedSecretOrError.EncryptedSecret(
-                            user.id,
-                            encryptedSecret.result
-                        )
-                    }
+                        is OpenPgpResult.Result ->
+                            EncryptedSecretOrError.EncryptedSecret(
+                                user.id,
+                                encryptedSecret.result,
+                            )
+                    },
                 )
             }
         return encryptedSecretsForAddedUsers
     }
 
     sealed class Output : AuthenticatedUseCaseOutput {
-
         @Suppress("ComplexCondition")
         override val authenticationState: AuthenticationState
-            get() = if (
-                (this is SecretFetchFailure &&
-                        (this.exception as? HttpException)?.code() == HttpURLConnection.HTTP_UNAUTHORIZED) ||
-                (this is ShareFailure &&
-                        (this.exception as? HttpException)?.code() == HttpURLConnection.HTTP_UNAUTHORIZED) ||
-                (this is SimulateShareFailure &&
-                        (this.exception as? HttpException)?.code() == HttpURLConnection.HTTP_UNAUTHORIZED)
-            ) {
-                AuthenticationState.Unauthenticated(AuthenticationState.Unauthenticated.Reason.Session)
-            } else if (this is Unauthorized) {
-                AuthenticationState.Unauthenticated(this.reason)
-            } else {
-                AuthenticationState.Authenticated
-            }
+            get() =
+                if (
+                    (
+                        this is SecretFetchFailure &&
+                            (this.exception as? HttpException)?.code() == HttpURLConnection.HTTP_UNAUTHORIZED
+                    ) ||
+                    (
+                        this is ShareFailure &&
+                            (this.exception as? HttpException)?.code() == HttpURLConnection.HTTP_UNAUTHORIZED
+                    ) ||
+                    (
+                        this is SimulateShareFailure &&
+                            (this.exception as? HttpException)?.code() == HttpURLConnection.HTTP_UNAUTHORIZED
+                    )
+                ) {
+                    AuthenticationState.Unauthenticated(AuthenticationState.Unauthenticated.Reason.Session)
+                } else if (this is Unauthorized) {
+                    AuthenticationState.Unauthenticated(this.reason)
+                } else {
+                    AuthenticationState.Authenticated
+                }
 
-        data class SecretFetchFailure(val exception: Exception) : Output()
+        data class SecretFetchFailure(
+            val exception: Exception,
+        ) : Output()
 
-        data class SecretDecryptFailure(val message: String) : Output()
+        data class SecretDecryptFailure(
+            val message: String,
+        ) : Output()
 
-        data class SecretEncryptFailure(val message: String) : Output()
+        data class SecretEncryptFailure(
+            val message: String,
+        ) : Output()
 
-        data class ShareFailure(val exception: Exception) : Output()
+        data class ShareFailure(
+            val exception: Exception,
+        ) : Output()
 
-        data class SimulateShareFailure(val exception: Exception) : Output()
+        data class SimulateShareFailure(
+            val exception: Exception,
+        ) : Output()
 
-        class Unauthorized(val reason: UnauthenticatedReason) : Output()
+        class Unauthorized(
+            val reason: UnauthenticatedReason,
+        ) : Output()
 
         data object Success : Output()
     }

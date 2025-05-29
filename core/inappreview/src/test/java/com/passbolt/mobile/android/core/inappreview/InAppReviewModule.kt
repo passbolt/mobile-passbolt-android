@@ -43,11 +43,12 @@ internal val baseTimeInstant = Instant.now()
 internal val baseTimeZone = ZoneId.systemDefault()
 internal val clockBaseTime = Clock.fixed(baseTimeInstant, baseTimeZone)
 
-val testInAppReviewModule = module {
-    factory { getInAppReviewParametersUseCase }
-    factory { getInAppReviewShowModeUseCase }
-    factory { saveInAppReviewParametersUseCase }
-    factory { saveInAppShowModeUseCase }
-    factory { clockBaseTime }
-    factoryOf(::InAppReviewInteractor)
-}
+val testInAppReviewModule =
+    module {
+        factory { getInAppReviewParametersUseCase }
+        factory { getInAppReviewShowModeUseCase }
+        factory { saveInAppReviewParametersUseCase }
+        factory { saveInAppShowModeUseCase }
+        factory { clockBaseTime }
+        factoryOf(::InAppReviewInteractor)
+    }

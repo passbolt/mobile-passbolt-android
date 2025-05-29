@@ -29,10 +29,9 @@ import retrofit2.http.Query
  */
 
 internal interface UsersApi {
-
     @GET(USERS)
     suspend fun getUsers(
-        @Query(QUERY_HAS_ACCESS_PERMISSION) hasAccessTo: List<String>? = null
+        @Query(QUERY_HAS_ACCESS_PERMISSION) hasAccessTo: List<String>? = null,
     ): BaseResponse<List<UserDto>>
 
     @GET(USERS_ME)

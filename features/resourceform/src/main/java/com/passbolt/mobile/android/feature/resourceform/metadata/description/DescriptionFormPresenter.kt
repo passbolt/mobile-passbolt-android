@@ -30,12 +30,14 @@ import com.passbolt.mobile.android.ui.ResourceFormMode
  */
 
 class DescriptionFormPresenter : DescriptionFormContract.Presenter {
-
     override var view: DescriptionFormContract.View? = null
 
     private var metadataDescription: String = ""
 
-    override fun argsRetrieved(mode: ResourceFormMode, metadataDescription: String) {
+    override fun argsRetrieved(
+        mode: ResourceFormMode,
+        metadataDescription: String,
+    ) {
         when (mode) {
             is ResourceFormMode.Create -> view?.showCreateTitle()
             is ResourceFormMode.Edit -> view?.showEditTitle(mode.resourceName)

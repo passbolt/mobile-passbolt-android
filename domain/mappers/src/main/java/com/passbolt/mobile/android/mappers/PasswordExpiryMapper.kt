@@ -27,10 +27,10 @@ import com.passbolt.mobile.android.dto.response.PasswordExpirySettingsDto
 import com.passbolt.mobile.android.ui.PasswordExpirySettings
 
 class PasswordExpiryMapper {
-
-    fun map(dto: PasswordExpirySettingsDto) = PasswordExpirySettings(
-        automaticExpiry = dto.automaticExpiry,
-        automaticUpdate = dto.automaticUpdate,
-        defaultExpiryPeriodDays = dto.defaultExpiryPeriod
-    )
+    fun map(dto: PasswordExpirySettingsDto) =
+        PasswordExpirySettings(
+            automaticExpiry = dto.automaticExpiry,
+            automaticUpdate = dto.automaticUpdate,
+            defaultExpiryPeriodDays = dto.defaultExpiryPeriod,
+        )
 }

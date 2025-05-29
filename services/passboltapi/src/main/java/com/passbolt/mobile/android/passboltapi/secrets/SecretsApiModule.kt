@@ -29,13 +29,13 @@ import org.koin.core.module.Module
 internal fun Module.secretsApiModule() {
     single<SecretsDataSource> {
         SecretsRemoteDataSource(
-            secretsApi = get()
+            secretsApi = get(),
         )
     }
     single {
         SecretsRepository(
             secretsDataSource = get(),
-            responseHandler = get()
+            responseHandler = get(),
         )
     }
     single {

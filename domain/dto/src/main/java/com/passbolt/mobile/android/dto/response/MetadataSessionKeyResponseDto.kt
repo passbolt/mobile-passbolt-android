@@ -32,5 +32,5 @@ data class MetadataSessionKeyResponseDto(
     val userId: UUID,
     val data: String,
     val created: String,
-    val modified: String
+    val modified: String,
 )

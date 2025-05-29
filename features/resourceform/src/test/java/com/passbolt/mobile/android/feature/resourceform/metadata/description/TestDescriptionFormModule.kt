@@ -27,6 +27,7 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-internal val descriptionFormModule = module {
-    factoryOf(::DescriptionFormPresenter) bind DescriptionFormContract.Presenter::class
-}
+internal val descriptionFormModule =
+    module {
+        factoryOf(::DescriptionFormPresenter) bind DescriptionFormContract.Presenter::class
+    }

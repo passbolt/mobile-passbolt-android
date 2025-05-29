@@ -60,9 +60,8 @@ class ScanQrPresenter(
     private val saveCurrentApiUrlUseCase: SaveCurrentApiUrlUseCase,
     private val accountsInteractor: AccountsInteractor,
     private val accountKitParser: AccountKitParser,
-    private val fetchFileAsStringUseCase: FetchFileAsStringUseCase
+    private val fetchFileAsStringUseCase: FetchFileAsStringUseCase,
 ) : ScanQrContract.Presenter {
-
     override var view: ScanQrContract.View? = null
 
     private val job = SupervisorJob()
@@ -97,17 +96,19 @@ class ScanQrPresenter(
     private suspend fun processParseResult(parserResult: ParseResult) {
         when (parserResult) {
             is ParseResult.Failure -> parserFailure(parserResult.exception)
-            is ParseResult.PassboltQr -> when (parserResult) {
-                is ParseResult.PassboltQr.FirstPage -> parserFirstPage(parserResult)
-                is ParseResult.PassboltQr.SubsequentPage -> parserSubsequentPage(parserResult)
-                is ParseResult.PassboltQr.AccountKitPage -> setupFromAccountKit(parserResult)
-            }
+            is ParseResult.PassboltQr ->
+                when (parserResult) {
+                    is ParseResult.PassboltQr.FirstPage -> parserFirstPage(parserResult)
+                    is ParseResult.PassboltQr.SubsequentPage -> parserSubsequentPage(parserResult)
+                    is ParseResult.PassboltQr.AccountKitPage -> setupFromAccountKit(parserResult)
+                }
             is ParseResult.FinishedWithSuccess -> parserFinishedWithSuccess(parserResult.armoredKey)
-            is ParseResult.UserResolvableError -> when (parserResult.errorType) {
-                ParseResult.UserResolvableError.ErrorType.MULTIPLE_BARCODES -> view?.showMultipleCodesInRange()
-                ParseResult.UserResolvableError.ErrorType.NO_BARCODES_IN_RANGE -> view?.showCenterCameraOnBarcode()
-                ParseResult.UserResolvableError.ErrorType.NOT_A_PASSBOLT_QR -> view?.showNotAPassboltQr()
-            }
+            is ParseResult.UserResolvableError ->
+                when (parserResult.errorType) {
+                    ParseResult.UserResolvableError.ErrorType.MULTIPLE_BARCODES -> view?.showMultipleCodesInRange()
+                    ParseResult.UserResolvableError.ErrorType.NO_BARCODES_IN_RANGE -> view?.showCenterCameraOnBarcode()
+                    ParseResult.UserResolvableError.ErrorType.NOT_A_PASSBOLT_QR -> view?.showNotAPassboltQr()
+                }
             is ParseResult.ScanFailure -> view?.showBarcodeScanError(parserResult.exception?.message)
         }
     }
@@ -116,15 +117,18 @@ class ScanQrPresenter(
         view?.showProgress()
         val failureAction = { view?.navigateToSummary(ResultStatus.Failure("")) }
         try {
-            when (val fileContentResult = fetchFileAsStringUseCase.execute(
-                FetchFileAsStringUseCase.Input(accountKitPage.content.accountKitUrl)
-            )) {
+            when (
+                val fileContentResult =
+                    fetchFileAsStringUseCase.execute(
+                        FetchFileAsStringUseCase.Input(accountKitPage.content.accountKitUrl),
+                    )
+            ) {
                 is FetchFileAsStringUseCase.Output.Failure -> failureAction()
                 is FetchFileAsStringUseCase.Output.Success ->
                     accountKitParser.parseAndVerify(
                         fileContentResult.fileContent,
                         onSuccess = { setupDataModel -> injectPredefinedAccount(setupDataModel) },
-                        onFailure = { failureAction() }
+                        onFailure = { failureAction() },
                     )
             }
             view?.hideProgress()
@@ -194,27 +198,31 @@ class ScanQrPresenter(
                 uuid = transferUuid,
                 authToken = authToken,
                 currentPage = pageNumber,
-                status = Status.COMPLETE
-            )
+                status = Status.COMPLETE,
+            ),
         )
         // ignoring result
         view?.navigateToSummary(ResultStatus.AlreadyLinked())
     }
 
-    private suspend fun updateTransfer(pageNumber: Int, status: Status = Status.IN_PROGRESS) {
+    private suspend fun updateTransfer(
+        pageNumber: Int,
+        status: Status = Status.IN_PROGRESS,
+    ) {
         // in case of the first qr code is not a correct one
         if (!::transferUuid.isInitialized || !::authToken.isInitialized || !::serverDomain.isInitialized) {
             view?.navigateToSummary(ResultStatus.Failure("Could not initialize private key transfer"))
             return
         }
-        val response = updateTransferUseCase.execute(
-            UpdateTransferUseCase.Input(
-                uuid = transferUuid,
-                authToken = authToken,
-                currentPage = pageNumber,
-                status = status
+        val response =
+            updateTransferUseCase.execute(
+                UpdateTransferUseCase.Input(
+                    uuid = transferUuid,
+                    authToken = authToken,
+                    currentPage = pageNumber,
+                    status = status,
+                ),
             )
-        )
         when (response) {
             is UpdateTransferUseCase.Output.Failure -> {
                 Timber.e(response.error.exception, "There was an error during transfer update")
@@ -239,7 +247,7 @@ class ScanQrPresenter(
     private fun onUpdateTransferSuccess(
         pageNumber: Int,
         status: Status,
-        response: UpdateTransferUseCase.Output.Success
+        response: UpdateTransferUseCase.Output.Success,
     ) {
         view?.setProgress(pageNumber)
         when (status) {
@@ -250,8 +258,8 @@ class ScanQrPresenter(
                         firstName = response.updateTransferModel.firstName,
                         lastName = response.updateTransferModel.lastName,
                         avatarUrl = response.updateTransferModel.avatarUrl,
-                        email = response.updateTransferModel.email
-                    )
+                        email = response.updateTransferModel.email,
+                    ),
                 )
             }
             Status.ERROR -> {
@@ -263,15 +271,18 @@ class ScanQrPresenter(
         }
     }
 
-    private fun saveAccountDetails(serverId: String, url: String) {
+    private fun saveAccountDetails(
+        serverId: String,
+        url: String,
+    ) {
         userId = uuidProvider.get()
         saveCurrentApiUrlUseCase.execute(SaveCurrentApiUrlUseCase.Input(url))
         updateAccountDataUseCase.execute(
             UpdateAccountDataUseCase.Input(
                 userId = userId,
                 url = url,
-                serverId = serverId
-            )
+                serverId = serverId,
+            ),
         )
     }
 
@@ -285,9 +296,9 @@ class ScanQrPresenter(
                         ACCOUNT_ALREADY_LINKED -> ResultStatus.AlreadyLinked()
                         ERROR_NON_HTTPS_DOMAIN -> ResultStatus.HttpNotSupported()
                         ERROR_WHEN_SAVING_PRIVATE_KEY -> ResultStatus.Failure(failureType.name)
-                    }
+                    },
                 )
-            }
+            },
         )
     }
 
@@ -331,9 +342,10 @@ class ScanQrPresenter(
 
     override fun accountKitSelected(accountKit: String) {
         scope.launch {
-            accountKitParser.parseAndVerify(accountKit,
+            accountKitParser.parseAndVerify(
+                accountKit,
                 onSuccess = { injectPredefinedAccount(it) },
-                onFailure = { view?.navigateToSummary(ResultStatus.Failure("")) }
+                onFailure = { view?.navigateToSummary(ResultStatus.Failure("")) },
             )
         }
     }

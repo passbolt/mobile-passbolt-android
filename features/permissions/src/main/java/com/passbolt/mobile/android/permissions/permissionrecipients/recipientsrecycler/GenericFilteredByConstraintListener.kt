@@ -27,10 +27,12 @@ import com.mikepenz.fastadapter.listeners.ItemFilterListener
  */
 class GenericFilteredByConstraintListener(
     private val onFiltered: (String, Int) -> Unit,
-    private val onFilterReset: () -> Unit
+    private val onFilterReset: () -> Unit,
 ) : ItemFilterListener<GenericItem> {
-
-    override fun itemsFiltered(constraint: CharSequence?, results: List<GenericItem>?) {
+    override fun itemsFiltered(
+        constraint: CharSequence?,
+        results: List<GenericItem>?,
+    ) {
         onFiltered(constraint.toString(), results?.size ?: 0)
     }
 

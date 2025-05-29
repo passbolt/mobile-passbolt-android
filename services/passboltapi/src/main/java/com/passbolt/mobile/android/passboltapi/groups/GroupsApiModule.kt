@@ -30,12 +30,12 @@ internal fun Module.groupsApiModule() {
     single {
         GroupsRepository(
             groupsDataSource = get(),
-            responseHandler = get()
+            responseHandler = get(),
         )
     }
     single<GroupsDataSource> {
         GroupsRemoteDataSource(
-            groupsApi = get()
+            groupsApi = get(),
         )
     }
     single {

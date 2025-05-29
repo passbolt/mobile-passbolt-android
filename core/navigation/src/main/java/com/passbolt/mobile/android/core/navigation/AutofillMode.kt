@@ -24,5 +24,5 @@ package com.passbolt.mobile.android.core.navigation
  */
 enum class AutofillMode {
     ACCESSIBILITY,
-    AUTOFILL
+    AUTOFILL,
 }

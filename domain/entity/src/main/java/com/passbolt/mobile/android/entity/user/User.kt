@@ -37,13 +37,13 @@ data class User(
     @Embedded
     val profile: UserProfile,
     @Embedded
-    val gpgKey: UserGpgKey
+    val gpgKey: UserGpgKey,
 )
 
 data class UserProfile(
     val firstName: String?,
     val lastName: String?,
-    val avatarUrl: String?
+    val avatarUrl: String?,
 )
 
 data class UserGpgKey(
@@ -56,5 +56,5 @@ data class UserGpgKey(
     val fingerprint: String,
     val type: String?,
     val expires: ZonedDateTime?,
-    val created: ZonedDateTime?
+    val created: ZonedDateTime?,
 )

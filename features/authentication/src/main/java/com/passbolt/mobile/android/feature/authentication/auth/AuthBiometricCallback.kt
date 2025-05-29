@@ -7,12 +7,11 @@ import com.passbolt.mobile.android.core.localization.R as LocalizationR
 class AuthBiometricCallback(
     private val authError: (Int) -> Unit,
     private val authSucceeded: (Cipher?) -> Unit,
-    private val authCanceled: (() -> Unit)? = null
+    private val authCanceled: (() -> Unit)? = null,
 ) : BiometricPrompt.AuthenticationCallback() {
-
     override fun onAuthenticationError(
         errorCode: Int,
-        errString: CharSequence
+        errString: CharSequence,
     ) {
         super.onAuthenticationError(errorCode, errString)
         handleError(errorCode)
@@ -30,7 +29,8 @@ class AuthBiometricCallback(
                 authError.invoke(LocalizationR.string.fingerprint_biometric_error_too_many_attempts)
             BiometricPrompt.ERROR_NEGATIVE_BUTTON,
             BiometricPrompt.ERROR_USER_CANCELED,
-            BiometricPrompt.ERROR_TIMEOUT -> {
+            BiometricPrompt.ERROR_TIMEOUT,
+            -> {
                 authCanceled?.invoke()
             }
             else -> authError.invoke(LocalizationR.string.fingerprint_biometric_error_generic)

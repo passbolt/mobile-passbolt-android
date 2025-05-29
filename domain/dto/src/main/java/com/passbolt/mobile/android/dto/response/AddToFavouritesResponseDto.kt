@@ -28,5 +28,5 @@ import java.util.UUID
 
 data class AddToFavouritesResponseDto(
     @SerializedName("id")
-    val favouriteId: UUID
+    val favouriteId: UUID,
 )

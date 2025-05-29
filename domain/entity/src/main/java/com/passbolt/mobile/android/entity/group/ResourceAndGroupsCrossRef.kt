@@ -13,19 +13,19 @@ import com.passbolt.mobile.android.entity.resource.Resource
             entity = Resource::class,
             parentColumns = ["resourceId"],
             childColumns = ["resourceId"],
-            onDelete = CASCADE
+            onDelete = CASCADE,
         ),
         ForeignKey(
             entity = UsersGroup::class,
             parentColumns = ["groupId"],
             childColumns = ["groupId"],
-            onDelete = CASCADE
-        )
-    ]
+            onDelete = CASCADE,
+        ),
+    ],
 )
 data class ResourceAndGroupsCrossRef(
     val resourceId: String,
     val groupId: String,
     val permission: Permission,
-    val permissionId: String
+    val permissionId: String,
 )

@@ -1,23 +1,3 @@
-package com.passbolt.mobile.android.core.mvp.authentication
-
-import androidx.annotation.CallSuper
-import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated.Reason.Mfa.MfaProvider
-import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated.Reason.Mfa.MfaProvider.DUO
-import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated.Reason.Mfa.MfaProvider.TOTP
-import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated.Reason.Mfa.MfaProvider.YUBIKEY
-import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancelChildren
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.drop
-import kotlinx.coroutines.flow.take
-import kotlinx.coroutines.launch
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
-import timber.log.Timber
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -41,15 +21,35 @@ import timber.log.Timber
  * @since v1.0
  */
 
+package com.passbolt.mobile.android.core.mvp.authentication
+
+import androidx.annotation.CallSuper
+import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated.Reason.Mfa.MfaProvider
+import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated.Reason.Mfa.MfaProvider.DUO
+import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated.Reason.Mfa.MfaProvider.TOTP
+import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated.Reason.Mfa.MfaProvider.YUBIKEY
+import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.launch
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
+import timber.log.Timber
+
 // TODO consider updating to support multiple async launches as now there would be a use case for that:
 // TODO fetching resources and folders on start in parallel
 abstract class BaseAuthenticatedPresenter<T : BaseAuthenticatedContract.View>(
-    coroutineLaunchContext: CoroutineLaunchContext
-) : BaseAuthenticatedContract.Presenter<T>, KoinComponent {
-
-    private var _sessionRefreshFlow = MutableStateFlow<Unit?>(null)
+    coroutineLaunchContext: CoroutineLaunchContext,
+) : BaseAuthenticatedContract.Presenter<T>,
+    KoinComponent {
+    private var _sessionRefreshedFlow = MutableStateFlow<Unit?>(null)
     val sessionRefreshedFlow
-        get() = _sessionRefreshFlow.asStateFlow()
+        get() = _sessionRefreshedFlow.asStateFlow()
 
     lateinit var needSessionRefreshFlow: MutableStateFlow<UnauthenticatedReason?>
     private val job = SupervisorJob()
@@ -79,7 +79,7 @@ abstract class BaseAuthenticatedPresenter<T : BaseAuthenticatedContract.View>(
                                 mfaProvidersHandler.setProviders(it.providers.orEmpty())
                                 view?.showMfaAuth(
                                     mfaProvidersHandler.firstMfaProvider(),
-                                    mfaProvidersHandler.hasMultipleProviders()
+                                    mfaProvidersHandler.hasMultipleProviders(),
                                 )
                             }
                             is AuthenticationState.Unauthenticated.Reason.Passphrase -> {
@@ -103,8 +103,8 @@ abstract class BaseAuthenticatedPresenter<T : BaseAuthenticatedContract.View>(
     }
 
     override fun authenticationRefreshed() {
-        _sessionRefreshFlow.value = Unit
-        _sessionRefreshFlow = MutableStateFlow(null)
+        _sessionRefreshedFlow.value = Unit
+        _sessionRefreshedFlow = MutableStateFlow(null)
     }
 
     override fun otherProviderClick(currentProvider: MfaProvider) {

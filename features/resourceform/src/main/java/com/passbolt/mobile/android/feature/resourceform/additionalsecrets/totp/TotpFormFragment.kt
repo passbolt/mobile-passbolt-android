@@ -45,9 +45,9 @@ import com.passbolt.mobile.android.core.localization.R as LocalizationR
  */
 class TotpFormFragment :
     BindingScopedFragment<FragmentTotpFormBinding>(
-        FragmentTotpFormBinding::inflate
-    ), TotpFormContract.View {
-
+        FragmentTotpFormBinding::inflate,
+    ),
+    TotpFormContract.View {
     private val presenter: TotpFormContract.Presenter by inject()
     private val navArgs: TotpFormFragmentArgs by navArgs()
 
@@ -57,8 +57,8 @@ class TotpFormFragment :
                 BundleCompat.getParcelable(
                     result,
                     TotpAdvancedSettingsFormFragment.EXTRA_TOTP_ADVANCED,
-                    TotpUiModel::class.java
-                )
+                    TotpUiModel::class.java,
+                ),
             )
         }
     }
@@ -69,21 +69,24 @@ class TotpFormFragment :
             BundleCompat.getParcelable(
                 result,
                 ScanOtpFragment.EXTRA_SCANNED_OTP,
-                OtpParseResult.OtpQr.TotpQr::class.java
-            )
+                OtpParseResult.OtpQr.TotpQr::class.java,
+            ),
         )
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
-        initDefaultToolbar(binding.toolbar)
+        initDefaultToolbar(requiredBinding.toolbar)
         setListeners()
         presenter.attach(this)
         presenter.argsRetrieved(navArgs.mode, navArgs.totpUiModel)
     }
 
     private fun setListeners() {
-        with(binding) {
+        with(requiredBinding) {
             totpSubformView.moreSettingsClickListener = {
                 presenter.moreSettingsClick()
             }
@@ -108,31 +111,31 @@ class TotpFormFragment :
     override fun navigateToTotpAdvancedSettingsForm(uiModel: TotpUiModel) {
         setFragmentResultListener(TotpAdvancedSettingsFormFragment.REQUEST_TOTP_ADVANCED, totpAdvancedResult)
         findNavController().navigate(
-            TotpFormFragmentDirections.actionTotpFormFragmentToTotpAdvancedSettingsFormFragment(navArgs.mode, uiModel)
+            TotpFormFragmentDirections.actionTotpFormFragmentToTotpAdvancedSettingsFormFragment(navArgs.mode, uiModel),
         )
     }
 
     override fun navigateToScanTotp(scanMode: ScanOtpMode) {
         setFragmentResultListener(ScanOtpFragment.REQUEST_SCAN_OTP_FOR_RESULT, totpScanQrReturned)
         findNavController().navigate(
-            ResourceFormFragmentDirections.actionResourceFormFragmentToScanOtp(scanMode)
+            ResourceFormFragmentDirections.actionResourceFormFragmentToScanOtp(scanMode),
         )
     }
 
     override fun showCreateTitle() {
-        binding.toolbar.toolbarTitle = getString(LocalizationR.string.resource_form_create_totp)
+        requiredBinding.toolbar.toolbarTitle = getString(LocalizationR.string.resource_form_create_totp)
     }
 
     override fun showEditTitle(resourceName: String) {
-        binding.toolbar.toolbarTitle = getString(LocalizationR.string.resource_form_edit_resource, resourceName)
+        requiredBinding.toolbar.toolbarTitle = getString(LocalizationR.string.resource_form_edit_resource, resourceName)
     }
 
     override fun showSecret(secret: String) {
-        binding.totpSubformView.secretInput.text = secret
+        requiredBinding.totpSubformView.secretInput.text = secret
     }
 
     override fun showUrl(issuer: String) {
-        binding.totpSubformView.urlInput.text = issuer
+        requiredBinding.totpSubformView.urlInput.text = issuer
     }
 
     override fun goBackWithResult(totpUiModel: TotpUiModel?) {

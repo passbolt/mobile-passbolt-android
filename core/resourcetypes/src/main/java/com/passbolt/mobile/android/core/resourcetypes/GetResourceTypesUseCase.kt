@@ -31,9 +31,8 @@ import com.passbolt.mobile.android.passboltapi.resourcetypes.ResourceTypesReposi
  * @since v1.0
  */
 class GetResourceTypesUseCase(
-    private val resourceTypesRepository: ResourceTypesRepository
+    private val resourceTypesRepository: ResourceTypesRepository,
 ) : AsyncUseCase<Unit, GetResourceTypesUseCase.Output> {
-
     override suspend fun execute(input: Unit): Output =
         when (val response = resourceTypesRepository.getResourceTypes()) {
             is NetworkResult.Failure -> Output.Failure(response)
@@ -41,25 +40,27 @@ class GetResourceTypesUseCase(
         }
 
     sealed class Output : AuthenticatedUseCaseOutput {
-
         override val authenticationState: AuthenticationState
-            get() = when {
-                this is Failure<*> && this.response.isUnauthorized ->
-                    AuthenticationState.Unauthenticated(AuthenticationState.Unauthenticated.Reason.Session)
-                this is Failure<*> && this.response.isMfaRequired -> {
-                    val providers = MfaTypeProvider.get(this.response)
+            get() =
+                when {
+                    this is Failure<*> && this.response.isUnauthorized ->
+                        AuthenticationState.Unauthenticated(AuthenticationState.Unauthenticated.Reason.Session)
+                    this is Failure<*> && this.response.isMfaRequired -> {
+                        val providers = MfaTypeProvider.get(this.response)
 
-                    AuthenticationState.Unauthenticated(
-                        AuthenticationState.Unauthenticated.Reason.Mfa(providers)
-                    )
+                        AuthenticationState.Unauthenticated(
+                            AuthenticationState.Unauthenticated.Reason.Mfa(providers),
+                        )
+                    }
+                    else -> AuthenticationState.Authenticated
                 }
-                else -> AuthenticationState.Authenticated
-            }
 
         data class Success(
-            val resourceTypes: List<ResourceTypeDto>
+            val resourceTypes: List<ResourceTypeDto>,
         ) : Output()
 
-        data class Failure<T : Any>(val response: NetworkResult.Failure<T>) : Output()
+        data class Failure<T : Any>(
+            val response: NetworkResult.Failure<T>,
+        ) : Output()
     }
 }

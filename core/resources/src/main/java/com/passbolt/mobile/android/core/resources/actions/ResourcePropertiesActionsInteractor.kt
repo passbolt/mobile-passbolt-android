@@ -33,15 +33,15 @@ import java.util.UUID
  */
 class ResourcePropertiesActionsInteractor(
     private val resource: ResourceModel,
-    private val idToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider
+    private val idToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider,
 ) {
-
     suspend fun provideWebsiteUrl(): Flow<ResourcePropertyActionResult<String>> {
-        val resourceContentType = ContentType.fromSlug(
-            idToSlugMappingProvider.provideMappingForSelectedAccount()[
-                UUID.fromString(resource.resourceTypeId)
-            ]!!
-        )
+        val resourceContentType =
+            ContentType.fromSlug(
+                idToSlugMappingProvider.provideMappingForSelectedAccount()[
+                    UUID.fromString(resource.resourceTypeId),
+                ]!!,
+            )
         return flowOf(
             ResourcePropertyActionResult(
                 URL_LABEL,
@@ -50,8 +50,8 @@ class ResourcePropertiesActionsInteractor(
                     resource.metadataJsonModel.uris?.firstOrNull()
                 } else {
                     resource.metadataJsonModel.uri
-                }.orEmpty()
-            )
+                }.orEmpty(),
+            ),
         )
     }
 
@@ -60,8 +60,8 @@ class ResourcePropertiesActionsInteractor(
             ResourcePropertyActionResult(
                 USERNAME_LABEL,
                 isSecret = false,
-                resource.metadataJsonModel.username.orEmpty()
-            )
+                resource.metadataJsonModel.username.orEmpty(),
+            ),
         )
 
     // provides description from resource model (for description from secret model see
@@ -71,8 +71,8 @@ class ResourcePropertiesActionsInteractor(
             ResourcePropertyActionResult(
                 DESCRIPTION_LABEL,
                 isSecret = false,
-                resource.metadataJsonModel.description.orEmpty()
-            )
+                resource.metadataJsonModel.description.orEmpty(),
+            ),
         )
 
     companion object {
@@ -89,7 +89,7 @@ class ResourcePropertiesActionsInteractor(
 
 suspend fun <T> performResourcePropertyAction(
     action: suspend () -> Flow<ResourcePropertyActionResult<T>>,
-    doOnResult: (ResourcePropertyActionResult<T>) -> Unit
+    doOnResult: (ResourcePropertyActionResult<T>) -> Unit,
 ) {
     doOnResult(action().single())
 }

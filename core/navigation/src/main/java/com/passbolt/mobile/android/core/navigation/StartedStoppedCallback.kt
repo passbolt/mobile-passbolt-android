@@ -27,12 +27,14 @@ import android.os.Bundle
  * @since v1.0
  */
 abstract class StartedStoppedCallback : Application.ActivityLifecycleCallbacks {
-
     abstract override fun onActivityStarted(activity: Activity)
 
     abstract override fun onActivityStopped(activity: Activity)
 
-    override fun onActivityCreated(activity: Activity, bundle: Bundle?) {
+    override fun onActivityCreated(
+        activity: Activity,
+        bundle: Bundle?,
+    ) {
         // not interested
     }
 
@@ -44,7 +46,10 @@ abstract class StartedStoppedCallback : Application.ActivityLifecycleCallbacks {
         // not interested
     }
 
-    override fun onActivitySaveInstanceState(activity: Activity, bundle: Bundle) {
+    override fun onActivitySaveInstanceState(
+        activity: Activity,
+        bundle: Bundle,
+    ) {
         // not interested
     }
 

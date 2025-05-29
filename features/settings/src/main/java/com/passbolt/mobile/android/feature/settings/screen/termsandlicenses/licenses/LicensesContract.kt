@@ -26,7 +26,6 @@ import com.passbolt.mobile.android.ui.OpenSourceLicensesModel
  * @since v1.0
  */
 interface LicensesContract {
-
     interface View : BaseContract.View {
         fun showLicenses(licensesData: OpenSourceLicensesModel)
     }

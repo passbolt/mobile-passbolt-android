@@ -34,15 +34,15 @@ import org.mockito.kotlin.whenever
  * @since v1.0
  */
 class TransferDetailsPresenterTest : KoinTest {
-
     private val presenter: TransferDetailsPresenter by inject()
     private var view: TransferDetailsContract.View = mock()
 
     @get:Rule
-    val koinTestRule = KoinTestRule.create {
-        printLogger(Level.ERROR)
-        modules(transferDetailsModule)
-    }
+    val koinTestRule =
+        KoinTestRule.create {
+            printLogger(Level.ERROR)
+            modules(transferDetailsModule)
+        }
 
     @Before
     fun setUp() {

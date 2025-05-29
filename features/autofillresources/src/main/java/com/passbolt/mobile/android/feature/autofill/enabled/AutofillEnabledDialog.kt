@@ -36,12 +36,11 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
  * @since v1.0
  */
 class AutofillEnabledDialog : DialogFragment() {
-
     private var listener: Listener? = null
     private lateinit var binding: DialogAutofillEnabledBinding
     private val dialogMode by lifecycleAwareLazy {
         requireNotNull(
-            BundleCompat.getSerializable(requireArguments(), DIALOG_MODE_KEY, DialogMode::class.java)
+            BundleCompat.getSerializable(requireArguments(), DIALOG_MODE_KEY, DialogMode::class.java),
         )
     }
 
@@ -50,7 +49,11 @@ class AutofillEnabledDialog : DialogFragment() {
         setStyle(STYLE_NO_TITLE, CoreUiR.style.FullscreenDialogTheme)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
+    ): View {
         binding = DialogAutofillEnabledBinding.inflate(inflater)
         setupView()
         setupListeners(binding)
@@ -76,11 +79,12 @@ class AutofillEnabledDialog : DialogFragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        listener = when {
-            activity is Listener -> activity as Listener
-            parentFragment is Listener -> parentFragment as Listener
-            else -> error("Parent must implement ${Listener::class.java.name}")
-        }
+        listener =
+            when {
+                activity is Listener -> activity as Listener
+                parentFragment is Listener -> parentFragment as Listener
+                else -> error("Parent must implement ${Listener::class.java.name}")
+            }
     }
 
     override fun dismiss() {
@@ -95,6 +99,7 @@ class AutofillEnabledDialog : DialogFragment() {
 
     interface Listener {
         fun goToAppClick()
+
         fun autofillEnabledDialogDismissed() {}
     }
 
@@ -103,9 +108,10 @@ class AutofillEnabledDialog : DialogFragment() {
 
         fun newInstance(dialogMode: DialogMode) =
             AutofillEnabledDialog().apply {
-                arguments = bundleOf(
-                    DIALOG_MODE_KEY to dialogMode
-                )
+                arguments =
+                    bundleOf(
+                        DIALOG_MODE_KEY to dialogMode,
+                    )
             }
     }
 }

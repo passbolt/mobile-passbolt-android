@@ -34,17 +34,19 @@ import java.time.ZonedDateTime
  * @since v1.0
  */
 class UpdateMetadataSessionKeysUseCase(
-    private val metadataRepository: MetadataRepository
+    private val metadataRepository: MetadataRepository,
 ) : AsyncUseCase<UpdateMetadataSessionKeysUseCase.Input, UpdateMetadataSessionKeysUseCase.Output> {
-
-    override suspend fun execute(input: Input): Output {
-        return when (val response = metadataRepository.updateMetadataSessionKeys(
-            input.metadataBundleId,
-            EncryptedDataAndModifiedRequest(
-                data = input.encryptedData,
-                modified = input.modifiedDate
-            )
-        )) {
+    override suspend fun execute(input: Input): Output =
+        when (
+            val response =
+                metadataRepository.updateMetadataSessionKeys(
+                    input.metadataBundleId,
+                    EncryptedDataAndModifiedRequest(
+                        data = input.encryptedData,
+                        modified = input.modifiedDate,
+                    ),
+                )
+        ) {
             is NetworkResult.Failure -> {
                 // 409 means that the bundle has been updated in the meantime by other client
                 if ((response.exception as HttpException).code() == HTTP_CONFLICT) {
@@ -55,33 +57,34 @@ class UpdateMetadataSessionKeysUseCase(
             }
             is NetworkResult.Success -> Output.Success
         }
-    }
 
     data class Input(
         val metadataBundleId: String,
         val encryptedData: String,
-        val modifiedDate: ZonedDateTime
+        val modifiedDate: ZonedDateTime,
     )
 
     sealed class Output : AuthenticatedUseCaseOutput {
-
         override val authenticationState: AuthenticationState
-            get() = when {
-                this is Failure<*> && this.response.isUnauthorized ->
-                    AuthenticationState.Unauthenticated(AuthenticationState.Unauthenticated.Reason.Session)
-                this is Failure<*> && this.response.isMfaRequired -> {
-                    val providers = MfaTypeProvider.get(this.response)
-                    AuthenticationState.Unauthenticated(
-                        AuthenticationState.Unauthenticated.Reason.Mfa(providers)
-                    )
+            get() =
+                when {
+                    this is Failure<*> && this.response.isUnauthorized ->
+                        AuthenticationState.Unauthenticated(AuthenticationState.Unauthenticated.Reason.Session)
+                    this is Failure<*> && this.response.isMfaRequired -> {
+                        val providers = MfaTypeProvider.get(this.response)
+                        AuthenticationState.Unauthenticated(
+                            AuthenticationState.Unauthenticated.Reason.Mfa(providers),
+                        )
+                    }
+                    else -> AuthenticationState.Authenticated
                 }
-                else -> AuthenticationState.Authenticated
-            }
 
         data object Success : Output()
 
         data object Conflict : Output()
 
-        data class Failure<T : Any>(val response: NetworkResult.Failure<T>) : Output()
+        data class Failure<T : Any>(
+            val response: NetworkResult.Failure<T>,
+        ) : Output()
     }
 }

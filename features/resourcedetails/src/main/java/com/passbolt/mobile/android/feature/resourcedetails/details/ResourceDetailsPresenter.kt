@@ -80,10 +80,10 @@ class ResourceDetailsPresenter(
     private val idToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider,
     private val getRbacRulesUseCase: GetRbacRulesUseCase,
     private val resourceDetailActionIdlingResource: ResourceDetailActionIdlingResource,
-    coroutineLaunchContext: CoroutineLaunchContext
+    coroutineLaunchContext: CoroutineLaunchContext,
 ) : DataRefreshViewReactivePresenter<ResourceDetailsContract.View>(coroutineLaunchContext),
-    ResourceDetailsContract.Presenter, KoinComponent {
-
+    ResourceDetailsContract.Presenter,
+    KoinComponent {
     override var view: ResourceDetailsContract.View? = null
     private val job = SupervisorJob()
     private val coroutineScope = CoroutineScope(job + coroutineLaunchContext.ui)
@@ -93,12 +93,13 @@ class ResourceDetailsPresenter(
     private var isNoteVisible = false
     private var permissionsListWidth: Int = -1
     private var permissionItemWidth: Float = -1f
-    private val missingItemExceptionHandler = CoroutineExceptionHandler { _, throwable ->
-        if (throwable is NullPointerException) {
-            view?.showContentNotAvailable()
-            view?.navigateBack()
+    private val missingItemExceptionHandler =
+        CoroutineExceptionHandler { _, throwable ->
+            if (throwable is NullPointerException) {
+                view?.showContentNotAvailable()
+                view?.navigateBack()
+            }
         }
-    }
     private val tickerJob = SupervisorJob()
     private val tickerScope = CoroutineScope(tickerJob + coroutineLaunchContext.ui)
     private var otpModel: OtpItemWrapper? = null
@@ -106,15 +107,21 @@ class ResourceDetailsPresenter(
     private val resourcePropertiesActionsInteractor: ResourcePropertiesActionsInteractor
         get() = get { parametersOf(resourceModel) }
     private val secretPropertiesActionsInteractor: SecretPropertiesActionsInteractor
-        get() = get {
-            parametersOf(resourceModel, needSessionRefreshFlow, sessionRefreshedFlow)
-        }
+        get() =
+            get {
+                parametersOf(resourceModel, needSessionRefreshFlow, sessionRefreshedFlow)
+            }
     private val resourceCommonActionsInteractor: ResourceCommonActionsInteractor
-        get() = get {
-            parametersOf(resourceModel, needSessionRefreshFlow, sessionRefreshedFlow)
-        }
+        get() =
+            get {
+                parametersOf(resourceModel, needSessionRefreshFlow, sessionRefreshedFlow)
+            }
 
-    override fun argsReceived(resourceModel: ResourceModel, permissionsListWidth: Int, permissionItemWidth: Float) {
+    override fun argsReceived(
+        resourceModel: ResourceModel,
+        permissionsListWidth: Int,
+        permissionItemWidth: Float,
+    ) {
         this.permissionsListWidth = permissionsListWidth
         this.permissionItemWidth = permissionItemWidth
         this.resourceModel = resourceModel
@@ -141,20 +148,25 @@ class ResourceDetailsPresenter(
                 fullDataRefreshExecutor.dataRefreshStatusFlow.first { it is DataRefreshStatus.Finished }
 
                 // refresh resource data based on latest db state
-                resourceModel = getLocalResourceUseCase.execute(GetLocalResourceUseCase.Input(resourceModel.resourceId))
-                    .resource
+                resourceModel =
+                    getLocalResourceUseCase
+                        .execute(GetLocalResourceUseCase.Input(resourceModel.resourceId))
+                        .resource
                 getAndDisplayResource()
             }
 
             // fetch remaining data from db
             val rbac = getRbacRulesUseCase.execute(Unit).rbacModel
-            launch { // get and display permissions
+            launch {
+                // get and display permissions
                 getAndDisplayPermissions(rbac)
             }
-            launch { // get and display tags
+            launch {
+                // get and display tags
                 getAndDisplayTags(rbac)
             }
-            launch { // get and show location
+            launch {
+                // get and show location
                 getAndDisplayLocation(rbac)
             }
         }
@@ -162,15 +174,17 @@ class ResourceDetailsPresenter(
 
     private suspend fun getAndDisplayLocation(rbac: RbacModel) {
         if (rbac.foldersUseRule == ALLOW) {
-            val resourceLocationPathSegments = resourceModel.folderId.let {
-                if (it != null) {
-                    getLocalFolderLocation.execute(GetLocalFolderLocationUseCase.Input(it))
-                        .parentFolders
-                        .map { folder -> folder.name }
-                } else {
-                    emptyList()
+            val resourceLocationPathSegments =
+                resourceModel.folderId.let {
+                    if (it != null) {
+                        getLocalFolderLocation
+                            .execute(GetLocalFolderLocationUseCase.Input(it))
+                            .parentFolders
+                            .map { folder -> folder.name }
+                    } else {
+                        emptyList()
+                    }
                 }
-            }
             view?.showFolderLocation(resourceLocationPathSegments)
         } else {
             view?.hideLocation()
@@ -180,7 +194,8 @@ class ResourceDetailsPresenter(
     private suspend fun getAndDisplayTags(rbac: RbacModel) {
         val areTagsAvailable = getFeatureFlagsUseCase.execute(Unit).featureFlags.areTagsAvailable
         if (areTagsAvailable && rbac.tagsUseRule == ALLOW) {
-            getLocalResourceTagsUseCase.execute(GetLocalResourceTagsUseCase.Input(resourceModel.resourceId))
+            getLocalResourceTagsUseCase
+                .execute(GetLocalResourceTagsUseCase.Input(resourceModel.resourceId))
                 .tags
                 .map { it.slug }
                 .let { view?.showTags(it) }
@@ -191,18 +206,21 @@ class ResourceDetailsPresenter(
 
     private suspend fun getAndDisplayPermissions(rbac: RbacModel) {
         if (rbac.shareViewRule == ALLOW) {
-            val permissions = getLocalResourcePermissionsUseCase.execute(
-                GetLocalResourcePermissionsUseCase.Input(resourceModel.resourceId)
-            ).permissions
+            val permissions =
+                getLocalResourcePermissionsUseCase
+                    .execute(
+                        GetLocalResourcePermissionsUseCase.Input(resourceModel.resourceId),
+                    ).permissions
 
-            val permissionsDisplayDataset = PermissionsDatasetCreator(permissionsListWidth, permissionItemWidth)
-                .prepareDataset(permissions)
+            val permissionsDisplayDataset =
+                PermissionsDatasetCreator(permissionsListWidth, permissionItemWidth)
+                    .prepareDataset(permissions)
 
             view?.showPermissions(
                 permissionsDisplayDataset.groupPermissions,
                 permissionsDisplayDataset.userPermissions,
                 permissionsDisplayDataset.counterValue,
-                permissionsDisplayDataset.overlap
+                permissionsDisplayDataset.overlap,
             )
         } else {
             view?.hideSharedWith()
@@ -212,7 +230,7 @@ class ResourceDetailsPresenter(
     private suspend fun getAndDisplayResource() {
         performResourcePropertyAction(
             action = { resourcePropertiesActionsInteractor.provideWebsiteUrl() },
-            doOnResult = { view?.displayUrl(it.result) }
+            doOnResult = { view?.displayUrl(it.result) },
         )
         view?.apply {
             displayUsername(resourceModel.metadataJsonModel.username.orEmpty())
@@ -253,9 +271,10 @@ class ResourceDetailsPresenter(
 
     private fun handleTotpField(resourceModel: ResourceModel) {
         coroutineScope.launch {
-            val slug = idToSlugMappingProvider.provideMappingForSelectedAccount()[
-                UUID.fromString(resourceModel.resourceTypeId)
-            ]
+            val slug =
+                idToSlugMappingProvider.provideMappingForSelectedAccount()[
+                    UUID.fromString(resourceModel.resourceTypeId),
+                ]
             if (ContentType.fromSlug(slug!!).hasTotp()) {
                 view?.showTotpSection()
             } else {
@@ -267,9 +286,10 @@ class ResourceDetailsPresenter(
     private fun handlePassword(resourceModel: ResourceModel) {
         view?.hidePassword()
         coroutineScope.launch {
-            val slug = idToSlugMappingProvider.provideMappingForSelectedAccount()[
-                UUID.fromString(resourceModel.resourceTypeId)
-            ]
+            val slug =
+                idToSlugMappingProvider.provideMappingForSelectedAccount()[
+                    UUID.fromString(resourceModel.resourceTypeId),
+                ]
             if (ContentType.fromSlug(slug!!).hasPassword()) {
                 view?.showPasswordSection()
             } else {
@@ -290,9 +310,10 @@ class ResourceDetailsPresenter(
 
     private fun handleDescriptionAndNoteField(resourceModel: ResourceModel) {
         coroutineScope.launch {
-            val slug = idToSlugMappingProvider.provideMappingForSelectedAccount()[
-                UUID.fromString(resourceModel.resourceTypeId)
-            ]
+            val slug =
+                idToSlugMappingProvider.provideMappingForSelectedAccount()[
+                    UUID.fromString(resourceModel.resourceTypeId),
+                ]
             val contentType = ContentType.fromSlug(slug!!)
             if (!contentType.hasNote()) {
                 view?.disableNote()
@@ -340,7 +361,7 @@ class ResourceDetailsPresenter(
                     doOnSuccess = {
                         view?.showPassword(it.result.orEmpty())
                         isPasswordVisible = true
-                    }
+                    },
                 )
                 resourceDetailActionIdlingResource.setIdle(true)
             }
@@ -358,7 +379,7 @@ class ResourceDetailsPresenter(
             resourceDetailActionIdlingResource.setIdle(false)
             performResourcePropertyAction(
                 action = { resourcePropertiesActionsInteractor.provideDescription() },
-                doOnResult = { view?.showMetadataDescription(it.result) }
+                doOnResult = { view?.showMetadataDescription(it.result) },
             )
             resourceDetailActionIdlingResource.setIdle(true)
         }
@@ -377,7 +398,7 @@ class ResourceDetailsPresenter(
                     doOnSuccess = {
                         view?.showNote(it.result)
                         isNoteVisible = true
-                    }
+                    },
                 )
             }
         }
@@ -387,7 +408,7 @@ class ResourceDetailsPresenter(
         coroutineScope.launch {
             performResourcePropertyAction(
                 action = { resourcePropertiesActionsInteractor.provideUsername() },
-                doOnResult = { view?.addToClipboard(it.label, it.result, it.isSecret) }
+                doOnResult = { view?.addToClipboard(it.label, it.result, it.isSecret) },
             )
         }
     }
@@ -396,7 +417,7 @@ class ResourceDetailsPresenter(
         coroutineScope.launch {
             performResourcePropertyAction(
                 action = { resourcePropertiesActionsInteractor.provideWebsiteUrl() },
-                doOnResult = { view?.addToClipboard(it.label, it.result, it.isSecret) }
+                doOnResult = { view?.addToClipboard(it.label, it.result, it.isSecret) },
             )
         }
     }
@@ -409,7 +430,7 @@ class ResourceDetailsPresenter(
                     action = { secretPropertiesActionsInteractor.providePassword() },
                     doOnFetchFailure = { view?.showFetchFailure() },
                     doOnDecryptionFailure = { view?.showDecryptionFailure() },
-                    doOnSuccess = { view?.addToClipboard(it.label, it.result.orEmpty(), it.isSecret) }
+                    doOnSuccess = { view?.addToClipboard(it.label, it.result.orEmpty(), it.isSecret) },
                 )
             }
             resourceDetailActionIdlingResource.setIdle(true)
@@ -421,7 +442,7 @@ class ResourceDetailsPresenter(
         coroutineScope.launch {
             performResourcePropertyAction(
                 action = { resourcePropertiesActionsInteractor.provideDescription() },
-                doOnResult = { view?.addToClipboard(it.label, it.result, it.isSecret) }
+                doOnResult = { view?.addToClipboard(it.label, it.result, it.isSecret) },
             )
         }
         resourceDetailActionIdlingResource.setIdle(true)
@@ -434,7 +455,7 @@ class ResourceDetailsPresenter(
                 action = { secretPropertiesActionsInteractor.provideNote() },
                 doOnFetchFailure = { view?.showFetchFailure() },
                 doOnDecryptionFailure = { view?.showDecryptionFailure() },
-                doOnSuccess = { view?.addToClipboard(it.label, it.result, it.isSecret) }
+                doOnSuccess = { view?.addToClipboard(it.label, it.result, it.isSecret) },
             )
         }
         resourceDetailActionIdlingResource.setIdle(true)
@@ -444,7 +465,7 @@ class ResourceDetailsPresenter(
         coroutineScope.launch {
             performResourcePropertyAction(
                 action = { resourcePropertiesActionsInteractor.provideWebsiteUrl() },
-                doOnResult = { view?.openWebsite(it.result) }
+                doOnResult = { view?.openWebsite(it.result) },
             )
         }
     }
@@ -458,15 +479,17 @@ class ResourceDetailsPresenter(
             performCommonResourceAction(
                 action = { resourceCommonActionsInteractor.deleteResource() },
                 doOnFailure = { view?.showGeneralError() },
-                doOnSuccess = { view?.closeWithDeleteSuccessResult(it.resourceName) }
+                doOnSuccess = { view?.closeWithDeleteSuccessResult(it.resourceName) },
             )
         }
     }
 
     override fun resourceEdited(resourceName: String?) {
         coroutineScope.launch {
-            resourceModel = getLocalResourceUseCase.execute(GetLocalResourceUseCase.Input(resourceModel.resourceId))
-                .resource
+            resourceModel =
+                getLocalResourceUseCase
+                    .execute(GetLocalResourceUseCase.Input(resourceModel.resourceId))
+                    .resource
             getResourcesAndPermissions()
             view?.apply {
                 showResourceEditedSnackbar(resourceName.orEmpty())
@@ -509,7 +532,7 @@ class ResourceDetailsPresenter(
             performCommonResourceAction(
                 action = { resourceCommonActionsInteractor.toggleFavourite(option) },
                 doOnFailure = { view?.showToggleFavouriteFailure() },
-                doOnSuccess = { view?.setResourceEditedResult(resourceModel.metadataJsonModel.name) }
+                doOnSuccess = { view?.setResourceEditedResult(resourceModel.metadataJsonModel.name) },
             )
             getResourcesAndPermissions()
             resourceDetailActionIdlingResource.setIdle(true)
@@ -538,21 +561,25 @@ class ResourceDetailsPresenter(
 
     private fun showTotp() {
         resourceDetailActionIdlingResource.setIdle(false)
-        otpModel = otpModelMapper.map(resourceModel)
-            .copy(isRefreshing = true)
-            .also {
-                view?.showTotp(it)
-            }
+        otpModel =
+            otpModelMapper
+                .map(resourceModel)
+                .copy(isRefreshing = true)
+                .also {
+                    view?.showTotp(it)
+                }
 
         doAfterOtpFetchAndDecrypt { _, otp, otpParameters ->
-            otpModel = otpModelMapper.map(resourceModel)
-                .copy(
-                    otpValue = otpParameters.otpValue,
-                    isVisible = true,
-                    otpExpirySeconds = otp.period,
-                    remainingSecondsCounter = otpParameters.secondsValid,
-                    isRefreshing = false
-                )
+            otpModel =
+                otpModelMapper
+                    .map(resourceModel)
+                    .copy(
+                        otpValue = otpParameters.otpValue,
+                        isVisible = true,
+                        otpExpirySeconds = otp.period,
+                        remainingSecondsCounter = otpParameters.secondsValid,
+                        isRefreshing = false,
+                    )
             resourceDetailActionIdlingResource.setIdle(true)
         }
     }
@@ -582,8 +609,8 @@ class ResourceDetailsPresenter(
         action: (
             ClipboardLabel,
             TotpSecret,
-            TotpParametersProvider.OtpParameters
-        ) -> Unit
+            TotpParametersProvider.OtpParameters,
+        ) -> Unit,
     ) {
         coroutineScope.launch {
             performSecretPropertyAction(
@@ -592,19 +619,20 @@ class ResourceDetailsPresenter(
                 doOnDecryptionFailure = { view?.showDecryptionFailure() },
                 doOnSuccess = {
                     if (it.result.key.isNotBlank()) {
-                        val otpParameters = totpParametersProvider.provideOtpParameters(
-                            secretKey = it.result.key,
-                            digits = it.result.digits,
-                            period = it.result.period,
-                            algorithm = it.result.algorithm
-                        )
+                        val otpParameters =
+                            totpParametersProvider.provideOtpParameters(
+                                secretKey = it.result.key,
+                                digits = it.result.digits,
+                                period = it.result.period,
+                                algorithm = it.result.algorithm,
+                            )
                         action(it.label, it.result, otpParameters)
                     } else {
                         val error = "Fetched totp key is empty"
                         Timber.e(error)
                         view?.showGeneralError(error)
                     }
-                }
+                },
             )
         }
     }

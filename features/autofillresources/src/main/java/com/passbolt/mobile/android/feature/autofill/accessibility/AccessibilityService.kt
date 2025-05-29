@@ -55,8 +55,9 @@ import timber.log.Timber
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class AccessibilityService : AccessibilityService(), KoinComponent {
-
+class AccessibilityService :
+    AccessibilityService(),
+    KoinComponent {
     private val accessibilityOperationsProvider: AccessibilityOperationsProvider by inject()
     private val coroutineLaunchContext: CoroutineLaunchContext by inject()
     private val windowManager: WindowManager by inject()
@@ -110,9 +111,11 @@ class AccessibilityService : AccessibilityService(), KoinComponent {
         }
         when (event?.eventType) {
             AccessibilityEvent.TYPE_VIEW_FOCUSED,
-            AccessibilityEvent.TYPE_VIEW_CLICKED -> viewClicked(event)
+            AccessibilityEvent.TYPE_VIEW_CLICKED,
+            -> viewClicked(event)
             AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED,
-            AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED -> stateChanged(event)
+            AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED,
+            -> stateChanged(event)
             else -> {
                 // ignoring
             }
@@ -162,23 +165,29 @@ class AccessibilityService : AccessibilityService(), KoinComponent {
             } else {
                 Timber.e(
                     "Permission to draw over other apps not granted " +
-                            "- please grant in the system application settings"
+                        "- please grant in the system application settings",
                 )
             }
         }
     }
 
-    private fun scanAndAutofill(root: AccessibilityNodeInfo, event: AccessibilityEvent): Boolean {
+    private fun scanAndAutofill(
+        root: AccessibilityNodeInfo,
+        event: AccessibilityEvent,
+    ): Boolean {
         var filled = false
         val allEditTexts = accessibilityOperationsProvider.getAllNodes(root, event)
         val passwordEditText = accessibilityOperationsProvider.getPasswordNode(allEditTexts)
-        val usernameEditText = accessibilityOperationsProvider.getUsernameNode(
-            allEditTexts,
-            passwordEditText?.viewIdResourceName
-        )
+        val usernameEditText =
+            accessibilityOperationsProvider.getUsernameNode(
+                allEditTexts,
+                passwordEditText?.viewIdResourceName,
+            )
         val uri = accessibilityOperationsProvider.getUri(root)
 
-        if (uri != null && usernameEditText != null && passwordEditText != null &&
+        if (uri != null &&
+            usernameEditText != null &&
+            passwordEditText != null &&
             accessibilityOperationsProvider.needToAutofill(AccessibilityCommunicator.lastCredentials, uri)
         ) {
             fillUsernameField(usernameEditText)
@@ -199,14 +208,14 @@ class AccessibilityService : AccessibilityService(), KoinComponent {
     private fun fillUsernameField(usernameEditText: AccessibilityNodeInfo) {
         accessibilityOperationsProvider.fillNode(
             usernameEditText,
-            AccessibilityCommunicator.lastCredentials!!.username
+            AccessibilityCommunicator.lastCredentials!!.username,
         )
     }
 
     private fun fillPasswordField(passwordEditText: AccessibilityNodeInfo) {
         accessibilityOperationsProvider.fillNode(
             passwordEditText,
-            AccessibilityCommunicator.lastCredentials!!.password
+            AccessibilityCommunicator.lastCredentials!!.password,
         )
     }
 
@@ -214,7 +223,7 @@ class AccessibilityService : AccessibilityService(), KoinComponent {
         startActivity(
             ActivityIntents.autofill(applicationContext, AutofillMode.ACCESSIBILITY.name, uri).apply {
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            }
+            },
         )
     }
 
@@ -226,9 +235,12 @@ class AccessibilityService : AccessibilityService(), KoinComponent {
             overlayView?.root?.measure(View.MeasureSpec.makeMeasureSpec(0, 0), View.MeasureSpec.makeMeasureSpec(0, 0))
             overlayViewHeight = overlayView?.root?.measuredHeight ?: 0
 
-            val anchorPosition = accessibilityOperationsProvider.getOverlayAnchorPosition(
-                event.source, overlayViewHeight, isOverlayAboveAnchor
-            )
+            val anchorPosition =
+                accessibilityOperationsProvider.getOverlayAnchorPosition(
+                    event.source,
+                    overlayViewHeight,
+                    isOverlayAboveAnchor,
+                )
             anchorNode = event.source
 
             params.x = anchorPosition.x
@@ -241,12 +253,13 @@ class AccessibilityService : AccessibilityService(), KoinComponent {
     private fun startOverlayAnchorObserver() {
         if (!overlayAnchorObserverRunning) {
             overlayAnchorObserverRunning = true
-            overlayAnchorObserverRunnable = scope.launch {
-                while (overlayAnchorObserverRunning) {
-                    delay(OBSERVE_POSITION_DELAY)
-                    adjustOverlayForScroll()
+            overlayAnchorObserverRunnable =
+                scope.launch {
+                    while (overlayAnchorObserverRunning) {
+                        delay(OBSERVE_POSITION_DELAY)
+                        adjustOverlayForScroll()
+                    }
                 }
-            }
         }
     }
 
@@ -256,9 +269,14 @@ class AccessibilityService : AccessibilityService(), KoinComponent {
             return
         }
         val root = rootInActiveWindow
-        val anchorPosition = accessibilityOperationsProvider.getOverlayAnchorPosition(
-            anchorNode, root, windows, overlayViewHeight, false
-        )
+        val anchorPosition =
+            accessibilityOperationsProvider.getOverlayAnchorPosition(
+                anchorNode,
+                root,
+                windows,
+                overlayViewHeight,
+                false,
+            )
         val currentLastPosition = lastPosition
         if (anchorPosition == null) {
             hideOverlay()

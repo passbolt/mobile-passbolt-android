@@ -36,13 +36,15 @@ import org.koin.android.ext.android.inject
 class TermsAndLicensesSettingsFragment :
     BindingScopedFragment<FragmentTermsAndLicensesSettingsBinding>(FragmentTermsAndLicensesSettingsBinding::inflate),
     TermsAndLicensesSettingsContract.View {
-
     private val presenter: TermsAndLicensesSettingsContract.Presenter by inject()
     private val externalDeeplinkHandler: ExternalDeeplinkHandler by inject()
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
-        initDefaultToolbar(binding.toolbar)
+        initDefaultToolbar(requiredBinding.toolbar)
         setListeners()
         presenter.attach(this)
     }
@@ -58,7 +60,7 @@ class TermsAndLicensesSettingsFragment :
     }
 
     private fun setListeners() {
-        with(binding) {
+        with(requiredBinding) {
             termsAndConditionsSetting.setDebouncingOnClick {
                 presenter.termsAndConditionsClick()
             }
@@ -72,19 +74,19 @@ class TermsAndLicensesSettingsFragment :
     }
 
     override fun disablePrivacyPolicySetting() {
-        binding.privacyPolicySetting.isEnabled = false
+        requiredBinding.privacyPolicySetting.isEnabled = false
     }
 
     override fun enablePrivacyPolicySetting() {
-        binding.privacyPolicySetting.isEnabled = true
+        requiredBinding.privacyPolicySetting.isEnabled = true
     }
 
     override fun disableTermsAndConditionsSetting() {
-        binding.termsAndConditionsSetting.isEnabled = false
+        requiredBinding.termsAndConditionsSetting.isEnabled = false
     }
 
     override fun enableTermsAndConditionsButton() {
-        binding.termsAndConditionsSetting.isEnabled = true
+        requiredBinding.termsAndConditionsSetting.isEnabled = true
     }
 
     override fun openUrl(url: String) {
@@ -93,7 +95,7 @@ class TermsAndLicensesSettingsFragment :
 
     override fun navigateToLicenses() {
         findNavController().navigate(
-            TermsAndLicensesSettingsFragmentDirections.actionTermsAndLicensesSettingsFragmentToLicensesFragment()
+            TermsAndLicensesSettingsFragmentDirections.actionTermsAndLicensesSettingsFragmentToLicensesFragment(),
         )
     }
 }

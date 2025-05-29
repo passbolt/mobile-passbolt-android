@@ -25,5 +25,7 @@ package com.passbolt.mobile.android.serializers.gson.exception
 
 import java.io.IOException
 
-class InvalidJsonTokenType(tokenType: String, expectedType: String) :
-    IOException("Token type $tokenType is expected to have $expectedType type")
+class InvalidJsonTokenType(
+    tokenType: String,
+    expectedType: String,
+) : IOException("Token type $tokenType is expected to have $expectedType type")

@@ -29,32 +29,51 @@ import com.passbolt.mobile.android.ui.OtpParseResult
 import kotlinx.coroutines.flow.StateFlow
 
 interface ScanOtpContract {
-
     interface View : BaseContract.View {
         fun startAnalysis()
+
         fun showStartCameraError()
+
         fun scanResultChannel(): StateFlow<BarcodeScanResult>
+
         fun showBarcodeScanError(message: String?)
+
         fun showMultipleCodesInRange()
+
         fun showCenterCameraOnBarcode()
+
         fun setFlagSecure()
+
         fun removeFlagSecure()
+
         fun showNotAnOtpBarcode()
+
         fun setResultAndNavigateBack(parserResult: OtpParseResult.OtpQr.TotpQr)
+
         fun showCameraRequiredDialog()
+
         fun requestCameraPermission()
+
         fun showCameraPermissionRequiredDialog()
+
         fun navigateToAppSettings()
+
         fun navigateToScanOtpSuccess(parserResult: OtpParseResult.OtpQr.TotpQr)
     }
 
     interface Presenter : BaseContract.Presenter<View> {
         fun startCameraError(exc: Exception)
+
         fun viewResumed()
+
         fun viewPaused()
+
         fun cameraPermissionGranted()
+
         fun permissionRejectedClick()
+
         fun settingsButtonClick()
+
         fun argsRetrieved(mode: ScanOtpMode)
     }
 }

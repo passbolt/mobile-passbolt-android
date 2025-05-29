@@ -26,17 +26,24 @@ import com.passbolt.mobile.android.ui.ResourceFormMode
  * @since v1.0
  */
 interface DescriptionFormContract {
-
     interface View : BaseContract.View {
         fun showDescription(metadataDescription: String)
+
         fun goBackWithResult(metadataDescription: String)
+
         fun showCreateTitle()
+
         fun showEditTitle(resourceName: String)
     }
 
     interface Presenter : BaseContract.Presenter<View> {
-        fun argsRetrieved(mode: ResourceFormMode, metadataDescription: String)
+        fun argsRetrieved(
+            mode: ResourceFormMode,
+            metadataDescription: String,
+        )
+
         fun onDescriptionChanged(description: String)
+
         fun applyClick()
     }
 }

@@ -1,15 +1,9 @@
-package com.passbolt.mobile.android.feature.settings.appsettings.autofill.com.passbolt.mobile.android.feature.main.mainscreen
+package com.passbolt.mobile.android.feature.main.mainscreen
 
 import com.passbolt.mobile.android.core.fulldatarefresh.DataRefreshStatus
 import com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor
 import com.passbolt.mobile.android.entity.featureflags.FeatureFlagsModel
-import com.passbolt.mobile.android.feature.main.mainscreen.MainContract
 import com.passbolt.mobile.android.feature.main.mainscreen.bottomnavigation.MainBottomNavigationModel
-import com.passbolt.mobile.android.feature.main.mainscreen.mockEncouragementsInteractor
-import com.passbolt.mobile.android.feature.main.mainscreen.mockFullDataRefreshExecutor
-import com.passbolt.mobile.android.feature.main.mainscreen.mockGetFeatureFlagsUseCase
-import com.passbolt.mobile.android.feature.main.mainscreen.mockInAppReviewInteractor
-import com.passbolt.mobile.android.feature.main.mainscreen.testMainModule
 import com.passbolt.mobile.android.featureflags.usecase.GetFeatureFlagsUseCase
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -52,15 +46,15 @@ import org.mockito.kotlin.whenever
  */
 
 class MainPresenterTest : KoinTest {
-
     private val presenter: MainContract.Presenter by inject()
     private val view = mock<MainContract.View>()
 
     @get:Rule
-    val koinTestRule = KoinTestRule.create {
-        printLogger(Level.ERROR)
-        modules(testMainModule)
-    }
+    val koinTestRule =
+        KoinTestRule.create {
+            printLogger(Level.ERROR)
+            modules(testMainModule)
+        }
 
     @After
     fun tearDown() {
@@ -105,21 +99,22 @@ class MainPresenterTest : KoinTest {
         whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow)
             .doReturn(mockDataRefreshFlow)
         mockGetFeatureFlagsUseCase.stub {
-            onBlocking { execute(Unit) } doReturn GetFeatureFlagsUseCase.Output(
-                FeatureFlagsModel(
-                    privacyPolicyUrl = null,
-                    termsAndConditionsUrl = null,
-                    isPreviewPasswordAvailable = false,
-                    areFoldersAvailable = true,
-                    areTagsAvailable = true,
-                    isTotpAvailable = true,
-                    isRbacAvailable = true,
-                    isPasswordExpiryAvailable = true,
-                    arePasswordPoliciesAvailable = true,
-                    canUpdatePasswordPolicies = true,
-                    isV5MetadataAvailable = false
+            onBlocking { execute(Unit) } doReturn
+                GetFeatureFlagsUseCase.Output(
+                    FeatureFlagsModel(
+                        privacyPolicyUrl = null,
+                        termsAndConditionsUrl = null,
+                        isPreviewPasswordAvailable = false,
+                        areFoldersAvailable = true,
+                        areTagsAvailable = true,
+                        isTotpAvailable = true,
+                        isRbacAvailable = true,
+                        isPasswordExpiryAvailable = true,
+                        arePasswordPoliciesAvailable = true,
+                        canUpdatePasswordPolicies = true,
+                        isV5MetadataAvailable = false,
+                    ),
                 )
-            )
 
             presenter.attach(view)
             mockDataRefreshFlow.tryEmit(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))

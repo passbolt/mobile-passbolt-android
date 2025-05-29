@@ -24,5 +24,5 @@ package com.passbolt.mobile.android.permissions.permissions
  */
 enum class PermissionsItem {
     RESOURCE,
-    FOLDER
+    FOLDER,
 }

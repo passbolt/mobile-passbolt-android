@@ -1,11 +1,3 @@
-package com.passbolt.mobile.android.feature.transferaccounttoanotherdevice
-
-import android.os.Bundle
-import com.passbolt.mobile.android.core.mvp.viewbinding.BindingActivity
-import com.passbolt.mobile.android.core.security.runtimeauth.RuntimeAuthenticatedFlag
-import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.databinding.ActivityTransferAccountToAnotherDeviceBinding
-import org.koin.android.ext.android.inject
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -29,11 +21,19 @@ import org.koin.android.ext.android.inject
  * @since v1.0
  */
 
+package com.passbolt.mobile.android.feature.transferaccounttoanotherdevice
+
+import android.os.Bundle
+import com.passbolt.mobile.android.core.mvp.viewbinding.BindingActivity
+import com.passbolt.mobile.android.core.security.runtimeauth.RuntimeAuthenticatedFlag
+import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.databinding.ActivityTransferAccountToAnotherDeviceBinding
+import org.koin.android.ext.android.inject
+
+// NOTE: When changing name or package read core/navigation/README.md
 class TransferAccountToAnotherDeviceActivity :
     BindingActivity<ActivityTransferAccountToAnotherDeviceBinding>(
-        ActivityTransferAccountToAnotherDeviceBinding::inflate
+        ActivityTransferAccountToAnotherDeviceBinding::inflate,
     ) {
-
     private val runtimeAuthenticatedFlag: RuntimeAuthenticatedFlag by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {

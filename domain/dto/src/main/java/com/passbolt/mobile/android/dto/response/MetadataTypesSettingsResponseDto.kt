@@ -47,7 +47,7 @@ data class MetadataTypesSettingsResponseDto(
     @SerializedName("allow_v4_v5_upgrade")
     val allowV4V5Upgrade: Boolean,
     @SerializedName("allow_v5_v4_downgrade")
-    val allowV5V4Downgrade: Boolean
+    val allowV5V4Downgrade: Boolean,
 )
 
 enum class MetadataTypeDto {
@@ -55,5 +55,5 @@ enum class MetadataTypeDto {
     V4,
 
     @SerializedName("v5")
-    V5
+    V5,
 }

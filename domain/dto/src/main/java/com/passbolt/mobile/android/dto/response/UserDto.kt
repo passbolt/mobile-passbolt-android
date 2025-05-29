@@ -34,12 +34,12 @@ data class UserDto(
     val active: Boolean,
     val deleted: Boolean,
     val disabled: String?,
-    val role: RoleDto?
+    val role: RoleDto?,
 )
 
 data class RoleDto(
     val id: String,
-    val name: String
+    val name: String,
 )
 
 data class GpgKeyDto(
@@ -54,5 +54,5 @@ data class GpgKeyDto(
     val keyId: String,
     val type: String?,
     @SerializedName("key_created")
-    val keyCreated: String?
+    val keyCreated: String?,
 )

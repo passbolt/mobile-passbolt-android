@@ -31,20 +31,19 @@ import com.passbolt.mobile.android.ui.UserModel
 class AddLocalUsersUseCase(
     private val databaseProvider: DatabaseProvider,
     private val userModelMapper: UsersModelMapper,
-    private val getSelectedAccountUseCase: GetSelectedAccountUseCase
+    private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
 ) : AsyncUseCase<AddLocalUsersUseCase.Input, Unit> {
-
     override suspend fun execute(input: Input) {
         val userId = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
         databaseProvider
             .get(userId)
             .usersDao()
             .insertAll(
-                input.users.map(userModelMapper::map)
+                input.users.map(userModelMapper::map),
             )
     }
 
     data class Input(
-        val users: List<UserModel>
+        val users: List<UserModel>,
     )
 }

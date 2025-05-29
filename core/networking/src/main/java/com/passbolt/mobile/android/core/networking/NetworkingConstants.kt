@@ -1,5 +1,3 @@
-package com.passbolt.mobile.android.core.networking
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -22,6 +20,9 @@ package com.passbolt.mobile.android.core.networking
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+
+package com.passbolt.mobile.android.core.networking
+
 // this is used only as a placeholder and it is replaced in ChangeableBaseUrlInterceptor
 const val PLACEHOLDER_BASE_URL = "https://passbolt.baseurl.placeholder"
 

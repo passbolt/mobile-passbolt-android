@@ -31,70 +31,139 @@ import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.TrustedKeyDeletedModel
 
 interface OtpContract {
-
     @Suppress("TooManyFunctions")
     interface View : DataRefreshViewReactiveContract.View {
         fun showOtpList(otpList: List<OtpItemWrapper>)
+
         fun showEmptyView()
+
         fun hideEmptyView()
+
         fun displaySearchAvatar(avatarUrl: String?)
+
         fun navigateToSwitchAccount(appContext: AppContext)
+
         fun navigateToManageAccounts()
+
         fun navigateToSwitchedAccountAuth(appContext: AppContext)
+
         fun showPleaseWaitForDataRefresh()
+
         fun displaySearchClearIcon()
+
         fun clearSearchInput()
-        fun showOtmMoreMenu(resourceId: String, resourceName: String)
-        fun copySecretToClipBoard(label: String, value: String)
+
+        fun showOtmMoreMenu(
+            resourceId: String,
+            resourceName: String,
+        )
+
+        fun copySecretToClipBoard(
+            label: String,
+            value: String,
+        )
+
         fun showDecryptionFailure()
+
         fun showFetchFailure()
+
         fun showConfirmDeleteDialog()
+
         fun showFailedToDeleteResource()
+
         fun showResourceDeleted()
+
         fun showNewOtpCreated()
+
         fun showProgress()
+
         fun hideProgress()
+
         fun showOtpUpdate()
+
         fun navigateToScanOtpCodeForResult()
+
         fun showError(message: String)
+
         fun showEncryptionError(message: String)
+
         fun showCreateButton()
+
         fun hideCreateButton()
+
         fun showTotpDeleted()
+
         fun showDataRefreshError()
+
         fun showJsonResourceSchemaValidationError()
+
         fun showJsonSecretSchemaValidationError()
+
         fun navigateToCreateTotpManually()
+
         fun navigateToEditResource(resourceModel: ResourceModel)
+
         fun showResourceCreatedSnackbar()
+
         fun showResourceEditedSnackbar(resourceName: String)
+
         fun showCannotUpdateTotpWithCurrentConfig()
+
         fun showMetadataKeyModifiedDialog(model: NewMetadataKeyToTrustModel)
+
         fun showMetadataKeyDeletedDialog(model: TrustedKeyDeletedModel)
+
         fun showFailedToVerifyMetadataKey()
+
         fun showNewMetadataKeyIsTrusted()
+
         fun showFailedToTrustMetadataKey()
     }
 
     interface Presenter : DataRefreshViewReactiveContract.Presenter<View> {
         fun otpItemClick(otpItemWrapper: OtpItemWrapper)
+
         fun otpItemMoreClick(otpListWrapper: OtpItemWrapper)
+
         fun refreshClick()
+
         fun searchAvatarClick()
+
         fun switchAccountManageAccountClick()
+
         fun switchAccountClick()
+
         fun searchClearClick()
+
         fun searchTextChanged(text: String)
+
         fun menuCopyOtpClick()
+
         fun menuShowOtpClick()
+
         fun menuDeleteOtpClick()
+
         fun totpDeletionConfirmed()
+
         fun otpCreated()
+
         fun otpUpdated()
-        fun otpQrScanReturned(isTotpCreated: Boolean, isManualCreationChosen: Boolean)
+
+        fun otpQrScanReturned(
+            isTotpCreated: Boolean,
+            isManualCreationChosen: Boolean,
+        )
+
         fun menuEditOtpClick()
-        fun resourceFormReturned(isResourceCreated: Boolean, isResourceEdited: Boolean, resourceName: String?)
+
+        fun resourceFormReturned(
+            isResourceCreated: Boolean,
+            isResourceEdited: Boolean,
+            resourceName: String?,
+        )
+
         fun trustedMetadataKeyDeleted(model: TrustedKeyDeletedModel)
+
         fun trustNewMetadataKey(model: NewMetadataKeyToTrustModel)
     }
 }

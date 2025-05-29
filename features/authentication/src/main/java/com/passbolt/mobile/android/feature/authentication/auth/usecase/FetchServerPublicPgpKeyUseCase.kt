@@ -29,27 +29,28 @@ import com.passbolt.mobile.android.passboltapi.auth.AuthRepository
  * @since v1.0
  */
 class FetchServerPublicPgpKeyUseCase(
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
 ) : AsyncUseCase<Unit, FetchServerPublicPgpKeyUseCase.Output> {
-
     override suspend fun execute(input: Unit): Output =
         when (val result = authRepository.getServerPublicPgpKey()) {
             is NetworkResult.Failure -> Output.Failure(result)
-            is NetworkResult.Success -> Output.Success(
-                result.value.body.keydata,
-                result.value.body.fingerprint,
-                result.value.header.serverTime
-            )
+            is NetworkResult.Success ->
+                Output.Success(
+                    result.value.body.keydata,
+                    result.value.body.fingerprint,
+                    result.value.header.serverTime,
+                )
         }
 
     sealed class Output {
-
         data class Success(
             val publicKey: String,
             val fingerprint: String,
-            val serverTime: Long
+            val serverTime: Long,
         ) : Output()
 
-        data class Failure(val error: NetworkResult.Failure<BaseResponse<ServerPgpResponseDto>>) : Output()
+        data class Failure(
+            val error: NetworkResult.Failure<BaseResponse<ServerPgpResponseDto>>,
+        ) : Output()
     }
 }

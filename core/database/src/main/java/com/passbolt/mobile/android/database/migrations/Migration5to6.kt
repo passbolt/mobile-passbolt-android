@@ -28,13 +28,14 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 
 @Suppress("MagicNumber")
 object Migration5to6 : Migration(5, 6) {
-
-    private const val CREATE_TAGS_TABLE = "CREATE TABLE IF NOT EXISTS Tag (" +
+    private const val CREATE_TAGS_TABLE =
+        "CREATE TABLE IF NOT EXISTS Tag (" +
             "`id` TEXT NOT NULL, " +
             "`slug` TEXT NOT NULL, " +
             "`isShared` INTEGER NOT NULL, " +
             "PRIMARY KEY(`id`))"
-    private const val CREATE_TAG_RESOURCE_CROSS_REF_TABLE = "CREATE TABLE IF NOT EXISTS ResourceAndTagsCrossRef (" +
+    private const val CREATE_TAG_RESOURCE_CROSS_REF_TABLE =
+        "CREATE TABLE IF NOT EXISTS ResourceAndTagsCrossRef (" +
             "`tagId` TEXT NOT NULL, " +
             "`resourceId` TEXT NOT NULL, " +
             "PRIMARY KEY(`tagId`, `resourceId`))"

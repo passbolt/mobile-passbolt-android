@@ -31,14 +31,16 @@ import java.io.File
  */
 
 class RemovePrivateKeyUseCase(
-    private val appContext: Context
+    private val appContext: Context,
 ) : UseCase<UserIdInput, Unit> {
-
     override fun execute(input: UserIdInput) {
-        val privateKeyFile = File(
-            com.passbolt.mobile.android.encryptedstorage.EncryptedFileBaseDirectory(appContext).baseDirectory,
-            PrivateKeyFileName(input.userId).name
-        )
+        val privateKeyFile =
+            File(
+                com.passbolt.mobile.android.encryptedstorage
+                    .EncryptedFileBaseDirectory(appContext)
+                    .baseDirectory,
+                PrivateKeyFileName(input.userId).name,
+            )
         if (privateKeyFile.exists()) {
             val deleted = privateKeyFile.delete()
             Timber.e("Deleted private key file: $deleted")

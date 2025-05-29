@@ -33,23 +33,22 @@ import retrofit2.http.Path
  * @since v1.0
  */
 internal interface ShareApi {
-
     @POST(SIMULATE_RESOURCE_SHARE)
     suspend fun simulateShareResource(
         @Path(PATH_RESOURCE_ID) resourceId: String,
-        @Body request: SimulateShareRequest
+        @Body request: SimulateShareRequest,
     ): BaseResponse<SimulateShareResponse>
 
     @PUT(SHARE_RESOURCE)
     suspend fun shareResource(
         @Path(PATH_RESOURCE_ID) resourceId: String,
-        @Body request: ResourceShareRequest
+        @Body request: ResourceShareRequest,
     ): BaseResponse<Unit>
 
     @POST(SHARE_FOLDER)
     suspend fun shareFolder(
         @Path(PATH_FOLDER_ID) folderId: String,
-        @Body request: FolderShareRequest
+        @Body request: FolderShareRequest,
     ): BaseResponse<Unit>
 
     private companion object {

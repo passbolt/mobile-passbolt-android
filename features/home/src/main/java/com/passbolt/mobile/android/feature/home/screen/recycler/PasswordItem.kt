@@ -47,17 +47,20 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
 class PasswordItem(
     private val resourceWrapper: ResourceItemWrapper,
     private val initialsIconGenerator: InitialsIconGenerator,
-    private val dotsVisible: Boolean = true
+    private val dotsVisible: Boolean = true,
 ) : AbstractBindingItem<ItemPasswordBinding>() {
-
     override val type: Int
         get() = R.id.itemPassword
 
-    override fun createBinding(inflater: LayoutInflater, parent: ViewGroup?): ItemPasswordBinding {
-        return ItemPasswordBinding.inflate(inflater, parent, false)
-    }
+    override fun createBinding(
+        inflater: LayoutInflater,
+        parent: ViewGroup?,
+    ): ItemPasswordBinding = ItemPasswordBinding.inflate(inflater, parent, false)
 
-    override fun bindView(binding: ItemPasswordBinding, payloads: List<Any>) {
+    override fun bindView(
+        binding: ItemPasswordBinding,
+        payloads: List<Any>,
+    ) {
         super.bindView(binding, payloads)
         with(binding) {
             setupUsername(this)
@@ -65,12 +68,13 @@ class PasswordItem(
             more.isVisible = dotsVisible
             loader.isVisible = resourceWrapper.loaderVisible
             itemPassword.isEnabled = resourceWrapper.clickable
-            initialsIconGenerator.generate(
-                resourceWrapper.resourceModel.metadataJsonModel.name,
-                resourceWrapper.resourceModel.initials
-            ).apply {
-                icon.setImageDrawable(this)
-            }
+            initialsIconGenerator
+                .generate(
+                    resourceWrapper.resourceModel.metadataJsonModel.name,
+                    resourceWrapper.resourceModel.initials,
+                ).apply {
+                    icon.setImageDrawable(this)
+                }
         }
     }
 
@@ -80,64 +84,67 @@ class PasswordItem(
                 binding.title.text = resourceWrapper.resourceModel.metadataJsonModel.name
                 binding.indicatorIcon.setImageDrawable(null)
             } else {
-                binding.title.text = binding.root.context.getString(
-                    LocalizationR.string.name_expired, resourceWrapper.resourceModel.metadataJsonModel.name
-                )
+                binding.title.text =
+                    binding.root.context.getString(
+                        LocalizationR.string.name_expired,
+                        resourceWrapper.resourceModel.metadataJsonModel.name,
+                    )
                 binding.indicatorIcon.setImageDrawable(
                     ContextCompat.getDrawable(
                         binding.root.context,
-                        CoreUiR.drawable.ic_excl_indicator
-                    )
+                        CoreUiR.drawable.ic_excl_indicator,
+                    ),
                 )
             }
         }
     }
 
-    private fun setupUsername(binding: ItemPasswordBinding) = with(binding) {
-        val fontFamily = ResourcesCompat.getFont(binding.root.context, CoreUiR.font.inter)
+    private fun setupUsername(binding: ItemPasswordBinding) =
+        with(binding) {
+            val fontFamily = ResourcesCompat.getFont(binding.root.context, CoreUiR.font.inter)
 
-        if (resourceWrapper.resourceModel.metadataJsonModel.username.isNullOrBlank()) {
-            subtitle.typeface = Typeface.create(fontFamily, FONT_WEIGHT, true)
-            subtitle.text = binding.root.context.getString(LocalizationR.string.no_username)
-        } else {
-            subtitle.typeface = Typeface.create(fontFamily, FONT_WEIGHT, false)
-            subtitle.text = resourceWrapper.resourceModel.metadataJsonModel.username
-        }
-    }
-
-    class MoreClick(
-        private val clickListener: (ResourceModel) -> Unit
-    ) : DebounceClickEventHook<PasswordItem>() {
-        override fun onBind(viewHolder: RecyclerView.ViewHolder): View? {
-            return viewHolder.asBinding<ItemPasswordBinding> {
-                it.more
+            if (resourceWrapper.resourceModel.metadataJsonModel.username
+                    .isNullOrBlank()
+            ) {
+                subtitle.typeface = Typeface.create(fontFamily, FONT_WEIGHT, true)
+                subtitle.text = binding.root.context.getString(LocalizationR.string.no_username)
+            } else {
+                subtitle.typeface = Typeface.create(fontFamily, FONT_WEIGHT, false)
+                subtitle.text = resourceWrapper.resourceModel.metadataJsonModel.username
             }
         }
+
+    class MoreClick(
+        private val clickListener: (ResourceModel) -> Unit,
+    ) : DebounceClickEventHook<PasswordItem>() {
+        override fun onBind(viewHolder: RecyclerView.ViewHolder): View? =
+            viewHolder.asBinding<ItemPasswordBinding> {
+                it.more
+            }
 
         override fun onDebounceClick(
             v: View,
             position: Int,
             fastAdapter: FastAdapter<PasswordItem>,
-            item: PasswordItem
+            item: PasswordItem,
         ) {
             clickListener.invoke(item.resourceWrapper.resourceModel)
         }
     }
 
     class ItemClick(
-        private val clickListener: (ResourceModel) -> Unit
+        private val clickListener: (ResourceModel) -> Unit,
     ) : ClickEventHook<PasswordItem>() {
-        override fun onBind(viewHolder: RecyclerView.ViewHolder): View? {
-            return viewHolder.asBinding<ItemPasswordBinding> {
+        override fun onBind(viewHolder: RecyclerView.ViewHolder): View? =
+            viewHolder.asBinding<ItemPasswordBinding> {
                 it.itemPassword
             }
-        }
 
         override fun onClick(
             v: View,
             position: Int,
             fastAdapter: FastAdapter<PasswordItem>,
-            item: PasswordItem
+            item: PasswordItem,
         ) {
             clickListener.invoke(item.resourceWrapper.resourceModel)
         }

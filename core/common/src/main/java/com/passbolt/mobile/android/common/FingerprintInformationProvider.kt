@@ -24,9 +24,7 @@ package com.passbolt.mobile.android.common
  */
 
 class FingerprintInformationProvider(
-    private val biometric: Biometric
+    private val biometric: Biometric,
 ) {
-
-    fun hasBiometricSetUp(): Boolean =
-        biometric.hasBiometricSetUp()
+    fun hasBiometricSetUp(): Boolean = biometric.hasBiometricSetUp()
 }

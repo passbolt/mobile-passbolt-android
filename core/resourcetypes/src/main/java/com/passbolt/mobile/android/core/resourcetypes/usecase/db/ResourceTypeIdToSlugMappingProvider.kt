@@ -28,9 +28,8 @@ import java.util.UUID
 
 class ResourceTypeIdToSlugMappingProvider(
     private val resourceTypeIdToSlugMappingUseCase: GetResourceTypeIdToSlugMappingUseCase,
-    private val getSelectedAccountUseCase: GetSelectedAccountUseCase
+    private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
 ) {
-
     private val perAccountMappings = hashMapOf<String, Map<UUID, String>>()
 
     suspend fun provideMappingForSelectedAccount(): Map<UUID, String> {

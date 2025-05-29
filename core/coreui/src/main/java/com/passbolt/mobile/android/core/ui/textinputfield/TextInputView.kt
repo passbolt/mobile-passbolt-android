@@ -40,139 +40,153 @@ import com.passbolt.mobile.android.core.localization.R as LocalizationR
  * @since v1.0
  */
 
-open class TextInputView @JvmOverloads constructor(
-    context: Context,
-    attrs: AttributeSet? = null,
-    defStyle: Int = 0
-) : ConstraintLayout(context, attrs, defStyle), StatefulInput {
+open class TextInputView
+    @JvmOverloads
+    constructor(
+        context: Context,
+        attrs: AttributeSet? = null,
+        defStyle: Int = 0,
+    ) : ConstraintLayout(context, attrs, defStyle),
+        StatefulInput {
+        var title: String = ""
+            set(value) {
+                field = value
+                binding.titleLabel.text = uiTitle
+            }
 
-    var title: String = ""
-        set(value) {
-            field = value
-            binding.titleLabel.text = uiTitle
+        var hint: String = ""
+            set(value) {
+                field = value
+                binding.input.hint = hint
+            }
+
+        var isRequired: Boolean = DEFAULT_REQUIRED_STATE
+            set(value) {
+                field = value
+                binding.titleLabel.text = uiTitle
+            }
+
+        var text: String
+            get() =
+                binding.input.text
+                    ?.toString()
+                    .orEmpty()
+            set(value) = binding.input.run { setText(value) }
+
+        private val requiredTitle: Spannable
+            get() =
+                SpannableString(REQUIRED_TITLE_FORMAT.format(title)).apply {
+                    setSpan( // the asterisk at the end is red
+                        ForegroundColorSpan(context.getColor(R.color.red)),
+                        length - 1,
+                        length,
+                        SPAN_EXCLUSIVE_EXCLUSIVE,
+                    )
+                }
+
+        private val uiTitle: Spannable
+            get() = if (!isRequired) SpannableString(title) else requiredTitle
+
+        private var textWatcher: TextWatcher? = null
+
+        protected val binding = ViewTextInputBinding.inflate(LayoutInflater.from(context), this)
+
+        init {
+            parseAttributes(attrs)
+            setInitialState()
+            setFocusChangeListener()
         }
 
-    var hint: String = ""
-        set(value) {
-            field = value
-            binding.input.hint = hint
+        override fun onDetachedFromWindow() {
+            binding.input.removeTextChangedListener(textWatcher)
+            super.onDetachedFromWindow()
         }
 
-    var isRequired: Boolean = DEFAULT_REQUIRED_STATE
-        set(value) {
-            field = value
-            binding.titleLabel.text = uiTitle
+        open fun enableSecretInput() =
+            with(binding.textLayout) {
+                editText?.apply {
+                    isSingleLine = true
+                    inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+                    isSaveEnabled = false
+                }
+                endIconMode = TextInputLayout.END_ICON_PASSWORD_TOGGLE
+            }
+
+        fun setDefaultHint(name: String) {
+            hint =
+                String.format(
+                    resources.getString(LocalizationR.string.input_default_hint),
+                    name.replaceFirstChar { it.lowercase() },
+                )
         }
 
-    var text: String
-        get() = binding.input.text?.toString().orEmpty()
-        set(value) = binding.input.run { setText(value) }
-
-    private val requiredTitle: Spannable
-        get() = SpannableString(REQUIRED_TITLE_FORMAT.format(title)).apply {
-            setSpan( // the asterisk at the end is red
-                ForegroundColorSpan(context.getColor(R.color.red)),
-                length - 1,
-                length,
-                SPAN_EXCLUSIVE_EXCLUSIVE
-            )
-        }
-
-    private val uiTitle: Spannable
-        get() = if (!isRequired) SpannableString(title) else requiredTitle
-
-    private var textWatcher: TextWatcher? = null
-
-    protected val binding = ViewTextInputBinding.inflate(LayoutInflater.from(context), this)
-
-    init {
-        parseAttributes(attrs)
-        setInitialState()
-        setFocusChangeListener()
-    }
-
-    override fun onDetachedFromWindow() {
-        binding.input.removeTextChangedListener(textWatcher)
-        super.onDetachedFromWindow()
-    }
-
-    open fun enableSecretInput() = with(binding.textLayout) {
-        editText?.apply {
-            isSingleLine = true
-            inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
-            isSaveEnabled = false
-        }
-        endIconMode = TextInputLayout.END_ICON_PASSWORD_TOGGLE
-    }
-
-    fun setDefaultHint(name: String) {
-        hint = String.format(
-            resources.getString(LocalizationR.string.input_default_hint),
-            name.replaceFirstChar { it.lowercase() })
-    }
-
-    private fun parseAttributes(attrs: AttributeSet?) {
-        attrs?.let {
-            context.obtainStyledAttributes(attrs, R.styleable.TextInputView, 0, 0).use {
-                hint = it.getString(R.styleable.TextInputView_inputHint).orEmpty()
-                title = it.getString(R.styleable.TextInputView_inputTitle).orEmpty()
-                isRequired = it.getBoolean(R.styleable.TextInputView_inputIsRequired, DEFAULT_REQUIRED_STATE)
+        private fun parseAttributes(attrs: AttributeSet?) {
+            attrs?.let {
+                context.obtainStyledAttributes(attrs, R.styleable.TextInputView, 0, 0).use {
+                    hint = it.getString(R.styleable.TextInputView_inputHint).orEmpty()
+                    title = it.getString(R.styleable.TextInputView_inputTitle).orEmpty()
+                    isRequired = it.getBoolean(R.styleable.TextInputView_inputIsRequired, DEFAULT_REQUIRED_STATE)
+                }
             }
         }
-    }
 
-    override fun setState(state: StatefulInput.State) = when (state) {
-        is StatefulInput.State.Default -> setInitialState()
-        is StatefulInput.State.Error -> setErrorState(state.message)
-    }
+        override fun setState(state: StatefulInput.State) =
+            when (state) {
+                is StatefulInput.State.Default -> setInitialState()
+                is StatefulInput.State.Error -> setErrorState(state.message)
+            }
 
-    fun setIsEmptyListener(textChange: (Boolean) -> Unit) {
-        textWatcher = binding.input.addTextChangedListener {
-            textChange.invoke(it.isNullOrEmpty())
-            setInitialState()
+        fun setIsEmptyListener(textChange: (Boolean) -> Unit) {
+            textWatcher =
+                binding.input.addTextChangedListener {
+                    textChange.invoke(it.isNullOrEmpty())
+                    setInitialState()
+                }
+        }
+
+        fun setTextChangeListener(textChange: (String) -> Unit) {
+            textWatcher =
+                binding.input.addTextChangedListener {
+                    textChange.invoke(it.toString())
+                    setInitialState()
+                }
+        }
+
+        private fun setFocusChangeListener() {
+            binding.textLayout.setOnFocusChangeListener { _, hasFocus ->
+                if (hasFocus) setState(StatefulInput.State.Default)
+            }
+        }
+
+        private fun setErrorState(message: String) {
+            with(binding) {
+                titleLabel.setTextColor(context.getColor(R.color.red))
+                textLayout.error = message
+            }
+        }
+
+        private fun setInitialState() {
+            with(binding) {
+                titleLabel.setTextColor(context.getColor(R.color.text_primary))
+                textLayout.error = ""
+            }
+        }
+
+        fun getInputBytes(): ByteArray =
+            binding.input.text
+                ?.toString()
+                ?.toByteArray() ?: byteArrayOf()
+
+        fun setInputType(inputType: Int) {
+            binding.input.inputType = inputType
+        }
+
+        fun disableSavingInstanceState() {
+            binding.input.isSaveEnabled = false
+        }
+
+        private companion object {
+            private const val DEFAULT_REQUIRED_STATE = false
+            private const val REQUIRED_TITLE_FORMAT = "%s *"
         }
     }
-
-    fun setTextChangeListener(textChange: (String) -> Unit) {
-        textWatcher = binding.input.addTextChangedListener {
-            textChange.invoke(it.toString())
-            setInitialState()
-        }
-    }
-
-    private fun setFocusChangeListener() {
-        binding.textLayout.setOnFocusChangeListener { _, hasFocus ->
-            if (hasFocus) setState(StatefulInput.State.Default)
-        }
-    }
-
-    private fun setErrorState(message: String) {
-        with(binding) {
-            titleLabel.setTextColor(context.getColor(R.color.red))
-            textLayout.error = message
-        }
-    }
-
-    private fun setInitialState() {
-        with(binding) {
-            titleLabel.setTextColor(context.getColor(R.color.text_primary))
-            textLayout.error = ""
-        }
-    }
-
-    fun getInputBytes(): ByteArray =
-        binding.input.text?.toString()?.toByteArray() ?: byteArrayOf()
-
-    fun setInputType(inputType: Int) {
-        binding.input.inputType = inputType
-    }
-
-    fun disableSavingInstanceState() {
-        binding.input.isSaveEnabled = false
-    }
-
-    private companion object {
-        private const val DEFAULT_REQUIRED_STATE = false
-        private const val REQUIRED_TITLE_FORMAT = "%s *"
-    }
-}

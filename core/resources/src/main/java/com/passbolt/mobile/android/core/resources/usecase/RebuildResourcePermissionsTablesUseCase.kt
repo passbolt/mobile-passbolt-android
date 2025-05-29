@@ -31,16 +31,17 @@ import com.passbolt.mobile.android.ui.ResourceModelWithAttributes
  */
 class RebuildResourcePermissionsTablesUseCase(
     private val removeLocalResourcePermissionsUseCase: RemoveLocalResourcePermissionsUseCase,
-    private val addLocalResourcePermissionsUseCase: AddLocalResourcePermissionsUseCase
+    private val addLocalResourcePermissionsUseCase: AddLocalResourcePermissionsUseCase,
 ) : AsyncUseCase<RebuildResourcePermissionsTablesUseCase.Input, Unit>,
     SelectedAccountUseCase {
-
     override suspend fun execute(input: Input) {
         removeLocalResourcePermissionsUseCase.execute(UserIdInput(selectedAccountId))
         addLocalResourcePermissionsUseCase.execute(
-            AddLocalResourcePermissionsUseCase.Input(input.resourcesWithTagsAndPermissions)
+            AddLocalResourcePermissionsUseCase.Input(input.resourcesWithTagsAndPermissions),
         )
     }
 
-    data class Input(val resourcesWithTagsAndPermissions: List<ResourceModelWithAttributes>)
+    data class Input(
+        val resourcesWithTagsAndPermissions: List<ResourceModelWithAttributes>,
+    )
 }

@@ -62,17 +62,20 @@ class CreateFolderPresenter(
     private val getLocalCurrentUserUseCase: GetLocalCurrentUserUseCase,
     private val usersModelMapper: UsersModelMapper,
     private val createFolderIdlingResource: CreateFolderIdlingResource,
-    coroutineLaunchContext: CoroutineLaunchContext
+    coroutineLaunchContext: CoroutineLaunchContext,
 ) : BaseAuthenticatedPresenter<CreateFolderContract.View>(coroutineLaunchContext),
     CreateFolderContract.Presenter {
-
     override var view: CreateFolderContract.View? = null
     private val job = SupervisorJob()
     private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
     private var folderName: String = ""
     private var parentFolderId: String? = null
 
-    override fun argsRetrieved(parentFolderId: String?, sharedWithWidth: Int, sharedWithAvatarWidth: Float) {
+    override fun argsRetrieved(
+        parentFolderId: String?,
+        sharedWithWidth: Int,
+        sharedWithAvatarWidth: Float,
+    ) {
         this.parentFolderId = parentFolderId
         scope.launch {
             getAndShowLocation(parentFolderId)
@@ -83,45 +86,49 @@ class CreateFolderPresenter(
     private suspend fun getAndShowPermissions(
         parentFolderId: String?,
         sharedWithWidth: Int,
-        sharedWithAvatarWidth: Float
+        sharedWithAvatarWidth: Float,
     ) {
-        val permissions = if (parentFolderId != null) {
-            getLocalFolderPermissionsUseCase.execute(
-                GetLocalFolderPermissionsUseCase.Input(parentFolderId)
-            ).permissions
-        } else {
-            // current user in root always has the owner permission
-            listOf(
-                PermissionModelUi.UserPermissionModel(
-                    ResourcePermission.OWNER,
-                    SharePermissionsModelMapper.TEMPORARY_NEW_PERMISSION_ID,
-                    usersModelMapper.mapToUserWithAvatar(getLocalCurrentUserUseCase.execute(Unit).user)
+        val permissions =
+            if (parentFolderId != null) {
+                getLocalFolderPermissionsUseCase
+                    .execute(
+                        GetLocalFolderPermissionsUseCase.Input(parentFolderId),
+                    ).permissions
+            } else {
+                // current user in root always has the owner permission
+                listOf(
+                    PermissionModelUi.UserPermissionModel(
+                        ResourcePermission.OWNER,
+                        SharePermissionsModelMapper.TEMPORARY_NEW_PERMISSION_ID,
+                        usersModelMapper.mapToUserWithAvatar(getLocalCurrentUserUseCase.execute(Unit).user),
+                    ),
                 )
-            )
-        }
+            }
 
-        val permissionsDisplayDataset = PermissionsDatasetCreator(
-            sharedWithWidth,
-            sharedWithAvatarWidth
-        )
-            .prepareDataset(permissions)
+        val permissionsDisplayDataset =
+            PermissionsDatasetCreator(
+                sharedWithWidth,
+                sharedWithAvatarWidth,
+            ).prepareDataset(permissions)
 
         view?.showPermissions(
             permissionsDisplayDataset.groupPermissions,
             permissionsDisplayDataset.userPermissions,
             permissionsDisplayDataset.counterValue,
-            permissionsDisplayDataset.overlap
+            permissionsDisplayDataset.overlap,
         )
     }
 
     private suspend fun getAndShowLocation(parentFolderId: String?) {
-        val parentFolders = if (parentFolderId != null) {
-            getLocalFolderLocation.execute(GetLocalFolderLocationUseCase.Input(parentFolderId))
-                .parentFolders
-                .map { folder -> folder.name }
-        } else {
-            emptyList()
-        }
+        val parentFolders =
+            if (parentFolderId != null) {
+                getLocalFolderLocation
+                    .execute(GetLocalFolderLocationUseCase.Input(parentFolderId))
+                    .parentFolders
+                    .map { folder -> folder.name }
+            } else {
+                emptyList()
+            }
         view?.showFolderLocation(parentFolders)
     }
 
@@ -147,22 +154,27 @@ class CreateFolderPresenter(
         view?.showProgress()
         createFolderIdlingResource.setIdle(false)
         scope.launch {
-            when (val output = runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
-                createFolderUseCase.execute(CreateFolderUseCase.Input(folderName, parentFolderId))
-            }) {
+            when (
+                val output =
+                    runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+                        createFolderUseCase.execute(CreateFolderUseCase.Input(folderName, parentFolderId))
+                    }
+            ) {
                 is CreateFolderUseCase.Output.Failure -> view?.showCreateFolderError(output.result.headerMessage)
                 is CreateFolderUseCase.Output.Success -> {
                     addLocalFolderUseCase.execute(AddLocalFolderUseCase.Input(output.folderWithAttributes.folderModel))
                     addLocalFolderPermissionsUseCase.execute(
-                        AddLocalFolderPermissionsUseCase.Input(listOf(output.folderWithAttributes))
+                        AddLocalFolderPermissionsUseCase.Input(listOf(output.folderWithAttributes)),
                     )
                     parentFolderId.let {
                         if (it == null) { // parent is root folder
                             view?.setFolderCreatedResultAndClose(folderName)
                         } else {
-                            val parentFolderDetails = getLocalFolderDetailsUseCase.execute(
-                                GetLocalFolderDetailsUseCase.Input(it)
-                            ).folder
+                            val parentFolderDetails =
+                                getLocalFolderDetailsUseCase
+                                    .execute(
+                                        GetLocalFolderDetailsUseCase.Input(it),
+                                    ).folder
                             if (parentFolderDetails.isShared) {
                                 applyFolderPermissionsToCreatedFolder(output.folderWithAttributes.folderModel, it)
                             } else {
@@ -179,18 +191,23 @@ class CreateFolderPresenter(
 
     private suspend fun applyFolderPermissionsToCreatedFolder(
         folderModel: FolderModel,
-        parentFolderId: String
+        parentFolderId: String,
     ) {
-        val newPermissionsToApply = getLocalFolderPermissionsToCopyAsNew.execute(
-            GetLocalParentFolderPermissionsToApplyToNewItemUseCase.Input(
-                parentFolderId,
-                ItemIdFolderId(folderModel.folderId)
-            )
-        ).permissions
+        val newPermissionsToApply =
+            getLocalFolderPermissionsToCopyAsNew
+                .execute(
+                    GetLocalParentFolderPermissionsToApplyToNewItemUseCase.Input(
+                        parentFolderId,
+                        ItemIdFolderId(folderModel.folderId),
+                    ),
+                ).permissions
 
-        when (val output = runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
-            folderShareInteractor.shareFolder(folderModel.folderId, newPermissionsToApply)
-        }) {
+        when (
+            val output =
+                runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+                    folderShareInteractor.shareFolder(folderModel.folderId, newPermissionsToApply)
+                }
+        ) {
             is FolderShareInteractor.Output.ShareFailure -> view?.showShareFailure(output.exception.message.orEmpty())
             is FolderShareInteractor.Output.Success -> {
                 view?.setFolderCreatedResultAndClose(folderModel.name)

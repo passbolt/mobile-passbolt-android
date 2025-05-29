@@ -24,16 +24,17 @@ import org.koin.dsl.module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-val startUpModule = module {
-    scope<StartUpActivity> {
-        scoped<StartUpContract.Presenter> {
-            StartUpPresenter(
-                getAccountsUseCase = get(),
-                coroutineLaunchContext = get()
-            )
-        }
-        scoped {
-            AccountSetupModelCreator()
+val startUpModule =
+    module {
+        scope<StartUpActivity> {
+            scoped<StartUpContract.Presenter> {
+                StartUpPresenter(
+                    getAccountsUseCase = get(),
+                    coroutineLaunchContext = get(),
+                )
+            }
+            scoped {
+                AccountSetupModelCreator()
+            }
         }
     }
-}

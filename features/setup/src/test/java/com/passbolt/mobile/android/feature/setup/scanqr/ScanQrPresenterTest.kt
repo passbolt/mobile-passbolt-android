@@ -63,23 +63,25 @@ import java.util.UUID
 
 @ExperimentalCoroutinesApi
 class ScanQrPresenterTest : KoinTest {
-
     private val presenter: ScanQrContract.Presenter by inject()
     private var view: ScanQrContract.View = mock()
 
-    private val scanningFlow = MutableStateFlow<BarcodeScanResult>(
-        BarcodeScanResult.NoBarcodeInRange
-    )
+    private val scanningFlow =
+        MutableStateFlow<BarcodeScanResult>(
+            BarcodeScanResult.NoBarcodeInRange,
+        )
 
-    private val parseFlow = MutableStateFlow<ParseResult>(
-        ParseResult.UserResolvableError(NO_BARCODES_IN_RANGE)
-    )
+    private val parseFlow =
+        MutableStateFlow<ParseResult>(
+            ParseResult.UserResolvableError(NO_BARCODES_IN_RANGE),
+        )
 
     @get:Rule
-    val koinTestRule = KoinTestRule.create {
-        printLogger(Level.ERROR)
-        modules(testModule, testScanQrModule)
-    }
+    val koinTestRule =
+        KoinTestRule.create {
+            printLogger(Level.ERROR)
+            modules(testModule, testScanQrModule)
+        }
 
     @Before
     fun setUp() {
@@ -125,136 +127,142 @@ class ScanQrPresenterTest : KoinTest {
     }
 
     @Test
-    fun `view should show correct user resolvable error tooltips`() = runTest {
-        presenter.argsRetrieved(null)
+    fun `view should show correct user resolvable error tooltips`() =
+        runTest {
+            presenter.argsRetrieved(null)
 
-        parseFlow.emit(ParseResult.UserResolvableError(NO_BARCODES_IN_RANGE))
-        parseFlow.emit(ParseResult.UserResolvableError(MULTIPLE_BARCODES))
-        parseFlow.emit(ParseResult.UserResolvableError(NOT_A_PASSBOLT_QR))
+            parseFlow.emit(ParseResult.UserResolvableError(NO_BARCODES_IN_RANGE))
+            parseFlow.emit(ParseResult.UserResolvableError(MULTIPLE_BARCODES))
+            parseFlow.emit(ParseResult.UserResolvableError(NOT_A_PASSBOLT_QR))
 
-        verify(view, times(2)).showCenterCameraOnBarcode()
-        verify(view).showMultipleCodesInRange()
-        verify(view).showNotAPassboltQr()
-    }
-
-    @Test
-    fun `view should initialize progress and show keep going after first page scan`() = runTest {
-        presenter.argsRetrieved(null)
-
-        whenever(uuidProvider.get()).doReturn(testUserId.toString())
-        whenever(checkAccountExistsUseCase.execute(any())).doReturn(CheckAccountExistsUseCase.Output(false))
-        whenever(httpsVerifier.isHttps(anyOrNull())).thenReturn(true)
-        whenever(updateTransferUseCase.execute(any())).doReturn(
-            UpdateTransferUseCase.Output.Success(
-                UpdateTransferModel("id", null, null, null, null)
-            )
-        )
-
-        parseFlow.emit(ParseResult.PassboltQr.FirstPage(FIRST_PAGE_RESERVED_BYTES_DTO, FIRST_PAGE_CONTENT))
-
-        verify(view).initializeProgress(TOTAL_PAGES)
-        verify(view).showKeepGoing()
-    }
-
-    @Test
-    fun `view should navigate to scanning error after scan failure`() = runTest {
-        presenter.argsRetrieved(null)
-
-        parseFlow.emit(ParseResult.Failure())
-
-        argumentCaptor<ResultStatus>().apply {
-            verify(view).navigateToSummary(capture())
-            assertThat(firstValue).isInstanceOf(ResultStatus.Failure::class.java)
+            verify(view, times(2)).showCenterCameraOnBarcode()
+            verify(view).showMultipleCodesInRange()
+            verify(view).showNotAPassboltQr()
         }
-    }
 
     @Test
-    fun `view should navigate to scanning success after scanning finished`() = runTest {
-        presenter.argsRetrieved(null)
+    fun `view should initialize progress and show keep going after first page scan`() =
+        runTest {
+            presenter.argsRetrieved(null)
 
-        whenever(uuidProvider.get()).doReturn(testUserId.toString())
-        whenever(savePrivateKeyUseCase.execute(any())).doReturn(SavePrivateKeyUseCase.Output.Success)
-        whenever(checkAccountExistsUseCase.execute(any())).doReturn(CheckAccountExistsUseCase.Output(false))
-        whenever(httpsVerifier.isHttps(anyOrNull())).thenReturn(true)
-        whenever(updateTransferUseCase.execute(any())).doReturn(
-            UpdateTransferUseCase.Output.Success(
-                UpdateTransferModel("id", null, null, null, null)
+            whenever(uuidProvider.get()).doReturn(testUserId.toString())
+            whenever(checkAccountExistsUseCase.execute(any())).doReturn(CheckAccountExistsUseCase.Output(false))
+            whenever(httpsVerifier.isHttps(anyOrNull())).thenReturn(true)
+            whenever(updateTransferUseCase.execute(any())).doReturn(
+                UpdateTransferUseCase.Output.Success(
+                    UpdateTransferModel("id", null, null, null, null),
+                ),
             )
-        )
-        parseFlow.emit(ParseResult.PassboltQr.FirstPage(FIRST_PAGE_RESERVED_BYTES_DTO, FIRST_PAGE_CONTENT))
-        parseFlow.emit(ParseResult.FinishedWithSuccess("key"))
 
-        verify(view).initializeProgress(TOTAL_PAGES)
-        verify(view).showKeepGoing()
-        argumentCaptor<ResultStatus>().apply {
-            verify(view).navigateToSummary(capture())
-            assertThat(firstValue).isInstanceOf(ResultStatus.Success::class.java)
+            parseFlow.emit(ParseResult.PassboltQr.FirstPage(FIRST_PAGE_RESERVED_BYTES_DTO, FIRST_PAGE_CONTENT))
+
+            verify(view).initializeProgress(TOTAL_PAGES)
+            verify(view).showKeepGoing()
         }
-    }
 
     @Test
-    fun `view should navigate to failure after scanning non https domain`() = runTest {
-        presenter.argsRetrieved(null)
+    fun `view should navigate to scanning error after scan failure`() =
+        runTest {
+            presenter.argsRetrieved(null)
 
-        whenever(uuidProvider.get()).doReturn(testUserId.toString())
-        whenever(savePrivateKeyUseCase.execute(any())).doReturn(SavePrivateKeyUseCase.Output.Success)
-        whenever(checkAccountExistsUseCase.execute(any())).doReturn(CheckAccountExistsUseCase.Output(false))
-        whenever(httpsVerifier.isHttps(anyOrNull())).thenReturn(false)
-        whenever(updateTransferUseCase.execute(any())).doReturn(
-            UpdateTransferUseCase.Output.Success(
-                UpdateTransferModel("id", null, null, null, null)
-            )
-        )
+            parseFlow.emit(ParseResult.Failure())
 
-        parseFlow.emit(ParseResult.PassboltQr.FirstPage(FIRST_PAGE_RESERVED_BYTES_DTO, FIRST_PAGE_CONTENT))
-
-        argumentCaptor<ResultStatus>().apply {
-            verify(view).navigateToSummary(capture())
-            assertThat(firstValue).isInstanceOf(ResultStatus.HttpNotSupported::class.java)
+            argumentCaptor<ResultStatus>().apply {
+                verify(view).navigateToSummary(capture())
+                assertThat(firstValue).isInstanceOf(ResultStatus.Failure::class.java)
+            }
         }
-        verify(updateTransferUseCase, never()).execute(any())
-    }
-
 
     @Test
-    fun `view should navigate to already linked after scanning existing key`() = runTest {
-        presenter.argsRetrieved(null)
+    fun `view should navigate to scanning success after scanning finished`() =
+        runTest {
+            presenter.argsRetrieved(null)
 
-        whenever(httpsVerifier.isHttps(anyOrNull())).thenReturn(true)
-        whenever(uuidProvider.get()).doReturn(testUserId.toString())
-        whenever(savePrivateKeyUseCase.execute(any())).doReturn(SavePrivateKeyUseCase.Output.Failure)
-        whenever(updateTransferUseCase.execute(any())).doReturn(
-            UpdateTransferUseCase.Output.Success(
-                UpdateTransferModel("id", null, null, null, null)
+            whenever(uuidProvider.get()).doReturn(testUserId.toString())
+            whenever(savePrivateKeyUseCase.execute(any())).doReturn(SavePrivateKeyUseCase.Output.Success)
+            whenever(checkAccountExistsUseCase.execute(any())).doReturn(CheckAccountExistsUseCase.Output(false))
+            whenever(httpsVerifier.isHttps(anyOrNull())).thenReturn(true)
+            whenever(updateTransferUseCase.execute(any())).doReturn(
+                UpdateTransferUseCase.Output.Success(
+                    UpdateTransferModel("id", null, null, null, null),
+                ),
             )
-        )
-        whenever(checkAccountExistsUseCase.execute(any())).doReturn(
-            CheckAccountExistsUseCase.Output(
-                true,
-                testUserId.toString()
-            )
-        )
+            parseFlow.emit(ParseResult.PassboltQr.FirstPage(FIRST_PAGE_RESERVED_BYTES_DTO, FIRST_PAGE_CONTENT))
+            parseFlow.emit(ParseResult.FinishedWithSuccess("key"))
 
-        parseFlow.emit(ParseResult.PassboltQr.FirstPage(FIRST_PAGE_RESERVED_BYTES_DTO, FIRST_PAGE_CONTENT))
-
-        argumentCaptor<ResultStatus>().apply {
-            verify(view).navigateToSummary(capture())
-            assertThat(firstValue).isInstanceOf(ResultStatus.AlreadyLinked::class.java)
+            verify(view).initializeProgress(TOTAL_PAGES)
+            verify(view).showKeepGoing()
+            argumentCaptor<ResultStatus>().apply {
+                verify(view).navigateToSummary(capture())
+                assertThat(firstValue).isInstanceOf(ResultStatus.Success::class.java)
+            }
         }
-    }
+
+    @Test
+    fun `view should navigate to failure after scanning non https domain`() =
+        runTest {
+            presenter.argsRetrieved(null)
+
+            whenever(uuidProvider.get()).doReturn(testUserId.toString())
+            whenever(savePrivateKeyUseCase.execute(any())).doReturn(SavePrivateKeyUseCase.Output.Success)
+            whenever(checkAccountExistsUseCase.execute(any())).doReturn(CheckAccountExistsUseCase.Output(false))
+            whenever(httpsVerifier.isHttps(anyOrNull())).thenReturn(false)
+            whenever(updateTransferUseCase.execute(any())).doReturn(
+                UpdateTransferUseCase.Output.Success(
+                    UpdateTransferModel("id", null, null, null, null),
+                ),
+            )
+
+            parseFlow.emit(ParseResult.PassboltQr.FirstPage(FIRST_PAGE_RESERVED_BYTES_DTO, FIRST_PAGE_CONTENT))
+
+            argumentCaptor<ResultStatus>().apply {
+                verify(view).navigateToSummary(capture())
+                assertThat(firstValue).isInstanceOf(ResultStatus.HttpNotSupported::class.java)
+            }
+            verify(updateTransferUseCase, never()).execute(any())
+        }
+
+    @Test
+    fun `view should navigate to already linked after scanning existing key`() =
+        runTest {
+            presenter.argsRetrieved(null)
+
+            whenever(httpsVerifier.isHttps(anyOrNull())).thenReturn(true)
+            whenever(uuidProvider.get()).doReturn(testUserId.toString())
+            whenever(savePrivateKeyUseCase.execute(any())).doReturn(SavePrivateKeyUseCase.Output.Failure)
+            whenever(updateTransferUseCase.execute(any())).doReturn(
+                UpdateTransferUseCase.Output.Success(
+                    UpdateTransferModel("id", null, null, null, null),
+                ),
+            )
+            whenever(checkAccountExistsUseCase.execute(any())).doReturn(
+                CheckAccountExistsUseCase.Output(
+                    true,
+                    testUserId.toString(),
+                ),
+            )
+
+            parseFlow.emit(ParseResult.PassboltQr.FirstPage(FIRST_PAGE_RESERVED_BYTES_DTO, FIRST_PAGE_CONTENT))
+
+            argumentCaptor<ResultStatus>().apply {
+                verify(view).navigateToSummary(capture())
+                assertThat(firstValue).isInstanceOf(ResultStatus.AlreadyLinked::class.java)
+            }
+        }
 
     private companion object {
         private const val TOTAL_PAGES = 10
         private val FIRST_PAGE_RESERVED_BYTES_DTO = ReservedBytesDto(1, 0)
         private val testTransferId = UUID.randomUUID()
         private val testUserId = UUID.randomUUID()
-        private val FIRST_PAGE_CONTENT = QrFirstPageDto(
-            testTransferId,
-            testUserId,
-            TOTAL_PAGES,
-            "testAuthToken",
-            "testHash",
-            "testDomain"
-        )
+        private val FIRST_PAGE_CONTENT =
+            QrFirstPageDto(
+                testTransferId,
+                testUserId,
+                TOTAL_PAGES,
+                "testAuthToken",
+                "testHash",
+                "testDomain",
+            )
     }
 }

@@ -36,17 +36,20 @@ private typealias FilterNameResId = Int
 private typealias FilterIconResId = Int
 
 class DefaultFilterItem(
-    val filterModel: DefaultFilterModel
+    val filterModel: DefaultFilterModel,
 ) : AbstractBindingItem<ItemDefaultFilterBinding>() {
-
     override val type: Int
         get() = R.id.itemDefaultFilter
 
-    override fun createBinding(inflater: LayoutInflater, parent: ViewGroup?): ItemDefaultFilterBinding {
-        return ItemDefaultFilterBinding.inflate(inflater, parent, false)
-    }
+    override fun createBinding(
+        inflater: LayoutInflater,
+        parent: ViewGroup?,
+    ): ItemDefaultFilterBinding = ItemDefaultFilterBinding.inflate(inflater, parent, false)
 
-    override fun bindView(binding: ItemDefaultFilterBinding, payloads: List<Any>) {
+    override fun bindView(
+        binding: ItemDefaultFilterBinding,
+        payloads: List<Any>,
+    ) {
         super.bindView(binding, payloads)
         with(binding) {
             val attrs = requireNotNull(defaultFilterAttributes[filterModel])
@@ -56,37 +59,39 @@ class DefaultFilterItem(
     }
 
     private companion object {
-        private val defaultFilterAttributes = mutableMapOf<
+        private val defaultFilterAttributes =
+            mutableMapOf<
                 DefaultFilterModel,
-                Pair<FilterNameResId, FilterIconResId>>()
-            .apply {
-                DefaultFilterModel.values().forEach {
-                    put(
-                        it,
-                        when (it) {
-                            DefaultFilterModel.LAST_USED ->
-                                LocalizationR.string.filters_menu_last_used to CoreUiR.drawable.ic_filter
-                            DefaultFilterModel.ALL_ITEMS ->
-                                LocalizationR.string.filters_menu_all_items to CoreUiR.drawable.ic_list
-                            DefaultFilterModel.FAVOURITES ->
-                                LocalizationR.string.filters_menu_favourites to CoreUiR.drawable.ic_star
-                            DefaultFilterModel.RECENTLY_MODIFIED ->
-                                LocalizationR.string.filters_menu_recently_modified to CoreUiR.drawable.ic_clock
-                            DefaultFilterModel.SHARED_WITH_ME ->
-                                LocalizationR.string.filters_menu_shared_with_me to CoreUiR.drawable.ic_share
-                            DefaultFilterModel.OWNED_BY_ME ->
-                                LocalizationR.string.filters_menu_owned_by_me to CoreUiR.drawable.ic_person
-                            DefaultFilterModel.FOLDERS ->
-                                LocalizationR.string.filters_menu_folders to CoreUiR.drawable.ic_folder
-                            DefaultFilterModel.TAGS ->
-                                LocalizationR.string.filters_menu_tags to CoreUiR.drawable.ic_tag
-                            DefaultFilterModel.GROUPS ->
-                                LocalizationR.string.filters_menu_groups to CoreUiR.drawable.ic_group
-                            DefaultFilterModel.EXPIRY ->
-                                LocalizationR.string.filters_menu_expiry to CoreUiR.drawable.ic_calendar_clock
-                        }
-                    )
+                Pair<FilterNameResId, FilterIconResId>,
+            >()
+                .apply {
+                    DefaultFilterModel.values().forEach {
+                        put(
+                            it,
+                            when (it) {
+                                DefaultFilterModel.LAST_USED ->
+                                    LocalizationR.string.filters_menu_last_used to CoreUiR.drawable.ic_filter
+                                DefaultFilterModel.ALL_ITEMS ->
+                                    LocalizationR.string.filters_menu_all_items to CoreUiR.drawable.ic_list
+                                DefaultFilterModel.FAVOURITES ->
+                                    LocalizationR.string.filters_menu_favourites to CoreUiR.drawable.ic_star
+                                DefaultFilterModel.RECENTLY_MODIFIED ->
+                                    LocalizationR.string.filters_menu_recently_modified to CoreUiR.drawable.ic_clock
+                                DefaultFilterModel.SHARED_WITH_ME ->
+                                    LocalizationR.string.filters_menu_shared_with_me to CoreUiR.drawable.ic_share
+                                DefaultFilterModel.OWNED_BY_ME ->
+                                    LocalizationR.string.filters_menu_owned_by_me to CoreUiR.drawable.ic_person
+                                DefaultFilterModel.FOLDERS ->
+                                    LocalizationR.string.filters_menu_folders to CoreUiR.drawable.ic_folder
+                                DefaultFilterModel.TAGS ->
+                                    LocalizationR.string.filters_menu_tags to CoreUiR.drawable.ic_tag
+                                DefaultFilterModel.GROUPS ->
+                                    LocalizationR.string.filters_menu_groups to CoreUiR.drawable.ic_group
+                                DefaultFilterModel.EXPIRY ->
+                                    LocalizationR.string.filters_menu_expiry to CoreUiR.drawable.ic_calendar_clock
+                            },
+                        )
+                    }
                 }
-            }
     }
 }

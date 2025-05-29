@@ -28,13 +28,11 @@ import com.passbolt.mobile.android.core.accounts.usecase.ACCOUNTS_ALIAS
  */
 
 class GetAccountsUseCase(
-    private val sharedPreferences: SharedPreferences
+    private val sharedPreferences: SharedPreferences,
 ) : UseCase<Unit, GetAccountsUseCase.Output> {
-
-    override fun execute(input: Unit): Output =
-        Output(sharedPreferences.getStringSet(ACCOUNTS_ALIAS, emptySet()).orEmpty())
+    override fun execute(input: Unit): Output = Output(sharedPreferences.getStringSet(ACCOUNTS_ALIAS, emptySet()).orEmpty())
 
     data class Output(
-        val users: Set<String>
+        val users: Set<String>,
     )
 }

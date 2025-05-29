@@ -34,20 +34,22 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
  * @since v1.0
  */
 class UserItem(
-    val model: PermissionModelUi.UserPermissionModel
+    val model: PermissionModelUi.UserPermissionModel,
 ) : AbstractBindingItem<ItemUserBinding>() {
-
     override val type: Int
         get() = R.id.userItem
 
-    override fun bindView(binding: ItemUserBinding, payloads: List<Any>) {
+    override fun bindView(
+        binding: ItemUserBinding,
+        payloads: List<Any>,
+    ) {
         with(binding) {
             root.apply {
                 load(model.user.avatarUrl) {
                     error(CoreUiR.drawable.ic_user_avatar)
                     transformations(
                         CircleCropTransformation(),
-                        AlphaTransformation(shouldLowerOpacity = model.user.isDisabled)
+                        AlphaTransformation(shouldLowerOpacity = model.user.isDisabled),
                     )
                     placeholder(CoreUiR.drawable.ic_user_avatar)
                 }
@@ -55,7 +57,8 @@ class UserItem(
         }
     }
 
-    override fun createBinding(inflater: LayoutInflater, parent: ViewGroup?): ItemUserBinding {
-        return ItemUserBinding.inflate(inflater, parent, false)
-    }
+    override fun createBinding(
+        inflater: LayoutInflater,
+        parent: ViewGroup?,
+    ): ItemUserBinding = ItemUserBinding.inflate(inflater, parent, false)
 }

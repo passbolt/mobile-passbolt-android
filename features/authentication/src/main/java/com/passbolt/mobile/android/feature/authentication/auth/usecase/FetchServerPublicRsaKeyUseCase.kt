@@ -29,9 +29,8 @@ import com.passbolt.mobile.android.passboltapi.auth.AuthRepository
  * @since v1.0
  */
 class FetchServerPublicRsaKeyUseCase(
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
 ) : AsyncUseCase<Unit, FetchServerPublicRsaKeyUseCase.Output> {
-
     override suspend fun execute(input: Unit): Output =
         when (val result = authRepository.getServerPublicRsaKey()) {
             is NetworkResult.Failure -> Output.Failure(result)
@@ -39,9 +38,12 @@ class FetchServerPublicRsaKeyUseCase(
         }
 
     sealed class Output {
+        data class Success(
+            val rsaKey: String,
+        ) : Output()
 
-        data class Success(val rsaKey: String) : Output()
-
-        data class Failure(val error: NetworkResult.Failure<BaseResponse<ServerRsaResponseDto>>) : Output()
+        data class Failure(
+            val error: NetworkResult.Failure<BaseResponse<ServerRsaResponseDto>>,
+        ) : Output()
     }
 }

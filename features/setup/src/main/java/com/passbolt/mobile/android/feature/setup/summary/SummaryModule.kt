@@ -32,7 +32,7 @@ fun Module.summaryModule() {
             SummaryPresenter(
                 saveAccountUseCase = get(),
                 saveResourcesDatabasePassphraseUseCase = get(),
-                uuidProvider = get()
+                uuidProvider = get(),
             )
         }
     }

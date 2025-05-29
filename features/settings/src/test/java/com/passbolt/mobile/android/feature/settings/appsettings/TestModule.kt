@@ -45,30 +45,33 @@ internal val removePassphraseUseCase = mock<RemovePassphraseUseCase>()
 internal val getSelectedAccountUseCase = mock<GetSelectedAccountUseCase>()
 internal val savePassphraseUseCase = mock<SavePassphraseUseCase>()
 internal val passphraseMemoryCache = mock<PassphraseMemoryCache>()
-internal val mockCipher = mock<Cipher> {
-    on { iv }.doReturn(ByteArray(0))
-}
-internal val biometricCipher = mock<BiometricCipher> {
-    on { getBiometricEncryptCipher() }.doReturn(mockCipher)
-}
+internal val mockCipher =
+    mock<Cipher> {
+        on { iv }.doReturn(ByteArray(0))
+    }
+internal val biometricCipher =
+    mock<BiometricCipher> {
+        on { getBiometricEncryptCipher() }.doReturn(mockCipher)
+    }
 internal val saveBiometricKayIvUseCase = mock<SaveBiometricKeyIvUseCase>()
 internal val fingerprintInformationProvider = mock<FingerprintInformationProvider>()
 internal val mockBiometryInteractor = mock<BiometryInteractor>()
 internal val mockGetHomeDisplayPrefsUseCase = mock<GetHomeDisplayViewPrefsUseCase>()
 
-val testAppSettingsModule = module {
-    factory<AppSettingsContract.Presenter> {
-        AppSettingsPresenter(
-            getHomeDisplayViewPrefsUseCase = mockGetHomeDisplayPrefsUseCase,
-            fingerprintInformationProvider = fingerprintInformationProvider,
-            passphraseMemoryCache = passphraseMemoryCache,
-            biometricCipher = biometricCipher,
-            biometryInteractor = mockBiometryInteractor,
-            savePassphraseUseCase = savePassphraseUseCase,
-            saveBiometricKeyIvUseCase = saveBiometricKayIvUseCase,
-            checkIfPassphraseExistsUseCase = checkIfPassphraseFileExistsUseCase,
-            removePassphraseUseCase = removePassphraseUseCase,
-            getSelectedAccountUseCase = getSelectedAccountUseCase
-        )
+val testAppSettingsModule =
+    module {
+        factory<AppSettingsContract.Presenter> {
+            AppSettingsPresenter(
+                getHomeDisplayViewPrefsUseCase = mockGetHomeDisplayPrefsUseCase,
+                fingerprintInformationProvider = fingerprintInformationProvider,
+                passphraseMemoryCache = passphraseMemoryCache,
+                biometricCipher = biometricCipher,
+                biometryInteractor = mockBiometryInteractor,
+                savePassphraseUseCase = savePassphraseUseCase,
+                saveBiometricKeyIvUseCase = saveBiometricKayIvUseCase,
+                checkIfPassphraseExistsUseCase = checkIfPassphraseFileExistsUseCase,
+                removePassphraseUseCase = removePassphraseUseCase,
+                getSelectedAccountUseCase = getSelectedAccountUseCase,
+            )
+        }
     }
-}

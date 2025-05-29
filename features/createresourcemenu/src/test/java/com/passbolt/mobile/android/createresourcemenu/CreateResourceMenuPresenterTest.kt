@@ -41,16 +41,16 @@ import org.mockito.kotlin.verify
  */
 
 class CreateResourceMenuPresenterTest : KoinTest {
-
     private val presenter: CreateResourceMenuContract.Presenter by inject()
     private val view: CreateResourceMenuContract.View = mock()
 
     @ExperimentalCoroutinesApi
     @get:Rule
-    val koinTestRule = KoinTestRule.create {
-        printLogger(Level.ERROR)
-        modules(testCreateResourceMenuModule)
-    }
+    val koinTestRule =
+        KoinTestRule.create {
+            printLogger(Level.ERROR)
+            modules(testCreateResourceMenuModule)
+        }
 
     @Test
     fun `totp and folders items should be visible based on settings`() {
@@ -60,9 +60,9 @@ class CreateResourceMenuPresenterTest : KoinTest {
                     CreateResourceMenuModel(
                         isTotpEnabled = true,
                         isFolderEnabled = true,
-                        isPasswordEnabled = true
-                    )
-                )
+                        isPasswordEnabled = true,
+                    ),
+                ),
             )
         }
 
@@ -82,9 +82,9 @@ class CreateResourceMenuPresenterTest : KoinTest {
                     CreateResourceMenuModel(
                         isTotpEnabled = false,
                         isFolderEnabled = false,
-                        isPasswordEnabled = false
-                    )
-                )
+                        isPasswordEnabled = false,
+                    ),
+                ),
             )
         }
 

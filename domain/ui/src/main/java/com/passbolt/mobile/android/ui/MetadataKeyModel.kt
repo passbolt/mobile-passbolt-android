@@ -36,7 +36,7 @@ data class MetadataKeyModel(
     val modified: ZonedDateTime,
     val expired: ZonedDateTime?,
     val deleted: ZonedDateTime?,
-    val metadataPrivateKeys: List<MetadataPrivateKeyModel>
+    val metadataPrivateKeys: List<MetadataPrivateKeyModel>,
 )
 
 data class MetadataPrivateKeyModel(
@@ -47,7 +47,7 @@ data class MetadataPrivateKeyModel(
     val created: String,
     val createdBy: UUID?,
     val modified: String,
-    val modifiedBy: UUID?
+    val modifiedBy: UUID?,
 )
 
 data class ParsedMetadataKeyModel(
@@ -57,7 +57,7 @@ data class ParsedMetadataKeyModel(
     val modified: ZonedDateTime,
     val expired: ZonedDateTime?,
     val deleted: ZonedDateTime?,
-    val metadataPrivateKeys: List<ParsedMetadataPrivateKeyModel>
+    val metadataPrivateKeys: List<ParsedMetadataPrivateKeyModel>,
 )
 
 data class DecryptedMetadataPrivateKeyJsonModel(
@@ -67,7 +67,7 @@ data class DecryptedMetadataPrivateKeyJsonModel(
     val armoredKey: String,
     val passphrase: String,
     val fingerprint: String,
-    val domain: String
+    val domain: String,
 )
 
 @Parcelize
@@ -82,5 +82,5 @@ data class ParsedMetadataPrivateKeyModel(
     val modifiedBy: UUID?,
     val fingerprint: String,
     val domain: String,
-    val pgpMessage: String
+    val pgpMessage: String,
 ) : Parcelable

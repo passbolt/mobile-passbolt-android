@@ -48,21 +48,23 @@ import org.mockito.kotlin.whenever
 class ScanOtpPresenterTest : KoinTest {
     private val presenter: ScanOtpContract.Presenter by inject()
     private var view: ScanOtpContract.View = mock()
-    private val scanningFlow = MutableStateFlow<BarcodeScanResult>(
-        BarcodeScanResult.NoBarcodeInRange
-    )
+    private val scanningFlow =
+        MutableStateFlow<BarcodeScanResult>(
+            BarcodeScanResult.NoBarcodeInRange,
+        )
 
-    private val parseFlow = MutableStateFlow<OtpParseResult>(
-        OtpParseResult.UserResolvableError(NO_BARCODES_IN_RANGE)
-    )
-
+    private val parseFlow =
+        MutableStateFlow<OtpParseResult>(
+            OtpParseResult.UserResolvableError(NO_BARCODES_IN_RANGE),
+        )
 
     @ExperimentalCoroutinesApi
     @get:Rule
-    val koinTestRule = KoinTestRule.create {
-        printLogger(Level.ERROR)
-        modules(scanOtpTestModule)
-    }
+    val koinTestRule =
+        KoinTestRule.create {
+            printLogger(Level.ERROR)
+            modules(scanOtpTestModule)
+        }
 
     @Before
     fun setup() {
@@ -111,52 +113,56 @@ class ScanOtpPresenterTest : KoinTest {
     }
 
     @Test
-    fun `view should show correct user resolvable error tooltips`() = runTest {
-        whenever(cameraInformationProvider.isCameraAvailable()).thenReturn(true)
-        whenever(cameraInformationProvider.isCameraPermissionGranted()).thenReturn(true)
+    fun `view should show correct user resolvable error tooltips`() =
+        runTest {
+            whenever(cameraInformationProvider.isCameraAvailable()).thenReturn(true)
+            whenever(cameraInformationProvider.isCameraPermissionGranted()).thenReturn(true)
 
-        presenter.attach(view)
+            presenter.attach(view)
 
-        parseFlow.emit(OtpParseResult.UserResolvableError(NO_BARCODES_IN_RANGE))
-        parseFlow.emit(OtpParseResult.UserResolvableError(MULTIPLE_BARCODES))
-        parseFlow.emit(OtpParseResult.UserResolvableError(NOT_A_OTP_QR))
+            parseFlow.emit(OtpParseResult.UserResolvableError(NO_BARCODES_IN_RANGE))
+            parseFlow.emit(OtpParseResult.UserResolvableError(MULTIPLE_BARCODES))
+            parseFlow.emit(OtpParseResult.UserResolvableError(NOT_A_OTP_QR))
 
-        verify(view, times(2)).showCenterCameraOnBarcode()
-        verify(view).showMultipleCodesInRange()
-        verify(view).showNotAnOtpBarcode()
-    }
-
-    @Test
-    fun `successful scan should finish scanning and show success`() = runTest {
-        whenever(cameraInformationProvider.isCameraAvailable()).thenReturn(true)
-        whenever(cameraInformationProvider.isCameraPermissionGranted()).thenReturn(true)
-
-        presenter.attach(view)
-        presenter.argsRetrieved(ScanOtpMode.SCAN_FOR_RESULT)
-
-        val successfulResult = OtpParseResult.OtpQr.TotpQr(
-            label = "label",
-            secret = "secret",
-            issuer = "issuer",
-            algorithm = OtpParseResult.OtpQr.Algorithm.SHA1,
-            digits = 6,
-            period = 30
-        )
-        parseFlow.emit(successfulResult)
-
-        verify(view).setResultAndNavigateBack(successfulResult)
-    }
+            verify(view, times(2)).showCenterCameraOnBarcode()
+            verify(view).showMultipleCodesInRange()
+            verify(view).showNotAnOtpBarcode()
+        }
 
     @Test
-    fun `view should navigate to scanning error after scan failure`() = runTest {
-        whenever(cameraInformationProvider.isCameraAvailable()).thenReturn(true)
-        whenever(cameraInformationProvider.isCameraPermissionGranted()).thenReturn(true)
+    fun `successful scan should finish scanning and show success`() =
+        runTest {
+            whenever(cameraInformationProvider.isCameraAvailable()).thenReturn(true)
+            whenever(cameraInformationProvider.isCameraPermissionGranted()).thenReturn(true)
 
-        presenter.attach(view)
+            presenter.attach(view)
+            presenter.argsRetrieved(ScanOtpMode.SCAN_FOR_RESULT)
 
-        val errorMessage = "Exception occurred"
-        parseFlow.emit(OtpParseResult.Failure(RuntimeException(errorMessage)))
+            val successfulResult =
+                OtpParseResult.OtpQr.TotpQr(
+                    label = "label",
+                    secret = "secret",
+                    issuer = "issuer",
+                    algorithm = OtpParseResult.OtpQr.Algorithm.SHA1,
+                    digits = 6,
+                    period = 30,
+                )
+            parseFlow.emit(successfulResult)
 
-        verify(view).showBarcodeScanError(errorMessage)
-    }
+            verify(view).setResultAndNavigateBack(successfulResult)
+        }
+
+    @Test
+    fun `view should navigate to scanning error after scan failure`() =
+        runTest {
+            whenever(cameraInformationProvider.isCameraAvailable()).thenReturn(true)
+            whenever(cameraInformationProvider.isCameraPermissionGranted()).thenReturn(true)
+
+            presenter.attach(view)
+
+            val errorMessage = "Exception occurred"
+            parseFlow.emit(OtpParseResult.Failure(RuntimeException(errorMessage)))
+
+            verify(view).showBarcodeScanError(errorMessage)
+        }
 }

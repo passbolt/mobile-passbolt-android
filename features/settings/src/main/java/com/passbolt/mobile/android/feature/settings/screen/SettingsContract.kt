@@ -25,24 +25,35 @@ import com.passbolt.mobile.android.core.mvp.BaseContract
  * @since v1.0
  */
 interface SettingsContract {
-
     interface View : BaseContract.View {
         fun showLogoutDialog()
+
         fun navigateToSignInWithLogout()
+
         fun showProgress()
+
         fun hideProgress()
+
         fun navigateToDebugLogsSettings()
+
         fun navigateAccountsSettings()
+
         fun navigateToTermsAndLicensesSettings()
+
         fun navigateToAppSettings()
     }
 
     interface Presenter : BaseContract.Presenter<View> {
         fun signOutClick()
+
         fun logoutConfirmed()
+
         fun debugLogsSettingsClick()
+
         fun accountsSettingsClick()
+
         fun termsAndLicensesClick()
+
         fun appSettingsClick()
     }
 }

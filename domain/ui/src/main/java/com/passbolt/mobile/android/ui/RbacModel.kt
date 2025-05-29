@@ -28,11 +28,11 @@ data class RbacModel(
     val passwordCopyRule: RbacRuleModel,
     val tagsUseRule: RbacRuleModel,
     val shareViewRule: RbacRuleModel,
-    val foldersUseRule: RbacRuleModel
+    val foldersUseRule: RbacRuleModel,
 )
 
 enum class RbacRuleModel {
     ALLOW,
     DENY,
-    UNSUPPORTED_RULE
+    UNSUPPORTED_RULE,
 }

@@ -33,40 +33,45 @@ import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpResult
 class ChallengeDecryptor(
     private val openPgp: OpenPgp,
     private val getPrivateKeyUseCase: GetPrivateKeyUseCase,
-    private val gson: Gson
+    private val gson: Gson,
 ) {
-
     suspend fun decrypt(
         serverPublicKey: String,
         passphrase: ByteArray,
         userId: String,
-        challenge: String
+        challenge: String,
     ): Output {
         val passphraseCopy = passphrase.copyOf()
         val privateKey = getPrivateKeyUseCase.execute(UserIdInput(userId)).privateKey
-        return when (val decryptedChallenge = openPgp.decryptVerifyMessageArmored(
-            publicKey = serverPublicKey,
-            privateKey = privateKey,
-            passphrase = passphrase,
-            cipherText = challenge
-        )) {
+        return when (
+            val decryptedChallenge =
+                openPgp.decryptVerifyMessageArmored(
+                    publicKey = serverPublicKey,
+                    privateKey = privateKey,
+                    passphrase = passphrase,
+                    cipherText = challenge,
+                )
+        ) {
             is OpenPgpResult.Error -> Output.DecryptionError(decryptedChallenge.error.message)
             is OpenPgpResult.Result -> {
                 passphraseCopy.erase()
                 Output.DecryptedChallenge(
                     gson.fromJson(
                         decryptedChallenge.result,
-                        ChallengeResponseDto::class.java
-                    )
+                        ChallengeResponseDto::class.java,
+                    ),
                 )
             }
         }
     }
 
     sealed class Output {
+        data class DecryptedChallenge(
+            val challenge: ChallengeResponseDto,
+        ) : Output()
 
-        data class DecryptedChallenge(val challenge: ChallengeResponseDto) : Output()
-
-        data class DecryptionError(val message: String?) : Output()
+        data class DecryptionError(
+            val message: String?,
+        ) : Output()
     }
 }

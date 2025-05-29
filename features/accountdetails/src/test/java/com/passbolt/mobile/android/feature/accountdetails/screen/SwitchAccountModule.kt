@@ -43,34 +43,37 @@ internal const val LABEL = "label"
 internal const val ROLE = "user"
 internal const val SELECTED_ACCOUNT_ID = "selected"
 
-internal val mockGetSelectedAccountDataUseCase = mock<GetSelectedAccountDataUseCase> {
-    on { execute(Unit) }.doReturn(
-        GetSelectedAccountDataUseCase.Output(
-            firstName = FIRST_NAME,
-            lastName = LAST_NAME,
-            email = EMAIL,
-            avatarUrl = AVATAR_URL,
-            url = SERVER_URL,
-            serverId = SERVER_ID,
-            label = LABEL,
-            role = ROLE
+internal val mockGetSelectedAccountDataUseCase =
+    mock<GetSelectedAccountDataUseCase> {
+        on { execute(Unit) }.doReturn(
+            GetSelectedAccountDataUseCase.Output(
+                firstName = FIRST_NAME,
+                lastName = LAST_NAME,
+                email = EMAIL,
+                avatarUrl = AVATAR_URL,
+                url = SERVER_URL,
+                serverId = SERVER_ID,
+                label = LABEL,
+                role = ROLE,
+            ),
         )
-    )
-}
-internal val mockGetSelectedAccountUseCase = mock<GetSelectedAccountUseCase> {
-    on { execute(Unit) }.doReturn(GetSelectedAccountUseCase.Output(SELECTED_ACCOUNT_ID))
-}
+    }
+internal val mockGetSelectedAccountUseCase =
+    mock<GetSelectedAccountUseCase> {
+        on { execute(Unit) }.doReturn(GetSelectedAccountUseCase.Output(SELECTED_ACCOUNT_ID))
+    }
 internal val mockUpdateAccountDataUseCase = mock<UpdateAccountDataUseCase>()
 
 @ExperimentalCoroutinesApi
-val testAccountDetailsModule = module {
-    factory<CoroutineLaunchContext> { TestCoroutineLaunchContext() }
-    factory<AccountDetailsContract.Presenter> {
-        AccountDetailsPresenter(
-            coroutineLaunchContext = get(),
-            getSelectedAccountDataUseCase = mockGetSelectedAccountDataUseCase,
-            getSelectedAccountUseCase = mockGetSelectedAccountUseCase,
-            updateAccountDataUseCase = mockUpdateAccountDataUseCase
-        )
+val testAccountDetailsModule =
+    module {
+        factory<CoroutineLaunchContext> { TestCoroutineLaunchContext() }
+        factory<AccountDetailsContract.Presenter> {
+            AccountDetailsPresenter(
+                coroutineLaunchContext = get(),
+                getSelectedAccountDataUseCase = mockGetSelectedAccountDataUseCase,
+                getSelectedAccountUseCase = mockGetSelectedAccountUseCase,
+                updateAccountDataUseCase = mockUpdateAccountDataUseCase,
+            )
+        }
     }
-}

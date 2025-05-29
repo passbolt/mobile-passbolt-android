@@ -17,9 +17,8 @@ class FiltersMenuPresenter(
     private val getFeatureFlagsUseCase: GetFeatureFlagsUseCase,
     private val getRbacRulesUseCase: GetRbacRulesUseCase,
     private val updateHomeDisplayViewPrefsUseCase: UpdateHomeDisplayViewPrefsUseCase,
-    coroutineLaunchContext: CoroutineLaunchContext
+    coroutineLaunchContext: CoroutineLaunchContext,
 ) : FiltersMenuContract.Presenter {
-
     override var view: FiltersMenuContract.View? = null
     private val job = SupervisorJob()
     private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
@@ -69,7 +68,7 @@ class FiltersMenuPresenter(
 
     private fun saveLastUsedHomeView(lastUsedHomeView: HomeDisplayView) {
         updateHomeDisplayViewPrefsUseCase.execute(
-            UpdateHomeDisplayViewPrefsUseCase.Input(lastUsedHomeView = lastUsedHomeView)
+            UpdateHomeDisplayViewPrefsUseCase.Input(lastUsedHomeView = lastUsedHomeView),
         )
     }
 

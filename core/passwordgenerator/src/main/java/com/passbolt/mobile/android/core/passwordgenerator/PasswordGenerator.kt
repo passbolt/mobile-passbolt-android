@@ -28,7 +28,7 @@ import kotlinx.coroutines.withContext
  * @since v1.0
  */
 class PasswordGenerator(
-    private val coroutineLaunchContext: CoroutineLaunchContext
+    private val coroutineLaunchContext: CoroutineLaunchContext,
 ) {
     suspend fun generate(settings: PasswordGeneratorSettingsModel): List<Codepoint> {
         val codepointBuilder = mutableListOf<Codepoint>()

@@ -21,26 +21,14 @@
  * @since v1.0
  */
 
-package com.passbolt.mobile.android.feature.settings.debuglogssettings
+package com.passbolt.mobile.android.feature.settings.screen.debuglogssettings
 
-import com.passbolt.mobile.android.core.logger.FileLoggingTree
-import com.passbolt.mobile.android.core.preferences.usecase.GetGlobalPreferencesUseCase
-import com.passbolt.mobile.android.core.preferences.usecase.UpdateGlobalPreferencesUseCase
-import com.passbolt.mobile.android.feature.settings.screen.debuglogssettings.DebugLogsSettingsContract
-import com.passbolt.mobile.android.feature.settings.screen.debuglogssettings.DebugLogsSettingsPresenter
-import org.koin.dsl.module
-import org.mockito.kotlin.mock
+sealed interface DebugLogsSettingsIntent {
+    object GoBack : DebugLogsSettingsIntent
 
-internal val mockUpdateGlobalPreferencesUseCase = mock<UpdateGlobalPreferencesUseCase>()
-internal val mockGetGlobalPreferencesUseCase = mock<GetGlobalPreferencesUseCase>()
-internal val mockFileLoggingTree = mock<FileLoggingTree>()
+    object OpenHelpWebsite : DebugLogsSettingsIntent
 
-val testDebugLogsModule = module {
-    factory<DebugLogsSettingsContract.Presenter> {
-        DebugLogsSettingsPresenter(
-            updateGlobalPreferencesUseCase = mockUpdateGlobalPreferencesUseCase,
-            getGlobalPreferencesUseCase = mockGetGlobalPreferencesUseCase,
-            fileLoggingTree = mockFileLoggingTree
-        )
-    }
+    object AccessLogs : DebugLogsSettingsIntent
+
+    object ToggleDebugLogs : DebugLogsSettingsIntent
 }

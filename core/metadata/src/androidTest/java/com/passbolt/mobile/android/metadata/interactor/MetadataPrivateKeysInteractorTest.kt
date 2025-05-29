@@ -60,9 +60,7 @@ import org.mockito.kotlin.verify
 import java.time.ZonedDateTime
 import java.util.UUID
 
-
 class MetadataPrivateKeysInteractorTest : KoinTest {
-
     private lateinit var gracePrivateKey: ByteArray
     private lateinit var gracePublicKey: String
     private lateinit var adminPublicKey: String
@@ -74,10 +72,11 @@ class MetadataPrivateKeysInteractorTest : KoinTest {
     private val openPgp by inject<OpenPgp>()
 
     @get:Rule
-    val koinTestRule = KoinTestRule.create {
-        printLogger(Level.ERROR)
-        modules(testMetadataPrivateKeysInteractorModule)
-    }
+    val koinTestRule =
+        KoinTestRule.create {
+            printLogger(Level.ERROR)
+            modules(testMetadataPrivateKeysInteractorModule)
+        }
 
     @Before
     fun setUp() {
@@ -98,54 +97,60 @@ class MetadataPrivateKeysInteractorTest : KoinTest {
         }
 
         mockGetLocalUserUseCase.stub {
-            onBlocking { execute(GetLocalUserUseCase.Input(GRACE_USER_ID)) } doReturn GetLocalUserUseCase.Output(
-                UserModel(
-                    id = GRACE_USER_ID,
-                    userName = "grace@passbolt.com",
-                    disabled = false,
-                    gpgKey = GpgKeyModel(
-                        armoredKey = gracePublicKey,
-                        fingerprint = "63452C7A0AE6FAE8C8C309640BD9E2409BC6A569",
-                        bits = 4096,
-                        uid = "Grace Hopper <grace@passbolt.com>",
-                        keyId = "0BD9E2409BC6A569",
-                        type = "RSA",
-                        keyExpirationDate = ZonedDateTime.now().plusDays(1),
-                        keyCreationDate = ZonedDateTime.now().minusDays(1),
-                        id = "d7c9f849-71ba-5940-a3ca-ab26472c06fb"
+            onBlocking { execute(GetLocalUserUseCase.Input(GRACE_USER_ID)) } doReturn
+                GetLocalUserUseCase.Output(
+                    UserModel(
+                        id = GRACE_USER_ID,
+                        userName = "grace@passbolt.com",
+                        disabled = false,
+                        gpgKey =
+                            GpgKeyModel(
+                                armoredKey = gracePublicKey,
+                                fingerprint = "63452C7A0AE6FAE8C8C309640BD9E2409BC6A569",
+                                bits = 4096,
+                                uid = "Grace Hopper <grace@passbolt.com>",
+                                keyId = "0BD9E2409BC6A569",
+                                type = "RSA",
+                                keyExpirationDate = ZonedDateTime.now().plusDays(1),
+                                keyCreationDate = ZonedDateTime.now().minusDays(1),
+                                id = "d7c9f849-71ba-5940-a3ca-ab26472c06fb",
+                            ),
+                        profile =
+                            UserProfileModel(
+                                username = "grace@passbolt.com",
+                                firstName = "grace",
+                                lastName = "Hopper",
+                                avatarUrl = null,
+                            ),
                     ),
-                    profile = UserProfileModel(
-                        username = "grace@passbolt.com",
-                        firstName = "grace",
-                        lastName = "Hopper",
-                        avatarUrl = null
-                    )
                 )
-            )
-            onBlocking { execute(GetLocalUserUseCase.Input(ADMIN_USER_ID)) } doReturn GetLocalUserUseCase.Output(
-                UserModel(
-                    id = ADMIN_USER_ID,
-                    userName = "admin@passbolt.com",
-                    disabled = false,
-                    gpgKey = GpgKeyModel(
-                        armoredKey = adminPublicKey,
-                        fingerprint = "0C1D1761110D1E33C9006D1A5B1B332ED06426D3",
-                        bits = 4096,
-                        uid = "Passbolt Default Admin <admin@passbolt.com>",
-                        keyId = "5B1B332ED06426D3",
-                        type = "RSA",
-                        keyExpirationDate = ZonedDateTime.now().plusDays(1),
-                        keyCreationDate = ZonedDateTime.now().minusDays(1),
-                        id = "91d8a7fd-3ab3-5e98-a4a5-0d8694ff23b9"
+            onBlocking { execute(GetLocalUserUseCase.Input(ADMIN_USER_ID)) } doReturn
+                GetLocalUserUseCase.Output(
+                    UserModel(
+                        id = ADMIN_USER_ID,
+                        userName = "admin@passbolt.com",
+                        disabled = false,
+                        gpgKey =
+                            GpgKeyModel(
+                                armoredKey = adminPublicKey,
+                                fingerprint = "0C1D1761110D1E33C9006D1A5B1B332ED06426D3",
+                                bits = 4096,
+                                uid = "Passbolt Default Admin <admin@passbolt.com>",
+                                keyId = "5B1B332ED06426D3",
+                                type = "RSA",
+                                keyExpirationDate = ZonedDateTime.now().plusDays(1),
+                                keyCreationDate = ZonedDateTime.now().minusDays(1),
+                                id = "91d8a7fd-3ab3-5e98-a4a5-0d8694ff23b9",
+                            ),
+                        profile =
+                            UserProfileModel(
+                                username = "admin@passbolt.com",
+                                firstName = "Passbolt",
+                                lastName = "Admin",
+                                avatarUrl = null,
+                            ),
                     ),
-                    profile = UserProfileModel(
-                        username = "admin@passbolt.com",
-                        firstName = "Passbolt",
-                        lastName = "Admin",
-                        avatarUrl = null
-                    )
                 )
-            )
         }
         mockGetSelectedUserPrivateKeyUseCase.stub {
             on { execute(any()) } doReturn GetSelectedUserPrivateKeyUseCase.Output(String(gracePrivateKey))
@@ -161,16 +166,17 @@ class MetadataPrivateKeysInteractorTest : KoinTest {
             onBlocking { execute(any()) } doReturn Unit
         }
         mockGetSelectedAccountDataUseCase.stub {
-            onBlocking { execute(any()) } doReturn GetSelectedAccountDataUseCase.Output(
-                firstName = "Grace",
-                lastName = "Hopper",
-                email = "grace@passbolt.com",
-                avatarUrl = null,
-                url = "https://passbolt.local",
-                serverId = GRACE_USER_ID,
-                label = "grace",
-                role = "role"
-            )
+            onBlocking { execute(any()) } doReturn
+                GetSelectedAccountDataUseCase.Output(
+                    firstName = "Grace",
+                    lastName = "Hopper",
+                    email = "grace@passbolt.com",
+                    avatarUrl = null,
+                    url = "https://passbolt.local",
+                    serverId = GRACE_USER_ID,
+                    label = "grace",
+                    role = "role",
+                )
         }
     }
 
@@ -180,119 +186,126 @@ class MetadataPrivateKeysInteractorTest : KoinTest {
     }
 
     @Test
-    fun correctOutputShouldBeReturnedWhenThereIsNoKeyServerSideAndNoKeyLocally() = runTest {
-        mockGetLocalMetadataKeysUseCase.stub {
-            onBlocking { execute(any()) } doReturn emptyList()
-        }
-        mockGetTrustedMetadataKeyUseCase.stub {
-            onBlocking { execute(any()) } doReturn GetTrustedMetadataKeyUseCase.Output.NoTrustedKey
-        }
+    fun correctOutputShouldBeReturnedWhenThereIsNoKeyServerSideAndNoKeyLocally() =
+        runTest {
+            mockGetLocalMetadataKeysUseCase.stub {
+                onBlocking { execute(any()) } doReturn emptyList()
+            }
+            mockGetTrustedMetadataKeyUseCase.stub {
+                onBlocking { execute(any()) } doReturn GetTrustedMetadataKeyUseCase.Output.NoTrustedKey
+            }
 
-        val result = metadataPrivateKeysInteractor.verifyMetadataPrivateKey()
+            val result = metadataPrivateKeysInteractor.verifyMetadataPrivateKey()
 
-        verify(mockSaveTrustedMetadataKeyUseCase, never()).execute(any())
-        verify(mockUpdateMetadataPrivateKeyUseCase, never()).execute(any())
-        assertThat(result).isInstanceOf(MetadataPrivateKeysInteractor.Output.NoMetadataKey::class.java)
-    }
+            verify(mockSaveTrustedMetadataKeyUseCase, never()).execute(any())
+            verify(mockUpdateMetadataPrivateKeyUseCase, never()).execute(any())
+            assertThat(result).isInstanceOf(MetadataPrivateKeysInteractor.Output.NoMetadataKey::class.java)
+        }
 
     @Test
-    fun correctOutputShouldBeReturnedWhenThereIsNoKeyServerSideAndThereIsAKeyLocally() = runTest {
-        mockGetLocalMetadataKeysUseCase.stub {
-            onBlocking { execute(any()) } doReturn emptyList()
-        }
-        mockGetTrustedMetadataKeyUseCase.stub {
-            onBlocking { execute(any()) } doReturn GetTrustedMetadataKeyUseCase.Output.TrustedKey(
-                id = UUID.randomUUID(),
-                userId = UUID.randomUUID(),
-                keyData = "",
-                passphrase = "",
-                created = ZonedDateTime.now(),
-                createdBy = UUID.randomUUID(),
-                modified = ZonedDateTime.now(),
-                modifiedBy = UUID.randomUUID(),
-                keyPgpMessage = "",
-                signingKeyFingerprint = "",
-                signatureCreationTimestampSeconds = 0,
-                signedUsername = "",
-                signedName = ""
-            )
-        }
-
-        val result = metadataPrivateKeysInteractor.verifyMetadataPrivateKey()
-
-        verify(mockSaveTrustedMetadataKeyUseCase, never()).execute(any())
-        verify(mockUpdateMetadataPrivateKeyUseCase, never()).execute(any())
-        assertThat(result).isInstanceOf(MetadataPrivateKeysInteractor.Output.TrustedKeyDeleted::class.java)
-    }
-
-    @Test
-    fun correctOutputShouldBeReturnedWhenThereIsBackendKeySignedByCurrentUserAndNoLocalKey() = runTest {
-        mockGetLocalMetadataKeysUseCase.stub {
-            onBlocking { execute(any()) } doReturn listOf(
-                ParsedMetadataKeyModel(
-                    id = UUID.randomUUID(),
-                    armoredKey = "",
-                    fingerprint = "",
-                    modified = ZonedDateTime.now(),
-                    expired = null,
-                    deleted = null,
-                    metadataPrivateKeys = listOf(
-                        ParsedMetadataPrivateKeyModel(
-                            id = UUID.randomUUID(),
-                            userId = UUID.fromString(GRACE_USER_ID),
-                            keyData = "",
-                            passphrase = "",
-                            created = ZonedDateTime.now(),
-                            createdBy = UUID.fromString(GRACE_USER_ID),
-                            modified = ZonedDateTime.now(),
-                            modifiedBy = UUID.fromString(GRACE_USER_ID),
-                            pgpMessage = String(privateKeySignedByGrace),
-                            fingerprint = "",
-                            domain = ""
-                        )
+    fun correctOutputShouldBeReturnedWhenThereIsNoKeyServerSideAndThereIsAKeyLocally() =
+        runTest {
+            mockGetLocalMetadataKeysUseCase.stub {
+                onBlocking { execute(any()) } doReturn emptyList()
+            }
+            mockGetTrustedMetadataKeyUseCase.stub {
+                onBlocking { execute(any()) } doReturn
+                    GetTrustedMetadataKeyUseCase.Output.TrustedKey(
+                        id = UUID.randomUUID(),
+                        userId = UUID.randomUUID(),
+                        keyData = "",
+                        passphrase = "",
+                        created = ZonedDateTime.now(),
+                        createdBy = UUID.randomUUID(),
+                        modified = ZonedDateTime.now(),
+                        modifiedBy = UUID.randomUUID(),
+                        keyPgpMessage = "",
+                        signingKeyFingerprint = "",
+                        signatureCreationTimestampSeconds = 0,
+                        signedUsername = "",
+                        signedName = "",
                     )
+            }
+
+            val result = metadataPrivateKeysInteractor.verifyMetadataPrivateKey()
+
+            verify(mockSaveTrustedMetadataKeyUseCase, never()).execute(any())
+            verify(mockUpdateMetadataPrivateKeyUseCase, never()).execute(any())
+            assertThat(result).isInstanceOf(MetadataPrivateKeysInteractor.Output.TrustedKeyDeleted::class.java)
+        }
+
+    @Test
+    fun correctOutputShouldBeReturnedWhenThereIsBackendKeySignedByCurrentUserAndNoLocalKey() =
+        runTest {
+            mockGetLocalMetadataKeysUseCase.stub {
+                onBlocking { execute(any()) } doReturn
+                    listOf(
+                        ParsedMetadataKeyModel(
+                            id = UUID.randomUUID(),
+                            armoredKey = "",
+                            fingerprint = "",
+                            modified = ZonedDateTime.now(),
+                            expired = null,
+                            deleted = null,
+                            metadataPrivateKeys =
+                                listOf(
+                                    ParsedMetadataPrivateKeyModel(
+                                        id = UUID.randomUUID(),
+                                        userId = UUID.fromString(GRACE_USER_ID),
+                                        keyData = "",
+                                        passphrase = "",
+                                        created = ZonedDateTime.now(),
+                                        createdBy = UUID.fromString(GRACE_USER_ID),
+                                        modified = ZonedDateTime.now(),
+                                        modifiedBy = UUID.fromString(GRACE_USER_ID),
+                                        pgpMessage = String(privateKeySignedByGrace),
+                                        fingerprint = "",
+                                        domain = "",
+                                    ),
+                                ),
+                        ),
+                    )
+            }
+            mockGetTrustedMetadataKeyUseCase.stub {
+                onBlocking { execute(any()) } doReturn GetTrustedMetadataKeyUseCase.Output.NoTrustedKey
+            }
+
+            val result = metadataPrivateKeysInteractor.verifyMetadataPrivateKey()
+
+            argumentCaptor<SaveTrustedMetadataKeyUseCase.Input> {
+                verify(mockSaveTrustedMetadataKeyUseCase).execute(capture())
+                assertSignedBy(
+                    firstValue.keyPgpMessage,
+                    String(gracePrivateKey),
+                    "grace@passbolt.com",
+                    gracePublicKey,
                 )
-            )
+                assertSignatureTime(
+                    firstValue.keyPgpMessage,
+                    String(gracePrivateKey),
+                    "grace@passbolt.com",
+                    gracePublicKey,
+                    GRACE_SIGNED_PGP_MESSAGE_SIGNATURE_TIME_SECONDS,
+                )
+            }
+            verify(mockUpdateMetadataPrivateKeyUseCase, never()).execute(any())
+            assertThat(result).isInstanceOf(MetadataPrivateKeysInteractor.Output.KeyIsTrusted::class.java)
         }
-        mockGetTrustedMetadataKeyUseCase.stub {
-            onBlocking { execute(any()) } doReturn GetTrustedMetadataKeyUseCase.Output.NoTrustedKey
-        }
-
-        val result = metadataPrivateKeysInteractor.verifyMetadataPrivateKey()
-
-        argumentCaptor<SaveTrustedMetadataKeyUseCase.Input> {
-            verify(mockSaveTrustedMetadataKeyUseCase).execute(capture())
-            assertSignedBy(
-                firstValue.keyPgpMessage,
-                String(gracePrivateKey),
-                "grace@passbolt.com",
-                gracePublicKey
-            )
-            assertSignatureTime(
-                firstValue.keyPgpMessage,
-                String(gracePrivateKey),
-                "grace@passbolt.com",
-                gracePublicKey,
-                GRACE_SIGNED_PGP_MESSAGE_SIGNATURE_TIME_SECONDS
-            )
-        }
-        verify(mockUpdateMetadataPrivateKeyUseCase, never()).execute(any())
-        assertThat(result).isInstanceOf(MetadataPrivateKeysInteractor.Output.KeyIsTrusted::class.java)
-    }
 
     private suspend fun assertSignatureTime(
         pgpMessage: String,
         privateKey: String,
         passphrase: String,
         publicKey: String,
-        expectedSignatureTime: Long
+        expectedSignatureTime: Long,
     ) {
-        val verifiedMessage = openPgp.verifySignature(
-            privateKey,
-            passphrase.toByteArray(),
-            publicKey,
-            pgpMessage.toByteArray()
-        )
+        val verifiedMessage =
+            openPgp.verifySignature(
+                privateKey,
+                passphrase.toByteArray(),
+                publicKey,
+                pgpMessage.toByteArray(),
+            )
 
         assertThat(verifiedMessage).isInstanceOf(OpenPgpResult.Result::class.java)
         assertThat((verifiedMessage as OpenPgpResult.Result).result.signatureCreationTimestampSeconds)
@@ -303,336 +316,357 @@ class MetadataPrivateKeysInteractorTest : KoinTest {
         pgpMessage: String,
         privateKey: String,
         passphrase: String,
-        publicKey: String
+        publicKey: String,
     ) {
         val publicKeyFingerprint = Crypto.newKeyFromArmored(publicKey).fingerprint
 
-        val verifiedMessage = openPgp.verifySignature(
-            privateKey,
-            passphrase.toByteArray(),
-            publicKey,
-            pgpMessage.toByteArray()
-        )
+        val verifiedMessage =
+            openPgp.verifySignature(
+                privateKey,
+                passphrase.toByteArray(),
+                publicKey,
+                pgpMessage.toByteArray(),
+            )
 
         assertThat(verifiedMessage).isInstanceOf(OpenPgpResult.Result::class.java)
         assertThat((verifiedMessage as OpenPgpResult.Result).result.signatureKeyFingerprint)
-            .ignoringCase().isEqualTo(publicKeyFingerprint)
+            .ignoringCase()
+            .isEqualTo(publicKeyFingerprint)
     }
 
     @Test
-    fun correctOutputShouldBeReturnedWhenThereIsBackendKeyNotSignedByCurrentUserAndNoLocalKey() = runTest {
-        mockGetLocalMetadataKeysUseCase.stub {
-            onBlocking { execute(any()) } doReturn listOf(
-                ParsedMetadataKeyModel(
-                    id = UUID.randomUUID(),
-                    armoredKey = "",
-                    fingerprint = "",
-                    modified = ZonedDateTime.now(),
-                    expired = null,
-                    deleted = null,
-                    metadataPrivateKeys = listOf(
-                        ParsedMetadataPrivateKeyModel(
+    fun correctOutputShouldBeReturnedWhenThereIsBackendKeyNotSignedByCurrentUserAndNoLocalKey() =
+        runTest {
+            mockGetLocalMetadataKeysUseCase.stub {
+                onBlocking { execute(any()) } doReturn
+                    listOf(
+                        ParsedMetadataKeyModel(
                             id = UUID.randomUUID(),
-                            userId = UUID.fromString(GRACE_USER_ID),
-                            keyData = "",
-                            passphrase = "",
-                            created = ZonedDateTime.now(),
-                            createdBy = UUID.fromString(ADMIN_USER_ID),
-                            modified = ZonedDateTime.now(),
-                            modifiedBy = UUID.fromString(ADMIN_USER_ID),
-                            pgpMessage = String(privateKeySignedByAdmin),
+                            armoredKey = "",
                             fingerprint = "",
-                            domain = ""
-                        )
+                            modified = ZonedDateTime.now(),
+                            expired = null,
+                            deleted = null,
+                            metadataPrivateKeys =
+                                listOf(
+                                    ParsedMetadataPrivateKeyModel(
+                                        id = UUID.randomUUID(),
+                                        userId = UUID.fromString(GRACE_USER_ID),
+                                        keyData = "",
+                                        passphrase = "",
+                                        created = ZonedDateTime.now(),
+                                        createdBy = UUID.fromString(ADMIN_USER_ID),
+                                        modified = ZonedDateTime.now(),
+                                        modifiedBy = UUID.fromString(ADMIN_USER_ID),
+                                        pgpMessage = String(privateKeySignedByAdmin),
+                                        fingerprint = "",
+                                        domain = "",
+                                    ),
+                                ),
+                        ),
                     )
+            }
+            mockGetTrustedMetadataKeyUseCase.stub {
+                onBlocking { execute(any()) } doReturn GetTrustedMetadataKeyUseCase.Output.NoTrustedKey
+            }
+
+            val result = metadataPrivateKeysInteractor.verifyMetadataPrivateKey()
+
+            argumentCaptor<SaveTrustedMetadataKeyUseCase.Input> {
+                verify(mockSaveTrustedMetadataKeyUseCase).execute(capture())
+                assertSignedBy(
+                    firstValue.keyPgpMessage,
+                    String(gracePrivateKey),
+                    "grace@passbolt.com",
+                    gracePublicKey,
                 )
-            )
-        }
-        mockGetTrustedMetadataKeyUseCase.stub {
-            onBlocking { execute(any()) } doReturn GetTrustedMetadataKeyUseCase.Output.NoTrustedKey
+            }
+            argumentCaptor<UpdateMetadataPrivateKeyUseCase.Input> {
+                verify(mockUpdateMetadataPrivateKeyUseCase).execute(capture())
+                assertSignedBy(
+                    firstValue.privateKeyPgpMessage,
+                    String(gracePrivateKey),
+                    "grace@passbolt.com",
+                    gracePublicKey,
+                )
+            }
+            assertThat(result).isInstanceOf(MetadataPrivateKeysInteractor.Output.KeyIsTrusted::class.java)
         }
 
-        val result = metadataPrivateKeysInteractor.verifyMetadataPrivateKey()
+    @Test
+    fun correctOutputShouldBeReturnedWhenThereIsMatchingBackendAndLocalKey() =
+        runTest {
+            mockGetLocalMetadataKeysUseCase.stub {
+                onBlocking { execute(any()) } doReturn
+                    listOf(
+                        ParsedMetadataKeyModel(
+                            id = UUID.randomUUID(),
+                            armoredKey = "",
+                            fingerprint = "",
+                            modified = ZonedDateTime.now(),
+                            expired = null,
+                            deleted = null,
+                            metadataPrivateKeys =
+                                listOf(
+                                    ParsedMetadataPrivateKeyModel(
+                                        id = UUID.randomUUID(),
+                                        userId = UUID.fromString(GRACE_USER_ID),
+                                        keyData = "",
+                                        passphrase = "",
+                                        created = ZonedDateTime.now(),
+                                        createdBy = UUID.fromString(GRACE_USER_ID),
+                                        modified = ZonedDateTime.now(),
+                                        modifiedBy = UUID.fromString(GRACE_USER_ID),
+                                        pgpMessage = String(privateKeySignedByGrace),
+                                        fingerprint = "",
+                                        domain = "",
+                                    ),
+                                ),
+                        ),
+                    )
+            }
+            mockGetTrustedMetadataKeyUseCase.stub {
+                onBlocking { execute(any()) } doReturn
+                    GetTrustedMetadataKeyUseCase.Output.TrustedKey(
+                        id = UUID.randomUUID(),
+                        userId = UUID.fromString(GRACE_USER_ID),
+                        keyData = "",
+                        passphrase = "",
+                        created = ZonedDateTime.now(),
+                        createdBy = UUID.fromString(GRACE_USER_ID),
+                        modified = ZonedDateTime.now(),
+                        modifiedBy = UUID.fromString(GRACE_USER_ID),
+                        keyPgpMessage = String(privateKeySignedByGrace),
+                        signingKeyFingerprint = "63452C7A0AE6FAE8C8C309640BD9E2409BC6A569",
+                        signatureCreationTimestampSeconds = GRACE_SIGNED_PGP_MESSAGE_SIGNATURE_TIME_SECONDS,
+                        signedUsername = "",
+                        signedName = "",
+                    )
+            }
 
-        argumentCaptor<SaveTrustedMetadataKeyUseCase.Input> {
-            verify(mockSaveTrustedMetadataKeyUseCase).execute(capture())
+            val result = metadataPrivateKeysInteractor.verifyMetadataPrivateKey()
+
+            verify(mockSaveTrustedMetadataKeyUseCase, never()).execute(any())
+            verify(mockUpdateMetadataPrivateKeyUseCase, never()).execute(any())
+            assertThat(result).isInstanceOf(MetadataPrivateKeysInteractor.Output.KeyIsTrusted::class.java)
+        }
+
+    @Test
+    fun correctOutputShouldBeReturnedWhenThereIsBackendAndLocalKeyAndBackendKeyIsNotSigned() =
+        runTest {
+            mockGetLocalMetadataKeysUseCase.stub {
+                onBlocking { execute(any()) } doReturn
+                    listOf(
+                        ParsedMetadataKeyModel(
+                            id = UUID.randomUUID(),
+                            armoredKey = "",
+                            fingerprint = "",
+                            modified = ZonedDateTime.now(),
+                            expired = null,
+                            deleted = null,
+                            metadataPrivateKeys =
+                                listOf(
+                                    ParsedMetadataPrivateKeyModel(
+                                        id = UUID.randomUUID(),
+                                        userId = UUID.fromString(GRACE_USER_ID),
+                                        keyData = "",
+                                        passphrase = "",
+                                        created = ZonedDateTime.now(),
+                                        createdBy = UUID.fromString(ADMIN_USER_ID),
+                                        modified = ZonedDateTime.now(),
+                                        modifiedBy = UUID.fromString(ADMIN_USER_ID),
+                                        pgpMessage = String(privateKeySignedByAdmin),
+                                        fingerprint = "",
+                                        domain = "",
+                                    ),
+                                ),
+                        ),
+                    )
+            }
+            mockGetTrustedMetadataKeyUseCase.stub {
+                onBlocking { execute(any()) } doReturn
+                    GetTrustedMetadataKeyUseCase.Output.TrustedKey(
+                        id = UUID.randomUUID(),
+                        userId = UUID.fromString(GRACE_USER_ID),
+                        keyData = "",
+                        passphrase = "",
+                        created = ZonedDateTime.now(),
+                        createdBy = UUID.fromString(GRACE_USER_ID),
+                        modified = ZonedDateTime.now(),
+                        modifiedBy = UUID.fromString(GRACE_USER_ID),
+                        keyPgpMessage = String(privateKeySignedByGrace),
+                        signingKeyFingerprint = "63452C7A0AE6FAE8C8C309640BD9E2409BC6A569",
+                        signatureCreationTimestampSeconds = GRACE_SIGNED_PGP_MESSAGE_SIGNATURE_TIME_SECONDS,
+                        signedUsername = "",
+                        signedName = "",
+                    )
+            }
+
+            val result = metadataPrivateKeysInteractor.verifyMetadataPrivateKey()
+
+            verify(mockSaveTrustedMetadataKeyUseCase, never()).execute(any())
+            verify(mockUpdateMetadataPrivateKeyUseCase, never()).execute(any())
+            assertThat(result).isInstanceOf(MetadataPrivateKeysInteractor.Output.NewKeyToTrust::class.java)
+            val pgpMessage = (result as MetadataPrivateKeysInteractor.Output.NewKeyToTrust).metadataPrivateKey.pgpMessage
             assertSignedBy(
-                firstValue.keyPgpMessage,
+                pgpMessage,
                 String(gracePrivateKey),
                 "grace@passbolt.com",
-                gracePublicKey
-            )
-        }
-        argumentCaptor<UpdateMetadataPrivateKeyUseCase.Input> {
-            verify(mockUpdateMetadataPrivateKeyUseCase).execute(capture())
-            assertSignedBy(
-                firstValue.privateKeyPgpMessage,
-                String(gracePrivateKey),
-                "grace@passbolt.com",
-                gracePublicKey
-            )
-        }
-        assertThat(result).isInstanceOf(MetadataPrivateKeysInteractor.Output.KeyIsTrusted::class.java)
-    }
-
-    @Test
-    fun correctOutputShouldBeReturnedWhenThereIsMatchingBackendAndLocalKey() = runTest {
-        mockGetLocalMetadataKeysUseCase.stub {
-            onBlocking { execute(any()) } doReturn listOf(
-                ParsedMetadataKeyModel(
-                    id = UUID.randomUUID(),
-                    armoredKey = "",
-                    fingerprint = "",
-                    modified = ZonedDateTime.now(),
-                    expired = null,
-                    deleted = null,
-                    metadataPrivateKeys = listOf(
-                        ParsedMetadataPrivateKeyModel(
-                            id = UUID.randomUUID(),
-                            userId = UUID.fromString(GRACE_USER_ID),
-                            keyData = "",
-                            passphrase = "",
-                            created = ZonedDateTime.now(),
-                            createdBy = UUID.fromString(GRACE_USER_ID),
-                            modified = ZonedDateTime.now(),
-                            modifiedBy = UUID.fromString(GRACE_USER_ID),
-                            pgpMessage = String(privateKeySignedByGrace),
-                            fingerprint = "",
-                            domain = ""
-                        )
-                    )
-                )
-            )
-        }
-        mockGetTrustedMetadataKeyUseCase.stub {
-            onBlocking { execute(any()) } doReturn GetTrustedMetadataKeyUseCase.Output.TrustedKey(
-                id = UUID.randomUUID(),
-                userId = UUID.fromString(GRACE_USER_ID),
-                keyData = "",
-                passphrase = "",
-                created = ZonedDateTime.now(),
-                createdBy = UUID.fromString(GRACE_USER_ID),
-                modified = ZonedDateTime.now(),
-                modifiedBy = UUID.fromString(GRACE_USER_ID),
-                keyPgpMessage = String(privateKeySignedByGrace),
-                signingKeyFingerprint = "63452C7A0AE6FAE8C8C309640BD9E2409BC6A569",
-                signatureCreationTimestampSeconds = GRACE_SIGNED_PGP_MESSAGE_SIGNATURE_TIME_SECONDS,
-                signedUsername = "",
-                signedName = ""
-            )
-        }
-
-        val result = metadataPrivateKeysInteractor.verifyMetadataPrivateKey()
-
-        verify(mockSaveTrustedMetadataKeyUseCase, never()).execute(any())
-        verify(mockUpdateMetadataPrivateKeyUseCase, never()).execute(any())
-        assertThat(result).isInstanceOf(MetadataPrivateKeysInteractor.Output.KeyIsTrusted::class.java)
-    }
-
-    @Test
-    fun correctOutputShouldBeReturnedWhenThereIsBackendAndLocalKeyAndBackendKeyIsNotSigned() = runTest {
-        mockGetLocalMetadataKeysUseCase.stub {
-            onBlocking { execute(any()) } doReturn listOf(
-                ParsedMetadataKeyModel(
-                    id = UUID.randomUUID(),
-                    armoredKey = "",
-                    fingerprint = "",
-                    modified = ZonedDateTime.now(),
-                    expired = null,
-                    deleted = null,
-                    metadataPrivateKeys = listOf(
-                        ParsedMetadataPrivateKeyModel(
-                            id = UUID.randomUUID(),
-                            userId = UUID.fromString(GRACE_USER_ID),
-                            keyData = "",
-                            passphrase = "",
-                            created = ZonedDateTime.now(),
-                            createdBy = UUID.fromString(ADMIN_USER_ID),
-                            modified = ZonedDateTime.now(),
-                            modifiedBy = UUID.fromString(ADMIN_USER_ID),
-                            pgpMessage = String(privateKeySignedByAdmin),
-                            fingerprint = "",
-                            domain = ""
-                        )
-                    )
-                )
-            )
-        }
-        mockGetTrustedMetadataKeyUseCase.stub {
-            onBlocking { execute(any()) } doReturn GetTrustedMetadataKeyUseCase.Output.TrustedKey(
-                id = UUID.randomUUID(),
-                userId = UUID.fromString(GRACE_USER_ID),
-                keyData = "",
-                passphrase = "",
-                created = ZonedDateTime.now(),
-                createdBy = UUID.fromString(GRACE_USER_ID),
-                modified = ZonedDateTime.now(),
-                modifiedBy = UUID.fromString(GRACE_USER_ID),
-                keyPgpMessage = String(privateKeySignedByGrace),
-                signingKeyFingerprint = "63452C7A0AE6FAE8C8C309640BD9E2409BC6A569",
-                signatureCreationTimestampSeconds = GRACE_SIGNED_PGP_MESSAGE_SIGNATURE_TIME_SECONDS,
-                signedUsername = "",
-                signedName = ""
-            )
-        }
-
-        val result = metadataPrivateKeysInteractor.verifyMetadataPrivateKey()
-
-        verify(mockSaveTrustedMetadataKeyUseCase, never()).execute(any())
-        verify(mockUpdateMetadataPrivateKeyUseCase, never()).execute(any())
-        assertThat(result).isInstanceOf(MetadataPrivateKeysInteractor.Output.NewKeyToTrust::class.java)
-        val pgpMessage = (result as MetadataPrivateKeysInteractor.Output.NewKeyToTrust).metadataPrivateKey.pgpMessage
-        assertSignedBy(
-            pgpMessage,
-            String(gracePrivateKey),
-            "grace@passbolt.com",
-            adminPublicKey
-        )
-        assertSignatureTime(
-            pgpMessage,
-            String(gracePrivateKey),
-            "grace@passbolt.com",
-            adminPublicKey,
-            ADMIN_SIGNED_PGP_MESSAGE_SIGNATURE_TIME_SECONDS
-        )
-    }
-
-    @Test
-    fun correctOutputShouldBeReturnedWhenThereIsSignedBackendAndLocalKeyButBackendKeyIsOlder() = runTest {
-        mockGetLocalMetadataKeysUseCase.stub {
-            onBlocking { execute(any()) } doReturn listOf(
-                ParsedMetadataKeyModel(
-                    id = UUID.randomUUID(),
-                    armoredKey = "",
-                    fingerprint = "",
-                    modified = ZonedDateTime.now(),
-                    expired = null,
-                    deleted = null,
-                    metadataPrivateKeys = listOf(
-                        ParsedMetadataPrivateKeyModel(
-                            id = UUID.randomUUID(),
-                            userId = UUID.fromString(GRACE_USER_ID),
-                            keyData = "",
-                            passphrase = "",
-                            created = ZonedDateTime.now(),
-                            createdBy = UUID.fromString(GRACE_USER_ID),
-                            modified = ZonedDateTime.now(),
-                            modifiedBy = UUID.fromString(GRACE_USER_ID),
-                            pgpMessage = String(privateKeySignedByGrace),
-                            fingerprint = "",
-                            domain = ""
-                        )
-                    )
-                )
-            )
-        }
-        mockGetTrustedMetadataKeyUseCase.stub {
-            onBlocking { execute(any()) } doReturn GetTrustedMetadataKeyUseCase.Output.TrustedKey(
-                id = UUID.randomUUID(),
-                userId = UUID.fromString(GRACE_USER_ID),
-                keyData = "",
-                passphrase = "",
-                created = ZonedDateTime.now(),
-                createdBy = UUID.fromString(GRACE_USER_ID),
-                modified = ZonedDateTime.now(),
-                modifiedBy = UUID.fromString(GRACE_USER_ID),
-                keyPgpMessage = String(privateKeySignedByGrace),
-                signingKeyFingerprint = "63452C7A0AE6FAE8C8C309640BD9E2409BC6A569",
-                signatureCreationTimestampSeconds = GRACE_SIGNED_PGP_MESSAGE_SIGNATURE_TIME_SECONDS + 1,
-                signedUsername = "",
-                signedName = ""
-            )
-        }
-
-        val result = metadataPrivateKeysInteractor.verifyMetadataPrivateKey()
-
-        verify(mockSaveTrustedMetadataKeyUseCase, never()).execute(any())
-        verify(mockUpdateMetadataPrivateKeyUseCase, never()).execute(any())
-        assertThat(result).isInstanceOf(MetadataPrivateKeysInteractor.Output.NewKeyToTrust::class.java)
-        val pgpMessage = (result as MetadataPrivateKeysInteractor.Output.NewKeyToTrust).metadataPrivateKey.pgpMessage
-        assertSignedBy(
-            pgpMessage,
-            String(gracePrivateKey),
-            "grace@passbolt.com",
-            gracePublicKey
-        )
-        assertSignatureTime(
-            pgpMessage,
-            String(gracePrivateKey),
-            "grace@passbolt.com",
-            gracePublicKey,
-            GRACE_SIGNED_PGP_MESSAGE_SIGNATURE_TIME_SECONDS
-        )
-    }
-
-    @Test
-    fun correctOutputShouldBeReturnedWhenThereIsSignedBackendAndLocalKeyButBackendKeyIsYounger() = runTest {
-        mockGetLocalMetadataKeysUseCase.stub {
-            onBlocking { execute(any()) } doReturn listOf(
-                ParsedMetadataKeyModel(
-                    id = UUID.randomUUID(),
-                    armoredKey = "",
-                    fingerprint = "",
-                    modified = ZonedDateTime.now(),
-                    expired = null,
-                    deleted = null,
-                    metadataPrivateKeys = listOf(
-                        ParsedMetadataPrivateKeyModel(
-                            id = UUID.randomUUID(),
-                            userId = UUID.fromString(GRACE_USER_ID),
-                            keyData = "",
-                            passphrase = "",
-                            created = ZonedDateTime.now(),
-                            createdBy = UUID.fromString(GRACE_USER_ID),
-                            modified = ZonedDateTime.now(),
-                            modifiedBy = UUID.fromString(GRACE_USER_ID),
-                            pgpMessage = String(privateKeySignedByGrace),
-                            fingerprint = "",
-                            domain = ""
-                        )
-                    )
-                )
-            )
-        }
-        mockGetTrustedMetadataKeyUseCase.stub {
-            onBlocking { execute(any()) } doReturn GetTrustedMetadataKeyUseCase.Output.TrustedKey(
-                id = UUID.randomUUID(),
-                userId = UUID.fromString(GRACE_USER_ID),
-                keyData = "",
-                passphrase = "",
-                created = ZonedDateTime.now(),
-                createdBy = UUID.fromString(GRACE_USER_ID),
-                modified = ZonedDateTime.now(),
-                modifiedBy = UUID.fromString(GRACE_USER_ID),
-                keyPgpMessage = String(privateKeySignedByGrace),
-                signingKeyFingerprint = "63452C7A0AE6FAE8C8C309640BD9E2409BC6A569",
-                signatureCreationTimestampSeconds = GRACE_SIGNED_PGP_MESSAGE_SIGNATURE_TIME_SECONDS - 1,
-                signedUsername = "",
-                signedName = ""
-            )
-        }
-
-        val result = metadataPrivateKeysInteractor.verifyMetadataPrivateKey()
-
-        argumentCaptor<SaveTrustedMetadataKeyUseCase.Input> {
-            verify(mockSaveTrustedMetadataKeyUseCase).execute(capture())
-            assertSignedBy(
-                firstValue.keyPgpMessage,
-                String(gracePrivateKey),
-                "grace@passbolt.com",
-                gracePublicKey
+                adminPublicKey,
             )
             assertSignatureTime(
-                firstValue.keyPgpMessage,
+                pgpMessage,
+                String(gracePrivateKey),
+                "grace@passbolt.com",
+                adminPublicKey,
+                ADMIN_SIGNED_PGP_MESSAGE_SIGNATURE_TIME_SECONDS,
+            )
+        }
+
+    @Test
+    fun correctOutputShouldBeReturnedWhenThereIsSignedBackendAndLocalKeyButBackendKeyIsOlder() =
+        runTest {
+            mockGetLocalMetadataKeysUseCase.stub {
+                onBlocking { execute(any()) } doReturn
+                    listOf(
+                        ParsedMetadataKeyModel(
+                            id = UUID.randomUUID(),
+                            armoredKey = "",
+                            fingerprint = "",
+                            modified = ZonedDateTime.now(),
+                            expired = null,
+                            deleted = null,
+                            metadataPrivateKeys =
+                                listOf(
+                                    ParsedMetadataPrivateKeyModel(
+                                        id = UUID.randomUUID(),
+                                        userId = UUID.fromString(GRACE_USER_ID),
+                                        keyData = "",
+                                        passphrase = "",
+                                        created = ZonedDateTime.now(),
+                                        createdBy = UUID.fromString(GRACE_USER_ID),
+                                        modified = ZonedDateTime.now(),
+                                        modifiedBy = UUID.fromString(GRACE_USER_ID),
+                                        pgpMessage = String(privateKeySignedByGrace),
+                                        fingerprint = "",
+                                        domain = "",
+                                    ),
+                                ),
+                        ),
+                    )
+            }
+            mockGetTrustedMetadataKeyUseCase.stub {
+                onBlocking { execute(any()) } doReturn
+                    GetTrustedMetadataKeyUseCase.Output.TrustedKey(
+                        id = UUID.randomUUID(),
+                        userId = UUID.fromString(GRACE_USER_ID),
+                        keyData = "",
+                        passphrase = "",
+                        created = ZonedDateTime.now(),
+                        createdBy = UUID.fromString(GRACE_USER_ID),
+                        modified = ZonedDateTime.now(),
+                        modifiedBy = UUID.fromString(GRACE_USER_ID),
+                        keyPgpMessage = String(privateKeySignedByGrace),
+                        signingKeyFingerprint = "63452C7A0AE6FAE8C8C309640BD9E2409BC6A569",
+                        signatureCreationTimestampSeconds = GRACE_SIGNED_PGP_MESSAGE_SIGNATURE_TIME_SECONDS + 1,
+                        signedUsername = "",
+                        signedName = "",
+                    )
+            }
+
+            val result = metadataPrivateKeysInteractor.verifyMetadataPrivateKey()
+
+            verify(mockSaveTrustedMetadataKeyUseCase, never()).execute(any())
+            verify(mockUpdateMetadataPrivateKeyUseCase, never()).execute(any())
+            assertThat(result).isInstanceOf(MetadataPrivateKeysInteractor.Output.NewKeyToTrust::class.java)
+            val pgpMessage = (result as MetadataPrivateKeysInteractor.Output.NewKeyToTrust).metadataPrivateKey.pgpMessage
+            assertSignedBy(
+                pgpMessage,
                 String(gracePrivateKey),
                 "grace@passbolt.com",
                 gracePublicKey,
-                GRACE_SIGNED_PGP_MESSAGE_SIGNATURE_TIME_SECONDS
+            )
+            assertSignatureTime(
+                pgpMessage,
+                String(gracePrivateKey),
+                "grace@passbolt.com",
+                gracePublicKey,
+                GRACE_SIGNED_PGP_MESSAGE_SIGNATURE_TIME_SECONDS,
             )
         }
-        verify(mockUpdateMetadataPrivateKeyUseCase, never()).execute(any())
-        assertThat(result).isInstanceOf(MetadataPrivateKeysInteractor.Output.KeyIsTrusted::class.java)
-    }
+
+    @Test
+    fun correctOutputShouldBeReturnedWhenThereIsSignedBackendAndLocalKeyButBackendKeyIsYounger() =
+        runTest {
+            mockGetLocalMetadataKeysUseCase.stub {
+                onBlocking { execute(any()) } doReturn
+                    listOf(
+                        ParsedMetadataKeyModel(
+                            id = UUID.randomUUID(),
+                            armoredKey = "",
+                            fingerprint = "",
+                            modified = ZonedDateTime.now(),
+                            expired = null,
+                            deleted = null,
+                            metadataPrivateKeys =
+                                listOf(
+                                    ParsedMetadataPrivateKeyModel(
+                                        id = UUID.randomUUID(),
+                                        userId = UUID.fromString(GRACE_USER_ID),
+                                        keyData = "",
+                                        passphrase = "",
+                                        created = ZonedDateTime.now(),
+                                        createdBy = UUID.fromString(GRACE_USER_ID),
+                                        modified = ZonedDateTime.now(),
+                                        modifiedBy = UUID.fromString(GRACE_USER_ID),
+                                        pgpMessage = String(privateKeySignedByGrace),
+                                        fingerprint = "",
+                                        domain = "",
+                                    ),
+                                ),
+                        ),
+                    )
+            }
+            mockGetTrustedMetadataKeyUseCase.stub {
+                onBlocking { execute(any()) } doReturn
+                    GetTrustedMetadataKeyUseCase.Output.TrustedKey(
+                        id = UUID.randomUUID(),
+                        userId = UUID.fromString(GRACE_USER_ID),
+                        keyData = "",
+                        passphrase = "",
+                        created = ZonedDateTime.now(),
+                        createdBy = UUID.fromString(GRACE_USER_ID),
+                        modified = ZonedDateTime.now(),
+                        modifiedBy = UUID.fromString(GRACE_USER_ID),
+                        keyPgpMessage = String(privateKeySignedByGrace),
+                        signingKeyFingerprint = "63452C7A0AE6FAE8C8C309640BD9E2409BC6A569",
+                        signatureCreationTimestampSeconds = GRACE_SIGNED_PGP_MESSAGE_SIGNATURE_TIME_SECONDS - 1,
+                        signedUsername = "",
+                        signedName = "",
+                    )
+            }
+
+            val result = metadataPrivateKeysInteractor.verifyMetadataPrivateKey()
+
+            argumentCaptor<SaveTrustedMetadataKeyUseCase.Input> {
+                verify(mockSaveTrustedMetadataKeyUseCase).execute(capture())
+                assertSignedBy(
+                    firstValue.keyPgpMessage,
+                    String(gracePrivateKey),
+                    "grace@passbolt.com",
+                    gracePublicKey,
+                )
+                assertSignatureTime(
+                    firstValue.keyPgpMessage,
+                    String(gracePrivateKey),
+                    "grace@passbolt.com",
+                    gracePublicKey,
+                    GRACE_SIGNED_PGP_MESSAGE_SIGNATURE_TIME_SECONDS,
+                )
+            }
+            verify(mockUpdateMetadataPrivateKeyUseCase, never()).execute(any())
+            assertThat(result).isInstanceOf(MetadataPrivateKeysInteractor.Output.KeyIsTrusted::class.java)
+        }
 
     private companion object {
         private const val GRACE_USER_ID = "640ebc06-5ec1-5322-a1ae-6120ed2f3a74"

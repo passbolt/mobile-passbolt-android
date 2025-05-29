@@ -32,12 +32,13 @@ import java.time.Clock
  * @since v1.0
  */
 
-val inAppReviewModule = module {
-    singleOf(::SaveInAppShowModeUseCase)
-    singleOf(::GetInAppReviewParametersUseCase)
-    singleOf(::SaveInAppReviewParametersUseCase)
-    singleOf(::GetInAppReviewShowModeUseCase)
-    singleOf(::InAppReviewShowSerializer)
-    singleOf(::InAppReviewInteractor)
-    factory { Clock.systemDefaultZone() }
-}
+val inAppReviewModule =
+    module {
+        singleOf(::SaveInAppShowModeUseCase)
+        singleOf(::GetInAppReviewParametersUseCase)
+        singleOf(::SaveInAppReviewParametersUseCase)
+        singleOf(::GetInAppReviewShowModeUseCase)
+        singleOf(::InAppReviewShowSerializer)
+        singleOf(::InAppReviewInteractor)
+        factory { Clock.systemDefaultZone() }
+    }

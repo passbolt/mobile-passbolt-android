@@ -38,28 +38,29 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-val autofillResourcesModule = module {
-    encourageAutofillModule()
-    accessibilityAutofillModule()
-    autofillResourcesModule()
+val autofillResourcesModule =
+    module {
+        encourageAutofillModule()
+        accessibilityAutofillModule()
+        autofillResourcesModule()
 
-    singleOf(::SettingsNavigator)
+        singleOf(::SettingsNavigator)
 
-    single {
-        androidApplication().getSystemService(Context.POWER_SERVICE) as PowerManager
+        single {
+            androidApplication().getSystemService(Context.POWER_SERVICE) as PowerManager
+        }
+        single {
+            androidApplication().getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        }
+        factory {
+            RemoteViewsFactory(
+                appContext = androidContext(),
+            )
+        }
+        factory<AutofillInformationProvider> {
+            AutofillInformationProviderImpl(
+                autofillManager = get(),
+                context = androidContext(),
+            )
+        }
     }
-    single {
-        androidApplication().getSystemService(Context.WINDOW_SERVICE) as WindowManager
-    }
-    factory {
-        RemoteViewsFactory(
-            appContext = androidContext()
-        )
-    }
-    factory<AutofillInformationProvider> {
-        AutofillInformationProviderImpl(
-            autofillManager = get(),
-            context = androidContext()
-        )
-    }
-}

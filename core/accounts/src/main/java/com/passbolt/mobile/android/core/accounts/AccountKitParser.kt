@@ -33,13 +33,12 @@ import timber.log.Timber
 
 class AccountKitParser(
     private val openPgp: OpenPgp,
-    private val json: Json
+    private val json: Json,
 ) {
-
     suspend fun parseAndVerify(
         accountKitFileContent: String,
         onSuccess: (AccountSetupDataModel) -> Unit,
-        onFailure: (String) -> Unit
+        onFailure: (String) -> Unit,
     ) {
         try {
             val pgpMessage = Base64.decode(accountKitFileContent, Base64.DEFAULT)
@@ -52,7 +51,7 @@ class AccountKitParser(
     private suspend fun parseAccountKit(
         pgpMessage: ByteArray,
         onFailure: (String) -> Unit,
-        onSuccess: (AccountSetupDataModel) -> Unit
+        onSuccess: (AccountSetupDataModel) -> Unit,
     ) {
         JSON_REG_EX.find(String(pgpMessage))?.value?.let { accountKitJson ->
             try {
@@ -61,7 +60,7 @@ class AccountKitParser(
                     pgpMessage = pgpMessage,
                     armoredPublicKey = accountKitDto.publicKeyArmored,
                     onSuccess = onSuccess,
-                    onFailure = onFailure
+                    onFailure = onFailure,
                 )
             } catch (e: Exception) {
                 parseAndVerifyError("Could not parse the account kit: error during parsing JSON", onFailure)
@@ -75,13 +74,15 @@ class AccountKitParser(
         pgpMessage: ByteArray,
         armoredPublicKey: String,
         onSuccess: (AccountSetupDataModel) -> Unit,
-        onFailure: (String) -> Unit
+        onFailure: (String) -> Unit,
     ) {
-        when (val verificationResult =
-            openPgp.verifyClearTextSignature(
-                armoredPublicKey = armoredPublicKey,
-                pgpMessage = pgpMessage
-            )) {
+        when (
+            val verificationResult =
+                openPgp.verifyClearTextSignature(
+                    armoredPublicKey = armoredPublicKey,
+                    pgpMessage = pgpMessage,
+                )
+        ) {
             is OpenPgpResult.Error -> parseAndVerifyError(verificationResult.error.message, onFailure)
             is OpenPgpResult.Result -> {
                 if (verificationResult.result.isSignatureVerified) {
@@ -96,8 +97,8 @@ class AccountKitParser(
                                 lastName = lastName,
                                 avatarUrl = null,
                                 keyFingerprint = verificationResult.result.keyFingerprint,
-                                armoredKey = privateKeyArmored
-                            )
+                                armoredKey = privateKeyArmored,
+                            ),
                         )
                     }
                 } else {
@@ -107,7 +108,10 @@ class AccountKitParser(
         }
     }
 
-    private fun parseAndVerifyError(message: String, onFailureCallback: (String) -> Unit) {
+    private fun parseAndVerifyError(
+        message: String,
+        onFailureCallback: (String) -> Unit,
+    ) {
         Timber.e(message)
         onFailureCallback(message)
     }

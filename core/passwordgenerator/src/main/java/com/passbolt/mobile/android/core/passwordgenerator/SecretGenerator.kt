@@ -31,9 +31,8 @@ import com.passbolt.mobile.android.ui.PasswordGeneratorSettingsModel
 class SecretGenerator(
     private val passwordGenerator: PasswordGenerator,
     private val passphraseGenerator: PassphraseGenerator,
-    private val entropyCalculator: EntropyCalculator
+    private val entropyCalculator: EntropyCalculator,
 ) {
-
     suspend fun generatePassword(settings: PasswordGeneratorSettingsModel): SecretGenerationResult {
         val password = passwordGenerator.generate(settings)
         val entropy = entropyCalculator.getPasswordEntropy(password, Alphabets.getCodepointSetsForModel(settings))
@@ -43,30 +42,34 @@ class SecretGenerator(
 
     suspend fun generatePassphrase(settings: PassphraseGeneratorSettingsModel): SecretGenerationResult {
         val passphrase = passphraseGenerator.generate(settings)
-        val entropy = entropyCalculator.getPassphraseEntropy(
-            settings.words,
-            settings.wordSeparator
-        )
+        val entropy =
+            entropyCalculator.getPassphraseEntropy(
+                settings.words,
+                settings.wordSeparator,
+            )
 
         return returnResult(passphrase, entropy)
     }
 
-    private fun returnResult(secret: List<Codepoint>, entropy: Double): SecretGenerationResult {
-        return if (entropy < MIN_ENTROPY_BITS) {
+    private fun returnResult(
+        secret: List<Codepoint>,
+        entropy: Double,
+    ): SecretGenerationResult =
+        if (entropy < MIN_ENTROPY_BITS) {
             SecretGenerationResult.FailedToGenerateLowEntropy(MIN_ENTROPY_BITS)
         } else {
             SecretGenerationResult.Success(secret, entropy)
         }
-    }
 
     sealed class SecretGenerationResult {
-
         data class Success(
             val password: List<Codepoint>,
-            val entropy: Double
+            val entropy: Double,
         ) : SecretGenerationResult()
 
-        data class FailedToGenerateLowEntropy(val minimumEntropyBits: Int) : SecretGenerationResult()
+        data class FailedToGenerateLowEntropy(
+            val minimumEntropyBits: Int,
+        ) : SecretGenerationResult()
     }
 
     private companion object {

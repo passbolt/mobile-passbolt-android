@@ -47,10 +47,10 @@ class ResourceSearchTest {
         private const val SEARCH_1 = "name"
         private const val SEARCH_2 = "username"
 
-        private val searchable = object : Searchable {
-            override val searchCriteria: String
-                get() = "$SEARCH_1$SEARCH_2"
-
-        }
+        private val searchable =
+            object : Searchable {
+                override val searchCriteria: String
+                    get() = "$SEARCH_1$SEARCH_2"
+            }
     }
 }

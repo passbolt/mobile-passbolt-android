@@ -31,9 +31,8 @@ import kotlinx.coroutines.launch
  */
 class TermsAndLicensesSettingsPresenter(
     private val getFeatureFlagsUseCase: GetFeatureFlagsUseCase,
-    coroutineLaunchContext: CoroutineLaunchContext
+    coroutineLaunchContext: CoroutineLaunchContext,
 ) : TermsAndLicensesSettingsContract.Presenter {
-
     override var view: TermsAndLicensesSettingsContract.View? = null
     private val job = SupervisorJob()
     private val scope = CoroutineScope(job + coroutineLaunchContext.ui)

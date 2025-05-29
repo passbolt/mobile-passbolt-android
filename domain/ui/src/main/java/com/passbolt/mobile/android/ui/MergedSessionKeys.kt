@@ -4,5 +4,5 @@ import java.time.ZonedDateTime
 
 data class MergedSessionKeys(
     val keys: HashMap<SessionKeyIdentifier, SessionKeyModel> = hashMapOf(),
-    val originMetadata: HashMap<String, ZonedDateTime> = hashMapOf()
+    val originMetadata: HashMap<String, ZonedDateTime> = hashMapOf(),
 )

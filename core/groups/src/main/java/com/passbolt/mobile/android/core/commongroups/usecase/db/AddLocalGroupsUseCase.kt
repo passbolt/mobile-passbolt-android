@@ -32,30 +32,33 @@ import com.passbolt.mobile.android.ui.GroupModelWithUsers
 class AddLocalGroupsUseCase(
     private val databaseProvider: DatabaseProvider,
     private val groupsModelMapper: GroupsModelMapper,
-    private val getSelectedAccountUseCase: GetSelectedAccountUseCase
+    private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
 ) : AsyncUseCase<AddLocalGroupsUseCase.Input, Unit> {
-
     override suspend fun execute(input: Input) {
         val currentAccount = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
-        val groupsDao = databaseProvider
-            .get(currentAccount)
-            .groupsDao()
-        val usersAndGroupsCrossRefDao = databaseProvider
-            .get(currentAccount)
-            .usersAndGroupsCrossRefDao()
+        val groupsDao =
+            databaseProvider
+                .get(currentAccount)
+                .groupsDao()
+        val usersAndGroupsCrossRefDao =
+            databaseProvider
+                .get(currentAccount)
+                .usersAndGroupsCrossRefDao()
 
         groupsDao.insertAll(input.groups.map { groupsModelMapper.map(it.groupModel) })
 
-        val groupAndUsersCrossRefs = input.groups.map { it.groupModel.groupId to it.users.map { user -> user.userId } }
-            .flatMap { (groupId, groupUserIds) ->
-                groupUserIds.map { groupUserId ->
-                    UsersAndGroupCrossRef(groupUserId, groupId)
+        val groupAndUsersCrossRefs =
+            input.groups
+                .map { it.groupModel.groupId to it.users.map { user -> user.userId } }
+                .flatMap { (groupId, groupUserIds) ->
+                    groupUserIds.map { groupUserId ->
+                        UsersAndGroupCrossRef(groupUserId, groupId)
+                    }
                 }
-            }
         usersAndGroupsCrossRefDao.insertAll(groupAndUsersCrossRefs)
     }
 
     data class Input(
-        val groups: List<GroupModelWithUsers>
+        val groups: List<GroupModelWithUsers>,
     )
 }

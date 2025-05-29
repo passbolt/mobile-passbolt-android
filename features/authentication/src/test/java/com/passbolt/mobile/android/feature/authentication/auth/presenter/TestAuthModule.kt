@@ -31,9 +31,9 @@ import com.passbolt.mobile.android.feature.authentication.auth.challenge.Challen
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeVerifier
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.MfaStatusProvider
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.BiometryInteractor
-import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetAndVerifyServerKeysAndTimeInteractor
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.FetchServerPublicPgpKeyUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.FetchServerPublicRsaKeyUseCase
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetAndVerifyServerKeysAndTimeInteractor
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GopenPgpTimeUpdater
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.PostSignInActionsInteractor
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.RefreshSessionUseCase
@@ -88,24 +88,26 @@ internal const val MOCK_ACCOUNT_DATA_SERVER_ID = "aaa-bbb-ccc"
 internal const val MOCK_LABEL = "label"
 internal const val MOCK_ROLE = "user"
 
-internal val mockGetAccountDataUseCase = mock<GetAccountDataUseCase> {
-    on { execute(UserIdInput(ACCOUNT)) }.doReturn(
-        GetAccountDataUseCase.Output(
-            firstName = MOCK_ACCOUNT_DATA_FIRST_NAME,
-            lastName = MOCK_ACCOUNT_DATA_LAST_NAME,
-            email = MOCK_ACCOUNT_DATA_EMAIL,
-            avatarUrl = MOCK_ACCOUNT_DATA_AVATAR_URL,
-            url = MOCK_ACCOUNT_DATA_URL,
-            serverId = MOCK_ACCOUNT_DATA_SERVER_ID,
-            label = MOCK_LABEL,
-            role = MOCK_ROLE
+internal val mockGetAccountDataUseCase =
+    mock<GetAccountDataUseCase> {
+        on { execute(UserIdInput(ACCOUNT)) }.doReturn(
+            GetAccountDataUseCase.Output(
+                firstName = MOCK_ACCOUNT_DATA_FIRST_NAME,
+                lastName = MOCK_ACCOUNT_DATA_LAST_NAME,
+                email = MOCK_ACCOUNT_DATA_EMAIL,
+                avatarUrl = MOCK_ACCOUNT_DATA_AVATAR_URL,
+                url = MOCK_ACCOUNT_DATA_URL,
+                serverId = MOCK_ACCOUNT_DATA_SERVER_ID,
+                label = MOCK_LABEL,
+                role = MOCK_ROLE,
+            ),
         )
-    )
-}
+    }
 internal val mockPassphraseMemoryCache = mock<PassphraseMemoryCache>()
-internal val mockPrivateKeyUseCase = mock<GetPrivateKeyUseCase> {
-    on { execute(any()) }.doReturn(GetPrivateKeyUseCase.Output("privateKey"))
-}
+internal val mockPrivateKeyUseCase =
+    mock<GetPrivateKeyUseCase> {
+        on { execute(any()) }.doReturn(GetPrivateKeyUseCase.Output("privateKey"))
+    }
 internal val mockVerifyPassphraseUseCase = mock<VerifyPassphraseUseCase>()
 internal val mockCheckIfPassphraseExistsUseCase = mock<CheckIfPassphraseFileExistsUseCase>()
 
@@ -121,12 +123,14 @@ internal val mockFeatureFlagsInteractor = mock<FeatureFlagsInteractor>()
 internal val mockIsServerFingerprintCorrectUseCase = mock<IsServerFingerprintCorrectUseCase>()
 internal val mockSaveServerFingerprintUseCase = mock<SaveServerFingerprintUseCase>()
 internal val mockSignOutUseCase = mock<SignOutUseCase>()
-internal val mockCipher = mock<Cipher> {
-    on { iv }.doReturn(ByteArray(0))
-}
-internal val mockBiometricCipher = mock<BiometricCipher> {
-    on { getBiometricDecryptCipher(any()) }.doReturn(mockCipher)
-}
+internal val mockCipher =
+    mock<Cipher> {
+        on { iv }.doReturn(ByteArray(0))
+    }
+internal val mockBiometricCipher =
+    mock<BiometricCipher> {
+        on { getBiometricDecryptCipher(any()) }.doReturn(mockCipher)
+    }
 internal val mockGetPassphraseUseCase = mock<GetPassphraseUseCase>()
 internal val mockRemoveBiometricKeyUseCase = mock<RemoveBiometricKeyUseCase>()
 internal val authReasonMapper = AuthReasonMapper()
@@ -146,124 +150,128 @@ internal val mockMetadataKeysSettingsInteractor = mock<MetadataKeysSettingsInter
 internal val mockSaveServerPublicRsaKeyUseCase = mock<SaveServerPublicRsaKeyUseCase>()
 
 @ExperimentalCoroutinesApi
-val testAuthModule = module {
-    factory {
-        GetAndVerifyServerKeysAndTimeInteractor(
-            fetchServerPublicPgpKeyUseCase = mockFetchServerPublicPgpKeyUseCase,
-            fetchServerPublicRsaKeyUseCase = mockFetchServerPublicRsaKeyUseCase,
-            getAccountDataUseCase = mockGetAccountDataUseCase,
-            isServerFingerprintCorrectUseCase = mockIsServerFingerprintCorrectUseCase,
-            gopenPgpTimeUpdater = mockGopenPgpTimeUpdater,
-            saveServerPublicRsaKeyUseCase = mockSaveServerPublicRsaKeyUseCase
-        )
-    }
-    factory {
-        SignInVerifyInteractor(
-            getAccountDataUseCase = mockGetAccountDataUseCase,
-            challengeProvider = mockChallengeProvider,
-            getSessionUseCase = mockGetSessionUseCase,
-            signInUseCase = mockSignInUseCase,
-            challengeDecryptor = mockChallengeDecryptor,
-            challengeVerifier = mockChallengeVerifier
-        )
-    }
-    factory {
-        BiometryInteractor(
-            checkIfPassphraseFileExistsUseCase = mockCheckIfPassphraseExistsUseCase,
-            removeBiometricKeyUseCase = mockRemoveBiometricKeyUseCase,
-            removeAllAccountsPassphrasesUseCase = mockRemoveAllAccountsPassphraseUseCase,
-            fingerprintInfoProvider = mockFingerprintInformationProvider
-        )
-    }
-    factory {
-        PostSignInActionsInteractor(
-            featureFlagsInteractor = mockFeatureFlagsInteractor,
-            rbacInteractor = mockRbacInteractor,
-            userProfileInteractor = mockProfileInteractor,
-            passwordExpiryPoliciesInteractor = mockPasswordExpiryPoliciesInteractor,
-            passwordPoliciesInteractor = mockPasswordPoliciesInteractor,
-            metadataTypesSettingsInteractor = mockMetadataTypesSettingsInteractor,
-            metadataKeysSettingsInteractor = mockMetadataKeysSettingsInteractor
-        )
-    }
-    single { RuntimeAuthenticatedFlag() }
-    single { SignInIdlingResource() }
-    factory<AuthContract.Presenter> { (authConfig: ActivityIntents.AuthConfig) ->
-        when (authConfig) {
-            is ActivityIntents.AuthConfig.Startup -> signInPresenter()
-            is ActivityIntents.AuthConfig.Setup -> signInPresenter()
-            is ActivityIntents.AuthConfig.ManageAccount -> signInPresenter()
-            is ActivityIntents.AuthConfig.SignIn -> signInPresenter()
-            is ActivityIntents.AuthConfig.RefreshPassphrase -> passphrasePresenter()
-            is ActivityIntents.AuthConfig.Mfa -> passphrasePresenter()
-            is ActivityIntents.AuthConfig.RefreshSession -> refreshSessionPresenter()
+val testAuthModule =
+    module {
+        factory {
+            GetAndVerifyServerKeysAndTimeInteractor(
+                fetchServerPublicPgpKeyUseCase = mockFetchServerPublicPgpKeyUseCase,
+                fetchServerPublicRsaKeyUseCase = mockFetchServerPublicRsaKeyUseCase,
+                getAccountDataUseCase = mockGetAccountDataUseCase,
+                isServerFingerprintCorrectUseCase = mockIsServerFingerprintCorrectUseCase,
+                gopenPgpTimeUpdater = mockGopenPgpTimeUpdater,
+                saveServerPublicRsaKeyUseCase = mockSaveServerPublicRsaKeyUseCase,
+            )
         }
+        factory {
+            SignInVerifyInteractor(
+                getAccountDataUseCase = mockGetAccountDataUseCase,
+                challengeProvider = mockChallengeProvider,
+                getSessionUseCase = mockGetSessionUseCase,
+                signInUseCase = mockSignInUseCase,
+                challengeDecryptor = mockChallengeDecryptor,
+                challengeVerifier = mockChallengeVerifier,
+            )
+        }
+        factory {
+            BiometryInteractor(
+                checkIfPassphraseFileExistsUseCase = mockCheckIfPassphraseExistsUseCase,
+                removeBiometricKeyUseCase = mockRemoveBiometricKeyUseCase,
+                removeAllAccountsPassphrasesUseCase = mockRemoveAllAccountsPassphraseUseCase,
+                fingerprintInfoProvider = mockFingerprintInformationProvider,
+            )
+        }
+        factory {
+            PostSignInActionsInteractor(
+                featureFlagsInteractor = mockFeatureFlagsInteractor,
+                rbacInteractor = mockRbacInteractor,
+                userProfileInteractor = mockProfileInteractor,
+                passwordExpiryPoliciesInteractor = mockPasswordExpiryPoliciesInteractor,
+                passwordPoliciesInteractor = mockPasswordPoliciesInteractor,
+                metadataTypesSettingsInteractor = mockMetadataTypesSettingsInteractor,
+                metadataKeysSettingsInteractor = mockMetadataKeysSettingsInteractor,
+            )
+        }
+        single { RuntimeAuthenticatedFlag() }
+        single { SignInIdlingResource() }
+        factory<AuthContract.Presenter> { (authConfig: ActivityIntents.AuthConfig) ->
+            when (authConfig) {
+                is ActivityIntents.AuthConfig.Startup -> signInPresenter()
+                is ActivityIntents.AuthConfig.Setup -> signInPresenter()
+                is ActivityIntents.AuthConfig.ManageAccount -> signInPresenter()
+                is ActivityIntents.AuthConfig.SignIn -> signInPresenter()
+                is ActivityIntents.AuthConfig.RefreshPassphrase -> passphrasePresenter()
+                is ActivityIntents.AuthConfig.Mfa -> passphrasePresenter()
+                is ActivityIntents.AuthConfig.RefreshSession -> refreshSessionPresenter()
+            }
+        }
+        factoryOf(::TestCoroutineLaunchContext) bind CoroutineLaunchContext::class
     }
-    factoryOf(::TestCoroutineLaunchContext) bind CoroutineLaunchContext::class
-}
 
-private fun Scope.signInPresenter() = SignInPresenter(
-    saveSessionUseCase = mock(),
-    saveSelectedAccountUseCase = mock(),
-    passphraseMemoryCache = mockPassphraseMemoryCache,
-    signOutUseCase = mockSignOutUseCase,
-    saveServerFingerprintUseCase = mockSaveServerFingerprintUseCase,
-    mfaStatusProvider = mockMfaStatusProvider,
-    getAndVerifyServerKeysInteractor = get(),
-    signInVerifyInteractor = get(),
-    inAppReviewInteractor = mockInAppReviewInteractor,
-    biometryInteractor = get(),
-    getAccountDataUseCase = mockGetAccountDataUseCase,
-    biometricCipher = mockBiometricCipher,
-    getPassphraseUseCase = mockGetPassphraseUseCase,
-    getPrivateKeyUseCase = mockPrivateKeyUseCase,
-    verifyPassphraseUseCase = mockVerifyPassphraseUseCase,
-    coroutineLaunchContext = get(),
-    authReasonMapper = authReasonMapper,
-    rootDetector = mockRootDetector,
-    runtimeAuthenticatedFlag = get(),
-    signInIdlingResource = get(),
-    getGlobalPreferencesUseCase = mockGetGlobalPreferencesUseCase,
-    postSignInActionsInteractor = get()
-)
+private fun Scope.signInPresenter() =
+    SignInPresenter(
+        saveSessionUseCase = mock(),
+        saveSelectedAccountUseCase = mock(),
+        passphraseMemoryCache = mockPassphraseMemoryCache,
+        signOutUseCase = mockSignOutUseCase,
+        saveServerFingerprintUseCase = mockSaveServerFingerprintUseCase,
+        mfaStatusProvider = mockMfaStatusProvider,
+        getAndVerifyServerKeysInteractor = get(),
+        signInVerifyInteractor = get(),
+        inAppReviewInteractor = mockInAppReviewInteractor,
+        biometryInteractor = get(),
+        getAccountDataUseCase = mockGetAccountDataUseCase,
+        biometricCipher = mockBiometricCipher,
+        getPassphraseUseCase = mockGetPassphraseUseCase,
+        getPrivateKeyUseCase = mockPrivateKeyUseCase,
+        verifyPassphraseUseCase = mockVerifyPassphraseUseCase,
+        coroutineLaunchContext = get(),
+        authReasonMapper = authReasonMapper,
+        rootDetector = mockRootDetector,
+        runtimeAuthenticatedFlag = get(),
+        signInIdlingResource = get(),
+        getGlobalPreferencesUseCase = mockGetGlobalPreferencesUseCase,
+        postSignInActionsInteractor = get(),
+    )
 
-private fun Scope.passphrasePresenter() = PassphrasePresenter(
-    passphraseMemoryCache = mockPassphraseMemoryCache,
-    getPrivateKeyUseCase = mockPrivateKeyUseCase,
-    verifyPassphraseUseCase = mockVerifyPassphraseUseCase,
-    getAccountDataUseCase = mockGetAccountDataUseCase,
-    coroutineLaunchContext = get(),
-    biometricCipher = mockBiometricCipher,
-    getPassphraseUseCase = mockGetPassphraseUseCase,
-    authReasonMapper = authReasonMapper,
-    rootDetector = mockRootDetector,
-    biometryInteractor = get(),
-    runtimeAuthenticatedFlag = get(),
-    getGlobalPreferencesUseCase = mockGetGlobalPreferencesUseCase
-)
+private fun Scope.passphrasePresenter() =
+    PassphrasePresenter(
+        passphraseMemoryCache = mockPassphraseMemoryCache,
+        getPrivateKeyUseCase = mockPrivateKeyUseCase,
+        verifyPassphraseUseCase = mockVerifyPassphraseUseCase,
+        getAccountDataUseCase = mockGetAccountDataUseCase,
+        coroutineLaunchContext = get(),
+        biometricCipher = mockBiometricCipher,
+        getPassphraseUseCase = mockGetPassphraseUseCase,
+        authReasonMapper = authReasonMapper,
+        rootDetector = mockRootDetector,
+        biometryInteractor = get(),
+        runtimeAuthenticatedFlag = get(),
+        getGlobalPreferencesUseCase = mockGetGlobalPreferencesUseCase,
+    )
 
-private fun Scope.refreshSessionPresenter() = RefreshSessionPresenter(
-    refreshSessionUseCase = mockRefreshSessionUseCase,
-    signInIdlingResource = get(),
-    passphraseMemoryCache = mockPassphraseMemoryCache,
-    saveSessionUseCase = mock(),
-    saveSelectedAccountUseCase = mock(),
-    getAccountDataUseCase = mockGetAccountDataUseCase,
-    signOutUseCase = mockSignOutUseCase,
-    saveServerFingerprintUseCase = mockSaveServerFingerprintUseCase,
-    mfaStatusProvider = mockMfaStatusProvider,
-    biometricCipher = mockBiometricCipher,
-    getPassphraseUseCase = mockGetPassphraseUseCase,
-    getPrivateKeyUseCase = mockPrivateKeyUseCase,
-    verifyPassphraseUseCase = mockVerifyPassphraseUseCase,
-    coroutineLaunchContext = get(),
-    authReasonMapper = authReasonMapper,
-    rootDetector = mockRootDetector,
-    getAndVerifyServerKeysInteractor = get(),
-    signInVerifyInteractor = get(),
-    biometryInteractor = get(),
-    runtimeAuthenticatedFlag = get(),
-    inAppReviewInteractor = mockInAppReviewInteractor,
-    getGlobalPreferencesUseCase = mockGetGlobalPreferencesUseCase,
-    postSignInActionsInteractor = get()
-)
+private fun Scope.refreshSessionPresenter() =
+    RefreshSessionPresenter(
+        refreshSessionUseCase = mockRefreshSessionUseCase,
+        signInIdlingResource = get(),
+        passphraseMemoryCache = mockPassphraseMemoryCache,
+        saveSessionUseCase = mock(),
+        saveSelectedAccountUseCase = mock(),
+        getAccountDataUseCase = mockGetAccountDataUseCase,
+        signOutUseCase = mockSignOutUseCase,
+        saveServerFingerprintUseCase = mockSaveServerFingerprintUseCase,
+        mfaStatusProvider = mockMfaStatusProvider,
+        biometricCipher = mockBiometricCipher,
+        getPassphraseUseCase = mockGetPassphraseUseCase,
+        getPrivateKeyUseCase = mockPrivateKeyUseCase,
+        verifyPassphraseUseCase = mockVerifyPassphraseUseCase,
+        coroutineLaunchContext = get(),
+        authReasonMapper = authReasonMapper,
+        rootDetector = mockRootDetector,
+        getAndVerifyServerKeysInteractor = get(),
+        signInVerifyInteractor = get(),
+        biometryInteractor = get(),
+        runtimeAuthenticatedFlag = get(),
+        inAppReviewInteractor = mockInAppReviewInteractor,
+        getGlobalPreferencesUseCase = mockGetGlobalPreferencesUseCase,
+        postSignInActionsInteractor = get(),
+    )

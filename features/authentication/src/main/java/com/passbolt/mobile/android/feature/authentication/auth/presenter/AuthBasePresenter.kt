@@ -1,3 +1,26 @@
+/**
+ * Passbolt - Open source password manager for teams
+ * Copyright (c) 2021 Passbolt SA
+ *
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
+ * Public License (AGPL) as published by the Free Software Foundation version 3.
+ *
+ * The name "Passbolt" is a registered trademark of Passbolt SA, and Passbolt SA hereby declines to grant a trademark
+ * license to "Passbolt" pursuant to the GNU Affero General Public License version 3 Section 7(e), without a separate
+ * agreement with Passbolt SA.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License along with this program. If not,
+ * see GNU Affero General Public License v3 (http://www.gnu.org/licenses/agpl-3.0.html).
+ *
+ * @copyright Copyright (c) Passbolt SA (https://www.passbolt.com)
+ * @license https://opensource.org/licenses/AGPL-3.0 AGPL License
+ * @link https://www.passbolt.com Passbolt (tm)
+ * @since v1.0
+ */
+
 package com.passbolt.mobile.android.feature.authentication.auth.presenter
 
 import android.security.keystore.KeyPermanentlyInvalidatedException
@@ -30,29 +53,6 @@ import org.koin.core.component.inject
 import timber.log.Timber
 import javax.crypto.Cipher
 
-/**
- * Passbolt - Open source password manager for teams
- * Copyright (c) 2021 Passbolt SA
- *
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
- * Public License (AGPL) as published by the Free Software Foundation version 3.
- *
- * The name "Passbolt" is a registered trademark of Passbolt SA, and Passbolt SA hereby declines to grant a trademark
- * license to "Passbolt" pursuant to the GNU Affero General Public License version 3 Section 7(e), without a separate
- * agreement with Passbolt SA.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License along with this program. If not,
- * see GNU Affero General Public License v3 (http://www.gnu.org/licenses/agpl-3.0.html).
- *
- * @copyright Copyright (c) Passbolt SA (https://www.passbolt.com)
- * @license https://opensource.org/licenses/AGPL-3.0 AGPL License
- * @link https://www.passbolt.com Passbolt (tm)
- * @since v1.0
- */
-
 // base presenter for auth view
 // handles account details display, forgot password dialog, biometry
 abstract class AuthBasePresenter(
@@ -67,9 +67,9 @@ abstract class AuthBasePresenter(
     private val biometryInteractor: BiometryInteractor,
     private val getGlobalPreferencesUseCase: GetGlobalPreferencesUseCase,
     protected val runtimeAuthenticatedFlag: RuntimeAuthenticatedFlag,
-    coroutineLaunchContext: CoroutineLaunchContext
-) : AuthContract.Presenter, KoinComponent {
-
+    coroutineLaunchContext: CoroutineLaunchContext,
+) : AuthContract.Presenter,
+    KoinComponent {
     override var view: AuthContract.View? = null
 
     private val job = SupervisorJob()
@@ -130,7 +130,10 @@ abstract class AuthBasePresenter(
         }
     }
 
-    override fun argsRetrieved(authConfig: ActivityIntents.AuthConfig, userId: String) {
+    override fun argsRetrieved(
+        authConfig: ActivityIntents.AuthConfig,
+        userId: String,
+    ) {
         this.userId = userId
         this.authConfig = authConfig
     }
@@ -146,8 +149,8 @@ abstract class AuthBasePresenter(
                     showLabel(
                         accountData.label ?: AccountModelMapper.defaultLabel(
                             accountData.firstName,
-                            accountData.lastName
-                        )
+                            accountData.lastName,
+                        ),
                     )
                     showDomain(accountData.url)
                 }
@@ -189,9 +192,10 @@ abstract class AuthBasePresenter(
 
     private fun validatePassphrase(passphrase: ByteArray) {
         scope.launch {
-            val privateKey = requireNotNull(
-                getPrivateKeyUseCase.execute(UserIdInput(userId)).privateKey
-            )
+            val privateKey =
+                requireNotNull(
+                    getPrivateKeyUseCase.execute(UserIdInput(userId)).privateKey,
+                )
             val isPassphraseCorrect =
                 verifyPassphraseUseCase.execute(VerifyPassphraseUseCase.Input(privateKey, passphrase)).isCorrect
             if (isPassphraseCorrect) {
@@ -208,9 +212,11 @@ abstract class AuthBasePresenter(
     @CallSuper
     override fun biometricAuthSuccess(authenticatedCipher: Cipher?) {
         authenticatedCipher?.let {
-            val potentialPassphrase = getPassphraseUseCase.execute(
-                GetPassphraseUseCase.Input(userId, authenticatedCipher)
-            ).potentialPassphrase
+            val potentialPassphrase =
+                getPassphraseUseCase
+                    .execute(
+                        GetPassphraseUseCase.Input(userId, authenticatedCipher),
+                    ).potentialPassphrase
             if (potentialPassphrase is PotentialPassphrase.Passphrase) {
                 passphraseMemoryCache.set(potentialPassphrase.passphrase)
             } else {
@@ -227,22 +233,32 @@ abstract class AuthBasePresenter(
         view?.showHelpMenu()
     }
 
-    protected fun mfaRequired(jwtToken: String, mfaProviders: List<String>?) {
+    protected fun mfaRequired(
+        jwtToken: String,
+        mfaProviders: List<String>?,
+    ) {
         mfaProvidersHandler.setProviders(
-            mfaProviders.orEmpty().map { AuthenticationState.Unauthenticated.Reason.Mfa.MfaProvider.parse(it) })
+            mfaProviders.orEmpty().map {
+                AuthenticationState.Unauthenticated.Reason.Mfa.MfaProvider
+                    .parse(it)
+            },
+        )
         when (val provider = mfaProvidersHandler.firstMfaProvider()) {
-            YUBIKEY -> view?.showYubikeyDialog(
-                jwtToken,
-                mfaProvidersHandler.hasMultipleProviders()
-            )
-            TOTP -> view?.showTotpDialog(
-                jwtToken,
-                mfaProvidersHandler.hasMultipleProviders()
-            )
-            DUO -> view?.showDuoDialog(
-                jwtToken,
-                mfaProvidersHandler.hasMultipleProviders()
-            )
+            YUBIKEY ->
+                view?.showYubikeyDialog(
+                    jwtToken,
+                    mfaProvidersHandler.hasMultipleProviders(),
+                )
+            TOTP ->
+                view?.showTotpDialog(
+                    jwtToken,
+                    mfaProvidersHandler.hasMultipleProviders(),
+                )
+            DUO ->
+                view?.showDuoDialog(
+                    jwtToken,
+                    mfaProvidersHandler.hasMultipleProviders(),
+                )
             else -> {
                 view?.showUnknownProvider()
                 Timber.e("Unknown provider: $provider")
@@ -253,7 +269,7 @@ abstract class AuthBasePresenter(
 
     override fun otherProviderClick(
         bearer: String?,
-        currentProvider: AuthenticationState.Unauthenticated.Reason.Mfa.MfaProvider
+        currentProvider: AuthenticationState.Unauthenticated.Reason.Mfa.MfaProvider,
     ) {
         when (mfaProvidersHandler.nextMfaProvider(currentProvider)) {
             YUBIKEY -> view?.showYubikeyDialog(bearer, mfaProvidersHandler.hasMultipleProviders())

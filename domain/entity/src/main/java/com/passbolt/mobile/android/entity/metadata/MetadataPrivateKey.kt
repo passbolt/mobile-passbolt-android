@@ -35,9 +35,9 @@ import java.time.ZonedDateTime
             entity = MetadataKey::class,
             parentColumns = ["id"],
             childColumns = ["metadataKeyId"],
-            onDelete = CASCADE
-        )
-    ]
+            onDelete = CASCADE,
+        ),
+    ],
 )
 data class MetadataPrivateKey(
     @PrimaryKey
@@ -52,5 +52,5 @@ data class MetadataPrivateKey(
     val created: ZonedDateTime,
     val createdBy: String?,
     val domain: String,
-    val fingerprint: String
+    val fingerprint: String,
 )

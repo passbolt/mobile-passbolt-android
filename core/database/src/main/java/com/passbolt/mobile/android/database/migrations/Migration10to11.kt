@@ -28,23 +28,22 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 
 @Suppress("MagicNumber")
 object Migration10to11 : Migration(10, 11) {
-
     private const val CREATE_FOLDER_AND_USERS_CROSS_REF_TABLE =
         "CREATE TABLE IF NOT EXISTS FolderAndUsersCrossRef (" +
-                "`folderId` TEXT NOT NULL, " +
-                "`userId` TEXT NOT NULL, " +
-                "`permission` TEXT NOT NULL, " +
-                "`permissionId` TEXT NOT NULL, " +
-                "PRIMARY KEY(`userId`, `folderId`)" +
-                ")"
+            "`folderId` TEXT NOT NULL, " +
+            "`userId` TEXT NOT NULL, " +
+            "`permission` TEXT NOT NULL, " +
+            "`permissionId` TEXT NOT NULL, " +
+            "PRIMARY KEY(`userId`, `folderId`)" +
+            ")"
     private const val CREATE_FOLDER_AND_GROUPS_CROSS_REF_TABLE =
         "CREATE TABLE IF NOT EXISTS FolderAndGroupsCrossRef (" +
-                "`folderId` TEXT NOT NULL, " +
-                "`groupId` TEXT NOT NULL, " +
-                "`permission` TEXT NOT NULL, " +
-                "`permissionId` TEXT NOT NULL, " +
-                "PRIMARY KEY(`folderId`, `groupId`)" +
-                ")"
+            "`folderId` TEXT NOT NULL, " +
+            "`groupId` TEXT NOT NULL, " +
+            "`permission` TEXT NOT NULL, " +
+            "`permissionId` TEXT NOT NULL, " +
+            "PRIMARY KEY(`folderId`, `groupId`)" +
+            ")"
 
     override fun migrate(db: SupportSQLiteDatabase) {
         with(db) {

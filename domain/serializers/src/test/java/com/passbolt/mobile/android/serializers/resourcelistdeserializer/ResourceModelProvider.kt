@@ -27,70 +27,78 @@ import com.passbolt.mobile.android.dto.response.PermissionDto
 import com.passbolt.mobile.android.dto.response.ResourceResponseV4Dto
 import java.util.UUID
 
-internal fun resourceWithNameOfLength(nameLength: Int, testedResourceTypeUuid: UUID) =
-    ResourceResponseV4Dto(
-        id = UUID.randomUUID(),
-        resourceTypeId = testedResourceTypeUuid,
-        description = null,
-        resourceFolderId = null,
-        name = (0..(nameLength)).joinToString { "a" },
-        uri = null,
-        username = null,
-        permission = PermissionDto(UUID.randomUUID(), 1, "", UUID.randomUUID(), "", UUID.randomUUID(), "", ""),
-        favorite = null,
-        modified = "",
-        tags = emptyList(),
-        permissions = emptyList(),
-        expired = null
-    )
+internal fun resourceWithNameOfLength(
+    nameLength: Int,
+    testedResourceTypeUuid: UUID,
+) = ResourceResponseV4Dto(
+    id = UUID.randomUUID(),
+    resourceTypeId = testedResourceTypeUuid,
+    description = null,
+    resourceFolderId = null,
+    name = (0..(nameLength)).joinToString { "a" },
+    uri = null,
+    username = null,
+    permission = PermissionDto(UUID.randomUUID(), 1, "", UUID.randomUUID(), "", UUID.randomUUID(), "", ""),
+    favorite = null,
+    modified = "",
+    tags = emptyList(),
+    permissions = emptyList(),
+    expired = null,
+)
 
-internal fun resourceWithUriOfLength(uriLength: Int, testedResourceTypeUuid: UUID) =
-    ResourceResponseV4Dto(
-        id = UUID.randomUUID(),
-        resourceTypeId = testedResourceTypeUuid,
-        description = null,
-        resourceFolderId = null,
-        name = "",
-        uri = (0..(uriLength)).joinToString { "a" },
-        username = null,
-        permission = PermissionDto(UUID.randomUUID(), 1, "", UUID.randomUUID(), "", UUID.randomUUID(), "", ""),
-        favorite = null,
-        modified = "",
-        tags = emptyList(),
-        permissions = emptyList(),
-        expired = null
-    )
+internal fun resourceWithUriOfLength(
+    uriLength: Int,
+    testedResourceTypeUuid: UUID,
+) = ResourceResponseV4Dto(
+    id = UUID.randomUUID(),
+    resourceTypeId = testedResourceTypeUuid,
+    description = null,
+    resourceFolderId = null,
+    name = "",
+    uri = (0..(uriLength)).joinToString { "a" },
+    username = null,
+    permission = PermissionDto(UUID.randomUUID(), 1, "", UUID.randomUUID(), "", UUID.randomUUID(), "", ""),
+    favorite = null,
+    modified = "",
+    tags = emptyList(),
+    permissions = emptyList(),
+    expired = null,
+)
 
-internal fun resourceWithDescriptionOfLength(descriptionLength: Int, testedResourceTypeUuid: UUID) =
-    ResourceResponseV4Dto(
-        id = UUID.randomUUID(),
-        resourceTypeId = testedResourceTypeUuid,
-        description = (0..(descriptionLength)).joinToString { "a" },
-        resourceFolderId = null,
-        name = "",
-        uri = null,
-        username = null,
-        permission = PermissionDto(UUID.randomUUID(), 1, "", UUID.randomUUID(), "", UUID.randomUUID(), "", ""),
-        favorite = null,
-        modified = "",
-        tags = emptyList(),
-        permissions = emptyList(),
-        expired = null
-    )
+internal fun resourceWithDescriptionOfLength(
+    descriptionLength: Int,
+    testedResourceTypeUuid: UUID,
+) = ResourceResponseV4Dto(
+    id = UUID.randomUUID(),
+    resourceTypeId = testedResourceTypeUuid,
+    description = (0..(descriptionLength)).joinToString { "a" },
+    resourceFolderId = null,
+    name = "",
+    uri = null,
+    username = null,
+    permission = PermissionDto(UUID.randomUUID(), 1, "", UUID.randomUUID(), "", UUID.randomUUID(), "", ""),
+    favorite = null,
+    modified = "",
+    tags = emptyList(),
+    permissions = emptyList(),
+    expired = null,
+)
 
-internal fun resourceWithUsernameOfLength(usernameLength: Int, testedResourceTypeUuid: UUID) =
-    ResourceResponseV4Dto(
-        id = UUID.randomUUID(),
-        resourceTypeId = testedResourceTypeUuid,
-        description = null,
-        resourceFolderId = null,
-        name = "",
-        uri = null,
-        username = (0..(usernameLength)).joinToString { "a" },
-        permission = PermissionDto(UUID.randomUUID(), 1, "", UUID.randomUUID(), "", UUID.randomUUID(), "", ""),
-        favorite = null,
-        modified = "",
-        tags = emptyList(),
-        permissions = emptyList(),
-        expired = null
-    )
+internal fun resourceWithUsernameOfLength(
+    usernameLength: Int,
+    testedResourceTypeUuid: UUID,
+) = ResourceResponseV4Dto(
+    id = UUID.randomUUID(),
+    resourceTypeId = testedResourceTypeUuid,
+    description = null,
+    resourceFolderId = null,
+    name = "",
+    uri = null,
+    username = (0..(usernameLength)).joinToString { "a" },
+    permission = PermissionDto(UUID.randomUUID(), 1, "", UUID.randomUUID(), "", UUID.randomUUID(), "", ""),
+    favorite = null,
+    modified = "",
+    tags = emptyList(),
+    permissions = emptyList(),
+    expired = null,
+)

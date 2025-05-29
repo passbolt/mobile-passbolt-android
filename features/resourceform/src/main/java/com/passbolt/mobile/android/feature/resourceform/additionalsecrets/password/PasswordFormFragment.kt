@@ -41,15 +41,18 @@ import com.passbolt.mobile.android.core.localization.R as LocalizationR
  */
 class PasswordFormFragment :
     BindingScopedFragment<FragmentPasswordFormBinding>(
-        FragmentPasswordFormBinding::inflate
-    ), PasswordFormContract.View {
-
+        FragmentPasswordFormBinding::inflate,
+    ),
+    PasswordFormContract.View {
     private val presenter: PasswordFormContract.Presenter by inject()
     private val navArgs: PasswordFormFragmentArgs by navArgs()
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
-        initDefaultToolbar(binding.toolbar)
+        initDefaultToolbar(requiredBinding.toolbar)
         setListeners()
         presenter.attach(this)
         presenter.argsRetrieved(navArgs.mode, navArgs.passwordModel)
@@ -61,15 +64,15 @@ class PasswordFormFragment :
     }
 
     override fun showCreateTitle() {
-        binding.toolbar.toolbarTitle = getString(LocalizationR.string.resource_form_create_password)
+        requiredBinding.toolbar.toolbarTitle = getString(LocalizationR.string.resource_form_create_password)
     }
 
     override fun showEditTitle(resourceName: String) {
-        binding.toolbar.toolbarTitle = getString(LocalizationR.string.resource_form_edit_resource, resourceName)
+        requiredBinding.toolbar.toolbarTitle = getString(LocalizationR.string.resource_form_edit_resource, resourceName)
     }
 
     private fun setListeners() {
-        with(binding) {
+        with(requiredBinding) {
             passwordSubformView.mainUriInput.apply {
                 setTextChangeListener { presenter.passwordMainUriTextChanged(it) }
             }
@@ -87,28 +90,35 @@ class PasswordFormFragment :
     }
 
     override fun showPasswordUsername(username: String) {
-        binding.passwordSubformView.usernameInput.text = username
+        requiredBinding.passwordSubformView.usernameInput.text = username
     }
 
     override fun showPasswordMainUri(mainUri: String) {
-        binding.passwordSubformView.mainUriInput.text = mainUri
+        requiredBinding.passwordSubformView.mainUriInput.text = mainUri
     }
 
-    override fun showPassword(password: List<Codepoint>, entropy: Double, passwordStrength: PasswordStrength) {
+    override fun showPassword(
+        password: List<Codepoint>,
+        entropy: Double,
+        passwordStrength: PasswordStrength,
+    ) {
         val passwordStringBuilder = StringBuilder()
         password.forEach {
             passwordStringBuilder.append(Character.toChars(it.value))
         }
 
-        binding.passwordSubformView.passwordGenerateInput.showPassword(
+        requiredBinding.passwordSubformView.passwordGenerateInput.showPassword(
             passwordStringBuilder.toString(),
             passwordStrength,
-            entropy
+            entropy,
         )
     }
 
-    override fun showPasswordStrength(passwordStrength: PasswordStrength, entropy: Double) {
-        binding.passwordSubformView.passwordGenerateInput.setPasswordStrength(passwordStrength, entropy)
+    override fun showPasswordStrength(
+        passwordStrength: PasswordStrength,
+        entropy: Double,
+    ) {
+        requiredBinding.passwordSubformView.passwordGenerateInput.setPasswordStrength(passwordStrength, entropy)
     }
 
     override fun showUnableToGeneratePassword(minimumEntropyBits: Int) {
@@ -118,7 +128,7 @@ class PasswordFormFragment :
     override fun goBackWithResult(password: PasswordUiModel) {
         setFragmentResult(
             REQUEST_PASSWORD,
-            bundleOf(EXTRA_PASSWORD to password)
+            bundleOf(EXTRA_PASSWORD to password),
         )
         findNavController().popBackStack()
     }

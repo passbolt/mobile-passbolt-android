@@ -42,10 +42,9 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 class ResourceMoreMenuFragment :
     BindingScopedAuthenticatedBottomSheetFragment<ViewPasswordBottomsheetBinding, ResourceMoreMenuContract.View>(
-        ViewPasswordBottomsheetBinding::inflate
+        ViewPasswordBottomsheetBinding::inflate,
     ),
     ResourceMoreMenuContract.View {
-
     override val presenter: ResourceMoreMenuContract.Presenter by inject()
     private var listener: Listener? = null
     private val resourceId: String by lifecycleAwareLazy {
@@ -55,7 +54,10 @@ class ResourceMoreMenuFragment :
         requireNotNull(requireArguments().getString(EXTRA_RESOURCE_NAME))
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         showTitle(initialResourceName)
         setListeners()
@@ -65,11 +67,12 @@ class ResourceMoreMenuFragment :
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        listener = when {
-            activity is Listener -> activity as Listener
-            parentFragment is Listener -> parentFragment as Listener
-            else -> error("Parent must implement ${Listener::class.java.name}")
-        }
+        listener =
+            when {
+                activity is Listener -> activity as Listener
+                parentFragment is Listener -> parentFragment as Listener
+                else -> error("Parent must implement ${Listener::class.java.name}")
+            }
     }
 
     override fun onResume() {
@@ -90,7 +93,7 @@ class ResourceMoreMenuFragment :
     }
 
     private fun setListeners() {
-        with(binding) {
+        with(requiredBinding) {
             setDebouncingOnClickAndDismiss(copyPassword) { listener?.menuCopyPasswordClick() }
             setDebouncingOnClickAndDismiss(copyMetadataDescription) { listener?.menuCopyMetadataDescriptionClick() }
             setDebouncingOnClickAndDismiss(copyNote) { listener?.menuCopyNoteClick() }
@@ -111,61 +114,61 @@ class ResourceMoreMenuFragment :
     }
 
     override fun showAddToFavouritesButton() {
-        with(binding.favourite) {
+        with(requiredBinding.favourite) {
             visible()
             text = getString(LocalizationR.string.more_add_to_favourite)
             setCompoundDrawablesRelativeWithIntrinsicBounds(
                 ContextCompat.getDrawable(requireContext(), CoreUiR.drawable.ic_add_to_favourite),
                 null,
                 null,
-                null
+                null,
             )
         }
     }
 
     override fun showRemoveFromFavouritesButton() {
-        with(binding.favourite) {
+        with(requiredBinding.favourite) {
             visible()
             text = getString(LocalizationR.string.more_remove_from_favourite)
             setCompoundDrawablesRelativeWithIntrinsicBounds(
                 ContextCompat.getDrawable(requireContext(), CoreUiR.drawable.ic_remove_favourite),
                 null,
                 null,
-                null
+                null,
             )
         }
     }
 
     override fun showTitle(title: String) {
-        binding.title.text = title
+        requiredBinding.title.text = title
     }
 
     override fun showSeparator() {
-        binding.separator.visible()
+        requiredBinding.separator.visible()
     }
 
     override fun showDeleteButton() {
-        binding.delete.visible()
+        requiredBinding.delete.visible()
     }
 
     override fun showEditButton() {
-        binding.edit.visible()
+        requiredBinding.edit.visible()
     }
 
     override fun showShareButton() {
-        binding.share.visible()
+        requiredBinding.share.visible()
     }
 
     override fun showCopyButton() {
-        binding.copyPassword.visible()
+        requiredBinding.copyPassword.visible()
     }
 
     override fun showCopyNoteButton() {
-        binding.copyNote.visible()
+        requiredBinding.copyNote.visible()
     }
 
     override fun showCopyMetadataDescriptionButton() {
-        binding.copyMetadataDescription.visible()
+        requiredBinding.copyMetadataDescription.visible()
     }
 
     override fun hideMenu() {
@@ -183,7 +186,7 @@ class ResourceMoreMenuFragment :
     override fun showRefreshFailure() {
         showSnackbar(
             messageResId = LocalizationR.string.common_data_refresh_error,
-            backgroundColor = CoreUiR.color.red
+            backgroundColor = CoreUiR.color.red,
         )
     }
 
@@ -191,26 +194,39 @@ class ResourceMoreMenuFragment :
         private const val EXTRA_RESOURCE_ID = "RESOURCE_ID"
         private const val EXTRA_RESOURCE_NAME = "RESOURCE_NAME"
 
-        fun newInstance(resourceId: String, resourceName: String) =
-            ResourceMoreMenuFragment().apply {
-                arguments = bundleOf(
+        fun newInstance(
+            resourceId: String,
+            resourceName: String,
+        ) = ResourceMoreMenuFragment().apply {
+            arguments =
+                bundleOf(
                     EXTRA_RESOURCE_ID to resourceId,
-                    EXTRA_RESOURCE_NAME to resourceName
+                    EXTRA_RESOURCE_NAME to resourceName,
                 )
-            }
+        }
     }
 
     interface Listener {
         fun menuCopyPasswordClick()
+
         fun menuCopyMetadataDescriptionClick()
+
         fun menuCopyNoteClick()
+
         fun menuCopyUrlClick()
+
         fun menuCopyUsernameClick()
+
         fun menuLaunchWebsiteClick()
+
         fun menuDeleteClick()
+
         fun menuEditClick()
+
         fun menuShareClick()
+
         fun menuFavouriteClick(option: ResourceMoreMenuModel.FavouriteOption)
+
         fun resourceMoreMenuDismissed()
     }
 }

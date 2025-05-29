@@ -35,11 +35,11 @@ import kotlin.math.ln
 
 class EntropyCalculator(
     private val dice: Dice,
-    private val coroutineLaunchContext: CoroutineLaunchContext
+    private val coroutineLaunchContext: CoroutineLaunchContext,
 ) {
     suspend fun getPasswordEntropy(
         password: List<Codepoint>,
-        alphabets: Set<CodepointSet>
+        alphabets: Set<CodepointSet>,
     ): Double =
         if (password.isEmpty() || alphabets.isEmpty()) {
             0.0
@@ -62,29 +62,33 @@ class EntropyCalculator(
                     Double.NEGATIVE_INFINITY
                 } else {
                     password.size.toDouble() * (
-                            ln(usedKnownAlphabet.size.toDouble() + usedUnknownAlphabet.size.toDouble()) /
-                                    ln(2.0)
-                            )
+                        ln(usedKnownAlphabet.size.toDouble() + usedUnknownAlphabet.size.toDouble()) /
+                            ln(2.0)
+                    )
                 }
             }
         }
 
-    suspend fun getPassphraseEntropy(passphraseWordCount: Int, separator: String): Double =
+    suspend fun getPassphraseEntropy(
+        passphraseWordCount: Int,
+        separator: String,
+    ): Double =
         withContext(coroutineLaunchContext.io) {
             dice.apply {
                 initialize()
                 isInitializedFlow.takeWhile { !it }
             }
-            val passphraseEntropy = passphraseWordCount.toDouble() * (
+            val passphraseEntropy =
+                passphraseWordCount.toDouble() * (
                     ln(dice.dictionarySize.toDouble() * WORD_CASE_NUMBER) /
-                            ln(2.0)
-                    )
+                        ln(2.0)
+                )
             val separatorEntropy = getPasswordEntropy(separator.toCodepoints(), Alphabets.all.values.toSet())
             passphraseEntropy + if (separatorEntropy > 0) separatorEntropy else 0.0
         }
 
-    suspend fun getSecretEntropy(secret: String): Double {
-        return withContext(coroutineLaunchContext.io) {
+    suspend fun getSecretEntropy(secret: String): Double =
+        withContext(coroutineLaunchContext.io) {
             var diceWordsCount = 0
             var secretCopy = secret
             dice.apply {
@@ -114,7 +118,6 @@ class EntropyCalculator(
                 }
             }
         }
-    }
 
     private companion object {
         private const val WORD_CASE_NUMBER = 3 // upper case, lower case, camel case

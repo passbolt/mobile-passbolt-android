@@ -34,12 +34,11 @@ import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 class SetupBiometricCallback(
     private val authError: (Int) -> Unit,
-    private val authSucceeded: (Cipher?) -> Unit
+    private val authSucceeded: (Cipher?) -> Unit,
 ) : BiometricPrompt.AuthenticationCallback() {
-
     override fun onAuthenticationError(
         errorCode: Int,
-        errString: CharSequence
+        errString: CharSequence,
     ) {
         super.onAuthenticationError(errorCode, errString)
         handleError(errorCode)

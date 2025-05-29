@@ -82,10 +82,12 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
 @Suppress("TooManyFunctions")
 class OtpFragment :
     BindingScopedAuthenticatedFragment<FragmentOtpBinding, OtpContract.View>(FragmentOtpBinding::inflate),
-    OtpContract.View, SwitchAccountBottomSheetFragment.Listener, OtpMoreMenuFragment.Listener,
-    CreateResourceMenuFragment.Listener, NewMetadataKeyTrustDialog.Listener,
+    OtpContract.View,
+    SwitchAccountBottomSheetFragment.Listener,
+    OtpMoreMenuFragment.Listener,
+    CreateResourceMenuFragment.Listener,
+    NewMetadataKeyTrustDialog.Listener,
     NewTrustedMetadataKeyDeletedDialog.Listener {
-
     override val presenter: OtpContract.Presenter by inject()
     private val otpAdapter: ItemAdapter<OtpItem> by inject()
     private val fastAdapter: FastAdapter<GenericItem> by inject()
@@ -105,7 +107,7 @@ class OtpFragment :
     private val otpScanQrReturned = { _: String, result: Bundle ->
         presenter.otpQrScanReturned(
             result.getBoolean(ScanOtpSuccessFragment.EXTRA_OTP_CREATED, false),
-            result.getBoolean(ScanOtpFragment.EXTRA_MANUAL_CREATION_CHOSEN)
+            result.getBoolean(ScanOtpFragment.EXTRA_MANUAL_CREATION_CHOSEN),
         )
     }
 
@@ -113,11 +115,14 @@ class OtpFragment :
         presenter.resourceFormReturned(
             result.getBoolean(ResourceFormFragment.EXTRA_RESOURCE_CREATED, false),
             result.getBoolean(ResourceFormFragment.EXTRA_RESOURCE_EDITED, false),
-            result.getString(ResourceFormFragment.EXTRA_RESOURCE_NAME)
+            result.getString(ResourceFormFragment.EXTRA_RESOURCE_NAME),
         )
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         setUpRecycler()
         setupListeners()
@@ -144,14 +149,13 @@ class OtpFragment :
     }
 
     override fun createPasswordClick() {
-
         findNavController().navigate(
             OtpFragmentDirections.actionHomeToResourceForm(
                 ResourceFormMode.Create(
                     LeadingContentType.PASSWORD,
-                    parentFolderId = null
-                )
-            )
+                    parentFolderId = null,
+                ),
+            ),
         )
     }
 
@@ -160,9 +164,9 @@ class OtpFragment :
             OtpFragmentDirections.actionHomeToResourceForm(
                 ResourceFormMode.Create(
                     LeadingContentType.TOTP,
-                    parentFolderId = null
-                )
-            )
+                    parentFolderId = null,
+                ),
+            ),
         )
     }
 
@@ -170,10 +174,10 @@ class OtpFragment :
         fastAdapter.addEventHooks(
             listOf(
                 OtpItem.ItemClick { presenter.otpItemClick(it) },
-                OtpItem.ItemMoreClick { presenter.otpItemMoreClick(it) }
-            )
+                OtpItem.ItemMoreClick { presenter.otpItemMoreClick(it) },
+            ),
         )
-        with(binding.recyclerView) {
+        with(requiredBinding.recyclerView) {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = fastAdapter
             itemAnimator = null
@@ -181,7 +185,7 @@ class OtpFragment :
     }
 
     private fun setupListeners() {
-        with(binding) {
+        with(requiredBinding) {
             swipeRefresh.setOnRefreshListener {
                 presenter.refreshClick()
             }
@@ -198,25 +202,26 @@ class OtpFragment :
     private fun setFragmentResultListeners() {
         setFragmentResultListener(
             ScanOtpFragment.REQUEST_SCAN_OTP_FOR_RESULT,
-            otpScanQrReturned
+            otpScanQrReturned,
         )
         setFragmentResultListener(
             ResourceFormFragment.REQUEST_RESOURCE_FORM,
-            resourceFormReturned
+            resourceFormReturned,
         )
     }
 
     private fun showCreateResourceMenu() {
-        CreateResourceMenuFragment.newInstance(homeDisplayViewModel = null)
+        CreateResourceMenuFragment
+            .newInstance(homeDisplayViewModel = null)
             .show(childFragmentManager, CreateResourceMenuFragment::class.java.name)
     }
 
     override fun hideRefreshProgress() {
-        binding.swipeRefresh.isRefreshing = false
+        requiredBinding.swipeRefresh.isRefreshing = false
     }
 
     override fun showRefreshProgress() {
-        binding.swipeRefresh.isRefreshing = true
+        requiredBinding.swipeRefresh.isRefreshing = true
     }
 
     override fun showOtpList(otpList: List<OtpItemWrapper>) {
@@ -225,42 +230,48 @@ class OtpFragment :
     }
 
     override fun showEmptyView() {
-        binding.emptyListContainer.visible()
+        requiredBinding.emptyListContainer.visible()
     }
 
     override fun hideEmptyView() {
-        binding.emptyListContainer.gone()
+        requiredBinding.emptyListContainer.gone()
     }
 
     override fun displaySearchAvatar(avatarUrl: String?) {
-        val request = ImageRequest.Builder(requireContext())
-            .data(avatarUrl)
-            .transformations(CircleCropTransformation())
-            .size(AVATAR_SIZE, AVATAR_SIZE)
-            .placeholder(CoreUiR.drawable.ic_avatar_placeholder)
-            .target(
-                onError = {
-                    binding.searchTextInput.setSearchEndIconWithListener(
-                        ContextCompat.getDrawable(requireContext(), CoreUiR.drawable.ic_avatar_placeholder)!!,
-                        presenter::searchAvatarClick
-                    )
-                },
-                onSuccess = {
-                    binding.searchTextInput.setSearchEndIconWithListener(it, presenter::searchAvatarClick)
-                }
-            )
-            .build()
+        val request =
+            ImageRequest
+                .Builder(requireContext())
+                .data(avatarUrl)
+                .transformations(CircleCropTransformation())
+                .size(AVATAR_SIZE, AVATAR_SIZE)
+                .placeholder(CoreUiR.drawable.ic_avatar_placeholder)
+                .target(
+                    onError = {
+                        requiredBinding.searchTextInput.setSearchEndIconWithListener(
+                            ContextCompat.getDrawable(requireContext(), CoreUiR.drawable.ic_avatar_placeholder)!!,
+                            presenter::searchAvatarClick,
+                        )
+                    },
+                    onSuccess = {
+                        requiredBinding.searchTextInput.setSearchEndIconWithListener(it, presenter::searchAvatarClick)
+                    },
+                ).build()
         imageLoader.enqueue(request)
     }
 
     override fun navigateToSwitchAccount(appContext: AppContext) {
-        SwitchAccountBottomSheetFragment.newInstance(appContext)
+        SwitchAccountBottomSheetFragment
+            .newInstance(appContext)
             .show(childFragmentManager, SwitchAccountBottomSheetFragment::class.java.name)
     }
 
-    override fun showOtmMoreMenu(resourceId: String, resourceName: String) {
+    override fun showOtmMoreMenu(
+        resourceId: String,
+        resourceName: String,
+    ) {
         presenter.pause()
-        OtpMoreMenuFragment.newInstance(resourceId, resourceName, true)
+        OtpMoreMenuFragment
+            .newInstance(resourceId, resourceName, true)
             .show(childFragmentManager, OtpMoreMenuFragment::class.java.name)
     }
 
@@ -276,8 +287,8 @@ class OtpFragment :
         authenticationResult.launch(
             ActivityIntents.authentication(
                 requireContext(),
-                ActivityIntents.AuthConfig.ManageAccount
-            )
+                ActivityIntents.AuthConfig.ManageAccount,
+            ),
         )
     }
 
@@ -290,8 +301,8 @@ class OtpFragment :
             ActivityIntents.authentication(
                 requireContext(),
                 ActivityIntents.AuthConfig.Startup,
-                appContext
-            )
+                appContext,
+            ),
         )
     }
 
@@ -300,14 +311,14 @@ class OtpFragment :
     }
 
     override fun displaySearchClearIcon() {
-        binding.searchTextInput.setSearchEndIconWithListener(
+        requiredBinding.searchTextInput.setSearchEndIconWithListener(
             ContextCompat.getDrawable(requireContext(), CoreUiR.drawable.ic_close)!!,
-            presenter::searchClearClick
+            presenter::searchClearClick,
         )
     }
 
     override fun clearSearchInput() {
-        binding.searchEditText.setText("")
+        requiredBinding.searchEditText.setText("")
     }
 
     override fun menuCopyOtpClick() {
@@ -322,13 +333,17 @@ class OtpFragment :
         showSnackbar(LocalizationR.string.otp_deleted)
     }
 
-    override fun copySecretToClipBoard(label: String, value: String) {
+    override fun copySecretToClipBoard(
+        label: String,
+        value: String,
+    ) {
         clipboardManager?.setPrimaryClip(
             ClipData.newPlainText(label, value).apply {
-                description.extras = PersistableBundle().apply {
-                    putBoolean(ClipDescription.EXTRA_IS_SENSITIVE, true)
-                }
-            }
+                description.extras =
+                    PersistableBundle().apply {
+                        putBoolean(ClipDescription.EXTRA_IS_SENSITIVE, true)
+                    }
+            },
         )
         Toast.makeText(requireContext(), getString(LocalizationR.string.copied_info, label), Toast.LENGTH_SHORT).show()
     }
@@ -373,7 +388,7 @@ class OtpFragment :
 
     override fun navigateToScanOtpCodeForResult() {
         findNavController().navigate(
-            OtpFragmentDirections.actionOtpFragmentToScanOtpFragment(ScanOtpMode.SCAN_WITH_SUCCESS_SCREEN)
+            OtpFragmentDirections.actionOtpFragmentToScanOtpFragment(ScanOtpMode.SCAN_WITH_SUCCESS_SCREEN),
         )
     }
 
@@ -384,14 +399,14 @@ class OtpFragment :
     override fun showEncryptionError(message: String) {
         showSnackbar(
             messageResId = LocalizationR.string.common_encryption_failure,
-            backgroundColor = CoreUiR.color.red
+            backgroundColor = CoreUiR.color.red,
         )
     }
 
     override fun showError(message: String) {
         showSnackbar(
             getString(LocalizationR.string.common_failure_format, message),
-            backgroundColor = CoreUiR.color.red
+            backgroundColor = CoreUiR.color.red,
         )
     }
 
@@ -399,29 +414,29 @@ class OtpFragment :
         showSnackbar(
             messageResId = R.string.common_data_refresh_error,
             backgroundColor = CoreUiR.color.red,
-            length = Snackbar.LENGTH_LONG
+            length = Snackbar.LENGTH_LONG,
         )
     }
 
     override fun showCreateButton() {
-        binding.createResourceFab.visible()
+        this@OtpFragment.requiredBinding.createResourceFab.visible()
     }
 
     override fun hideCreateButton() {
-        binding.createResourceFab.gone()
+        requiredBinding.createResourceFab.gone()
     }
 
     override fun showJsonResourceSchemaValidationError() {
         showSnackbar(
             LocalizationR.string.common_json_schema_resource_validation_error,
-            backgroundColor = CoreUiR.color.red
+            backgroundColor = CoreUiR.color.red,
         )
     }
 
     override fun showJsonSecretSchemaValidationError() {
         showSnackbar(
             LocalizationR.string.common_json_schema_secret_validation_error,
-            backgroundColor = CoreUiR.color.red
+            backgroundColor = CoreUiR.color.red,
         )
     }
 
@@ -434,9 +449,9 @@ class OtpFragment :
             HomeFragmentDirections.actionHomeToResourceForm(
                 ResourceFormMode.Edit(
                     resourceModel.resourceId,
-                    resourceModel.metadataJsonModel.name
-                )
-            )
+                    resourceModel.metadataJsonModel.name,
+                ),
+            ),
         )
     }
 
@@ -447,7 +462,7 @@ class OtpFragment :
     override fun showResourceCreatedSnackbar() {
         showSnackbar(
             LocalizationR.string.resource_form_create_success,
-            backgroundColor = CoreUiR.color.green
+            backgroundColor = CoreUiR.color.green,
         )
     }
 
@@ -455,31 +470,33 @@ class OtpFragment :
         showSnackbar(
             messageResId = LocalizationR.string.common_message_resource_edited,
             messageArgs = arrayOf(resourceName),
-            backgroundColor = CoreUiR.color.green
+            backgroundColor = CoreUiR.color.green,
         )
     }
 
     override fun showCannotUpdateTotpWithCurrentConfig() {
         showSnackbar(
             messageResId = LocalizationR.string.common_cannot_create_resource_with_current_config,
-            backgroundColor = CoreUiR.color.red
+            backgroundColor = CoreUiR.color.red,
         )
     }
 
     override fun showMetadataKeyModifiedDialog(model: NewMetadataKeyToTrustModel) {
-        NewMetadataKeyTrustDialog.newInstance(model)
+        NewMetadataKeyTrustDialog
+            .newInstance(model)
             .show(childFragmentManager, NewMetadataKeyTrustDialog::class.java.name)
     }
 
     override fun showMetadataKeyDeletedDialog(model: TrustedKeyDeletedModel) {
-        NewTrustedMetadataKeyDeletedDialog.newInstance(model)
+        NewTrustedMetadataKeyDeletedDialog
+            .newInstance(model)
             .show(childFragmentManager, NewTrustedMetadataKeyDeletedDialog::class.java.name)
     }
 
     override fun showFailedToVerifyMetadataKey() {
         showSnackbar(
             messageResId = LocalizationR.string.common_metadata_key_verification_failure,
-            backgroundColor = CoreUiR.color.red
+            backgroundColor = CoreUiR.color.red,
         )
     }
 
@@ -494,14 +511,14 @@ class OtpFragment :
     override fun showNewMetadataKeyIsTrusted() {
         showSnackbar(
             messageResId = LocalizationR.string.common_metadata_key_is_trusted,
-            backgroundColor = CoreUiR.color.green
+            backgroundColor = CoreUiR.color.green,
         )
     }
 
     override fun showFailedToTrustMetadataKey() {
         showSnackbar(
             messageResId = LocalizationR.string.common_metadata_key_trust_failed,
-            backgroundColor = CoreUiR.color.red
+            backgroundColor = CoreUiR.color.red,
         )
     }
 

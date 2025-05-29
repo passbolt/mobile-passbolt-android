@@ -57,9 +57,9 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 class CreateFolderFragment :
     BindingScopedAuthenticatedFragment<FragmentCreateFolderBinding, CreateFolderContract.View>(
-        FragmentCreateFolderBinding::inflate
-    ), CreateFolderContract.View {
-
+        FragmentCreateFolderBinding::inflate,
+    ),
+    CreateFolderContract.View {
     override val presenter: CreateFolderContract.Presenter by inject()
     private val args: CreateFolderFragmentArgs by navArgs()
     private val groupPermissionsItemAdapter: ItemAdapter<GroupItem> by inject(named(GROUP_ITEM_ADAPTER))
@@ -68,53 +68,58 @@ class CreateFolderFragment :
     private val fastAdapter: FastAdapter<GenericItem> by inject()
     private val sharedWithDecorator: OverlappingItemDecorator by inject()
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
-        initDefaultToolbar(binding.toolbar)
+        initDefaultToolbar(requiredBinding.toolbar)
         initSharedWithRecycler()
         setListeners()
         presenter.attach(this)
-        binding.sharedWithRecycler.doOnLayout {
-            binding.sharedWithRecycler.addItemDecoration(sharedWithDecorator)
+        requiredBinding.sharedWithRecycler.doOnLayout {
+            requiredBinding.sharedWithRecycler.addItemDecoration(sharedWithDecorator)
             presenter.argsRetrieved(
                 args.parentFolderId,
                 it.width,
-                resources.getDimension(CoreUiR.dimen.dp_40)
+                resources.getDimension(CoreUiR.dimen.dp_40),
             )
         }
     }
 
     private fun setListeners() {
-        with(binding) {
+        with(requiredBinding) {
             folderNameInput.setTextChangeListener { presenter.folderNameChanged(it) }
             saveButton.setDebouncingOnClick { presenter.saveClick() }
         }
     }
 
     private fun initSharedWithRecycler() {
-        with(binding.sharedWithRecycler) {
-            layoutManager = object : LinearLayoutManager(context, HORIZONTAL, false) {
-                override fun canScrollHorizontally() = false
-            }
+        with(requiredBinding.sharedWithRecycler) {
+            layoutManager =
+                object : LinearLayoutManager(context, HORIZONTAL, false) {
+                    override fun canScrollHorizontally() = false
+                }
             adapter = fastAdapter
         }
     }
 
     override fun showFolderLocation(parentFolders: List<String>) {
-        binding.locationValue.text = parentFolders.let {
-            val mutable = it.toMutableList()
-            mutable.add(0, getString(LocalizationR.string.folder_root))
-            mutable.joinToString(
-                separator = " %s ".format(getString(LocalizationR.string.folder_details_location_separator))
-            )
-        }
+        requiredBinding.locationValue.text =
+            parentFolders.let {
+                val mutable = it.toMutableList()
+                mutable.add(0, getString(LocalizationR.string.folder_root))
+                mutable.joinToString(
+                    separator = " %s ".format(getString(LocalizationR.string.folder_details_location_separator)),
+                )
+            }
     }
 
     override fun showPermissions(
         groupPermissions: List<PermissionModelUi.GroupPermissionModel>,
         userPermissions: List<PermissionModelUi.UserPermissionModel>,
         counterValue: List<String>,
-        overlap: Int
+        overlap: Int,
     ) {
         sharedWithDecorator.overlap = Overlap(left = overlap)
         FastAdapterDiffUtil.calculateDiff(groupPermissionsItemAdapter, groupPermissions.map { GroupItem(it) })
@@ -124,15 +129,15 @@ class CreateFolderFragment :
     }
 
     override fun showFolderNameLenghtValidationError(folderNameMaxLength: Int) {
-        binding.folderNameInput.setState(
+        requiredBinding.folderNameInput.setState(
             StatefulInput.State.Error(
-                getString(LocalizationR.string.validation_required_with_max_length, folderNameMaxLength)
-            )
+                getString(LocalizationR.string.validation_required_with_max_length, folderNameMaxLength),
+            ),
         )
     }
 
     override fun clearValidationErrors() {
-        binding.folderNameInput.setState(StatefulInput.State.Default)
+        requiredBinding.folderNameInput.setState(StatefulInput.State.Default)
     }
 
     override fun showProgress() {
@@ -148,7 +153,7 @@ class CreateFolderFragment :
             messageResId = LocalizationR.string.create_folder_error_format,
             messageArgs = arrayOf(errorMessage),
             backgroundColor = CoreUiR.color.red,
-            length = Snackbar.LENGTH_LONG
+            length = Snackbar.LENGTH_LONG,
         )
     }
 
@@ -157,14 +162,14 @@ class CreateFolderFragment :
             messageResId = LocalizationR.string.share_folder_error_format,
             messageArgs = arrayOf(errorMessage),
             backgroundColor = CoreUiR.color.red,
-            length = Snackbar.LENGTH_LONG
+            length = Snackbar.LENGTH_LONG,
         )
     }
 
     override fun setFolderCreatedResultAndClose(folderName: String) {
         setFragmentResult(
             REQUEST_CREATE_FOLDER,
-            bundleOf(EXTRA_CREATED_FOLDER_NAME to folderName)
+            bundleOf(EXTRA_CREATED_FOLDER_NAME to folderName),
         )
         findNavController().popBackStack()
     }

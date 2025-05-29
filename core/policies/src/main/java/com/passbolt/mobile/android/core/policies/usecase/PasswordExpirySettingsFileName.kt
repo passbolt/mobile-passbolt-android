@@ -1,7 +1,8 @@
 package com.passbolt.mobile.android.core.policies.usecase
 
-class PasswordExpirySettingsFileName(userId: String) {
-
+class PasswordExpirySettingsFileName(
+    userId: String,
+) {
     val name = PASSWORD_EXPIRY_SETTINGS_FILE_NAME_FORMAT.format(userId)
 
     private companion object {

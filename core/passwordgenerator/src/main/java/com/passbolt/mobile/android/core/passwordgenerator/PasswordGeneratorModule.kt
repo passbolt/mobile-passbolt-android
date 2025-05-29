@@ -31,19 +31,20 @@ import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 import java.security.SecureRandom
 
-val passwordGeneratorModule = module {
-    singleOf(::PasswordGenerator)
-    singleOf(::PassphraseGenerator)
-    singleOf(::SecretGenerator)
-    singleOf(::EntropyCalculator)
-    singleOf(::CheckPasswordPropertiesUseCase)
-    single { SecureRandom() }
-    single {
-        val diceInputStream = androidApplication().resources.openRawResource(R.raw.eff_large_wordlist)
-        Dice(
-            diceInputFileInputStream = diceInputStream,
-            coroutineLaunchContext = get(),
-            secureRandom = get()
-        )
+val passwordGeneratorModule =
+    module {
+        singleOf(::PasswordGenerator)
+        singleOf(::PassphraseGenerator)
+        singleOf(::SecretGenerator)
+        singleOf(::EntropyCalculator)
+        singleOf(::CheckPasswordPropertiesUseCase)
+        single { SecureRandom() }
+        single {
+            val diceInputStream = androidApplication().resources.openRawResource(R.raw.eff_large_wordlist)
+            Dice(
+                diceInputFileInputStream = diceInputStream,
+                coroutineLaunchContext = get(),
+                secureRandom = get(),
+            )
+        }
     }
-}

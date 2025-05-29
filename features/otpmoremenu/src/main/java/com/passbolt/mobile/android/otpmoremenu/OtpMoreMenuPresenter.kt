@@ -13,10 +13,9 @@ import kotlinx.coroutines.launch
 class OtpMoreMenuPresenter(
     private val createOtpMoreMenuModelUseCase: CreateOtpMoreMenuModelUseCase,
     private val createMenuModelIdlingResource: CreateMenuModelIdlingResource,
-    coroutineLaunchContext: CoroutineLaunchContext
+    coroutineLaunchContext: CoroutineLaunchContext,
 ) : DataRefreshViewReactivePresenter<OtpMoreMenuContract.View>(coroutineLaunchContext),
     OtpMoreMenuContract.Presenter {
-
     override var view: OtpMoreMenuContract.View? = null
     private val job = SupervisorJob()
     private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
@@ -24,7 +23,10 @@ class OtpMoreMenuPresenter(
     private lateinit var resourceId: String
     private lateinit var menuModel: OtpMoreMenuModel
 
-    override fun argsRetrieved(resourceId: String, canShowTotp: Boolean) {
+    override fun argsRetrieved(
+        resourceId: String,
+        canShowTotp: Boolean,
+    ) {
         this.resourceId = resourceId
         if (canShowTotp) {
             view?.showShowOtpButton()
@@ -39,9 +41,11 @@ class OtpMoreMenuPresenter(
     override fun refreshSuccessAction() {
         createMenuModelIdlingResource.setIdle(false)
         scope.launch {
-            menuModel = createOtpMoreMenuModelUseCase.execute(
-                CreateOtpMoreMenuModelUseCase.Input(resourceId)
-            ).otpMoreMenuModel
+            menuModel =
+                createOtpMoreMenuModelUseCase
+                    .execute(
+                        CreateOtpMoreMenuModelUseCase.Input(resourceId),
+                    ).otpMoreMenuModel
             view?.showTitle(menuModel.title)
             processEditAndDeleteButtons()
             createMenuModelIdlingResource.setIdle(true)

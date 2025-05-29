@@ -76,42 +76,42 @@ import com.passbolt.mobile.android.feature.otp.R as OtpR
 import com.passbolt.mobile.android.feature.resourcemoremenu.R.id as ResourcemoremenuId
 import com.passbolt.mobile.android.feature.resources.R.id as ResourcesID
 
-
 @RunWith(AndroidJUnit4::class)
 @MediumTest
 class ResourcesEditionTest : KoinTest {
-
     @get:Rule
-    val startUpActivityRule = lazyActivitySetupScenarioRule<AuthenticationMainActivity>(
-        koinOverrideModules = listOf(instrumentationTestsModule),
-        intentSupplier = {
-            ActivityIntents.authentication(
-                InstrumentationRegistry.getInstrumentation().targetContext,
-                ActivityIntents.AuthConfig.Startup,
-                AppContext.APP,
-                managedAccountIntentCreator.getUserLocalId()
-            )
-        }
-    )
+    val startUpActivityRule =
+        lazyActivitySetupScenarioRule<AuthenticationMainActivity>(
+            koinOverrideModules = listOf(instrumentationTestsModule),
+            intentSupplier = {
+                ActivityIntents.authentication(
+                    InstrumentationRegistry.getInstrumentation().targetContext,
+                    ActivityIntents.AuthConfig.Startup,
+                    AppContext.APP,
+                    managedAccountIntentCreator.getUserLocalId(),
+                )
+            },
+        )
 
     private val managedAccountIntentCreator: ManagedAccountIntentCreator by inject()
 
     private val resourcesFullRefreshIdlingResource: ResourcesFullRefreshIdlingResource by inject()
 
     @get:Rule
-    val idlingResourceRule = let {
-        val signInIdlingResource: SignInIdlingResource by inject()
-        val updateResourceIdlingResource: UpdateResourceIdlingResource by inject()
-        val createResourceIdlingResource: CreateResourceIdlingResource by inject()
-        IdlingResourceRule(
-            arrayOf(
-                signInIdlingResource,
-                resourcesFullRefreshIdlingResource,
-                updateResourceIdlingResource,
-                createResourceIdlingResource
+    val idlingResourceRule =
+        let {
+            val signInIdlingResource: SignInIdlingResource by inject()
+            val updateResourceIdlingResource: UpdateResourceIdlingResource by inject()
+            val createResourceIdlingResource: CreateResourceIdlingResource by inject()
+            IdlingResourceRule(
+                arrayOf(
+                    signInIdlingResource,
+                    resourcesFullRefreshIdlingResource,
+                    updateResourceIdlingResource,
+                    createResourceIdlingResource,
+                ),
             )
-        )
-    }
+        }
 
     @BeforeTest
     fun setup() {
@@ -121,8 +121,8 @@ class ResourcesEditionTest : KoinTest {
         createNewPasswordFromHomeScreen("ResourcesEditionTest")
     }
 
+    //    https://passbolt.testrail.io/index.php?/cases/view/8134
     @Test
-//    https://passbolt.testrail.io/index.php?/cases/view/8134
     fun onTheResourcesActionMenuDrawerICanClickEditPassword() {
         //    Given     that I am on the action menu drawer
         pickFirstResourceWithName("ResourcesEditionTest")
@@ -137,8 +137,8 @@ class ResourcesEditionTest : KoinTest {
         onView(withText(LocalizationR.string.resource_update_edit_password_title)).check(matches(isDisplayed()))
     }
 
+    //    https://passbolt.testrail.io/index.php?/cases/view/8135
     @Test
-//    https://passbolt.testrail.io/index.php?/cases/view/8135
     fun onTheEditPasswordPageICanEditElements() {
         //    Given     that I am on `Edit password` screen
         enterEditPasswordScreen()
@@ -168,9 +168,8 @@ class ResourcesEditionTest : KoinTest {
         //    | Enter description |
     }
 
-
+    //    https://passbolt.testrail.io/index.php?/cases/view/8136
     @Test
-//    https://passbolt.testrail.io/index.php?/cases/view/8136
     fun onTheEditPasswordPageICanSaveChangedResources() {
         //    Given     that I am on `Edit password` screen
         enterEditPasswordScreen()
@@ -192,8 +191,8 @@ class ResourcesEditionTest : KoinTest {
         //    | Enter description |
     }
 
+    //    https://passbolt.testrail.io/index.php?/cases/view/8137
     @Test
-//    https://passbolt.testrail.io/index.php?/cases/view/8137
     fun onTheEditPasswordPageIShouldSeeAnErrorMessageAfterDeletingTheMandatoryTextField() {
         //    Given     that I am on `Edit password` screen
         enterEditPasswordScreen()
@@ -231,8 +230,8 @@ class ResourcesEditionTest : KoinTest {
         //    | Enter a password |
     }
 
+    //    https://passbolt.testrail.io/index.php?/cases/view/8138
     @Test
-//    https://passbolt.testrail.io/index.php?/cases/view/8138
     fun onTheEditPasswordPageICanDeleteTheOptionalInputTextField() {
         //    Given     that I am on `Edit password` screen
         enterEditPasswordScreen()
@@ -262,8 +261,8 @@ class ResourcesEditionTest : KoinTest {
         //    | Enter description |
     }
 
-    @Test
     //  https://passbolt.testrail.io/index.php?/cases/view/8139
+    @Test
     fun onTheEditPasswordPageISeeConfirmationPopupWhenSavingAChangedResource() {
         // unregister refresh idling resource after first refresh not to block the snackbar checks
         // (second refresh is during snackbar is showing)
@@ -299,12 +298,13 @@ class ResourcesEditionTest : KoinTest {
     private fun onViewInputWithHintName(hintName: String): ViewInteraction =
         onView(allOf(isDescendantOfA(withHint(equalTo(hintName))), withId(CoreUiR.id.input)))
 
-    private fun onViewTextInputLayoutWithHintName(hintName: String): ViewInteraction = onView(
-        allOf(
-            isDescendantOfA(withHint(hasToString(hintName))),
-            isAssignableFrom(TextInputLayout::class.java)
+    private fun onViewTextInputLayoutWithHintName(hintName: String): ViewInteraction =
+        onView(
+            allOf(
+                isDescendantOfA(withHint(hasToString(hintName))),
+                isAssignableFrom(TextInputLayout::class.java),
+            ),
         )
-    )
 
     private fun enterEditPasswordScreen() {
         onView(withId(OtpR.id.searchEditText)).perform(typeText("ResourcesEditionTest"))

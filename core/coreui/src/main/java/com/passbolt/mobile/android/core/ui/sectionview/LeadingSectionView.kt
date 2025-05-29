@@ -32,33 +32,34 @@ import com.passbolt.mobile.android.core.ui.databinding.ViewLeadingSectionBinding
  * @since v1.0
  */
 
-class LeadingSectionView @JvmOverloads constructor(
-    context: Context,
-    attrs: AttributeSet? = null,
-    defStyle: Int = 0
-) : LinearLayout(context, attrs, defStyle) {
+class LeadingSectionView
+    @JvmOverloads
+    constructor(
+        context: Context,
+        attrs: AttributeSet? = null,
+        defStyle: Int = 0,
+    ) : LinearLayout(context, attrs, defStyle) {
+        var title: String = ""
+            set(value) {
+                field = value
+                binding.title.text = value
+            }
 
-    var title: String = ""
-        set(value) {
-            field = value
-            binding.title.text = value
+        private val binding = ViewLeadingSectionBinding.inflate(LayoutInflater.from(context), this)
+
+        val backgroundContainer: ViewGroup
+            get() = binding.backgroundContainer
+
+        init {
+            orientation = VERTICAL
+            parseAttributes(attrs)
         }
 
-    private val binding = ViewLeadingSectionBinding.inflate(LayoutInflater.from(context), this)
-
-    val backgroundContainer: ViewGroup
-        get() = binding.backgroundContainer
-
-    init {
-        orientation = VERTICAL
-        parseAttributes(attrs)
-    }
-
-    private fun parseAttributes(attrs: AttributeSet?) {
-        attrs?.let {
-            context.obtainStyledAttributes(attrs, R.styleable.LeadingSectionView, 0, 0).use {
-                title = it.getString(R.styleable.LeadingSectionView_sectionTitle).orEmpty()
+        private fun parseAttributes(attrs: AttributeSet?) {
+            attrs?.let {
+                context.obtainStyledAttributes(attrs, R.styleable.LeadingSectionView, 0, 0).use {
+                    title = it.getString(R.styleable.LeadingSectionView_sectionTitle).orEmpty()
+                }
             }
         }
     }
-}

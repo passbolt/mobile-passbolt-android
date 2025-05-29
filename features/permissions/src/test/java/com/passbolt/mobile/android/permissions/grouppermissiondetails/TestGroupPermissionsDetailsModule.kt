@@ -35,12 +35,13 @@ import org.mockito.kotlin.mock
 internal val mockGetGroupWithUsersUseCase = mock<GetGroupWithUsersUseCase>()
 
 @ExperimentalCoroutinesApi
-internal val testGroupPermissionsDetailsModule = module {
-    factory<CoroutineLaunchContext> { TestCoroutineLaunchContext() }
-    factory<GroupPermissionsContract.Presenter> {
-        GroupPermissionsPresenter(
-            coroutineLaunchContext = get(),
-            getGroupWithUsersUseCase = mockGetGroupWithUsersUseCase
-        )
+internal val testGroupPermissionsDetailsModule =
+    module {
+        factory<CoroutineLaunchContext> { TestCoroutineLaunchContext() }
+        factory<GroupPermissionsContract.Presenter> {
+            GroupPermissionsPresenter(
+                coroutineLaunchContext = get(),
+                getGroupWithUsersUseCase = mockGetGroupWithUsersUseCase,
+            )
+        }
     }
-}

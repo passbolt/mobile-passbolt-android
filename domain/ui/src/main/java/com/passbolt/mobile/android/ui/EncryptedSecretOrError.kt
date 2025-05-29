@@ -24,13 +24,12 @@ package com.passbolt.mobile.android.ui
  */
 
 sealed class EncryptedSecretOrError {
-
     data class Error(
-        val message: String
+        val message: String,
     ) : EncryptedSecretOrError()
 
     data class EncryptedSecret(
         val userId: String,
-        val data: String
+        val data: String,
     ) : EncryptedSecretOrError()
 }

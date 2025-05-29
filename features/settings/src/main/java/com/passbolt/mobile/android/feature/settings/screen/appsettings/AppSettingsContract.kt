@@ -29,36 +29,61 @@ import com.passbolt.mobile.android.ui.DefaultFilterModel
 import javax.crypto.Cipher
 
 interface AppSettingsContract {
-
     interface View : BaseContract.View {
         fun navigateToDefaultFilterSettings(userSetHomeView: DefaultFilterModel)
+
         fun navigateToAutofillSettings()
+
         fun showDisableFingerprintConfirmationDialog()
+
         fun showConfigureFingerprintFirst()
+
         fun toggleFingerprintOff(silently: Boolean)
+
         fun toggleFingerprintOn(silently: Boolean)
+
         fun navigateToAuthGetPassphrase()
+
         fun showBiometricPrompt(fingerprintEncryptionCipher: Cipher)
+
         fun showKeyChangesDetected()
+
         fun showBiometryError(message: String?)
-        fun showAuthenticationError(@StringRes errorMessage: Int)
+
+        fun showAuthenticationError(
+            @StringRes errorMessage: Int,
+        )
+
         fun navigateToSystemSettings()
+
         fun navigateToExpertSettings()
     }
 
     interface Presenter : BaseContract.Presenter<View> {
         fun autofillClick()
+
         fun defaultFilterClick()
+
         fun fingerprintSettingChanged(isEnabled: Boolean)
+
         fun getPassphraseSucceeded()
+
         fun biometricAuthError(errorMessage: Int)
+
         fun biometricAuthCanceled()
+
         fun biometricAuthSucceeded(authenticatedCipher: Cipher?)
+
         fun systemSettingsClick()
+
         fun disableFingerprintConfirmed()
+
         fun disableFingerprintCanceled()
+
         fun keyChangesInfoConfirmClick()
+
         fun viewResumed()
+
         fun expertSettingsClick()
     }
 }

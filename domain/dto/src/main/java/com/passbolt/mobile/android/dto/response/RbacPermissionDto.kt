@@ -29,9 +29,9 @@ data class RbacPermissionDto(
     @SerializedName("control_function")
     val controlFunction: String,
     @SerializedName("ui_action")
-    val uiAction: UiActionDto?
+    val uiAction: UiActionDto?,
 )
 
 data class UiActionDto(
-    val name: String
+    val name: String,
 )

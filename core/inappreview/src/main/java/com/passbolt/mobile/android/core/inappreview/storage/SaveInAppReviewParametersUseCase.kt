@@ -29,9 +29,8 @@ import java.time.LocalDate
  */
 class SaveInAppReviewParametersUseCase(
     private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory,
-    private val getSelectedAccountUseCase: GetSelectedAccountUseCase
+    private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
 ) : UseCase<SaveInAppReviewParametersUseCase.Input, Unit> {
-
     override fun execute(input: Input) {
         val userId = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
         val fileName = InAppReviewFileName(userId).name
@@ -52,6 +51,6 @@ class SaveInAppReviewParametersUseCase(
 
     data class Input(
         val inAppReviewShowIntervalStartDate: LocalDate?,
-        val signInCount: Int
+        val signInCount: Int,
     )
 }

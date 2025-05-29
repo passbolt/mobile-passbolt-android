@@ -10,17 +10,17 @@ import androidx.room.ForeignKey
             entity = Tag::class,
             parentColumns = ["id"],
             childColumns = ["tagId"],
-            onDelete = ForeignKey.CASCADE
+            onDelete = ForeignKey.CASCADE,
         ),
         ForeignKey(
             entity = Resource::class,
             parentColumns = ["resourceId"],
             childColumns = ["resourceId"],
-            onDelete = ForeignKey.CASCADE
-        )
-    ]
+            onDelete = ForeignKey.CASCADE,
+        ),
+    ],
 )
 data class ResourceAndTagsCrossRef(
     val tagId: String,
-    val resourceId: String
+    val resourceId: String,
 )

@@ -43,25 +43,32 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class EncourageAutofillServiceDialog : DialogFragment(), EncourageAutofillContract.View, AndroidScopeComponent {
-
+class EncourageAutofillServiceDialog :
+    DialogFragment(),
+    EncourageAutofillContract.View,
+    AndroidScopeComponent {
     override val scope by fragmentScope(useParentActivityScope = false)
     private var listener: Listener? = null
     private val presenter: EncourageAutofillContract.Presenter by scope.inject()
-    private var autofillSystemSettingsLauncher = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            presenter.autofillSettingsClosedWithResult()
+    private var autofillSystemSettingsLauncher =
+        registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult(),
+        ) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                presenter.autofillSettingsClosedWithResult()
+            }
         }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setStyle(STYLE_NO_TITLE, CoreUiR.style.FullscreenDialogTheme)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
+    ): View {
         val binding = DialogEncourageAutofillBinding.inflate(inflater)
         setupListeners(binding)
         setupSteps(binding)
@@ -70,11 +77,12 @@ class EncourageAutofillServiceDialog : DialogFragment(), EncourageAutofillContra
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        listener = when {
-            activity is Listener -> activity as Listener
-            parentFragment is Listener -> parentFragment as Listener
-            else -> error("Parent must implement ${Listener::class.java.name}")
-        }
+        listener =
+            when {
+                activity is Listener -> activity as Listener
+                parentFragment is Listener -> parentFragment as Listener
+                else -> error("Parent must implement ${Listener::class.java.name}")
+            }
         presenter.attach(this)
     }
 
@@ -86,16 +94,19 @@ class EncourageAutofillServiceDialog : DialogFragment(), EncourageAutofillContra
 
     private fun setupSteps(binding: DialogEncourageAutofillBinding) {
         binding.stepsView.addList(
-            requireContext().resources.getStringArray(LocalizationR.array.dialog_encourage_autofill_setup_steps)
-                .mapIndexed { index, text -> CircleStepItemModel(text.fromHtml(), getStepDrawable(index)) }
+            requireContext()
+                .resources
+                .getStringArray(LocalizationR.array.dialog_encourage_autofill_setup_steps)
+                .mapIndexed { index, text -> CircleStepItemModel(text.fromHtml(), getStepDrawable(index)) },
         )
     }
 
-    private fun getStepDrawable(index: Int) = try {
-        AUTOFILL_SETUP_STEPS_ICONS[index]
-    } catch (ignored: Exception) {
-        null
-    }
+    private fun getStepDrawable(index: Int) =
+        try {
+            AUTOFILL_SETUP_STEPS_ICONS[index]
+        } catch (ignored: Exception) {
+            null
+        }
 
     private fun setupListeners(binding: DialogEncourageAutofillBinding) {
         with(binding) {
@@ -109,13 +120,14 @@ class EncourageAutofillServiceDialog : DialogFragment(), EncourageAutofillContra
         autofillSystemSettingsLauncher.launch(
             Intent(
                 Settings.ACTION_REQUEST_SET_AUTOFILL_SERVICE,
-                Uri.parse(PACKAGE_URI_FORMAT.format(requireContext().packageName))
-            )
+                Uri.parse(PACKAGE_URI_FORMAT.format(requireContext().packageName)),
+            ),
         )
     }
 
     override fun showAutofillNotSupported() {
-        AlertDialog.Builder(requireContext())
+        AlertDialog
+            .Builder(requireContext())
             .setTitle(LocalizationR.string.dialog_encourage_autofill_autofill_not_supported_title)
             .setMessage(LocalizationR.string.dialog_encourage_autofill_autofill_not_supported_message)
             .setPositiveButton(LocalizationR.string.ok) { _, _ -> }
@@ -134,14 +146,16 @@ class EncourageAutofillServiceDialog : DialogFragment(), EncourageAutofillContra
 
     private companion object {
         private const val PACKAGE_URI_FORMAT = "package:%s"
-        private val AUTOFILL_SETUP_STEPS_ICONS = listOf(
-            CoreUiR.drawable.autofill_with_bg,
-            CoreUiR.drawable.passbolt_with_bg
-        )
+        private val AUTOFILL_SETUP_STEPS_ICONS =
+            listOf(
+                CoreUiR.drawable.autofill_with_bg,
+                CoreUiR.drawable.passbolt_with_bg,
+            )
     }
 
     interface Listener {
         fun autofillSetupClosed()
+
         fun autofillSetupSuccessfully()
     }
 }

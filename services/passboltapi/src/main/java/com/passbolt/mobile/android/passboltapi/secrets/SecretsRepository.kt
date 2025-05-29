@@ -27,10 +27,10 @@ import com.passbolt.mobile.android.core.networking.callWithHandler
  */
 class SecretsRepository(
     private val secretsDataSource: SecretsDataSource,
-    private val responseHandler: ResponseHandler
+    private val responseHandler: ResponseHandler,
 ) {
-
-    suspend fun getSecret(resourceId: String) = callWithHandler(responseHandler) {
-        secretsDataSource.getSecret(resourceId)
-    }
+    suspend fun getSecret(resourceId: String) =
+        callWithHandler(responseHandler) {
+            secretsDataSource.getSecret(resourceId)
+        }
 }

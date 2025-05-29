@@ -27,17 +27,18 @@ import com.passbolt.mobile.android.database.DatabaseProvider
  * @since v1.0
  */
 class RemoveLocalGroupsUseCase(
-    private val databaseProvider: DatabaseProvider
+    private val databaseProvider: DatabaseProvider,
 ) : AsyncUseCase<UserIdInput, Unit> {
-
     override suspend fun execute(input: UserIdInput) {
-        val groupsDao = databaseProvider
-            .get(input.userId)
-            .groupsDao()
+        val groupsDao =
+            databaseProvider
+                .get(input.userId)
+                .groupsDao()
 
-        val usersAndGroupsCrossRefDao = databaseProvider
-            .get(input.userId)
-            .usersAndGroupsCrossRefDao()
+        val usersAndGroupsCrossRefDao =
+            databaseProvider
+                .get(input.userId)
+                .usersAndGroupsCrossRefDao()
 
         groupsDao.deleteAll()
         usersAndGroupsCrossRefDao.deleteAll()

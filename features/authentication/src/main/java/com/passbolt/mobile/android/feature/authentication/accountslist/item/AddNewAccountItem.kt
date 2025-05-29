@@ -34,28 +34,27 @@ import com.passbolt.mobile.android.feature.authentication.databinding.ItemAddNew
  * @since v1.0
  */
 class AddNewAccountItem : AbstractBindingItem<ItemAddNewAccountBinding>() {
-
     override val type: Int
         get() = R.id.addItemAccount
 
-    override fun createBinding(inflater: LayoutInflater, parent: ViewGroup?): ItemAddNewAccountBinding {
-        return ItemAddNewAccountBinding.inflate(inflater, parent, false)
-    }
+    override fun createBinding(
+        inflater: LayoutInflater,
+        parent: ViewGroup?,
+    ): ItemAddNewAccountBinding = ItemAddNewAccountBinding.inflate(inflater, parent, false)
 
     class AddAccountItemClick(
-        private val clickListener: () -> Unit
+        private val clickListener: () -> Unit,
     ) : ClickEventHook<AddNewAccountItem>() {
-        override fun onBind(viewHolder: RecyclerView.ViewHolder): View? {
-            return viewHolder.asBinding<ItemAddNewAccountBinding> {
+        override fun onBind(viewHolder: RecyclerView.ViewHolder): View? =
+            viewHolder.asBinding<ItemAddNewAccountBinding> {
                 it.addItemAccount
             }
-        }
 
         override fun onClick(
             v: View,
             position: Int,
             fastAdapter: FastAdapter<AddNewAccountItem>,
-            item: AddNewAccountItem
+            item: AddNewAccountItem,
         ) {
             clickListener.invoke()
         }

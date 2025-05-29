@@ -62,9 +62,9 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class AccountsListFragment : BindingScopedFragment<FragmentAccountsListBinding>(FragmentAccountsListBinding::inflate),
+class AccountsListFragment :
+    BindingScopedFragment<FragmentAccountsListBinding>(FragmentAccountsListBinding::inflate),
     AccountsListContract.View {
-
     private val presenter: AccountsListContract.Presenter by inject()
     private val modelAdapter: ModelAdapter<AccountModelUi, GenericItem> by inject()
     private val fastAdapter: FastAdapter<GenericItem> by inject()
@@ -72,22 +72,26 @@ class AccountsListFragment : BindingScopedFragment<FragmentAccountsListBinding>(
     private val listDivider: DrawableListDivider by inject()
     private val authConfig by lifecycleAwareLazy {
         requireNotNull(
-            BundleCompat.getSerializable(requireArguments(), ARG_AUTH_CONFIG, ActivityIntents.AuthConfig::class.java)
+            BundleCompat.getSerializable(requireArguments(), ARG_AUTH_CONFIG, ActivityIntents.AuthConfig::class.java),
         )
     }
     private val context by lifecycleAwareLazy {
         requireNotNull(
-            BundleCompat.getSerializable(requireArguments(), ARG_CONTEXT, AppContext::class.java)
+            BundleCompat.getSerializable(requireArguments(), ARG_CONTEXT, AppContext::class.java),
         )
     }
     private lateinit var uiStrategy: AccountListStrategy
-    private val backPressedCallback = object : OnBackPressedCallback(true) {
-        override fun handleOnBackPressed() {
-            presenter.backClick()
+    private val backPressedCallback =
+        object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                presenter.backClick()
+            }
         }
-    }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         uiStrategy = get { parametersOf(this, authConfig) }
         initToolbar()
@@ -99,23 +103,23 @@ class AccountsListFragment : BindingScopedFragment<FragmentAccountsListBinding>(
     }
 
     override fun onDestroyView() {
-        binding.recyclerView.adapter = null
+        requiredBinding.recyclerView.adapter = null
         presenter.detach()
         super.onDestroyView()
     }
 
     private fun initLogo() {
-        binding.icon.visibility = uiStrategy.logoVisibility()
+        requiredBinding.icon.visibility = uiStrategy.logoVisibility()
     }
 
     private fun initHeader() {
-        setOf(binding.header, binding.subtitle).forEach {
+        setOf(requiredBinding.header, requiredBinding.subtitle).forEach {
             it.visibility = uiStrategy.headerVisibility()
         }
     }
 
     private fun initToolbar() {
-        with(binding.toolbar) {
+        with(requiredBinding.toolbar) {
             uiStrategy.getTitleRes()?.let { toolbarTitle = getString(it) }
             visibility = uiStrategy.toolbarVisibility()
             initDefaultToolbar(this)
@@ -124,7 +128,7 @@ class AccountsListFragment : BindingScopedFragment<FragmentAccountsListBinding>(
     }
 
     private fun setListeners() {
-        with(binding) {
+        with(requiredBinding) {
             removeAccountLabel.setDebouncingOnClick { presenter.removeAnAccountClick() }
             doneRemovingAccountsButton.setDebouncingOnClick { presenter.doneRemovingAccountsClick() }
         }
@@ -132,7 +136,7 @@ class AccountsListFragment : BindingScopedFragment<FragmentAccountsListBinding>(
     }
 
     private fun initAdapter() {
-        binding.recyclerView.apply {
+        requiredBinding.recyclerView.apply {
             itemAnimator = null
             layoutManager = LinearLayoutManager(requireContext())
             adapter = fastAdapter
@@ -143,11 +147,12 @@ class AccountsListFragment : BindingScopedFragment<FragmentAccountsListBinding>(
             listOf(
                 AccountItemClick(
                     accountClickListener = { presenter.accountItemClick(it) },
-                    removeAccountClickListener = { presenter.removeAccountClick(it) }),
+                    removeAccountClickListener = { presenter.removeAccountClick(it) },
+                ),
                 AddNewAccountItem.AddAccountItemClick {
                     presenter.addAccountClick()
-                }
-            )
+                },
+            ),
         )
     }
 
@@ -163,12 +168,13 @@ class AccountsListFragment : BindingScopedFragment<FragmentAccountsListBinding>(
         findNavController().navigate(
             R.id.authFragment,
             AuthFragment.newBundle(authConfig, context, model.userId),
-            NavOptions.Builder()
+            NavOptions
+                .Builder()
                 .setEnterAnim(CoreUiR.anim.slide_in_right)
                 .setExitAnim(CoreUiR.anim.slide_out_left)
                 .setPopEnterAnim(CoreUiR.anim.slide_in_left)
                 .setPopExitAnim(CoreUiR.anim.slide_out_right)
-                .build()
+                .build(),
         )
     }
 
@@ -176,12 +182,13 @@ class AccountsListFragment : BindingScopedFragment<FragmentAccountsListBinding>(
         findNavController().navigate(
             R.id.authFragment,
             AuthFragment.newBundle(ActivityIntents.AuthConfig.Startup, context, model.userId),
-            NavOptions.Builder()
+            NavOptions
+                .Builder()
                 .setEnterAnim(CoreUiR.anim.slide_in_right)
                 .setExitAnim(CoreUiR.anim.slide_out_left)
                 .setPopEnterAnim(CoreUiR.anim.slide_in_left)
                 .setPopExitAnim(CoreUiR.anim.slide_out_right)
-                .build()
+                .build(),
         )
     }
 
@@ -192,29 +199,29 @@ class AccountsListFragment : BindingScopedFragment<FragmentAccountsListBinding>(
     }
 
     override fun showDoneRemovingAccounts() {
-        binding.doneRemovingAccountsButton.visible()
+        requiredBinding.doneRemovingAccountsButton.visible()
     }
 
     override fun hideDoneRemovingAccounts() {
-        binding.doneRemovingAccountsButton.gone()
+        requiredBinding.doneRemovingAccountsButton.gone()
     }
 
     override fun showRemoveAccounts() {
-        binding.removeAccountLabel.visible()
+        requiredBinding.removeAccountLabel.visible()
     }
 
     override fun hideRemoveAccounts() {
-        binding.removeAccountLabel.gone()
+        requiredBinding.removeAccountLabel.gone()
     }
 
     override fun showRemoveAccountConfirmationDialog(model: AccountModelUi.AccountModel) {
-        AlertDialog.Builder(requireContext())
+        AlertDialog
+            .Builder(requireContext())
             .setTitle(LocalizationR.string.are_you_sure)
             .setMessage(LocalizationR.string.accounts_list_remove_account_message)
             .setPositiveButton(LocalizationR.string.accounts_list_remove_account) { _, _ ->
                 presenter.confirmRemoveAccountClick(model)
-            }
-            .setNegativeButton(LocalizationR.string.cancel) { _, _ -> }
+            }.setNegativeButton(LocalizationR.string.cancel) { _, _ -> }
             .show()
     }
 
@@ -237,18 +244,16 @@ class AccountsListFragment : BindingScopedFragment<FragmentAccountsListBinding>(
     override fun showAccountRemovedSnackbar() {
         Snackbar
             .make(
-                binding.root,
+                requiredBinding.root,
                 LocalizationR.string.accounts_list_account_removed,
-                Snackbar.LENGTH_SHORT
-            )
-            .setAnchorView(binding.doneRemovingAccountsButton)
+                Snackbar.LENGTH_SHORT,
+            ).setAnchorView(requiredBinding.doneRemovingAccountsButton)
             .setBackgroundTint(
                 ContextCompat.getColor(
                     requireContext(),
-                    CoreUiR.color.background_gray_dark
-                )
-            )
-            .show()
+                    CoreUiR.color.background_gray_dark,
+                ),
+            ).show()
     }
 
     override fun notifySelectedAccountChanged() {
@@ -263,9 +268,12 @@ class AccountsListFragment : BindingScopedFragment<FragmentAccountsListBinding>(
         const val ARG_AUTH_CONFIG = "AUTH_CONFIG"
         const val ARG_CONTEXT = "CONTEXT"
 
-        fun newBundle(authConfig: ActivityIntents.AuthConfig, context: AppContext) = bundleOf(
+        fun newBundle(
+            authConfig: ActivityIntents.AuthConfig,
+            context: AppContext,
+        ) = bundleOf(
             ARG_AUTH_CONFIG to authConfig,
-            ARG_CONTEXT to context
+            ARG_CONTEXT to context,
         )
     }
 }

@@ -29,11 +29,10 @@ import timber.log.Timber
 import java.net.URL
 
 class FetchFileAsStringUseCase(
-    private val coroutineLaunchContext: CoroutineLaunchContext
+    private val coroutineLaunchContext: CoroutineLaunchContext,
 ) : AsyncUseCase<FetchFileAsStringUseCase.Input, FetchFileAsStringUseCase.Output> {
-
-    override suspend fun execute(input: Input): Output {
-        return try {
+    override suspend fun execute(input: Input): Output =
+        try {
             withContext(coroutineLaunchContext.io) {
                 URL(input.url).openStream().use {
                     Output.Success(it.readBytes().decodeToString())
@@ -43,12 +42,16 @@ class FetchFileAsStringUseCase(
             Timber.e(e, "Error during fetching file")
             Output.Failure
         }
-    }
 
-    data class Input(val url: String)
+    data class Input(
+        val url: String,
+    )
 
     sealed class Output {
-        data class Success(val fileContent: String) : Output()
+        data class Success(
+            val fileContent: String,
+        ) : Output()
+
         data object Failure : Output()
     }
 }

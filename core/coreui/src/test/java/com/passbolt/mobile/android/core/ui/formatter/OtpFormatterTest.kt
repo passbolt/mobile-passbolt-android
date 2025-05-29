@@ -26,9 +26,7 @@ package com.passbolt.mobile.android.core.ui.formatter
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test
 
-
 class OtpFormatterTest {
-
     private val otpFormatter = OtpFormatter()
 
     @Test

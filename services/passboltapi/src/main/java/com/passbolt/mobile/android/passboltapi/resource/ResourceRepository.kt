@@ -28,23 +28,27 @@ import com.passbolt.mobile.android.dto.request.CreateResourceDto
  */
 class ResourceRepository(
     private val resourceDataSource: ResourceDataSource,
-    private val responseHandler: ResponseHandler
+    private val responseHandler: ResponseHandler,
 ) {
-
-    suspend fun getResources() = callWithHandler(responseHandler) {
-        resourceDataSource.getResources()
-    }
-
-    suspend fun createResource(createResourceDto: CreateResourceDto) = callWithHandler(responseHandler) {
-        resourceDataSource.createResource(createResourceDto)
-    }
-
-    suspend fun deleteResource(resourceId: String) = callWithHandler(responseHandler) {
-        resourceDataSource.deleteResource(resourceId)
-    }
-
-    suspend fun updateResource(resourceId: String, createResourceDto: CreateResourceDto) =
+    suspend fun getResources() =
         callWithHandler(responseHandler) {
-            resourceDataSource.updateResource(resourceId, createResourceDto)
+            resourceDataSource.getResources()
         }
+
+    suspend fun createResource(createResourceDto: CreateResourceDto) =
+        callWithHandler(responseHandler) {
+            resourceDataSource.createResource(createResourceDto)
+        }
+
+    suspend fun deleteResource(resourceId: String) =
+        callWithHandler(responseHandler) {
+            resourceDataSource.deleteResource(resourceId)
+        }
+
+    suspend fun updateResource(
+        resourceId: String,
+        createResourceDto: CreateResourceDto,
+    ) = callWithHandler(responseHandler) {
+        resourceDataSource.updateResource(resourceId, createResourceDto)
+    }
 }

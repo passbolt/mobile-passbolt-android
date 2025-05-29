@@ -1,7 +1,6 @@
 package com.password.mobile.android.feature.home.screen
 
 import com.google.common.truth.Truth.assertThat
-import com.google.gson.JsonObject
 import com.passbolt.mobile.android.core.accounts.usecase.accountdata.GetSelectedAccountDataUseCase
 import com.passbolt.mobile.android.core.accounts.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalResourcesAndFoldersUseCase
@@ -52,34 +51,37 @@ import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
 import java.time.ZonedDateTime
 
+@Suppress("LargeClass")
 @ExperimentalCoroutinesApi
 class HomePresenterTest : KoinTest {
-
     private val presenter: HomeContract.Presenter by inject()
     private val view: HomeContract.View = mock()
     private val mockFullDataRefreshExecutor: FullDataRefreshExecutor by inject()
 
     @get:Rule
-    val koinTestRule = KoinTestRule.create {
-        printLogger(Level.ERROR)
-        modules(testHomeModule)
-    }
+    val koinTestRule =
+        KoinTestRule.create {
+            printLogger(Level.ERROR)
+            modules(testHomeModule)
+        }
 
     @Before
     fun setUp() {
         whenever(mockGetSelectedAccountUseCase.execute(anyOrNull())).thenReturn(
-            GetSelectedAccountUseCase.Output("id")
+            GetSelectedAccountUseCase.Output("id"),
         )
         mockGetLocalResourcesAndFoldersUseCase.stub {
-            onBlocking { execute(any()) } doReturn GetLocalResourcesAndFoldersUseCase.Output.Success(
-                emptyList(),
-                emptyList()
-            )
+            onBlocking { execute(any()) } doReturn
+                GetLocalResourcesAndFoldersUseCase.Output.Success(
+                    emptyList(),
+                    emptyList(),
+                )
         }
         mockGetLocalResourcesFilteredByTagUseCase.stub {
-            onBlocking { execute(any()) } doReturn GetLocalResourcesFilteredByTagUseCase.Output(
-                emptyList()
-            )
+            onBlocking { execute(any()) } doReturn
+                GetLocalResourcesFilteredByTagUseCase.Output(
+                    emptyList(),
+                )
         }
         mockGetRbacRulesUseCase.stub {
             onBlocking { execute(Unit) }.doReturn(
@@ -89,44 +91,45 @@ class HomePresenterTest : KoinTest {
                         passwordCopyRule = ALLOW,
                         tagsUseRule = ALLOW,
                         shareViewRule = ALLOW,
-                        foldersUseRule = ALLOW
-                    )
-                )
+                        foldersUseRule = ALLOW,
+                    ),
+                ),
             )
         }
     }
 
     @Test
-    fun `user avatar should be displayed when provided`() = runTest {
-        whenever(mockResourcesInteractor.fetchAndSaveResources()).thenReturn(
-            ResourceInteractor.Output.Success
-        )
-        whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
-            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
-        )
-        val url = "avatar_url"
+    fun `user avatar should be displayed when provided`() =
+        runTest {
+            whenever(mockResourcesInteractor.fetchAndSaveResources()).thenReturn(
+                ResourceInteractor.Output.Success,
+            )
+            whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
+                flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success)),
+            )
+            val url = "avatar_url"
 
-        mockAccountData(url)
+            mockAccountData(url)
 
-        presenter.attach(view)
-        presenter.argsRetrieved(
-            ShowSuggestedModel.DoNotShow,
-            HomeDisplayViewModel.AllItems,
-            hasPreviousEntry = false,
-            shouldShowCloseButton = false,
-            shouldShowResourceMoreMenu = false
-        )
-        presenter.resume(view)
+            presenter.attach(view)
+            presenter.argsRetrieved(
+                ShowSuggestedModel.DoNotShow,
+                HomeDisplayViewModel.AllItems,
+                hasPreviousEntry = false,
+                shouldShowCloseButton = false,
+                shouldShowResourceMoreMenu = false,
+            )
+            presenter.resume(view)
 
-        verify(view).displaySearchAvatar(eq(url))
-    }
+            verify(view).displaySearchAvatar(eq(url))
+        }
 
     @Test
     fun `search input end icon should switch correctly based on input`() {
         val url = "avatar_url"
         mockAccountData(url)
         whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
-            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
+            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success)),
         )
 
         presenter.attach(view)
@@ -135,7 +138,7 @@ class HomePresenterTest : KoinTest {
             HomeDisplayViewModel.AllItems,
             hasPreviousEntry = false,
             shouldShowCloseButton = false,
-            shouldShowResourceMoreMenu = false
+            shouldShowResourceMoreMenu = false,
         )
         presenter.resume(view)
         presenter.searchTextChange("abc")
@@ -146,267 +149,276 @@ class HomePresenterTest : KoinTest {
     }
 
     @Test
-    fun `all fetched resources should be displayed when empty search text`() = runTest {
-        whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
-            flowOf(
-                DataRefreshStatus.InProgress,
-                DataRefreshStatus.Finished(HomeDataInteractor.Output.Success)
+    fun `all fetched resources should be displayed when empty search text`() =
+        runTest {
+            whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
+                flowOf(
+                    DataRefreshStatus.InProgress,
+                    DataRefreshStatus.Finished(HomeDataInteractor.Output.Success),
+                ),
             )
-        )
-        whenever(mockResourcesInteractor.fetchAndSaveResources()).thenReturn(
-            ResourceInteractor.Output.Success
-        )
-        whenever(mockGetLocalResourcesUseCase.execute(any())).thenReturn(
-            GetLocalResourcesUseCase.Output(mockResourcesList())
-        )
+            whenever(mockResourcesInteractor.fetchAndSaveResources()).thenReturn(
+                ResourceInteractor.Output.Success,
+            )
+            whenever(mockGetLocalResourcesUseCase.execute(any())).thenReturn(
+                GetLocalResourcesUseCase.Output(mockResourcesList()),
+            )
 
-        mockAccountData(null)
-        presenter.attach(view)
-        presenter.argsRetrieved(
-            ShowSuggestedModel.DoNotShow,
-            HomeDisplayViewModel.AllItems,
-            hasPreviousEntry = false,
-            shouldShowCloseButton = false,
-            shouldShowResourceMoreMenu = false
-        )
-        presenter.resume(view)
+            mockAccountData(null)
+            presenter.attach(view)
+            presenter.argsRetrieved(
+                ShowSuggestedModel.DoNotShow,
+                HomeDisplayViewModel.AllItems,
+                hasPreviousEntry = false,
+                shouldShowCloseButton = false,
+                shouldShowResourceMoreMenu = false,
+            )
+            presenter.resume(view)
 
-        verify(view, times(2)).showHomeScreenTitle(HomeDisplayViewModel.AllItems)
-        verify(view).showAllItemsSearchHint()
-        verify(view).hideBackArrow()
-        verify(view).hideCreateButton()
-        verify(view).showRefreshProgress()
-        verify(view, times(2)).showCreateButton()
-        verify(view, times(2)).showItems(any(), any(), any(), any(), any(), any(), any(), any())
-        verify(view).displaySearchAvatar(null)
-        verify(view).hideRefreshProgress()
-        verify(view).hideFolderMoreMenuIcon()
-        verifyNoMoreInteractions(view)
-    }
-
-    @Test
-    fun `refresh swiped should reload data with filter applied when search text entered`() = runTest {
-        mockResourcesList()
-        whenever(mockResourcesInteractor.fetchAndSaveResources()).thenReturn(
-            ResourceInteractor.Output.Success
-        )
-        whenever(mockGetLocalResourcesUseCase.execute(any())).thenReturn(
-            GetLocalResourcesUseCase.Output(mockResourcesList())
-        )
-        mockAccountData(null)
-        whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
-            flowOf(
-                DataRefreshStatus.InProgress,
-                DataRefreshStatus.Finished(HomeDataInteractor.Output.Success)
-            )
-        )
-        val refreshFlow = MutableStateFlow(
-            DataRefreshStatus.Finished(
-                HomeDataInteractor.Output.Success
-            )
-        )
-        whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(refreshFlow)
-        whenever(mockFullDataRefreshExecutor.performFullDataRefresh()).then {
-            refreshFlow.tryEmit(
-                DataRefreshStatus.Finished(
-                    HomeDataInteractor.Output.Success
-                )
-            )
+            verify(view, times(2)).showHomeScreenTitle(HomeDisplayViewModel.AllItems)
+            verify(view).showAllItemsSearchHint()
+            verify(view).hideBackArrow()
+            verify(view).hideCreateButton()
+            verify(view).showRefreshProgress()
+            verify(view, times(2)).showCreateButton()
+            verify(view, times(2)).showItems(any(), any(), any(), any(), any(), any(), any(), any())
+            verify(view).displaySearchAvatar(null)
+            verify(view).hideRefreshProgress()
+            verify(view).hideFolderMoreMenuIcon()
+            verifyNoMoreInteractions(view)
         }
 
-        presenter.attach(view)
-        presenter.argsRetrieved(
-            ShowSuggestedModel.DoNotShow,
-            HomeDisplayViewModel.AllItems,
-            hasPreviousEntry = false,
-            shouldShowCloseButton = false,
-            shouldShowResourceMoreMenu = false
-        )
-        presenter.resume(view)
-        presenter.searchTextChange("second")
-        presenter.refreshSwipe()
-
-
-        verify(view).hideCreateButton()
-        verify(view).hideRefreshProgress()
-        verify(view, times(2)).showItems(any(), any(), any(), any(), any(), any(), any(), any())
-        verify(view, times(2)).showCreateButton()
-    }
-
     @Test
-    fun `empty view should be displayed when search is empty`() = runTest {
-        whenever(mockResourcesInteractor.fetchAndSaveResources()).thenReturn(
-            ResourceInteractor.Output.Success
-        )
-        whenever(mockGetLocalResourcesUseCase.execute(any())).thenReturn(
-            GetLocalResourcesUseCase.Output(mockResourcesList())
-        )
-        mockAccountData(null)
-        whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
-            flowOf(
-                DataRefreshStatus.InProgress,
-                DataRefreshStatus.Finished(HomeDataInteractor.Output.Success)
+    fun `refresh swiped should reload data with filter applied when search text entered`() =
+        runTest {
+            mockResourcesList()
+            whenever(mockResourcesInteractor.fetchAndSaveResources()).thenReturn(
+                ResourceInteractor.Output.Success,
             )
-        )
-
-        presenter.attach(view)
-        presenter.argsRetrieved(
-            ShowSuggestedModel.DoNotShow,
-            HomeDisplayViewModel.AllItems,
-            hasPreviousEntry = false,
-            shouldShowCloseButton = false,
-            shouldShowResourceMoreMenu = false
-        )
-        presenter.resume(view)
-        presenter.searchTextChange("empty search")
-
-        verify(view).hideCreateButton()
-        verify(view).showSearchEmptyList()
-        verify(view, times(2)).showCreateButton()
-    }
-
-    @Test
-    fun `empty view should be displayed when there are no resources`() = runTest {
-        whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
-            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
-        )
-        whenever(mockResourcesInteractor.fetchAndSaveResources()).thenReturn(
-            ResourceInteractor.Output.Success
-        )
-        whenever(mockGetLocalResourcesUseCase.execute(any())).thenReturn(
-            GetLocalResourcesUseCase.Output(emptyList())
-        )
-        mockAccountData(null)
-
-        presenter.attach(view)
-        presenter.argsRetrieved(
-            ShowSuggestedModel.DoNotShow,
-            HomeDisplayViewModel.AllItems,
-            hasPreviousEntry = false,
-            shouldShowCloseButton = false,
-            shouldShowResourceMoreMenu = false
-        )
-        presenter.resume(view)
-
-        verify(view, times(2)).showEmptyList()
-    }
-
-    @Test
-    fun `error should be displayed when request failures`() = runTest {
-        whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
-            flowOf(
-                DataRefreshStatus.InProgress,
-                DataRefreshStatus.Finished(HomeDataInteractor.Output.Failure(AuthenticationState.Authenticated))
+            whenever(mockGetLocalResourcesUseCase.execute(any())).thenReturn(
+                GetLocalResourcesUseCase.Output(mockResourcesList()),
             )
-        )
-        mockAccountData(null)
-        whenever(mockGetLocalResourcesUseCase.execute(any())).thenReturn(
-            GetLocalResourcesUseCase.Output(emptyList())
-        )
-
-        presenter.attach(view)
-        presenter.argsRetrieved(
-            ShowSuggestedModel.DoNotShow,
-            HomeDisplayViewModel.AllItems,
-            hasPreviousEntry = false,
-            shouldShowCloseButton = false,
-            shouldShowResourceMoreMenu = false
-        )
-        presenter.resume(view)
-
-        verify(view).hideBackArrow()
-        verify(view).showHomeScreenTitle(HomeDisplayViewModel.AllItems)
-        verify(view).showAllItemsSearchHint()
-        verify(view).hideRefreshProgress()
-        verify(view).showDataRefreshError()
-        verify(view).displaySearchAvatar(null)
-        verify(view).hideFolderMoreMenuIcon()
-        verify(view, times(2)).hideCreateButton()
-    }
-
-    @Test
-    fun `error during refresh clicked should show correct ui`() = runTest {
-        val refreshFlow =
-            MutableStateFlow(
-                DataRefreshStatus.Finished(
-                    HomeDataInteractor.Output.Failure(AuthenticationState.Authenticated)
+            mockAccountData(null)
+            whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
+                flowOf(
+                    DataRefreshStatus.InProgress,
+                    DataRefreshStatus.Finished(HomeDataInteractor.Output.Success),
+                ),
+            )
+            val refreshFlow =
+                MutableStateFlow(
+                    DataRefreshStatus.Finished(
+                        HomeDataInteractor.Output.Success,
+                    ),
                 )
-            )
-        whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(refreshFlow)
-        whenever(mockGetLocalResourcesUseCase.execute(any())).thenReturn(
-            GetLocalResourcesUseCase.Output(emptyList())
-        )
-        whenever(mockResourcesInteractor.fetchAndSaveResources()).thenReturn(
-            ResourceInteractor.Output.Failure(AuthenticationState.Authenticated)
-        )
-        whenever(mockFullDataRefreshExecutor.performFullDataRefresh()).then {
-            refreshFlow.tryEmit(
-                DataRefreshStatus.Finished(
-                    HomeDataInteractor.Output.Failure(AuthenticationState.Authenticated)
+            whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(refreshFlow)
+            whenever(mockFullDataRefreshExecutor.performFullDataRefresh()).then {
+                refreshFlow.tryEmit(
+                    DataRefreshStatus.Finished(
+                        HomeDataInteractor.Output.Success,
+                    ),
                 )
+            }
+
+            presenter.attach(view)
+            presenter.argsRetrieved(
+                ShowSuggestedModel.DoNotShow,
+                HomeDisplayViewModel.AllItems,
+                hasPreviousEntry = false,
+                shouldShowCloseButton = false,
+                shouldShowResourceMoreMenu = false,
             )
+            presenter.resume(view)
+            presenter.searchTextChange("second")
+            presenter.refreshSwipe()
+
+            verify(view).hideCreateButton()
+            verify(view).hideRefreshProgress()
+            verify(view, times(2)).showItems(any(), any(), any(), any(), any(), any(), any(), any())
+            verify(view, times(2)).showCreateButton()
         }
-        mockAccountData(null)
-
-        presenter.attach(view)
-        presenter.argsRetrieved(
-            ShowSuggestedModel.DoNotShow,
-            HomeDisplayViewModel.AllItems,
-            hasPreviousEntry = false,
-            shouldShowCloseButton = false,
-            shouldShowResourceMoreMenu = false
-        )
-        presenter.resume(view)
-
-        verify(view).hideBackArrow()
-        verify(view).hideRefreshProgress()
-        verify(view).showDataRefreshError()
-    }
 
     @Test
-    fun `item clicked should open details screen`() = runTest {
-        whenever(mockResourcesInteractor.fetchAndSaveResources()).thenReturn(
-            ResourceInteractor.Output.Failure(AuthenticationState.Authenticated)
-        )
-        whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
-            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
-        )
-        val model = ResourceModel(
-            resourceId = "id",
-            resourceTypeId = "resTypeId",
-            folderId = "folderId",
-            permission = ResourcePermission.READ,
-            favouriteId = null,
-            modified = ZonedDateTime.now(),
-            expiry = null,
-            metadataJsonModel = MetadataJsonModel(
-                """
-                        {
-                            "name": "",
-                            "uri": "",
-                            "username": "",
-                            "description": ""
-                        }
-                """.trimIndent()
-            ),
-            metadataKeyId = null,
-            metadataKeyType = null
-        )
-        mockAccountData(null)
-        presenter.attach(view)
-        presenter.argsRetrieved(
-            ShowSuggestedModel.DoNotShow,
-            HomeDisplayViewModel.AllItems,
-            hasPreviousEntry = false,
-            shouldShowCloseButton = false,
-            shouldShowResourceMoreMenu = false
-        )
-        presenter.resume(view)
-        reset(view)
-        presenter.itemClick(model)
-        verify(view).navigateToDetails(model)
-        verifyNoMoreInteractions(view)
-    }
+    fun `empty view should be displayed when search is empty`() =
+        runTest {
+            whenever(mockResourcesInteractor.fetchAndSaveResources()).thenReturn(
+                ResourceInteractor.Output.Success,
+            )
+            whenever(mockGetLocalResourcesUseCase.execute(any())).thenReturn(
+                GetLocalResourcesUseCase.Output(mockResourcesList()),
+            )
+            mockAccountData(null)
+            whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
+                flowOf(
+                    DataRefreshStatus.InProgress,
+                    DataRefreshStatus.Finished(HomeDataInteractor.Output.Success),
+                ),
+            )
+
+            presenter.attach(view)
+            presenter.argsRetrieved(
+                ShowSuggestedModel.DoNotShow,
+                HomeDisplayViewModel.AllItems,
+                hasPreviousEntry = false,
+                shouldShowCloseButton = false,
+                shouldShowResourceMoreMenu = false,
+            )
+            presenter.resume(view)
+            presenter.searchTextChange("empty search")
+
+            verify(view).hideCreateButton()
+            verify(view).showSearchEmptyList()
+            verify(view, times(2)).showCreateButton()
+        }
+
+    @Test
+    fun `empty view should be displayed when there are no resources`() =
+        runTest {
+            whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
+                flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success)),
+            )
+            whenever(mockResourcesInteractor.fetchAndSaveResources()).thenReturn(
+                ResourceInteractor.Output.Success,
+            )
+            whenever(mockGetLocalResourcesUseCase.execute(any())).thenReturn(
+                GetLocalResourcesUseCase.Output(emptyList()),
+            )
+            mockAccountData(null)
+
+            presenter.attach(view)
+            presenter.argsRetrieved(
+                ShowSuggestedModel.DoNotShow,
+                HomeDisplayViewModel.AllItems,
+                hasPreviousEntry = false,
+                shouldShowCloseButton = false,
+                shouldShowResourceMoreMenu = false,
+            )
+            presenter.resume(view)
+
+            verify(view, times(2)).showEmptyList()
+        }
+
+    @Test
+    fun `error should be displayed when request failures`() =
+        runTest {
+            whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
+                flowOf(
+                    DataRefreshStatus.InProgress,
+                    DataRefreshStatus.Finished(HomeDataInteractor.Output.Failure(AuthenticationState.Authenticated)),
+                ),
+            )
+            mockAccountData(null)
+            whenever(mockGetLocalResourcesUseCase.execute(any())).thenReturn(
+                GetLocalResourcesUseCase.Output(emptyList()),
+            )
+
+            presenter.attach(view)
+            presenter.argsRetrieved(
+                ShowSuggestedModel.DoNotShow,
+                HomeDisplayViewModel.AllItems,
+                hasPreviousEntry = false,
+                shouldShowCloseButton = false,
+                shouldShowResourceMoreMenu = false,
+            )
+            presenter.resume(view)
+
+            verify(view).hideBackArrow()
+            verify(view).showHomeScreenTitle(HomeDisplayViewModel.AllItems)
+            verify(view).showAllItemsSearchHint()
+            verify(view).hideRefreshProgress()
+            verify(view).showDataRefreshError()
+            verify(view).displaySearchAvatar(null)
+            verify(view).hideFolderMoreMenuIcon()
+            verify(view, times(2)).hideCreateButton()
+        }
+
+    @Test
+    fun `error during refresh clicked should show correct ui`() =
+        runTest {
+            val refreshFlow =
+                MutableStateFlow(
+                    DataRefreshStatus.Finished(
+                        HomeDataInteractor.Output.Failure(AuthenticationState.Authenticated),
+                    ),
+                )
+            whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(refreshFlow)
+            whenever(mockGetLocalResourcesUseCase.execute(any())).thenReturn(
+                GetLocalResourcesUseCase.Output(emptyList()),
+            )
+            whenever(mockResourcesInteractor.fetchAndSaveResources()).thenReturn(
+                ResourceInteractor.Output.Failure(AuthenticationState.Authenticated),
+            )
+            whenever(mockFullDataRefreshExecutor.performFullDataRefresh()).then {
+                refreshFlow.tryEmit(
+                    DataRefreshStatus.Finished(
+                        HomeDataInteractor.Output.Failure(AuthenticationState.Authenticated),
+                    ),
+                )
+            }
+            mockAccountData(null)
+
+            presenter.attach(view)
+            presenter.argsRetrieved(
+                ShowSuggestedModel.DoNotShow,
+                HomeDisplayViewModel.AllItems,
+                hasPreviousEntry = false,
+                shouldShowCloseButton = false,
+                shouldShowResourceMoreMenu = false,
+            )
+            presenter.resume(view)
+
+            verify(view).hideBackArrow()
+            verify(view).hideRefreshProgress()
+            verify(view).showDataRefreshError()
+        }
+
+    @Test
+    fun `item clicked should open details screen`() =
+        runTest {
+            whenever(mockResourcesInteractor.fetchAndSaveResources()).thenReturn(
+                ResourceInteractor.Output.Failure(AuthenticationState.Authenticated),
+            )
+            whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
+                flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success)),
+            )
+            val model =
+                ResourceModel(
+                    resourceId = "id",
+                    resourceTypeId = "resTypeId",
+                    folderId = "folderId",
+                    permission = ResourcePermission.READ,
+                    favouriteId = null,
+                    modified = ZonedDateTime.now(),
+                    expiry = null,
+                    metadataJsonModel =
+                        MetadataJsonModel(
+                            """
+                            {
+                                "name": "",
+                                "uri": "",
+                                "username": "",
+                                "description": ""
+                            }
+                            """.trimIndent(),
+                        ),
+                    metadataKeyId = null,
+                    metadataKeyType = null,
+                )
+            mockAccountData(null)
+            presenter.attach(view)
+            presenter.argsRetrieved(
+                ShowSuggestedModel.DoNotShow,
+                HomeDisplayViewModel.AllItems,
+                hasPreviousEntry = false,
+                shouldShowCloseButton = false,
+                shouldShowResourceMoreMenu = false,
+            )
+            presenter.resume(view)
+            reset(view)
+            presenter.itemClick(model)
+            verify(view).navigateToDetails(model)
+            verifyNoMoreInteractions(view)
+        }
 
     @Test
     fun `home should navigate to root when current folder cannot be retrieved`() {
@@ -414,12 +426,13 @@ class HomePresenterTest : KoinTest {
             onBlocking { execute(any()) } doReturn GetLocalResourcesAndFoldersUseCase.Output.Failure
         }
         mockGetLocalFolderUseCase.stub {
-            onBlocking { execute(any()) } doReturn com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalFolderDetailsUseCase.Output(
-                FolderModel("childId", "root", "child folder", false, ResourcePermission.UPDATE)
-            )
+            onBlocking { execute(any()) } doReturn
+                com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalFolderDetailsUseCase.Output(
+                    FolderModel("childId", "root", "child folder", false, ResourcePermission.UPDATE),
+                )
         }
         whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
-            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
+            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success)),
         )
         mockAccountData(null)
 
@@ -429,7 +442,7 @@ class HomePresenterTest : KoinTest {
             HomeDisplayViewModel.Folders(Folder.Child("childId"), "child name", isActiveFolderShared = false),
             hasPreviousEntry = false,
             shouldShowCloseButton = false,
-            shouldShowResourceMoreMenu = false
+            shouldShowResourceMoreMenu = false,
         )
         presenter.resume(view)
 
@@ -440,7 +453,7 @@ class HomePresenterTest : KoinTest {
     @Test
     fun `view should show correct titles for child items`() {
         whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
-            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
+            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success)),
         )
         mockAccountData(null)
 
@@ -450,41 +463,56 @@ class HomePresenterTest : KoinTest {
             HomeDisplayViewModel.Folders(Folder.Child("childId"), "folder name", isActiveFolderShared = false),
             hasPreviousEntry = false,
             shouldShowCloseButton = false,
-            shouldShowResourceMoreMenu = false
+            shouldShowResourceMoreMenu = false,
         )
         presenter.argsRetrieved(
             ShowSuggestedModel.DoNotShow,
             HomeDisplayViewModel.Tags("id", "tag name", isActiveTagShared = false),
             hasPreviousEntry = false,
             shouldShowCloseButton = false,
-            shouldShowResourceMoreMenu = false
+            shouldShowResourceMoreMenu = false,
         )
         presenter.argsRetrieved(
             ShowSuggestedModel.DoNotShow,
             HomeDisplayViewModel.Groups("id", "group name"),
             hasPreviousEntry = false,
             shouldShowCloseButton = false,
-            shouldShowResourceMoreMenu = false
+            shouldShowResourceMoreMenu = false,
         )
         presenter.argsRetrieved(
             ShowSuggestedModel.DoNotShow,
-            HomeDisplayViewModel.RecentlyModified, hasPreviousEntry = false, false, shouldShowResourceMoreMenu = false
+            HomeDisplayViewModel.RecentlyModified,
+            hasPreviousEntry = false,
+            false,
+            shouldShowResourceMoreMenu = false,
         )
         presenter.argsRetrieved(
             ShowSuggestedModel.DoNotShow,
-            HomeDisplayViewModel.SharedWithMe, hasPreviousEntry = false, false, shouldShowResourceMoreMenu = false
+            HomeDisplayViewModel.SharedWithMe,
+            hasPreviousEntry = false,
+            false,
+            shouldShowResourceMoreMenu = false,
         )
         presenter.argsRetrieved(
             ShowSuggestedModel.DoNotShow,
-            HomeDisplayViewModel.OwnedByMe, hasPreviousEntry = false, false, shouldShowResourceMoreMenu = false
+            HomeDisplayViewModel.OwnedByMe,
+            hasPreviousEntry = false,
+            false,
+            shouldShowResourceMoreMenu = false,
         )
         presenter.argsRetrieved(
             ShowSuggestedModel.DoNotShow,
-            HomeDisplayViewModel.Favourites, hasPreviousEntry = false, false, shouldShowResourceMoreMenu = false
+            HomeDisplayViewModel.Favourites,
+            hasPreviousEntry = false,
+            false,
+            shouldShowResourceMoreMenu = false,
         )
         presenter.argsRetrieved(
             ShowSuggestedModel.DoNotShow,
-            HomeDisplayViewModel.AllItems, hasPreviousEntry = false, false, shouldShowResourceMoreMenu = false
+            HomeDisplayViewModel.AllItems,
+            hasPreviousEntry = false,
+            false,
+            shouldShowResourceMoreMenu = false,
         )
         presenter.resume(view)
 
@@ -497,7 +525,7 @@ class HomePresenterTest : KoinTest {
     @Test
     fun `view should show back arrow when in child item`() {
         whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
-            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
+            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success)),
         )
         mockAccountData(null)
 
@@ -507,21 +535,21 @@ class HomePresenterTest : KoinTest {
             HomeDisplayViewModel.Folders(Folder.Child("childId"), "folder name", isActiveFolderShared = false),
             hasPreviousEntry = true,
             shouldShowCloseButton = false,
-            shouldShowResourceMoreMenu = false
+            shouldShowResourceMoreMenu = false,
         )
         presenter.argsRetrieved(
             ShowSuggestedModel.DoNotShow,
             HomeDisplayViewModel.Tags("id", "tag name", isActiveTagShared = false),
             hasPreviousEntry = true,
             shouldShowCloseButton = false,
-            shouldShowResourceMoreMenu = false
+            shouldShowResourceMoreMenu = false,
         )
         presenter.argsRetrieved(
             ShowSuggestedModel.DoNotShow,
             HomeDisplayViewModel.Groups("id", "group name"),
             hasPreviousEntry = true,
             shouldShowCloseButton = false,
-            shouldShowResourceMoreMenu = false
+            shouldShowResourceMoreMenu = false,
         )
         presenter.resume(view)
 
@@ -531,7 +559,7 @@ class HomePresenterTest : KoinTest {
     @Test
     fun `view should navigate to selected item correctly based on root or child item`() {
         whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
-            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
+            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success)),
         )
         mockAccountData(null)
 
@@ -541,7 +569,7 @@ class HomePresenterTest : KoinTest {
             HomeDisplayViewModel.Folders(Folder.Child("childId"), "folder name", isActiveFolderShared = false),
             hasPreviousEntry = true,
             shouldShowCloseButton = false,
-            shouldShowResourceMoreMenu = false
+            shouldShowResourceMoreMenu = false,
         )
         presenter.tagsClick()
         presenter.argsRetrieved(
@@ -549,7 +577,7 @@ class HomePresenterTest : KoinTest {
             HomeDisplayViewModel.tagsRoot(),
             hasPreviousEntry = false,
             shouldShowCloseButton = false,
-            shouldShowResourceMoreMenu = false
+            shouldShowResourceMoreMenu = false,
         )
         presenter.resume(view)
         presenter.foldersClick()
@@ -561,13 +589,13 @@ class HomePresenterTest : KoinTest {
     @Test
     fun `view root should user selected filter by default`() {
         whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
-            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
+            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success)),
         )
         whenever(mockGetHomeDisplayPrefsUseCase.execute(any())).doReturn(
             GetHomeDisplayViewPrefsUseCase.Output(
                 lastUsedHomeView = HomeDisplayView.ALL_ITEMS,
-                userSetHomeView = DefaultFilterModel.FOLDERS
-            )
+                userSetHomeView = DefaultFilterModel.FOLDERS,
+            ),
         )
         mockAccountData(null)
 
@@ -577,7 +605,7 @@ class HomePresenterTest : KoinTest {
             homeDisplayView = null,
             hasPreviousEntry = false,
             shouldShowCloseButton = false,
-            shouldShowResourceMoreMenu = false
+            shouldShowResourceMoreMenu = false,
         )
         presenter.resume(view)
 
@@ -590,13 +618,13 @@ class HomePresenterTest : KoinTest {
     @Test
     fun `view should apply visibility settings correct`() {
         whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
-            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
+            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success)),
         )
         whenever(mockGetHomeDisplayPrefsUseCase.execute(any())).doReturn(
             GetHomeDisplayViewPrefsUseCase.Output(
                 lastUsedHomeView = HomeDisplayView.ALL_ITEMS,
-                userSetHomeView = DefaultFilterModel.FOLDERS
-            )
+                userSetHomeView = DefaultFilterModel.FOLDERS,
+            ),
         )
         mockAccountData(null)
 
@@ -606,7 +634,7 @@ class HomePresenterTest : KoinTest {
             homeDisplayView = null,
             hasPreviousEntry = false,
             shouldShowCloseButton = false,
-            shouldShowResourceMoreMenu = false
+            shouldShowResourceMoreMenu = false,
         )
         presenter.resume(view)
 
@@ -618,56 +646,59 @@ class HomePresenterTest : KoinTest {
             homeDisplayView = HomeDisplayViewModel.Folders(Folder.Root),
             hasPreviousEntry = false,
             shouldShowCloseButton = true,
-            shouldShowResourceMoreMenu = true
+            shouldShowResourceMoreMenu = true,
         )
 
         verify(view).showCloseButton()
     }
 
-    private fun mockResourcesList() = listOf(
-        ResourceModel(
-            resourceId = "id1",
-            resourceTypeId = "resTypeId",
-            folderId = "folderId",
-            permission = ResourcePermission.READ,
-            favouriteId = null,
-            modified = ZonedDateTime.now(),
-            expiry = null,
-            metadataJsonModel = MetadataJsonModel(
-                """
-                    {
-                        "name": "",
-                        "uri": "",
-                        "username": "",
-                        "description": ""
-                    }
-                """.trimIndent()
+    private fun mockResourcesList() =
+        listOf(
+            ResourceModel(
+                resourceId = "id1",
+                resourceTypeId = "resTypeId",
+                folderId = "folderId",
+                permission = ResourcePermission.READ,
+                favouriteId = null,
+                modified = ZonedDateTime.now(),
+                expiry = null,
+                metadataJsonModel =
+                    MetadataJsonModel(
+                        """
+                        {
+                            "name": "",
+                            "uri": "",
+                            "username": "",
+                            "description": ""
+                        }
+                        """.trimIndent(),
+                    ),
+                metadataKeyId = null,
+                metadataKeyType = null,
             ),
-            metadataKeyId = null,
-            metadataKeyType = null
-        ),
-        ResourceModel(
-            resourceId = "id2",
-            resourceTypeId = "resTypeId",
-            folderId = "folderId",
-            permission = ResourcePermission.READ,
-            favouriteId = null,
-            modified = ZonedDateTime.now(),
-            expiry = null,
-            metadataJsonModel = MetadataJsonModel(
-                """
-                    {
-                        "name": "",
-                        "uri": "",
-                        "username": "",
-                        "description": ""
-                    }
-                """.trimIndent()
+            ResourceModel(
+                resourceId = "id2",
+                resourceTypeId = "resTypeId",
+                folderId = "folderId",
+                permission = ResourcePermission.READ,
+                favouriteId = null,
+                modified = ZonedDateTime.now(),
+                expiry = null,
+                metadataJsonModel =
+                    MetadataJsonModel(
+                        """
+                        {
+                            "name": "",
+                            "uri": "",
+                            "username": "",
+                            "description": ""
+                        }
+                        """.trimIndent(),
+                    ),
+                metadataKeyId = null,
+                metadataKeyType = null,
             ),
-            metadataKeyId = null,
-            metadataKeyType = null
         )
-    )
 
     private fun mockAccountData(avatarUrl: String?) {
         whenever(mockGetSelectedAccountDataUseCase.execute(anyOrNull())).thenReturn(
@@ -679,8 +710,8 @@ class HomePresenterTest : KoinTest {
                 url = "",
                 serverId = "",
                 label = "label",
-                role = "user"
-            )
+                role = "user",
+            ),
         )
     }
 }

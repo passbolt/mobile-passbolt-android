@@ -29,9 +29,8 @@ import net.jimblackler.jsonschemafriend.Schema
 import net.jimblackler.jsonschemafriend.SchemaStore
 
 class JSFSchemaRepository(
-    private val context: Context
+    private val context: Context,
 ) : JsonSchemaRepository<Schema> {
-
     private val resourceSchemaRepository = hashMapOf<String, Schema>()
     private val secretsSchemaRepository = hashMapOf<String, Schema>()
 

@@ -23,12 +23,11 @@ package com.passbolt.mobile.android.core.autofill.accessibility
  * @since v1.0
  */
 object AccessibilityCommunicator {
-
     var lastCredentials: Credentials? = null
 
     data class Credentials(
         val username: String,
         val password: String,
-        val uri: String?
+        val uri: String?,
     )
 }

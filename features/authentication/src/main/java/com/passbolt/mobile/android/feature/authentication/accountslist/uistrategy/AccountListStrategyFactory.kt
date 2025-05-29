@@ -26,10 +26,9 @@ import com.passbolt.mobile.android.feature.authentication.accountslist.AccountsL
  * @since v1.0
  */
 class AccountListStrategyFactory {
-
     fun get(
         accountsListFragment: AccountsListFragment,
-        type: ActivityIntents.AuthConfig
+        type: ActivityIntents.AuthConfig,
     ) = when (type) {
         is ActivityIntents.AuthConfig.ManageAccount -> ManageAccountListStrategy(accountsListFragment)
         is ActivityIntents.AuthConfig.Startup -> AuthAccountListStrategy(accountsListFragment)

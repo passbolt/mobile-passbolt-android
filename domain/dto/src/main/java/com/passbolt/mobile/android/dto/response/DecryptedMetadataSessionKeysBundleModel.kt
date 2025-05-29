@@ -31,5 +31,5 @@ data class DecryptedMetadataSessionKeysBundleModel(
     val id: UUID,
     val bundle: SessionKeysBundleDto,
     val created: ZonedDateTime,
-    val modified: ZonedDateTime
+    val modified: ZonedDateTime,
 )

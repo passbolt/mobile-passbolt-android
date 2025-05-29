@@ -34,38 +34,39 @@ import org.koin.test.KoinTest
 import java.util.UUID
 
 class ResourceTypesListDeserializerTest : KoinTest {
-
-    private val gson = GsonBuilder()
-        .registerTypeAdapter(
-            object : TypeToken<List<@JvmSuppressWildcards ResourceTypeDto>>() {}.type,
-            ResourceTypesListDeserializer()
-        )
-        .create()
+    private val gson =
+        GsonBuilder()
+            .registerTypeAdapter(
+                object : TypeToken<List<@JvmSuppressWildcards ResourceTypeDto>>() {}.type,
+                ResourceTypesListDeserializer(),
+            ).create()
 
     @Test
     fun `resources types with unsupported slugs should be filtered out`() {
-        val resourceTypes = listOf(
-            ResourceTypeDto(
-                id = UUID.randomUUID(),
-                slug = "invalid_slug",
-                name = "name",
-                description = "description",
-                deleted = null
-            ),
-            ResourceTypeDto(
-                id = UUID.randomUUID(),
-                slug = ContentType.PasswordString.slug,
-                name = "name",
-                description = "description",
-                deleted = null
+        val resourceTypes =
+            listOf(
+                ResourceTypeDto(
+                    id = UUID.randomUUID(),
+                    slug = "invalid_slug",
+                    name = "name",
+                    description = "description",
+                    deleted = null,
+                ),
+                ResourceTypeDto(
+                    id = UUID.randomUUID(),
+                    slug = ContentType.PasswordString.slug,
+                    name = "name",
+                    description = "description",
+                    deleted = null,
+                ),
             )
-        )
 
         val listJson = gson.toJson(resourceTypes)
-        val resultList = gson.fromJson<List<ResourceTypeDto>>(
-            listJson,
-            object : TypeToken<List<@JvmSuppressWildcards ResourceTypeDto>>() {}.type
-        )
+        val resultList =
+            gson.fromJson<List<ResourceTypeDto>>(
+                listJson,
+                object : TypeToken<List<@JvmSuppressWildcards ResourceTypeDto>>() {}.type,
+            )
 
         assertThat(resultList.size).isEqualTo(1)
     }

@@ -28,9 +28,8 @@ import com.passbolt.mobile.android.core.preferences.usecase.UpdateGlobalPreferen
 
 class ExpertSettingsPresenter(
     private val getGlobalPreferencesUseCase: GetGlobalPreferencesUseCase,
-    private val updateGlobalPreferencesUseCase: UpdateGlobalPreferencesUseCase
+    private val updateGlobalPreferencesUseCase: UpdateGlobalPreferencesUseCase,
 ) : ExpertSettingsContract.Presenter {
-
     override var view: ExpertSettingsContract.View? = null
 
     override fun attach(view: ExpertSettingsContract.View) {
@@ -65,7 +64,7 @@ class ExpertSettingsPresenter(
 
     override fun onDeveloperModeStateChanged(isDeveloperModeEnabled: Boolean) {
         updateGlobalPreferencesUseCase.execute(
-            UpdateGlobalPreferencesUseCase.Input(isDeveloperModeEnabled = isDeveloperModeEnabled)
+            UpdateGlobalPreferencesUseCase.Input(isDeveloperModeEnabled = isDeveloperModeEnabled),
         )
         if (isDeveloperModeEnabled) {
             // enable all developer settings
@@ -80,7 +79,7 @@ class ExpertSettingsPresenter(
 
     override fun onHideRootChanged(isHideRootDialogEnabled: Boolean) {
         updateGlobalPreferencesUseCase.execute(
-            UpdateGlobalPreferencesUseCase.Input(isHideRootDialogEnabled = isHideRootDialogEnabled)
+            UpdateGlobalPreferencesUseCase.Input(isHideRootDialogEnabled = isHideRootDialogEnabled),
         )
     }
 }

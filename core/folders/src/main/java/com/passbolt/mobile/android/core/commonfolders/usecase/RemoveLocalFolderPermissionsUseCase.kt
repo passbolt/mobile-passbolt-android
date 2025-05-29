@@ -27,9 +27,8 @@ import com.passbolt.mobile.android.database.DatabaseProvider
  * @since v1.0
  */
 class RemoveLocalFolderPermissionsUseCase(
-    private val databaseProvider: DatabaseProvider
+    private val databaseProvider: DatabaseProvider,
 ) : AsyncUseCase<UserIdInput, Unit> {
-
     override suspend fun execute(input: UserIdInput) {
         databaseProvider
             .get(input.userId)

@@ -35,31 +35,33 @@ class GetLocalResourcesUseCase(
     private val databaseProvider: DatabaseProvider,
     private val resourceModelMapper: ResourceModelMapper,
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
-    private val homeDisplayViewMapper: HomeDisplayViewMapper
+    private val homeDisplayViewMapper: HomeDisplayViewMapper,
 ) : AsyncUseCase<GetLocalResourcesUseCase.Input, GetLocalResourcesUseCase.Output> {
-
     override suspend fun execute(input: Input): Output {
         val userId = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
-        val resources = databaseProvider
-            .get(userId)
-            .resourcesDao()
-            .let {
-                when (val viewType = homeDisplayViewMapper.map(input.homeDisplayView)) {
-                    is ResourceDatabaseView.ByModifiedDateDescending -> it.getAllOrderedByModifiedDate(input.slugs)
-                    is ResourceDatabaseView.ByNameAscending -> it.getAllOrderedByName(input.slugs)
-                    is ResourceDatabaseView.IsFavourite -> it.getFavourites(input.slugs)
-                    is ResourceDatabaseView.HasPermissions -> it.getWithPermissions(viewType.permissions, input.slugs)
-                    is ResourceDatabaseView.HasExpiry -> it.getExpiredResources(input.slugs)
+        val resources =
+            databaseProvider
+                .get(userId)
+                .resourcesDao()
+                .let {
+                    when (val viewType = homeDisplayViewMapper.map(input.homeDisplayView)) {
+                        is ResourceDatabaseView.ByModifiedDateDescending -> it.getAllOrderedByModifiedDate(input.slugs)
+                        is ResourceDatabaseView.ByNameAscending -> it.getAllOrderedByName(input.slugs)
+                        is ResourceDatabaseView.IsFavourite -> it.getFavourites(input.slugs)
+                        is ResourceDatabaseView.HasPermissions -> it.getWithPermissions(viewType.permissions, input.slugs)
+                        is ResourceDatabaseView.HasExpiry -> it.getExpiredResources(input.slugs)
+                    }
                 }
-            }
 
         return Output(resources.map { resourceModelMapper.map(it) })
     }
 
     data class Input(
         val slugs: Set<String>,
-        val homeDisplayView: HomeDisplayViewModel = HomeDisplayViewModel.AllItems
+        val homeDisplayView: HomeDisplayViewModel = HomeDisplayViewModel.AllItems,
     )
 
-    data class Output(val resources: List<ResourceModel>)
+    data class Output(
+        val resources: List<ResourceModel>,
+    )
 }

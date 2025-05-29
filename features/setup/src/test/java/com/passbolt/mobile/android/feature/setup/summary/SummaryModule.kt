@@ -33,12 +33,13 @@ internal val mockSaveAccountUseCase = mock<SaveAccountUseCase>()
 internal val saveResourcesDatabasePassphraseUseCase = mock<SaveResourcesDatabasePassphraseUseCase>()
 internal val uuidProvider = mock<UuidProvider>()
 
-val summaryModule = module {
-    factory<SummaryContract.Presenter> {
-        SummaryPresenter(
-            saveAccountUseCase = mockSaveAccountUseCase,
-            saveResourcesDatabasePassphraseUseCase = saveResourcesDatabasePassphraseUseCase,
-            uuidProvider = uuidProvider
-        )
+val summaryModule =
+    module {
+        factory<SummaryContract.Presenter> {
+            SummaryPresenter(
+                saveAccountUseCase = mockSaveAccountUseCase,
+                saveResourcesDatabasePassphraseUseCase = saveResourcesDatabasePassphraseUseCase,
+                uuidProvider = uuidProvider,
+            )
+        }
     }
-}

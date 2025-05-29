@@ -2,13 +2,13 @@ package com.passbolt.mobile.android.core.navigation
 
 import android.content.Context
 import android.content.Intent
-import com.gaelmarhic.quadrant.Accountdetails
-import com.gaelmarhic.quadrant.Authentication
-import com.gaelmarhic.quadrant.Autofillresources
-import com.gaelmarhic.quadrant.Main
-import com.gaelmarhic.quadrant.Setup
-import com.gaelmarhic.quadrant.Startup
-import com.gaelmarhic.quadrant.Transferaccounttoanotherdevice
+import com.passbolt.mobile.android.core.navigation.constants.Accountdetails
+import com.passbolt.mobile.android.core.navigation.constants.Authentication
+import com.passbolt.mobile.android.core.navigation.constants.Autofillresources
+import com.passbolt.mobile.android.core.navigation.constants.Main
+import com.passbolt.mobile.android.core.navigation.constants.Setup
+import com.passbolt.mobile.android.core.navigation.constants.Startup
+import com.passbolt.mobile.android.core.navigation.constants.Transferaccounttoanotherdevice
 import java.io.Serializable
 
 /**
@@ -34,7 +34,6 @@ import java.io.Serializable
  * @since v1.0
  */
 object ActivityIntents {
-
     const val EXTRA_AUTH_CONFIG = "AUTH_CONFIG"
     const val EXTRA_CONTEXT = "CONTEXT"
     const val EXTRA_USER_ID = "USER_ID"
@@ -42,55 +41,63 @@ object ActivityIntents {
     const val EXTRA_AUTOFILL_MODE_NAME = "AUTOFILL_MODE"
     const val EXTRA_ACCOUNT_SETUP_DATA = "ACCOUNT_SETUP_DATA"
 
-    fun setup(context: Context, accountSetupData: AccountSetupDataModel? = null) = Intent().apply {
+    fun setup(
+        context: Context,
+        accountSetupData: AccountSetupDataModel? = null,
+    ) = Intent().apply {
         setClassName(context, Setup.SET_UP_ACTIVITY)
         putExtra(EXTRA_ACCOUNT_SETUP_DATA, accountSetupData)
     }
 
-    fun home(context: Context) = Intent().apply {
-        setClassName(context, Main.MAIN_ACTIVITY)
-        flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-    }
+    fun home(context: Context) =
+        Intent().apply {
+            setClassName(context, Main.MAIN_ACTIVITY)
+            flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+        }
 
-    fun bringHome(context: Context) = Intent().apply {
-        setClassName(context, Main.MAIN_ACTIVITY)
-        flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-    }
+    fun bringHome(context: Context) =
+        Intent().apply {
+            setClassName(context, Main.MAIN_ACTIVITY)
+            flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+        }
 
-    fun start(context: Context) = Intent().apply {
-        setClassName(context, Startup.START_UP_ACTIVITY)
-        addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
-    }
+    fun start(context: Context) =
+        Intent().apply {
+            setClassName(context, Startup.START_UP_ACTIVITY)
+            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
 
     fun authentication(
         context: Context,
         authConfig: AuthConfig,
         appContext: AppContext = AppContext.APP,
-        userId: String? = null
-    ) =
-        Intent().apply {
-            setClassName(context, Authentication.AUTHENTICATION_MAIN_ACTIVITY)
-            putExtra(EXTRA_AUTH_CONFIG, authConfig)
-            putExtra(EXTRA_USER_ID, userId)
-            putExtra(EXTRA_CONTEXT, appContext)
-            flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
-        }
+        userId: String? = null,
+    ) = Intent().apply {
+        setClassName(context, Authentication.AUTHENTICATION_MAIN_ACTIVITY)
+        putExtra(EXTRA_AUTH_CONFIG, authConfig)
+        putExtra(EXTRA_USER_ID, userId)
+        putExtra(EXTRA_CONTEXT, appContext)
+        flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
+    }
 
     // have to pass the name as there is a bug in android when passing serializable
     // in an intent that is next set as PendingIntent payload (AutofillService)
-    fun autofill(context: Context, autofillModeName: String, uri: String? = null) =
-        Intent().apply {
-            setClassName(context, Autofillresources.AUTOFILL_RESOURCES_ACTIVITY)
-            putExtra(EXTRA_AUTOFILL_MODE_NAME, autofillModeName)
-            uri?.let { putExtra(EXTRA_AUTOFILL_URI, uri) }
-        }
+    fun autofill(
+        context: Context,
+        autofillModeName: String,
+        uri: String? = null,
+    ) = Intent().apply {
+        setClassName(context, Autofillresources.AUTOFILL_RESOURCES_ACTIVITY)
+        putExtra(EXTRA_AUTOFILL_MODE_NAME, autofillModeName)
+        uri?.let { putExtra(EXTRA_AUTOFILL_URI, uri) }
+    }
 
     fun autofillReorderToFront(context: Context) =
         Intent().apply {
             setClassName(context, Autofillresources.AUTOFILL_RESOURCES_ACTIVITY)
             flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT or
-                    Intent.FLAG_ACTIVITY_SINGLE_TOP or
-                    Intent.FLAG_ACTIVITY_CLEAR_TOP
+                Intent.FLAG_ACTIVITY_SINGLE_TOP or
+                Intent.FLAG_ACTIVITY_CLEAR_TOP
         }
 
     fun accountDetails(context: Context) =
@@ -105,7 +112,9 @@ object ActivityIntents {
 
     sealed class AuthConfig : Serializable {
         data object Startup : AuthConfig()
+
         data object Setup : AuthConfig()
+
         data object ManageAccount : AuthConfig()
 
         // refreshes backend session and passphrase
@@ -118,7 +127,7 @@ object ActivityIntents {
         data object RefreshSession : AuthConfig()
 
         class Mfa(
-            val provider: String
+            val provider: String,
         ) : AuthConfig()
     }
 }

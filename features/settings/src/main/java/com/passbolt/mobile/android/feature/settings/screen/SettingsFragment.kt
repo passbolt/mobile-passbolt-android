@@ -35,19 +35,22 @@ import org.koin.android.ext.android.inject
  * @since v1.0
  */
 
-class SettingsFragment : BindingScopedFragment<FragmentSettingsBinding>(FragmentSettingsBinding::inflate),
+class SettingsFragment :
+    BindingScopedFragment<FragmentSettingsBinding>(FragmentSettingsBinding::inflate),
     SettingsContract.View {
-
     private val presenter: SettingsContract.Presenter by inject()
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         setListeners()
         presenter.attach(this)
     }
 
     private fun setListeners() {
-        with(binding) {
+        with(requiredBinding) {
             appSettings.setDebouncingOnClick {
                 presenter.appSettingsClick()
             }
@@ -75,8 +78,8 @@ class SettingsFragment : BindingScopedFragment<FragmentSettingsBinding>(Fragment
         startActivity(
             ActivityIntents.authentication(
                 requireContext(),
-                ActivityIntents.AuthConfig.Startup
-            )
+                ActivityIntents.AuthConfig.Startup,
+            ),
         )
     }
 
@@ -90,25 +93,25 @@ class SettingsFragment : BindingScopedFragment<FragmentSettingsBinding>(Fragment
 
     override fun navigateAccountsSettings() {
         findNavController().navigate(
-            SettingsFragmentDirections.actionSettingsToAccountsSettingsFragment()
+            SettingsFragmentDirections.actionSettingsToAccountsSettingsFragment(),
         )
     }
 
     override fun navigateToDebugLogsSettings() {
         findNavController().navigate(
-            SettingsFragmentDirections.actionSettingsToDebugLogsSettingsFragment()
+            SettingsFragmentDirections.actionSettingsToDebugLogsSettingsComposeFragment(),
         )
     }
 
     override fun navigateToTermsAndLicensesSettings() {
         findNavController().navigate(
-            SettingsFragmentDirections.actionSettingsToTermsAndLicensesSettingsFragment()
+            SettingsFragmentDirections.actionSettingsToTermsAndLicensesSettingsFragment(),
         )
     }
 
     override fun navigateToAppSettings() {
         findNavController().navigate(
-            SettingsFragmentDirections.actionSettingsToAppSettingsFragment()
+            SettingsFragmentDirections.actionSettingsToAppSettingsFragment(),
         )
     }
 }

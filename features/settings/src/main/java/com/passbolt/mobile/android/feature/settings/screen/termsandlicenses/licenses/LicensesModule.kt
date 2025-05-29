@@ -34,7 +34,7 @@ fun Module.licensesModule() {
     scope<LicensesFragment> {
         scoped<LicensesContract.Presenter> {
             LicensesPresenter(
-                gson = get()
+                gson = get(),
             )
         }
         scoped<ItemAdapter<LicenseItem>> {

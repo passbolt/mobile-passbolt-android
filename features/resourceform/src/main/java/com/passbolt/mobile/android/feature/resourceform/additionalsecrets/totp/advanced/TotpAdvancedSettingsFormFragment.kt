@@ -39,30 +39,33 @@ import com.passbolt.mobile.android.core.localization.R as LocalizationR
  */
 class TotpAdvancedSettingsFormFragment :
     BindingScopedFragment<FragmentTotpAdvancedSettingsFormBinding>(
-        FragmentTotpAdvancedSettingsFormBinding::inflate
-    ), TotpAdvancedSettingsFormContract.View {
-
+        FragmentTotpAdvancedSettingsFormBinding::inflate,
+    ),
+    TotpAdvancedSettingsFormContract.View {
     private val presenter: TotpAdvancedSettingsFormContract.Presenter by inject()
     private val navArgs: TotpAdvancedSettingsFormFragmentArgs by navArgs()
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
-        initDefaultToolbar(binding.toolbar)
+        initDefaultToolbar(requiredBinding.toolbar)
         setListeners()
         presenter.attach(this)
         presenter.argsRetrieved(navArgs.mode, navArgs.totpUiModel)
     }
 
     override fun showCreateTitle() {
-        binding.toolbar.toolbarTitle = getString(LocalizationR.string.resource_form_create_totp)
+        requiredBinding.toolbar.toolbarTitle = getString(LocalizationR.string.resource_form_create_totp)
     }
 
     override fun showEditTitle(resourceName: String) {
-        binding.toolbar.toolbarTitle = getString(LocalizationR.string.resource_form_edit_resource, resourceName)
+        requiredBinding.toolbar.toolbarTitle = getString(LocalizationR.string.resource_form_edit_resource, resourceName)
     }
 
     private fun setListeners() {
-        with(binding) {
+        with(requiredBinding) {
             totpAdvancedSettingsSubformView.totpPeriodInput.setTextChangeListener {
                 presenter.totpPeriodChanged(it)
             }
@@ -79,29 +82,29 @@ class TotpAdvancedSettingsFormFragment :
     }
 
     override fun showExpiry(expiry: String) {
-        binding.totpAdvancedSettingsSubformView.totpPeriodInput.text = expiry
+        requiredBinding.totpAdvancedSettingsSubformView.totpPeriodInput.text = expiry
     }
 
     override fun showLength(length: String) {
-        binding.totpAdvancedSettingsSubformView.digitsDropdown.setItem(length)
+        requiredBinding.totpAdvancedSettingsSubformView.digitsDropdown.setItem(length)
     }
 
     override fun showAlgorithm(algorithm: String) {
-        binding.totpAdvancedSettingsSubformView.algorithmDropdown.setItem(algorithm)
+        requiredBinding.totpAdvancedSettingsSubformView.algorithmDropdown.setItem(algorithm)
     }
 
     override fun showTotpPeriodError() {
-        binding.totpAdvancedSettingsSubformView.totpPeriodInput.setState(
+        requiredBinding.totpAdvancedSettingsSubformView.totpPeriodInput.setState(
             StatefulInput.State.Error(
-                getString(LocalizationR.string.validation_required_integer)
-            )
+                getString(LocalizationR.string.validation_required_integer),
+            ),
         )
     }
 
     override fun goBackWithResult(totpModel: TotpUiModel) {
         setFragmentResult(
             REQUEST_TOTP_ADVANCED,
-            bundleOf(EXTRA_TOTP_ADVANCED to totpModel)
+            bundleOf(EXTRA_TOTP_ADVANCED to totpModel),
         )
         findNavController().popBackStack()
     }

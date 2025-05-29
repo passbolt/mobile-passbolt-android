@@ -50,25 +50,29 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
  * @since v1.0
  */
 
-class ScanYubikeyDialog : DialogFragment(), AndroidScopeComponent, ScanYubikeyContract.View {
-
+class ScanYubikeyDialog :
+    DialogFragment(),
+    AndroidScopeComponent,
+    ScanYubikeyContract.View {
     override val scope by fragmentScope(useParentActivityScope = false)
     private var listener: ScanYubikeyListener? = null
     private val presenter: ScanYubikeyContract.Presenter by scope.inject()
     private lateinit var binding: DialogScanYubikeyBinding
-    private val authenticationResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-        if (it.resultCode == Activity.RESULT_OK) {
-            presenter.authenticationSucceeded()
+    private val authenticationResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            if (it.resultCode == Activity.RESULT_OK) {
+                presenter.authenticationSucceeded()
+            }
         }
-    }
-    private val scanYubikeyResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-        if (it.resultCode == Activity.RESULT_OK) {
-            val otp = it.data?.getStringExtra(OtpActivity.EXTRA_OTP)
-            presenter.yubikeyScanned(otp, bundledAuthToken, binding.rememberMeCheckBox.isChecked)
-        } else {
-            presenter.yubikeyScanCancelled()
+    private val scanYubikeyResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            if (it.resultCode == Activity.RESULT_OK) {
+                val otp = it.data?.getStringExtra(OtpActivity.EXTRA_OTP)
+                presenter.yubikeyScanned(otp, bundledAuthToken, binding.rememberMeCheckBox.isChecked)
+            } else {
+                presenter.yubikeyScanCancelled()
+            }
         }
-    }
     private val bundledAuthToken by lifecycleAwareLazy {
         requireArguments().getString(EXTRA_AUTH_KEY)
     }
@@ -81,13 +85,20 @@ class ScanYubikeyDialog : DialogFragment(), AndroidScopeComponent, ScanYubikeyCo
         setStyle(STYLE_NO_TITLE, CoreUiR.style.FullscreenDialogTheme)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         setupListeners()
         presenter.onViewCreated(bundledHasOtherProvider)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
+    ): View {
         binding = DialogScanYubikeyBinding.inflate(inflater)
         return binding.root
     }
@@ -95,11 +106,12 @@ class ScanYubikeyDialog : DialogFragment(), AndroidScopeComponent, ScanYubikeyCo
     override fun onAttach(context: Context) {
         super.onAttach(context)
         isCancelable = false
-        listener = when {
-            activity is ScanYubikeyListener -> activity as ScanYubikeyListener
-            parentFragment is ScanYubikeyListener -> parentFragment as ScanYubikeyListener
-            else -> error("Parent must implement ${ScanYubikeyListener::class.java.name}")
-        }
+        listener =
+            when {
+                activity is ScanYubikeyListener -> activity as ScanYubikeyListener
+                parentFragment is ScanYubikeyListener -> parentFragment as ScanYubikeyListener
+                else -> error("Parent must implement ${ScanYubikeyListener::class.java.name}")
+            }
         presenter.attach(this)
     }
 
@@ -114,8 +126,8 @@ class ScanYubikeyDialog : DialogFragment(), AndroidScopeComponent, ScanYubikeyCo
         authenticationResult.launch(
             ActivityIntents.authentication(
                 requireContext(),
-                ActivityIntents.AuthConfig.SignIn
-            )
+                ActivityIntents.AuthConfig.SignIn,
+            ),
         )
     }
 
@@ -143,7 +155,7 @@ class ScanYubikeyDialog : DialogFragment(), AndroidScopeComponent, ScanYubikeyCo
 
     override fun showScanYubikey() {
         scanYubikeyResult.launch(
-            Intent(requireContext(), OtpActivity::class.java)
+            Intent(requireContext(), OtpActivity::class.java),
         )
     }
 
@@ -158,7 +170,8 @@ class ScanYubikeyDialog : DialogFragment(), AndroidScopeComponent, ScanYubikeyCo
     }
 
     override fun showEmptyScannedOtp() {
-        Snackbar.make(requireView(), LocalizationR.string.dialog_mfa_scan_empty_otp, Snackbar.LENGTH_SHORT)
+        Snackbar
+            .make(requireView(), LocalizationR.string.dialog_mfa_scan_empty_otp, Snackbar.LENGTH_SHORT)
             .apply {
                 view.setBackgroundColor(context.getColor(CoreUiR.color.red))
                 show()
@@ -193,7 +206,8 @@ class ScanYubikeyDialog : DialogFragment(), AndroidScopeComponent, ScanYubikeyCo
     }
 
     override fun showError() {
-        Snackbar.make(binding.root, LocalizationR.string.unknown_error, Snackbar.LENGTH_LONG)
+        Snackbar
+            .make(binding.root, LocalizationR.string.unknown_error, Snackbar.LENGTH_LONG)
             .apply {
                 view.setBackgroundColor(context.getColor(CoreUiR.color.red))
                 show()
@@ -206,18 +220,19 @@ class ScanYubikeyDialog : DialogFragment(), AndroidScopeComponent, ScanYubikeyCo
 
         fun newInstance(
             token: String? = null,
-            hasOtherProvider: Boolean
-        ) =
-            ScanYubikeyDialog().apply {
-                arguments = bundleOf(
+            hasOtherProvider: Boolean,
+        ) = ScanYubikeyDialog().apply {
+            arguments =
+                bundleOf(
                     EXTRA_AUTH_KEY to token,
-                    EXTRA_OTHER_PROVIDER to hasOtherProvider
+                    EXTRA_OTHER_PROVIDER to hasOtherProvider,
                 )
-            }
+        }
     }
 }
 
 interface ScanYubikeyListener {
     fun yubikeyOtherProviderClick(jwtToken: String?)
+
     fun yubikeyVerificationSucceeded(mfaHeader: String? = null)
 }

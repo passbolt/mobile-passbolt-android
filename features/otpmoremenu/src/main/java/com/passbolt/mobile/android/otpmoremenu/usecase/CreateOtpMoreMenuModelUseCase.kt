@@ -29,10 +29,8 @@ import com.passbolt.mobile.android.ui.OtpMoreMenuModel
 import com.passbolt.mobile.android.ui.ResourcePermission
 
 class CreateOtpMoreMenuModelUseCase(
-    private val getLocalResourceUseCase: GetLocalResourceUseCase
-) :
-    AsyncUseCase<CreateOtpMoreMenuModelUseCase.Input, CreateOtpMoreMenuModelUseCase.Output> {
-
+    private val getLocalResourceUseCase: GetLocalResourceUseCase,
+) : AsyncUseCase<CreateOtpMoreMenuModelUseCase.Input, CreateOtpMoreMenuModelUseCase.Output> {
     override suspend fun execute(input: Input): Output {
         val resource = getLocalResourceUseCase.execute(GetLocalResourceUseCase.Input(input.resourceId)).resource
 
@@ -40,23 +38,24 @@ class CreateOtpMoreMenuModelUseCase(
             OtpMoreMenuModel(
                 title = resource.metadataJsonModel.name,
                 canDelete = resource.permission in WRITE_PERMISSIONS,
-                canEdit = resource.permission in WRITE_PERMISSIONS
-            )
+                canEdit = resource.permission in WRITE_PERMISSIONS,
+            ),
         )
     }
 
     data class Input(
-        val resourceId: String
+        val resourceId: String,
     )
 
     data class Output(
-        val otpMoreMenuModel: OtpMoreMenuModel
+        val otpMoreMenuModel: OtpMoreMenuModel,
     )
 
     private companion object {
-        private val WRITE_PERMISSIONS = setOf(
-            ResourcePermission.OWNER,
-            ResourcePermission.UPDATE
-        )
+        private val WRITE_PERMISSIONS =
+            setOf(
+                ResourcePermission.OWNER,
+                ResourcePermission.UPDATE,
+            )
     }
 }

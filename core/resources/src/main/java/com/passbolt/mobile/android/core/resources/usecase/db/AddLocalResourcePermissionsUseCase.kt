@@ -33,48 +33,53 @@ import com.passbolt.mobile.android.ui.ResourceModelWithAttributes
  */
 class AddLocalResourcePermissionsUseCase(
     private val databaseProvider: DatabaseProvider,
-    private val permissionsModelMapper: PermissionsModelMapper
+    private val permissionsModelMapper: PermissionsModelMapper,
 ) : AsyncUseCase<AddLocalResourcePermissionsUseCase.Input, Unit>,
     SelectedAccountUseCase {
-
     override suspend fun execute(input: Input) {
         val db = databaseProvider.get(selectedAccountId)
         val resourcesAndGroupsCrossRefDao = db.resourcesAndGroupsCrossRefDao()
         val resourcesAndUsersCrossRefDao = db.resourcesAndUsersCrossRefDao()
 
         input.resourcesWithTagsModelAndGroups.apply {
-            val resourceGroupPermissions = map {
-                it.resourceModel.resourceId to it.resourcePermissions
-                    .filterIsInstance<PermissionModel.GroupPermissionModel>()
-            }
-            val resourceUserPermissions = map {
-                it.resourceModel.resourceId to it.resourcePermissions
-                    .filterIsInstance<PermissionModel.UserPermissionModel>()
-            }
-
-            val resourceAndGroupCrossRefs = resourceGroupPermissions
-                .flatMap { (resourceId, groupPermissions) ->
-                    groupPermissions.map { groupPermission ->
-                        ResourceAndGroupsCrossRef(
-                            resourceId,
-                            groupPermission.group.groupId,
-                            permissionsModelMapper.map(groupPermission.permission),
-                            groupPermission.permissionId
-                        )
-                    }
+            val resourceGroupPermissions =
+                map {
+                    it.resourceModel.resourceId to
+                        it.resourcePermissions
+                            .filterIsInstance<PermissionModel.GroupPermissionModel>()
+                }
+            val resourceUserPermissions =
+                map {
+                    it.resourceModel.resourceId to
+                        it.resourcePermissions
+                            .filterIsInstance<PermissionModel.UserPermissionModel>()
                 }
 
-            val resourceAndUsersCrossRefs = resourceUserPermissions
-                .flatMap { (resourceId, userPermissions) ->
-                    userPermissions.map { userPermission ->
-                        ResourceAndUsersCrossRef(
-                            resourceId,
-                            userPermission.userId,
-                            permissionsModelMapper.map(userPermission.permission),
-                            userPermission.permissionId
-                        )
+            val resourceAndGroupCrossRefs =
+                resourceGroupPermissions
+                    .flatMap { (resourceId, groupPermissions) ->
+                        groupPermissions.map { groupPermission ->
+                            ResourceAndGroupsCrossRef(
+                                resourceId,
+                                groupPermission.group.groupId,
+                                permissionsModelMapper.map(groupPermission.permission),
+                                groupPermission.permissionId,
+                            )
+                        }
                     }
-                }
+
+            val resourceAndUsersCrossRefs =
+                resourceUserPermissions
+                    .flatMap { (resourceId, userPermissions) ->
+                        userPermissions.map { userPermission ->
+                            ResourceAndUsersCrossRef(
+                                resourceId,
+                                userPermission.userId,
+                                permissionsModelMapper.map(userPermission.permission),
+                                userPermission.permissionId,
+                            )
+                        }
+                    }
 
             resourcesAndGroupsCrossRefDao.insertAll(resourceAndGroupCrossRefs)
             resourcesAndUsersCrossRefDao.insertAll(resourceAndUsersCrossRefs)
@@ -82,6 +87,6 @@ class AddLocalResourcePermissionsUseCase(
     }
 
     data class Input(
-        val resourcesWithTagsModelAndGroups: List<ResourceModelWithAttributes>
+        val resourcesWithTagsModelAndGroups: List<ResourceModelWithAttributes>,
     )
 }

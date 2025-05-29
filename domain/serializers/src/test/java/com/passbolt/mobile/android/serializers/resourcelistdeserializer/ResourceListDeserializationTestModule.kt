@@ -58,50 +58,49 @@ internal val mockGetLocalMetadataKeysUseCase = mock<GetLocalMetadataKeysUseCase>
 internal val mockResourcesSnapShot = mock<ResourcesSnapshot>()
 internal val mockGetLocalResourceTypesUseCase = mock<GetLocalResourceTypesUseCase>()
 
-val resourceListDeserializationTestModule = module {
-    singleOf(::JsonSchemaValidationRunner)
-    singleOf(::ResourceListDeserializer)
-    single { (resourceTypeIdToSlugMapping: Map<UUID, String>, supportedResourceTypesIds: Set<UUID>) ->
-        ResourceListItemDeserializer(
-            jsonSchemaValidationRunner = get(),
-            gson = get(named(STRICT_ADAPTERS_ONLY_GSON)),
-            resourceTypeIdToSlugMapping = resourceTypeIdToSlugMapping,
-            supportedResourceTypesIds = supportedResourceTypesIds,
-            metadataDecryptor = mockMetadataDecryptor,
-            resourcesSnapshot = get()
-        )
-    }
-    singleOf(::ResourceTypeIdToSlugMappingProvider)
-    single { Validator() }
-    single { mockResourcesSnapShot }
-    single { mockGetLocalResourceTypesUseCase }
-    single<JsonSchemaRepository<Schema>> {
-        mockJSFSchemaRepository
-    }
-    single<JsonSchemaValidator> {
-        JSFJsonSchemaValidator(
-            schemaRepository = get(),
-            validator = get()
-        )
-    }
-    single { mockIdToSlugMappingUseCase }
-    factory { mockGetSelectedAccountUseCase }
-    single {
-        GsonBuilder()
-            .registerTypeAdapter(
-                object : TypeToken<List<@JvmSuppressWildcards ResourceResponseDto>>() {}.type,
-                get<ResourceListDeserializer>()
+val resourceListDeserializationTestModule =
+    module {
+        singleOf(::JsonSchemaValidationRunner)
+        singleOf(::ResourceListDeserializer)
+        single { (resourceTypeIdToSlugMapping: Map<UUID, String>, supportedResourceTypesIds: Set<UUID>) ->
+            ResourceListItemDeserializer(
+                jsonSchemaValidationRunner = get(),
+                gson = get(named(STRICT_ADAPTERS_ONLY_GSON)),
+                resourceTypeIdToSlugMapping = resourceTypeIdToSlugMapping,
+                supportedResourceTypesIds = supportedResourceTypesIds,
+                metadataDecryptor = mockMetadataDecryptor,
+                resourcesSnapshot = get(),
             )
-            .create()
+        }
+        singleOf(::ResourceTypeIdToSlugMappingProvider)
+        single { Validator() }
+        single { mockResourcesSnapShot }
+        single { mockGetLocalResourceTypesUseCase }
+        single<JsonSchemaRepository<Schema>> {
+            mockJSFSchemaRepository
+        }
+        single<JsonSchemaValidator> {
+            JSFJsonSchemaValidator(
+                schemaRepository = get(),
+                validator = get(),
+            )
+        }
+        single { mockIdToSlugMappingUseCase }
+        factory { mockGetSelectedAccountUseCase }
+        single {
+            GsonBuilder()
+                .registerTypeAdapter(
+                    object : TypeToken<List<@JvmSuppressWildcards ResourceResponseDto>>() {}.type,
+                    get<ResourceListDeserializer>(),
+                ).create()
+        }
+        single(named(STRICT_ADAPTERS_ONLY_GSON)) {
+            GsonBuilder()
+                .apply {
+                    strictTypeAdapters.forEach {
+                        registerTypeAdapter(it.key, it.value)
+                    }
+                }.create()
+        }
+        single { mockGetLocalMetadataKeysUseCase }
     }
-    single(named(STRICT_ADAPTERS_ONLY_GSON)) {
-        GsonBuilder()
-            .apply {
-                strictTypeAdapters.forEach {
-                    registerTypeAdapter(it.key, it.value)
-                }
-            }
-            .create()
-    }
-    single { mockGetLocalMetadataKeysUseCase }
-}

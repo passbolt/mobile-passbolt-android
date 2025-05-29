@@ -1,9 +1,3 @@
-package com.passbolt.mobile.android.feature.settings.screen.debuglogssettings
-
-import org.koin.core.module.Module
-import org.koin.core.module.dsl.scopedOf
-import org.koin.dsl.bind
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -27,8 +21,11 @@ import org.koin.dsl.bind
  * @since v1.0
  */
 
+package com.passbolt.mobile.android.feature.settings.screen.debuglogssettings
+
+import org.koin.androidx.viewmodel.dsl.viewModelOf
+import org.koin.core.module.Module
+
 fun Module.debugLogsSettingsModule() {
-    scope<DebugLogsSettingsFragment> {
-        scopedOf(::DebugLogsSettingsPresenter) bind DebugLogsSettingsContract.Presenter::class
-    }
+    viewModelOf(::DebugLogsSettingsViewModel)
 }

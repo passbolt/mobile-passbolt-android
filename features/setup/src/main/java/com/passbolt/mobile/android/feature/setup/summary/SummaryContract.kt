@@ -27,28 +27,49 @@ import com.passbolt.mobile.android.core.mvp.BaseContract
  * @since v1.0
  */
 interface SummaryContract {
-
     interface View : BaseContract.View {
-        fun setTitle(@StringRes title: Int)
+        fun setTitle(
+            @StringRes title: Int,
+        )
+
         fun setDescription(message: String)
-        fun setButtonLabel(@StringRes text: Int)
-        fun setIcon(@DrawableRes icon: Int)
+
+        fun setButtonLabel(
+            @StringRes text: Int,
+        )
+
+        fun setIcon(
+            @DrawableRes icon: Int,
+        )
+
         fun navigateToWelcome()
+
         fun navigateToFingerprintSetup()
+
         fun navigateToSignIn(userId: String)
+
         fun showLeaveConfirmationDialog()
+
         fun navigateToStart()
+
         fun navigateToManageAccounts()
+
         fun showHelpButton()
+
         fun showHelpMenu()
     }
 
     interface Presenter : BaseContract.Presenter<View> {
         fun start(status: ResultStatus)
+
         fun buttonClick()
+
         fun authenticationSucceeded()
+
         fun backClick()
+
         fun leaveConfirmationClick()
+
         fun helpClick()
     }
 }

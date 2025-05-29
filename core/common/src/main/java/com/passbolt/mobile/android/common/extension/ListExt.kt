@@ -1,5 +1,3 @@
-package com.passbolt.mobile.android.common.extension
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -22,6 +20,9 @@ package com.passbolt.mobile.android.common.extension
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+
+package com.passbolt.mobile.android.common.extension
+
 /**
  * Returns if are provided lists are empty.
  * @param lists lists to be checked

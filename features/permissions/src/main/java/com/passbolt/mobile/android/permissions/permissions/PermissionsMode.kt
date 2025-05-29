@@ -23,5 +23,6 @@ package com.passbolt.mobile.android.permissions.permissions
  * @since v1.0
  */
 enum class PermissionsMode {
-    VIEW, EDIT
+    VIEW,
+    EDIT,
 }

@@ -26,17 +26,18 @@ import com.passbolt.mobile.android.core.navigation.ActivityIntents
  * @since v1.0
  */
 interface AuthenticationMainContract {
-
     interface View : BaseContract.View {
         fun initNavWithoutAccountList(currentAccount: String)
+
         fun initNavWithAccountList()
+
         fun navigateToSignIn(currentAccount: String)
     }
 
     interface Presenter : BaseContract.Presenter<View> {
         fun bundleRetrieved(
             authConfig: ActivityIntents.AuthConfig,
-            userId: String?
+            userId: String?,
         )
     }
 }

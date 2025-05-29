@@ -23,9 +23,7 @@ package com.passbolt.mobile.android.passboltapi.settings
  * @since v1.0
  */
 internal class SettingsRemoteDataSource(
-    private val settingsApi: SettingsApi
+    private val settingsApi: SettingsApi,
 ) : SettingsDataSource {
-
-    override suspend fun getSettings() =
-        settingsApi.getSettings()
+    override suspend fun getSettings() = settingsApi.getSettings()
 }

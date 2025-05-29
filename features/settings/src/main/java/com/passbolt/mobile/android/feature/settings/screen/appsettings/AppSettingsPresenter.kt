@@ -48,9 +48,8 @@ class AppSettingsPresenter(
     private val saveBiometricKeyIvUseCase: SaveBiometricKeyIvUseCase,
     private val checkIfPassphraseExistsUseCase: CheckIfPassphraseFileExistsUseCase,
     private val removePassphraseUseCase: RemovePassphraseUseCase,
-    private val getSelectedAccountUseCase: GetSelectedAccountUseCase
+    private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
 ) : AppSettingsContract.Presenter {
-
     override var view: AppSettingsContract.View? = null
 
     override fun viewResumed() {
@@ -58,9 +57,10 @@ class AppSettingsPresenter(
     }
 
     private fun handleFingerprintSwitchState() {
-        if (checkIfPassphraseExistsUseCase.execute(
-                UserIdInput(requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount))
-            ).passphraseFileExists
+        if (checkIfPassphraseExistsUseCase
+                .execute(
+                    UserIdInput(requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)),
+                ).passphraseFileExists
         ) {
             view?.toggleFingerprintOn(silently = true)
         } else {
@@ -113,13 +113,13 @@ class AppSettingsPresenter(
             savePassphraseUseCase.execute(
                 SavePassphraseUseCase.Input(
                     passphrase.passphrase,
-                    authenticatedCipher
-                )
+                    authenticatedCipher,
+                ),
             )
             saveBiometricKeyIvUseCase.execute(
                 SaveBiometricKeyIvUseCase.Input(
-                    authenticatedCipher.iv
-                )
+                    authenticatedCipher.iv,
+                ),
             )
             view?.toggleFingerprintOn(silently = true)
         } else {
@@ -155,7 +155,7 @@ class AppSettingsPresenter(
 
     override fun defaultFilterClick() {
         view?.navigateToDefaultFilterSettings(
-            getHomeDisplayViewPrefsUseCase.execute(Unit).userSetHomeView
+            getHomeDisplayViewPrefsUseCase.execute(Unit).userSetHomeView,
         )
     }
 

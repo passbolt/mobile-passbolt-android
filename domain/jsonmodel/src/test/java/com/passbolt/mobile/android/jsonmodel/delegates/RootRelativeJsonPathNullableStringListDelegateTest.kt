@@ -11,12 +11,12 @@ import org.koin.test.KoinTest
 import org.koin.test.KoinTestRule
 
 class RootRelativeJsonPathNullableStringListDelegateTest : KoinTest {
-
     @get:Rule
-    val koinTestRule = KoinTestRule.create {
-        printLogger(Level.ERROR)
-        modules(jsonPathDelegatesTestModule)
-    }
+    val koinTestRule =
+        KoinTestRule.create {
+            printLogger(Level.ERROR)
+            modules(jsonPathDelegatesTestModule)
+        }
 
     @Test
     fun `read should work as expected`() {
@@ -29,11 +29,12 @@ class RootRelativeJsonPathNullableStringListDelegateTest : KoinTest {
                 ]
             }
             """
-        val jsonModel = object : JsonModel {
-            override var json: String? = jsonString
+        val jsonModel =
+            object : JsonModel {
+                override var json: String? = jsonString
 
-            var testListField by RootRelativeJsonPathNullableStringListDelegate(jsonPath = "testListField")
-        }
+                var testListField by RootRelativeJsonPathNullableStringListDelegate(jsonPath = "testListField")
+            }
 
         assertThat(jsonModel.testListField).isNotNull()
         assertThat(jsonModel.testListField!!).containsExactly("test1", "test2")
@@ -47,39 +48,42 @@ class RootRelativeJsonPathNullableStringListDelegateTest : KoinTest {
                 "testListField": null
             }
             """
-        val jsonModel = object : JsonModel {
-            override var json: String? = jsonString
+        val jsonModel =
+            object : JsonModel {
+                override var json: String? = jsonString
 
-            var testListField by RootRelativeJsonPathNullableStringListDelegate(jsonPath = "testListField")
-        }
+                var testListField by RootRelativeJsonPathNullableStringListDelegate(jsonPath = "testListField")
+            }
 
         assertThat(jsonModel.testListField).isEqualTo(null)
     }
 
     @Test
     fun `field write should work as expected`() {
-        val jsonStringInputs = listOf(
-            // empty field write
-            """
+        val jsonStringInputs =
+            listOf(
+                // empty field write
+                """
             {
                 "testListField": ""
             }
             """,
-            // null field write
-            """
+                // null field write
+                """
             {
                 "testListField": null
             }
-            """
-        )
-        val jsonModels = jsonStringInputs.map { jsonString ->
+            """,
+            )
+        val jsonModels =
+            jsonStringInputs.map { jsonString ->
 
-            object : JsonModel {
-                override var json: String? = jsonString
+                object : JsonModel {
+                    override var json: String? = jsonString
 
-                var testListField by RootRelativeJsonPathNullableStringListDelegate(jsonPath = "testListField")
+                    var testListField by RootRelativeJsonPathNullableStringListDelegate(jsonPath = "testListField")
+                }
             }
-        }
 
         jsonModels.forEach {
             it.testListField = listOf("test1, test2")
@@ -102,11 +106,12 @@ class RootRelativeJsonPathNullableStringListDelegateTest : KoinTest {
             }
             """
 
-        val jsonModel = object : JsonModel {
-            override var json: String? = jsonStringInput
+        val jsonModel =
+            object : JsonModel {
+                override var json: String? = jsonStringInput
 
-            var testListField by RootRelativeJsonPathNullableStringDelegate(jsonPath = "testListField")
-        }
+                var testListField by RootRelativeJsonPathNullableStringDelegate(jsonPath = "testListField")
+            }
 
         jsonModel.testListField = null
 
@@ -122,11 +127,12 @@ class RootRelativeJsonPathNullableStringListDelegateTest : KoinTest {
         {}
         """
 
-        val jsonModel = object : JsonModel {
-            override var json: String? = jsonString
+        val jsonModel =
+            object : JsonModel {
+                override var json: String? = jsonString
 
-            var testStringField by RootRelativeJsonPathNullableStringDelegate(jsonPath = "testStringField")
-        }
+                var testStringField by RootRelativeJsonPathNullableStringDelegate(jsonPath = "testStringField")
+            }
 
         jsonModel.testStringField = "test"
 

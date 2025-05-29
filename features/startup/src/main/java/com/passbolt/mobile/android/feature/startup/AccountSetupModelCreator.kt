@@ -26,7 +26,6 @@ import com.passbolt.mobile.android.core.navigation.AccountSetupDataModel
  * @since v1.0
  */
 class AccountSetupModelCreator {
-
     fun createFromIntent(intent: Intent): AccountSetupDataModel? =
         if (BuildConfig.DEBUG && intent.action == ACTION_MANAGED_PROFILE) {
             AccountSetupDataModel(
@@ -37,7 +36,7 @@ class AccountSetupModelCreator {
                 lastName = intent.getStringExtra(EXTRA_LAST_NAME).orEmpty(),
                 avatarUrl = intent.getStringExtra(EXTRA_AVATAR_URL).orEmpty(),
                 keyFingerprint = intent.getStringExtra(EXTRA_KEY_FINGERPRINT).orEmpty(),
-                armoredKey = intent.getStringExtra(EXTRA_ARMORED_KEY).orEmpty()
+                armoredKey = intent.getStringExtra(EXTRA_ARMORED_KEY).orEmpty(),
             )
         } else {
             null

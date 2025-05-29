@@ -27,17 +27,21 @@ import com.passbolt.mobile.android.feature.main.mainscreen.bottomnavigation.Main
  */
 
 interface MainContract {
-
     interface View : BaseAuthenticatedContract.View {
         fun checkForAppUpdates()
+
         fun showAppUpdateDownloadedSnackbar()
+
         fun tryLaunchReviewFlow()
+
         fun setupBottomNavigation(navigationModel: MainBottomNavigationModel)
+
         fun showChromeNativeAutofillEncouragement()
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
         fun appUpdateDownloaded()
+
         fun performFullDataRefresh()
     }
 }

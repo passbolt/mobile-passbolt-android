@@ -1,3 +1,26 @@
+/**
+ * Passbolt - Open source password manager for teams
+ * Copyright (c) 2021 Passbolt SA
+ *
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
+ * Public License (AGPL) as published by the Free Software Foundation version 3.
+ *
+ * The name "Passbolt" is a registered trademark of Passbolt SA, and Passbolt SA hereby declines to grant a trademark
+ * license to "Passbolt" pursuant to the GNU Affero General Public License version 3 Section 7(e), without a separate
+ * agreement with Passbolt SA.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License along with this program. If not,
+ * see GNU Affero General Public License v3 (http://www.gnu.org/licenses/agpl-3.0.html).
+ *
+ * @copyright Copyright (c) Passbolt SA (https://www.passbolt.com)
+ * @license https://opensource.org/licenses/AGPL-3.0 AGPL License
+ * @link https://www.passbolt.com Passbolt (tm)
+ * @since v1.0
+ */
+
 package com.passbolt.mobile.android.feature.autofill.resources
 
 import android.app.Activity
@@ -25,34 +48,12 @@ import org.koin.core.parameter.parametersOf
 import org.koin.core.qualifier.named
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
-/**
- * Passbolt - Open source password manager for teams
- * Copyright (c) 2021 Passbolt SA
- *
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
- * Public License (AGPL) as published by the Free Software Foundation version 3.
- *
- * The name "Passbolt" is a registered trademark of Passbolt SA, and Passbolt SA hereby declines to grant a trademark
- * license to "Passbolt" pursuant to the GNU Affero General Public License version 3 Section 7(e), without a separate
- * agreement with Passbolt SA.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License along with this program. If not,
- * see GNU Affero General Public License v3 (http://www.gnu.org/licenses/agpl-3.0.html).
- *
- * @copyright Copyright (c) Passbolt SA (https://www.passbolt.com)
- * @license https://opensource.org/licenses/AGPL-3.0 AGPL License
- * @link https://www.passbolt.com Passbolt (tm)
- * @since v1.0
- */
-
+// NOTE: When changing name or package read core/navigation/README.md
 class AutofillResourcesActivity :
     BindingScopedAuthenticatedActivity<ActivityAutofillResourcesBinding, AutofillResourcesContract.View>(
-        ActivityAutofillResourcesBinding::inflate
-    ), AutofillResourcesContract.View {
-
+        ActivityAutofillResourcesBinding::inflate,
+    ),
+    AutofillResourcesContract.View {
     override val presenter: AutofillResourcesContract.Presenter by inject()
     override val appContext = AppContext.AUTOFILL
 
@@ -89,7 +90,7 @@ class AutofillResourcesActivity :
     }
 
     override fun navigateToAutofillHome() {
-        findNavHostFragment(binding.fragmentContainer.id)
+        findNavHostFragment(requiredBinding.fragmentContainer.id)
             .navController
             .setGraph(com.passbolt.mobile.android.feature.home.R.navigation.home)
     }
@@ -99,8 +100,8 @@ class AutofillResourcesActivity :
             ActivityIntents.authentication(
                 this,
                 ActivityIntents.AuthConfig.RefreshSession,
-                appContext = AppContext.AUTOFILL
-            )
+                appContext = AppContext.AUTOFILL,
+            ),
         )
     }
 
@@ -113,15 +114,23 @@ class AutofillResourcesActivity :
         finish()
     }
 
-    override fun getAutofillStructure() = requireNotNull(
-        IntentCompat.getParcelableExtra(intent, EXTRA_ASSIST_STRUCTURE, AssistStructure::class.java)
-    )
+    override fun getAutofillStructure() =
+        requireNotNull(
+            IntentCompat.getParcelableExtra(intent, EXTRA_ASSIST_STRUCTURE, AssistStructure::class.java),
+        )
 
-    override fun autofillReturn(username: String, password: String, uri: String?) {
+    override fun autofillReturn(
+        username: String,
+        password: String,
+        uri: String?,
+    ) {
         returnAutofillDatasetStrategy.returnDataset(username, password, uri)
     }
 
-    override fun setResultAndFinish(result: Int, resultIntent: Intent) {
+    override fun setResultAndFinish(
+        result: Int,
+        resultIntent: Intent,
+    ) {
         setResult(result, resultIntent)
         finish()
     }
@@ -154,12 +163,14 @@ class AutofillResourcesActivity :
     }
 
     override fun showDecryptionFailure() {
-        Toast.makeText(this, LocalizationR.string.common_decryption_failure, Toast.LENGTH_SHORT)
+        Toast
+            .makeText(this, LocalizationR.string.common_decryption_failure, Toast.LENGTH_SHORT)
             .show()
     }
 
     override fun showFetchFailure() {
-        Toast.makeText(this, LocalizationR.string.common_fetch_failure, Toast.LENGTH_SHORT)
+        Toast
+            .makeText(this, LocalizationR.string.common_fetch_failure, Toast.LENGTH_SHORT)
             .show()
     }
 }

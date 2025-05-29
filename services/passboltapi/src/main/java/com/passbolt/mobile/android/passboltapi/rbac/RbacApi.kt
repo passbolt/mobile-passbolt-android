@@ -28,7 +28,6 @@ import com.passbolt.mobile.android.dto.response.RbacPermissionDto
 import retrofit2.http.GET
 
 internal interface RbacApi {
-
     @GET(RBAC_ME)
     suspend fun getMyRbacPermissions(): BaseResponse<List<RbacPermissionDto>>
 

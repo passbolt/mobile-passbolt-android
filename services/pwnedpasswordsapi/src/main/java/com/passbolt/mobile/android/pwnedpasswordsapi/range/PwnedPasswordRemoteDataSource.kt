@@ -23,9 +23,8 @@ package com.passbolt.mobile.android.pwnedpasswordsapi.range
  * @since v1.0
  */
 internal class PwnedPasswordRemoteDataSource(
-    private val pwnedPasswordsApi: PwnedPasswordsApi
+    private val pwnedPasswordsApi: PwnedPasswordsApi,
 ) : PwnedPasswordDataSource {
-
     override suspend fun getPwnedPasswordsSuffixes(passwordPartialHash: String): String =
         pwnedPasswordsApi.getPwnedPasswordsSuffixes(passwordPartialHash)
 }

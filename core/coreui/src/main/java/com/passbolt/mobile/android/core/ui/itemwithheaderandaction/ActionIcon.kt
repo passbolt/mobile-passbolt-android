@@ -25,18 +25,22 @@ package com.passbolt.mobile.android.core.ui.itemwithheaderandaction
 
 // corresponds with itemWithHeaderAndActionView_action attr
 @Suppress("MagicNumber")
-enum class ActionIcon(val value: Int) {
+enum class ActionIcon(
+    val value: Int,
+) {
     NONE(0),
     VIEW(1),
     COPY(2),
-    HIDE(3);
+    HIDE(3),
+    ;
 
     companion object {
-        fun fromInt(value: Int) = when (value) {
-            1 -> VIEW
-            2 -> COPY
-            3 -> HIDE
-            else -> NONE
-        }
+        fun fromInt(value: Int) =
+            when (value) {
+                1 -> VIEW
+                2 -> COPY
+                3 -> HIDE
+                else -> NONE
+            }
     }
 }

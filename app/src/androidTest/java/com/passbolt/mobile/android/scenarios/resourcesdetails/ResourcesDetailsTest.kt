@@ -59,47 +59,47 @@ import kotlin.test.BeforeTest
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
-
 @RunWith(AndroidJUnit4::class)
 @MediumTest
 class ResourcesDetailsTest : KoinTest {
-
     @get:Rule
-    val startUpActivityRule = lazyActivitySetupScenarioRule<AuthenticationMainActivity>(
-        koinOverrideModules = listOf(instrumentationTestsModule),
-        intentSupplier = {
-            ActivityIntents.authentication(
-                InstrumentationRegistry.getInstrumentation().targetContext,
-                ActivityIntents.AuthConfig.Startup,
-                AppContext.APP,
-                managedAccountIntentCreator.getUserLocalId()
-            )
-        }
-    )
+    val startUpActivityRule =
+        lazyActivitySetupScenarioRule<AuthenticationMainActivity>(
+            koinOverrideModules = listOf(instrumentationTestsModule),
+            intentSupplier = {
+                ActivityIntents.authentication(
+                    InstrumentationRegistry.getInstrumentation().targetContext,
+                    ActivityIntents.AuthConfig.Startup,
+                    AppContext.APP,
+                    managedAccountIntentCreator.getUserLocalId(),
+                )
+            },
+        )
 
     private val managedAccountIntentCreator: ManagedAccountIntentCreator by inject()
 
     @get:Rule
-    val idlingResourceRule = let {
-        val signInIdlingResource: SignInIdlingResource by inject()
-        val resourcesFullRefreshIdlingResource: ResourcesFullRefreshIdlingResource by inject()
-        val resourceDetailActionIdlingResource: ResourceDetailActionIdlingResource by inject()
-        IdlingResourceRule(
-            arrayOf(
-                signInIdlingResource,
-                resourcesFullRefreshIdlingResource,
-                resourceDetailActionIdlingResource
+    val idlingResourceRule =
+        let {
+            val signInIdlingResource: SignInIdlingResource by inject()
+            val resourcesFullRefreshIdlingResource: ResourcesFullRefreshIdlingResource by inject()
+            val resourceDetailActionIdlingResource: ResourceDetailActionIdlingResource by inject()
+            IdlingResourceRule(
+                arrayOf(
+                    signInIdlingResource,
+                    resourcesFullRefreshIdlingResource,
+                    resourceDetailActionIdlingResource,
+                ),
             )
-        )
-    }
+        }
 
     @BeforeTest
     fun setup() {
         signIn(managedAccountIntentCreator.getPassphrase())
     }
 
-    @Test
     //  https://passbolt.testrail.io/index.php?/cases/view/2443
+    @Test
     fun asAUserOnTheHomepageICanAccessTheResourcePageForWhichIHaveFullPermissions() {
         //    Given     that I am a mobile user with the application installed
         //    And       the Passbolt application is already opened
@@ -122,8 +122,8 @@ class ResourcesDetailsTest : KoinTest {
         //    And       I see the resource name
         onView(allOf(withId(com.passbolt.mobile.android.feature.otp.R.id.name), withText("cakephp"))).check(
             matches(
-                isDisplayed()
-            )
+                isDisplayed(),
+            ),
         )
         //    And       I see the “Website URL” list item with title, value and a copy icon
         onView(withText(LocalizationR.string.resource_details_url_header)).check(matches(isDisplayed()))
@@ -131,10 +131,9 @@ class ResourcesDetailsTest : KoinTest {
         onView(
             allOf(
                 isDescendantOfA(withId(com.passbolt.mobile.android.feature.resources.R.id.usernameItem)),
-                withId(com.passbolt.mobile.android.core.ui.R.id.actionIcon)
-            )
-        )
-            .check(matches(isDisplayed()))
+                withId(com.passbolt.mobile.android.core.ui.R.id.actionIcon),
+            ),
+        ).check(matches(isDisplayed()))
             .check(matches(hasDrawable(id = CoreUiR.drawable.ic_copy, tint = CoreUiR.color.icon_tint)))
         //    And       I see the “Username” list item with title, value and a copy icon
         onView(withText(LocalizationR.string.resource_details_username_header)).check(matches(isDisplayed()))
@@ -142,10 +141,9 @@ class ResourcesDetailsTest : KoinTest {
         onView(
             allOf(
                 isDescendantOfA(withId(com.passbolt.mobile.android.feature.resources.R.id.usernameItem)),
-                withId(com.passbolt.mobile.android.core.ui.R.id.actionIcon)
-            )
-        )
-            .check(matches(isDisplayed()))
+                withId(com.passbolt.mobile.android.core.ui.R.id.actionIcon),
+            ),
+        ).check(matches(isDisplayed()))
             .check(matches(hasDrawable(id = CoreUiR.drawable.ic_copy, tint = CoreUiR.color.icon_tint)))
         //    And       I see the “Password” list item with title, hidden value and a show icon
         onView(withText(LocalizationR.string.resource_details_password_header)).check(matches(isDisplayed()))
@@ -153,18 +151,17 @@ class ResourcesDetailsTest : KoinTest {
         onView(
             allOf(
                 isDescendantOfA(withId(com.passbolt.mobile.android.feature.resources.R.id.passwordItem)),
-                withId(com.passbolt.mobile.android.core.ui.R.id.actionIcon)
-            )
-        )
-            .check(matches(isDisplayed()))
+                withId(com.passbolt.mobile.android.core.ui.R.id.actionIcon),
+            ),
+        ).check(matches(isDisplayed()))
             .check(matches(hasDrawable(id = CoreUiR.drawable.ic_eye_visible, tint = CoreUiR.color.icon_tint)))
         //    And       I see the “Description” list item with title, hidden value and a show icon
         onView(withText(LocalizationR.string.resource_details_description_header)).check(matches(isDisplayed()))
         onView(withId(com.passbolt.mobile.android.feature.resources.R.id.descriptionItem)).check(matches(isDisplayed()))
     }
 
-    @Test
     //  https://passbolt.testrail.io/index.php?/cases/view/2447
+    @Test
     fun asALoggedInMobileUserOnTheResourceDisplayICanShowOrHideResourceDescription() {
         //    Given     that I am a mobile user with the application installed
         //    And       the Passbolt application is already opened
@@ -174,23 +171,22 @@ class ResourcesDetailsTest : KoinTest {
             .perform(
                 click(),
                 typeText("TestResourceDesc"),
-                closeSoftKeyboard()
+                closeSoftKeyboard(),
             )
         onView(withText("TestResourceDescription")).perform(click())
         //    When      I click on the show icon in the “Description” item list
         onView(
             allOf(
                 isDescendantOfA(withId(com.passbolt.mobile.android.feature.resources.R.id.descriptionItem)),
-                withId(com.passbolt.mobile.android.core.ui.R.id.actionIcon)
-            )
-        )
-            .perform(click())
+                withId(com.passbolt.mobile.android.core.ui.R.id.actionIcon),
+            ),
+        ).perform(click())
         //    Then      I see the description
         onView(withText("Luxembourg")).check(matches(isDisplayed()))
     }
 
-    @Test
     //  https://passbolt.testrail.io/index.php?/cases/view/2458
+    @Test
     fun asALoggedInMobileUserOnTheResourceDisplayICanSeeTheRestOfALongDescriptionThatIsHigherThanTheScreen() {
         //    Given     that I am a mobile user with the application installed
         onView(withId(com.passbolt.mobile.android.feature.otp.R.id.searchEditText)).perform(click(), typeText("long d"))
@@ -199,10 +195,9 @@ class ResourcesDetailsTest : KoinTest {
         onView(
             allOf(
                 isDescendantOfA(withId(com.passbolt.mobile.android.feature.resources.R.id.descriptionItem)),
-                withId(com.passbolt.mobile.android.core.ui.R.id.actionIcon)
-            )
-        )
-            .perform(click())
+                withId(com.passbolt.mobile.android.core.ui.R.id.actionIcon),
+            ),
+        ).perform(click())
         //    And       the description is unhidden
         //    And       the description height is taller than the height of the page
         //    When      I scroll the page
@@ -210,8 +205,8 @@ class ResourcesDetailsTest : KoinTest {
         //    Then      I see the rest of the description
     }
 
-    @Test
     //  https://passbolt.testrail.io/index.php?/cases/view/2459
+    @Test
     fun asALoggedInMobileUserOnTheResourceDisplayICanTriggerTheActionMenuAndCopyCredentialsToTheClipboard() {
         //    Given     that I am a mobile user with the application installed
         onView(withId(com.passbolt.mobile.android.feature.otp.R.id.searchEditText)).perform(click(), typeText("face"))

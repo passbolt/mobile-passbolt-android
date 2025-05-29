@@ -35,7 +35,6 @@ import com.passbolt.mobile.android.dto.response.ResourceResponseDto
 import com.passbolt.mobile.android.dto.response.ResourceResponseV4Dto
 import com.passbolt.mobile.android.dto.response.ResourceResponseV5Dto
 import com.passbolt.mobile.android.serializers.gson.MetadataDecryptor
-import com.passbolt.mobile.android.supportedresourceTypes.ContentType
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordAndDescription
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordDescriptionTotp
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordString
@@ -58,13 +57,14 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.stub
 import java.util.UUID
 
+@Suppress("LargeClass")
 class ResourceListDeserializerTest : KoinTest {
-
     @get:Rule
-    val koinTestRule = KoinTestRule.create {
-        printLogger(Level.ERROR)
-        modules(resourceListDeserializationTestModule)
-    }
+    val koinTestRule =
+        KoinTestRule.create {
+            printLogger(Level.ERROR)
+            modules(resourceListDeserializationTestModule)
+        }
 
     private val gson: Gson by inject()
 
@@ -84,36 +84,44 @@ class ResourceListDeserializerTest : KoinTest {
                         ResourceTypeModel(UUID.randomUUID(), Totp.slug, "", deleted = null),
                         ResourceTypeModel(UUID.randomUUID(), V5TotpStandalone.slug, "", deleted = null),
                         ResourceTypeModel(UUID.randomUUID(), PasswordDescriptionTotp.slug, "", deleted = null),
-                        ResourceTypeModel(UUID.randomUUID(), V5DefaultWithTotp.slug, "", deleted = null)
-                    )
-                )
+                        ResourceTypeModel(UUID.randomUUID(), V5DefaultWithTotp.slug, "", deleted = null),
+                    ),
+                ),
             )
         }
         mockJSFSchemaRepository.stub {
-            on { schemaForResource(PasswordString.slug) } doReturn SchemaStore().loadSchema(
-                this::class.java.getResource("/password-string-resource-schema.json")
-            )
-            on { schemaForResource(V5PasswordString.slug) } doReturn SchemaStore().loadSchema(
-                this::class.java.getResource("/v5-password-string-resource-schema.json")
-            )
-            on { schemaForResource(PasswordAndDescription.slug) } doReturn SchemaStore().loadSchema(
-                this::class.java.getResource("/password-and-description-resource-schema.json")
-            )
-            on { schemaForResource(V5Default.slug) } doReturn SchemaStore().loadSchema(
-                this::class.java.getResource("/v5-default-resource-schema.json")
-            )
-            on { schemaForResource(PasswordDescriptionTotp.slug) } doReturn SchemaStore().loadSchema(
-                this::class.java.getResource("/password-description-totp-resource-schema.json")
-            )
-            on { schemaForResource(V5DefaultWithTotp.slug) } doReturn SchemaStore().loadSchema(
-                this::class.java.getResource("/v5-default-with-totp-resource-schema.json")
-            )
-            on { schemaForResource(Totp.slug) } doReturn SchemaStore().loadSchema(
-                this::class.java.getResource("/totp-resource-schema.json")
-            )
-            on { schemaForResource(V5TotpStandalone.slug) } doReturn SchemaStore().loadSchema(
-                this::class.java.getResource("/v5-totp-standalone-resource-schema.json")
-            )
+            on { schemaForResource(PasswordString.slug) } doReturn
+                SchemaStore().loadSchema(
+                    this::class.java.getResource("/password-string-resource-schema.json"),
+                )
+            on { schemaForResource(V5PasswordString.slug) } doReturn
+                SchemaStore().loadSchema(
+                    this::class.java.getResource("/v5-password-string-resource-schema.json"),
+                )
+            on { schemaForResource(PasswordAndDescription.slug) } doReturn
+                SchemaStore().loadSchema(
+                    this::class.java.getResource("/password-and-description-resource-schema.json"),
+                )
+            on { schemaForResource(V5Default.slug) } doReturn
+                SchemaStore().loadSchema(
+                    this::class.java.getResource("/v5-default-resource-schema.json"),
+                )
+            on { schemaForResource(PasswordDescriptionTotp.slug) } doReturn
+                SchemaStore().loadSchema(
+                    this::class.java.getResource("/password-description-totp-resource-schema.json"),
+                )
+            on { schemaForResource(V5DefaultWithTotp.slug) } doReturn
+                SchemaStore().loadSchema(
+                    this::class.java.getResource("/v5-default-with-totp-resource-schema.json"),
+                )
+            on { schemaForResource(Totp.slug) } doReturn
+                SchemaStore().loadSchema(
+                    this::class.java.getResource("/totp-resource-schema.json"),
+                )
+            on { schemaForResource(V5TotpStandalone.slug) } doReturn
+                SchemaStore().loadSchema(
+                    this::class.java.getResource("/v5-totp-standalone-resource-schema.json"),
+                )
         }
     }
 
@@ -122,34 +130,37 @@ class ResourceListDeserializerTest : KoinTest {
         mockIdToSlugMappingUseCase.stub {
             onBlocking { execute(Unit) }.doReturn(
                 GetResourceTypeIdToSlugMappingUseCase.Output(
-                    mapOf(testedResourceTypeUuid to PasswordString.slug)
-                )
+                    mapOf(testedResourceTypeUuid to PasswordString.slug),
+                ),
             )
         }
 
-        val invalidResources = listOf(
-            resourceWithNameOfLength(
-                PASSWORD_STRING_NAME_MAX_LENGTH + 1, testedResourceTypeUuid
-            ),
-            resourceWithUriOfLength(
-                PASSWORD_STRING_URI_MAX_LENGTH + 1,
-                testedResourceTypeUuid
-            ),
-            resourceWithDescriptionOfLength(
-                PASSWORD_STRING_DESCRIPTION_MAX_LENGTH + 1,
-                testedResourceTypeUuid
-            ),
-            resourceWithUsernameOfLength(
-                PASSWORD_STRING_USERNAME_MAX_LENGTH + 1,
-                testedResourceTypeUuid
+        val invalidResources =
+            listOf(
+                resourceWithNameOfLength(
+                    PASSWORD_STRING_NAME_MAX_LENGTH + 1,
+                    testedResourceTypeUuid,
+                ),
+                resourceWithUriOfLength(
+                    PASSWORD_STRING_URI_MAX_LENGTH + 1,
+                    testedResourceTypeUuid,
+                ),
+                resourceWithDescriptionOfLength(
+                    PASSWORD_STRING_DESCRIPTION_MAX_LENGTH + 1,
+                    testedResourceTypeUuid,
+                ),
+                resourceWithUsernameOfLength(
+                    PASSWORD_STRING_USERNAME_MAX_LENGTH + 1,
+                    testedResourceTypeUuid,
+                ),
             )
-        )
 
         val listJson = gson.toJson(invalidResources)
-        val resulList = gson.fromJson<List<ResourceResponseDto>>(
-            listJson,
-            object : TypeToken<List<@JvmSuppressWildcards ResourceResponseDto>>() {}.type
-        )
+        val resulList =
+            gson.fromJson<List<ResourceResponseDto>>(
+                listJson,
+                object : TypeToken<List<@JvmSuppressWildcards ResourceResponseDto>>() {}.type,
+            )
 
         assertThat(resulList).isEmpty()
     }
@@ -159,34 +170,37 @@ class ResourceListDeserializerTest : KoinTest {
         mockIdToSlugMappingUseCase.stub {
             onBlocking { execute(Unit) }.doReturn(
                 GetResourceTypeIdToSlugMappingUseCase.Output(
-                    mapOf(testedResourceTypeUuid to V5PasswordString.slug)
-                )
+                    mapOf(testedResourceTypeUuid to V5PasswordString.slug),
+                ),
             )
         }
 
-        val invalidResources = listOf(
-            resourceWithNameOfLength(
-                PASSWORD_STRING_NAME_MAX_LENGTH + 1, testedResourceTypeUuid
-            ),
-            resourceWithUriOfLength(
-                PASSWORD_STRING_URI_MAX_LENGTH + 1,
-                testedResourceTypeUuid
-            ),
-            resourceWithDescriptionOfLength(
-                PASSWORD_STRING_DESCRIPTION_MAX_LENGTH + 1,
-                testedResourceTypeUuid
-            ),
-            resourceWithUsernameOfLength(
-                PASSWORD_STRING_USERNAME_MAX_LENGTH + 1,
-                testedResourceTypeUuid
+        val invalidResources =
+            listOf(
+                resourceWithNameOfLength(
+                    PASSWORD_STRING_NAME_MAX_LENGTH + 1,
+                    testedResourceTypeUuid,
+                ),
+                resourceWithUriOfLength(
+                    PASSWORD_STRING_URI_MAX_LENGTH + 1,
+                    testedResourceTypeUuid,
+                ),
+                resourceWithDescriptionOfLength(
+                    PASSWORD_STRING_DESCRIPTION_MAX_LENGTH + 1,
+                    testedResourceTypeUuid,
+                ),
+                resourceWithUsernameOfLength(
+                    PASSWORD_STRING_USERNAME_MAX_LENGTH + 1,
+                    testedResourceTypeUuid,
+                ),
             )
-        )
 
         val listJson = gson.toJson(invalidResources)
-        val resulList = gson.fromJson<List<ResourceResponseDto>>(
-            listJson,
-            object : TypeToken<List<@JvmSuppressWildcards ResourceResponseDto>>() {}.type
-        )
+        val resulList =
+            gson.fromJson<List<ResourceResponseDto>>(
+                listJson,
+                object : TypeToken<List<@JvmSuppressWildcards ResourceResponseDto>>() {}.type,
+            )
 
         assertThat(resulList).isEmpty()
     }
@@ -196,30 +210,32 @@ class ResourceListDeserializerTest : KoinTest {
         mockIdToSlugMappingUseCase.stub {
             onBlocking { execute(Unit) }.doReturn(
                 GetResourceTypeIdToSlugMappingUseCase.Output(
-                    mapOf(testedResourceTypeUuid to PasswordAndDescription.slug)
-                )
+                    mapOf(testedResourceTypeUuid to PasswordAndDescription.slug),
+                ),
             )
         }
-        val invalidResources = listOf(
-            resourceWithNameOfLength(
-                PASSWORD_AND_DESCRIPTION_NAME_MAX_LENGTH + 1,
-                testedResourceTypeUuid
-            ),
-            resourceWithUriOfLength(
-                PASSWORD_AND_DESCRIPTION_URI_MAX_LENGTH + 1,
-                testedResourceTypeUuid
-            ),
-            resourceWithUsernameOfLength(
-                PASSWORD_AND_DESCRIPTION_USERNAME_MAX_LENGTH + 1,
-                testedResourceTypeUuid
+        val invalidResources =
+            listOf(
+                resourceWithNameOfLength(
+                    PASSWORD_AND_DESCRIPTION_NAME_MAX_LENGTH + 1,
+                    testedResourceTypeUuid,
+                ),
+                resourceWithUriOfLength(
+                    PASSWORD_AND_DESCRIPTION_URI_MAX_LENGTH + 1,
+                    testedResourceTypeUuid,
+                ),
+                resourceWithUsernameOfLength(
+                    PASSWORD_AND_DESCRIPTION_USERNAME_MAX_LENGTH + 1,
+                    testedResourceTypeUuid,
+                ),
             )
-        )
 
         val listJson = gson.toJson(invalidResources)
-        val resulList = gson.fromJson<List<ResourceResponseDto>>(
-            listJson,
-            object : TypeToken<List<@JvmSuppressWildcards ResourceResponseDto>>() {}.type
-        )
+        val resulList =
+            gson.fromJson<List<ResourceResponseDto>>(
+                listJson,
+                object : TypeToken<List<@JvmSuppressWildcards ResourceResponseDto>>() {}.type,
+            )
 
         assertThat(resulList).isEmpty()
     }
@@ -229,30 +245,32 @@ class ResourceListDeserializerTest : KoinTest {
         mockIdToSlugMappingUseCase.stub {
             onBlocking { execute(Unit) }.doReturn(
                 GetResourceTypeIdToSlugMappingUseCase.Output(
-                    mapOf(testedResourceTypeUuid to V5Default.slug)
-                )
+                    mapOf(testedResourceTypeUuid to V5Default.slug),
+                ),
             )
         }
-        val invalidResources = listOf(
-            resourceWithNameOfLength(
-                PASSWORD_AND_DESCRIPTION_NAME_MAX_LENGTH + 1,
-                testedResourceTypeUuid
-            ),
-            resourceWithUriOfLength(
-                PASSWORD_AND_DESCRIPTION_URI_MAX_LENGTH + 1,
-                testedResourceTypeUuid
-            ),
-            resourceWithUsernameOfLength(
-                PASSWORD_AND_DESCRIPTION_USERNAME_MAX_LENGTH + 1,
-                testedResourceTypeUuid
+        val invalidResources =
+            listOf(
+                resourceWithNameOfLength(
+                    PASSWORD_AND_DESCRIPTION_NAME_MAX_LENGTH + 1,
+                    testedResourceTypeUuid,
+                ),
+                resourceWithUriOfLength(
+                    PASSWORD_AND_DESCRIPTION_URI_MAX_LENGTH + 1,
+                    testedResourceTypeUuid,
+                ),
+                resourceWithUsernameOfLength(
+                    PASSWORD_AND_DESCRIPTION_USERNAME_MAX_LENGTH + 1,
+                    testedResourceTypeUuid,
+                ),
             )
-        )
 
         val listJson = gson.toJson(invalidResources)
-        val resulList = gson.fromJson<List<ResourceResponseDto>>(
-            listJson,
-            object : TypeToken<List<@JvmSuppressWildcards ResourceResponseDto>>() {}.type
-        )
+        val resulList =
+            gson.fromJson<List<ResourceResponseDto>>(
+                listJson,
+                object : TypeToken<List<@JvmSuppressWildcards ResourceResponseDto>>() {}.type,
+            )
 
         assertThat(resulList).isEmpty()
     }
@@ -262,26 +280,28 @@ class ResourceListDeserializerTest : KoinTest {
         mockIdToSlugMappingUseCase.stub {
             onBlocking { execute(Unit) }.doReturn(
                 GetResourceTypeIdToSlugMappingUseCase.Output(
-                    mapOf(testedResourceTypeUuid to Totp.slug)
-                )
+                    mapOf(testedResourceTypeUuid to Totp.slug),
+                ),
             )
         }
-        val invalidResources = listOf(
-            resourceWithNameOfLength(
-                TOTP_NAME_MAX_LENGTH + 1,
-                testedResourceTypeUuid
-            ),
-            resourceWithUriOfLength(
-                TOTP_URI_MAX_LENGTH + 1,
-                testedResourceTypeUuid
-            ),
-        )
+        val invalidResources =
+            listOf(
+                resourceWithNameOfLength(
+                    TOTP_NAME_MAX_LENGTH + 1,
+                    testedResourceTypeUuid,
+                ),
+                resourceWithUriOfLength(
+                    TOTP_URI_MAX_LENGTH + 1,
+                    testedResourceTypeUuid,
+                ),
+            )
 
         val listJson = gson.toJson(invalidResources)
-        val resulList = gson.fromJson<List<ResourceResponseDto>>(
-            listJson,
-            object : TypeToken<List<@JvmSuppressWildcards ResourceResponseDto>>() {}.type
-        )
+        val resulList =
+            gson.fromJson<List<ResourceResponseDto>>(
+                listJson,
+                object : TypeToken<List<@JvmSuppressWildcards ResourceResponseDto>>() {}.type,
+            )
 
         assertThat(resulList).isEmpty()
     }
@@ -291,26 +311,28 @@ class ResourceListDeserializerTest : KoinTest {
         mockIdToSlugMappingUseCase.stub {
             onBlocking { execute(Unit) }.doReturn(
                 GetResourceTypeIdToSlugMappingUseCase.Output(
-                    mapOf(testedResourceTypeUuid to V5TotpStandalone.slug)
-                )
+                    mapOf(testedResourceTypeUuid to V5TotpStandalone.slug),
+                ),
             )
         }
-        val invalidResources = listOf(
-            resourceWithNameOfLength(
-                TOTP_NAME_MAX_LENGTH + 1,
-                testedResourceTypeUuid
-            ),
-            resourceWithUriOfLength(
-                TOTP_URI_MAX_LENGTH + 1,
-                testedResourceTypeUuid
-            ),
-        )
+        val invalidResources =
+            listOf(
+                resourceWithNameOfLength(
+                    TOTP_NAME_MAX_LENGTH + 1,
+                    testedResourceTypeUuid,
+                ),
+                resourceWithUriOfLength(
+                    TOTP_URI_MAX_LENGTH + 1,
+                    testedResourceTypeUuid,
+                ),
+            )
 
         val listJson = gson.toJson(invalidResources)
-        val resulList = gson.fromJson<List<ResourceResponseDto>>(
-            listJson,
-            object : TypeToken<List<@JvmSuppressWildcards ResourceResponseDto>>() {}.type
-        )
+        val resulList =
+            gson.fromJson<List<ResourceResponseDto>>(
+                listJson,
+                object : TypeToken<List<@JvmSuppressWildcards ResourceResponseDto>>() {}.type,
+            )
 
         assertThat(resulList).isEmpty()
     }
@@ -320,30 +342,32 @@ class ResourceListDeserializerTest : KoinTest {
         mockIdToSlugMappingUseCase.stub {
             onBlocking { execute(Unit) }.doReturn(
                 GetResourceTypeIdToSlugMappingUseCase.Output(
-                    mapOf(testedResourceTypeUuid to PasswordDescriptionTotp.slug)
-                )
+                    mapOf(testedResourceTypeUuid to PasswordDescriptionTotp.slug),
+                ),
             )
         }
-        val invalidResources = listOf(
-            resourceWithNameOfLength(
-                PASSWORD_DESCRIPTION_TOTP_NAME_MAX_LENGTH + 1,
-                testedResourceTypeUuid
-            ),
-            resourceWithUriOfLength(
-                PASSWORD_DESCRIPTION_TOTP_URI_MAX_LENGTH + 1,
-                testedResourceTypeUuid
-            ),
-            resourceWithUsernameOfLength(
-                PASSWORD_DESCRIPTION_TOTP_USERNAME_MAX_LENGTH + 1,
-                testedResourceTypeUuid
+        val invalidResources =
+            listOf(
+                resourceWithNameOfLength(
+                    PASSWORD_DESCRIPTION_TOTP_NAME_MAX_LENGTH + 1,
+                    testedResourceTypeUuid,
+                ),
+                resourceWithUriOfLength(
+                    PASSWORD_DESCRIPTION_TOTP_URI_MAX_LENGTH + 1,
+                    testedResourceTypeUuid,
+                ),
+                resourceWithUsernameOfLength(
+                    PASSWORD_DESCRIPTION_TOTP_USERNAME_MAX_LENGTH + 1,
+                    testedResourceTypeUuid,
+                ),
             )
-        )
 
         val listJson = gson.toJson(invalidResources)
-        val resulList = gson.fromJson<List<ResourceResponseDto>>(
-            listJson,
-            object : TypeToken<List<@JvmSuppressWildcards ResourceResponseDto>>() {}.type
-        )
+        val resulList =
+            gson.fromJson<List<ResourceResponseDto>>(
+                listJson,
+                object : TypeToken<List<@JvmSuppressWildcards ResourceResponseDto>>() {}.type,
+            )
 
         assertThat(resulList).isEmpty()
     }
@@ -353,30 +377,32 @@ class ResourceListDeserializerTest : KoinTest {
         mockIdToSlugMappingUseCase.stub {
             onBlocking { execute(Unit) }.doReturn(
                 GetResourceTypeIdToSlugMappingUseCase.Output(
-                    mapOf(testedResourceTypeUuid to V5DefaultWithTotp.slug)
-                )
+                    mapOf(testedResourceTypeUuid to V5DefaultWithTotp.slug),
+                ),
             )
         }
-        val invalidResources = listOf(
-            resourceWithNameOfLength(
-                PASSWORD_DESCRIPTION_TOTP_NAME_MAX_LENGTH + 1,
-                testedResourceTypeUuid
-            ),
-            resourceWithUriOfLength(
-                PASSWORD_DESCRIPTION_TOTP_URI_MAX_LENGTH + 1,
-                testedResourceTypeUuid
-            ),
-            resourceWithUsernameOfLength(
-                PASSWORD_DESCRIPTION_TOTP_USERNAME_MAX_LENGTH + 1,
-                testedResourceTypeUuid
+        val invalidResources =
+            listOf(
+                resourceWithNameOfLength(
+                    PASSWORD_DESCRIPTION_TOTP_NAME_MAX_LENGTH + 1,
+                    testedResourceTypeUuid,
+                ),
+                resourceWithUriOfLength(
+                    PASSWORD_DESCRIPTION_TOTP_URI_MAX_LENGTH + 1,
+                    testedResourceTypeUuid,
+                ),
+                resourceWithUsernameOfLength(
+                    PASSWORD_DESCRIPTION_TOTP_USERNAME_MAX_LENGTH + 1,
+                    testedResourceTypeUuid,
+                ),
             )
-        )
 
         val listJson = gson.toJson(invalidResources)
-        val resulList = gson.fromJson<List<ResourceResponseDto>>(
-            listJson,
-            object : TypeToken<List<@JvmSuppressWildcards ResourceResponseDto>>() {}.type
-        )
+        val resulList =
+            gson.fromJson<List<ResourceResponseDto>>(
+                listJson,
+                object : TypeToken<List<@JvmSuppressWildcards ResourceResponseDto>>() {}.type,
+            )
 
         assertThat(resulList).isEmpty()
     }
@@ -386,33 +412,35 @@ class ResourceListDeserializerTest : KoinTest {
         mockIdToSlugMappingUseCase.stub {
             onBlocking { execute(Unit) }.doReturn(
                 GetResourceTypeIdToSlugMappingUseCase.Output(
-                    mapOf(testedResourceTypeUuid to PasswordAndDescription.slug)
-                )
+                    mapOf(testedResourceTypeUuid to PasswordAndDescription.slug),
+                ),
             )
         }
-        val validResources = listOf(
-            ResourceResponseV4Dto(
-                id = UUID.randomUUID(),
-                resourceTypeId = testedResourceTypeUuid,
-                description = null,
-                resourceFolderId = null,
-                name = "",
-                uri = null,
-                username = null,
-                permission = PermissionDto(UUID.randomUUID(), 1, "", UUID.randomUUID(), "", UUID.randomUUID(), "", ""),
-                favorite = null,
-                modified = "",
-                tags = emptyList(),
-                permissions = emptyList(),
-                expired = null
+        val validResources =
+            listOf(
+                ResourceResponseV4Dto(
+                    id = UUID.randomUUID(),
+                    resourceTypeId = testedResourceTypeUuid,
+                    description = null,
+                    resourceFolderId = null,
+                    name = "",
+                    uri = null,
+                    username = null,
+                    permission = PermissionDto(UUID.randomUUID(), 1, "", UUID.randomUUID(), "", UUID.randomUUID(), "", ""),
+                    favorite = null,
+                    modified = "",
+                    tags = emptyList(),
+                    permissions = emptyList(),
+                    expired = null,
+                ),
             )
-        )
 
         val listJson = gson.toJson(validResources)
-        val resulList = gson.fromJson<List<ResourceResponseDto>>(
-            listJson,
-            object : TypeToken<List<@JvmSuppressWildcards ResourceResponseDto>>() {}.type
-        )
+        val resulList =
+            gson.fromJson<List<ResourceResponseDto>>(
+                listJson,
+                object : TypeToken<List<@JvmSuppressWildcards ResourceResponseDto>>() {}.type,
+            )
 
         assertThat(resulList.size).isEqualTo(1)
     }
@@ -422,33 +450,35 @@ class ResourceListDeserializerTest : KoinTest {
         mockIdToSlugMappingUseCase.stub {
             onBlocking { execute(Unit) }.doReturn(
                 GetResourceTypeIdToSlugMappingUseCase.Output(
-                    mapOf(testedResourceTypeUuid to PasswordString.slug)
-                )
+                    mapOf(testedResourceTypeUuid to PasswordString.slug),
+                ),
             )
         }
-        val validResources = listOf(
-            ResourceResponseV4Dto(
-                id = UUID.randomUUID(),
-                resourceTypeId = testedResourceTypeUuid,
-                description = null,
-                resourceFolderId = null,
-                name = "",
-                uri = null,
-                username = null,
-                permission = PermissionDto(UUID.randomUUID(), 1, "", UUID.randomUUID(), "", UUID.randomUUID(), "", ""),
-                favorite = null,
-                modified = "",
-                tags = emptyList(),
-                permissions = emptyList(),
-                expired = null
+        val validResources =
+            listOf(
+                ResourceResponseV4Dto(
+                    id = UUID.randomUUID(),
+                    resourceTypeId = testedResourceTypeUuid,
+                    description = null,
+                    resourceFolderId = null,
+                    name = "",
+                    uri = null,
+                    username = null,
+                    permission = PermissionDto(UUID.randomUUID(), 1, "", UUID.randomUUID(), "", UUID.randomUUID(), "", ""),
+                    favorite = null,
+                    modified = "",
+                    tags = emptyList(),
+                    permissions = emptyList(),
+                    expired = null,
+                ),
             )
-        )
 
         val listJson = gson.toJson(validResources)
-        val resulList = gson.fromJson<List<ResourceResponseDto>>(
-            listJson,
-            object : TypeToken<List<@JvmSuppressWildcards ResourceResponseDto>>() {}.type
-        )
+        val resulList =
+            gson.fromJson<List<ResourceResponseDto>>(
+                listJson,
+                object : TypeToken<List<@JvmSuppressWildcards ResourceResponseDto>>() {}.type,
+            )
 
         assertThat(resulList).hasSize(1)
         assertThat(resulList[0].id).isEqualTo(validResources[0].id)
@@ -459,26 +489,27 @@ class ResourceListDeserializerTest : KoinTest {
         mockIdToSlugMappingUseCase.stub {
             onBlocking { execute(Unit) }.doReturn(
                 GetResourceTypeIdToSlugMappingUseCase.Output(
-                    mapOf(testedResourceTypeUuid to V5PasswordString.slug)
-                )
+                    mapOf(testedResourceTypeUuid to V5PasswordString.slug),
+                ),
             )
         }
-        val validResources = listOf(
-            ResourceResponseV5Dto(
-                id = UUID.randomUUID(),
-                resourceTypeId = testedResourceTypeUuid,
-                resourceFolderId = null,
-                permission = PermissionDto(UUID.randomUUID(), 1, "", UUID.randomUUID(), "", UUID.randomUUID(), "", ""),
-                favorite = null,
-                modified = "",
-                tags = emptyList(),
-                permissions = emptyList(),
-                expired = null,
-                metadataKeyType = MetadataKeyTypeDto.SHARED,
-                metadata = "encrypted metadata",
-                metadataKeyId = UUID.randomUUID()
+        val validResources =
+            listOf(
+                ResourceResponseV5Dto(
+                    id = UUID.randomUUID(),
+                    resourceTypeId = testedResourceTypeUuid,
+                    resourceFolderId = null,
+                    permission = PermissionDto(UUID.randomUUID(), 1, "", UUID.randomUUID(), "", UUID.randomUUID(), "", ""),
+                    favorite = null,
+                    modified = "",
+                    tags = emptyList(),
+                    permissions = emptyList(),
+                    expired = null,
+                    metadataKeyType = MetadataKeyTypeDto.SHARED,
+                    metadata = "encrypted metadata",
+                    metadataKeyId = UUID.randomUUID(),
+                ),
             )
-        )
         mockMetadataDecryptor.stub {
             onBlocking { decryptMetadata(any()) }.doReturn(
                 MetadataDecryptor.Output.Success(
@@ -490,16 +521,17 @@ class ResourceListDeserializerTest : KoinTest {
                         "username": "username",
                         "description": "description"
                     }
-                    """.trimIndent()
-                )
+                    """.trimIndent(),
+                ),
             )
         }
 
         val listJson = gson.toJson(validResources)
-        val resulList = gson.fromJson<List<ResourceResponseDto>>(
-            listJson,
-            object : TypeToken<List<@JvmSuppressWildcards ResourceResponseDto>>() {}.type
-        )
+        val resulList =
+            gson.fromJson<List<ResourceResponseDto>>(
+                listJson,
+                object : TypeToken<List<@JvmSuppressWildcards ResourceResponseDto>>() {}.type,
+            )
 
         assertThat(resulList).hasSize(1)
         assertThat(resulList[0].id).isEqualTo(validResources[0].id)
@@ -510,33 +542,35 @@ class ResourceListDeserializerTest : KoinTest {
         mockIdToSlugMappingUseCase.stub {
             onBlocking { execute(Unit) }.doReturn(
                 GetResourceTypeIdToSlugMappingUseCase.Output(
-                    mapOf(testedResourceTypeUuid to PasswordAndDescription.slug)
-                )
+                    mapOf(testedResourceTypeUuid to PasswordAndDescription.slug),
+                ),
             )
         }
-        val validResources = listOf(
-            ResourceResponseV4Dto(
-                id = UUID.randomUUID(),
-                resourceTypeId = testedResourceTypeUuid,
-                description = null,
-                resourceFolderId = null,
-                name = "",
-                uri = null,
-                username = null,
-                permission = PermissionDto(UUID.randomUUID(), 1, "", UUID.randomUUID(), "", UUID.randomUUID(), "", ""),
-                favorite = null,
-                modified = "",
-                tags = emptyList(),
-                permissions = emptyList(),
-                expired = null
+        val validResources =
+            listOf(
+                ResourceResponseV4Dto(
+                    id = UUID.randomUUID(),
+                    resourceTypeId = testedResourceTypeUuid,
+                    description = null,
+                    resourceFolderId = null,
+                    name = "",
+                    uri = null,
+                    username = null,
+                    permission = PermissionDto(UUID.randomUUID(), 1, "", UUID.randomUUID(), "", UUID.randomUUID(), "", ""),
+                    favorite = null,
+                    modified = "",
+                    tags = emptyList(),
+                    permissions = emptyList(),
+                    expired = null,
+                ),
             )
-        )
 
         val listJson = gson.toJson(validResources)
-        val resulList = gson.fromJson<List<ResourceResponseDto>>(
-            listJson,
-            object : TypeToken<List<@JvmSuppressWildcards ResourceResponseDto>>() {}.type
-        )
+        val resulList =
+            gson.fromJson<List<ResourceResponseDto>>(
+                listJson,
+                object : TypeToken<List<@JvmSuppressWildcards ResourceResponseDto>>() {}.type,
+            )
 
         assertThat(resulList).hasSize(1)
         assertThat(resulList[0].id).isEqualTo(validResources[0].id)
@@ -547,26 +581,27 @@ class ResourceListDeserializerTest : KoinTest {
         mockIdToSlugMappingUseCase.stub {
             onBlocking { execute(Unit) }.doReturn(
                 GetResourceTypeIdToSlugMappingUseCase.Output(
-                    mapOf(testedResourceTypeUuid to V5Default.slug)
-                )
+                    mapOf(testedResourceTypeUuid to V5Default.slug),
+                ),
             )
         }
-        val validResources = listOf(
-            ResourceResponseV5Dto(
-                id = UUID.randomUUID(),
-                resourceTypeId = testedResourceTypeUuid,
-                resourceFolderId = null,
-                permission = PermissionDto(UUID.randomUUID(), 1, "", UUID.randomUUID(), "", UUID.randomUUID(), "", ""),
-                favorite = null,
-                modified = "",
-                tags = emptyList(),
-                permissions = emptyList(),
-                expired = null,
-                metadataKeyType = MetadataKeyTypeDto.SHARED,
-                metadata = "encrypted metadata",
-                metadataKeyId = UUID.randomUUID()
+        val validResources =
+            listOf(
+                ResourceResponseV5Dto(
+                    id = UUID.randomUUID(),
+                    resourceTypeId = testedResourceTypeUuid,
+                    resourceFolderId = null,
+                    permission = PermissionDto(UUID.randomUUID(), 1, "", UUID.randomUUID(), "", UUID.randomUUID(), "", ""),
+                    favorite = null,
+                    modified = "",
+                    tags = emptyList(),
+                    permissions = emptyList(),
+                    expired = null,
+                    metadataKeyType = MetadataKeyTypeDto.SHARED,
+                    metadata = "encrypted metadata",
+                    metadataKeyId = UUID.randomUUID(),
+                ),
             )
-        )
         mockMetadataDecryptor.stub {
             onBlocking { decryptMetadata(any()) }.doReturn(
                 MetadataDecryptor.Output.Success(
@@ -578,16 +613,17 @@ class ResourceListDeserializerTest : KoinTest {
                         "username": "username",
                         "description": "description"
                     }
-                    """.trimIndent()
-                )
+                    """.trimIndent(),
+                ),
             )
         }
 
         val listJson = gson.toJson(validResources)
-        val resulList = gson.fromJson<List<ResourceResponseDto>>(
-            listJson,
-            object : TypeToken<List<@JvmSuppressWildcards ResourceResponseDto>>() {}.type
-        )
+        val resulList =
+            gson.fromJson<List<ResourceResponseDto>>(
+                listJson,
+                object : TypeToken<List<@JvmSuppressWildcards ResourceResponseDto>>() {}.type,
+            )
 
         assertThat(resulList).hasSize(1)
         assertThat(resulList[0].id).isEqualTo(validResources[0].id)
@@ -598,33 +634,35 @@ class ResourceListDeserializerTest : KoinTest {
         mockIdToSlugMappingUseCase.stub {
             onBlocking { execute(Unit) }.doReturn(
                 GetResourceTypeIdToSlugMappingUseCase.Output(
-                    mapOf(testedResourceTypeUuid to Totp.slug)
-                )
+                    mapOf(testedResourceTypeUuid to Totp.slug),
+                ),
             )
         }
-        val validResources = listOf(
-            ResourceResponseV4Dto(
-                id = UUID.randomUUID(),
-                resourceTypeId = testedResourceTypeUuid,
-                description = null,
-                resourceFolderId = null,
-                name = "",
-                uri = null,
-                username = null,
-                permission = PermissionDto(UUID.randomUUID(), 1, "", UUID.randomUUID(), "", UUID.randomUUID(), "", ""),
-                favorite = null,
-                modified = "",
-                tags = emptyList(),
-                permissions = emptyList(),
-                expired = null
+        val validResources =
+            listOf(
+                ResourceResponseV4Dto(
+                    id = UUID.randomUUID(),
+                    resourceTypeId = testedResourceTypeUuid,
+                    description = null,
+                    resourceFolderId = null,
+                    name = "",
+                    uri = null,
+                    username = null,
+                    permission = PermissionDto(UUID.randomUUID(), 1, "", UUID.randomUUID(), "", UUID.randomUUID(), "", ""),
+                    favorite = null,
+                    modified = "",
+                    tags = emptyList(),
+                    permissions = emptyList(),
+                    expired = null,
+                ),
             )
-        )
 
         val listJson = gson.toJson(validResources)
-        val resulList = gson.fromJson<List<ResourceResponseDto>>(
-            listJson,
-            object : TypeToken<List<@JvmSuppressWildcards ResourceResponseDto>>() {}.type
-        )
+        val resulList =
+            gson.fromJson<List<ResourceResponseDto>>(
+                listJson,
+                object : TypeToken<List<@JvmSuppressWildcards ResourceResponseDto>>() {}.type,
+            )
 
         assertThat(resulList).hasSize(1)
         assertThat(resulList[0].id).isEqualTo(validResources[0].id)
@@ -635,26 +673,27 @@ class ResourceListDeserializerTest : KoinTest {
         mockIdToSlugMappingUseCase.stub {
             onBlocking { execute(Unit) }.doReturn(
                 GetResourceTypeIdToSlugMappingUseCase.Output(
-                    mapOf(testedResourceTypeUuid to V5TotpStandalone.slug)
-                )
+                    mapOf(testedResourceTypeUuid to V5TotpStandalone.slug),
+                ),
             )
         }
-        val validResources = listOf(
-            ResourceResponseV5Dto(
-                id = UUID.randomUUID(),
-                resourceTypeId = testedResourceTypeUuid,
-                resourceFolderId = null,
-                permission = PermissionDto(UUID.randomUUID(), 1, "", UUID.randomUUID(), "", UUID.randomUUID(), "", ""),
-                favorite = null,
-                modified = "",
-                tags = emptyList(),
-                permissions = emptyList(),
-                expired = null,
-                metadataKeyType = MetadataKeyTypeDto.SHARED,
-                metadata = "encrypted metadata",
-                metadataKeyId = UUID.randomUUID()
+        val validResources =
+            listOf(
+                ResourceResponseV5Dto(
+                    id = UUID.randomUUID(),
+                    resourceTypeId = testedResourceTypeUuid,
+                    resourceFolderId = null,
+                    permission = PermissionDto(UUID.randomUUID(), 1, "", UUID.randomUUID(), "", UUID.randomUUID(), "", ""),
+                    favorite = null,
+                    modified = "",
+                    tags = emptyList(),
+                    permissions = emptyList(),
+                    expired = null,
+                    metadataKeyType = MetadataKeyTypeDto.SHARED,
+                    metadata = "encrypted metadata",
+                    metadataKeyId = UUID.randomUUID(),
+                ),
             )
-        )
         mockMetadataDecryptor.stub {
             onBlocking { decryptMetadata(any()) }.doReturn(
                 MetadataDecryptor.Output.Success(
@@ -666,16 +705,17 @@ class ResourceListDeserializerTest : KoinTest {
                         "username": "username",
                         "description": "description"
                     }
-                    """.trimIndent()
-                )
+                    """.trimIndent(),
+                ),
             )
         }
 
         val listJson = gson.toJson(validResources)
-        val resulList = gson.fromJson<List<ResourceResponseDto>>(
-            listJson,
-            object : TypeToken<List<@JvmSuppressWildcards ResourceResponseDto>>() {}.type
-        )
+        val resulList =
+            gson.fromJson<List<ResourceResponseDto>>(
+                listJson,
+                object : TypeToken<List<@JvmSuppressWildcards ResourceResponseDto>>() {}.type,
+            )
 
         assertThat(resulList).hasSize(1)
         assertThat(resulList[0].id).isEqualTo(validResources[0].id)
@@ -686,33 +726,35 @@ class ResourceListDeserializerTest : KoinTest {
         mockIdToSlugMappingUseCase.stub {
             onBlocking { execute(Unit) }.doReturn(
                 GetResourceTypeIdToSlugMappingUseCase.Output(
-                    mapOf(testedResourceTypeUuid to PasswordDescriptionTotp.slug)
-                )
+                    mapOf(testedResourceTypeUuid to PasswordDescriptionTotp.slug),
+                ),
             )
         }
-        val validResources = listOf(
-            ResourceResponseV4Dto(
-                id = UUID.randomUUID(),
-                resourceTypeId = testedResourceTypeUuid,
-                description = null,
-                resourceFolderId = null,
-                name = "",
-                uri = null,
-                username = null,
-                permission = PermissionDto(UUID.randomUUID(), 1, "", UUID.randomUUID(), "", UUID.randomUUID(), "", ""),
-                favorite = null,
-                modified = "",
-                tags = emptyList(),
-                permissions = emptyList(),
-                expired = null
+        val validResources =
+            listOf(
+                ResourceResponseV4Dto(
+                    id = UUID.randomUUID(),
+                    resourceTypeId = testedResourceTypeUuid,
+                    description = null,
+                    resourceFolderId = null,
+                    name = "",
+                    uri = null,
+                    username = null,
+                    permission = PermissionDto(UUID.randomUUID(), 1, "", UUID.randomUUID(), "", UUID.randomUUID(), "", ""),
+                    favorite = null,
+                    modified = "",
+                    tags = emptyList(),
+                    permissions = emptyList(),
+                    expired = null,
+                ),
             )
-        )
 
         val listJson = gson.toJson(validResources)
-        val resulList = gson.fromJson<List<ResourceResponseDto>>(
-            listJson,
-            object : TypeToken<List<@JvmSuppressWildcards ResourceResponseDto>>() {}.type
-        )
+        val resulList =
+            gson.fromJson<List<ResourceResponseDto>>(
+                listJson,
+                object : TypeToken<List<@JvmSuppressWildcards ResourceResponseDto>>() {}.type,
+            )
 
         assertThat(resulList).hasSize(1)
         assertThat(resulList[0].id).isEqualTo(validResources[0].id)
@@ -723,26 +765,27 @@ class ResourceListDeserializerTest : KoinTest {
         mockIdToSlugMappingUseCase.stub {
             onBlocking { execute(Unit) }.doReturn(
                 GetResourceTypeIdToSlugMappingUseCase.Output(
-                    mapOf(testedResourceTypeUuid to V5DefaultWithTotp.slug)
-                )
+                    mapOf(testedResourceTypeUuid to V5DefaultWithTotp.slug),
+                ),
             )
         }
-        val validResources = listOf(
-            ResourceResponseV5Dto(
-                id = UUID.randomUUID(),
-                resourceTypeId = testedResourceTypeUuid,
-                resourceFolderId = null,
-                permission = PermissionDto(UUID.randomUUID(), 1, "", UUID.randomUUID(), "", UUID.randomUUID(), "", ""),
-                favorite = null,
-                modified = "",
-                tags = emptyList(),
-                permissions = emptyList(),
-                expired = null,
-                metadataKeyType = MetadataKeyTypeDto.SHARED,
-                metadata = "encrypted metadata",
-                metadataKeyId = UUID.randomUUID()
+        val validResources =
+            listOf(
+                ResourceResponseV5Dto(
+                    id = UUID.randomUUID(),
+                    resourceTypeId = testedResourceTypeUuid,
+                    resourceFolderId = null,
+                    permission = PermissionDto(UUID.randomUUID(), 1, "", UUID.randomUUID(), "", UUID.randomUUID(), "", ""),
+                    favorite = null,
+                    modified = "",
+                    tags = emptyList(),
+                    permissions = emptyList(),
+                    expired = null,
+                    metadataKeyType = MetadataKeyTypeDto.SHARED,
+                    metadata = "encrypted metadata",
+                    metadataKeyId = UUID.randomUUID(),
+                ),
             )
-        )
         mockMetadataDecryptor.stub {
             onBlocking { decryptMetadata(any()) }.doReturn(
                 MetadataDecryptor.Output.Success(
@@ -754,16 +797,17 @@ class ResourceListDeserializerTest : KoinTest {
                         "username": "username",
                         "description": "description"
                     }
-                    """.trimIndent()
-                )
+                    """.trimIndent(),
+                ),
             )
         }
 
         val listJson = gson.toJson(validResources)
-        val resulList = gson.fromJson<List<ResourceResponseDto>>(
-            listJson,
-            object : TypeToken<List<@JvmSuppressWildcards ResourceResponseDto>>() {}.type
-        )
+        val resulList =
+            gson.fromJson<List<ResourceResponseDto>>(
+                listJson,
+                object : TypeToken<List<@JvmSuppressWildcards ResourceResponseDto>>() {}.type,
+            )
 
         assertThat(resulList).hasSize(1)
         assertThat(resulList[0].id).isEqualTo(validResources[0].id)

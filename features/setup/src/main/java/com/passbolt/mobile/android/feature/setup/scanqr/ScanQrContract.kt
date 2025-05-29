@@ -30,42 +30,71 @@ import kotlinx.coroutines.flow.StateFlow
  */
 
 interface ScanQrContract {
-
     interface View : BaseContract.View {
         fun showExitConfirmation()
+
         fun navigateBack()
+
         fun startAnalysis()
+
         fun showStartCameraError()
+
         fun scanResultChannel(): StateFlow<BarcodeScanResult>
+
         fun navigateToSummary(status: ResultStatus)
+
         fun showBarcodeScanError(message: String?)
+
         fun showMultipleCodesInRange()
+
         fun showCenterCameraOnBarcode()
+
         fun showKeepGoing()
+
         fun showUpdateTransferError(headerMessage: String)
+
         fun initializeProgress(totalPages: Int)
+
         fun setProgress(progress: Int)
+
         fun showNotAPassboltQr()
+
         fun showServerNotReachable(serverDomain: String)
+
         fun setFlagSecure()
+
         fun removeFlagSecure()
+
         fun showHelpMenu()
+
         fun navigateToImportProfile()
+
         fun showAccountKitFilePicker()
+
         fun showProgress()
+
         fun hideProgress()
     }
 
     interface Presenter : BaseContract.Presenter<View> {
         fun backClick()
+
         fun exitConfirmClick()
+
         fun infoIconClick()
+
         fun startCameraError(exc: Exception)
+
         fun viewResumed()
+
         fun viewPaused()
+
         fun argsRetrieved(bundledAccountSetupData: AccountSetupDataModel?)
+
         fun importProfileClick()
+
         fun importAccountKitClick()
+
         fun accountKitSelected(accountKit: String)
     }
 }

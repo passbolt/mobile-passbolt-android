@@ -27,5 +27,5 @@ import androidx.annotation.DrawableRes
  */
 data class CircleStepItemModel(
     val text: Spanned,
-    @DrawableRes val icon: Int? = null
+    @DrawableRes val icon: Int? = null,
 )

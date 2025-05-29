@@ -29,10 +29,9 @@ import retrofit2.http.Query
  */
 
 internal interface GroupsApi {
-
     @GET(GROUPS)
     suspend fun getGroups(
-        @Query(QUERY_CONTAIN_USER) containingUser: Int = 1
+        @Query(QUERY_CONTAIN_USER) containingUser: Int = 1,
     ): BaseResponse<List<GroupsResponseDto>>
 
     private companion object {

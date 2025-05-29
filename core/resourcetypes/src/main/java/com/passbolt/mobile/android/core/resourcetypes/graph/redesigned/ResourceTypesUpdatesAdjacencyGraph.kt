@@ -52,81 +52,89 @@ class ResourceTypesUpdatesAdjacencyGraph {
         val v5DefaultWithTotp = ResourceTypeVertex(V5DefaultWithTotp)
 
         // edges (actions)
-        map[simplePassword] = listOf(
-            ResourceTypeEdge(simplePassword, simplePassword, UpdateAction.EDIT_METADATA),
-            ResourceTypeEdge(simplePassword, simplePassword, UpdateAction.ADD_PASSWORD),
-            ResourceTypeEdge(simplePassword, simplePassword, UpdateAction.REMOVE_PASSWORD),
-            ResourceTypeEdge(simplePassword, simplePassword, UpdateAction.ADD_METADATA_DESCRIPTION),
-            ResourceTypeEdge(simplePassword, simplePassword, UpdateAction.REMOVE_METADATA_DESCRIPTION)
-        )
-        map[v5PasswordString] = listOf(
-            ResourceTypeEdge(v5PasswordString, v5PasswordString, UpdateAction.EDIT_METADATA),
-            ResourceTypeEdge(v5PasswordString, v5PasswordString, UpdateAction.ADD_PASSWORD),
-            ResourceTypeEdge(v5PasswordString, v5PasswordString, UpdateAction.REMOVE_PASSWORD),
-            ResourceTypeEdge(v5PasswordString, v5PasswordString, UpdateAction.ADD_METADATA_DESCRIPTION),
-            ResourceTypeEdge(v5PasswordString, v5PasswordString, UpdateAction.REMOVE_METADATA_DESCRIPTION),
-            ResourceTypeEdge(v5PasswordString, v5DefaultWithTotp, UpdateAction.ADD_TOTP),
-            ResourceTypeEdge(v5PasswordString, v5Default, UpdateAction.ADD_NOTE)
-        )
+        map[simplePassword] =
+            listOf(
+                ResourceTypeEdge(simplePassword, simplePassword, UpdateAction.EDIT_METADATA),
+                ResourceTypeEdge(simplePassword, simplePassword, UpdateAction.ADD_PASSWORD),
+                ResourceTypeEdge(simplePassword, simplePassword, UpdateAction.REMOVE_PASSWORD),
+                ResourceTypeEdge(simplePassword, simplePassword, UpdateAction.ADD_METADATA_DESCRIPTION),
+                ResourceTypeEdge(simplePassword, simplePassword, UpdateAction.REMOVE_METADATA_DESCRIPTION),
+            )
+        map[v5PasswordString] =
+            listOf(
+                ResourceTypeEdge(v5PasswordString, v5PasswordString, UpdateAction.EDIT_METADATA),
+                ResourceTypeEdge(v5PasswordString, v5PasswordString, UpdateAction.ADD_PASSWORD),
+                ResourceTypeEdge(v5PasswordString, v5PasswordString, UpdateAction.REMOVE_PASSWORD),
+                ResourceTypeEdge(v5PasswordString, v5PasswordString, UpdateAction.ADD_METADATA_DESCRIPTION),
+                ResourceTypeEdge(v5PasswordString, v5PasswordString, UpdateAction.REMOVE_METADATA_DESCRIPTION),
+                ResourceTypeEdge(v5PasswordString, v5DefaultWithTotp, UpdateAction.ADD_TOTP),
+                ResourceTypeEdge(v5PasswordString, v5Default, UpdateAction.ADD_NOTE),
+            )
 
-        map[passwordAndDescription] = listOf(
-            ResourceTypeEdge(passwordAndDescription, passwordAndDescription, UpdateAction.EDIT_METADATA),
-            ResourceTypeEdge(passwordAndDescription, passwordAndDescription, UpdateAction.ADD_NOTE),
-            ResourceTypeEdge(passwordAndDescription, passwordAndDescription, UpdateAction.REMOVE_NOTE),
-            ResourceTypeEdge(passwordAndDescription, passwordAndDescription, UpdateAction.ADD_PASSWORD),
-            ResourceTypeEdge(passwordAndDescription, passwordAndDescription, UpdateAction.REMOVE_PASSWORD),
-            ResourceTypeEdge(passwordAndDescription, passwordDescriptionTotp, UpdateAction.ADD_TOTP)
-        )
-        map[v5Default] = listOf(
-            ResourceTypeEdge(v5Default, v5Default, UpdateAction.EDIT_METADATA),
-            ResourceTypeEdge(v5Default, v5Default, UpdateAction.ADD_NOTE),
-            ResourceTypeEdge(v5Default, v5Default, UpdateAction.REMOVE_NOTE),
-            ResourceTypeEdge(v5Default, v5Default, UpdateAction.ADD_PASSWORD),
-            ResourceTypeEdge(v5Default, v5Default, UpdateAction.REMOVE_PASSWORD),
-            ResourceTypeEdge(v5Default, v5Default, UpdateAction.ADD_METADATA_DESCRIPTION),
-            ResourceTypeEdge(v5Default, v5Default, UpdateAction.REMOVE_METADATA_DESCRIPTION),
-            ResourceTypeEdge(v5Default, v5DefaultWithTotp, UpdateAction.ADD_TOTP)
-        )
+        map[passwordAndDescription] =
+            listOf(
+                ResourceTypeEdge(passwordAndDescription, passwordAndDescription, UpdateAction.EDIT_METADATA),
+                ResourceTypeEdge(passwordAndDescription, passwordAndDescription, UpdateAction.ADD_NOTE),
+                ResourceTypeEdge(passwordAndDescription, passwordAndDescription, UpdateAction.REMOVE_NOTE),
+                ResourceTypeEdge(passwordAndDescription, passwordAndDescription, UpdateAction.ADD_PASSWORD),
+                ResourceTypeEdge(passwordAndDescription, passwordAndDescription, UpdateAction.REMOVE_PASSWORD),
+                ResourceTypeEdge(passwordAndDescription, passwordDescriptionTotp, UpdateAction.ADD_TOTP),
+            )
+        map[v5Default] =
+            listOf(
+                ResourceTypeEdge(v5Default, v5Default, UpdateAction.EDIT_METADATA),
+                ResourceTypeEdge(v5Default, v5Default, UpdateAction.ADD_NOTE),
+                ResourceTypeEdge(v5Default, v5Default, UpdateAction.REMOVE_NOTE),
+                ResourceTypeEdge(v5Default, v5Default, UpdateAction.ADD_PASSWORD),
+                ResourceTypeEdge(v5Default, v5Default, UpdateAction.REMOVE_PASSWORD),
+                ResourceTypeEdge(v5Default, v5Default, UpdateAction.ADD_METADATA_DESCRIPTION),
+                ResourceTypeEdge(v5Default, v5Default, UpdateAction.REMOVE_METADATA_DESCRIPTION),
+                ResourceTypeEdge(v5Default, v5DefaultWithTotp, UpdateAction.ADD_TOTP),
+            )
 
-        map[passwordDescriptionTotp] = listOf(
-            ResourceTypeEdge(passwordDescriptionTotp, passwordDescriptionTotp, UpdateAction.EDIT_METADATA),
-            ResourceTypeEdge(passwordDescriptionTotp, passwordDescriptionTotp, UpdateAction.ADD_NOTE),
-            ResourceTypeEdge(passwordDescriptionTotp, passwordDescriptionTotp, UpdateAction.REMOVE_NOTE),
-            ResourceTypeEdge(passwordDescriptionTotp, passwordDescriptionTotp, UpdateAction.ADD_TOTP),
-            ResourceTypeEdge(passwordDescriptionTotp, passwordAndDescription, UpdateAction.REMOVE_TOTP),
-            ResourceTypeEdge(passwordDescriptionTotp, passwordDescriptionTotp, UpdateAction.ADD_PASSWORD),
-            ResourceTypeEdge(passwordDescriptionTotp, passwordDescriptionTotp, UpdateAction.REMOVE_PASSWORD),
-            ResourceTypeEdge(passwordDescriptionTotp, totp, UpdateAction.REMOVE_PASSWORD_AND_NOTE)
-        )
-        map[v5DefaultWithTotp] = listOf(
-            ResourceTypeEdge(v5DefaultWithTotp, v5DefaultWithTotp, UpdateAction.EDIT_METADATA),
-            ResourceTypeEdge(v5DefaultWithTotp, v5DefaultWithTotp, UpdateAction.ADD_NOTE),
-            ResourceTypeEdge(v5DefaultWithTotp, v5DefaultWithTotp, UpdateAction.REMOVE_NOTE),
-            ResourceTypeEdge(v5DefaultWithTotp, v5DefaultWithTotp, UpdateAction.ADD_TOTP),
-            ResourceTypeEdge(v5DefaultWithTotp, v5Default, UpdateAction.REMOVE_TOTP),
-            ResourceTypeEdge(v5DefaultWithTotp, v5DefaultWithTotp, UpdateAction.ADD_PASSWORD),
-            ResourceTypeEdge(v5DefaultWithTotp, v5DefaultWithTotp, UpdateAction.REMOVE_PASSWORD),
-            ResourceTypeEdge(v5DefaultWithTotp, v5Totp, UpdateAction.REMOVE_PASSWORD_AND_NOTE),
-            ResourceTypeEdge(v5DefaultWithTotp, v5DefaultWithTotp, UpdateAction.ADD_METADATA_DESCRIPTION),
-            ResourceTypeEdge(v5DefaultWithTotp, v5DefaultWithTotp, UpdateAction.REMOVE_METADATA_DESCRIPTION)
-        )
+        map[passwordDescriptionTotp] =
+            listOf(
+                ResourceTypeEdge(passwordDescriptionTotp, passwordDescriptionTotp, UpdateAction.EDIT_METADATA),
+                ResourceTypeEdge(passwordDescriptionTotp, passwordDescriptionTotp, UpdateAction.ADD_NOTE),
+                ResourceTypeEdge(passwordDescriptionTotp, passwordDescriptionTotp, UpdateAction.REMOVE_NOTE),
+                ResourceTypeEdge(passwordDescriptionTotp, passwordDescriptionTotp, UpdateAction.ADD_TOTP),
+                ResourceTypeEdge(passwordDescriptionTotp, passwordAndDescription, UpdateAction.REMOVE_TOTP),
+                ResourceTypeEdge(passwordDescriptionTotp, passwordDescriptionTotp, UpdateAction.ADD_PASSWORD),
+                ResourceTypeEdge(passwordDescriptionTotp, passwordDescriptionTotp, UpdateAction.REMOVE_PASSWORD),
+                ResourceTypeEdge(passwordDescriptionTotp, totp, UpdateAction.REMOVE_PASSWORD_AND_NOTE),
+            )
+        map[v5DefaultWithTotp] =
+            listOf(
+                ResourceTypeEdge(v5DefaultWithTotp, v5DefaultWithTotp, UpdateAction.EDIT_METADATA),
+                ResourceTypeEdge(v5DefaultWithTotp, v5DefaultWithTotp, UpdateAction.ADD_NOTE),
+                ResourceTypeEdge(v5DefaultWithTotp, v5DefaultWithTotp, UpdateAction.REMOVE_NOTE),
+                ResourceTypeEdge(v5DefaultWithTotp, v5DefaultWithTotp, UpdateAction.ADD_TOTP),
+                ResourceTypeEdge(v5DefaultWithTotp, v5Default, UpdateAction.REMOVE_TOTP),
+                ResourceTypeEdge(v5DefaultWithTotp, v5DefaultWithTotp, UpdateAction.ADD_PASSWORD),
+                ResourceTypeEdge(v5DefaultWithTotp, v5DefaultWithTotp, UpdateAction.REMOVE_PASSWORD),
+                ResourceTypeEdge(v5DefaultWithTotp, v5Totp, UpdateAction.REMOVE_PASSWORD_AND_NOTE),
+                ResourceTypeEdge(v5DefaultWithTotp, v5DefaultWithTotp, UpdateAction.ADD_METADATA_DESCRIPTION),
+                ResourceTypeEdge(v5DefaultWithTotp, v5DefaultWithTotp, UpdateAction.REMOVE_METADATA_DESCRIPTION),
+            )
 
-        map[totp] = listOf(
-            ResourceTypeEdge(totp, totp, UpdateAction.EDIT_METADATA),
-            ResourceTypeEdge(totp, totp, UpdateAction.ADD_TOTP),
-            ResourceTypeEdge(totp, totp, UpdateAction.REMOVE_TOTP),
-            ResourceTypeEdge(totp, passwordDescriptionTotp, UpdateAction.ADD_NOTE),
-            ResourceTypeEdge(totp, passwordDescriptionTotp, UpdateAction.ADD_PASSWORD)
-        )
-        map[v5Totp] = listOf(
-            ResourceTypeEdge(v5Totp, v5Totp, UpdateAction.EDIT_METADATA),
-            ResourceTypeEdge(v5Totp, v5Totp, UpdateAction.ADD_TOTP),
-            ResourceTypeEdge(v5Totp, v5Totp, UpdateAction.REMOVE_TOTP),
-            ResourceTypeEdge(v5Totp, v5DefaultWithTotp, UpdateAction.ADD_NOTE),
-            ResourceTypeEdge(v5Totp, v5DefaultWithTotp, UpdateAction.ADD_PASSWORD),
-            ResourceTypeEdge(v5Totp, v5Totp, UpdateAction.ADD_METADATA_DESCRIPTION),
-            ResourceTypeEdge(v5Totp, v5Totp, UpdateAction.REMOVE_METADATA_DESCRIPTION)
-        )
+        map[totp] =
+            listOf(
+                ResourceTypeEdge(totp, totp, UpdateAction.EDIT_METADATA),
+                ResourceTypeEdge(totp, totp, UpdateAction.ADD_TOTP),
+                ResourceTypeEdge(totp, totp, UpdateAction.REMOVE_TOTP),
+                ResourceTypeEdge(totp, passwordDescriptionTotp, UpdateAction.ADD_NOTE),
+                ResourceTypeEdge(totp, passwordDescriptionTotp, UpdateAction.ADD_PASSWORD),
+            )
+        map[v5Totp] =
+            listOf(
+                ResourceTypeEdge(v5Totp, v5Totp, UpdateAction.EDIT_METADATA),
+                ResourceTypeEdge(v5Totp, v5Totp, UpdateAction.ADD_TOTP),
+                ResourceTypeEdge(v5Totp, v5Totp, UpdateAction.REMOVE_TOTP),
+                ResourceTypeEdge(v5Totp, v5DefaultWithTotp, UpdateAction.ADD_NOTE),
+                ResourceTypeEdge(v5Totp, v5DefaultWithTotp, UpdateAction.ADD_PASSWORD),
+                ResourceTypeEdge(v5Totp, v5Totp, UpdateAction.ADD_METADATA_DESCRIPTION),
+                ResourceTypeEdge(v5Totp, v5Totp, UpdateAction.REMOVE_METADATA_DESCRIPTION),
+            )
 
         adjacencyMap = map
     }
@@ -145,11 +153,12 @@ class ResourceTypesUpdatesAdjacencyGraph {
             .value
             .map { edge ->
                 UpdateActionMetadata(edge.updateAction, edge.destination.contentType)
-            }
-            .toList()
+            }.toList()
 
-    fun getResourceTypeSlugAfterUpdate(currentResourceTypeSlug: String, update: UpdateAction) =
-        getUpdateActionsMetadata(currentResourceTypeSlug)
-            .first { it.action == update }
-            .newResourceType
+    fun getResourceTypeSlugAfterUpdate(
+        currentResourceTypeSlug: String,
+        update: UpdateAction,
+    ) = getUpdateActionsMetadata(currentResourceTypeSlug)
+        .first { it.action == update }
+        .newResourceType
 }

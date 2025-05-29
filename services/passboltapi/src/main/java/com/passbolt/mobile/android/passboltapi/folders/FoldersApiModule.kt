@@ -29,13 +29,13 @@ import org.koin.core.module.Module
 internal fun Module.foldersApiModule() {
     single<FoldersDataSource> {
         FoldersRemoteDataSource(
-            foldersApi = get()
+            foldersApi = get(),
         )
     }
     single {
         FoldersRepository(
             foldersDataSource = get(),
-            responseHandler = get()
+            responseHandler = get(),
         )
     }
     single {

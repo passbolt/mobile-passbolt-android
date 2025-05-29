@@ -37,103 +37,102 @@ import com.passbolt.mobile.android.ui.UserWithAvatar
 
 class PermissionsModelMapper(
     private val groupsModelMapper: GroupsModelMapper,
-    private val usersModelMapper: UsersModelMapper
+    private val usersModelMapper: UsersModelMapper,
 ) {
-
-    fun map(permission: Permission) = when (permission) {
-        Permission.READ -> ResourcePermission.READ
-        Permission.WRITE -> ResourcePermission.UPDATE
-        Permission.OWNER -> ResourcePermission.OWNER
-    }
-
-    @Suppress("MagicNumber")
-    fun map(permissionInt: Int) = when (permissionInt) {
-        1 -> ResourcePermission.READ
-        7 -> ResourcePermission.UPDATE
-        15 -> ResourcePermission.OWNER
-        else -> throw IllegalArgumentException("Unsupported DTO permission value: $permissionInt")
-    }
+    fun map(permission: Permission) =
+        when (permission) {
+            Permission.READ -> ResourcePermission.READ
+            Permission.WRITE -> ResourcePermission.UPDATE
+            Permission.OWNER -> ResourcePermission.OWNER
+        }
 
     @Suppress("MagicNumber")
-    fun mapToPermissionInt(permission: ResourcePermission) = when (permission) {
-        ResourcePermission.READ -> 1
-        ResourcePermission.UPDATE -> 7
-        ResourcePermission.OWNER -> 15
-    }
+    fun map(permissionInt: Int) =
+        when (permissionInt) {
+            1 -> ResourcePermission.READ
+            7 -> ResourcePermission.UPDATE
+            15 -> ResourcePermission.OWNER
+            else -> throw IllegalArgumentException("Unsupported DTO permission value: $permissionInt")
+        }
 
-    fun map(permission: ResourcePermission) = when (permission) {
-        ResourcePermission.READ -> Permission.READ
-        ResourcePermission.UPDATE -> Permission.WRITE
-        ResourcePermission.OWNER -> Permission.OWNER
-    }
+    @Suppress("MagicNumber")
+    fun mapToPermissionInt(permission: ResourcePermission) =
+        when (permission) {
+            ResourcePermission.READ -> 1
+            ResourcePermission.UPDATE -> 7
+            ResourcePermission.OWNER -> 15
+        }
+
+    fun map(permission: ResourcePermission) =
+        when (permission) {
+            ResourcePermission.READ -> Permission.READ
+            ResourcePermission.UPDATE -> Permission.WRITE
+            ResourcePermission.OWNER -> Permission.OWNER
+        }
 
     fun map(permissionWithGroups: PermissionWithGroupDto): PermissionModel =
         if (permissionWithGroups.group != null) {
             PermissionModel.GroupPermissionModel(
                 permission = map(permissionWithGroups.type),
                 permissionId = permissionWithGroups.id.toString(),
-                group = groupsModelMapper.map(permissionWithGroups.group!!)
+                group = groupsModelMapper.map(permissionWithGroups.group!!),
             )
         } else {
             PermissionModel.UserPermissionModel(
                 permission = map(permissionWithGroups.type),
                 permissionId = permissionWithGroups.id.toString(),
-                userId = permissionWithGroups.aroForeignKey.toString()
+                userId = permissionWithGroups.aroForeignKey.toString(),
             )
         }
 
     fun map(
         groupsPermissions: List<GroupPermission>,
-        usersPermissions: List<UserPermission>
-    ) =
-        mutableListOf<PermissionModelUi>()
-            .apply {
-                groupsPermissions.mapTo(this) {
-                    PermissionModelUi.GroupPermissionModel(
-                        permission = map(it.permission),
-                        permissionId = it.permissionId,
-                        group = groupsModelMapper.map(it)
-                    )
-                }
-                usersPermissions.mapTo(this) {
-                    PermissionModelUi.UserPermissionModel(
-                        map(it.permission),
-                        it.permissionId,
-                        UserWithAvatar(
-                            userId = it.userId,
-                            firstName = it.firstName.orEmpty(),
-                            lastName = it.lastName.orEmpty(),
-                            userName = it.userName,
-                            isDisabled = it.disabled,
-                            avatarUrl = it.avatarUrl
-                        )
-                    )
-                }
+        usersPermissions: List<UserPermission>,
+    ) = mutableListOf<PermissionModelUi>()
+        .apply {
+            groupsPermissions.mapTo(this) {
+                PermissionModelUi.GroupPermissionModel(
+                    permission = map(it.permission),
+                    permissionId = it.permissionId,
+                    group = groupsModelMapper.map(it),
+                )
             }
-            .toList()
+            usersPermissions.mapTo(this) {
+                PermissionModelUi.UserPermissionModel(
+                    map(it.permission),
+                    it.permissionId,
+                    UserWithAvatar(
+                        userId = it.userId,
+                        firstName = it.firstName.orEmpty(),
+                        lastName = it.lastName.orEmpty(),
+                        userName = it.userName,
+                        isDisabled = it.disabled,
+                        avatarUrl = it.avatarUrl,
+                    ),
+                )
+            }
+        }.toList()
 
     fun map(
         model: GroupModel,
         permission: ResourcePermission,
-        permissionId: String
-    ) =
-        PermissionModelUi.GroupPermissionModel(permission, permissionId, model)
+        permissionId: String,
+    ) = PermissionModelUi.GroupPermissionModel(permission, permissionId, model)
 
     fun map(
         model: UserModel,
         permission: ResourcePermission,
-        permissionId: String
-    ) =
-        PermissionModelUi.UserPermissionModel(
-            permission,
-            permissionId,
-            usersModelMapper.mapToUserWithAvatar(model)
-        )
+        permissionId: String,
+    ) = PermissionModelUi.UserPermissionModel(
+        permission,
+        permissionId,
+        usersModelMapper.mapToUserWithAvatar(model),
+    )
 
     fun mapToUserPermission(permission: PermissionDto): PermissionModel.UserPermissionModel =
         PermissionModel.UserPermissionModel(
             permission = map(permission.type),
             permissionId = permission.id.toString(),
-            userId = permission.aroForeignKey.toString()
+            userId = permission.aroForeignKey.toString(),
         )
 }

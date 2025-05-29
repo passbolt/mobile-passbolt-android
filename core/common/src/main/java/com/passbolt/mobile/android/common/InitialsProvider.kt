@@ -25,8 +25,10 @@ import com.passbolt.mobile.android.common.extension.firstOrEmpty
  * @since v1.0
  */
 class InitialsProvider {
-
-    fun get(firstName: String, lastName: String? = null): String =
+    fun get(
+        firstName: String,
+        lastName: String? = null,
+    ): String =
         if (!lastName.isNullOrEmpty()) {
             "${firstName.firstOrEmpty()}${lastName.first()}"
         } else {

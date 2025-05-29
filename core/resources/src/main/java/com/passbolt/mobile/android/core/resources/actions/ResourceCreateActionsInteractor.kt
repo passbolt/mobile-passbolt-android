@@ -85,16 +85,15 @@ class ResourceCreateActionsInteractor(
     private val getMetadataKeysUseCase: GetLocalMetadataKeysUseCase,
     private val getLocalCurrentUserUseCase: GetLocalCurrentUserUseCase,
     private val metadataPrivateKeysInteractor: MetadataPrivateKeysInteractor,
-    private val resourceTypeIdToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider
+    private val resourceTypeIdToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider,
 ) : KoinComponent {
-
     suspend fun createGenericResource(
         contentType: ContentType,
         resourceParentFolderId: String?,
         metadataJsonModel: MetadataJsonModel,
-        secretJsonModel: SecretJsonModel
-    ): Flow<ResourceCreateActionResult> {
-        return if (!isSupported(contentType)) {
+        secretJsonModel: SecretJsonModel,
+    ): Flow<ResourceCreateActionResult> =
+        if (!isSupported(contentType)) {
             flowOf(CannotCreateWithCurrentConfig)
         } else {
             when (val metadataKeyParams = getMetadataKeysParams(resourceParentFolderId)) {
@@ -116,45 +115,52 @@ class ResourceCreateActionsInteractor(
                                 expiry = null,
                                 metadataKeyId = metadataKeyParams.metadataKeyId,
                                 metadataKeyType = metadataKeyParams.metadataKeyType,
-                                metadataJsonModel = metadataJsonModel
+                                metadataJsonModel = metadataJsonModel,
                             )
                         },
-                        createSecret = { secretJsonModel }
+                        createSecret = { secretJsonModel },
                     )
                 }
             }
         }
-    }
 
     private suspend fun isSupported(contentType: ContentType) =
-        resourceTypeIdToSlugMappingProvider.provideMappingForSelectedAccount()
+        resourceTypeIdToSlugMappingProvider
+            .provideMappingForSelectedAccount()
             .values
             .contains(contentType.slug)
 
     private suspend fun shouldPersonalKeyBeUsed(parentFolderId: String?): Boolean {
-        val isPersonalKeyAllowed = getMetadataKeysSettingsUseCase.execute(Unit)
-            .metadataKeysSettingsModel.allowUsageOfPersonalKeys
-        val isParentFolderShared = parentFolderId?.let {
-            getLocalFolderPermissionsUseCase.execute(
-                GetLocalFolderPermissionsUseCase.Input(parentFolderId)
-            ).permissions.size > 1
-        } ?: false
+        val isPersonalKeyAllowed =
+            getMetadataKeysSettingsUseCase
+                .execute(Unit)
+                .metadataKeysSettingsModel.allowUsageOfPersonalKeys
+        val isParentFolderShared =
+            parentFolderId?.let {
+                getLocalFolderPermissionsUseCase
+                    .execute(
+                        GetLocalFolderPermissionsUseCase.Input(parentFolderId),
+                    ).permissions.size > 1
+            } ?: false
 
         return isPersonalKeyAllowed && !isParentFolderShared
     }
 
+    @Suppress("LongMethod")
     private suspend fun getMetadataKeysParams(parentFolderId: String?): MetadataKeyParamsModel {
-        val metadataKeyType = if (shouldPersonalKeyBeUsed(parentFolderId)) {
-            MetadataKeyTypeModel.PERSONAL
-        } else {
-            MetadataKeyTypeModel.SHARED
-        }
+        val metadataKeyType =
+            if (shouldPersonalKeyBeUsed(parentFolderId)) {
+                MetadataKeyTypeModel.PERSONAL
+            } else {
+                MetadataKeyTypeModel.SHARED
+            }
 
         return when (metadataKeyType) {
             MetadataKeyTypeModel.SHARED -> {
-                val verifyOutput = runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
-                    metadataPrivateKeysInteractor.verifyMetadataPrivateKey()
-                }
+                val verifyOutput =
+                    runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+                        metadataPrivateKeysInteractor.verifyMetadataPrivateKey()
+                    }
 
                 when (verifyOutput) {
                     is MetadataPrivateKeysInteractor.Output.Failure -> {
@@ -169,8 +175,8 @@ class ResourceCreateActionsInteractor(
                                 signatureCreationTimestampSeconds = verifyOutput.signatureCreationTimestampSeconds,
                                 signatureKeyFingerprint = verifyOutput.signatureKeyFingerprint,
                                 metadataPrivateKey = verifyOutput.metadataPrivateKey,
-                                modificationKind = verifyOutput.modificationKind
-                            )
+                                modificationKind = verifyOutput.modificationKind,
+                            ),
                         )
                     }
                     is TrustedKeyDeleted -> {
@@ -179,58 +185,64 @@ class ResourceCreateActionsInteractor(
                                 keyFingerprint = verifyOutput.keyFingerprint,
                                 signedUsername = verifyOutput.signedUsername,
                                 signedName = verifyOutput.signedName,
-                                modificationKind = verifyOutput.modificationKind
-                            )
+                                modificationKind = verifyOutput.modificationKind,
+                            ),
                         )
                     }
                     else -> {
                         // for cases when not able to verify (i.e. cannot get user, cannot validate signature)
                         // do not block the user
                         MetadataKeyParamsModel.ParamsModel(
-                            metadataKeyId = getMetadataKeysUseCase.execute(GetLocalMetadataKeysUseCase.Input(ENCRYPT))
-                                .firstOrNull()?.id?.toString(),
-                            metadataKeyType = MetadataKeyTypeModel.SHARED
+                            metadataKeyId =
+                                getMetadataKeysUseCase
+                                    .execute(GetLocalMetadataKeysUseCase.Input(ENCRYPT))
+                                    .firstOrNull()
+                                    ?.id
+                                    ?.toString(),
+                            metadataKeyType = MetadataKeyTypeModel.SHARED,
                         )
                     }
                 }
             }
             MetadataKeyTypeModel.PERSONAL -> {
                 MetadataKeyParamsModel.ParamsModel(
-                    metadataKeyId = getLocalCurrentUserUseCase.execute(Unit).user.gpgKey.id,
-                    metadataKeyType = MetadataKeyTypeModel.PERSONAL
+                    metadataKeyId =
+                        getLocalCurrentUserUseCase
+                            .execute(Unit)
+                            .user.gpgKey.id,
+                    metadataKeyType = MetadataKeyTypeModel.PERSONAL,
                 )
             }
         }
     }
 
-    private suspend fun getMetadataType() =
-        getMetadataTypesSettingsUseCase.execute(Unit).metadataTypesSettingsModel.defaultMetadataType
+    private suspend fun getMetadataType() = getMetadataTypesSettingsUseCase.execute(Unit).metadataTypesSettingsModel.defaultMetadataType
 
     private suspend fun createResource(
         createResource: (MetadataTypeModel) -> CreateResourceModel,
-        createSecret: () -> SecretJsonModel
-    ): Flow<ResourceCreateActionResult> {
-        return try {
+        createSecret: () -> SecretJsonModel,
+    ): Flow<ResourceCreateActionResult> =
+        try {
             flowOf(
                 runCreateOperation {
                     createResourceInteractor.execute(
                         resourceInput = createResource(getMetadataType()),
-                        secretInput = createSecret()
+                        secretInput = createSecret(),
                     )
-                }
+                },
             )
         } catch (e: Exception) {
             Timber.e(e, "Error updating resource")
             flowOf(Failure())
         }
-    }
 
-    private suspend fun runCreateOperation(
-        operation: suspend () -> CreateResourceInteractor.Output
-    ): ResourceCreateActionResult {
-        return when (val operationResult = runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
-            operation()
-        }) {
+    private suspend fun runCreateOperation(operation: suspend () -> CreateResourceInteractor.Output): ResourceCreateActionResult =
+        when (
+            val operationResult =
+                runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+                    operation()
+                }
+        ) {
             is CreateResourceInteractor.Output.Failure<*> -> {
                 Failure(operationResult.response.exception.message)
             }
@@ -243,42 +255,47 @@ class ResourceCreateActionsInteractor(
             is CreateResourceInteractor.Output.Success -> {
                 addLocalResourceUseCase.execute(AddLocalResourceUseCase.Input(operationResult.resource.resourceModel))
                 addLocalResourcePermissionsUseCase.execute(
-                    AddLocalResourcePermissionsUseCase.Input(listOf(operationResult.resource))
+                    AddLocalResourcePermissionsUseCase.Input(listOf(operationResult.resource)),
                 )
 
-                val newFolderPermissionsToApply = operationResult.resource.resourceModel.folderId?.let {
-                    getLocalParentFolderPermissionsToApplyUseCase.execute(
-                        GetLocalParentFolderPermissionsToApplyToNewItemUseCase.Input(
-                            it,
-                            ItemIdResourceId(operationResult.resource.resourceModel.resourceId)
-                        )
-                    ).permissions
-                }.orEmpty()
+                val newFolderPermissionsToApply =
+                    operationResult.resource.resourceModel.folderId
+                        ?.let {
+                            getLocalParentFolderPermissionsToApplyUseCase
+                                .execute(
+                                    GetLocalParentFolderPermissionsToApplyToNewItemUseCase.Input(
+                                        it,
+                                        ItemIdResourceId(operationResult.resource.resourceModel.resourceId),
+                                    ),
+                                ).permissions
+                        }.orEmpty()
 
                 if (newFolderPermissionsToApply.size > 1) {
                     applyFolderPermissionsToCreatedResource(
                         operationResult.resource.resourceModel,
-                        newFolderPermissionsToApply
+                        newFolderPermissionsToApply,
                     )
                 } else {
                     Success(
                         operationResult.resource.resourceModel.resourceId,
-                        operationResult.resource.resourceModel.metadataJsonModel.name
+                        operationResult.resource.resourceModel.metadataJsonModel.name,
                     )
                 }
             }
             is CreateResourceInteractor.Output.JsonSchemaValidationFailure ->
                 JsonSchemaValidationFailure(operationResult.entity)
         }
-    }
 
     private suspend fun applyFolderPermissionsToCreatedResource(
         resource: ResourceModel,
-        newPermissionsToApply: List<PermissionModelUi>
-    ): ResourceCreateActionResult {
-        return when (val shareResult = runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
-            resourceShareInteractor.simulateAndShareResource(resource.resourceId, newPermissionsToApply)
-        }) {
+        newPermissionsToApply: List<PermissionModelUi>,
+    ): ResourceCreateActionResult =
+        when (
+            val shareResult =
+                runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+                    resourceShareInteractor.simulateAndShareResource(resource.resourceId, newPermissionsToApply)
+                }
+        ) {
             is ResourceShareInteractor.Output.SecretDecryptFailure -> CryptoFailure(shareResult.message)
             is ResourceShareInteractor.Output.SecretEncryptFailure -> CryptoFailure(shareResult.message)
             is ResourceShareInteractor.Output.SecretFetchFailure -> FetchFailure
@@ -287,7 +304,6 @@ class ResourceCreateActionsInteractor(
             is ResourceShareInteractor.Output.Success -> Success(resource.resourceId, resource.metadataJsonModel.name)
             is ResourceShareInteractor.Output.Unauthorized -> Unauthorized
         }
-    }
 }
 
 @Suppress("LongParameterList")
@@ -303,7 +319,7 @@ suspend fun performResourceCreateAction(
     doOnFetchFailure: () -> Unit = {},
     doOnUnauthorized: () -> Unit = {},
     doOnShareFailure: (String) -> Unit = {},
-    doOnMetadataKeyVerificationFailure: () -> Unit = {}
+    doOnMetadataKeyVerificationFailure: () -> Unit = {},
 ) {
     action().single().let {
         when (it) {

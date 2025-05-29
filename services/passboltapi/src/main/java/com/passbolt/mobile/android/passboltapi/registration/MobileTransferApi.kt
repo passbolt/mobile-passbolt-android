@@ -37,23 +37,22 @@ import retrofit2.http.Query
  */
 
 internal interface MobileTransferApi {
-
     @POST(MOBILE_TRANSFERS)
     suspend fun createTransfer(
-        @Body createTransferRequest: CreateTransferRequestDto
+        @Body createTransferRequest: CreateTransferRequestDto,
     ): BaseResponse<CreateTransferResponseDto>
 
     @GET(TRANSFER_BY_ID)
     suspend fun viewTransfer(
         @Header("Authorization") authToken: String,
-        @Path(PATH_UUID) uuid: String
+        @Path(PATH_UUID) uuid: String,
     ): BaseResponse<TransferResponseDto>
 
     @GET(TRANSFER_BY_ID)
     suspend fun viewTransferWithMfa(
         @Header("Authorization") authToken: String,
         @Header("Cookie") mfaCookie: String,
-        @Path(PATH_UUID) uuid: String
+        @Path(PATH_UUID) uuid: String,
     ): BaseResponse<TransferResponseDto>
 
     @PUT(TRANSFER_BY_ID_AND_AUTH_TOKEN)
@@ -61,7 +60,7 @@ internal interface MobileTransferApi {
         @Path(PATH_UUID) uuid: String,
         @Path(PATH_AUTH_TOKEN) authToken: String,
         @Body pageRequestDto: UpdateTransferRequestDto,
-        @Query(USER_PROFILE_INFO) userProfile: String?
+        @Query(USER_PROFILE_INFO) userProfile: String?,
     ): BaseResponse<TransferResponseDto>
 
     private companion object {

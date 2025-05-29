@@ -32,9 +32,8 @@ import java.net.HttpURLConnection
 
 class SecretInteractor(
     private val fetchSecretUseCase: FetchSecretUseCase,
-    private val decryptSecretUseCase: DecryptSecretUseCase
+    private val decryptSecretUseCase: DecryptSecretUseCase,
 ) {
-
     suspend fun fetchAndDecrypt(resourceId: String): Output =
         when (val response = fetchSecretUseCase.execute(FetchSecretUseCase.Input(resourceId))) {
             is FetchSecretUseCase.Output.EncryptedSecret -> decrypt(response.encryptedSecret)
@@ -49,24 +48,32 @@ class SecretInteractor(
         }
 
     sealed class Output : AuthenticatedUseCaseOutput {
-
         override val authenticationState: AuthenticationState
-            get() = if (this is FetchFailure &&
-                (this.exception as? HttpException)?.code() == HttpURLConnection.HTTP_UNAUTHORIZED
-            ) {
-                AuthenticationState.Unauthenticated(AuthenticationState.Unauthenticated.Reason.Session)
-            } else if (this is Unauthorized) {
-                AuthenticationState.Unauthenticated(AuthenticationState.Unauthenticated.Reason.Passphrase)
-            } else {
-                AuthenticationState.Authenticated
-            }
+            get() =
+                if (this is FetchFailure &&
+                    (this.exception as? HttpException)?.code() == HttpURLConnection.HTTP_UNAUTHORIZED
+                ) {
+                    AuthenticationState.Unauthenticated(AuthenticationState.Unauthenticated.Reason.Session)
+                } else if (this is Unauthorized) {
+                    AuthenticationState.Unauthenticated(AuthenticationState.Unauthenticated.Reason.Passphrase)
+                } else {
+                    AuthenticationState.Authenticated
+                }
 
-        data class FetchFailure(val exception: Exception) : Output()
+        data class FetchFailure(
+            val exception: Exception,
+        ) : Output()
 
-        data class DecryptFailure(val error: OpenPgpError) : Output()
+        data class DecryptFailure(
+            val error: OpenPgpError,
+        ) : Output()
 
-        data class Unauthorized(val reason: UnauthenticatedReason) : Output()
+        data class Unauthorized(
+            val reason: UnauthenticatedReason,
+        ) : Output()
 
-        data class Success(val decryptedSecret: String) : Output()
+        data class Success(
+            val decryptedSecret: String,
+        ) : Output()
     }
 }

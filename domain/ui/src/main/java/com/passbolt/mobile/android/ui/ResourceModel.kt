@@ -47,9 +47,9 @@ data class ResourceModel(
     val expiry: ZonedDateTime?,
     val metadataKeyId: String?,
     val metadataKeyType: MetadataKeyTypeModel?,
-    val metadataJsonModel: MetadataJsonModel
-) : Parcelable, Searchable by metadataJsonModel {
-
+    val metadataJsonModel: MetadataJsonModel,
+) : Parcelable,
+    Searchable by metadataJsonModel {
     @IgnoredOnParcel
     val initials: String
         get() = initialsProvider.get(metadataJsonModel.name)
@@ -65,12 +65,12 @@ data class ResourceModelWithAttributes(
     val resourceModel: ResourceModel,
     val resourceTags: List<TagModel>,
     val resourcePermissions: List<PermissionModel>,
-    val favouriteId: String?
+    val favouriteId: String?,
 )
 
 enum class MetadataKeyTypeModel {
     SHARED,
-    PERSONAL
+    PERSONAL,
 }
 
 open class CreateResourceModel(
@@ -79,7 +79,7 @@ open class CreateResourceModel(
     val expiry: ZonedDateTime?,
     val metadataKeyId: String?,
     val metadataKeyType: MetadataKeyTypeModel?,
-    val metadataJsonModel: MetadataJsonModel
+    val metadataJsonModel: MetadataJsonModel,
 )
 
 class UpdateResourceModel(
@@ -89,19 +89,22 @@ class UpdateResourceModel(
     expiry: ZonedDateTime?,
     metadataKeyId: String?,
     metadataKeyType: MetadataKeyTypeModel?,
-    metadataJsonModel: MetadataJsonModel
+    metadataJsonModel: MetadataJsonModel,
 ) : CreateResourceModel(
-    contentType = contentType,
-    folderId = folderId,
-    expiry = expiry,
-    metadataKeyId = metadataKeyId,
-    metadataKeyType = metadataKeyType,
-    metadataJsonModel = metadataJsonModel
-)
+        contentType = contentType,
+        folderId = folderId,
+        expiry = expiry,
+        metadataKeyId = metadataKeyId,
+        metadataKeyType = metadataKeyType,
+        metadataJsonModel = metadataJsonModel,
+    )
 
 @Parcelize
-data class MetadataJsonModel(override var json: String?) : JsonModel, Parcelable, Searchable {
-
+data class MetadataJsonModel(
+    override var json: String?,
+) : JsonModel,
+    Parcelable,
+    Searchable {
     @IgnoredOnParcel
     var objectType: String by RootRelativeJsonPathStringDelegate(jsonPath = "object_type")
 
@@ -134,28 +137,32 @@ data class MetadataJsonModel(override var json: String?) : JsonModel, Parcelable
         }.orEmpty()
 
     @Suppress("NestedBlockDepth")
-    fun setMainUri(contentType: ContentType, mainUri: String) {
+    fun setMainUri(
+        contentType: ContentType,
+        mainUri: String,
+    ) {
         if (contentType.isV5()) {
-            uris = uris.let {
-                if (it.isNullOrEmpty()) {
-                    listOf(mainUri)
-                } else {
-                    it.toMutableList().apply {
-                        set(0, mainUri)
+            uris =
+                uris.let {
+                    if (it.isNullOrEmpty()) {
+                        listOf(mainUri)
+                    } else {
+                        it.toMutableList().apply {
+                            set(0, mainUri)
+                        }
                     }
                 }
-            }
         } else {
             uri = mainUri
         }
     }
 
     companion object {
-        fun empty(): MetadataJsonModel = MetadataJsonModel(
-            """
+        fun empty(): MetadataJsonModel =
+            MetadataJsonModel(
+                """
                 {"name": ""}
-            """
-                .trimIndent()
-        )
+                """.trimIndent(),
+            )
     }
 }

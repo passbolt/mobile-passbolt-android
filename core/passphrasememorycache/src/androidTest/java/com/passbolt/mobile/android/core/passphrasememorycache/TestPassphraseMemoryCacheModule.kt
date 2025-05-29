@@ -34,17 +34,18 @@ import org.koin.dsl.module
 internal val testCoroutineLaunchContext = TestCoroutineLaunchContext()
 
 @ExperimentalCoroutinesApi
-internal val testPassphraseMemoryCacheModule = module {
-    single {
-        PassphraseMemoryCache(
-            coroutineLaunchContext = get(),
-            lifecycleOwner = get(named<ProcessLifecycleOwner>())
-        )
+internal val testPassphraseMemoryCacheModule =
+    module {
+        single {
+            PassphraseMemoryCache(
+                coroutineLaunchContext = get(),
+                lifecycleOwner = get(named<ProcessLifecycleOwner>()),
+            )
+        }
+        factory<CoroutineLaunchContext> {
+            testCoroutineLaunchContext
+        }
+        factory(named<ProcessLifecycleOwner>()) {
+            ProcessLifecycleOwner.get()
+        }
     }
-    factory<CoroutineLaunchContext> {
-        testCoroutineLaunchContext
-    }
-    factory(named<ProcessLifecycleOwner>()) {
-        ProcessLifecycleOwner.get()
-    }
-}

@@ -36,9 +36,8 @@ import com.passbolt.mobile.android.encryptedstorage.EncryptedSharedPreferencesFa
  */
 
 class UpdateAccountDataUseCase(
-    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory
+    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory,
 ) : UseCase<UpdateAccountDataUseCase.Input, Unit> {
-
     override fun execute(input: Input) {
         val fileName = AccountDataFileName(input.userId).name
         val sharedPreferences = encryptedSharedPreferencesFactory.get("$fileName.xml")
@@ -66,6 +65,6 @@ class UpdateAccountDataUseCase(
         val avatarUrl: String? = null,
         val serverId: String? = null,
         val label: String? = null,
-        val role: String? = null
+        val role: String? = null,
     )
 }

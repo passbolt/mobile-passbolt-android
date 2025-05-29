@@ -31,11 +31,12 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-val transferAccountToAnotherDeviceModule = module {
-    transferAccountModule()
-    transferAccountOnboardingModule()
-    transferAccountSummaryModule()
+val transferAccountToAnotherDeviceModule =
+    module {
+        transferAccountModule()
+        transferAccountOnboardingModule()
+        transferAccountSummaryModule()
 
-    singleOf(::CreateTransferUseCase)
-    singleOf(::ViewTransferUseCase)
-}
+        singleOf(::CreateTransferUseCase)
+        singleOf(::ViewTransferUseCase)
+    }

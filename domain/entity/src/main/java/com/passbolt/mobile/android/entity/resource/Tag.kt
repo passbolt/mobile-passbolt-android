@@ -31,12 +31,12 @@ data class Tag(
     @PrimaryKey
     val id: String,
     val slug: String,
-    val isShared: Boolean
+    val isShared: Boolean,
 )
 
 data class TagWithTaggedItemsCount(
     val id: String,
     val slug: String,
     val isShared: Boolean,
-    val taggedItemsCount: Int
+    val taggedItemsCount: Int,
 )

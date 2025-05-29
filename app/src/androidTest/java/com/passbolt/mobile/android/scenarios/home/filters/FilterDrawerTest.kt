@@ -54,40 +54,40 @@ import com.google.android.material.R as MaterialR
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
-
 @RunWith(AndroidJUnit4::class)
 @LargeTest
 class FilterDrawerTest : KoinTest {
-
     @get:Rule
-    val startUpActivityRule = lazyActivitySetupScenarioRule<AuthenticationMainActivity>(
-        koinOverrideModules = listOf(instrumentationTestsModule),
-        intentSupplier = {
-            ActivityIntents.authentication(
-                InstrumentationRegistry.getInstrumentation().targetContext,
-                ActivityIntents.AuthConfig.Startup,
-                AppContext.APP,
-                managedAccountIntentCreator.getUserLocalId()
-            )
-        }
-    )
+    val startUpActivityRule =
+        lazyActivitySetupScenarioRule<AuthenticationMainActivity>(
+            koinOverrideModules = listOf(instrumentationTestsModule),
+            intentSupplier = {
+                ActivityIntents.authentication(
+                    InstrumentationRegistry.getInstrumentation().targetContext,
+                    ActivityIntents.AuthConfig.Startup,
+                    AppContext.APP,
+                    managedAccountIntentCreator.getUserLocalId(),
+                )
+            },
+        )
 
     private val managedAccountIntentCreator: ManagedAccountIntentCreator by inject()
 
     @get:Rule
-    val idlingResourceRule = let {
-        val signInIdlingResource: SignInIdlingResource by inject()
-        val resourcesFullRefreshIdlingResource: ResourcesFullRefreshIdlingResource by inject()
-        IdlingResourceRule(arrayOf(signInIdlingResource, resourcesFullRefreshIdlingResource))
-    }
+    val idlingResourceRule =
+        let {
+            val signInIdlingResource: SignInIdlingResource by inject()
+            val resourcesFullRefreshIdlingResource: ResourcesFullRefreshIdlingResource by inject()
+            IdlingResourceRule(arrayOf(signInIdlingResource, resourcesFullRefreshIdlingResource))
+        }
 
     @BeforeTest
     fun setup() {
         signIn(managedAccountIntentCreator.getPassphrase())
     }
 
-    @Test
     // https://passbolt.testrail.io/index.php?/cases/view/2616
+    @Test
     fun asALoggedInMobileUserOnTheHomepageICanSeeAFilterIconInTheSearchBar() {
         //    Given     that I am a logged in mobile user
         //    When      I am on the homepage
@@ -96,8 +96,8 @@ class FilterDrawerTest : KoinTest {
         onView(withId(MaterialR.id.text_input_start_icon)).check(matches(isDisplayed()))
     }
 
-    @Test
     // https://passbolt.testrail.io/index.php?/cases/view/2617
+    @Test
     fun asALoggedInMobileUserOnTheHomepageICanSeeTheFilterDrawer() {
         //    Given     that I am a logged in mobile user on the homepage
         //    When      I click on the filter icon
@@ -128,8 +128,8 @@ class FilterDrawerTest : KoinTest {
         }
     }
 
-    @Test
     // https://passbolt.testrail.io/index.php?/cases/view/2618
+    @Test
     fun asALoggedInMobileUserOnTheFilterDrawerICanSeeTheActiveFilterUsedToFilterOrSortResources() {
         // Given      that I am a logged in mobile user
         ResourceFilterModel.entries.forEach { model ->

@@ -30,7 +30,8 @@ import org.koin.dsl.module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-val architectureModule = module {
-    factoryOf(::MfaProvidersHandler)
-    singleOf(::AppCoroutineContext) bind CoroutineLaunchContext::class
-}
+val architectureModule =
+    module {
+        factoryOf(::MfaProvidersHandler)
+        singleOf(::AppCoroutineContext) bind CoroutineLaunchContext::class
+    }

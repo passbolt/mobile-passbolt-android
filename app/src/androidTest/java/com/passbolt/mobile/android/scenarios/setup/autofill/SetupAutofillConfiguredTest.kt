@@ -52,26 +52,26 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
-
 @RunWith(AndroidJUnit4::class)
 @MediumTest
 class SetupAutofillConfiguredTest : KoinTest {
+    @get:Rule
+    val startActivityRule =
+        lazyActivityScenarioRule<StartUpActivity>(
+            koinOverrideModules = listOf(instrumentationTestsModule, autofillConfiguredModuleTests),
+            intentSupplier = {
+                managedAccountIntentCreator.createIntent(
+                    InstrumentationRegistry.getInstrumentation().targetContext,
+                )
+            },
+        )
 
     @get:Rule
-    val startActivityRule = lazyActivityScenarioRule<StartUpActivity>(
-        koinOverrideModules = listOf(instrumentationTestsModule, autofillConfiguredModuleTests),
-        intentSupplier = {
-            managedAccountIntentCreator.createIntent(
-                InstrumentationRegistry.getInstrumentation().targetContext
-            )
+    val idlingResourceRule =
+        let {
+            val signInIdlingResource: SignInIdlingResource by inject()
+            IdlingResourceRule(arrayOf(signInIdlingResource))
         }
-    )
-
-    @get:Rule
-    val idlingResourceRule = let {
-        val signInIdlingResource: SignInIdlingResource by inject()
-        IdlingResourceRule(arrayOf(signInIdlingResource))
-    }
 
     @get:Rule
     val permissionRule: GrantPermissionRule = GrantPermissionRule.grant(android.Manifest.permission.CAMERA)
@@ -95,8 +95,8 @@ class SetupAutofillConfiguredTest : KoinTest {
         accountDataCleaner.clearAccountData()
     }
 
-    @Test
     //    https://passbolt.testrail.io/index.php?/cases/view/2365
+    @Test
     fun asAMobileUserIShouldNotSeeAPromptToEnableAutofillForPassboltIfItIsAlreadyConfigured() {
         //    Given     Autofill is configured for Passbolt
         //    When      I skip or finish the biometric configuration

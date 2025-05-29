@@ -20,7 +20,6 @@ import org.koin.test.KoinTest
 import org.koin.test.KoinTestRule
 import org.koin.test.inject
 
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -46,18 +45,17 @@ import org.koin.test.inject
 
 @ExperimentalCoroutinesApi
 class PassphraseMemoryCacheTest : KoinTest {
-
     private val passphraseMemoryCache: PassphraseMemoryCache by inject()
 
     @get:Rule
-    val koinTestRule = KoinTestRule.create {
-        printLogger(Level.ERROR)
-        modules(testPassphraseMemoryCacheModule)
-    }
+    val koinTestRule =
+        KoinTestRule.create {
+            printLogger(Level.ERROR)
+            modules(testPassphraseMemoryCacheModule)
+        }
 
     @get:Rule
     val activityScenarioRule = ActivityScenarioRule(TestActivity::class.java)
-
 
     @Before
     fun setup() {
@@ -66,72 +64,80 @@ class PassphraseMemoryCacheTest : KoinTest {
     }
 
     @Test
-    fun test_passphraseIsCachedForSetDuration() = runTest(testCoroutineLaunchContext.ui) {
-        passphraseMemoryCache.set(TEST_PASSPHRASE)
+    fun test_passphraseIsCachedForSetDuration() =
+        runTest(testCoroutineLaunchContext.ui) {
+            passphraseMemoryCache.set(TEST_PASSPHRASE)
 
-        // advance time on the timer thread to just before cache expiration
-        advanceTimeBy(PassphraseMemoryCache.CACHE_EXPIRATION_MILLIS - 1)
+            // advance time on the timer thread to just before cache expiration
+            advanceTimeBy(PassphraseMemoryCache.CACHE_EXPIRATION_MILLIS - 1)
 
-        assertThat(passphraseMemoryCache.get()).isInstanceOf(PotentialPassphrase.Passphrase::class.java)
-        assertThat((passphraseMemoryCache.get() as PotentialPassphrase.Passphrase).passphrase)
-            .isEqualTo(TEST_PASSPHRASE)
-    }
-
-    @Test
-    fun test_cacheIsClearedAfterSetDuration() = runTest(testCoroutineLaunchContext.ui) {
-        passphraseMemoryCache.set(TEST_PASSPHRASE)
-
-        // advance time on the timer thread to just after cache expiration
-        advanceTimeBy(PassphraseMemoryCache.CACHE_EXPIRATION_MILLIS + 1)
-
-        assertThat(passphraseMemoryCache.get()).isInstanceOf(PotentialPassphrase.PassphraseNotPresent::class.java)
-    }
+            assertThat(passphraseMemoryCache.get()).isInstanceOf(PotentialPassphrase.Passphrase::class.java)
+            assertThat((passphraseMemoryCache.get() as PotentialPassphrase.Passphrase).passphrase)
+                .isEqualTo(TEST_PASSPHRASE)
+        }
 
     @Test
-    fun test_CacheIsClearedAfterAppIsInBackground() = runBlocking {
-        passphraseMemoryCache.set(TEST_PASSPHRASE)
+    fun test_cacheIsClearedAfterSetDuration() =
+        runTest(testCoroutineLaunchContext.ui) {
+            passphraseMemoryCache.set(TEST_PASSPHRASE)
 
-        // start launcher app
-        InstrumentationRegistry.getInstrumentation().context
-            .startActivity(launcherIntent())
+            // advance time on the timer thread to just after cache expiration
+            advanceTimeBy(PassphraseMemoryCache.CACHE_EXPIRATION_MILLIS + 1)
 
-        delay(LIFECYCLE_OBSERVATION_TIMEOUT_MILLIS)
-        assertThat(passphraseMemoryCache.get()).isInstanceOf(PotentialPassphrase.PassphraseNotPresent::class.java)
-    }
-
-    @Test
-    fun test_CacheIsClearedAfterAppIsDestroyed() = runBlocking {
-        passphraseMemoryCache.set(TEST_PASSPHRASE)
-
-        val scenario = activityScenarioRule.scenario
-        scenario.moveToState(Lifecycle.State.DESTROYED)
-
-        delay(LIFECYCLE_OBSERVATION_TIMEOUT_MILLIS)
-        assertThat(passphraseMemoryCache.get()).isInstanceOf(PotentialPassphrase.PassphraseNotPresent::class.java)
-    }
+            assertThat(passphraseMemoryCache.get()).isInstanceOf(PotentialPassphrase.PassphraseNotPresent::class.java)
+        }
 
     @Test
-    fun test_CacheTimeoutIsRenewedAfterNewPassphraseValueIsSet() = runTest(testCoroutineLaunchContext.ui) {
-        passphraseMemoryCache.set(TEST_PASSPHRASE)
+    fun test_CacheIsClearedAfterAppIsInBackground() =
+        runBlocking {
+            passphraseMemoryCache.set(TEST_PASSPHRASE)
 
-        // advance time on the timer thread to just before cache expiration
-        advanceTimeBy(PassphraseMemoryCache.CACHE_EXPIRATION_MILLIS - 1)
+            // start launcher app
+            InstrumentationRegistry
+                .getInstrumentation()
+                .context
+                .startActivity(launcherIntent())
 
-        // set new passphrase
-        passphraseMemoryCache.set(TEST_PASSPHRASE)
-        // advance time on the timer thread to just before cache expiration
-        advanceTimeBy(PassphraseMemoryCache.CACHE_EXPIRATION_MILLIS - 1)
+            delay(LIFECYCLE_OBSERVATION_TIMEOUT_MILLIS)
+            assertThat(passphraseMemoryCache.get()).isInstanceOf(PotentialPassphrase.PassphraseNotPresent::class.java)
+        }
 
-        assertThat(passphraseMemoryCache.get()).isInstanceOf(PotentialPassphrase.Passphrase::class.java)
-    }
+    @Test
+    fun test_CacheIsClearedAfterAppIsDestroyed() =
+        runBlocking {
+            passphraseMemoryCache.set(TEST_PASSPHRASE)
+
+            val scenario = activityScenarioRule.scenario
+            scenario.moveToState(Lifecycle.State.DESTROYED)
+
+            delay(LIFECYCLE_OBSERVATION_TIMEOUT_MILLIS)
+            assertThat(passphraseMemoryCache.get()).isInstanceOf(PotentialPassphrase.PassphraseNotPresent::class.java)
+        }
+
+    @Test
+    fun test_CacheTimeoutIsRenewedAfterNewPassphraseValueIsSet() =
+        runTest(testCoroutineLaunchContext.ui) {
+            passphraseMemoryCache.set(TEST_PASSPHRASE)
+
+            // advance time on the timer thread to just before cache expiration
+            advanceTimeBy(PassphraseMemoryCache.CACHE_EXPIRATION_MILLIS - 1)
+
+            // set new passphrase
+            passphraseMemoryCache.set(TEST_PASSPHRASE)
+            // advance time on the timer thread to just before cache expiration
+            advanceTimeBy(PassphraseMemoryCache.CACHE_EXPIRATION_MILLIS - 1)
+
+            assertThat(passphraseMemoryCache.get()).isInstanceOf(PotentialPassphrase.Passphrase::class.java)
+        }
 
     private companion object {
         private val TEST_PASSPHRASE = "passphrase".toByteArray()
         private const val LIFECYCLE_OBSERVATION_TIMEOUT_MILLIS = 1_000L
 
-        fun launcherIntent() = Intent(Intent.ACTION_MAIN).apply {
-            addCategory(Intent.CATEGORY_HOME)
-            flags = FLAG_ACTIVITY_NEW_TASK
-        }
+        fun launcherIntent() =
+            Intent(Intent.ACTION_MAIN).apply {
+                addCategory(Intent.CATEGORY_HOME)
+                flags = FLAG_ACTIVITY_NEW_TASK
+            }
     }
 }

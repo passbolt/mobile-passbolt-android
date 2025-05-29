@@ -27,25 +27,37 @@ import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
  */
 
 interface ResourceMoreMenuContract {
-
     interface View : DataRefreshViewReactiveContract.View {
         fun showTitle(title: String)
+
         fun showSeparator()
+
         fun showDeleteButton()
+
         fun showEditButton()
+
         fun showShareButton()
+
         fun showAddToFavouritesButton()
+
         fun showRemoveFromFavouritesButton()
+
         fun showRefreshFailure()
+
         fun notifyFavouriteClick(favouriteOption: ResourceMoreMenuModel.FavouriteOption)
+
         fun hideMenu()
+
         fun showCopyButton()
+
         fun showCopyNoteButton()
+
         fun showCopyMetadataDescriptionButton()
     }
 
     interface Presenter : DataRefreshViewReactiveContract.Presenter<View> {
         fun argsRetrieved(resourceId: String)
+
         fun menuFavouriteClick()
     }
 }

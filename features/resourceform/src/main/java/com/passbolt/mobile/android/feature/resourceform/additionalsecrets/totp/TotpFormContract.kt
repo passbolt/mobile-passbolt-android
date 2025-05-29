@@ -29,25 +29,43 @@ import com.passbolt.mobile.android.ui.TotpUiModel
  * @since v1.0
  */
 interface TotpFormContract {
-
     interface View : BaseContract.View {
         fun navigateToTotpAdvancedSettingsForm(uiModel: TotpUiModel)
+
         fun goBackWithResult(totpUiModel: TotpUiModel?)
+
         fun showCreateTitle()
+
         fun showSecret(secret: String)
+
         fun showUrl(issuer: String)
+
         fun navigateToScanTotp(scanMode: ScanOtpMode)
+
         fun showEditTitle(resourceName: String)
     }
 
     interface Presenter : BaseContract.Presenter<View> {
         fun moreSettingsClick()
-        fun argsRetrieved(mode: ResourceFormMode, totpUiModel: TotpUiModel)
+
+        fun argsRetrieved(
+            mode: ResourceFormMode,
+            totpUiModel: TotpUiModel,
+        )
+
         fun totpAdvancedSettingsChanged(totpModel: TotpUiModel?)
+
         fun applyClick()
+
         fun totpSecretChanged(secret: String)
+
         fun totpUrlChanged(url: String)
-        fun totpScanned(isManualCreationChosen: Boolean, totpQr: OtpParseResult.OtpQr.TotpQr?)
+
+        fun totpScanned(
+            isManualCreationChosen: Boolean,
+            totpQr: OtpParseResult.OtpQr.TotpQr?,
+        )
+
         fun removeTotpClick()
     }
 }

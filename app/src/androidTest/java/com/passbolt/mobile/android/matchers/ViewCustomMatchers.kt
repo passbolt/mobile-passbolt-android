@@ -21,7 +21,6 @@
  * @since v1.0
  */
 
-
 package com.passbolt.mobile.android.matchers
 
 import android.content.Context
@@ -64,7 +63,7 @@ fun hasDrawable(
     @DrawableRes id: Int,
     @ColorRes tint: Int? = null,
     tintMode: PorterDuff.Mode = PorterDuff.Mode.SRC_IN,
-    drawablePosition: TextDrawablePosition = TextDrawablePosition.LEFT
+    drawablePosition: TextDrawablePosition = TextDrawablePosition.LEFT,
 ) = object : TypeSafeMatcher<View>() {
     override fun describeTo(description: Description) {
         description.appendText("View with drawable same as drawable with id $id")
@@ -79,7 +78,10 @@ fun hasDrawable(
         return when (view) {
             is TextView -> view.compoundDrawables[drawablePosition.ordinal].toBitmap().sameAs(expectedBitmap)
             is ImageView -> view.drawable.toBitmap().sameAs(expectedBitmap)
-            is SpeedDialView -> view.mainFab.drawable.toBitmap().sameAs(expectedBitmap)
+            is SpeedDialView ->
+                view.mainFab.drawable
+                    .toBitmap()
+                    .sameAs(expectedBitmap)
             else -> false
         }
     }
@@ -87,25 +89,31 @@ fun hasDrawable(
 
 private fun Int.toColor(context: Context) = ContextCompat.getColor(context, this)
 
-private fun Drawable.tinted(@ColorInt tintColor: Int? = null, tintMode: PorterDuff.Mode = PorterDuff.Mode.SRC_IN) =
-    apply {
-        setTintList(tintColor?.toColorStateList())
-        setTintMode(tintMode)
-    }
+private fun Drawable.tinted(
+    @ColorInt tintColor: Int? = null,
+    tintMode: PorterDuff.Mode = PorterDuff.Mode.SRC_IN,
+) = apply {
+    setTintList(tintColor?.toColorStateList())
+    setTintMode(tintMode)
+}
 
 private fun Int.toColorStateList() = ColorStateList.valueOf(this)
 
 enum class TextDrawablePosition {
-    LEFT, TOP, RIGHT, BOTTOM
+    LEFT,
+    TOP,
+    RIGHT,
+    BOTTOM,
 }
-
 
 /**
  * HasBackgroundColor is custom matcher method, which help us in ui test, to check whether the background color matches
  * the color sent as a method parameter
  */
 
-fun hasBackgroundColor(@ColorInt color: Int) = object : TypeSafeMatcher<View>() {
+fun hasBackgroundColor(
+    @ColorInt color: Int,
+) = object : TypeSafeMatcher<View>() {
     override fun describeTo(description: Description?) {
         description?.appendText("View background color to be $color")
     }
@@ -117,35 +125,37 @@ fun hasBackgroundColor(@ColorInt color: Int) = object : TypeSafeMatcher<View>() 
     }
 }
 
-fun isTextHidden() = object : BoundedMatcher<View?, EditText>(EditText::class.java) {
-    override fun describeTo(description: Description) {
-        description.appendText("Text is hidden")
-    }
-
-    override fun matchesSafely(editText: EditText): Boolean {
-        // returns true if password is hidden
-        return editText.transformationMethod is PasswordTransformationMethod
-    }
-}
-
-fun hasToast() = object : TypeSafeMatcher<Root?>() {
-    override fun matchesSafely(item: Root?): Boolean {
-        val type: Int? = item?.windowLayoutParams?.get()?.type
-        if (type == WindowManager.LayoutParams.FIRST_APPLICATION_WINDOW) {
-            val windowToken: IBinder = item.decorView.windowToken
-            val appToken: IBinder = item.decorView.applicationWindowToken
-            if (windowToken === appToken) {
-                // means this window isn't contained by any other windows.
-                return true
-            }
+fun isTextHidden() =
+    object : BoundedMatcher<View?, EditText>(EditText::class.java) {
+        override fun describeTo(description: Description) {
+            description.appendText("Text is hidden")
         }
-        return false
+
+        override fun matchesSafely(editText: EditText): Boolean {
+            // returns true if password is hidden
+            return editText.transformationMethod is PasswordTransformationMethod
+        }
     }
 
-    override fun describeTo(description: Description?) {
-        description?.appendText("is toast")
+fun hasToast() =
+    object : TypeSafeMatcher<Root?>() {
+        override fun matchesSafely(item: Root?): Boolean {
+            val type: Int? = item?.windowLayoutParams?.get()?.type
+            if (type == WindowManager.LayoutParams.FIRST_APPLICATION_WINDOW) {
+                val windowToken: IBinder = item.decorView.windowToken
+                val appToken: IBinder = item.decorView.applicationWindowToken
+                if (windowToken === appToken) {
+                    // means this window isn't contained by any other windows.
+                    return true
+                }
+            }
+            return false
+        }
+
+        override fun describeTo(description: Description?) {
+            description?.appendText("is toast")
+        }
     }
-}
 
 /**
  * Matches a view at any position within a RecyclerView that satisfies the given itemMatcher.
@@ -198,29 +208,30 @@ fun withProgressBarOfMinimumProgress(progress: Int): Matcher<View?> =
             description.appendText("ProgressBar with progress value of at least $progress ")
         }
 
-        override fun matchesSafely(progressBar: ProgressBar?): Boolean {
-            return progressBar?.let {
+        override fun matchesSafely(progressBar: ProgressBar?): Boolean =
+            progressBar?.let {
                 it.progress >= progress
             } ?: false
-        }
     }
 
-fun withTextInputStrokeColorOf(@ColorRes colorResId: Int): Matcher<View?> =
+fun withTextInputStrokeColorOf(
+    @ColorRes colorResId: Int,
+): Matcher<View?> =
     object : BoundedMatcher<View, TextInputLayout>(TextInputLayout::class.java) {
         override fun describeTo(description: Description) {
             description.appendText("TextInputLayout with stroke color of res id: $colorResId")
         }
 
-        override fun matchesSafely(textInputLayout: TextInputLayout?): Boolean {
-            return textInputLayout?.let {
+        override fun matchesSafely(textInputLayout: TextInputLayout?): Boolean =
+            textInputLayout?.let {
                 textInputLayout.boxStrokeErrorColor?.defaultColor == textInputLayout.context.getColor(colorResId)
             } ?: false
-        }
     }
 
 fun <T> first(matcher: Matcher<T>): Matcher<T>? {
     return object : BaseMatcher<T>() {
         var isFirst = true
+
         override fun matches(item: Any): Boolean {
             if (isFirst && matcher.matches(item)) {
                 isFirst = false
@@ -235,21 +246,21 @@ fun <T> first(matcher: Matcher<T>): Matcher<T>? {
     }
 }
 
-fun <T> withIndex(index: Int, matcher: Matcher<T>): Matcher<T>? {
-    return object : BaseMatcher<T>() {
+fun <T> withIndex(
+    index: Int,
+    matcher: Matcher<T>,
+): Matcher<T>? =
+    object : BaseMatcher<T>() {
         private var currentIndex = 0
 
-        override fun matches(item: Any): Boolean {
-            return matcher.matches(item) && currentIndex++ == index;
-        }
+        override fun matches(item: Any): Boolean = matcher.matches(item) && currentIndex++ == index
 
         override fun describeTo(description: Description?) {
-            description?.appendText("with index: ");
-            description?.appendValue(index);
-            matcher.describeTo(description);
+            description?.appendText("with index: ")
+            description?.appendValue(index)
+            matcher.describeTo(description)
         }
     }
-}
 
 fun withSpeedDialViewOpenState(isOpen: Boolean): Matcher<View?> =
     object : BoundedMatcher<View, SpeedDialView>(SpeedDialView::class.java) {
@@ -257,27 +268,23 @@ fun withSpeedDialViewOpenState(isOpen: Boolean): Matcher<View?> =
             description.appendText("SpeedDialView with isOpen state set to: $isOpen")
         }
 
-        override fun matchesSafely(speedDialView: SpeedDialView?): Boolean {
-            return speedDialView?.let {
+        override fun matchesSafely(speedDialView: SpeedDialView?): Boolean =
+            speedDialView?.let {
                 speedDialView.isOpen == isOpen
             } ?: false
-        }
     }
 
 fun withImageViewContainingAnyImage(): Matcher<View?> =
     object : BoundedMatcher<View, ImageView>(ImageView::class.java) {
-
         override fun describeTo(description: Description) {
             description.appendText("ImageView with any image set")
         }
 
-        override fun matchesSafely(imageView: ImageView?): Boolean {
-            return imageView?.let {
+        override fun matchesSafely(imageView: ImageView?): Boolean =
+            imageView?.let {
                 it.drawable != null
             } ?: false
-        }
     }
-
 
 fun withFormattedText(formatRegex: String): Matcher<View> {
     return object : TypeSafeMatcher<View>() {

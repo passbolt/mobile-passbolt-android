@@ -34,9 +34,8 @@ import com.passbolt.mobile.android.ui.UserModel
 
 class FetchCurrentUserUseCase(
     private val usersRepository: UsersRepository,
-    private val userModelMapper: UsersModelMapper
+    private val userModelMapper: UsersModelMapper,
 ) : AsyncUseCase<Unit, FetchCurrentUserUseCase.Output> {
-
     override suspend fun execute(input: Unit): Output =
         when (val result = usersRepository.getMyProfile()) {
             is NetworkResult.Failure.NetworkError -> Output.Failure(result, result.exception.message)
@@ -45,28 +44,30 @@ class FetchCurrentUserUseCase(
         }
 
     sealed class Output : AuthenticatedUseCaseOutput {
-
         override val authenticationState: AuthenticationState
-            get() = when {
-                this is Failure<*> && this.response.isUnauthorized -> {
-                    AuthenticationState.Unauthenticated(AuthenticationState.Unauthenticated.Reason.Session)
+            get() =
+                when {
+                    this is Failure<*> && this.response.isUnauthorized -> {
+                        AuthenticationState.Unauthenticated(AuthenticationState.Unauthenticated.Reason.Session)
+                    }
+                    this is Failure<*> && this.response.isMfaRequired -> {
+                        val providers = MfaTypeProvider.get(this.response)
+                        AuthenticationState.Unauthenticated(
+                            AuthenticationState.Unauthenticated.Reason.Mfa(providers),
+                        )
+                    }
+                    else -> {
+                        AuthenticationState.Authenticated
+                    }
                 }
-                this is Failure<*> && this.response.isMfaRequired -> {
-                    val providers = MfaTypeProvider.get(this.response)
-                    AuthenticationState.Unauthenticated(
-                        AuthenticationState.Unauthenticated.Reason.Mfa(providers)
-                    )
-                }
-                else -> {
-                    AuthenticationState.Authenticated
-                }
-            }
 
-        data class Success(val userModel: UserModel) : Output()
+        data class Success(
+            val userModel: UserModel,
+        ) : Output()
 
         data class Failure<T : Any>(
             val response: NetworkResult.Failure<T>,
-            val message: String?
+            val message: String?,
         ) : Output()
     }
 }

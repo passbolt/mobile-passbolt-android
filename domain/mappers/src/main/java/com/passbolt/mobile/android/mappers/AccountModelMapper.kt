@@ -26,26 +26,33 @@ import com.passbolt.mobile.android.ui.AccountModelUi
  * @since v1.0
  */
 class AccountModelMapper {
-
-    fun map(accounts: List<Account>, currentAccount: String?): List<AccountModelUi> =
+    fun map(
+        accounts: List<Account>,
+        currentAccount: String?,
+    ): List<AccountModelUi> =
         accounts
             .mapIndexed { i, item -> map(item, currentAccount, i == 0) }
             .let { it + AccountModelUi.AddNewAccount }
 
-    private fun map(account: Account, currentAccount: String?, isFirstItem: Boolean) =
-        AccountModelUi.AccountModel(
-            userId = account.userId,
-            title = account.label ?: defaultLabel(account.firstName, account.lastName),
-            email = account.email,
-            avatar = account.avatarUrl,
-            isFirstItem = isFirstItem,
-            url = account.url,
-            isCurrentUser = account.userId == currentAccount
-        )
+    private fun map(
+        account: Account,
+        currentAccount: String?,
+        isFirstItem: Boolean,
+    ) = AccountModelUi.AccountModel(
+        userId = account.userId,
+        title = account.label ?: defaultLabel(account.firstName, account.lastName),
+        email = account.email,
+        avatar = account.avatarUrl,
+        isFirstItem = isFirstItem,
+        url = account.url,
+        isCurrentUser = account.userId == currentAccount,
+    )
 
     companion object {
-
-        fun defaultLabel(firstName: String?, lastName: String?): String {
+        fun defaultLabel(
+            firstName: String?,
+            lastName: String?,
+        ): String {
             val builder = StringBuilder(firstName.orEmpty())
             lastName?.let { builder.append(" %s".format(it)) }
             return builder.toString()

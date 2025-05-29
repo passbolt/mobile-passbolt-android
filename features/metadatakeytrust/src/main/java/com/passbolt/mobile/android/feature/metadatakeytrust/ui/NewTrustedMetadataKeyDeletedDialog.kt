@@ -37,12 +37,13 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class NewTrustedMetadataKeyDeletedDialog : DialogFragment(), KoinComponent {
-
+class NewTrustedMetadataKeyDeletedDialog :
+    DialogFragment(),
+    KoinComponent {
     private var listener: Listener? = null
     private val bundledDeletedKey by lifecycleAwareLazy {
         requireNotNull(
-            BundleCompat.getParcelable(requireArguments(), DELETED_KEY, TrustedKeyDeletedModel::class.java)
+            BundleCompat.getParcelable(requireArguments(), DELETED_KEY, TrustedKeyDeletedModel::class.java),
         )
     }
 
@@ -51,7 +52,11 @@ class NewTrustedMetadataKeyDeletedDialog : DialogFragment(), KoinComponent {
         setStyle(STYLE_NO_TITLE, CoreUiR.style.FullscreenDialogTheme)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
+    ): View {
         val binding = DialogTrustedMetadataKeyDeletedBinding.inflate(inflater)
         setupListeners(binding)
         isCancelable = false
@@ -71,11 +76,12 @@ class NewTrustedMetadataKeyDeletedDialog : DialogFragment(), KoinComponent {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        listener = when {
-            activity is Listener -> activity as Listener
-            parentFragment is Listener -> parentFragment as Listener
-            else -> error("Parent must implement ${Listener::class.java.name}")
-        }
+        listener =
+            when {
+                activity is Listener -> activity as Listener
+                parentFragment is Listener -> parentFragment as Listener
+                else -> error("Parent must implement ${Listener::class.java.name}")
+            }
     }
 
     override fun onDetach() {
@@ -92,9 +98,10 @@ class NewTrustedMetadataKeyDeletedDialog : DialogFragment(), KoinComponent {
 
         fun newInstance(trustedKeyDeletedModel: TrustedKeyDeletedModel) =
             NewTrustedMetadataKeyDeletedDialog().apply {
-                arguments = bundleOf(
-                    DELETED_KEY to trustedKeyDeletedModel
-                )
+                arguments =
+                    bundleOf(
+                        DELETED_KEY to trustedKeyDeletedModel,
+                    )
             }
     }
 }

@@ -26,17 +26,24 @@ package com.passbolt.mobile.android.otpmoremenu
 import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReactiveContract
 
 interface OtpMoreMenuContract {
-
     interface View : DataRefreshViewReactiveContract.View {
         fun showTitle(title: String)
+
         fun showSeparator()
+
         fun showDeleteButton()
+
         fun showEditButton()
+
         fun showShowOtpButton()
+
         fun showRefreshFailure()
     }
 
     interface Presenter : DataRefreshViewReactiveContract.Presenter<View> {
-        fun argsRetrieved(resourceId: String, canShowTotp: Boolean)
+        fun argsRetrieved(
+            resourceId: String,
+            canShowTotp: Boolean,
+        )
     }
 }

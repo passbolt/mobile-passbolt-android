@@ -31,24 +31,23 @@ import com.passbolt.mobile.android.entity.resource.TagWithTaggedItemsCount
  */
 @Dao
 interface TagsDao : BaseDao<Tag> {
-
     @Transaction
     @Query(
         "SELECT id, slug, isShared, " +
-                "(SELECT" +
-                "(" +
-                "(select distinct count(resourceId) from resourceandtagscrossref rTCR where rTCR.tagId is t.id) " +
-                ")" +
-                ") AS taggedItemsCount " +
-                "FROM Tag t"
+            "(SELECT" +
+            "(" +
+            "(select distinct count(resourceId) from resourceandtagscrossref rTCR where rTCR.tagId is t.id) " +
+            ")" +
+            ") AS taggedItemsCount " +
+            "FROM Tag t",
     )
     suspend fun getAllWithTaggedItemsCount(): List<TagWithTaggedItemsCount>
 
     @Transaction
     @Query(
         "SELECT * FROM Tag t " +
-                "WHERE t.id IN " +
-                "(select distinct tagId from resourceandtagscrossref rTCR where rTCR.resourceId is :resourceId)"
+            "WHERE t.id IN " +
+            "(select distinct tagId from resourceandtagscrossref rTCR where rTCR.resourceId is :resourceId)",
     )
     suspend fun getResourceTags(resourceId: String): List<Tag>
 

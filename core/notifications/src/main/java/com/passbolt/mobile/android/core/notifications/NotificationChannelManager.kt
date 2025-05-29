@@ -26,15 +26,18 @@ import android.app.NotificationManager
  * @since v1.0
  */
 class NotificationChannelManager(
-    private val notificationManager: NotificationManager
+    private val notificationManager: NotificationManager,
 ) {
-
-    fun createNotificationChannel(channelId: String, name: String) {
-        val serviceChannel = NotificationChannel(
-            channelId,
-            name,
-            NotificationManager.IMPORTANCE_HIGH
-        )
+    fun createNotificationChannel(
+        channelId: String,
+        name: String,
+    ) {
+        val serviceChannel =
+            NotificationChannel(
+                channelId,
+                name,
+                NotificationManager.IMPORTANCE_HIGH,
+            )
         notificationManager.createNotificationChannel(serviceChannel)
     }
 }

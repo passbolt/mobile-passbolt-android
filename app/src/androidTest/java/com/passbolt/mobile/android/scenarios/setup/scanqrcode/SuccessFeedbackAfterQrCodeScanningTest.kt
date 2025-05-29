@@ -47,20 +47,19 @@ import org.koin.test.inject
 import kotlin.test.BeforeTest
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
-
 @RunWith(AndroidJUnit4::class)
 @MediumTest
 class SuccessFeedbackAfterQrCodeScanningTest : KoinTest {
-
     @get:Rule
-    val startUpActivityRule = lazyActivityScenarioRule<StartUpActivity>(
-        koinOverrideModules = listOf(instrumentationTestsModule),
-        intentSupplier = {
-            managedAccountIntentCreator.createIntent(
-                InstrumentationRegistry.getInstrumentation().targetContext
-            )
-        }
-    )
+    val startUpActivityRule =
+        lazyActivityScenarioRule<StartUpActivity>(
+            koinOverrideModules = listOf(instrumentationTestsModule),
+            intentSupplier = {
+                managedAccountIntentCreator.createIntent(
+                    InstrumentationRegistry.getInstrumentation().targetContext,
+                )
+            },
+        )
 
     @get:Rule
     val permissionRule: GrantPermissionRule = GrantPermissionRule.grant(android.Manifest.permission.CAMERA)
@@ -74,15 +73,15 @@ class SuccessFeedbackAfterQrCodeScanningTest : KoinTest {
         onView(withId(R.id.scanQrCodesButton)).perform(click())
     }
 
-    @Test
     //    https://passbolt.testrail.io/index.php?/cases/view/2346
+    @Test
     fun asAMobileUserIShouldSeeASuccessFeedbackAtTheEndOfTheQrCodeScanning() {
-        //Given    the user is on the “Scanning QR codes” screen
-        //When     the user scans the last QR code
-        //Then     a successful feedback illustration and message appears
+        // Given    the user is on the “Scanning QR codes” screen
+        // When     the user scans the last QR code
+        // Then     a successful feedback illustration and message appears
         onView(withId(R.id.icon)).check(matches(isDisplayed()))
         onView(withText(LocalizationR.string.scan_qr_summary_success_title)).check(matches(isDisplayed()))
-        //And      a "Continue" button is available
+        // And      a "Continue" button is available
         onView(withId(com.passbolt.mobile.android.feature.autofill.R.id.button)).check(matches(isDisplayed()))
     }
 }

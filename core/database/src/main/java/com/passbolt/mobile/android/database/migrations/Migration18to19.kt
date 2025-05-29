@@ -28,13 +28,13 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 
 @Suppress("MagicNumber")
 object Migration18to19 : Migration(18, 19) {
-
     private const val ADD_METADATA_KEY_MODIFIED_COLUMN =
         "ALTER TABLE MetadataKey ADD COLUMN modified INTEGER NOT NULL DEFAULT 0"
 
     private const val DROP_METADATA_PRIVATE_KEY = "DROP TABLE MetadataPrivateKey"
 
-    private const val CREATE_METADATA_PRIVATE_KEY = "CREATE TABLE IF NOT EXISTS MetadataPrivateKey (" +
+    private const val CREATE_METADATA_PRIVATE_KEY =
+        "CREATE TABLE IF NOT EXISTS MetadataPrivateKey (" +
             "`id` TEXT NOT NULL, " +
             "`pgpMessage` TEXT NOT NULL, " +
             "`metadataKeyId` TEXT NOT NULL, " +

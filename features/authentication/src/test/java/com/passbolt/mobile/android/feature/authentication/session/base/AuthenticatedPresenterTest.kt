@@ -42,10 +42,8 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.time.ZonedDateTime
 
-
 @OptIn(ExperimentalCoroutinesApi::class)
 class AuthenticatedPresenterTest {
-
     private val coroutineLaunchContext = TestCoroutineLaunchContext()
     private val presenter = DummyAuthPresenter(coroutineLaunchContext)
     private val view = mock<DummyAuthContract.View>()
@@ -55,60 +53,64 @@ class AuthenticatedPresenterTest {
     private val mockRefreshSessionUseCase = mock<RefreshSessionUseCase>()
 
     @get:Rule
-    val koinTestRule = KoinTestRule.create {
-        printLogger(Level.ERROR)
-        modules(
-            module {
-                single { mockGetSessionExpiryUseCase }
-                single { mockPassphraseMemoryCache }
-                single { mockRefreshSessionUseCase }
-            }
-        )
-    }
-
-    @Test
-    fun `ui sig-in authentication should be invoked when session is expired`() = runTest {
-        mockGetSessionExpiryUseCase.stub {
-            onBlocking { execute(Unit) }.thenReturn(
-                GetSessionExpiryUseCase.Output.JwtAlreadyExpired
+    val koinTestRule =
+        KoinTestRule.create {
+            printLogger(Level.ERROR)
+            modules(
+                module {
+                    single { mockGetSessionExpiryUseCase }
+                    single { mockPassphraseMemoryCache }
+                    single { mockRefreshSessionUseCase }
+                },
             )
         }
-        mockRefreshSessionUseCase.stub {
-            onBlocking { execute(Unit) }.thenReturn(
-                RefreshSessionUseCase.Output.Failure
-            )
-        }
-        whenever(mockPassphraseMemoryCache.getSessionDurationSeconds()).thenReturn(null)
-
-        presenter.attach(view)
-        val job = launch {
-            presenter.authenticatedOperation()
-        }
-        delay(1)
-        job.cancel()
-
-        verify(view).showSignInAuth()
-    }
 
     @Test
-    fun `ui passphrase authentication should be invoked when session is expired`() = runTest {
-        mockGetSessionExpiryUseCase.stub {
-            onBlocking { execute(Unit) }.thenReturn(
-                GetSessionExpiryUseCase.Output.JwtWillExpire(
-                    ZonedDateTime.now().plusSeconds(60)
+    fun `ui sig-in authentication should be invoked when session is expired`() =
+        runTest {
+            mockGetSessionExpiryUseCase.stub {
+                onBlocking { execute(Unit) }.thenReturn(
+                    GetSessionExpiryUseCase.Output.JwtAlreadyExpired,
                 )
-            )
+            }
+            mockRefreshSessionUseCase.stub {
+                onBlocking { execute(Unit) }.thenReturn(
+                    RefreshSessionUseCase.Output.Failure,
+                )
+            }
+            whenever(mockPassphraseMemoryCache.getSessionDurationSeconds()).thenReturn(null)
+
+            presenter.attach(view)
+            val job =
+                launch {
+                    presenter.authenticatedOperation()
+                }
+            delay(1)
+            job.cancel()
+
+            verify(view).showSignInAuth()
         }
-        whenever(mockPassphraseMemoryCache.getSessionDurationSeconds()).thenReturn(null)
 
-        presenter.attach(view)
-        val job = launch {
-            presenter.authenticatedOperation()
+    @Test
+    fun `ui passphrase authentication should be invoked when session is expired`() =
+        runTest {
+            mockGetSessionExpiryUseCase.stub {
+                onBlocking { execute(Unit) }.thenReturn(
+                    GetSessionExpiryUseCase.Output.JwtWillExpire(
+                        ZonedDateTime.now().plusSeconds(60),
+                    ),
+                )
+            }
+            whenever(mockPassphraseMemoryCache.getSessionDurationSeconds()).thenReturn(null)
+
+            presenter.attach(view)
+            val job =
+                launch {
+                    presenter.authenticatedOperation()
+                }
+            delay(1)
+            job.cancel()
+
+            verify(view).showRefreshPassphraseAuth()
         }
-        delay(1)
-        job.cancel()
-
-        verify(view).showRefreshPassphraseAuth()
-    }
-
 }

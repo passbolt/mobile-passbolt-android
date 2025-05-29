@@ -28,23 +28,25 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-val encryptedStorageModule = module {
-    cryptoModule()
-    factory {
-        EncryptedFileFactory(
-            context = androidApplication(),
-            masterKey = get()
-        )
+val encryptedStorageModule =
+    module {
+        cryptoModule()
+        factory {
+            EncryptedFileFactory(
+                context = androidApplication(),
+                masterKey = get(),
+            )
+        }
+        factory {
+            EncryptedSharedPreferencesFactory(
+                context = androidApplication(),
+                masterKey = get(),
+            )
+        }
+        factory {
+            MasterKey
+                .Builder(androidApplication())
+                .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+                .build()
+        }
     }
-    factory {
-        EncryptedSharedPreferencesFactory(
-            context = androidApplication(),
-            masterKey = get()
-        )
-    }
-    factory {
-        MasterKey.Builder(androidApplication())
-            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-            .build()
-    }
-}

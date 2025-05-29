@@ -28,11 +28,11 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 
 @Suppress("MagicNumber")
 object Migration14to15 : Migration(14, 15) {
-
     private const val DROP_EXISTING_RESOURCES_TABLE = "DROP TABLE Resource"
     private const val DROP_EXISTING_RESOURCES_TYPES_TABLE = "DROP TABLE ResourceType"
 
-    private const val CREATE_NEW_RESOURCES_TABLE = "CREATE TABLE IF NOT EXISTS Resource (" +
+    private const val CREATE_NEW_RESOURCES_TABLE =
+        "CREATE TABLE IF NOT EXISTS Resource (" +
             "`resourceId` TEXT NOT NULL, " +
             "`folderId` TEXT, " +
             "`resourceName` TEXT NOT NULL, " +
@@ -51,7 +51,8 @@ object Migration14to15 : Migration(14, 15) {
             "FOREIGN KEY(`resourceTypeId`) REFERENCES `ResourceType`(`resourceTypeId`)" +
             " ON UPDATE NO ACTION ON DELETE NO ACTION )"
 
-    private const val CREATE_NEW_RESOURCE_TYPES_TABLE = "CREATE TABLE IF NOT EXISTS ResourceType (" +
+    private const val CREATE_NEW_RESOURCE_TYPES_TABLE =
+        "CREATE TABLE IF NOT EXISTS ResourceType (" +
             "`resourceTypeId` TEXT NOT NULL, " +
             "`name` TEXT NOT NULL, " +
             "`slug` TEXT NOT NULL, " +

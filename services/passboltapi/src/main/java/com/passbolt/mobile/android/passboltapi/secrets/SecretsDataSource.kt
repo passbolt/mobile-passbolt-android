@@ -27,6 +27,5 @@ import com.passbolt.mobile.android.dto.response.SecretResponseDto
  */
 
 interface SecretsDataSource {
-
     suspend fun getSecret(resourceId: String): BaseResponse<SecretResponseDto>
 }

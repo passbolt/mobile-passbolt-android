@@ -28,24 +28,36 @@ import com.passbolt.mobile.android.ui.NewMetadataKeyToTrustModel
 import com.passbolt.mobile.android.ui.TrustedKeyDeletedModel
 
 sealed class ResourceUpdateActionResult {
+    data class Success(
+        val resourceId: String,
+        val resourceName: String,
+    ) : ResourceUpdateActionResult()
 
-    data class Success(val resourceId: String, val resourceName: String) : ResourceUpdateActionResult()
-
-    data class Failure(val message: String? = null) : ResourceUpdateActionResult()
+    data class Failure(
+        val message: String? = null,
+    ) : ResourceUpdateActionResult()
 
     data object FetchFailure : ResourceUpdateActionResult()
 
     data object Unauthorized : ResourceUpdateActionResult()
 
-    class CryptoFailure(val message: String? = null) : ResourceUpdateActionResult()
+    class CryptoFailure(
+        val message: String? = null,
+    ) : ResourceUpdateActionResult()
 
     data object CannotUpdateWithCurrentConfig : ResourceUpdateActionResult()
 
-    class JsonSchemaValidationFailure(val entity: SchemaEntity) : ResourceUpdateActionResult()
+    class JsonSchemaValidationFailure(
+        val entity: SchemaEntity,
+    ) : ResourceUpdateActionResult()
 
     data object MetadataKeyVerificationFailure : ResourceUpdateActionResult()
 
-    data class MetadataKeyModified(val keyToTrust: NewMetadataKeyToTrustModel) : ResourceUpdateActionResult()
+    data class MetadataKeyModified(
+        val keyToTrust: NewMetadataKeyToTrustModel,
+    ) : ResourceUpdateActionResult()
 
-    data class MetadataKeyDeleted(val deletedKey: TrustedKeyDeletedModel) : ResourceUpdateActionResult()
+    data class MetadataKeyDeleted(
+        val deletedKey: TrustedKeyDeletedModel,
+    ) : ResourceUpdateActionResult()
 }

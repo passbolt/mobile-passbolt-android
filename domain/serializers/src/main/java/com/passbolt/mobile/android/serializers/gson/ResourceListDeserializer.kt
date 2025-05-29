@@ -41,13 +41,13 @@ import java.lang.reflect.Type
 
 open class ResourceListDeserializer(
     private val resourceTypeIdToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider,
-    private val getLocalMetadataKeysUseCase: GetLocalMetadataKeysUseCase
-) : JsonDeserializer<List<ResourceResponseDto>>, KoinComponent {
-
+    private val getLocalMetadataKeysUseCase: GetLocalMetadataKeysUseCase,
+) : JsonDeserializer<List<ResourceResponseDto>>,
+    KoinComponent {
     override fun deserialize(
         json: JsonElement?,
         typeOfT: Type?,
-        context: JsonDeserializationContext?
+        context: JsonDeserializationContext?,
     ): List<ResourceResponseDto> {
         if (json == null || context == null) {
             Timber.e("Json element or deserialization context was null: (${json == null}), (${context == null}")
@@ -56,26 +56,31 @@ open class ResourceListDeserializer(
 
         // done on the parser thread
         return runBlocking {
-            val resourceTypeIdToSlugMapping = resourceTypeIdToSlugMappingProvider
-                .provideMappingForSelectedAccount()
+            val resourceTypeIdToSlugMapping =
+                resourceTypeIdToSlugMappingProvider
+                    .provideMappingForSelectedAccount()
 
-            val supportedResourceTypesIds = resourceTypeIdToSlugMapping
-                .filter { it.value in allSlugs }
-                .keys
+            val supportedResourceTypesIds =
+                resourceTypeIdToSlugMapping
+                    .filter { it.value in allSlugs }
+                    .keys
 
             val metadataKeys = getLocalMetadataKeysUseCase.execute(GetLocalMetadataKeysUseCase.Input(DECRYPT))
 
             val resourcesSnapshot = get<ResourcesSnapshot>()
 
-            val singleResourceDeserializer = get<ResourceListItemDeserializer> {
-                parametersOf(resourceTypeIdToSlugMapping, supportedResourceTypesIds, metadataKeys, resourcesSnapshot)
-            }
+            val singleResourceDeserializer =
+                get<ResourceListItemDeserializer> {
+                    parametersOf(resourceTypeIdToSlugMapping, supportedResourceTypesIds, metadataKeys, resourcesSnapshot)
+                }
 
             if (json.isJsonArray) {
                 json.asJsonArray.mapNotNullTo(mutableListOf()) { jsonElement ->
                     if (!jsonElement.isJsonNull) {
                         singleResourceDeserializer.deserialize(
-                            jsonElement, ResourceResponseDto::class.java, context
+                            jsonElement,
+                            ResourceResponseDto::class.java,
+                            context,
                         )
                     } else {
                         Timber.e("Encountered a null root json element when parsing resources")

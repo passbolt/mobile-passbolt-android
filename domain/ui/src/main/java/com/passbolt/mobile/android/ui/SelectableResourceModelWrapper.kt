@@ -28,5 +28,5 @@ import com.passbolt.mobile.android.common.search.Searchable
 data class SelectableResourceModelWrapper(
     val resourceModel: ResourceModel,
     val isSelectable: Boolean,
-    val isSelected: Boolean
+    val isSelected: Boolean,
 ) : Searchable by resourceModel

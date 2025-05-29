@@ -47,16 +47,18 @@ class PasswordFormPresenter(
     private val entropyCalculator: EntropyCalculator,
     private val getPasswordPoliciesUseCase: GetPasswordPoliciesUseCase,
     private val secretGenerator: SecretGenerator,
-    coroutineLaunchContext: CoroutineLaunchContext
+    coroutineLaunchContext: CoroutineLaunchContext,
 ) : PasswordFormContract.Presenter {
-
     override var view: PasswordFormContract.View? = null
     private val job = SupervisorJob()
     private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
 
     private lateinit var passwordModel: PasswordUiModel
 
-    override fun argsRetrieved(mode: ResourceFormMode, passwordModel: PasswordUiModel) {
+    override fun argsRetrieved(
+        mode: ResourceFormMode,
+        passwordModel: PasswordUiModel,
+    ) {
         this.passwordModel = passwordModel
         when (mode) {
             is ResourceFormMode.Create -> view?.showCreateTitle()
@@ -100,20 +102,22 @@ class PasswordFormPresenter(
     override fun passwordGenerateClick() {
         scope.launch {
             val passwordPolicies = getPasswordPoliciesUseCase.execute(Unit)
-            val secretGenerationResult = when (passwordPolicies.defaultGenerator) {
-                PasswordGeneratorTypeModel.PASSWORD ->
-                    secretGenerator.generatePassword(passwordPolicies.passwordGeneratorSettings)
-                PasswordGeneratorTypeModel.PASSPHRASE ->
-                    secretGenerator.generatePassphrase(passwordPolicies.passphraseGeneratorSettings)
-            }
+            val secretGenerationResult =
+                when (passwordPolicies.defaultGenerator) {
+                    PasswordGeneratorTypeModel.PASSWORD ->
+                        secretGenerator.generatePassword(passwordPolicies.passwordGeneratorSettings)
+                    PasswordGeneratorTypeModel.PASSPHRASE ->
+                        secretGenerator.generatePassphrase(passwordPolicies.passphraseGeneratorSettings)
+                }
             when (secretGenerationResult) {
                 is SecretGenerator.SecretGenerationResult.FailedToGenerateLowEntropy ->
                     view?.showUnableToGeneratePassword(secretGenerationResult.minimumEntropyBits)
-                is SecretGenerator.SecretGenerationResult.Success -> view?.showPassword(
-                    secretGenerationResult.password,
-                    secretGenerationResult.entropy,
-                    entropyViewMapper.map(Entropy.parse(secretGenerationResult.entropy))
-                )
+                is SecretGenerator.SecretGenerationResult.Success ->
+                    view?.showPassword(
+                        secretGenerationResult.password,
+                        secretGenerationResult.entropy,
+                        entropyViewMapper.map(Entropy.parse(secretGenerationResult.entropy)),
+                    )
             }
         }
     }

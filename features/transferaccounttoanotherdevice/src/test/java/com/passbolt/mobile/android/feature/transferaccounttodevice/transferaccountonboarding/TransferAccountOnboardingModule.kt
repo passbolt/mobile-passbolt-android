@@ -27,8 +27,9 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-val transferAccountOnboardingModule = module {
-    factory<TransferAccountOnboardingContract.Presenter> {
-        TransferAccountOnboardingPresenter()
+val transferAccountOnboardingModule =
+    module {
+        factory<TransferAccountOnboardingContract.Presenter> {
+            TransferAccountOnboardingPresenter()
+        }
     }
-}

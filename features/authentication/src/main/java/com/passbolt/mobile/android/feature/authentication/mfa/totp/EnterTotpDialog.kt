@@ -50,8 +50,10 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
  * @since v1.0
  */
 
-class EnterTotpDialog : DialogFragment(), AndroidScopeComponent, EnterTotpContract.View {
-
+class EnterTotpDialog :
+    DialogFragment(),
+    AndroidScopeComponent,
+    EnterTotpContract.View {
     override val scope by fragmentScope(useParentActivityScope = false)
     private var listener: EnterTotpListener? = null
     val presenter: EnterTotpContract.Presenter by scope.inject()
@@ -60,11 +62,12 @@ class EnterTotpDialog : DialogFragment(), AndroidScopeComponent, EnterTotpContra
     private val bundledAuthToken by lifecycleAwareLazy {
         requireArguments().getString(EXTRA_AUTH_KEY).orEmpty()
     }
-    private val authenticationResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-        if (it.resultCode == Activity.RESULT_OK) {
-            presenter.authenticationSucceeded()
+    private val authenticationResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            if (it.resultCode == Activity.RESULT_OK) {
+                presenter.authenticationSucceeded()
+            }
         }
-    }
     private val bundledHasYubikeyProvider by lifecycleAwareLazy {
         requireArguments().getBoolean(EXTRA_OTHER_PROVIDER)
     }
@@ -74,7 +77,10 @@ class EnterTotpDialog : DialogFragment(), AndroidScopeComponent, EnterTotpContra
         setStyle(STYLE_NO_TITLE, CoreUiR.style.FullscreenDialogTheme)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         setupListeners()
         binding.otpInput.isFocusableInTouchMode = true
@@ -82,7 +88,11 @@ class EnterTotpDialog : DialogFragment(), AndroidScopeComponent, EnterTotpContra
         presenter.viewCreated(bundledHasYubikeyProvider)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
+    ): View {
         binding = DialogEnterTotpBinding.inflate(inflater)
         return binding.root
     }
@@ -90,11 +100,12 @@ class EnterTotpDialog : DialogFragment(), AndroidScopeComponent, EnterTotpContra
     override fun onAttach(context: Context) {
         super.onAttach(context)
         isCancelable = false
-        listener = when {
-            activity is EnterTotpListener -> activity as EnterTotpListener
-            parentFragment is EnterTotpListener -> parentFragment as EnterTotpListener
-            else -> error("Parent must implement ${EnterTotpListener::class.java.name}")
-        }
+        listener =
+            when {
+                activity is EnterTotpListener -> activity as EnterTotpListener
+                parentFragment is EnterTotpListener -> parentFragment as EnterTotpListener
+                else -> error("Parent must implement ${EnterTotpListener::class.java.name}")
+            }
         presenter.attach(this)
     }
 
@@ -125,16 +136,18 @@ class EnterTotpDialog : DialogFragment(), AndroidScopeComponent, EnterTotpContra
         }
     }
 
-    private fun getPasteData() = clipboardManager?.let {
-        if (it.hasPrimaryClip() && it.primaryClipDescription?.hasMimeType(MIMETYPE_TEXT_PLAIN) == true) {
-            it.primaryClip?.getItemAt(0)?.text
-        } else {
-            return null
+    private fun getPasteData() =
+        clipboardManager?.let {
+            if (it.hasPrimaryClip() && it.primaryClipDescription?.hasMimeType(MIMETYPE_TEXT_PLAIN) == true) {
+                it.primaryClip?.getItemAt(0)?.text
+            } else {
+                return null
+            }
         }
-    }
 
     override fun showError() {
-        Snackbar.make(binding.root, LocalizationR.string.unknown_error, Snackbar.LENGTH_SHORT)
+        Snackbar
+            .make(binding.root, LocalizationR.string.unknown_error, Snackbar.LENGTH_SHORT)
             .apply {
                 view.setBackgroundColor(context.getColor(CoreUiR.color.red))
                 show()
@@ -142,7 +155,8 @@ class EnterTotpDialog : DialogFragment(), AndroidScopeComponent, EnterTotpContra
     }
 
     override fun showNetworkError() {
-        Snackbar.make(binding.root, LocalizationR.string.common_network_failure, Snackbar.LENGTH_SHORT)
+        Snackbar
+            .make(binding.root, LocalizationR.string.common_network_failure, Snackbar.LENGTH_SHORT)
             .apply {
                 view.setBackgroundColor(context.getColor(CoreUiR.color.red))
                 show()
@@ -171,7 +185,8 @@ class EnterTotpDialog : DialogFragment(), AndroidScopeComponent, EnterTotpContra
     }
 
     override fun showWrongCodeError() {
-        Snackbar.make(binding.root, LocalizationR.string.dialog_mfa_wrong_code, Snackbar.LENGTH_LONG)
+        Snackbar
+            .make(binding.root, LocalizationR.string.dialog_mfa_wrong_code, Snackbar.LENGTH_LONG)
             .apply {
                 view.setBackgroundColor(context.getColor(CoreUiR.color.red))
                 show()
@@ -204,8 +219,8 @@ class EnterTotpDialog : DialogFragment(), AndroidScopeComponent, EnterTotpContra
         authenticationResult.launch(
             ActivityIntents.authentication(
                 requireContext(),
-                ActivityIntents.AuthConfig.SignIn
-            )
+                ActivityIntents.AuthConfig.SignIn,
+            ),
         )
     }
 
@@ -219,18 +234,19 @@ class EnterTotpDialog : DialogFragment(), AndroidScopeComponent, EnterTotpContra
 
         fun newInstance(
             token: String? = null,
-            hasOtherProvider: Boolean
-        ) =
-            EnterTotpDialog().apply {
-                arguments = bundleOf(
+            hasOtherProvider: Boolean,
+        ) = EnterTotpDialog().apply {
+            arguments =
+                bundleOf(
                     EXTRA_AUTH_KEY to token,
-                    EXTRA_OTHER_PROVIDER to hasOtherProvider
+                    EXTRA_OTHER_PROVIDER to hasOtherProvider,
                 )
-            }
+        }
     }
 }
 
 interface EnterTotpListener {
     fun totpOtherProviderClick(bearer: String)
+
     fun totpVerificationSucceeded(mfaHeader: String? = null)
 }

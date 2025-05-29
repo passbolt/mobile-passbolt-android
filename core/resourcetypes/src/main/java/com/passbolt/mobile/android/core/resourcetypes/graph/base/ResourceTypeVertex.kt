@@ -25,4 +25,6 @@ package com.passbolt.mobile.android.core.resourcetypes.graph.base
 
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType
 
-class ResourceTypeVertex(override val contentType: ContentType) : Vertex<ContentType>
+class ResourceTypeVertex(
+    override val contentType: ContentType,
+) : Vertex<ContentType>

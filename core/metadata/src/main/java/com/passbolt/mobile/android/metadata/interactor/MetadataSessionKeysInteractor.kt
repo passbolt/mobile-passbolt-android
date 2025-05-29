@@ -58,11 +58,10 @@ class MetadataSessionKeysInteractor(
     private val sessionKeysMemoryCache: SessionKeysMemoryCache,
     private val metadataMapper: MetadataMapper,
     private val gson: Gson,
-    private val sessionKeysBundleValidator: SessionKeysBundleValidator
+    private val sessionKeysBundleValidator: SessionKeysBundleValidator,
 ) {
-
-    suspend fun fetchMetadataSessionKeys(): Output {
-        return when (val response = fetchMetadataSessionKeysUseCase.execute(Unit)) {
+    suspend fun fetchMetadataSessionKeys(): Output =
+        when (val response = fetchMetadataSessionKeysUseCase.execute(Unit)) {
             is Success -> {
                 try {
                     buildMetadataSessionKeysCache(response.metadataSessionKeysBundles)
@@ -73,12 +72,9 @@ class MetadataSessionKeysInteractor(
             is FetchMetadataSessionKeysUseCase.Output.Failure<*> ->
                 Output.Failure(response.authenticationState)
         }
-    }
 
     @Throws(PassphraseNotInCacheException::class)
-    private suspend fun buildMetadataSessionKeysCache(
-        metadataKeysBundles: List<MetadataSessionKeysBundleModel>
-    ): Output {
+    private suspend fun buildMetadataSessionKeysCache(metadataKeysBundles: List<MetadataSessionKeysBundleModel>): Output {
         val privateKey = getPrivateKeyUseCase.execute(Unit).privateKey
         if (privateKey == null) {
             Timber.e("User private key not found")
@@ -93,8 +89,7 @@ class MetadataSessionKeysInteractor(
                         Timber.d("Merging session keys cache")
                         if (it.isNotEmpty()) sessionKeysMemoryCache.wasInitialCacheEmpty = false
                         sessionKeysBundleMerger.merge(it)
-                    }
-                    .let {
+                    }.let {
                         Timber.d("Session keys cache loaded")
                         sessionKeysMemoryCache.value = it
                     }
@@ -116,11 +111,14 @@ class MetadataSessionKeysInteractor(
             is PotentialPassphrase.Passphrase -> {
                 val mappedCache = metadataMapper.map(sessionKeysMemoryCache.value.keys)
 
-                when (val encryptedCacheResult = openPgp.encryptSignMessageArmored(
-                    privateKey,
-                    passphrase.passphrase,
-                    gson.toJson(mappedCache)
-                )) {
+                when (
+                    val encryptedCacheResult =
+                        openPgp.encryptSignMessageArmored(
+                            privateKey,
+                            passphrase.passphrase,
+                            gson.toJson(mappedCache),
+                        )
+                ) {
                     is OpenPgpResult.Error -> {
                         Timber.e("Error when encrypting session keys cache")
                         // error when processing session key is not blocking
@@ -148,24 +146,25 @@ class MetadataSessionKeysInteractor(
             if (sessionKeysMemoryCache.isLocallyModified) {
                 Timber.d(
                     "Cached bundles existing and cache locally modified - " +
-                            "updating the latest bundle"
+                        "updating the latest bundle",
                 )
                 updateExistingSessionKeysCache(
                     encryptedCacheResult.result,
-                    restart = true
+                    restart = true,
                 )
             } else {
                 Timber.d(
-                    "Skipping session keys update - no local modifications"
+                    "Skipping session keys update - no local modifications",
                 )
                 Output.Success
             }
         }
 
     private suspend fun postNewSessionKeysCache(encryptedData: String): Output =
-        when (postMetadataSessionKeysUseCase.execute(
-            PostMetadataSessionKeysUseCase.Input(encryptedData)
-        )
+        when (
+            postMetadataSessionKeysUseCase.execute(
+                PostMetadataSessionKeysUseCase.Input(encryptedData),
+            )
         ) {
             is PostMetadataSessionKeysUseCase.Output.Failure<*> -> {
                 Timber.e("Error when posting session keys cache")
@@ -180,17 +179,18 @@ class MetadataSessionKeysInteractor(
 
     private suspend fun updateExistingSessionKeysCache(
         encryptedData: String,
-        restart: Boolean
+        restart: Boolean,
     ): Output {
         val latestModifiedOrigin = sessionKeysMemoryCache.findLatestModifiedOriginBundleData()
         require(latestModifiedOrigin != null) { "No origin bundle found but trying to update" }
-        return when (updateMetadataSessionKeysUseCase.execute(
-            UpdateMetadataSessionKeysUseCase.Input(
-                metadataBundleId = latestModifiedOrigin.originBundleId,
-                modifiedDate = latestModifiedOrigin.modifiedDate,
-                encryptedData = encryptedData
+        return when (
+            updateMetadataSessionKeysUseCase.execute(
+                UpdateMetadataSessionKeysUseCase.Input(
+                    metadataBundleId = latestModifiedOrigin.originBundleId,
+                    modifiedDate = latestModifiedOrigin.modifiedDate,
+                    encryptedData = encryptedData,
+                ),
             )
-        )
         ) {
             is UpdateMetadataSessionKeysUseCase.Output.Failure<*> -> {
                 Timber.e("Error when updating session keys cache")
@@ -201,7 +201,7 @@ class MetadataSessionKeysInteractor(
             UpdateMetadataSessionKeysUseCase.Output.Conflict -> {
                 Timber.d(
                     "Conflict when updating session keys cache, " +
-                            "trying to re-fetch and restart update; restart=$restart"
+                        "trying to re-fetch and restart update; restart=$restart",
                 )
                 if (restart) {
                     tryReFetchCacheAndUpdate()
@@ -223,18 +223,20 @@ class MetadataSessionKeysInteractor(
         val passphrase = passphraseMemoryCache.get()
         if (reFetchedCache != null && privateKey != null && passphrase is PotentialPassphrase.Passphrase) {
             val localSessionKeysBundleId = UUID.randomUUID()
-            val mergedLocalWithReFetched = sessionKeysBundleMerger.merge(
-                reFetchedCache.mapDecryptNotNull(privateKey, passphrase.passphrase) +
-                        metadataMapper.map(sessionKeysMemoryCache.value, localSessionKeysBundleId)
-            )
+            val mergedLocalWithReFetched =
+                sessionKeysBundleMerger.merge(
+                    reFetchedCache.mapDecryptNotNull(privateKey, passphrase.passphrase) +
+                        metadataMapper.map(sessionKeysMemoryCache.value, localSessionKeysBundleId),
+                )
             // local cache bundle is not part of origin
             mergedLocalWithReFetched.originMetadata.remove(localSessionKeysBundleId.toString())
             sessionKeysMemoryCache.value = mergedLocalWithReFetched
-            val encryptedCache = openPgp.encryptSignMessageArmored(
-                privateKey,
-                passphrase.passphrase,
-                gson.toJson(metadataMapper.map(sessionKeysMemoryCache.value.keys))
-            )
+            val encryptedCache =
+                openPgp.encryptSignMessageArmored(
+                    privateKey,
+                    passphrase.passphrase,
+                    gson.toJson(metadataMapper.map(sessionKeysMemoryCache.value.keys)),
+                )
             if (encryptedCache is OpenPgpResult.Result) {
                 updateExistingSessionKeysCache(encryptedCache.result, restart = false)
             }
@@ -243,32 +245,37 @@ class MetadataSessionKeysInteractor(
 
     private suspend fun List<MetadataSessionKeysBundleModel>.mapDecryptNotNull(
         privateKey: String,
-        passphrase: ByteArray
+        passphrase: ByteArray,
     ): List<DecryptedMetadataSessionKeysBundleModel> =
         mapNotNull { metadataSessionKeysBundle ->
-            when (val decryptedBundleResult = openPgp.decryptVerifyMessageArmored(
-                privateKey,
-                passphrase,
-                metadataSessionKeysBundle.data
-            )) {
+            when (
+                val decryptedBundleResult =
+                    openPgp.decryptVerifyMessageArmored(
+                        privateKey,
+                        passphrase,
+                        metadataSessionKeysBundle.data,
+                    )
+            ) {
                 is OpenPgpResult.Error -> {
                     Timber.e("Error when decrypting session keys bundle")
                     null
                 }
                 is OpenPgpResult.Result -> {
                     Timber.d("Decrypted session keys bundle")
-                    val parsedBundle = gson.fromJson(
-                        decryptedBundleResult.result,
-                        SessionKeysBundleDto::class.java
-                    )
+                    val parsedBundle =
+                        gson.fromJson(
+                            decryptedBundleResult.result,
+                            SessionKeysBundleDto::class.java,
+                        )
                     if (sessionKeysBundleValidator.isValid(parsedBundle)) {
                         DecryptedMetadataSessionKeysBundleModel(
                             id = metadataSessionKeysBundle.id,
-                            bundle = parsedBundle.copy(
-                                sessionKeys = parsedBundle.sessionKeys.filterNot { it.modified == null }
-                            ),
+                            bundle =
+                                parsedBundle.copy(
+                                    sessionKeys = parsedBundle.sessionKeys.filterNot { it.modified == null },
+                                ),
                             created = metadataSessionKeysBundle.created,
-                            modified = metadataSessionKeysBundle.modified
+                            modified = metadataSessionKeysBundle.modified,
                         )
                     } else {
                         Timber.e("Invalid session keys bundle: ${metadataSessionKeysBundle.id}")
@@ -279,12 +286,13 @@ class MetadataSessionKeysInteractor(
         }
 
     sealed class Output : AuthenticatedUseCaseOutput {
-
         data object Success : Output() {
             override val authenticationState: AuthenticationState
                 get() = AuthenticationState.Authenticated
         }
 
-        data class Failure(override val authenticationState: AuthenticationState) : Output()
+        data class Failure(
+            override val authenticationState: AuthenticationState,
+        ) : Output()
     }
 }

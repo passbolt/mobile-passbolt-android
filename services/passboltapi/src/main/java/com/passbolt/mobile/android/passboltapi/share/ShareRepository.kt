@@ -30,26 +30,26 @@ import com.passbolt.mobile.android.dto.request.SimulateShareRequest
  */
 class ShareRepository(
     private val shareDataSource: ShareDataSource,
-    private val responseHandler: ResponseHandler
+    private val responseHandler: ResponseHandler,
 ) {
     suspend fun simulateShareResource(
         resourceId: String,
-        request: SimulateShareRequest
-    ) =
-        callWithHandler(responseHandler) {
-            shareDataSource.simulateShareResource(resourceId, request)
-        }
+        request: SimulateShareRequest,
+    ) = callWithHandler(responseHandler) {
+        shareDataSource.simulateShareResource(resourceId, request)
+    }
 
     suspend fun shareResource(
         resourceId: String,
-        request: ResourceShareRequest
-    ) =
-        callWithHandler(responseHandler) {
-            shareDataSource.shareResource(resourceId, request)
-        }
+        request: ResourceShareRequest,
+    ) = callWithHandler(responseHandler) {
+        shareDataSource.shareResource(resourceId, request)
+    }
 
-    suspend fun shareFolder(folderId: String, request: FolderShareRequest) =
-        callWithHandler(responseHandler) {
-            shareDataSource.shareFolder(folderId, request)
-        }
+    suspend fun shareFolder(
+        folderId: String,
+        request: FolderShareRequest,
+    ) = callWithHandler(responseHandler) {
+        shareDataSource.shareFolder(folderId, request)
+    }
 }

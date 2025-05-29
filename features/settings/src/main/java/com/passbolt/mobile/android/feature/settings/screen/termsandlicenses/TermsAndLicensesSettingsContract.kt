@@ -26,20 +26,27 @@ package com.passbolt.mobile.android.feature.settings.screen.termsandlicenses
 import com.passbolt.mobile.android.core.mvp.BaseContract
 
 interface TermsAndLicensesSettingsContract {
-
     interface View : BaseContract.View {
         fun navigateToLicenses()
+
         fun disablePrivacyPolicySetting()
+
         fun enablePrivacyPolicySetting()
+
         fun disableTermsAndConditionsSetting()
+
         fun enableTermsAndConditionsButton()
+
         fun openUrl(url: String)
     }
 
     interface Presenter : BaseContract.Presenter<View> {
         fun licensesClick()
+
         fun viewResumed()
+
         fun termsAndConditionsClick()
+
         fun privacyPolicyClick()
     }
 }

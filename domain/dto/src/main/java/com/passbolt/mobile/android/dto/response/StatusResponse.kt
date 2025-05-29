@@ -38,5 +38,5 @@ enum class StatusResponse {
     CANCEL,
 
     @SerializedName("start")
-    START
+    START,
 }

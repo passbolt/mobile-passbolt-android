@@ -27,5 +27,5 @@ data class TransferModel(
     val status: Status,
     val currentPage: Int,
     val totalPages: Int,
-    val hash: String
+    val hash: String,
 )
