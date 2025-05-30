@@ -27,7 +27,6 @@ import androidx.annotation.StringRes
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.closeSoftKeyboard
-import androidx.test.espresso.action.ViewActions.scrollTo
 import androidx.test.espresso.action.ViewActions.typeText
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA
@@ -51,11 +50,13 @@ internal fun getString(
 ) = InstrumentationRegistry.getInstrumentation().targetContext.getString(stringResId, *formatArgs)
 
 internal fun createNewPasswordFromHomeScreen(name: String) {
-    onView(withId(com.passbolt.mobile.android.feature.home.R.id.homeSpeedDialViewId)).perform(click())
+    onView(withId(com.passbolt.mobile.android.feature.home.R.id.createResourceFab)).perform(click())
+    onView(withId(com.passbolt.mobile.android.feature.createresourcemenu.R.id.createPassword)).perform(click())
+
     onView(withId(CoreUiR.id.generatePasswordLayout)).perform(click())
     onView(
         allOf(
-            isDescendantOfA(withHint(hasToString(EditableFieldInput.ENTER_NAME.hintName))),
+            isDescendantOfA(withHint(hasToString(EditableFieldInput.NAME.hintName))),
             withId(CoreUiR.id.input),
         ),
     ).perform(
@@ -77,17 +78,7 @@ internal fun createNewPasswordFromHomeScreen(name: String) {
     ).perform(
         typeText("TestUsername"),
     )
-    onView(
-        allOf(
-            isDescendantOfA(withHint(hasToString(EditableFieldInput.ENTER_DESCRIPTION.hintName))),
-            withId(CoreUiR.id.input),
-        ),
-    ).perform(
-        scrollTo(),
-        typeText("TestDescription"),
-        closeSoftKeyboard(),
-    )
-    onView(withId(com.passbolt.mobile.android.feature.resources.R.id.updateButton)).perform(scrollTo(), click())
+    onView(withId(com.passbolt.mobile.android.feature.resourceform.R.id.primaryButton)).perform(click())
 }
 
 internal fun signIn(passphrase: String) {

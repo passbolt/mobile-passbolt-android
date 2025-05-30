@@ -26,10 +26,12 @@ dependencies {
     implementation project(':serializers')
     implementation project(':scanotp')
     implementation project(':metadatakeytrust')
+    implementation project(':idlingresource')
 
     implementation libs.navigation.fragment
     implementation libs.navigation.ui
     implementation libs.koin
+    implementation libs.espresso.idling.resource
 
     testImplementation project(':commontest')
     testImplementation libs.gson

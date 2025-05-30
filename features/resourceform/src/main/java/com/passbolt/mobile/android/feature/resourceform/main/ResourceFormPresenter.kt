@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.feature.resourceform.main
 
 import com.passbolt.mobile.android.core.fulldatarefresh.DataRefreshStatus
 import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
+import com.passbolt.mobile.android.core.idlingresource.CreateResourceIdlingResource
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.passwordgenerator.SecretGenerator
@@ -91,6 +92,7 @@ class ResourceFormPresenter(
     private val getLocalResourceUseCase: GetLocalResourceUseCase,
     private val fullDataRefreshExecutor: FullDataRefreshExecutor,
     private val metadataPrivateKeysHelperInteractor: MetadataPrivateKeysHelperInteractor,
+    private val createResourceIdlingResource: CreateResourceIdlingResource,
     coroutineLaunchContext: CoroutineLaunchContext,
 ) : BaseAuthenticatedPresenter<ResourceFormContract.View>(coroutineLaunchContext),
     ResourceFormContract.Presenter {
@@ -389,6 +391,7 @@ class ResourceFormPresenter(
     override fun createResourceClick() {
         onValid {
             scope.launch {
+                createResourceIdlingResource.setIdle(false)
                 view?.showProgress()
                 val resourceCreateActionsInteractor =
                     get<ResourceCreateActionsInteractor> {
@@ -413,6 +416,7 @@ class ResourceFormPresenter(
                     doOnMetadataKeyVerificationFailure = { view?.showFailedToVerifyMetadataKey() },
                 )
                 view?.hideProgress()
+                createResourceIdlingResource.setIdle(true)
             }
         }
     }

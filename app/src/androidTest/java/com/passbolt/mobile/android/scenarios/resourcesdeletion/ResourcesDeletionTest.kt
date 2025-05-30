@@ -138,7 +138,7 @@ class ResourcesDeletionTest : KoinTest {
     @Test
     fun onThePasswordRemovalPopupICanClickTheCancelButton() {
         //    Given that I am on removal popup
-        onView(withId(com.passbolt.mobile.android.feature.otp.R.id.searchEditText)).perform(typeText("ResourcesDeletionTest"))
+        onView(withId(com.passbolt.mobile.android.feature.home.R.id.searchEditText)).perform(typeText("ResourcesDeletionTest"))
         onView(first(withId(R.id.more))).perform(click())
         onView(withId(com.passbolt.mobile.android.feature.resourcemoremenu.R.id.passwordBottomSheetRoot))
             .perform(swipeUp())
@@ -166,8 +166,8 @@ class ResourcesDeletionTest : KoinTest {
         onView(withText(LocalizationR.string.delete)).perform(click())
         //    Then I am back on the homepage
         onView(withId(com.passbolt.mobile.android.feature.permissions.R.id.rootLayout)).check(matches(isDisplayed()))
-        //    And I see a popup "<password name> password was deleted." in @green
+        //    And I see a popup "<password name> resource was deleted." in @green
         onView(withId(MaterialR.id.snackbar_text))
-            .check(matches(withText(endsWith("password was deleted."))))
+            .check(matches(withText(endsWith(" resource was deleted."))))
     }
 }

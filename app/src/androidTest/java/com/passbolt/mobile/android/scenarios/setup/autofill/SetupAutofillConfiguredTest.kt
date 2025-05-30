@@ -48,7 +48,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.koin.test.KoinTest
 import org.koin.test.inject
-import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
@@ -82,17 +81,13 @@ class SetupAutofillConfiguredTest : KoinTest {
 
     @BeforeTest
     fun setup() {
+        accountDataCleaner.clearAccountData()
         onView(withId(R.id.connectToAccountButton)).perform(click())
         onView(withId(R.id.scanQrCodesButton)).perform(scrollTo(), click())
         onView(withId(com.passbolt.mobile.android.feature.autofill.R.id.button)).perform(click())
         onView(withId(CoreUiR.id.input)).perform(typeText(managedAccountIntentCreator.getPassphrase()))
-        onView(withId(com.passbolt.mobile.android.feature.authentication.R.id.authButton)).perform(scrollTo(), click())
         accountDataInitializer.initializeAccount()
-    }
-
-    @AfterTest
-    fun tearDown() {
-        accountDataCleaner.clearAccountData()
+        onView(withId(com.passbolt.mobile.android.feature.authentication.R.id.authButton)).perform(scrollTo(), click())
     }
 
     //    https://passbolt.testrail.io/index.php?/cases/view/2365

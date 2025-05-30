@@ -109,21 +109,17 @@ enum class ExpertSettingsItemModel(
 enum class DebugLogsItemModel(
     @StringRes val settingsItemTextId: Int,
     @DrawableRes val settingsItemIconId: Int,
-    @IdRes val settingsItemId: Int,
 ) {
     ENABLE_DEBUG_LOGS(
         settingsItemTextId = LocalizationR.string.settings_debug_logs_enable_logs,
         settingsItemIconId = CoreUiR.drawable.ic_bug,
-        settingsItemId = R.id.enableLogsSetting,
     ),
     ACCESS_THE_LOGS(
         settingsItemTextId = LocalizationR.string.settings_debug_logs_settings_logs,
         settingsItemIconId = CoreUiR.drawable.ic_access_logs,
-        settingsItemId = R.id.accessLogsSetting,
     ),
     VISIT_HELP_WEBSITE(
         settingsItemTextId = LocalizationR.string.settings_debug_logs_visit_help_website,
         settingsItemIconId = CoreUiR.drawable.ic_link,
-        settingsItemId = R.id.visitHelpWebsite,
     ),
 }

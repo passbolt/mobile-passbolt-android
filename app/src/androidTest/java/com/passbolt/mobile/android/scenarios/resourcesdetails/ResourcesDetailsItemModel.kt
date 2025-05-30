@@ -48,8 +48,8 @@ enum class ResourcesDetailsItemModel(
         resourceIconId = CoreUiR.drawable.ic_key,
         resourceTintColorId = CoreUiR.color.icon_tint,
     ),
-    COPY_DESCRIPTION(
-        resourceId = com.passbolt.mobile.android.feature.resourcemoremenu.R.id.copyDescription,
+    COPY_METADATA_DESCRIPTION(
+        resourceId = com.passbolt.mobile.android.feature.resourcemoremenu.R.id.copyMetadataDescription,
         resourceIconId = CoreUiR.drawable.ic_description,
         resourceTintColorId = CoreUiR.color.icon_tint,
     ),
@@ -68,8 +68,8 @@ enum class ResourcesDetailsItemModel(
         resourceIconId = CoreUiR.drawable.ic_share,
         resourceTintColorId = CoreUiR.color.icon_tint,
     ),
-    EDIT_PASSWORD(
-        resourceId = com.passbolt.mobile.android.feature.resourcemoremenu.R.id.editPassword,
+    EDIT(
+        resourceId = com.passbolt.mobile.android.feature.resourcemoremenu.R.id.edit,
         resourceIconId = CoreUiR.drawable.ic_edit,
         resourceTintColorId = CoreUiR.color.icon_tint,
     ),

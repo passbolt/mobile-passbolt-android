@@ -45,7 +45,6 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Root
 import androidx.test.espresso.matcher.BoundedMatcher
 import com.google.android.material.textfield.TextInputLayout
-import com.leinardi.android.speeddial.SpeedDialView
 import org.hamcrest.BaseMatcher
 import org.hamcrest.Description
 import org.hamcrest.Matcher
@@ -78,10 +77,6 @@ fun hasDrawable(
         return when (view) {
             is TextView -> view.compoundDrawables[drawablePosition.ordinal].toBitmap().sameAs(expectedBitmap)
             is ImageView -> view.drawable.toBitmap().sameAs(expectedBitmap)
-            is SpeedDialView ->
-                view.mainFab.drawable
-                    .toBitmap()
-                    .sameAs(expectedBitmap)
             else -> false
         }
     }
@@ -260,18 +255,6 @@ fun <T> withIndex(
             description?.appendValue(index)
             matcher.describeTo(description)
         }
-    }
-
-fun withSpeedDialViewOpenState(isOpen: Boolean): Matcher<View?> =
-    object : BoundedMatcher<View, SpeedDialView>(SpeedDialView::class.java) {
-        override fun describeTo(description: Description) {
-            description.appendText("SpeedDialView with isOpen state set to: $isOpen")
-        }
-
-        override fun matchesSafely(speedDialView: SpeedDialView?): Boolean =
-            speedDialView?.let {
-                speedDialView.isOpen == isOpen
-            } ?: false
     }
 
 fun withImageViewContainingAnyImage(): Matcher<View?> =

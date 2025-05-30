@@ -157,7 +157,7 @@ class ResourcesDetailsTest : KoinTest {
             .check(matches(hasDrawable(id = CoreUiR.drawable.ic_eye_visible, tint = CoreUiR.color.icon_tint)))
         //    And       I see the “Description” list item with title, hidden value and a show icon
         onView(withText(LocalizationR.string.resource_details_description_header)).check(matches(isDisplayed()))
-        onView(withId(com.passbolt.mobile.android.feature.resources.R.id.descriptionItem)).check(matches(isDisplayed()))
+        onView(withId(com.passbolt.mobile.android.feature.resources.R.id.metadataDescriptionItem)).check(matches(isDisplayed()))
     }
 
     //  https://passbolt.testrail.io/index.php?/cases/view/2447
@@ -173,11 +173,12 @@ class ResourcesDetailsTest : KoinTest {
                 typeText("TestResourceDesc"),
                 closeSoftKeyboard(),
             )
-        onView(withText("TestResourceDescription")).perform(click())
+        // TODO update for metadata description / secret description
+//        onView(withText("TestResourceDescription")).perform(click())
         //    When      I click on the show icon in the “Description” item list
         onView(
             allOf(
-                isDescendantOfA(withId(com.passbolt.mobile.android.feature.resources.R.id.descriptionItem)),
+                isDescendantOfA(withId(com.passbolt.mobile.android.feature.resources.R.id.metadataDescriptionItem)),
                 withId(com.passbolt.mobile.android.core.ui.R.id.actionIcon),
             ),
         ).perform(click())
@@ -194,7 +195,7 @@ class ResourcesDetailsTest : KoinTest {
         onView(withText("long desc")).perform(click())
         onView(
             allOf(
-                isDescendantOfA(withId(com.passbolt.mobile.android.feature.resources.R.id.descriptionItem)),
+                isDescendantOfA(withId(com.passbolt.mobile.android.feature.resources.R.id.metadataDescriptionItem)),
                 withId(com.passbolt.mobile.android.core.ui.R.id.actionIcon),
             ),
         ).perform(click())

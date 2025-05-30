@@ -24,6 +24,7 @@
 package com.passbolt.mobile.android.scenarios.setup.autofill
 
 import com.passbolt.mobile.android.feature.autofill.informationprovider.AutofillInformationProvider
+import com.passbolt.mobile.android.feature.autofill.informationprovider.AutofillInformationProvider.ChromeNativeAutofillStatus.NOT_SUPPORTED
 import org.koin.dsl.module
 
 val autofillNotConfiguredModuleTests =
@@ -39,6 +40,8 @@ val autofillNotConfiguredModuleTests =
                 override fun isAccessibilityServiceEnabled() = true
 
                 override fun isAccessibilityAutofillSetup() = true
+
+                override fun getChromeNativeAutofillStatus() = NOT_SUPPORTED
             }
         }
     }
@@ -56,6 +59,8 @@ val autofillConfiguredModuleTests =
                 override fun isAccessibilityServiceEnabled() = true
 
                 override fun isAccessibilityAutofillSetup() = true
+
+                override fun getChromeNativeAutofillStatus() = NOT_SUPPORTED
             }
         }
     }

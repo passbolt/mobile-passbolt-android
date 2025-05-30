@@ -1,3 +1,5 @@
+package com.passbolt.mobile.android.feature.settings.screen.debuglogssettings
+
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -20,8 +22,6 @@
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-
-package com.passbolt.mobile.android.feature.settings.screen.debuglogssettings
 
 data class DebugLogsSettingsState(
     val areDebugLogsEnabled: Boolean = false,

@@ -3,7 +3,6 @@ package com.passbolt.mobile.android.feature.resourceform.main
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.scopedOf
-import org.koin.dsl.bind
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 /**
@@ -31,7 +30,21 @@ import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 fun Module.resourceFormModule() {
     scope<ResourceFormFragment> {
-        scopedOf(::ResourceFormPresenter) bind ResourceFormContract.Presenter::class
+        scoped<ResourceFormContract.Presenter> {
+            ResourceFormPresenter(
+                getPasswordPoliciesUseCase = get(),
+                secretGenerator = get(),
+                entropyViewMapper = get(),
+                entropyCalculator = get(),
+                resourceFormMapper = get(),
+                resourceModelHandler = get(),
+                getLocalResourceUseCase = get(),
+                fullDataRefreshExecutor = get(),
+                metadataPrivateKeysHelperInteractor = get(),
+                createResourceIdlingResource = get(),
+                coroutineLaunchContext = get(),
+            )
+        }
         scopedOf(::ResourceModelHandler)
         scoped<Map<DefaultValue, String>> {
             val context = androidContext()
