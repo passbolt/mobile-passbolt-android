@@ -33,6 +33,8 @@ snyk {
 }
 
 subprojects {
+    apply plugin: libs.plugins.dependency.analysis.get().pluginId
+
     if (file("./build.gradle").exists()) {
         apply from: "${rootDir}/gradle/moduleSetup.gradle"
     }

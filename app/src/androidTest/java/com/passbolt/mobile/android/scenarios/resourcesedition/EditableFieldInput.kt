@@ -27,9 +27,8 @@ enum class EditableFieldInput(
     val hintName: String,
     val textToReplace: String,
 ) {
-    ENTER_NAME("Enter resource name", "DeleteThisPassword"),
-    ENTER_URL("Enter main URI", "URLToBeDeleted"),
+    NAME("Name", "DeleteThisPassword"),
+    ENTER_URL("Enter URI", "URLToBeDeleted"),
     ENTER_USERNAME("Enter username", "UsernameToBeDeleted"),
     ENTER_PASSWORD("Enter password", "PasswordToBeDeleted"),
-    ENTER_DESCRIPTION("Enter description", "Password was generated for testing purposes. Needs to be deleted."),
 }

@@ -26,6 +26,8 @@ package com.passbolt.mobile.android
 import com.passbolt.mobile.android.accountinit.AccountDataCleaner
 import com.passbolt.mobile.android.accountinit.AccountInitializer
 import com.passbolt.mobile.android.core.security.rootdetection.RootDetector
+import com.passbolt.mobile.android.feature.autofill.informationprovider.AutofillInformationProvider
+import com.passbolt.mobile.android.feature.autofill.informationprovider.AutofillInformationProvider.ChromeNativeAutofillStatus.NOT_SUPPORTED
 import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
@@ -43,4 +45,19 @@ val instrumentationTestsModule =
         singleOf(::ManagedAccountIntentCreator)
         singleOf(::AccountInitializer)
         singleOf(::AccountDataCleaner)
+        single<AutofillInformationProvider> {
+            object : AutofillInformationProvider {
+                override fun isAutofillServiceSupported() = true
+
+                override fun isPassboltAutofillServiceSet() = false
+
+                override fun isAccessibilityOverlayEnabled() = false
+
+                override fun isAccessibilityServiceEnabled() = false
+
+                override fun isAccessibilityAutofillSetup() = false
+
+                override fun getChromeNativeAutofillStatus() = NOT_SUPPORTED
+            }
+        }
     }

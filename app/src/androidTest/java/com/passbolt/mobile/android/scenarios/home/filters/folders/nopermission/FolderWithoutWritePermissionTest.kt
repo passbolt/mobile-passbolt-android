@@ -116,7 +116,7 @@ class FolderWithoutWritePermissionTest : KoinTest {
         //  When I enter this folder
         onView(first(withId(homeId.itemFolder))).perform(click())
         //  Then I do not see the create button
-        onView(withId(homeId.homeSpeedDialViewId)).check(matches(not(isDisplayed())))
+        onView(withId(homeId.createResourceFab)).check(matches(not(isDisplayed())))
         //  And  I see the list of folders
         onView(first(withId(homeId.itemFolder))).check((matches(isDisplayed())))
         //  And  I see the list of resources below the folders

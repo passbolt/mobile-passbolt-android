@@ -7,6 +7,7 @@ import com.jayway.jsonpath.spi.json.GsonJsonProvider
 import com.jayway.jsonpath.spi.mapper.GsonMappingProvider
 import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
+import com.passbolt.mobile.android.core.idlingresource.CreateResourceIdlingResource
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.passwordgenerator.SecretGenerator
 import com.passbolt.mobile.android.core.passwordgenerator.entropy.EntropyCalculator
@@ -70,6 +71,7 @@ internal val testResourceFormModule =
         factoryOf(::EntropyViewMapper)
         singleOf(::ResourceModelHandler)
         factoryOf(::ResourceTypesUpdatesAdjacencyGraph)
+        factoryOf(::CreateResourceIdlingResource)
 
         single { mockGetDefaultCreateContentTypeUseCase }
         single { mockGetEditContentTypeUseCase }
@@ -93,6 +95,7 @@ internal val testResourceFormModule =
                 coroutineLaunchContext = get(),
                 resourceModelHandler = get(),
                 fullDataRefreshExecutor = get(),
+                createResourceIdlingResource = get(),
             )
         }
 

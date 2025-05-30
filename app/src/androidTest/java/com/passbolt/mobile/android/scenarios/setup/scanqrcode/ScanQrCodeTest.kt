@@ -84,7 +84,7 @@ class ScanQrCodeTest : KoinTest {
         //        And     an "Access the logs" button is available
         onView(withId(com.passbolt.mobile.android.feature.helpmenu.R.id.accessLogs)).check(matches(isDisplayed()))
         //        And     a "Visit help site" button is available
-        onView(withId(com.passbolt.mobile.android.feature.settings.R.id.visitHelpWebsite)).check(matches(isDisplayed()))
+        onView(withId(com.passbolt.mobile.android.feature.helpmenu.R.id.visitHelpWebsite)).check(matches(isDisplayed()))
     }
 
     //    https://passbolt.testrail.io/index.php?/cases/view/6192
@@ -95,7 +95,7 @@ class ScanQrCodeTest : KoinTest {
         //        Given   the user is on the “Help” modal
         onView(withContentDescription(LocalizationR.string.help_button_description)).perform(click())
         //        When    the user clicks on the “Visit help site” button
-        onView(withId(com.passbolt.mobile.android.feature.settings.R.id.visitHelpWebsite)).perform(click())
+        onView(withId(com.passbolt.mobile.android.feature.helpmenu.R.id.visitHelpWebsite)).perform(click())
         //        Then    a webpage with help is presented
         val expectedIntent: Matcher<Intent> =
             AllOf.allOf(
