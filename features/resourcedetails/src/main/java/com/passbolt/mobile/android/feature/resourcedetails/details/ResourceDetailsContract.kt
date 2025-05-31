@@ -165,6 +165,8 @@ interface ResourceDetailsContract {
         fun hideTags()
 
         fun hideLocation()
+
+        fun displayAdditionalUrls(uris: List<String>)
     }
 
     @Suppress("TooManyFunctions")

@@ -23,6 +23,13 @@
 
 package com.passbolt.mobile.android.feature.home.screen
 
+/**
+ * Presenter responsible for managing the home resource list. The general flow is to fetch resources and resource types
+ * from the backend on start and update the database. Then when applying different views (all, favourite,
+ * shared with me, etc.) the reload is done from the database only. To refresh from backend again users can do the
+ * swipe to refresh gesture.
+ */
+
 import com.passbolt.mobile.android.common.extension.areListsEmpty
 import com.passbolt.mobile.android.common.search.Searchable
 import com.passbolt.mobile.android.common.search.SearchableMatcher
@@ -76,12 +83,6 @@ import org.koin.core.component.get
 import org.koin.core.parameter.parametersOf
 import timber.log.Timber
 
-/**
- * Presenter responsible for managing the home resource list. The general flow is to fetch resources and resource types
- * from the backend on start and update the database. Then when applying different views (all, favourite,
- * shared with me, etc.) the reload is done from the database only. To refresh from backend again users can do the
- * swipe to refresh gesture.
- */
 @Suppress("TooManyFunctions", "LargeClass", "LongParameterList") // TODO MOB-321
 class HomePresenter(
     coroutineLaunchContext: CoroutineLaunchContext,
@@ -689,7 +690,7 @@ class HomePresenter(
     override fun menuLaunchWebsiteClick() {
         coroutineScope.launch {
             performResourcePropertyAction(
-                action = { resourcePropertiesActionsInteractor.provideWebsiteUrl() },
+                action = { resourcePropertiesActionsInteractor.provideMainUri() },
                 doOnResult = { view?.openWebsite(it.result) },
             )
         }
@@ -698,7 +699,7 @@ class HomePresenter(
     override fun menuCopyUrlClick() {
         coroutineScope.launch {
             performResourcePropertyAction(
-                action = { resourcePropertiesActionsInteractor.provideWebsiteUrl() },
+                action = { resourcePropertiesActionsInteractor.provideMainUri() },
                 doOnResult = { view?.addToClipboard(it.label, it.result, it.isSecret) },
             )
         }

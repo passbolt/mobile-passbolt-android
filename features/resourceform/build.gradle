@@ -27,6 +27,7 @@ dependencies {
     implementation project(':scanotp')
     implementation project(':metadatakeytrust')
     implementation project(':idlingresource')
+    implementation project(':coreui')
 
     implementation libs.navigation.fragment
     implementation libs.navigation.ui

@@ -52,7 +52,18 @@
             app:popExitAnim="@anim/slide_out_right" />
         <action
             android:id="@+id/action_resourceFormFragment_to_passwordFormFragment"
-            app:destination="@id/passwordFormFragment" />
+            app:destination="@id/passwordFormFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_resourceFormFragment_to_additionalUrisFormFragment"
+            app:destination="@id/additionalUrisFormFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
 
     <fragment
@@ -145,5 +156,17 @@
     </action>
 
     <include app:graph="@navigation/scan_otp" />
+    <fragment
+        android:id="@+id/additionalUrisFormFragment"
+        android:name="com.passbolt.mobile.android.feature.resourceform.metadata.additionaluris.AdditionalUrisFormFragment"
+        android:label="AdditionalUrisFormFragment"
+        tools:layout="@layout/fragment_additional_uris_form">
+        <argument
+            android:name="mode"
+            app:argType="com.passbolt.mobile.android.ui.ResourceFormMode" />
+        <argument
+            android:name="additionalUris"
+            app:argType="com.passbolt.mobile.android.ui.AdditionalUrisUiModel" />
+    </fragment>
 
 </navigation>

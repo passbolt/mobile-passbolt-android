@@ -32,6 +32,7 @@ import com.passbolt.mobile.android.ui.MetadataJsonModel
 import com.passbolt.mobile.android.ui.MetadataTypeModel
 import com.passbolt.mobile.android.ui.OtpParseResult
 import com.passbolt.mobile.android.ui.ResourceFormUiModel
+import com.passbolt.mobile.android.ui.ResourceFormUiModel.Metadata.ADDITIONAL_URIS
 import com.passbolt.mobile.android.ui.ResourceFormUiModel.Metadata.DESCRIPTION
 import com.passbolt.mobile.android.ui.ResourceFormUiModel.Secret.NOTE
 import com.passbolt.mobile.android.ui.ResourceFormUiModel.Secret.PASSWORD
@@ -260,6 +261,7 @@ class ResourceModelHandler(
             }
         }
 
+    @Suppress("CyclomaticComplexMethod")
     fun getUiModel(): ResourceFormUiModel {
         val contentTypeUpdateActions =
             resourceActionsGraph
@@ -297,6 +299,9 @@ class ResourceModelHandler(
                     val metadata = mutableListOf<ResourceFormUiModel.Metadata>()
                     if (it.contains(ADD_METADATA_DESCRIPTION) || it.contains(REMOVE_METADATA_DESCRIPTION)) {
                         metadata.add(DESCRIPTION)
+                    }
+                    if (it.contains(UpdateAction.EDIT_ADDITIONAL_URIS)) {
+                        metadata.add(ADDITIONAL_URIS)
                     }
                     metadata
                 },

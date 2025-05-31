@@ -229,8 +229,16 @@ class ResourceDetailsPresenter(
 
     private suspend fun getAndDisplayResource() {
         performResourcePropertyAction(
-            action = { resourcePropertiesActionsInteractor.provideWebsiteUrl() },
+            action = { resourcePropertiesActionsInteractor.provideMainUri() },
             doOnResult = { view?.displayUrl(it.result) },
+        )
+        performResourcePropertyAction(
+            action = { resourcePropertiesActionsInteractor.provideAdditionalUris() },
+            doOnResult = {
+                if (it.result.isNotEmpty()) {
+                    view?.displayAdditionalUrls(it.result)
+                }
+            },
         )
         view?.apply {
             displayUsername(resourceModel.metadataJsonModel.username.orEmpty())
@@ -416,7 +424,7 @@ class ResourceDetailsPresenter(
     override fun urlCopyClick() {
         coroutineScope.launch {
             performResourcePropertyAction(
-                action = { resourcePropertiesActionsInteractor.provideWebsiteUrl() },
+                action = { resourcePropertiesActionsInteractor.provideMainUri() },
                 doOnResult = { view?.addToClipboard(it.label, it.result, it.isSecret) },
             )
         }
@@ -464,7 +472,7 @@ class ResourceDetailsPresenter(
     override fun launchWebsiteClick() {
         coroutineScope.launch {
             performResourcePropertyAction(
-                action = { resourcePropertiesActionsInteractor.provideWebsiteUrl() },
+                action = { resourcePropertiesActionsInteractor.provideMainUri() },
                 doOnResult = { view?.openWebsite(it.result) },
             )
         }
