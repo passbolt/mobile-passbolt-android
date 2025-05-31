@@ -18,6 +18,7 @@ import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAct
 import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction.ADD_NOTE
 import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction.ADD_PASSWORD
 import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction.ADD_TOTP
+import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction.EDIT_ADDITIONAL_URIS
 import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction.EDIT_METADATA
 import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction.REMOVE_METADATA_DESCRIPTION
 import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction.REMOVE_NOTE
@@ -31,6 +32,7 @@ import com.passbolt.mobile.android.mappers.ResourceFormMapper
 import com.passbolt.mobile.android.metadata.interactor.MetadataPrivateKeysHelperInteractor
 import com.passbolt.mobile.android.serializers.jsonschema.SchemaEntity
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType
+import com.passbolt.mobile.android.ui.AdditionalUrisUiModel
 import com.passbolt.mobile.android.ui.Entropy
 import com.passbolt.mobile.android.ui.LeadingContentType
 import com.passbolt.mobile.android.ui.LeadingContentType.PASSWORD
@@ -51,6 +53,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import org.koin.core.parameter.parametersOf
 import timber.log.Timber
@@ -95,7 +98,8 @@ class ResourceFormPresenter(
     private val createResourceIdlingResource: CreateResourceIdlingResource,
     coroutineLaunchContext: CoroutineLaunchContext,
 ) : BaseAuthenticatedPresenter<ResourceFormContract.View>(coroutineLaunchContext),
-    ResourceFormContract.Presenter {
+    ResourceFormContract.Presenter,
+    KoinComponent {
     override var view: ResourceFormContract.View? = null
     private val job = SupervisorJob()
     private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
@@ -278,6 +282,20 @@ class ResourceFormPresenter(
         }
     }
 
+    override fun additionalUrisChanged(urisUiModel: AdditionalUrisUiModel?) {
+        urisUiModel?.let {
+            val uris = listOf(urisUiModel.mainUri) + urisUiModel.additionalUris
+            resourceModelHandler.applyModelChange(EDIT_ADDITIONAL_URIS) { metadata, _ ->
+                metadata.uris =
+                    if (uris.all { it.isBlank() }) {
+                        emptyList()
+                    } else {
+                        uris.map { it.trim() }.filter { it.isNotBlank() }
+                    }
+            }
+        }
+    }
+
     override fun additionalNoteClick() {
         view?.navigateToNote(resourceSecret.description.orEmpty())
     }
@@ -351,6 +369,17 @@ class ResourceFormPresenter(
 
     override fun metadataDescriptionClick() {
         view?.navigateToMetadataDescription(resourceMetadata.description.orEmpty())
+    }
+
+    override fun additionalUrisClick() {
+        val mainUri = resourceMetadata.getMainUri(newContentType)
+        val additionalUris = resourceMetadata.uris.orEmpty().filter { it != mainUri }
+        val uiModel =
+            AdditionalUrisUiModel(
+                mainUri = mainUri,
+                additionalUris = additionalUris,
+            )
+        view?.navigateToAdditionalUris(uiModel)
     }
 
     override fun noteChanged(note: String?) {

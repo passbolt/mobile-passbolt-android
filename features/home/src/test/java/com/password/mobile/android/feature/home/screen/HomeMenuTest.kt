@@ -375,7 +375,7 @@ class HomeMenuTest : KoinTest {
     fun `resource url should be copied correct`() =
         runTest {
             mockResourcePropertiesActionsInteractor.stub {
-                onBlocking { provideWebsiteUrl() } doReturn
+                onBlocking { provideMainUri() } doReturn
                     flowOf(
                         ResourcePropertyActionResult(
                             ResourcePropertiesActionsInteractor.URL_LABEL,
@@ -441,7 +441,7 @@ class HomeMenuTest : KoinTest {
     fun `resource url website should be opened`() =
         runTest {
             mockResourcePropertiesActionsInteractor.stub {
-                onBlocking { provideWebsiteUrl() } doReturn
+                onBlocking { provideMainUri() } doReturn
                     flowOf(
                         ResourcePropertyActionResult(
                             ResourcePropertiesActionsInteractor.URL_LABEL,

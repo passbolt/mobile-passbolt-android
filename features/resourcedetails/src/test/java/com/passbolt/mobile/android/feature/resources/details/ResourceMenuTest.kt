@@ -217,7 +217,7 @@ class ResourceMenuTest : KoinTest {
     fun `resource url website should be opened if not empty`() =
         runTest {
             mockResourcePropertiesActionsInteractor.stub {
-                onBlocking { provideWebsiteUrl() } doReturn
+                onBlocking { provideMainUri() } doReturn
                     flowOf(
                         ResourcePropertyActionResult(
                             ResourcePropertiesActionsInteractor.URL_LABEL,
@@ -270,7 +270,7 @@ class ResourceMenuTest : KoinTest {
     @Test
     fun `resource url should be copied correct if not empty`() {
         mockResourcePropertiesActionsInteractor.stub {
-            onBlocking { provideWebsiteUrl() } doReturn
+            onBlocking { provideMainUri() } doReturn
                 flowOf(
                     ResourcePropertyActionResult(
                         ResourcePropertiesActionsInteractor.URL_LABEL,

@@ -1,4 +1,9 @@
-package com.passbolt.mobile.android.ui
+package com.passbolt.mobile.android.feature.resourceform.metadata.additionaluris
+
+import com.passbolt.mobile.android.core.mvp.BaseContract
+import com.passbolt.mobile.android.ui.AdditionalUrisUiModel
+import com.passbolt.mobile.android.ui.ResourceFormMode
+import java.util.UUID
 
 /**
  * Passbolt - Open source password manager for teams
@@ -22,19 +27,38 @@ package com.passbolt.mobile.android.ui
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-data class ResourceFormUiModel(
-    val leadingContentType: LeadingContentType,
-    val supportedMetadata: List<Metadata>,
-    val supportedAdditionalSecrets: List<Secret>,
-) {
-    enum class Metadata {
-        DESCRIPTION,
-        ADDITIONAL_URIS,
+interface AdditionalUrisFormContract {
+    interface View : BaseContract.View {
+        fun goBackWithResult(additionalUris: AdditionalUrisUiModel)
+
+        fun showCreateTitle()
+
+        fun showEditTitle(resourceName: String)
+
+        fun showMainUri(mainUri: String)
+
+        fun showAdditionalUris(uiTagToValue: LinkedHashMap<UUID, String>)
+
+        fun showMaxUriLimitExceeded(maxUriLimit: Int)
     }
 
-    enum class Secret {
-        PASSWORD,
-        NOTE,
-        TOTP,
+    interface Presenter : BaseContract.Presenter<View> {
+        fun argsRetrieved(
+            mode: ResourceFormMode,
+            additionalUris: AdditionalUrisUiModel,
+        )
+
+        fun applyClick()
+
+        fun mainUriChanged(mainUri: String)
+
+        fun additionalUriChanged(
+            uiTag: UUID,
+            uri: String,
+        )
+
+        fun addAdditionalUriClick()
+
+        fun additionalUriRemoved(uiTag: UUID)
     }
 }

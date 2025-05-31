@@ -11,6 +11,7 @@ import com.passbolt.mobile.android.core.ui.menu.OpenableSettingView
 import com.passbolt.mobile.android.feature.resourceform.R
 import com.passbolt.mobile.android.feature.resourceform.databinding.ViewMetadataSectionBinding
 import com.passbolt.mobile.android.ui.ResourceFormUiModel
+import com.passbolt.mobile.android.ui.ResourceFormUiModel.Metadata.ADDITIONAL_URIS
 import com.passbolt.mobile.android.ui.ResourceFormUiModel.Metadata.DESCRIPTION
 
 /**
@@ -51,10 +52,21 @@ class MetadataSectionView
                 }
             }
 
+        var additionalUrisClick: (() -> Unit)? = null
+            set(value) {
+                field = value
+                value?.let {
+                    additionalUrisSection.setDebouncingOnClick(action = value)
+                }
+            }
+
         private val binding = ViewMetadataSectionBinding.inflate(LayoutInflater.from(context), this)
 
         private val descriptionSection: OpenableSettingView
             get() = binding.metadataSectionView.backgroundContainer.findViewById(R.id.description)
+
+        private val additionalUrisSection: OpenableSettingView
+            get() = binding.metadataSectionView.backgroundContainer.findViewById(R.id.additionalUris)
 
         init {
             orientation = VERTICAL
@@ -70,6 +82,7 @@ class MetadataSectionView
                 gone()
             } else {
                 descriptionSection.isVisible = fields.contains(DESCRIPTION)
+                additionalUrisSection.isVisible = fields.contains(ADDITIONAL_URIS)
             }
         }
     }

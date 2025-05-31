@@ -320,6 +320,16 @@ class ResourceDetailsFragment :
         )
     }
 
+    override fun displayAdditionalUrls(uris: List<String>) {
+        requiredBinding.additionalUrisItem.apply {
+            textValue =
+                uris
+                    .map { getString(LocalizationR.string.additional_uri_format, it) }
+                    .joinToString(separator = "\n") { it }
+            visible()
+        }
+    }
+
     override fun addToClipboard(
         label: String,
         value: String,

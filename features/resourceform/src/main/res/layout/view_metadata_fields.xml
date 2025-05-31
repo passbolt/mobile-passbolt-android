@@ -15,4 +15,11 @@
         app:icon="@drawable/ic_description"
         app:name="@string/resource_form_description" />
 
+    <com.passbolt.mobile.android.core.ui.menu.OpenableSettingView
+        android:id="@+id/additionalUris"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:icon="@drawable/ic_link"
+        app:name="@string/resource_form_additional_uris" />
+
 </merge>

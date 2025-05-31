@@ -375,12 +375,21 @@
                         app:layout_constraintTop_toBottomOf="@id/tagsHeader" />
 
                     <com.passbolt.mobile.android.core.ui.itemwithheaderandaction.ItemWithHeaderAndActionView
+                        android:id="@+id/additionalUrisItem"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/dp_16"
+                        android:visibility="gone"
+                        app:itemWithHeaderAndActionView_title="@string/resource_details_additional_uris"
+                        app:layout_constraintTop_toBottomOf="@id/tagsValue" />
+
+                    <com.passbolt.mobile.android.core.ui.itemwithheaderandaction.ItemWithHeaderAndActionView
                         android:id="@+id/expiryItem"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/dp_16"
                         app:itemWithHeaderAndActionView_title="@string/resource_details_expiry_header"
-                        app:layout_constraintTop_toBottomOf="@id/tagsValue" />
+                        app:layout_constraintTop_toBottomOf="@id/additionalUrisItem" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 

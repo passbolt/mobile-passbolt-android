@@ -35,7 +35,7 @@ class ResourcePropertiesActionsInteractor(
     private val resource: ResourceModel,
     private val idToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider,
 ) {
-    suspend fun provideWebsiteUrl(): Flow<ResourcePropertyActionResult<String>> {
+    suspend fun provideMainUri(): Flow<ResourcePropertyActionResult<String>> {
         val resourceContentType =
             ContentType.fromSlug(
                 idToSlugMappingProvider.provideMappingForSelectedAccount()[
@@ -46,11 +46,30 @@ class ResourcePropertiesActionsInteractor(
             ResourcePropertyActionResult(
                 URL_LABEL,
                 isSecret = false,
-                if (resourceContentType.isV5()) {
-                    resource.metadataJsonModel.uris?.firstOrNull()
-                } else {
-                    resource.metadataJsonModel.uri
-                }.orEmpty(),
+                resource.metadataJsonModel.getMainUri(resourceContentType),
+            ),
+        )
+    }
+
+    suspend fun provideAdditionalUris(): Flow<ResourcePropertyActionResult<List<String>>> {
+        val resourceContentType =
+            ContentType.fromSlug(
+                idToSlugMappingProvider.provideMappingForSelectedAccount()[
+                    UUID.fromString(resource.resourceTypeId),
+                ]!!,
+            )
+        val mainUri = resource.metadataJsonModel.getMainUri(resourceContentType)
+        val additionalUris =
+            if (resourceContentType.isV5()) {
+                resource.metadataJsonModel.uris?.filter { it != mainUri } ?: emptyList()
+            } else {
+                emptyList()
+            }
+        return flowOf(
+            ResourcePropertyActionResult(
+                URLS_LABEL,
+                isSecret = false,
+                additionalUris,
             ),
         )
     }
@@ -81,6 +100,9 @@ class ResourcePropertiesActionsInteractor(
 
         @VisibleForTesting
         const val URL_LABEL = "Url"
+
+        @VisibleForTesting
+        const val URLS_LABEL = "Urls"
 
         @VisibleForTesting
         const val DESCRIPTION_LABEL = "Description"

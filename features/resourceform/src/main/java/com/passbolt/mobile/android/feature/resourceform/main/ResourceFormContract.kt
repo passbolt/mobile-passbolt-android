@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.feature.resourceform.main
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
 import com.passbolt.mobile.android.core.passwordgenerator.codepoints.Codepoint
 import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpMode
+import com.passbolt.mobile.android.ui.AdditionalUrisUiModel
 import com.passbolt.mobile.android.ui.NewMetadataKeyToTrustModel
 import com.passbolt.mobile.android.ui.OtpParseResult
 import com.passbolt.mobile.android.ui.PasswordStrength
@@ -134,6 +135,8 @@ interface ResourceFormContract {
         fun showNewMetadataKeyIsTrusted()
 
         fun showFailedToTrustMetadataKey()
+
+        fun navigateToAdditionalUris(model: AdditionalUrisUiModel)
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
@@ -185,5 +188,9 @@ interface ResourceFormContract {
         fun trustedMetadataKeyDeleted(model: TrustedKeyDeletedModel)
 
         fun trustNewMetadataKey(model: NewMetadataKeyToTrustModel)
+
+        fun additionalUrisClick()
+
+        fun additionalUrisChanged(urisUiModel: AdditionalUrisUiModel?)
     }
 }

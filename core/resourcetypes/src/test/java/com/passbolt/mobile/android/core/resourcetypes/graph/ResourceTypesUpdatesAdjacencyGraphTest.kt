@@ -50,7 +50,7 @@ class ResourceTypesUpdatesAdjacencyGraphTest {
     fun `actions are correct for v5-password-string`() {
         val actions = graph.getUpdateActionsMetadata(ContentType.V5PasswordString.slug)
 
-        assertThat(actions).hasSize(7)
+        assertThat(actions).hasSize(8)
         assertThat(actions.map { it.action }).containsExactly(
             UpdateAction.EDIT_METADATA,
             UpdateAction.ADD_PASSWORD,
@@ -59,6 +59,7 @@ class ResourceTypesUpdatesAdjacencyGraphTest {
             UpdateAction.REMOVE_METADATA_DESCRIPTION,
             UpdateAction.ADD_TOTP,
             UpdateAction.ADD_NOTE,
+            UpdateAction.EDIT_ADDITIONAL_URIS,
         )
     }
 
@@ -81,7 +82,7 @@ class ResourceTypesUpdatesAdjacencyGraphTest {
     fun `actions are correct for v5-default`() {
         val actions = graph.getUpdateActionsMetadata(ContentType.V5Default.slug)
 
-        assertThat(actions).hasSize(8)
+        assertThat(actions).hasSize(9)
         assertThat(actions.map { it.action }).containsExactly(
             UpdateAction.EDIT_METADATA,
             UpdateAction.ADD_NOTE,
@@ -91,6 +92,7 @@ class ResourceTypesUpdatesAdjacencyGraphTest {
             UpdateAction.ADD_TOTP,
             UpdateAction.ADD_METADATA_DESCRIPTION,
             UpdateAction.REMOVE_METADATA_DESCRIPTION,
+            UpdateAction.EDIT_ADDITIONAL_URIS,
         )
     }
 
@@ -115,7 +117,7 @@ class ResourceTypesUpdatesAdjacencyGraphTest {
     fun `actions are correct for v5-default-with-totp`() {
         val actions = graph.getUpdateActionsMetadata(ContentType.V5DefaultWithTotp.slug)
 
-        assertThat(actions).hasSize(10)
+        assertThat(actions).hasSize(11)
         assertThat(actions.map { it.action }).containsExactly(
             UpdateAction.EDIT_METADATA,
             UpdateAction.ADD_TOTP,
@@ -127,6 +129,7 @@ class ResourceTypesUpdatesAdjacencyGraphTest {
             UpdateAction.REMOVE_PASSWORD_AND_NOTE,
             UpdateAction.ADD_METADATA_DESCRIPTION,
             UpdateAction.REMOVE_METADATA_DESCRIPTION,
+            UpdateAction.EDIT_ADDITIONAL_URIS,
         )
     }
 
@@ -148,7 +151,7 @@ class ResourceTypesUpdatesAdjacencyGraphTest {
     fun `actions are correct for v5-totp-standalone`() {
         val actions = graph.getUpdateActionsMetadata(ContentType.V5TotpStandalone.slug)
 
-        assertThat(actions).hasSize(7)
+        assertThat(actions).hasSize(8)
         assertThat(actions.map { it.action }).containsExactly(
             UpdateAction.EDIT_METADATA,
             UpdateAction.ADD_TOTP,
@@ -157,6 +160,7 @@ class ResourceTypesUpdatesAdjacencyGraphTest {
             UpdateAction.ADD_PASSWORD,
             UpdateAction.REMOVE_METADATA_DESCRIPTION,
             UpdateAction.ADD_METADATA_DESCRIPTION,
+            UpdateAction.EDIT_ADDITIONAL_URIS,
         )
     }
 }

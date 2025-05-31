@@ -30,9 +30,11 @@ import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.passwo
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.TotpFormFragment
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.advanced.TotpAdvancedSettingsFormFragment
 import com.passbolt.mobile.android.feature.resourceform.databinding.FragmentResourceFormBinding
+import com.passbolt.mobile.android.feature.resourceform.metadata.additionaluris.AdditionalUrisFormFragment
 import com.passbolt.mobile.android.feature.resourceform.metadata.description.DescriptionFormFragment
 import com.passbolt.mobile.android.feature.resourceform.subform.password.PasswordSubformView
 import com.passbolt.mobile.android.feature.resourceform.subform.totp.TotpSubformView
+import com.passbolt.mobile.android.ui.AdditionalUrisUiModel
 import com.passbolt.mobile.android.ui.NewMetadataKeyToTrustModel
 import com.passbolt.mobile.android.ui.OtpParseResult
 import com.passbolt.mobile.android.ui.PasswordStrength
@@ -86,6 +88,18 @@ class ResourceFormFragment :
     private val metadataDescriptionResult = { _: String, result: Bundle ->
         if (result.containsKey(DescriptionFormFragment.EXTRA_METADATA_DESCRIPTION)) {
             presenter.metadataDescriptionChanged(result.getString(DescriptionFormFragment.EXTRA_METADATA_DESCRIPTION))
+        }
+    }
+
+    private val additionalUrisResult = { _: String, result: Bundle ->
+        if (result.containsKey(AdditionalUrisFormFragment.EXTRA_ADDITIONAL_URIS)) {
+            presenter.additionalUrisChanged(
+                BundleCompat.getParcelable(
+                    result,
+                    AdditionalUrisFormFragment.EXTRA_ADDITIONAL_URIS,
+                    AdditionalUrisUiModel::class.java,
+                ),
+            )
         }
     }
 
@@ -177,6 +191,7 @@ class ResourceFormFragment :
             visible()
             setUp(supportedMetadata)
             descriptionClick = { presenter.metadataDescriptionClick() }
+            additionalUrisClick = { presenter.additionalUrisClick() }
         }
     }
 
@@ -186,6 +201,16 @@ class ResourceFormFragment :
             ResourceFormFragmentDirections.actionResourceFormFragmentToDescriptionFormFragment(
                 navArgs.mode,
                 metadataDescription,
+            ),
+        )
+    }
+
+    override fun navigateToAdditionalUris(model: AdditionalUrisUiModel) {
+        setFragmentResultListener(AdditionalUrisFormFragment.REQUEST_ADDITIONAL_URIS, additionalUrisResult)
+        findNavController().navigate(
+            ResourceFormFragmentDirections.actionResourceFormFragmentToAdditionalUrisFormFragment(
+                navArgs.mode,
+                model,
             ),
         )
     }

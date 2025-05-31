@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.feature.resources.details
 
+import com.google.common.truth.Truth.assertThat
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalFolderLocationUseCase
 import com.passbolt.mobile.android.core.fulldatarefresh.DataRefreshStatus
 import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
@@ -36,6 +37,7 @@ import org.koin.test.KoinTest
 import org.koin.test.KoinTestRule
 import org.koin.test.inject
 import org.mockito.kotlin.any
+import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
@@ -100,7 +102,7 @@ class ResourceDetailsPresenterTest : KoinTest {
                         """
                         {
                             "name": "$NAME",
-                            "uri": "$URL",
+                            "uri": "$URL1",
                             "username": "$USERNAME",
                             "description": "$DESCRIPTION"
                         }
@@ -123,7 +125,7 @@ class ResourceDetailsPresenterTest : KoinTest {
                         """
                         {
                             "name": "$NAME",
-                            "uri": "$URL",
+                            "uri": "$URL1",
                             "username": "$USERNAME",
                             "description": "$DESCRIPTION"
                         }
@@ -193,6 +195,60 @@ class ResourceDetailsPresenterTest : KoinTest {
     }
 
     @Test
+    fun `password details should show multiple uris if present`() {
+        resourceModel =
+            ResourceModel(
+                resourceId = ID,
+                resourceTypeId = RESOURCE_TYPE_ID.toString(),
+                folderId = FOLDER_ID_ID,
+                permission = ResourcePermission.READ,
+                favouriteId = "fav-id",
+                modified = ZonedDateTime.now(),
+                expiry = null,
+                metadataJsonModel =
+                    MetadataJsonModel(
+                        """
+                        {
+                            "name": "$NAME",
+                            "uris": ["$URL1", "$URL2"],
+                            "username": "$USERNAME",
+                            "description": "$DESCRIPTION"
+                        }
+                        """.trimIndent(),
+                    ),
+                metadataKeyId = null,
+                metadataKeyType = null,
+            )
+        mockResourceTypeIdToSlugMappingProvider.stub {
+            onBlocking { provideMappingForSelectedAccount() }.doReturn(
+                mapOf(RESOURCE_TYPE_ID to ContentType.V5Default.slug),
+            )
+        }
+        mockGetLocalResourceUseCase.stub {
+            onBlocking { execute(GetLocalResourceUseCase.Input(resourceModel.resourceId)) }
+                .doReturn(GetLocalResourceUseCase.Output(resourceModel))
+        }
+        mockResourceTypeIdToSlugMappingProvider.stub {
+            onBlocking { provideMappingForSelectedAccount() }.doReturn(
+                mapOf(RESOURCE_TYPE_ID to ContentType.V5Default.slug),
+            )
+        }
+
+        presenter.argsReceived(
+            resourceModel,
+            100,
+            20f,
+        )
+        presenter.resume(view)
+
+        verify(view, times(2)).displayUrl(URL1)
+        argumentCaptor<List<String>> {
+            verify(view, times(2)).displayAdditionalUrls(capture())
+            assertThat(firstValue).containsExactlyElementsIn(listOf(URL2))
+        }
+    }
+
+    @Test
     fun `password details should be shown correct for password and description`() {
         mockResourceTypeIdToSlugMappingProvider.stub {
             onBlocking { provideMappingForSelectedAccount() }.doReturn(
@@ -213,7 +269,7 @@ class ResourceDetailsPresenterTest : KoinTest {
         verify(view, never()).displayExpirySection(any())
         verify(view, times(2)).displayUsername(USERNAME)
         verify(view, times(2)).displayInitialsIcon(NAME, "n")
-        verify(view, times(2)).displayUrl(URL)
+        verify(view, times(2)).displayUrl(URL1)
         verify(view, times(2)).hidePassword()
         verify(view, times(2)).showPermissions(eq(listOf(groupPermission)), eq(listOf(userPermission)), any(), any())
         verify(view, times(2)).showTags(RESOURCE_TAGS.map { it.slug })
@@ -248,7 +304,7 @@ class ResourceDetailsPresenterTest : KoinTest {
         verify(view, never()).displayExpirySection(any())
         verify(view, times(2)).displayUsername(USERNAME)
         verify(view, times(2)).displayInitialsIcon(NAME, "n")
-        verify(view, times(2)).displayUrl(URL)
+        verify(view, times(2)).displayUrl(URL1)
         verify(view, times(2)).hidePassword()
         verify(view, times(2)).showPermissions(eq(listOf(groupPermission)), eq(listOf(userPermission)), any(), any())
         verify(view, times(2)).showTags(RESOURCE_TAGS.map { it.slug })
@@ -284,7 +340,7 @@ class ResourceDetailsPresenterTest : KoinTest {
         verify(view, never()).displayExpirySection(any())
         verify(view, times(2)).displayUsername(USERNAME)
         verify(view, times(2)).displayInitialsIcon(NAME, "n")
-        verify(view, times(2)).displayUrl(URL)
+        verify(view, times(2)).displayUrl(URL1)
         verify(view, times(2)).hidePassword()
         verify(view, times(2)).showPermissions(eq(listOf(groupPermission)), eq(listOf(userPermission)), any(), any())
         verify(view, times(2)).showTags(RESOURCE_TAGS.map { it.slug })
@@ -319,7 +375,7 @@ class ResourceDetailsPresenterTest : KoinTest {
         verify(view, never()).displayExpirySection(any())
         verify(view, times(2)).displayUsername(USERNAME)
         verify(view, times(2)).displayInitialsIcon(NAME, "n")
-        verify(view, times(2)).displayUrl(URL)
+        verify(view, times(2)).displayUrl(URL1)
         verify(view, times(2)).hidePassword()
         verify(view, times(2)).showPermissions(eq(listOf(groupPermission)), eq(listOf(userPermission)), any(), any())
         verify(view, times(2)).showTags(RESOURCE_TAGS.map { it.slug })
@@ -360,7 +416,7 @@ class ResourceDetailsPresenterTest : KoinTest {
         verify(view, times(2)).displayExpirySection(resourceModelExpired.expiry!!)
         verify(view, times(2)).displayUsername(USERNAME)
         verify(view, times(2)).displayInitialsIcon(NAME, "n")
-        verify(view, times(2)).displayUrl(URL)
+        verify(view, times(2)).displayUrl(URL1)
         verify(view, times(2)).hidePassword()
         verify(view, times(2)).showPermissions(eq(listOf(groupPermission)), eq(listOf(userPermission)), any(), any())
         verify(view, times(2)).showTags(RESOURCE_TAGS.map { it.slug })
@@ -519,7 +575,8 @@ class ResourceDetailsPresenterTest : KoinTest {
     private companion object {
         private const val NAME = "name"
         private const val USERNAME = "username"
-        private const val URL = "https://www.passbolt.com"
+        private const val URL1 = "https://www.passbolt.com"
+        private const val URL2 = "https://www.passbolt2.com"
         private val ID = UUID.randomUUID().toString()
         private val ID_EXPIRED = UUID.randomUUID().toString()
         private const val DESCRIPTION = "desc"
