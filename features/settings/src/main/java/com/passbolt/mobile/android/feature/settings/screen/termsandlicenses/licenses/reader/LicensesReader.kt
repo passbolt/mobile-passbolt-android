@@ -1,6 +1,5 @@
-package com.passbolt.mobile.android.feature.settings.screen.termsandlicenses.licenses
+package com.passbolt.mobile.android.feature.settings.screen.termsandlicenses.licenses.reader
 
-import com.passbolt.mobile.android.core.mvp.BaseContract
 import com.passbolt.mobile.android.ui.OpenSourceLicensesModel
 
 /**
@@ -25,12 +24,6 @@ import com.passbolt.mobile.android.ui.OpenSourceLicensesModel
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-interface LicensesContract {
-    interface View : BaseContract.View {
-        fun showLicenses(licensesData: OpenSourceLicensesModel)
-    }
-
-    interface Presenter : BaseContract.Presenter<View> {
-        fun argsRetrieved(licensesJson: String)
-    }
+internal interface LicensesReader {
+    suspend fun getLicenses(): OpenSourceLicensesModel
 }

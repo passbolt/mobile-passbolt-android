@@ -56,12 +56,6 @@
         tools:layout="@layout/fragment_settings_autofill" />
 
     <fragment
-        android:id="@+id/licensesFragment"
-        android:name="com.passbolt.mobile.android.feature.settings.screen.termsandlicenses.licenses.LicensesFragment"
-        android:label="LicensesFragment"
-        tools:layout="@layout/fragment_licenses" />
-
-    <fragment
         android:id="@+id/defaultFilterFragment"
         android:name="com.passbolt.mobile.android.feature.settings.screen.appsettings.defaultfilter.DefaultFilterFragment"
         android:label="DefaultFilterFragment"
@@ -148,12 +142,16 @@
         android:name="com.passbolt.mobile.android.feature.settings.screen.termsandlicenses.TermsAndLicensesSettingsComposeFragment"
         android:label="TermsAndLicensesComposeFragment">
         <action
-            android:id="@+id/action_termsAndLicensesComposeFragment_to_licensesFragment"
-            app:destination="@id/licensesFragment"
+            android:id="@+id/action_termsAndLicensesComposeFragment_to_licensesComposeFragment"
+            app:destination="@id/licensesComposeFragment"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
     </fragment>
+    <fragment
+        android:id="@+id/licensesComposeFragment"
+        android:name="com.passbolt.mobile.android.feature.settings.screen.termsandlicenses.licenses.LicensesComposeFragment"
+        android:label="LicensesComposeFragment" />
 
 </navigation>

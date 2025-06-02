@@ -63,5 +63,6 @@ internal val appModule =
             androidContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?
         }
         factory { androidContext().resources }
+        factory { androidContext().assets }
         single { androidContext() as PassboltApplication }
     }
