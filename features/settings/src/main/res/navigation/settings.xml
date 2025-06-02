@@ -21,7 +21,7 @@
             app:popExitAnim="@anim/slide_out_right" />
         <action
             android:id="@+id/action_settings_to_termsAndLicensesSettingsFragment"
-            app:destination="@id/termsAndLicensesSettingsFragment"
+            app:destination="@id/termsAndLicensesComposeFragment"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
@@ -36,6 +36,13 @@
         <action
             android:id="@+id/action_settings_to_debugLogsSettingsComposeFragment"
             app:destination="@id/debugLogsSettingsComposeFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_settings_to_termsAndLicensesComposeFragment"
+            app:destination="@id/termsAndLicensesComposeFragment"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
@@ -79,19 +86,6 @@
         <action
             android:id="@+id/action_accountsSettingsFragment_to_accountDetailsFragment"
             app:destination="@id/account_details"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left"
-            app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right" />
-    </fragment>
-    <fragment
-        android:id="@+id/termsAndLicensesSettingsFragment"
-        android:name="com.passbolt.mobile.android.feature.settings.screen.termsandlicenses.TermsAndLicensesSettingsFragment"
-        android:label="TermsAndLicensesSettingsFragment"
-        tools:layout="@layout/fragment_terms_and_licenses_settings">
-        <action
-            android:id="@+id/action_termsAndLicensesSettingsFragment_to_licensesFragment"
-            app:destination="@id/licensesFragment"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
@@ -144,6 +138,18 @@
         <action
             android:id="@+id/action_debugLogsSettingsComposeFragment_to_logs"
             app:destination="@id/logs"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+    <fragment
+        android:id="@+id/termsAndLicensesComposeFragment"
+        android:name="com.passbolt.mobile.android.feature.settings.screen.termsandlicenses.TermsAndLicensesSettingsComposeFragment"
+        android:label="TermsAndLicensesComposeFragment">
+        <action
+            android:id="@+id/action_termsAndLicensesComposeFragment_to_licensesFragment"
+            app:destination="@id/licensesFragment"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"

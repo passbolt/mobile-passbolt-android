@@ -105,7 +105,7 @@ class SettingsFragment :
 
     override fun navigateToTermsAndLicensesSettings() {
         findNavController().navigate(
-            SettingsFragmentDirections.actionSettingsToTermsAndLicensesSettingsFragment(),
+            SettingsFragmentDirections.actionSettingsToTermsAndLicensesComposeFragment(),
         )
     }
 

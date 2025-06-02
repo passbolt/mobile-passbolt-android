@@ -1,8 +1,3 @@
-package com.passbolt.mobile.android.feature.settings.screen.termsandlicenses
-
-import org.koin.androidx.viewmodel.dsl.viewModelOf
-import org.koin.core.module.Module
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -26,6 +21,11 @@ import org.koin.core.module.Module
  * @since v1.0
  */
 
-fun Module.termsAndLicensesSettingsModule() {
-    viewModelOf(::TermsAndLicensesSettingsViewModel)
-}
+package com.passbolt.mobile.android.feature.settings.screen.termsandlicenses
+
+data class TermsAndLicensesSettingsState(
+    val isPrivacyPolicyEnabled: Boolean = false,
+    val isTermsAndConditionsEnabled: Boolean = false,
+    val privacyPolicyUrl: String? = null,
+    val termsAndConditionsUrl: String? = null,
+)

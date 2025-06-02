@@ -1,3 +1,5 @@
+package com.passbolt.mobile.android.feature.settings.screen.termsandlicenses
+
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -20,33 +22,12 @@
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+interface TermsAndLicensesSettingsNavigation {
+    fun navigateUp()
 
-package com.passbolt.mobile.android.feature.settings.screen.termsandlicenses
+    fun navigateToTermsAndConditions(termsAndConditionsUrl: String)
 
-import com.passbolt.mobile.android.core.mvp.BaseContract
+    fun navigateToPrivacyPolicy(privacyPolicyUrl: String)
 
-interface TermsAndLicensesSettingsContract {
-    interface View : BaseContract.View {
-        fun navigateToLicenses()
-
-        fun disablePrivacyPolicySetting()
-
-        fun enablePrivacyPolicySetting()
-
-        fun disableTermsAndConditionsSetting()
-
-        fun enableTermsAndConditionsButton()
-
-        fun openUrl(url: String)
-    }
-
-    interface Presenter : BaseContract.Presenter<View> {
-        fun licensesClick()
-
-        fun viewResumed()
-
-        fun termsAndConditionsClick()
-
-        fun privacyPolicyClick()
-    }
+    fun navigateToOpenSourceLicenses()
 }

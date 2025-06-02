@@ -21,29 +21,14 @@
  * @since v1.0
  */
 
-package com.passbolt.mobile.android.feature.settings.termsandlicenses
+package com.passbolt.mobile.android.feature.settings.screen.termsandlicenses
 
-import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
-import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
-import com.passbolt.mobile.android.feature.settings.screen.termsandlicenses.TermsAndLicensesSettingsContract
-import com.passbolt.mobile.android.feature.settings.screen.termsandlicenses.TermsAndLicensesSettingsPresenter
-import com.passbolt.mobile.android.featureflags.usecase.GetFeatureFlagsUseCase
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import org.koin.core.module.dsl.factoryOf
-import org.koin.dsl.bind
-import org.koin.dsl.module
-import org.mockito.kotlin.mock
+sealed interface TermsAndLicensesSettingsIntent {
+    object GoBack : TermsAndLicensesSettingsIntent
 
-internal val getFeatureFlagsUseCase = mock<GetFeatureFlagsUseCase>()
+    object GoToTermsAndLicenses : TermsAndLicensesSettingsIntent
 
-@ExperimentalCoroutinesApi
-val testTermsAndLicensesSettingsModule =
-    module {
-        factoryOf(::TestCoroutineLaunchContext) bind CoroutineLaunchContext::class
-        factory<TermsAndLicensesSettingsContract.Presenter> {
-            TermsAndLicensesSettingsPresenter(
-                getFeatureFlagsUseCase = getFeatureFlagsUseCase,
-                coroutineLaunchContext = get(),
-            )
-        }
-    }
+    object GoToPrivacyPolicy : TermsAndLicensesSettingsIntent
+
+    object GoToOpenSourceLicenses : TermsAndLicensesSettingsIntent
+}
