@@ -56,7 +56,10 @@
     <string name="common_metadata_key_verification_failure">Could not verify metadata keys</string>
     <string name="common_metadata_key_is_trusted">New metadata key is trusted</string>
     <string name="common_metadata_key_trust_failed">Failed to trust new metadata key</string>
-
+    <string name="common_bullet_format"
+        translatable="false">• %s</string>
+    <string name="common_bullet"
+        translatable="false">• </string>
     <string name="common_message_resource_edited">%s resource was successfully edited.</string>
     <string name="common_message_resource_deleted">%s resource was deleted.</string>
     <string name="common_message_resource_shared">The resource permissions were updated.</string>

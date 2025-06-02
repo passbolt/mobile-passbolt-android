@@ -56,7 +56,7 @@ internal class TermsAndLicensesSettingsViewModel(
         viewModelScope.launch {
             val featureFlags = getFeatureFlagsUseCase.execute(Unit).featureFlags
             updateViewState {
-                TermsAndLicensesSettingsState(
+                copy(
                     privacyPolicyUrl = featureFlags.privacyPolicyUrl,
                     termsAndConditionsUrl = featureFlags.termsAndConditionsUrl,
                     isPrivacyPolicyEnabled = !featureFlags.privacyPolicyUrl.isNullOrBlank(),

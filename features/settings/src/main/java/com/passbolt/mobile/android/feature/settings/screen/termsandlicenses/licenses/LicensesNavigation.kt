@@ -1,12 +1,5 @@
 package com.passbolt.mobile.android.feature.settings.screen.termsandlicenses.licenses
 
-import com.passbolt.mobile.android.feature.settings.screen.termsandlicenses.licenses.reader.LicensesAssetsReader
-import com.passbolt.mobile.android.feature.settings.screen.termsandlicenses.licenses.reader.LicensesReader
-import org.koin.androidx.viewmodel.dsl.viewModelOf
-import org.koin.core.module.Module
-import org.koin.core.module.dsl.singleOf
-import org.koin.dsl.bind
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -29,8 +22,8 @@ import org.koin.dsl.bind
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+interface LicensesNavigation {
+    fun navigateUp()
 
-fun Module.licensesModule() {
-    viewModelOf(::LicensesViewModel)
-    singleOf(::LicensesAssetsReader) bind LicensesReader::class
+    fun navigateToLicenseUrl(licenseUrl: String)
 }

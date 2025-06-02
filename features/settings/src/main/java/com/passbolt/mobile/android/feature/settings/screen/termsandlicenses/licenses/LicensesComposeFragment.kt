@@ -1,3 +1,16 @@
+package com.passbolt.mobile.android.feature.settings.screen.termsandlicenses.licenses
+
+import PassboltTheme
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.compose.ui.platform.ComposeView
+import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
+import com.passbolt.mobile.android.common.ExternalDeeplinkHandler
+import org.koin.android.ext.android.inject
+
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -20,23 +33,9 @@
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-
-package com.passbolt.mobile.android.feature.settings.screen.termsandlicenses
-
-import PassboltTheme
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import androidx.compose.ui.platform.ComposeView
-import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.findNavController
-import com.passbolt.mobile.android.common.ExternalDeeplinkHandler
-import org.koin.android.ext.android.inject
-
-class TermsAndLicensesSettingsComposeFragment :
+class LicensesComposeFragment :
     Fragment(),
-    TermsAndLicensesSettingsNavigation {
+    LicensesNavigation {
     private val externalDeeplinkHandler: ExternalDeeplinkHandler by inject()
 
     override fun onCreateView(
@@ -47,8 +46,8 @@ class TermsAndLicensesSettingsComposeFragment :
         ComposeView(requireContext()).apply {
             setContent {
                 PassboltTheme {
-                    TermsAndLicensesScreen(
-                        navigation = this@TermsAndLicensesSettingsComposeFragment,
+                    LicensesScreen(
+                        navigation = this@LicensesComposeFragment,
                     )
                 }
             }
@@ -58,17 +57,7 @@ class TermsAndLicensesSettingsComposeFragment :
         findNavController().popBackStack()
     }
 
-    override fun navigateToTermsAndConditions(termsAndConditionsUrl: String) {
-        externalDeeplinkHandler.openWebsite(requireContext(), termsAndConditionsUrl)
-    }
-
-    override fun navigateToPrivacyPolicy(privacyPolicyUrl: String) {
-        externalDeeplinkHandler.openWebsite(requireContext(), privacyPolicyUrl)
-    }
-
-    override fun navigateToOpenSourceLicenses() {
-        findNavController().navigate(
-            TermsAndLicensesSettingsComposeFragmentDirections.actionTermsAndLicensesComposeFragmentToLicensesComposeFragment(),
-        )
+    override fun navigateToLicenseUrl(licenseUrl: String) {
+        externalDeeplinkHandler.openWebsite(requireContext(), licenseUrl)
     }
 }
