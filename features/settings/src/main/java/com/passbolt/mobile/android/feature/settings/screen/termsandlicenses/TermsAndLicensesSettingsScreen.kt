@@ -21,7 +21,7 @@
  * @since v1.0
  */
 
-package com.passbolt.mobile.android.feature.settings.screen.debuglogssettings
+package com.passbolt.mobile.android.feature.settings.screen.termsandlicenses
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -37,23 +37,23 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
 import com.passbolt.mobile.android.core.ui.R
 import com.passbolt.mobile.android.core.ui.compose.menu.OpenableSettingsItem
-import com.passbolt.mobile.android.core.ui.compose.menu.SwitchableSettingsItem
 import com.passbolt.mobile.android.core.ui.compose.topbar.TitleAppBar
-import com.passbolt.mobile.android.feature.settings.screen.debuglogssettings.DebugLogsScreenSideEffect.NavigateToLogs
-import com.passbolt.mobile.android.feature.settings.screen.debuglogssettings.DebugLogsScreenSideEffect.NavigateUp
-import com.passbolt.mobile.android.feature.settings.screen.debuglogssettings.DebugLogsScreenSideEffect.OpenHelpWebsite
+import com.passbolt.mobile.android.feature.settings.screen.termsandlicenses.TermsAndLicensesSettingsSideEffect.NavigateToOpenSourceLicensesSettings
+import com.passbolt.mobile.android.feature.settings.screen.termsandlicenses.TermsAndLicensesSettingsSideEffect.NavigateToPrivacyPolicy
+import com.passbolt.mobile.android.feature.settings.screen.termsandlicenses.TermsAndLicensesSettingsSideEffect.NavigateToTermsAndConditionsSettings
+import com.passbolt.mobile.android.feature.settings.screen.termsandlicenses.TermsAndLicensesSettingsSideEffect.NavigateUp
 import org.koin.androidx.compose.koinViewModel
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 @Composable
-internal fun DebugLogsSettingsScreen(
-    navigation: DebugLogSettingsNavigation,
+internal fun TermsAndLicensesScreen(
+    navigation: TermsAndLicensesSettingsNavigation,
     modifier: Modifier = Modifier,
-    viewModel: DebugLogsSettingsViewModel = koinViewModel(),
+    viewModel: TermsAndLicensesSettingsViewModel = koinViewModel(),
 ) {
     val state = viewModel.viewState.collectAsStateWithLifecycle()
 
-    DebugLogsSettingsScreen(
+    TermsAndLicensesScreen(
         modifier = modifier,
         state = state.value,
         onIntent = viewModel::onIntent,
@@ -61,17 +61,18 @@ internal fun DebugLogsSettingsScreen(
 
     SideEffectDispatcher(viewModel.sideEffect) {
         when (it) {
-            NavigateToLogs -> navigation.navigateToLogs()
+            NavigateToOpenSourceLicensesSettings -> navigation.navigateToOpenSourceLicenses()
+            is NavigateToPrivacyPolicy -> navigation.navigateToPrivacyPolicy(it.privacyPolicyUrl)
+            is NavigateToTermsAndConditionsSettings -> navigation.navigateToTermsAndConditions(it.termsAndConditionsUrl)
             NavigateUp -> navigation.navigateUp()
-            OpenHelpWebsite -> navigation.openHelpWebsite()
         }
     }
 }
 
 @Composable
-private fun DebugLogsSettingsScreen(
-    state: DebugLogsSettingsState,
-    onIntent: (DebugLogsSettingsIntent) -> Unit,
+private fun TermsAndLicensesScreen(
+    onIntent: (TermsAndLicensesSettingsIntent) -> Unit,
+    state: TermsAndLicensesSettingsState,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -81,38 +82,40 @@ private fun DebugLogsSettingsScreen(
                 .padding(vertical = 16.dp),
     ) {
         TitleAppBar(
-            title = stringResource(LocalizationR.string.settings_debug_logs),
-            onBackClick = { onIntent(DebugLogsSettingsIntent.GoBack) },
-        )
-        SwitchableSettingsItem(
-            iconPainter = painterResource(R.drawable.ic_bug),
-            title = stringResource(LocalizationR.string.settings_debug_logs_enable_logs),
-            isChecked = state.areDebugLogsEnabled,
-            onCheckedChange = { onIntent(DebugLogsSettingsIntent.ToggleDebugLogs) },
+            title = stringResource(LocalizationR.string.settings_terms_and_licenses),
+            onBackClick = { onIntent(TermsAndLicensesSettingsIntent.GoBack) },
         )
 
         OpenableSettingsItem(
-            iconPainter = painterResource(R.drawable.ic_access_logs),
-            title = stringResource(LocalizationR.string.settings_debug_logs_settings_logs),
-            onClick = { onIntent(DebugLogsSettingsIntent.AccessLogs) },
-            isEnabled = state.isAccessLogsEnabled,
-        )
-
-        OpenableSettingsItem(
-            iconPainter = painterResource(R.drawable.ic_link),
-            title = stringResource(LocalizationR.string.settings_debug_logs_visit_help_website),
-            onClick = { onIntent(DebugLogsSettingsIntent.OpenHelpWebsite) },
+            iconPainter = painterResource(R.drawable.ic_terms),
+            title = stringResource(LocalizationR.string.settings_terms_and_licenses_terms),
+            onClick = { onIntent(TermsAndLicensesSettingsIntent.GoToTermsAndLicenses) },
             opensInternally = false,
+            isEnabled = state.isTermsAndConditionsEnabled,
+        )
+
+        OpenableSettingsItem(
+            iconPainter = painterResource(R.drawable.ic_lock),
+            title = stringResource(LocalizationR.string.settings_terms_and_licenses_privacy_policy),
+            onClick = { onIntent(TermsAndLicensesSettingsIntent.GoToPrivacyPolicy) },
+            opensInternally = false,
+            isEnabled = state.isPrivacyPolicyEnabled,
+        )
+
+        OpenableSettingsItem(
+            iconPainter = painterResource(R.drawable.ic_licenses),
+            title = stringResource(LocalizationR.string.settings_terms_and_licenses_licenses),
+            onClick = { onIntent(TermsAndLicensesSettingsIntent.GoToOpenSourceLicenses) },
         )
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-private fun DebugLogsSettingsPreview() {
-    DebugLogsSettingsScreen(
-        state = DebugLogsSettingsState(areDebugLogsEnabled = true),
+private fun TermsAndLicensesPreview() {
+    TermsAndLicensesScreen(
         onIntent = {},
+        state = TermsAndLicensesSettingsState(),
         modifier = Modifier,
     )
 }
