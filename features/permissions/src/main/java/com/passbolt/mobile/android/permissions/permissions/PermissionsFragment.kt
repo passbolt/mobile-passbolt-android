@@ -21,17 +21,23 @@ import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.extension.showSnackbar
 import com.passbolt.mobile.android.core.extension.visible
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
+import com.passbolt.mobile.android.core.ui.R
 import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
 import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
+import com.passbolt.mobile.android.feature.metadatakeytrust.ui.NewMetadataKeyTrustDialog
+import com.passbolt.mobile.android.feature.metadatakeytrust.ui.NewTrustedMetadataKeyDeletedDialog
 import com.passbolt.mobile.android.feature.permissions.databinding.FragmentResourcePermissionsBinding
 import com.passbolt.mobile.android.permissions.grouppermissionsdetails.GroupPermissionsFragment
 import com.passbolt.mobile.android.permissions.permissionrecipients.PermissionRecipientsFragment
 import com.passbolt.mobile.android.permissions.permissions.recycler.PermissionItem
 import com.passbolt.mobile.android.permissions.userpermissionsdetails.UserPermissionsFragment
+import com.passbolt.mobile.android.ui.NewMetadataKeyToTrustModel
 import com.passbolt.mobile.android.ui.PermissionModelUi
+import com.passbolt.mobile.android.ui.TrustedKeyDeletedModel
 import org.koin.android.ext.android.inject
 import org.koin.core.qualifier.named
+import kotlin.jvm.java
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
@@ -62,7 +68,7 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
 class PermissionsFragment :
     BindingScopedAuthenticatedFragment<FragmentResourcePermissionsBinding, PermissionsContract.View>(
         FragmentResourcePermissionsBinding::inflate
-    ), PermissionsContract.View {
+    ), PermissionsContract.View, NewMetadataKeyTrustDialog.Listener, NewTrustedMetadataKeyDeletedDialog.Listener {
 
     override val presenter: PermissionsContract.Presenter by inject()
     private val permissionsItemAdapter: ItemAdapter<PermissionItem> by inject(named(PERMISSIONS_ITEM_ADAPTER))
@@ -302,7 +308,7 @@ class PermissionsFragment :
         )
     }
 
-    override fun showReEncyptMetadataFailure() {
+    override fun showReEncryptMetadataFailure() {
         showSnackbar(
             LocalizationR.string.common_metadata_encryption_failure,
             anchorView = snackbarAnchorView,
@@ -349,6 +355,88 @@ class PermissionsFragment :
 
     override fun navigateToHome() {
         requireActivity().startActivity(ActivityIntents.bringHome(requireContext()))
+    }
+
+    override fun showCannotUpdateTotpWithCurrentConfig() {
+        showSnackbar(
+            messageResId = LocalizationR.string.common_cannot_create_resource_with_current_config,
+            anchorView = snackbarAnchorView,
+            backgroundColor = R.color.red
+        )
+    }
+
+    override fun showMetadataKeyModifiedDialog(model: NewMetadataKeyToTrustModel) {
+        NewMetadataKeyTrustDialog.newInstance(model)
+            .show(childFragmentManager, NewMetadataKeyTrustDialog::class.java.name)
+    }
+
+    override fun showMetadataKeyDeletedDialog(model: TrustedKeyDeletedModel) {
+        NewTrustedMetadataKeyDeletedDialog.newInstance(model)
+            .show(childFragmentManager, NewTrustedMetadataKeyDeletedDialog::class.java.name)
+    }
+
+    override fun showFailedToVerifyMetadataKey() {
+        showSnackbar(
+            messageResId = LocalizationR.string.common_metadata_key_verification_failure,
+            anchorView = snackbarAnchorView,
+            backgroundColor = R.color.red
+        )
+    }
+
+    override fun showNewMetadataKeyIsTrusted() {
+        showSnackbar(
+            messageResId = LocalizationR.string.common_metadata_key_is_trusted,
+            anchorView = snackbarAnchorView,
+            backgroundColor = R.color.green
+        )
+    }
+
+    override fun showFailedToTrustMetadataKey() {
+        showSnackbar(
+            messageResId = LocalizationR.string.common_metadata_key_trust_failed,
+            anchorView = snackbarAnchorView,
+            backgroundColor = R.color.red
+        )
+    }
+
+    override fun trustNewMetadataKeyClick(newKeyToTrust: NewMetadataKeyToTrustModel) {
+        presenter.trustNewMetadataKey(newKeyToTrust)
+    }
+
+    override fun trustMetadataKeyDeletionClick(model: TrustedKeyDeletedModel) {
+        presenter.trustedMetadataKeyDeleted(model)
+    }
+
+    override fun showJsonResourceSchemaValidationError() {
+        showSnackbar(
+            LocalizationR.string.common_json_schema_resource_validation_error,
+            anchorView = snackbarAnchorView,
+            backgroundColor = R.color.red
+        )
+    }
+
+    override fun showJsonSecretSchemaValidationError() {
+        showSnackbar(
+            LocalizationR.string.common_json_schema_secret_validation_error,
+            anchorView = snackbarAnchorView,
+            backgroundColor = R.color.red
+        )
+    }
+
+    override fun showGenericError() {
+        showSnackbar(
+            LocalizationR.string.common_failure,
+            anchorView = snackbarAnchorView,
+            backgroundColor = R.color.red
+        )
+    }
+
+    override fun showEncryptionError(error: String) {
+        showSnackbar(
+            LocalizationR.string.common_encryption_failure,
+            anchorView = snackbarAnchorView,
+            backgroundColor = R.color.red
+        )
     }
 
     companion object {
