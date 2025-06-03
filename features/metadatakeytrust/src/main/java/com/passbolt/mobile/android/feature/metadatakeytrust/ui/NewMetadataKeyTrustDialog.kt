@@ -66,7 +66,9 @@ class NewMetadataKeyTrustDialog : DialogFragment(), KoinComponent {
     }
 
     private fun showValues(binding: DialogNewMetadataKeyTrustBinding) {
-        fingerprintFormatter.format(bundledNewKeyToTrust.signatureKeyFingerprint, appendMiddleSpacing = true)?.let {
+        fingerprintFormatter.format(
+            bundledNewKeyToTrust.metadataPrivateKey.fingerprint, appendMiddleSpacing = true
+        )?.let {
             binding.fingerprint.text = it.uppercase()
         }
         binding.message1.text = getString(

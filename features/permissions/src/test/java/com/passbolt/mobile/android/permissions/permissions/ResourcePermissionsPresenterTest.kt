@@ -1,11 +1,11 @@
 package com.passbolt.mobile.android.permissions.permissions
 
 import com.google.common.truth.Truth.assertThat
-import com.google.gson.JsonObject
 import com.passbolt.mobile.android.commontest.session.validSessionTestModule
 import com.passbolt.mobile.android.core.fulldatarefresh.DataRefreshStatus
 import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
 import com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor
+import com.passbolt.mobile.android.core.resources.actions.ResourceUpdateActionResult
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcePermissionsUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUseCase
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType
@@ -248,6 +248,11 @@ class ResourcePermissionsPresenterTest : KoinTest {
 
     @Test
     fun `view should set result and go back after share success`() {
+        mockResourceUpdateActionsInteractor.stub {
+            onBlocking { reEncryptResourceMetadata() }.doReturn(
+                flowOf(ResourceUpdateActionResult.Success("", ""))
+            )
+        }
         val mockPermissions = GROUP_PERMISSIONS + USER_PERMISSIONS[0].copy(permission = ResourcePermission.OWNER)
         mockGetLocalResourcePermissionsUseCase.stub {
             onBlocking { execute(GetLocalResourcePermissionsUseCase.Input(RESOURCE_ID)) }

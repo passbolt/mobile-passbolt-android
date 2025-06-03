@@ -25,6 +25,8 @@ dependencies {
     implementation project(':supportedresourcetypes')
     implementation project(':metadata')
     implementation project(':accounts')
+    implementation project(':serializers')
+    implementation project(':metadatakeytrust')
 
     implementation libs.koin
     implementation libs.fastadapter.core

@@ -1,7 +1,9 @@
 package com.passbolt.mobile.android.permissions.permissions
 
 import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReactiveContract
+import com.passbolt.mobile.android.ui.NewMetadataKeyToTrustModel
 import com.passbolt.mobile.android.ui.PermissionModelUi
+import com.passbolt.mobile.android.ui.TrustedKeyDeletedModel
 
 /**
  * Passbolt - Open source password manager for teams
@@ -54,7 +56,7 @@ interface PermissionsContract {
         fun showSecretFetchFailure()
         fun showSecretEncryptFailure()
         fun showSecretDecryptFailure()
-        fun showReEncyptMetadataFailure()
+        fun showReEncryptMetadataFailure()
         fun showProgress()
         fun hideProgress()
         fun closeWithShareSuccessResult()
@@ -63,6 +65,16 @@ interface PermissionsContract {
         fun showDataRefreshError()
         fun showContentNotAvailable()
         fun navigateToHome()
+        fun showGenericError()
+        fun showEncryptionError(error: String)
+        fun showJsonResourceSchemaValidationError()
+        fun showJsonSecretSchemaValidationError()
+        fun showCannotUpdateTotpWithCurrentConfig()
+        fun showMetadataKeyModifiedDialog(model: NewMetadataKeyToTrustModel)
+        fun showMetadataKeyDeletedDialog(model: TrustedKeyDeletedModel)
+        fun showFailedToVerifyMetadataKey()
+        fun showNewMetadataKeyIsTrusted()
+        fun showFailedToTrustMetadataKey()
     }
 
     interface Presenter : DataRefreshViewReactiveContract.Presenter<View> {
@@ -76,5 +88,7 @@ interface PermissionsContract {
         fun userPermissionDeleted(permission: PermissionModelUi.UserPermissionModel)
         fun groupPermissionDeleted(permission: PermissionModelUi.GroupPermissionModel)
         fun refreshPermissionsList()
+        fun trustNewMetadataKey(model: NewMetadataKeyToTrustModel)
+        fun trustedMetadataKeyDeleted(model: TrustedKeyDeletedModel)
     }
 }
