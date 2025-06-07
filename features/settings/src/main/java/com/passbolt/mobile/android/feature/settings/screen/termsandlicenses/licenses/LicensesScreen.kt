@@ -50,6 +50,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.passbolt.mobile.android.core.compose.AppTypography
 import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
+import com.passbolt.mobile.android.core.ui.compose.topbar.BackNavigationIcon
 import com.passbolt.mobile.android.core.ui.compose.topbar.TitleAppBar
 import com.passbolt.mobile.android.feature.settings.screen.termsandlicenses.licenses.LicensesIntent.GoBack
 import com.passbolt.mobile.android.feature.settings.screen.termsandlicenses.licenses.LicensesIntent.GoToLicenseUrl
@@ -98,7 +99,7 @@ private fun LicensesScreen(
     ) {
         TitleAppBar(
             title = stringResource(LocalizationR.string.settings_licenses_title),
-            onBackClick = { onIntent(GoBack) },
+            navigationIcon = { BackNavigationIcon(onBackClick = { onIntent(GoBack) }) },
         )
         LazyColumn(
             modifier =

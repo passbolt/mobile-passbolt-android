@@ -37,7 +37,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
 import com.passbolt.mobile.android.core.ui.R
 import com.passbolt.mobile.android.core.ui.compose.menu.OpenableSettingsItem
+import com.passbolt.mobile.android.core.ui.compose.topbar.BackNavigationIcon
 import com.passbolt.mobile.android.core.ui.compose.topbar.TitleAppBar
+import com.passbolt.mobile.android.feature.settings.screen.termsandlicenses.TermsAndLicensesSettingsIntent.GoBack
 import com.passbolt.mobile.android.feature.settings.screen.termsandlicenses.TermsAndLicensesSettingsSideEffect.NavigateToOpenSourceLicensesSettings
 import com.passbolt.mobile.android.feature.settings.screen.termsandlicenses.TermsAndLicensesSettingsSideEffect.NavigateToPrivacyPolicy
 import com.passbolt.mobile.android.feature.settings.screen.termsandlicenses.TermsAndLicensesSettingsSideEffect.NavigateToTermsAndConditionsSettings
@@ -83,7 +85,7 @@ private fun TermsAndLicensesScreen(
     ) {
         TitleAppBar(
             title = stringResource(LocalizationR.string.settings_terms_and_licenses),
-            onBackClick = { onIntent(TermsAndLicensesSettingsIntent.GoBack) },
+            navigationIcon = { BackNavigationIcon(onBackClick = { onIntent(GoBack) }) },
         )
 
         OpenableSettingsItem(
