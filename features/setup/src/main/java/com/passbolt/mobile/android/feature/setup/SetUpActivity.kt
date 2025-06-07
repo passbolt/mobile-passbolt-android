@@ -50,7 +50,7 @@ class SetUpActivity :
                 R.id.transferDetailsFragment,
                 R.id.scanQrFragment,
                 R.id.importProfileFragment,
-                com.passbolt.mobile.android.feature.logs.R.id.logsFragment,
+                com.passbolt.mobile.android.feature.logs.R.id.logsComposeFragment,
             )
 
     override val bundledAccountSetupData: AccountSetupDataModel? by lifecycleAwareLazy {

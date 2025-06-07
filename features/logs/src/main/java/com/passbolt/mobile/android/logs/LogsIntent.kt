@@ -1,12 +1,3 @@
-package com.passbolt.mobile.android.logs
-
-import com.passbolt.mobile.android.logs.reader.LogsFileReader
-import com.passbolt.mobile.android.logs.reader.LogsReader
-import org.koin.androidx.viewmodel.dsl.viewModelOf
-import org.koin.core.module.Module
-import org.koin.core.module.dsl.singleOf
-import org.koin.dsl.bind
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -30,7 +21,10 @@ import org.koin.dsl.bind
  * @since v1.0
  */
 
-fun Module.logsModule() {
-    viewModelOf(::LogsViewModel)
-    singleOf(::LogsFileReader) bind LogsReader::class
+package com.passbolt.mobile.android.logs
+
+sealed interface LogsIntent {
+    object GoBack : LogsIntent
+
+    object ShareLogs : LogsIntent
 }

@@ -55,6 +55,7 @@
         android:label="SettingsAutofillFragment"
         tools:layout="@layout/fragment_settings_autofill" />
 
+
     <fragment
         android:id="@+id/defaultFilterFragment"
         android:name="com.passbolt.mobile.android.feature.settings.screen.appsettings.defaultfilter.DefaultFilterFragment"

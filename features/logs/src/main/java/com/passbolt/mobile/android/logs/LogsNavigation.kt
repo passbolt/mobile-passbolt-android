@@ -1,8 +1,5 @@
 package com.passbolt.mobile.android.logs
 
-import com.passbolt.mobile.android.core.mvp.BaseContract
-import java.io.File
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -25,18 +22,8 @@ import java.io.File
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-interface LogsContract {
-    interface View : BaseContract.View {
-        fun showLogs(logLines: List<String>)
+interface LogsNavigation {
+    fun navigateUp()
 
-        fun showShareSheet(logFile: File)
-
-        fun scrollLogsToPosition(position: Int)
-    }
-
-    interface Presenter : BaseContract.Presenter<View> {
-        fun argsRetrieved(logFilePath: String?)
-
-        fun shareClick()
-    }
+    fun navigateToLogsShareSheet(logFilePath: String)
 }
