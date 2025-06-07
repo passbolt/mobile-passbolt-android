@@ -38,10 +38,14 @@ import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
 import com.passbolt.mobile.android.core.ui.R
 import com.passbolt.mobile.android.core.ui.compose.menu.OpenableSettingsItem
 import com.passbolt.mobile.android.core.ui.compose.menu.SwitchableSettingsItem
+import com.passbolt.mobile.android.core.ui.compose.topbar.BackNavigationIcon
 import com.passbolt.mobile.android.core.ui.compose.topbar.TitleAppBar
 import com.passbolt.mobile.android.feature.settings.screen.debuglogssettings.DebugLogsScreenSideEffect.NavigateToLogs
 import com.passbolt.mobile.android.feature.settings.screen.debuglogssettings.DebugLogsScreenSideEffect.NavigateUp
 import com.passbolt.mobile.android.feature.settings.screen.debuglogssettings.DebugLogsScreenSideEffect.OpenHelpWebsite
+import com.passbolt.mobile.android.feature.settings.screen.debuglogssettings.DebugLogsSettingsIntent.AccessLogs
+import com.passbolt.mobile.android.feature.settings.screen.debuglogssettings.DebugLogsSettingsIntent.GoBack
+import com.passbolt.mobile.android.feature.settings.screen.debuglogssettings.DebugLogsSettingsIntent.ToggleDebugLogs
 import org.koin.androidx.compose.koinViewModel
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
@@ -82,19 +86,19 @@ private fun DebugLogsSettingsScreen(
     ) {
         TitleAppBar(
             title = stringResource(LocalizationR.string.settings_debug_logs),
-            onBackClick = { onIntent(DebugLogsSettingsIntent.GoBack) },
+            navigationIcon = { BackNavigationIcon(onBackClick = { onIntent(GoBack) }) },
         )
         SwitchableSettingsItem(
             iconPainter = painterResource(R.drawable.ic_bug),
             title = stringResource(LocalizationR.string.settings_debug_logs_enable_logs),
             isChecked = state.areDebugLogsEnabled,
-            onCheckedChange = { onIntent(DebugLogsSettingsIntent.ToggleDebugLogs) },
+            onCheckedChange = { onIntent(ToggleDebugLogs) },
         )
 
         OpenableSettingsItem(
             iconPainter = painterResource(R.drawable.ic_access_logs),
             title = stringResource(LocalizationR.string.settings_debug_logs_settings_logs),
-            onClick = { onIntent(DebugLogsSettingsIntent.AccessLogs) },
+            onClick = { onIntent(AccessLogs) },
             isEnabled = state.isAccessLogsEnabled,
         )
 

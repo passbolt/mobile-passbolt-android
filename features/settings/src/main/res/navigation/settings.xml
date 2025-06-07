@@ -4,50 +4,42 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/settingsNav"
-    app:startDestination="@id/settings">
+    app:startDestination="@id/settingsComposeFragment">
 
     <fragment
-        android:id="@+id/settings"
-        android:name="com.passbolt.mobile.android.feature.settings.screen.SettingsFragment"
-        android:label="HomeFragment"
-        tools:layout="@layout/fragment_settings">
-
+        android:id="@+id/settingsComposeFragment"
+        android:name="com.passbolt.mobile.android.feature.settings.screen.SettingsComposeFragment"
+        android:label="SettingsComposeFragment">
         <action
-            android:id="@+id/action_settings_to_accountsSettingsFragment"
-            app:destination="@id/accountsSettingsFragment"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left"
-            app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right" />
-        <action
-            android:id="@+id/action_settings_to_termsAndLicensesSettingsFragment"
+            android:id="@+id/action_settingsComposeFragment_to_termsAndLicensesComposeFragment"
             app:destination="@id/termsAndLicensesComposeFragment"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
         <action
-            android:id="@+id/action_settings_to_appSettingsFragment"
-            app:destination="@id/appSettingsFragment"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left"
-            app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right" />
-        <action
-            android:id="@+id/action_settings_to_debugLogsSettingsComposeFragment"
+            android:id="@+id/action_settingsComposeFragment_to_debugLogsSettingsComposeFragment"
             app:destination="@id/debugLogsSettingsComposeFragment"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
         <action
-            android:id="@+id/action_settings_to_termsAndLicensesComposeFragment"
-            app:destination="@id/termsAndLicensesComposeFragment"
+            android:id="@+id/action_settingsComposeFragment_to_appSettingsFragment"
+            app:destination="@id/appSettingsFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_settingsComposeFragment_to_accountsSettingsFragment"
+            app:destination="@id/accountsSettingsFragment"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
     </fragment>
+
 
     <fragment
         android:id="@+id/settingsAutofillFragment"

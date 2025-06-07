@@ -44,6 +44,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
+import com.passbolt.mobile.android.core.ui.compose.topbar.BackNavigationIcon
 import com.passbolt.mobile.android.core.ui.compose.topbar.TitleAppBar
 import com.passbolt.mobile.android.logs.LogsIntent.GoBack
 import com.passbolt.mobile.android.logs.LogsIntent.ShareLogs
@@ -109,7 +110,9 @@ private fun LogsScreen(
                     )
                 }
             },
-            onBackClick = { onIntent(GoBack) },
+            navigationIcon = {
+                BackNavigationIcon(onBackClick = { onIntent(GoBack) })
+            },
         )
         LazyColumn(
             state = logListState,

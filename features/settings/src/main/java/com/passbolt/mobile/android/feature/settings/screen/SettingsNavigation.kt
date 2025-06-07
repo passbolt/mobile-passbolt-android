@@ -1,8 +1,5 @@
 package com.passbolt.mobile.android.feature.settings.screen
 
-import android.os.Parcelable
-import kotlinx.parcelize.Parcelize
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -25,8 +22,14 @@ import kotlinx.parcelize.Parcelize
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-@Parcelize
-data class SettingsFragmentModel(
-    val isTermsAndConditionsVisible: Boolean,
-    val isPrivacyPolicyVisible: Boolean,
-) : Parcelable
+interface SettingsNavigation {
+    fun navigateToAppSettingsLogs()
+
+    fun navigateToAccounts()
+
+    fun navigateToTermsAndLicenses()
+
+    fun navigateToDebugLogs()
+
+    fun navigateToStartUp()
+}

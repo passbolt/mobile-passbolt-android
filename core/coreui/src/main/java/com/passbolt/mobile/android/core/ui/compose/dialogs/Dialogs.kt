@@ -1,6 +1,11 @@
-package com.passbolt.mobile.android.feature.settings.screen
+package com.passbolt.mobile.android.core.ui.compose.dialogs
 
-import com.passbolt.mobile.android.core.mvp.BaseContract
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -24,36 +29,28 @@ import com.passbolt.mobile.android.core.mvp.BaseContract
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-interface SettingsContract {
-    interface View : BaseContract.View {
-        fun showLogoutDialog()
 
-        fun navigateToSignInWithLogout()
-
-        fun showProgress()
-
-        fun hideProgress()
-
-        fun navigateToDebugLogsSettings()
-
-        fun navigateAccountsSettings()
-
-        fun navigateToTermsAndLicensesSettings()
-
-        fun navigateToAppSettings()
-    }
-
-    interface Presenter : BaseContract.Presenter<View> {
-        fun signOutClick()
-
-        fun logoutConfirmed()
-
-        fun debugLogsSettingsClick()
-
-        fun accountsSettingsClick()
-
-        fun termsAndLicensesClick()
-
-        fun appSettingsClick()
+@Composable
+fun SignOutAlertDialog(
+    isVisible: Boolean,
+    onSignOutConfirm: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    if (isVisible) {
+        AlertDialog(
+            onDismissRequest = onDismiss,
+            title = { Text(stringResource(LocalizationR.string.are_you_sure)) },
+            text = { Text(stringResource(LocalizationR.string.logout_dialog_message)) },
+            confirmButton = {
+                TextButton(onClick = onSignOutConfirm) {
+                    Text(stringResource(LocalizationR.string.logout_dialog_sign_out))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = onDismiss) {
+                    Text(stringResource(LocalizationR.string.cancel))
+                }
+            },
+        )
     }
 }
