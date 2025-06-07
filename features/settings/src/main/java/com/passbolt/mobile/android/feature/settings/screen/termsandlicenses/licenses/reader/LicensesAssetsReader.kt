@@ -11,16 +11,15 @@ internal class LicensesAssetsReader(
     private val gson: Gson,
     private val coroutineLaunchContext: CoroutineLaunchContext,
 ) : LicensesReader {
-    override suspend fun getLicenses(): OpenSourceLicensesModel {
-        val licensesJson =
-            withContext(coroutineLaunchContext.io) {
+    override suspend fun getLicenses(): OpenSourceLicensesModel =
+        withContext(coroutineLaunchContext.io) {
+            val licensesJson =
                 assetsManager
                     .open(LICENSES_ASSET)
                     .bufferedReader()
                     .readText()
-            }
-        return gson.fromJson(licensesJson, OpenSourceLicensesModel::class.java)
-    }
+            gson.fromJson(licensesJson, OpenSourceLicensesModel::class.java)
+        }
 
     private companion object {
         private const val LICENSES_ASSET = "licenses.json"

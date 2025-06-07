@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.core.ui.compose.topbar
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -24,6 +25,7 @@ import androidx.compose.ui.unit.dp
 fun TitleAppBar(
     title: String,
     modifier: Modifier = Modifier,
+    actions: @Composable RowScope.() -> Unit = {},
     onBackClick: () -> Unit = {},
 ) {
     TopAppBar(
@@ -53,6 +55,7 @@ fun TitleAppBar(
                 )
             }
         },
+        actions = actions,
         modifier = modifier,
         colors =
             TopAppBarDefaults.topAppBarColors(

@@ -12,7 +12,7 @@ import kotlinx.coroutines.withContext
 @Composable
 fun <UiAction> SideEffectDispatcher(
     eventsFlow: Flow<UiAction>,
-    onEvent: (UiAction) -> Unit,
+    onEvent: suspend (UiAction) -> Unit,
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
     LaunchedEffect(eventsFlow, lifecycleOwner.lifecycle) {

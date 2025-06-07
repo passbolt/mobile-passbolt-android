@@ -1,6 +1,7 @@
 plugins {
     alias libs.plugins.android.library
     alias libs.plugins.kotlin.gradle
+    alias libs.plugins.compose.compiler
 }
 
 dependencies {
@@ -11,17 +12,22 @@ dependencies {
     implementation project(':logger')
 
     implementation libs.koin
+    implementation libs.koin.compose
     implementation libs.material
     implementation libs.androidx.core
-    implementation libs.fastadapter.binding
-    implementation libs.fastadapter.core
     implementation libs.navigation.fragment
     implementation libs.navigation.ui
+    implementation libs.compose.foundation
+    implementation libs.compose.material3
+    implementation libs.compose.lifecycle.viewmodel
+    implementation libs.compose.ui.tooling
+    debugImplementation libs.compose.ui.tooling.preview
 }
 
 android {
     namespace = "com.passbolt.mobile.android.feature.logs"
     buildFeatures {
+        compose true
         viewBinding true
     }
 }
