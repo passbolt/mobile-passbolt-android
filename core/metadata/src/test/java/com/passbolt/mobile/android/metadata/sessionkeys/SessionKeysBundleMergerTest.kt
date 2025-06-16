@@ -24,10 +24,13 @@
 package com.passbolt.mobile.android.metadata.sessionkeys
 
 import com.google.common.truth.Truth.assertThat
+import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.dto.request.SessionKeyDto
 import com.passbolt.mobile.android.dto.request.SessionKeysBundleDto
 import com.passbolt.mobile.android.dto.response.DecryptedMetadataSessionKeysBundleModel
 import com.passbolt.mobile.android.ui.SessionKeyIdentifier
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runTest
 import org.junit.Test
 import java.time.ZonedDateTime
 import java.util.UUID
@@ -35,10 +38,11 @@ import java.util.UUID
 
 class SessionKeysBundleMergerTest {
 
-    private val sessionKeysBundleMerger = SessionKeysBundleMerger()
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val sessionKeysBundleMerger = SessionKeysBundleMerger(TestCoroutineLaunchContext())
 
     @Test
-    fun `single bundle should be kept in whole`() {
+    fun `single bundle should be kept in whole`() = runTest {
         val keys = listOf(
             SessionKeyDto("1", UUID.randomUUID(), "key1", ZonedDateTime.now().toString()),
             SessionKeyDto("2", UUID.randomUUID(), "key2", ZonedDateTime.now().toString()),
@@ -63,7 +67,7 @@ class SessionKeysBundleMergerTest {
     }
 
     @Test
-    fun `single bundle with duplicated models should be chosen by modified date`() {
+    fun `single bundle with duplicated models should be chosen by modified date`() = runTest {
         val sameForignModelId = UUID.randomUUID()
         val keys = listOf(
             SessionKeyDto("1", UUID.randomUUID(), "key1", ZonedDateTime.now().toString()),
@@ -90,7 +94,7 @@ class SessionKeysBundleMergerTest {
     }
 
     @Test
-    fun `multiple bundle should be kept in whole`() {
+    fun `multiple bundle should be kept in whole`() = runTest {
         val keys1 = listOf(
             SessionKeyDto("1", UUID.randomUUID(), "key1", ZonedDateTime.now().toString()),
             SessionKeyDto("2", UUID.randomUUID(), "key2", ZonedDateTime.now().toString()),
@@ -131,7 +135,7 @@ class SessionKeysBundleMergerTest {
     }
 
     @Test
-    fun `multiple bundle with duplicated models should be chosen by modified date`() {
+    fun `multiple bundle with duplicated models should be chosen by modified date`() = runTest {
         val sameForeignModelId = UUID.randomUUID()
         val keys1 = listOf(
             SessionKeyDto("1", UUID.randomUUID(), "key1", ZonedDateTime.now().toString()),

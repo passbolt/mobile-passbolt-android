@@ -24,9 +24,12 @@
 package com.passbolt.mobile.android.metadata.sessionkeys
 
 import com.google.common.truth.Truth.assertThat
+import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.dto.request.SessionKeyDto
 import com.passbolt.mobile.android.dto.request.SessionKeysBundleDto
 import com.passbolt.mobile.android.dto.response.DecryptedMetadataSessionKeysBundleModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runTest
 import org.junit.Test
 import java.time.ZonedDateTime
 import java.util.UUID
@@ -34,11 +37,12 @@ import java.util.UUID
 
 class SessionKeysCacheTest {
 
-    private val sessionKeysBundleMerger = SessionKeysBundleMerger()
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val sessionKeysBundleMerger = SessionKeysBundleMerger(TestCoroutineLaunchContext())
     private val sessionKeysCache = SessionKeysMemoryCache()
 
     @Test
-    fun `most recently modified origin should be returned correctly`() {
+    fun `most recently modified origin should be returned correctly`() = runTest {
         val keys1 = emptyList<SessionKeyDto>()
         val keys2 = emptyList<SessionKeyDto>()
         val bundle1Id = UUID.randomUUID()

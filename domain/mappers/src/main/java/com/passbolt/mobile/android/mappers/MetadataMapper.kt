@@ -49,6 +49,7 @@ import com.passbolt.mobile.android.ui.SessionKeyIdentifier
 import com.passbolt.mobile.android.ui.SessionKeyModel
 import java.time.ZonedDateTime
 import java.util.UUID
+import java.util.concurrent.ConcurrentHashMap
 
 class MetadataMapper {
 
@@ -143,7 +144,7 @@ class MetadataMapper {
             )
         }
 
-    fun map(value: HashMap<SessionKeyIdentifier, SessionKeyModel>): SessionKeysBundleDto =
+    fun map(value: ConcurrentHashMap<SessionKeyIdentifier, SessionKeyModel>): SessionKeysBundleDto =
         value
             .mapTo(mutableListOf()) { (id, keyModel) ->
                 SessionKeyDto(

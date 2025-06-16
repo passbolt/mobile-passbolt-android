@@ -24,21 +24,19 @@
 package com.passbolt.mobile.android.serializers.gson
 
 import com.google.gson.Gson
-import com.google.gson.JsonDeserializationContext
-import com.google.gson.JsonDeserializer
 import com.google.gson.JsonElement
+import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import com.passbolt.mobile.android.database.snapshot.ResourcesSnapshot
 import com.passbolt.mobile.android.dto.PassphraseNotInCacheException
 import com.passbolt.mobile.android.dto.response.ResourceResponseDto
 import com.passbolt.mobile.android.dto.response.ResourceResponseV4Dto
 import com.passbolt.mobile.android.dto.response.ResourceResponseV5Dto
-import com.passbolt.mobile.android.database.snapshot.ResourcesSnapshot
 import com.passbolt.mobile.android.entity.resource.ResourceWithMetadata
 import com.passbolt.mobile.android.serializers.gson.validation.JsonSchemaValidationRunner
 import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import org.koin.core.component.KoinComponent
 import timber.log.Timber
-import java.lang.reflect.Type
 import java.time.ZonedDateTime
 import java.util.UUID
 import kotlin.contracts.ExperimentalContracts
@@ -54,15 +52,11 @@ open class ResourceListItemDeserializer(
     private val metadataDecryptor: MetadataDecryptor,
     private val resourceTypeIdToSlugMapping: Map<UUID, String>,
     private val supportedResourceTypesIds: Set<UUID>,
-    private val resourcesSnapshot: ResourcesSnapshot
-) : JsonDeserializer<ResourceResponseDto?>, KoinComponent {
+    private val resourcesSnapshot: ResourcesSnapshot,
+    private val coroutineLaunchContext: CoroutineLaunchContext
+) : KoinComponent {
 
-    override fun deserialize(
-        json: JsonElement,
-        typeOfT: Type?,
-        context: JsonDeserializationContext
-    ): ResourceResponseDto? {
-        // done on the parser thread
+    suspend fun deserialize(json: JsonElement): ResourceResponseDto? {
 
         val resourceTypeId = json.asJsonObject[SerializedNames.RESOURCE_TYPE_ID].asString
         val slug = resourceTypeIdToSlugMapping[UUID.fromString(resourceTypeId)]
@@ -71,7 +65,7 @@ open class ResourceListItemDeserializer(
             Timber.d("Unsupported resource type id: $resourceTypeId, skipping")
             null
         } else {
-            runBlocking {
+            withContext(coroutineLaunchContext.io) {
                 try {
                     if (slug in SupportedContentTypes.v4Slugs) {
                         val resource = gson.fromJson(json, ResourceResponseV4Dto::class.java)

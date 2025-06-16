@@ -26,12 +26,16 @@ package com.passbolt.mobile.android.serializers.gson
 import com.google.gson.JsonDeserializationContext
 import com.google.gson.JsonDeserializer
 import com.google.gson.JsonElement
+import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
 import com.passbolt.mobile.android.database.snapshot.ResourcesSnapshot
 import com.passbolt.mobile.android.dto.response.ResourceResponseDto
+import com.passbolt.mobile.android.gopenpgp.OpenPgp
 import com.passbolt.mobile.android.metadata.usecase.db.GetLocalMetadataKeysUseCase
 import com.passbolt.mobile.android.metadata.usecase.db.GetLocalMetadataKeysUseCase.MetadataKeyPurpose.DECRYPT
 import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.allSlugs
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.runBlocking
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
@@ -41,7 +45,9 @@ import java.lang.reflect.Type
 
 open class ResourceListDeserializer(
     private val resourceTypeIdToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider,
-    private val getLocalMetadataKeysUseCase: GetLocalMetadataKeysUseCase
+    private val getLocalMetadataKeysUseCase: GetLocalMetadataKeysUseCase,
+    private val coroutineLaunchContext: CoroutineLaunchContext,
+    private val openPgp: OpenPgp
 ) : JsonDeserializer<List<ResourceResponseDto>>, KoinComponent {
 
     override fun deserialize(
@@ -72,16 +78,26 @@ open class ResourceListDeserializer(
             }
 
             if (json.isJsonArray) {
-                json.asJsonArray.mapNotNullTo(mutableListOf()) { jsonElement ->
-                    if (!jsonElement.isJsonNull) {
-                        singleResourceDeserializer.deserialize(
-                            jsonElement, ResourceResponseDto::class.java, context
-                        )
-                    } else {
-                        Timber.e("Encountered a null root json element when parsing resources")
-                        null
+                Timber.d("Started resource list deserialization")
+                val jobs = json.asJsonArray.map { jsonElement ->
+                    async(context = coroutineLaunchContext.io) {
+                        if (!jsonElement.isJsonNull) {
+                            try {
+                                singleResourceDeserializer.deserialize(jsonElement)
+                            } catch (e: Exception) {
+                                Timber.e(e, "Failed to deserialize item")
+                                null
+                            }
+                        } else {
+                            Timber.e("Null json element")
+                            null
+                        }
                     }
                 }
+                val results = jobs.awaitAll()
+                openPgp.freeMemory()
+                Timber.d("Finished resource list deserialization")
+                results.filterNotNull()
             } else {
                 emptyList()
             }

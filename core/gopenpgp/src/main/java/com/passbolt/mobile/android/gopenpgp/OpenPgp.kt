@@ -7,6 +7,7 @@ import com.passbolt.mobile.android.common.extension.erase
 import com.passbolt.mobile.android.gopenpgp.exception.GopenPgpExceptionParser
 import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpResult
 import com.passbolt.mobile.android.gopenpgp.model.CleartextSignatureVerification
+import com.passbolt.mobile.android.gopenpgp.model.DecryptedMessageAndSessionKey
 import com.passbolt.mobile.android.gopenpgp.model.VerifiedMessage
 import com.proton.gopenpgp.constants.Constants.AES256
 import com.proton.gopenpgp.crypto.Crypto
@@ -326,6 +327,8 @@ class OpenPgp(
         }
     }
 
+    // this method is meant to be called in a loop
+    // call freeMemory() after loop completes
     suspend fun decryptMessageArmoredWithSessionKey(
         sessionKeyHexString: String,
         message: String
@@ -336,19 +339,48 @@ class OpenPgp(
                     sessionKeyHexString.decodeHex(), SESSION_KEY_ALGORITHM
                 )
 
-                val decryptionHandle = pgpHandle.decryptionWithTimeOffset()
+                val decryptionHandle = pgpHandle.decryption()
                     .sessionKey(pgpSessionKey)
                     .new_()
 
-                val decrypted = decryptionHandle.decrypt(message.toByteArray(), Crypto.Armor)
+                val result = decryptionHandle.decrypt(message.toByteArray(), Crypto.Auto)
 
-                OpenPgpResult.Result(String(decrypted.bytes()))
+                OpenPgpResult.Result(String(result.bytes()))
             }
         } catch (exception: Exception) {
             Timber.e(exception, "There was an error during decryptMessageArmoredWithSessionKey")
             return OpenPgpResult.Error(gopenPgpExceptionParser.parseGopenPgpException(exception))
-        } finally {
-            Mobile.freeOSMemory()
+        }
+    }
+
+    // this method is meant to be called in a loop
+    // call freeMemory() after loop completes
+    @OptIn(ExperimentalStdlibApi::class)
+    suspend fun decryptMessageArmoredWithSessionKeyRetrieve(
+        unlockedKey: Key,
+        cipherText: String
+    ): OpenPgpResult<DecryptedMessageAndSessionKey> {
+        return try {
+            withContext(Dispatchers.IO) {
+                val decryptionHandle = pgpHandle.decryptionWithTimeOffset()
+                    .decryptionKey(unlockedKey)
+                    .retrieveSessionKey()
+                    .new_()
+
+                val result = decryptionHandle.decrypt(
+                    cipherText.toByteArray(), Crypto.Armor
+                )
+
+                OpenPgpResult.Result(
+                    DecryptedMessageAndSessionKey(
+                        decryptedMessage = result.string(),
+                        sessionKeyHex = result.sessionKey().key.toHexString()
+                    )
+                )
+            }
+        } catch (exception: Exception) {
+            Timber.e(exception, "There was an error during decryptMessageArmoredWithSessionKey")
+            return OpenPgpResult.Error(gopenPgpExceptionParser.parseGopenPgpException(exception))
         }
     }
 
@@ -384,6 +416,10 @@ class OpenPgp(
         } finally {
             Mobile.freeOSMemory()
         }
+    }
+
+    fun freeMemory() {
+        Mobile.freeOSMemory()
     }
 
     /**
