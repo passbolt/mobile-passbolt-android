@@ -76,6 +76,7 @@ val serializersModule = module {
             jsonSchemaValidationRunner = get(),
             gson = get(named(STRICT_ADAPTERS_ONLY_GSON)),
             metadataDecryptor = get<MetadataDecryptor> { parametersOf(metadataKeys) },
+            coroutineLaunchContext = get(),
             resourceTypeIdToSlugMapping = resourceTypeIdToSlugMapping,
             supportedResourceTypesIds = supportedResourceTypesIds,
             resourcesSnapshot = resourcesSnapshot
@@ -87,6 +88,7 @@ val serializersModule = module {
             passphraseMemoryCache = get(),
             openPgp = get(),
             sessionKeysCache = get(),
+            coroutineLaunchContext = get(),
             metadataKeys = metadataKeys
         )
     }

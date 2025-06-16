@@ -22,6 +22,8 @@ dependencies {
     implementation libs.room.core
     implementation libs.gson
 
+    testImplementation project(':commontest')
+
     androidTestImplementation(name: "gopenpgp", ext: "aar")
     androidTestImplementation libs.koin.test
     androidTestImplementation libs.koin.test.junit

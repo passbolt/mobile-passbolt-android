@@ -23,35 +23,43 @@
 
 package com.passbolt.mobile.android.metadata.sessionkeys
 
+import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.dto.response.DecryptedMetadataSessionKeysBundleModel
 import com.passbolt.mobile.android.ui.MergedSessionKeys
 import com.passbolt.mobile.android.ui.SessionKeyIdentifier
 import com.passbolt.mobile.android.ui.SessionKeyModel
+import kotlinx.coroutines.withContext
 import java.time.ZonedDateTime
+import java.util.concurrent.ConcurrentHashMap
 
-class SessionKeysBundleMerger {
+class SessionKeysBundleMerger(
+    private val coroutineLaunchContext: CoroutineLaunchContext
 
-    fun merge(input: List<DecryptedMetadataSessionKeysBundleModel>): MergedSessionKeys {
-        val merged = hashMapOf<SessionKeyIdentifier, SessionKeyModel>()
+) {
 
-        input.flatMap { it.bundle.sessionKeys }.forEach {
-            // certain versions of web-ext do not append modified date to session keys
-            // these session keys are filtered out in MetadataSessionKeysInteractor#mapDecryptNotNull
-            requireNotNull(it.modified) { "Session key modified date is required" }
+    suspend fun merge(input: List<DecryptedMetadataSessionKeysBundleModel>): MergedSessionKeys =
+        withContext(coroutineLaunchContext.io) {
+            val merged = hashMapOf<SessionKeyIdentifier, SessionKeyModel>()
 
-            val sessionKeyIdentifier = SessionKeyIdentifier(foreignModel = it.foreignModel, foreignId = it.foreignId)
-            val currentModified = ZonedDateTime.parse(it.modified)
-            val existing = merged[sessionKeyIdentifier]
-            if (existing == null || existing.modified.isBefore(currentModified)) {
-                merged[sessionKeyIdentifier] = SessionKeyModel(it.sessionKey, currentModified)
+            input.flatMap { it.bundle.sessionKeys }.forEach {
+                // certain versions of web-ext do not append modified date to session keys
+                // these session keys are filtered out in MetadataSessionKeysInteractor#mapDecryptNotNull
+                requireNotNull(it.modified) { "Session key modified date is required" }
+
+                val sessionKeyIdentifier =
+                    SessionKeyIdentifier(foreignModel = it.foreignModel, foreignId = it.foreignId)
+                val currentModified = ZonedDateTime.parse(it.modified)
+                val existing = merged[sessionKeyIdentifier]
+                if (existing == null || existing.modified.isBefore(currentModified)) {
+                    merged[sessionKeyIdentifier] = SessionKeyModel(it.sessionKey, currentModified)
+                }
             }
-        }
 
-        val originKeysMetadata = hashMapOf<String, ZonedDateTime>()
-        input.forEach {
-            originKeysMetadata[it.id.toString()] = it.modified
-        }
+            val originKeysMetadata = hashMapOf<String, ZonedDateTime>()
+            input.forEach {
+                originKeysMetadata[it.id.toString()] = it.modified
+            }
 
-        return MergedSessionKeys(merged, originKeysMetadata)
-    }
+            MergedSessionKeys(ConcurrentHashMap(merged), ConcurrentHashMap(originKeysMetadata))
+        }
 }
