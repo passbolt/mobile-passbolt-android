@@ -1,10 +1,1 @@
-# Passbolt 2.0.0-36 Android app release notes
-
-## Added
-- Redesigned the resource create and update form
-- Compose resources that support v4 and v5 API
-- Redesigned resource details screen
-
-## Improved
-- TOTP subform - now scanning is available directly from the form
-- Note / Metadata description UI differentiation
+This release brings a huge performance boost when processing resource list especially visible when decrypting V5 resource list. It also adds translations for 16 new languages and two significant security features - metadata key pinning and bump of gopenpgp library from major version 2 to 3.
