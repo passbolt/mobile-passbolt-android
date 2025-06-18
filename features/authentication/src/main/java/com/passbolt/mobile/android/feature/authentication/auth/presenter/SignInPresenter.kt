@@ -164,7 +164,6 @@ open class SignInPresenter(
                             ChallengeVerificationErrorType.INVALID_SIGNATURE -> view?.showChallengeInvalidSignature()
                             ChallengeVerificationErrorType.FAILURE -> view?.showChallengeVerificationFailure()
                         }
-                        view?.showGenericError()
                     }
                     is SignInVerifyInteractor.Error.IncorrectPassphrase -> {
                         view?.showWrongPassphrase()

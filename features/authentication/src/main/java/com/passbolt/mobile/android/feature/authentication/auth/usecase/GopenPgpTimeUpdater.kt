@@ -17,7 +17,7 @@ class GopenPgpTimeUpdater(
 
         return if (abs(timeDeltaSeconds) <= TIME_DELTA_FOR_LOCAL_SYNC_SECS) {
             Timber.d("Local time sync needed. Adjusted: $timeDeltaSeconds")
-            openPgp.setTimeOffsetSecond(timeDeltaSeconds)
+            openPgp.setTimeOffsetSeconds(timeDeltaSeconds)
             Result.TIME_SYNCED
         } else {
             Timber.d("Time delta to big for sync. Showing error.")

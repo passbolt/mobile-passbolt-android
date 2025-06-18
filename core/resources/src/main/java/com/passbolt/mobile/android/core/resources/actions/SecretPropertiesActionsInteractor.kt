@@ -160,7 +160,7 @@ class SecretPropertiesActionsInteractor(
 
         data object Unauthorized : SecretFetchAndDecryptResult()
 
-        class Success(val secret: ByteArray) : SecretFetchAndDecryptResult()
+        class Success(val secret: String) : SecretFetchAndDecryptResult()
     }
 
     companion object {

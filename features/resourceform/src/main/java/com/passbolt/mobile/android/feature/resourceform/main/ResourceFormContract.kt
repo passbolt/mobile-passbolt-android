@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.feature.resourceform.main
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
 import com.passbolt.mobile.android.core.passwordgenerator.codepoints.Codepoint
 import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpMode
+import com.passbolt.mobile.android.ui.NewMetadataKeyToTrustModel
 import com.passbolt.mobile.android.ui.OtpParseResult
 import com.passbolt.mobile.android.ui.PasswordStrength
 import com.passbolt.mobile.android.ui.PasswordStrength.Empty
@@ -10,6 +11,7 @@ import com.passbolt.mobile.android.ui.PasswordUiModel
 import com.passbolt.mobile.android.ui.ResourceFormMode
 import com.passbolt.mobile.android.ui.ResourceFormUiModel
 import com.passbolt.mobile.android.ui.TotpUiModel
+import com.passbolt.mobile.android.ui.TrustedKeyDeletedModel
 
 /**
  * Passbolt - Open source password manager for teams
@@ -77,7 +79,14 @@ interface ResourceFormContract {
         fun navigateBack()
         fun navigateBackWithEditSuccess(name: String)
         fun showTotpRequired()
+        fun showCannotCreateTotpWithCurrentConfig()
+        fun showCannotUpdateTotpWithCurrentConfig()
         fun showEditTitle(resourceName: String)
+        fun showMetadataKeyModifiedDialog(model: NewMetadataKeyToTrustModel)
+        fun showMetadataKeyDeletedDialog(model: TrustedKeyDeletedModel)
+        fun showFailedToVerifyMetadataKey()
+        fun showNewMetadataKeyIsTrusted()
+        fun showFailedToTrustMetadataKey()
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
@@ -102,5 +111,7 @@ interface ResourceFormContract {
         fun additionalPasswordClick()
         fun passwordChanged(passwordUiModel: PasswordUiModel?)
         fun totpScanned(isManualCreationChosen: Boolean, scannedTotp: OtpParseResult.OtpQr.TotpQr?)
+        fun trustedMetadataKeyDeleted(model: TrustedKeyDeletedModel)
+        fun trustNewMetadataKey(model: NewMetadataKeyToTrustModel)
     }
 }

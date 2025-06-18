@@ -84,6 +84,10 @@ class CreateResourceMenuFragment :
         }
     }
 
+    override fun showPasswordButton() {
+        binding.createPassword.visible()
+    }
+
     override fun showTotpButton() {
         binding.createTotp.visible()
     }

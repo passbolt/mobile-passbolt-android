@@ -2,7 +2,6 @@ package com.passbolt.mobile.android.feature.home.screen
 
 import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReactiveContract
 import com.passbolt.mobile.android.feature.home.screen.model.HeaderSectionConfiguration
-import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpMode
 import com.passbolt.mobile.android.ui.Folder
 import com.passbolt.mobile.android.ui.FolderMoreMenuModel
 import com.passbolt.mobile.android.ui.FolderWithCountAndPath
@@ -106,7 +105,7 @@ interface HomeContract {
         fun showJsonSecretSchemaValidationError()
         fun showCreateResourceMenu(homeView: HomeDisplayViewModel)
         fun navigateToCreateTotpManually(parentFolderId: String?)
-        fun navigateToScanTotp(scanMode: ScanOtpMode)
+        fun navigateToScanTotp(parentFolderId: String?)
     }
 
     interface Presenter : DataRefreshViewReactiveContract.Presenter<View> {
@@ -166,5 +165,6 @@ interface HomeContract {
         fun resourceFormReturned(isResourceCreated: Boolean, isResourceEdited: Boolean, resourceName: String?)
         fun menuCopyNoteClick()
         fun resourceDetailsReturned(isResourceEdited: Boolean, isResourceDeleted: Boolean, resourceName: String?)
+        fun createTotpClick()
     }
 }

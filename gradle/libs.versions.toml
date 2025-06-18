@@ -1,5 +1,7 @@
 [versions]
 androidGradlePlugin = "8.5.2"
+commonsValidator = "1.9.0"
+dexmakerMockitoInlineExtended = "2.28.4"
 gradleVersionsPlugin = "0.48.0"
 desugarJdkLibs = "2.0.4"
 kotlin = "2.0.0"
@@ -71,12 +73,15 @@ inAppReview = "2.0.1"
 okio = "3.5.0"
 otp = "2.4.0"
 apacheCommonsCodec = "1.16.0"
-jsonSchemaFriend = "0.12.3"
+jsonSchemaFriend = "0.12.5"
 jsonPath = "2.9.0"
 jsonAssert = "2.0-rc1"
+snyk = "0.7.0"
 
 [libraries]
+commons-validator = { module = "commons-validator:commons-validator", version.ref = "commonsValidator" }
 desugar-jdklibs = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "desugarJdkLibs" }
+dexmaker-mockito-inline-extended = { module = "com.linkedin.dexmaker:dexmaker-mockito-inline-extended", version.ref = "dexmakerMockitoInlineExtended" }
 licensee = { group = "app.cash.licensee", name = "licensee-gradle-plugin", version.ref = "licensee" }
 koin = { group = "io.insert-koin", name = "koin-android", version.ref = "koin" }
 koin-test = { group = "io.insert-koin", name = "koin-test", version.ref = "koin" }
@@ -179,3 +184,5 @@ dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 kotlin-ksp = { id = "com.google.devtools.ksp", version.ref = "kotlinKsp" }
 room = { id = "androidx.room", version.ref = "roomCore" }
+snyk = { id = "io.snyk.gradle.plugin.snykplugin", version.ref = "snyk" }
+

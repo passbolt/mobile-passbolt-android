@@ -60,6 +60,8 @@ import com.passbolt.mobile.android.createresourcemenu.CreateResourceMenuFragment
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
 import com.passbolt.mobile.android.feature.home.screen.HomeFragmentDirections
 import com.passbolt.mobile.android.feature.home.switchaccount.SwitchAccountBottomSheetFragment
+import com.passbolt.mobile.android.feature.metadatakeytrust.ui.NewMetadataKeyTrustDialog
+import com.passbolt.mobile.android.feature.metadatakeytrust.ui.NewTrustedMetadataKeyDeletedDialog
 import com.passbolt.mobile.android.feature.otp.databinding.FragmentOtpBinding
 import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpFragment
 import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpMode
@@ -68,9 +70,11 @@ import com.passbolt.mobile.android.feature.otp.screen.recycler.OtpItem
 import com.passbolt.mobile.android.feature.resourceform.main.ResourceFormFragment
 import com.passbolt.mobile.android.otpmoremenu.OtpMoreMenuFragment
 import com.passbolt.mobile.android.ui.LeadingContentType
+import com.passbolt.mobile.android.ui.NewMetadataKeyToTrustModel
 import com.passbolt.mobile.android.ui.OtpItemWrapper
 import com.passbolt.mobile.android.ui.ResourceFormMode
 import com.passbolt.mobile.android.ui.ResourceModel
+import com.passbolt.mobile.android.ui.TrustedKeyDeletedModel
 import org.koin.android.ext.android.inject
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
@@ -79,7 +83,8 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
 class OtpFragment :
     BindingScopedAuthenticatedFragment<FragmentOtpBinding, OtpContract.View>(FragmentOtpBinding::inflate),
     OtpContract.View, SwitchAccountBottomSheetFragment.Listener, OtpMoreMenuFragment.Listener,
-    CreateResourceMenuFragment.Listener {
+    CreateResourceMenuFragment.Listener, NewMetadataKeyTrustDialog.Listener,
+    NewTrustedMetadataKeyDeletedDialog.Listener {
 
     override val presenter: OtpContract.Presenter by inject()
     private val otpAdapter: ItemAdapter<OtpItem> by inject()
@@ -451,6 +456,52 @@ class OtpFragment :
             messageResId = LocalizationR.string.common_message_resource_edited,
             messageArgs = arrayOf(resourceName),
             backgroundColor = CoreUiR.color.green
+        )
+    }
+
+    override fun showCannotUpdateTotpWithCurrentConfig() {
+        showSnackbar(
+            messageResId = LocalizationR.string.common_cannot_create_resource_with_current_config,
+            backgroundColor = CoreUiR.color.red
+        )
+    }
+
+    override fun showMetadataKeyModifiedDialog(model: NewMetadataKeyToTrustModel) {
+        NewMetadataKeyTrustDialog.newInstance(model)
+            .show(childFragmentManager, NewMetadataKeyTrustDialog::class.java.name)
+    }
+
+    override fun showMetadataKeyDeletedDialog(model: TrustedKeyDeletedModel) {
+        NewTrustedMetadataKeyDeletedDialog.newInstance(model)
+            .show(childFragmentManager, NewTrustedMetadataKeyDeletedDialog::class.java.name)
+    }
+
+    override fun showFailedToVerifyMetadataKey() {
+        showSnackbar(
+            messageResId = LocalizationR.string.common_metadata_key_verification_failure,
+            backgroundColor = CoreUiR.color.red
+        )
+    }
+
+    override fun trustNewMetadataKeyClick(newKeyToTrust: NewMetadataKeyToTrustModel) {
+        presenter.trustNewMetadataKey(newKeyToTrust)
+    }
+
+    override fun trustMetadataKeyDeletionClick(model: TrustedKeyDeletedModel) {
+        presenter.trustedMetadataKeyDeleted(model)
+    }
+
+    override fun showNewMetadataKeyIsTrusted() {
+        showSnackbar(
+            messageResId = LocalizationR.string.common_metadata_key_is_trusted,
+            backgroundColor = CoreUiR.color.green
+        )
+    }
+
+    override fun showFailedToTrustMetadataKey() {
+        showSnackbar(
+            messageResId = LocalizationR.string.common_metadata_key_trust_failed,
+            backgroundColor = CoreUiR.color.red
         )
     }
 

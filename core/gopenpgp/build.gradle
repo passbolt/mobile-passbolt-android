@@ -15,6 +15,9 @@ dependencies {
     androidTestImplementation libs.kotlin.coroutines.test
     androidTestImplementation libs.android.tests.runner
     androidTestImplementation libs.android.test.rules
+
+    androidTestImplementation project(":serializers")
+    androidTestImplementation libs.gson
 }
 
 android {

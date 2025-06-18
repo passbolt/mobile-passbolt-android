@@ -24,6 +24,8 @@
 package com.passbolt.mobile.android.core.resources.actions
 
 import com.passbolt.mobile.android.serializers.jsonschema.SchemaEntity
+import com.passbolt.mobile.android.ui.NewMetadataKeyToTrustModel
+import com.passbolt.mobile.android.ui.TrustedKeyDeletedModel
 
 sealed class ResourceCreateActionResult {
 
@@ -39,7 +41,15 @@ sealed class ResourceCreateActionResult {
 
     data class SimulateShareFailure(val message: String? = null) : ResourceCreateActionResult()
 
+    data object MetadataKeyVerificationFailure : ResourceCreateActionResult()
+
+    data class MetadataKeyModified(val keyToTrust: NewMetadataKeyToTrustModel) : ResourceCreateActionResult()
+
+    data class MetadataKeyDeleted(val deletedKey: TrustedKeyDeletedModel) : ResourceCreateActionResult()
+
     class CryptoFailure(val message: String? = null) : ResourceCreateActionResult()
+
+    data object CannotCreateWithCurrentConfig : ResourceCreateActionResult()
 
     class JsonSchemaValidationFailure(val entity: SchemaEntity) : ResourceCreateActionResult()
 }

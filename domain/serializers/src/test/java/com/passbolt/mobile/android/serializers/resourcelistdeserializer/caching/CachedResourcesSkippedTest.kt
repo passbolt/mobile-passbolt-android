@@ -27,6 +27,7 @@ import com.google.common.truth.Truth.assertThat
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.passbolt.mobile.android.core.accounts.usecase.selectedaccount.GetSelectedAccountUseCase
+import com.passbolt.mobile.android.core.resourcetypes.usecase.db.GetLocalResourceTypesUseCase
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.GetResourceTypeIdToSlugMappingUseCase
 import com.passbolt.mobile.android.dto.response.MetadataKeyTypeDto
 import com.passbolt.mobile.android.dto.response.PermissionDto
@@ -38,7 +39,14 @@ import com.passbolt.mobile.android.entity.resource.Permission
 import com.passbolt.mobile.android.entity.resource.ResourceWithMetadata
 import com.passbolt.mobile.android.serializers.gson.MetadataDecryptor.Output.Success
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordAndDescription
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordDescriptionTotp
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordString
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.Totp
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5Default
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5DefaultWithTotp
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5PasswordString
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5TotpStandalone
+import com.passbolt.mobile.android.ui.ResourceTypeModel
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
@@ -72,6 +80,22 @@ class CachedResourcesSkippedTest : KoinTest {
     fun setup() {
         mockGetSelectedAccountUseCase.stub {
             onBlocking { execute(Unit) } doReturn GetSelectedAccountUseCase.Output("selectedAccountId")
+        }
+        mockGetLocalResourceTypesUseCase.stub {
+            onBlocking { execute(Unit) }.doReturn(
+                GetLocalResourceTypesUseCase.Output(
+                    listOf(
+                        ResourceTypeModel(UUID.randomUUID(), PasswordString.slug, "", deleted = null),
+                        ResourceTypeModel(UUID.randomUUID(), V5PasswordString.slug, "", deleted = null),
+                        ResourceTypeModel(UUID.randomUUID(), PasswordAndDescription.slug, "", deleted = null),
+                        ResourceTypeModel(UUID.randomUUID(), V5Default.slug, "", deleted = null),
+                        ResourceTypeModel(UUID.randomUUID(), Totp.slug, "", deleted = null),
+                        ResourceTypeModel(UUID.randomUUID(), V5TotpStandalone.slug, "", deleted = null),
+                        ResourceTypeModel(UUID.randomUUID(), PasswordDescriptionTotp.slug, "", deleted = null),
+                        ResourceTypeModel(UUID.randomUUID(), V5DefaultWithTotp.slug, "", deleted = null)
+                    )
+                )
+            )
         }
         reset(mockJsonSchemaValidationRunner)
     }

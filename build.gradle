@@ -21,6 +21,14 @@ plugins {
     alias libs.plugins.dokka
     alias libs.plugins.detekt
     alias libs.plugins.kotlin.ksp
+    alias libs.plugins.snyk
+}
+
+snyk {
+    arguments = "--all-sub-projects --org=${System.getenv("SNYK_ORG")}"
+    autoDownload = true
+    autoUpdate = true
+    setApi(System.getenv("SNYK_TOKEN") ?: "")
 }
 
 subprojects {

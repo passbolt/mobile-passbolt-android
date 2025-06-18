@@ -1,3 +1,5 @@
+package com.passbolt.mobile.android.gopenpgp.model
+
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -20,11 +22,7 @@
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-
-package com.passbolt.mobile.android.gopenpgp.model
-
-data class SignatureVerification(
-    val isSignatureVerified: Boolean,
-    val message: String,
-    val keyFingerprint: String
+data class DecryptedMessageAndSessionKey(
+    val decryptedMessage: String,
+    val sessionKeyHex: String
 )

@@ -10,13 +10,6 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-        // TODO remove after jsonschemafriend is republished https://github.com/jimblackler/jsonschemafriend/issues/124
-        maven {
-            url 'https://maven.scijava.org/content/repositories/public'
-            content {
-                includeGroup 'net.jimblackler.jsonschemafriend'
-            }
-        }
         maven { url "https://jitpack.io" }
         flatDir { dirs "${rootProject.projectDir}/core/gopenpgp/libs" }
     }
@@ -89,6 +82,7 @@ featureModule "scanotp"
 featureModule "otpmoremenu"
 featureModule "createresourcemenu"
 featureModule "resourceform"
+featureModule "metadatakeytrust"
 
 serviceModule "passboltapi"
 serviceModule "linksapi"

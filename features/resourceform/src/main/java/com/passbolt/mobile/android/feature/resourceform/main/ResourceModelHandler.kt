@@ -3,6 +3,8 @@ package com.passbolt.mobile.android.feature.resourceform.main
 import com.passbolt.mobile.android.core.mvp.authentication.UnauthenticatedReason
 import com.passbolt.mobile.android.core.resources.actions.SecretPropertiesActionsInteractor
 import com.passbolt.mobile.android.core.resources.actions.SecretPropertyActionResult
+import com.passbolt.mobile.android.core.resources.usecase.GetDefaultCreateContentTypeUseCase
+import com.passbolt.mobile.android.core.resources.usecase.GetEditContentTypeUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUseCase
 import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.ResourceTypesUpdatesAdjacencyGraph
 import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction
@@ -15,8 +17,6 @@ import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAct
 import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction.REMOVE_PASSWORD
 import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction.REMOVE_TOTP
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.SecretJsonModel
-import com.passbolt.mobile.android.feature.resourceform.usecase.GetDefaultCreateContentTypeUseCase
-import com.passbolt.mobile.android.feature.resourceform.usecase.GetEditContentTypeUseCase
 import com.passbolt.mobile.android.jsonmodel.delegates.TotpSecret
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordAndDescription
@@ -170,12 +170,36 @@ class ResourceModelHandler(
         val finalAction = mergeActions(action)
         val allowedActions = resourceActionsGraph.getUpdateActionsMetadata(contentType.slug).map { it.action }
         if (finalAction in allowedActions) {
+            val currentContentType = ContentType.fromSlug(contentType.slug)
             contentType = resourceActionsGraph.getResourceTypeSlugAfterUpdate(contentType.slug, finalAction)
+            if (contentType != currentContentType) {
+                resourceSecret = mapSecretModel(
+                    resourceSecret,
+                    currentContentType,
+                    contentType
+                )
+            }
             Timber.d("Allowed action $finalAction. Current content type is: $contentType")
             return true
         }
         Timber.d("Action $finalAction is not allowed for content type $contentType")
         return false
+    }
+
+    // if changing from V5 string to JSON model - secret needs to me migrated to JSON object
+    private fun mapSecretModel(
+        model: SecretJsonModel,
+        oldContentType: ContentType,
+        newContentType: ContentType
+    ): SecretJsonModel {
+        return if (oldContentType == V5PasswordString) {
+            when (newContentType) {
+                V5DefaultWithTotp, V5Default -> SecretJsonModel.emptyJsonModel(model.password.orEmpty())
+                else -> model
+            }
+        } else {
+            model
+        }
     }
 
     private fun mergeActions(action: UpdateAction): UpdateAction {

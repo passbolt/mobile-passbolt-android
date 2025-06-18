@@ -43,4 +43,11 @@ class ResourceTypeIdToSlugMappingProvider(
             }
         }
     }
+
+    fun invalidateSelectedUserMapping() {
+        val selectedAccount = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
+        if (perAccountMappings.containsKey(selectedAccount)) {
+            perAccountMappings.remove(selectedAccount)
+        }
+    }
 }

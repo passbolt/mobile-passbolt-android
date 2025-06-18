@@ -67,19 +67,6 @@ class SecretInteractor(
 
         data class Unauthorized(val reason: UnauthenticatedReason) : Output()
 
-        data class Success(val decryptedSecret: ByteArray) : Output() {
-            override fun equals(other: Any?): Boolean {
-                if (this === other) return true
-                if (javaClass != other?.javaClass) return false
-
-                other as Success
-
-                return decryptedSecret.contentEquals(other.decryptedSecret)
-            }
-
-            override fun hashCode(): Int {
-                return decryptedSecret.contentHashCode()
-            }
-        }
+        data class Success(val decryptedSecret: String) : Output()
     }
 }

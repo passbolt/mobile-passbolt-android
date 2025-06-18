@@ -38,7 +38,7 @@ class SecretParser(
 
     suspend fun parseSecret(
         resourceTypeId: String,
-        decryptedSecret: ByteArray
+        decryptedSecret: String
     ): DecryptedSecretOrError<SecretJsonModel> {
 
         val slug = resourceTypeIdToSlugMappingProvider
@@ -46,13 +46,12 @@ class SecretParser(
 
         return try {
             // in case of simple password the backend returns a string (not a json string)
-            val plainSecret = String(decryptedSecret)
             if (secretValidationRunner.isSecretValid(
-                    PlainSecretValidationWrapper(plainSecret, ContentType.fromSlug(slug!!)).validationPlainSecret,
+                    PlainSecretValidationWrapper(decryptedSecret, ContentType.fromSlug(slug!!)).validationPlainSecret,
                     slug
                 )
             ) {
-                val parsedSecret = SecretJsonModel(plainSecret)
+                val parsedSecret = SecretJsonModel(decryptedSecret)
                 DecryptedSecretOrError.DecryptedSecret(parsedSecret)
             } else {
                 val errorMessage = "Invalid secret in $slug resource type"

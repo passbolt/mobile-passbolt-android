@@ -30,4 +30,5 @@ internal fun Module.resourceTypesDbModule() {
     singleOf(::RebuildLocalResourceTypesUseCase)
     singleOf(::GetResourceTypeIdToSlugMappingUseCase)
     singleOf(::ResourceTypeIdToSlugMappingProvider)
+    singleOf(::GetLocalResourceTypesUseCase)
 }

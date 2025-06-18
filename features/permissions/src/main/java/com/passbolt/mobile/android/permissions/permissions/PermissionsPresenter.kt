@@ -6,27 +6,26 @@ import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalFolderP
 import com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor
 import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReactivePresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
-import com.passbolt.mobile.android.core.resources.actions.ResourceUpdateActionResult
 import com.passbolt.mobile.android.core.resources.actions.ResourceUpdateActionsInteractor
+import com.passbolt.mobile.android.core.resources.actions.performResourceUpdateAction
 import com.passbolt.mobile.android.core.resources.usecase.ResourceShareInteractor
 import com.passbolt.mobile.android.core.resources.usecase.ResourceShareInteractor.Output
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcePermissionsUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUseCase
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
-import com.passbolt.mobile.android.metadata.usecase.db.GetLocalMetadataKeysUseCase
-import com.passbolt.mobile.android.metadata.usecase.db.GetLocalMetadataKeysUseCase.MetadataKeyPurpose.ENCRYPT
+import com.passbolt.mobile.android.metadata.interactor.MetadataPrivateKeysHelperInteractor
 import com.passbolt.mobile.android.permissions.permissions.validation.HasAtLeastOneOwnerPermission
+import com.passbolt.mobile.android.serializers.jsonschema.SchemaEntity
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType
-import com.passbolt.mobile.android.ui.MetadataKeyTypeModel
+import com.passbolt.mobile.android.ui.NewMetadataKeyToTrustModel
 import com.passbolt.mobile.android.ui.PermissionModelUi
-import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourcePermission
+import com.passbolt.mobile.android.ui.TrustedKeyDeletedModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
-import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.launch
 import org.koin.core.component.get
 import org.koin.core.parameter.parametersOf
@@ -65,7 +64,7 @@ class PermissionsPresenter(
     private val resourceShareInteractor: ResourceShareInteractor,
     private val homeDataInteractor: HomeDataInteractor,
     private val resourceTypeIdToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider,
-    private val getLocalMetadataKeysUseCase: GetLocalMetadataKeysUseCase,
+    private val metadataPrivateKeysHelperInteractor: MetadataPrivateKeysHelperInteractor,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : PermissionsContract.Presenter,
     DataRefreshViewReactivePresenter<PermissionsContract.View>(coroutineLaunchContext) {
@@ -189,12 +188,6 @@ class PermissionsPresenter(
         }
     }
 
-    private fun shouldReEncryptUserResourceMetadataWithSharedKey(
-        contentType: ContentType,
-        resource: ResourceModel
-    ) =
-        contentType.isV5() && resource.metadataKeyType == MetadataKeyTypeModel.PERSONAL && recipients.size > 1
-
     private fun updateIfNeededAndShareResource() {
         view?.showProgress()
         scope.launch {
@@ -204,38 +197,36 @@ class PermissionsPresenter(
                     UUID.fromString(resource.resourceTypeId)
                 ]!!
             )
-
-            if (shouldReEncryptUserResourceMetadataWithSharedKey(contentType, resource)) {
-                reEncryptUserResourceMetadataWithSharedKey(resource)
+            val resourceUpdateActionsInteractor = get<ResourceUpdateActionsInteractor> {
+                parametersOf(resource, needSessionRefreshFlow, sessionRefreshedFlow)
             }
-            shareResource()
+
+            if (contentType.isV5()) {
+                performResourceUpdateAction(
+                    action = suspend {
+                        resourceUpdateActionsInteractor.reEncryptResourceMetadata()
+                    },
+                    doOnFailure = { view?.showGenericError() },
+                    doOnCryptoFailure = { view?.showEncryptionError(it) },
+                    doOnSchemaValidationFailure = ::handleSchemaValidationFailure,
+                    doOnSuccess = { scope.launch { shareResource() } },
+                    doOnCannotEditWithCurrentConfig = { view?.showCannotUpdateTotpWithCurrentConfig() },
+                    doOnMetadataKeyModified = { view?.showMetadataKeyModifiedDialog(it) },
+                    doOnMetadataKeyDeleted = { view?.showMetadataKeyDeletedDialog(it) },
+                    doOnMetadataKeyVerificationFailure = { view?.showFailedToVerifyMetadataKey() }
+                )
+            } else {
+                shareResource()
+            }
 
             view?.hideProgress()
         }
     }
 
-    private suspend fun reEncryptUserResourceMetadataWithSharedKey(resource: ResourceModel) {
-        val metadataKeyId = getLocalMetadataKeysUseCase.execute(GetLocalMetadataKeysUseCase.Input(ENCRYPT))
-            .firstOrNull()
-            ?.id
-
-        val resourceUpdateActionsInteractor = get<ResourceUpdateActionsInteractor> {
-            parametersOf(resource, needSessionRefreshFlow, sessionRefreshedFlow)
-        }
-        if (metadataKeyId == null) {
-            Timber.e(
-                "Resource metadata should be re-encrypted with shared key " +
-                        "but no valid ENCRYPT metadata shared key found "
-            )
-            view?.showReEncyptMetadataFailure()
-            return
-        }
-        when (resourceUpdateActionsInteractor.reEncryptResourceMetadata(
-            metadataKeyId = metadataKeyId.toString(),
-            metadataKeyType = MetadataKeyTypeModel.SHARED
-        ).single()) {
-            is ResourceUpdateActionResult.Success -> shareResource()
-            else -> view?.showReEncyptMetadataFailure()
+    private fun handleSchemaValidationFailure(entity: SchemaEntity) {
+        when (entity) {
+            SchemaEntity.RESOURCE -> view?.showJsonResourceSchemaValidationError()
+            SchemaEntity.SECRET -> view?.showJsonSecretSchemaValidationError()
         }
     }
 
@@ -317,6 +308,29 @@ class PermissionsPresenter(
             .filterIsInstance<PermissionModelUi.GroupPermissionModel>()
             .find { it.group.groupId == permission.group.groupId }
             ?.let { recipients.remove(it) }
+    }
+
+    override fun trustedMetadataKeyDeleted(model: TrustedKeyDeletedModel) {
+        scope.launch {
+            metadataPrivateKeysHelperInteractor.deletedTrustedMetadataPrivateKey()
+        }
+    }
+
+    override fun trustNewMetadataKey(model: NewMetadataKeyToTrustModel) {
+        scope.launch {
+            view?.showProgress()
+            when (val output = runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+                metadataPrivateKeysHelperInteractor.trustNewKey(model)
+            }) {
+                is MetadataPrivateKeysHelperInteractor.Output.Success ->
+                    view?.showNewMetadataKeyIsTrusted()
+                else -> {
+                    Timber.e("Failed to trust new metadata key: $output")
+                    view?.showFailedToTrustMetadataKey()
+                }
+            }
+            view?.hideProgress()
+        }
     }
 
     override fun detach() {

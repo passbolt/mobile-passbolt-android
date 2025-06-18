@@ -25,11 +25,15 @@ package com.passbolt.mobile.android.serializers.resourcelistdeserializer.caching
 
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
+import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.core.accounts.usecase.selectedaccount.GetSelectedAccountUseCase
+import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import com.passbolt.mobile.android.core.resourcetypes.usecase.db.GetLocalResourceTypesUseCase
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.GetResourceTypeIdToSlugMappingUseCase
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
 import com.passbolt.mobile.android.database.snapshot.ResourcesSnapshot
 import com.passbolt.mobile.android.dto.response.ResourceResponseDto
+import com.passbolt.mobile.android.gopenpgp.OpenPgp
 import com.passbolt.mobile.android.metadata.usecase.db.GetLocalMetadataKeysUseCase
 import com.passbolt.mobile.android.serializers.STRICT_ADAPTERS_ONLY_GSON
 import com.passbolt.mobile.android.serializers.gson.MetadataDecryptor
@@ -37,9 +41,11 @@ import com.passbolt.mobile.android.serializers.gson.ResourceListDeserializer
 import com.passbolt.mobile.android.serializers.gson.ResourceListItemDeserializer
 import com.passbolt.mobile.android.serializers.gson.strictTypeAdapters
 import com.passbolt.mobile.android.serializers.gson.validation.JsonSchemaValidationRunner
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import net.jimblackler.jsonschemafriend.Validator
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier.named
+import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.mockito.kotlin.mock
 import java.util.UUID
@@ -50,10 +56,14 @@ internal val mockMetadataDecryptor = mock<MetadataDecryptor>()
 internal val mockGetLocalMetadataKeysUseCase = mock<GetLocalMetadataKeysUseCase>()
 internal val mockResourcesSnapShot = mock<ResourcesSnapshot>()
 internal val mockJsonSchemaValidationRunner = mock<JsonSchemaValidationRunner>()
+internal val mockGetLocalResourceTypesUseCase = mock<GetLocalResourceTypesUseCase>()
 
+@OptIn(ExperimentalCoroutinesApi::class)
 val resourceListItemDeserializationTestModule = module {
     singleOf(::JsonSchemaValidationRunner)
     singleOf(::ResourceListDeserializer)
+    singleOf(::TestCoroutineLaunchContext) bind CoroutineLaunchContext::class
+    single { mock<OpenPgp>() }
     single { (resourceTypeIdToSlugMapping: Map<UUID, String>, supportedResourceTypesIds: Set<UUID>) ->
         ResourceListItemDeserializer(
             jsonSchemaValidationRunner = mockJsonSchemaValidationRunner,
@@ -61,7 +71,8 @@ val resourceListItemDeserializationTestModule = module {
             resourceTypeIdToSlugMapping = resourceTypeIdToSlugMapping,
             supportedResourceTypesIds = supportedResourceTypesIds,
             metadataDecryptor = mockMetadataDecryptor,
-            resourcesSnapshot = get()
+            resourcesSnapshot = get(),
+            coroutineLaunchContext = get()
         )
     }
     singleOf(::ResourceTypeIdToSlugMappingProvider)
@@ -69,6 +80,7 @@ val resourceListItemDeserializationTestModule = module {
     single { mockResourcesSnapShot }
     single { mockIdToSlugMappingUseCase }
     factory { mockGetSelectedAccountUseCase }
+    single { mockGetLocalResourceTypesUseCase }
     single {
         GsonBuilder()
             .registerTypeAdapter(

@@ -14,18 +14,20 @@ import com.passbolt.mobile.android.core.resources.actions.performResourceCreateA
 import com.passbolt.mobile.android.core.resources.actions.performResourceUpdateAction
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUseCase
 import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction.ADD_METADATA_DESCRIPTION
-import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction.ADD_PASSWORD
 import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction.ADD_NOTE
+import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction.ADD_PASSWORD
 import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction.ADD_TOTP
 import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction.EDIT_METADATA
 import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction.REMOVE_METADATA_DESCRIPTION
-import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction.REMOVE_PASSWORD
 import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction.REMOVE_NOTE
+import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction.REMOVE_PASSWORD
 import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction.REMOVE_TOTP
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.SecretJsonModel
+import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
 import com.passbolt.mobile.android.jsonmodel.delegates.TotpSecret
 import com.passbolt.mobile.android.mappers.EntropyViewMapper
 import com.passbolt.mobile.android.mappers.ResourceFormMapper
+import com.passbolt.mobile.android.metadata.interactor.MetadataPrivateKeysHelperInteractor
 import com.passbolt.mobile.android.serializers.jsonschema.SchemaEntity
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType
 import com.passbolt.mobile.android.ui.Entropy
@@ -33,7 +35,7 @@ import com.passbolt.mobile.android.ui.LeadingContentType
 import com.passbolt.mobile.android.ui.LeadingContentType.PASSWORD
 import com.passbolt.mobile.android.ui.LeadingContentType.TOTP
 import com.passbolt.mobile.android.ui.MetadataJsonModel
-import com.passbolt.mobile.android.ui.MetadataTypeModel
+import com.passbolt.mobile.android.ui.NewMetadataKeyToTrustModel
 import com.passbolt.mobile.android.ui.OtpParseResult
 import com.passbolt.mobile.android.ui.PasswordGeneratorTypeModel
 import com.passbolt.mobile.android.ui.PasswordUiModel
@@ -42,6 +44,7 @@ import com.passbolt.mobile.android.ui.ResourceFormMode.Create
 import com.passbolt.mobile.android.ui.ResourceFormMode.Edit
 import com.passbolt.mobile.android.ui.ResourceFormUiModel
 import com.passbolt.mobile.android.ui.TotpUiModel
+import com.passbolt.mobile.android.ui.TrustedKeyDeletedModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
@@ -87,6 +90,7 @@ class ResourceFormPresenter(
     private val resourceModelHandler: ResourceModelHandler,
     private val getLocalResourceUseCase: GetLocalResourceUseCase,
     private val fullDataRefreshExecutor: FullDataRefreshExecutor,
+    private val metadataPrivateKeysHelperInteractor: MetadataPrivateKeysHelperInteractor,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : BaseAuthenticatedPresenter<ResourceFormContract.View>(coroutineLaunchContext),
     ResourceFormContract.Presenter {
@@ -103,9 +107,7 @@ class ResourceFormPresenter(
         get() = resourceModelHandler.resourceMetadata
     private val resourceSecret: SecretJsonModel
         get() = resourceModelHandler.resourceSecret
-    private val metadataType: MetadataTypeModel
-        get() = resourceModelHandler.metadataType
-    private val contentType: ContentType
+    private val newContentType: ContentType
         get() = resourceModelHandler.contentType
 
     private var argsConsumed = false
@@ -132,7 +134,7 @@ class ResourceFormPresenter(
                                 needSessionRefreshFlow,
                                 sessionRefreshedFlow
                             )
-                        } catch (e: Exception) {
+                        } catch (_: Exception) {
                             view?.showEditResourceInitializationError()
                             view?.navigateBack()
                             return@launch
@@ -197,14 +199,14 @@ class ResourceFormPresenter(
                 view?.addTotpLeadingForm(
                     resourceFormMapper.mapToUiModel(resourceSecret.totp, resourceMetadata.name)
                 )
-                view?.showTotpIssuer(resourceMetadata.getMainUri(metadataType))
+                view?.showTotpIssuer(resourceMetadata.getMainUri(newContentType))
                 view?.showTotpSecret(resourceSecret.totp?.key.orEmpty())
             }
             PASSWORD -> {
                 view?.addPasswordLeadingForm()
                 view?.showPasswordUsername(resourceMetadata.username.orEmpty())
-                view?.showPasswordMainUri(resourceMetadata.getMainUri(metadataType))
-                showPassword(resourceSecret.getPassword(contentType).orEmpty())
+                view?.showPasswordMainUri(resourceMetadata.getMainUri(newContentType))
+                showPassword(resourceSecret.getPassword(newContentType).orEmpty())
             }
         }
     }
@@ -238,7 +240,7 @@ class ResourceFormPresenter(
 
     override fun passwordTextChanged(password: String) {
         resourceModelHandler.applyModelChange(if (password.isBlank()) REMOVE_PASSWORD else ADD_PASSWORD) { _, secret ->
-            secret.setPassword(contentType, password)
+            secret.setPassword(newContentType, password)
 
             scope.launch {
                 val entropy = entropyCalculator.getSecretEntropy(password)
@@ -254,7 +256,7 @@ class ResourceFormPresenter(
 
     override fun passwordMainUriTextChanged(mainUri: String) {
         resourceModelHandler.applyModelChange(EDIT_METADATA) { metadata, _ ->
-            metadata.setMainUri(metadataType, mainUri)
+            metadata.setMainUri(newContentType, mainUri)
         }
     }
 
@@ -286,14 +288,14 @@ class ResourceFormPresenter(
 
     override fun totpUrlChanged(url: String) {
         resourceModelHandler.applyModelChange(EDIT_METADATA) { metadata, _ ->
-            metadata.setMainUri(metadataType, url)
+            metadata.setMainUri(newContentType, url)
         }
     }
 
     override fun totpAdvancedSettingsChanged(totpAdvancedSettings: TotpUiModel?) {
         resourceModelHandler.applyModelChange(ADD_TOTP) { _, secret ->
             val settings =
-                totpAdvancedSettings ?: TotpUiModel.emptyWithDefaults(resourceMetadata.getMainUri(metadataType))
+                totpAdvancedSettings ?: TotpUiModel.emptyWithDefaults(resourceMetadata.getMainUri(newContentType))
             secret.totp = requireNotNull(resourceSecret.totp).copy(
                 algorithm = settings.algorithm,
                 digits = settings.length.toInt(),
@@ -308,7 +310,7 @@ class ResourceFormPresenter(
 
         scannedTotp?.let {
             resourceModelHandler.applyModelChange(EDIT_METADATA) { metadata, _ ->
-                metadata.setMainUri(metadataType, it.issuer.orEmpty())
+                metadata.setMainUri(newContentType, it.issuer.orEmpty())
                 metadata.name = it.label
             }
             resourceModelHandler.applyModelChange(ADD_TOTP) { _, secret ->
@@ -324,15 +326,15 @@ class ResourceFormPresenter(
 
     override fun additionalTotpClick() {
         view?.navigateToTotp(
-            resourceFormMapper.mapToUiModel(resourceSecret.totp, resourceMetadata.getMainUri(metadataType))
+            resourceFormMapper.mapToUiModel(resourceSecret.totp, resourceMetadata.getMainUri(newContentType))
         )
     }
 
     override fun additionalPasswordClick() {
         view?.navigateToPassword(
             resourceFormMapper.mapToUiModel(
-                resourceSecret.getPassword(contentType).orEmpty(),
-                resourceMetadata.getMainUri(metadataType),
+                resourceSecret.getPassword(newContentType).orEmpty(),
+                resourceMetadata.getMainUri(newContentType),
                 resourceMetadata.username.orEmpty()
             )
         )
@@ -358,7 +360,7 @@ class ResourceFormPresenter(
         }
         if (totpUiModel != null) {
             resourceModelHandler.applyModelChange(EDIT_METADATA) { metadata, _ ->
-                metadata.setMainUri(metadataType, totpUiModel.issuer)
+                metadata.setMainUri(newContentType, totpUiModel.issuer)
             }
         }
     }
@@ -368,11 +370,11 @@ class ResourceFormPresenter(
             val passwordEvent = if (passwordUiModel.password.isBlank()) REMOVE_PASSWORD else ADD_PASSWORD
 
             resourceModelHandler.applyModelChange(passwordEvent) { _, secret ->
-                secret.setPassword(contentType, passwordUiModel.password)
+                secret.setPassword(newContentType, passwordUiModel.password)
             }
             resourceModelHandler.applyModelChange(EDIT_METADATA) { metadata, _ ->
                 metadata.username = passwordUiModel.username
-                metadata.setMainUri(metadataType, passwordUiModel.mainUri)
+                metadata.setMainUri(newContentType, passwordUiModel.mainUri)
             }
         }
     }
@@ -386,8 +388,8 @@ class ResourceFormPresenter(
                 }
                 performResourceCreateAction(
                     action = {
-                        resourceCreateActionsInteractor.createGenericResourceResource(
-                            contentType,
+                        resourceCreateActionsInteractor.createGenericResource(
+                            newContentType,
                             parentFolderId,
                             resourceModelHandler.getResourceMetadataWithRequiredFields(),
                             resourceModelHandler.getResourceSecretWithRequiredFields()
@@ -396,7 +398,11 @@ class ResourceFormPresenter(
                     doOnFailure = { view?.showGenericError() },
                     doOnCryptoFailure = { view?.showEncryptionError(it) },
                     doOnSchemaValidationFailure = ::handleSchemaValidationFailure,
-                    doOnSuccess = { view?.navigateBackWithCreateSuccess(resourceMetadata.name) }
+                    doOnSuccess = { view?.navigateBackWithCreateSuccess(resourceMetadata.name) },
+                    doOnCannotCreateWithCurrentConfig = { view?.showCannotCreateTotpWithCurrentConfig() },
+                    doOnMetadataKeyModified = { view?.showMetadataKeyModifiedDialog(it) },
+                    doOnMetadataKeyDeleted = { view?.showMetadataKeyDeletedDialog(it) },
+                    doOnMetadataKeyVerificationFailure = { view?.showFailedToVerifyMetadataKey() }
                 )
                 view?.hideProgress()
             }
@@ -423,16 +429,19 @@ class ResourceFormPresenter(
                 performResourceUpdateAction(
                     action = {
                         resourceUpdateActionsInteractor.updateGenericResource(
-                            contentType,
-                            editedResource,
-                            resourceModelHandler.getResourceMetadataWithRequiredFields(),
-                            resourceModelHandler.getResourceSecretWithRequiredFields()
+                            newContentType,
+                            { resourceModelHandler.getResourceMetadataWithRequiredFields() },
+                            { resourceModelHandler.getResourceSecretWithRequiredFields() }
                         )
                     },
                     doOnFailure = { view?.showGenericError() },
                     doOnCryptoFailure = { view?.showEncryptionError(it) },
                     doOnSchemaValidationFailure = ::handleSchemaValidationFailure,
-                    doOnSuccess = { view?.navigateBackWithEditSuccess(resourceMetadata.name) }
+                    doOnSuccess = { view?.navigateBackWithEditSuccess(resourceMetadata.name) },
+                    doOnCannotEditWithCurrentConfig = { view?.showCannotUpdateTotpWithCurrentConfig() },
+                    doOnMetadataKeyModified = { view?.showMetadataKeyModifiedDialog(it) },
+                    doOnMetadataKeyDeleted = { view?.showMetadataKeyDeletedDialog(it) },
+                    doOnMetadataKeyVerificationFailure = { view?.showFailedToVerifyMetadataKey() }
                 )
                 view?.hideProgress()
             }
@@ -444,6 +453,29 @@ class ResourceFormPresenter(
             view?.showTotpRequired()
         } else {
             action()
+        }
+    }
+
+    override fun trustedMetadataKeyDeleted(model: TrustedKeyDeletedModel) {
+        scope.launch {
+            metadataPrivateKeysHelperInteractor.deletedTrustedMetadataPrivateKey()
+        }
+    }
+
+    override fun trustNewMetadataKey(model: NewMetadataKeyToTrustModel) {
+        scope.launch {
+            view?.showProgress()
+            when (val output = runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+                metadataPrivateKeysHelperInteractor.trustNewKey(model)
+            }) {
+                is MetadataPrivateKeysHelperInteractor.Output.Success ->
+                    view?.showNewMetadataKeyIsTrusted()
+                else -> {
+                    Timber.e("Failed to trust new metadata key: $output")
+                    view?.showFailedToTrustMetadataKey()
+                }
+            }
+            view?.hideProgress()
         }
     }
 }

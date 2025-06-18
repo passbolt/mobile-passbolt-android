@@ -25,8 +25,10 @@ package com.passbolt.mobile.android.feature.otp.screen
 
 import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReactiveContract
 import com.passbolt.mobile.android.core.navigation.AppContext
+import com.passbolt.mobile.android.ui.NewMetadataKeyToTrustModel
 import com.passbolt.mobile.android.ui.OtpItemWrapper
 import com.passbolt.mobile.android.ui.ResourceModel
+import com.passbolt.mobile.android.ui.TrustedKeyDeletedModel
 
 interface OtpContract {
 
@@ -66,6 +68,12 @@ interface OtpContract {
         fun navigateToEditResource(resourceModel: ResourceModel)
         fun showResourceCreatedSnackbar()
         fun showResourceEditedSnackbar(resourceName: String)
+        fun showCannotUpdateTotpWithCurrentConfig()
+        fun showMetadataKeyModifiedDialog(model: NewMetadataKeyToTrustModel)
+        fun showMetadataKeyDeletedDialog(model: TrustedKeyDeletedModel)
+        fun showFailedToVerifyMetadataKey()
+        fun showNewMetadataKeyIsTrusted()
+        fun showFailedToTrustMetadataKey()
     }
 
     interface Presenter : DataRefreshViewReactiveContract.Presenter<View> {
@@ -86,5 +94,7 @@ interface OtpContract {
         fun otpQrScanReturned(isTotpCreated: Boolean, isManualCreationChosen: Boolean)
         fun menuEditOtpClick()
         fun resourceFormReturned(isResourceCreated: Boolean, isResourceEdited: Boolean, resourceName: String?)
+        fun trustedMetadataKeyDeleted(model: TrustedKeyDeletedModel)
+        fun trustNewMetadataKey(model: NewMetadataKeyToTrustModel)
     }
 }

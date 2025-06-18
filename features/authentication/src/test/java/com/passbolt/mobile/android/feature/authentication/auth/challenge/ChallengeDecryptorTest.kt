@@ -37,7 +37,7 @@ class ChallengeDecryptorTest : KoinTest {
                 " access_token: \"access_token\", refresh_token: \"refresh_token\"}"
         whenever(getPrivateKeyUseCase.execute(any())).thenReturn(GetPrivateKeyUseCase.Output(privateKey))
         whenever(openPgp.decryptVerifyMessageArmored(eq(publicKey), eq(privateKey), any(), any())).thenReturn(
-            OpenPgpResult.Result(challenge.toByteArray())
+            OpenPgpResult.Result(challenge)
         )
 
 

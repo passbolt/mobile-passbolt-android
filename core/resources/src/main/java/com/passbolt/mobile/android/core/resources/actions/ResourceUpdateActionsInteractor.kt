@@ -23,24 +23,31 @@
 
 package com.passbolt.mobile.android.core.resources.actions
 
+import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalFolderPermissionsUseCase
 import com.passbolt.mobile.android.core.mvp.authentication.UnauthenticatedReason
 import com.passbolt.mobile.android.core.resources.interactor.update.UpdateResourceInteractor
+import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcePermissionsUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.UpdateLocalResourceUseCase
 import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.ResourceTypesUpdatesAdjacencyGraph
 import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.SecretInput
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.SecretJsonModel
+import com.passbolt.mobile.android.core.users.usecase.db.GetLocalCurrentUserUseCase
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
-import com.passbolt.mobile.android.jsonmodel.delegates.TotpSecret
+import com.passbolt.mobile.android.metadata.interactor.MetadataPrivateKeysInteractor
+import com.passbolt.mobile.android.metadata.interactor.MetadataPrivateKeysInteractor.Output.TrustedKeyDeleted
+import com.passbolt.mobile.android.metadata.usecase.GetMetadataKeysSettingsUseCase
+import com.passbolt.mobile.android.metadata.usecase.db.GetLocalMetadataKeysUseCase
+import com.passbolt.mobile.android.metadata.usecase.db.GetLocalMetadataKeysUseCase.MetadataKeyPurpose.ENCRYPT
 import com.passbolt.mobile.android.serializers.jsonschema.SchemaEntity
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType
 import com.passbolt.mobile.android.ui.MetadataJsonModel
+import com.passbolt.mobile.android.ui.MetadataKeyParamsModel
 import com.passbolt.mobile.android.ui.MetadataKeyTypeModel
-import com.passbolt.mobile.android.ui.MetadataTypeModel
-import com.passbolt.mobile.android.ui.MetadataTypeModel.V4
-import com.passbolt.mobile.android.ui.MetadataTypeModel.V5
+import com.passbolt.mobile.android.ui.NewMetadataKeyToTrustModel
 import com.passbolt.mobile.android.ui.ResourceModel
+import com.passbolt.mobile.android.ui.TrustedKeyDeletedModel
 import com.passbolt.mobile.android.ui.UpdateResourceModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -52,223 +59,187 @@ import timber.log.Timber
 import java.util.UUID
 
 class ResourceUpdateActionsInteractor(
-    private val resource: ResourceModel,
+    private val existingResource: ResourceModel,
     private val needSessionRefreshFlow: MutableStateFlow<UnauthenticatedReason?>,
     private val sessionRefreshedFlow: StateFlow<Unit?>,
     private val secretPropertiesActionsInteractor: SecretPropertiesActionsInteractor,
     private val updateResourceInteractor: UpdateResourceInteractor,
     private val resourceTypesUpdateGraph: ResourceTypesUpdatesAdjacencyGraph,
     private val updateLocalResourceUseCase: UpdateLocalResourceUseCase,
-    private val idToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider
+    private val idToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider,
+    private val getLocalCurrentUserUseCase: GetLocalCurrentUserUseCase,
+    private val metadataPrivateKeysInteractor: MetadataPrivateKeysInteractor,
+    private val getLocalFolderPermissionsUseCase: GetLocalFolderPermissionsUseCase,
+    private val getLocalResourcePermissionsUseCase: GetLocalResourcePermissionsUseCase,
+    private val getMetadataKeysSettingsUseCase: GetMetadataKeysSettingsUseCase,
+    private val getMetadataKeysUseCase: GetLocalMetadataKeysUseCase,
+    private val resourceTypeIdToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider
 ) : KoinComponent {
 
     suspend fun updateGenericResource(
-        contentType: ContentType,
-        resourceModel: ResourceModel,
-        metadataJsonModel: MetadataJsonModel,
-        secretJsonModel: SecretJsonModel
+        newContentType: ContentType,
+        metadataModification: (MetadataJsonModel) -> MetadataJsonModel = { it },
+        secretModification: (SecretJsonModel) -> SecretJsonModel = { it },
+        forceMetadataSharedKey: Boolean = false
     ): Flow<ResourceUpdateActionResult> {
-        return updateResource2(
-            updateResource = {
-                UpdateResourceModel(
-                    contentType = contentType,
-                    resourceId = resource.resourceId,
-                    folderId = resourceModel.folderId,
-                    expiry = resourceModel.expiry,
-                    metadataKeyId = resourceModel.metadataKeyId,
-                    metadataKeyType = resourceModel.metadataKeyType,
-                    metadataJsonModel = metadataJsonModel
-                )
-            },
-            updateSecret = { decryptedSecret ->
-                val passwordChanged = decryptedSecret.secret != secretJsonModel.getPassword(contentType)
-                SecretInput(
-                    secretJsonModel = secretJsonModel,
-                    passwordChanged = passwordChanged
-                )
-            }
-        )
-    }
-
-    suspend fun deleteTotpFromResource(): Flow<ResourceUpdateActionResult> =
-        updateResource(
-            updateAction = UpdateAction.REMOVE_TOTP,
-            updateResource = { newResourceType, _ ->
-                UpdateResourceModel(
-                    resourceId = resource.resourceId,
-                    contentType = newResourceType,
-                    folderId = resource.folderId,
-                    expiry = resource.expiry,
-                    metadataJsonModel = MetadataJsonModel(resource.metadataJsonModel.json),
-                    metadataKeyId = resource.metadataKeyId,
-                    metadataKeyType = resource.metadataKeyType
-                )
-            },
-            updateSecret = { decryptedSecret ->
-                SecretInput(
-                    secretJsonModel = decryptedSecret.apply {
-                        totp = null
-                    },
-                    passwordChanged = false
-                )
-            }
-        )
-
-    suspend fun addTotpToResource(
-        overrideName: String?,
-        overrideUri: String?,
-        period: Long,
-        digits: Int,
-        algorithm: String,
-        secretKey: String
-    ): Flow<ResourceUpdateActionResult> =
-        updateResource(
-            updateAction = UpdateAction.ADD_TOTP,
-            updateResource = { newResourceType, metadataType ->
-                UpdateResourceModel(
-                    resourceId = resource.resourceId,
-                    contentType = newResourceType,
-                    folderId = resource.folderId,
-                    expiry = resource.expiry,
-                    metadataJsonModel = MetadataJsonModel(resource.metadataJsonModel.json),
-                    metadataKeyId = resource.metadataKeyId,
-                    metadataKeyType = resource.metadataKeyType
-                ).apply {
-                    metadataJsonModel.name = overrideName ?: resource.metadataJsonModel.name
-                    metadataJsonModel.username = resource.metadataJsonModel.username
-                    when (metadataType) {
-                        V4 -> this.metadataJsonModel.uri = overrideUri ?: resource.metadataJsonModel.uri
-                        V5 -> this.metadataJsonModel.uris = if (overrideUri != null) {
-                            listOf(overrideUri)
-                        } else {
-                            resource.metadataJsonModel.uris
-                        }
-                    }
+        return if (!isSupported(newContentType)) {
+            flowOf(ResourceUpdateActionResult.CannotUpdateWithCurrentConfig)
+        } else {
+            when (val metadataKeyParams = getMetadataKeysParams(existingResource.folderId, forceMetadataSharedKey)) {
+                is MetadataKeyParamsModel.ErrorDuringVerification -> {
+                    flowOf(ResourceUpdateActionResult.MetadataKeyVerificationFailure)
                 }
-            },
-            updateSecret = { decryptedSecret ->
-                SecretInput(
-                    secretJsonModel = decryptedSecret.apply {
-                        totp = TotpSecret(
-                            algorithm,
-                            secretKey,
-                            digits,
-                            period
-                        )
-                    },
-                    passwordChanged = false
-                )
-            }
-        )
-
-    suspend fun updateLinkedTotpResourceTotpFields(
-        label: String,
-        issuer: String?,
-        period: Long,
-        digits: Int,
-        algorithm: String,
-        secretKey: String
-    ): Flow<ResourceUpdateActionResult> =
-        updateResource(
-            updateAction = UpdateAction.ADD_TOTP,
-            updateResource = { newResourceType, metadataType ->
-                UpdateResourceModel(
-                    resourceId = resource.resourceId,
-                    contentType = newResourceType,
-                    folderId = resource.folderId,
-                    expiry = resource.expiry,
-                    metadataJsonModel = MetadataJsonModel(resource.metadataJsonModel.json),
-                    metadataKeyId = resource.metadataKeyId,
-                    metadataKeyType = resource.metadataKeyType
-                ).apply {
-                    metadataJsonModel.name = label
-                    metadataJsonModel.username = resource.metadataJsonModel.username
-                    when (metadataType) {
-                        V4 -> this.metadataJsonModel.uri = issuer
-                        V5 -> this.metadataJsonModel.uris = if (issuer != null) listOf(issuer) else emptyList()
-                    }
+                is MetadataKeyParamsModel.NewMetadataKeyToTrust -> {
+                    flowOf(ResourceUpdateActionResult.MetadataKeyModified(metadataKeyParams.newMetadataKeyToTrust))
                 }
-            },
-            updateSecret = { decryptedSecret ->
-                SecretInput(
-                    secretJsonModel = decryptedSecret.apply {
-                        totp = TotpSecret(
-                            algorithm,
-                            secretKey,
-                            digits,
-                            period
-                        )
-                    },
-                    passwordChanged = false
-                )
-            }
-        )
-
-    suspend fun reEncryptResourceMetadata(
-        metadataKeyId: String,
-        metadataKeyType: MetadataKeyTypeModel
-    ): Flow<ResourceUpdateActionResult> =
-        updateResource(
-            updateAction = UpdateAction.EDIT_METADATA,
-            updateResource = { newResourceType, _ ->
-                UpdateResourceModel(
-                    resourceId = resource.resourceId,
-                    contentType = newResourceType,
-                    folderId = resource.folderId,
-                    expiry = resource.expiry,
-                    metadataJsonModel = MetadataJsonModel(resource.metadataJsonModel.json),
-                    metadataKeyId = metadataKeyId,
-                    metadataKeyType = metadataKeyType
-                )
-            },
-            updateSecret = { decryptedSecret ->
-                SecretInput(
-                    secretJsonModel = decryptedSecret,
-                    passwordChanged = false
-                )
-            }
-        )
-
-    @Deprecated("Use updateResource2 instead")
-    private suspend fun updateResource(
-        updateAction: UpdateAction,
-        updateResource: (ContentType, MetadataTypeModel) -> UpdateResourceModel,
-        updateSecret: (SecretJsonModel) -> SecretInput
-    ): Flow<ResourceUpdateActionResult> {
-        return try {
-            val decryptedSecret = secretPropertiesActionsInteractor.provideDecryptedSecret().single()
-            val newResourceType = resourceTypesUpdateGraph.getResourceTypeSlugAfterUpdate(
-                idToSlugMappingProvider.provideMappingForSelectedAccount()[UUID.fromString(resource.resourceTypeId)]!!,
-                updateAction
-            )
-            flowOf(
-                when (decryptedSecret) {
-                    is SecretPropertyActionResult.Success ->
-                        runUpdateOperation {
-                            updateResourceInteractor.execute(
-                                resourceInput = updateResource(
-                                    newResourceType,
-                                    if (newResourceType.isV5()) V5 else V4
-                                ),
-                                secretInput = updateSecret(decryptedSecret.result)
+                is MetadataKeyParamsModel.TrustedKeyDeleted -> {
+                    flowOf(ResourceUpdateActionResult.MetadataKeyDeleted(metadataKeyParams.trustedKeyDeleted))
+                }
+                is MetadataKeyParamsModel.ParamsModel -> {
+                    updateResource(
+                        updateResource = {
+                            UpdateResourceModel(
+                                contentType = newContentType,
+                                resourceId = existingResource.resourceId,
+                                folderId = existingResource.folderId,
+                                expiry = existingResource.expiry,
+                                metadataKeyId = metadataKeyParams.metadataKeyId,
+                                metadataKeyType = metadataKeyParams.metadataKeyType,
+                                metadataJsonModel = metadataModification(existingResource.metadataJsonModel)
+                            )
+                        },
+                        updateSecret = { decryptedSecret ->
+                            val existingResourceContentType = ContentType.fromSlug(
+                                idToSlugMappingProvider.provideMappingForSelectedAccount()[
+                                    UUID.fromString(existingResource.resourceTypeId)
+                                ]!!
+                            )
+                            val modifiedSecret = secretModification(decryptedSecret)
+                            val passwordChanged =
+                                decryptedSecret.getPassword(existingResourceContentType) != modifiedSecret.getPassword(
+                                    newContentType
+                                )
+                            SecretInput(
+                                secretJsonModel = modifiedSecret,
+                                passwordChanged = passwordChanged
                             )
                         }
-                    is SecretPropertyActionResult.FetchFailure ->
-                        ResourceUpdateActionResult.FetchFailure
-                    is SecretPropertyActionResult.DecryptionFailure ->
-                        ResourceUpdateActionResult.CryptoFailure()
-                    else -> ResourceUpdateActionResult.Failure()
+                    )
                 }
-            )
-        } catch (e: Exception) {
-            Timber.e(e, "Error updating resource")
-            flowOf(ResourceUpdateActionResult.Failure())
+            }
         }
     }
 
-    private suspend fun updateResource2(
+    suspend fun updateGenericResource(
+        updateAction: UpdateAction,
+        metadataModification: (MetadataJsonModel) -> MetadataJsonModel = { it },
+        secretModification: (SecretJsonModel) -> SecretJsonModel = { it }
+    ): Flow<ResourceUpdateActionResult> {
+        val newContentType = resourceTypesUpdateGraph.getResourceTypeSlugAfterUpdate(
+            idToSlugMappingProvider.provideMappingForSelectedAccount()[
+                UUID.fromString(existingResource.resourceTypeId)
+            ]!!,
+            updateAction
+        )
+        return updateGenericResource(newContentType, metadataModification, secretModification)
+    }
+
+    suspend fun reEncryptResourceMetadata(): Flow<ResourceUpdateActionResult> {
+        val contentType = ContentType.fromSlug(
+            idToSlugMappingProvider.provideMappingForSelectedAccount()[
+                UUID.fromString(existingResource.resourceTypeId)
+            ]!!
+        )
+
+        return updateGenericResource(contentType, forceMetadataSharedKey = true)
+    }
+
+    private suspend fun isSupported(contentType: ContentType) =
+        resourceTypeIdToSlugMappingProvider.provideMappingForSelectedAccount()
+            .values
+            .contains(contentType.slug)
+
+    private suspend fun shouldPersonalKeyBeUsed(parentFolderId: String?, forceMetadataSharedKey: Boolean): Boolean {
+        val isPersonalKeyAllowed = getMetadataKeysSettingsUseCase.execute(Unit)
+            .metadataKeysSettingsModel.allowUsageOfPersonalKeys
+        val isParentFolderShared = parentFolderId?.let {
+            getLocalFolderPermissionsUseCase.execute(
+                GetLocalFolderPermissionsUseCase.Input(parentFolderId)
+            ).permissions.size > 1
+        } ?: false
+        val isResourceShared = getLocalResourcePermissionsUseCase.execute(
+            GetLocalResourcePermissionsUseCase.Input(existingResource.resourceId)
+        ).permissions.size > 1
+
+        return !forceMetadataSharedKey && isPersonalKeyAllowed && !isParentFolderShared && !isResourceShared
+    }
+
+    private suspend fun getMetadataKeysParams(
+        parentFolderId: String?,
+        forceMetadataSharedKey: Boolean
+    ): MetadataKeyParamsModel {
+        val metadataKeyType = if (shouldPersonalKeyBeUsed(parentFolderId, forceMetadataSharedKey)) {
+            MetadataKeyTypeModel.PERSONAL
+        } else {
+            MetadataKeyTypeModel.SHARED
+        }
+
+        return when (metadataKeyType) {
+            MetadataKeyTypeModel.SHARED -> {
+                val verifyOutput = runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+                    metadataPrivateKeysInteractor.verifyMetadataPrivateKey()
+                }
+
+                when (verifyOutput) {
+                    is MetadataPrivateKeysInteractor.Output.Failure -> {
+                        MetadataKeyParamsModel.ErrorDuringVerification
+                    }
+                    is MetadataPrivateKeysInteractor.Output.NewKeyToTrust -> {
+                        MetadataKeyParamsModel.NewMetadataKeyToTrust(
+                            NewMetadataKeyToTrustModel(
+                                id = verifyOutput.metadataPrivateKey.id,
+                                signedUsername = verifyOutput.signedUsername,
+                                signedName = verifyOutput.signedName,
+                                signatureCreationTimestampSeconds = verifyOutput.signatureCreationTimestampSeconds,
+                                signatureKeyFingerprint = verifyOutput.signatureKeyFingerprint,
+                                metadataPrivateKey = verifyOutput.metadataPrivateKey,
+                                modificationKind = verifyOutput.modificationKind
+                            )
+                        )
+                    }
+                    is TrustedKeyDeleted -> {
+                        MetadataKeyParamsModel.TrustedKeyDeleted(
+                            TrustedKeyDeletedModel(
+                                keyFingerprint = verifyOutput.keyFingerprint,
+                                signedUsername = verifyOutput.signedUsername,
+                                signedName = verifyOutput.signedName,
+                                modificationKind = verifyOutput.modificationKind
+                            )
+                        )
+                    }
+                    else -> {
+                        // for cases when not able to verify (i.e. cannot get user, cannot validate signature)
+                        // do not block the user
+                        MetadataKeyParamsModel.ParamsModel(
+                            metadataKeyId = getMetadataKeysUseCase.execute(GetLocalMetadataKeysUseCase.Input(ENCRYPT))
+                                .firstOrNull()?.id?.toString(),
+                            metadataKeyType = MetadataKeyTypeModel.SHARED
+                        )
+                    }
+                }
+            }
+            MetadataKeyTypeModel.PERSONAL -> {
+                MetadataKeyParamsModel.ParamsModel(
+                    metadataKeyId = getLocalCurrentUserUseCase.execute(Unit).user.gpgKey.id,
+                    metadataKeyType = MetadataKeyTypeModel.PERSONAL
+                )
+            }
+        }
+    }
+
+    private suspend fun updateResource(
         updateResource: () -> UpdateResourceModel,
-        updateSecret: (SecretJsonModel) -> SecretInput
+        updateSecret: suspend (SecretJsonModel) -> SecretInput
     ): Flow<ResourceUpdateActionResult> {
         return try {
             val decryptedSecret = secretPropertiesActionsInteractor.provideDecryptedSecret().single()
@@ -324,14 +295,19 @@ class ResourceUpdateActionsInteractor(
     }
 }
 
+@Suppress("LongParameterList")
 suspend fun performResourceUpdateAction(
     action: suspend () -> Flow<ResourceUpdateActionResult>,
     doOnCryptoFailure: (String) -> Unit,
     doOnFailure: (String) -> Unit,
     doOnSuccess: (ResourceUpdateActionResult.Success) -> Unit,
     doOnSchemaValidationFailure: (SchemaEntity) -> Unit,
+    doOnCannotEditWithCurrentConfig: () -> Unit,
+    doOnMetadataKeyModified: (NewMetadataKeyToTrustModel) -> Unit,
+    doOnMetadataKeyDeleted: (TrustedKeyDeletedModel) -> Unit,
     doOnFetchFailure: () -> Unit = {},
-    doOnUnauthorized: () -> Unit = {}
+    doOnUnauthorized: () -> Unit = {},
+    doOnMetadataKeyVerificationFailure: () -> Unit = {}
 ) {
     action().single().let {
         when (it) {
@@ -341,6 +317,10 @@ suspend fun performResourceUpdateAction(
             is ResourceUpdateActionResult.Success -> doOnSuccess(it)
             is ResourceUpdateActionResult.Unauthorized -> doOnUnauthorized()
             is ResourceUpdateActionResult.JsonSchemaValidationFailure -> doOnSchemaValidationFailure(it.entity)
+            is ResourceUpdateActionResult.CannotUpdateWithCurrentConfig -> doOnCannotEditWithCurrentConfig()
+            is ResourceUpdateActionResult.MetadataKeyDeleted -> doOnMetadataKeyDeleted(it.deletedKey)
+            is ResourceUpdateActionResult.MetadataKeyModified -> doOnMetadataKeyModified(it.keyToTrust)
+            ResourceUpdateActionResult.MetadataKeyVerificationFailure -> doOnMetadataKeyVerificationFailure()
         }
     }
 }

@@ -25,8 +25,10 @@ package com.passbolt.mobile.android.feature.otp.scanotp.scanotpsuccess
 
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
 import com.passbolt.mobile.android.resourcepicker.model.PickResourceAction
+import com.passbolt.mobile.android.ui.NewMetadataKeyToTrustModel
 import com.passbolt.mobile.android.ui.OtpParseResult
 import com.passbolt.mobile.android.ui.ResourceModel
+import com.passbolt.mobile.android.ui.TrustedKeyDeletedModel
 
 interface ScanOtpSuccessContract {
 
@@ -40,12 +42,20 @@ interface ScanOtpSuccessContract {
         fun showError(message: String)
         fun showJsonResourceSchemaValidationError()
         fun showJsonSecretSchemaValidationError()
+        fun showCannotUpdateTotpWithCurrentConfig()
+        fun showMetadataKeyModifiedDialog(model: NewMetadataKeyToTrustModel)
+        fun showMetadataKeyDeletedDialog(model: TrustedKeyDeletedModel)
+        fun showFailedToVerifyMetadataKey()
+        fun showNewMetadataKeyIsTrusted()
+        fun showFailedToTrustMetadataKey()
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
         fun createStandaloneOtpClick()
-        fun argsRetrieved(scannedTotp: OtpParseResult.OtpQr.TotpQr)
+        fun argsRetrieved(scannedTotp: OtpParseResult.OtpQr.TotpQr, parentFolderId: String?)
         fun linkToResourceClick()
         fun linkedResourceReceived(action: PickResourceAction, resource: ResourceModel)
+        fun trustedMetadataKeyDeleted(model: TrustedKeyDeletedModel)
+        fun trustNewMetadataKey(model: NewMetadataKeyToTrustModel)
     }
 }

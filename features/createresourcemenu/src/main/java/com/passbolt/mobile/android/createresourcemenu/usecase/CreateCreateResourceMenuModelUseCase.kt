@@ -24,25 +24,63 @@
 package com.passbolt.mobile.android.createresourcemenu.usecase
 
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
+import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
 import com.passbolt.mobile.android.featureflags.usecase.GetFeatureFlagsUseCase
+import com.passbolt.mobile.android.metadata.usecase.GetMetadataTypesSettingsUseCase
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType
 import com.passbolt.mobile.android.ui.CreateResourceMenuModel
 import com.passbolt.mobile.android.ui.HomeDisplayViewModel
 import com.passbolt.mobile.android.ui.HomeDisplayViewModel.Folders
+import com.passbolt.mobile.android.ui.MetadataTypeModel
+import com.passbolt.mobile.android.ui.MetadataTypeModel.V4
+import com.passbolt.mobile.android.ui.MetadataTypeModel.V5
 
-class CreateCreateResourceMenuModelUseCase(private val getFeatureFlagsUseCase: GetFeatureFlagsUseCase) :
+class CreateCreateResourceMenuModelUseCase(
+    private val getFeatureFlagsUseCase: GetFeatureFlagsUseCase,
+    private val getMetadataTypesSettingsUseCase: GetMetadataTypesSettingsUseCase,
+    private val idToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider
+) :
     AsyncUseCase<CreateCreateResourceMenuModelUseCase.Input, CreateCreateResourceMenuModelUseCase.Output> {
 
     override suspend fun execute(input: Input): Output {
+        val defaultMetadataType = getMetadataTypesSettingsUseCase.execute(Unit)
+            .metadataTypesSettingsModel
+            .defaultMetadataType
+        val supportedContentTypes = idToSlugMappingProvider.provideMappingForSelectedAccount()
+            .values
+            .map { ContentType.fromSlug(it) }
         val isTotpFeatureFlagEnabled = getFeatureFlagsUseCase.execute(Unit).featureFlags.isTotpAvailable
         val isFoldersViewSelected = input.homeDisplay is Folders
 
         return Output(
             CreateResourceMenuModel(
-                isTotpEnabled = isTotpFeatureFlagEnabled,
+                isPasswordEnabled = isLeadingPasswordResourceSupported(defaultMetadataType, supportedContentTypes),
+                isTotpEnabled = isLeadingTotpResourceSupported(
+                    defaultMetadataType,
+                    supportedContentTypes
+                ) && isTotpFeatureFlagEnabled,
                 isFolderEnabled = isFoldersViewSelected
             )
         )
     }
+
+    private fun isLeadingPasswordResourceSupported(
+        defaultMetadataType: MetadataTypeModel,
+        supportedSlugs: List<ContentType>
+    ): Boolean =
+        when (defaultMetadataType) {
+            V4 -> supportedSlugs.contains(ContentType.PasswordAndDescription)
+            V5 -> supportedSlugs.contains(ContentType.V5Default)
+        }
+
+    private fun isLeadingTotpResourceSupported(
+        defaultMetadataType: MetadataTypeModel,
+        supportedSlugs: List<ContentType>
+    ): Boolean =
+        when (defaultMetadataType) {
+            V4 -> supportedSlugs.contains(ContentType.Totp)
+            V5 -> supportedSlugs.contains(ContentType.V5TotpStandalone)
+        }
 
     data class Input(
         // homeDisplay is null when the user is on home (totp tab)

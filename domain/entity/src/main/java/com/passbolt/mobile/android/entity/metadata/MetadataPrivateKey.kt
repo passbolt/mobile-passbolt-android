@@ -4,6 +4,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.ForeignKey.Companion.CASCADE
 import androidx.room.PrimaryKey
+import java.time.ZonedDateTime
 
 /**
  * Passbolt - Open source password manager for teams
@@ -39,10 +40,17 @@ import androidx.room.PrimaryKey
     ]
 )
 data class MetadataPrivateKey(
-    @PrimaryKey(autoGenerate = true)
-    val id: Long = 0,
+    @PrimaryKey
+    val id: String,
+    val pgpMessage: String,
     val metadataKeyId: String,
     val userId: String?,
     val data: String,
-    val passphrase: String
+    val passphrase: String,
+    val modified: ZonedDateTime,
+    val modifiedBy: String?,
+    val created: ZonedDateTime,
+    val createdBy: String?,
+    val domain: String,
+    val fingerprint: String
 )

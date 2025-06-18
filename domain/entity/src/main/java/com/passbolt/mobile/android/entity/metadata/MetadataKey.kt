@@ -35,6 +35,7 @@ data class MetadataKey(
     val id: String,
     val fingerprint: String?,
     val armoredKey: String,
+    val modified: ZonedDateTime,
     val expired: ZonedDateTime?,
     val deleted: ZonedDateTime?
 )

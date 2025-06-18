@@ -31,6 +31,7 @@ data class MetadataKeysResponseDto(
     val fingerprint: String,
     @SerializedName("armored_key")
     val armoredKey: String,
+    val modified: String,
     val expired: String?,
     val deleted: String?,
     @SerializedName("metadata_private_keys")
@@ -38,10 +39,17 @@ data class MetadataKeysResponseDto(
 )
 
 data class MetadataPrivateKeyDto(
+    val id: UUID,
     @SerializedName("user_id")
     val userId: UUID,
     @SerializedName("data")
     val encryptedKeyData: String,
     @SerializedName("metadata_key_id")
-    val metadataKeyId: UUID
+    val metadataKeyId: UUID,
+    val created: String,
+    @SerializedName("created_by")
+    val createdBy: UUID?,
+    val modified: String,
+    @SerializedName("modified_by")
+    val modifiedBy: UUID?
 )

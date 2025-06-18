@@ -13,11 +13,12 @@ import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpResult
 import com.passbolt.mobile.android.metadata.privatekeys.MetadataPrivateKeysValidator
 import com.passbolt.mobile.android.metadata.usecase.FetchMetadataKeysUseCase
 import com.passbolt.mobile.android.metadata.usecase.db.RebuildMetadataKeysTablesUseCase
+import com.passbolt.mobile.android.ui.DecryptedMetadataPrivateKeyJsonModel
 import com.passbolt.mobile.android.ui.MetadataKeyModel
-import com.passbolt.mobile.android.ui.MetadataPrivateKeyJsonModel
 import com.passbolt.mobile.android.ui.ParsedMetadataKeyModel
 import com.passbolt.mobile.android.ui.ParsedMetadataPrivateKeyModel
 import timber.log.Timber
+import java.time.ZonedDateTime
 
 /**
  * Passbolt - Open source password manager for teams
@@ -57,7 +58,7 @@ class MetadataKeysInteractor(
             is FetchMetadataKeysUseCase.Output.Success -> {
                 try {
                     saveMetadataKeys(response.metadataKeysModel)
-                } catch (e: PassphraseNotInCacheException) {
+                } catch (_: PassphraseNotInCacheException) {
                     Output.Failure(AuthenticationState.Unauthenticated(Passphrase))
                 }
             }
@@ -66,6 +67,7 @@ class MetadataKeysInteractor(
         }
     }
 
+    @Suppress("LongMethod")
     @Throws(PassphraseNotInCacheException::class)
     private suspend fun saveMetadataKeys(metadataKeysModel: List<MetadataKeyModel>): Output {
         val privateKey = getPrivateKeyUseCase.execute(Unit).privateKey
@@ -80,26 +82,35 @@ class MetadataKeysInteractor(
                         id = it.id,
                         armoredKey = it.armoredKey,
                         fingerprint = it.fingerprint,
+                        modified = it.modified,
                         expired = it.expired,
                         deleted = it.deleted,
                         metadataPrivateKeys = it.metadataPrivateKeys.mapNotNull { metadataPrivateKey ->
                             val decryptedKeyData = openPgp.decryptMessageArmored(
                                 privateKey,
                                 passphrase.passphrase,
-                                metadataPrivateKey.encryptedKeyData
+                                metadataPrivateKey.pgpMessage
                             )
                             when (decryptedKeyData) {
                                 is OpenPgpResult.Error -> null
                                 is OpenPgpResult.Result -> {
                                     val keyModel = gson.fromJson(
-                                        String(decryptedKeyData.result),
-                                        MetadataPrivateKeyJsonModel::class.java
+                                        decryptedKeyData.result,
+                                        DecryptedMetadataPrivateKeyJsonModel::class.java
                                     )
                                     if (metadataPrivateKeysValidator.isValid(keyModel)) {
                                         ParsedMetadataPrivateKeyModel(
+                                            id = metadataPrivateKey.id,
                                             userId = metadataPrivateKey.userId,
                                             keyData = keyModel.armoredKey,
-                                            passphrase = keyModel.passphrase
+                                            passphrase = keyModel.passphrase,
+                                            pgpMessage = metadataPrivateKey.pgpMessage,
+                                            created = ZonedDateTime.parse(metadataPrivateKey.created),
+                                            createdBy = metadataPrivateKey.createdBy,
+                                            modified = ZonedDateTime.parse(metadataPrivateKey.modified),
+                                            modifiedBy = metadataPrivateKey.modifiedBy,
+                                            fingerprint = keyModel.fingerprint,
+                                            domain = keyModel.domain
                                         )
                                     } else {
                                         Timber.e(

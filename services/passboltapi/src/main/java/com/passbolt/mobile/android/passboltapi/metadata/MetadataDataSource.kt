@@ -34,6 +34,8 @@ interface MetadataDataSource {
 
     suspend fun getMetadataKeys(): List<MetadataKeysResponseDto>
 
+    suspend fun putMetadataPrivateKey(uuid: String, request: EncryptedDataRequest)
+
     suspend fun getMetadataTypesSettings(): MetadataTypesSettingsResponseDto
 
     suspend fun getMetadataKeysSettings(): MetadataKeysSettingsResponseDto

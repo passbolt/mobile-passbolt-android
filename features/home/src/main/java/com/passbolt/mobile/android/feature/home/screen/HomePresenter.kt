@@ -34,7 +34,7 @@ import com.passbolt.mobile.android.common.extension.areListsEmpty
 import com.passbolt.mobile.android.common.search.Searchable
 import com.passbolt.mobile.android.common.search.SearchableMatcher
 import com.passbolt.mobile.android.core.accounts.usecase.accountdata.GetSelectedAccountDataUseCase
-import com.passbolt.mobile.android.core.autofill.urlmatcher.AutofillUrlMatcher
+import com.passbolt.mobile.android.core.autofill.urlmatcher.AutofillUriMatcher
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalFolderDetailsUseCase
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalResourcesAndFoldersUseCase
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalSubFolderResourcesFilteredUseCase
@@ -99,7 +99,7 @@ class HomePresenter(
     private val getLocalResourcesWithGroupsUseCase: GetLocalResourcesWithGroupUseCase,
     private val getHomeDisplayViewPrefsUseCase: GetHomeDisplayViewPrefsUseCase,
     private val homeModelMapper: HomeDisplayViewMapper,
-    private val autofillMatcher: AutofillUrlMatcher,
+    private val autofillMatcher: AutofillUriMatcher,
     private val getLocalFolderUseCase: GetLocalFolderDetailsUseCase,
     private val deleteResourceIdlingResource: DeleteResourceIdlingResource,
     private val totpParametersProvider: TotpParametersProvider,
@@ -704,7 +704,7 @@ class HomePresenter(
     }
 
     override fun deleteResourceConfirmed() {
-        coroutineScope.launch {
+        runWhileShowingProgress {
             deleteResourceIdlingResource.setIdle(false)
             performCommonResourceAction(
                 action = { resourceCommonActionsInteractor.deleteResource() },
@@ -846,6 +846,11 @@ class HomePresenter(
         )
     }
 
+    override fun createTotpClick() {
+        val parentFolderId = (homeView as? HomeDisplayViewModel.Folders)?.activeFolder?.folderId
+        view?.navigateToScanTotp(parentFolderId)
+    }
+
     override fun closeClick() {
         view?.finish()
     }
@@ -951,5 +956,13 @@ class HomePresenter(
 
     override fun onCreateResourceClick() {
         view?.showCreateResourceMenu(homeView)
+    }
+
+    private fun runWhileShowingProgress(action: suspend () -> Unit) {
+        coroutineScope.launch {
+            view?.showProgress()
+            action()
+            view?.hideProgress()
+        }
     }
 }

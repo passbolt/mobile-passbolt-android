@@ -3,7 +3,7 @@ package com.passbolt.mobile.android.core.autofill
 import com.passbolt.mobile.android.core.autofill.accessibility.AccessibilityOperationsProvider
 import com.passbolt.mobile.android.core.autofill.system.AutofillHintsFactory
 import com.passbolt.mobile.android.core.autofill.system.FillableInputsFinder
-import com.passbolt.mobile.android.core.autofill.urlmatcher.AutofillUrlMatcher
+import com.passbolt.mobile.android.core.autofill.urlmatcher.AutofillUriMatcher
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
@@ -35,7 +35,7 @@ import org.koin.dsl.module
 val autofillModule = module {
     factoryOf(::FillableInputsFinder)
     singleOf(::AccessibilityOperationsProvider)
-    singleOf(::AutofillUrlMatcher)
+    singleOf(::AutofillUriMatcher)
     factory {
         AutofillHintsFactory(
             resources = get(),

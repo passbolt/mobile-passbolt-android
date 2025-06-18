@@ -29,7 +29,13 @@ import com.passbolt.mobile.android.core.resources.actions.ResourceCreateActionsI
 import com.passbolt.mobile.android.core.resources.actions.ResourceUpdateActionsInteractor
 import com.passbolt.mobile.android.core.resources.actions.performResourceCreateAction
 import com.passbolt.mobile.android.core.resources.actions.performResourceUpdateAction
+import com.passbolt.mobile.android.core.resources.usecase.GetDefaultCreateContentTypeUseCase
+import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
+import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.SecretJsonModel
+import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
+import com.passbolt.mobile.android.jsonmodel.delegates.TotpSecret
+import com.passbolt.mobile.android.metadata.interactor.MetadataPrivateKeysHelperInteractor
 import com.passbolt.mobile.android.resourcepicker.model.PickResourceAction
 import com.passbolt.mobile.android.serializers.jsonschema.SchemaEntity
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType
@@ -37,8 +43,12 @@ import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordAn
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordDescriptionTotp
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5Default
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5DefaultWithTotp
+import com.passbolt.mobile.android.ui.LeadingContentType
+import com.passbolt.mobile.android.ui.MetadataJsonModel
+import com.passbolt.mobile.android.ui.NewMetadataKeyToTrustModel
 import com.passbolt.mobile.android.ui.OtpParseResult
 import com.passbolt.mobile.android.ui.ResourceModel
+import com.passbolt.mobile.android.ui.TrustedKeyDeletedModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
@@ -46,21 +56,27 @@ import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import org.koin.core.parameter.parametersOf
+import timber.log.Timber
 import java.util.UUID
 
 class ScanOtpSuccessPresenter(
     private val idToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider,
+    private val getDefaultCreateContentTypeUseCase: GetDefaultCreateContentTypeUseCase,
+    private val metadataPrivateKeysHelperInteractor: MetadataPrivateKeysHelperInteractor,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : BaseAuthenticatedPresenter<ScanOtpSuccessContract.View>(coroutineLaunchContext),
     ScanOtpSuccessContract.Presenter, KoinComponent {
 
     override var view: ScanOtpSuccessContract.View? = null
-    private lateinit var scannedTotp: OtpParseResult.OtpQr.TotpQr
     private val job = SupervisorJob()
     private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
 
-    override fun argsRetrieved(scannedTotp: OtpParseResult.OtpQr.TotpQr) {
+    private lateinit var scannedTotp: OtpParseResult.OtpQr.TotpQr
+    private var parentFolderId: String? = null
+
+    override fun argsRetrieved(scannedTotp: OtpParseResult.OtpQr.TotpQr, parentFolderId: String?) {
         this.scannedTotp = scannedTotp
+        this.parentFolderId = parentFolderId
     }
 
     override fun createStandaloneOtpClick() {
@@ -69,23 +85,39 @@ class ScanOtpSuccessPresenter(
             val resourceCreateActionsInteractor = get<ResourceCreateActionsInteractor> {
                 parametersOf(needSessionRefreshFlow, sessionRefreshedFlow)
             }
+            val defaultType = getDefaultCreateContentTypeUseCase.execute(
+                GetDefaultCreateContentTypeUseCase.Input(LeadingContentType.TOTP)
+            )
+
             performResourceCreateAction(
                 action = {
-                    resourceCreateActionsInteractor.createStandaloneTotpResource(
-                        label = scannedTotp.label,
-                        resourceUsername = null,
-                        issuer = scannedTotp.issuer,
-                        period = scannedTotp.period,
-                        digits = scannedTotp.digits,
-                        algorithm = scannedTotp.algorithm.name,
-                        secretKey = scannedTotp.secret,
-                        resourceParentFolderId = null
+                    resourceCreateActionsInteractor.createGenericResource(
+                        resourceParentFolderId = parentFolderId,
+                        contentType = defaultType.contentType,
+                        metadataJsonModel = MetadataJsonModel.empty().apply {
+                            name = scannedTotp.label
+                            scannedTotp.issuer?.let {
+                                setMainUri(defaultType.contentType, it)
+                            }
+                        },
+                        secretJsonModel = SecretJsonModel.emptyTotp().apply {
+                            totp = TotpSecret(
+                                algorithm = scannedTotp.algorithm.name,
+                                key = scannedTotp.secret,
+                                period = scannedTotp.period,
+                                digits = scannedTotp.digits
+                            )
+                        }
                     )
                 },
                 doOnFailure = { view?.showGenericError() },
                 doOnCryptoFailure = { view?.showEncryptionError(it) },
                 doOnSchemaValidationFailure = ::handleSchemaValidationFailure,
-                doOnSuccess = { view?.navigateToOtpList(scannedTotp, otpCreated = true) }
+                doOnSuccess = { view?.navigateToOtpList(scannedTotp, otpCreated = true) },
+                doOnCannotCreateWithCurrentConfig = { view?.showCannotUpdateTotpWithCurrentConfig() },
+                doOnMetadataKeyModified = { view?.showMetadataKeyModifiedDialog(it) },
+                doOnMetadataKeyDeleted = { view?.showMetadataKeyDeletedDialog(it) },
+                doOnMetadataKeyVerificationFailure = { view?.showFailedToVerifyMetadataKey() }
             )
             view?.hideProgress()
         }
@@ -109,33 +141,35 @@ class ScanOtpSuccessPresenter(
                 parametersOf(resource, needSessionRefreshFlow, sessionRefreshedFlow)
             }
             val updateOperation =
-                when (val contentType = ContentType.fromSlug(slug!!)) {
+                when (ContentType.fromSlug(slug!!)) {
                     is PasswordAndDescription, V5Default -> suspend {
-                        resourceUpdateActionsInteractor.addTotpToResource(
-                            overrideName = resource.metadataJsonModel.name,
-                            overrideUri = if (contentType.isV5()) {
-                                resource.metadataJsonModel.uris?.firstOrNull()
-                            } else {
-                                resource.metadataJsonModel.uri
-                            },
-                            period = scannedTotp.period,
-                            digits = scannedTotp.digits,
-                            algorithm = scannedTotp.algorithm.name,
-                            secretKey = scannedTotp.secret
+                        resourceUpdateActionsInteractor.updateGenericResource(
+                            UpdateAction.ADD_TOTP,
+                            secretModification = {
+                                it.apply {
+                                    totp = TotpSecret(
+                                        algorithm = scannedTotp.algorithm.name,
+                                        key = scannedTotp.secret,
+                                        period = scannedTotp.period,
+                                        digits = scannedTotp.digits
+                                    )
+                                }
+                            }
                         )
                     }
                     is PasswordDescriptionTotp, V5DefaultWithTotp -> suspend {
-                        resourceUpdateActionsInteractor.updateLinkedTotpResourceTotpFields(
-                            label = resource.metadataJsonModel.name,
-                            issuer = if (contentType.isV5()) {
-                                resource.metadataJsonModel.uris?.firstOrNull()
-                            } else {
-                                resource.metadataJsonModel.uri
-                            },
-                            period = scannedTotp.period,
-                            digits = scannedTotp.digits,
-                            algorithm = scannedTotp.algorithm.name,
-                            secretKey = scannedTotp.secret
+                        resourceUpdateActionsInteractor.updateGenericResource(
+                            UpdateAction.ADD_TOTP,
+                            secretModification = {
+                                it.apply {
+                                    totp = TotpSecret(
+                                        algorithm = scannedTotp.algorithm.name,
+                                        key = scannedTotp.secret,
+                                        period = scannedTotp.period,
+                                        digits = scannedTotp.digits
+                                    )
+                                }
+                            }
                         )
                     }
                     else ->
@@ -147,7 +181,11 @@ class ScanOtpSuccessPresenter(
                 doOnFetchFailure = { view?.showGenericError() },
                 doOnCryptoFailure = { view?.showEncryptionError(it) },
                 doOnSchemaValidationFailure = ::handleSchemaValidationFailure,
-                doOnSuccess = { view?.navigateToOtpList(totp = scannedTotp, otpCreated = true) }
+                doOnSuccess = { view?.navigateToOtpList(totp = scannedTotp, otpCreated = true) },
+                doOnCannotEditWithCurrentConfig = { view?.showCannotUpdateTotpWithCurrentConfig() },
+                doOnMetadataKeyModified = { view?.showMetadataKeyModifiedDialog(it) },
+                doOnMetadataKeyDeleted = { view?.showMetadataKeyDeletedDialog(it) },
+                doOnMetadataKeyVerificationFailure = { view?.showFailedToVerifyMetadataKey() }
             )
 
             view?.hideProgress()
@@ -161,5 +199,28 @@ class ScanOtpSuccessPresenter(
     override fun detach() {
         scope.coroutineContext.cancelChildren()
         super<BaseAuthenticatedPresenter>.detach()
+    }
+
+    override fun trustedMetadataKeyDeleted(model: TrustedKeyDeletedModel) {
+        scope.launch {
+            metadataPrivateKeysHelperInteractor.deletedTrustedMetadataPrivateKey()
+        }
+    }
+
+    override fun trustNewMetadataKey(model: NewMetadataKeyToTrustModel) {
+        scope.launch {
+            view?.showProgress()
+            when (val output = runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+                metadataPrivateKeysHelperInteractor.trustNewKey(model)
+            }) {
+                is MetadataPrivateKeysHelperInteractor.Output.Success ->
+                    view?.showNewMetadataKeyIsTrusted()
+                else -> {
+                    Timber.e("Failed to trust new metadata key: $output")
+                    view?.showFailedToTrustMetadataKey()
+                }
+            }
+            view?.hideProgress()
+        }
     }
 }

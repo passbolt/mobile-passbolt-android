@@ -70,6 +70,10 @@
         app:popEnterAnim="@anim/slide_in_left"
         app:popExitAnim="@anim/slide_out_right">
         <argument
+            android:name="parentFolderId"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
             android:name="scanOtpMode"
             app:argType="com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpMode" />
     </action>

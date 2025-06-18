@@ -8,7 +8,7 @@ import com.passbolt.mobile.android.feature.resourceform.main.ResourceModelHandle
 import com.passbolt.mobile.android.feature.resourceform.main.mockFullDataRefreshExecutor
 import com.passbolt.mobile.android.feature.resourceform.main.mockGetDefaultCreateContentTypeUseCase
 import com.passbolt.mobile.android.feature.resourceform.main.testResourceFormModule
-import com.passbolt.mobile.android.feature.resourceform.usecase.GetDefaultCreateContentTypeUseCase
+import com.passbolt.mobile.android.core.resources.usecase.GetDefaultCreateContentTypeUseCase
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType
 import com.passbolt.mobile.android.ui.LeadingContentType
 import com.passbolt.mobile.android.ui.MetadataTypeModel

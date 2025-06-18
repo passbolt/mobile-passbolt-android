@@ -15,11 +15,15 @@ dependencies {
     implementation project(':accounts')
     implementation project(':passphrasememorycache')
     implementation project(':entity')
+    implementation project(':architecture')
 
+    implementation(name: "gopenpgp", ext: "aar")
     implementation libs.koin
     implementation libs.gson
     implementation libs.jsonschema.friend
     implementation libs.room.core
+
+    testImplementation project(':commontest')
 }
 
 android {
