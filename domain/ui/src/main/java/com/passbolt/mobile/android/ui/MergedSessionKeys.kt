@@ -1,8 +1,9 @@
 package com.passbolt.mobile.android.ui
 
 import java.time.ZonedDateTime
+import java.util.concurrent.ConcurrentHashMap
 
 data class MergedSessionKeys(
-    val keys: HashMap<SessionKeyIdentifier, SessionKeyModel> = hashMapOf(),
-    val originMetadata: HashMap<String, ZonedDateTime> = hashMapOf(),
+    val keys: ConcurrentHashMap<SessionKeyIdentifier, SessionKeyModel> = ConcurrentHashMap(),
+    val originMetadata: ConcurrentHashMap<String, ZonedDateTime> = ConcurrentHashMap(),
 )

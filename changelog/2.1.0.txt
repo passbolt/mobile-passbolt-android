@@ -1,0 +1,23 @@
+# Passbolt 2.1.0-37 Android app release notes
+
+## Added
+- MOB-2682: Add translations for 16 new languages including Chinese Simplified, Dutch, French, German, Italian, Japanese, Korean, Lithuanian, Polish, Portuguese Brazilian, Romanian, Russian, Slovenian, Spanish, Swedish, Ukrainian
+- MOB-2657: Support resource type *deleted* property
+- MOB-5270: Match autofill suggestion URLs by subdomains
+- MOB-2635: Block share on RBAC setting
+
+## Improved
+- MOB-2634: Password list decryption and processing performance boost
+- MOB-2656: Edit form issue when switching from password string to complex types during edit
+- MOB-2604: Create password in a personal folder - switched from share simulation to checking permissions
+- MOB-2648: Sort expired items by expiry ascending
+
+## Fixed
+- MOB-2674: TOTP created inside folder was being created in the root
+
+## Security
+- MOB-2626: Added metadata key pinning mechanism
+- MOB-2597: Update gopenpgp from version 2 to version 3
+
+## Maintenance
+- MOB-2504: Integrate Snyk security scanner

@@ -49,11 +49,6 @@ class SessionKeysMemoryCache {
         isLocallyModified = true
     }
 
-    fun hasCachedKey(
-        model: String,
-        id: UUID,
-    ): Boolean = value.keys.containsKey(SessionKeyIdentifier(model, id))
-
     fun getSessionKeyHexString(
         model: String,
         id: UUID,

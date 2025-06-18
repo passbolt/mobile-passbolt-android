@@ -11,6 +11,7 @@ import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalFolderP
 import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
 import com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import com.passbolt.mobile.android.core.resources.actions.ResourceUpdateActionsInteractor
 import com.passbolt.mobile.android.core.resources.usecase.ResourceShareInteractor
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcePermissionsUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUseCase
@@ -18,7 +19,7 @@ import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdT
 import com.passbolt.mobile.android.jsonmodel.JSON_MODEL_GSON
 import com.passbolt.mobile.android.jsonmodel.jsonpathops.JsonPathJsonPathOps
 import com.passbolt.mobile.android.jsonmodel.jsonpathops.JsonPathsOps
-import com.passbolt.mobile.android.metadata.usecase.db.GetLocalMetadataKeysUseCase
+import com.passbolt.mobile.android.metadata.interactor.MetadataPrivateKeysHelperInteractor
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier.named
@@ -57,7 +58,8 @@ internal val mockGetLocalResourceUseCase = mock<GetLocalResourceUseCase>()
 internal val mockGetLocalFolderPermissionsUseCase = mock<GetLocalFolderPermissionsUseCase>()
 internal val mockGetLocalFolderUseCase = mock<GetLocalFolderDetailsUseCase>()
 internal val mockResourceTypeIdToSlugMappingProvider = mock<ResourceTypeIdToSlugMappingProvider>()
-internal val mockGetLocalMetadataKeysUseCase = mock<GetLocalMetadataKeysUseCase>()
+internal val mockMetadataPrivateKeysHelperInteractor = mock<MetadataPrivateKeysHelperInteractor>()
+internal val mockResourceUpdateActionsInteractor = mock<ResourceUpdateActionsInteractor>()
 
 @ExperimentalCoroutinesApi
 internal val testResourcePermissionsModule =
@@ -76,6 +78,7 @@ internal val testResourcePermissionsModule =
                 homeDataInteractor = mockHomeDataInteractor,
                 coroutineLaunchContext = get(),
                 resourceTypeIdToSlugMappingProvider = mockResourceTypeIdToSlugMappingProvider,
+                metadataPrivateKeysHelperInteractor = mockMetadataPrivateKeysHelperInteractor,
             )
         }
         single(named(JSON_MODEL_GSON)) { Gson() }
@@ -88,4 +91,5 @@ internal val testResourcePermissionsModule =
                 .build()
         }
         singleOf(::JsonPathJsonPathOps) bind JsonPathsOps::class
+        single { mockResourceUpdateActionsInteractor }
     }

@@ -71,9 +71,13 @@ class NewMetadataKeyTrustDialog :
     }
 
     private fun showValues(binding: DialogNewMetadataKeyTrustBinding) {
-        fingerprintFormatter.format(bundledNewKeyToTrust.signatureKeyFingerprint, appendMiddleSpacing = true)?.let {
-            binding.fingerprint.text = it.uppercase()
-        }
+        fingerprintFormatter
+            .format(
+                bundledNewKeyToTrust.metadataPrivateKey.fingerprint,
+                appendMiddleSpacing = true,
+            )?.let {
+                binding.fingerprint.text = it.uppercase()
+            }
         binding.message1.text =
             getString(
                 LocalizationR.string.dialog_new_metadata_key_trust_modified_by_user,

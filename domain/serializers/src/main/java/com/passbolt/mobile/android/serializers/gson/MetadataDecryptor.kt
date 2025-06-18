@@ -24,6 +24,7 @@
 package com.passbolt.mobile.android.serializers.gson
 
 import com.passbolt.mobile.android.core.accounts.usecase.privatekey.GetSelectedUserPrivateKeyUseCase
+import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.passphrasememorycache.PassphraseMemoryCache
 import com.passbolt.mobile.android.core.passphrasememorycache.PotentialPassphrase
 import com.passbolt.mobile.android.dto.response.MetadataKeyTypeDto.PERSONAL
@@ -34,7 +35,11 @@ import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpResult
 import com.passbolt.mobile.android.metadata.sessionkeys.ForeignModel.RESOURCE
 import com.passbolt.mobile.android.metadata.sessionkeys.SessionKeysMemoryCache
 import com.passbolt.mobile.android.ui.ParsedMetadataKeyModel
+import com.proton.gopenpgp.crypto.Crypto
+import com.proton.gopenpgp.crypto.Key
+import kotlinx.coroutines.withContext
 import timber.log.Timber
+import java.util.concurrent.ConcurrentHashMap
 
 class MetadataDecryptor(
     private val getSelectedUserPrivateKeyUseCase: GetSelectedUserPrivateKeyUseCase,
@@ -42,77 +47,83 @@ class MetadataDecryptor(
     private val metadataKeys: List<ParsedMetadataKeyModel>,
     private val openPgp: OpenPgp,
     private val sessionKeysCache: SessionKeysMemoryCache,
+    private val coroutineLaunchContext: CoroutineLaunchContext,
 ) {
+    private val cachedSharedKeys = ConcurrentHashMap<String, Key>()
+    private var cachedPersonalKey =
+        let {
+            val privateKey = getSelectedUserPrivateKeyUseCase.execute(Unit).privateKey
+            require(privateKey != null) { "Selected user private key not found" }
+            val passphrase = passphraseMemoryCache.get()
+            require(passphrase is PotentialPassphrase.Passphrase) { "Passphrase not present in cache" }
+            Crypto.newPrivateKeyFromArmored(privateKey, passphrase.passphrase)
+        }
+
     suspend fun decryptMetadata(resource: ResourceResponseV5Dto): Output {
         return try {
-            val (key, passphrase) = getKeyAndPassphrase(resource)
+            withContext(coroutineLaunchContext.io) {
+                // decrypt using cached session key
+                val cachedSessionKey = sessionKeysCache.getSessionKeyHexString(RESOURCE.value, resource.id)
+                if (cachedSessionKey != null) {
+                    val decryptUsingCachedResult =
+                        openPgp.decryptMessageArmoredWithSessionKey(
+                            cachedSessionKey,
+                            resource.metadata,
+                        )
+                    // if result is success, return it; otherwise, fallback to full decrypt
+                    // session key may not be valid but we know it only when trying to use it and it fails
+                    if (decryptUsingCachedResult is OpenPgpResult.Result) {
+                        return@withContext Output.Success(decryptUsingCachedResult.result)
+                    }
+                }
 
-            // decrypt using cached session key
-            if (sessionKeysCache.hasCachedKey(RESOURCE.value, resource.id)) {
-                val cachedSessionKey =
-                    // not null because of hasCachedKey check
-                    requireNotNull(
-                        sessionKeysCache.getSessionKeyHexString(RESOURCE.value, resource.id),
-                    )
-                val decryptUsingCachedResult =
-                    openPgp.decryptMessageArmoredWithSessionKey(
-                        cachedSessionKey,
+                // fallback to full decrypt
+                val fullDecryptResult =
+                    openPgp.decryptMessageArmoredWithSessionKeyRetrieve(
+                        getUnlockedKey(resource),
                         resource.metadata,
                     )
-                // if result is success, return it; otherwise, fallback to full decrypt
-                // session key may not be valid but we know it only when trying to use it and it fails
-                if (decryptUsingCachedResult is OpenPgpResult.Result) {
-                    return Output.Success(decryptUsingCachedResult.result)
+                require(fullDecryptResult is OpenPgpResult.Result) {
+                    "Failed to decrypt with session key retrieve for resource id=(${resource.id}), skipping"
                 }
+
+                sessionKeysCache.put(RESOURCE.value, resource.id, fullDecryptResult.result.sessionKeyHex)
+
+                Output.Success(fullDecryptResult.result.decryptedMessage)
             }
-
-            // fallback to full decrypt
-            val sessionKey = openPgp.decryptSessionKey(key, passphrase, resource.metadata)
-            require(sessionKey is OpenPgpResult.Result) {
-                "Failed to decrypt session key id=(${resource.id}), skipping"
-            }
-
-            sessionKeysCache.put(RESOURCE.value, resource.id, sessionKey.result)
-
-            val decryptedMetadata =
-                openPgp.decryptMessageArmoredWithSessionKey(
-                    sessionKey.result,
-                    resource.metadata,
-                )
-
-            require(decryptedMetadata is OpenPgpResult.Result) {
-                "Failed to decrypt resource id=(${resource.id}), skipping"
-            }
-
-            Output.Success(decryptedMetadata.result)
         } catch (exception: Exception) {
             Timber.e(exception, "Exception during metadata decryption")
             Output.Failure(exception)
         }
     }
 
-    private fun getKeyAndPassphrase(resource: ResourceResponseV5Dto): KeyToPassphrase =
+    private fun getUnlockedKey(resource: ResourceResponseV5Dto): Key =
         when (resource.metadataKeyType) {
             SHARED -> {
-                val metadataPrivateKey =
-                    metadataKeys
-                        .firstOrNull { it.id == resource.metadataKeyId }
-                        ?.metadataPrivateKeys
-                        ?.firstOrNull()
+                val cachedKey = cachedSharedKeys[resource.metadataKeyId.toString()]
+                if (cachedKey != null) {
+                    cachedKey
+                } else {
+                    val metadataPrivateKey =
+                        metadataKeys
+                            .firstOrNull { it.id == resource.metadataKeyId }
+                            ?.metadataPrivateKeys
+                            ?.firstOrNull()
 
-                require(metadataPrivateKey != null) {
-                    "Metadata private key for resource id=(${resource.id}) not found, skipping"
+                    require(metadataPrivateKey != null) {
+                        "Metadata private key for resource id=(${resource.id}) not found, skipping"
+                    }
+
+                    Crypto
+                        .newPrivateKeyFromArmored(
+                            metadataPrivateKey.keyData,
+                            metadataPrivateKey.passphrase.toByteArray(),
+                        ).also {
+                            cachedSharedKeys[resource.metadataKeyId.toString()] = it
+                        }
                 }
-
-                metadataPrivateKey.keyData to metadataPrivateKey.passphrase.toByteArray()
             }
-            PERSONAL -> {
-                val privateKey = getSelectedUserPrivateKeyUseCase.execute(Unit).privateKey
-                require(privateKey != null) { "Selected user private key not found" }
-                val passphrase = passphraseMemoryCache.get()
-                require(passphrase is PotentialPassphrase.Passphrase) { "Passphrase not present in cache" }
-                privateKey to passphrase.passphrase
-            }
+            PERSONAL -> cachedPersonalKey
         }
 
     sealed class Output {

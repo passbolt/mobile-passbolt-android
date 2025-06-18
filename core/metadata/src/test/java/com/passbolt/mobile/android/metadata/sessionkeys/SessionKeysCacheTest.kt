@@ -24,44 +24,49 @@
 package com.passbolt.mobile.android.metadata.sessionkeys
 
 import com.google.common.truth.Truth.assertThat
+import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.dto.request.SessionKeyDto
 import com.passbolt.mobile.android.dto.request.SessionKeysBundleDto
 import com.passbolt.mobile.android.dto.response.DecryptedMetadataSessionKeysBundleModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runTest
 import org.junit.Test
 import java.time.ZonedDateTime
 import java.util.UUID
 
 class SessionKeysCacheTest {
-    private val sessionKeysBundleMerger = SessionKeysBundleMerger()
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val sessionKeysBundleMerger = SessionKeysBundleMerger(TestCoroutineLaunchContext())
     private val sessionKeysCache = SessionKeysMemoryCache()
 
     @Test
-    fun `most recently modified origin should be returned correctly`() {
-        val keys1 = emptyList<SessionKeyDto>()
-        val keys2 = emptyList<SessionKeyDto>()
-        val bundle1Id = UUID.randomUUID()
-        val bundle1 =
-            DecryptedMetadataSessionKeysBundleModel(
-                id = bundle1Id,
-                created = ZonedDateTime.now(),
-                modified = ZonedDateTime.now(),
-                bundle = SessionKeysBundleDto("PASSBOLT_SESSION_KEYS", keys1),
-            )
-        val bundle2Id = UUID.randomUUID()
-        val bundle2 =
-            DecryptedMetadataSessionKeysBundleModel(
-                id = bundle2Id,
-                created = ZonedDateTime.now().plusDays(1),
-                modified = ZonedDateTime.now().plusDays(1),
-                bundle = SessionKeysBundleDto("PASSBOLT_SESSION_KEYS", keys2),
-            )
+    fun `most recently modified origin should be returned correctly`() =
+        runTest {
+            val keys1 = emptyList<SessionKeyDto>()
+            val keys2 = emptyList<SessionKeyDto>()
+            val bundle1Id = UUID.randomUUID()
+            val bundle1 =
+                DecryptedMetadataSessionKeysBundleModel(
+                    id = bundle1Id,
+                    created = ZonedDateTime.now(),
+                    modified = ZonedDateTime.now(),
+                    bundle = SessionKeysBundleDto("PASSBOLT_SESSION_KEYS", keys1),
+                )
+            val bundle2Id = UUID.randomUUID()
+            val bundle2 =
+                DecryptedMetadataSessionKeysBundleModel(
+                    id = bundle2Id,
+                    created = ZonedDateTime.now().plusDays(1),
+                    modified = ZonedDateTime.now().plusDays(1),
+                    bundle = SessionKeysBundleDto("PASSBOLT_SESSION_KEYS", keys2),
+                )
 
-        val result = sessionKeysBundleMerger.merge(listOf(bundle1, bundle2))
-        sessionKeysCache.value = result
+            val result = sessionKeysBundleMerger.merge(listOf(bundle1, bundle2))
+            sessionKeysCache.value = result
 
-        val mostRecentCacheItem = sessionKeysCache.findLatestModifiedOriginBundleData()
-        assertThat(mostRecentCacheItem).isNotNull()
-        assertThat(mostRecentCacheItem!!.originBundleId).isEqualTo(bundle2Id.toString())
-        assertThat(mostRecentCacheItem.modifiedDate).isEqualTo(bundle2.modified)
-    }
+            val mostRecentCacheItem = sessionKeysCache.findLatestModifiedOriginBundleData()
+            assertThat(mostRecentCacheItem).isNotNull()
+            assertThat(mostRecentCacheItem!!.originBundleId).isEqualTo(bundle2Id.toString())
+            assertThat(mostRecentCacheItem.modifiedDate).isEqualTo(bundle2.modified)
+        }
 }
