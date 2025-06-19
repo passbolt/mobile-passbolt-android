@@ -373,6 +373,7 @@
     <string name="settings_app_settings_autofill">Autofill</string>
     <string name="settings_app_settings_fingerprint">Fingerprint</string>
     <string name="settings_app_settings_biometry_error">Biometry error. %s</string>
+    <string name="settings_app_settings_biometry_authentication_error">Biometry authentication error. %s</string>
     <string name="settings_app_settings_expert_settings">Expert settings</string>
 
     <string name="settings_app_settings_expert_settings_dev_mode">Developer mode</string>

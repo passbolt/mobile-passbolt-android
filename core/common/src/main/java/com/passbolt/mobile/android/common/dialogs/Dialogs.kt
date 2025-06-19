@@ -81,41 +81,6 @@ fun cancelTransferAccountAlertDialog(
     .setNegativeButton(LocalizationR.string.cancel) { _, _ -> }
     .create()
 
-fun configureFingerprintFirstDialog(
-    context: Context,
-    confirmAction: () -> Unit,
-) = AlertDialog
-    .Builder(context)
-    .setTitle(LocalizationR.string.settings_add_first_fingerprint_title)
-    .setMessage(LocalizationR.string.settings_add_first_fingerprint)
-    .setPositiveButton(LocalizationR.string.settings_add_first_fingerprint_settings) { _, _ -> confirmAction() }
-    .setNegativeButton(LocalizationR.string.cancel) { _, _ -> }
-    .setCancelable(false)
-    .create()
-
-fun disableFingerprintConfirmationDialog(
-    context: Context,
-    confirmAction: () -> Unit,
-    cancelAction: () -> Unit,
-) = AlertDialog
-    .Builder(context)
-    .setTitle(LocalizationR.string.are_you_sure)
-    .setMessage(LocalizationR.string.settings_disable_fingerprint_confirmation_message)
-    .setPositiveButton(LocalizationR.string.settings_disable) { _, _ -> confirmAction() }
-    .setNegativeButton(LocalizationR.string.cancel) { _, _ -> cancelAction() }
-    .create()
-
-fun keyChangesDetectedAlertDialog(
-    context: Context,
-    confirmAction: () -> Unit,
-) = AlertDialog
-    .Builder(context)
-    .setTitle(LocalizationR.string.fingerprint_biometric_changed_title)
-    .setMessage(LocalizationR.string.fingerprint_authenticate_again)
-    .setPositiveButton(LocalizationR.string.got_it) { _, _ -> confirmAction() }
-    .setCancelable(false)
-    .create()
-
 fun confirmResourceDeletionAlertDialog(
     context: Context,
     confirmAction: () -> Unit,

@@ -1,7 +1,4 @@
-package com.passbolt.mobile.android.feature.settings.screen.appsettings
-
-import org.koin.androidx.viewmodel.dsl.viewModelOf
-import org.koin.core.module.Module
+package com.passbolt.mobile.android.ui
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,7 +22,8 @@ import org.koin.core.module.Module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-
-fun Module.appSettingsModule() {
-    viewModelOf(::AppSettingsViewModel)
+enum class BiometricAuthError {
+    GENERIC,
+    ERROR_LOCKOUT,
+    ERROR_LOCKOUT_PERMANENT,
 }

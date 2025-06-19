@@ -1,6 +1,5 @@
 package com.passbolt.mobile.android.feature.authentication.auth
 
-import androidx.biometric.BiometricPrompt
 import com.passbolt.mobile.android.core.idlingresource.SignInIdlingResource
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeDecryptor
@@ -77,9 +76,6 @@ fun Module.authModule() {
         scopedOf(::SignInVerifyInteractor)
         scopedOf(::GopenPgpTimeUpdater)
         scopedOf(::PostSignInActionsInteractor)
-        scoped {
-            BiometricPrompt.PromptInfo.Builder()
-        }
     }
     singleOf(::SignOutUseCase)
     singleOf(::BiometryInteractor)
