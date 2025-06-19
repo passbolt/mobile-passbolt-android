@@ -1,8 +1,5 @@
 package com.passbolt.mobile.android.feature.settings.screen.appsettings
 
-import org.koin.androidx.viewmodel.dsl.viewModelOf
-import org.koin.core.module.Module
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -26,6 +23,9 @@ import org.koin.core.module.Module
  * @since v1.0
  */
 
-fun Module.appSettingsModule() {
-    viewModelOf(::AppSettingsViewModel)
-}
+data class AppSettingsState(
+    val isFingerprintEnabled: Boolean = false,
+    val isDisableFingerprintDialogVisible: Boolean = false,
+    val isConfigureFingerprintDialogVisible: Boolean = false,
+    val isKeyChangesDialogDetectedVisible: Boolean = false,
+)

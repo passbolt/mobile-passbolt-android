@@ -1,7 +1,6 @@
 package com.passbolt.mobile.android.feature.settings.screen.appsettings
 
-import org.koin.androidx.viewmodel.dsl.viewModelOf
-import org.koin.core.module.Module
+import javax.crypto.Cipher
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,7 +24,30 @@ import org.koin.core.module.Module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+internal sealed interface AppSettingsSideEffect {
+    data object NavigateUp : AppSettingsSideEffect
 
-fun Module.appSettingsModule() {
-    viewModelOf(::AppSettingsViewModel)
+    data object NavigateToAutofill : AppSettingsSideEffect
+
+    data object NavigateToDefaultFilter : AppSettingsSideEffect
+
+    data object NavigateToExpertSettings : AppSettingsSideEffect
+
+    data object NavigateToGetPassphrase : AppSettingsSideEffect
+
+    data object NavigateToSystemSettings : AppSettingsSideEffect
+
+    data class LaunchBiometricPrompt(
+        val cipher: Cipher,
+    ) : AppSettingsSideEffect
+
+    data class ShowErrorSnackbar(
+        val snackbarKind: SnackbarKind,
+        val additionalMessage: String? = null,
+    ) : AppSettingsSideEffect
+
+    enum class SnackbarKind {
+        AUTHENTICAION_ERROR,
+        BIOMETRY_ERROR,
+    }
 }

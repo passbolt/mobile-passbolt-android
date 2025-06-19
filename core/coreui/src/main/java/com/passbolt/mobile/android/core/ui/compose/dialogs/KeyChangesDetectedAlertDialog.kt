@@ -1,7 +1,11 @@
-package com.passbolt.mobile.android.feature.settings.screen.appsettings
+package com.passbolt.mobile.android.core.ui.compose.dialogs
 
-import org.koin.androidx.viewmodel.dsl.viewModelOf
-import org.koin.core.module.Module
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,6 +30,27 @@ import org.koin.core.module.Module
  * @since v1.0
  */
 
-fun Module.appSettingsModule() {
-    viewModelOf(::AppSettingsViewModel)
+@Composable
+fun KeyChangesDetectedAlertDialog(
+    isVisible: Boolean,
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    if (isVisible) {
+        AlertDialog(
+            onDismissRequest = onDismiss,
+            title = { Text(stringResource(LocalizationR.string.fingerprint_biometric_changed_title)) },
+            text = { Text(stringResource(LocalizationR.string.fingerprint_authenticate_again)) },
+            confirmButton = {
+                TextButton(onClick = onConfirm) {
+                    Text(stringResource(LocalizationR.string.got_it))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = onDismiss) {
+                    Text(stringResource(LocalizationR.string.cancel))
+                }
+            },
+        )
+    }
 }

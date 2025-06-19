@@ -175,6 +175,7 @@ compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
 compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
 compose-lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "composeLifecycleViewModel" }
 compose-ui-graphics = { module = "androidx.compose.ui:ui-graphics-android" }
+compose-activity = { module = "androidx.activity:activity-compose" }
 ktlint-compose-rulset = { module = "io.nlopez.compose.rules:ktlint", version.ref="nlopez-compose-rulset" }
 detekt-compose-rulset = { module = "io.nlopez.compose.rules:detekt", version.ref="nlopez-compose-rulset" }
 

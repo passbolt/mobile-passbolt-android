@@ -49,6 +49,7 @@ dependencies {
     implementation libs.compose.lifecycle.viewmodel
     implementation libs.compose.ui.tooling
     debugImplementation libs.compose.ui.tooling.preview
+    implementation libs.compose.activity
 
     testImplementation project(':commontest')
 }

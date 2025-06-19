@@ -21,7 +21,7 @@
  * @since v1.0
  */
 
-package com.passbolt.mobile.android.feature.settings.screen
+package com.passbolt.mobile.android.feature.settings.screen.appsettings
 
 import PassboltTheme
 import android.os.Bundle
@@ -31,11 +31,11 @@ import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import com.passbolt.mobile.android.core.navigation.ActivityIntents
+import com.passbolt.mobile.android.ui.DefaultFilterModel
 
-class SettingsComposeFragment :
+class AppSettingsComposeFragment :
     Fragment(),
-    SettingsNavigation {
+    AppSettingsNavigation {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -44,43 +44,33 @@ class SettingsComposeFragment :
         ComposeView(requireContext()).apply {
             setContent {
                 PassboltTheme {
-                    SettingsScreen(
-                        navigation = this@SettingsComposeFragment,
+                    AppSettingsScreen(
+                        navigation = this@AppSettingsComposeFragment,
                     )
                 }
             }
         }
 
-    override fun navigateToAppSettingsLogs() {
+    override fun navigateUp() {
+        findNavController().popBackStack()
+    }
+
+    override fun navigateToAutofill() {
         findNavController().navigate(
-            SettingsComposeFragmentDirections.actionSettingsComposeFragmentToAppSettingsComposeFragment(),
+            AppSettingsComposeFragmentDirections.actionAppSettingsComposeFragmentToSettingsAutofillFragment(),
         )
     }
 
-    override fun navigateToAccounts() {
+    override fun navigateToDefaultFilter() {
+        // TODO hardcode for now - implement getting default filter in default filter MVI
         findNavController().navigate(
-            SettingsComposeFragmentDirections.actionSettingsComposeFragmentToAccountsSettingsFragment(),
+            AppSettingsComposeFragmentDirections.actionAppSettingsComposeFragmentToDefaultFilterFragment(DefaultFilterModel.ALL_ITEMS),
         )
     }
 
-    override fun navigateToTermsAndLicenses() {
+    override fun navigateToExpertSettings() {
         findNavController().navigate(
-            SettingsComposeFragmentDirections.actionSettingsComposeFragmentToTermsAndLicensesComposeFragment(),
-        )
-    }
-
-    override fun navigateToDebugLogs() {
-        findNavController().navigate(
-            SettingsComposeFragmentDirections.actionSettingsComposeFragmentToDebugLogsSettingsComposeFragment(),
-        )
-    }
-
-    override fun navigateToStartUp() {
-        startActivity(
-            ActivityIntents.authentication(
-                requireContext(),
-                ActivityIntents.AuthConfig.Startup,
-            ),
+            AppSettingsComposeFragmentDirections.actionAppSettingsComposeFragmentToExpertSettingsFragment(),
         )
     }
 }

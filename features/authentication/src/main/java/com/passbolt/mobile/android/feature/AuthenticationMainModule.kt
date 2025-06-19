@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.feature
 
+import androidx.biometric.BiometricPrompt
 import com.passbolt.mobile.android.feature.authentication.accountslist.accountsListModule
 import com.passbolt.mobile.android.feature.authentication.auth.authModule
 import com.passbolt.mobile.android.feature.authentication.authenticationMainModule
@@ -42,4 +43,6 @@ val authenticationModule =
         unknownProviderModule()
         authWithDuoModule()
         duoWebViewModule()
+
+        single { BiometricPrompt.PromptInfo.Builder() }
     }
