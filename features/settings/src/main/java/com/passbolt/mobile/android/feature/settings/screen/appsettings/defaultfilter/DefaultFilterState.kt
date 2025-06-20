@@ -1,7 +1,6 @@
 package com.passbolt.mobile.android.feature.settings.screen.appsettings.defaultfilter
 
-import org.koin.androidx.viewmodel.dsl.viewModelOf
-import org.koin.core.module.Module
+import com.passbolt.mobile.android.ui.DefaultFilterModel
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,6 +25,7 @@ import org.koin.core.module.Module
  * @since v1.0
  */
 
-fun Module.defaultFilterModule() {
-    viewModelOf(::DefaultFilterViewModel)
-}
+data class DefaultFilterState(
+    val allFilters: List<DefaultFilterModel> = emptyList(),
+    val selectedFilter: DefaultFilterModel? = null,
+)

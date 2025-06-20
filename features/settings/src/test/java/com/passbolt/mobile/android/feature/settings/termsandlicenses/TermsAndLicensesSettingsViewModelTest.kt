@@ -39,6 +39,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.koin.core.logger.Level
+import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 import org.koin.test.KoinTest
 import org.koin.test.KoinTestRule
@@ -57,6 +58,7 @@ class TermsAndLicensesSettingsViewModelTest : KoinTest {
                 listOf(
                     module {
                         single { mock<GetFeatureFlagsUseCase>() }
+                        factoryOf(::TermsAndLicensesSettingsViewModel)
                     },
                 ),
             )
@@ -97,10 +99,7 @@ class TermsAndLicensesSettingsViewModelTest : KoinTest {
                     ),
                 )
 
-            viewModel =
-                TermsAndLicensesSettingsViewModel(
-                    getFeatureFlagsUseCase = get(),
-                )
+            viewModel = get()
 
             val state = viewModel.viewState.value
 
@@ -131,10 +130,7 @@ class TermsAndLicensesSettingsViewModelTest : KoinTest {
                     ),
                 )
 
-            viewModel =
-                TermsAndLicensesSettingsViewModel(
-                    getFeatureFlagsUseCase = get(),
-                )
+            viewModel = get()
 
             val state = viewModel.viewState.drop(1).first()
 

@@ -48,16 +48,6 @@
         tools:layout="@layout/fragment_settings_autofill" />
 
     <fragment
-        android:id="@+id/defaultFilterFragment"
-        android:name="com.passbolt.mobile.android.feature.settings.screen.appsettings.defaultfilter.DefaultFilterFragment"
-        android:label="DefaultFilterFragment"
-        tools:layout="@layout/fragment_default_filter">
-        <argument
-            android:name="selectedFilter"
-            app:argType="com.passbolt.mobile.android.ui.DefaultFilterModel" />
-    </fragment>
-
-    <fragment
         android:id="@+id/accountsSettingsFragment"
         android:name="com.passbolt.mobile.android.feature.settings.screen.accounts.AccountsSettingsFragment"
         android:label="AccountsSettingsFragment"
@@ -124,13 +114,6 @@
         android:name="com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsComposeFragment"
         android:label="AppSettingsComposeFragment">
         <action
-            android:id="@+id/action_appSettingsComposeFragment_to_defaultFilterFragment"
-            app:destination="@id/defaultFilterFragment"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left"
-            app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right" />
-        <action
             android:id="@+id/action_appSettingsComposeFragment_to_settingsAutofillFragment"
             app:destination="@id/settingsAutofillFragment"
             app:enterAnim="@anim/slide_in_right"
@@ -144,6 +127,17 @@
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_appSettingsComposeFragment_to_defaultFilterComposeFragment"
+            app:destination="@id/defaultFilterComposeFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
+    <fragment
+        android:id="@+id/defaultFilterComposeFragment"
+        android:name="com.passbolt.mobile.android.feature.settings.screen.appsettings.defaultfilter.DefaultFilterComposeFragment"
+        android:label="DefaultFilterComposeFragment" />
 
 </navigation>

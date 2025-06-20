@@ -34,6 +34,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.koin.core.logger.Level
+import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 import org.koin.test.KoinTest
 import org.koin.test.KoinTestRule
@@ -89,19 +90,7 @@ class AppSettingsViewModelTest : KoinTest {
                         single { mock<BiometryInteractor>() }
                         single { mock<SavePassphraseUseCase>() }
                         single { mock<SaveBiometricKeyIvUseCase>() }
-                        factory {
-                            AppSettingsViewModel(
-                                checkIfPassphraseExistsUseCase = get(),
-                                getSelectedAccountUseCase = get(),
-                                fingerprintInformationProvider = get(),
-                                passphraseMemoryCache = get(),
-                                removePassphraseUseCase = get(),
-                                biometricCipher = get(),
-                                biometryInteractor = get(),
-                                savePassphraseUseCase = get(),
-                                saveBiometricKeyIvUseCase = get(),
-                            )
-                        }
+                        factoryOf(::AppSettingsViewModel)
                     },
                 ),
             )

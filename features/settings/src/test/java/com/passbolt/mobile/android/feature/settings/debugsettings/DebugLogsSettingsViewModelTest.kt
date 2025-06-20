@@ -1,4 +1,4 @@
-package com.passbolt.mobile.android.feature.settings.debugsettingscompose
+package com.passbolt.mobile.android.feature.settings.debugsettings
 
 /**
  * Passbolt - Open source password manager for teams
@@ -39,6 +39,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.koin.core.logger.Level
+import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 import org.koin.test.KoinTest
 import org.koin.test.KoinTestRule
@@ -62,6 +63,7 @@ class DebugLogsSettingsViewModelTest : KoinTest {
                         single { mock<UpdateGlobalPreferencesUseCase>() }
                         single { mock<GetGlobalPreferencesUseCase>() }
                         single { mock<FileLoggingTree>() }
+                        factoryOf(::DebugLogsSettingsViewModel)
                     },
                 ),
             )
@@ -93,12 +95,7 @@ class DebugLogsSettingsViewModelTest : KoinTest {
                     isHideRootDialogEnabled = false,
                 )
 
-            viewModel =
-                DebugLogsSettingsViewModel(
-                    get(),
-                    get(),
-                    get(),
-                )
+            viewModel = get()
 
             val state = viewModel.viewState.value
 
@@ -118,12 +115,7 @@ class DebugLogsSettingsViewModelTest : KoinTest {
                     isHideRootDialogEnabled = false,
                 )
 
-            viewModel =
-                DebugLogsSettingsViewModel(
-                    get(),
-                    get(),
-                    get(),
-                )
+            viewModel = get()
 
             val state = viewModel.viewState.value
 
@@ -146,11 +138,8 @@ class DebugLogsSettingsViewModelTest : KoinTest {
             val updateGlobalPreferencesUseCase: UpdateGlobalPreferencesUseCase = get()
 
             viewModel =
-                DebugLogsSettingsViewModel(
-                    get(),
-                    get(),
-                    get(),
-                ).apply { onIntent(ToggleDebugLogs) }
+                get<DebugLogsSettingsViewModel>()
+                    .apply { onIntent(ToggleDebugLogs) }
 
             val state = viewModel.viewState.value
 
@@ -176,11 +165,8 @@ class DebugLogsSettingsViewModelTest : KoinTest {
             val updateGlobalPreferencesUseCase: UpdateGlobalPreferencesUseCase = get()
 
             viewModel =
-                DebugLogsSettingsViewModel(
-                    get(),
-                    get(),
-                    get(),
-                ).apply { onIntent(ToggleDebugLogs) }
+                get<DebugLogsSettingsViewModel>()
+                    .apply { onIntent(ToggleDebugLogs) }
 
             val state = viewModel.viewState.value
 

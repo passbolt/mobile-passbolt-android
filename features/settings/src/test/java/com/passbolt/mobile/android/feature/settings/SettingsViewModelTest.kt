@@ -22,6 +22,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.koin.core.logger.Level
+import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 import org.koin.test.KoinTest
 import org.koin.test.KoinTestRule
@@ -65,6 +66,7 @@ class SettingsViewModelTest : KoinTest {
                     module {
                         single { mock<SignOutUseCase>() }
                         single { mock<FullDataRefreshExecutor>() }
+                        factoryOf(::SettingsViewModel)
                     },
                 ),
             )
@@ -93,11 +95,7 @@ class SettingsViewModelTest : KoinTest {
             val fullDataRefreshExecutor: FullDataRefreshExecutor = get()
             whenever(fullDataRefreshExecutor.dataRefreshStatusFlow) doReturn flowOf(Finished(Success))
 
-            viewModel =
-                SettingsViewModel(
-                    signOutUseCase = get(),
-                    fullDataRefreshExecutor = get(),
-                )
+            viewModel = get()
 
             viewModel.viewState.drop(1).test {
                 viewModel.onIntent(SignOut)
