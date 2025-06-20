@@ -1,8 +1,5 @@
 package com.passbolt.mobile.android.feature.settings.screen.appsettings.defaultfilter
 
-import com.passbolt.mobile.android.core.mvp.BaseContract
-import com.passbolt.mobile.android.ui.DefaultFilterModel
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -25,22 +22,6 @@ import com.passbolt.mobile.android.ui.DefaultFilterModel
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-
-interface DefaultFilterContract {
-    interface View : BaseContract.View {
-        fun showFiltersList(filters: List<DefaultFilterModel>)
-
-        fun selectFilterSilently(selectedFilter: DefaultFilterModel)
-    }
-
-    interface Presenter : BaseContract.Presenter<View> {
-        fun defaultFilterSelectionChanged(
-            filterModel: DefaultFilterModel,
-            isSelected: Boolean,
-        )
-
-        fun argsRetrieved(selectedFilter: DefaultFilterModel)
-
-        fun viewResume()
-    }
+internal sealed interface DefaultFilterSideEffect {
+    data object NavigateUp : DefaultFilterSideEffect
 }

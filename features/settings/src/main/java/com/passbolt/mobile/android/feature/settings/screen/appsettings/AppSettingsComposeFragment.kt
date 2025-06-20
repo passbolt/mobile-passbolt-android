@@ -31,7 +31,6 @@ import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import com.passbolt.mobile.android.ui.DefaultFilterModel
 
 class AppSettingsComposeFragment :
     Fragment(),
@@ -62,9 +61,8 @@ class AppSettingsComposeFragment :
     }
 
     override fun navigateToDefaultFilter() {
-        // TODO hardcode for now - implement getting default filter in default filter MVI
         findNavController().navigate(
-            AppSettingsComposeFragmentDirections.actionAppSettingsComposeFragmentToDefaultFilterFragment(DefaultFilterModel.ALL_ITEMS),
+            AppSettingsComposeFragmentDirections.actionAppSettingsComposeFragmentToDefaultFilterComposeFragment(),
         )
     }
 

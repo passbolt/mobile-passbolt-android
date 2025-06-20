@@ -1,8 +1,5 @@
 package com.passbolt.mobile.android.feature.settings.screen.appsettings.defaultfilter
 
-import org.koin.androidx.viewmodel.dsl.viewModelOf
-import org.koin.core.module.Module
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -25,7 +22,6 @@ import org.koin.core.module.Module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-
-fun Module.defaultFilterModule() {
-    viewModelOf(::DefaultFilterViewModel)
+interface DefaultFilterNavigation {
+    fun navigateUp()
 }
