@@ -21,7 +21,7 @@
  * @since v1.0
  */
 
-package com.passbolt.mobile.android.feature.settings.screen
+package com.passbolt.mobile.android.feature.settings.screen.accounts
 
 import PassboltTheme
 import android.os.Bundle
@@ -33,9 +33,9 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 
-class SettingsComposeFragment :
+class AccountsSettingsComposeFragment :
     Fragment(),
-    SettingsNavigation {
+    AccountsSettingsNavigation {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -44,43 +44,36 @@ class SettingsComposeFragment :
         ComposeView(requireContext()).apply {
             setContent {
                 PassboltTheme {
-                    SettingsScreen(
-                        navigation = this@SettingsComposeFragment,
+                    AccountsSettingsScreen(
+                        navigation = this@AccountsSettingsComposeFragment,
                     )
                 }
             }
         }
 
-    override fun navigateToAppSettingsLogs() {
+    override fun navigateUp() {
+        findNavController().popBackStack()
+    }
+
+    override fun navigateToManageAccounts() {
+        // TODO move to single activity navigation
+        startActivity(ActivityIntents.authentication(requireContext(), ActivityIntents.AuthConfig.ManageAccount))
+    }
+
+    override fun navigateToAccountDetails() {
         findNavController().navigate(
-            SettingsComposeFragmentDirections.actionSettingsComposeFragmentToAppSettingsComposeFragment(),
+            AccountsSettingsComposeFragmentDirections.actionAccountsSettingsComposeFragmentToAccountDetails(),
         )
     }
 
-    override fun navigateToAccounts() {
+    override fun navigateToKeyInspector() {
         findNavController().navigate(
-            SettingsComposeFragmentDirections.actionSettingsComposeFragmentToAccountsSettingsComposeFragment(),
+            AccountsSettingsComposeFragmentDirections.actionAccountsSettingsComposeFragmentToKeyInspectorFragment(),
         )
     }
 
-    override fun navigateToTermsAndLicenses() {
-        findNavController().navigate(
-            SettingsComposeFragmentDirections.actionSettingsComposeFragmentToTermsAndLicensesComposeFragment(),
-        )
-    }
-
-    override fun navigateToDebugLogs() {
-        findNavController().navigate(
-            SettingsComposeFragmentDirections.actionSettingsComposeFragmentToDebugLogsSettingsComposeFragment(),
-        )
-    }
-
-    override fun navigateToStartUp() {
-        startActivity(
-            ActivityIntents.authentication(
-                requireContext(),
-                ActivityIntents.AuthConfig.Startup,
-            ),
-        )
+    override fun navigateToTransferAccount() {
+        // TODO move to single activity navigation
+        startActivity(ActivityIntents.transferAccountToAnotherDevice(requireContext()))
     }
 }
