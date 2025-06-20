@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.feature.settings
 
+import com.passbolt.mobile.android.feature.settings.screen.accounts.accountsSettingsModule
 import com.passbolt.mobile.android.feature.settings.screen.accounts.keyinspector.keyInspectorModule
 import com.passbolt.mobile.android.feature.settings.screen.accounts.keyinspector.keyinspectormoremenu.keyInspectorMoreMenuModule
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.appSettingsModule
@@ -40,6 +41,7 @@ val settingsModule =
         settingsModule()
 
         appSettingsModule()
+        accountsSettingsModule()
         debugLogsSettingsModule()
         termsAndLicensesSettingsModule()
         expertSettingsModule()
