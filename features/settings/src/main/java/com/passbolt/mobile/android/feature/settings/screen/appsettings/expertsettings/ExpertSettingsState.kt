@@ -1,8 +1,5 @@
 package com.passbolt.mobile.android.feature.settings.screen.appsettings.expertsettings
 
-import org.koin.androidx.viewmodel.dsl.viewModelOf
-import org.koin.core.module.Module
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -26,6 +23,8 @@ import org.koin.core.module.Module
  * @since v1.0
  */
 
-internal fun Module.expertSettingsModule() {
-    viewModelOf(::ExpertSettingsViewModel)
-}
+internal data class ExpertSettingsState(
+    val isDeveloperModeChecked: Boolean = false,
+    val isHideRootWarningEnabled: Boolean = false,
+    val isHideRootWarningChecked: Boolean = false,
+)

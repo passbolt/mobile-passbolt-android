@@ -47,17 +47,6 @@
         android:label="SettingsAutofillFragment"
         tools:layout="@layout/fragment_settings_autofill" />
 
-    <fragment
-        android:id="@+id/expertSettingsFragment"
-        android:name="com.passbolt.mobile.android.feature.settings.screen.appsettings.expertsettings.ExpertSettingsFragment"
-        android:label="ExpertSettingsFragment"
-        tools:layout="@layout/fragment_expert_settings" />
-    <fragment
-        android:id="@+id/keyInspectorFragment"
-        android:name="com.passbolt.mobile.android.feature.settings.screen.accounts.keyinspector.KeyInspectorFragment"
-        android:label="KeyInspectorFragment"
-        tools:layout="@layout/fragment_key_inspector" />
-
     <include app:graph="@navigation/logs" />
     <include app:graph="@navigation/account_details" />
     <fragment
@@ -85,10 +74,6 @@
             app:popExitAnim="@anim/slide_out_right" />
     </fragment>
     <fragment
-        android:id="@+id/licensesComposeFragment"
-        android:name="com.passbolt.mobile.android.feature.settings.screen.termsandlicenses.licenses.LicensesComposeFragment"
-        android:label="LicensesComposeFragment" />
-    <fragment
         android:id="@+id/appSettingsComposeFragment"
         android:name="com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsComposeFragment"
         android:label="AppSettingsComposeFragment">
@@ -100,8 +85,8 @@
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
         <action
-            android:id="@+id/action_appSettingsComposeFragment_to_expertSettingsFragment"
-            app:destination="@id/expertSettingsFragment"
+            android:id="@+id/action_appSettingsComposeFragment_to_expertSettingsComposeFragment"
+            app:destination="@id/expertSettingsComposeFragment"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
@@ -114,6 +99,15 @@
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
     </fragment>
+
+    <fragment
+        android:id="@+id/keyInspectorFragment"
+        android:name="com.passbolt.mobile.android.feature.settings.screen.accounts.keyinspector.KeyInspectorFragment"
+        android:label="KeyInspectorFragment"
+        tools:layout="@layout/fragment_key_inspector" />
+
+    <include app:graph="@navigation/logs" />
+    <include app:graph="@navigation/account_details" />
     <fragment
         android:id="@+id/defaultFilterComposeFragment"
         android:name="com.passbolt.mobile.android.feature.settings.screen.appsettings.defaultfilter.DefaultFilterComposeFragment"
@@ -137,5 +131,13 @@
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
     </fragment>
+    <fragment
+        android:id="@+id/licensesComposeFragment"
+        android:name="com.passbolt.mobile.android.feature.settings.screen.termsandlicenses.licenses.LicensesComposeFragment"
+        android:label="LicensesComposeFragment" />
+    <fragment
+        android:id="@+id/expertSettingsComposeFragment"
+        android:name="com.passbolt.mobile.android.feature.settings.screen.appsettings.expertsettings.ExpertSettingsComposeFragment"
+        android:label="ExpertSettingsComposeFragment" />
 
 </navigation>
