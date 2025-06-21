@@ -21,24 +21,12 @@
  * @since v1.0
  */
 
-package com.passbolt.mobile.android.feature.settings.appsettings.expertsettings
+package com.passbolt.mobile.android.feature.settings.screen.appsettings.expertsettings
 
-import com.passbolt.mobile.android.core.preferences.usecase.GetGlobalPreferencesUseCase
-import com.passbolt.mobile.android.core.preferences.usecase.UpdateGlobalPreferencesUseCase
-import com.passbolt.mobile.android.feature.settings.screen.appsettings.expertsettings.ExpertSettingsContract
-import com.passbolt.mobile.android.feature.settings.screen.appsettings.expertsettings.ExpertSettingsPresenter
-import org.koin.dsl.module
-import org.mockito.kotlin.mock
+internal sealed interface ExpertSettingsIntent {
+    object GoBack : ExpertSettingsIntent
 
-internal val mockGetGlobalPreferencesUseCase = mock<GetGlobalPreferencesUseCase>()
-internal val mockUpdateGlobalPreferencesUseCase = mock<UpdateGlobalPreferencesUseCase>()
+    data object ToggleDeveloperMode : ExpertSettingsIntent
 
-val testExpertSettingsModule =
-    module {
-        factory<ExpertSettingsContract.Presenter> {
-            ExpertSettingsPresenter(
-                getGlobalPreferencesUseCase = mockGetGlobalPreferencesUseCase,
-                updateGlobalPreferencesUseCase = mockUpdateGlobalPreferencesUseCase,
-            )
-        }
-    }
+    data object ToggleHideRootWarning : ExpertSettingsIntent
+}

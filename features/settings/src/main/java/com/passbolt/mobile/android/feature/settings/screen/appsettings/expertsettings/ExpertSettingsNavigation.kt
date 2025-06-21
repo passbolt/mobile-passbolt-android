@@ -1,3 +1,5 @@
+package com.passbolt.mobile.android.feature.settings.screen.appsettings.expertsettings
+
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -20,29 +22,6 @@
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-
-package com.passbolt.mobile.android.feature.settings.screen.appsettings.expertsettings
-
-import com.passbolt.mobile.android.core.mvp.BaseContract
-
-interface ExpertSettingsContract {
-    interface View : BaseContract.View {
-        fun setDeveloperModeSwitchToOn()
-
-        fun setDeveloperModeSwitchToOff()
-
-        fun setHideRootDialogSwitchToOn()
-
-        fun setHideRootDialogSwitchToOff()
-
-        fun enableHideRootSwitch()
-
-        fun disableHideRootSwitch()
-    }
-
-    interface Presenter : BaseContract.Presenter<View> {
-        fun onDeveloperModeStateChanged(isDeveloperModeEnabled: Boolean)
-
-        fun onHideRootChanged(isHideRootDialogEnabled: Boolean)
-    }
+internal interface ExpertSettingsNavigation {
+    fun navigateUp()
 }

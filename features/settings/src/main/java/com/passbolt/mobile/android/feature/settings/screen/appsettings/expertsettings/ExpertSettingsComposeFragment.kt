@@ -21,7 +21,7 @@
  * @since v1.0
  */
 
-package com.passbolt.mobile.android.feature.settings.screen.appsettings
+package com.passbolt.mobile.android.feature.settings.screen.appsettings.expertsettings
 
 import PassboltTheme
 import android.os.Bundle
@@ -32,9 +32,9 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 
-class AppSettingsComposeFragment :
+class ExpertSettingsComposeFragment :
     Fragment(),
-    AppSettingsNavigation {
+    ExpertSettingsNavigation {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -43,8 +43,8 @@ class AppSettingsComposeFragment :
         ComposeView(requireContext()).apply {
             setContent {
                 PassboltTheme {
-                    AppSettingsScreen(
-                        navigation = this@AppSettingsComposeFragment,
+                    ExpertSettingsScreen(
+                        navigation = this@ExpertSettingsComposeFragment,
                     )
                 }
             }
@@ -52,23 +52,5 @@ class AppSettingsComposeFragment :
 
     override fun navigateUp() {
         findNavController().popBackStack()
-    }
-
-    override fun navigateToAutofill() {
-        findNavController().navigate(
-            AppSettingsComposeFragmentDirections.actionAppSettingsComposeFragmentToSettingsAutofillFragment(),
-        )
-    }
-
-    override fun navigateToDefaultFilter() {
-        findNavController().navigate(
-            AppSettingsComposeFragmentDirections.actionAppSettingsComposeFragmentToDefaultFilterComposeFragment(),
-        )
-    }
-
-    override fun navigateToExpertSettings() {
-        findNavController().navigate(
-            AppSettingsComposeFragmentDirections.actionAppSettingsComposeFragmentToExpertSettingsComposeFragment(),
-        )
     }
 }
