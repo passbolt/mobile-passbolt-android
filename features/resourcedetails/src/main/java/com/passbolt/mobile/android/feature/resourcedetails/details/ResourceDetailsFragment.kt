@@ -29,12 +29,13 @@ import com.passbolt.mobile.android.core.extension.gone
 import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.extension.showSnackbar
 import com.passbolt.mobile.android.core.extension.visible
+import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.navigation.deeplinks.NavDeepLinkProvider
+import com.passbolt.mobile.android.core.resources.resourceicon.ResourceIconProvider
 import com.passbolt.mobile.android.core.ui.controller.TotpViewController
 import com.passbolt.mobile.android.core.ui.controller.TotpViewController.StateParameters
 import com.passbolt.mobile.android.core.ui.controller.TotpViewController.TimeParameters
 import com.passbolt.mobile.android.core.ui.controller.TotpViewController.ViewParameters
-import com.passbolt.mobile.android.core.ui.initialsicon.InitialsIconGenerator
 import com.passbolt.mobile.android.core.ui.itemwithheaderandaction.ActionIcon
 import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
 import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
@@ -58,6 +59,10 @@ import com.passbolt.mobile.android.ui.PermissionModelUi
 import com.passbolt.mobile.android.ui.ResourceFormMode
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.core.qualifier.named
 import java.time.ZonedDateTime
@@ -95,7 +100,6 @@ class ResourceDetailsFragment :
     ResourceMoreMenuFragment.Listener {
     override val presenter: ResourceDetailsContract.Presenter by inject()
     private val clipboardManager: ClipboardManager? by inject()
-    private val initialsIconGenerator: InitialsIconGenerator by inject()
     private val navArgs: ResourceDetailsFragmentArgs by navArgs()
 
     private val sharedWithFields
@@ -141,6 +145,10 @@ class ResourceDetailsFragment :
     }
 
     private val totpViewController: TotpViewController by inject()
+    private val coroutineLaunchContext: CoroutineLaunchContext by inject()
+    private val job = SupervisorJob()
+    private val coroutineUiScope = CoroutineScope(job + coroutineLaunchContext.ui)
+    private val resourceIconProvider: ResourceIconProvider by inject()
 
     override fun onViewCreated(
         view: View,
@@ -181,6 +189,7 @@ class ResourceDetailsFragment :
     }
 
     override fun onDestroyView() {
+        coroutineUiScope.coroutineContext.cancelChildren()
         requiredBinding.sharedWithRecycler.adapter = null
         presenter.detach()
         super.onDestroyView()
@@ -311,13 +320,12 @@ class ResourceDetailsFragment :
         }
     }
 
-    override fun displayInitialsIcon(
-        name: String,
-        initials: String,
-    ) {
-        requiredBinding.icon.setImageDrawable(
-            initialsIconGenerator.generate(name, initials),
-        )
+    override fun displayInitialsIcon(resource: ResourceModel) {
+        coroutineUiScope.launch {
+            requiredBinding.icon.setImageDrawable(
+                resourceIconProvider.getResourceIcon(requireContext(), resource),
+            )
+        }
     }
 
     override fun displayAdditionalUrls(uris: List<String>) {

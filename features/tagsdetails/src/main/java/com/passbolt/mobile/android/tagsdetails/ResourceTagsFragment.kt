@@ -11,12 +11,18 @@ import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
 import com.passbolt.mobile.android.core.extension.showSnackbar
 import com.passbolt.mobile.android.core.extension.visible
+import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
-import com.passbolt.mobile.android.core.ui.initialsicon.InitialsIconGenerator
+import com.passbolt.mobile.android.core.resources.resourceicon.ResourceIconProvider
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
 import com.passbolt.mobile.android.feature.tagsdetails.databinding.FragmentResourceTagsBinding
 import com.passbolt.mobile.android.tagsdetails.tagsrecycler.TagItem
+import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.TagModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.core.qualifier.named
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
@@ -29,9 +35,12 @@ class ResourceTagsFragment :
     ResourceTagsContract.View {
     override val presenter: ResourceTagsContract.Presenter by inject()
     private val args: ResourceTagsFragmentArgs by navArgs()
-    private val initialsIconGenerator: InitialsIconGenerator by inject()
     private val tagsItemAdapter: ItemAdapter<TagItem> by inject(named(TAGS_ITEM_ADAPTER))
     private val fastAdapter: FastAdapter<TagItem> by inject(named(TAGS_ADAPTER))
+    private val coroutineLaunchContext: CoroutineLaunchContext by inject()
+    private val job = SupervisorJob()
+    private val coroutineUiScope = CoroutineScope(job + coroutineLaunchContext.ui)
+    private val resourceIconProvider: ResourceIconProvider by inject()
 
     override fun onViewCreated(
         view: View,
@@ -46,6 +55,7 @@ class ResourceTagsFragment :
     }
 
     override fun onDestroyView() {
+        coroutineUiScope.coroutineContext.cancelChildren()
         presenter.detach()
         super.onDestroyView()
     }
@@ -71,13 +81,12 @@ class ResourceTagsFragment :
         requiredBinding.name.text = name
     }
 
-    override fun displayInitialsIcon(
-        name: String,
-        initials: String,
-    ) {
-        requiredBinding.icon.setImageDrawable(
-            initialsIconGenerator.generate(name, initials),
-        )
+    override fun displayInitialsIcon(resource: ResourceModel) {
+        coroutineUiScope.launch {
+            requiredBinding.icon.setImageDrawable(
+                resourceIconProvider.getResourceIcon(requireContext(), resource),
+            )
+        }
     }
 
     override fun showFavouriteStar() {

@@ -11,14 +11,19 @@ import com.mikepenz.fastadapter.binding.AbstractBindingItem
 import com.mikepenz.fastadapter.listeners.ClickEventHook
 import com.passbolt.mobile.android.common.extension.isInFuture
 import com.passbolt.mobile.android.core.extension.asBinding
+import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import com.passbolt.mobile.android.core.resources.resourceicon.ResourceIconProvider
 import com.passbolt.mobile.android.core.ui.controller.TotpViewController
 import com.passbolt.mobile.android.core.ui.controller.TotpViewController.StateParameters
 import com.passbolt.mobile.android.core.ui.controller.TotpViewController.TimeParameters
 import com.passbolt.mobile.android.core.ui.controller.TotpViewController.ViewParameters
-import com.passbolt.mobile.android.core.ui.initialsicon.InitialsIconGenerator
 import com.passbolt.mobile.android.feature.otp.R
 import com.passbolt.mobile.android.feature.otp.databinding.ItemOtpBinding
 import com.passbolt.mobile.android.ui.OtpItemWrapper
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
@@ -48,12 +53,15 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
  */
 class OtpItem(
     val otpModel: OtpItemWrapper,
-    private val initialsIconGenerator: InitialsIconGenerator,
 ) : AbstractBindingItem<ItemOtpBinding>(),
     KoinComponent {
     override val type: Int
         get() = R.id.itemOtp
 
+    private val coroutineLaunchContext: CoroutineLaunchContext by inject()
+    private val job = SupervisorJob()
+    private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
+    private val resourceIconProvider: ResourceIconProvider by inject()
     private val totpViewController: TotpViewController by inject()
 
     override fun createBinding(
@@ -68,12 +76,14 @@ class OtpItem(
         super.bindView(binding, payloads)
         with(binding) {
             setupTitleAndExpiry(this)
-            icon.setImageDrawable(
-                initialsIconGenerator.generate(
-                    otpModel.resource.metadataJsonModel.name,
-                    otpModel.resource.initials,
-                ),
-            )
+            scope.launch {
+                icon.setImageDrawable(
+                    resourceIconProvider.getResourceIcon(
+                        binding.root.context,
+                        otpModel.resource,
+                    ),
+                )
+            }
             eye.isVisible = !otpModel.isVisible && !otpModel.isRefreshing
             totpViewController.updateView(
                 ViewParameters(binding.progress, binding.otp, binding.generationInProgress),
@@ -81,6 +91,11 @@ class OtpItem(
                 TimeParameters(otpModel.otpExpirySeconds, otpModel.remainingSecondsCounter),
             )
         }
+    }
+
+    override fun unbindView(binding: ItemOtpBinding) {
+        scope.coroutineContext.cancelChildren()
+        super.unbindView(binding)
     }
 
     private fun setupTitleAndExpiry(binding: ItemOtpBinding) {

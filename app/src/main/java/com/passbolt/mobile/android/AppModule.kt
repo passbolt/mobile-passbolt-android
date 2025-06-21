@@ -7,7 +7,6 @@ import androidx.lifecycle.ProcessLifecycleOwner
 import coil.ImageLoader
 import com.passbolt.mobile.android.common.ExternalDeeplinkHandler
 import com.passbolt.mobile.android.common.HttpsVerifier
-import com.passbolt.mobile.android.common.InitialsProvider
 import com.passbolt.mobile.android.common.UuidProvider
 import com.passbolt.mobile.android.core.navigation.AppForegroundListener
 import com.passbolt.mobile.android.core.networking.COIL_HTTP_CLIENT
@@ -54,7 +53,6 @@ internal val appModule =
                 .okHttpClient(okHttpClient = get(named(COIL_HTTP_CLIENT)))
                 .build()
         }
-        single { InitialsProvider() }
         single { ExternalDeeplinkHandler() }
         single { HttpsVerifier() }
         factory { androidApplication().packageManager }

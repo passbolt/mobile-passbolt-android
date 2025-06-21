@@ -55,7 +55,6 @@ dependencies {
     implementation libs.fastadapter.core
     implementation libs.fastadapter.binding
     implementation libs.fastadapter.diff
-    implementation libs.textdrawable
     implementation libs.coil.core
     implementation libs.coil.base
     implementation libs.room.core

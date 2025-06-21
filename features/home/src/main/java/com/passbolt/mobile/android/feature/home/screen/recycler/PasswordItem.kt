@@ -10,15 +10,23 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
+import com.mikepenz.fastadapter.binding.BindingViewHolder
 import com.mikepenz.fastadapter.listeners.ClickEventHook
 import com.passbolt.mobile.android.common.extension.isInFuture
 import com.passbolt.mobile.android.core.extension.DebounceClickEventHook
 import com.passbolt.mobile.android.core.extension.asBinding
-import com.passbolt.mobile.android.core.ui.initialsicon.InitialsIconGenerator
+import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import com.passbolt.mobile.android.core.resources.resourceicon.ResourceIconProvider
 import com.passbolt.mobile.android.feature.home.R
 import com.passbolt.mobile.android.feature.home.databinding.ItemPasswordBinding
 import com.passbolt.mobile.android.ui.ResourceItemWrapper
 import com.passbolt.mobile.android.ui.ResourceModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.launch
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
@@ -46,11 +54,16 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
  */
 class PasswordItem(
     private val resourceWrapper: ResourceItemWrapper,
-    private val initialsIconGenerator: InitialsIconGenerator,
     private val dotsVisible: Boolean = true,
-) : AbstractBindingItem<ItemPasswordBinding>() {
+) : AbstractBindingItem<ItemPasswordBinding>(),
+    KoinComponent {
     override val type: Int
         get() = R.id.itemPassword
+
+    private val coroutineLaunchContext: CoroutineLaunchContext by inject()
+    private val job = SupervisorJob()
+    private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
+    private val resourceIconProvider: ResourceIconProvider by inject()
 
     override fun createBinding(
         inflater: LayoutInflater,
@@ -68,14 +81,25 @@ class PasswordItem(
             more.isVisible = dotsVisible
             loader.isVisible = resourceWrapper.loaderVisible
             itemPassword.isEnabled = resourceWrapper.clickable
-            initialsIconGenerator
-                .generate(
-                    resourceWrapper.resourceModel.metadataJsonModel.name,
-                    resourceWrapper.resourceModel.initials,
-                ).apply {
-                    icon.setImageDrawable(this)
-                }
+            scope.launch {
+                icon.setImageDrawable(
+                    resourceIconProvider.getResourceIcon(
+                        binding.root.context,
+                        resourceWrapper.resourceModel,
+                    ),
+                )
+            }
         }
+    }
+
+    override fun unbindView(holder: BindingViewHolder<ItemPasswordBinding>) {
+        scope.coroutineContext.cancelChildren()
+        super.unbindView(holder)
+    }
+
+    override fun unbindView(binding: ItemPasswordBinding) {
+        super.unbindView(binding)
+        scope.coroutineContext.cancelChildren()
     }
 
     private fun setupTitleAndExpiry(binding: ItemPasswordBinding) {

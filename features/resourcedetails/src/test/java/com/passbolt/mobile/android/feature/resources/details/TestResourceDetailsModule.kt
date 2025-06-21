@@ -5,7 +5,6 @@ import com.jayway.jsonpath.Configuration
 import com.jayway.jsonpath.Option
 import com.jayway.jsonpath.spi.json.GsonJsonProvider
 import com.jayway.jsonpath.spi.mapper.GsonMappingProvider
-import com.passbolt.mobile.android.common.InitialsProvider
 import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalFolderLocationUseCase
 import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
@@ -61,7 +60,6 @@ internal val testResourceDetailsModule =
         single { mock<FullDataRefreshExecutor>() }
         factoryOf(::TestCoroutineLaunchContext) bind CoroutineLaunchContext::class
         factoryOf(::OtpModelMapper)
-        factoryOf(::InitialsProvider)
         factoryOf(::PermissionsModelMapper)
         factoryOf(::GroupsModelMapper)
         factoryOf(::UsersModelMapper)

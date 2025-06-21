@@ -46,7 +46,6 @@ import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.extension.setSearchEndIconWithListener
 import com.passbolt.mobile.android.core.extension.showSnackbar
 import com.passbolt.mobile.android.core.extension.visible
-import com.passbolt.mobile.android.core.ui.initialsicon.InitialsIconGenerator
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
 import com.passbolt.mobile.android.feature.resourcepicker.databinding.FragmentResourcePickerBinding
 import com.passbolt.mobile.android.resourcepicker.model.ConfirmationModel
@@ -83,7 +82,6 @@ class ResourcePickerFragment :
         named(RESOURCE_ITEM_ADAPTER),
     )
     private val fastAdapter: FastAdapter<GenericItem> by inject()
-    private val initialsIconGenerator: InitialsIconGenerator by inject()
     private val args: ResourcePickerFragmentArgs by navArgs()
     private val resourcePickedListener =
         object : ISelectionListener<GenericItem> {
@@ -209,7 +207,7 @@ class ResourcePickerFragment :
         FastAdapterDiffUtil.calculateDiff(
             suggestedItemsItemAdapter,
             suggestedResources.map {
-                SelectableResourceItem(it, initialsIconGenerator)
+                SelectableResourceItem(it)
             },
         )
         // other items header
@@ -225,7 +223,7 @@ class ResourcePickerFragment :
         FastAdapterDiffUtil.calculateDiff(
             selectableResourceItemAdapter,
             resourceList.map {
-                SelectableResourceItem(it, initialsIconGenerator)
+                SelectableResourceItem(it)
             },
         )
         fastAdapter.notifyAdapterDataSetChanged()

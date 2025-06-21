@@ -242,7 +242,7 @@ class ResourceDetailsPresenter(
         )
         view?.apply {
             displayUsername(resourceModel.metadataJsonModel.username.orEmpty())
-            displayInitialsIcon(resourceModel.metadataJsonModel.name, resourceModel.initials)
+            displayInitialsIcon(resourceModel)
             handleExpiry()
             handleFavourite()
             handlePassword(resourceModel)
