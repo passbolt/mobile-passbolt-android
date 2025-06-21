@@ -8,19 +8,31 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isVisible
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
 import com.passbolt.mobile.android.common.extension.isInFuture
-import com.passbolt.mobile.android.core.ui.initialsicon.InitialsIconGenerator
+import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import com.passbolt.mobile.android.core.resources.resourceicon.ResourceIconProvider
 import com.passbolt.mobile.android.feature.resourcepicker.R
 import com.passbolt.mobile.android.feature.resourcepicker.databinding.ItemSelectableResourceBinding
 import com.passbolt.mobile.android.ui.ResourcePickerListItem
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.launch
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 class SelectableResourceItem(
     val resourcePickerListItem: ResourcePickerListItem,
-    private val initialsIconGenerator: InitialsIconGenerator,
-) : AbstractBindingItem<ItemSelectableResourceBinding>() {
+) : AbstractBindingItem<ItemSelectableResourceBinding>(),
+    KoinComponent {
     override val type: Int
         get() = R.id.itemSelectableResource
+
+    private val coroutineLaunchContext: CoroutineLaunchContext by inject()
+    private val job = SupervisorJob()
+    private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
+    private val resourceIconProvider: ResourceIconProvider by inject()
 
     override fun createBinding(
         inflater: LayoutInflater,
@@ -40,6 +52,11 @@ class SelectableResourceItem(
             setupInitialsIcon(this)
             setupSelection(this)
         }
+    }
+
+    override fun unbindView(binding: ItemSelectableResourceBinding) {
+        scope.coroutineContext.cancelChildren()
+        super.unbindView(binding)
     }
 
     private fun setupTitleAndExpiry(binding: ItemSelectableResourceBinding) {
@@ -72,13 +89,14 @@ class SelectableResourceItem(
     }
 
     private fun setupInitialsIcon(binding: ItemSelectableResourceBinding) {
-        initialsIconGenerator
-            .generate(
-                resourcePickerListItem.resourceModel.metadataJsonModel.name,
-                resourcePickerListItem.resourceModel.initials,
-            ).apply {
-                binding.icon.setImageDrawable(this)
-            }
+        scope.launch {
+            binding.icon.setImageDrawable(
+                resourceIconProvider.getResourceIcon(
+                    binding.root.context,
+                    resourcePickerListItem.resourceModel,
+                ),
+            )
+        }
     }
 
     private fun setupUsername(binding: ItemSelectableResourceBinding) =

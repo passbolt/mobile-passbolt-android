@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.tagsdetails
 
 import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReactiveContract
 import com.passbolt.mobile.android.permissions.permissions.PermissionsMode
+import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.TagModel
 
 /**
@@ -37,10 +38,7 @@ interface ResourceTagsContract {
     interface View : DataRefreshViewReactiveContract.View {
         fun displayTitle(name: String)
 
-        fun displayInitialsIcon(
-            name: String,
-            initials: String,
-        )
+        fun displayInitialsIcon(resource: ResourceModel)
 
         fun showFavouriteStar()
 

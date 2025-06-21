@@ -89,7 +89,7 @@ class LocationDetailsPresenter(
                     .resource
                     .let {
                         view?.showFolderName(it.metadataJsonModel.name)
-                        view?.displayInitialsIcon(it.metadataJsonModel.name, it.initials)
+                        view?.displayInitialsIcon(it)
                         it
                     }
             }

@@ -28,7 +28,6 @@ import com.jayway.jsonpath.Configuration
 import com.jayway.jsonpath.Option
 import com.jayway.jsonpath.spi.json.GsonJsonProvider
 import com.jayway.jsonpath.spi.mapper.GsonMappingProvider
-import com.passbolt.mobile.android.common.InitialsProvider
 import com.passbolt.mobile.android.common.search.SearchableMatcher
 import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.core.accounts.usecase.accountdata.GetSelectedAccountDataUseCase
@@ -77,7 +76,6 @@ internal val testOtpModule =
         factoryOf(::UsersModelMapper)
         factoryOf(::GroupsModelMapper)
         factoryOf(::PermissionsModelMapper)
-        factoryOf(::InitialsProvider)
         single { mock<FullDataRefreshExecutor>() }
         factory<OtpContract.Presenter> {
             OtpPresenter(

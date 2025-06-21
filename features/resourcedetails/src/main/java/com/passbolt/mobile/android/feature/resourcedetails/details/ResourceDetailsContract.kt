@@ -47,10 +47,7 @@ interface ResourceDetailsContract {
 
         fun displayUrl(url: String)
 
-        fun displayInitialsIcon(
-            name: String,
-            initials: String,
-        )
+        fun displayInitialsIcon(resource: ResourceModel)
 
         fun navigateToMore(
             resourceId: String,

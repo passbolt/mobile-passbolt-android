@@ -68,7 +68,7 @@ class ResourceTagsPresenter(
                 val resourceModel = getLocalResourceUseCase.execute(GetLocalResourceUseCase.Input(resourceId)).resource
                 view?.apply {
                     displayTitle(resourceModel.metadataJsonModel.name)
-                    displayInitialsIcon(resourceModel.metadataJsonModel.name, resourceModel.initials)
+                    displayInitialsIcon(resourceModel)
                     if (resourceModel.isFavourite()) {
                         showFavouriteStar()
                     }

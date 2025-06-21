@@ -5,7 +5,6 @@ import com.jayway.jsonpath.Configuration
 import com.jayway.jsonpath.Option
 import com.jayway.jsonpath.spi.json.GsonJsonProvider
 import com.jayway.jsonpath.spi.mapper.GsonMappingProvider
-import com.passbolt.mobile.android.common.InitialsProvider
 import com.passbolt.mobile.android.common.search.SearchableMatcher
 import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.core.accounts.usecase.accountdata.GetSelectedAccountDataUseCase
@@ -86,7 +85,6 @@ val testHomeModule =
         factory { mockCreateResourceMoreMenuModelUseCase }
         single { mock<FullDataRefreshExecutor>() }
         factoryOf(::TestCoroutineLaunchContext) bind CoroutineLaunchContext::class
-        factoryOf(::InitialsProvider)
         factoryOf(::AutofillUriMatcher)
         factoryOf(::HomeDisplayViewMapper)
         factoryOf(::SearchableMatcher)

@@ -53,7 +53,6 @@ import com.passbolt.mobile.android.core.extension.visible
 import com.passbolt.mobile.android.core.localization.R
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppContext
-import com.passbolt.mobile.android.core.ui.initialsicon.InitialsIconGenerator
 import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
 import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
 import com.passbolt.mobile.android.createresourcemenu.CreateResourceMenuFragment
@@ -91,7 +90,6 @@ class OtpFragment :
     override val presenter: OtpContract.Presenter by inject()
     private val otpAdapter: ItemAdapter<OtpItem> by inject()
     private val fastAdapter: FastAdapter<GenericItem> by inject()
-    private val initialsIconGenerator: InitialsIconGenerator by inject()
     private val imageLoader: ImageLoader by inject()
     private val clipboardManager: ClipboardManager? by inject()
 
@@ -225,7 +223,7 @@ class OtpFragment :
     }
 
     override fun showOtpList(otpList: List<OtpItemWrapper>) {
-        otpAdapter.set(otpList.map { OtpItem(it, initialsIconGenerator) })
+        otpAdapter.set(otpList.map { OtpItem(it) })
         fastAdapter.notifyAdapterDataSetChanged()
     }
 

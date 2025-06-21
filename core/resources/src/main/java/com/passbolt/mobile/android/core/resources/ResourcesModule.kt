@@ -9,6 +9,7 @@ import com.passbolt.mobile.android.core.resources.actions.ResourceUpdateActionsI
 import com.passbolt.mobile.android.core.resources.actions.SecretPropertiesActionsInteractor
 import com.passbolt.mobile.android.core.resources.interactor.create.CreateResourceInteractor
 import com.passbolt.mobile.android.core.resources.interactor.update.UpdateResourceInteractor
+import com.passbolt.mobile.android.core.resources.resourceicon.ResourceIconProvider
 import com.passbolt.mobile.android.core.resources.usecase.AddToFavouritesUseCase
 import com.passbolt.mobile.android.core.resources.usecase.DeleteResourceUseCase
 import com.passbolt.mobile.android.core.resources.usecase.FavouritesInteractor
@@ -24,6 +25,7 @@ import com.passbolt.mobile.android.core.resources.usecase.db.resourcesDbModule
 import com.passbolt.mobile.android.ui.ResourceModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.parameter.parametersOf
 import org.koin.dsl.module
@@ -68,6 +70,7 @@ val resourcesModule =
         singleOf(::ResourceShareInteractor)
         singleOf(::UpdateResourceInteractor)
         singleOf(::CreateResourceInteractor)
+        factoryOf(::ResourceIconProvider)
 
         factory { (resource: ResourceModel) ->
             ResourcePropertiesActionsInteractor(

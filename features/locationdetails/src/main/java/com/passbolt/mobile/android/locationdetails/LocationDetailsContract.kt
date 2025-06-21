@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.locationdetails
 
 import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReactiveContract
 import com.passbolt.mobile.android.ui.FolderModel
+import com.passbolt.mobile.android.ui.ResourceModel
 
 /**
  * Passbolt - Open source password manager for teams
@@ -36,10 +37,7 @@ interface LocationDetailsContract {
 
         fun showFolderLocation(parentFolders: List<FolderModel>)
 
-        fun displayInitialsIcon(
-            name: String,
-            initials: String,
-        )
+        fun displayInitialsIcon(resource: ResourceModel)
 
         fun showDataRefreshError()
 

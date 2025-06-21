@@ -1,7 +1,6 @@
 package com.passbolt.mobile.android.ui
 
 import android.os.Parcelable
-import com.passbolt.mobile.android.common.InitialsProvider
 import com.passbolt.mobile.android.common.search.Searchable
 import com.passbolt.mobile.android.jsonmodel.JsonModel
 import com.passbolt.mobile.android.jsonmodel.delegates.RootRelativeJsonPathNullableStringDelegate
@@ -10,7 +9,6 @@ import com.passbolt.mobile.android.jsonmodel.delegates.RootRelativeJsonPathStrin
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
-import org.koin.java.KoinJavaComponent.inject
 import java.time.ZonedDateTime
 
 /**
@@ -49,15 +47,7 @@ data class ResourceModel(
     val metadataKeyType: MetadataKeyTypeModel?,
     val metadataJsonModel: MetadataJsonModel,
 ) : Parcelable,
-    Searchable by metadataJsonModel {
-    @IgnoredOnParcel
-    val initials: String
-        get() = initialsProvider.get(metadataJsonModel.name)
-
-    companion object {
-        val initialsProvider: InitialsProvider by inject(InitialsProvider::class.java)
-    }
-}
+    Searchable by metadataJsonModel
 
 fun ResourceModel.isFavourite() = favouriteId != null
 
@@ -125,6 +115,9 @@ data class MetadataJsonModel(
 
     @IgnoredOnParcel
     var uris: List<String>? by RootRelativeJsonPathNullableStringListDelegate(jsonPath = "uris")
+
+    @IgnoredOnParcel
+    var icon: MetadataIconModel? by RootRelativeJsonPathIconDelegate(jsonPath = "icon")
 
     @IgnoredOnParcel
     override val searchCriteria: String = "$name${username.orEmpty()}${uri.orEmpty()}${uris.orEmpty().joinToString()}"

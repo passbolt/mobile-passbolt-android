@@ -5,7 +5,6 @@ import com.jayway.jsonpath.Configuration
 import com.jayway.jsonpath.Option
 import com.jayway.jsonpath.spi.json.GsonJsonProvider
 import com.jayway.jsonpath.spi.mapper.GsonMappingProvider
-import com.passbolt.mobile.android.common.InitialsProvider
 import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceTagsUseCase
@@ -51,7 +50,6 @@ internal val mockResourceTagsUseCase = mock<GetLocalResourceTagsUseCase>()
 @ExperimentalCoroutinesApi
 internal val testResourceTagsModule =
     module {
-        factoryOf(::InitialsProvider)
         factoryOf(::TestCoroutineLaunchContext) bind CoroutineLaunchContext::class
         factory<ResourceTagsContract.Presenter> {
             ResourceTagsPresenter(

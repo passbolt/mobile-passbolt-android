@@ -1,6 +1,6 @@
-package com.passbolt.mobile.android.common
+package com.passbolt.mobile.android.ui
 
-import com.passbolt.mobile.android.common.extension.firstOrEmpty
+import com.google.gson.annotations.SerializedName
 
 /**
  * Passbolt - Open source password manager for teams
@@ -24,14 +24,10 @@ import com.passbolt.mobile.android.common.extension.firstOrEmpty
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class InitialsProvider {
-    fun get(
-        firstName: String,
-        lastName: String? = null,
-    ): String =
-        if (!lastName.isNullOrEmpty()) {
-            "${firstName.firstOrEmpty()}${lastName.first()}"
-        } else {
-            firstName.firstOrEmpty()
-        }
-}
+
+data class MetadataIconModel(
+    val type: String,
+    val value: Int,
+    @SerializedName("background_color")
+    val backgroundColorHexString: String?,
+)

@@ -39,7 +39,6 @@ import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.core.navigation.constants.Autofillresources
 import com.passbolt.mobile.android.core.navigation.deeplinks.NavDeepLinkProvider
-import com.passbolt.mobile.android.core.ui.initialsicon.InitialsIconGenerator
 import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
 import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
 import com.passbolt.mobile.android.createfolder.CreateFolderFragment
@@ -137,7 +136,6 @@ class HomeFragment :
     private val inCurrentFoldersHeaderItemAdapter: ItemAdapter<InCurrentFoldersHeaderItem> by inject(
         named(IN_CURRENT_FOLDER_HEADER_ITEM_ADAPTER),
     )
-    private val initialsIconGenerator: InitialsIconGenerator by inject()
 
     private val snackbarAnchorView: View?
         get() {
@@ -439,7 +437,6 @@ class HomeFragment :
             suggestedResources.map { resourceModel ->
                 PasswordItem(
                     ResourceItemWrapper(resourceModel),
-                    initialsIconGenerator,
                     resourceHandlingStrategy.shouldShowResourceMoreMenu(),
                 )
             },
@@ -470,7 +467,6 @@ class HomeFragment :
             resourceList.map { resourceModel ->
                 PasswordItem(
                     ResourceItemWrapper(resourceModel),
-                    initialsIconGenerator,
                     dotsVisible = resourceHandlingStrategy.shouldShowResourceMoreMenu(),
                 )
             },
@@ -488,7 +484,6 @@ class HomeFragment :
             filteredSubFolderResourceList.map { resourceModel ->
                 PasswordItem(
                     ResourceItemWrapper(resourceModel),
-                    initialsIconGenerator,
                     dotsVisible = resourceHandlingStrategy.shouldShowResourceMoreMenu(),
                 )
             },

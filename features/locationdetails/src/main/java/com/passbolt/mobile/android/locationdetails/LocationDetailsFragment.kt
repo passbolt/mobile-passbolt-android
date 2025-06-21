@@ -11,12 +11,18 @@ import com.mikepenz.fastadapter.expandable.getExpandableExtension
 import com.mikepenz.itemanimators.SlideDownAlphaAnimator
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
 import com.passbolt.mobile.android.core.extension.showSnackbar
+import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
-import com.passbolt.mobile.android.core.ui.initialsicon.InitialsIconGenerator
+import com.passbolt.mobile.android.core.resources.resourceicon.ResourceIconProvider
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
 import com.passbolt.mobile.android.feature.locationdetails.databinding.FragmentFolderLocationDetailsBinding
 import com.passbolt.mobile.android.locationdetails.recyclerview.ExpandableFolderDatasetCreator
 import com.passbolt.mobile.android.ui.FolderModel
+import com.passbolt.mobile.android.ui.ResourceModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
@@ -53,7 +59,10 @@ class LocationDetailsFragment :
     private val args: LocationDetailsFragmentArgs by navArgs()
     private val fastAdapter: FastItemAdapter<GenericItem> by inject()
     private val expandableFolderDatasetCreator: ExpandableFolderDatasetCreator by inject()
-    private val initialsIconGenerator: InitialsIconGenerator by inject()
+    private val coroutineLaunchContext: CoroutineLaunchContext by inject()
+    private val job = SupervisorJob()
+    private val coroutineUiScope = CoroutineScope(job + coroutineLaunchContext.ui)
+    private val resourceIconProvider: ResourceIconProvider by inject()
 
     override fun onViewCreated(
         view: View,
@@ -68,6 +77,7 @@ class LocationDetailsFragment :
     }
 
     override fun onDestroyView() {
+        coroutineUiScope.coroutineContext.cancelChildren()
         presenter.detach()
         super.onDestroyView()
     }
@@ -117,13 +127,12 @@ class LocationDetailsFragment :
         }
     }
 
-    override fun displayInitialsIcon(
-        name: String,
-        initials: String,
-    ) {
-        requiredBinding.icon.setImageDrawable(
-            initialsIconGenerator.generate(name, initials),
-        )
+    override fun displayInitialsIcon(resource: ResourceModel) {
+        coroutineUiScope.launch {
+            requiredBinding.icon.setImageDrawable(
+                resourceIconProvider.getResourceIcon(requireContext(), resource),
+            )
+        }
     }
 
     override fun hideRefreshProgress() {

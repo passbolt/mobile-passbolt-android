@@ -102,7 +102,7 @@ class ResourceTagsPresenterTest : KoinTest {
 
         verify(view).showFavouriteStar()
         verify(view).displayTitle(NAME)
-        verify(view).displayInitialsIcon(NAME, "n")
+        verify(view).displayInitialsIcon(resourceModel)
         verify(view).showTags(RESOURCE_TAGS)
         verifyNoMoreInteractions(view)
     }

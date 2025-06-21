@@ -57,7 +57,6 @@ fastAdapterCore = "5.7.0"
 fastAdapterCoreAnimators = "1.1.0"
 easylauncher = "6.4.0"
 fusionauthJwt = "5.3.0"
-textDrawable = "558677ea31"
 serializationJson = "1.6.0"
 roomCore = "2.6.1"
 sqliteCipher = "4.6.1"
@@ -147,7 +146,6 @@ fastadapter-ui = { group = "com.mikepenz", name = "fastadapter-extensions-ui", v
 fastadapter-animators = { group = "com.mikepenz", name = "itemanimators", version.ref = "fastAdapterCoreAnimators" }
 easylauncher = { group = "com.project.starter", name = "easylauncher", version.ref = "easylauncher" }
 fusionauth-jwt = { group = "io.fusionauth", name = "fusionauth-jwt", version.ref = "fusionauthJwt" }
-textdrawable = { group = "com.github.amulyakhare", name = "TextDrawable", version.ref = "textDrawable" }
 room-core = { group = "androidx.room", name = "room-ktx", version.ref = "roomCore" }
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "roomCore" }
 sqlite-cipher = { group = "net.zetetic", name = "sqlcipher-android", version.ref = "sqliteCipher" }

@@ -1,16 +1,13 @@
 package com.passbolt.mobile.android.core
 
-import com.passbolt.mobile.android.core.font.Font
 import com.passbolt.mobile.android.core.font.fontModule
 import com.passbolt.mobile.android.core.ui.controller.TotpViewController
 import com.passbolt.mobile.android.core.ui.formatter.DateFormatter
 import com.passbolt.mobile.android.core.ui.formatter.FingerprintFormatter
 import com.passbolt.mobile.android.core.ui.formatter.OtpFormatter
-import com.passbolt.mobile.android.core.ui.initialsicon.InitialsIconGenerator
 import com.passbolt.mobile.android.core.ui.recyclerview.OverlappingItemDecorator
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
-import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import java.time.format.DateTimeFormatter
 
@@ -49,10 +46,5 @@ val coreUiModule =
 
         single {
             DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm O")
-        }
-        factory {
-            InitialsIconGenerator(
-                font = get(named<Font.InterMedium>()),
-            )
         }
     }
