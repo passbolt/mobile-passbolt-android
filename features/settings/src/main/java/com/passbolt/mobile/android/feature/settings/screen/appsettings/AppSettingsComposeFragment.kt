@@ -56,7 +56,7 @@ class AppSettingsComposeFragment :
 
     override fun navigateToAutofill() {
         findNavController().navigate(
-            AppSettingsComposeFragmentDirections.actionAppSettingsComposeFragmentToSettingsAutofillFragment(),
+            AppSettingsComposeFragmentDirections.actionAppSettingsComposeFragmentToAutofillSettingsComposeFragment(),
         )
     }
 

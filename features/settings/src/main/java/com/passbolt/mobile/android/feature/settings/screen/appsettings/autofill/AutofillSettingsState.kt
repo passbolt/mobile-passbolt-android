@@ -1,10 +1,4 @@
-package com.passbolt.mobile.android.core.notifications
-
-import android.app.NotificationManager
-import com.passbolt.mobile.android.core.notifications.accessibilityautofill.AccessibilityServiceNotificationFactory
-import org.koin.android.ext.koin.androidContext
-import org.koin.core.module.dsl.singleOf
-import org.koin.dsl.module
+package com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill
 
 /**
  * Passbolt - Open source password manager for teams
@@ -29,9 +23,9 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-val notificationsModule =
-    module {
-        factory { androidContext().getSystemService(NotificationManager::class.java) }
-        singleOf(::AccessibilityServiceNotificationFactory)
-        singleOf(::NotificationChannelManager)
-    }
+data class AutofillSettingsState(
+    val isNativeAutofillChecked: Boolean = false,
+    val isAccessibilityAutofillChecked: Boolean = false,
+    val isChromeNativeAutofillChecked: Boolean = false,
+    val isChromeNativeAutofillEnabled: Boolean = false,
+)
