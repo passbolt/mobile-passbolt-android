@@ -1,11 +1,3 @@
-package com.passbolt.mobile.android.core.notifications
-
-import android.app.NotificationManager
-import com.passbolt.mobile.android.core.notifications.accessibilityautofill.AccessibilityServiceNotificationFactory
-import org.koin.android.ext.koin.androidContext
-import org.koin.core.module.dsl.singleOf
-import org.koin.dsl.module
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -29,9 +21,16 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-val notificationsModule =
-    module {
-        factory { androidContext().getSystemService(NotificationManager::class.java) }
-        singleOf(::AccessibilityServiceNotificationFactory)
-        singleOf(::NotificationChannelManager)
-    }
+package com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill
+
+sealed interface AutofillSettingsIntent {
+    object GoBack : AutofillSettingsIntent
+
+    object ToggleNativeAutofill : AutofillSettingsIntent
+
+    data object ToggleChromeNativeAutofill : AutofillSettingsIntent
+
+    data object ToggleAccessibilityAutofill : AutofillSettingsIntent
+
+    data object UpdateAutofillState : AutofillSettingsIntent
+}

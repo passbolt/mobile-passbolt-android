@@ -2,6 +2,7 @@ package com.passbolt.mobile.android
 
 import android.content.ClipboardManager
 import android.content.Context
+import android.view.autofill.AutofillManager
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ProcessLifecycleOwner
 import coil.ImageLoader
@@ -63,4 +64,5 @@ internal val appModule =
         factory { androidContext().resources }
         factory { androidContext().assets }
         single { androidContext() as PassboltApplication }
+        factory { androidContext().getSystemService(AutofillManager::class.java) }
     }

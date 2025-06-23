@@ -1,7 +1,5 @@
 package com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill
 
-import com.passbolt.mobile.android.core.mvp.BaseContract
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -24,46 +22,22 @@ import com.passbolt.mobile.android.core.mvp.BaseContract
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-interface SettingsAutofillContract {
-    interface View : BaseContract.View {
-        fun setAccessibilitySwitchOn()
+internal sealed interface AutofillScreenSideEffect {
+    data object NavigateUp : AutofillScreenSideEffect
 
-        fun setAccessibilitySwitchOff()
+    data object NavigateToNativeAutofillEnabled : AutofillScreenSideEffect
 
-        fun showAutofillServiceNotSupported()
+    data object NavigateToEncourageNativeAutofill : AutofillScreenSideEffect
 
-        fun setAutofillSwitchOff()
+    data object NavigateToEncourageAccessibilityAutofill : AutofillScreenSideEffect
 
-        fun setAutofillSwitchOn()
+    data class ShowErrorSnackBar(
+        val type: ErrorSnackbarType,
+    ) : AutofillScreenSideEffect
 
-        fun showEncourageAutofillService()
+    data object NavigateToChromeNativeAutofill : AutofillScreenSideEffect
 
-        fun showEncourageAccessibilityService()
-
-        fun showAutofillFeatureEnabledSuccess()
-
-        fun disableChromeNativeAutofillLayout()
-
-        fun showChromeNativeAutofillNotSupported()
-
-        fun setChromeNativeAutofillSwitchOn()
-
-        fun setChromeNativeAutofillSwitchOff()
-
-        fun enableChromeNativeAutofillLayout()
-
-        fun launchChromeNativeAutofillDeeplink()
-    }
-
-    interface Presenter : BaseContract.Presenter<View> {
-        fun autofillServiceSwitchClick()
-
-        fun accessibilityServiceSwitchClick()
-
-        fun viewResumed()
-
-        fun autofillSetupSuccessfully()
-
-        fun chromeNativeAutofillServiceSwitchClick()
+    enum class ErrorSnackbarType {
+        NATIVE_AUTOFILL_NOT_SUPPORTED,
     }
 }

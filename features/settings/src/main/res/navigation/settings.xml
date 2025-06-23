@@ -42,14 +42,6 @@
     </fragment>
 
     <fragment
-        android:id="@+id/settingsAutofillFragment"
-        android:name="com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.SettingsAutofillFragment"
-        android:label="SettingsAutofillFragment"
-        tools:layout="@layout/fragment_settings_autofill" />
-
-    <include app:graph="@navigation/logs" />
-    <include app:graph="@navigation/account_details" />
-    <fragment
         android:id="@+id/debugLogsSettingsComposeFragment"
         android:name="com.passbolt.mobile.android.feature.settings.screen.debuglogssettings.DebugLogsSettingsComposeFragment"
         android:label="DebugLogsSettingsComposeFragment">
@@ -61,6 +53,7 @@
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
     </fragment>
+
     <fragment
         android:id="@+id/termsAndLicensesComposeFragment"
         android:name="com.passbolt.mobile.android.feature.settings.screen.termsandlicenses.TermsAndLicensesSettingsComposeFragment"
@@ -73,13 +66,14 @@
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
     </fragment>
+
     <fragment
         android:id="@+id/appSettingsComposeFragment"
         android:name="com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsComposeFragment"
         android:label="AppSettingsComposeFragment">
         <action
-            android:id="@+id/action_appSettingsComposeFragment_to_settingsAutofillFragment"
-            app:destination="@id/settingsAutofillFragment"
+            android:id="@+id/action_appSettingsComposeFragment_to_autofillSettingsComposeFragment"
+            app:destination="@id/autofillSettingsComposeFragment"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
@@ -106,12 +100,11 @@
         android:label="KeyInspectorFragment"
         tools:layout="@layout/fragment_key_inspector" />
 
-    <include app:graph="@navigation/logs" />
-    <include app:graph="@navigation/account_details" />
     <fragment
         android:id="@+id/defaultFilterComposeFragment"
         android:name="com.passbolt.mobile.android.feature.settings.screen.appsettings.defaultfilter.DefaultFilterComposeFragment"
         android:label="DefaultFilterComposeFragment" />
+
     <fragment
         android:id="@+id/accountsSettingsComposeFragment"
         android:name="com.passbolt.mobile.android.feature.settings.screen.accounts.AccountsSettingsComposeFragment"
@@ -131,13 +124,22 @@
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
     </fragment>
+
     <fragment
         android:id="@+id/licensesComposeFragment"
         android:name="com.passbolt.mobile.android.feature.settings.screen.termsandlicenses.licenses.LicensesComposeFragment"
         android:label="LicensesComposeFragment" />
+
     <fragment
         android:id="@+id/expertSettingsComposeFragment"
         android:name="com.passbolt.mobile.android.feature.settings.screen.appsettings.expertsettings.ExpertSettingsComposeFragment"
         android:label="ExpertSettingsComposeFragment" />
 
+    <fragment
+        android:id="@+id/autofillSettingsComposeFragment"
+        android:name="com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.AutofillSettingsComposeFragment"
+        android:label="AutofillSettingsComposeFragment" />
+
+    <include app:graph="@navigation/logs" />
+    <include app:graph="@navigation/account_details" />
 </navigation>

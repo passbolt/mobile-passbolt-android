@@ -154,7 +154,7 @@ class EncourageAutofillServiceDialog :
     }
 
     interface Listener {
-        fun autofillSetupClosed()
+        fun autofillSetupClosed() {}
 
         fun autofillSetupSuccessfully()
     }

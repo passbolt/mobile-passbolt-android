@@ -13,8 +13,8 @@ import androidx.compose.ui.tooling.preview.Preview
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TitleAppBar(
-    title: String,
     modifier: Modifier = Modifier,
+    title: String = "",
     actions: @Composable RowScope.() -> Unit = {},
     navigationIcon: @Composable () -> Unit = {},
 ) {
