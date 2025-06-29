@@ -70,6 +70,7 @@ class ResourceTypesUpdatesAdjacencyGraph {
                 ResourceTypeEdge(v5PasswordString, v5DefaultWithTotp, UpdateAction.ADD_TOTP),
                 ResourceTypeEdge(v5PasswordString, v5Default, UpdateAction.ADD_NOTE),
                 ResourceTypeEdge(v5PasswordString, v5PasswordString, UpdateAction.EDIT_ADDITIONAL_URIS),
+                ResourceTypeEdge(v5PasswordString, v5PasswordString, UpdateAction.EDIT_APPEARANCE),
             )
 
         map[passwordAndDescription] =
@@ -92,6 +93,7 @@ class ResourceTypesUpdatesAdjacencyGraph {
                 ResourceTypeEdge(v5Default, v5Default, UpdateAction.REMOVE_METADATA_DESCRIPTION),
                 ResourceTypeEdge(v5Default, v5DefaultWithTotp, UpdateAction.ADD_TOTP),
                 ResourceTypeEdge(v5Default, v5Default, UpdateAction.EDIT_ADDITIONAL_URIS),
+                ResourceTypeEdge(v5Default, v5Default, UpdateAction.EDIT_APPEARANCE),
             )
 
         map[passwordDescriptionTotp] =
@@ -118,6 +120,7 @@ class ResourceTypesUpdatesAdjacencyGraph {
                 ResourceTypeEdge(v5DefaultWithTotp, v5DefaultWithTotp, UpdateAction.ADD_METADATA_DESCRIPTION),
                 ResourceTypeEdge(v5DefaultWithTotp, v5DefaultWithTotp, UpdateAction.REMOVE_METADATA_DESCRIPTION),
                 ResourceTypeEdge(v5DefaultWithTotp, v5DefaultWithTotp, UpdateAction.EDIT_ADDITIONAL_URIS),
+                ResourceTypeEdge(v5DefaultWithTotp, v5DefaultWithTotp, UpdateAction.EDIT_APPEARANCE),
             )
 
         map[totp] =
@@ -138,6 +141,7 @@ class ResourceTypesUpdatesAdjacencyGraph {
                 ResourceTypeEdge(v5Totp, v5Totp, UpdateAction.ADD_METADATA_DESCRIPTION),
                 ResourceTypeEdge(v5Totp, v5Totp, UpdateAction.REMOVE_METADATA_DESCRIPTION),
                 ResourceTypeEdge(v5Totp, v5Totp, UpdateAction.EDIT_ADDITIONAL_URIS),
+                ResourceTypeEdge(v5Totp, v5Totp, UpdateAction.EDIT_APPEARANCE),
             )
 
         adjacencyMap = map

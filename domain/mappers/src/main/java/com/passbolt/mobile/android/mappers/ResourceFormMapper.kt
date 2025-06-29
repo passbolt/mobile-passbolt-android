@@ -1,7 +1,11 @@
 package com.passbolt.mobile.android.mappers
 
 import com.passbolt.mobile.android.jsonmodel.delegates.TotpSecret
+import com.passbolt.mobile.android.ui.MetadataIconModel
 import com.passbolt.mobile.android.ui.PasswordUiModel
+import com.passbolt.mobile.android.ui.ResourceAppearanceModel
+import com.passbolt.mobile.android.ui.ResourceAppearanceModel.Companion.ICON_TYPE_KEEPASS
+import com.passbolt.mobile.android.ui.ResourceAppearanceModel.Companion.ICON_TYPE_PASSBOLT
 import com.passbolt.mobile.android.ui.TotpUiModel
 
 /**
@@ -60,4 +64,25 @@ class ResourceFormMapper {
         mainUri = mainUri,
         username = username,
     )
+
+    fun mapToUiModel(resourceIcon: MetadataIconModel?): ResourceAppearanceModel =
+        if (resourceIcon != null) {
+            ResourceAppearanceModel(
+                iconType = resourceIcon.type,
+                iconValue = resourceIcon.value,
+                iconBackgroundHexColor = resourceIcon.backgroundColorHexString,
+            )
+        } else {
+            ResourceAppearanceModel()
+        }
+
+    fun toAppearanceModel(
+        keepassIconValue: Int?,
+        backgroundColorHex: String?,
+    ): ResourceAppearanceModel =
+        ResourceAppearanceModel(
+            iconType = keepassIconValue?.let { ICON_TYPE_KEEPASS } ?: ICON_TYPE_PASSBOLT,
+            iconValue = keepassIconValue,
+            iconBackgroundHexColor = backgroundColorHex,
+        )
 }

@@ -28,6 +28,7 @@ enum class UpdateAction {
      * Use for editing remaining metadata (description, username, name, main uri, uris)
      */
     EDIT_METADATA,
+    EDIT_APPEARANCE,
     EDIT_ADDITIONAL_URIS,
 
     ADD_METADATA_DESCRIPTION,

@@ -31,6 +31,7 @@ import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.T
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.advanced.TotpAdvancedSettingsFormFragment
 import com.passbolt.mobile.android.feature.resourceform.databinding.FragmentResourceFormBinding
 import com.passbolt.mobile.android.feature.resourceform.metadata.additionaluris.AdditionalUrisFormFragment
+import com.passbolt.mobile.android.feature.resourceform.metadata.appearance.AppearanceFormComposeFragment
 import com.passbolt.mobile.android.feature.resourceform.metadata.description.DescriptionFormFragment
 import com.passbolt.mobile.android.feature.resourceform.subform.password.PasswordSubformView
 import com.passbolt.mobile.android.feature.resourceform.subform.totp.TotpSubformView
@@ -39,6 +40,7 @@ import com.passbolt.mobile.android.ui.NewMetadataKeyToTrustModel
 import com.passbolt.mobile.android.ui.OtpParseResult
 import com.passbolt.mobile.android.ui.PasswordStrength
 import com.passbolt.mobile.android.ui.PasswordUiModel
+import com.passbolt.mobile.android.ui.ResourceAppearanceModel
 import com.passbolt.mobile.android.ui.ResourceFormUiModel
 import com.passbolt.mobile.android.ui.TotpUiModel
 import com.passbolt.mobile.android.ui.TrustedKeyDeletedModel
@@ -88,6 +90,18 @@ class ResourceFormFragment :
     private val metadataDescriptionResult = { _: String, result: Bundle ->
         if (result.containsKey(DescriptionFormFragment.EXTRA_METADATA_DESCRIPTION)) {
             presenter.metadataDescriptionChanged(result.getString(DescriptionFormFragment.EXTRA_METADATA_DESCRIPTION))
+        }
+    }
+
+    private val appearanceResult = { _: String, result: Bundle ->
+        if (result.containsKey(AppearanceFormComposeFragment.EXTRA_APPEARANCE)) {
+            presenter.appearanceChanged(
+                BundleCompat.getParcelable(
+                    result,
+                    AppearanceFormComposeFragment.EXTRA_APPEARANCE,
+                    ResourceAppearanceModel::class.java,
+                ),
+            )
         }
     }
 
@@ -192,6 +206,7 @@ class ResourceFormFragment :
             setUp(supportedMetadata)
             descriptionClick = { presenter.metadataDescriptionClick() }
             additionalUrisClick = { presenter.additionalUrisClick() }
+            appearanceClick = { presenter.appearanceClick() }
         }
     }
 
@@ -201,6 +216,16 @@ class ResourceFormFragment :
             ResourceFormFragmentDirections.actionResourceFormFragmentToDescriptionFormFragment(
                 navArgs.mode,
                 metadataDescription,
+            ),
+        )
+    }
+
+    override fun navigateToAppearance(appearanceModel: ResourceAppearanceModel) {
+        setFragmentResultListener(AppearanceFormComposeFragment.REQUEST_APPEARANCE, appearanceResult)
+        findNavController().navigate(
+            ResourceFormFragmentDirections.actionResourceFormFragmentToAppearanceFormComposeFragment(
+                navArgs.mode,
+                appearanceModel,
             ),
         )
     }

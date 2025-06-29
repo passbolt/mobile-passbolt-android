@@ -1,5 +1,8 @@
 package com.passbolt.mobile.android.ui
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -22,20 +25,41 @@ package com.passbolt.mobile.android.ui
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-data class ResourceFormUiModel(
-    val leadingContentType: LeadingContentType,
-    val supportedMetadata: List<Metadata>,
-    val supportedAdditionalSecrets: List<Secret>,
-) {
-    enum class Metadata {
-        DESCRIPTION,
-        ADDITIONAL_URIS,
-        APPEARANCE,
-    }
 
-    enum class Secret {
-        PASSWORD,
-        NOTE,
-        TOTP,
+@Parcelize
+data class ResourceAppearanceModel(
+    val iconType: String? = ICON_TYPE_PASSBOLT,
+    val iconBackgroundHexColor: String? = DEFAULT_BACKGROUND_COLOR_HEX_STRING,
+    val iconValue: Int? = null,
+) : Parcelable {
+    val isDefaultBackgroundColorSet: Boolean
+        get() = iconBackgroundHexColor == DEFAULT_BACKGROUND_COLOR_HEX_STRING
+
+    val isDefaultIconSet: Boolean
+        get() = iconType == ICON_TYPE_PASSBOLT && iconValue == null
+
+    companion object {
+        const val ICON_TYPE_KEEPASS = "keepass-icon-set"
+        const val ICON_TYPE_PASSBOLT = "passbolt-icon-set"
+        const val DEFAULT_BACKGROUND_COLOR_HEX_STRING = "#BEBEBE"
+        const val MAX_KEEPASS_ICON_VALUE = 68
+
+        val predefinedColorHexList =
+            listOf(
+                "#BBBBBB",
+                "#888888",
+                "#575757",
+                "#9C6A55",
+                "#E64626",
+                "#F07438",
+                "#F5AA48",
+                "#FFE144",
+                "#B1D86A",
+                "#3D9B5E",
+                "#A0DAE3",
+                "#4A75DF",
+                "#AC8CFB",
+                "#E88BA8",
+            )
     }
 }

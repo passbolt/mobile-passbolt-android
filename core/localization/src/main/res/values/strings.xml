@@ -318,6 +318,7 @@
     <string name="resource_form_enter_description">Enter description</string>
     <string name="resource_form_metadata_description">Metadata description</string>
     <string name="resource_form_create_metadata_description">Create metadata description</string>
+    <string name="resource_form_create_resource_appearance">Resource appearance</string>
     <string name="resource_form_create_additional_uris">Create additional URIs</string>
     <string name="resource_form_note">Note</string>
     <string name="resource_form_create_note">Create note</string>
@@ -341,6 +342,11 @@
     <string name="resource_form_remove_note">Remove Note</string>
     <string name="resource_form_no_name">no name</string>
     <string name="resource_form_max_additional_uris_limit">You can add a maximum of %d additional URIs</string>
+    <string name="resource_form_appearance">Appearance</string>
+    <string name="resource_form_appearance_select_color">Select color</string>
+    <string name="resource_form_appearance_select_icon">Select icon</string>
+    <string name="resource_form_appearance_default_color">Default color</string>
+    <string name="resource_form_appearance_default_icon">Default icon</string>
 
     <string name="settings_app_settings">App settings</string>
     <string name="settings_accounts">Accounts</string>

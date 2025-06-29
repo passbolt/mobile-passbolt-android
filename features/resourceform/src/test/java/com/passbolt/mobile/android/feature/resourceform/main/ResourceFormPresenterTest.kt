@@ -13,6 +13,7 @@ import com.passbolt.mobile.android.ui.PasswordStrength
 import com.passbolt.mobile.android.ui.ResourceFormMode
 import com.passbolt.mobile.android.ui.ResourceFormUiModel
 import com.passbolt.mobile.android.ui.ResourceFormUiModel.Metadata.ADDITIONAL_URIS
+import com.passbolt.mobile.android.ui.ResourceFormUiModel.Metadata.APPEARANCE
 import com.passbolt.mobile.android.ui.ResourceFormUiModel.Metadata.DESCRIPTION
 import com.passbolt.mobile.android.ui.ResourceFormUiModel.Secret.NOTE
 import com.passbolt.mobile.android.ui.ResourceFormUiModel.Secret.PASSWORD
@@ -179,7 +180,7 @@ class ResourceFormPresenterTest : KoinTest {
         }
         argumentCaptor<List<ResourceFormUiModel.Metadata>> {
             verify(view).setupMetadata(capture())
-            assertThat(firstValue).containsExactly(DESCRIPTION, ADDITIONAL_URIS)
+            assertThat(firstValue).containsExactly(DESCRIPTION, ADDITIONAL_URIS, APPEARANCE)
         }
         verify(view).hideAdvancedSettings()
     }
@@ -210,7 +211,7 @@ class ResourceFormPresenterTest : KoinTest {
         }
         argumentCaptor<List<ResourceFormUiModel.Metadata>> {
             verify(view).setupMetadata(capture())
-            assertThat(firstValue).containsExactly(DESCRIPTION, ADDITIONAL_URIS)
+            assertThat(firstValue).containsExactly(DESCRIPTION, ADDITIONAL_URIS, APPEARANCE)
         }
         verify(view).hideAdvancedSettings()
     }

@@ -8,6 +8,7 @@ import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.a
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.totpFormModule
 import com.passbolt.mobile.android.feature.resourceform.main.resourceFormModule
 import com.passbolt.mobile.android.feature.resourceform.metadata.additionaluris.additionalUrisFormModule
+import com.passbolt.mobile.android.feature.resourceform.metadata.appearance.appearanceFormModule
 import com.passbolt.mobile.android.feature.resourceform.metadata.description.descriptionFormModule
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
@@ -44,6 +45,7 @@ val resourceFormModule =
         noteFormModule()
         passwordFormModule()
         additionalUrisFormModule()
+        appearanceFormModule()
 
         factoryOf(::GetDefaultCreateContentTypeUseCase)
         factoryOf(::GetEditContentTypeUseCase)

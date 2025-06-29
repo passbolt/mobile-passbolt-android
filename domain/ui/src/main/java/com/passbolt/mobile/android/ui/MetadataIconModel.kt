@@ -27,7 +27,7 @@ import com.google.gson.annotations.SerializedName
 
 data class MetadataIconModel(
     val type: String,
-    val value: Int,
+    val value: Int?,
     @SerializedName("background_color")
     val backgroundColorHexString: String?,
 )

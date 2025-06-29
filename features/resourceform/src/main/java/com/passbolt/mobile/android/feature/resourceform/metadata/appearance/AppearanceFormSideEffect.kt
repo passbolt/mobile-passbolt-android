@@ -1,4 +1,6 @@
-package com.passbolt.mobile.android.ui
+package com.passbolt.mobile.android.feature.resourceform.metadata.appearance
+
+import com.passbolt.mobile.android.ui.ResourceAppearanceModel
 
 /**
  * Passbolt - Open source password manager for teams
@@ -22,20 +24,10 @@ package com.passbolt.mobile.android.ui
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-data class ResourceFormUiModel(
-    val leadingContentType: LeadingContentType,
-    val supportedMetadata: List<Metadata>,
-    val supportedAdditionalSecrets: List<Secret>,
-) {
-    enum class Metadata {
-        DESCRIPTION,
-        ADDITIONAL_URIS,
-        APPEARANCE,
-    }
+internal sealed interface AppearanceFormSideEffect {
+    data object NavigateUp : AppearanceFormSideEffect
 
-    enum class Secret {
-        PASSWORD,
-        NOTE,
-        TOTP,
-    }
+    data class ApplyAndGoBack(
+        val model: ResourceAppearanceModel,
+    ) : AppearanceFormSideEffect
 }
