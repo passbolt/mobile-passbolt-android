@@ -27,6 +27,6 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:src="@drawable/ic_trash"
-            app:tint="@color/icon_tint" />
+            app:tint="@color/black" />
     </FrameLayout>
 </LinearLayout>
