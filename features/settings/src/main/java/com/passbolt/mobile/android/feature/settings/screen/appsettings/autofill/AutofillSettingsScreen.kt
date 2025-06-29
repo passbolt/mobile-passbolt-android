@@ -160,7 +160,10 @@ private fun AutofillSettingsScreen(
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
             textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.titleLarge,
+            style =
+                MaterialTheme.typography.titleLarge.copy(
+                    color = MaterialTheme.colorScheme.onBackground,
+                ),
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -168,6 +171,7 @@ private fun AutofillSettingsScreen(
         Text(
             text = stringResource(LocalizationR.string.settings_autofill_autofill_desc),
             textAlign = TextAlign.Center,
+            color = MaterialTheme.colorScheme.onBackground,
             modifier =
                 Modifier
                     .fillMaxWidth()
