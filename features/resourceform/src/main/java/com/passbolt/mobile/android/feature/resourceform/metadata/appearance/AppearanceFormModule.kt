@@ -1,4 +1,7 @@
-package com.passbolt.mobile.android.ui
+package com.passbolt.mobile.android.feature.resourceform.metadata.appearance
+
+import org.koin.androidx.viewmodel.dsl.viewModelOf
+import org.koin.core.module.Module
 
 /**
  * Passbolt - Open source password manager for teams
@@ -22,20 +25,7 @@ package com.passbolt.mobile.android.ui
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-data class ResourceFormUiModel(
-    val leadingContentType: LeadingContentType,
-    val supportedMetadata: List<Metadata>,
-    val supportedAdditionalSecrets: List<Secret>,
-) {
-    enum class Metadata {
-        DESCRIPTION,
-        ADDITIONAL_URIS,
-        APPEARANCE,
-    }
 
-    enum class Secret {
-        PASSWORD,
-        NOTE,
-        TOTP,
-    }
+internal fun Module.appearanceFormModule() {
+    viewModelOf(::AppearanceFormViewModel)
 }

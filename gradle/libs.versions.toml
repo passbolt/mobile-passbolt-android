@@ -78,6 +78,7 @@ jsonAssert = "2.0-rc1"
 snyk = "0.7.0"
 androidxComposeBom = "2025.04.00"
 nlopez-compose-rulset = "0.4.22"
+accompanist-drawablepainer = "0.37.3"
 
 [libraries]
 commons-validator = { module = "commons-validator:commons-validator", version.ref = "commonsValidator" }
@@ -174,8 +175,9 @@ compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview"
 compose-lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "composeLifecycleViewModel" }
 compose-ui-graphics = { module = "androidx.compose.ui:ui-graphics-android" }
 compose-activity = { module = "androidx.activity:activity-compose" }
-ktlint-compose-rulset = { module = "io.nlopez.compose.rules:ktlint", version.ref="nlopez-compose-rulset" }
-detekt-compose-rulset = { module = "io.nlopez.compose.rules:detekt", version.ref="nlopez-compose-rulset" }
+ktlint-compose-rulset = { module = "io.nlopez.compose.rules:ktlint", version.ref = "nlopez-compose-rulset" }
+detekt-compose-rulset = { module = "io.nlopez.compose.rules:detekt", version.ref = "nlopez-compose-rulset" }
+accompanist-drawablepainter = { module = "com.google.accompanist:accompanist-drawablepainter", version.ref = "accompanist-drawablepainer" }
 
 [plugins]
 android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }

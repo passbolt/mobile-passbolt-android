@@ -1,5 +1,3 @@
-package com.passbolt.mobile.android.ui
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -22,20 +20,31 @@ package com.passbolt.mobile.android.ui
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-data class ResourceFormUiModel(
-    val leadingContentType: LeadingContentType,
-    val supportedMetadata: List<Metadata>,
-    val supportedAdditionalSecrets: List<Secret>,
-) {
-    enum class Metadata {
-        DESCRIPTION,
-        ADDITIONAL_URIS,
-        APPEARANCE,
-    }
 
-    enum class Secret {
-        PASSWORD,
-        NOTE,
-        TOTP,
-    }
+package com.passbolt.mobile.android.feature.resourceform.metadata.appearance
+
+import com.passbolt.mobile.android.ui.ResourceAppearanceModel
+import com.passbolt.mobile.android.ui.ResourceFormMode
+
+internal sealed interface AppearanceFormIntent {
+    object GoBack : AppearanceFormIntent
+
+    object ToggleDefaultColor : AppearanceFormIntent
+
+    object ToggleDefaultIcon : AppearanceFormIntent
+
+    data class SetCustomIconBackgroundColor(
+        val colorHexString: String,
+    ) : AppearanceFormIntent
+
+    data class SetKeepassIcon(
+        val iconValue: Int,
+    ) : AppearanceFormIntent
+
+    data class Initialize(
+        val resourceFormMode: ResourceFormMode,
+        val model: ResourceAppearanceModel,
+    ) : AppearanceFormIntent
+
+    data object ApplyChanges : AppearanceFormIntent
 }

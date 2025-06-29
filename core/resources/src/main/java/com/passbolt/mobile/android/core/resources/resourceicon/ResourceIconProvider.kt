@@ -22,6 +22,8 @@ import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5Default
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5DefaultWithTotp
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5PasswordString
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5TotpStandalone
+import com.passbolt.mobile.android.ui.ResourceAppearanceModel.Companion.DEFAULT_BACKGROUND_COLOR_HEX_STRING
+import com.passbolt.mobile.android.ui.ResourceAppearanceModel.Companion.ICON_TYPE_KEEPASS
 import com.passbolt.mobile.android.ui.ResourceModel
 import timber.log.Timber
 import java.util.UUID
@@ -61,7 +63,7 @@ class ResourceIconProvider(
             try {
                 getKeypassIcon(
                     context,
-                    resourceIcon.value,
+                    requireNotNull(resourceIcon.value),
                     resourceIcon.backgroundColorHexString,
                 )
             } catch (e: Exception) {
@@ -109,23 +111,18 @@ class ResourceIconProvider(
         )
     }
 
-    fun createCircleDrawableWithIcon(
+    private fun createCircleDrawableWithIcon(
         backgroundColorHex: String?,
         @DrawableRes vectorResId: Int,
         context: Context,
         iconSizeDp: Float = 32f,
         backgroundCircleSizeDp: Float = 40f,
+        withSelectedBorder: Boolean = false,
+        borderWidthDp: Float = 4f,
     ): Drawable {
         val backgroundColor = (backgroundColorHex ?: DEFAULT_BACKGROUND_COLOR_HEX_STRING).toColorInt()
         val density = context.resources.displayMetrics.density
         val iconTint = getContrastingTint(backgroundColor)
-
-        val shape =
-            ShapeDrawable(OvalShape()).apply {
-                intrinsicWidth = (backgroundCircleSizeDp * density).toInt()
-                intrinsicHeight = (backgroundCircleSizeDp * density).toInt()
-                paint.color = backgroundColor
-            }
 
         val vectorDrawable = ContextCompat.getDrawable(context, vectorResId)?.mutate()
         vectorDrawable?.setTint(iconTint)
@@ -136,18 +133,50 @@ class ResourceIconProvider(
             (iconSizeDp * density).toInt(),
         )
 
-        val inset = ((backgroundCircleSizeDp - iconSizeDp) / 2 * density).toInt()
-        val insetDrawable = InsetDrawable(vectorDrawable, inset, inset, inset, inset)
+        val iconInset = ((backgroundCircleSizeDp - iconSizeDp) / 2 * density).toInt()
+        val insetDrawable = InsetDrawable(vectorDrawable, iconInset, iconInset, iconInset, iconInset)
 
-        return LayerDrawable(arrayOf(shape, insetDrawable)).apply {
-            setLayerGravity(1, Gravity.CENTER)
+        if (withSelectedBorder) {
+            val borderColor = ContextCompat.getColor(context, CoreUiR.color.primary)
+
+            val borderShape =
+                ShapeDrawable(OvalShape()).apply {
+                    intrinsicWidth = (backgroundCircleSizeDp * density).toInt()
+                    intrinsicHeight = (backgroundCircleSizeDp * density).toInt()
+                    paint.color = borderColor
+                }
+
+            val insetValue = (borderWidthDp * density).toInt()
+            val backgroundShape =
+                ShapeDrawable(OvalShape()).apply {
+                    intrinsicWidth = ((backgroundCircleSizeDp - 2 * borderWidthDp) * density).toInt()
+                    intrinsicHeight = ((backgroundCircleSizeDp - 2 * borderWidthDp) * density).toInt()
+                    paint.color = backgroundColor
+                }
+            val insetBackgroundShape = InsetDrawable(backgroundShape, insetValue, insetValue, insetValue, insetValue)
+
+            return LayerDrawable(arrayOf(borderShape, insetBackgroundShape, insetDrawable)).apply {
+                setLayerGravity(2, Gravity.CENTER)
+            }
+        } else {
+            val shape =
+                ShapeDrawable(OvalShape()).apply {
+                    intrinsicWidth = (backgroundCircleSizeDp * density).toInt()
+                    intrinsicHeight = (backgroundCircleSizeDp * density).toInt()
+                    paint.color = backgroundColor
+                }
+
+            return LayerDrawable(arrayOf(shape, insetDrawable)).apply {
+                setLayerGravity(1, Gravity.CENTER)
+            }
         }
     }
 
-    fun createCircleDrawableWithIconByName(
+    private fun createCircleDrawableWithIconByName(
         backgroundColorHex: String?,
         vectorDrawableName: String,
         context: Context,
+        withSelectedBorder: Boolean = false,
     ): Drawable {
         @SuppressLint("DiscouragedApi") // only way to load drawable by name
         val drawableResId =
@@ -161,18 +190,21 @@ class ResourceIconProvider(
             backgroundColorHex,
             drawableResId,
             context,
+            withSelectedBorder = withSelectedBorder,
         )
     }
 
-    private fun getKeypassIcon(
+    fun getKeypassIcon(
         context: Context,
         keepassIconValue: Int,
         backgroundHexString: String?,
+        withSelectedBorder: Boolean = false,
     ): Drawable =
         createCircleDrawableWithIconByName(
             backgroundColorHex = backgroundHexString,
             vectorDrawableName = "keepass_$keepassIconValue",
             context = context,
+            withSelectedBorder = withSelectedBorder,
         )
 
     fun getContrastingTint(backgroundColor: Int): Int {
@@ -187,8 +219,6 @@ class ResourceIconProvider(
     }
 
     private companion object {
-        private const val ICON_TYPE_KEEPASS = "keepass-icon-set"
-        private const val DEFAULT_BACKGROUND_COLOR_HEX_STRING = "#BEBEBE"
         private const val TINT_THRESHOLD_LUMINANCE = 125
     }
 }

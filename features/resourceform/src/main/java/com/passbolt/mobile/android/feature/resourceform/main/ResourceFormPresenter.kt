@@ -19,6 +19,7 @@ import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAct
 import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction.ADD_PASSWORD
 import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction.ADD_TOTP
 import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction.EDIT_ADDITIONAL_URIS
+import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction.EDIT_APPEARANCE
 import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction.EDIT_METADATA
 import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction.REMOVE_METADATA_DESCRIPTION
 import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction.REMOVE_NOTE
@@ -37,11 +38,16 @@ import com.passbolt.mobile.android.ui.Entropy
 import com.passbolt.mobile.android.ui.LeadingContentType
 import com.passbolt.mobile.android.ui.LeadingContentType.PASSWORD
 import com.passbolt.mobile.android.ui.LeadingContentType.TOTP
+import com.passbolt.mobile.android.ui.MetadataIconModel
 import com.passbolt.mobile.android.ui.MetadataJsonModel
 import com.passbolt.mobile.android.ui.NewMetadataKeyToTrustModel
 import com.passbolt.mobile.android.ui.OtpParseResult
 import com.passbolt.mobile.android.ui.PasswordGeneratorTypeModel
 import com.passbolt.mobile.android.ui.PasswordUiModel
+import com.passbolt.mobile.android.ui.ResourceAppearanceModel
+import com.passbolt.mobile.android.ui.ResourceAppearanceModel.Companion.DEFAULT_BACKGROUND_COLOR_HEX_STRING
+import com.passbolt.mobile.android.ui.ResourceAppearanceModel.Companion.ICON_TYPE_KEEPASS
+import com.passbolt.mobile.android.ui.ResourceAppearanceModel.Companion.ICON_TYPE_PASSBOLT
 import com.passbolt.mobile.android.ui.ResourceFormMode
 import com.passbolt.mobile.android.ui.ResourceFormMode.Create
 import com.passbolt.mobile.android.ui.ResourceFormMode.Edit
@@ -85,6 +91,7 @@ import timber.log.Timber
  * @since v1.0
  */
 
+@Suppress("TooManyFunctions")
 class ResourceFormPresenter(
     private val getPasswordPoliciesUseCase: GetPasswordPoliciesUseCase,
     private val secretGenerator: SecretGenerator,
@@ -282,6 +289,24 @@ class ResourceFormPresenter(
         }
     }
 
+    override fun appearanceChanged(model: ResourceAppearanceModel?) {
+        resourceModelHandler.applyModelChange(EDIT_APPEARANCE) { metadata, _ ->
+            val iconType = model?.iconType ?: ICON_TYPE_PASSBOLT
+            val iconValue =
+                when (iconType) {
+                    ICON_TYPE_KEEPASS -> model?.iconValue
+                    else -> null
+                }
+            val iconBackgroundColorHex = model?.iconBackgroundHexColor ?: DEFAULT_BACKGROUND_COLOR_HEX_STRING
+            metadata.icon =
+                MetadataIconModel(
+                    type = iconType,
+                    value = iconValue,
+                    backgroundColorHexString = iconBackgroundColorHex,
+                )
+        }
+    }
+
     override fun additionalUrisChanged(urisUiModel: AdditionalUrisUiModel?) {
         urisUiModel?.let {
             val uris = listOf(urisUiModel.mainUri) + urisUiModel.additionalUris
@@ -369,6 +394,11 @@ class ResourceFormPresenter(
 
     override fun metadataDescriptionClick() {
         view?.navigateToMetadataDescription(resourceMetadata.description.orEmpty())
+    }
+
+    override fun appearanceClick() {
+        val appearanceModel = resourceFormMapper.mapToUiModel(resourceMetadata.icon)
+        view?.navigateToAppearance(appearanceModel)
     }
 
     override fun additionalUrisClick() {

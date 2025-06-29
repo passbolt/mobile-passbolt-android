@@ -33,6 +33,7 @@ import com.passbolt.mobile.android.ui.MetadataTypeModel
 import com.passbolt.mobile.android.ui.OtpParseResult
 import com.passbolt.mobile.android.ui.ResourceFormUiModel
 import com.passbolt.mobile.android.ui.ResourceFormUiModel.Metadata.ADDITIONAL_URIS
+import com.passbolt.mobile.android.ui.ResourceFormUiModel.Metadata.APPEARANCE
 import com.passbolt.mobile.android.ui.ResourceFormUiModel.Metadata.DESCRIPTION
 import com.passbolt.mobile.android.ui.ResourceFormUiModel.Secret.NOTE
 import com.passbolt.mobile.android.ui.ResourceFormUiModel.Secret.PASSWORD
@@ -302,6 +303,9 @@ class ResourceModelHandler(
                     }
                     if (it.contains(UpdateAction.EDIT_ADDITIONAL_URIS)) {
                         metadata.add(ADDITIONAL_URIS)
+                    }
+                    if (it.contains(UpdateAction.EDIT_APPEARANCE)) {
+                        metadata.add(APPEARANCE)
                     }
                     metadata
                 },

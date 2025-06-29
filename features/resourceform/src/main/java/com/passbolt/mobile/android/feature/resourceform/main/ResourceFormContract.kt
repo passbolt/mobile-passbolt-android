@@ -9,6 +9,7 @@ import com.passbolt.mobile.android.ui.OtpParseResult
 import com.passbolt.mobile.android.ui.PasswordStrength
 import com.passbolt.mobile.android.ui.PasswordStrength.Empty
 import com.passbolt.mobile.android.ui.PasswordUiModel
+import com.passbolt.mobile.android.ui.ResourceAppearanceModel
 import com.passbolt.mobile.android.ui.ResourceFormMode
 import com.passbolt.mobile.android.ui.ResourceFormUiModel
 import com.passbolt.mobile.android.ui.TotpUiModel
@@ -137,6 +138,8 @@ interface ResourceFormContract {
         fun showFailedToTrustMetadataKey()
 
         fun navigateToAdditionalUris(model: AdditionalUrisUiModel)
+
+        fun navigateToAppearance(appearanceModel: ResourceAppearanceModel)
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
@@ -192,5 +195,9 @@ interface ResourceFormContract {
         fun additionalUrisClick()
 
         fun additionalUrisChanged(urisUiModel: AdditionalUrisUiModel?)
+
+        fun appearanceClick()
+
+        fun appearanceChanged(model: ResourceAppearanceModel?)
     }
 }

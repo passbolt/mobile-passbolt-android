@@ -9,6 +9,7 @@ import com.passbolt.mobile.android.core.resources.actions.ResourceUpdateActionsI
 import com.passbolt.mobile.android.core.resources.actions.SecretPropertiesActionsInteractor
 import com.passbolt.mobile.android.core.resources.interactor.create.CreateResourceInteractor
 import com.passbolt.mobile.android.core.resources.interactor.update.UpdateResourceInteractor
+import com.passbolt.mobile.android.core.resources.resourceicon.BackgroundColorIconProvider
 import com.passbolt.mobile.android.core.resources.resourceicon.ResourceIconProvider
 import com.passbolt.mobile.android.core.resources.usecase.AddToFavouritesUseCase
 import com.passbolt.mobile.android.core.resources.usecase.DeleteResourceUseCase
@@ -71,6 +72,7 @@ val resourcesModule =
         singleOf(::UpdateResourceInteractor)
         singleOf(::CreateResourceInteractor)
         factoryOf(::ResourceIconProvider)
+        factoryOf(::BackgroundColorIconProvider)
 
         factory { (resource: ResourceModel) ->
             ResourcePropertiesActionsInteractor(
