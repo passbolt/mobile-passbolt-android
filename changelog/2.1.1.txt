@@ -1,0 +1,4 @@
+# Passbolt 2.1.0-38 Android app release notes
+
+## Improved
+- MOB-2678: Improve autofill for Chrome with native autofill enabled and Vivaldi browser
