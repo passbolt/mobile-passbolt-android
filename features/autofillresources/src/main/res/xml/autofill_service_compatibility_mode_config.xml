@@ -6,16 +6,16 @@
     <!--    Chrome -->
     <compatibility-package
         android:name="com.android.chrome"
-        android:maxLongVersionCode="10000000000" />
+        android:maxLongVersionCode="704903820" />
     <compatibility-package
         android:name="com.chrome.beta"
-        android:maxLongVersionCode="10000000000" />
+        android:maxLongVersionCode="704903820" />
     <compatibility-package
         android:name="com.chrome.dev"
-        android:maxLongVersionCode="10000000000" />
+        android:maxLongVersionCode="704903820" />
     <compatibility-package
         android:name="com.chrome.canary"
-        android:maxLongVersionCode="10000000000" />
+        android:maxLongVersionCode="704903820" />
 
     <compatibility-package
         android:name="org.chromium.chrome"
