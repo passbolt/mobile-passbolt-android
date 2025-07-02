@@ -96,7 +96,6 @@ kotlin {
 
 play {
     track = "production"
-    userFraction = 1.0d
     releaseName = "$projectVersionName-$projectVersionCode"
     defaultToAppBundles = true
 }
