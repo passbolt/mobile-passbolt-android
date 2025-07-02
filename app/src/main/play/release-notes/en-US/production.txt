@@ -1,1 +1,1 @@
-This release brings a huge performance boost when processing resource list especially visible when decrypting V5 resource list. It also adds translations for 16 new languages and two significant security features - metadata key pinning and bump of gopenpgp library from major version 2 to 3.
+This minor release focuses on fixing autofill for Chrome browser when the recent feature of native autofill is enabled. It also improves autofill on the Vivaldi browser.

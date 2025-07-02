@@ -37,7 +37,7 @@ class FillableInputsFinder(
         val hintValues = autofillHintsFactory.getHintValues(field)
         return autofillParsedStructure
             .asSequence()
-            .filter { it.inputType != 0 && !it.autofillHints.isNullOrEmpty() }
+            .filter { !it.autofillHints.isNullOrEmpty() }
             .firstOrNull { parsedStructure ->
                 parsedStructure.autofillHints!!.any { structureHint ->
                     // filtered above
