@@ -28,6 +28,7 @@ import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.mockJSFSchemaRepository
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.testParserModule
+import com.passbolt.mobile.android.jsonmodel.JSON_MODEL_GSON
 import com.passbolt.mobile.android.serializers.gson.validation.JsonSchemaValidationRunner
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordAndDescription
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordDescriptionTotp
@@ -43,12 +44,12 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.koin.core.logger.Level
+import org.koin.core.qualifier.named
 import org.koin.test.KoinTest
 import org.koin.test.KoinTestRule
 import org.koin.test.inject
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.stub
-import kotlin.test.assertTrue
 
 class SecretValidationTest : KoinTest {
     @get:Rule
@@ -59,7 +60,7 @@ class SecretValidationTest : KoinTest {
         }
 
     private val secretValidationRunner: JsonSchemaValidationRunner by inject()
-    private val gson: Gson by inject()
+    private val gson: Gson by inject(named(JSON_MODEL_GSON))
 
     @Before
     fun setup() {
@@ -100,21 +101,33 @@ class SecretValidationTest : KoinTest {
     }
 
     @Test
-    fun `invalid secret for password string resource type should be rejected`() =
+    fun `invalid secret for password string resource type should be rejected - v4`() =
         runTest {
             val tooLongPassword =
                 (0..PASSWORD_STRING_PASSWORD_MAX_LENGTH + 1)
                     .joinToString { "a" }
             val tooLongPasswordJson = gson.toJson(tooLongPassword)
 
-            val resultV4 = secretValidationRunner.isSecretValid(tooLongPasswordJson, PasswordString.slug)
-            val resultV5 = secretValidationRunner.isSecretValid(tooLongPasswordJson, V5PasswordString.slug)
+            val result = secretValidationRunner.isSecretValid(tooLongPasswordJson, PasswordString.slug)
 
-            assertTrue { listOf(resultV4, resultV5).all { it == false } }
+            assertThat(result).isFalse()
         }
 
     @Test
-    fun `invalid secret for password and description resource type should be rejected`() =
+    fun `invalid secret for password string resource type should be rejected - v5`() =
+        runTest {
+            val tooLongPassword =
+                (0..PASSWORD_STRING_PASSWORD_MAX_LENGTH + 1)
+                    .joinToString { "a" }
+            val tooLongPasswordJson = gson.toJson(tooLongPassword)
+
+            val result = secretValidationRunner.isSecretValid(tooLongPasswordJson, V5PasswordString.slug)
+
+            assertThat(result).isFalse()
+        }
+
+    @Test
+    fun `invalid secret for password and description resource type should be rejected - v4`() =
         runTest {
             val tooLongPassword =
                 (0..PASSWORD_AND_DESCRIPTION_PASSWORD_MAX_LENGTH + 1)
@@ -122,6 +135,44 @@ class SecretValidationTest : KoinTest {
             val tooLongDescription =
                 (0..PASSWORD_AND_DESCRIPTION_DESCRIPTION_MAX_LENGTH + 1)
                     .joinToString { "a" }
+
+            val invalidSecrets =
+                listOf(
+                    JsonObject().apply {
+                        addProperty("object_type", "PASSBOLT_SECRET_DATA")
+                        addProperty("description", "desc")
+                        addProperty("secret", tooLongPassword)
+                    },
+                    JsonObject().apply {
+                        addProperty("object_type", "PASSBOLT_SECRET_DATA")
+                        addProperty("description", tooLongDescription)
+                        addProperty("secret", "pass")
+                    },
+                    JsonObject().apply {
+                        addProperty("object_type", "PASSBOLT_SECRET_DATA")
+                        addProperty("description", tooLongDescription)
+                        add("secret", null)
+                    },
+                ).map { gson.toJson(it) }
+
+            val results =
+                invalidSecrets.map {
+                    secretValidationRunner.isSecretValid(it, PasswordAndDescription.slug)
+                }
+
+            assertThat(results.none { it }).isTrue()
+        }
+
+    @Test
+    fun `invalid secret for password and description resource type should be rejected - v5`() =
+        runTest {
+            val tooLongPassword =
+                (0..PASSWORD_AND_DESCRIPTION_PASSWORD_MAX_LENGTH + 1)
+                    .joinToString { "a" }
+            val tooLongDescription =
+                (0..PASSWORD_AND_DESCRIPTION_DESCRIPTION_MAX_LENGTH + 1)
+                    .joinToString { "a" }
+
             val invalidSecrets =
                 listOf(
                     JsonObject().apply {
@@ -136,18 +187,13 @@ class SecretValidationTest : KoinTest {
                     },
                 ).map { gson.toJson(it) }
 
-            val resultsV4 =
-                invalidSecrets
-                    .map { secretValidationRunner.isSecretValid(it, PasswordAndDescription.slug) }
-            val resultsV5 =
-                invalidSecrets
-                    .map { secretValidationRunner.isSecretValid(it, V5Default.slug) }
+            val results = invalidSecrets.map { secretValidationRunner.isSecretValid(it, V5Default.slug) }
 
-            assertThat((resultsV4 + resultsV5).none { it }).isTrue()
+            assertThat(results.none { it }).isTrue()
         }
 
     @Test
-    fun `invalid secret for totp resource type should be rejected`() =
+    fun `invalid secret for totp resource type should be rejected - v4`() =
         runTest {
             val invalidAlgorithm = "invalid_alg"
             val tooLongKey =
@@ -208,18 +254,87 @@ class SecretValidationTest : KoinTest {
                     },
                 ).map { gson.toJson(it) }
 
-            val resultsV4 =
-                invalidSecrets
-                    .map { secretValidationRunner.isSecretValid(it, Totp.slug) }
-            val resultsV5 =
-                invalidSecrets
-                    .map { secretValidationRunner.isSecretValid(it, V5TotpStandalone.slug) }
+            val results =
+                invalidSecrets.map {
+                    secretValidationRunner.isSecretValid(it, Totp.slug)
+                }
 
-            assertThat((resultsV4 + resultsV5).none { it }).isTrue()
+            assertThat(results.none { it }).isTrue()
         }
 
     @Test
-    fun `invalid secret for password description totp resource type should be rejected`() =
+    fun `invalid secret for totp resource type should be rejected - v5`() =
+        runTest {
+            val invalidAlgorithm = "invalid_alg"
+            val tooLongKey =
+                (0..TOTP_KEY_MAX_LENGTH + 1)
+                    .joinToString { "a" }
+            val tooFewDigits = TOTP_DIGITS_INCLUSIVE_MIN - 1
+            val tooManyDigits = TOTP_DIGITS_INCLUSIVE_MAX + 1
+
+            val invalidSecrets =
+                listOf(
+                    JsonObject().apply {
+                        addProperty("object_type", "PASSBOLT_SECRET_DATA")
+                        add(
+                            "totp",
+                            JsonObject().apply {
+                                addProperty("algorithm", invalidAlgorithm)
+                                addProperty("secret_key", "A")
+                                addProperty("digits", 6)
+                                addProperty("perdiod", 1)
+                            },
+                        )
+                    },
+                    JsonObject().apply {
+                        addProperty("object_type", "PASSBOLT_SECRET_DATA")
+                        add(
+                            "totp",
+                            JsonObject().apply {
+                                addProperty("algorithm", "SHA1")
+                                addProperty("secret_key", tooLongKey)
+                                addProperty("digits", 6)
+                                addProperty("perdiod", 1)
+                            },
+                        )
+                    },
+                    JsonObject().apply {
+                        addProperty("object_type", "PASSBOLT_SECRET_DATA")
+                        add(
+                            "totp",
+                            JsonObject().apply {
+                                addProperty("algorithm", "SHA1")
+                                addProperty("secret_key", "A")
+                                addProperty("digits", tooFewDigits)
+                                addProperty("perdiod", 1)
+                            },
+                        )
+                    },
+                    JsonObject().apply {
+                        addProperty("object_type", "PASSBOLT_SECRET_DATA")
+                        add(
+                            "totp",
+                            JsonObject().apply {
+                                addProperty("algorithm", "SHA1")
+                                addProperty("secret_key", "A")
+                                addProperty("digits", tooManyDigits)
+                                addProperty("perdiod", 1)
+                            },
+                        )
+                    },
+                ).map { gson.toJson(it) }
+
+            val results =
+                invalidSecrets.map {
+                    secretValidationRunner.isSecretValid(it, V5TotpStandalone.slug)
+                }
+
+            assertThat(results.none { it }).isTrue()
+        }
+
+    @Test
+    @Suppress("CyclomaticComplexMethod")
+    fun `invalid secret for password description totp resource type should be rejected - v4`() =
         runTest {
             val tooLongPassword =
                 (0..PASSWORD_DESCRIPTION_TOTP_PASSWORD_MAX_LENGTH + 1)
@@ -235,6 +350,7 @@ class SecretValidationTest : KoinTest {
                 PASSWORD_DESCRIPTION_TOTP_TOTP_DIGITS_INCLUSIVE_MIN - 1
             val tooManyDigits =
                 PASSWORD_DESCRIPTION_TOTP_TOTP_DIGITS_INCLUSIVE_MAX + 1
+
             val invalidSecrets =
                 listOf(
                     JsonObject().apply {
@@ -321,6 +437,20 @@ class SecretValidationTest : KoinTest {
                             },
                         )
                     },
+                    JsonObject().apply {
+                        addProperty("object_type", "PASSBOLT_SECRET_DATA")
+                        add("secret", null)
+                        addProperty("desc", "desc")
+                        add(
+                            "totp",
+                            JsonObject().apply {
+                                addProperty("algorithm", "SHA1")
+                                addProperty("secret_key", "a")
+                                addProperty("digits", tooManyDigits)
+                                addProperty("period", 1)
+                            },
+                        )
+                    },
                 ).map { gson.toJson(it) }
 
             val resultsV4 =
@@ -334,18 +464,43 @@ class SecretValidationTest : KoinTest {
         }
 
     @Test
-    fun `valid secret for password string resource type should not be rejected`() =
+    fun `valid secret for password string resource type should not be rejected - v4`() =
         runTest {
             val validSecret = gson.toJson("password")
 
-            val resultV4 = secretValidationRunner.isSecretValid(validSecret, PasswordString.slug)
-            val resultV5 = secretValidationRunner.isSecretValid(validSecret, V5PasswordString.slug)
+            val result = secretValidationRunner.isSecretValid(validSecret, PasswordString.slug)
 
-            assertThat(listOf(resultV4, resultV5).all { it })
+            assertThat(result).isTrue()
         }
 
     @Test
-    fun `valid secret for password and description resource type should not be rejected`() =
+    fun `valid secret for password string resource type should not be rejected - v5`() =
+        runTest {
+            val validSecret = gson.toJson("password")
+
+            val result = secretValidationRunner.isSecretValid(validSecret, V5PasswordString.slug)
+
+            assertThat(result).isTrue()
+        }
+
+    @Test
+    fun `valid secret for password and description resource type should not be rejected - v4`() =
+        runTest {
+            val validSecret =
+                JsonObject().apply {
+                    addProperty("object_type", "PASSBOLT_SECRET_DATA")
+                    addProperty("description", "desc")
+                    addProperty("password", "password")
+                }
+            val validSecretJson = gson.toJson(validSecret)
+
+            val result = secretValidationRunner.isSecretValid(validSecretJson, PasswordAndDescription.slug)
+
+            assertThat(result).isTrue()
+        }
+
+    @Test
+    fun `valid secret for password and description resource type should not be rejected - v5`() =
         runTest {
             val validSecrets =
                 listOf(
@@ -354,25 +509,112 @@ class SecretValidationTest : KoinTest {
                         addProperty("description", "desc")
                         addProperty("password", "password")
                     },
+                    JsonObject().apply {
+                        addProperty("object_type", "PASSBOLT_SECRET_DATA")
+                        addProperty("description", "desc")
+                        add("password", null)
+                    },
                 ).map { gson.toJson(it) }
 
-            val resultsV4 =
-                validSecrets
-                    .map { secretValidationRunner.isSecretValid(it, PasswordAndDescription.slug) }
-            val resultsV5 =
-                validSecrets
-                    .map { secretValidationRunner.isSecretValid(it, V5Default.slug) }
+            val results = validSecrets.map { secretValidationRunner.isSecretValid(it, V5Default.slug) }
 
-            assertThat((resultsV4 + resultsV5).all { it }).isTrue()
+            assertThat(results.all { it }).isTrue()
         }
 
     @Test
-    fun `valid secret for totp resource type should be not rejected`() =
+    fun `valid secret for totp resource type should be not rejected - v4`() =
+        runTest {
+            val validSecret =
+                JsonObject().apply {
+                    addProperty("object_type", "PASSBOLT_SECRET_DATA")
+                    add(
+                        "totp",
+                        JsonObject().apply {
+                            addProperty("algorithm", "SHA-1")
+                            addProperty("secret_key", "A")
+                            addProperty("digits", 6)
+                            addProperty("period", 1)
+                        },
+                    )
+                }
+            val validSecretJson = gson.toJson(validSecret)
+
+            val result = secretValidationRunner.isSecretValid(validSecretJson, Totp.slug)
+
+            assertThat(result).isTrue()
+        }
+
+    @Test
+    fun `valid secret for totp resource type should be not rejected - v5`() =
+        runTest {
+            val validSecret =
+                JsonObject().apply {
+                    addProperty("object_type", "PASSBOLT_SECRET_DATA")
+                    add(
+                        "totp",
+                        JsonObject().apply {
+                            addProperty("algorithm", "SHA-1")
+                            addProperty("secret_key", "A")
+                            addProperty("digits", 6)
+                            addProperty("period", 1)
+                        },
+                    )
+                }
+            val validSecretJson = gson.toJson(validSecret)
+
+            val result = secretValidationRunner.isSecretValid(validSecretJson, V5TotpStandalone.slug)
+
+            assertThat(result).isTrue()
+        }
+
+    @Test
+    fun `valid secret for password description totp resource type should not be rejected - v4`() =
+        runTest {
+            val validSecret =
+                JsonObject().apply {
+                    addProperty("object_type", "PASSBOLT_SECRET_DATA")
+                    addProperty("description", "desc")
+                    addProperty("password", "password")
+                    add(
+                        "totp",
+                        JsonObject().apply {
+                            addProperty("algorithm", "SHA-1")
+                            addProperty("secret_key", "A")
+                            addProperty("digits", 6)
+                            addProperty("period", 1)
+                        },
+                    )
+                }
+            val validSecretJson = gson.toJson(validSecret)
+
+            val result = secretValidationRunner.isSecretValid(validSecretJson, PasswordDescriptionTotp.slug)
+
+            assertThat(result).isTrue()
+        }
+
+    @Test
+    fun `valid secret for password description totp resource type should not be rejected - v5`() =
         runTest {
             val validSecrets =
                 listOf(
                     JsonObject().apply {
                         addProperty("object_type", "PASSBOLT_SECRET_DATA")
+                        addProperty("description", "desc")
+                        addProperty("password", "password")
+                        add(
+                            "totp",
+                            JsonObject().apply {
+                                addProperty("algorithm", "SHA-1")
+                                addProperty("secret_key", "A")
+                                addProperty("digits", 6)
+                                addProperty("period", 1)
+                            },
+                        )
+                    },
+                    JsonObject().apply {
+                        addProperty("object_type", "PASSBOLT_SECRET_DATA")
+                        addProperty("description", "desc")
+                        add("password", null)
                         add(
                             "totp",
                             JsonObject().apply {
@@ -385,45 +627,9 @@ class SecretValidationTest : KoinTest {
                     },
                 ).map { gson.toJson(it) }
 
-            val resultsV4 =
-                validSecrets
-                    .map { secretValidationRunner.isSecretValid(it, Totp.slug) }
-            val resultsV5 =
-                validSecrets
-                    .map { secretValidationRunner.isSecretValid(it, V5TotpStandalone.slug) }
+            val results = validSecrets.map { secretValidationRunner.isSecretValid(it, V5DefaultWithTotp.slug) }
 
-            assertThat((resultsV4 + resultsV5).all { it }).isTrue()
-        }
-
-    @Test
-    fun `valid secret for password description totp resource type should not be rejected`() =
-        runTest {
-            val validSecrets =
-                listOf(
-                    JsonObject().apply {
-                        addProperty("object_type", "PASSBOLT_SECRET_DATA")
-                        addProperty("description", "desc")
-                        addProperty("password", "password")
-                        add(
-                            "totp",
-                            JsonObject().apply {
-                                addProperty("algorithm", "SHA-1")
-                                addProperty("secret_key", "A")
-                                addProperty("digits", 6)
-                                addProperty("period", 1)
-                            },
-                        )
-                    },
-                ).map { gson.toJson(it) }
-
-            val resultsV4 =
-                validSecrets
-                    .map { secretValidationRunner.isSecretValid(it, PasswordDescriptionTotp.slug) }
-            val resultsV5 =
-                validSecrets
-                    .map { secretValidationRunner.isSecretValid(it, V5DefaultWithTotp.slug) }
-
-            assertThat((resultsV4 + resultsV5).all { it }).isTrue()
+            assertThat(results.all { it }).isTrue()
         }
 
     private companion object {
