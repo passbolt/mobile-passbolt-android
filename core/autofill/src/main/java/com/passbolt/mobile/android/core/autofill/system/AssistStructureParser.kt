@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.core.autofill.system
 import android.annotation.SuppressLint
 import android.app.assist.AssistStructure
 import android.view.ViewStructure
+import com.passbolt.mobile.android.core.autofill.BuildConfig
 import timber.log.Timber
 
 /**
@@ -68,7 +69,9 @@ class AssistStructureParser {
         domainBuilder: StringBuilder,
         packageIdBuilder: StringBuilder,
     ): ParsedStructure? {
-        logNodeVisit(viewNode)
+        if (BuildConfig.DEBUG) {
+            logNodeVisit(viewNode)
+        }
 
         val autofillId = viewNode.autofillId ?: return null
         val autofillHints = viewNode.autofillHints
