@@ -23,7 +23,6 @@
 
 package com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser
 
-import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.jayway.jsonpath.Configuration
 import com.jayway.jsonpath.Option
@@ -70,7 +69,7 @@ val testParserModule =
                 resourceTypeIdToSlugMappingProvider = mockIdToSlugMappingProvider,
             )
         }
-        single(named(JSON_MODEL_GSON)) { Gson() }
+        single(named(JSON_MODEL_GSON)) { GsonBuilder().serializeNulls().create() }
         single {
             Configuration
                 .builder()
