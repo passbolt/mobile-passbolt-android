@@ -16,6 +16,10 @@ dependencies {
 
 android {
     namespace = "com.passbolt.mobile.android.core.autofill"
+
+    buildFeatures {
+        buildConfig true
+    }
 }
 
 kotlin {
