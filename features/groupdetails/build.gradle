@@ -25,8 +25,7 @@ dependencies {
     implementation libs.fastadapter.core
     implementation libs.fastadapter.binding
     implementation libs.fastadapter.diff
-    implementation libs.coil.core
-    implementation libs.coil.base
+    implementation libs.coil.views
 }
 
 android {

@@ -18,9 +18,12 @@ import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
-import coil.ImageLoader
-import coil.request.ImageRequest
-import coil.transform.CircleCropTransformation
+import coil3.ImageLoader
+import coil3.asDrawable
+import coil3.request.ImageRequest
+import coil3.request.placeholder
+import coil3.request.transformations
+import coil3.transform.CircleCropTransformation
 import com.google.android.material.snackbar.Snackbar
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
@@ -39,6 +42,7 @@ import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.core.navigation.constants.Autofillresources
 import com.passbolt.mobile.android.core.navigation.deeplinks.NavDeepLinkProvider
+import com.passbolt.mobile.android.core.resources.resourceicon.ResourceIconProvider
 import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
 import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
 import com.passbolt.mobile.android.createfolder.CreateFolderFragment
@@ -149,6 +153,7 @@ class HomeFragment :
         }
     private val fastAdapter: FastAdapter<GenericItem> by inject()
     private val imageLoader: ImageLoader by inject()
+    private val resourceIconProvider: ResourceIconProvider by inject()
     private val clipboardManager: ClipboardManager? by inject()
     private val externalDeeplinkHandler: ExternalDeeplinkHandler by inject()
     private val arguments: HomeFragmentArgs by navArgs()
@@ -276,7 +281,7 @@ class HomeFragment :
                         )
                     },
                     onSuccess = {
-                        requiredBinding.searchTextInput.setSearchEndIconWithListener(it, presenter::searchAvatarClick)
+                        requiredBinding.searchTextInput.setSearchEndIconWithListener(it.asDrawable(resources), presenter::searchAvatarClick)
                     },
                 ).build()
         imageLoader.enqueue(request)
@@ -438,6 +443,7 @@ class HomeFragment :
                 PasswordItem(
                     ResourceItemWrapper(resourceModel),
                     resourceHandlingStrategy.shouldShowResourceMoreMenu(),
+                    resourceIconProvider,
                 )
             },
         )
@@ -468,6 +474,7 @@ class HomeFragment :
                 PasswordItem(
                     ResourceItemWrapper(resourceModel),
                     dotsVisible = resourceHandlingStrategy.shouldShowResourceMoreMenu(),
+                    resourceIconProvider,
                 )
             },
         )
@@ -485,6 +492,7 @@ class HomeFragment :
                 PasswordItem(
                     ResourceItemWrapper(resourceModel),
                     dotsVisible = resourceHandlingStrategy.shouldShowResourceMoreMenu(),
+                    resourceIconProvider,
                 )
             },
         )

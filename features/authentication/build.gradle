@@ -50,8 +50,7 @@ dependencies {
     implementation libs.fastadapter.binding
     implementation libs.fastadapter.diff
     implementation libs.koin
-    implementation libs.coil.core
-    implementation libs.coil.base
+    implementation libs.coil.views
     implementation libs.gson
     implementation libs.fusionauth.jwt
     implementation libs.yubikit.android

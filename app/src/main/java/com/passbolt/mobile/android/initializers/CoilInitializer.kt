@@ -25,8 +25,8 @@ package com.passbolt.mobile.android.initializers
 
 import android.content.Context
 import androidx.startup.Initializer
-import coil.Coil
-import coil.ImageLoader
+import coil3.ImageLoader
+import coil3.SingletonImageLoader
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
@@ -45,7 +45,7 @@ class CoilInitializer :
     private val imageLoader: ImageLoader by inject()
 
     override fun create(context: Context) {
-        Coil.setImageLoader(imageLoader)
+        SingletonImageLoader.setSafe { _ -> imageLoader }
     }
 
     override fun dependencies(): MutableList<Class<out Initializer<*>>> = mutableListOf(KoinInitializer::class.java)

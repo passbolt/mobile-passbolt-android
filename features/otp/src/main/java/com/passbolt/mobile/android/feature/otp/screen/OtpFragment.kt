@@ -37,9 +37,12 @@ import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import coil.ImageLoader
-import coil.request.ImageRequest
-import coil.transform.CircleCropTransformation
+import coil3.ImageLoader
+import coil3.asDrawable
+import coil3.request.ImageRequest
+import coil3.request.placeholder
+import coil3.request.transformations
+import coil3.transform.CircleCropTransformation
 import com.google.android.material.snackbar.Snackbar
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
@@ -53,6 +56,7 @@ import com.passbolt.mobile.android.core.extension.visible
 import com.passbolt.mobile.android.core.localization.R
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppContext
+import com.passbolt.mobile.android.core.resources.resourceicon.ResourceIconProvider
 import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
 import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
 import com.passbolt.mobile.android.createresourcemenu.CreateResourceMenuFragment
@@ -92,6 +96,7 @@ class OtpFragment :
     private val fastAdapter: FastAdapter<GenericItem> by inject()
     private val imageLoader: ImageLoader by inject()
     private val clipboardManager: ClipboardManager? by inject()
+    private val resourceIconProvider: ResourceIconProvider by inject()
 
     private val authenticationResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -223,7 +228,7 @@ class OtpFragment :
     }
 
     override fun showOtpList(otpList: List<OtpItemWrapper>) {
-        otpAdapter.set(otpList.map { OtpItem(it) })
+        otpAdapter.set(otpList.map { OtpItem(it, resourceIconProvider) })
         fastAdapter.notifyAdapterDataSetChanged()
     }
 
@@ -251,7 +256,7 @@ class OtpFragment :
                         )
                     },
                     onSuccess = {
-                        requiredBinding.searchTextInput.setSearchEndIconWithListener(it, presenter::searchAvatarClick)
+                        requiredBinding.searchTextInput.setSearchEndIconWithListener(it.asDrawable(resources), presenter::searchAvatarClick)
                     },
                 ).build()
         imageLoader.enqueue(request)

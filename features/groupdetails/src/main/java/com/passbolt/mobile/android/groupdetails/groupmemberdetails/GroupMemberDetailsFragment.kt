@@ -3,8 +3,11 @@ package com.passbolt.mobile.android.groupdetails.groupmemberdetails
 import android.os.Bundle
 import android.view.View
 import androidx.navigation.fragment.navArgs
-import coil.load
-import coil.transform.CircleCropTransformation
+import coil3.load
+import coil3.request.error
+import coil3.request.placeholder
+import coil3.request.transformations
+import coil3.transform.CircleCropTransformation
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
 import com.passbolt.mobile.android.core.ui.formatter.FingerprintFormatter
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
