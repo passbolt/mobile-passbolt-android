@@ -43,6 +43,15 @@ class ResourceTypeIdToSlugMappingProvider(
         }
     }
 
+    suspend fun provideMappingForAccount(account: String): Map<UUID, String> =
+        if (perAccountMappings.containsKey(account)) {
+            perAccountMappings[account]!!
+        } else {
+            resourceTypeIdToSlugMappingUseCase.execute(Unit).idToSlugMapping.also {
+                perAccountMappings[account] = it
+            }
+        }
+
     fun invalidateSelectedUserMapping() {
         val selectedAccount = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
         if (perAccountMappings.containsKey(selectedAccount)) {

@@ -32,8 +32,7 @@ dependencies {
     implementation libs.navigation.fragment
     implementation libs.navigation.ui
     implementation libs.swiperefresh
-    implementation libs.coil.core
-    implementation libs.coil.base
+    implementation libs.coil.views
 }
 
 android {

@@ -19,7 +19,8 @@ dependencies {
     implementation libs.koin
     implementation libs.fastadapter.binding
     implementation libs.fastadapter.core
-    implementation libs.coil.core
+    implementation libs.coil.views
+    implementation libs.coil.compose
 
     implementation platform(libs.compose.bom)
     implementation libs.compose.foundation

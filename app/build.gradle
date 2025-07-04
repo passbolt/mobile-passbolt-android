@@ -193,8 +193,8 @@ dependencies {
     debugImplementation libs.leakcanary
 
     implementation libs.lifecycle.process
-    implementation libs.coil.core
-    implementation libs.coil.base
+    implementation libs.coil.views
+    implementation libs.coil.networking
     implementation libs.koin
     implementation libs.gson
     implementation libs.app.startup

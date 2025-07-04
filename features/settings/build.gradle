@@ -42,7 +42,7 @@ dependencies {
     implementation libs.fastadapter.binding
     implementation libs.fastadapter.core
     implementation libs.fastadapter.diff
-    implementation libs.coil.core
+    implementation libs.coil.views
     implementation platform(libs.compose.bom)
     implementation libs.compose.foundation
     implementation libs.compose.material3

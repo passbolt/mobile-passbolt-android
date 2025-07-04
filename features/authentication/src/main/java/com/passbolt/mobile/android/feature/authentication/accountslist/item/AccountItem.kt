@@ -4,8 +4,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
-import coil.load
-import coil.transform.CircleCropTransformation
+import coil3.load
+import coil3.request.error
+import coil3.request.placeholder
+import coil3.request.transformations
+import coil3.transform.CircleCropTransformation
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
 import com.passbolt.mobile.android.feature.authentication.R
 import com.passbolt.mobile.android.feature.authentication.databinding.ItemAccountBinding

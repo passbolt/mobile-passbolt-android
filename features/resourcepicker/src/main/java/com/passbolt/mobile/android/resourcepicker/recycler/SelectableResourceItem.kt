@@ -17,6 +17,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
@@ -24,6 +25,7 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 class SelectableResourceItem(
     val resourcePickerListItem: ResourcePickerListItem,
+    val resourceIconProvider: ResourceIconProvider,
 ) : AbstractBindingItem<ItemSelectableResourceBinding>(),
     KoinComponent {
     override val type: Int
@@ -32,7 +34,6 @@ class SelectableResourceItem(
     private val coroutineLaunchContext: CoroutineLaunchContext by inject()
     private val job = SupervisorJob()
     private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
-    private val resourceIconProvider: ResourceIconProvider by inject()
 
     override fun createBinding(
         inflater: LayoutInflater,
@@ -90,12 +91,14 @@ class SelectableResourceItem(
 
     private fun setupInitialsIcon(binding: ItemSelectableResourceBinding) {
         scope.launch {
-            binding.icon.setImageDrawable(
-                resourceIconProvider.getResourceIcon(
-                    binding.root.context,
-                    resourcePickerListItem.resourceModel,
-                ),
-            )
+            val drawable =
+                withContext(coroutineLaunchContext.io) {
+                    resourceIconProvider.getResourceIcon(
+                        binding.root.context,
+                        resourcePickerListItem.resourceModel,
+                    )
+                }
+            binding.icon.setImageDrawable(drawable)
         }
     }
 

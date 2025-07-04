@@ -6,8 +6,11 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResult
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import coil.load
-import coil.transform.CircleCropTransformation
+import coil3.load
+import coil3.request.error
+import coil3.request.placeholder
+import coil3.request.transformations
+import coil3.transform.CircleCropTransformation
 import com.passbolt.mobile.android.common.dialogs.permissionDeletionConfirmationAlertDialog
 import com.passbolt.mobile.android.core.UiConstants
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar

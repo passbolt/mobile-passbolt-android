@@ -52,7 +52,7 @@ mlkit = "17.3.0"
 zxing = "4.3.0"
 gson = "2.11.0"
 appDistribution = "5.0.0"
-coil = "2.6.0"
+coil = "3.0.4"
 fastAdapterCore = "5.7.0"
 fastAdapterCoreAnimators = "1.1.0"
 easylauncher = "6.4.0"
@@ -136,8 +136,9 @@ timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "tim
 qr-scan = { group = "com.google.mlkit", name = "barcode-scanning", version.ref = "mlkit" }
 qr-generation = { group = "com.journeyapps", name = "zxing-android-embedded", version.ref = "zxing" }
 gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
-coil-core = { group = "io.coil-kt", name = "coil", version.ref = "coil" }
-coil-base = { group = "io.coil-kt", name = "coil-base", version.ref = "coil" }
+coil-networking = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil" }
+coil-views = { module = "io.coil-kt.coil3:coil", version.ref = "coil" }
+coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 fastadapter-core = { group = "com.mikepenz", name = "fastadapter", version.ref = "fastAdapterCore" }
 fastadapter-binding = { group = "com.mikepenz", name = "fastadapter-extensions-binding", version.ref = "fastAdapterCore" }
 fastadapter-utils = { group = "com.mikepenz", name = "fastadapter-extensions-utils", version.ref = "fastAdapterCore" }

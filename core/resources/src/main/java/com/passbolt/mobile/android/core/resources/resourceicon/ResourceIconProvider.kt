@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.Drawable
-import android.graphics.drawable.InsetDrawable
 import android.graphics.drawable.LayerDrawable
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.OvalShape
@@ -12,6 +11,8 @@ import android.view.Gravity
 import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.toColorInt
+import com.passbolt.mobile.android.core.accounts.usecase.selectedaccount.GetSelectedAccountUseCase
+import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordAndDescription
@@ -25,6 +26,7 @@ import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5TotpStan
 import com.passbolt.mobile.android.ui.ResourceAppearanceModel.Companion.DEFAULT_BACKGROUND_COLOR_HEX_STRING
 import com.passbolt.mobile.android.ui.ResourceAppearanceModel.Companion.ICON_TYPE_KEEPASS
 import com.passbolt.mobile.android.ui.ResourceModel
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.util.UUID
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
@@ -53,7 +55,14 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
  */
 class ResourceIconProvider(
     private val resourceTypeIdToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider,
+    private val coroutineLaunchContext: CoroutineLaunchContext,
+    getSelectedAccountUseCase: GetSelectedAccountUseCase,
 ) {
+    val selectedAccount: String =
+        requireNotNull(
+            getSelectedAccountUseCase.execute(Unit).selectedAccount,
+        ) { "Encountered null selected account" }
+
     suspend fun getResourceIcon(
         context: Context,
         resource: ResourceModel,
@@ -91,7 +100,7 @@ class ResourceIconProvider(
     ): Drawable {
         val contentType =
             ContentType.fromSlug(
-                resourceTypeIdToSlugMappingProvider.provideMappingForSelectedAccount()[
+                resourceTypeIdToSlugMappingProvider.provideMappingForAccount(selectedAccount)[
                     UUID.fromString(resourceTypeId),
                 ]!!,
             )
@@ -111,68 +120,48 @@ class ResourceIconProvider(
         )
     }
 
-    private fun createCircleDrawableWithIcon(
+    private suspend fun createCircleDrawableWithIcon(
         backgroundColorHex: String?,
         @DrawableRes vectorResId: Int,
         context: Context,
-        iconSizeDp: Float = 32f,
-        backgroundCircleSizeDp: Float = 40f,
         withSelectedBorder: Boolean = false,
         borderWidthDp: Float = 4f,
-    ): Drawable {
-        val backgroundColor = (backgroundColorHex ?: DEFAULT_BACKGROUND_COLOR_HEX_STRING).toColorInt()
-        val density = context.resources.displayMetrics.density
-        val iconTint = getContrastingTint(backgroundColor)
+    ): Drawable =
+        withContext(coroutineLaunchContext.io) {
+            val backgroundColor = (backgroundColorHex ?: DEFAULT_BACKGROUND_COLOR_HEX_STRING).toColorInt()
+            val density = context.resources.displayMetrics.density
+            val iconTint = getContrastingTint(backgroundColor)
 
-        val vectorDrawable = ContextCompat.getDrawable(context, vectorResId)?.mutate()
-        vectorDrawable?.setTint(iconTint)
-        vectorDrawable?.setBounds(
-            0,
-            0,
-            (iconSizeDp * density).toInt(),
-            (iconSizeDp * density).toInt(),
-        )
-
-        val iconInset = ((backgroundCircleSizeDp - iconSizeDp) / 2 * density).toInt()
-        val insetDrawable = InsetDrawable(vectorDrawable, iconInset, iconInset, iconInset, iconInset)
-
-        if (withSelectedBorder) {
-            val borderColor = ContextCompat.getColor(context, CoreUiR.color.primary)
-
-            val borderShape =
-                ShapeDrawable(OvalShape()).apply {
-                    intrinsicWidth = (backgroundCircleSizeDp * density).toInt()
-                    intrinsicHeight = (backgroundCircleSizeDp * density).toInt()
-                    paint.color = borderColor
-                }
-
-            val insetValue = (borderWidthDp * density).toInt()
             val backgroundShape =
                 ShapeDrawable(OvalShape()).apply {
-                    intrinsicWidth = ((backgroundCircleSizeDp - 2 * borderWidthDp) * density).toInt()
-                    intrinsicHeight = ((backgroundCircleSizeDp - 2 * borderWidthDp) * density).toInt()
-                    paint.color = backgroundColor
-                }
-            val insetBackgroundShape = InsetDrawable(backgroundShape, insetValue, insetValue, insetValue, insetValue)
-
-            return LayerDrawable(arrayOf(borderShape, insetBackgroundShape, insetDrawable)).apply {
-                setLayerGravity(2, Gravity.CENTER)
-            }
-        } else {
-            val shape =
-                ShapeDrawable(OvalShape()).apply {
-                    intrinsicWidth = (backgroundCircleSizeDp * density).toInt()
-                    intrinsicHeight = (backgroundCircleSizeDp * density).toInt()
                     paint.color = backgroundColor
                 }
 
-            return LayerDrawable(arrayOf(shape, insetDrawable)).apply {
-                setLayerGravity(1, Gravity.CENTER)
+            val icon =
+                ContextCompat.getDrawable(context, vectorResId)?.apply {
+                    setTint(iconTint)
+                }
+
+            if (!withSelectedBorder) {
+                LayerDrawable(arrayOf(backgroundShape, icon)).apply {
+                    setLayerGravity(1, Gravity.CENTER)
+                }
+            } else {
+                val borderColor = ContextCompat.getColor(context, CoreUiR.color.primary)
+
+                val borderShape =
+                    ShapeDrawable(OvalShape()).apply {
+                        paint.color = borderColor
+                    }
+
+                LayerDrawable(arrayOf(borderShape, backgroundShape, icon)).apply {
+                    val borderInset = (borderWidthDp * density).toInt()
+                    setLayerInset(1, borderInset, borderInset, borderInset, borderInset)
+                }
             }
         }
-    }
 
-    private fun createCircleDrawableWithIconByName(
+    private suspend fun createCircleDrawableWithIconByName(
         backgroundColorHex: String?,
         vectorDrawableName: String,
         context: Context,
@@ -194,7 +183,7 @@ class ResourceIconProvider(
         )
     }
 
-    fun getKeypassIcon(
+    suspend fun getKeypassIcon(
         context: Context,
         keepassIconValue: Int,
         backgroundHexString: String?,
@@ -207,7 +196,7 @@ class ResourceIconProvider(
             withSelectedBorder = withSelectedBorder,
         )
 
-    fun getContrastingTint(backgroundColor: Int): Int {
+    private fun getContrastingTint(backgroundColor: Int): Int {
         val r = Color.red(backgroundColor)
         val g = Color.green(backgroundColor)
         val b = Color.blue(backgroundColor)

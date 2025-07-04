@@ -10,7 +10,6 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
-import com.mikepenz.fastadapter.binding.BindingViewHolder
 import com.mikepenz.fastadapter.listeners.ClickEventHook
 import com.passbolt.mobile.android.common.extension.isInFuture
 import com.passbolt.mobile.android.core.extension.DebounceClickEventHook
@@ -25,6 +24,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
@@ -55,6 +55,7 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
 class PasswordItem(
     private val resourceWrapper: ResourceItemWrapper,
     private val dotsVisible: Boolean = true,
+    private val resourceIconProvider: ResourceIconProvider,
 ) : AbstractBindingItem<ItemPasswordBinding>(),
     KoinComponent {
     override val type: Int
@@ -63,7 +64,6 @@ class PasswordItem(
     private val coroutineLaunchContext: CoroutineLaunchContext by inject()
     private val job = SupervisorJob()
     private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
-    private val resourceIconProvider: ResourceIconProvider by inject()
 
     override fun createBinding(
         inflater: LayoutInflater,
@@ -82,19 +82,16 @@ class PasswordItem(
             loader.isVisible = resourceWrapper.loaderVisible
             itemPassword.isEnabled = resourceWrapper.clickable
             scope.launch {
-                icon.setImageDrawable(
-                    resourceIconProvider.getResourceIcon(
-                        binding.root.context,
-                        resourceWrapper.resourceModel,
-                    ),
-                )
+                val drawable =
+                    withContext(coroutineLaunchContext.io) {
+                        resourceIconProvider.getResourceIcon(
+                            binding.root.context,
+                            resourceWrapper.resourceModel,
+                        )
+                    }
+                icon.setImageDrawable(drawable)
             }
         }
-    }
-
-    override fun unbindView(holder: BindingViewHolder<ItemPasswordBinding>) {
-        scope.coroutineContext.cancelChildren()
-        super.unbindView(holder)
     }
 
     override fun unbindView(binding: ItemPasswordBinding) {

@@ -5,7 +5,8 @@ import android.content.Context
 import android.view.autofill.AutofillManager
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ProcessLifecycleOwner
-import coil.ImageLoader
+import coil3.ImageLoader
+import coil3.network.okhttp.OkHttpNetworkFetcherFactory
 import com.passbolt.mobile.android.common.ExternalDeeplinkHandler
 import com.passbolt.mobile.android.common.HttpsVerifier
 import com.passbolt.mobile.android.common.UuidProvider
@@ -51,8 +52,15 @@ internal val appModule =
         single {
             ImageLoader
                 .Builder(androidContext())
-                .okHttpClient(okHttpClient = get(named(COIL_HTTP_CLIENT)))
-                .build()
+                .components {
+                    add(
+                        OkHttpNetworkFetcherFactory(
+                            callFactory = {
+                                get(named(COIL_HTTP_CLIENT))
+                            },
+                        ),
+                    )
+                }.build()
         }
         single { ExternalDeeplinkHandler() }
         single { HttpsVerifier() }

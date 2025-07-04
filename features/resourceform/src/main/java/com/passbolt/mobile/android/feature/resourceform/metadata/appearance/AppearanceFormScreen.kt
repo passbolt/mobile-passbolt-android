@@ -24,8 +24,10 @@
 package com.passbolt.mobile.android.feature.resourceform.metadata.appearance
 
 import android.content.Context
+import android.graphics.drawable.Drawable
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -43,6 +45,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -176,35 +179,43 @@ private fun SelectIconSection(
         Spacer(modifier = Modifier.height(8.dp))
         FlowRow(
             modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = spacedBy(8.dp),
+            verticalArrangement = spacedBy(8.dp),
         ) {
             state.keepassIconValues.forEach { keepassIconValue ->
                 val isSelected = state.keepassIconValue == keepassIconValue
-                val drawable =
-                    remember(keepassIconValue, isSelected) {
+
+                produceState<Drawable?>(
+                    initialValue = null,
+                    key1 = keepassIconValue,
+                    key2 = isSelected,
+                ) {
+                    value =
                         resourceIconProvider.getKeypassIcon(
                             context = context,
                             keepassIconValue = keepassIconValue,
                             backgroundHexString = DEFAULT_BACKGROUND_COLOR_HEX_STRING,
                             withSelectedBorder = isSelected,
                         )
-                    }
-                val painter = rememberDrawablePainter(drawable)
+                }.value?.let {
+                    val painter = rememberDrawablePainter(it)
 
-                Box(
-                    modifier =
-                        Modifier
-                            .size(44.dp)
-                            .clip(CircleShape)
-                            .clickable {
-                                onIntent(SetKeepassIcon(keepassIconValue))
-                            },
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Image(
-                        painter = painter,
-                        contentDescription = null,
-                        modifier = Modifier.size(40.dp),
-                    )
+                    Box(
+                        modifier =
+                            Modifier
+                                .size(44.dp)
+                                .clip(CircleShape)
+                                .clickable {
+                                    onIntent(SetKeepassIcon(keepassIconValue))
+                                },
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Image(
+                            painter = painter,
+                            contentDescription = null,
+                            modifier = Modifier.size(40.dp),
+                        )
+                    }
                 }
             }
         }
@@ -233,6 +244,8 @@ private fun SelectColorSection(
         Spacer(modifier = Modifier.height(8.dp))
         FlowRow(
             modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = spacedBy(8.dp),
+            verticalArrangement = spacedBy(8.dp),
         ) {
             state.backgroundColorsHexList.forEach { colorHex ->
                 val isSelected = state.iconBackgroundColorHex == colorHex
