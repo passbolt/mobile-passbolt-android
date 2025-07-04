@@ -175,6 +175,8 @@ compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview"
 compose-lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "composeLifecycleViewModel" }
 compose-ui-graphics = { module = "androidx.compose.ui:ui-graphics-android" }
 compose-activity = { module = "androidx.activity:activity-compose" }
+compose-ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4" }
+compose-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest" }
 ktlint-compose-rulset = { module = "io.nlopez.compose.rules:ktlint", version.ref = "nlopez-compose-rulset" }
 detekt-compose-rulset = { module = "io.nlopez.compose.rules:detekt", version.ref = "nlopez-compose-rulset" }
 accompanist-drawablepainter = { module = "com.google.accompanist:accompanist-drawablepainter", version.ref = "accompanist-drawablepainer" }

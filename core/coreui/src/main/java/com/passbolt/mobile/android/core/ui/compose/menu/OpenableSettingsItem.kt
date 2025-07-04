@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.core.ui.compose.menu
 
+import androidx.annotation.VisibleForTesting
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
@@ -18,12 +19,15 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.passbolt.mobile.android.core.compose.AppTypography
 import com.passbolt.mobile.android.core.ui.R
+import com.passbolt.mobile.android.core.ui.compose.menu.OpenableSettingsItem.TestTags.ARROW
+import com.passbolt.mobile.android.core.ui.compose.menu.OpenableSettingsItem.TestTags.ITEM
 
 @Composable
 fun OpenableSettingsItem(
@@ -45,13 +49,14 @@ fun OpenableSettingsItem(
                 .alpha(alpha)
                 .height(64.dp)
                 .clickable(enabled = isEnabled) { onClick() }
-                .padding(horizontal = 16.dp),
+                .padding(horizontal = 16.dp)
+                .testTag(ITEM),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         if (iconPainter != null) {
             Image(
                 painter = iconPainter,
-                contentDescription = null,
+                contentDescription = title,
                 colorFilter = ColorFilter.tint(iconTint),
                 modifier = Modifier.size(24.dp),
             )
@@ -71,7 +76,8 @@ fun OpenableSettingsItem(
                 modifier =
                     Modifier
                         .size(16.dp)
-                        .padding(start = 8.dp),
+                        .padding(start = 8.dp)
+                        .testTag(ARROW),
             )
         }
     }
@@ -85,4 +91,12 @@ private fun OpenableSettingsItemPreview() {
         title = "App settings",
         onClick = { },
     )
+}
+
+@VisibleForTesting
+object OpenableSettingsItem {
+    object TestTags {
+        const val ITEM = "OpenableSettingsItem"
+        const val ARROW = "OpenableSettingsItemArrow"
+    }
 }

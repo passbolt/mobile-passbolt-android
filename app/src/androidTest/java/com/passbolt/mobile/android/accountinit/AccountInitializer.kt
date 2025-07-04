@@ -6,6 +6,7 @@ import com.passbolt.mobile.android.core.accounts.usecase.accountdata.UpdateAccou
 import com.passbolt.mobile.android.core.accounts.usecase.privatekey.SavePrivateKeyUseCase
 import com.passbolt.mobile.android.core.accounts.usecase.selectedaccount.SaveCurrentApiUrlUseCase
 import com.passbolt.mobile.android.core.accounts.usecase.selectedaccount.SaveSelectedAccountUseCase
+import com.passbolt.mobile.android.core.preferences.usecase.UpdateGlobalPreferencesUseCase
 import com.passbolt.mobile.android.database.usecase.SaveResourcesDatabasePassphraseUseCase
 import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
 import org.koin.core.component.KoinComponent
@@ -18,6 +19,7 @@ class AccountInitializer(
     private val savePrivateKeyUseCase: SavePrivateKeyUseCase,
     private val managedAccountIntentCreator: ManagedAccountIntentCreator,
     private val saveAccountUseCase: SaveAccountUseCase,
+    private val updateGlobalPreferencesUseCase: UpdateGlobalPreferencesUseCase,
 ) : KoinComponent {
     fun initializeAccount() {
         saveCurrentApiUrlUseCase.execute(
@@ -46,6 +48,13 @@ class AccountInitializer(
             SavePrivateKeyUseCase.Input(
                 managedAccountIntentCreator.getUserLocalId(),
                 managedAccountIntentCreator.getArmoredPrivateKey(),
+            ),
+        )
+        updateGlobalPreferencesUseCase.execute(
+            UpdateGlobalPreferencesUseCase.Input(
+                areDebugLogsEnabled = false,
+                isDeveloperModeEnabled = false,
+                isHideRootDialogEnabled = false,
             ),
         )
     }
