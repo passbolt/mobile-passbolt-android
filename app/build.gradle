@@ -212,4 +212,7 @@ dependencies {
     androidTestImplementation libs.koin.test.junit
     androidTestImplementation libs.android.test.intents
     androidTestImplementation libs.mockito.android
+    androidTestImplementation platform(libs.compose.bom)
+    androidTestImplementation libs.compose.ui.test.junit4
+    androidTestDebugImplementation libs.compose.ui.test.manifest
 }
