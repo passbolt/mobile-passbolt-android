@@ -33,6 +33,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -140,9 +141,13 @@ private fun LicenseUrlsSection(
     onIntent: (LicensesIntent) -> Unit,
 ) {
     Column(Modifier.fillMaxWidth()) {
-        Text(style = AppTypography.titleMedium, text = stringResource(LocalizationR.string.licenses_urls))
+        Text(
+            style = AppTypography.titleMedium,
+            text = stringResource(LocalizationR.string.licenses_urls),
+            color = MaterialTheme.colorScheme.onBackground,
+        )
         license.spdxLicenses
-            ?.mapNotNull { it.url }
+            ?.map { it.url }
             ?.forEach { url ->
                 Text(
                     text =
@@ -179,13 +184,18 @@ private fun LicenseUrlsSection(
 @Composable
 private fun LicenseLicensesSection(license: LicenseModelItem) {
     Column(Modifier.fillMaxWidth()) {
-        Text(style = AppTypography.titleMedium, text = stringResource(LocalizationR.string.licenses_licensees))
+        Text(
+            style = AppTypography.titleMedium,
+            text = stringResource(LocalizationR.string.licenses_licensees),
+            color = MaterialTheme.colorScheme.onBackground,
+        )
         license.spdxLicenses
             ?.mapNotNull { it.name }
             ?.forEach {
                 Text(
                     text = stringResource(LocalizationR.string.common_bullet_format, it),
                     modifier = Modifier.padding(start = 8.dp),
+                    color = MaterialTheme.colorScheme.onBackground,
                 )
             }
     }
@@ -194,15 +204,23 @@ private fun LicenseLicensesSection(license: LicenseModelItem) {
 @Composable
 private fun LicenseNameSection(license: LicenseModelItem) {
     Column(Modifier.fillMaxWidth()) {
-        Text(style = AppTypography.titleMedium, text = stringResource(LocalizationR.string.licenses_name))
-        Text(text = license.name.orEmpty())
+        Text(
+            style = AppTypography.titleMedium,
+            text = stringResource(LocalizationR.string.licenses_name),
+            color = MaterialTheme.colorScheme.onBackground,
+        )
+        Text(text = license.name.orEmpty(), color = MaterialTheme.colorScheme.onBackground)
     }
 }
 
 @Composable
 private fun LicenseArtifactSection(license: LicenseModelItem) {
     Column(Modifier.fillMaxWidth()) {
-        Text(style = AppTypography.titleMedium, text = stringResource(LocalizationR.string.licenses_artifact))
+        Text(
+            style = AppTypography.titleMedium,
+            text = stringResource(LocalizationR.string.licenses_artifact),
+            color = MaterialTheme.colorScheme.onBackground,
+        )
         Text(
             text =
                 "%s:%s:%s".format(
@@ -210,6 +228,7 @@ private fun LicenseArtifactSection(license: LicenseModelItem) {
                     license.artifactId.orEmpty(),
                     license.version.orEmpty(),
                 ),
+            color = MaterialTheme.colorScheme.onBackground,
         )
     }
 }
