@@ -1,3 +1,5 @@
+package com.passbolt.mobile.android.feature.settings.screen.accounts.keyinspector
+
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -20,12 +22,8 @@
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+interface KeyInspectorNavigation {
+    fun navigateUp()
 
-package com.passbolt.mobile.android.feature.settings.screen.accounts.keyinspector
-
-import org.koin.androidx.viewmodel.dsl.viewModelOf
-import org.koin.core.module.Module
-
-fun Module.keyInspectorModule() {
-    viewModelOf(::KeyInspectorViewModel)
+    fun navigateToKeyInspectorMoreMenu()
 }

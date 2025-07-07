@@ -68,7 +68,7 @@ class AccountsSettingsComposeFragment :
 
     override fun navigateToKeyInspector() {
         findNavController().navigate(
-            AccountsSettingsComposeFragmentDirections.actionAccountsSettingsComposeFragmentToKeyInspectorFragment(),
+            AccountsSettingsComposeFragmentDirections.actionAccountsSettingsComposeFragmentToKeyInspectorComposeFragment(),
         )
     }
 

@@ -1,3 +1,5 @@
+package com.passbolt.mobile.android.feature.settings.screen.accounts.keyinspector
+
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -20,45 +22,25 @@
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+internal sealed interface KeyInspectorScreenSideEffect {
+    data object NavigateUp : KeyInspectorScreenSideEffect
 
-package com.passbolt.mobile.android.feature.settings.screen.accounts.keyinspector
+    data object NavigateToKeyInspectorMoreMenu : KeyInspectorScreenSideEffect
 
-import com.passbolt.mobile.android.common.types.ClipboardLabel
-import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
+    data class ShowErrorSnackbar(
+        val type: ErrorSnackbarType,
+        val errorMessage: String? = null,
+    ) : KeyInspectorScreenSideEffect
 
-interface KeyInspectorContract {
-    interface View : BaseAuthenticatedContract.View {
-        fun showProgress()
+    data class AddUidToClipboard(
+        val uid: String,
+    ) : KeyInspectorScreenSideEffect
 
-        fun hideProgress()
+    data class AddFingerprintToClipboard(
+        val fingerprint: String,
+    ) : KeyInspectorScreenSideEffect
 
-        fun showError(message: String?)
-
-        fun showUid(uid: String)
-
-        fun showFingerprint(fingerprint: String)
-
-        fun showCreationDate(keyCreationDate: String)
-
-        fun showExpirationDate(keyExpirationDate: String)
-
-        fun showLength(bits: String)
-
-        fun showAlgorithm(algorithm: String)
-
-        fun showAvatar(avatarUrl: String?)
-
-        fun showLabel(label: String)
-
-        fun addToClipboard(
-            clipboardLabel: ClipboardLabel,
-            value: String,
-        )
-    }
-
-    interface Presenter : BaseAuthenticatedContract.Presenter<View> {
-        fun uidCopyClick()
-
-        fun fingerprintCopyClick()
+    enum class ErrorSnackbarType {
+        FAILED_TO_FETCH_KEY,
     }
 }

@@ -37,6 +37,9 @@
     <string name="proceed">Proceed</string>
     <string name="edit_password">Edit password</string>
 
+    <string name="copy_label_fingerprint">Fingerprint</string>
+    <string name="copy_label_uid">UID</string>
+
     <string name="common_failure">Something went wrong!</string>
     <string name="common_startup_configuration_fetch_error">Error while fetching configuration</string>
     <string name="common_time_is_out_of_sync">Server and client time is out of sync, please contact your administrator.</string>
