@@ -14,9 +14,21 @@ val Inter =
         Font(R.font.inter_semi_bold, FontWeight.SemiBold),
     )
 
+val Inconsolata =
+    FontFamily(
+        Font(R.font.inconsolata_regular, FontWeight.Normal),
+    )
+
 val AppTypography =
     Typography(
         titleMedium =
+            TextStyle(
+                fontFamily = Inter,
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 14.sp,
+                letterSpacing = 0.sp,
+            ),
+        labelMedium =
             TextStyle(
                 fontFamily = Inter,
                 fontWeight = FontWeight.SemiBold,

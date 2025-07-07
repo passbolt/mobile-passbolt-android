@@ -23,9 +23,40 @@
 
 package com.passbolt.mobile.android.feature.settings.screen.accounts.keyinspector
 
-import org.koin.androidx.viewmodel.dsl.viewModelOf
-import org.koin.core.module.Module
+import PassboltTheme
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.compose.ui.platform.ComposeView
+import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
+import com.passbolt.mobile.android.feature.settings.screen.accounts.keyinspector.keyinspectormoremenu.KeyInspectorMoreMenuFragment
 
-fun Module.keyInspectorModule() {
-    viewModelOf(::KeyInspectorViewModel)
+class KeyInspectorComposeFragment :
+    Fragment(),
+    KeyInspectorNavigation {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
+    ): View =
+        ComposeView(requireContext()).apply {
+            setContent {
+                PassboltTheme {
+                    KeyInspectorScreen(
+                        navigation = this@KeyInspectorComposeFragment,
+                    )
+                }
+            }
+        }
+
+    override fun navigateUp() {
+        findNavController().popBackStack()
+    }
+
+    override fun navigateToKeyInspectorMoreMenu() {
+        KeyInspectorMoreMenuFragment()
+            .show(childFragmentManager, KeyInspectorMoreMenuFragment::class.java.name)
+    }
 }

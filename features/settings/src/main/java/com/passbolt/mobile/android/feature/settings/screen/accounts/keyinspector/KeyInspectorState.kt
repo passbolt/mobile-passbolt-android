@@ -1,3 +1,5 @@
+package com.passbolt.mobile.android.feature.settings.screen.accounts.keyinspector
+
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -21,11 +23,14 @@
  * @since v1.0
  */
 
-package com.passbolt.mobile.android.feature.settings.screen.accounts.keyinspector
-
-import org.koin.androidx.viewmodel.dsl.viewModelOf
-import org.koin.core.module.Module
-
-fun Module.keyInspectorModule() {
-    viewModelOf(::KeyInspectorViewModel)
-}
+data class KeyInspectorState(
+    val label: String = "",
+    val avatarUrl: String? = "",
+    val uid: String = "",
+    val fingerprint: String = "",
+    val created: String = "",
+    val expires: String = "",
+    val keyLength: Int = 0,
+    val algorithm: String = "",
+    val showProgress: Boolean = false,
+)

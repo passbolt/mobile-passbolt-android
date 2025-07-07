@@ -23,9 +23,12 @@
 
 package com.passbolt.mobile.android.feature.settings.screen.accounts.keyinspector
 
-import org.koin.androidx.viewmodel.dsl.viewModelOf
-import org.koin.core.module.Module
+sealed interface KeyInspectorIntent {
+    object GoBack : KeyInspectorIntent
 
-fun Module.keyInspectorModule() {
-    viewModelOf(::KeyInspectorViewModel)
+    object CopyUid : KeyInspectorIntent
+
+    object CopyFingerprint : KeyInspectorIntent
+
+    object OpenMoreMenu : KeyInspectorIntent
 }

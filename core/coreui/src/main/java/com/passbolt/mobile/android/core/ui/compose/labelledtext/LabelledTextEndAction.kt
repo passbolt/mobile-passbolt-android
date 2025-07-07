@@ -1,3 +1,7 @@
+package com.passbolt.mobile.android.core.ui.compose.labelledtext
+
+import androidx.annotation.DrawableRes
+
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -20,11 +24,6 @@
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-
-package com.passbolt.mobile.android.core.ui.labelledtext
-
-import androidx.annotation.DrawableRes
-
 data class LabelledTextEndAction(
     @DrawableRes val icon: Int,
     val action: () -> Unit,

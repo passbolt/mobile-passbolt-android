@@ -2,7 +2,6 @@
 <navigation
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/settingsNav"
     app:startDestination="@id/settingsComposeFragment">
 
@@ -95,12 +94,6 @@
     </fragment>
 
     <fragment
-        android:id="@+id/keyInspectorFragment"
-        android:name="com.passbolt.mobile.android.feature.settings.screen.accounts.keyinspector.KeyInspectorFragment"
-        android:label="KeyInspectorFragment"
-        tools:layout="@layout/fragment_key_inspector" />
-
-    <fragment
         android:id="@+id/defaultFilterComposeFragment"
         android:name="com.passbolt.mobile.android.feature.settings.screen.appsettings.defaultfilter.DefaultFilterComposeFragment"
         android:label="DefaultFilterComposeFragment" />
@@ -110,8 +103,8 @@
         android:name="com.passbolt.mobile.android.feature.settings.screen.accounts.AccountsSettingsComposeFragment"
         android:label="AccountsSettingsComposeFragment">
         <action
-            android:id="@+id/action_accountsSettingsComposeFragment_to_keyInspectorFragment"
-            app:destination="@id/keyInspectorFragment"
+            android:id="@+id/action_accountsSettingsComposeFragment_to_keyInspectorComposeFragment"
+            app:destination="@id/keyInspectorComposeFragment"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
@@ -134,6 +127,11 @@
         android:id="@+id/expertSettingsComposeFragment"
         android:name="com.passbolt.mobile.android.feature.settings.screen.appsettings.expertsettings.ExpertSettingsComposeFragment"
         android:label="ExpertSettingsComposeFragment" />
+
+    <fragment
+        android:id="@+id/keyInspectorComposeFragment"
+        android:name="com.passbolt.mobile.android.feature.settings.screen.accounts.keyinspector.KeyInspectorComposeFragment"
+        android:label="KeyInspectorComposeFragment" />
 
     <fragment
         android:id="@+id/autofillSettingsComposeFragment"
