@@ -64,6 +64,8 @@ import com.passbolt.mobile.android.core.ui.compose.labelledtext.LabelledTextEndA
 import com.passbolt.mobile.android.core.ui.compose.progressdialog.ProgressDialog
 import com.passbolt.mobile.android.core.ui.compose.topbar.BackNavigationIcon
 import com.passbolt.mobile.android.core.ui.compose.topbar.TitleAppBar
+import com.passbolt.mobile.android.feature.authentication.compose.AuthenticationHandler
+import com.passbolt.mobile.android.feature.authentication.compose.AuthenticationNavigation
 import com.passbolt.mobile.android.feature.settings.screen.accounts.keyinspector.KeyInspectorIntent.GoBack
 import com.passbolt.mobile.android.feature.settings.screen.accounts.keyinspector.KeyInspectorIntent.OpenMoreMenu
 import com.passbolt.mobile.android.feature.settings.screen.accounts.keyinspector.KeyInspectorScreenSideEffect.AddFingerprintToClipboard
@@ -81,6 +83,7 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
 @Composable
 internal fun KeyInspectorScreen(
     navigation: KeyInspectorNavigation,
+    authenticationNavigation: AuthenticationNavigation,
     modifier: Modifier = Modifier,
     viewModel: KeyInspectorViewModel = koinViewModel(),
     clipboardManager: ClipboardManager? = koinInject(),
@@ -95,6 +98,12 @@ internal fun KeyInspectorScreen(
         state = state.value,
         snackbarHostState = snackbarHostState,
         onIntent = viewModel::onIntent,
+    )
+
+    AuthenticationHandler(
+        onAuthenticatedIntent = viewModel::onAuthenticationIntent,
+        authenticationSideEffect = viewModel.authenticationSideEffect,
+        authenticationNavigation = authenticationNavigation,
     )
 
     SideEffectDispatcher(viewModel.sideEffect) {

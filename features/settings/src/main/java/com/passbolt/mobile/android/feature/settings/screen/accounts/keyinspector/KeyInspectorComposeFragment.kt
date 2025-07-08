@@ -29,12 +29,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
-import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.passbolt.mobile.android.feature.authentication.compose.AuthenticatedComposeFragment
 import com.passbolt.mobile.android.feature.settings.screen.accounts.keyinspector.keyinspectormoremenu.KeyInspectorMoreMenuFragment
+import org.koin.androidx.compose.getViewModel
 
 class KeyInspectorComposeFragment :
-    Fragment(),
+    AuthenticatedComposeFragment(),
     KeyInspectorNavigation {
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -43,9 +44,11 @@ class KeyInspectorComposeFragment :
     ): View =
         ComposeView(requireContext()).apply {
             setContent {
+                authenticationViewModel = getViewModel<KeyInspectorViewModel>()
                 PassboltTheme {
                     KeyInspectorScreen(
                         navigation = this@KeyInspectorComposeFragment,
+                        authenticationNavigation = this@KeyInspectorComposeFragment,
                     )
                 }
             }

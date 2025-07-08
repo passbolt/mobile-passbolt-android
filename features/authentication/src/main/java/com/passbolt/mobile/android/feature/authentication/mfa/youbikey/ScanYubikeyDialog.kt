@@ -108,8 +108,8 @@ class ScanYubikeyDialog :
         isCancelable = false
         listener =
             when {
-                activity is ScanYubikeyListener -> activity as ScanYubikeyListener
                 parentFragment is ScanYubikeyListener -> parentFragment as ScanYubikeyListener
+                activity is ScanYubikeyListener -> activity as ScanYubikeyListener
                 else -> error("Parent must implement ${ScanYubikeyListener::class.java.name}")
             }
         presenter.attach(this)
@@ -145,7 +145,7 @@ class ScanYubikeyDialog :
                 presenter.scanYubikeyClick()
             }
             otherProviderButton.setDebouncingOnClick {
-                listener?.yubikeyOtherProviderClick(bundledAuthToken)
+                otherProviderClick()
             }
             closeButton.setDebouncingOnClick {
                 presenter.closeClick()
@@ -162,6 +162,11 @@ class ScanYubikeyDialog :
     override fun showYubikeyDoesNotBelongToCurrentUser() {
         yubikeyNotFromCurrentUserAlertDialog(requireContext())
             .show()
+    }
+
+    private fun otherProviderClick() {
+        dismiss()
+        listener?.yubikeyOtherProviderClick(bundledAuthToken)
     }
 
     override fun showScanOtpCancelled() {

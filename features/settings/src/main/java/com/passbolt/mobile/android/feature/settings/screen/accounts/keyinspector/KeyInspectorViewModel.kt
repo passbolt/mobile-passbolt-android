@@ -25,11 +25,12 @@ package com.passbolt.mobile.android.feature.settings.screen.accounts.keyinspecto
 
 import androidx.lifecycle.viewModelScope
 import com.passbolt.mobile.android.core.accounts.usecase.accountdata.GetSelectedAccountDataUseCase
-import com.passbolt.mobile.android.core.compose.SideEffectViewModel
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.ui.formatter.DateFormatter
 import com.passbolt.mobile.android.core.ui.formatter.FingerprintFormatter
 import com.passbolt.mobile.android.core.users.user.FetchCurrentUserUseCase
+import com.passbolt.mobile.android.feature.authentication.compose.AuthenticatedViewModel
+import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
 import com.passbolt.mobile.android.feature.settings.screen.accounts.keyinspector.KeyInspectorIntent.CopyFingerprint
 import com.passbolt.mobile.android.feature.settings.screen.accounts.keyinspector.KeyInspectorIntent.CopyUid
 import com.passbolt.mobile.android.feature.settings.screen.accounts.keyinspector.KeyInspectorIntent.GoBack
@@ -49,7 +50,7 @@ internal class KeyInspectorViewModel(
     private val dateFormatter: DateFormatter,
     private val fingerprintFormatter: FingerprintFormatter,
     coroutineLaunchContext: CoroutineLaunchContext,
-) : SideEffectViewModel<KeyInspectorState, KeyInspectorScreenSideEffect>(KeyInspectorState()) {
+) : AuthenticatedViewModel<KeyInspectorState, KeyInspectorScreenSideEffect>(KeyInspectorState()) {
     init {
         viewModelScope.launch(coroutineLaunchContext.default) {
             updateViewState { copy(showProgress = true) }
@@ -73,9 +74,7 @@ internal class KeyInspectorViewModel(
     }
 
     private suspend fun fetchKeyData() {
-        // TODO: add session refresh to new arch!!!
-        val keyData = fetchCurrentUserUseCase.execute(Unit)
-        when (keyData) {
+        when (val keyData = runAuthenticatedOperation { fetchCurrentUserUseCase.execute(Unit) }) {
             is FetchCurrentUserUseCase.Output.Failure<*> -> emitSideEffect(ShowErrorSnackbar(FAILED_TO_FETCH_KEY, keyData.message))
             is FetchCurrentUserUseCase.Output.Success -> {
                 val keyData = keyData.userModel.gpgKey
