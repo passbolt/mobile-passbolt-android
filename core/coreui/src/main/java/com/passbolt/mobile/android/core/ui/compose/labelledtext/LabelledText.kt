@@ -52,7 +52,7 @@ fun LabelledText(
         Column(
             modifier = Modifier.weight(1f),
         ) {
-            Text(text = label)
+            Text(text = label, color = MaterialTheme.colorScheme.onBackground)
             Spacer(Modifier.height(8.dp))
             Text(text = text, style = textStyle, color = colorResource(CoreUiR.color.text_secondary))
         }

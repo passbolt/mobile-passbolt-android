@@ -28,9 +28,12 @@ import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.core.accounts.usecase.accountdata.GetSelectedAccountDataUseCase
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.networking.NetworkResult
+import com.passbolt.mobile.android.core.passphrasememorycache.PassphraseMemoryCache
 import com.passbolt.mobile.android.core.ui.formatter.DateFormatter
 import com.passbolt.mobile.android.core.ui.formatter.FingerprintFormatter
 import com.passbolt.mobile.android.core.users.user.FetchCurrentUserUseCase
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetSessionExpiryUseCase
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetSessionExpiryUseCase.Output.JwtWillExpire
 import com.passbolt.mobile.android.feature.settings.screen.accounts.keyinspector.KeyInspectorIntent.CopyFingerprint
 import com.passbolt.mobile.android.feature.settings.screen.accounts.keyinspector.KeyInspectorIntent.CopyUid
 import com.passbolt.mobile.android.feature.settings.screen.accounts.keyinspector.KeyInspectorScreenSideEffect.AddFingerprintToClipboard
@@ -83,6 +86,8 @@ class KeyInspectorViewModelTest : KoinTest {
                         single { mock<GetSelectedAccountDataUseCase>() }
                         single { mock<DateFormatter>() }
                         single { mock<FingerprintFormatter>() }
+                        single { mock<GetSessionExpiryUseCase>() }
+                        single { mock<PassphraseMemoryCache>() }
                         singleOf(::TestCoroutineLaunchContext) bind CoroutineLaunchContext::class
                         factoryOf(::KeyInspectorViewModel)
                     },
@@ -97,6 +102,12 @@ class KeyInspectorViewModelTest : KoinTest {
     @Before
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
+
+        val passphraseMemoryCache: PassphraseMemoryCache = get()
+        whenever(passphraseMemoryCache.getSessionDurationSeconds()) doReturn 5 * 60
+
+        val getSessionExpiryUseCase: GetSessionExpiryUseCase = get()
+        whenever(getSessionExpiryUseCase.execute(Unit)) doReturn JwtWillExpire(ZonedDateTime.now().plusMinutes(5))
 
         val getSelectedAccountDataUseCase = get<GetSelectedAccountDataUseCase>()
         whenever(getSelectedAccountDataUseCase.execute(Unit)) doReturn selectedAccountData

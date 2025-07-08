@@ -58,7 +58,7 @@ class PassphraseMemoryCache(
         initializeObservers()
         currentTimerMillis = TIMER_TICK_MILLIS
         value = PotentialPassphrase.Passphrase(passphrase.copyOf())
-        Timber.d("Passphrase cached")
+        Timber.d("[Session] Passphrase cached")
     }
 
     fun get() = value
@@ -92,11 +92,11 @@ class PassphraseMemoryCache(
         }
         timerScope.coroutineContext.cancelChildren()
         lifecycleObserverScope.coroutineContext.cancelChildren()
-        Timber.d("Passphrase cache cleared")
+        Timber.d("[Session] Passphrase cache cleared")
     }
 
     override fun onStop(owner: LifecycleOwner) {
-        Timber.d("App went background")
+        Timber.d("[Session] App went background")
         clear()
     }
 

@@ -142,7 +142,7 @@ class AuthWithDuoDialog :
                 presenter.authWithDuoClick()
             }
             otherProviderButton.setDebouncingOnClick {
-                listener?.duoOtherProviderClick(bundledAuthToken)
+                otherProviderClick()
             }
             closeButton.setDebouncingOnClick {
                 presenter.closeClick()
@@ -188,6 +188,11 @@ class AuthWithDuoDialog :
                 view.setBackgroundColor(context.getColor(CoreUiR.color.red))
                 show()
             }
+    }
+
+    private fun otherProviderClick() {
+        dismiss()
+        listener?.duoOtherProviderClick(bundledAuthToken)
     }
 
     companion object {

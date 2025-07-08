@@ -21,6 +21,13 @@ val Inconsolata =
 
 val AppTypography =
     Typography(
+        titleLarge =
+            TextStyle(
+                fontFamily = Inter,
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 20.sp,
+                letterSpacing = 0.sp,
+            ),
         titleMedium =
             TextStyle(
                 fontFamily = Inter,
@@ -33,13 +40,6 @@ val AppTypography =
                 fontFamily = Inter,
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 14.sp,
-                letterSpacing = 0.sp,
-            ),
-        titleLarge =
-            TextStyle(
-                fontFamily = Inter,
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 24.sp,
                 letterSpacing = 0.sp,
             ),
         displayMedium =

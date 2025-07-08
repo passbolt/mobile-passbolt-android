@@ -102,8 +102,8 @@ class EnterTotpDialog :
         isCancelable = false
         listener =
             when {
-                activity is EnterTotpListener -> activity as EnterTotpListener
                 parentFragment is EnterTotpListener -> parentFragment as EnterTotpListener
+                activity is EnterTotpListener -> activity as EnterTotpListener
                 else -> error("Parent must implement ${EnterTotpListener::class.java.name}")
             }
         presenter.attach(this)
@@ -122,7 +122,7 @@ class EnterTotpDialog :
     private fun setupListeners() {
         with(binding) {
             otherProviderButton.setDebouncingOnClick {
-                listener?.totpOtherProviderClick(bundledAuthToken)
+                otherProviderClick()
             }
             closeButton.setDebouncingOnClick {
                 presenter.closeClick()
@@ -134,6 +134,11 @@ class EnterTotpDialog :
                 presenter.otpEntered(it.toString(), bundledAuthToken, rememberMeCheckBox.isChecked)
             }
         }
+    }
+
+    private fun otherProviderClick() {
+        dismiss()
+        listener?.totpOtherProviderClick(bundledAuthToken)
     }
 
     private fun getPasteData() =
@@ -211,6 +216,7 @@ class EnterTotpDialog :
     }
 
     override fun notifyVerificationSucceeded(mfaHeader: String) {
+        dismiss()
         listener?.totpVerificationSucceeded(mfaHeader)
     }
 
