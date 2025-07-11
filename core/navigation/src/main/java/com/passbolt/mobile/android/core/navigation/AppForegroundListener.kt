@@ -17,6 +17,8 @@ class AppForegroundListener : StartedStoppedCallback() {
         _appWentForegroundFlow
             .asSharedFlow()
 
+    fun isForeground(): Boolean = startedActivities > 0
+
     override fun onActivityStarted(activity: Activity) {
         if (++startedActivities == 1) {
             _appWentForegroundFlow.tryEmit(activity)
