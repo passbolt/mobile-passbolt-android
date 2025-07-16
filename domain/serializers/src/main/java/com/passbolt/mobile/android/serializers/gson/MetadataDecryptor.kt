@@ -59,7 +59,7 @@ class MetadataDecryptor(
                 require(privateKey != null) { "Selected user private key not found" }
                 val passphrase = passphraseMemoryCache.get()
                 require(passphrase is PotentialPassphrase.Passphrase) { "Passphrase not present in cache" }
-                Crypto.newPrivateKeyFromArmored(privateKey, passphrase.passphrase)
+                cachedPersonalKey = Crypto.newPrivateKeyFromArmored(privateKey, passphrase.passphrase)
             }
 
             withContext(coroutineLaunchContext.io) {
