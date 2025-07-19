@@ -26,84 +26,84 @@ import androidx.navigation.NavDeepLinkRequest
  * @since v1.0
  */
 object NavDeepLinkProvider {
-
     fun permissionsDeepLinkRequest(
         permissionItemName: String,
         permissionItemId: String,
-        permissionsModeName: String
-    ) =
-        NavDeepLinkRequest.Builder
-            .fromUri(
-                Uri.Builder()
-                    .scheme(NAV_DEEP_LINK_SCHEME)
-                    .authority(AUTHORITY_PERMISSIONS)
-                    .appendPath(permissionItemName)
-                    .appendPath(permissionItemId)
-                    .appendQueryParameter(QUERY_PERMISSIONS_MODE, permissionsModeName)
-                    .build()
-            ).build()
+        permissionsModeName: String,
+    ) = NavDeepLinkRequest.Builder
+        .fromUri(
+            Uri
+                .Builder()
+                .scheme(NAV_DEEP_LINK_SCHEME)
+                .authority(AUTHORITY_PERMISSIONS)
+                .appendPath(permissionItemName)
+                .appendPath(permissionItemId)
+                .appendQueryParameter(QUERY_PERMISSIONS_MODE, permissionsModeName)
+                .build(),
+        ).build()
 
     fun locationDetailsDeepLinkRequest(
         locationDetailsItemName: String,
-        locationDetailsItemId: String
-    ) =
-        NavDeepLinkRequest.Builder
-            .fromUri(
-                Uri.Builder()
-                    .scheme(NAV_DEEP_LINK_SCHEME)
-                    .authority(AUTHORITY_LOCATION_DETAILS)
-                    .appendPath(locationDetailsItemName)
-                    .appendPath(locationDetailsItemId)
-                    .build()
-            ).build()
+        locationDetailsItemId: String,
+    ) = NavDeepLinkRequest.Builder
+        .fromUri(
+            Uri
+                .Builder()
+                .scheme(NAV_DEEP_LINK_SCHEME)
+                .authority(AUTHORITY_LOCATION_DETAILS)
+                .appendPath(locationDetailsItemName)
+                .appendPath(locationDetailsItemId)
+                .build(),
+        ).build()
 
     fun folderDetailsDeepLinkRequest(childFolderId: String) =
         NavDeepLinkRequest.Builder
             .fromUri(
-                Uri.Builder()
+                Uri
+                    .Builder()
                     .scheme(NAV_DEEP_LINK_SCHEME)
                     .authority(AUTHORITY_FOLDERS)
                     .path(childFolderId)
-                    .build()
+                    .build(),
             ).build()
 
     fun createFolderDeepLinkRequest(parentFolderId: String?) =
         NavDeepLinkRequest.Builder
             .fromUri(
-                Uri.Builder()
+                Uri
+                    .Builder()
                     .scheme(NAV_DEEP_LINK_SCHEME)
                     .authority(AUTHORITY_CREATE_FOLDER)
                     .apply { parentFolderId?.let { appendQueryParameter(QUERY_PARENT_FOLDER_ID, it) } }
-                    .build()
-            )
-            .build()
+                    .build(),
+            ).build()
 
     fun resourceTagsDeepLinkRequest(
         resourceId: String,
-        permissionsModeName: String
-    ) =
-        NavDeepLinkRequest.Builder
-            .fromUri(
-                Uri.Builder()
-                    .scheme(NAV_DEEP_LINK_SCHEME)
-                    .authority(AUTHORITY_TAGS_DETAILS)
-                    .appendPath(resourceId)
-                    .appendQueryParameter(QUERY_PERMISSIONS_MODE, permissionsModeName)
-                    .build()
-            ).build()
+        permissionsModeName: String,
+    ) = NavDeepLinkRequest.Builder
+        .fromUri(
+            Uri
+                .Builder()
+                .scheme(NAV_DEEP_LINK_SCHEME)
+                .authority(AUTHORITY_TAGS_DETAILS)
+                .appendPath(resourceId)
+                .appendQueryParameter(QUERY_PERMISSIONS_MODE, permissionsModeName)
+                .build(),
+        ).build()
 
     fun resourceResourcePickerDeepLinkRequest(suggestionUri: String?) =
         NavDeepLinkRequest.Builder
             .fromUri(
-                Uri.Builder()
+                Uri
+                    .Builder()
                     .scheme(NAV_DEEP_LINK_SCHEME)
                     .authority(AUTHORITY_RESOURCE_PICKER)
                     .apply {
                         suggestionUri?.let {
                             appendQueryParameter(QUERY_SUGGESTION_URI, suggestionUri)
                         }
-                    }
-                    .build()
+                    }.build(),
             ).build()
 
     private const val NAV_DEEP_LINK_SCHEME = "passbolt"

@@ -27,16 +27,14 @@ import com.passbolt.mobile.android.ui.PasswordExpirySettings
 
 class PasswordExpiryPoliciesInteractor(
     private val fetchPasswordExpirySettingsUseCase: FetchPasswordExpirySettingsUseCase,
-    private val savePasswordExpirySettingsUseCase: SavePasswordExpirySettingsUseCase
+    private val savePasswordExpirySettingsUseCase: SavePasswordExpirySettingsUseCase,
 ) {
-
-    suspend fun fetchAndSavePasswordExpiryPolicies(): Output {
-        return when (val response = fetchPasswordExpirySettingsUseCase.execute(Unit)) {
+    suspend fun fetchAndSavePasswordExpiryPolicies(): Output =
+        when (val response = fetchPasswordExpirySettingsUseCase.execute(Unit)) {
             is FetchPasswordExpirySettingsUseCase.Output.Failure<*> -> Output.Failure
             is FetchPasswordExpirySettingsUseCase.Output.Success ->
                 savePasswordExpirySettingsRules(response.passwordExpirySettings)
         }
-    }
 
     private suspend fun savePasswordExpirySettingsRules(passwordExpirySettings: PasswordExpirySettings): Output {
         savePasswordExpirySettingsUseCase.execute(SavePasswordExpirySettingsUseCase.Input(passwordExpirySettings))
@@ -44,9 +42,8 @@ class PasswordExpiryPoliciesInteractor(
     }
 
     sealed class Output {
-
         data class Success(
-            val passwordExpirySettings: PasswordExpirySettings
+            val passwordExpirySettings: PasswordExpirySettings,
         ) : Output()
 
         data object Failure : Output()

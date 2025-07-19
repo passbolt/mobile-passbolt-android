@@ -38,15 +38,15 @@ import org.mockito.kotlin.mock
 internal val mockGetSelectedUserPrivateKeyUseCase = mock<GetSelectedUserPrivateKeyUseCase>()
 internal val mockOpenPgp = mock<OpenPgp>()
 
-
 @OptIn(ExperimentalCoroutinesApi::class)
-val testKeyInspectorMoreMenuModule = module {
-    factoryOf(::TestCoroutineLaunchContext) bind CoroutineLaunchContext::class
-    factory<KeyInspectorMoreMenuContract.Presenter> {
-        KeyInspectorMoreMenuPresenter(
-            getPrivateKeyUseCase = mockGetSelectedUserPrivateKeyUseCase,
-            openPgp = mockOpenPgp,
-            coroutineLaunchContext = get()
-        )
+val testKeyInspectorMoreMenuModule =
+    module {
+        factoryOf(::TestCoroutineLaunchContext) bind CoroutineLaunchContext::class
+        factory<KeyInspectorMoreMenuContract.Presenter> {
+            KeyInspectorMoreMenuPresenter(
+                getPrivateKeyUseCase = mockGetSelectedUserPrivateKeyUseCase,
+                openPgp = mockOpenPgp,
+                coroutineLaunchContext = get(),
+            )
+        }
     }
-}

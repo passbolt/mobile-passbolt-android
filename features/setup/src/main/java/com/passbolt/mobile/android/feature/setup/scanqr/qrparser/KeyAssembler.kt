@@ -27,9 +27,8 @@ import okio.Buffer
  * @since v1.0
  */
 class KeyAssembler(
-    private val json: Json
+    private val json: Json,
 ) {
-
     fun assemblePrivateKey(contentBytes: Buffer): String {
         val key = String(contentBytes.readByteArray())
 

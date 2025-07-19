@@ -30,31 +30,34 @@ import com.passbolt.mobile.android.ui.ParsedMetadataKeyModel
  */
 class AddLocalMetadataKeysUseCase(
     private val databaseProvider: DatabaseProvider,
-    private val metadataMapper: MetadataMapper
+    private val metadataMapper: MetadataMapper,
 ) : AsyncUseCase<AddLocalMetadataKeysUseCase.Input, Unit>,
     SelectedAccountUseCase {
-
     override suspend fun execute(input: Input) {
-        val metadataKeysDao = databaseProvider
-            .get(selectedAccountId)
-            .metadataKeysDao()
+        val metadataKeysDao =
+            databaseProvider
+                .get(selectedAccountId)
+                .metadataKeysDao()
 
-        val metadataPrivateKeysDao = databaseProvider
-            .get(selectedAccountId)
-            .metadataPrivateKeysDao()
+        val metadataPrivateKeysDao =
+            databaseProvider
+                .get(selectedAccountId)
+                .metadataPrivateKeysDao()
 
         val keys = input.metadataKeys.map { metadataMapper.map(it) }
-        val privateKeys = input.metadataKeys.map { metadataKey ->
-            metadataKey.metadataPrivateKeys.map { privateKey ->
-                metadataMapper.map(privateKey, metadataKey.id.toString())
-            }
-        }.flatten()
+        val privateKeys =
+            input.metadataKeys
+                .map { metadataKey ->
+                    metadataKey.metadataPrivateKeys.map { privateKey ->
+                        metadataMapper.map(privateKey, metadataKey.id.toString())
+                    }
+                }.flatten()
 
         metadataKeysDao.insertAll(keys)
         metadataPrivateKeysDao.insertAll(privateKeys)
     }
 
     data class Input(
-        val metadataKeys: List<ParsedMetadataKeyModel>
+        val metadataKeys: List<ParsedMetadataKeyModel>,
     )
 }

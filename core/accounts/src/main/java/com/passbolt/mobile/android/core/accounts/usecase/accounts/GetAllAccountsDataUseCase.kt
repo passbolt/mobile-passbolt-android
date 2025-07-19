@@ -30,28 +30,28 @@ import com.passbolt.mobile.android.entity.account.Account
 
 class GetAllAccountsDataUseCase(
     private val getAccountDataUseCase: GetAccountDataUseCase,
-    private val getAccountsUseCase: GetAccountsUseCase
+    private val getAccountsUseCase: GetAccountsUseCase,
 ) : UseCase<Unit, GetAllAccountsDataUseCase.Output> {
-
     override fun execute(input: Unit): Output {
-        val accountsData = getAccountsUseCase.execute(Unit).users.map { userId ->
-            val accountData = getAccountDataUseCase.execute(UserIdInput(userId))
-            Account(
-                userId = userId,
-                firstName = accountData.firstName,
-                lastName = accountData.lastName,
-                email = accountData.email,
-                avatarUrl = accountData.avatarUrl,
-                url = accountData.url,
-                serverId = accountData.serverId,
-                label = accountData.label
-            )
-        }
+        val accountsData =
+            getAccountsUseCase.execute(Unit).users.map { userId ->
+                val accountData = getAccountDataUseCase.execute(UserIdInput(userId))
+                Account(
+                    userId = userId,
+                    firstName = accountData.firstName,
+                    lastName = accountData.lastName,
+                    email = accountData.email,
+                    avatarUrl = accountData.avatarUrl,
+                    url = accountData.url,
+                    serverId = accountData.serverId,
+                    label = accountData.label,
+                )
+            }
 
         return Output(accountsData)
     }
 
     data class Output(
-        val accounts: List<Account>
+        val accounts: List<Account>,
     )
 }

@@ -24,37 +24,43 @@
 package com.passbolt.mobile.android.scenarios.setup.autofill
 
 import com.passbolt.mobile.android.feature.autofill.informationprovider.AutofillInformationProvider
+import com.passbolt.mobile.android.feature.autofill.informationprovider.AutofillInformationProvider.ChromeNativeAutofillStatus.NOT_SUPPORTED
 import org.koin.dsl.module
 
+val autofillNotConfiguredModuleTests =
+    module {
+        single<AutofillInformationProvider> {
+            object : AutofillInformationProvider {
+                override fun isAutofillServiceSupported() = true
 
-val autofillNotConfiguredModuleTests = module {
-    single<AutofillInformationProvider> {
-        object : AutofillInformationProvider {
-            override fun isAutofillServiceSupported() = true
+                override fun isPassboltAutofillServiceSet() = false
 
-            override fun isPassboltAutofillServiceSet() = false
+                override fun isAccessibilityOverlayEnabled() = true
 
-            override fun isAccessibilityOverlayEnabled() = true
+                override fun isAccessibilityServiceEnabled() = true
 
-            override fun isAccessibilityServiceEnabled() = true
+                override fun isAccessibilityAutofillSetup() = true
 
-            override fun isAccessibilityAutofillSetup() = true
+                override fun getChromeNativeAutofillStatus() = NOT_SUPPORTED
+            }
         }
     }
-}
 
-val autofillConfiguredModuleTests = module {
-    single<AutofillInformationProvider> {
-        object : AutofillInformationProvider {
-            override fun isAutofillServiceSupported() = true
+val autofillConfiguredModuleTests =
+    module {
+        single<AutofillInformationProvider> {
+            object : AutofillInformationProvider {
+                override fun isAutofillServiceSupported() = true
 
-            override fun isPassboltAutofillServiceSet() = true
+                override fun isPassboltAutofillServiceSet() = true
 
-            override fun isAccessibilityOverlayEnabled() = true
+                override fun isAccessibilityOverlayEnabled() = true
 
-            override fun isAccessibilityServiceEnabled() = true
+                override fun isAccessibilityServiceEnabled() = true
 
-            override fun isAccessibilityAutofillSetup() = true
+                override fun isAccessibilityAutofillSetup() = true
+
+                override fun getChromeNativeAutofillStatus() = NOT_SUPPORTED
+            }
         }
     }
-}

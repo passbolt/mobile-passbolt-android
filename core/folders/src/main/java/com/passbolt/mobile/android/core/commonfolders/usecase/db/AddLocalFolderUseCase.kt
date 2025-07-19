@@ -31,9 +31,8 @@ import com.passbolt.mobile.android.ui.FolderModel
 class AddLocalFolderUseCase(
     private val databaseProvider: DatabaseProvider,
     private val folderModelMapper: FolderModelMapper,
-    private val getSelectedAccountUseCase: GetSelectedAccountUseCase
+    private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
 ) : AsyncUseCase<AddLocalFolderUseCase.Input, Unit> {
-
     override suspend fun execute(input: Input) {
         val currentAccount = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
         databaseProvider
@@ -43,6 +42,6 @@ class AddLocalFolderUseCase(
     }
 
     data class Input(
-        val folder: FolderModel
+        val folder: FolderModel,
     )
 }

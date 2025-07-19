@@ -26,6 +26,5 @@ package com.passbolt.mobile.android.passboltapi.expiry
 import com.passbolt.mobile.android.dto.response.PasswordExpirySettingsDto
 
 interface PasswordExpiryDataSource {
-
     suspend fun getPasswordExpirySettings(): PasswordExpirySettingsDto
 }

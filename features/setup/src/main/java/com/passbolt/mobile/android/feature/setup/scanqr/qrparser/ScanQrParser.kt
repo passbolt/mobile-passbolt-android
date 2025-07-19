@@ -36,14 +36,14 @@ import timber.log.Timber
 class ScanQrParser(
     private val coroutineLaunchContext: CoroutineLaunchContext,
     private val qrScanResultsMapper: QrScanResultsMapper,
-    private val keyAssembler: KeyAssembler
+    private val keyAssembler: KeyAssembler,
 ) {
-
     val parseResultFlow: SharedFlow<ParseResult>
-        get() = _pareResultFlow.asStateFlow()
-    private val _pareResultFlow = MutableStateFlow<ParseResult>(
-        ParseResult.UserResolvableError(ParseResult.UserResolvableError.ErrorType.NO_BARCODES_IN_RANGE)
-    )
+        get() = _parseResultFlow.asStateFlow()
+    private val _parseResultFlow =
+        MutableStateFlow<ParseResult>(
+            ParseResult.UserResolvableError(ParseResult.UserResolvableError.ErrorType.NO_BARCODES_IN_RANGE),
+        )
 
     private val alreadyScannedPages = sortedSetOf<Int>()
     private val isFirstPageScanned
@@ -59,38 +59,38 @@ class ScanQrParser(
                 if (it is ParseResult.PassboltQr.FirstPage) {
                     if (it.isNotScanned()) {
                         processFirstPageData(it)
-                        _pareResultFlow.tryEmit(it)
+                        _parseResultFlow.tryEmit(it)
                     } else {
-                        _pareResultFlow.tryEmit(
+                        _parseResultFlow.tryEmit(
                             ParseResult.ScanFailure(
-                                IllegalStateException("First page has already been scanned. Restart transfer.")
-                            )
+                                IllegalStateException("First page has already been scanned. Restart transfer."),
+                            ),
                         )
                     }
                 } else if (it is ParseResult.PassboltQr.SubsequentPage) {
                     if (isFirstPageScanned) {
                         if (it.isNotScanned()) {
                             processSubsequentPageData(it)
-                            _pareResultFlow.tryEmit(it)
+                            _parseResultFlow.tryEmit(it)
                         }
                     } else {
                         Timber.e("First page was not scanned, but subsequent page received")
-                        _pareResultFlow.tryEmit(
+                        _parseResultFlow.tryEmit(
                             ParseResult.ScanFailure(
                                 IllegalStateException(
                                     "First page was not scanned, " +
-                                            "but subsequent page received. Restart transfer."
-                                )
-                            )
+                                        "but subsequent page received. Restart transfer.",
+                                ),
+                            ),
                         )
                     }
                 } else if (it is ParseResult.PassboltQr.AccountKitPage) {
                     if (it.isNotScanned()) {
                         processAccountKitPageData(it)
-                        _pareResultFlow.tryEmit(it)
+                        _parseResultFlow.tryEmit(it)
                     }
                 } else {
-                    _pareResultFlow.tryEmit(it)
+                    _parseResultFlow.tryEmit(it)
                 }
             }
     }
@@ -99,8 +99,7 @@ class ScanQrParser(
         alreadyScannedPages.add(accountKitPage.reservedBytesDto.page)
     }
 
-    private fun ParseResult.PassboltQr.isNotScanned() =
-        !alreadyScannedPages.contains(this.reservedBytesDto.page)
+    private fun ParseResult.PassboltQr.isNotScanned() = !alreadyScannedPages.contains(this.reservedBytesDto.page)
 
     private suspend fun processFirstPageData(firstPage: ParseResult.PassboltQr.FirstPage) =
         withContext(coroutineLaunchContext.io) {
@@ -116,18 +115,19 @@ class ScanQrParser(
             }
         }
 
-    suspend fun verifyScannedKey() = withContext(coroutineLaunchContext.io) {
-        try {
-            if (scannedBytes.sha512().hex() == hash) {
-                val assembledKey = keyAssembler.assemblePrivateKey(scannedBytes)
-                _pareResultFlow.tryEmit(ParseResult.FinishedWithSuccess(assembledKey))
-            } else {
-                _pareResultFlow.tryEmit(ParseResult.Failure())
+    suspend fun verifyScannedKey() =
+        withContext(coroutineLaunchContext.io) {
+            try {
+                if (scannedBytes.sha512().hex() == hash) {
+                    val assembledKey = keyAssembler.assemblePrivateKey(scannedBytes)
+                    _parseResultFlow.tryEmit(ParseResult.FinishedWithSuccess(assembledKey))
+                } else {
+                    _parseResultFlow.tryEmit(ParseResult.Failure())
+                }
+                scannedBytes.clear()
+            } catch (exception: Exception) {
+                Timber.e(exception, "Error during verifying the key")
+                _parseResultFlow.tryEmit(ParseResult.Failure())
             }
-            scannedBytes.clear()
-        } catch (exception: Exception) {
-            Timber.e(exception, "Error during verifying the key")
-            _pareResultFlow.tryEmit(ParseResult.Failure())
         }
-    }
 }

@@ -11,17 +11,17 @@ import com.passbolt.mobile.android.entity.user.User
             entity = User::class,
             parentColumns = ["id"],
             childColumns = ["userId"],
-            onDelete = ForeignKey.CASCADE
+            onDelete = ForeignKey.CASCADE,
         ),
         ForeignKey(
             entity = UsersGroup::class,
             parentColumns = ["groupId"],
             childColumns = ["groupId"],
-            onDelete = ForeignKey.CASCADE
-        )
-    ]
+            onDelete = ForeignKey.CASCADE,
+        ),
+    ],
 )
 data class UsersAndGroupCrossRef(
     val userId: String,
-    val groupId: String
+    val groupId: String,
 )

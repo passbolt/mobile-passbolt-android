@@ -28,9 +28,8 @@ import java.util.UUID
 
 class ResourceTypeIdToSlugMappingProvider(
     private val resourceTypeIdToSlugMappingUseCase: GetResourceTypeIdToSlugMappingUseCase,
-    private val getSelectedAccountUseCase: GetSelectedAccountUseCase
+    private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
 ) {
-
     private val perAccountMappings = hashMapOf<String, Map<UUID, String>>()
 
     suspend fun provideMappingForSelectedAccount(): Map<UUID, String> {
@@ -43,6 +42,15 @@ class ResourceTypeIdToSlugMappingProvider(
             }
         }
     }
+
+    suspend fun provideMappingForAccount(account: String): Map<UUID, String> =
+        if (perAccountMappings.containsKey(account)) {
+            perAccountMappings[account]!!
+        } else {
+            resourceTypeIdToSlugMappingUseCase.execute(Unit).idToSlugMapping.also {
+                perAccountMappings[account] = it
+            }
+        }
 
     fun invalidateSelectedUserMapping() {
         val selectedAccount = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)

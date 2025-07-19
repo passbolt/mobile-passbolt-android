@@ -25,9 +25,7 @@ import com.scottyab.rootbeer.RootBeer
  * @since v1.0
  */
 class RootDetectorImpl(
-    private val rootBeer: RootBeer
+    private val rootBeer: RootBeer,
 ) : RootDetector {
-
-    override fun isDeviceRooted() =
-        rootBeer.isRooted
+    override fun isDeviceRooted() = rootBeer.isRooted
 }

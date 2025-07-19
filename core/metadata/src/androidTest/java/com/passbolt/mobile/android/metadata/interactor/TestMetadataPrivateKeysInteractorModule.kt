@@ -52,34 +52,35 @@ internal val mockDeleteTrustedMetadataKeyUseCase = mock<DeleteTrustedMetadataKey
 internal val mockGetSelectedAccountDataUseCase = mock<GetSelectedAccountDataUseCase>()
 internal val mockMetadataKeysInteractor = mock<MetadataKeysInteractor>()
 
-val testMetadataPrivateKeysInteractorModule = module {
-    factory { Crypto.pgp() }
-    singleOf(::GopenPgpExceptionParser)
-    factoryOf(::OpenPgp)
-    factoryOf(::Gson)
-    factory {
-        MetadataPrivateKeysHelperInteractor(
-            openPgp = get(),
-            updateMetadataPrivateKeyUseCase = mockUpdateMetadataPrivateKeyUseCase,
-            getLocalUserUseCase = mockGetLocalUserUseCase,
-            saveTrustedMetadataKeyUseCase = mockSaveTrustedMetadataKeyUseCase,
-            getSelectedAccountDataUseCase = mockGetSelectedAccountDataUseCase,
-            deleteTrustedMetadataKeyUseCase = mockDeleteTrustedMetadataKeyUseCase,
-            getSelectedUserPrivateKeyUseCase = mockGetSelectedUserPrivateKeyUseCase,
-            passphraseMemoryCache = mockPassphraseMemoryCache,
-            metadataKeysInteractor = mockMetadataKeysInteractor,
-            gson = get()
-        )
+val testMetadataPrivateKeysInteractorModule =
+    module {
+        factory { Crypto.pgp() }
+        singleOf(::GopenPgpExceptionParser)
+        factoryOf(::OpenPgp)
+        factoryOf(::Gson)
+        factory {
+            MetadataPrivateKeysHelperInteractor(
+                openPgp = get(),
+                updateMetadataPrivateKeyUseCase = mockUpdateMetadataPrivateKeyUseCase,
+                getLocalUserUseCase = mockGetLocalUserUseCase,
+                saveTrustedMetadataKeyUseCase = mockSaveTrustedMetadataKeyUseCase,
+                getSelectedAccountDataUseCase = mockGetSelectedAccountDataUseCase,
+                deleteTrustedMetadataKeyUseCase = mockDeleteTrustedMetadataKeyUseCase,
+                getSelectedUserPrivateKeyUseCase = mockGetSelectedUserPrivateKeyUseCase,
+                passphraseMemoryCache = mockPassphraseMemoryCache,
+                metadataKeysInteractor = mockMetadataKeysInteractor,
+                gson = get(),
+            )
+        }
+        factory {
+            MetadataPrivateKeysInteractor(
+                openPgp = get(),
+                metadataPrivateKeysHelperInteractor = get(),
+                getLocalMetadataKeysUseCase = mockGetLocalMetadataKeysUseCase,
+                getLocalUserUseCase = mockGetLocalUserUseCase,
+                getSelectedUserPrivateKeyUseCase = mockGetSelectedUserPrivateKeyUseCase,
+                passphraseMemoryCache = mockPassphraseMemoryCache,
+                getTrustedMetadataKeyUseCase = mockGetTrustedMetadataKeyUseCase,
+            )
+        }
     }
-    factory {
-        MetadataPrivateKeysInteractor(
-            openPgp = get(),
-            metadataPrivateKeysHelperInteractor = get(),
-            getLocalMetadataKeysUseCase = mockGetLocalMetadataKeysUseCase,
-            getLocalUserUseCase = mockGetLocalUserUseCase,
-            getSelectedUserPrivateKeyUseCase = mockGetSelectedUserPrivateKeyUseCase,
-            passphraseMemoryCache = mockPassphraseMemoryCache,
-            getTrustedMetadataKeyUseCase = mockGetTrustedMetadataKeyUseCase,
-        )
-    }
-}

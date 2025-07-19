@@ -31,5 +31,5 @@ data class CreateFolderResponseDto(
     val parentFolderId: UUID?,
     val name: String,
     val personal: Boolean,
-    val permission: PermissionDto
+    val permission: PermissionDto,
 )

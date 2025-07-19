@@ -32,9 +32,8 @@ import org.koin.core.scope.Scope
  */
 
 abstract class BindingScopedBottomSheetFragment<T : ViewBinding>(
-    viewInflater: (LayoutInflater, ViewGroup?, Boolean) -> T
-) :
-    BindingBottomSheetFragment<T>(viewInflater), AndroidScopeComponent {
-
+    viewInflater: (LayoutInflater, ViewGroup?, Boolean) -> T,
+) : BindingBottomSheetFragment<T>(viewInflater),
+    AndroidScopeComponent {
     override val scope: Scope by fragmentScope(useParentActivityScope = false)
 }

@@ -27,22 +27,23 @@ import retrofit2.converter.gson.GsonConverterFactory
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-val linksApiModule = module {
-    single {
-        RestServiceProvider(
-            client = get(named(DEFAULT_HTTP_CLIENT)),
-            converterFactory = GsonConverterFactory.create()
-        )
+val linksApiModule =
+    module {
+        single {
+            RestServiceProvider(
+                client = get(named(DEFAULT_HTTP_CLIENT)),
+                converterFactory = GsonConverterFactory.create(),
+            )
+        }
+        single {
+            CheckUrlLinksRepository(
+                restServiceProvider = get(),
+                responseHandler = get(),
+            )
+        }
+        single {
+            CheckUrlLinksUseCase(
+                checkUrlLinksRepository = get(),
+            )
+        }
     }
-    single {
-        CheckUrlLinksRepository(
-            restServiceProvider = get(),
-            responseHandler = get()
-        )
-    }
-    single {
-        CheckUrlLinksUseCase(
-            checkUrlLinksRepository = get()
-        )
-    }
-}

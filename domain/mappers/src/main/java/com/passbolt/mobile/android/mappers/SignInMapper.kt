@@ -25,7 +25,8 @@ import com.passbolt.mobile.android.dto.request.SignInRequestDto
  * @since v1.0
  */
 class SignInMapper {
-
-    fun mapRequestToDto(userId: String, challenge: String): SignInRequestDto =
-        SignInRequestDto(userId, challenge)
+    fun mapRequestToDto(
+        userId: String,
+        challenge: String,
+    ): SignInRequestDto = SignInRequestDto(userId, challenge)
 }

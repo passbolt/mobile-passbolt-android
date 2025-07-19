@@ -25,7 +25,7 @@ import com.google.gson.annotations.SerializedName
  * @since v1.0
  */
 data class SignInResponseDto(
-    val challenge: String
+    val challenge: String,
 )
 
 data class ChallengeResponseDto(
@@ -38,5 +38,5 @@ data class ChallengeResponseDto(
     @SerializedName("refresh_token")
     val refreshToken: String,
     @SerializedName("providers")
-    var mfaProviders: List<String>?
+    var mfaProviders: List<String>?,
 )

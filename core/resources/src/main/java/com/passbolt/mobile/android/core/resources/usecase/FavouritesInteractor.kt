@@ -32,20 +32,20 @@ import timber.log.Timber
 class FavouritesInteractor(
     private val addToFavouritesUseCase: AddToFavouritesUseCase,
     private val removeFromFavouritesUseCase: RemoveFromFavouritesUseCase,
-    private val updateLocalResourceUseCase: UpdateLocalResourceUseCase
+    private val updateLocalResourceUseCase: UpdateLocalResourceUseCase,
 ) {
-
     suspend fun addToFavouritesAndUpdateLocal(resource: ResourceModel): Output {
-        val addToFavouritesResult = addToFavouritesUseCase.execute(
-            AddToFavouritesUseCase.Input(resource.resourceId)
-        )
+        val addToFavouritesResult =
+            addToFavouritesUseCase.execute(
+                AddToFavouritesUseCase.Input(resource.resourceId),
+            )
 
         return when (addToFavouritesResult) {
             is AddToFavouritesUseCase.Output.Failure<*> -> {
                 Timber.e(
                     addToFavouritesResult.response.exception,
                     "Error when adding to favourites: %s",
-                    addToFavouritesResult.response.headerMessage
+                    addToFavouritesResult.response.headerMessage,
                 )
                 Output.Failure(addToFavouritesResult.authenticationState)
             }
@@ -56,16 +56,17 @@ class FavouritesInteractor(
 
     suspend fun removeFromFavouritesAndUpdateLocal(resource: ResourceModel): Output {
         require(resource.isFavourite())
-        val removeFromFavouritesResult = removeFromFavouritesUseCase.execute(
-            RemoveFromFavouritesUseCase.Input(resource.favouriteId!!)
-        )
+        val removeFromFavouritesResult =
+            removeFromFavouritesUseCase.execute(
+                RemoveFromFavouritesUseCase.Input(resource.favouriteId!!),
+            )
 
         return when (removeFromFavouritesResult) {
             is RemoveFromFavouritesUseCase.Output.Failure<*> -> {
                 Timber.e(
                     removeFromFavouritesResult.response.exception,
                     "Error when removing from favourites: %s",
-                    removeFromFavouritesResult.response.headerMessage
+                    removeFromFavouritesResult.response.headerMessage,
                 )
                 Output.Failure(removeFromFavouritesResult.authenticationState)
             }
@@ -74,22 +75,26 @@ class FavouritesInteractor(
         }
     }
 
-    private suspend fun updateLocalResourceFavouriteId(favouriteId: String?, resource: ResourceModel): Output {
+    private suspend fun updateLocalResourceFavouriteId(
+        favouriteId: String?,
+        resource: ResourceModel,
+    ): Output {
         updateLocalResourceUseCase.execute(
             UpdateLocalResourceUseCase.Input(
-                resource.copy(favouriteId = favouriteId)
-            )
+                resource.copy(favouriteId = favouriteId),
+            ),
         )
         return Output.Success
     }
 
     sealed class Output : AuthenticatedUseCaseOutput {
-
         data object Success : Output() {
             override val authenticationState: AuthenticationState
                 get() = AuthenticationState.Authenticated
         }
 
-        class Failure(override val authenticationState: AuthenticationState) : Output()
+        class Failure(
+            override val authenticationState: AuthenticationState,
+        ) : Output()
     }
 }

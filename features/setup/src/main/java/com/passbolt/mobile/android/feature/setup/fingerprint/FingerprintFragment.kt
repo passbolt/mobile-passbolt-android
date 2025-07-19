@@ -47,18 +47,21 @@ import com.passbolt.mobile.android.core.localization.R as LocalizationR
  * @since v1.0
  */
 
-class FingerprintFragment : BindingScopedFragment<FragmentFingerprintBinding>(FragmentFingerprintBinding::inflate),
-    FingerprintContract.View, EncourageAutofillServiceDialog.Listener, AutofillEnabledDialog.Listener,
+class FingerprintFragment :
+    BindingScopedFragment<FragmentFingerprintBinding>(FragmentFingerprintBinding::inflate),
+    FingerprintContract.View,
+    EncourageAutofillServiceDialog.Listener,
+    AutofillEnabledDialog.Listener,
     EncourageChromeNativeAutofillServiceDialog.Listener {
-
     private val presenter: FingerprintContract.Presenter by inject()
     private val biometricPromptBuilder: BiometricPrompt.PromptInfo.Builder by inject()
     private val executor: Executor by inject()
-    private val authenticationResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-        if (it.resultCode == Activity.RESULT_OK) {
-            presenter.getPassphraseSucceeded()
+    private val authenticationResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            if (it.resultCode == Activity.RESULT_OK) {
+                presenter.getPassphraseSucceeded()
+            }
         }
-    }
 
     override fun onStart() {
         super.onStart()
@@ -75,20 +78,23 @@ class FingerprintFragment : BindingScopedFragment<FragmentFingerprintBinding>(Fr
         presenter.resume()
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         setListeners()
     }
 
     private fun setListeners() {
-        with(binding) {
+        with(requiredBinding) {
             useFingerprintButton.setDebouncingOnClick { presenter.useFingerprintClick() }
             maybeLaterButton.setDebouncingOnClick { presenter.maybeLaterClick() }
         }
     }
 
     override fun showUseFingerprint() {
-        with(binding) {
+        with(requiredBinding) {
             icon.setImageResource(com.passbolt.mobile.android.core.ui.R.drawable.ic_use_fingerprint)
             title.text = getString(LocalizationR.string.fingerprint_setup_use_title)
             description.text = getString(LocalizationR.string.fingerprint_setup_use_description)
@@ -96,7 +102,7 @@ class FingerprintFragment : BindingScopedFragment<FragmentFingerprintBinding>(Fr
     }
 
     override fun showConfigureFingerprint() {
-        with(binding) {
+        with(requiredBinding) {
             icon.setImageResource(com.passbolt.mobile.android.core.ui.R.drawable.ic_configure_fingerprint)
             title.text = getString(LocalizationR.string.fingerprint_setup_configure_title)
             description.text = getString(LocalizationR.string.fingerprint_setup_configure_description)
@@ -109,12 +115,14 @@ class FingerprintFragment : BindingScopedFragment<FragmentFingerprintBinding>(Fr
 
     override fun showEncourageAutofillDialog() {
         EncourageAutofillServiceDialog().show(
-            childFragmentManager, EncourageAutofillServiceDialog::class.java.name
+            childFragmentManager,
+            EncourageAutofillServiceDialog::class.java.name,
         )
     }
 
     override fun showAutofillEnabledDialog() {
-        AutofillEnabledDialog.newInstance(DialogMode.Setup)
+        AutofillEnabledDialog
+            .newInstance(DialogMode.Setup)
             .show(childFragmentManager, AutofillEnabledDialog::class.java.name)
     }
 
@@ -124,26 +132,32 @@ class FingerprintFragment : BindingScopedFragment<FragmentFingerprintBinding>(Fr
     }
 
     override fun showBiometricPrompt(fingerprintEncryptionCipher: Cipher) {
-        val biometricPrompt = BiometricPrompt(
-            this, executor, SetupBiometricCallback(
-                presenter::authenticationError,
-                presenter::authenticationSucceeded
+        val biometricPrompt =
+            BiometricPrompt(
+                this,
+                executor,
+                SetupBiometricCallback(
+                    presenter::authenticationError,
+                    presenter::authenticationSucceeded,
+                ),
             )
-        )
 
-        val promptInfo = biometricPromptBuilder
-            .setTitle(getString(LocalizationR.string.fingerprint_setup_biometric_title))
-            .setSubtitle(getString(LocalizationR.string.fingerprint_setup_biometric_subtitle))
-            .setNegativeButtonText(getString(LocalizationR.string.cancel))
-            .setAllowedAuthenticators(BIOMETRIC_STRONG)
-            .build()
+        val promptInfo =
+            biometricPromptBuilder
+                .setTitle(getString(LocalizationR.string.fingerprint_setup_biometric_title))
+                .setSubtitle(getString(LocalizationR.string.fingerprint_setup_biometric_subtitle))
+                .setNegativeButtonText(getString(LocalizationR.string.cancel))
+                .setAllowedAuthenticators(BIOMETRIC_STRONG)
+                .build()
         biometricPrompt.authenticate(promptInfo, BiometricPrompt.CryptoObject(fingerprintEncryptionCipher))
     }
 
-    override fun showAuthenticationError(@StringRes errorMessage: Int) {
+    override fun showAuthenticationError(
+        @StringRes errorMessage: Int,
+    ) {
         showSnackbar(
             errorMessage,
-            backgroundColor = com.passbolt.mobile.android.core.ui.R.color.red
+            backgroundColor = com.passbolt.mobile.android.core.ui.R.color.red,
         )
     }
 
@@ -163,20 +177,21 @@ class FingerprintFragment : BindingScopedFragment<FragmentFingerprintBinding>(Fr
         authenticationResult.launch(
             ActivityIntents.authentication(
                 requireContext(),
-                ActivityIntents.AuthConfig.Setup
-            )
+                ActivityIntents.AuthConfig.Setup,
+            ),
         )
     }
 
     override fun showGenericError() {
         showSnackbar(
             LocalizationR.string.common_failure,
-            backgroundColor = com.passbolt.mobile.android.core.ui.R.color.red
+            backgroundColor = com.passbolt.mobile.android.core.ui.R.color.red,
         )
     }
 
     override fun showKeyChangesDetected() {
-        AlertDialog.Builder(requireContext())
+        AlertDialog
+            .Builder(requireContext())
             .setTitle(LocalizationR.string.fingerprint_biometric_changed_title)
             .setTitle(LocalizationR.string.fingerprint_authenticate_again)
             .setPositiveButton(LocalizationR.string.got_it) { _, _ -> presenter.keyChangesInfoConfirmClick() }
@@ -187,7 +202,7 @@ class FingerprintFragment : BindingScopedFragment<FragmentFingerprintBinding>(Fr
     override fun showEncourageChromeNativeAutofillDialog() {
         EncourageChromeNativeAutofillServiceDialog().show(
             childFragmentManager,
-            EncourageChromeNativeAutofillServiceDialog::class.java.name
+            EncourageChromeNativeAutofillServiceDialog::class.java.name,
         )
     }
 

@@ -29,10 +29,12 @@ import kotlin.time.Duration
  * @since v1.0
  */
 
-fun timerFlow(repeatTimes: Long, delayMillis: Long) =
-    (0 until repeatTimes)
-        .asFlow()
-        .onEach { delay(delayMillis) }
+fun timerFlow(
+    repeatTimes: Long,
+    delayMillis: Long,
+) = (0 until repeatTimes)
+    .asFlow()
+    .onEach { delay(delayMillis) }
 
 fun infiniteTimer(tickDuration: Duration) =
     flow {

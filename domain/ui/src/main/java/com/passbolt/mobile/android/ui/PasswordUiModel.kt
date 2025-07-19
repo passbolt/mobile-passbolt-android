@@ -30,5 +30,5 @@ import kotlinx.parcelize.Parcelize
 data class PasswordUiModel(
     val password: String,
     val mainUri: String,
-    val username: String
+    val username: String,
 ) : Parcelable

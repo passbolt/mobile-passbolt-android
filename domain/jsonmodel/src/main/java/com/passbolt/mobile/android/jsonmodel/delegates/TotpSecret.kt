@@ -7,5 +7,5 @@ data class TotpSecret(
     @SerializedName("secret_key")
     val key: String,
     val digits: Int,
-    val period: Long
+    val period: Long,
 )

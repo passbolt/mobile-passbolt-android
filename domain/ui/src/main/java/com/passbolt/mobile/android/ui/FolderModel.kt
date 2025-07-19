@@ -31,7 +31,7 @@ data class FolderModel(
     val name: String,
     val isShared: Boolean,
     val permission: ResourcePermission,
-    override val searchCriteria: String = name
+    override val searchCriteria: String = name,
 ) : Searchable
 
 data class FolderWithCountAndPath(
@@ -42,10 +42,10 @@ data class FolderWithCountAndPath(
     val isShared: Boolean,
     val subItemsCount: Int,
     val path: String?,
-    override val searchCriteria: String = name
+    override val searchCriteria: String = name,
 ) : Searchable
 
 data class FolderModelWithAttributes(
     val folderModel: FolderModel,
-    val folderPermissions: List<PermissionModel>
+    val folderPermissions: List<PermissionModel>,
 )

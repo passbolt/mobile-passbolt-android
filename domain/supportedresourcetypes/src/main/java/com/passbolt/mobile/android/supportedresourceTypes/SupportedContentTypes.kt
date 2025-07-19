@@ -41,14 +41,23 @@ private const val V5_DEFAULT_SLUG = "v5-default"
 private const val V5_DEFAULT_WITH_TOTP = "v5-default-with-totp"
 private const val V5_PASSWORD_STRING_SLUG = "v5-password-string"
 
-sealed class ContentType(val slug: String) {
+sealed class ContentType(
+    val slug: String,
+) {
     data object PasswordString : ContentType(PASSWORD_STRING_SLUG)
+
     data object PasswordAndDescription : ContentType(PASSWORD_AND_DESCRIPTION_SLUG)
+
     data object Totp : ContentType(TOTP_SLUG)
+
     data object PasswordDescriptionTotp : ContentType(PASSWORD_DESCRIPTION_TOTP_SLUG)
+
     data object V5TotpStandalone : ContentType(V5_TOTP_STANDALONE_SLUG)
+
     data object V5Default : ContentType(V5_DEFAULT_SLUG)
+
     data object V5DefaultWithTotp : ContentType(V5_DEFAULT_WITH_TOTP)
+
     data object V5PasswordString : ContentType(V5_PASSWORD_STRING_SLUG)
 
     fun isSimplePassword() = this == PasswordString || this == V5PasswordString
@@ -57,40 +66,48 @@ sealed class ContentType(val slug: String) {
 
     fun isV4() = this.slug in SupportedContentTypes.v4Slugs
 
-    fun hasTotp() = this in setOf(
-        Totp,
-        PasswordDescriptionTotp,
-        V5TotpStandalone,
-        V5DefaultWithTotp
-    )
+    fun hasTotp() =
+        this in
+            setOf(
+                Totp,
+                PasswordDescriptionTotp,
+                V5TotpStandalone,
+                V5DefaultWithTotp,
+            )
 
-    fun hasNote() = this in setOf(
-        PasswordAndDescription,
-        PasswordDescriptionTotp,
-        V5Default,
-        V5DefaultWithTotp
-    )
+    fun hasNote() =
+        this in
+            setOf(
+                PasswordAndDescription,
+                PasswordDescriptionTotp,
+                V5Default,
+                V5DefaultWithTotp,
+            )
 
-    fun hasMetadataDescription() = this in setOf(
-        PasswordString,
-        V5PasswordString,
-        V5Default,
-        V5DefaultWithTotp,
-        V5TotpStandalone
-    )
+    fun hasMetadataDescription() =
+        this in
+            setOf(
+                PasswordString,
+                V5PasswordString,
+                V5Default,
+                V5DefaultWithTotp,
+                V5TotpStandalone,
+            )
 
-    fun hasPassword() = this in setOf(
-        PasswordString,
-        PasswordAndDescription,
-        PasswordDescriptionTotp,
-        V5Default,
-        V5DefaultWithTotp,
-        V5PasswordString
-    )
+    fun hasPassword() =
+        this in
+            setOf(
+                PasswordString,
+                PasswordAndDescription,
+                PasswordDescriptionTotp,
+                V5Default,
+                V5DefaultWithTotp,
+                V5PasswordString,
+            )
 
     companion object {
-        fun fromSlug(slug: String): ContentType {
-            return when (slug) {
+        fun fromSlug(slug: String): ContentType =
+            when (slug) {
                 PASSWORD_STRING_SLUG -> PasswordString
                 PASSWORD_AND_DESCRIPTION_SLUG -> PasswordAndDescription
                 TOTP_SLUG -> Totp
@@ -101,54 +118,57 @@ sealed class ContentType(val slug: String) {
                 V5_PASSWORD_STRING_SLUG -> V5PasswordString
                 else -> throw IllegalArgumentException("Unsupported content type slug: $slug")
             }
-        }
     }
 }
 
 object SupportedContentTypes {
+    val homeSlugs =
+        setOf(
+            PasswordString,
+            PasswordAndDescription,
+            PasswordDescriptionTotp,
+            V5PasswordString,
+            V5Default,
+            V5DefaultWithTotp,
+            Totp,
+            PasswordDescriptionTotp,
+            V5TotpStandalone,
+            V5DefaultWithTotp,
+        ).map { it.slug }.toSet()
 
-    val homeSlugs = setOf(
-        PasswordString,
-        PasswordAndDescription,
-        PasswordDescriptionTotp,
-        V5PasswordString,
-        V5Default,
-        V5DefaultWithTotp,
-        Totp,
-        PasswordDescriptionTotp,
-        V5TotpStandalone,
-        V5DefaultWithTotp
-    ).map { it.slug }.toSet()
-
-    val totpSlugs = setOf(
-        Totp,
-        PasswordDescriptionTotp,
-        V5TotpStandalone,
-        V5DefaultWithTotp
-    ).map { it.slug }.toSet()
+    val totpSlugs =
+        setOf(
+            Totp,
+            PasswordDescriptionTotp,
+            V5TotpStandalone,
+            V5DefaultWithTotp,
+        ).map { it.slug }.toSet()
 
     val allSlugs = homeSlugs + totpSlugs
 
-    val v4Slugs = setOf(
-        PasswordString,
-        PasswordAndDescription,
-        PasswordDescriptionTotp,
-        Totp
-    ).map { it.slug }.toSet()
+    val v4Slugs =
+        setOf(
+            PasswordString,
+            PasswordAndDescription,
+            PasswordDescriptionTotp,
+            Totp,
+        ).map { it.slug }.toSet()
 
-    val v5Slugs = setOf(
-        V5Default,
-        V5PasswordString,
-        V5DefaultWithTotp,
-        V5TotpStandalone
-    ).map { it.slug }.toSet()
+    val v5Slugs =
+        setOf(
+            V5Default,
+            V5PasswordString,
+            V5DefaultWithTotp,
+            V5TotpStandalone,
+        ).map { it.slug }.toSet()
 
-    val resourcesSlugsSupportingExpiry = setOf(
-        PasswordString,
-        PasswordAndDescription,
-        PasswordDescriptionTotp,
-        V5PasswordString,
-        V5Default,
-        V5DefaultWithTotp
-    )
+    val resourcesSlugsSupportingExpiry =
+        setOf(
+            PasswordString,
+            PasswordAndDescription,
+            PasswordDescriptionTotp,
+            V5PasswordString,
+            V5Default,
+            V5DefaultWithTotp,
+        )
 }

@@ -35,16 +35,20 @@ import com.passbolt.mobile.android.ui.GroupWithCount
  * @since v1.0
  */
 class GroupWithCountItem(
-    val groupWithCount: GroupWithCount
+    val groupWithCount: GroupWithCount,
 ) : AbstractBindingItem<ItemGroupWithCountBinding>() {
-
     override val type: Int
         get() = R.id.itemGroup
 
-    override fun createBinding(inflater: LayoutInflater, parent: ViewGroup?): ItemGroupWithCountBinding =
-        ItemGroupWithCountBinding.inflate(inflater, parent, false)
+    override fun createBinding(
+        inflater: LayoutInflater,
+        parent: ViewGroup?,
+    ): ItemGroupWithCountBinding = ItemGroupWithCountBinding.inflate(inflater, parent, false)
 
-    override fun bindView(binding: ItemGroupWithCountBinding, payloads: List<Any>) {
+    override fun bindView(
+        binding: ItemGroupWithCountBinding,
+        payloads: List<Any>,
+    ) {
         super.bindView(binding, payloads)
         with(binding) {
             name.text = groupWithCount.groupName
@@ -53,20 +57,18 @@ class GroupWithCountItem(
     }
 
     class ItemClick(
-        private val clickListener: (GroupWithCount) -> Unit
+        private val clickListener: (GroupWithCount) -> Unit,
     ) : ClickEventHook<GroupWithCountItem>() {
-
-        override fun onBind(viewHolder: RecyclerView.ViewHolder): View? {
-            return viewHolder.asBinding<ItemGroupWithCountBinding> {
+        override fun onBind(viewHolder: RecyclerView.ViewHolder): View? =
+            viewHolder.asBinding<ItemGroupWithCountBinding> {
                 it.itemGroup
             }
-        }
 
         override fun onClick(
             v: View,
             position: Int,
             fastAdapter: FastAdapter<GroupWithCountItem>,
-            item: GroupWithCountItem
+            item: GroupWithCountItem,
         ) {
             clickListener.invoke(item.groupWithCount)
         }

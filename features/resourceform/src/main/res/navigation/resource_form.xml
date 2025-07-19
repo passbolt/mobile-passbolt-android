@@ -52,7 +52,25 @@
             app:popExitAnim="@anim/slide_out_right" />
         <action
             android:id="@+id/action_resourceFormFragment_to_passwordFormFragment"
-            app:destination="@id/passwordFormFragment" />
+            app:destination="@id/passwordFormFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_resourceFormFragment_to_additionalUrisFormFragment"
+            app:destination="@id/additionalUrisFormFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_resourceFormFragment_to_appearanceFormComposeFragment"
+            app:destination="@id/appearanceFormComposeFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
 
     <fragment
@@ -136,14 +154,37 @@
         app:popExitAnim="@anim/slide_out_right">
         <argument
             android:name="parentFolderId"
+            android:defaultValue="@null"
             app:argType="string"
-            app:nullable="true"
-            android:defaultValue="@null"/>
+            app:nullable="true" />
         <argument
             android:name="scanOtpMode"
             app:argType="com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpMode" />
     </action>
 
     <include app:graph="@navigation/scan_otp" />
+    <fragment
+        android:id="@+id/additionalUrisFormFragment"
+        android:name="com.passbolt.mobile.android.feature.resourceform.metadata.additionaluris.AdditionalUrisFormFragment"
+        android:label="AdditionalUrisFormFragment"
+        tools:layout="@layout/fragment_additional_uris_form">
+        <argument
+            android:name="mode"
+            app:argType="com.passbolt.mobile.android.ui.ResourceFormMode" />
+        <argument
+            android:name="additionalUris"
+            app:argType="com.passbolt.mobile.android.ui.AdditionalUrisUiModel" />
+    </fragment>
+    <fragment
+        android:id="@+id/appearanceFormComposeFragment"
+        android:name="com.passbolt.mobile.android.feature.resourceform.metadata.appearance.AppearanceFormComposeFragment"
+        android:label="AppearanceFormComposeFragment">
+        <argument
+            android:name="mode"
+            app:argType="com.passbolt.mobile.android.ui.ResourceFormMode" />
+        <argument
+            android:name="appearanceModel"
+            app:argType="com.passbolt.mobile.android.ui.ResourceAppearanceModel" />
+    </fragment>
 
 </navigation>

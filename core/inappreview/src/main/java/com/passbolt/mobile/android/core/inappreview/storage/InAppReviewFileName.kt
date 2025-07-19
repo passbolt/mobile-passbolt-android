@@ -23,8 +23,9 @@ package com.passbolt.mobile.android.core.inappreview.storage
  * @since v1.0
  */
 
-class InAppReviewFileName(userId: String) {
-
+class InAppReviewFileName(
+    userId: String,
+) {
     val name = IN_APP_REVIEW_FILE_NAME_FORMAT.format(userId)
 
     private companion object {

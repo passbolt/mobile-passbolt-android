@@ -18,7 +18,6 @@ dependencies {
     implementation libs.retrofit.gsonconverter
     implementation libs.koin
     implementation libs.gson
-    implementation libs.coil.core
 }
 
 android {

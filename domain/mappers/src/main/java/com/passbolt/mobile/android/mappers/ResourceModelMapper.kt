@@ -40,56 +40,59 @@ import java.time.ZonedDateTime
  * @since v1.0
  */
 class ResourceModelMapper(
-    private val permissionsModelMapper: PermissionsModelMapper
+    private val permissionsModelMapper: PermissionsModelMapper,
 ) {
-
-    fun map(resource: ResourceResponseDto): ResourceModel = when (resource) {
-        is ResourceResponseV4Dto -> {
-            ResourceModel(
-                resourceId = resource.id.toString(),
-                resourceTypeId = resource.resourceTypeId.toString(),
-                folderId = resource.resourceFolderId?.toString(),
-                permission = permissionsModelMapper.map(resource.permission.type),
-                favouriteId = resource.favorite?.id?.toString(),
-                modified = ZonedDateTime.parse(resource.modified),
-                expiry = resource.expired?.let { ZonedDateTime.parse(it) },
-                metadataJsonModel = getV5Metadata(resource),
-                metadataKeyId = null,
-                metadataKeyType = null
-            )
+    fun map(resource: ResourceResponseDto): ResourceModel =
+        when (resource) {
+            is ResourceResponseV4Dto -> {
+                ResourceModel(
+                    resourceId = resource.id.toString(),
+                    resourceTypeId = resource.resourceTypeId.toString(),
+                    folderId = resource.resourceFolderId?.toString(),
+                    permission = permissionsModelMapper.map(resource.permission.type),
+                    favouriteId = resource.favorite?.id?.toString(),
+                    modified = ZonedDateTime.parse(resource.modified),
+                    expiry = resource.expired?.let { ZonedDateTime.parse(it) },
+                    metadataJsonModel = getV5Metadata(resource),
+                    metadataKeyId = null,
+                    metadataKeyType = null,
+                )
+            }
+            is ResourceResponseV5Dto -> {
+                ResourceModel(
+                    resourceId = resource.id.toString(),
+                    resourceTypeId = resource.resourceTypeId.toString(),
+                    folderId = resource.resourceFolderId?.toString(),
+                    permission = permissionsModelMapper.map(resource.permission.type),
+                    favouriteId = resource.favorite?.id?.toString(),
+                    modified = ZonedDateTime.parse(resource.modified),
+                    expiry = resource.expired?.let { ZonedDateTime.parse(it) },
+                    metadataJsonModel = MetadataJsonModel(resource.metadata),
+                    metadataKeyId = resource.metadataKeyId.toString(),
+                    metadataKeyType = map(resource.metadataKeyType),
+                )
+            }
         }
-        is ResourceResponseV5Dto -> {
-            ResourceModel(
-                resourceId = resource.id.toString(),
-                resourceTypeId = resource.resourceTypeId.toString(),
-                folderId = resource.resourceFolderId?.toString(),
-                permission = permissionsModelMapper.map(resource.permission.type),
-                favouriteId = resource.favorite?.id?.toString(),
-                modified = ZonedDateTime.parse(resource.modified),
-                expiry = resource.expired?.let { ZonedDateTime.parse(it) },
-                metadataJsonModel = MetadataJsonModel(resource.metadata),
-                metadataKeyId = resource.metadataKeyId.toString(),
-                metadataKeyType = map(resource.metadataKeyType)
-            )
+
+    private fun map(metadataKeyTypeDto: MetadataKeyTypeDto) =
+        when (metadataKeyTypeDto) {
+            SHARED -> MetadataKeyTypeModel.SHARED
+            PERSONAL -> MetadataKeyTypeModel.PERSONAL
         }
-    }
 
-    private fun map(metadataKeyTypeDto: MetadataKeyTypeDto) = when (metadataKeyTypeDto) {
-        SHARED -> MetadataKeyTypeModel.SHARED
-        PERSONAL -> MetadataKeyTypeModel.PERSONAL
-    }
+    private fun map(metadataKeyTypeModel: MetadataKeyTypeModel?) =
+        when (metadataKeyTypeModel) {
+            MetadataKeyTypeModel.SHARED -> MetadataKeyType.SHARED
+            MetadataKeyTypeModel.PERSONAL -> MetadataKeyType.PERSONAL
+            null -> null
+        }
 
-    private fun map(metadataKeyTypeModel: MetadataKeyTypeModel?) = when (metadataKeyTypeModel) {
-        MetadataKeyTypeModel.SHARED -> MetadataKeyType.SHARED
-        MetadataKeyTypeModel.PERSONAL -> MetadataKeyType.PERSONAL
-        null -> null
-    }
-
-    private fun map(metadataKeyType: MetadataKeyType?) = when (metadataKeyType) {
-        MetadataKeyType.SHARED -> MetadataKeyTypeModel.SHARED
-        MetadataKeyType.PERSONAL -> MetadataKeyTypeModel.PERSONAL
-        null -> null
-    }
+    private fun map(metadataKeyType: MetadataKeyType?) =
+        when (metadataKeyType) {
+            MetadataKeyType.SHARED -> MetadataKeyTypeModel.SHARED
+            MetadataKeyType.PERSONAL -> MetadataKeyTypeModel.PERSONAL
+            null -> null
+        }
 
     fun map(resourceModel: ResourceModel): Resource =
         Resource(
@@ -101,7 +104,7 @@ class ResourceModelMapper(
             modified = resourceModel.modified,
             expiry = resourceModel.expiry,
             metadataKeyId = resourceModel.metadataKeyId,
-            metadataKeyType = map(resourceModel.metadataKeyType)
+            metadataKeyType = map(resourceModel.metadataKeyType),
         )
 
     fun mapResourceMetadata(resourceModel: ResourceModel): ResourceMetadata =
@@ -110,12 +113,13 @@ class ResourceModelMapper(
             metadataJson = requireNotNull(resourceModel.metadataJsonModel.json),
             name = resourceModel.metadataJsonModel.name,
             username = resourceModel.metadataJsonModel.username,
-            description = resourceModel.metadataJsonModel.description
+            description = resourceModel.metadataJsonModel.description,
         )
 
-    fun mapResourceUri(resourceModel: ResourceModel) = resourceModel.metadataJsonModel.uri?.let {
-        ResourceUri(resourceId = resourceModel.resourceId, uri = it)
-    }
+    fun mapResourceUri(resourceModel: ResourceModel) =
+        resourceModel.metadataJsonModel.uri?.let {
+            ResourceUri(resourceId = resourceModel.resourceId, uri = it)
+        }
 
     fun map(resourceEntity: ResourceWithMetadata): ResourceModel =
         ResourceModel(
@@ -128,16 +132,17 @@ class ResourceModelMapper(
             expiry = resourceEntity.expiry,
             metadataJsonModel = MetadataJsonModel(resourceEntity.metadataJson),
             metadataKeyId = resourceEntity.metadataKeyId,
-            metadataKeyType = map(resourceEntity.metadataKeyType)
+            metadataKeyType = map(resourceEntity.metadataKeyType),
         )
 
     private fun getV5Metadata(resourceModel: ResourceResponseV4Dto) =
         MetadataJsonModel(
-            JsonObject().apply {
-                addProperty("name", resourceModel.name)
-                addProperty("username", resourceModel.username)
-                addProperty("description", resourceModel.description)
-                addProperty("uri", resourceModel.uri)
-            }.toString()
+            JsonObject()
+                .apply {
+                    addProperty("name", resourceModel.name)
+                    addProperty("username", resourceModel.username)
+                    addProperty("description", resourceModel.description)
+                    addProperty("uri", resourceModel.uri)
+                }.toString(),
         )
 }

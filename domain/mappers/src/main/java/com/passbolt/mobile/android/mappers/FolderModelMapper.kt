@@ -30,23 +30,23 @@ import com.passbolt.mobile.android.ui.FolderWithCountAndPath
  * @since v1.0
  */
 class FolderModelMapper(
-    private val permissionsModelMapper: PermissionsModelMapper
+    private val permissionsModelMapper: PermissionsModelMapper,
 ) {
-
     fun map(folder: FolderResponseDto): FolderModelWithAttributes {
         val currentUserPermission = folder.permission
-        val otherUsersPermissions = folder.permissions.filter { folderPermission ->
-            folderPermission.aroForeignKey != currentUserPermission.aroForeignKey
-        }
+        val otherUsersPermissions =
+            folder.permissions.filter { folderPermission ->
+                folderPermission.aroForeignKey != currentUserPermission.aroForeignKey
+            }
         return FolderModelWithAttributes(
             FolderModel(
                 folderId = folder.id.toString(),
                 parentFolderId = folder.folderParentId?.toString(),
                 name = folder.name.orEmpty(),
                 isShared = otherUsersPermissions.isNotEmpty(),
-                permission = permissionsModelMapper.map(folder.permission.type)
+                permission = permissionsModelMapper.map(folder.permission.type),
             ),
-            folder.permissions.map(permissionsModelMapper::map)
+            folder.permissions.map(permissionsModelMapper::map),
         )
     }
 
@@ -56,7 +56,7 @@ class FolderModelMapper(
             name = folderModel.name,
             permission = permissionsModelMapper.map(folderModel.permission),
             parentId = folderModel.parentFolderId,
-            isShared = folderModel.isShared
+            isShared = folderModel.isShared,
         )
 
     fun map(folderEntity: Folder): FolderModel =
@@ -65,7 +65,7 @@ class FolderModelMapper(
             name = folderEntity.name,
             parentFolderId = folderEntity.parentId,
             isShared = folderEntity.isShared,
-            permission = permissionsModelMapper.map(folderEntity.permission)
+            permission = permissionsModelMapper.map(folderEntity.permission),
         )
 
     fun map(folderWithChildItemsCountAndPath: FolderWithChildItemsCountAndPath) =
@@ -76,6 +76,6 @@ class FolderModelMapper(
             parentId = folderWithChildItemsCountAndPath.parentId,
             isShared = folderWithChildItemsCountAndPath.isShared,
             subItemsCount = folderWithChildItemsCountAndPath.childItemsCount,
-            path = folderWithChildItemsCountAndPath.path
+            path = folderWithChildItemsCountAndPath.path,
         )
 }

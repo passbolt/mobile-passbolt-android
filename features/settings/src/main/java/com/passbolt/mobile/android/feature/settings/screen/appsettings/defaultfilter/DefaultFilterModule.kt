@@ -1,11 +1,7 @@
 package com.passbolt.mobile.android.feature.settings.screen.appsettings.defaultfilter
 
-import com.mikepenz.fastadapter.FastAdapter
-import com.mikepenz.fastadapter.adapters.ItemAdapter
-import com.passbolt.mobile.android.feature.settings.screen.appsettings.defaultfilter.recycler.DefaultFilterItem
+import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.core.module.Module
-import org.koin.core.module.dsl.scopedOf
-import org.koin.dsl.bind
 
 /**
  * Passbolt - Open source password manager for teams
@@ -31,16 +27,5 @@ import org.koin.dsl.bind
  */
 
 fun Module.defaultFilterModule() {
-    scope<DefaultFilterFragment> {
-        scopedOf(::DefaultFilterPresenter) bind DefaultFilterContract.Presenter::class
-
-        scoped<ItemAdapter<DefaultFilterItem>> {
-            ItemAdapter.items()
-        }
-        scoped {
-            FastAdapter.with(
-                get<ItemAdapter<DefaultFilterItem>>()
-            )
-        }
-    }
+    viewModelOf(::DefaultFilterViewModel)
 }

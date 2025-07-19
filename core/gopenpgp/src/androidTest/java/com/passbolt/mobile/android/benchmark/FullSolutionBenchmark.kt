@@ -46,30 +46,31 @@ import java.util.UUID
  */
 
 class FullSolutionBenchmark : KoinTest {
-
     private val gson: Gson by inject()
     private lateinit var gracePrivateKey: String
     private lateinit var gracePublicKey: String
     private val cache = hashMapOf<UUID, String>()
 
     @get:Rule
-    val koinTestRule = KoinTestRule.create {
-        printLogger(Level.ERROR)
-        modules(module {
-            factory { Crypto.pgp() }
-            single { GopenPgpExceptionParser() }
-            single { OpenPgp(gopenPgpExceptionParser = get(), pgpHandle = get()) }
-            single {
-                GsonBuilder()
-                    .apply {
-                        strictTypeAdapters.forEach {
-                            registerTypeAdapter(it.key, it.value)
-                        }
+    val koinTestRule =
+        KoinTestRule.create {
+            printLogger(Level.ERROR)
+            modules(
+                module {
+                    factory { Crypto.pgp() }
+                    single { GopenPgpExceptionParser() }
+                    single { OpenPgp(gopenPgpExceptionParser = get(), pgpHandle = get()) }
+                    single {
+                        GsonBuilder()
+                            .apply {
+                                strictTypeAdapters.forEach {
+                                    registerTypeAdapter(it.key, it.value)
+                                }
+                            }.create()
                     }
-                    .create()
-            }
-        })
-    }
+                },
+            )
+        }
 
     @Before
     fun setup() {
@@ -111,15 +112,20 @@ class FullSolutionBenchmark : KoinTest {
     private fun generateSessionKey() = Crypto.generateSessionKeyAlgo(SESSION_KEY_ALGO)
 
     @OptIn(ExperimentalStdlibApi::class)
-    private fun encryptWithSessionKey(sessionKeyHex: String, message: ByteArray): ByteArray {
+    private fun encryptWithSessionKey(
+        sessionKeyHex: String,
+        message: ByteArray,
+    ): ByteArray {
         val pgpHandle: PGPHandle by inject()
 
-        val sessionKey = Crypto.newSessionKeyFromToken(
-            sessionKeyHex.hexToByteArray(),
-            SESSION_KEY_ALGO
-        )
+        val sessionKey =
+            Crypto.newSessionKeyFromToken(
+                sessionKeyHex.hexToByteArray(),
+                SESSION_KEY_ALGO,
+            )
 
-        return pgpHandle.encryption()
+        return pgpHandle
+            .encryption()
             .sessionKey(sessionKey)
             .new_()
             .encrypt(message)
@@ -127,14 +133,19 @@ class FullSolutionBenchmark : KoinTest {
     }
 
     @OptIn(ExperimentalStdlibApi::class)
-    private fun decryptWithSessionKey(sessionKeyHex: String, message: ByteArray): ByteArray {
+    private fun decryptWithSessionKey(
+        sessionKeyHex: String,
+        message: ByteArray,
+    ): ByteArray {
         val pgpHandle: PGPHandle by inject()
 
-        val sessionKey = Crypto.newSessionKeyFromToken(
-            sessionKeyHex.hexToByteArray(),
-            SESSION_KEY_ALGO
-        )
-        return pgpHandle.decryption()
+        val sessionKey =
+            Crypto.newSessionKeyFromToken(
+                sessionKeyHex.hexToByteArray(),
+                SESSION_KEY_ALGO,
+            )
+        return pgpHandle
+            .decryption()
             .sessionKey(sessionKey)
             .new_()
             .decrypt(message, Crypto.Auto)
@@ -146,34 +157,37 @@ class FullSolutionBenchmark : KoinTest {
         val pgpHandle: PGPHandle by inject()
         val gracePk = Crypto.newKeyFromArmored(gracePublicKey)
 
-        val (result, duration) = measureDurationForResult {
-            list.map { resource ->
-                // create a session key
-                val sessionKey = generateSessionKey()
+        val (result, duration) =
+            measureDurationForResult {
+                list.map { resource ->
+                    // create a session key
+                    val sessionKey = generateSessionKey()
 
-                // encrypt session key with a public key - PESK
-                val encryptedSessionKey = pgpHandle
-                    .encryption()
-                    .recipient(gracePk)
-                    .new_()
-                    .encryptSessionKey(sessionKey)
+                    // encrypt session key with a public key - PESK
+                    val encryptedSessionKey =
+                        pgpHandle
+                            .encryption()
+                            .recipient(gracePk)
+                            .new_()
+                            .encryptSessionKey(sessionKey)
 
-                // encrypt message with session key - SEPID
-                val encryptedMetadata = encryptWithSessionKey(
-                    sessionKey.key.toHexString(),
-                    resource.metadata.toByteArray()
-                )
+                    // encrypt message with session key - SEPID
+                    val encryptedMetadata =
+                        encryptWithSessionKey(
+                            sessionKey.key.toHexString(),
+                            resource.metadata.toByteArray(),
+                        )
 
-                // cache session key for future decryption
-                cache[resource.id] = sessionKey.key.toHexString()
+                    // cache session key for future decryption
+                    cache[resource.id] = sessionKey.key.toHexString()
 
-                // create split message with message packet and key packet
-                val splitMessage = Crypto.newPGPSplitMessage(encryptedSessionKey, encryptedMetadata)
-                val splitMessageArmored = splitMessage.armor()
+                    // create split message with message packet and key packet
+                    val splitMessage = Crypto.newPGPSplitMessage(encryptedSessionKey, encryptedMetadata)
+                    val splitMessageArmored = splitMessage.armor()
 
-                resource.copy(metadata = splitMessageArmored)
+                    resource.copy(metadata = splitMessageArmored)
+                }
             }
-        }
 
         println("encryptResourceV5ListPESK for ${list.size} resources took: $duration ms")
 
@@ -183,64 +197,71 @@ class FullSolutionBenchmark : KoinTest {
     @OptIn(ExperimentalStdlibApi::class)
     private fun decryptResourceV5ListPESK(list: List<ResourceV5>): List<ResourceV5> {
         val pgpHandle: PGPHandle by inject()
-        val gracePrivate = Crypto.newPrivateKeyFromArmored(
-            gracePrivateKey,
-            "grace@passbolt.com".toByteArray()
-        )
-        val decryptionHandle = pgpHandle.decryption()
-            .decryptionKey(gracePrivate)
-            .new_()
+        val gracePrivate =
+            Crypto.newPrivateKeyFromArmored(
+                gracePrivateKey,
+                "grace@passbolt.com".toByteArray(),
+            )
+        val decryptionHandle =
+            pgpHandle
+                .decryption()
+                .decryptionKey(gracePrivate)
+                .new_()
 
-        val (result, duration) = measureDurationForResult {
-            list.map { resource ->
-                val pgpMessage = Crypto.newPGPMessageFromArmored(resource.metadata)
+        val (result, duration) =
+            measureDurationForResult {
+                list.map { resource ->
+                    val pgpMessage = Crypto.newPGPMessageFromArmored(resource.metadata)
 
-                // get from cache if present, otherwise decrypt session key
-                val decryptedSessionKey: String = cache[resource.id] ?: let {
-                    decryptionHandle.decryptSessionKey(pgpMessage.bytes()).key.toHexString()
+                    // get from cache if present, otherwise decrypt session key
+                    val decryptedSessionKey: String =
+                        cache[resource.id] ?: let {
+                            decryptionHandle.decryptSessionKey(pgpMessage.bytes()).key.toHexString()
+                        }
+
+                    // decrypt message with session key
+                    val decryptedMessage =
+                        decryptWithSessionKey(
+                            decryptedSessionKey,
+                            pgpMessage.dataPacket,
+                        )
+
+                    val metadataString = String(decryptedMessage)
+                    val parsedMetadata = gson.fromJson(metadataString.reader(), ResourceV5Metadata::class.java)
+                    resource.copy(metadata = metadataString)
                 }
-
-                // decrypt message with session key
-                val decryptedMessage = decryptWithSessionKey(
-                    decryptedSessionKey,
-                    pgpMessage.dataPacket
-                )
-
-                val metadataString = String(decryptedMessage)
-                val parsedMetadata = gson.fromJson(metadataString.reader(), ResourceV5Metadata::class.java)
-                resource.copy(metadata = metadataString)
             }
-        }
 
         println("decryptResourceV5ListPESK for ${list.size} resources took: $duration ms")
 
         return result
     }
 
-    private fun generateV5Resources(count: Int) = (0 until count).map {
-        ResourceV5(
-            UUID.randomUUID(),
-            UUID.randomUUID(),
-            UUID.randomUUID(),
-            gson.toJson(
-                ResourceV5Metadata(
-                    "PASSBOLT_METADATA_V5",
-                    "name",
-                    "username",
-                    listOf("uri", "uri2", "uri3"),
-                    mapOf("jsonPath" to "xPath", "jsonPath2" to "xPath2", "jsonPath3" to "xPath3"),
-                    listOf(
-                        ResourceV5CustomField(UUID.randomUUID(), "key", "type"),
-                        ResourceV5CustomField(UUID.randomUUID(), "key", "type"),
-                        ResourceV5CustomField(UUID.randomUUID(), "key", "type"),
+    private fun generateV5Resources(count: Int) =
+        (0 until count).map {
+            ResourceV5(
+                UUID.randomUUID(),
+                UUID.randomUUID(),
+                UUID.randomUUID(),
+                gson.toJson(
+                    ResourceV5Metadata(
+                        "PASSBOLT_METADATA_V5",
+                        "name",
+                        "username",
+                        listOf("uri", "uri2", "uri3"),
+                        mapOf("jsonPath" to "xPath", "jsonPath2" to "xPath2", "jsonPath3" to "xPath3"),
+                        listOf(
+                            ResourceV5CustomField(UUID.randomUUID(), "key", "type"),
+                            ResourceV5CustomField(UUID.randomUUID(), "key", "type"),
+                            ResourceV5CustomField(UUID.randomUUID(), "key", "type"),
+                        ),
+                        ResourceV5Icon("type", "value"),
                     ),
-                    ResourceV5Icon("type", "value")
-                )
-            ),
-            "modified",
-            "expired"
-        )
-    }
+                ),
+                "modified",
+                "expired",
+            )
+        }
 
     private companion object {
         private const val SESSION_KEY_ALGO = AES256

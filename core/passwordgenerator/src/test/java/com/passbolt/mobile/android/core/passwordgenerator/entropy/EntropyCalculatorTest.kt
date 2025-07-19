@@ -38,50 +38,58 @@ import org.koin.test.KoinTest
 import org.koin.test.KoinTestRule
 import org.koin.test.inject
 
-
 class EntropyCalculatorTest : KoinTest {
-
     @ExperimentalCoroutinesApi
     @get:Rule
-    val koinTestRule = KoinTestRule.create {
-        printLogger(Level.ERROR)
-        modules(passwordGeneratorTestModule)
-    }
+    val koinTestRule =
+        KoinTestRule.create {
+            printLogger(Level.ERROR)
+            modules(passwordGeneratorTestModule)
+        }
 
     private val entropyCalculator: EntropyCalculator by inject()
 
     @Test
-    fun `test password entropy for short string generated from short character set`() = runTest {
-        val alphabetSet = setOf("A", "B", "C").map { CodepointSet("label", "name", it.toCodepoints()) }.toSet()
-        val result = entropyCalculator.getPasswordEntropy("ABC".toCodepoints(), alphabetSet)
-        assertEquals(result, 4.75, 0.1)
-    }
+    fun `test password entropy for short string generated from short character set`() =
+        runTest {
+            val alphabetSet = setOf("A", "B", "C").map { CodepointSet("label", "name", it.toCodepoints()) }.toSet()
+            val result = entropyCalculator.getPasswordEntropy("ABC".toCodepoints(), alphabetSet)
+            assertEquals(result, 4.75, 0.1)
+        }
 
     @Test
-    fun `test password entropy for short string generated from all characters`() = runTest {
-        val alphabetSet = Alphabets.all.values.toSet()
-        val result = entropyCalculator.getPasswordEntropy("ABC".toCodepoints(), alphabetSet)
+    fun `test password entropy for short string generated from all characters`() =
+        runTest {
+            val alphabetSet = Alphabets.all.values.toSet()
+            val result = entropyCalculator.getPasswordEntropy("ABC".toCodepoints(), alphabetSet)
 
-        assertEquals(result, 14.1, 0.1)
-    }
-
-    @Test
-    fun `test password entropy for long string with all available characters`() = runTest {
-        val alphabetSet = Alphabets.all.values.toSet()
-        val result = entropyCalculator.getPasswordEntropy(
-            "###\"@L./Jfc^J&7{1cIs_W172Bir5qm\"b:Lkd%3oY.\\!]X#j(gi;B<Y\"'SWOPX')_KGMZO.[/3:P!ibyJa?x\$gN#\$dT~QOXF?.y9^AH?[teQDbkGsBTs[-ZQ8au/~@+ag\$uFJ9D72uew?i!q!*J01[w:``_g\"###".toCodepoints(),
-            alphabetSet
-        )
-
-        assertEquals(result, 1046.0, 1.0)
-    }
+            assertEquals(result, 14.1, 0.1)
+        }
 
     @Test
-    fun `test password entropy for string only unknown characters should be undefined`() = runTest {
-        val alphabetSet = Alphabets.all.values.toSet()
-        val result = entropyCalculator.getPasswordEntropy("ㄸㅉ삼공육ㄴㅌ오ㅡㅎㅁㅣ이ㄲ륙삼ㅁㅇㅋ육ㄱ팔삼".toCodepoints(), alphabetSet)
-        assertThat(result).isEqualTo(Double.NEGATIVE_INFINITY)
-    }
+    fun `test password entropy for long string with all available characters`() =
+        runTest {
+            val alphabetSet = Alphabets.all.values.toSet()
+            val result =
+                entropyCalculator.getPasswordEntropy(
+                    (
+                        "###\"@L./Jfc^J&7{1cIs_W172Bir5qm\"b:Lkd%3oY.\\!]X#j(gi;B<Y\"'SWOPX'" +
+                            ")_KGMZO.[/3:P!ibyJa?x\$gN#\$dT~QOXF?.y9^AH?[teQDbkGsBTs" +
+                            "[-ZQ8au/~@+ag\$uFJ9D72uew?i!q!*J01[w:``_g\"###"
+                    ).toCodepoints(),
+                    alphabetSet,
+                )
+
+            assertEquals(result, 1046.0, 1.0)
+        }
+
+    @Test
+    fun `test password entropy for string only unknown characters should be undefined`() =
+        runTest {
+            val alphabetSet = Alphabets.all.values.toSet()
+            val result = entropyCalculator.getPasswordEntropy("ㄸㅉ삼공육ㄴㅌ오ㅡㅎㅁㅣ이ㄲ륙삼ㅁㅇㅋ육ㄱ팔삼".toCodepoints(), alphabetSet)
+            assertThat(result).isEqualTo(Double.NEGATIVE_INFINITY)
+        }
 
     @Test
     fun `test password entropy for string with mixed unknown and known characters should be greater than with only known characters`() =
@@ -95,33 +103,37 @@ class EntropyCalculatorTest : KoinTest {
         }
 
     @Test
-    fun `adding unknown characters to password should increase entropy`() = runTest {
-        val alphabetSet = Alphabets.all.values.toSet()
+    fun `adding unknown characters to password should increase entropy`() =
+        runTest {
+            val alphabetSet = Alphabets.all.values.toSet()
 
-        val result1 = entropyCalculator.getPasswordEntropy("ABC일".toCodepoints(), alphabetSet)
-        val result2 = entropyCalculator.getPasswordEntropy("ABC일일".toCodepoints(), alphabetSet)
+            val result1 = entropyCalculator.getPasswordEntropy("ABC일".toCodepoints(), alphabetSet)
+            val result2 = entropyCalculator.getPasswordEntropy("ABC일일".toCodepoints(), alphabetSet)
 
-        assertThat(result2).isGreaterThan(result1)
-    }
-
-    @Test
-    fun `test passphrase entropy for sample data`() = runTest {
-        val result = entropyCalculator.getPassphraseEntropy(9, "; ")
-
-        assertEquals(result, 135.23, 0.01)
-    }
+            assertThat(result2).isGreaterThan(result1)
+        }
 
     @Test
-    fun `test passphrase entropy with no separator`() = runTest {
-        val result = entropyCalculator.getPassphraseEntropy(9, "")
+    fun `test passphrase entropy for sample data`() =
+        runTest {
+            val result = entropyCalculator.getPassphraseEntropy(9, "; ")
 
-        assertEquals(result, 130.59, 0.01)
-    }
+            assertEquals(result, 135.23, 0.01)
+        }
 
     @Test
-    fun `test passphrase entropy with only unknown chars separator should not be undefined`() = runTest {
-        val result = entropyCalculator.getPassphraseEntropy(9, " ")
+    fun `test passphrase entropy with no separator`() =
+        runTest {
+            val result = entropyCalculator.getPassphraseEntropy(9, "")
 
-        assertThat(result).isGreaterThan(0.0)
-    }
+            assertEquals(result, 130.59, 0.01)
+        }
+
+    @Test
+    fun `test passphrase entropy with only unknown chars separator should not be undefined`() =
+        runTest {
+            val result = entropyCalculator.getPassphraseEntropy(9, " ")
+
+            assertThat(result).isGreaterThan(0.0)
+        }
 }

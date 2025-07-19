@@ -26,28 +26,44 @@ import retrofit2.Response
  * @since v1.0
  */
 class CookieExtractor {
+    fun get(
+        response: Response<*>,
+        cookieName: String,
+    ): String? =
+        response
+            .headers()
+            .values(SET_COOKIE_HEADER)
+            .find { it.contains(cookieName) }
+            ?.split(COOKIES_DELIMITER)
+            ?.firstOrNull()
 
-    fun get(response: Response<*>, cookieName: String): String? =
-        response.headers().values(SET_COOKIE_HEADER)
-            .find { it.contains(cookieName) }?.split(COOKIES_DELIMITER)?.firstOrNull()
+    fun get(
+        cookies: List<Cookie>,
+        cookieName: String,
+    ): Cookie? = cookies.find { it.name.contains(cookieName) }
 
-    fun get(cookies: List<Cookie>, cookieName: String): Cookie? =
-        cookies.find { it.name.contains(cookieName) }
+    fun get(
+        response: okhttp3.Response,
+        cookieName: String,
+    ): String? =
+        response
+            .headers(SET_COOKIE_HEADER)
+            .find { it.contains(cookieName) }
+            ?.split(COOKIES_DELIMITER)
+            ?.firstOrNull()
 
-    fun get(response: okhttp3.Response, cookieName: String): String? =
-        response.headers(SET_COOKIE_HEADER)
-            .find { it.contains(cookieName) }?.split(COOKIES_DELIMITER)?.firstOrNull()
-
-    fun getCookieValue(response: Response<*>, cookieName: String) =
-        get(response, cookieName)
-            ?.split(COOKIE_VALUE_DELIMITER)
-            ?.let {
-                if (it.size == 2) {
-                    it[SPLIT_COOKIE_VALUE_INDEX].trim()
-                } else {
-                    null
-                }
+    fun getCookieValue(
+        response: Response<*>,
+        cookieName: String,
+    ) = get(response, cookieName)
+        ?.split(COOKIE_VALUE_DELIMITER)
+        ?.let {
+            if (it.size == 2) {
+                it[SPLIT_COOKIE_VALUE_INDEX].trim()
+            } else {
+                null
             }
+        }
 
     companion object {
         const val MFA_COOKIE = "passbolt_mfa"

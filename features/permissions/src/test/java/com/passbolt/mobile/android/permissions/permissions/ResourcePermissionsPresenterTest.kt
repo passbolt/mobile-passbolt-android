@@ -1,3 +1,26 @@
+/**
+ * Passbolt - Open source password manager for teams
+ * Copyright (c) 2021 Passbolt SA
+ *
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
+ * Public License (AGPL) as published by the Free Software Foundation version 3.
+ *
+ * The name "Passbolt" is a registered trademark of Passbolt SA, and Passbolt SA hereby declines to grant a trademark
+ * license to "Passbolt" pursuant to the GNU Affero General Public License version 3 Section 7(e), without a separate
+ * agreement with Passbolt SA.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License along with this program. If not,
+ * see GNU Affero General Public License v3 (http://www.gnu.org/licenses/agpl-3.0.html).
+ *
+ * @copyright Copyright (c) Passbolt SA (https://www.passbolt.com)
+ * @license https://opensource.org/licenses/AGPL-3.0 AGPL License
+ * @link https://www.passbolt.com Passbolt (tm)
+ * @since v1.0
+ */
+
 package com.passbolt.mobile.android.permissions.permissions
 
 import com.google.common.truth.Truth.assertThat
@@ -35,71 +58,51 @@ import org.mockito.kotlin.whenever
 import java.time.ZonedDateTime
 import java.util.UUID
 
-/**
- * Passbolt - Open source password manager for teams
- * Copyright (c) 2021 Passbolt SA
- *
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
- * Public License (AGPL) as published by the Free Software Foundation version 3.
- *
- * The name "Passbolt" is a registered trademark of Passbolt SA, and Passbolt SA hereby declines to grant a trademark
- * license to "Passbolt" pursuant to the GNU Affero General Public License version 3 Section 7(e), without a separate
- * agreement with Passbolt SA.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License along with this program. If not,
- * see GNU Affero General Public License v3 (http://www.gnu.org/licenses/agpl-3.0.html).
- *
- * @copyright Copyright (c) Passbolt SA (https://www.passbolt.com)
- * @license https://opensource.org/licenses/AGPL-3.0 AGPL License
- * @link https://www.passbolt.com Passbolt (tm)
- * @since v1.0
- */
 // TODO add folder permissions tests
 class ResourcePermissionsPresenterTest : KoinTest {
-
     private val presenter: PermissionsContract.Presenter by inject()
     private val view: PermissionsContract.View = mock()
     private val mockFullDataRefreshExecutor: FullDataRefreshExecutor by inject()
 
     @ExperimentalCoroutinesApi
     @get:Rule
-    val koinTestRule = KoinTestRule.create {
-        printLogger(Level.ERROR)
-        modules(testResourcePermissionsModule, validSessionTestModule)
-    }
+    val koinTestRule =
+        KoinTestRule.create {
+            printLogger(Level.ERROR)
+            modules(testResourcePermissionsModule, validSessionTestModule)
+        }
 
     @Before
     fun setup() {
-        resourceModel = ResourceModel(
-            resourceId = RESOURCE_ID,
-            resourceTypeId = RESOURCE_TYPE_ID.toString(),
-            folderId = FOLDER_ID_ID.toString(),
-            permission = ResourcePermission.READ,
-            favouriteId = null,
-            modified = ZonedDateTime.now(),
-            expiry = null,
-            metadataJsonModel = MetadataJsonModel(
-                """
-                    {
-                        "name": "$NAME",
-                        "uri": "$URL",
-                        "username": "$USERNAME",
-                        "description": "$DESCRIPTION"
-                    }
-                """.trimIndent()
-            ),
-            metadataKeyId = null,
-            metadataKeyType = null
-        )
+        resourceModel =
+            ResourceModel(
+                resourceId = RESOURCE_ID,
+                resourceTypeId = RESOURCE_TYPE_ID.toString(),
+                folderId = FOLDER_ID_ID.toString(),
+                permission = ResourcePermission.READ,
+                favouriteId = null,
+                modified = ZonedDateTime.now(),
+                expiry = null,
+                metadataJsonModel =
+                    MetadataJsonModel(
+                        """
+                        {
+                            "name": "$NAME",
+                            "uri": "$URL",
+                            "username": "$USERNAME",
+                            "description": "$DESCRIPTION"
+                        }
+                        """.trimIndent(),
+                    ),
+                metadataKeyId = null,
+                metadataKeyType = null,
+            )
         mockGetLocalResourceUseCase.stub {
             onBlocking { execute(GetLocalResourceUseCase.Input(RESOURCE_ID)) }
                 .doReturn(GetLocalResourceUseCase.Output(resourceModel))
         }
         whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
-            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
+            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success)),
         )
         presenter.attach(view)
     }
@@ -208,9 +211,12 @@ class ResourcePermissionsPresenterTest : KoinTest {
 
         presenter.argsReceived(PermissionsItem.RESOURCE, RESOURCE_ID, PermissionsMode.VIEW)
         presenter.resume(view)
-        val modifiedPermission = PermissionModelUi.UserPermissionModel(
-            ResourcePermission.OWNER, "permId", USER_PERMISSIONS[0].user.copy()
-        )
+        val modifiedPermission =
+            PermissionModelUi.UserPermissionModel(
+                ResourcePermission.OWNER,
+                "permId",
+                USER_PERMISSIONS[0].user.copy(),
+            )
         presenter.userPermissionModified(modifiedPermission)
 
         argumentCaptor<List<PermissionModelUi>>().apply {
@@ -232,9 +238,12 @@ class ResourcePermissionsPresenterTest : KoinTest {
 
         presenter.argsReceived(PermissionsItem.RESOURCE, RESOURCE_ID, PermissionsMode.VIEW)
         presenter.resume(view)
-        val modifiedPermission = PermissionModelUi.GroupPermissionModel(
-            ResourcePermission.OWNER, "permId", GROUP_PERMISSIONS[0].group.copy()
-        )
+        val modifiedPermission =
+            PermissionModelUi.GroupPermissionModel(
+                ResourcePermission.OWNER,
+                "permId",
+                GROUP_PERMISSIONS[0].group.copy(),
+            )
         presenter.groupPermissionModified(modifiedPermission)
 
         argumentCaptor<List<PermissionModelUi>>().apply {
@@ -250,7 +259,7 @@ class ResourcePermissionsPresenterTest : KoinTest {
     fun `view should set result and go back after share success`() {
         mockResourceUpdateActionsInteractor.stub {
             onBlocking { reEncryptResourceMetadata() }.doReturn(
-                flowOf(ResourceUpdateActionResult.Success("", ""))
+                flowOf(ResourceUpdateActionResult.Success("", "")),
             )
         }
         val mockPermissions = GROUP_PERMISSIONS + USER_PERMISSIONS[0].copy(permission = ResourcePermission.OWNER)
@@ -268,7 +277,7 @@ class ResourcePermissionsPresenterTest : KoinTest {
         }
         mockResourceTypeIdToSlugMappingProvider.stub {
             onBlocking { provideMappingForSelectedAccount() }.doReturn(
-                mapOf(RESOURCE_TYPE_ID to ContentType.PasswordAndDescription.slug)
+                mapOf(RESOURCE_TYPE_ID to ContentType.PasswordAndDescription.slug),
             )
         }
 
@@ -284,27 +293,30 @@ class ResourcePermissionsPresenterTest : KoinTest {
 
     private companion object {
         private const val RESOURCE_ID = "resid"
-        private val GROUP_PERMISSIONS = listOf(
-            PermissionModelUi.GroupPermissionModel(
-                permission = ResourcePermission.READ,
-                permissionId = "groupPermId",
-                group = GroupModel(groupId = "groupId", groupName = "groupname")
+        private val GROUP_PERMISSIONS =
+            listOf(
+                PermissionModelUi.GroupPermissionModel(
+                    permission = ResourcePermission.READ,
+                    permissionId = "groupPermId",
+                    group = GroupModel(groupId = "groupId", groupName = "groupname"),
+                ),
             )
-        )
-        private val USER_PERMISSIONS = listOf(
-            PermissionModelUi.UserPermissionModel(
-                permission = ResourcePermission.READ,
-                permissionId = "userPermId",
-                user = UserWithAvatar(
-                    userId = "userId",
-                    firstName = "first",
-                    lastName = "last",
-                    userName = "userName",
-                    isDisabled = false,
-                    avatarUrl = "avartUrl"
-                )
+        private val USER_PERMISSIONS =
+            listOf(
+                PermissionModelUi.UserPermissionModel(
+                    permission = ResourcePermission.READ,
+                    permissionId = "userPermId",
+                    user =
+                        UserWithAvatar(
+                            userId = "userId",
+                            firstName = "first",
+                            lastName = "last",
+                            userName = "userName",
+                            isDisabled = false,
+                            avatarUrl = "avartUrl",
+                        ),
+                ),
             )
-        )
 
         private const val NAME = "name"
         private const val USERNAME = "username"

@@ -30,7 +30,6 @@ import com.passbolt.mobile.android.entity.user.ResourceAndUsersCrossRef
  */
 @Dao
 interface ResourcesAndUsersCrossRefDao : BaseDao<ResourceAndUsersCrossRef> {
-
     @Transaction
     @Query("DELETE FROM ResourceAndUsersCrossRef")
     suspend fun deleteAll()

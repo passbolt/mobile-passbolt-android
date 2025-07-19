@@ -23,8 +23,9 @@ package com.passbolt.mobile.android.core.accounts.usecase
  * @since v1.0
  */
 
-class SessionFileName(userId: String) {
-
+class SessionFileName(
+    userId: String,
+) {
     val name = SESSION_FILE_NAME_FORMAT.format(userId)
 
     private companion object {

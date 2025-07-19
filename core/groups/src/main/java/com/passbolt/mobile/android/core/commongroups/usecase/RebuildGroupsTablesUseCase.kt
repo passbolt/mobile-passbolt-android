@@ -10,9 +10,8 @@ import com.passbolt.mobile.android.ui.GroupModelWithUsers
 class RebuildGroupsTablesUseCase(
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
     private val removeLocalGroupsUseCase: RemoveLocalGroupsUseCase,
-    private val addLocalGroupsUseCase: AddLocalGroupsUseCase
+    private val addLocalGroupsUseCase: AddLocalGroupsUseCase,
 ) : AsyncUseCase<RebuildGroupsTablesUseCase.Input, Unit> {
-
     override suspend fun execute(input: Input) {
         val selectedAccount = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
         removeLocalGroupsUseCase.execute(UserIdInput(selectedAccount))
@@ -20,6 +19,6 @@ class RebuildGroupsTablesUseCase(
     }
 
     class Input(
-        val groups: List<GroupModelWithUsers>
+        val groups: List<GroupModelWithUsers>,
     )
 }

@@ -28,42 +28,43 @@ import kotlinx.parcelize.Parcelize
  */
 sealed class PermissionModel(
     val permission: ResourcePermission,
-    val permissionId: String
+    val permissionId: String,
 ) {
-
     class UserPermissionModel(
         permission: ResourcePermission,
         permissionId: String,
-        val userId: String
+        val userId: String,
     ) : PermissionModel(permission, permissionId)
 
     class GroupPermissionModel(
         permission: ResourcePermission,
         permissionId: String,
-        val group: GroupModel
+        val group: GroupModel,
     ) : PermissionModel(permission, permissionId)
 }
 
 sealed class PermissionModelUi(
     open val permission: ResourcePermission,
-    open val permissionId: String
-) : Searchable, Parcelable {
-
+    open val permissionId: String,
+) : Searchable,
+    Parcelable {
     @Parcelize
     data class UserPermissionModel(
         override val permission: ResourcePermission,
         override val permissionId: String,
         val user: UserWithAvatar,
-        override val searchCriteria: String = user.searchCriteria
-    ) : PermissionModelUi(permission, permissionId), Parcelable
+        override val searchCriteria: String = user.searchCriteria,
+    ) : PermissionModelUi(permission, permissionId),
+        Parcelable
 
     @Parcelize
     data class GroupPermissionModel(
         override val permission: ResourcePermission,
         override val permissionId: String,
         val group: GroupModel,
-        override val searchCriteria: String = group.searchCriteria
-    ) : PermissionModelUi(permission, permissionId), Parcelable
+        override val searchCriteria: String = group.searchCriteria,
+    ) : PermissionModelUi(permission, permissionId),
+        Parcelable
 }
 
 @Parcelize
@@ -74,9 +75,9 @@ data class UserWithAvatar(
     val userName: String,
     val isDisabled: Boolean,
     val avatarUrl: String?,
-    override val searchCriteria: String = "$userName$firstName$lastName"
-) : Searchable, Parcelable {
-
+    override val searchCriteria: String = "$userName$firstName$lastName",
+) : Searchable,
+    Parcelable {
     val fullName: String
         get() = "$firstName $lastName"
 }

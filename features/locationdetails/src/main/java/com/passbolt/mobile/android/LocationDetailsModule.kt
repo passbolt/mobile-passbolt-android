@@ -26,6 +26,7 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-val locationDetailsModule = module {
-    locationDetailsModule()
-}
+val locationDetailsModule =
+    module {
+        locationDetailsModule()
+    }

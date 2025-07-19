@@ -64,23 +64,27 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
 @RunWith(AndroidJUnit4::class)
 @LargeTest
 class SetupConfigureBiometricUnavailableTest : KoinTest {
+    @get:Rule
+    val startActivityRule =
+        lazyActivityScenarioRule<SetUpActivity>(
+            koinOverrideModules =
+                listOf(
+                    instrumentationTestsModule,
+                    biometricSetupUnavailableModuleTests,
+                ),
+            intentSupplier = {
+                managedAccountIntentCreator.createIntent(
+                    InstrumentationRegistry.getInstrumentation().targetContext,
+                )
+            },
+        )
 
     @get:Rule
-    val startActivityRule = lazyActivityScenarioRule<SetUpActivity>(koinOverrideModules = listOf(
-        instrumentationTestsModule,
-        biometricSetupUnavailableModuleTests
-    ),
-        intentSupplier = {
-            managedAccountIntentCreator.createIntent(
-                InstrumentationRegistry.getInstrumentation().targetContext
-            )
-        })
-
-    @get:Rule
-    val idlingResourceRule = let {
-        val signInIdlingResource: SignInIdlingResource by inject()
-        IdlingResourceRule(arrayOf(signInIdlingResource))
-    }
+    val idlingResourceRule =
+        let {
+            val signInIdlingResource: SignInIdlingResource by inject()
+            IdlingResourceRule(arrayOf(signInIdlingResource))
+        }
 
     @get:Rule
     val permissionRule: GrantPermissionRule = GrantPermissionRule.grant(android.Manifest.permission.CAMERA)
@@ -102,8 +106,8 @@ class SetupConfigureBiometricUnavailableTest : KoinTest {
         accountDataCleaner.clearAccountData()
     }
 
-    @Test
     // https://passbolt.testrail.io/index.php?/cases/view/2358
+    @Test
     fun asAMobileUserIHaveAnOptionToConfigureBiometricsOnTheDevice() {
         //    Given     I don't have biometrics configured on my device
         //    And       I am on the Passphrase screen
@@ -121,8 +125,8 @@ class SetupConfigureBiometricUnavailableTest : KoinTest {
         onView(withId(R.id.maybeLaterButton)).check(matches(isDisplayed()))
     }
 
-    @Test
     // https://passbolt.testrail.io/index.php?/cases/view/2359
+    @Test
     fun asAMobileUserICanConfigureBiometricsToUseItOnTheDevice() {
         Intents.init()
 
@@ -133,17 +137,18 @@ class SetupConfigureBiometricUnavailableTest : KoinTest {
         //    When      I click on Configure {biometrics provider} button
         onView(withId(R.id.useFingerprintButton)).perform(click())
         //    Then      I am taken to the phone security settings / OS-specific process where I can complete the biometric setup
-        val expectedIntent: Matcher<Intent> = AllOf.allOf(
-            IntentMatchers.hasAction(Settings.ACTION_SETTINGS),
-        )
+        val expectedIntent: Matcher<Intent> =
+            AllOf.allOf(
+                IntentMatchers.hasAction(Settings.ACTION_SETTINGS),
+            )
         Intents.intended(expectedIntent)
         //    And       I can go back to the application
 
         Intents.release()
     }
 
-    @Test
     // https://passbolt.testrail.io/index.php?/cases/view/2360
+    @Test
     fun asAMobileUserIShouldBeAbleToSkipTheBiometricsConfiguration() {
         //    Given     I don't have biometrics configured on my device
         //    And       I am on the Configure {biometrics provider} screen

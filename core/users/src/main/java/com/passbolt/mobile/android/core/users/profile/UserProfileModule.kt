@@ -28,14 +28,14 @@ fun Module.userProfileModule() {
     single {
         FetchUserProfileUseCase(
             usersRepository = get(),
-            userProfileMapper = get()
+            userProfileMapper = get(),
         )
     }
     single {
         UserProfileInteractor(
             fetchUserProfileUseCase = get(),
             updateAccountDataUseCase = get(),
-            getSelectedAccountUseCase = get()
+            getSelectedAccountUseCase = get(),
         )
     }
 }

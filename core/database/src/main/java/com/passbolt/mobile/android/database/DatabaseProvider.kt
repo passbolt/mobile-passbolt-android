@@ -52,9 +52,8 @@ import kotlin.coroutines.suspendCoroutine
 class DatabaseProvider(
     private val getResourcesDatabasePassphraseUseCase: GetResourcesDatabasePassphraseUseCase,
     private val context: Context,
-    private val messageDigestHash: MessageDigestHash
+    private val messageDigestHash: MessageDigestHash,
 ) {
-
     @Volatile
     private var instance: HashMap<String, ResourceDatabase?> = hashMapOf()
 
@@ -66,18 +65,33 @@ class DatabaseProvider(
         }
         val passphrase = getResourcesDatabasePassphraseUseCase.execute(Unit).passphrase
         val factory = SupportOpenHelperFactory(passphrase.toByteArray(StandardCharsets.UTF_8))
-        val newInstance = Room.databaseBuilder(
-            context,
-            ResourceDatabase::class.java, "${currentUser}_$RESOURCE_DATABASE_NAME"
-        )
-            .addMigrations(
-                Migration1to2, Migration2to3, Migration3to4, Migration4to5, Migration5to6,
-                Migration6to7, Migration7to8, Migration8to9, Migration9to10, Migration10to11,
-                Migration11to12, Migration12to13, Migration13to14, Migration14to15, Migration15to16,
-                Migration16to17, Migration17to18, Migration18to19
-            )
-            .openHelperFactory(factory)
-            .build()
+        val newInstance =
+            Room
+                .databaseBuilder(
+                    context,
+                    ResourceDatabase::class.java,
+                    "${currentUser}_$RESOURCE_DATABASE_NAME",
+                ).addMigrations(
+                    Migration1to2,
+                    Migration2to3,
+                    Migration3to4,
+                    Migration4to5,
+                    Migration5to6,
+                    Migration6to7,
+                    Migration7to8,
+                    Migration8to9,
+                    Migration9to10,
+                    Migration10to11,
+                    Migration11to12,
+                    Migration12to13,
+                    Migration13to14,
+                    Migration14to15,
+                    Migration15to16,
+                    Migration16to17,
+                    Migration17to18,
+                    Migration18to19,
+                ).openHelperFactory(factory)
+                .build()
 
         instance[currentUser] = newInstance
         return newInstance

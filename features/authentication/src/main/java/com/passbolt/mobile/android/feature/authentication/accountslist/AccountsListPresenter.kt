@@ -47,9 +47,8 @@ class AccountsListPresenter(
     private val signOutUseCase: SignOutUseCase,
     private val saveCurrentApiUrlUseCase: SaveCurrentApiUrlUseCase,
     private val databaseProvider: DatabaseProvider,
-    coroutineLaunchContext: CoroutineLaunchContext
+    coroutineLaunchContext: CoroutineLaunchContext,
 ) : AccountsListContract.Presenter {
-
     override var view: AccountsListContract.View? = null
     private val job = SupervisorJob()
     private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
@@ -68,10 +67,11 @@ class AccountsListPresenter(
 
     private fun displayAccounts() {
         val selectedAccount = getSelectedAccountUseCase.execute(Unit).selectedAccount
-        accounts = accountModelMapper.map(
-            getAllAccountsDataUseCase.execute(Unit).accounts,
-            selectedAccount
-        )
+        accounts =
+            accountModelMapper.map(
+                getAllAccountsDataUseCase.execute(Unit).accounts,
+                selectedAccount,
+            )
         view?.showAccounts(accounts)
     }
 
@@ -108,12 +108,13 @@ class AccountsListPresenter(
     }
 
     private fun removeModeOn(isOn: Boolean) {
-        accounts = accounts
-            .filterIsInstance<AccountModelUi.AccountModel>()
-            .map { it.copy(isTrashIconVisible = isOn) }
-            .let {
-                if (!isOn) it + AccountModelUi.AddNewAccount else it
-            }
+        accounts =
+            accounts
+                .filterIsInstance<AccountModelUi.AccountModel>()
+                .map { it.copy(isTrashIconVisible = isOn) }
+                .let {
+                    if (!isOn) it + AccountModelUi.AddNewAccount else it
+                }
         view?.showAccounts(accounts)
 
         if (isOn) {

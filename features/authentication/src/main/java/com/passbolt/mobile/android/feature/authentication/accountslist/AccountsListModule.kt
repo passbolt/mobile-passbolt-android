@@ -49,13 +49,15 @@ fun Module.accountsListModule() {
             ModelAdapter(accountUiItemsMapper::mapModelToItem)
         }
         scoped {
-            FastAdapter.with(get<ModelAdapter<AccountModelUi, GenericItem>> {
-                parametersOf(get<AccountUiItemsMapper>())
-            })
+            FastAdapter.with(
+                get<ModelAdapter<AccountModelUi, GenericItem>> {
+                    parametersOf(get<AccountUiItemsMapper>())
+                },
+            )
         }
         scoped {
             DrawableListDivider(
-                ContextCompat.getDrawable(androidContext(), CoreUiR.drawable.grey_divider)
+                ContextCompat.getDrawable(androidContext(), CoreUiR.drawable.grey_divider),
             )
         }
         scoped { (accountListFragment: AccountsListFragment, type: ActivityIntents.AuthConfig) ->

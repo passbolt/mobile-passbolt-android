@@ -34,17 +34,19 @@ import javax.crypto.Cipher
 
 class SavePassphraseUseCase(
     private val biometricCrypto: BiometricCrypto,
-    private val appContext: Context
+    private val appContext: Context,
 ) : UseCase<SavePassphraseUseCase.Input, Unit>,
     com.passbolt.mobile.android.core.accounts.usecase.SelectedAccountUseCase {
-
     @Throws(UserNotAuthenticatedException::class)
     override fun execute(input: Input) {
         val fileName = PassphraseFileName(selectedAccountId).name
-        val file = File(
-            com.passbolt.mobile.android.encryptedstorage.EncryptedFileBaseDirectory(appContext).baseDirectory,
-            fileName
-        )
+        val file =
+            File(
+                com.passbolt.mobile.android.encryptedstorage
+                    .EncryptedFileBaseDirectory(appContext)
+                    .baseDirectory,
+                fileName,
+            )
         val passphraseCopy = input.passphrase.copyOf()
         file.outputStream().use {
             val encrypted = biometricCrypto.encryptData(passphraseCopy, input.authenticatedCipher)
@@ -55,6 +57,6 @@ class SavePassphraseUseCase(
 
     data class Input(
         val passphrase: ByteArray,
-        val authenticatedCipher: Cipher
+        val authenticatedCipher: Cipher,
     )
 }

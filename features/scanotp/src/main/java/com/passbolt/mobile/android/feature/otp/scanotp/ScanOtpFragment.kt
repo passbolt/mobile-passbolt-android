@@ -50,28 +50,32 @@ import org.koin.core.qualifier.named
 import org.koin.core.scope.Scope
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
-class ScanOtpFragment : BindingScopedFragment<FragmentScanOtpBinding>(FragmentScanOtpBinding::inflate),
+class ScanOtpFragment :
+    BindingScopedFragment<FragmentScanOtpBinding>(FragmentScanOtpBinding::inflate),
     ScanOtpContract.View {
-
     private val presenter: ScanOtpContract.Presenter by inject()
     private val navArgs: ScanOtpFragmentArgs by navArgs()
 
     private lateinit var scanManagerScope: Scope
     private lateinit var scanManager: ScanManager
     private val flagSecureSetter: FlagSecureSetter by inject()
-    private var requestPermissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { isGranted: Boolean ->
-        if (isGranted) {
-            presenter.cameraPermissionGranted()
-        } else {
-            presenter.permissionRejectedClick()
+    private var requestPermissionLauncher =
+        registerForActivityResult(
+            ActivityResultContracts.RequestPermission(),
+        ) { isGranted: Boolean ->
+            if (isGranted) {
+                presenter.cameraPermissionGranted()
+            } else {
+                presenter.permissionRejectedClick()
+            }
         }
-    }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
-        initDefaultToolbar(binding.toolbar)
+        initDefaultToolbar(requiredBinding.toolbar)
         scanManagerScope = getKoin().getOrCreateScope(SCAN_MANAGER_SCOPE, named(SCAN_MANAGER_SCOPE))
         scanManager = scanManagerScope.get()
         setListeners()
@@ -80,7 +84,7 @@ class ScanOtpFragment : BindingScopedFragment<FragmentScanOtpBinding>(FragmentSc
     }
 
     private fun setListeners() {
-        binding.createTotpManuallyButton.setDebouncingOnClick(action = ::setCreateTotpManuallyResult)
+        requiredBinding.createTotpManuallyButton.setDebouncingOnClick(action = ::setCreateTotpManuallyResult)
     }
 
     override fun onResume() {
@@ -104,35 +108,36 @@ class ScanOtpFragment : BindingScopedFragment<FragmentScanOtpBinding>(FragmentSc
 
     override fun startAnalysis() {
         try {
-            scanManager.attach(this, binding.cameraPreview)
+            scanManager.attach(this, requiredBinding.cameraPreview)
         } catch (exception: Exception) {
             presenter.startCameraError(exception)
         }
     }
 
     override fun showStartCameraError() {
-        binding.tooltip.text = getString(LocalizationR.string.scan_qr_camera_error)
+        requiredBinding.tooltip.text = getString(LocalizationR.string.scan_qr_camera_error)
     }
 
     override fun showBarcodeScanError(message: String?) {
-        val messageBuilder = StringBuilder(getString(LocalizationR.string.scan_qr_scanning_error)).apply {
-            if (!message.isNullOrBlank()) {
-                append("(%s)".format(message))
+        val messageBuilder =
+            StringBuilder(getString(LocalizationR.string.scan_qr_scanning_error)).apply {
+                if (!message.isNullOrBlank()) {
+                    append("(%s)".format(message))
+                }
             }
-        }
-        binding.tooltip.text = messageBuilder.toString()
+        requiredBinding.tooltip.text = messageBuilder.toString()
     }
 
     override fun showMultipleCodesInRange() {
-        binding.tooltip.text = getString(LocalizationR.string.scan_qr_multiple_codes_in_range)
+        requiredBinding.tooltip.text = getString(LocalizationR.string.scan_qr_multiple_codes_in_range)
     }
 
     override fun showCenterCameraOnBarcode() {
-        binding.tooltip.text = getString(LocalizationR.string.scan_qr_aim_at_qr_code)
+        requiredBinding.tooltip.text = getString(LocalizationR.string.scan_qr_aim_at_qr_code)
     }
 
     override fun showNotAnOtpBarcode() {
-        binding.tooltip.text = getString(LocalizationR.string.otp_scan_not_a_totp_qr)
+        requiredBinding.tooltip.text = getString(LocalizationR.string.otp_scan_not_a_totp_qr)
     }
 
     override fun setFlagSecure() {
@@ -146,7 +151,7 @@ class ScanOtpFragment : BindingScopedFragment<FragmentScanOtpBinding>(FragmentSc
     private fun setCreateTotpManuallyResult() {
         setFragmentResult(
             REQUEST_SCAN_OTP_FOR_RESULT,
-            bundleOf(EXTRA_MANUAL_CREATION_CHOSEN to true)
+            bundleOf(EXTRA_MANUAL_CREATION_CHOSEN to true),
         )
         findNavController().popBackStack()
     }
@@ -156,8 +161,8 @@ class ScanOtpFragment : BindingScopedFragment<FragmentScanOtpBinding>(FragmentSc
             REQUEST_SCAN_OTP_FOR_RESULT,
             bundleOf(
                 EXTRA_MANUAL_CREATION_CHOSEN to false,
-                EXTRA_SCANNED_OTP to parserResult
-            )
+                EXTRA_SCANNED_OTP to parserResult,
+            ),
         )
         findNavController().popBackStack()
     }
@@ -166,8 +171,8 @@ class ScanOtpFragment : BindingScopedFragment<FragmentScanOtpBinding>(FragmentSc
         findNavController().navigate(
             ScanOtpFragmentDirections.actionScanOtpFragmentToScanOtpSuccessFragment(
                 parserResult,
-                navArgs.parentFolderId
-            )
+                navArgs.parentFolderId,
+            ),
         )
     }
 
@@ -182,16 +187,16 @@ class ScanOtpFragment : BindingScopedFragment<FragmentScanOtpBinding>(FragmentSc
     override fun showCameraPermissionRequiredDialog() {
         provideCameraPermissionInSettingsDialog(requireContext()) {
             presenter.settingsButtonClick()
-        }
-            .show()
+        }.show()
     }
 
     override fun navigateToAppSettings() {
         findNavController().popBackStack()
-        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-            .apply {
-                data = Uri.fromParts("package", requireContext().packageName, null)
-            }
+        val intent =
+            Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                .apply {
+                    data = Uri.fromParts("package", requireContext().packageName, null)
+                }
         startActivity(intent)
     }
 

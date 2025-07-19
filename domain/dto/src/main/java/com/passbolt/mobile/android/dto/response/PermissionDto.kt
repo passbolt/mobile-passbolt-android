@@ -13,5 +13,5 @@ data class PermissionDto(
     @SerializedName("aro_foreign_key")
     val aroForeignKey: UUID,
     val created: String?,
-    val modified: String?
+    val modified: String?,
 )

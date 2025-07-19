@@ -31,10 +31,12 @@ import com.passbolt.mobile.android.dto.response.MetadataTypesSettingsResponseDto
  */
 
 interface MetadataDataSource {
-
     suspend fun getMetadataKeys(): List<MetadataKeysResponseDto>
 
-    suspend fun putMetadataPrivateKey(uuid: String, request: EncryptedDataRequest)
+    suspend fun putMetadataPrivateKey(
+        uuid: String,
+        request: EncryptedDataRequest,
+    )
 
     suspend fun getMetadataTypesSettings(): MetadataTypesSettingsResponseDto
 
@@ -44,5 +46,8 @@ interface MetadataDataSource {
 
     suspend fun postMetadataSessionKeys(request: EncryptedDataRequest)
 
-    suspend fun updateMetadataSessionKeys(uuid: String, request: EncryptedDataAndModifiedRequest)
+    suspend fun updateMetadataSessionKeys(
+        uuid: String,
+        request: EncryptedDataAndModifiedRequest,
+    )
 }

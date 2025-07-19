@@ -26,6 +26,8 @@ import java.io.File
  * @since v1.0
  */
 
-class EncryptedFileBaseDirectory(appContext: Context) {
+class EncryptedFileBaseDirectory(
+    appContext: Context,
+) {
     val baseDirectory: File = appContext.filesDir
 }

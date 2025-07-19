@@ -11,12 +11,18 @@ import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
 import com.passbolt.mobile.android.core.extension.showSnackbar
 import com.passbolt.mobile.android.core.extension.visible
+import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
-import com.passbolt.mobile.android.core.ui.initialsicon.InitialsIconGenerator
+import com.passbolt.mobile.android.core.resources.resourceicon.ResourceIconProvider
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
 import com.passbolt.mobile.android.feature.tagsdetails.databinding.FragmentResourceTagsBinding
 import com.passbolt.mobile.android.tagsdetails.tagsrecycler.TagItem
+import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.TagModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.core.qualifier.named
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
@@ -24,25 +30,32 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 class ResourceTagsFragment :
     BindingScopedAuthenticatedFragment<FragmentResourceTagsBinding, ResourceTagsContract.View>(
-        FragmentResourceTagsBinding::inflate
-    ), ResourceTagsContract.View {
-
+        FragmentResourceTagsBinding::inflate,
+    ),
+    ResourceTagsContract.View {
     override val presenter: ResourceTagsContract.Presenter by inject()
     private val args: ResourceTagsFragmentArgs by navArgs()
-    private val initialsIconGenerator: InitialsIconGenerator by inject()
     private val tagsItemAdapter: ItemAdapter<TagItem> by inject(named(TAGS_ITEM_ADAPTER))
     private val fastAdapter: FastAdapter<TagItem> by inject(named(TAGS_ADAPTER))
+    private val coroutineLaunchContext: CoroutineLaunchContext by inject()
+    private val job = SupervisorJob()
+    private val coroutineUiScope = CoroutineScope(job + coroutineLaunchContext.ui)
+    private val resourceIconProvider: ResourceIconProvider by inject()
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
-        binding.swipeRefresh.isEnabled = false
-        initDefaultToolbar(binding.toolbar)
+        requiredBinding.swipeRefresh.isEnabled = false
+        initDefaultToolbar(requiredBinding.toolbar)
         setUpTagsRecycler()
         presenter.attach(this)
         presenter.argsRetrieved(args.resourceId, args.mode)
     }
 
     override fun onDestroyView() {
+        coroutineUiScope.coroutineContext.cancelChildren()
         presenter.detach()
         super.onDestroyView()
     }
@@ -58,24 +71,26 @@ class ResourceTagsFragment :
     }
 
     private fun setUpTagsRecycler() {
-        with(binding.tagsRecycler) {
+        with(requiredBinding.tagsRecycler) {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = fastAdapter
         }
     }
 
     override fun displayTitle(name: String) {
-        binding.name.text = name
+        requiredBinding.name.text = name
     }
 
-    override fun displayInitialsIcon(name: String, initials: String) {
-        binding.icon.setImageDrawable(
-            initialsIconGenerator.generate(name, initials)
-        )
+    override fun displayInitialsIcon(resource: ResourceModel) {
+        coroutineUiScope.launch {
+            requiredBinding.icon.setImageDrawable(
+                resourceIconProvider.getResourceIcon(requireContext(), resource),
+            )
+        }
     }
 
     override fun showFavouriteStar() {
-        binding.favouriteIcon.visible()
+        requiredBinding.favouriteIcon.visible()
     }
 
     override fun showTags(tags: List<TagModel>) {
@@ -84,17 +99,17 @@ class ResourceTagsFragment :
     }
 
     override fun hideRefreshProgress() {
-        binding.swipeRefresh.isRefreshing = false
+        requiredBinding.swipeRefresh.isRefreshing = false
     }
 
     override fun showRefreshProgress() {
-        binding.swipeRefresh.isRefreshing = true
+        requiredBinding.swipeRefresh.isRefreshing = true
     }
 
     override fun showDataRefreshError() {
         showSnackbar(
             LocalizationR.string.common_data_refresh_error,
-            backgroundColor = CoreUiR.color.red
+            backgroundColor = CoreUiR.color.red,
         )
     }
 

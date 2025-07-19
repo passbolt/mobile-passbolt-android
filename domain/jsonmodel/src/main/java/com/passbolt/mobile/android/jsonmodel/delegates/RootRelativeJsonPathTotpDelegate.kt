@@ -10,18 +10,26 @@ import org.koin.core.qualifier.named
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
-class RootRelativeJsonPathTotpDelegate(private val jsonPath: String) :
-    ReadWriteProperty<JsonModel, TotpSecret?>, KoinComponent {
-
+class RootRelativeJsonPathTotpDelegate(
+    private val jsonPath: String,
+) : ReadWriteProperty<JsonModel, TotpSecret?>,
+    KoinComponent {
     private val gson: Gson by inject(named(JSON_MODEL_GSON))
     private val jsonPathsOps: JsonPathsOps by inject()
 
-    override fun getValue(thisRef: JsonModel, property: KProperty<*>): TotpSecret? =
+    override fun getValue(
+        thisRef: JsonModel,
+        property: KProperty<*>,
+    ): TotpSecret? =
         jsonPathsOps.readOrNull(thisRef) { "$.$jsonPath" }?.let {
             gson.fromJson(it, TotpSecret::class.java)
         }
 
-    override fun setValue(thisRef: JsonModel, property: KProperty<*>, value: TotpSecret?) {
+    override fun setValue(
+        thisRef: JsonModel,
+        property: KProperty<*>,
+        value: TotpSecret?,
+    ) {
         if (value == null) {
             // if totp is null remove the property from json
             jsonPathsOps.delete(thisRef) { "$.$jsonPath" }

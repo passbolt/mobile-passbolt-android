@@ -29,10 +29,9 @@ import com.passbolt.mobile.android.encryptedstorage.EncryptedSharedPreferencesFa
 import com.passbolt.mobile.android.ui.PasswordExpirySettings
 
 class GetPasswordExpirySettingsUseCase(
-    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory
+    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory,
 ) : AsyncUseCase<Unit, GetPasswordExpirySettingsUseCase.Output>,
     SelectedAccountUseCase {
-
     override suspend fun execute(input: Unit): Output {
         val fileName = PasswordExpirySettingsFileName(selectedAccountId).name
         return encryptedSharedPreferencesFactory.get("$fileName.xml").let {
@@ -40,22 +39,25 @@ class GetPasswordExpirySettingsUseCase(
                 it.getBoolean(KEY_AUTOMATIC_PASSWORD_EXPIRY, DEFAULT_AUTOMATIC_PASSWORD_EXPIRY)
             val isAutomaticUpdateEnabled =
                 it.getBoolean(KEY_AUTOMATIC_PASSWORD_UPDATE, DEFAULT_AUTOMATIC_PASSWORD_UPDATE)
-            val defaultExpiryPeriodDays = if (it.contains(KEY_DEFAULT_EXPIRY_PERIOD_DAYS)) {
-                it.getInt(KEY_DEFAULT_EXPIRY_PERIOD_DAYS, DEFAULT_EXPIRY_PERIOD_DAYS)
-            } else {
-                null
-            }
+            val defaultExpiryPeriodDays =
+                if (it.contains(KEY_DEFAULT_EXPIRY_PERIOD_DAYS)) {
+                    it.getInt(KEY_DEFAULT_EXPIRY_PERIOD_DAYS, DEFAULT_EXPIRY_PERIOD_DAYS)
+                } else {
+                    null
+                }
             Output(
                 PasswordExpirySettings(
                     automaticExpiry = isAutomaticExpireEnabled,
                     automaticUpdate = isAutomaticUpdateEnabled,
-                    defaultExpiryPeriodDays = defaultExpiryPeriodDays
-                )
+                    defaultExpiryPeriodDays = defaultExpiryPeriodDays,
+                ),
             )
         }
     }
 
-    data class Output(val expirySettings: PasswordExpirySettings)
+    data class Output(
+        val expirySettings: PasswordExpirySettings,
+    )
 
     private companion object {
         const val DEFAULT_EXPIRY_PERIOD_DAYS = 90

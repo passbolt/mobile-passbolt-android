@@ -1,12 +1,7 @@
 package com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill
 
-import android.view.autofill.AutofillManager
-import com.passbolt.mobile.android.feature.autofill.informationprovider.AutofillInformationProvider
-import com.passbolt.mobile.android.feature.autofill.informationprovider.AutofillInformationProviderImpl
-import org.koin.android.ext.koin.androidContext
+import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.core.module.Module
-import org.koin.core.module.dsl.scopedOf
-import org.koin.dsl.bind
 
 /**
  * Passbolt - Open source password manager for teams
@@ -32,15 +27,5 @@ import org.koin.dsl.bind
  */
 
 fun Module.settingsAutofillModule() {
-    scope<SettingsAutofillFragment> {
-        scopedOf(::SettingsAutofillPresenter) bind SettingsAutofillContract.Presenter::class
-    }
-
-    factory { androidContext().getSystemService(AutofillManager::class.java) }
-    factory<AutofillInformationProvider> {
-        AutofillInformationProviderImpl(
-            autofillManager = get(),
-            context = androidContext()
-        )
-    }
+    viewModelOf(::AutofillSettingsViewModel)
 }

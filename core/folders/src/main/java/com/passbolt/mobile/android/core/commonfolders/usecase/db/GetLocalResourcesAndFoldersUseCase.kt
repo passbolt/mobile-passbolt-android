@@ -35,17 +35,18 @@ class GetLocalResourcesAndFoldersUseCase(
     private val databaseProvider: DatabaseProvider,
     private val folderModelMapper: FolderModelMapper,
     private val resourceModelMapper: ResourceModelMapper,
-    private val getSelectedAccountUseCase: GetSelectedAccountUseCase
+    private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
 ) : AsyncUseCase<GetLocalResourcesAndFoldersUseCase.Input, GetLocalResourcesAndFoldersUseCase.Output> {
-
     override suspend fun execute(input: Input): Output {
-        val foldersDao = databaseProvider
-            .get(requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount))
-            .foldersDao()
+        val foldersDao =
+            databaseProvider
+                .get(requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount))
+                .foldersDao()
 
-        val resourcesDao = databaseProvider
-            .get(requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount))
-            .resourcesDao()
+        val resourcesDao =
+            databaseProvider
+                .get(requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount))
+                .resourcesDao()
 
         return runCatching {
             val resourcesInFolder = resourcesDao.getResourcesForFolderWithId(input.folder.folderId, input.slugs)
@@ -53,21 +54,20 @@ class GetLocalResourcesAndFoldersUseCase(
 
             Output.Success(
                 foldersInFolder.map { folderModelMapper.map(it) },
-                resourcesInFolder.map { resourceModelMapper.map(it) })
-        }
-            .getOrElse { Output.Failure }
+                resourcesInFolder.map { resourceModelMapper.map(it) },
+            )
+        }.getOrElse { Output.Failure }
     }
 
     data class Input(
         val folder: Folder,
-        val slugs: Set<String>
+        val slugs: Set<String>,
     )
 
     sealed class Output {
-
         data class Success(
             val folders: List<FolderWithCountAndPath>,
-            val resources: List<ResourceModel>
+            val resources: List<ResourceModel>,
         ) : Output()
 
         data object Failure : Output()

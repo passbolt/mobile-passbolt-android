@@ -27,32 +27,30 @@ import retrofit2.Response
  * @since v1.0
  */
 internal class MfaRemoteDataSource(
-    private val mfaApi: MfaApi
+    private val mfaApi: MfaApi,
 ) : MfaDataSource {
+    override suspend fun verifyTotp(
+        totpRequest: TotpRequest,
+        authHeader: String?,
+    ): Response<Void> = mfaApi.verifyTotp(totpRequest, authHeader)
 
-    override suspend fun verifyTotp(totpRequest: TotpRequest, authHeader: String?): Response<Void> {
-        return mfaApi.verifyTotp(totpRequest, authHeader)
-    }
+    override suspend fun verifyYubikeyOtp(
+        hotpRequest: HotpRequest,
+        authHeader: String?,
+    ): Response<Void> = mfaApi.verifyYubikeyOtp(hotpRequest, authHeader)
 
-    override suspend fun verifyYubikeyOtp(hotpRequest: HotpRequest, authHeader: String?): Response<Void> {
-        return mfaApi.verifyYubikeyOtp(hotpRequest, authHeader)
-    }
-
-    override suspend fun getDuoPromptUrl(authHeader: String?): Response<Void> {
-        return mfaApi.getDuoPromptUrl(authHeader)
-    }
+    override suspend fun getDuoPromptUrl(authHeader: String?): Response<Void> = mfaApi.getDuoPromptUrl(authHeader)
 
     override suspend fun verifyDuoCallback(
         authHeader: String?,
         passboltDuoStateUuid: String,
         state: String?,
-        code: String?
-    ): Response<Void> {
-        return mfaApi.verifyDuoCallback(
+        code: String?,
+    ): Response<Void> =
+        mfaApi.verifyDuoCallback(
             authHeader = authHeader,
             passboltDuoState = "passbolt_duo_state=%s".format(passboltDuoStateUuid),
             state = state,
-            code = code
+            code = code,
         )
-    }
 }

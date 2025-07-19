@@ -36,13 +36,13 @@ fun Module.jsonSchemaModule() {
     single { Validator() }
     single<JsonSchemaRepository<Schema>> {
         JSFSchemaRepository(
-            context = androidContext()
+            context = androidContext(),
         )
     }
     single<JsonSchemaValidator> {
         JSFJsonSchemaValidator(
             schemaRepository = get(),
-            validator = get()
+            validator = get(),
         )
     }
 }

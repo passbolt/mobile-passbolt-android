@@ -51,136 +51,143 @@ import java.util.UUID
  * @since v1.0
  */
 class ScanOtpSuccessPresenterTest : KoinTest {
-
     private val presenter: ScanOtpSuccessContract.Presenter by inject()
     private var view: ScanOtpSuccessContract.View = mock()
 
     @ExperimentalCoroutinesApi
     @get:Rule
-    val koinTestRule = KoinTestRule.create {
-        printLogger(Level.ERROR)
-        modules(testScanOtpSuccessModule)
-    }
+    val koinTestRule =
+        KoinTestRule.create {
+            printLogger(Level.ERROR)
+            modules(testScanOtpSuccessModule)
+        }
 
     @Test
-    fun `create standalone totp should create totp and navigate back`() = runBlocking {
-        mockGetDefaultCreateContentTypeUseCase.stub {
-            onBlocking { execute(any()) }.doReturn(
-                GetDefaultCreateContentTypeUseCase.Output(
-                    ContentType.V5TotpStandalone,
-                    MetadataTypeModel.V5
+    fun `create standalone totp should create totp and navigate back`() =
+        runBlocking {
+            mockGetDefaultCreateContentTypeUseCase.stub {
+                onBlocking { execute(any()) }.doReturn(
+                    GetDefaultCreateContentTypeUseCase.Output(
+                        ContentType.V5TotpStandalone,
+                        MetadataTypeModel.V5,
+                    ),
                 )
-            )
-        }
-        val mockScannedTotp = OtpParseResult.OtpQr.TotpQr(
-            label = "label",
-            secret = "secret",
-            issuer = "issuer",
-            algorithm = OtpParseResult.OtpQr.Algorithm.SHA1,
-            digits = 6,
-            period = 30
-        )
-        val mockResourceName = "mockResourceName"
-        val mockResourceId = UUID.randomUUID()
-        mockResourceCreateActionsInteractor.stub {
-            onBlocking {
-                createGenericResource(any(), anyOrNull(), any(), any())
             }
-                .doReturn(flowOf(ResourceCreateActionResult.Success(mockResourceId.toString(), mockResourceName)))
+            val mockScannedTotp =
+                OtpParseResult.OtpQr.TotpQr(
+                    label = "label",
+                    secret = "secret",
+                    issuer = "issuer",
+                    algorithm = OtpParseResult.OtpQr.Algorithm.SHA1,
+                    digits = 6,
+                    period = 30,
+                )
+            val mockResourceName = "mockResourceName"
+            val mockResourceId = UUID.randomUUID()
+            mockResourceCreateActionsInteractor.stub {
+                onBlocking {
+                    createGenericResource(any(), anyOrNull(), any(), any())
+                }.doReturn(flowOf(ResourceCreateActionResult.Success(mockResourceId.toString(), mockResourceName)))
+            }
+
+            presenter.attach(view)
+            presenter.argsRetrieved(mockScannedTotp, null)
+            presenter.createStandaloneOtpClick()
+
+            verify(view).showProgress()
+            verify(view).hideProgress()
+            verify(view).navigateToOtpList(mockScannedTotp, otpCreated = true)
         }
-
-        presenter.attach(view)
-        presenter.argsRetrieved(mockScannedTotp, null)
-        presenter.createStandaloneOtpClick()
-
-        verify(view).showProgress()
-        verify(view).hideProgress()
-        verify(view).navigateToOtpList(mockScannedTotp, otpCreated = true)
-    }
 
     @Test
-    fun `link totp to linked resource should update fields and navigate back`() = runBlocking {
-        val mockScannedTotp = OtpParseResult.OtpQr.TotpQr(
-            label = "label",
-            secret = "secret",
-            issuer = "issuer",
-            algorithm = OtpParseResult.OtpQr.Algorithm.SHA1,
-            digits = 6,
-            period = 30
-        )
-        val mockResourceName = "mockResourceName"
-        val mockResourceId = UUID.randomUUID()
-        val mockResourceTypeId = UUID.randomUUID()
-        val mockMetadataJsonModel = mock<MetadataJsonModel> {
-            on { name } doReturn mockResourceName
-        }
-        val mockLinkResourceModel = mock<ResourceModel> {
-            on { resourceTypeId } doReturn mockResourceTypeId.toString()
-            on { metadataJsonModel } doReturn mockMetadataJsonModel
-        }
+    fun `link totp to linked resource should update fields and navigate back`() =
+        runBlocking {
+            val mockScannedTotp =
+                OtpParseResult.OtpQr.TotpQr(
+                    label = "label",
+                    secret = "secret",
+                    issuer = "issuer",
+                    algorithm = OtpParseResult.OtpQr.Algorithm.SHA1,
+                    digits = 6,
+                    period = 30,
+                )
+            val mockResourceName = "mockResourceName"
+            val mockResourceId = UUID.randomUUID()
+            val mockResourceTypeId = UUID.randomUUID()
+            val mockMetadataJsonModel =
+                mock<MetadataJsonModel> {
+                    on { name } doReturn mockResourceName
+                }
+            val mockLinkResourceModel =
+                mock<ResourceModel> {
+                    on { resourceTypeId } doReturn mockResourceTypeId.toString()
+                    on { metadataJsonModel } doReturn mockMetadataJsonModel
+                }
 
-        mockResourceUpdateActionsInteractor.stub {
-            onBlocking {
-                updateGenericResource(eq(UpdateAction.ADD_TOTP), any(), any())
+            mockResourceUpdateActionsInteractor.stub {
+                onBlocking {
+                    updateGenericResource(eq(UpdateAction.ADD_TOTP), any(), any())
+                }.doReturn(flowOf(ResourceUpdateActionResult.Success(mockResourceId.toString(), mockResourceName)))
             }
-                .doReturn(flowOf(ResourceUpdateActionResult.Success(mockResourceId.toString(), mockResourceName)))
-        }
-        mockIdToSlugMappingProvider.stub {
-            onBlocking { provideMappingForSelectedAccount() }.doReturn(
-                mapOf(mockResourceTypeId to ContentType.V5DefaultWithTotp.slug)
-            )
-        }
+            mockIdToSlugMappingProvider.stub {
+                onBlocking { provideMappingForSelectedAccount() }.doReturn(
+                    mapOf(mockResourceTypeId to ContentType.V5DefaultWithTotp.slug),
+                )
+            }
 
-        presenter.attach(view)
-        presenter.argsRetrieved(mockScannedTotp, null)
-        presenter.linkToResourceClick()
-        presenter.linkedResourceReceived(PickResourceAction.TOTP_REPLACE, mockLinkResourceModel)
+            presenter.attach(view)
+            presenter.argsRetrieved(mockScannedTotp, null)
+            presenter.linkToResourceClick()
+            presenter.linkedResourceReceived(PickResourceAction.TOTP_REPLACE, mockLinkResourceModel)
 
-        verify(view).showProgress()
-        verify(view).hideProgress()
-        verify(view).navigateToOtpList(mockScannedTotp, otpCreated = true)
-    }
+            verify(view).showProgress()
+            verify(view).hideProgress()
+            verify(view).navigateToOtpList(mockScannedTotp, otpCreated = true)
+        }
 
     @Test
-    fun `link totp to password resource should update fields and navigate back`() = runBlocking {
-        val mockScannedTotp = OtpParseResult.OtpQr.TotpQr(
-            label = "label",
-            secret = "secret",
-            issuer = "issuer",
-            algorithm = OtpParseResult.OtpQr.Algorithm.SHA1,
-            digits = 6,
-            period = 30
-        )
-        val mockResourceName = "mockResourceName"
-        val mockResourceId = UUID.randomUUID()
-        val mockResourceTypeId = UUID.randomUUID()
-        val mockMetadataJsonModel = mock<MetadataJsonModel> {
-            on { name } doReturn mockResourceName
-        }
-        val mockLinkResourceModel = mock<ResourceModel> {
-            on { resourceTypeId } doReturn mockResourceTypeId.toString()
-            on { metadataJsonModel } doReturn mockMetadataJsonModel
-        }
+    fun `link totp to password resource should update fields and navigate back`() =
+        runBlocking {
+            val mockScannedTotp =
+                OtpParseResult.OtpQr.TotpQr(
+                    label = "label",
+                    secret = "secret",
+                    issuer = "issuer",
+                    algorithm = OtpParseResult.OtpQr.Algorithm.SHA1,
+                    digits = 6,
+                    period = 30,
+                )
+            val mockResourceName = "mockResourceName"
+            val mockResourceId = UUID.randomUUID()
+            val mockResourceTypeId = UUID.randomUUID()
+            val mockMetadataJsonModel =
+                mock<MetadataJsonModel> {
+                    on { name } doReturn mockResourceName
+                }
+            val mockLinkResourceModel =
+                mock<ResourceModel> {
+                    on { resourceTypeId } doReturn mockResourceTypeId.toString()
+                    on { metadataJsonModel } doReturn mockMetadataJsonModel
+                }
 
-        mockResourceUpdateActionsInteractor.stub {
-            onBlocking {
-                updateGenericResource(eq(UpdateAction.ADD_TOTP), any(), any())
+            mockResourceUpdateActionsInteractor.stub {
+                onBlocking {
+                    updateGenericResource(eq(UpdateAction.ADD_TOTP), any(), any())
+                }.doReturn(flowOf(ResourceUpdateActionResult.Success(mockResourceId.toString(), mockResourceName)))
             }
-                .doReturn(flowOf(ResourceUpdateActionResult.Success(mockResourceId.toString(), mockResourceName)))
-        }
-        mockIdToSlugMappingProvider.stub {
-            onBlocking { provideMappingForSelectedAccount() }.doReturn(
-                mapOf(mockResourceTypeId to ContentType.V5Default.slug)
-            )
-        }
+            mockIdToSlugMappingProvider.stub {
+                onBlocking { provideMappingForSelectedAccount() }.doReturn(
+                    mapOf(mockResourceTypeId to ContentType.V5Default.slug),
+                )
+            }
 
-        presenter.attach(view)
-        presenter.argsRetrieved(mockScannedTotp, null)
-        presenter.linkToResourceClick()
-        presenter.linkedResourceReceived(PickResourceAction.TOTP_LINK, mockLinkResourceModel)
+            presenter.attach(view)
+            presenter.argsRetrieved(mockScannedTotp, null)
+            presenter.linkToResourceClick()
+            presenter.linkedResourceReceived(PickResourceAction.TOTP_LINK, mockLinkResourceModel)
 
-        verify(view).showProgress()
-        verify(view).hideProgress()
-        verify(view).navigateToOtpList(mockScannedTotp, otpCreated = true)
-    }
+            verify(view).showProgress()
+            verify(view).hideProgress()
+            verify(view).navigateToOtpList(mockScannedTotp, otpCreated = true)
+        }
 }

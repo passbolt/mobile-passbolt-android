@@ -28,7 +28,7 @@ import org.koin.core.module.Module
 internal fun Module.selectedAccountModule() {
     single {
         GetSelectedAccountUseCase(
-            encryptedSharedPreferencesFactory = get()
+            encryptedSharedPreferencesFactory = get(),
         )
     }
     factory {
@@ -36,17 +36,17 @@ internal fun Module.selectedAccountModule() {
     }
     single {
         SaveSelectedAccountUseCase(
-            encryptedSharedPreferencesFactory = get()
+            encryptedSharedPreferencesFactory = get(),
         )
     }
     single {
         GetCurrentApiUrlUseCase(
-            encryptedSharedPreferencesFactory = get()
+            encryptedSharedPreferencesFactory = get(),
         )
     }
     single {
         SaveCurrentApiUrlUseCase(
-            encryptedSharedPreferencesFactory = get()
+            encryptedSharedPreferencesFactory = get(),
         )
     }
 }

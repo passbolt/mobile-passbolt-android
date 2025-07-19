@@ -28,7 +28,7 @@ import com.passbolt.mobile.android.common.search.Searchable
 data class TagModel(
     val id: String,
     val slug: String,
-    val isShared: Boolean
+    val isShared: Boolean,
 )
 
 data class TagWithCount(
@@ -36,5 +36,5 @@ data class TagWithCount(
     val slug: String,
     val isShared: Boolean,
     val taggedResourcesCount: Int,
-    override val searchCriteria: String = slug
+    override val searchCriteria: String = slug,
 ) : Searchable

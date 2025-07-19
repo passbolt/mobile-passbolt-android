@@ -80,26 +80,28 @@ import java.time.Instant
 
 @ExperimentalCoroutinesApi
 class SignInPresenterTest : KoinTest {
-
     private val presenter: AuthContract.Presenter by inject {
         parametersOf(ActivityIntents.AuthConfig.SignIn)
     }
     private val mockView = mock<AuthContract.View>()
 
     @get:Rule
-    val koinTestRule = KoinTestRule.create {
-        printLogger(Level.ERROR)
-        modules(testAuthModule)
-    }
+    val koinTestRule =
+        KoinTestRule.create {
+            printLogger(Level.ERROR)
+            modules(testAuthModule)
+        }
 
     @Before
     fun setup() {
         whenever(mockGetGlobalPreferencesUseCase.execute(Unit))
             .doReturn(
                 GetGlobalPreferencesUseCase.Output(
-                    areDebugLogsEnabled = false, debugLogFileCreationDateTime = null,
-                    isDeveloperModeEnabled = false, isHideRootDialogEnabled = false
-                )
+                    areDebugLogsEnabled = false,
+                    debugLogFileCreationDateTime = null,
+                    isDeveloperModeEnabled = false,
+                    isHideRootDialogEnabled = false,
+                ),
             )
         whenever(mockGopenPgpTimeUpdater.updateTimeIfNeeded(any(), any()))
             .thenReturn(GopenPgpTimeUpdater.Result.TIME_SYNCED)
@@ -109,9 +111,9 @@ class SignInPresenterTest : KoinTest {
                     PasswordExpirySettings(
                         automaticExpiry = true,
                         automaticUpdate = true,
-                        defaultExpiryPeriodDays = 90
-                    )
-                )
+                        defaultExpiryPeriodDays = 90,
+                    ),
+                ),
             )
         }
         mockPasswordPoliciesInteractor.stub {
@@ -119,39 +121,40 @@ class SignInPresenterTest : KoinTest {
                 PasswordPoliciesInteractor.Output.Success(
                     PasswordPolicies(
                         defaultGenerator = PasswordGeneratorTypeModel.PASSWORD,
-                        passwordGeneratorSettings = PasswordGeneratorSettingsModel(
-                            length = 12,
-                            maskUpper = true,
-                            maskLower = true,
-                            maskDigit = true,
-                            maskEmoji = true,
-                            maskParenthesis = true,
-                            maskChar1 = true,
-                            maskChar2 = true,
-                            maskChar3 = true,
-                            maskChar4 = true,
-                            maskChar5 = true,
-                            excludeLookAlikeChars = true
-                        ),
-                        passphraseGeneratorSettings = PassphraseGeneratorSettingsModel(
-                            words = 4,
-                            wordSeparator = "-",
-                            wordCase = CaseTypeModel.LOWERCASE
-
-                        ),
-                        isExternalDictionaryCheckEnabled = false
-                    )
-                )
+                        passwordGeneratorSettings =
+                            PasswordGeneratorSettingsModel(
+                                length = 12,
+                                maskUpper = true,
+                                maskLower = true,
+                                maskDigit = true,
+                                maskEmoji = true,
+                                maskParenthesis = true,
+                                maskChar1 = true,
+                                maskChar2 = true,
+                                maskChar3 = true,
+                                maskChar4 = true,
+                                maskChar5 = true,
+                                excludeLookAlikeChars = true,
+                            ),
+                        passphraseGeneratorSettings =
+                            PassphraseGeneratorSettingsModel(
+                                words = 4,
+                                wordSeparator = "-",
+                                wordCase = CaseTypeModel.LOWERCASE,
+                            ),
+                        isExternalDictionaryCheckEnabled = false,
+                    ),
+                ),
             )
         }
         mockMetadataTypesSettingsInteractor.stub {
             onBlocking { fetchAndSaveMetadataTypesSettings() }.doReturn(
-                MetadataTypesSettingsInteractor.Output.Success
+                MetadataTypesSettingsInteractor.Output.Success,
             )
         }
         mockMetadataKeysSettingsInteractor.stub {
             onBlocking { fetchAndSaveMetadataKeysSettings() }.doReturn(
-                MetadataKeysSettingsInteractor.Output.Success
+                MetadataKeysSettingsInteractor.Output.Success,
             )
         }
     }
@@ -164,8 +167,8 @@ class SignInPresenterTest : KoinTest {
         mockFetchServerPublicPgpKeyUseCase.stub {
             onBlocking { execute(any()) }.thenReturn(
                 FetchServerPublicPgpKeyUseCase.Output.Failure(
-                    NetworkResult.Failure.NetworkError(UnknownHostException(), "")
-                )
+                    NetworkResult.Failure.NetworkError(UnknownHostException(), ""),
+                ),
             )
         }
         whenever(mockCheckIfPassphraseExistsUseCase.execute(anyOrNull()))
@@ -192,8 +195,8 @@ class SignInPresenterTest : KoinTest {
         mockFetchServerPublicPgpKeyUseCase.stub {
             onBlocking { execute(any()) }.thenReturn(
                 FetchServerPublicPgpKeyUseCase.Output.Failure(
-                    NetworkResult.Failure.ServerError(SocketTimeoutException(), headerMessage = "")
-                )
+                    NetworkResult.Failure.ServerError(SocketTimeoutException(), headerMessage = ""),
+                ),
             )
         }
         whenever(mockCheckIfPassphraseExistsUseCase.execute(anyOrNull()))
@@ -222,8 +225,8 @@ class SignInPresenterTest : KoinTest {
                 FetchServerPublicPgpKeyUseCase.Output.Success(
                     "publicKey",
                     "fingerprint",
-                    Instant.now().epochSecond
-                )
+                    Instant.now().epochSecond,
+                ),
             )
         }
         mockFetchServerPublicRsaKeyUseCase.stub {
@@ -233,7 +236,7 @@ class SignInPresenterTest : KoinTest {
             .doReturn(IsServerFingerprintCorrectUseCase.Output(true))
         mockChallengeProvider.stub {
             onBlocking { get(any(), any(), any(), any()) }.doReturn(
-                ChallengeProvider.Output.Success("challenge")
+                ChallengeProvider.Output.Success("challenge"),
             )
         }
         mockSignInUseCase.stub {
@@ -243,13 +246,13 @@ class SignInPresenterTest : KoinTest {
         mockChallengeDecryptor.stub {
             onBlocking { decrypt(any(), any(), any(), any()) }.doReturn(
                 ChallengeDecryptor.Output.DecryptedChallenge(
-                    ChallengeResponseDto("1", "domain", "token", "accessToken", "refreshToken", null)
-                )
+                    ChallengeResponseDto("1", "domain", "token", "accessToken", "refreshToken", null),
+                ),
             )
         }
         mockChallengeVerifier.stub {
             onBlocking { verify(any(), any()) }.doReturn(
-                ChallengeVerifier.Output.Verified("accessToken", "refreshToken")
+                ChallengeVerifier.Output.Verified("accessToken", "refreshToken"),
             )
         }
         whenever(mockCheckIfPassphraseExistsUseCase.execute(anyOrNull()))
@@ -268,9 +271,9 @@ class SignInPresenterTest : KoinTest {
                         isPasswordExpiryAvailable = true,
                         arePasswordPoliciesAvailable = true,
                         canUpdatePasswordPolicies = true,
-                        isV5MetadataAvailable = false
-                    )
-                )
+                        isV5MetadataAvailable = false,
+                    ),
+                ),
             )
         }
         mockRbacInteractor.stub {
@@ -281,9 +284,9 @@ class SignInPresenterTest : KoinTest {
                         passwordCopyRule = ALLOW,
                         tagsUseRule = ALLOW,
                         shareViewRule = ALLOW,
-                        foldersUseRule = ALLOW
-                    )
-                )
+                        foldersUseRule = ALLOW,
+                    ),
+                ),
             )
         }
         whenever(mockMfaStatusProvider.provideMfaStatus()).doReturn(MfaStatus.NOT_REQUIRED)
@@ -313,8 +316,8 @@ class SignInPresenterTest : KoinTest {
                 FetchServerPublicPgpKeyUseCase.Output.Success(
                     "publickKey",
                     "fingerprint",
-                    Instant.now().epochSecond
-                )
+                    Instant.now().epochSecond,
+                ),
             )
         }
         mockFetchServerPublicRsaKeyUseCase.stub {
@@ -322,7 +325,7 @@ class SignInPresenterTest : KoinTest {
         }
         mockChallengeProvider.stub {
             onBlocking { get(any(), any(), any(), any()) }.doReturn(
-                ChallengeProvider.Output.WrongPassphrase
+                ChallengeProvider.Output.WrongPassphrase,
             )
         }
         whenever(mockCheckIfPassphraseExistsUseCase.execute(anyOrNull()))
@@ -348,8 +351,8 @@ class SignInPresenterTest : KoinTest {
                 FetchServerPublicPgpKeyUseCase.Output.Success(
                     "publickKey",
                     "fingerprint",
-                    Instant.now().epochSecond
-                )
+                    Instant.now().epochSecond,
+                ),
             )
         }
         mockFetchServerPublicRsaKeyUseCase.stub {
@@ -357,7 +360,7 @@ class SignInPresenterTest : KoinTest {
         }
         mockChallengeProvider.stub {
             onBlocking { get(any(), any(), any(), any()) }.doReturn(
-                ChallengeProvider.Output.Success("challenge")
+                ChallengeProvider.Output.Success("challenge"),
             )
         }
         mockSignInUseCase.stub {
@@ -366,12 +369,12 @@ class SignInPresenterTest : KoinTest {
         }
         mockChallengeDecryptor.stub {
             onBlocking { decrypt(any(), any(), any(), any()) }.doReturn(
-                ChallengeDecryptor.Output.DecryptionError(errorMessage)
+                ChallengeDecryptor.Output.DecryptionError(errorMessage),
             )
         }
         mockChallengeVerifier.stub {
             onBlocking { verify(any(), any()) }.doReturn(
-                ChallengeVerifier.Output.Failure
+                ChallengeVerifier.Output.Failure,
             )
         }
         whenever(mockCheckIfPassphraseExistsUseCase.execute(anyOrNull()))
@@ -398,8 +401,8 @@ class SignInPresenterTest : KoinTest {
                 FetchServerPublicPgpKeyUseCase.Output.Success(
                     "publickKey",
                     "fingerprint",
-                    Instant.now().epochSecond
-                )
+                    Instant.now().epochSecond,
+                ),
             )
         }
         mockFetchServerPublicRsaKeyUseCase.stub {
@@ -410,12 +413,12 @@ class SignInPresenterTest : KoinTest {
         }
         mockChallengeProvider.stub {
             onBlocking { get(any(), any(), any(), any()) }.doReturn(
-                ChallengeProvider.Output.Success("challenge")
+                ChallengeProvider.Output.Success("challenge"),
             )
         }
         mockSignInUseCase.stub {
             onBlocking { execute(any()) }.thenReturn(
-                SignInUseCase.Output.Failure(ERROR_MESSAGE, SignInFailureType.OTHER)
+                SignInUseCase.Output.Failure(ERROR_MESSAGE, SignInFailureType.OTHER),
             )
         }
         whenever(mockCheckIfPassphraseExistsUseCase.execute(anyOrNull()))
@@ -442,8 +445,8 @@ class SignInPresenterTest : KoinTest {
                 FetchServerPublicPgpKeyUseCase.Output.Success(
                     "publickKey",
                     "fingerprint",
-                    Instant.now().epochSecond
-                )
+                    Instant.now().epochSecond,
+                ),
             )
         }
         mockFetchServerPublicRsaKeyUseCase.stub {
@@ -454,15 +457,15 @@ class SignInPresenterTest : KoinTest {
         }
         mockChallengeProvider.stub {
             onBlocking { get(any(), any(), any(), any()) }.doReturn(
-                ChallengeProvider.Output.Success("challenge")
+                ChallengeProvider.Output.Success("challenge"),
             )
         }
         mockSignInUseCase.stub {
             onBlocking { execute(any()) }.thenReturn(
                 SignInUseCase.Output.Failure(
                     ERROR_MESSAGE,
-                    SignInFailureType.OTHER
-                )
+                    SignInFailureType.OTHER,
+                ),
             )
         }
         whenever(mockCheckIfPassphraseExistsUseCase.execute(anyOrNull()))
@@ -487,8 +490,8 @@ class SignInPresenterTest : KoinTest {
                 FetchServerPublicPgpKeyUseCase.Output.Success(
                     "publickKey",
                     "fingerprint",
-                    Instant.now().epochSecond
-                )
+                    Instant.now().epochSecond,
+                ),
             )
         }
         mockFetchServerPublicRsaKeyUseCase.stub {
@@ -496,7 +499,7 @@ class SignInPresenterTest : KoinTest {
         }
         mockChallengeProvider.stub {
             onBlocking { get(any(), any(), any(), any()) }.doReturn(
-                ChallengeProvider.Output.Success("challenge")
+                ChallengeProvider.Output.Success("challenge"),
             )
         }
         mockSignInUseCase.stub {
@@ -506,13 +509,13 @@ class SignInPresenterTest : KoinTest {
         mockChallengeDecryptor.stub {
             onBlocking { decrypt(any(), any(), any(), any()) }.doReturn(
                 ChallengeDecryptor.Output.DecryptedChallenge(
-                    ChallengeResponseDto("1", "domain", "token", "accessToken", "refreshToken", null)
-                )
+                    ChallengeResponseDto("1", "domain", "token", "accessToken", "refreshToken", null),
+                ),
             )
         }
         mockChallengeVerifier.stub {
             onBlocking { verify(any(), any()) }.doReturn(
-                ChallengeVerifier.Output.Failure
+                ChallengeVerifier.Output.Failure,
             )
         }
         mockIsServerFingerprintCorrectUseCase.stub {
@@ -542,8 +545,8 @@ class SignInPresenterTest : KoinTest {
                 FetchServerPublicPgpKeyUseCase.Output.Success(
                     "publickKey",
                     "fingerprint",
-                    Instant.now().epochSecond
-                )
+                    Instant.now().epochSecond,
+                ),
             )
         }
         mockFetchServerPublicRsaKeyUseCase.stub {
@@ -551,13 +554,13 @@ class SignInPresenterTest : KoinTest {
         }
         mockChallengeProvider.stub {
             onBlocking { get(any(), any(), any(), any()) }.doReturn(
-                ChallengeProvider.Output.Success("challenge")
+                ChallengeProvider.Output.Success("challenge"),
             )
         }
 
         mockSignInUseCase.stub {
             onBlocking { execute(any()) }.thenReturn(
-                SignInUseCase.Output.Failure(ERROR_MESSAGE, SignInFailureType.ACCOUNT_DOES_NOT_EXIST)
+                SignInUseCase.Output.Failure(ERROR_MESSAGE, SignInFailureType.ACCOUNT_DOES_NOT_EXIST),
             )
         }
 
@@ -573,7 +576,7 @@ class SignInPresenterTest : KoinTest {
         verify(mockView).showAccountDoesNotExistDialog(
             MOCK_LABEL,
             MOCK_ACCOUNT_DATA_EMAIL,
-            MOCK_ACCOUNT_DATA_URL
+            MOCK_ACCOUNT_DATA_URL,
         )
     }
 

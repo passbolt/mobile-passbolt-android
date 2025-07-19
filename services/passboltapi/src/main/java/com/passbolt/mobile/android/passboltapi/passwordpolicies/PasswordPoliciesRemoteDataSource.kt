@@ -24,9 +24,7 @@
 package com.passbolt.mobile.android.passboltapi.passwordpolicies
 
 internal class PasswordPoliciesRemoteDataSource(
-    private val passwordPoliciesApi: PasswordPoliciesApi
+    private val passwordPoliciesApi: PasswordPoliciesApi,
 ) : PasswordPoliciesDataSource {
-
-    override suspend fun getPasswordPoliciesSettings() =
-        passwordPoliciesApi.getPasswordPolicies().body
+    override suspend fun getPasswordPoliciesSettings() = passwordPoliciesApi.getPasswordPolicies().body
 }

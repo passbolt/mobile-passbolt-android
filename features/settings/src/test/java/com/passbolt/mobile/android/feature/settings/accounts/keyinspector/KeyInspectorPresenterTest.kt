@@ -49,17 +49,16 @@ import java.net.UnknownHostException
 import java.time.ZonedDateTime
 import java.util.UUID
 
-
 class KeyInspectorPresenterTest : KoinTest {
-
     private val presenter: KeyInspectorContract.Presenter by inject()
     private val view = mock<KeyInspectorContract.View>()
 
     @get:Rule
-    val koinTestRule = KoinTestRule.create {
-        printLogger(Level.ERROR)
-        modules(testKeyInspectorModule, validSessionTestModule)
-    }
+    val koinTestRule =
+        KoinTestRule.create {
+            printLogger(Level.ERROR)
+            modules(testKeyInspectorModule, validSessionTestModule)
+        }
 
     @Before
     fun setup() {
@@ -76,10 +75,11 @@ class KeyInspectorPresenterTest : KoinTest {
             onBlocking { execute(Unit) }.thenReturn(
                 FetchCurrentUserUseCase.Output.Failure(
                     NetworkResult.Failure.NetworkError(
-                        UnknownHostException(), errorMessage
+                        UnknownHostException(),
+                        errorMessage,
                     ),
-                    errorMessage
-                )
+                    errorMessage,
+                ),
             )
         }
 
@@ -101,50 +101,63 @@ class KeyInspectorPresenterTest : KoinTest {
         verify(view).showAvatar(accountData.avatarUrl.toString())
         verify(view).showLabel(accountData.label.toString())
         verify(view).showFingerprint(mockFingerprint)
-        verify(view).showLength(userData.userModel.gpgKey.bits.toString())
-        verify(view).showUid(userData.userModel.gpgKey.uid.toString())
+        verify(view).showLength(
+            userData.userModel.gpgKey.bits
+                .toString(),
+        )
+        verify(view).showUid(
+            userData.userModel.gpgKey.uid
+                .toString(),
+        )
         verify(view).showExpirationDate(mockDate)
         verify(view).showCreationDate(mockDate)
-        verify(view).showAlgorithm(userData.userModel.gpgKey.type.toString())
+        verify(view).showAlgorithm(
+            userData.userModel.gpgKey.type
+                .toString(),
+        )
         verify(view).hideProgress()
         verifyNoMoreInteractions(view)
     }
 
     private companion object {
         private val now = ZonedDateTime.now()
-        private val accountData = GetSelectedAccountDataUseCase.Output(
-            firstName = "first",
-            lastName = "last",
-            email = "email",
-            avatarUrl = "avatar_url",
-            url = "url",
-            serverId = "serverId",
-            label = "label",
-            role = "user"
-        )
-        private val userData = FetchCurrentUserUseCase.Output.Success(
-            UserModel(
-                id = "newUserId",
-                userName = "newUserName",
-                disabled = false,
-                gpgKey = GpgKeyModel(
-                    armoredKey = "keyData",
-                    fingerprint = "fingerprint",
-                    bits = 1,
-                    uid = "uid",
-                    keyId = "keyid",
-                    type = "rsa",
-                    keyExpirationDate = now,
-                    keyCreationDate = now,
-                    id = UUID.randomUUID().toString()
-                ),
-                profile = UserProfileModel(
-                    username = "username",
-                    firstName = "first",
-                    lastName = "last",
-                    avatarUrl = "avatar_url"
-                )
+        private val accountData =
+            GetSelectedAccountDataUseCase.Output(
+                firstName = "first",
+                lastName = "last",
+                email = "email",
+                avatarUrl = "avatar_url",
+                url = "url",
+                serverId = "serverId",
+                label = "label",
+                role = "user",
             )
-        )
+        private val userData =
+            FetchCurrentUserUseCase.Output.Success(
+                UserModel(
+                    id = "newUserId",
+                    userName = "newUserName",
+                    disabled = false,
+                    gpgKey =
+                        GpgKeyModel(
+                            armoredKey = "keyData",
+                            fingerprint = "fingerprint",
+                            bits = 1,
+                            uid = "uid",
+                            keyId = "keyid",
+                            type = "rsa",
+                            keyExpirationDate = now,
+                            keyCreationDate = now,
+                            id = UUID.randomUUID().toString(),
+                        ),
+                    profile =
+                        UserProfileModel(
+                            username = "username",
+                            firstName = "first",
+                            lastName = "last",
+                            avatarUrl = "avatar_url",
+                        ),
+                ),
+            )
     }
 }

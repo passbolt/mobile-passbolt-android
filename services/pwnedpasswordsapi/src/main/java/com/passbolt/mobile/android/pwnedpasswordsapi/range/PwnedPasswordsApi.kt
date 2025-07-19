@@ -27,13 +27,13 @@ import retrofit2.http.Path
  */
 interface PwnedPasswordsApi {
     /**
-    @param passwordPartialHash HIBP requires the first 5 characters of the SHA-1 hash of the password
-    to be sent to the API. See https://haveibeenpwned.com/API/v3#PwnedPasswords for more information.
-    @return The response body contains the suffixes of the SHA-1 hashes of the passwords that have been compromised.
+     @param passwordPartialHash HIBP requires the first 5 characters of the SHA-1 hash of the password
+     to be sent to the API. See https://haveibeenpwned.com/API/v3#PwnedPasswords for more information.
+     @return The response body contains the suffixes of the SHA-1 hashes of the passwords that have been compromised.
      **/
     @GET(PWNED_PASSWORDS_BY_RANGE)
     suspend fun getPwnedPasswordsSuffixes(
-        @Path(PATH_PASSWORD_PARTIAL_HASH) passwordPartialHash: String
+        @Path(PATH_PASSWORD_PARTIAL_HASH) passwordPartialHash: String,
     ): String
 
     companion object {

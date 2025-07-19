@@ -14,24 +14,32 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 class ExpandableFolderItem(
     private val folderModel: FolderModel,
-    private val basePaddingMultiplier: Int
+    private val basePaddingMultiplier: Int,
 ) : AbstractExpandableItem<ExpandableFolderItem.ViewHolder>(),
     ISubItem<ExpandableFolderItem.ViewHolder> {
-
     override val type: Int
         get() = R.id.itemExpandableFolder
 
     override val layoutRes: Int
         get() = R.layout.item_expandable_folder
 
-    override fun bindView(holder: ViewHolder, payloads: List<Any>) {
+    override fun bindView(
+        holder: ViewHolder,
+        payloads: List<Any>,
+    ) {
         super.bindView(holder, payloads)
         val p = payloads.mapNotNull { it as? String }.lastOrNull()
         if (p == ExpandableExtension.PAYLOAD_EXPAND) {
-            holder.expandIcon.animate().rotation(ROTATION_EXPANDED).start()
+            holder.expandIcon
+                .animate()
+                .rotation(ROTATION_EXPANDED)
+                .start()
             return
         } else if (p == ExpandableExtension.PAYLOAD_COLLAPSE) {
-            holder.expandIcon.animate().rotation(ROTATION_COLLAPSED).start()
+            holder.expandIcon
+                .animate()
+                .rotation(ROTATION_COLLAPSED)
+                .start()
             return
         }
 
@@ -43,14 +51,17 @@ class ExpandableFolderItem(
                     CoreUiR.drawable.ic_filled_shared_folder_with_bg
                 } else {
                     CoreUiR.drawable.ic_filled_folder_with_bg
-                }
+                },
             )
             expandIcon.apply {
                 visibility = if (subItems.isEmpty()) View.INVISIBLE else View.VISIBLE
                 rotation = if (isExpanded) ROTATION_EXPANDED else ROTATION_COLLAPSED
             }
             view.updatePadding(
-                left = itemView.context.resources.getDimension(CoreUiR.dimen.dp_8).toInt() * basePaddingMultiplier
+                left =
+                    itemView.context.resources
+                        .getDimension(CoreUiR.dimen.dp_8)
+                        .toInt() * basePaddingMultiplier,
             )
         }
     }
@@ -63,7 +74,9 @@ class ExpandableFolderItem(
 
     override fun getViewHolder(v: View) = ViewHolder(v)
 
-    class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
+    class ViewHolder(
+        val view: View,
+    ) : RecyclerView.ViewHolder(view) {
         var name: TextView = view.findViewById(R.id.name)
         var icon: ImageView = view.findViewById(R.id.icon)
         var expandIcon: ImageView = view.findViewById(R.id.expandIcon)

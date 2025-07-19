@@ -29,22 +29,21 @@ import com.passbolt.mobile.android.encryptedstorage.EncryptedSharedPreferencesFa
  */
 
 class GetAccountFlagsPrefsUseCase(
-    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory
+    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory,
 ) : UseCase<Unit, GetAccountFlagsPrefsUseCase.Output>,
     SelectedAccountUseCase {
-
     override fun execute(input: Unit): Output {
         val fileName = AccountPreferencesFileName(selectedAccountId).name
         val sharedPreferences = encryptedSharedPreferencesFactory.get("$fileName.xml")
 
         with(sharedPreferences) {
             return Output(
-                wasChromeNativeAutofillDialogShown = getBoolean(KEY_CHROME_NATIVE_AUTOFILL_DIALOG_SHOWN, false)
+                wasChromeNativeAutofillDialogShown = getBoolean(KEY_CHROME_NATIVE_AUTOFILL_DIALOG_SHOWN, false),
             )
         }
     }
 
     data class Output(
-        val wasChromeNativeAutofillDialogShown: Boolean
+        val wasChromeNativeAutofillDialogShown: Boolean,
     )
 }

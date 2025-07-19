@@ -49,13 +49,14 @@ open class SingleResourceDeserializer(
     private val resourceTypeIdToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider,
     private val jsonSchemaValidationRunner: JsonSchemaValidationRunner,
     private val getLocalMetadataKeys: GetLocalMetadataKeysUseCase,
-    private val gson: Gson
-) : JsonDeserializer<ResourceResponseDto?>, KoinComponent {
-
+    private val gson: Gson,
+) : JsonDeserializer<ResourceResponseDto?>,
+    KoinComponent {
+    @Suppress("LongMethod")
     override fun deserialize(
         json: JsonElement?,
         typeOfT: Type?,
-        context: JsonDeserializationContext?
+        context: JsonDeserializationContext?,
     ): ResourceResponseDto? {
         if (json == null || context == null) {
             Timber.e("Json element or deserialization context was null: (${json == null}), (${context == null}")
@@ -64,12 +65,14 @@ open class SingleResourceDeserializer(
 
         // done on the parser thread
         return runBlocking {
-            val resourceTypeIdToSlugMapping = resourceTypeIdToSlugMappingProvider
-                .provideMappingForSelectedAccount()
+            val resourceTypeIdToSlugMapping =
+                resourceTypeIdToSlugMappingProvider
+                    .provideMappingForSelectedAccount()
 
-            val supportedResourceTypesIds = resourceTypeIdToSlugMapping
-                .filter { it.value in allSlugs }
-                .keys
+            val supportedResourceTypesIds =
+                resourceTypeIdToSlugMapping
+                    .filter { it.value in allSlugs }
+                    .keys
 
             val metadataKeys = getLocalMetadataKeys.execute(GetLocalMetadataKeysUseCase.Input(DECRYPT))
             val metadataDecryptor = get<MetadataDecryptor> { parametersOf(metadataKeys) }
@@ -96,10 +99,11 @@ open class SingleResourceDeserializer(
 
                         val decryptedMetadataResult = metadataDecryptor.decryptMetadata(resource)
 
-                        if (decryptedMetadataResult is MetadataDecryptor.Output.Success && isValid(
+                        if (decryptedMetadataResult is MetadataDecryptor.Output.Success &&
+                            isValid(
                                 resource.resourceTypeId,
                                 decryptedMetadataResult.decryptedMetadata,
-                                resourceTypeIdToSlugMapping
+                                resourceTypeIdToSlugMapping,
                             )
                         ) {
                             resource.copy(metadata = decryptedMetadataResult.decryptedMetadata)
@@ -129,7 +133,7 @@ open class SingleResourceDeserializer(
     private suspend fun isValid(
         resourceTypeId: UUID,
         resourceJson: String,
-        resourceTypeIdToSlugMapping: Map<UUID, String>
+        resourceTypeIdToSlugMapping: Map<UUID, String>,
     ): Boolean {
         val resourceTypeSlug = resourceTypeIdToSlugMapping[resourceTypeId]
         return if (resourceTypeSlug != null) {
@@ -139,6 +143,8 @@ open class SingleResourceDeserializer(
         }
     }
 
-    private fun isSupported(resourceTypeId: String, supportedResourceTypesIds: Set<UUID>) =
-        UUID.fromString(resourceTypeId) in supportedResourceTypesIds
+    private fun isSupported(
+        resourceTypeId: String,
+        supportedResourceTypesIds: Set<UUID>,
+    ) = UUID.fromString(resourceTypeId) in supportedResourceTypesIds
 }

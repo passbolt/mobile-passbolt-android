@@ -27,10 +27,9 @@ import com.passbolt.mobile.android.encryptedstorage.EncryptedSharedPreferencesFa
  * @since v1.0
  */
 class DeleteTrustedMetadataKeyUseCase(
-    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory
+    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory,
 ) : AsyncUseCase<Unit, Unit>,
     SelectedAccountUseCase {
-
     override suspend fun execute(input: Unit) {
         val fileName = TrustedMetadataKeyFileName(selectedAccountId).name
         val sharedPreferences = encryptedSharedPreferencesFactory.get("$fileName.xml")

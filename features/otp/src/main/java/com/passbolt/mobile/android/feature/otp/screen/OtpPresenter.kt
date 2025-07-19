@@ -79,10 +79,10 @@ class OtpPresenter(
     private val totpParametersProvider: TotpParametersProvider,
     private val idToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider,
     private val metadataPrivateKeysHelperInteractor: MetadataPrivateKeysHelperInteractor,
-    coroutineLaunchContext: CoroutineLaunchContext
-) : DataRefreshViewReactivePresenter<OtpContract.View>(coroutineLaunchContext), OtpContract.Presenter,
+    coroutineLaunchContext: CoroutineLaunchContext,
+) : DataRefreshViewReactivePresenter<OtpContract.View>(coroutineLaunchContext),
+    OtpContract.Presenter,
     KoinScopeComponent {
-
     override var view: OtpContract.View? = null
     private val job = SupervisorJob()
 
@@ -139,7 +139,9 @@ class OtpPresenter(
     }
 
     private suspend fun getAndShowOtpResources() {
-        getLocalResourcesUseCase.execute(GetLocalResourcesUseCase.Input(totpSlugs)).resources
+        getLocalResourcesUseCase
+            .execute(GetLocalResourcesUseCase.Input(totpSlugs))
+            .resources
             .map(otpModelMapper::map)
             .let {
                 otpList = it.toMutableList()
@@ -153,8 +155,11 @@ class OtpPresenter(
     }
 
     private fun loadUserAvatar() {
-        userAvatarUrl = getSelectedAccountDataUseCase.execute(Unit).avatarUrl
-            .also { view?.displaySearchAvatar(it) }
+        userAvatarUrl =
+            getSelectedAccountDataUseCase
+                .execute(Unit)
+                .avatarUrl
+                .also { view?.displaySearchAvatar(it) }
     }
 
     private fun updateOtpsCounterTime() {
@@ -169,7 +174,7 @@ class OtpPresenter(
                                 isVisible = false,
                                 otpExpirySeconds = null,
                                 otpValue = null,
-                                remainingSecondsCounter = null
+                                remainingSecondsCounter = null,
                             )
                         } else {
                             replaced = true
@@ -207,9 +212,10 @@ class OtpPresenter(
     }
 
     private fun filterOtps() {
-        val filtered = otpList.filter {
-            searchableMatcher.matches(it, currentSearchText.value)
-        }
+        val filtered =
+            otpList.filter {
+                searchableMatcher.matches(it, currentSearchText.value)
+            }
         if (filtered.isEmpty()) {
             view?.showEmptyView()
         } else {
@@ -234,7 +240,7 @@ class OtpPresenter(
                     otpExpirySeconds = null,
                     otpValue = null,
                     remainingSecondsCounter = null,
-                    isRefreshing = isCurrentItemRefreshing
+                    isRefreshing = isCurrentItemRefreshing,
                 )
             } else {
                 it
@@ -250,11 +256,15 @@ class OtpPresenter(
         showTotp(otpItemWrapper, copyToClipboard = true)
     }
 
-    private fun showTotp(otpItemWrapper: OtpItemWrapper, copyToClipboard: Boolean) {
+    private fun showTotp(
+        otpItemWrapper: OtpItemWrapper,
+        copyToClipboard: Boolean,
+    ) {
         presenterScope.launch {
-            val secretPropertiesActionsInteractor = get<SecretPropertiesActionsInteractor> {
-                parametersOf(otpItemWrapper.resource, needSessionRefreshFlow, sessionRefreshedFlow)
-            }
+            val secretPropertiesActionsInteractor =
+                get<SecretPropertiesActionsInteractor> {
+                    parametersOf(otpItemWrapper.resource, needSessionRefreshFlow, sessionRefreshedFlow)
+                }
             performSecretPropertyAction(
                 action = { secretPropertiesActionsInteractor.provideOtp() },
                 doOnDecryptionFailure = { view?.showDecryptionFailure() },
@@ -262,23 +272,26 @@ class OtpPresenter(
                 doOnSuccess = {
                     if (it.result.key.isNotBlank()) {
                         view?.apply {
-                            val otpParameters = totpParametersProvider.provideOtpParameters(
-                                secretKey = it.result.key,
-                                digits = it.result.digits,
-                                period = it.result.period,
-                                algorithm = it.result.algorithm
-                            )
+                            val otpParameters =
+                                totpParametersProvider.provideOtpParameters(
+                                    secretKey = it.result.key,
+                                    digits = it.result.digits,
+                                    period = it.result.period,
+                                    algorithm = it.result.algorithm,
+                                )
 
-                            val newOtp = otpItemWrapper.copy(
-                                otpValue = otpParameters.otpValue,
-                                isVisible = true,
-                                otpExpirySeconds = it.result.period,
-                                remainingSecondsCounter = otpParameters.secondsValid,
-                                isRefreshing = false
-                            )
+                            val newOtp =
+                                otpItemWrapper.copy(
+                                    otpValue = otpParameters.otpValue,
+                                    isVisible = true,
+                                    otpExpirySeconds = it.result.period,
+                                    remainingSecondsCounter = otpParameters.secondsValid,
+                                    isRefreshing = false,
+                                )
                             with(newOtp) {
-                                val indexOfOld = otpList
-                                    .indexOfFirst { it.resource.resourceId == otpItemWrapper.resource.resourceId }
+                                val indexOfOld =
+                                    otpList
+                                        .indexOfFirst { it.resource.resourceId == otpItemWrapper.resource.resourceId }
                                 otpList[indexOfOld] = this
                                 visibleOtpId = otpItemWrapper.resource.resourceId
                             }
@@ -292,7 +305,7 @@ class OtpPresenter(
                         Timber.e(error)
                         view?.showError(error)
                     }
-                }
+                },
             )
         }
     }
@@ -352,28 +365,30 @@ class OtpPresenter(
 
     override fun menuCopyOtpClick() {
         presenterScope.launch {
-            val secretPropertiesActionsInteractor = get<SecretPropertiesActionsInteractor> {
-                parametersOf(currentOtpItemForMenu!!.resource, needSessionRefreshFlow, sessionRefreshedFlow)
-            }
+            val secretPropertiesActionsInteractor =
+                get<SecretPropertiesActionsInteractor> {
+                    parametersOf(currentOtpItemForMenu!!.resource, needSessionRefreshFlow, sessionRefreshedFlow)
+                }
             performSecretPropertyAction(
                 action = { secretPropertiesActionsInteractor.provideOtp() },
                 doOnDecryptionFailure = { view?.showDecryptionFailure() },
                 doOnFetchFailure = { view?.showFetchFailure() },
                 doOnSuccess = {
                     if (it.result.key.isNotBlank()) {
-                        val otpParameters = totpParametersProvider.provideOtpParameters(
-                            secretKey = it.result.key,
-                            digits = it.result.digits,
-                            period = it.result.period,
-                            algorithm = it.result.algorithm
-                        )
+                        val otpParameters =
+                            totpParametersProvider.provideOtpParameters(
+                                secretKey = it.result.key,
+                                digits = it.result.digits,
+                                period = it.result.period,
+                                algorithm = it.result.algorithm,
+                            )
                         view?.copySecretToClipBoard(it.label, otpParameters.otpValue)
                     } else {
                         val error = "Fetched totp key is empty"
                         Timber.e(error)
                         view?.showError(error)
                     }
-                }
+                },
             )
         }
     }
@@ -394,9 +409,10 @@ class OtpPresenter(
         presenterScope.launch {
             view?.showProgress()
             val otpResource = currentOtpItemForMenu!!.resource
-            val slug = idToSlugMappingProvider.provideMappingForSelectedAccount()[
-                UUID.fromString(otpResource.resourceTypeId)
-            ]
+            val slug =
+                idToSlugMappingProvider.provideMappingForSelectedAccount()[
+                    UUID.fromString(otpResource.resourceTypeId),
+                ]
             when (val contentType = ContentType.fromSlug(slug!!)) {
                 is Totp, V5TotpStandalone ->
                     deleteStandaloneTotpResource(otpResource)
@@ -410,15 +426,16 @@ class OtpPresenter(
     }
 
     private suspend fun downgradeToPasswordAndDescriptionResource(otpResource: ResourceModel) {
-        val resourceUpdateActionInteractor = get<ResourceUpdateActionsInteractor> {
-            parametersOf(otpResource, needSessionRefreshFlow, sessionRefreshedFlow)
-        }
+        val resourceUpdateActionInteractor =
+            get<ResourceUpdateActionsInteractor> {
+                parametersOf(otpResource, needSessionRefreshFlow, sessionRefreshedFlow)
+            }
 
         performResourceUpdateAction(
             action = {
                 resourceUpdateActionInteractor.updateGenericResource(
                     UpdateAction.REMOVE_TOTP,
-                    secretModification = { it.apply { totp = null } }
+                    secretModification = { it.apply { totp = null } },
                 )
             },
             doOnCryptoFailure = { view?.showEncryptionError(it) },
@@ -432,7 +449,7 @@ class OtpPresenter(
             doOnCannotEditWithCurrentConfig = { view?.showCannotUpdateTotpWithCurrentConfig() },
             doOnMetadataKeyModified = { view?.showMetadataKeyModifiedDialog(it) },
             doOnMetadataKeyDeleted = { view?.showMetadataKeyDeletedDialog(it) },
-            doOnMetadataKeyVerificationFailure = { view?.showFailedToVerifyMetadataKey() }
+            doOnMetadataKeyVerificationFailure = { view?.showFailedToVerifyMetadataKey() },
         )
     }
 
@@ -444,16 +461,17 @@ class OtpPresenter(
     }
 
     private suspend fun deleteStandaloneTotpResource(otpResource: ResourceModel) {
-        val resourceCommonActionsInteractor = get<ResourceCommonActionsInteractor> {
-            parametersOf(otpResource, needSessionRefreshFlow, sessionRefreshedFlow)
-        }
+        val resourceCommonActionsInteractor =
+            get<ResourceCommonActionsInteractor> {
+                parametersOf(otpResource, needSessionRefreshFlow, sessionRefreshedFlow)
+            }
         performCommonResourceAction(
             action = { resourceCommonActionsInteractor.deleteResource() },
             doOnFailure = { view?.showFailedToDeleteResource() },
             doOnSuccess = {
                 view?.showResourceDeleted()
                 initRefresh()
-            }
+            },
         )
     }
 
@@ -473,7 +491,10 @@ class OtpPresenter(
         initRefresh()
     }
 
-    override fun otpQrScanReturned(isTotpCreated: Boolean, isManualCreationChosen: Boolean) {
+    override fun otpQrScanReturned(
+        isTotpCreated: Boolean,
+        isManualCreationChosen: Boolean,
+    ) {
         if (isTotpCreated) {
             initRefresh()
         } else {
@@ -483,7 +504,11 @@ class OtpPresenter(
         }
     }
 
-    override fun resourceFormReturned(isResourceCreated: Boolean, isResourceEdited: Boolean, resourceName: String?) {
+    override fun resourceFormReturned(
+        isResourceCreated: Boolean,
+        isResourceEdited: Boolean,
+        resourceName: String?,
+    ) {
         if (isResourceCreated) {
             initRefresh()
             view?.showResourceCreatedSnackbar()
@@ -503,9 +528,12 @@ class OtpPresenter(
     override fun trustNewMetadataKey(model: NewMetadataKeyToTrustModel) {
         presenterScope.launch {
             view?.showProgress()
-            when (val output = runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
-                metadataPrivateKeysHelperInteractor.trustNewKey(model)
-            }) {
+            when (
+                val output =
+                    runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+                        metadataPrivateKeysHelperInteractor.trustNewKey(model)
+                    }
+            ) {
                 is MetadataPrivateKeysHelperInteractor.Output.Success ->
                     view?.showNewMetadataKeyIsTrusted()
                 else -> {

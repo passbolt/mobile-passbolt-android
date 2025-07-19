@@ -27,9 +27,8 @@ import com.passbolt.mobile.android.encryptedstorage.biometric.KeyStoreWrapper
  * @since v1.0
  */
 class RemoveBiometricKeyUseCase(
-    private val keyStoreWrapper: KeyStoreWrapper
+    private val keyStoreWrapper: KeyStoreWrapper,
 ) : UseCase<Unit, Unit> {
-
     override fun execute(input: Unit) {
         keyStoreWrapper.removeKey(BiometricCrypto.BIOMETRIC_KEY_ALIAS)
     }

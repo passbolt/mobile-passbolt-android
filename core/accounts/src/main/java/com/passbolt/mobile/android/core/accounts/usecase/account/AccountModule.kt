@@ -28,12 +28,12 @@ import org.koin.core.module.Module
 internal fun Module.accountModule() {
     factory {
         SaveAccountUseCase(
-            sharedPreferences = get()
+            sharedPreferences = get(),
         )
     }
     factory {
         RemoveAccountUseCase(
-            sharedPreferences = get()
+            sharedPreferences = get(),
         )
     }
 }

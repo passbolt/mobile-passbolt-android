@@ -30,20 +30,25 @@ import androidx.viewbinding.ViewBinding
  * @since v1.0
  */
 
-abstract class BindingFragment<T : ViewBinding>(private val viewInflater: (LayoutInflater, ViewGroup?, Boolean) -> T) :
-    Fragment() {
+abstract class BindingFragment<T : ViewBinding>(
+    private val viewInflater: (LayoutInflater, ViewGroup?, Boolean) -> T,
+) : Fragment() {
+    private var binding: T? = null
 
-    private var _binding: T? = null
-    protected val binding: T
-        get() = _binding!!
+    protected val requiredBinding: T
+        get() = requireNotNull(binding)
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        _binding = viewInflater.invoke(inflater, container, false)
-        return binding.root
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
+    ): View? {
+        binding = viewInflater.invoke(inflater, container, false)
+        return requiredBinding.root
     }
 
     override fun onDestroyView() {
-        _binding = null
+        binding = null
         super.onDestroyView()
     }
 }

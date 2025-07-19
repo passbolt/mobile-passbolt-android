@@ -29,9 +29,8 @@ import timber.log.Timber
  */
 
 class SavePrivateKeyUseCase(
-    private val encryptedFileFactory: EncryptedFileFactory
+    private val encryptedFileFactory: EncryptedFileFactory,
 ) : UseCase<SavePrivateKeyUseCase.Input, SavePrivateKeyUseCase.Output> {
-
     override fun execute(input: Input): Output {
         val name = PrivateKeyFileName(input.userId).name
         Timber.d("Saving private key.")
@@ -51,11 +50,12 @@ class SavePrivateKeyUseCase(
 
     sealed class Output {
         data object Success : Output()
+
         data object Failure : Output()
     }
 
     data class Input(
         val userId: String,
-        val privateKey: String
+        val privateKey: String,
     )
 }

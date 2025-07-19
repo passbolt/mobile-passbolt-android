@@ -27,14 +27,15 @@ import com.passbolt.mobile.android.core.networking.callWithHandler
  */
 class FavouritesRepository(
     private val favouritesDataSource: FavouritesDataSource,
-    private val responseHandler: ResponseHandler
+    private val responseHandler: ResponseHandler,
 ) {
+    suspend fun addToFavourites(resourceId: String) =
+        callWithHandler(responseHandler) {
+            favouritesDataSource.addToFavourites(resourceId)
+        }
 
-    suspend fun addToFavourites(resourceId: String) = callWithHandler(responseHandler) {
-        favouritesDataSource.addToFavourites(resourceId)
-    }
-
-    suspend fun removeFromFavourites(favouriteId: String) = callWithHandler(responseHandler) {
-        favouritesDataSource.removeFromFavourites(favouriteId)
-    }
+    suspend fun removeFromFavourites(favouriteId: String) =
+        callWithHandler(responseHandler) {
+            favouritesDataSource.removeFromFavourites(favouriteId)
+        }
 }

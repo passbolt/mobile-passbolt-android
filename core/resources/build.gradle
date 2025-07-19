@@ -28,6 +28,7 @@ dependencies {
     implementation project(':passphrasememorycache')
     implementation project(':metadata')
     implementation project(':jsonmodel')
+    implementation project(':coreui')
 
     implementation libs.gson
     implementation libs.room.core

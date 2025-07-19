@@ -51,15 +51,14 @@ import org.koin.test.KoinTest
 import kotlin.test.BeforeTest
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
-
 @RunWith(AndroidJUnit4::class)
 @MediumTest
 class ScanQrCodeTest : KoinTest {
-
     @get:Rule
-    val activityRule = lazyActivityScenarioRule<SetUpActivity>(
-        koinOverrideModules = listOf(instrumentationTestsModule)
-    )
+    val activityRule =
+        lazyActivityScenarioRule<SetUpActivity>(
+            koinOverrideModules = listOf(instrumentationTestsModule),
+        )
 
     @get:Rule
     val permissionRule: GrantPermissionRule = GrantPermissionRule.grant(android.Manifest.permission.CAMERA)
@@ -70,8 +69,8 @@ class ScanQrCodeTest : KoinTest {
         onView(withId(R.id.scanQrCodesButton)).perform(scrollTo(), click())
     }
 
-    @Test
     //    https://passbolt.testrail.io/index.php?/cases/view/2342
+    @Test
     fun asAMobileUserICanGetHelpDuringTheQrCodeScanningProcess() {
         //        Given   the user is on the “Scanning QR codes” screen
         //        When    the user clicks on the “information” icon next to the progress bar
@@ -85,30 +84,31 @@ class ScanQrCodeTest : KoinTest {
         //        And     an "Access the logs" button is available
         onView(withId(com.passbolt.mobile.android.feature.helpmenu.R.id.accessLogs)).check(matches(isDisplayed()))
         //        And     a "Visit help site" button is available
-        onView(withId(com.passbolt.mobile.android.feature.settings.R.id.visitHelpWebsite)).check(matches(isDisplayed()))
+        onView(withId(com.passbolt.mobile.android.feature.helpmenu.R.id.visitHelpWebsite)).check(matches(isDisplayed()))
     }
 
-    @Test
     //    https://passbolt.testrail.io/index.php?/cases/view/6192
+    @Test
     fun asAMobileUserICanOpenHelpWebpageDuringTheQrCodeScanningProcess() {
         Intents.init()
 
         //        Given   the user is on the “Help” modal
         onView(withContentDescription(LocalizationR.string.help_button_description)).perform(click())
         //        When    the user clicks on the “Visit help site” button
-        onView(withId(com.passbolt.mobile.android.feature.settings.R.id.visitHelpWebsite)).perform(click())
+        onView(withId(com.passbolt.mobile.android.feature.helpmenu.R.id.visitHelpWebsite)).perform(click())
         //        Then    a webpage with help is presented
-        val expectedIntent: Matcher<Intent> = AllOf.allOf(
-            IntentMatchers.hasAction(Intent.ACTION_VIEW),
-            IntentMatchers.hasData(getString(LocalizationR.string.help_website))
-        )
+        val expectedIntent: Matcher<Intent> =
+            AllOf.allOf(
+                IntentMatchers.hasAction(Intent.ACTION_VIEW),
+                IntentMatchers.hasData(getString(LocalizationR.string.help_website)),
+            )
         Intents.intended(expectedIntent)
 
         Intents.release()
     }
 
-    @Test
     //    https://passbolt.testrail.io/index.php?/cases/view/6193
+    @Test
     fun asAMobileUserICanSeeAnExplanationWhyScanningQrCodes() {
         //      Given   the user is on the “Help” modal
         onView(withContentDescription(LocalizationR.string.help_button_description)).perform(click())

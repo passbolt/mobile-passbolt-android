@@ -40,16 +40,17 @@ internal val mockAuthRepository = mock<AuthRepository>()
 internal val mockOpenPgp = mock<OpenPgp>()
 internal val mockTimeProvider = mock<TimeProvider>()
 
-val testSignInUseCaseModule = module {
-    factory {
-        mock<SignInMapper> {
-            on { mapRequestToDto(any(), any()) }.doReturn(SignInRequestDto("userId", "challenge"))
+val testSignInUseCaseModule =
+    module {
+        factory {
+            mock<SignInMapper> {
+                on { mapRequestToDto(any(), any()) }.doReturn(SignInRequestDto("userId", "challenge"))
+            }
         }
+        factory { mockAuthRepository }
+        factory { mockTimeProvider }
+        factory { mockOpenPgp }
+        singleOf(::CookieExtractor)
+        factoryOf(::SignInUseCase)
+        factoryOf(::GopenPgpTimeUpdater)
     }
-    factory { mockAuthRepository }
-    factory { mockTimeProvider }
-    factory { mockOpenPgp }
-    singleOf(::CookieExtractor)
-    factoryOf(::SignInUseCase)
-    factoryOf(::GopenPgpTimeUpdater)
-}

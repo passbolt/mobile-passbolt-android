@@ -33,10 +33,8 @@ import java.time.ZonedDateTime
 import java.util.concurrent.ConcurrentHashMap
 
 class SessionKeysBundleMerger(
-    private val coroutineLaunchContext: CoroutineLaunchContext
-
+    private val coroutineLaunchContext: CoroutineLaunchContext,
 ) {
-
     suspend fun merge(input: List<DecryptedMetadataSessionKeysBundleModel>): MergedSessionKeys =
         withContext(coroutineLaunchContext.io) {
             val merged = hashMapOf<SessionKeyIdentifier, SessionKeyModel>()

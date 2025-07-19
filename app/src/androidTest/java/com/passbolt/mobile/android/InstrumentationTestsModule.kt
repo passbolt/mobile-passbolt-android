@@ -1,13 +1,3 @@
-package com.passbolt.mobile.android
-
-import com.passbolt.mobile.android.accountinit.AccountDataCleaner
-import com.passbolt.mobile.android.accountinit.AccountInitializer
-import com.passbolt.mobile.android.core.security.rootdetection.RootDetector
-import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
-import org.koin.core.module.dsl.singleOf
-import org.koin.dsl.module
-
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -31,16 +21,43 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
+package com.passbolt.mobile.android
+
+import com.passbolt.mobile.android.accountinit.AccountDataCleaner
+import com.passbolt.mobile.android.accountinit.AccountInitializer
+import com.passbolt.mobile.android.core.security.rootdetection.RootDetector
+import com.passbolt.mobile.android.feature.autofill.informationprovider.AutofillInformationProvider
+import com.passbolt.mobile.android.feature.autofill.informationprovider.AutofillInformationProvider.ChromeNativeAutofillStatus.NOT_SUPPORTED
+import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
+import org.koin.core.module.dsl.singleOf
+import org.koin.dsl.module
+
 /**
  * Dependency overrides for instrumentation tests.
  */
-val instrumentationTestsModule = module {
-    single<RootDetector> {
-        object : RootDetector {
-            override fun isDeviceRooted() = false
+val instrumentationTestsModule =
+    module {
+        single<RootDetector> {
+            object : RootDetector {
+                override fun isDeviceRooted() = false
+            }
+        }
+        singleOf(::ManagedAccountIntentCreator)
+        singleOf(::AccountInitializer)
+        singleOf(::AccountDataCleaner)
+        single<AutofillInformationProvider> {
+            object : AutofillInformationProvider {
+                override fun isAutofillServiceSupported() = true
+
+                override fun isPassboltAutofillServiceSet() = false
+
+                override fun isAccessibilityOverlayEnabled() = false
+
+                override fun isAccessibilityServiceEnabled() = false
+
+                override fun isAccessibilityAutofillSetup() = false
+
+                override fun getChromeNativeAutofillStatus() = NOT_SUPPORTED
+            }
         }
     }
-    singleOf(::ManagedAccountIntentCreator)
-    singleOf(::AccountInitializer)
-    singleOf(::AccountDataCleaner)
-}

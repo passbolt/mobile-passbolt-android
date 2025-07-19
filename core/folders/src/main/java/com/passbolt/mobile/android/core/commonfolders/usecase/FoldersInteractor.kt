@@ -32,27 +32,28 @@ class FoldersInteractor(
     private val fetchUserFoldersUseCase: FetchUserFoldersUseCase,
     private val rebuildLocalFoldersUseCase: RebuildFoldersTablesUseCase,
     private val getFeatureFlagsUseCase: GetFeatureFlagsUseCase,
-    private val rebuildLocalFolderPermissionsUseCase: RebuildFolderPermissionsTablesUseCase
+    private val rebuildLocalFolderPermissionsUseCase: RebuildFolderPermissionsTablesUseCase,
 ) {
-
-    suspend fun fetchAndSaveFolders(): Output {
-        return if (getFeatureFlagsUseCase.execute(Unit).featureFlags.areFoldersAvailable) {
+    suspend fun fetchAndSaveFolders(): Output =
+        if (getFeatureFlagsUseCase.execute(Unit).featureFlags.areFoldersAvailable) {
             when (val fetched = fetchUserFoldersUseCase.execute(Unit)) {
                 is FetchUserFoldersUseCase.Output.Failure -> Output.Failure(fetched.authenticationState)
                 is FetchUserFoldersUseCase.Output.Success -> {
                     try {
                         rebuildLocalFoldersUseCase.execute(
                             RebuildFoldersTablesUseCase.Input(
-                                fetched.foldersWithAttributes.map { it.folderModel })
+                                fetched.foldersWithAttributes.map { it.folderModel },
+                            ),
                         )
                         rebuildLocalFolderPermissionsUseCase.execute(
-                            RebuildFolderPermissionsTablesUseCase.Input(fetched.foldersWithAttributes)
+                            RebuildFolderPermissionsTablesUseCase.Input(fetched.foldersWithAttributes),
                         )
                         Output.Success
                     } catch (exception: SQLException) {
                         Timber.e(
-                            exception, "There was an error during folders and folders " +
-                                    "permissions db insert"
+                            exception,
+                            "There was an error during folders and folders " +
+                                "permissions db insert",
                         )
                         Output.Failure(fetched.authenticationState)
                     }
@@ -61,15 +62,15 @@ class FoldersInteractor(
         } else {
             Output.Success
         }
-    }
 
     sealed class Output : AuthenticatedUseCaseOutput {
-
         data object Success : Output() {
             override val authenticationState: AuthenticationState
                 get() = AuthenticationState.Authenticated
         }
 
-        data class Failure(override val authenticationState: AuthenticationState) : Output()
+        data class Failure(
+            override val authenticationState: AuthenticationState,
+        ) : Output()
     }
 }

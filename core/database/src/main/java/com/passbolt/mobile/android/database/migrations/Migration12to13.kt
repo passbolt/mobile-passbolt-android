@@ -28,7 +28,6 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 
 @Suppress("MagicNumber")
 object Migration12to13 : Migration(12, 13) {
-
     private const val ADD_KEY_CREATION_DATE_COLUMN =
         "ALTER TABLE User ADD COLUMN created INTEGER"
 

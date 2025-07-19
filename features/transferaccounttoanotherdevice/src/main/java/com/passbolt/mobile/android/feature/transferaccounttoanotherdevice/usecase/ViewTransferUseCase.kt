@@ -37,44 +37,46 @@ import kotlinx.coroutines.withContext
 class ViewTransferUseCase(
     private val mobileTransferRepository: MobileTransferRepository,
     private val transferMapper: TransferMapper,
-    private val coroutineContext: CoroutineLaunchContext
+    private val coroutineContext: CoroutineLaunchContext,
 ) : AsyncUseCase<ViewTransferUseCase.Input, ViewTransferUseCase.Output> {
-
-    override suspend fun execute(input: Input): Output = withContext(coroutineContext.io) {
-        when (val response = mobileTransferRepository.viewTransfer(input.authToken, input.mfaCookie, input.uuid)) {
-            is NetworkResult.Failure -> Output.Failure(response)
-            is NetworkResult.Success -> Output.Success(transferMapper.mapViewResponseToUi(response.value))
+    override suspend fun execute(input: Input): Output =
+        withContext(coroutineContext.io) {
+            when (val response = mobileTransferRepository.viewTransfer(input.authToken, input.mfaCookie, input.uuid)) {
+                is NetworkResult.Failure -> Output.Failure(response)
+                is NetworkResult.Success -> Output.Success(transferMapper.mapViewResponseToUi(response.value))
+            }
         }
-    }
 
     data class Input(
         val authToken: String,
         val mfaCookie: String?,
-        val uuid: String
+        val uuid: String,
     )
 
     sealed class Output : AuthenticatedUseCaseOutput {
-
         override val authenticationState: AuthenticationState
-            get() = when {
-                this is Failure<*> && this.response.isUnauthorized -> {
-                    AuthenticationState.Unauthenticated(AuthenticationState.Unauthenticated.Reason.Session)
+            get() =
+                when {
+                    this is Failure<*> && this.response.isUnauthorized -> {
+                        AuthenticationState.Unauthenticated(AuthenticationState.Unauthenticated.Reason.Session)
+                    }
+                    this is Failure<*> && this.response.isMfaRequired -> {
+                        val providers = MfaTypeProvider.get(this.response)
+                        AuthenticationState.Unauthenticated(
+                            AuthenticationState.Unauthenticated.Reason.Mfa(providers),
+                        )
+                    }
+                    else -> {
+                        AuthenticationState.Authenticated
+                    }
                 }
-                this is Failure<*> && this.response.isMfaRequired -> {
-                    val providers = MfaTypeProvider.get(this.response)
-                    AuthenticationState.Unauthenticated(
-                        AuthenticationState.Unauthenticated.Reason.Mfa(providers)
-                    )
-                }
-                else -> {
-                    AuthenticationState.Authenticated
-                }
-            }
 
         data class Success(
-            val transfer: TransferModel
+            val transfer: TransferModel,
         ) : Output()
 
-        class Failure<T : Any>(val response: NetworkResult.Failure<T>) : Output()
+        class Failure<T : Any>(
+            val response: NetworkResult.Failure<T>,
+        ) : Output()
     }
 }

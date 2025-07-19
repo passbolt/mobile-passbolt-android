@@ -26,7 +26,10 @@ import androidx.fragment.app.DialogFragment
  * @since v1.0
  */
 
-fun DialogFragment.setDebouncingOnClickAndDismiss(view: View, action: () -> Unit = {}) {
+fun DialogFragment.setDebouncingOnClickAndDismiss(
+    view: View,
+    action: () -> Unit = {},
+) {
     view.setDebouncingOnClick {
         action()
         dismiss()

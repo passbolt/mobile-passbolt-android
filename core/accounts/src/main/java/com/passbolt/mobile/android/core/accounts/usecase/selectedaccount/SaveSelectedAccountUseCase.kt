@@ -30,9 +30,8 @@ import com.passbolt.mobile.android.encryptedstorage.EncryptedSharedPreferencesFa
  */
 
 class SaveSelectedAccountUseCase(
-    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory
+    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory,
 ) : UseCase<UserIdInput, Unit> {
-
     override fun execute(input: UserIdInput) {
         val sharedPreferences =
             encryptedSharedPreferencesFactory.get("$SELECTED_ACCOUNT_ALIAS.xml")

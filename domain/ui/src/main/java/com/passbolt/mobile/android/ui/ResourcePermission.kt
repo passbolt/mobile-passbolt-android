@@ -25,5 +25,5 @@ package com.passbolt.mobile.android.ui
 enum class ResourcePermission {
     READ,
     UPDATE,
-    OWNER;
+    OWNER,
 }

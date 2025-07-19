@@ -37,29 +37,31 @@ class ChallengeProvider(
     private val openPgp: OpenPgp,
     private val privateKeyUseCase: GetPrivateKeyUseCase,
     private val timeProvider: TimeProvider,
-    private val uuidProvider: UuidProvider
+    private val uuidProvider: UuidProvider,
 ) {
-
     suspend fun get(
         domain: String,
         serverPublicKey: String,
         passphrase: ByteArray,
-        userId: String
+        userId: String,
     ): Output {
         val passphraseCopy = passphrase.copyOf()
         val privateKey = requireNotNull(privateKeyUseCase.execute(UserIdInput(userId)).privateKey)
         val tokenExpiry = getVerifyTokenExpiry()
 
-        val challengeJson = ChallengeDto(CHALLENGE_VERSION, domain, uuidProvider.get(), tokenExpiry)
-            .run { gson.toJson(this) }
+        val challengeJson =
+            ChallengeDto(CHALLENGE_VERSION, domain, uuidProvider.get(), tokenExpiry)
+                .run { gson.toJson(this) }
 
         return when (
-            val encryptedChallenge = openPgp.encryptSignMessageArmored(
-                publicKey = serverPublicKey,
-                privateKey = privateKey,
-                passphrase = passphraseCopy,
-                message = challengeJson
-            )) {
+            val encryptedChallenge =
+                openPgp.encryptSignMessageArmored(
+                    publicKey = serverPublicKey,
+                    privateKey = privateKey,
+                    passphrase = passphraseCopy,
+                    message = challengeJson,
+                )
+        ) {
             is OpenPgpResult.Result -> {
                 passphraseCopy.erase()
                 Output.Success(encryptedChallenge.result)
@@ -68,12 +70,11 @@ class ChallengeProvider(
         }
     }
 
-    private fun getVerifyTokenExpiry() =
-        timeProvider.getCurrentEpochSeconds() + TOKEN_VALIDATION_TIME
+    private fun getVerifyTokenExpiry() = timeProvider.getCurrentEpochSeconds() + TOKEN_VALIDATION_TIME
 
     sealed class Output {
         data class Success(
-            val challenge: String
+            val challenge: String,
         ) : Output()
 
         data object WrongPassphrase : Output()

@@ -49,14 +49,14 @@ import org.junit.Rule
 import org.junit.Test
 
 class DatabaseMigrationsTest {
-
     @get:Rule
-    val helper: MigrationTestHelper = MigrationTestHelper(
-        InstrumentationRegistry.getInstrumentation(),
-        ResourceDatabase::class.java,
-        emptyList(),
-        FrameworkSQLiteOpenHelperFactory()
-    )
+    val helper: MigrationTestHelper =
+        MigrationTestHelper(
+            InstrumentationRegistry.getInstrumentation(),
+            ResourceDatabase::class.java,
+            emptyList(),
+            FrameworkSQLiteOpenHelperFactory(),
+        )
 
     @Test
     fun migrate1To2() {
@@ -65,7 +65,8 @@ class DatabaseMigrationsTest {
             close()
         }
 
-        helper.runMigrationsAndValidate(TEST_DB, 2, true, Migration1to2)
+        helper
+            .runMigrationsAndValidate(TEST_DB, 2, true, Migration1to2)
             .apply {
                 execSQL("INSERT INTO ResourceType VALUES(2, 'resourceTypeName', 'resourceTypeSlug')")
                 close()
@@ -75,13 +76,20 @@ class DatabaseMigrationsTest {
     @Test
     fun migrate2To3() {
         helper.createDatabase(TEST_DB, 2).apply {
-            execSQL("INSERT INTO Resource VALUES('id','name','READ','url','username','desc','typeId','1','folderName','READ','1')")
+            execSQL(
+                "INSERT INTO Resource VALUES('id','name','READ','url','username','desc','typeId','1'," +
+                    "'folderName','READ','1')",
+            )
             close()
         }
 
-        helper.runMigrationsAndValidate(TEST_DB, 3, true, Migration2to3)
+        helper
+            .runMigrationsAndValidate(TEST_DB, 3, true, Migration2to3)
             .apply {
-                execSQL("INSERT INTO Resource VALUES('id2','name','READ','url','username','desc','typeId', '1','1','folderName','READ','1')")
+                execSQL(
+                    "INSERT INTO Resource VALUES('id2','name','READ','url','username','desc','typeId', '1','1'," +
+                        "'folderName','READ','1')",
+                )
                 close()
             }
     }
@@ -89,15 +97,19 @@ class DatabaseMigrationsTest {
     @Test
     fun migrate3To4() {
         helper.createDatabase(TEST_DB, 3).apply {
-            execSQL("INSERT INTO Resource VALUES('id1','name','READ','url','username','desc','typeId', '1','1','folderName','READ','1')")
+            execSQL(
+                "INSERT INTO Resource VALUES('id1','name','READ','url','username','desc','typeId', " +
+                    "'1','1','folderName','READ','1')",
+            )
             close()
         }
 
-        helper.runMigrationsAndValidate(TEST_DB, 4, true, Migration3to4)
+        helper
+            .runMigrationsAndValidate(TEST_DB, 4, true, Migration3to4)
             .apply {
                 execSQL(
                     "INSERT INTO Resource VALUES('id2','name','READ','url','username','desc','typeId', '1'," +
-                            "1644909225833, '1','folderName','READ','1')"
+                        "1644909225833, '1','folderName','READ','1')",
                 )
                 close()
             }
@@ -108,16 +120,17 @@ class DatabaseMigrationsTest {
         helper.createDatabase(TEST_DB, 4).apply {
             execSQL(
                 "INSERT INTO Resource VALUES('id1','name','READ','url','username','desc','typeId', '1'," +
-                        "1644909225833, '1','folderName','READ','1')"
+                    "1644909225833, '1','folderName','READ','1')",
             )
             close()
         }
 
-        helper.runMigrationsAndValidate(TEST_DB, 5, true, Migration4to5)
+        helper
+            .runMigrationsAndValidate(TEST_DB, 5, true, Migration4to5)
             .apply {
                 execSQL(
                     "INSERT INTO Resource VALUES('id2','folderid','name','READ','url','username','desc'," +
-                            "'typeId', '1',1644909225833)"
+                        "'typeId', '1',1644909225833)",
                 )
                 close()
             }
@@ -129,7 +142,8 @@ class DatabaseMigrationsTest {
             close()
         }
 
-        helper.runMigrationsAndValidate(TEST_DB, 6, true, Migration5to6)
+        helper
+            .runMigrationsAndValidate(TEST_DB, 6, true, Migration5to6)
             .apply {
                 execSQL("INSERT INTO Tag VALUES('id1','tagSlug',0)")
                 execSQL("INSERT INTO ResourceAndTagsCrossRef VALUES('id1','id2')")
@@ -143,7 +157,8 @@ class DatabaseMigrationsTest {
             close()
         }
 
-        helper.runMigrationsAndValidate(TEST_DB, 7, true, Migration6to7)
+        helper
+            .runMigrationsAndValidate(TEST_DB, 7, true, Migration6to7)
             .apply {
                 execSQL("INSERT INTO UsersGroup VALUES('id1','name')")
                 execSQL("INSERT INTO ResourceAndGroupsCrossRef VALUES('resId1','id1')")
@@ -158,20 +173,21 @@ class DatabaseMigrationsTest {
             close()
         }
 
-        helper.runMigrationsAndValidate(TEST_DB, 8, true, Migration7to8)
+        helper
+            .runMigrationsAndValidate(TEST_DB, 8, true, Migration7to8)
             .apply {
                 execSQL(
                     "INSERT INTO User VALUES('id','username','fName','lName','avatar','armoredKey'," +
-                            "4096,'uid','keyId','fingerprint','type',1644909225833)"
+                        "4096,'uid','keyId','fingerprint','type',1644909225833)",
                 )
                 execSQL(
-                    "INSERT INTO ResourceAndGroupsCrossRef VALUES('resourceId','groupId','READ')"
+                    "INSERT INTO ResourceAndGroupsCrossRef VALUES('resourceId','groupId','READ')",
                 )
                 execSQL(
-                    "INSERT INTO UsersAndGroupCrossRef VALUES('userId','groupId')"
+                    "INSERT INTO UsersAndGroupCrossRef VALUES('userId','groupId')",
                 )
                 execSQL(
-                    "INSERT INTO ResourceAndUsersCrossRef VALUES('resourceId','userId', 'OWNER')"
+                    "INSERT INTO ResourceAndUsersCrossRef VALUES('resourceId','userId', 'OWNER')",
                 )
                 close()
             }
@@ -181,21 +197,22 @@ class DatabaseMigrationsTest {
     fun migrate8To9() {
         helper.createDatabase(TEST_DB, 8).apply {
             execSQL(
-                "INSERT INTO ResourceAndGroupsCrossRef VALUES('resourceId','groupId','READ')"
+                "INSERT INTO ResourceAndGroupsCrossRef VALUES('resourceId','groupId','READ')",
             )
             execSQL(
-                "INSERT INTO ResourceAndUsersCrossRef VALUES('resourceId','userId', 'OWNER')"
+                "INSERT INTO ResourceAndUsersCrossRef VALUES('resourceId','userId', 'OWNER')",
             )
             close()
         }
 
-        helper.runMigrationsAndValidate(TEST_DB, 9, true, Migration8to9)
+        helper
+            .runMigrationsAndValidate(TEST_DB, 9, true, Migration8to9)
             .apply {
                 execSQL(
-                    "INSERT INTO ResourceAndGroupsCrossRef VALUES('resourceId9','groupId9','READ','permissionId')"
+                    "INSERT INTO ResourceAndGroupsCrossRef VALUES('resourceId9','groupId9','READ','permissionId')",
                 )
                 execSQL(
-                    "INSERT INTO ResourceAndUsersCrossRef VALUES('resourceId9','userId9', 'OWNER','permissionId')"
+                    "INSERT INTO ResourceAndUsersCrossRef VALUES('resourceId9','userId9', 'OWNER','permissionId')",
                 )
                 close()
             }
@@ -206,16 +223,17 @@ class DatabaseMigrationsTest {
         helper.createDatabase(TEST_DB, 9).apply {
             execSQL(
                 "INSERT INTO Resource VALUES('id2','folderid','name','READ','url','username','desc'," +
-                        "'typeId', '1',1644909225833)"
+                    "'typeId', '1',1644909225833)",
             )
             close()
         }
 
-        helper.runMigrationsAndValidate(TEST_DB, 10, true, Migration9to10)
+        helper
+            .runMigrationsAndValidate(TEST_DB, 10, true, Migration9to10)
             .apply {
                 execSQL(
                     "INSERT INTO Resource VALUES('id2','folderid','name','READ','url','username','desc'," +
-                            "'typeId', 'favouriteId',1644909225833)"
+                        "'typeId', 'favouriteId',1644909225833)",
                 )
                 close()
             }
@@ -227,7 +245,8 @@ class DatabaseMigrationsTest {
             close()
         }
 
-        helper.runMigrationsAndValidate(TEST_DB, 11, true, Migration10to11)
+        helper
+            .runMigrationsAndValidate(TEST_DB, 11, true, Migration10to11)
             .apply {
                 execSQL("INSERT INTO FolderAndUsersCrossRef VALUES('folderId','userId','READ','permId1')")
                 execSQL("INSERT INTO FolderAndGroupsCrossRef VALUES('folderId','groupId','READ','permId2')")
@@ -237,12 +256,14 @@ class DatabaseMigrationsTest {
 
     @Test
     fun migrate11To12() {
-        helper.createDatabase(TEST_DB, 11)
+        helper
+            .createDatabase(TEST_DB, 11)
             .apply {
                 close()
             }
 
-        helper.runMigrationsAndValidate(TEST_DB, 12, true, Migration11to12)
+        helper
+            .runMigrationsAndValidate(TEST_DB, 12, true, Migration11to12)
             .apply {
                 // foreign key constraints added - nothing to test here
                 close()
@@ -251,20 +272,22 @@ class DatabaseMigrationsTest {
 
     @Test
     fun migrate12To13() {
-        helper.createDatabase(TEST_DB, 12)
+        helper
+            .createDatabase(TEST_DB, 12)
             .apply {
                 execSQL(
                     "INSERT INTO User VALUES('id','username','fName','lName','avatar','armoredKey'," +
-                            "4096,'uid','keyId','fingerprint','type',1644909225833)"
+                        "4096,'uid','keyId','fingerprint','type',1644909225833)",
                 )
                 close()
             }
 
-        helper.runMigrationsAndValidate(TEST_DB, 13, true, Migration12to13)
+        helper
+            .runMigrationsAndValidate(TEST_DB, 13, true, Migration12to13)
             .apply {
                 execSQL(
                     "INSERT INTO User VALUES('id2','username','fName','lName','avatar','armoredKey'," +
-                            "4096,'uid','keyId','fingerprint','type',1644909225833, 1644909225830)"
+                        "4096,'uid','keyId','fingerprint','type',1644909225833, 1644909225830)",
                 )
                 close()
             }
@@ -272,20 +295,22 @@ class DatabaseMigrationsTest {
 
     @Test
     fun migrate13To14() {
-        helper.createDatabase(TEST_DB, 13)
+        helper
+            .createDatabase(TEST_DB, 13)
             .apply {
                 execSQL(
                     "INSERT INTO User VALUES('id','username','fName','lName','avatar','armoredKey'," +
-                            "4096,'uid','keyId','fingerprint','type',1644909225833, 1644909225830)"
+                        "4096,'uid','keyId','fingerprint','type',1644909225833, 1644909225830)",
                 )
                 close()
             }
 
-        helper.runMigrationsAndValidate(TEST_DB, 14, true, Migration13to14)
+        helper
+            .runMigrationsAndValidate(TEST_DB, 14, true, Migration13to14)
             .apply {
                 execSQL(
                     "INSERT INTO User VALUES('id2','username',1,'fName','lName','avatar','armoredKey'," +
-                            "4096,'uid','keyId','fingerprint','type',1644909225833, 1644909225830)"
+                        "4096,'uid','keyId','fingerprint','type',1644909225833, 1644909225830)",
                 )
                 close()
             }
@@ -293,23 +318,28 @@ class DatabaseMigrationsTest {
 
     @Test
     fun migrate14To15() {
-        helper.createDatabase(TEST_DB, 14)
+        helper
+            .createDatabase(TEST_DB, 14)
             .apply {
                 execSQL("INSERT INTO ResourceType VALUES('1', 'resourceTypeName', 'resourceTypeSlug')")
                 execSQL(
                     "INSERT INTO Resource VALUES('id1','folderid','name','READ','url','username','desc'," +
-                            "'1', 'favouriteId',1644909225833)"
+                        "'1', 'favouriteId',1644909225833)",
                 )
                 close()
             }
 
-        helper.runMigrationsAndValidate(TEST_DB, 15, true, Migration14to15)
+        helper
+            .runMigrationsAndValidate(TEST_DB, 15, true, Migration14to15)
             .apply {
-                execSQL("INSERT INTO ResourceType VALUES('2', 'resourceTypeName', 'resourceTypeSlug', 'resourceSchemaJson', 'secretSchemaJson')")
+                execSQL(
+                    "INSERT INTO ResourceType VALUES('2', 'resourceTypeName', 'resourceTypeSlug', " +
+                        "'resourceSchemaJson', 'secretSchemaJson')",
+                )
 
                 execSQL(
                     "INSERT INTO Resource VALUES('id3','folderid','name','READ','url','username','desc'," +
-                            "'typeId', 'favouriteId', 1644909225833, null,'resourceJson')"
+                        "'typeId', 'favouriteId', 1644909225833, null,'resourceJson')",
                 )
                 close()
             }
@@ -317,27 +347,38 @@ class DatabaseMigrationsTest {
 
     @Test
     fun migrate15To16() {
-        helper.createDatabase(TEST_DB, 15)
+        helper
+            .createDatabase(TEST_DB, 15)
             .apply {
-                execSQL("INSERT INTO ResourceType VALUES('2', 'resourceTypeName', 'resourceTypeSlug', 'resourceSchemaJson', 'secretSchemaJson')")
+                execSQL(
+                    "INSERT INTO ResourceType VALUES('2', 'resourceTypeName', 'resourceTypeSlug', " +
+                        "'resourceSchemaJson', 'secretSchemaJson')",
+                )
 
                 execSQL(
                     "INSERT INTO Resource VALUES('id2','folderid','name','READ','url','username','desc'," +
-                            "'2', 'favouriteId',1644909225833,1644909225833, 'resourceJson')"
+                        "'2', 'favouriteId',1644909225833,1644909225833, 'resourceJson')",
                 )
                 close()
             }
 
-        helper.runMigrationsAndValidate(TEST_DB, 16, true, Migration15to16)
+        helper
+            .runMigrationsAndValidate(TEST_DB, 16, true, Migration15to16)
             .apply {
-                execSQL("INSERT INTO ResourceType VALUES('3', 'resourceTypeName', 'resourceTypeSlug', 'resourceSchemaJson', 'secretSchemaJson', 1644909225833)")
-                execSQL("INSERT INTO ResourceType VALUES('4', 'resourceTypeName', 'resourceTypeSlug', 'resourceSchemaJson', 'secretSchemaJson', null)")
                 execSQL(
-                    "INSERT INTO Resource VALUES('id2','folderid','READ', '2'," +
-                            " 'favouriteId', 1644909225833, 1644909225833)"
+                    "INSERT INTO ResourceType VALUES('3', 'resourceTypeName', 'resourceTypeSlug', " +
+                        "'resourceSchemaJson', 'secretSchemaJson', 1644909225833)",
                 )
                 execSQL(
-                    "INSERT INTO ResourceMetadata VALUES(1, 'id2', 'metadataJson', 'name', 'username', 'desc')"
+                    "INSERT INTO ResourceType VALUES('4', 'resourceTypeName', 'resourceTypeSlug', " +
+                        "'resourceSchemaJson', 'secretSchemaJson', null)",
+                )
+                execSQL(
+                    "INSERT INTO Resource VALUES('id2','folderid','READ', '2'," +
+                        " 'favouriteId', 1644909225833, 1644909225833)",
+                )
+                execSQL(
+                    "INSERT INTO ResourceMetadata VALUES(1, 'id2', 'metadataJson', 'name', 'username', 'desc')",
                 )
                 execSQL("INSERT INTO ResourceUri VALUES(1, 'id2', 'uri1')")
                 execSQL("INSERT INTO ResourceUri VALUES(2, 'id2', 'uri2')")
@@ -347,40 +388,51 @@ class DatabaseMigrationsTest {
 
     @Test
     fun migrate16To17() {
-        helper.createDatabase(TEST_DB, 16)
+        helper
+            .createDatabase(TEST_DB, 16)
             .apply {
-                execSQL("INSERT INTO ResourceType VALUES('1', 'resourceTypeName', 'resourceTypeSlug', 'resourceSchemaJson', 'secretSchemaJson', 1644909225833)")
+                execSQL(
+                    "INSERT INTO ResourceType VALUES('1', 'resourceTypeName', 'resourceTypeSlug', " +
+                        "'resourceSchemaJson', 'secretSchemaJson', 1644909225833)",
+                )
                 execSQL(
                     "INSERT INTO Resource VALUES('id1','folderid','READ', '1'," +
-                            " 'favouriteId', 1644909225833, 1644909225833)"
+                        " 'favouriteId', 1644909225833, 1644909225833)",
                 )
                 execSQL(
                     "INSERT INTO User VALUES('id2','username',1,'fName','lName','avatar','armoredKey'," +
-                            "4096,'uid','keyId','fingerprint','type',1644909225833, 1644909225830)"
+                        "4096,'uid','keyId','fingerprint','type',1644909225833, 1644909225830)",
                 )
                 close()
             }
 
-        helper.runMigrationsAndValidate(TEST_DB, 17, true, Migration16to17)
+        helper
+            .runMigrationsAndValidate(TEST_DB, 17, true, Migration16to17)
             .apply {
-                execSQL("INSERT INTO ResourceType VALUES('1', 'resourceTypeName', 'resourceTypeSlug', 1644909225833)")
+                execSQL(
+                    "INSERT INTO ResourceType VALUES('1', 'resourceTypeName', " +
+                        "'resourceTypeSlug', 1644909225833)",
+                )
 
-                execSQL("INSERT INTO MetadataKey VALUES('id', 'fingerprint', 'armoredKey', 1644909225833, 1644909225833)")
+                execSQL(
+                    "INSERT INTO MetadataKey VALUES('id', 'fingerprint', 'armoredKey', " +
+                        "1644909225833, 1644909225833)",
+                )
                 execSQL("INSERT INTO MetadataKey VALUES('id2', 'fingerprint', 'armoredKey', null, null)")
                 execSQL(
-                    "INSERT INTO MetadataPrivateKey VALUES(0,'id', 'userId', 'data')"
+                    "INSERT INTO MetadataPrivateKey VALUES(0,'id', 'userId', 'data')",
                 )
                 execSQL(
                     "INSERT INTO Resource VALUES('id2','folderid','READ', '1'," +
-                            " 'favouriteId', 1644909225833, 1644909225833, null, 'SHARED')"
+                        " 'favouriteId', 1644909225833, 1644909225833, null, 'SHARED')",
                 )
                 execSQL(
                     "INSERT INTO Resource VALUES('id3','folderid','READ', '1'," +
-                            " 'favouriteId', 1644909225833, 1644909225833, 'id', 'SHARED')"
+                        " 'favouriteId', 1644909225833, 1644909225833, 'id', 'SHARED')",
                 )
                 execSQL(
                     "INSERT INTO User VALUES('id3','username',1,'fName','lName','avatar','userKeyId', 'armoredKey'," +
-                            "4096,'uid','keyId','fingerprint','type',1644909225833, 1644909225830)"
+                        "4096,'uid','keyId','fingerprint','type',1644909225833, 1644909225830)",
                 )
                 close()
             }
@@ -388,27 +440,32 @@ class DatabaseMigrationsTest {
 
     @Test
     fun migrate17To18() {
-        helper.createDatabase(TEST_DB, 17)
+        helper
+            .createDatabase(TEST_DB, 17)
             .apply {
-                execSQL("INSERT INTO MetadataKey VALUES('id', 'fingerprint', 'armoredKey', 1644909225833, 1644909225833)")
+                execSQL(
+                    "INSERT INTO MetadataKey VALUES('id', 'fingerprint', 'armoredKey', " +
+                        "1644909225833, 1644909225833)",
+                )
                 execSQL("INSERT INTO MetadataKey VALUES('id2', 'fingerprint', 'armoredKey', null, null)")
                 execSQL("INSERT INTO MetadataPrivateKey VALUES(0,'id', 'userId', 'data')")
                 execSQL("INSERT INTO ResourceType VALUES('1', 'resourceTypeName', 'resourceTypeSlug', 1644909225833)")
                 execSQL(
                     "INSERT INTO Resource VALUES('id2','folderid','READ', '1'," +
-                            " 'favouriteId', 1644909225833, 1644909225833, null, 'SHARED')"
+                        " 'favouriteId', 1644909225833, 1644909225833, null, 'SHARED')",
                 )
                 close()
             }
 
-        helper.runMigrationsAndValidate(TEST_DB, 18, true, Migration17to18)
+        helper
+            .runMigrationsAndValidate(TEST_DB, 18, true, Migration17to18)
             .apply {
                 execSQL(
-                    "INSERT INTO MetadataPrivateKey VALUES(1,'id', 'userId', 'data', 'passphrase')"
+                    "INSERT INTO MetadataPrivateKey VALUES(1,'id', 'userId', 'data', 'passphrase')",
                 )
                 execSQL(
                     "INSERT INTO Resource VALUES('id3','folderid','READ', '1'," +
-                            " 'favouriteId', 1644909225833, 1644909225833, null, 'SHARED')"
+                        " 'favouriteId', 1644909225833, 1644909225833, null, 'SHARED')",
                 )
                 close()
             }
@@ -416,17 +473,28 @@ class DatabaseMigrationsTest {
 
     @Test
     fun migrate18To19() {
-        helper.createDatabase(TEST_DB, 18)
+        helper
+            .createDatabase(TEST_DB, 18)
             .apply {
-                execSQL("INSERT INTO MetadataKey VALUES('id', 'fingerprint', 'armoredKey', 1644909225833, 1644909225833)")
+                execSQL(
+                    "INSERT INTO MetadataKey VALUES('id', 'fingerprint', 'armoredKey', " +
+                        "1644909225833, 1644909225833)",
+                )
                 execSQL("INSERT INTO MetadataPrivateKey VALUES(1,'id', 'userId', 'data', 'passphrase')")
                 close()
             }
 
-        helper.runMigrationsAndValidate(TEST_DB, 19, true, Migration18to19)
+        helper
+            .runMigrationsAndValidate(TEST_DB, 19, true, Migration18to19)
             .apply {
-                execSQL("INSERT INTO MetadataKey VALUES('id1', 'fingerprint', 'armoredKey', 1644909225833, 1644909225833, 1644909225833)")
-                execSQL("INSERT INTO MetadataPrivateKey VALUES('id','id1', 'userId', 'data', 'passphrase', 1644909225833, 'modifiedBy', 1644909225833, 'createdBy', 'pgpMessage', 'fingerprint', 'domain')")
+                execSQL(
+                    "INSERT INTO MetadataKey VALUES('id1', 'fingerprint', 'armoredKey', 1644909225833, " +
+                        "1644909225833, 1644909225833)",
+                )
+                execSQL(
+                    "INSERT INTO MetadataPrivateKey VALUES('id','id1', 'userId', 'data', 'passphrase', 1644909225833, " +
+                        "'modifiedBy', 1644909225833, 'createdBy', 'pgpMessage', 'fingerprint', 'domain')",
+                )
                 close()
             }
     }
@@ -437,18 +505,32 @@ class DatabaseMigrationsTest {
             close()
         }
 
-        Room.databaseBuilder(
-            InstrumentationRegistry.getInstrumentation().targetContext,
-            ResourceDatabase::class.java,
-            TEST_DB
-        )
-            .addMigrations(
-                Migration1to2, Migration2to3, Migration3to4, Migration4to5, Migration5to6,
-                Migration6to7, Migration7to8, Migration8to9, Migration9to10, Migration10to11,
-                Migration11to12, Migration12to13, Migration13to14, Migration14to15, Migration15to16,
-                Migration16to17, Migration17to18, Migration18to19
-            )
-            .build().apply {
+        Room
+            .databaseBuilder(
+                InstrumentationRegistry.getInstrumentation().targetContext,
+                ResourceDatabase::class.java,
+                TEST_DB,
+            ).addMigrations(
+                Migration1to2,
+                Migration2to3,
+                Migration3to4,
+                Migration4to5,
+                Migration5to6,
+                Migration6to7,
+                Migration7to8,
+                Migration8to9,
+                Migration9to10,
+                Migration10to11,
+                Migration11to12,
+                Migration12to13,
+                Migration13to14,
+                Migration14to15,
+                Migration15to16,
+                Migration16to17,
+                Migration17to18,
+                Migration18to19,
+            ).build()
+            .apply {
                 openHelper.writableDatabase
                 close()
             }

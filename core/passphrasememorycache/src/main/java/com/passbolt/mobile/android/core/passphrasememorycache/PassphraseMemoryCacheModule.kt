@@ -27,11 +27,12 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-val passphraseMemoryCacheModule = module {
-    single {
-        PassphraseMemoryCache(
-            coroutineLaunchContext = get(),
-            lifecycleOwner = get(named<ProcessLifecycleOwner>())
-        )
+val passphraseMemoryCacheModule =
+    module {
+        single {
+            PassphraseMemoryCache(
+                coroutineLaunchContext = get(),
+                lifecycleOwner = get(named<ProcessLifecycleOwner>()),
+            )
+        }
     }
-}

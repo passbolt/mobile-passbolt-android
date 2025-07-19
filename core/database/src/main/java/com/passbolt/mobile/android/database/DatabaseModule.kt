@@ -28,14 +28,15 @@ import org.koin.dsl.module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-val databaseModule = module {
-    databaseModule()
-    singleOf(::ResourcesSnapshot)
-    single {
-        DatabaseProvider(
-            context = androidApplication(),
-            getResourcesDatabasePassphraseUseCase = get(),
-            messageDigestHash = get()
-        )
+val databaseModule =
+    module {
+        databaseModule()
+        singleOf(::ResourcesSnapshot)
+        single {
+            DatabaseProvider(
+                context = androidApplication(),
+                getResourcesDatabasePassphraseUseCase = get(),
+                messageDigestHash = get(),
+            )
+        }
     }
-}

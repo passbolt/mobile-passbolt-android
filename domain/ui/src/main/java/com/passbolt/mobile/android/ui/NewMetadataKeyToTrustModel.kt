@@ -35,5 +35,5 @@ data class NewMetadataKeyToTrustModel(
     val signatureCreationTimestampSeconds: Long,
     val signatureKeyFingerprint: String,
     val metadataPrivateKey: ParsedMetadataPrivateKeyModel,
-    val modificationKind: MetadataKeyModification
+    val modificationKind: MetadataKeyModification,
 ) : Parcelable

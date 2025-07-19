@@ -28,17 +28,18 @@ import com.passbolt.mobile.android.core.ui.R
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class OpenableSettingView @JvmOverloads constructor(
-    context: Context,
-    attrs: AttributeSet? = null,
-    defStyle: Int = 0
-) : SettingView(context, attrs, defStyle) {
-
-    init {
-        AppCompatImageView(context).apply {
-            setImageResource(R.drawable.ic_arrow_right)
-            imageTintList = ColorStateList.valueOf(context.getColor(R.color.icon_tint))
-            binding.root.addView(this)
+class OpenableSettingView
+    @JvmOverloads
+    constructor(
+        context: Context,
+        attrs: AttributeSet? = null,
+        defStyle: Int = 0,
+    ) : SettingView(context, attrs, defStyle) {
+        init {
+            AppCompatImageView(context).apply {
+                setImageResource(R.drawable.ic_arrow_right)
+                imageTintList = ColorStateList.valueOf(context.getColor(R.color.icon_tint))
+                binding.root.addView(this)
+            }
         }
     }
-}

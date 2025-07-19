@@ -41,21 +41,22 @@ class DecryptSecretUseCase(
     private val gopenPgp: OpenPgp,
     private val passphraseMemoryCache: PassphraseMemoryCache,
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
-    private val getPrivateKeyUseCase: GetPrivateKeyUseCase
+    private val getPrivateKeyUseCase: GetPrivateKeyUseCase,
 ) : AsyncUseCase<DecryptSecretUseCase.Input, DecryptSecretUseCase.Output> {
-
     override suspend fun execute(input: Input): Output {
-        val account = UserIdInput(
-            requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
-        )
+        val account =
+            UserIdInput(
+                requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount),
+            )
         val potentialPassphrase = passphraseMemoryCache.get()
         return if (potentialPassphrase is PotentialPassphrase.Passphrase) {
             val passphraseCopy = potentialPassphrase.passphrase.copyOf()
-            val decrypted = gopenPgp.decryptMessageArmored(
-                getPrivateKeyUseCase.execute(account).privateKey,
-                passphraseCopy,
-                input.encryptedSecret
-            )
+            val decrypted =
+                gopenPgp.decryptMessageArmored(
+                    getPrivateKeyUseCase.execute(account).privateKey,
+                    passphraseCopy,
+                    input.encryptedSecret,
+                )
             when (decrypted) {
                 is OpenPgpResult.Error -> {
                     Timber.e(decrypted.error.message)
@@ -72,15 +73,20 @@ class DecryptSecretUseCase(
     }
 
     data class Input(
-        val encryptedSecret: String
+        val encryptedSecret: String,
     )
 
     sealed class Output {
+        data class Unauthorized(
+            val reason: UnauthenticatedReason,
+        ) : Output()
 
-        data class Unauthorized(val reason: UnauthenticatedReason) : Output()
+        data class Failure(
+            val exception: OpenPgpError,
+        ) : Output()
 
-        data class Failure(val exception: OpenPgpError) : Output()
-
-        data class DecryptedSecret(val decryptedSecret: String) : Output()
+        data class DecryptedSecret(
+            val decryptedSecret: String,
+        ) : Output()
     }
 }

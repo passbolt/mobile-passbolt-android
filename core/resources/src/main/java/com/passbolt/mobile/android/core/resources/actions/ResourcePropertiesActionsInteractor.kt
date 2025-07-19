@@ -33,25 +33,44 @@ import java.util.UUID
  */
 class ResourcePropertiesActionsInteractor(
     private val resource: ResourceModel,
-    private val idToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider
+    private val idToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider,
 ) {
-
-    suspend fun provideWebsiteUrl(): Flow<ResourcePropertyActionResult<String>> {
-        val resourceContentType = ContentType.fromSlug(
-            idToSlugMappingProvider.provideMappingForSelectedAccount()[
-                UUID.fromString(resource.resourceTypeId)
-            ]!!
-        )
+    suspend fun provideMainUri(): Flow<ResourcePropertyActionResult<String>> {
+        val resourceContentType =
+            ContentType.fromSlug(
+                idToSlugMappingProvider.provideMappingForSelectedAccount()[
+                    UUID.fromString(resource.resourceTypeId),
+                ]!!,
+            )
         return flowOf(
             ResourcePropertyActionResult(
                 URL_LABEL,
                 isSecret = false,
-                if (resourceContentType.isV5()) {
-                    resource.metadataJsonModel.uris?.firstOrNull()
-                } else {
-                    resource.metadataJsonModel.uri
-                }.orEmpty()
+                resource.metadataJsonModel.getMainUri(resourceContentType),
+            ),
+        )
+    }
+
+    suspend fun provideAdditionalUris(): Flow<ResourcePropertyActionResult<List<String>>> {
+        val resourceContentType =
+            ContentType.fromSlug(
+                idToSlugMappingProvider.provideMappingForSelectedAccount()[
+                    UUID.fromString(resource.resourceTypeId),
+                ]!!,
             )
+        val mainUri = resource.metadataJsonModel.getMainUri(resourceContentType)
+        val additionalUris =
+            if (resourceContentType.isV5()) {
+                resource.metadataJsonModel.uris?.filter { it != mainUri } ?: emptyList()
+            } else {
+                emptyList()
+            }
+        return flowOf(
+            ResourcePropertyActionResult(
+                URLS_LABEL,
+                isSecret = false,
+                additionalUris,
+            ),
         )
     }
 
@@ -60,8 +79,8 @@ class ResourcePropertiesActionsInteractor(
             ResourcePropertyActionResult(
                 USERNAME_LABEL,
                 isSecret = false,
-                resource.metadataJsonModel.username.orEmpty()
-            )
+                resource.metadataJsonModel.username.orEmpty(),
+            ),
         )
 
     // provides description from resource model (for description from secret model see
@@ -71,8 +90,8 @@ class ResourcePropertiesActionsInteractor(
             ResourcePropertyActionResult(
                 DESCRIPTION_LABEL,
                 isSecret = false,
-                resource.metadataJsonModel.description.orEmpty()
-            )
+                resource.metadataJsonModel.description.orEmpty(),
+            ),
         )
 
     companion object {
@@ -83,13 +102,16 @@ class ResourcePropertiesActionsInteractor(
         const val URL_LABEL = "Url"
 
         @VisibleForTesting
+        const val URLS_LABEL = "Urls"
+
+        @VisibleForTesting
         const val DESCRIPTION_LABEL = "Description"
     }
 }
 
 suspend fun <T> performResourcePropertyAction(
     action: suspend () -> Flow<ResourcePropertyActionResult<T>>,
-    doOnResult: (ResourcePropertyActionResult<T>) -> Unit
+    doOnResult: (ResourcePropertyActionResult<T>) -> Unit,
 ) {
     doOnResult(action().single())
 }

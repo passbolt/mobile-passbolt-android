@@ -38,13 +38,15 @@ import java.net.HttpURLConnection.HTTP_UNAUTHORIZED
  */
 class VerifyYubikeyUseCase(
     private val mfaRepository: MfaRepository,
-    private val cookieExtractor: CookieExtractor
+    private val cookieExtractor: CookieExtractor,
 ) : AsyncUseCase<VerifyYubikeyUseCase.Input, VerifyYubikeyUseCase.Output> {
-
     override suspend fun execute(input: Input): Output =
-        when (val result = mfaRepository.verifyYubikeyOtp(
-            HotpRequest(input.totp, input.remember), input.jwtHeader?.let { "Bearer $it" }
-        )
+        when (
+            val result =
+                mfaRepository.verifyYubikeyOtp(
+                    HotpRequest(input.totp, input.remember),
+                    input.jwtHeader?.let { "Bearer $it" },
+                )
         ) {
             is NetworkResult.Failure -> Output.Failure(result)
             is NetworkResult.Success -> {
@@ -62,63 +64,69 @@ class VerifyYubikeyUseCase(
     private fun handleError(result: NetworkResult.Success<Response<Void>>) =
         when (val errorCode = result.value.code()) {
             HTTP_UNAUTHORIZED -> Output.Unauthorized
-            HTTP_BAD_REQUEST -> if (yubikeyNotFromCurrentUser(result.value)) {
-                Output.YubikeyNotFromCurrentUser
-            } else {
-                Output.NetworkFailure(errorCode)
-            }
+            HTTP_BAD_REQUEST ->
+                if (yubikeyNotFromCurrentUser(result.value)) {
+                    Output.YubikeyNotFromCurrentUser
+                } else {
+                    Output.NetworkFailure(errorCode)
+                }
             else -> Output.NetworkFailure(errorCode)
         }
 
     // checks if field "isSameYubikeyId" exists in the response - that means that it's not a Yubikey
     // that is associated with the account
-    private fun yubikeyNotFromCurrentUser(result: Response<Void>) = try {
-        val errorBody = result.errorBody()?.string()
-        errorBody != null &&
+    private fun yubikeyNotFromCurrentUser(result: Response<Void>) =
+        try {
+            val errorBody = result.errorBody()?.string()
+            errorBody != null &&
                 JSONObject(errorBody)
                     .getJSONObject(RESPONSE_BODY)
                     .getJSONObject(RESPONSE_BODY_HOTP)
                     .has(HOTP_BODY_IS_SAME_YUBIKEY)
-    } catch (exception: JSONException) {
-        false
-    }
+        } catch (exception: JSONException) {
+            false
+        }
 
     data class Input(
         val totp: String,
         val jwtHeader: String?,
-        val remember: Boolean
+        val remember: Boolean,
     )
 
     sealed class Output : AuthenticatedUseCaseOutput {
-
         override val authenticationState: AuthenticationState
-            get() = when {
-                this is Failure<*> && this.response.isUnauthorized ||
-                        this is NetworkFailure && this.errorCode == HTTP_UNAUTHORIZED ->
-                    AuthenticationState.Unauthenticated(AuthenticationState.Unauthenticated.Reason.Session)
-                this is Failure<*> && this.response.isMfaRequired -> {
-                    val providers = MfaTypeProvider.get(this.response)
+            get() =
+                when {
+                    this is Failure<*> &&
+                        this.response.isUnauthorized ||
+                        this is NetworkFailure &&
+                        this.errorCode == HTTP_UNAUTHORIZED ->
+                        AuthenticationState.Unauthenticated(AuthenticationState.Unauthenticated.Reason.Session)
+                    this is Failure<*> && this.response.isMfaRequired -> {
+                        val providers = MfaTypeProvider.get(this.response)
 
-                    AuthenticationState.Unauthenticated(
-                        AuthenticationState.Unauthenticated.Reason.Mfa(providers)
-                    )
+                        AuthenticationState.Unauthenticated(
+                            AuthenticationState.Unauthenticated.Reason.Mfa(providers),
+                        )
+                    }
+                    else -> AuthenticationState.Authenticated
                 }
-                else -> AuthenticationState.Authenticated
-            }
 
         data class Success(
-            val mfaHeader: String?
+            val mfaHeader: String?,
         ) : Output()
 
         data class NetworkFailure(
-            val errorCode: Int
+            val errorCode: Int,
         ) : Output()
 
         data object Unauthorized : Output()
 
         data object YubikeyNotFromCurrentUser : Output()
 
-        data class Failure<T : Any>(val response: NetworkResult.Failure<T>) : Output()
+        data class Failure<T : Any>(
+            val response: NetworkResult.Failure<T>,
+        ) : Output()
     }
 
     private companion object {

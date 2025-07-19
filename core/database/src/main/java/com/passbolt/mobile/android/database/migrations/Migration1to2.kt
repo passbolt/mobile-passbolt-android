@@ -28,7 +28,6 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 
 @Suppress("MagicNumber")
 object Migration1to2 : Migration(1, 2) {
-
     private const val ADD_RESOURCE_TYPE_SLUG_COLUMN =
         "ALTER TABLE ResourceType ADD COLUMN slug TEXT NOT NULL DEFAULT ''"
 

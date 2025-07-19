@@ -27,10 +27,9 @@ import com.mikepenz.fastadapter.binding.BindingViewHolder
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-inline fun <reified T : ViewBinding> RecyclerView.ViewHolder.asBinding(block: (T) -> View): View? {
-    return if (this is BindingViewHolder<*> && this.binding is T) {
+inline fun <reified T : ViewBinding> RecyclerView.ViewHolder.asBinding(block: (T) -> View): View? =
+    if (this is BindingViewHolder<*> && this.binding is T) {
         block(this.binding as T)
     } else {
         null
     }
-}

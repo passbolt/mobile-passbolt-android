@@ -35,10 +35,15 @@ import com.passbolt.mobile.android.core.ui.dialog.showDialog
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class ProgressDialog(private val dismissOnStop: Boolean = true) : DialogFragment(), DefaultLifecycleObserver {
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
-        DialogProgressBinding.inflate(inflater).root
+class ProgressDialog(
+    private val dismissOnStop: Boolean = true,
+) : DialogFragment(),
+    DefaultLifecycleObserver {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
+    ): View = DialogProgressBinding.inflate(inflater).root
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -62,7 +67,10 @@ class ProgressDialog(private val dismissOnStop: Boolean = true) : DialogFragment
     }
 }
 
-fun showProgressDialog(fragmentManager: FragmentManager, dismissOnStop: Boolean = true) {
+fun showProgressDialog(
+    fragmentManager: FragmentManager,
+    dismissOnStop: Boolean = true,
+) {
     showDialog(fragmentManager, ProgressDialog(dismissOnStop), ProgressDialog::class.java.name)
 }
 

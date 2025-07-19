@@ -39,22 +39,24 @@ import com.passbolt.mobile.android.core.localization.R as LocalizationR
  * @since v1.0
  */
 
-class FolderMoreMenuFragment : BottomSheetDialogFragment(), FolderMoreMenuContract.View, AndroidScopeComponent {
-
+class FolderMoreMenuFragment :
+    BottomSheetDialogFragment(),
+    FolderMoreMenuContract.View,
+    AndroidScopeComponent {
     override val scope by fragmentScope(useParentActivityScope = false)
     private val presenter: FolderMoreMenuContract.Presenter by scope.inject()
     private lateinit var binding: ViewFolderMoreMenuBottomsheetBinding
     private var listener: Listener? = null
     private val menuModel by lifecycleAwareLazy {
         requireNotNull(
-            BundleCompat.getParcelable(requireArguments(), EXTRA_FOLDER_MENU_MODEL, FolderMoreMenuModel::class.java)
+            BundleCompat.getParcelable(requireArguments(), EXTRA_FOLDER_MENU_MODEL, FolderMoreMenuModel::class.java),
         )
     }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         binding = ViewFolderMoreMenuBottomsheetBinding.inflate(inflater)
         presenter.attach(this)
@@ -62,18 +64,22 @@ class FolderMoreMenuFragment : BottomSheetDialogFragment(), FolderMoreMenuContra
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         setListeners()
     }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        listener = when {
-            activity is Listener -> activity as Listener
-            parentFragment is Listener -> parentFragment as Listener
-            else -> error("Parent must implement ${Listener::class.java.name}")
-        }
+        listener =
+            when {
+                activity is Listener -> activity as Listener
+                parentFragment is Listener -> parentFragment as Listener
+                else -> error("Parent must implement ${Listener::class.java.name}")
+            }
     }
 
     override fun onDetach() {

@@ -43,29 +43,32 @@ import java.time.Instant
  */
 class OpenPgp(
     private val pgpHandle: PGPHandle,
-    private val gopenPgpExceptionParser: GopenPgpExceptionParser
+    private val gopenPgpExceptionParser: GopenPgpExceptionParser,
 ) {
-
     private var timeOffsetSeconds: Long = 0L
 
     suspend fun encryptSignMessageArmored(
         publicKey: String,
         privateKey: String,
         passphrase: ByteArray,
-        message: String
-    ): OpenPgpResult<String> {
-        return try {
+        message: String,
+    ): OpenPgpResult<String> =
+        try {
             withContext(Dispatchers.IO) {
                 val passphraseCopy = passphrase.copyOf()
 
-                val encryptionHandle = pgpHandle.encryptionWithTimeOffset()
-                    .recipient(Crypto.newKeyFromArmored(publicKey))
-                    .signingKey(Crypto.newPrivateKeyFromArmored(privateKey, passphrase))
-                    .new_()
+                val encryptionHandle =
+                    pgpHandle
+                        .encryptionWithTimeOffset()
+                        .recipient(Crypto.newKeyFromArmored(publicKey))
+                        .signingKey(Crypto.newPrivateKeyFromArmored(privateKey, passphrase))
+                        .new_()
 
-                val encrypted = encryptionHandle.encrypt(
-                    message.toByteArray()
-                ).armor()
+                val encrypted =
+                    encryptionHandle
+                        .encrypt(
+                            message.toByteArray(),
+                        ).armor()
 
                 passphraseCopy.erase()
 
@@ -77,28 +80,31 @@ class OpenPgp(
         } finally {
             Mobile.freeOSMemory()
         }
-    }
 
     suspend fun encryptSignMessageArmored(
         privateKey: String,
         passphrase: ByteArray,
-        message: String
-    ): OpenPgpResult<String> {
-        return try {
+        message: String,
+    ): OpenPgpResult<String> =
+        try {
             withContext(Dispatchers.IO) {
                 val passphraseCopy = passphrase.copyOf()
 
                 val signingKey = Crypto.newPrivateKeyFromArmored(privateKey, passphrase)
                 val recipient = signingKey.toPublic()
 
-                val encryptionHandle = pgpHandle.encryptionWithTimeOffset()
-                    .signingKey(signingKey)
-                    .recipient(recipient)
-                    .new_()
+                val encryptionHandle =
+                    pgpHandle
+                        .encryptionWithTimeOffset()
+                        .signingKey(signingKey)
+                        .recipient(recipient)
+                        .new_()
 
-                val encrypted = encryptionHandle.encrypt(
-                    message.toByteArray()
-                ).armor()
+                val encrypted =
+                    encryptionHandle
+                        .encrypt(
+                            message.toByteArray(),
+                        ).armor()
 
                 passphraseCopy.erase()
 
@@ -110,26 +116,30 @@ class OpenPgp(
         } finally {
             Mobile.freeOSMemory()
         }
-    }
 
     suspend fun decryptVerifyMessageArmored(
         publicKey: String,
         privateKey: String,
         passphrase: ByteArray,
-        cipherText: String
-    ): OpenPgpResult<String> {
-        return try {
+        cipherText: String,
+    ): OpenPgpResult<String> =
+        try {
             withContext(Dispatchers.IO) {
                 val passphraseCopy = passphrase.copyOf()
 
-                val decryptionHandle = pgpHandle.decryptionWithTimeOffset()
-                    .decryptionKey(Crypto.newPrivateKeyFromArmored(privateKey, passphrase))
-                    .verificationKey(Crypto.newKeyFromArmored(publicKey))
-                    .new_()
+                val decryptionHandle =
+                    pgpHandle
+                        .decryptionWithTimeOffset()
+                        .decryptionKey(Crypto.newPrivateKeyFromArmored(privateKey, passphrase))
+                        .verificationKey(Crypto.newKeyFromArmored(publicKey))
+                        .new_()
 
-                val decrypted = decryptionHandle.decrypt(
-                    cipherText.toByteArray(), Crypto.Armor
-                ).string()
+                val decrypted =
+                    decryptionHandle
+                        .decrypt(
+                            cipherText.toByteArray(),
+                            Crypto.Armor,
+                        ).string()
 
                 passphraseCopy.erase()
 
@@ -141,28 +151,32 @@ class OpenPgp(
         } finally {
             Mobile.freeOSMemory()
         }
-    }
 
     suspend fun decryptVerifyMessageArmored(
         privateKey: String,
         passphrase: ByteArray,
-        cipherText: String
-    ): OpenPgpResult<String> {
-        return try {
+        cipherText: String,
+    ): OpenPgpResult<String> =
+        try {
             withContext(Dispatchers.IO) {
                 val passphraseCopy = passphrase.copyOf()
 
                 val decryptionKey = Crypto.newPrivateKeyFromArmored(privateKey, passphrase)
                 val verificationKey = Crypto.newKey(decryptionKey.publicKey)
 
-                val decryptionHandle = pgpHandle.decryptionWithTimeOffset()
-                    .decryptionKey(decryptionKey)
-                    .verificationKey(verificationKey)
-                    .new_()
+                val decryptionHandle =
+                    pgpHandle
+                        .decryptionWithTimeOffset()
+                        .decryptionKey(decryptionKey)
+                        .verificationKey(verificationKey)
+                        .new_()
 
-                val decrypted = decryptionHandle.decrypt(
-                    cipherText.toByteArray(), Crypto.Armor
-                ).string()
+                val decrypted =
+                    decryptionHandle
+                        .decrypt(
+                            cipherText.toByteArray(),
+                            Crypto.Armor,
+                        ).string()
 
                 passphraseCopy.erase()
 
@@ -174,13 +188,12 @@ class OpenPgp(
         } finally {
             Mobile.freeOSMemory()
         }
-    }
 
     suspend fun unlockKey(
         privateKey: String?,
-        passphrase: ByteArray
-    ): OpenPgpResult<Boolean> {
-        return try {
+        passphrase: ByteArray,
+    ): OpenPgpResult<Boolean> =
+        try {
             withContext(Dispatchers.IO) {
                 val passphraseCopy = passphrase.copyOf()
 
@@ -196,24 +209,28 @@ class OpenPgp(
         } finally {
             Mobile.freeOSMemory()
         }
-    }
 
     suspend fun decryptMessageArmored(
         privateKey: String,
         passphrase: ByteArray,
-        cipherText: String
-    ): OpenPgpResult<String> {
-        return try {
+        cipherText: String,
+    ): OpenPgpResult<String> =
+        try {
             withContext(Dispatchers.IO) {
                 val passphraseCopy = passphrase.copyOf()
 
-                val decryptionHandle = pgpHandle.decryptionWithTimeOffset()
-                    .decryptionKey(Crypto.newPrivateKeyFromArmored(privateKey, passphrase))
-                    .new_()
+                val decryptionHandle =
+                    pgpHandle
+                        .decryptionWithTimeOffset()
+                        .decryptionKey(Crypto.newPrivateKeyFromArmored(privateKey, passphrase))
+                        .new_()
 
-                val decrypted = decryptionHandle.decrypt(
-                    cipherText.toByteArray(), Crypto.Armor
-                ).string()
+                val decrypted =
+                    decryptionHandle
+                        .decrypt(
+                            cipherText.toByteArray(),
+                            Crypto.Armor,
+                        ).string()
 
                 passphraseCopy.erase()
 
@@ -225,24 +242,26 @@ class OpenPgp(
         } finally {
             Mobile.freeOSMemory()
         }
-    }
 
     suspend fun decryptSessionKey(
         privateKey: String,
         passphrase: ByteArray,
-        cipherText: String
-    ): OpenPgpResult<String> {
-        return try {
+        cipherText: String,
+    ): OpenPgpResult<String> =
+        try {
             withContext(Dispatchers.IO) {
                 val passphraseCopy = passphrase.copyOf()
 
-                val decryptionHandle = pgpHandle.decryptionWithTimeOffset()
-                    .decryptionKey(Crypto.newPrivateKeyFromArmored(privateKey, passphrase))
-                    .new_()
+                val decryptionHandle =
+                    pgpHandle
+                        .decryptionWithTimeOffset()
+                        .decryptionKey(Crypto.newPrivateKeyFromArmored(privateKey, passphrase))
+                        .new_()
 
-                val decryptedSessionKey = decryptionHandle.decryptSessionKey(
-                    Crypto.newPGPMessageFromArmored(cipherText).keyPacket
-                )
+                val decryptedSessionKey =
+                    decryptionHandle.decryptSessionKey(
+                        Crypto.newPGPMessageFromArmored(cipherText).keyPacket,
+                    )
 
                 passphraseCopy.erase()
 
@@ -254,15 +273,12 @@ class OpenPgp(
         } finally {
             Mobile.freeOSMemory()
         }
-    }
 
-    suspend fun generatePublicKey(
-        privateKey: String
-    ): OpenPgpResult<String> {
-        return try {
+    suspend fun generatePublicKey(privateKey: String): OpenPgpResult<String> =
+        try {
             withContext(Dispatchers.IO) {
                 OpenPgpResult.Result(
-                    Crypto.newKeyFromArmored(privateKey).armoredPublicKey
+                    Crypto.newKeyFromArmored(privateKey).armoredPublicKey,
                 )
             }
         } catch (exception: Exception) {
@@ -271,13 +287,12 @@ class OpenPgp(
         } finally {
             Mobile.freeOSMemory()
         }
-    }
 
-    suspend fun getKeyFingerprint(key: String): OpenPgpResult<String> {
-        return try {
+    suspend fun getKeyFingerprint(key: String): OpenPgpResult<String> =
+        try {
             withContext(Dispatchers.IO) {
                 OpenPgpResult.Result(
-                    Key(key).fingerprint
+                    Key(key).fingerprint,
                 )
             }
         } catch (exception: Exception) {
@@ -286,37 +301,39 @@ class OpenPgp(
         } finally {
             Mobile.freeOSMemory()
         }
-    }
 
     suspend fun verifyClearTextSignature(
         armoredPublicKey: String,
-        pgpMessage: ByteArray
+        pgpMessage: ByteArray,
     ): OpenPgpResult<CleartextSignatureVerification> {
         return try {
             withContext(Dispatchers.IO) {
                 val keyFingerprint = (getKeyFingerprint(armoredPublicKey) as OpenPgpResult.Result<String>).result
 
-                val verificationHandle = pgpHandle.verificationWithTimeOffset()
-                    .verificationKey(Crypto.newKeyFromArmored(armoredPublicKey))
-                    .new_()
+                val verificationHandle =
+                    pgpHandle
+                        .verificationWithTimeOffset()
+                        .verificationKey(Crypto.newKeyFromArmored(armoredPublicKey))
+                        .new_()
 
                 val verificationResult = verificationHandle.verifyCleartext(pgpMessage)
 
                 OpenPgpResult.Result(
                     CleartextSignatureVerification(
-                        isSignatureVerified = try {
-                            // signatureError() throws exception if signature is not valid
-                            // returns unit if the signature is valid
-                            verificationResult.signatureError()
-                            true
-                        } catch (e: Exception) {
-                            // go to outer catch - signature is not valid
-                            @Suppress("RethrowCaughtException")
-                            throw e
-                        },
+                        isSignatureVerified =
+                            try {
+                                // signatureError() throws exception if signature is not valid
+                                // returns unit if the signature is valid
+                                verificationResult.signatureError()
+                                true
+                            } catch (e: Exception) {
+                                // go to outer catch - signature is not valid
+                                @Suppress("RethrowCaughtException")
+                                throw e
+                            },
                         message = String(verificationResult.cleartext()),
-                        keyFingerprint = keyFingerprint
-                    )
+                        keyFingerprint = keyFingerprint,
+                    ),
                 )
             }
         } catch (exception: Exception) {
@@ -331,17 +348,21 @@ class OpenPgp(
     // call freeMemory() after loop completes
     suspend fun decryptMessageArmoredWithSessionKey(
         sessionKeyHexString: String,
-        message: String
+        message: String,
     ): OpenPgpResult<String> {
         return try {
             withContext(Dispatchers.IO) {
-                val pgpSessionKey = Crypto.newSessionKeyFromToken(
-                    sessionKeyHexString.decodeHex(), SESSION_KEY_ALGORITHM
-                )
+                val pgpSessionKey =
+                    Crypto.newSessionKeyFromToken(
+                        sessionKeyHexString.decodeHex(),
+                        SESSION_KEY_ALGORITHM,
+                    )
 
-                val decryptionHandle = pgpHandle.decryption()
-                    .sessionKey(pgpSessionKey)
-                    .new_()
+                val decryptionHandle =
+                    pgpHandle
+                        .decryption()
+                        .sessionKey(pgpSessionKey)
+                        .new_()
 
                 val result = decryptionHandle.decrypt(message.toByteArray(), Crypto.Auto)
 
@@ -358,24 +379,28 @@ class OpenPgp(
     @OptIn(ExperimentalStdlibApi::class)
     suspend fun decryptMessageArmoredWithSessionKeyRetrieve(
         unlockedKey: Key,
-        cipherText: String
+        cipherText: String,
     ): OpenPgpResult<DecryptedMessageAndSessionKey> {
         return try {
             withContext(Dispatchers.IO) {
-                val decryptionHandle = pgpHandle.decryptionWithTimeOffset()
-                    .decryptionKey(unlockedKey)
-                    .retrieveSessionKey()
-                    .new_()
+                val decryptionHandle =
+                    pgpHandle
+                        .decryptionWithTimeOffset()
+                        .decryptionKey(unlockedKey)
+                        .retrieveSessionKey()
+                        .new_()
 
-                val result = decryptionHandle.decrypt(
-                    cipherText.toByteArray(), Crypto.Armor
-                )
+                val result =
+                    decryptionHandle.decrypt(
+                        cipherText.toByteArray(),
+                        Crypto.Armor,
+                    )
 
                 OpenPgpResult.Result(
                     DecryptedMessageAndSessionKey(
                         decryptedMessage = result.string(),
-                        sessionKeyHex = result.sessionKey().key.toHexString()
-                    )
+                        sessionKeyHex = result.sessionKey().key.toHexString(),
+                    ),
                 )
             }
         } catch (exception: Exception) {
@@ -388,14 +413,16 @@ class OpenPgp(
         armoredPrivateKey: String,
         passphrase: ByteArray,
         armoredPublicKey: String,
-        pgpMessage: ByteArray
+        pgpMessage: ByteArray,
     ): OpenPgpResult<VerifiedMessage> {
         return try {
             withContext(Dispatchers.IO) {
-                val decryptionHandle = pgpHandle.decryptionWithTimeOffset()
-                    .decryptionKey(Crypto.newPrivateKeyFromArmored(armoredPrivateKey, passphrase))
-                    .verificationKey(Crypto.newKeyFromArmored(armoredPublicKey))
-                    .new_()
+                val decryptionHandle =
+                    pgpHandle
+                        .decryptionWithTimeOffset()
+                        .decryptionKey(Crypto.newPrivateKeyFromArmored(armoredPrivateKey, passphrase))
+                        .verificationKey(Crypto.newKeyFromArmored(armoredPublicKey))
+                        .new_()
 
                 val decryptionResult = decryptionHandle.decrypt(pgpMessage, Crypto.Armor)
 
@@ -406,8 +433,8 @@ class OpenPgp(
                         decryptedMessage = String(decryptionResult.bytes()),
                         signatureCreationTimestampSeconds = decryptionResult.signatureCreationTime(),
                         signatureKeyFingerprint = decryptionResult.signedByKey().fingerprint,
-                        signatureKeyHexKeyID = decryptionResult.signedByKey().hexKeyID
-                    )
+                        signatureKeyHexKeyID = decryptionResult.signedByKey().hexKeyID,
+                    ),
                 )
             }
         } catch (exception: Exception) {

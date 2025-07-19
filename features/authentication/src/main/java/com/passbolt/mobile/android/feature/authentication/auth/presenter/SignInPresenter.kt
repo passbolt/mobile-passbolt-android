@@ -1,3 +1,25 @@
+/**
+ * Passbolt - Open source password manager for teams
+ * Copyright (c) 2021 Passbolt SA
+ *
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
+ * Public License (AGPL) as published by the Free Software Foundation version 3.
+ *
+ * The name "Passbolt" is a registered trademark of Passbolt SA, and Passbolt SA hereby declines to grant a trademark
+ * license to "Passbolt" pursuant to the GNU Affero General Public License version 3 Section 7(e), without a separate
+ * agreement with Passbolt SA.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License along with this program. If not,
+ * see GNU Affero General Public License v3 (http://www.gnu.org/licenses/agpl-3.0.html).
+ *
+ * @copyright Copyright (c) Passbolt SA (https://www.passbolt.com)
+ * @license https://opensource.org/licenses/AGPL-3.0 AGPL License
+ * @link https://www.passbolt.com Passbolt (tm)
+ * @since v1.0
+ */
 package com.passbolt.mobile.android.feature.authentication.auth.presenter
 
 import com.passbolt.mobile.android.common.usecase.UserIdInput
@@ -29,28 +51,6 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.crypto.Cipher
 
-/**
- * Passbolt - Open source password manager for teams
- * Copyright (c) 2021 Passbolt SA
- *
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
- * Public License (AGPL) as published by the Free Software Foundation version 3.
- *
- * The name "Passbolt" is a registered trademark of Passbolt SA, and Passbolt SA hereby declines to grant a trademark
- * license to "Passbolt" pursuant to the GNU Affero General Public License version 3 Section 7(e), without a separate
- * agreement with Passbolt SA.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License along with this program. If not,
- * see GNU Affero General Public License v3 (http://www.gnu.org/licenses/agpl-3.0.html).
- *
- * @copyright Copyright (c) Passbolt SA (https://www.passbolt.com)
- * @license https://opensource.org/licenses/AGPL-3.0 AGPL License
- * @link https://www.passbolt.com Passbolt (tm)
- * @since v1.0
- */
 // presenter for sign in view used for performing full sign in
 open class SignInPresenter(
     private val saveSessionUseCase: SaveSessionUseCase,
@@ -74,22 +74,21 @@ open class SignInPresenter(
     authReasonMapper: AuthReasonMapper,
     rootDetector: RootDetector,
     runtimeAuthenticatedFlag: RuntimeAuthenticatedFlag,
-    getGlobalPreferencesUseCase: GetGlobalPreferencesUseCase
+    getGlobalPreferencesUseCase: GetGlobalPreferencesUseCase,
 ) : AuthBasePresenter(
-    getAccountDataUseCase,
-    getPrivateKeyUseCase,
-    verifyPassphraseUseCase,
-    biometricCipher,
-    getPassphraseUseCase,
-    passphraseMemoryCache,
-    authReasonMapper,
-    rootDetector,
-    biometryInteractor,
-    getGlobalPreferencesUseCase,
-    runtimeAuthenticatedFlag,
-    coroutineLaunchContext
-) {
-
+        getAccountDataUseCase,
+        getPrivateKeyUseCase,
+        verifyPassphraseUseCase,
+        biometricCipher,
+        getPassphraseUseCase,
+        passphraseMemoryCache,
+        authReasonMapper,
+        rootDetector,
+        biometryInteractor,
+        getGlobalPreferencesUseCase,
+        runtimeAuthenticatedFlag,
+        coroutineLaunchContext,
+    ) {
     private var loginState: LoginState? = null
 
     override fun onPassphraseVerified(passphrase: ByteArray) {
@@ -113,7 +112,8 @@ open class SignInPresenter(
         signInIdlingResource.setIdle(false)
         view?.showProgress()
         scope.launch {
-            getAndVerifyServerKeysInteractor.getAndVerifyServerKeys(userId,
+            getAndVerifyServerKeysInteractor.getAndVerifyServerKeys(
+                userId,
                 onError = {
                     view?.hideProgress()
                     when (it) {
@@ -130,20 +130,25 @@ open class SignInPresenter(
                             view?.showTimeIsOutOfSync()
                         }
                     }
-                }
+                },
             ) {
                 signIn(passphrase.copyOf(), it.pgpKey, it.rsaKey, it.pgpKeyFingerprint)
             }
         }
     }
 
+    @Suppress("LongMethod")
     private suspend fun signIn(
         passphrase: ByteArray,
         serverPublicKey: String,
         rsaKey: String,
-        fingerprint: String
+        fingerprint: String,
     ) {
-        signInVerifyInteractor.signInVerify(serverPublicKey, passphrase, userId, rsaKey,
+        signInVerifyInteractor.signInVerify(
+            serverPublicKey,
+            passphrase,
+            userId,
+            rsaKey,
             onError = {
                 view?.hideProgress()
                 signInIdlingResource.setIdle(true)
@@ -152,7 +157,7 @@ open class SignInPresenter(
                         view?.showAccountDoesNotExistDialog(
                             it.label,
                             it.email,
-                            it.serverUrl
+                            it.serverUrl,
                         )
                     }
                     is SignInVerifyInteractor.Error.ChallengeDecryptionError -> {
@@ -172,20 +177,22 @@ open class SignInPresenter(
                         view?.showError(it.message)
                     }
                 }
-            }) {
-            loginState = LoginState(
-                accessToken = it.accessToken,
-                refreshToken = it.refreshToken,
-                fingerprint = fingerprint,
-                mfaToken = it.mfaToken
-            )
+            },
+        ) {
+            loginState =
+                LoginState(
+                    accessToken = it.accessToken,
+                    refreshToken = it.refreshToken,
+                    fingerprint = fingerprint,
+                    mfaToken = it.mfaToken,
+                )
             Timber.d("Checking MFA status")
             mfaStatusProvider.setState(
                 MfaStatusProvider.MfaState(
                     challengeResponseDto = it.challengeResponseDto,
                     newMfaToken = it.mfaToken,
-                    currentMfaToken = it.currentMfaToken
-                )
+                    currentMfaToken = it.currentMfaToken,
+                ),
             )
             when (mfaStatusProvider.provideMfaStatus()) {
                 MfaStatus.NOT_REQUIRED -> {
@@ -222,15 +229,15 @@ open class SignInPresenter(
                     userId = userId,
                     accessToken = currentLoginState.accessToken,
                     refreshToken = currentLoginState.refreshToken,
-                    mfaToken = loginState?.mfaToken
-                )
+                    mfaToken = loginState?.mfaToken,
+                ),
             )
         }
         saveServerFingerprintUseCase.execute(
             SaveServerFingerprintUseCase.Input(
                 userId,
-                currentLoginState.fingerprint
-            )
+                currentLoginState.fingerprint,
+            ),
         )
         saveSelectedAccountUseCase.execute(UserIdInput(userId))
         Timber.d("Increasing sign in count")
@@ -249,7 +256,7 @@ open class SignInPresenter(
                         PostSignInActionsInteractor.Error.ConfigurationFetchError -> view?.showGenericError()
                         PostSignInActionsInteractor.Error.UserProfileFetchError -> view?.showGenericError()
                     }
-                }
+                },
             ) {
                 view?.apply {
                     hideProgress()
@@ -286,6 +293,6 @@ open class SignInPresenter(
         val accessToken: String,
         val refreshToken: String,
         val fingerprint: String,
-        var mfaToken: String? = null
+        var mfaToken: String? = null,
     )
 }

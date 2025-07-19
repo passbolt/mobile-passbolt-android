@@ -26,12 +26,9 @@ import com.passbolt.mobile.android.dto.response.FolderResponseDto
  * @since v1.0
  */
 internal class FoldersRemoteDataSource(
-    private val foldersApi: FoldersApi
+    private val foldersApi: FoldersApi,
 ) : FoldersDataSource {
+    override suspend fun getFolders(): List<FolderResponseDto> = foldersApi.getFolders().body
 
-    override suspend fun getFolders(): List<FolderResponseDto> =
-        foldersApi.getFolders().body
-
-    override suspend fun createFolder(createFolderRequestDto: CreateFolderRequestDto) =
-        foldersApi.createFolder(createFolderRequestDto).body
+    override suspend fun createFolder(createFolderRequestDto: CreateFolderRequestDto) = foldersApi.createFolder(createFolderRequestDto).body
 }

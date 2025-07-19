@@ -32,7 +32,7 @@ fun Module.accountDetailsModule() {
                 getSelectedAccountDataUseCase = get(),
                 coroutineLaunchContext = get(),
                 getSelectedAccountUseCase = get(),
-                updateAccountDataUseCase = get()
+                updateAccountDataUseCase = get(),
             )
         }
     }

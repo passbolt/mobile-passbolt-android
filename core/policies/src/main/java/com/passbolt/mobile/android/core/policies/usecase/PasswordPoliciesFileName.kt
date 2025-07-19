@@ -1,7 +1,8 @@
 package com.passbolt.mobile.android.core.policies.usecase
 
-class PasswordPoliciesFileName(userId: String) {
-
+class PasswordPoliciesFileName(
+    userId: String,
+) {
     val name = PASSWORD_POLICIES_FILE_NAME_FORMAT.format(userId)
 
     companion object {

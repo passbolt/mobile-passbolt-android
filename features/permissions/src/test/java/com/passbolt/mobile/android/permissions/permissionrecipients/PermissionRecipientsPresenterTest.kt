@@ -3,9 +3,6 @@ package com.passbolt.mobile.android.permissions.permissionrecipients
 import com.google.common.truth.Truth.assertThat
 import com.passbolt.mobile.android.core.commongroups.usecase.db.GetLocalGroupsUseCase
 import com.passbolt.mobile.android.core.users.usecase.db.GetLocalUsersUseCase
-import com.passbolt.mobile.android.feature.resources.userspermissiondetails.mockGetLocalGroupsUseCase
-import com.passbolt.mobile.android.feature.resources.userspermissiondetails.mockGetLocalUsersUseCase
-import com.passbolt.mobile.android.feature.resources.userspermissiondetails.testPermissionRecipientsModule
 import com.passbolt.mobile.android.mappers.PermissionsModelMapper
 import com.passbolt.mobile.android.ui.GpgKeyModel
 import com.passbolt.mobile.android.ui.GroupModel
@@ -56,16 +53,16 @@ import java.util.UUID
 
 @ExperimentalCoroutinesApi
 class PermissionRecipientsPresenterTest : KoinTest {
-
     private val presenter: PermissionRecipientsContract.Presenter by inject()
     private val view: PermissionRecipientsContract.View = mock()
     private val permissionsModelMapper: PermissionsModelMapper by inject()
 
     @get:Rule
-    val koinTestRule = KoinTestRule.create {
-        printLogger(Level.ERROR)
-        modules(testPermissionRecipientsModule)
-    }
+    val koinTestRule =
+        KoinTestRule.create {
+            printLogger(Level.ERROR)
+            modules(testPermissionRecipientsModule)
+        }
 
     @Before
     fun setup() {
@@ -87,14 +84,14 @@ class PermissionRecipientsPresenterTest : KoinTest {
             emptyList(),
             emptyList(),
             100,
-            10f
+            10f,
         )
 
         verify(view).showPermissions(
             emptyList(),
             emptyList(),
             counterValue = emptyList(),
-            overlap = 0
+            overlap = 0,
         )
         verify(view).showRecipients(listOf(GROUP), listOf(USER))
     }
@@ -105,7 +102,7 @@ class PermissionRecipientsPresenterTest : KoinTest {
             emptyList(),
             emptyList(),
             100,
-            10f
+            10f,
         )
         reset(view)
         presenter.groupRecipientSelectionChanged(NEW_GROUP, isSelected = true)
@@ -116,7 +113,7 @@ class PermissionRecipientsPresenterTest : KoinTest {
             groupPermissionsCaptor.capture(),
             any(),
             any(),
-            any()
+            any(),
         )
         assertThat(groupPermissionsCaptor.firstValue.size).isEqualTo(1)
         assertThat(groupPermissionsCaptor.firstValue[0].group).isEqualTo(NEW_GROUP)
@@ -130,21 +127,24 @@ class PermissionRecipientsPresenterTest : KoinTest {
             emptyList(),
             emptyList(),
             100,
-            10f
+            10f,
         )
         reset(view)
         presenter.userRecipientSelectionChanged(NEW_USER, isSelected = true)
 
         val userPermissionsCaptor = argumentCaptor<List<PermissionModelUi.UserPermissionModel>>()
-        val mapped = permissionsModelMapper.map(
-            NEW_USER, PermissionRecipientsPresenter.DEFAULT_PERMISSIONS_FOR_NEW_RECIPIENTS, "permId"
-        )
+        val mapped =
+            permissionsModelMapper.map(
+                NEW_USER,
+                PermissionRecipientsPresenter.DEFAULT_PERMISSIONS_FOR_NEW_RECIPIENTS,
+                "permId",
+            )
 
         verify(view).showPermissions(
             any(),
             userPermissionsCaptor.capture(),
             any(),
-            any()
+            any(),
         )
         assertThat(userPermissionsCaptor.firstValue.size).isEqualTo(1)
         assertThat(userPermissionsCaptor.firstValue[0].user.userId).isEqualTo(mapped.user.userId)
@@ -158,7 +158,7 @@ class PermissionRecipientsPresenterTest : KoinTest {
             emptyList(),
             emptyList(),
             100,
-            10f
+            10f,
         )
 
         presenter.searchTextChange("abc")
@@ -172,57 +172,64 @@ class PermissionRecipientsPresenterTest : KoinTest {
         private val GROUP = GroupModel(groupId = "grId", groupName = "grName")
         private val NEW_GROUP = GroupModel(groupId = "grId", groupName = "grName")
 
-        private val USER_WITH_AVATAR = UserWithAvatar(
-            userId = "userId",
-            firstName = "first",
-            lastName = "last",
-            userName = "userName",
-            isDisabled = false,
-            avatarUrl = "avartUrl"
-        )
-        private val USER = UserModel(
-            id = USER_WITH_AVATAR.userId,
-            userName = USER_WITH_AVATAR.userName,
-            disabled = false,
-            gpgKey = GpgKeyModel(
-                armoredKey = "keyData",
-                fingerprint = "fingerprint",
-                bits = 1,
-                uid = "uid",
-                keyId = "keyid",
-                type = "rsa",
-                keyExpirationDate = ZonedDateTime.now(),
-                keyCreationDate = ZonedDateTime.now(),
-                id = UUID.randomUUID().toString()
-            ),
-            profile = UserProfileModel(
-                username = "username",
-                firstName = USER_WITH_AVATAR.firstName,
-                lastName = USER_WITH_AVATAR.lastName,
-                avatarUrl = USER_WITH_AVATAR.avatarUrl
+        private val USER_WITH_AVATAR =
+            UserWithAvatar(
+                userId = "userId",
+                firstName = "first",
+                lastName = "last",
+                userName = "userName",
+                isDisabled = false,
+                avatarUrl = "avartUrl",
             )
-        )
-        private val NEW_USER = UserModel(
-            id = "newUserId",
-            userName = "newUserName",
-            disabled = false,
-            gpgKey = GpgKeyModel(
-                armoredKey = "keyData",
-                fingerprint = "fingerprint",
-                bits = 1,
-                uid = "uid",
-                keyId = "keyid",
-                type = "rsa",
-                keyExpirationDate = ZonedDateTime.now(),
-                keyCreationDate = ZonedDateTime.now(),
-                id = UUID.randomUUID().toString()
-            ),
-            profile = UserProfileModel(
-                username = "username",
-                firstName = "newUserFirst",
-                lastName = "newUserLast",
-                avatarUrl = "newUserAvatar"
+        private val USER =
+            UserModel(
+                id = USER_WITH_AVATAR.userId,
+                userName = USER_WITH_AVATAR.userName,
+                disabled = false,
+                gpgKey =
+                    GpgKeyModel(
+                        armoredKey = "keyData",
+                        fingerprint = "fingerprint",
+                        bits = 1,
+                        uid = "uid",
+                        keyId = "keyid",
+                        type = "rsa",
+                        keyExpirationDate = ZonedDateTime.now(),
+                        keyCreationDate = ZonedDateTime.now(),
+                        id = UUID.randomUUID().toString(),
+                    ),
+                profile =
+                    UserProfileModel(
+                        username = "username",
+                        firstName = USER_WITH_AVATAR.firstName,
+                        lastName = USER_WITH_AVATAR.lastName,
+                        avatarUrl = USER_WITH_AVATAR.avatarUrl,
+                    ),
             )
-        )
+        private val NEW_USER =
+            UserModel(
+                id = "newUserId",
+                userName = "newUserName",
+                disabled = false,
+                gpgKey =
+                    GpgKeyModel(
+                        armoredKey = "keyData",
+                        fingerprint = "fingerprint",
+                        bits = 1,
+                        uid = "uid",
+                        keyId = "keyid",
+                        type = "rsa",
+                        keyExpirationDate = ZonedDateTime.now(),
+                        keyCreationDate = ZonedDateTime.now(),
+                        id = UUID.randomUUID().toString(),
+                    ),
+                profile =
+                    UserProfileModel(
+                        username = "username",
+                        firstName = "newUserFirst",
+                        lastName = "newUserLast",
+                        avatarUrl = "newUserAvatar",
+                    ),
+            )
     }
 }

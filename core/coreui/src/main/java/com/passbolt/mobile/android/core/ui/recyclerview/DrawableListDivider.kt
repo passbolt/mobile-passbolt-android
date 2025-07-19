@@ -27,10 +27,13 @@ import androidx.recyclerview.widget.RecyclerView
  * @since v1.0
  */
 class DrawableListDivider(
-    private val divider: Drawable?
+    private val divider: Drawable?,
 ) : RecyclerView.ItemDecoration() {
-
-    override fun onDrawOver(canvas: Canvas, parent: RecyclerView, state: RecyclerView.State) {
+    override fun onDrawOver(
+        canvas: Canvas,
+        parent: RecyclerView,
+        state: RecyclerView.State,
+    ) {
         val dividerLeft = parent.paddingLeft
         val dividerRight = parent.width - parent.paddingRight
         val childCount = parent.childCount

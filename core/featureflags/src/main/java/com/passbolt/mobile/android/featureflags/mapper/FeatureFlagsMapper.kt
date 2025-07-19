@@ -27,30 +27,38 @@ import com.passbolt.mobile.android.featureflags.usecase.Defaults
  * @since v1.0
  */
 class FeatureFlagsMapper {
-
     fun map(settingsResponseDto: SettingsResponseDto): FeatureFlagsModel =
         settingsResponseDto.passboltSettings.let {
             return FeatureFlagsModel(
                 it.legalSettings.privacyPolicyUrl.url,
                 it.legalSettings.termsAndConditionsUrl.url,
-                isPreviewPasswordAvailable = it.plugins.previewPassword?.enabled
-                    ?: Defaults.IS_PREVIEW_PASSWORD_AVAILABLE,
-                areFoldersAvailable = it.plugins.folders?.enabled
-                    ?: Defaults.ARE_FOLDERS_AVAILABLE,
-                areTagsAvailable = it.plugins.tags?.enabled
-                    ?: Defaults.ARE_TAGS_AVAILABLE,
-                isTotpAvailable = it.plugins.totpResourceTypes?.enabled
-                    ?: Defaults.IS_TOTP_AVAILABLE,
-                isRbacAvailable = it.plugins.rbacs?.enabled
-                    ?: Defaults.IS_RBAC_AVAILABLE,
-                isPasswordExpiryAvailable = it.plugins.passwordExpiry?.enabled
-                    ?: Defaults.IS_PASSWORD_EXPIRY_AVAILABLE,
-                arePasswordPoliciesAvailable = it.plugins.passwordPolicies?.enabled
-                    ?: Defaults.ARE_PASSWORD_POLICIES_AVAILABLE,
-                canUpdatePasswordPolicies = it.plugins.passwordPoliciesUpdate?.enabled
-                    ?: Defaults.CAN_UPDATE_PASSWORD_POLICIES,
-                isV5MetadataAvailable = it.plugins.metadata?.enabled
-                    ?: Defaults.IS_V5_METADATA_AVAILABLE
+                isPreviewPasswordAvailable =
+                    it.plugins.previewPassword?.enabled
+                        ?: Defaults.IS_PREVIEW_PASSWORD_AVAILABLE,
+                areFoldersAvailable =
+                    it.plugins.folders?.enabled
+                        ?: Defaults.ARE_FOLDERS_AVAILABLE,
+                areTagsAvailable =
+                    it.plugins.tags?.enabled
+                        ?: Defaults.ARE_TAGS_AVAILABLE,
+                isTotpAvailable =
+                    it.plugins.totpResourceTypes?.enabled
+                        ?: Defaults.IS_TOTP_AVAILABLE,
+                isRbacAvailable =
+                    it.plugins.rbacs?.enabled
+                        ?: Defaults.IS_RBAC_AVAILABLE,
+                isPasswordExpiryAvailable =
+                    it.plugins.passwordExpiry?.enabled
+                        ?: Defaults.IS_PASSWORD_EXPIRY_AVAILABLE,
+                arePasswordPoliciesAvailable =
+                    it.plugins.passwordPolicies?.enabled
+                        ?: Defaults.ARE_PASSWORD_POLICIES_AVAILABLE,
+                canUpdatePasswordPolicies =
+                    it.plugins.passwordPoliciesUpdate?.enabled
+                        ?: Defaults.CAN_UPDATE_PASSWORD_POLICIES,
+                isV5MetadataAvailable =
+                    it.plugins.metadata?.enabled
+                        ?: Defaults.IS_V5_METADATA_AVAILABLE,
             )
         }
 }

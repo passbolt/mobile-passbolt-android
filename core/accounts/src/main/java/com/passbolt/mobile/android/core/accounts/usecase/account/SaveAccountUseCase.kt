@@ -29,9 +29,8 @@ import com.passbolt.mobile.android.core.accounts.usecase.ACCOUNTS_ALIAS
  */
 
 class SaveAccountUseCase(
-    private val sharedPreferences: SharedPreferences
+    private val sharedPreferences: SharedPreferences,
 ) : UseCase<UserIdInput, Unit> {
-
     override fun execute(input: UserIdInput) {
         with(sharedPreferences.edit()) {
             val currentList = sharedPreferences.getStringSet(ACCOUNTS_ALIAS, emptySet()).orEmpty()

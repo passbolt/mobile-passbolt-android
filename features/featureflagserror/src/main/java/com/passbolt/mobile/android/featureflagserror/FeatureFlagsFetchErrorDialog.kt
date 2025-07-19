@@ -33,7 +33,6 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
  * @since v1.0
  */
 class FeatureFlagsFetchErrorDialog : DialogFragment() {
-
     private var listener: Listener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,7 +40,11 @@ class FeatureFlagsFetchErrorDialog : DialogFragment() {
         setStyle(STYLE_NO_TITLE, CoreUiR.style.FullscreenDialogTheme)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
+    ): View {
         val binding = DialogFeatureFlagsFetchErrorBinding.inflate(inflater)
         setupListeners(binding)
         return binding.root
@@ -50,11 +53,12 @@ class FeatureFlagsFetchErrorDialog : DialogFragment() {
     override fun onAttach(context: Context) {
         super.onAttach(context)
         isCancelable = false
-        listener = when {
-            activity is Listener -> activity as Listener
-            parentFragment is Listener -> parentFragment as Listener
-            else -> error("Parent must implement ${Listener::class.java.name}")
-        }
+        listener =
+            when {
+                activity is Listener -> activity as Listener
+                parentFragment is Listener -> parentFragment as Listener
+                else -> error("Parent must implement ${Listener::class.java.name}")
+            }
     }
 
     override fun onDetach() {
@@ -75,6 +79,7 @@ class FeatureFlagsFetchErrorDialog : DialogFragment() {
 
     interface Listener {
         fun fetchFeatureFlagsErrorDialogRefreshClick()
+
         fun fetchFeatureFlagsErrorDialogSignOutClick()
     }
 }

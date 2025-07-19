@@ -4,8 +4,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
-import coil.load
-import coil.transform.CircleCropTransformation
+import coil3.load
+import coil3.request.error
+import coil3.request.placeholder
+import coil3.request.transformations
+import coil3.transform.CircleCropTransformation
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
 import com.passbolt.mobile.android.feature.authentication.R
 import com.passbolt.mobile.android.feature.authentication.databinding.ItemAccountBinding
@@ -35,17 +38,20 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
  * @since v1.0
  */
 class AccountItem(
-    val accountModel: AccountModelUi.AccountModel
+    val accountModel: AccountModelUi.AccountModel,
 ) : AbstractBindingItem<ItemAccountBinding>() {
-
     override val type: Int
         get() = R.id.itemAccount
 
-    override fun createBinding(inflater: LayoutInflater, parent: ViewGroup?): ItemAccountBinding {
-        return ItemAccountBinding.inflate(inflater, parent, false)
-    }
+    override fun createBinding(
+        inflater: LayoutInflater,
+        parent: ViewGroup?,
+    ): ItemAccountBinding = ItemAccountBinding.inflate(inflater, parent, false)
 
-    override fun bindView(binding: ItemAccountBinding, payloads: List<Any>) {
+    override fun bindView(
+        binding: ItemAccountBinding,
+        payloads: List<Any>,
+    ) {
         super.bindView(binding, payloads)
         with(binding) {
             title.text = accountModel.title
@@ -56,7 +62,7 @@ class AccountItem(
                     CoreUiR.drawable.background_ripple_top_radius
                 } else {
                     CoreUiR.drawable.background_ripple
-                }
+                },
             )
             icon.load(accountModel.avatar) {
                 error(CoreUiR.drawable.ic_avatar_placeholder)

@@ -23,8 +23,9 @@ package com.passbolt.mobile.android.core.preferences
  * @since v1.0
  */
 
-class AccountPreferencesFileName(userId: String) {
-
+class AccountPreferencesFileName(
+    userId: String,
+) {
     val name = ACCOUNT_PREFERENCES_FILE_NAME_FORMAT.format(userId)
 
     private companion object {

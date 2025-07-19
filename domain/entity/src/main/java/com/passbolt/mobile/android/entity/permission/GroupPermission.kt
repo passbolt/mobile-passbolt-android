@@ -6,5 +6,5 @@ data class GroupPermission(
     val groupId: String,
     val permission: Permission,
     val permissionId: String,
-    val groupName: String
+    val groupName: String,
 )

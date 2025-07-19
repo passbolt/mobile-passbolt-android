@@ -27,8 +27,9 @@ import com.passbolt.mobile.android.core.tags.usecase.db.tagsDbModule
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
-val tagsModule = module {
-    tagsDbModule()
+val tagsModule =
+    module {
+        tagsDbModule()
 
-    singleOf(::RebuildTagsTablesUseCase)
-}
+        singleOf(::RebuildTagsTablesUseCase)
+    }

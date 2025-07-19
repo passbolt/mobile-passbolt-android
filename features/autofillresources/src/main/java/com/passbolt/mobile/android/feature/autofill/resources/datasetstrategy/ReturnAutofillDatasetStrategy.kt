@@ -25,13 +25,16 @@ import com.passbolt.mobile.android.feature.autofill.resources.AutofillResourcesC
  * @since v1.0
  */
 interface ReturnAutofillDatasetStrategy {
-
     var view: AutofillResourcesContract.View?
 
     val activeView
         get() = requireNotNull(view)
 
-    fun returnDataset(username: String, password: String, uri: String?)
+    fun returnDataset(
+        username: String,
+        password: String,
+        uri: String?,
+    )
 
     fun detach() {
         view = null

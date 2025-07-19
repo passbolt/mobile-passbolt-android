@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.feature.settings
 
+import com.passbolt.mobile.android.feature.settings.screen.accounts.accountsSettingsModule
 import com.passbolt.mobile.android.feature.settings.screen.accounts.keyinspector.keyInspectorModule
 import com.passbolt.mobile.android.feature.settings.screen.accounts.keyinspector.keyinspectormoremenu.keyInspectorMoreMenuModule
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.appSettingsModule
@@ -35,17 +36,19 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-val settingsModule = module {
-    settingsModule()
+val settingsModule =
+    module {
+        settingsModule()
 
-    appSettingsModule()
-    debugLogsSettingsModule()
-    termsAndLicensesSettingsModule()
-    expertSettingsModule()
+        appSettingsModule()
+        accountsSettingsModule()
+        debugLogsSettingsModule()
+        termsAndLicensesSettingsModule()
+        expertSettingsModule()
 
-    settingsAutofillModule()
-    licensesModule()
-    defaultFilterModule()
-    keyInspectorModule()
-    keyInspectorMoreMenuModule()
-}
+        settingsAutofillModule()
+        licensesModule()
+        defaultFilterModule()
+        keyInspectorModule()
+        keyInspectorMoreMenuModule()
+    }

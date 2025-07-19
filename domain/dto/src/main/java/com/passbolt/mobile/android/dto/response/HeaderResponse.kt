@@ -32,5 +32,5 @@ class HeaderResponse(
     val url: String,
     val code: Int,
     @SerializedName("servertime")
-    val serverTime: Long
+    val serverTime: Long,
 )

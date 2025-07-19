@@ -37,13 +37,15 @@ class ScanManager(
     private val mainExecutor: Executor,
     private val barcodeImageAnalyzer: QrCodeImageAnalyzer,
     private val cameraController: LifecycleCameraController,
-    private val barcodeScanner: BarcodeScanner
+    private val barcodeScanner: BarcodeScanner,
 ) {
-
     val barcodeScanPublisher: StateFlow<BarcodeScanResult>
         get() = barcodeImageAnalyzer.resultFlow
 
-    fun attach(owner: LifecycleOwner, previewView: PreviewView) {
+    fun attach(
+        owner: LifecycleOwner,
+        previewView: PreviewView,
+    ) {
         with(cameraController) {
             cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
             setImageAnalysisAnalyzer(mainExecutor, barcodeImageAnalyzer)

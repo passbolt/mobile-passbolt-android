@@ -27,7 +27,8 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-val folderDetailsModule = module {
-    folderMoreMenuModule()
-    folderDetailsModule()
-}
+val folderDetailsModule =
+    module {
+        folderMoreMenuModule()
+        folderDetailsModule()
+    }

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+
+    <com.passbolt.mobile.android.core.ui.textinputfield.TextInputView
+        android:id="@+id/additionalUriInput"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        app:inputHint="@string/resource_form_enter_uri" />
+
+    <FrameLayout
+        android:id="@+id/removeUriButton"
+        android:layout_width="@dimen/dp_56"
+        android:layout_height="@dimen/dp_56"
+        android:layout_gravity="bottom|end"
+        android:layout_marginStart="@dimen/dp_8"
+        android:background="@drawable/background_generate_password"
+        android:foreground="?attr/selectableItemBackground">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_trash"
+            app:tint="@color/black" />
+    </FrameLayout>
+</LinearLayout>

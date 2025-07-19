@@ -28,9 +28,8 @@ import com.passbolt.mobile.android.core.networking.NetworkResult
 import com.passbolt.mobile.android.passboltapi.secrets.SecretsRepository
 
 class FetchSecretUseCase(
-    private val secretsRepository: SecretsRepository
+    private val secretsRepository: SecretsRepository,
 ) : AsyncUseCase<FetchSecretUseCase.Input, FetchSecretUseCase.Output> {
-
     override suspend fun execute(input: Input) =
         when (val response = secretsRepository.getSecret(input.resourceId)) {
             is NetworkResult.Failure<*> -> Output.Failure(response.exception)
@@ -38,11 +37,16 @@ class FetchSecretUseCase(
         }
 
     data class Input(
-        val resourceId: String
+        val resourceId: String,
     )
 
     sealed class Output {
-        data class EncryptedSecret(val encryptedSecret: String) : Output()
-        data class Failure(val exception: Exception) : Output()
+        data class EncryptedSecret(
+            val encryptedSecret: String,
+        ) : Output()
+
+        data class Failure(
+            val exception: Exception,
+        ) : Output()
     }
 }

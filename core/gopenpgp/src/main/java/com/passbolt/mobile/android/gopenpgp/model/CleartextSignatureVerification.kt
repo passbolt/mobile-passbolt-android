@@ -26,5 +26,5 @@ package com.passbolt.mobile.android.gopenpgp.model
 data class CleartextSignatureVerification(
     val isSignatureVerified: Boolean,
     val message: String,
-    val keyFingerprint: String
+    val keyFingerprint: String,
 )

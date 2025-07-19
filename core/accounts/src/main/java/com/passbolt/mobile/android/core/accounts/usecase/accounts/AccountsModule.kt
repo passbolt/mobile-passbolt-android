@@ -28,18 +28,18 @@ import org.koin.core.module.Module
 internal fun Module.accountsModule() {
     single {
         GetAccountsUseCase(
-            sharedPreferences = get()
+            sharedPreferences = get(),
         )
     }
     single {
         CheckAccountExistsUseCase(
-            getAllAccountsDataUseCase = get()
+            getAllAccountsDataUseCase = get(),
         )
     }
     single {
         GetAllAccountsDataUseCase(
             getAccountDataUseCase = get(),
-            getAccountsUseCase = get()
+            getAccountsUseCase = get(),
         )
     }
 }

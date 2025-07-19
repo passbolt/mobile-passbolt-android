@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.tagsdetails
 
 import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReactiveContract
 import com.passbolt.mobile.android.permissions.permissions.PermissionsMode
+import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.TagModel
 
 /**
@@ -27,18 +28,26 @@ import com.passbolt.mobile.android.ui.TagModel
  * @since v1.0
  */
 interface ResourceTagsContract {
-
     interface Presenter : DataRefreshViewReactiveContract.Presenter<View> {
-        fun argsRetrieved(resourceId: String, mode: PermissionsMode)
+        fun argsRetrieved(
+            resourceId: String,
+            mode: PermissionsMode,
+        )
     }
 
     interface View : DataRefreshViewReactiveContract.View {
         fun displayTitle(name: String)
-        fun displayInitialsIcon(name: String, initials: String)
+
+        fun displayInitialsIcon(resource: ResourceModel)
+
         fun showFavouriteStar()
+
         fun showTags(tags: List<TagModel>)
+
         fun showDataRefreshError()
+
         fun showContentNotAvailable()
+
         fun navigateToHome()
     }
 }

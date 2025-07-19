@@ -19,9 +19,8 @@ class WelcomePresenter(
     private val rootDetector: RootDetector,
     private val getGlobalPreferencesUseCase: GetGlobalPreferencesUseCase,
     private val accountsInteractor: AccountsInteractor,
-    private val accountKitParser: AccountKitParser
+    private val accountKitParser: AccountKitParser,
 ) : WelcomeContract.Presenter {
-
     override var view: WelcomeContract.View? = null
     private val job = SupervisorJob()
     private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
@@ -57,9 +56,10 @@ class WelcomePresenter(
 
     override fun accountKitSelected(accountKit: String) {
         scope.launch {
-            accountKitParser.parseAndVerify(accountKit,
+            accountKitParser.parseAndVerify(
+                accountKit,
                 onSuccess = { injectPredefinedAccount(it) },
-                onFailure = { view?.navigateToSummary(ResultStatus.Failure("")) }
+                onFailure = { view?.navigateToSummary(ResultStatus.Failure("")) },
             )
         }
     }
@@ -74,9 +74,9 @@ class WelcomePresenter(
                         ACCOUNT_ALREADY_LINKED -> ResultStatus.AlreadyLinked()
                         ERROR_NON_HTTPS_DOMAIN -> ResultStatus.HttpNotSupported()
                         ERROR_WHEN_SAVING_PRIVATE_KEY -> ResultStatus.Failure(failureType.name)
-                    }
+                    },
                 )
-            }
+            },
         )
     }
 }

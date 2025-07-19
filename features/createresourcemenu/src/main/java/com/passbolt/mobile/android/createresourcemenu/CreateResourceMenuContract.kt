@@ -27,11 +27,13 @@ import com.passbolt.mobile.android.ui.HomeDisplayViewModel
  */
 
 interface CreateResourceMenuContract {
-
     interface View : BaseContract.View {
         fun showTotpButton()
+
         fun showFoldersButton()
+
         fun hideMenu()
+
         fun showPasswordButton()
     }
 

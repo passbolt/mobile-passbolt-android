@@ -30,10 +30,9 @@ import com.passbolt.mobile.android.ui.ParsedMetadataKeyModel
  */
 class GetLocalMetadataKeyUseCase(
     private val databaseProvider: DatabaseProvider,
-    private val metadataMapper: MetadataMapper
+    private val metadataMapper: MetadataMapper,
 ) : AsyncUseCase<GetLocalMetadataKeyUseCase.Input, ParsedMetadataKeyModel>,
     SelectedAccountUseCase {
-
     override suspend fun execute(input: Input): ParsedMetadataKeyModel =
         databaseProvider
             .get(selectedAccountId)
@@ -41,5 +40,7 @@ class GetLocalMetadataKeyUseCase(
             .getMetadataKey(input.metadataKeyId)
             .let { metadataMapper.mapToUi(it) }
 
-    data class Input(val metadataKeyId: String)
+    data class Input(
+        val metadataKeyId: String,
+    )
 }

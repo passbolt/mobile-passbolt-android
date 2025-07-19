@@ -27,18 +27,23 @@ import java.io.Serializable
  * @since v1.0
  */
 
-fun <T> LifecycleOwner.lifecycleAwareLazy(initializer: () -> T): Lazy<T> =
-    LifecycleAwareLazy(this, initializer)
+fun <T> LifecycleOwner.lifecycleAwareLazy(initializer: () -> T): Lazy<T> = LifecycleAwareLazy(this, initializer)
 
-class LifecycleAwareLazy<out T>(owner: LifecycleOwner, private val initializer: () -> T) : Lazy<T>, Serializable {
+class LifecycleAwareLazy<out T>(
+    owner: LifecycleOwner,
+    private val initializer: () -> T,
+) : Lazy<T>,
+    Serializable {
     private var _value: T? = null
 
     init {
-        owner.lifecycle.addObserver(object : DefaultLifecycleObserver {
-            override fun onStop(owner: LifecycleOwner) {
-                _value = null
-            }
-        })
+        owner.lifecycle.addObserver(
+            object : DefaultLifecycleObserver {
+                override fun onStop(owner: LifecycleOwner) {
+                    _value = null
+                }
+            },
+        )
     }
 
     override val value: T

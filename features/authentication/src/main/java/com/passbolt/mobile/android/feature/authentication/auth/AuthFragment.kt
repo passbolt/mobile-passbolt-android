@@ -11,8 +11,11 @@ import androidx.biometric.BiometricPrompt
 import androidx.core.os.BundleCompat
 import androidx.core.os.bundleOf
 import androidx.navigation.fragment.findNavController
-import coil.load
-import coil.transform.CircleCropTransformation
+import coil3.load
+import coil3.request.error
+import coil3.request.placeholder
+import coil3.request.transformations
+import coil3.transform.CircleCropTransformation
 import com.google.android.material.snackbar.Snackbar
 import com.passbolt.mobile.android.common.dialogs.rootWarningAlertDialog
 import com.passbolt.mobile.android.common.dialogs.serverNotReachableAlertDialog
@@ -76,10 +79,16 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
  * @since v1.0
  */
 @Suppress("TooManyFunctions")
-class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBinding::inflate), AuthContract.View,
-    FeatureFlagsFetchErrorDialog.Listener, ServerFingerprintChangedDialog.Listener, AccountDoesNotExistDialog.Listener,
-    EnterTotpListener, ScanYubikeyListener, AuthWithDuoListener, HelpMenuFragment.Listener {
-
+class AuthFragment :
+    BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBinding::inflate),
+    AuthContract.View,
+    FeatureFlagsFetchErrorDialog.Listener,
+    ServerFingerprintChangedDialog.Listener,
+    AccountDoesNotExistDialog.Listener,
+    EnterTotpListener,
+    ScanYubikeyListener,
+    AuthWithDuoListener,
+    HelpMenuFragment.Listener {
     private val strategyFactory: AuthStrategyFactory by inject()
     private lateinit var authStrategy: AuthStrategy
 
@@ -92,27 +101,35 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
     private val authConfig by lifecycleAwareLazy {
         requireNotNull(
             BundleCompat.getSerializable(
-                requireArguments(), EXTRA_AUTH_CONFIG, ActivityIntents.AuthConfig::class.java
-            )
+                requireArguments(),
+                EXTRA_AUTH_CONFIG,
+                ActivityIntents.AuthConfig::class.java,
+            ),
         )
     }
     private val context by lifecycleAwareLazy {
         requireNotNull(
             BundleCompat.getSerializable(
-                requireArguments(), EXTRA_CONTEXT, AppContext::class.java
-            )
+                requireArguments(),
+                EXTRA_CONTEXT,
+                AppContext::class.java,
+            ),
         )
     }
     private val userId by lifecycleAwareLazy {
         requireNotNull(requireArguments().getString(EXTRA_USER_ID))
     }
-    private val backPressedCallback = object : OnBackPressedCallback(true) {
-        override fun handleOnBackPressed() {
-            presenter.backClick(authStrategy.showLeaveConfirmationDialog())
+    private val backPressedCallback =
+        object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                presenter.backClick(authStrategy.showLeaveConfirmationDialog())
+            }
         }
-    }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         authStrategy = strategyFactory.get(authConfig, context, this)
         presenter = get { parametersOf(authConfig) }
@@ -123,12 +140,12 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
     }
 
     private fun setListeners() {
-        with(binding) {
+        with(requiredBinding) {
             passphraseInput.setIsEmptyListener {
                 presenter.passphraseInputIsEmpty(it)
             }
             authButton.setDebouncingOnClick {
-                presenter.signInClick(binding.passphraseInput.getInputBytes())
+                presenter.signInClick(requiredBinding.passphraseInput.getInputBytes())
             }
             forgotPasswordButton.setDebouncingOnClick {
                 presenter.forgotPasswordClick()
@@ -148,7 +165,7 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
     }
 
     override fun showAuthenticationReason(reason: AuthContract.View.RefreshAuthReason) {
-        with(binding.authReasonLabel) {
+        with(requiredBinding.authReasonLabel) {
             text = getMessageForReason(reason)
             visible()
         }
@@ -163,29 +180,36 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
         }
 
     override fun setBiometricAuthButtonVisible() {
-        binding.biometricAuthButton.visible()
+        requiredBinding.biometricAuthButton.visible()
     }
 
     override fun setBiometricAuthButtonGone() {
-        binding.biometricAuthButton.gone()
+        requiredBinding.biometricAuthButton.gone()
     }
 
-    override fun showBiometricPrompt(authReason: AuthContract.View.RefreshAuthReason?, fingeprintCipherCrypto: Cipher) {
-        val biometricPrompt = BiometricPrompt(
-            this, executor, AuthBiometricCallback(
-                presenter::biometricAuthError,
-                presenter::biometricAuthSuccess
+    override fun showBiometricPrompt(
+        authReason: AuthContract.View.RefreshAuthReason?,
+        fingeprintCipherCrypto: Cipher,
+    ) {
+        val biometricPrompt =
+            BiometricPrompt(
+                this,
+                executor,
+                AuthBiometricCallback(
+                    presenter::biometricAuthError,
+                    presenter::biometricAuthSuccess,
+                ),
             )
-        )
 
         val promptSubtitle =
             authReason?.let { getMessageForReason(authReason) } ?: ""
-        val promptInfo = biometricPromptBuilder
-            .setTitle(getString(LocalizationR.string.auth_biometric_title))
-            .setSubtitle(promptSubtitle)
-            .setNegativeButtonText(getString(LocalizationR.string.cancel))
-            .setAllowedAuthenticators(BIOMETRIC_STRONG)
-            .build()
+        val promptInfo =
+            biometricPromptBuilder
+                .setTitle(getString(LocalizationR.string.auth_biometric_title))
+                .setSubtitle(promptSubtitle)
+                .setNegativeButtonText(getString(LocalizationR.string.cancel))
+                .setAllowedAuthenticators(BIOMETRIC_STRONG)
+                .build()
         biometricPrompt.authenticate(promptInfo, BiometricPrompt.CryptoObject(fingeprintCipherCrypto))
     }
 
@@ -200,7 +224,7 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
     }
 
     override fun showTitle() {
-        binding.toolbar.toolbarTitle = authStrategy.title()
+        requiredBinding.toolbar.toolbarTitle = authStrategy.title()
     }
 
     override fun navigateBack() {
@@ -211,11 +235,13 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
         authStrategy.authSuccess()
     }
 
-    override fun showAuthenticationError(@StringRes errorMessage: Int) {
+    override fun showAuthenticationError(
+        @StringRes errorMessage: Int,
+    ) {
         showSnackbar(
             errorMessage,
             length = Snackbar.LENGTH_LONG,
-            backgroundColor = CoreUiR.color.red
+            backgroundColor = CoreUiR.color.red,
         )
     }
 
@@ -223,7 +249,7 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
         showSnackbar(
             LocalizationR.string.auth_incorrect_passphrase,
             length = Snackbar.LENGTH_LONG,
-            backgroundColor = CoreUiR.color.red
+            backgroundColor = CoreUiR.color.red,
         )
     }
 
@@ -231,7 +257,7 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
         showSnackbar(
             LocalizationR.string.common_failure,
             length = Snackbar.LENGTH_LONG,
-            backgroundColor = CoreUiR.color.red
+            backgroundColor = CoreUiR.color.red,
         )
     }
 
@@ -239,7 +265,7 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
         showSnackbar(
             LocalizationR.string.auth_error_invalid_signature,
             length = Snackbar.LENGTH_LONG,
-            backgroundColor = CoreUiR.color.red
+            backgroundColor = CoreUiR.color.red,
         )
     }
 
@@ -247,7 +273,7 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
         showSnackbar(
             LocalizationR.string.auth_error_token_expired,
             length = Snackbar.LENGTH_LONG,
-            backgroundColor = CoreUiR.color.red
+            backgroundColor = CoreUiR.color.red,
         )
     }
 
@@ -255,7 +281,7 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
         showSnackbar(
             LocalizationR.string.auth_error_challenge_verification_failure,
             length = Snackbar.LENGTH_LONG,
-            backgroundColor = CoreUiR.color.red
+            backgroundColor = CoreUiR.color.red,
         )
     }
 
@@ -269,8 +295,9 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
 
     override fun showError(message: String) {
         showSnackbar(
-            message, length = Snackbar.LENGTH_LONG,
-            backgroundColor = CoreUiR.color.red
+            message,
+            length = Snackbar.LENGTH_LONG,
+            backgroundColor = CoreUiR.color.red,
         )
     }
 
@@ -278,12 +305,13 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
         showSnackbar(
             LocalizationR.string.common_time_is_out_of_sync,
             length = Snackbar.LENGTH_LONG,
-            backgroundColor = CoreUiR.color.red
+            backgroundColor = CoreUiR.color.red,
         )
     }
 
     override fun showFingerprintChangedError() {
-        AlertDialog.Builder(requireContext())
+        AlertDialog
+            .Builder(requireContext())
             .setCancelable(false)
             .setTitle(LocalizationR.string.fingerprint_biometric_changed_title)
             .setMessage(LocalizationR.string.fingerprint_biometric_changed_message)
@@ -293,31 +321,45 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
 
     override fun showServerFingerprintChanged(newFingerprint: String) {
         ServerFingerprintChangedDialog.newInstance(newFingerprint).show(
-            childFragmentManager, ServerFingerprintChangedDialog::class.java.name
+            childFragmentManager,
+            ServerFingerprintChangedDialog::class.java.name,
         )
     }
 
-    override fun showTotpDialog(jwtToken: String?, hasOtherProviders: Boolean) {
+    override fun showTotpDialog(
+        jwtToken: String?,
+        hasOtherProviders: Boolean,
+    ) {
         EnterTotpDialog.newInstance(token = jwtToken, hasOtherProvider = hasOtherProviders).show(
-            childFragmentManager, EnterTotpDialog::class.java.name
+            childFragmentManager,
+            EnterTotpDialog::class.java.name,
         )
     }
 
-    override fun showDuoDialog(jwtToken: String?, hasOtherProviders: Boolean) {
+    override fun showDuoDialog(
+        jwtToken: String?,
+        hasOtherProviders: Boolean,
+    ) {
         AuthWithDuoDialog.newInstance(token = jwtToken, hasOtherProvider = hasOtherProviders).show(
-            childFragmentManager, AuthWithDuoDialog::class.java.name
+            childFragmentManager,
+            AuthWithDuoDialog::class.java.name,
         )
     }
 
-    override fun showYubikeyDialog(jwtToken: String?, hasOtherProviders: Boolean) {
+    override fun showYubikeyDialog(
+        jwtToken: String?,
+        hasOtherProviders: Boolean,
+    ) {
         ScanYubikeyDialog.newInstance(token = jwtToken, hasOtherProvider = hasOtherProviders).show(
-            childFragmentManager, ScanYubikeyDialog::class.java.name
+            childFragmentManager,
+            ScanYubikeyDialog::class.java.name,
         )
     }
 
     override fun showUnknownProvider() {
         UnknownProviderDialog().show(
-            childFragmentManager, UnknownProviderDialog::class.java.name
+            childFragmentManager,
+            UnknownProviderDialog::class.java.name,
         )
     }
 
@@ -334,21 +376,21 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
     }
 
     override fun showLabel(name: String) {
-        binding.nameLabel.text = name
+        requiredBinding.nameLabel.text = name
     }
 
     override fun showEmail(email: String) {
-        binding.emailLabel.text = email
+        requiredBinding.emailLabel.text = email
     }
 
     override fun showDomain(domain: String) {
-        with(binding) {
+        with(requiredBinding) {
             domainLabel.text = domain
         }
     }
 
     override fun showAvatar(url: String) {
-        binding.avatarImage.load(url) {
+        requiredBinding.avatarImage.load(url) {
             transformations(CircleCropTransformation())
             error(CoreUiR.drawable.ic_avatar_placeholder)
             placeholder(CoreUiR.drawable.ic_avatar_placeholder)
@@ -356,7 +398,8 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
     }
 
     override fun showForgotPasswordDialog() {
-        AlertDialog.Builder(requireContext())
+        AlertDialog
+            .Builder(requireContext())
             .setTitle(LocalizationR.string.auth_forgot_password_title)
             .setMessage(LocalizationR.string.auth_forgot_password_message)
             .setPositiveButton(LocalizationR.string.got_it) { _, _ -> }
@@ -364,7 +407,8 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
     }
 
     override fun showLeaveConfirmationDialog() {
-        AlertDialog.Builder(requireContext())
+        AlertDialog
+            .Builder(requireContext())
             .setTitle(LocalizationR.string.are_you_sure)
             .setMessage(LocalizationR.string.auth_exit_dialog_message)
             .setPositiveButton(LocalizationR.string.continue_setup) { _, _ -> }
@@ -373,11 +417,11 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
     }
 
     override fun enableAuthButton() {
-        binding.authButton.isEnabled = true
+        requiredBinding.authButton.isEnabled = true
     }
 
     override fun disableAuthButton() {
-        binding.authButton.isEnabled = false
+        requiredBinding.authButton.isEnabled = false
     }
 
     override fun hideKeyboard() {
@@ -385,7 +429,7 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
     }
 
     override fun clearPassphraseInput() {
-        binding.passphraseInput.clearText()
+        requiredBinding.passphraseInput.clearText()
     }
 
     override fun showFeatureFlagsErrorDialog() {
@@ -407,8 +451,13 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
         featureFlagsFetchErrorDialog?.dismiss()
     }
 
-    override fun showAccountDoesNotExistDialog(label: String, email: String?, url: String) {
-        AccountDoesNotExistDialog.newInstance(label, email, url)
+    override fun showAccountDoesNotExistDialog(
+        label: String,
+        email: String?,
+        url: String,
+    ) {
+        AccountDoesNotExistDialog
+            .newInstance(label, email, url)
             .show(childFragmentManager, AccountDoesNotExistDialog::class.java.name)
     }
 
@@ -426,7 +475,8 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
             errorMessage.append(getString(LocalizationR.string.auth_decryption_error_cause, message))
         }
 
-        AlertDialog.Builder(requireContext())
+        AlertDialog
+            .Builder(requireContext())
             .setTitle(LocalizationR.string.auth_decryption_error_title)
             .setMessage(errorMessage)
             .setPositiveButton(LocalizationR.string.got_it) { _, _ -> }
@@ -470,19 +520,19 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
     }
 
     override fun showHelpMenu() {
-        HelpMenuFragment.newInstance(
-            HelpMenuModel(
-                shouldShowShowQrCodesHelp = false,
-                shouldShowImportProfile = false,
-                shouldShowImportAccountKit = false
-            )
-        )
-            .show(childFragmentManager, HelpMenuFragment::class.java.name)
+        HelpMenuFragment
+            .newInstance(
+                HelpMenuModel(
+                    shouldShowShowQrCodesHelp = false,
+                    shouldShowImportProfile = false,
+                    shouldShowImportAccountKit = false,
+                ),
+            ).show(childFragmentManager, HelpMenuFragment::class.java.name)
     }
 
     override fun menuShowLogsClick() {
         findNavController().navigate(
-            AuthFragmentDirections.actionAuthFragmentToLogs()
+            AuthFragmentDirections.actionAuthFragmentToLogs(),
         )
     }
 
@@ -491,11 +541,14 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
         private const val EXTRA_CONTEXT = "CONTEXT"
         private const val EXTRA_USER_ID = "USER_ID"
 
-        fun newBundle(authConfig: ActivityIntents.AuthConfig, context: AppContext, currentAccount: String) =
-            bundleOf(
-                EXTRA_AUTH_CONFIG to authConfig,
-                EXTRA_USER_ID to currentAccount,
-                EXTRA_CONTEXT to context
-            )
+        fun newBundle(
+            authConfig: ActivityIntents.AuthConfig,
+            context: AppContext,
+            currentAccount: String,
+        ) = bundleOf(
+            EXTRA_AUTH_CONFIG to authConfig,
+            EXTRA_USER_ID to currentAccount,
+            EXTRA_CONTEXT to context,
+        )
     }
 }

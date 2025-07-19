@@ -14,10 +14,9 @@ import kotlinx.coroutines.launch
 
 class GroupPermissionsPresenter(
     private val getGroupWithUsersUseCase: GetGroupWithUsersUseCase,
-    coroutineLaunchContext: CoroutineLaunchContext
-) : GroupPermissionsContract.Presenter,
-    BaseAuthenticatedPresenter<GroupPermissionsContract.View>(coroutineLaunchContext) {
-
+    coroutineLaunchContext: CoroutineLaunchContext,
+) : BaseAuthenticatedPresenter<GroupPermissionsContract.View>(coroutineLaunchContext),
+    GroupPermissionsContract.Presenter {
     override var view: GroupPermissionsContract.View? = null
     private val job = SupervisorJob()
     private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
@@ -28,7 +27,7 @@ class GroupPermissionsPresenter(
         permission: PermissionModelUi.GroupPermissionModel,
         mode: PermissionsMode,
         membersRecyclerWidth: Int,
-        membersItemWidth: Float
+        membersItemWidth: Float,
     ) {
         this.groupPermission = permission
         when (mode) {
@@ -41,21 +40,23 @@ class GroupPermissionsPresenter(
             }
         }
         scope.launch {
-            getGroupWithUsersUseCase.execute(
-                GetGroupWithUsersUseCase.Input(
-                    permission.group.groupId
-                )
-            ).groupWithUsers
+            getGroupWithUsersUseCase
+                .execute(
+                    GetGroupWithUsersUseCase.Input(
+                        permission.group.groupId,
+                    ),
+                ).groupWithUsers
                 .let {
                     view?.showGroupName(it.group.groupName)
 
-                    val usersDisplayDataset = UsersDatasetCreator(membersRecyclerWidth, membersItemWidth)
-                        .prepareDataset(it.users)
+                    val usersDisplayDataset =
+                        UsersDatasetCreator(membersRecyclerWidth, membersItemWidth)
+                            .prepareDataset(it.users)
 
                     view?.showGroupUsers(
                         usersDisplayDataset.users,
                         usersDisplayDataset.counterValue,
-                        usersDisplayDataset.overlap
+                        usersDisplayDataset.overlap,
                     )
                 }
         }
@@ -66,11 +67,12 @@ class GroupPermissionsPresenter(
     }
 
     override fun onPermissionSelected(permission: ResourcePermission) {
-        groupPermission = PermissionModelUi.GroupPermissionModel(
-            permission,
-            groupPermission.permissionId,
-            groupPermission.group.copy()
-        )
+        groupPermission =
+            PermissionModelUi.GroupPermissionModel(
+                permission,
+                groupPermission.permissionId,
+                groupPermission.group.copy(),
+            )
     }
 
     override fun saveButtonClick() {

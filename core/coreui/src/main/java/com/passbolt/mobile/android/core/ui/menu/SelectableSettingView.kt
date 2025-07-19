@@ -27,24 +27,25 @@ import com.google.android.material.radiobutton.MaterialRadioButton
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class SelectableSettingView @JvmOverloads constructor(
-    context: Context,
-    attrs: AttributeSet? = null,
-    defStyle: Int = 0
-) : SettingView(context, attrs, defStyle) {
+class SelectableSettingView
+    @JvmOverloads
+    constructor(
+        context: Context,
+        attrs: AttributeSet? = null,
+        defStyle: Int = 0,
+    ) : SettingView(context, attrs, defStyle) {
+        private val radioButton: AppCompatRadioButton
 
-    private val radioButton: AppCompatRadioButton
+        init {
+            MaterialRadioButton(context).apply {
+                isClickable = false
+                radioButton = this
+                binding.root.addView(this)
+            }
+        }
 
-    init {
-        MaterialRadioButton(context).apply {
-            isClickable = false
-            radioButton = this
-            binding.root.addView(this)
+        override fun setSelected(isSelected: Boolean) {
+            super.setSelected(isSelected)
+            radioButton.isChecked = isSelected
         }
     }
-
-    override fun setSelected(isSelected: Boolean) {
-        super.setSelected(isSelected)
-        radioButton.isChecked = isSelected
-    }
-}

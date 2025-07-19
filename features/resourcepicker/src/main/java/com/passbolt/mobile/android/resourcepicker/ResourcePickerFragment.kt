@@ -46,7 +46,7 @@ import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.extension.setSearchEndIconWithListener
 import com.passbolt.mobile.android.core.extension.showSnackbar
 import com.passbolt.mobile.android.core.extension.visible
-import com.passbolt.mobile.android.core.ui.initialsicon.InitialsIconGenerator
+import com.passbolt.mobile.android.core.resources.resourceicon.ResourceIconProvider
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
 import com.passbolt.mobile.android.feature.resourcepicker.databinding.FragmentResourcePickerBinding
 import com.passbolt.mobile.android.resourcepicker.model.ConfirmationModel
@@ -66,52 +66,61 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 class ResourcePickerFragment :
     BindingScopedAuthenticatedFragment<FragmentResourcePickerBinding, ResourcePickerContract.View>(
-        FragmentResourcePickerBinding::inflate
-    ), ResourcePickerContract.View {
-
+        FragmentResourcePickerBinding::inflate,
+    ),
+    ResourcePickerContract.View {
     override val presenter: ResourcePickerContract.Presenter by inject()
+    private val resourceIconProvider: ResourceIconProvider by inject()
     private val suggestedHeaderItemAdapter: ItemAdapter<HeaderItem> by inject(
-        named(SUGGESTED_HEADER_ITEM_ADAPTER)
+        named(SUGGESTED_HEADER_ITEM_ADAPTER),
     )
     private val suggestedItemsItemAdapter: ItemAdapter<SelectableResourceItem> by inject(
-        named(SUGGESTED_ITEMS_ITEM_ADAPTER)
+        named(SUGGESTED_ITEMS_ITEM_ADAPTER),
     )
     private val otherItemsItemAdapter: ItemAdapter<HeaderItem> by inject(
-        named(OTHER_ITEMS_HEADER_ITEM_ADAPTER)
+        named(OTHER_ITEMS_HEADER_ITEM_ADAPTER),
     )
     private val selectableResourceItemAdapter: ItemAdapter<SelectableResourceItem> by inject(
-        named(RESOURCE_ITEM_ADAPTER)
+        named(RESOURCE_ITEM_ADAPTER),
     )
     private val fastAdapter: FastAdapter<GenericItem> by inject()
-    private val initialsIconGenerator: InitialsIconGenerator by inject()
     private val args: ResourcePickerFragmentArgs by navArgs()
-    private val resourcePickedListener = object : ISelectionListener<GenericItem> {
-        override fun onSelectionChanged(item: GenericItem, selected: Boolean) {
-            if (item is SelectableResourceItem) {
-                when (item.resourcePickerListItem.selection) {
-                    SELECTABLE -> presenter.resourcePicked(item.resourcePickerListItem, selected)
-                    NOT_SELECTABLE_NO_PERMISSION -> if (selected) {
-                        showSnackbar(
-                            LocalizationR.string.resource_picker_no_edit_permission,
-                            backgroundColor = CoreUiR.color.red,
-                            anchorView = binding.applyButtonLayout,
-                            length = Snackbar.LENGTH_LONG
-                        )
-                    }
-                    NOT_SELECTABLE_UNSUPPORTED_RESOURCE_TYPE -> if (selected) {
-                        showSnackbar(
-                            LocalizationR.string.resource_picker_resource_not_compatible,
-                            backgroundColor = CoreUiR.color.red,
-                            anchorView = binding.applyButtonLayout,
-                            length = Snackbar.LENGTH_LONG
-                        )
+    private val resourcePickedListener =
+        object : ISelectionListener<GenericItem> {
+            override fun onSelectionChanged(
+                item: GenericItem,
+                selected: Boolean,
+            ) {
+                if (item is SelectableResourceItem) {
+                    when (item.resourcePickerListItem.selection) {
+                        SELECTABLE -> presenter.resourcePicked(item.resourcePickerListItem, selected)
+                        NOT_SELECTABLE_NO_PERMISSION ->
+                            if (selected) {
+                                showSnackbar(
+                                    LocalizationR.string.resource_picker_no_edit_permission,
+                                    backgroundColor = CoreUiR.color.red,
+                                    anchorView = requiredBinding.applyButtonLayout,
+                                    length = Snackbar.LENGTH_LONG,
+                                )
+                            }
+                        NOT_SELECTABLE_UNSUPPORTED_RESOURCE_TYPE ->
+                            if (selected) {
+                                showSnackbar(
+                                    LocalizationR.string.resource_picker_resource_not_compatible,
+                                    backgroundColor = CoreUiR.color.red,
+                                    anchorView = requiredBinding.applyButtonLayout,
+                                    length = Snackbar.LENGTH_LONG,
+                                )
+                            }
                     }
                 }
             }
         }
-    }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initRecycler(savedInstanceState)
         setUpListeners()
@@ -151,7 +160,7 @@ class ResourcePickerFragment :
             withSavedInstanceState(savedInstanceState, BUNDLE_PICKED_RESOURCE_SELECTION)
         }
 
-        with(binding.recyclerView) {
+        with(requiredBinding.recyclerView) {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = fastAdapter
             itemAnimator = null
@@ -159,7 +168,7 @@ class ResourcePickerFragment :
     }
 
     private fun setUpListeners() {
-        with(binding) {
+        with(requiredBinding) {
             searchEditText.doAfterTextChanged {
                 presenter.searchTextChanged(it.toString())
             }
@@ -176,16 +185,16 @@ class ResourcePickerFragment :
     }
 
     override fun hideRefreshProgress() {
-        binding.swipeRefresh.isRefreshing = false
+        requiredBinding.swipeRefresh.isRefreshing = false
     }
 
     override fun showRefreshProgress() {
-        binding.swipeRefresh.isRefreshing = true
+        requiredBinding.swipeRefresh.isRefreshing = true
     }
 
     override fun showResources(
         suggestedResources: List<ResourcePickerListItem>,
-        resourceList: List<ResourcePickerListItem>
+        resourceList: List<ResourcePickerListItem>,
     ) {
         // suggested header
         FastAdapterDiffUtil.calculateDiff(
@@ -194,14 +203,14 @@ class ResourcePickerFragment :
                 listOf(HeaderItem(HeaderType.SUGGESTED))
             } else {
                 emptyList()
-            }
+            },
         )
         // suggested items
         FastAdapterDiffUtil.calculateDiff(
             suggestedItemsItemAdapter,
             suggestedResources.map {
-                SelectableResourceItem(it, initialsIconGenerator)
-            }
+                SelectableResourceItem(it, resourceIconProvider)
+            },
         )
         // other items header
         FastAdapterDiffUtil.calculateDiff(
@@ -210,19 +219,20 @@ class ResourcePickerFragment :
                 listOf(HeaderItem(HeaderType.OTHER))
             } else {
                 emptyList()
-            }
+            },
         )
         // other items
         FastAdapterDiffUtil.calculateDiff(
             selectableResourceItemAdapter,
             resourceList.map {
-                SelectableResourceItem(it, initialsIconGenerator)
-            })
+                SelectableResourceItem(it, resourceIconProvider)
+            },
+        )
         fastAdapter.notifyAdapterDataSetChanged()
     }
 
     override fun showEmptyState() {
-        with(binding) {
+        with(requiredBinding) {
             recyclerView.gone()
             emptyListContainer.visible()
             appBar.setExpanded(true)
@@ -230,40 +240,44 @@ class ResourcePickerFragment :
     }
 
     override fun hideEmptyState() {
-        with(binding) {
+        with(requiredBinding) {
             recyclerView.visible()
             emptyListContainer.gone()
         }
     }
 
     override fun displaySearchClearEndIcon() {
-        binding.searchTextInput.setSearchEndIconWithListener(
+        requiredBinding.searchTextInput.setSearchEndIconWithListener(
             ContextCompat.getDrawable(requireContext(), CoreUiR.drawable.ic_close)!!,
-            presenter::searchClearClick
+            presenter::searchClearClick,
         )
     }
 
     override fun hideSearchEndIcon() {
-        binding.searchTextInput.clearEndIcon()
+        requiredBinding.searchTextInput.clearEndIcon()
     }
 
     override fun showDataRefreshError() {
         showSnackbar(
             messageResId = LocalizationR.string.common_data_refresh_error,
-            backgroundColor = CoreUiR.color.red
+            backgroundColor = CoreUiR.color.red,
         )
     }
 
     override fun enableApplyButton() {
-        binding.applyButton.isEnabled = true
+        requiredBinding.applyButton.isEnabled = true
     }
 
     override fun clearSearchInput() {
-        binding.searchEditText.setText("")
+        requiredBinding.searchEditText.setText("")
     }
 
-    override fun showConfirmation(confirmationModel: ConfirmationModel, pickAction: PickResourceAction) {
-        AlertDialog.Builder(requireContext())
+    override fun showConfirmation(
+        confirmationModel: ConfirmationModel,
+        pickAction: PickResourceAction,
+    ) {
+        AlertDialog
+            .Builder(requireContext())
             .setTitle(confirmationModel.titleResId)
             .setMessage(confirmationModel.messageResId)
             .setPositiveButton(confirmationModel.positiveButtonResId) { _, _ -> presenter.otpLinkConfirmed(pickAction) }
@@ -271,13 +285,16 @@ class ResourcePickerFragment :
             .show()
     }
 
-    override fun setResultAndNavigateBack(pickAction: PickResourceAction, resourceModel: ResourceModel) {
+    override fun setResultAndNavigateBack(
+        pickAction: PickResourceAction,
+        resourceModel: ResourceModel,
+    ) {
         setFragmentResult(
             REQUEST_PICK_RESOURCE_FOR_RESULT,
             bundleOf(
                 RESULT_PICKED_ACTION to pickAction,
-                RESULT_PICKED_RESOURCE to resourceModel
-            )
+                RESULT_PICKED_RESOURCE to resourceModel,
+            ),
         )
         findNavController().popBackStack()
     }

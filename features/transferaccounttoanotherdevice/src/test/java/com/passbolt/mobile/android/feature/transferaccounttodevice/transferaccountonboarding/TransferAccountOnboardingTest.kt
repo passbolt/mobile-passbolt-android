@@ -34,15 +34,15 @@ import org.mockito.kotlin.verify
  */
 
 class TransferAccountOnboardingTest : KoinTest {
-
     private val presenter: TransferAccountOnboardingContract.Presenter by inject()
     private val view: TransferAccountOnboardingContract.View = mock()
 
     @get:Rule
-    val koinTestRule = KoinTestRule.create {
-        printLogger(Level.ERROR)
-        modules(transferAccountOnboardingModule)
-    }
+    val koinTestRule =
+        KoinTestRule.create {
+            printLogger(Level.ERROR)
+            modules(transferAccountOnboardingModule)
+        }
 
     @Test
     fun `start transfer clicked should authenticate and then navigate to transfer account`() {

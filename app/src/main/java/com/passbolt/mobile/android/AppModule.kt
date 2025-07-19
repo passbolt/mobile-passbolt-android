@@ -2,15 +2,17 @@ package com.passbolt.mobile.android
 
 import android.content.ClipboardManager
 import android.content.Context
+import android.view.autofill.AutofillManager
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ProcessLifecycleOwner
-import coil.ImageLoader
-import com.passbolt.mobile.android.common.HttpsVerifier
-import com.passbolt.mobile.android.common.InitialsProvider
-import com.passbolt.mobile.android.common.UuidProvider
+import coil3.ImageLoader
+import coil3.network.okhttp.OkHttpNetworkFetcherFactory
 import com.passbolt.mobile.android.common.ExternalDeeplinkHandler
+import com.passbolt.mobile.android.common.HttpsVerifier
+import com.passbolt.mobile.android.common.UuidProvider
 import com.passbolt.mobile.android.core.navigation.AppForegroundListener
 import com.passbolt.mobile.android.core.networking.COIL_HTTP_CLIENT
+import okhttp3.OkHttpClient
 import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.qualifier.named
@@ -39,27 +41,37 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-internal val appModule = module {
-    factory {
-        ContextCompat.getMainExecutor(androidContext())
+internal val appModule =
+    module {
+        factory {
+            ContextCompat.getMainExecutor(androidContext())
+        }
+        factory(named<ProcessLifecycleOwner>()) {
+            ProcessLifecycleOwner.get()
+        }
+        single { UuidProvider() }
+        single {
+            ImageLoader
+                .Builder(androidContext())
+                .components {
+                    add(
+                        OkHttpNetworkFetcherFactory(
+                            callFactory = {
+                                get<OkHttpClient>(named(COIL_HTTP_CLIENT))
+                            },
+                        ),
+                    )
+                }.build()
+        }
+        single { ExternalDeeplinkHandler() }
+        single { HttpsVerifier() }
+        factory { androidApplication().packageManager }
+        single { AppForegroundListener() }
+        single {
+            androidContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?
+        }
+        factory { androidContext().resources }
+        factory { androidContext().assets }
+        single { androidContext() as PassboltApplication }
+        factory { androidContext().getSystemService(AutofillManager::class.java) }
     }
-    factory(named<ProcessLifecycleOwner>()) {
-        ProcessLifecycleOwner.get()
-    }
-    single { UuidProvider() }
-    single {
-        ImageLoader.Builder(androidContext())
-            .okHttpClient(okHttpClient = get(named(COIL_HTTP_CLIENT)))
-            .build()
-    }
-    single { InitialsProvider() }
-    single { ExternalDeeplinkHandler() }
-    single { HttpsVerifier() }
-    factory { androidApplication().packageManager }
-    single { AppForegroundListener() }
-    single {
-        androidContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?
-    }
-    factory { androidContext().resources }
-    single { androidContext() as PassboltApplication }
-}

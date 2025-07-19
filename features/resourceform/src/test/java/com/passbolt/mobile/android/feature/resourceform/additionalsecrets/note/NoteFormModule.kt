@@ -27,6 +27,7 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-internal val noteFormModule = module {
-    factoryOf(::NoteFormPresenter) bind NoteFormContract.Presenter::class
-}
+internal val noteFormModule =
+    module {
+        factoryOf(::NoteFormPresenter) bind NoteFormContract.Presenter::class
+    }

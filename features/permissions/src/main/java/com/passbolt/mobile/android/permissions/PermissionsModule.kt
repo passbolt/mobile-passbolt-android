@@ -29,9 +29,10 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-val permissionsModule = module {
-    permissionsModule()
-    groupPermissionsModule()
-    userPermissionsModule()
-    permissionRecipientsModule()
-}
+val permissionsModule =
+    module {
+        permissionsModule()
+        groupPermissionsModule()
+        userPermissionsModule()
+        permissionRecipientsModule()
+    }

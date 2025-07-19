@@ -29,5 +29,5 @@ data class ResourceTypeDto(
     val slug: String,
     val name: String,
     val description: String,
-    val deleted: String?
+    val deleted: String?,
 )

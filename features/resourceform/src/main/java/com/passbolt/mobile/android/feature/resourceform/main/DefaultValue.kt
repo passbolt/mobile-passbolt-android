@@ -23,5 +23,5 @@ package com.passbolt.mobile.android.feature.resourceform.main
  * @since v1.0
  */
 enum class DefaultValue {
-    NAME
+    NAME,
 }

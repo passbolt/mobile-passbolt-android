@@ -37,16 +37,20 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
  * @since v1.0
  */
 class FolderItem(
-    val folderWithCountAndPath: FolderWithCountAndPath
+    val folderWithCountAndPath: FolderWithCountAndPath,
 ) : AbstractBindingItem<ItemFolderBinding>() {
-
     override val type: Int
         get() = R.id.itemFolder
 
-    override fun createBinding(inflater: LayoutInflater, parent: ViewGroup?): ItemFolderBinding =
-        ItemFolderBinding.inflate(inflater, parent, false)
+    override fun createBinding(
+        inflater: LayoutInflater,
+        parent: ViewGroup?,
+    ): ItemFolderBinding = ItemFolderBinding.inflate(inflater, parent, false)
 
-    override fun bindView(binding: ItemFolderBinding, payloads: List<Any>) {
+    override fun bindView(
+        binding: ItemFolderBinding,
+        payloads: List<Any>,
+    ) {
         super.bindView(binding, payloads)
         with(binding) {
             name.text = folderWithCountAndPath.name
@@ -56,7 +60,7 @@ class FolderItem(
                     CoreUiR.drawable.ic_filled_shared_folder_with_bg
                 } else {
                     CoreUiR.drawable.ic_filled_folder_with_bg
-                }
+                },
             )
 
             val rootPathPlaceholder = path.context.getString(LocalizationR.string.folder_root)
@@ -68,20 +72,18 @@ class FolderItem(
     }
 
     class ItemClick(
-        private val clickListener: (FolderWithCountAndPath) -> Unit
+        private val clickListener: (FolderWithCountAndPath) -> Unit,
     ) : ClickEventHook<FolderItem>() {
-
-        override fun onBind(viewHolder: RecyclerView.ViewHolder): View? {
-            return viewHolder.asBinding<ItemFolderBinding> {
+        override fun onBind(viewHolder: RecyclerView.ViewHolder): View? =
+            viewHolder.asBinding<ItemFolderBinding> {
                 it.itemFolder
             }
-        }
 
         override fun onClick(
             v: View,
             position: Int,
             fastAdapter: FastAdapter<FolderItem>,
-            item: FolderItem
+            item: FolderItem,
         ) {
             clickListener.invoke(item.folderWithCountAndPath)
         }

@@ -30,9 +30,8 @@ import com.passbolt.mobile.android.database.usecase.SaveResourcesDatabasePassphr
 class SummaryPresenter(
     private val saveAccountUseCase: SaveAccountUseCase,
     private val saveResourcesDatabasePassphraseUseCase: SaveResourcesDatabasePassphraseUseCase,
-    private val uuidProvider: UuidProvider
+    private val uuidProvider: UuidProvider,
 ) : SummaryContract.Presenter {
-
     override var view: SummaryContract.View? = null
     private lateinit var status: ResultStatus
 

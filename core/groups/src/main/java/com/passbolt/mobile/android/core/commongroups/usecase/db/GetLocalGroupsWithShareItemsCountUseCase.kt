@@ -31,9 +31,8 @@ import com.passbolt.mobile.android.ui.GroupWithCount
 class GetLocalGroupsWithShareItemsCountUseCase(
     private val databaseProvider: DatabaseProvider,
     private val groupModelMapper: GroupsModelMapper,
-    private val getSelectedAccountUseCase: GetSelectedAccountUseCase
+    private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
 ) : AsyncUseCase<Unit, List<GroupWithCount>> {
-
     override suspend fun execute(input: Unit) =
         databaseProvider
             .get(requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount))

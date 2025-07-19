@@ -11,9 +11,8 @@ import com.passbolt.mobile.android.ui.AccountModelUi
 
 class AccountItemClick(
     private val accountClickListener: (AccountModelUi.AccountModel) -> Unit,
-    private val removeAccountClickListener: (AccountModelUi.AccountModel) -> Unit
+    private val removeAccountClickListener: (AccountModelUi.AccountModel) -> Unit,
 ) : ClickEventHook<AccountItem>() {
-
     override fun onBindMany(viewHolder: RecyclerView.ViewHolder): List<View> {
         viewHolder.asBinding<ItemAccountBinding> {
             return listOf(it.itemAccount, it.trashImage)
@@ -25,12 +24,11 @@ class AccountItemClick(
         v: View,
         position: Int,
         fastAdapter: FastAdapter<AccountItem>,
-        item: AccountItem
-    ) =
-        when (v.id) {
-            R.id.itemAccount -> accountClickListener.invoke(item.accountModel)
-            R.id.trashImage -> removeAccountClickListener.invoke(item.accountModel)
-            else -> { /* ignore the rest of the views */
-            }
+        item: AccountItem,
+    ) = when (v.id) {
+        R.id.itemAccount -> accountClickListener.invoke(item.accountModel)
+        R.id.trashImage -> removeAccountClickListener.invoke(item.accountModel)
+        else -> { // ignore the rest of the views
         }
+    }
 }

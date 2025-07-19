@@ -28,6 +28,7 @@ import com.passbolt.mobile.android.core.navigation.AccountSetupDataModel
 class StartUpContract {
     interface View : BaseContract.View {
         fun navigateToSetup(accountSetupDataModel: AccountSetupDataModel?)
+
         fun navigateToSignIn()
     }
 

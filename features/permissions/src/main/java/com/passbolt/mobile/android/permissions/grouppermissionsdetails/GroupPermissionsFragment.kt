@@ -36,9 +36,9 @@ import com.passbolt.mobile.android.feature.groupdetails.R as GroupDetailsR
 
 class GroupPermissionsFragment :
     BindingScopedAuthenticatedFragment<FragmentGroupPermissionsBinding, GroupPermissionsContract.View>(
-        FragmentGroupPermissionsBinding::inflate
-    ), GroupPermissionsContract.View {
-
+        FragmentGroupPermissionsBinding::inflate,
+    ),
+    GroupPermissionsContract.View {
     override val presenter: GroupPermissionsContract.Presenter by inject()
     private val args: GroupPermissionsFragmentArgs by navArgs()
     private val groupMembersItemAdapter: ItemAdapter<GroupUserItem> by inject(named(GROUP_MEMBER_ITEM_ADAPTER))
@@ -46,25 +46,28 @@ class GroupPermissionsFragment :
     private val fastAdapter: FastAdapter<GenericItem> by inject()
     private val sharedWithDecorator: OverlappingItemDecorator by inject()
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
-        initDefaultToolbar(binding.toolbar)
+        initDefaultToolbar(requiredBinding.toolbar)
         setListeners()
         setupGroupMembersRecycler()
         presenter.attach(this)
-        binding.groupMembersRecycler.doOnLayout {
-            binding.groupMembersRecycler.addItemDecoration(sharedWithDecorator)
+        requiredBinding.groupMembersRecycler.doOnLayout {
+            requiredBinding.groupMembersRecycler.addItemDecoration(sharedWithDecorator)
             presenter.argsRetrieved(
                 args.permission,
                 args.mode,
                 it.width,
-                resources.getDimension(CoreUiR.dimen.dp_40)
+                resources.getDimension(CoreUiR.dimen.dp_40),
             )
         }
     }
 
     private fun setListeners() {
-        with(binding) {
+        with(requiredBinding) {
             permissionSelect.onPermissionSelectedListener = {
                 presenter.onPermissionSelected(it)
             }
@@ -82,7 +85,7 @@ class GroupPermissionsFragment :
     }
 
     override fun onDestroyView() {
-        binding.groupMembersRecycler.adapter = null
+        requiredBinding.groupMembersRecycler.adapter = null
         presenter.detach()
         super.onDestroyView()
     }
@@ -92,46 +95,47 @@ class GroupPermissionsFragment :
             presenter.groupMembersRecyclerClick()
             true
         }
-        with(binding.groupMembersRecycler) {
-            layoutManager = object : LinearLayoutManager(context, HORIZONTAL, false) {
-                override fun canScrollHorizontally() = false
-            }
+        with(requiredBinding.groupMembersRecycler) {
+            layoutManager =
+                object : LinearLayoutManager(context, HORIZONTAL, false) {
+                    override fun canScrollHorizontally() = false
+                }
             adapter = fastAdapter
         }
     }
 
     override fun showPermission(permission: ResourcePermission) {
-        with(binding.permissionLabel) {
+        with(requiredBinding.permissionLabel) {
             visible()
             text = permission.getPermissionTextValue(context)
             setCompoundDrawablesWithIntrinsicBounds(
                 permission.getPermissionIcon(context),
                 null,
                 null,
-                null
+                null,
             )
         }
     }
 
     override fun showPermissionChoices(currentPermission: ResourcePermission) {
-        with(binding) {
+        with(requiredBinding) {
             permissionSelect.visible()
             permissionSelect.selectPermission(currentPermission, silently = true)
         }
     }
 
     override fun showSaveLayout() {
-        binding.saveLayout.visible()
+        requiredBinding.saveLayout.visible()
     }
 
     override fun showGroupName(groupName: String) {
-        binding.nameLabel.text = groupName
+        requiredBinding.nameLabel.text = groupName
     }
 
     override fun showGroupUsers(
         users: List<UserModel>,
         counterValue: List<String>,
-        overlapOffset: Int
+        overlapOffset: Int,
     ) {
         sharedWithDecorator.overlap = Overlap(left = overlapOffset)
         FastAdapterDiffUtil.calculateDiff(groupMembersItemAdapter, users.map { GroupUserItem((it)) })
@@ -141,35 +145,36 @@ class GroupPermissionsFragment :
 
     override fun navigateToGroupMembers(groupId: String) {
         findNavController().navigate(
-            GroupDetailsR.id.group_members, GroupMembersFragment.newBundle(groupId),
-            NavOptions.Builder()
+            GroupDetailsR.id.group_members,
+            GroupMembersFragment.newBundle(groupId),
+            NavOptions
+                .Builder()
                 .setEnterAnim(CoreUiR.anim.slide_in_right)
                 .setExitAnim(CoreUiR.anim.slide_out_left)
                 .setPopEnterAnim(CoreUiR.anim.slide_in_left)
                 .setPopExitAnim(CoreUiR.anim.slide_out_right)
-                .build()
+                .build(),
         )
     }
 
     override fun setUpdatedPermissionResult(permission: PermissionModelUi.GroupPermissionModel) {
         setFragmentResult(
             REQUEST_UPDATE_GROUP_PERMISSION,
-            bundleOf(EXTRA_UPDATED_GROUP_PERMISSION to permission)
+            bundleOf(EXTRA_UPDATED_GROUP_PERMISSION to permission),
         )
     }
 
     override fun setDeletePermissionResult(groupPermission: PermissionModelUi.GroupPermissionModel) {
         setFragmentResult(
             REQUEST_UPDATE_GROUP_PERMISSION,
-            bundleOf(EXTRA_DELETED_GROUP_PERMISSION to groupPermission)
+            bundleOf(EXTRA_DELETED_GROUP_PERMISSION to groupPermission),
         )
     }
 
     override fun showPermissionDeleteConfirmation() {
         permissionDeletionConfirmationAlertDialog(requireContext()) {
             presenter.permissionDeleteConfirmClick()
-        }
-            .show()
+        }.show()
     }
 
     override fun navigateBack() {

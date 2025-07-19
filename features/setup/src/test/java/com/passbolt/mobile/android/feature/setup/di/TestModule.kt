@@ -30,7 +30,8 @@ import org.koin.dsl.module
  */
 
 @ExperimentalCoroutinesApi
-val testModule = module {
-    factory { Gson() }
-    factory<CoroutineLaunchContext> { TestCoroutineLaunchContext() }
-}
+val testModule =
+    module {
+        factory { Gson() }
+        factory<CoroutineLaunchContext> { TestCoroutineLaunchContext() }
+    }

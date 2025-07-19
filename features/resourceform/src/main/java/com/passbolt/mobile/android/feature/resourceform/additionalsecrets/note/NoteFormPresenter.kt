@@ -30,12 +30,14 @@ import com.passbolt.mobile.android.ui.ResourceFormMode
  */
 
 class NoteFormPresenter : NoteFormContract.Presenter {
-
     override var view: NoteFormContract.View? = null
 
     private var note: String = ""
 
-    override fun argsRetrieved(mode: ResourceFormMode, note: String) {
+    override fun argsRetrieved(
+        mode: ResourceFormMode,
+        note: String,
+    ) {
         when (mode) {
             is ResourceFormMode.Create -> view?.showCreateTitle()
             is ResourceFormMode.Edit -> view?.showEditTitle(mode.resourceName)

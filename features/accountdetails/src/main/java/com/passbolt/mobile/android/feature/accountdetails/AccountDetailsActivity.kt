@@ -1,11 +1,3 @@
-package com.passbolt.mobile.android.feature.accountdetails
-
-import android.os.Bundle
-import com.passbolt.mobile.android.core.mvp.viewbinding.BindingActivity
-import com.passbolt.mobile.android.core.security.runtimeauth.RuntimeAuthenticatedFlag
-import com.passbolt.mobile.android.feature.accountdetails.databinding.ActivityAccountDetailsBinding
-import org.koin.android.ext.android.inject
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -28,9 +20,17 @@ import org.koin.android.ext.android.inject
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class AccountDetailsActivity :
-    BindingActivity<ActivityAccountDetailsBinding>(ActivityAccountDetailsBinding::inflate) {
 
+package com.passbolt.mobile.android.feature.accountdetails
+
+import android.os.Bundle
+import com.passbolt.mobile.android.core.mvp.viewbinding.BindingActivity
+import com.passbolt.mobile.android.core.security.runtimeauth.RuntimeAuthenticatedFlag
+import com.passbolt.mobile.android.feature.accountdetails.databinding.ActivityAccountDetailsBinding
+import org.koin.android.ext.android.inject
+
+// NOTE: When changing name or package read core/navigation/README.md
+class AccountDetailsActivity : BindingActivity<ActivityAccountDetailsBinding>(ActivityAccountDetailsBinding::inflate) {
     private val runtimeAuthenticatedFlag: RuntimeAuthenticatedFlag by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {

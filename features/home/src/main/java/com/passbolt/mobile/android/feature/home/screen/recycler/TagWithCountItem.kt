@@ -36,16 +36,20 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
  * @since v1.0
  */
 class TagWithCountItem(
-    val tagWithCount: TagWithCount
+    val tagWithCount: TagWithCount,
 ) : AbstractBindingItem<ItemTagWithCountBinding>() {
-
     override val type: Int
         get() = R.id.itemTagWithCount
 
-    override fun createBinding(inflater: LayoutInflater, parent: ViewGroup?): ItemTagWithCountBinding =
-        ItemTagWithCountBinding.inflate(inflater, parent, false)
+    override fun createBinding(
+        inflater: LayoutInflater,
+        parent: ViewGroup?,
+    ): ItemTagWithCountBinding = ItemTagWithCountBinding.inflate(inflater, parent, false)
 
-    override fun bindView(binding: ItemTagWithCountBinding, payloads: List<Any>) {
+    override fun bindView(
+        binding: ItemTagWithCountBinding,
+        payloads: List<Any>,
+    ) {
         super.bindView(binding, payloads)
         with(binding) {
             name.text = tagWithCount.slug
@@ -55,26 +59,24 @@ class TagWithCountItem(
                     CoreUiR.drawable.ic_filled_shared_tag_with_bg
                 } else {
                     CoreUiR.drawable.ic_filled_tag_with_bg
-                }
+                },
             )
         }
     }
 
     class ItemClick(
-        private val clickListener: (TagWithCount) -> Unit
+        private val clickListener: (TagWithCount) -> Unit,
     ) : ClickEventHook<TagWithCountItem>() {
-
-        override fun onBind(viewHolder: RecyclerView.ViewHolder): View? {
-            return viewHolder.asBinding<ItemTagWithCountBinding> {
+        override fun onBind(viewHolder: RecyclerView.ViewHolder): View? =
+            viewHolder.asBinding<ItemTagWithCountBinding> {
                 it.itemTagWithCount
             }
-        }
 
         override fun onClick(
             v: View,
             position: Int,
             fastAdapter: FastAdapter<TagWithCountItem>,
-            item: TagWithCountItem
+            item: TagWithCountItem,
         ) {
             clickListener.invoke(item.tagWithCount)
         }

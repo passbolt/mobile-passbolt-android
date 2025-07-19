@@ -54,8 +54,8 @@ fun Module.folderDetailsModule() {
                 listOf(
                     get<ItemAdapter<GroupItem>>(named(GROUP_ITEM_ADAPTER)),
                     get<ItemAdapter<UserItem>>(named(USER_ITEM_ADAPTER)),
-                    get<ItemAdapter<CounterItem>>(named(COUNTER_ITEM_ADAPTER))
-                )
+                    get<ItemAdapter<CounterItem>>(named(COUNTER_ITEM_ADAPTER)),
+                ),
             )
         }
     }

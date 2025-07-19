@@ -12,16 +12,17 @@ plugins {
     alias libs.plugins.android.library apply false
     alias libs.plugins.kotlin.gradle apply false
     alias libs.plugins.gradle.versions apply false
-    alias libs.plugins.quadrant apply false
     alias libs.plugins.navigation.safeargs apply false
     alias libs.plugins.kotlin.parcelize apply false
     alias libs.plugins.playstore.publisher apply false
+    alias(libs.plugins.compose.compiler) apply false
     alias libs.plugins.dependency.analysis
     alias libs.plugins.kover
     alias libs.plugins.dokka
     alias libs.plugins.detekt
     alias libs.plugins.kotlin.ksp
     alias libs.plugins.snyk
+    alias libs.plugins.ktlint
 }
 
 snyk {
@@ -32,11 +33,33 @@ snyk {
 }
 
 subprojects {
+    apply plugin: libs.plugins.dependency.analysis.get().pluginId
+
     if (file("./build.gradle").exists()) {
-        apply from: "${rootDir}/gradle/ktlint.gradle"
-        apply from: "${rootDir}/gradle/detekt.gradle"
         apply from: "${rootDir}/gradle/moduleSetup.gradle"
-        apply from: "${rootDir}/gradle/dokka.gradle"
+    }
+
+    apply plugin: libs.plugins.ktlint.get().pluginId
+    ktlint {
+        version = "1.6.0"
+        android = true
+        verbose = true
+        debug = true
+    }
+
+    apply plugin: libs.plugins.detekt.get().pluginId
+    detekt {
+        toolVersion = "1.23.8"
+        parallel = true
+        config.setFrom("${rootDir}/gradle/detekt-config.yml")
+        buildUponDefaultConfig = true
+        ignoredBuildTypes = ["qa", "automatedTests", "release"]
+        basePath = "build/reports/detekt-report.html"
+    }
+
+    dependencies {
+        ktlintRuleset libs.ktlint.compose.rulset
+        detektPlugins libs.detekt.compose.rulset
     }
 }
 

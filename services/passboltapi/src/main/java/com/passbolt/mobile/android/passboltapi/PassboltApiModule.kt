@@ -40,21 +40,22 @@ import org.koin.dsl.module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-val passboltApiModule = module {
-    mobileTransferApiModule()
-    authApiModule()
-    mfaApiModule()
-    secretsApiModule()
-    resourceApiModule()
-    resourceTypesApiModule()
-    foldersApiModule()
-    groupsApiModule()
-    usersApiModule()
-    settingsApiModule()
-    shareApiModule()
-    favouritesApiModule()
-    rbacApiModule()
-    passwordExpiryApiModule()
-    passwordPoliciesApiModule()
-    metadataApiModule()
-}
+val passboltApiModule =
+    module {
+        mobileTransferApiModule()
+        authApiModule()
+        mfaApiModule()
+        secretsApiModule()
+        resourceApiModule()
+        resourceTypesApiModule()
+        foldersApiModule()
+        groupsApiModule()
+        usersApiModule()
+        settingsApiModule()
+        shareApiModule()
+        favouritesApiModule()
+        rbacApiModule()
+        passwordExpiryApiModule()
+        passwordPoliciesApiModule()
+        metadataApiModule()
+    }

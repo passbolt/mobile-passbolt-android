@@ -12,9 +12,8 @@ import kotlinx.coroutines.launch
 class CreateResourceMenuPresenter(
     private val createCreateResourceMoreMenuModelUseCase: CreateCreateResourceMenuModelUseCase,
     private val menuModelIdlingResource: CreateMenuModelIdlingResource,
-    coroutineLaunchContext: CoroutineLaunchContext
+    coroutineLaunchContext: CoroutineLaunchContext,
 ) : CreateResourceMenuContract.Presenter {
-
     override var view: CreateResourceMenuContract.View? = null
     private val job = SupervisorJob()
     private val coroutineScope = CoroutineScope(job + coroutineLaunchContext.ui)
@@ -31,9 +30,10 @@ class CreateResourceMenuPresenter(
     private fun processFieldsVisibility(homeDisplayViewModel: HomeDisplayViewModel?) {
         coroutineScope.launch {
             menuModelIdlingResource.setIdle(false)
-            createCreateResourceMoreMenuModelUseCase.execute(
-                CreateCreateResourceMenuModelUseCase.Input(homeDisplayViewModel)
-            ).model
+            createCreateResourceMoreMenuModelUseCase
+                .execute(
+                    CreateCreateResourceMenuModelUseCase.Input(homeDisplayViewModel),
+                ).model
                 .apply {
                     if (isPasswordEnabled) {
                         view?.showPasswordButton()

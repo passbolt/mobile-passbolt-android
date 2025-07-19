@@ -32,14 +32,13 @@ import java.util.concurrent.Executor
 class QrCodeImageAnalyzer(
     private val qrCodeImageAnalyzerResultsConsumer: QrCodeImageAnalyzerResultsConsumer,
     barcodeScanner: BarcodeScanner,
-    mainExecutor: Executor
+    mainExecutor: Executor,
 ) : MlKitAnalyzer(
-    listOf(barcodeScanner),
-    ImageAnalysis.COORDINATE_SYSTEM_VIEW_REFERENCED,
-    mainExecutor,
-    qrCodeImageAnalyzerResultsConsumer
-) {
-
+        listOf(barcodeScanner),
+        ImageAnalysis.COORDINATE_SYSTEM_VIEW_REFERENCED,
+        mainExecutor,
+        qrCodeImageAnalyzerResultsConsumer,
+    ) {
     val resultFlow: StateFlow<BarcodeScanResult>
         get() = qrCodeImageAnalyzerResultsConsumer.resultFlow
 }

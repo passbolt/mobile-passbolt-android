@@ -37,9 +37,8 @@ import java.util.UUID
  * @since v1.0
  */
 class TransferQrCodesDataGenerator(
-    private val getSelectedAccountDataUseCase: GetSelectedAccountDataUseCase
+    private val getSelectedAccountDataUseCase: GetSelectedAccountDataUseCase,
 ) {
-
     suspend fun generateQrCodesDataPages(input: Input): Output {
         return try {
             val pages = mutableListOf<String>()
@@ -52,24 +51,31 @@ class TransferQrCodesDataGenerator(
         }
     }
 
-    private fun appendFirstPage(input: Input, pages: MutableList<String>) {
+    private fun appendFirstPage(
+        input: Input,
+        pages: MutableList<String>,
+    ) {
         val accountData = getSelectedAccountDataUseCase.execute(Unit)
         val userServerId = requireNotNull(accountData.serverId)
         val domain = requireNotNull(accountData.url)
 
         val firstPageReservedBytes = ReservedBytesDto(PROTOCOL_VERSION, page = 0)
-        val firstPage = QrFirstPageDto(
-            UUID.fromString(input.transferId),
-            UUID.fromString(userServerId),
-            input.pagesCount,
-            input.authenticationToken,
-            input.hash,
-            domain
-        )
+        val firstPage =
+            QrFirstPageDto(
+                UUID.fromString(input.transferId),
+                UUID.fromString(userServerId),
+                input.pagesCount,
+                input.authenticationToken,
+                input.hash,
+                domain,
+            )
         pages.add(firstPageReservedBytes.encodeToString() + Json.encodeToString(firstPage))
     }
 
-    private fun appendSubsequentPages(input: Input, pages: MutableList<String>) {
+    private fun appendSubsequentPages(
+        input: Input,
+        pages: MutableList<String>,
+    ) {
         val chunkedKeyJson = input.keyJson.chunked(MAX_QR_DATA_BYTES_EXCLUDING_RESERVED_BYTES)
 
         // subtract 1 for the first page
@@ -86,13 +92,12 @@ class TransferQrCodesDataGenerator(
         val authenticationToken: String,
         val pagesCount: Int,
         val hash: String,
-        val keyJson: String
+        val keyJson: String,
     )
 
     sealed class Output {
-
         data class QrPages(
-            val pages: List<String>
+            val pages: List<String>,
         ) : Output()
 
         data object Error : Output()

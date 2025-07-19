@@ -44,14 +44,14 @@ import kotlin.test.assertTrue
  */
 
 class InAppReviewInteractorTest : KoinTest {
-
     private val inAppReviewInteractor: InAppReviewInteractor by inject()
 
     @get:Rule
-    val koinTestRule = KoinTestRule.create {
-        printLogger(Level.ERROR)
-        modules(testInAppReviewModule)
-    }
+    val koinTestRule =
+        KoinTestRule.create {
+            printLogger(Level.ERROR)
+            modules(testInAppReviewModule)
+        }
 
     @After
     fun tearDown() {
@@ -59,7 +59,7 @@ class InAppReviewInteractorTest : KoinTest {
             getInAppReviewParametersUseCase,
             getInAppReviewShowModeUseCase,
             saveInAppReviewParametersUseCase,
-            saveInAppShowModeUseCase
+            saveInAppShowModeUseCase,
         )
     }
 

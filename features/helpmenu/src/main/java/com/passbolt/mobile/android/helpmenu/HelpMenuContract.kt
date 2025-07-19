@@ -26,19 +26,25 @@ import com.passbolt.mobile.android.ui.HelpMenuModel
  * @since v1.0
  */
 interface HelpMenuContract {
-
     interface View : BaseContract.View {
         fun showScanQrCodesHelp()
+
         fun enableAccessLogs()
+
         fun disableAccessLogs()
+
         fun setEnableLogsSwitchOn()
+
         fun setEnableLogsSwitchOff()
+
         fun showImportProfileHelp()
+
         fun showImportAccountKitHelp()
     }
 
     interface Presenter : BaseContract.Presenter<View> {
         fun argsRetrieved(helpMenuModel: HelpMenuModel)
+
         fun logsSettingChanged(areLogsEnabled: Boolean)
     }
 }

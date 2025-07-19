@@ -25,24 +25,29 @@ import org.jetbrains.annotations.VisibleForTesting
  * @since v1.0
  */
 class FingerprintFormatter {
-
-    fun format(fingerprint: String, appendMiddleSpacing: Boolean): String? {
+    fun format(
+        fingerprint: String,
+        appendMiddleSpacing: Boolean,
+    ): String? {
         if (fingerprint.length != FINGERPRINT_LENGTH) {
             return null
         }
 
-        val parsedString = buildString {
-            append(fingerprint.substring(0, fingerprint.length / 2).chunked(FINGERPRINT_BLOCK_LENGTH).joinToString(" "))
-            appendLine()
-            if (appendMiddleSpacing) appendLine()
-            append(fingerprint.substring(fingerprint.length / 2).chunked(FINGERPRINT_BLOCK_LENGTH).joinToString(" "))
-        }
+        val parsedString =
+            buildString {
+                append(fingerprint.substring(0, fingerprint.length / 2).chunked(FINGERPRINT_BLOCK_LENGTH).joinToString(" "))
+                appendLine()
+                if (appendMiddleSpacing) appendLine()
+                append(fingerprint.substring(fingerprint.length / 2).chunked(FINGERPRINT_BLOCK_LENGTH).joinToString(" "))
+            }
 
         return parsedString
     }
 
-    fun formatWithRawFallback(fingerprint: String, appendMiddleSpacing: Boolean) =
-        format(fingerprint, appendMiddleSpacing) ?: fingerprint
+    fun formatWithRawFallback(
+        fingerprint: String,
+        appendMiddleSpacing: Boolean,
+    ) = format(fingerprint, appendMiddleSpacing) ?: fingerprint
 
     companion object {
         @VisibleForTesting

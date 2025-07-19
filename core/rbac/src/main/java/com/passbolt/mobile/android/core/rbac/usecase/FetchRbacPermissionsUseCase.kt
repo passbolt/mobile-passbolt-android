@@ -31,9 +31,8 @@ import com.passbolt.mobile.android.ui.RbacModel
 
 class FetchRbacPermissionsUseCase(
     private val rbacRepository: RbacRepository,
-    private val rbacMapper: RbacMapper
+    private val rbacMapper: RbacMapper,
 ) : AsyncUseCase<Unit, FetchRbacPermissionsUseCase.Output> {
-
     override suspend fun execute(input: Unit): Output =
         when (val response = rbacRepository.getMyRbacPermissions()) {
             is NetworkResult.Failure -> Output.Failure(response)
@@ -41,11 +40,12 @@ class FetchRbacPermissionsUseCase(
         }
 
     sealed class Output {
-
         data class Success(
-            val rbacModel: RbacModel
+            val rbacModel: RbacModel,
         ) : Output()
 
-        data class Failure<T : Any>(val response: NetworkResult.Failure<T>) : Output()
+        data class Failure<T : Any>(
+            val response: NetworkResult.Failure<T>,
+        ) : Output()
     }
 }

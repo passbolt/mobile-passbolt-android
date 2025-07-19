@@ -32,6 +32,8 @@ import com.passbolt.mobile.android.ui.MetadataJsonModel
 import com.passbolt.mobile.android.ui.MetadataTypeModel
 import com.passbolt.mobile.android.ui.OtpParseResult
 import com.passbolt.mobile.android.ui.ResourceFormUiModel
+import com.passbolt.mobile.android.ui.ResourceFormUiModel.Metadata.ADDITIONAL_URIS
+import com.passbolt.mobile.android.ui.ResourceFormUiModel.Metadata.APPEARANCE
 import com.passbolt.mobile.android.ui.ResourceFormUiModel.Metadata.DESCRIPTION
 import com.passbolt.mobile.android.ui.ResourceFormUiModel.Secret.NOTE
 import com.passbolt.mobile.android.ui.ResourceFormUiModel.Secret.PASSWORD
@@ -71,26 +73,27 @@ class ResourceModelHandler(
     private val getEditContentTypeUseCase: GetEditContentTypeUseCase,
     private val resourceActionsGraph: ResourceTypesUpdatesAdjacencyGraph,
     private val getLocalResourceUseCase: GetLocalResourceUseCase,
-    private val defaultValues: Map<DefaultValue, String>
+    private val defaultValues: Map<DefaultValue, String>,
 ) : KoinComponent {
-
     lateinit var resourceMetadata: MetadataJsonModel
     lateinit var resourceSecret: SecretJsonModel
     lateinit var metadataType: MetadataTypeModel
     lateinit var contentType: ContentType
 
     suspend fun initializeModelForCreation(leadingContentType: LeadingContentType) {
-        val initialContentTypeToCreate = getDefaultCreateContentTypeUseCase.execute(
-            GetDefaultCreateContentTypeUseCase.Input(leadingContentType)
-        )
+        val initialContentTypeToCreate =
+            getDefaultCreateContentTypeUseCase.execute(
+                GetDefaultCreateContentTypeUseCase.Input(leadingContentType),
+            )
         contentType = initialContentTypeToCreate.contentType
         metadataType = initialContentTypeToCreate.metadataType
 
         resourceMetadata = MetadataJsonModel.empty()
-        resourceSecret = when (leadingContentType) {
-            LeadingContentType.TOTP -> SecretJsonModel.emptyTotp()
-            LeadingContentType.PASSWORD -> SecretJsonModel.emptyPassword()
-        }
+        resourceSecret =
+            when (leadingContentType) {
+                LeadingContentType.TOTP -> SecretJsonModel.emptyTotp()
+                LeadingContentType.PASSWORD -> SecretJsonModel.emptyPassword()
+            }
 
         Timber.d("Initialized creation model with content type: $contentType and metadata type: $metadataType")
     }
@@ -99,26 +102,30 @@ class ResourceModelHandler(
     suspend fun initializeModelForEdition(
         existingResourceId: String,
         needSessionRefreshFlow: MutableStateFlow<UnauthenticatedReason?>,
-        sessionRefreshedFlow: StateFlow<Unit?>
+        sessionRefreshedFlow: StateFlow<Unit?>,
     ) {
         try {
             // init resource
-            val resource = getLocalResourceUseCase.execute(
-                GetLocalResourceUseCase.Input(existingResourceId)
-            ).resource
+            val resource =
+                getLocalResourceUseCase
+                    .execute(
+                        GetLocalResourceUseCase.Input(existingResourceId),
+                    ).resource
             resourceMetadata = resource.metadataJsonModel
 
             // init model fields
-            val initialEditContentType = getEditContentTypeUseCase.execute(
-                GetEditContentTypeUseCase.Input(resource.resourceTypeId)
-            )
+            val initialEditContentType =
+                getEditContentTypeUseCase.execute(
+                    GetEditContentTypeUseCase.Input(resource.resourceTypeId),
+                )
             contentType = initialEditContentType.contentType
             metadataType = initialEditContentType.metadataType
 
             // init secret
-            val secretPropertiesActionsInteractor: SecretPropertiesActionsInteractor = get {
-                parametersOf(resource, needSessionRefreshFlow, sessionRefreshedFlow)
-            }
+            val secretPropertiesActionsInteractor: SecretPropertiesActionsInteractor =
+                get {
+                    parametersOf(resource, needSessionRefreshFlow, sessionRefreshedFlow)
+                }
             val secret = secretPropertiesActionsInteractor.provideDecryptedSecret().single()
             resourceSecret = (secret as SecretPropertyActionResult.Success<SecretJsonModel>).result
 
@@ -129,7 +136,10 @@ class ResourceModelHandler(
         }
     }
 
-    fun applyModelChange(action: UpdateAction, change: (MetadataJsonModel, SecretJsonModel) -> Unit) {
+    fun applyModelChange(
+        action: UpdateAction,
+        change: (MetadataJsonModel, SecretJsonModel) -> Unit,
+    ) {
         if (processContentTypeEvent(action)) {
             change(resourceMetadata, resourceSecret)
             ensureRequiredFieldsAreSet()
@@ -139,12 +149,13 @@ class ResourceModelHandler(
 
     private fun ensureRequiredFieldsAreSet() {
         if (contentType.hasTotp() && resourceSecret.totp == null) {
-            resourceSecret.totp = TotpSecret(
-                algorithm = OtpParseResult.OtpQr.Algorithm.DEFAULT.name,
-                digits = OtpParseResult.OtpQr.TotpQr.DEFAULT_DIGITS,
-                period = OtpParseResult.OtpQr.TotpQr.DEFAULT_PERIOD_SECONDS,
-                key = ""
-            )
+            resourceSecret.totp =
+                TotpSecret(
+                    algorithm = OtpParseResult.OtpQr.Algorithm.DEFAULT.name,
+                    digits = OtpParseResult.OtpQr.TotpQr.DEFAULT_DIGITS,
+                    period = OtpParseResult.OtpQr.TotpQr.DEFAULT_PERIOD_SECONDS,
+                    key = "",
+                )
         }
         if (contentType.hasNote() && resourceSecret.description == null) {
             resourceSecret.description = ""
@@ -173,11 +184,12 @@ class ResourceModelHandler(
             val currentContentType = ContentType.fromSlug(contentType.slug)
             contentType = resourceActionsGraph.getResourceTypeSlugAfterUpdate(contentType.slug, finalAction)
             if (contentType != currentContentType) {
-                resourceSecret = mapSecretModel(
-                    resourceSecret,
-                    currentContentType,
-                    contentType
-                )
+                resourceSecret =
+                    mapSecretModel(
+                        resourceSecret,
+                        currentContentType,
+                        contentType,
+                    )
             }
             Timber.d("Allowed action $finalAction. Current content type is: $contentType")
             return true
@@ -190,9 +202,9 @@ class ResourceModelHandler(
     private fun mapSecretModel(
         model: SecretJsonModel,
         oldContentType: ContentType,
-        newContentType: ContentType
-    ): SecretJsonModel {
-        return if (oldContentType == V5PasswordString) {
+        newContentType: ContentType,
+    ): SecretJsonModel =
+        if (oldContentType == V5PasswordString) {
             when (newContentType) {
                 V5DefaultWithTotp, V5Default -> SecretJsonModel.emptyJsonModel(model.password.orEmpty())
                 else -> model
@@ -200,7 +212,6 @@ class ResourceModelHandler(
         } else {
             model
         }
-    }
 
     private fun mergeActions(action: UpdateAction): UpdateAction {
         if (contentType in setOf(PasswordDescriptionTotp, V5DefaultWithTotp)) {
@@ -216,14 +227,12 @@ class ResourceModelHandler(
         return action
     }
 
-    private fun resourceHasNoPassword(): Boolean =
-        resourceSecret.getPassword(contentType).isNullOrBlank()
+    private fun resourceHasNoPassword(): Boolean = resourceSecret.getPassword(contentType).isNullOrBlank()
 
-    private fun resourceHasNoNote(): Boolean =
-        resourceSecret.description.isNullOrBlank()
+    private fun resourceHasNoNote(): Boolean = resourceSecret.description.isNullOrBlank()
 
-    fun getResourceSecretWithRequiredFields(): SecretJsonModel {
-        return SecretJsonModel(resourceSecret.json).apply {
+    fun getResourceSecretWithRequiredFields(): SecretJsonModel =
+        SecretJsonModel(resourceSecret.json).apply {
             when (contentType) {
                 PasswordString, V5PasswordString, PasswordAndDescription, V5Default -> {
                     if (getPassword(contentType).isNullOrBlank()) {
@@ -245,51 +254,61 @@ class ResourceModelHandler(
                 }
             }
         }
-    }
 
-    fun getResourceMetadataWithRequiredFields(): MetadataJsonModel {
-        return MetadataJsonModel(resourceMetadata.json).apply {
+    fun getResourceMetadataWithRequiredFields(): MetadataJsonModel =
+        MetadataJsonModel(resourceMetadata.json).apply {
             if (name.isBlank()) {
                 name = requireNotNull(defaultValues[DefaultValue.NAME])
             }
         }
-    }
 
+    @Suppress("CyclomaticComplexMethod")
     fun getUiModel(): ResourceFormUiModel {
-        val contentTypeUpdateActions = resourceActionsGraph.getUpdateActionsMetadata(contentType.slug)
-            .map { it.action }
-        val leadingContentType = if (contentType in setOf(Totp, V5TotpStandalone)) {
-            LeadingContentType.TOTP
-        } else {
-            LeadingContentType.PASSWORD
-        }
+        val contentTypeUpdateActions =
+            resourceActionsGraph
+                .getUpdateActionsMetadata(contentType.slug)
+                .map { it.action }
+        val leadingContentType =
+            if (contentType in setOf(Totp, V5TotpStandalone)) {
+                LeadingContentType.TOTP
+            } else {
+                LeadingContentType.PASSWORD
+            }
 
         return ResourceFormUiModel(
             leadingContentType = leadingContentType,
-            supportedAdditionalSecrets = contentTypeUpdateActions.let {
-                val additionalSecrets = mutableListOf<ResourceFormUiModel.Secret>()
-                if (leadingContentType != LeadingContentType.TOTP &&
-                    (it.contains(ADD_TOTP) || it.contains(REMOVE_TOTP))
-                ) {
-                    additionalSecrets.add(TOTP)
-                }
-                if (it.contains(ADD_NOTE) || it.contains(REMOVE_NOTE)) {
-                    additionalSecrets.add(NOTE)
-                }
-                if (leadingContentType != LeadingContentType.PASSWORD &&
-                    (it.contains(ADD_PASSWORD) || it.contains(REMOVE_PASSWORD))
-                ) {
-                    additionalSecrets.add(PASSWORD)
-                }
-                additionalSecrets
-            },
-            supportedMetadata = contentTypeUpdateActions.let {
-                val metadata = mutableListOf<ResourceFormUiModel.Metadata>()
-                if (it.contains(ADD_METADATA_DESCRIPTION) || it.contains(REMOVE_METADATA_DESCRIPTION)) {
-                    metadata.add(DESCRIPTION)
-                }
-                metadata
-            }
+            supportedAdditionalSecrets =
+                contentTypeUpdateActions.let {
+                    val additionalSecrets = mutableListOf<ResourceFormUiModel.Secret>()
+                    if (leadingContentType != LeadingContentType.TOTP &&
+                        (it.contains(ADD_TOTP) || it.contains(REMOVE_TOTP))
+                    ) {
+                        additionalSecrets.add(TOTP)
+                    }
+                    if (it.contains(ADD_NOTE) || it.contains(REMOVE_NOTE)) {
+                        additionalSecrets.add(NOTE)
+                    }
+                    if (leadingContentType != LeadingContentType.PASSWORD &&
+                        (it.contains(ADD_PASSWORD) || it.contains(REMOVE_PASSWORD))
+                    ) {
+                        additionalSecrets.add(PASSWORD)
+                    }
+                    additionalSecrets
+                },
+            supportedMetadata =
+                contentTypeUpdateActions.let {
+                    val metadata = mutableListOf<ResourceFormUiModel.Metadata>()
+                    if (it.contains(ADD_METADATA_DESCRIPTION) || it.contains(REMOVE_METADATA_DESCRIPTION)) {
+                        metadata.add(DESCRIPTION)
+                    }
+                    if (it.contains(UpdateAction.EDIT_ADDITIONAL_URIS)) {
+                        metadata.add(ADDITIONAL_URIS)
+                    }
+                    if (it.contains(UpdateAction.EDIT_APPEARANCE)) {
+                        metadata.add(APPEARANCE)
+                    }
+                    metadata
+                },
         )
     }
 }

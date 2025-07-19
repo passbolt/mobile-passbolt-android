@@ -26,7 +26,6 @@ import com.passbolt.mobile.android.feature.authentication.accountslist.AccountsL
  * @since v1.0
  */
 interface AccountListStrategy {
-
     var accountListFragment: AccountsListFragment?
     val activeAccountListFragment
         get() = requireNotNull(accountListFragment)

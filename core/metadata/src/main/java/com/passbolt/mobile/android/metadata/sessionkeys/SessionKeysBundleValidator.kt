@@ -26,7 +26,5 @@ package com.passbolt.mobile.android.metadata.sessionkeys
 import com.passbolt.mobile.android.dto.request.SessionKeysBundleDto
 
 class SessionKeysBundleValidator {
-
-    fun isValid(bundle: SessionKeysBundleDto?): Boolean =
-        bundle?.objectType == "PASSBOLT_SESSION_KEYS"
+    fun isValid(bundle: SessionKeysBundleDto?): Boolean = bundle?.objectType == "PASSBOLT_SESSION_KEYS"
 }

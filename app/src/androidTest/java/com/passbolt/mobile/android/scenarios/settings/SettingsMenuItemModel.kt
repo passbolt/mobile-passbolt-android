@@ -1,9 +1,7 @@
 package com.passbolt.mobile.android.scenarios.settings
 
 import androidx.annotation.DrawableRes
-import androidx.annotation.IdRes
 import androidx.annotation.StringRes
-import com.passbolt.mobile.android.feature.settings.R
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
@@ -33,97 +31,79 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
 enum class SettingsMenuItemModel(
     @StringRes val settingsItemTextId: Int,
     @DrawableRes val settingsItemIconId: Int,
-    @IdRes val settingsItemId: Int
 ) {
     APP_SETTINGS(
         settingsItemTextId = LocalizationR.string.settings_app_settings,
         settingsItemIconId = CoreUiR.drawable.ic_app_settings,
-        settingsItemId = R.id.appSettings
     ),
     ACCOUNTS(
         settingsItemTextId = LocalizationR.string.settings_accounts,
         settingsItemIconId = CoreUiR.drawable.ic_manage_accounts,
-        settingsItemId = R.id.accountsSettings
     ),
     TERMS_AND_LICENSES(
         settingsItemTextId = LocalizationR.string.settings_terms_and_licenses,
         settingsItemIconId = CoreUiR.drawable.ic_terms,
-        settingsItemId = R.id.termsAndLicensesSettings
     ),
     DEBUG_LOGS(
         settingsItemTextId = LocalizationR.string.settings_debug_logs,
         settingsItemIconId = CoreUiR.drawable.ic_bug,
-        settingsItemId = R.id.debugLogsSettings
     ),
     SIGN_OUT(
         settingsItemTextId = LocalizationR.string.settings_sign_out,
         settingsItemIconId = CoreUiR.drawable.ic_sign_out,
-        settingsItemId = R.id.signOut
-    )
+    ),
 }
 
 enum class AppSettingsItemModel(
     @StringRes val settingsItemTextId: Int,
     @DrawableRes val settingsItemIconId: Int,
-    @IdRes val settingsItemId: Int
 ) {
     FINGERPRINT(
         settingsItemTextId = LocalizationR.string.settings_app_settings_fingerprint,
         settingsItemIconId = CoreUiR.drawable.ic_fingerprint,
-        settingsItemId = R.id.fingerprintSetting
     ),
     AUTOFILL(
         settingsItemTextId = LocalizationR.string.settings_app_settings_autofill,
         settingsItemIconId = CoreUiR.drawable.ic_key,
-        settingsItemId = R.id.autofillSetting
     ),
     DEFAULT_FILTER(
         settingsItemTextId = LocalizationR.string.settings_app_settings_default_filter,
         settingsItemIconId = CoreUiR.drawable.ic_filter,
-        settingsItemId = R.id.defaultFilterSetting
     ),
     EXPERT_SETTINGS(
         settingsItemTextId = LocalizationR.string.settings_app_settings_expert_settings,
         settingsItemIconId = CoreUiR.drawable.ic_cog,
-        settingsItemId = R.id.expertSettings
-    )
+    ),
 }
 
 enum class ExpertSettingsItemModel(
     @StringRes val settingsItemTextId: Int,
     @DrawableRes val settingsItemIconId: Int,
-    @IdRes val settingsItemId: Int
 ) {
     DEVELOPER_MODE(
         settingsItemTextId = LocalizationR.string.settings_app_settings_expert_settings_dev_mode,
         settingsItemIconId = CoreUiR.drawable.ic_dev_mode,
-        settingsItemId = R.id.developerModeSetting
     ),
     DEVICE_IS_ROOTED_DIALOG(
         settingsItemTextId = LocalizationR.string.settings_app_settings_expert_settings_hide_root,
         settingsItemIconId = CoreUiR.drawable.ic_hash,
-        settingsItemId = R.id.hideRootWarningSetting
-    )
+    ),
 }
 
 enum class DebugLogsItemModel(
     @StringRes val settingsItemTextId: Int,
     @DrawableRes val settingsItemIconId: Int,
-    @IdRes val settingsItemId: Int
 ) {
     ENABLE_DEBUG_LOGS(
         settingsItemTextId = LocalizationR.string.settings_debug_logs_enable_logs,
         settingsItemIconId = CoreUiR.drawable.ic_bug,
-        settingsItemId = R.id.enableLogsSetting
     ),
     ACCESS_THE_LOGS(
         settingsItemTextId = LocalizationR.string.settings_debug_logs_settings_logs,
         settingsItemIconId = CoreUiR.drawable.ic_access_logs,
-        settingsItemId = R.id.accessLogsSetting
     ),
     VISIT_HELP_WEBSITE(
         settingsItemTextId = LocalizationR.string.settings_debug_logs_visit_help_website,
         settingsItemIconId = CoreUiR.drawable.ic_link,
-        settingsItemId = R.id.visitHelpWebsite
-    )
+    ),
 }

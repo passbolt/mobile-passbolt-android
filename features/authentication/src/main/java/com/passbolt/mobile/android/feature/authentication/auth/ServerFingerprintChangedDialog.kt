@@ -38,8 +38,9 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class ServerFingerprintChangedDialog : DialogFragment(), KoinComponent {
-
+class ServerFingerprintChangedDialog :
+    DialogFragment(),
+    KoinComponent {
     private var listener: Listener? = null
     private val fingerprintFormatter: FingerprintFormatter by inject()
     private val bundledFingerprint by lifecycleAwareLazy {
@@ -51,7 +52,11 @@ class ServerFingerprintChangedDialog : DialogFragment(), KoinComponent {
         setStyle(STYLE_NO_TITLE, CoreUiR.style.FullscreenDialogTheme)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
+    ): View {
         val binding = DialogServerFingerprintBinding.inflate(inflater)
         setupListeners(binding)
         fingerprintFormatter.format(bundledFingerprint, appendMiddleSpacing = true)?.let {
@@ -61,13 +66,12 @@ class ServerFingerprintChangedDialog : DialogFragment(), KoinComponent {
         return binding.root
     }
 
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        return object : Dialog(requireActivity(), theme) {
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog =
+        object : Dialog(requireActivity(), theme) {
             override fun onBackPressed() {
                 requireActivity().finishAffinity()
             }
         }
-    }
 
     private fun setupListeners(binding: DialogServerFingerprintBinding) {
         with(binding) {
@@ -81,11 +85,12 @@ class ServerFingerprintChangedDialog : DialogFragment(), KoinComponent {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        listener = when {
-            activity is Listener -> activity as Listener
-            parentFragment is Listener -> parentFragment as Listener
-            else -> error("Parent must implement ${Listener::class.java.name}")
-        }
+        listener =
+            when {
+                activity is Listener -> activity as Listener
+                parentFragment is Listener -> parentFragment as Listener
+                else -> error("Parent must implement ${Listener::class.java.name}")
+            }
     }
 
     override fun onDetach() {
@@ -102,9 +107,10 @@ class ServerFingerprintChangedDialog : DialogFragment(), KoinComponent {
 
         fun newInstance(fingerprint: String) =
             ServerFingerprintChangedDialog().apply {
-                arguments = bundleOf(
-                    FINGERPRINT_KEY to fingerprint
-                )
+                arguments =
+                    bundleOf(
+                        FINGERPRINT_KEY to fingerprint,
+                    )
             }
     }
 }

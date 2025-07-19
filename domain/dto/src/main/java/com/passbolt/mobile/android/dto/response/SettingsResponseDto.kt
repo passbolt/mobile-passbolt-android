@@ -27,24 +27,24 @@ import com.google.gson.annotations.SerializedName
 
 data class SettingsResponseDto(
     @SerializedName("passbolt")
-    val passboltSettings: PassboltSettingsDto
+    val passboltSettings: PassboltSettingsDto,
 )
 
 data class PassboltSettingsDto(
     @SerializedName("legal")
     val legalSettings: LegalSettingsDto,
-    val plugins: PluginsDto
+    val plugins: PluginsDto,
 )
 
 data class LegalSettingsDto(
     @SerializedName("privacy_policy")
     val privacyPolicyUrl: UrlDto,
     @SerializedName("terms")
-    val termsAndConditionsUrl: UrlDto
+    val termsAndConditionsUrl: UrlDto,
 )
 
 data class UrlDto(
-    val url: String
+    val url: String,
 )
 
 data class PluginsDto(
@@ -56,10 +56,10 @@ data class PluginsDto(
     val passwordExpiry: PluginAvailabilityDto?,
     val passwordPolicies: PluginAvailabilityDto?,
     val passwordPoliciesUpdate: PluginAvailabilityDto?,
-    val metadata: PluginAvailabilityDto?
+    val metadata: PluginAvailabilityDto?,
 )
 
 data class PluginAvailabilityDto(
     val enabled: Boolean?,
-    val version: String?
+    val version: String?,
 )

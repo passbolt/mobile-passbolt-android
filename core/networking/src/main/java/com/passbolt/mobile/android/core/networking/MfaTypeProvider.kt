@@ -23,7 +23,6 @@ package com.passbolt.mobile.android.core.networking
  * @since v1.0
  */
 object MfaTypeProvider {
-
     fun get(serverError: NetworkResult.Failure<*>) =
         ((serverError as NetworkResult.Failure.ServerError).mfaStatus as MfaStatus.Required).providers
 }

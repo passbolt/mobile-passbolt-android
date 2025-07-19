@@ -29,23 +29,23 @@ import org.junit.Assert.assertThrows
 import org.junit.Test
 import java.util.UUID
 
-
 class UUIDDeserializationTest {
-
-    private data class TestModel(val testField: UUID)
+    private data class TestModel(
+        val testField: UUID,
+    )
 
     private val gson = Gson()
 
     @Test
     fun `parsing invalid types should throw exception`() {
-        val invalidDataTypes = listOf(
-            "{\"testField\": 1}",
-            "{\"testField\": 1.0}",
-            "{\"testField\": true}",
-            "{\"testField\": {}}",
-            "{\"testField\": []}"
-
-        )
+        val invalidDataTypes =
+            listOf(
+                "{\"testField\": 1}",
+                "{\"testField\": 1.0}",
+                "{\"testField\": true}",
+                "{\"testField\": {}}",
+                "{\"testField\": []}",
+            )
 
         invalidDataTypes.forEach {
             assertThrows(Exception::class.java) {
@@ -56,10 +56,11 @@ class UUIDDeserializationTest {
 
     @Test
     fun `parsing null should be allowed`() {
-        val nullDataTypes = listOf(
-            "{}",
-            "{\"testField\": null}",
-        )
+        val nullDataTypes =
+            listOf(
+                "{}",
+                "{\"testField\": null}",
+            )
 
         nullDataTypes.forEach {
             val parsed = gson.fromJson(it, TestModel::class.java)
@@ -70,9 +71,10 @@ class UUIDDeserializationTest {
     @Test
     fun `parsing valid data type should work`() {
         val validParsedValues = listOf(UUID.randomUUID())
-        val validDataTypes = listOf(
-            "{\"testField\": ${validParsedValues[0]}}",
-        )
+        val validDataTypes =
+            listOf(
+                "{\"testField\": ${validParsedValues[0]}}",
+            )
 
         validDataTypes.forEachIndexed { index, value ->
             val parsed = gson.fromJson(value, TestModel::class.java)

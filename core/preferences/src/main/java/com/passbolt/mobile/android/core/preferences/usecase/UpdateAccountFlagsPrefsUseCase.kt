@@ -29,10 +29,9 @@ import com.passbolt.mobile.android.encryptedstorage.EncryptedSharedPreferencesFa
  */
 
 class UpdateAccountFlagsPrefsUseCase(
-    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory
+    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory,
 ) : UseCase<UpdateAccountFlagsPrefsUseCase.Input, Unit>,
     SelectedAccountUseCase {
-
     override fun execute(input: Input) {
         val fileName = AccountPreferencesFileName(selectedAccountId).name
         val sharedPreferences = encryptedSharedPreferencesFactory.get("$fileName.xml")
@@ -44,6 +43,6 @@ class UpdateAccountFlagsPrefsUseCase(
     }
 
     data class Input(
-        val wasChromeNativeAutofillDialogShown: Boolean?
+        val wasChromeNativeAutofillDialogShown: Boolean?,
     )
 }

@@ -28,10 +28,9 @@ import com.passbolt.mobile.android.encryptedstorage.EncryptedSharedPreferencesFa
 import com.passbolt.mobile.android.ui.RbacModel
 
 class SaveRbacRulesUseCase(
-    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory
+    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory,
 ) : AsyncUseCase<SaveRbacRulesUseCase.Input, Unit>,
     com.passbolt.mobile.android.core.accounts.usecase.SelectedAccountUseCase {
-
     override suspend fun execute(input: Input) {
         val fileName = RbacRulesFileName(selectedAccountId).name
         val sharedPreferences = encryptedSharedPreferencesFactory.get("$fileName.xml")
@@ -45,5 +44,7 @@ class SaveRbacRulesUseCase(
         }
     }
 
-    data class Input(val rbacModel: RbacModel)
+    data class Input(
+        val rbacModel: RbacModel,
+    )
 }

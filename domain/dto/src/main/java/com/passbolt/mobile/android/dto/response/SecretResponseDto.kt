@@ -24,5 +24,5 @@ package com.passbolt.mobile.android.dto.response
  */
 
 data class SecretResponseDto(
-    val data: String
+    val data: String,
 )

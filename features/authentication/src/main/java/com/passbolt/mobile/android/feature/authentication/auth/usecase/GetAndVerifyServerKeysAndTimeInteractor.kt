@@ -34,10 +34,13 @@ class GetAndVerifyServerKeysAndTimeInteractor(
     private val saveServerPublicRsaKeyUseCase: SaveServerPublicRsaKeyUseCase,
     private val isServerFingerprintCorrectUseCase: IsServerFingerprintCorrectUseCase,
     private val getAccountDataUseCase: GetAccountDataUseCase,
-    private val gopenPgpTimeUpdater: GopenPgpTimeUpdater
+    private val gopenPgpTimeUpdater: GopenPgpTimeUpdater,
 ) {
-
-    suspend fun getAndVerifyServerKeys(userId: String, onError: (Error) -> Unit, onSuccess: suspend (Success) -> Unit) {
+    suspend fun getAndVerifyServerKeys(
+        userId: String,
+        onError: (Error) -> Unit,
+        onSuccess: suspend (Success) -> Unit,
+    ) {
         Timber.d("Getting server pgp and rsa keys")
         val (pgpKey, getTimeRequestDuration) = measureTimedValue { fetchServerPublicPgpKeyUseCase.execute(Unit) }
         val rsaKey = fetchServerPublicRsaKeyUseCase.execute(Unit)
@@ -65,9 +68,11 @@ class GetAndVerifyServerKeysAndTimeInteractor(
             }
         } else {
             if ((pgpKey as? FetchServerPublicPgpKeyUseCase.Output.Failure)
-                    ?.error?.isServerNotReachable == true ||
+                    ?.error
+                    ?.isServerNotReachable == true ||
                 (rsaKey as? FetchServerPublicRsaKeyUseCase.Output.Failure)
-                    ?.error?.isServerNotReachable == true
+                    ?.error
+                    ?.isServerNotReachable == true
             ) {
                 Timber.d("Server is not reachable")
                 val accountData = getAccountDataUseCase.execute(UserIdInput(userId))
@@ -79,12 +84,23 @@ class GetAndVerifyServerKeysAndTimeInteractor(
         }
     }
 
-    data class Success(val pgpKey: String, val pgpKeyFingerprint: String, val rsaKey: String)
+    data class Success(
+        val pgpKey: String,
+        val pgpKeyFingerprint: String,
+        val rsaKey: String,
+    )
 
     sealed class Error {
-        data class IncorrectServerFingerprint(val fingerprint: String) : Error()
-        data class ServerNotReachable(val serverUrl: String) : Error()
+        data class IncorrectServerFingerprint(
+            val fingerprint: String,
+        ) : Error()
+
+        data class ServerNotReachable(
+            val serverUrl: String,
+        ) : Error()
+
         data object TimeIsOutOfSync : Error()
+
         data object Generic : Error()
     }
 }

@@ -30,10 +30,11 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-val groupsModule = module {
-    groupsDbModule()
+val groupsModule =
+    module {
+        groupsDbModule()
 
-    singleOf(::FetchUserGroupsUseCase)
-    singleOf(::RebuildGroupsTablesUseCase)
-    singleOf(::GroupsInteractor)
-}
+        singleOf(::FetchUserGroupsUseCase)
+        singleOf(::RebuildGroupsTablesUseCase)
+        singleOf(::GroupsInteractor)
+    }

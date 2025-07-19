@@ -25,5 +25,5 @@ package com.passbolt.mobile.android.entity.metadata
 
 enum class MetadataKeyType {
     SHARED,
-    PERSONAL
+    PERSONAL,
 }

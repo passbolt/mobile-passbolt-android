@@ -5,23 +5,28 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 
 class DuoWebViewClient : WebViewClient() {
-
     var onPageCommitVisible: (() -> Unit)? = null
     var onDuoAuthFinishedIntercepted: ((DuoState) -> Unit)? = null
 
-    override fun onPageCommitVisible(view: WebView?, url: String?) {
+    override fun onPageCommitVisible(
+        view: WebView?,
+        url: String?,
+    ) {
         super.onPageCommitVisible(view, url)
         onPageCommitVisible?.invoke()
     }
 
-    override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
+    override fun shouldOverrideUrlLoading(
+        view: WebView?,
+        request: WebResourceRequest?,
+    ): Boolean {
         request?.let {
             return if (it.url.toString().contains(DUO_CALLBACK_REDIRECTION)) {
                 onDuoAuthFinishedIntercepted?.invoke(
                     DuoState(
                         state = it.url.getQueryParameter(QUERY_DUO_STATE),
-                        duoCode = it.url.getQueryParameter(QUERY_DUO_CODE)
-                    )
+                        duoCode = it.url.getQueryParameter(QUERY_DUO_CODE),
+                    ),
                 )
                 true
             } else {

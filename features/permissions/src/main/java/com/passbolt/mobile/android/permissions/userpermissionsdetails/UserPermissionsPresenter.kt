@@ -13,17 +13,19 @@ import kotlinx.coroutines.launch
 
 class UserPermissionsPresenter(
     private val getLocalUserUseCase: GetLocalUserUseCase,
-    coroutineLaunchContext: CoroutineLaunchContext
-) : UserPermissionsContract.Presenter,
-    BaseAuthenticatedPresenter<UserPermissionsContract.View>(coroutineLaunchContext) {
-
+    coroutineLaunchContext: CoroutineLaunchContext,
+) : BaseAuthenticatedPresenter<UserPermissionsContract.View>(coroutineLaunchContext),
+    UserPermissionsContract.Presenter {
     override var view: UserPermissionsContract.View? = null
     private val job = SupervisorJob()
     private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
 
     private lateinit var userPermission: PermissionModelUi.UserPermissionModel
 
-    override fun argsRetrieved(userPermission: PermissionModelUi.UserPermissionModel, mode: PermissionsMode) {
+    override fun argsRetrieved(
+        userPermission: PermissionModelUi.UserPermissionModel,
+        mode: PermissionsMode,
+    ) {
         this.userPermission = userPermission
         scope.launch {
             getLocalUserUseCase.execute(GetLocalUserUseCase.Input(userPermission.user.userId)).user.let {
@@ -42,11 +44,12 @@ class UserPermissionsPresenter(
     }
 
     override fun onPermissionSelected(permission: ResourcePermission) {
-        userPermission = PermissionModelUi.UserPermissionModel(
-            permission,
-            userPermission.permissionId,
-            userPermission.user.copy()
-        )
+        userPermission =
+            PermissionModelUi.UserPermissionModel(
+                permission,
+                userPermission.permissionId,
+                userPermission.user.copy(),
+            )
     }
 
     override fun saveClick() {

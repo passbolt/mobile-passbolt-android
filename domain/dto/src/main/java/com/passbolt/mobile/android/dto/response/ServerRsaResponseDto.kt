@@ -23,5 +23,5 @@ package com.passbolt.mobile.android.dto.response
  * @since v1.0
  */
 data class ServerRsaResponseDto(
-    val keydata: String
+    val keydata: String,
 )

@@ -22,4 +22,6 @@ package com.passbolt.mobile.android.gopenpgp.exception
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-open class OpenPgpError(val message: String = "")
+open class OpenPgpError(
+    val message: String = "",
+)

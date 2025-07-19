@@ -30,15 +30,14 @@ import retrofit2.http.Path
  */
 
 internal interface FavouritesApi {
-
     @POST(FAVOURITE_RESOURCE_BY_ID)
     suspend fun addToFavourites(
-        @Path(PATH_RESOURCE_ID) resourceId: String
+        @Path(PATH_RESOURCE_ID) resourceId: String,
     ): BaseResponse<AddToFavouritesResponseDto>
 
     @DELETE(FAVOURITES_BY_ID)
     suspend fun removeFromFavourites(
-        @Path(PATH_FAVOURITE_ID) favouriteId: String
+        @Path(PATH_FAVOURITE_ID) favouriteId: String,
     ): BaseResponse<Unit>
 
     private companion object {

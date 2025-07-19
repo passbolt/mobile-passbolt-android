@@ -26,7 +26,6 @@ import com.passbolt.mobile.android.ui.UserModel
  * @since v1.0
  */
 interface GroupMemberDetailsContract {
-
     interface View : BaseAuthenticatedContract.View {
         fun showUserData(user: UserModel)
     }

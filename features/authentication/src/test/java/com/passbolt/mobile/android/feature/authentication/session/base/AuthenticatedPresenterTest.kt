@@ -24,6 +24,7 @@
 package com.passbolt.mobile.android.feature.authentication.session.base
 
 import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
+import com.passbolt.mobile.android.core.navigation.AppForegroundListener
 import com.passbolt.mobile.android.core.passphrasememorycache.PassphraseMemoryCache
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetSessionExpiryUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.RefreshSessionUseCase
@@ -37,15 +38,15 @@ import org.koin.core.logger.Level
 import org.koin.dsl.module
 import org.koin.test.KoinTestRule
 import org.mockito.Mockito.mock
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.never
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.time.ZonedDateTime
 
-
 @OptIn(ExperimentalCoroutinesApi::class)
 class AuthenticatedPresenterTest {
-
     private val coroutineLaunchContext = TestCoroutineLaunchContext()
     private val presenter = DummyAuthPresenter(coroutineLaunchContext)
     private val view = mock<DummyAuthContract.View>()
@@ -53,62 +54,121 @@ class AuthenticatedPresenterTest {
     private val mockPassphraseMemoryCache = mock<PassphraseMemoryCache>()
     private val mockGetSessionExpiryUseCase = mock<GetSessionExpiryUseCase>()
     private val mockRefreshSessionUseCase = mock<RefreshSessionUseCase>()
+    private val appForegroundListener = mock<AppForegroundListener>()
 
     @get:Rule
-    val koinTestRule = KoinTestRule.create {
-        printLogger(Level.ERROR)
-        modules(
-            module {
-                single { mockGetSessionExpiryUseCase }
-                single { mockPassphraseMemoryCache }
-                single { mockRefreshSessionUseCase }
-            }
-        )
-    }
-
-    @Test
-    fun `ui sig-in authentication should be invoked when session is expired`() = runTest {
-        mockGetSessionExpiryUseCase.stub {
-            onBlocking { execute(Unit) }.thenReturn(
-                GetSessionExpiryUseCase.Output.JwtAlreadyExpired
+    val koinTestRule =
+        KoinTestRule.create {
+            printLogger(Level.ERROR)
+            modules(
+                module {
+                    single { mockGetSessionExpiryUseCase }
+                    single { mockPassphraseMemoryCache }
+                    single { mockRefreshSessionUseCase }
+                    single { appForegroundListener }
+                },
             )
         }
-        mockRefreshSessionUseCase.stub {
-            onBlocking { execute(Unit) }.thenReturn(
-                RefreshSessionUseCase.Output.Failure
-            )
-        }
-        whenever(mockPassphraseMemoryCache.getSessionDurationSeconds()).thenReturn(null)
-
-        presenter.attach(view)
-        val job = launch {
-            presenter.authenticatedOperation()
-        }
-        delay(1)
-        job.cancel()
-
-        verify(view).showSignInAuth()
-    }
 
     @Test
-    fun `ui passphrase authentication should be invoked when session is expired`() = runTest {
-        mockGetSessionExpiryUseCase.stub {
-            onBlocking { execute(Unit) }.thenReturn(
-                GetSessionExpiryUseCase.Output.JwtWillExpire(
-                    ZonedDateTime.now().plusSeconds(60)
+    fun `ui sign-in authentication should be invoked when session is expired`() =
+        runTest {
+            mockGetSessionExpiryUseCase.stub {
+                onBlocking { execute(Unit) }.thenReturn(
+                    GetSessionExpiryUseCase.Output.JwtAlreadyExpired,
                 )
-            )
+            }
+            mockRefreshSessionUseCase.stub {
+                onBlocking { execute(Unit) }.thenReturn(
+                    RefreshSessionUseCase.Output.Failure,
+                )
+            }
+            whenever(appForegroundListener.isForeground()) doReturn true
+            whenever(mockPassphraseMemoryCache.getSessionDurationSeconds()).thenReturn(null)
+
+            presenter.attach(view)
+            val job =
+                launch {
+                    presenter.authenticatedOperation()
+                }
+            delay(1)
+            job.cancel()
+
+            verify(view).showSignInAuth()
         }
-        whenever(mockPassphraseMemoryCache.getSessionDurationSeconds()).thenReturn(null)
 
-        presenter.attach(view)
-        val job = launch {
-            presenter.authenticatedOperation()
+    @Test
+    fun `ui passphrase authentication should be invoked when session is expired`() =
+        runTest {
+            mockGetSessionExpiryUseCase.stub {
+                onBlocking { execute(Unit) }.thenReturn(
+                    GetSessionExpiryUseCase.Output.JwtWillExpire(
+                        ZonedDateTime.now().plusSeconds(60),
+                    ),
+                )
+            }
+            whenever(appForegroundListener.isForeground()) doReturn true
+            whenever(mockPassphraseMemoryCache.getSessionDurationSeconds()).thenReturn(null)
+
+            presenter.attach(view)
+            val job =
+                launch {
+                    presenter.authenticatedOperation()
+                }
+            delay(1)
+            job.cancel()
+
+            verify(view).showRefreshPassphraseAuth()
         }
-        delay(1)
-        job.cancel()
 
-        verify(view).showRefreshPassphraseAuth()
-    }
+    @Test
+    fun `ui sign-in authentication not should be invoked when app is in background`() =
+        runTest {
+            mockGetSessionExpiryUseCase.stub {
+                onBlocking { execute(Unit) }.thenReturn(
+                    GetSessionExpiryUseCase.Output.JwtAlreadyExpired,
+                )
+            }
+            mockRefreshSessionUseCase.stub {
+                onBlocking { execute(Unit) }.thenReturn(
+                    RefreshSessionUseCase.Output.Failure,
+                )
+            }
+            whenever(appForegroundListener.isForeground()) doReturn false
+            whenever(mockPassphraseMemoryCache.getSessionDurationSeconds()).thenReturn(null)
 
+            presenter.attach(view)
+            val job =
+                launch {
+                    presenter.authenticatedOperation()
+                }
+            delay(1)
+            job.cancel()
+
+            verify(view, never()).showSignInAuth()
+        }
+
+    @Test
+    fun `ui passphrase authentication should not be invoked when app is in background`() =
+        runTest {
+            mockGetSessionExpiryUseCase.stub {
+                onBlocking { execute(Unit) }.thenReturn(
+                    GetSessionExpiryUseCase.Output.JwtWillExpire(
+                        ZonedDateTime.now().plusSeconds(60),
+                    ),
+                )
+            }
+            whenever(appForegroundListener.isForeground()) doReturn false
+            whenever(mockPassphraseMemoryCache.getSessionDurationSeconds()).thenReturn(null)
+
+            presenter.attach(view)
+            val job =
+                launch {
+                    presenter.authenticatedOperation()
+                }
+            delay(1)
+            job.cancel()
+
+            verify(view, never()).showRefreshPassphraseAuth()
+        }
 }

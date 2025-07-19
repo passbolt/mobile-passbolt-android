@@ -6,8 +6,11 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResult
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import coil.load
-import coil.transform.CircleCropTransformation
+import coil3.load
+import coil3.request.error
+import coil3.request.placeholder
+import coil3.request.transformations
+import coil3.transform.CircleCropTransformation
 import com.passbolt.mobile.android.common.dialogs.permissionDeletionConfirmationAlertDialog
 import com.passbolt.mobile.android.core.UiConstants
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
@@ -27,23 +30,26 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 class UserPermissionsFragment :
     BindingScopedAuthenticatedFragment<FragmentUserPermissionsBinding, UserPermissionsContract.View>(
-        FragmentUserPermissionsBinding::inflate
-    ), UserPermissionsContract.View {
-
+        FragmentUserPermissionsBinding::inflate,
+    ),
+    UserPermissionsContract.View {
     override val presenter: UserPermissionsContract.Presenter by inject()
     private val args: UserPermissionsFragmentArgs by navArgs()
     private val fingerprintFormatter: FingerprintFormatter by inject()
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
-        initDefaultToolbar(binding.toolbar)
+        initDefaultToolbar(requiredBinding.toolbar)
         setListeners()
         presenter.attach(this)
         presenter.argsRetrieved(args.permission, args.mode)
     }
 
     private fun setListeners() {
-        with(binding) {
+        with(requiredBinding) {
             permissionSelect.onPermissionSelectedListener = {
                 presenter.onPermissionSelected(it)
             }
@@ -57,27 +63,27 @@ class UserPermissionsFragment :
     }
 
     override fun showPermission(permission: ResourcePermission) {
-        with(binding.permissionLabel) {
+        with(requiredBinding.permissionLabel) {
             visible()
             text = permission.getPermissionTextValue(context)
             setCompoundDrawablesWithIntrinsicBounds(
                 permission.getPermissionIcon(context),
                 null,
                 null,
-                null
+                null,
             )
         }
     }
 
     override fun showPermissionChoices(currentPermission: ResourcePermission) {
-        with(binding.permissionSelect) {
+        with(requiredBinding.permissionSelect) {
             visible()
             selectPermission(currentPermission, silently = true)
         }
     }
 
     override fun showUserData(user: UserModel) {
-        with(binding) {
+        with(requiredBinding) {
             if (user.disabled) {
                 nameLabel.text = requireContext().getString(LocalizationR.string.name_suspended, user.fullName)
                 setOf(nameLabel, emailLabel).forEach { it.alpha = UiConstants.LOWERED_ALPHA }
@@ -85,9 +91,11 @@ class UserPermissionsFragment :
                 nameLabel.text = user.fullName
             }
             emailLabel.text = user.userName
-            fingerprintLabel.text = fingerprintFormatter.formatWithRawFallback(
-                user.gpgKey.fingerprint, appendMiddleSpacing = false
-            )
+            fingerprintLabel.text =
+                fingerprintFormatter.formatWithRawFallback(
+                    user.gpgKey.fingerprint,
+                    appendMiddleSpacing = false,
+                )
             avatarImage.load(user.profile.avatarUrl) {
                 error(CoreUiR.drawable.ic_user_avatar)
                 transformations(CircleCropTransformation())
@@ -97,28 +105,27 @@ class UserPermissionsFragment :
     }
 
     override fun showSaveLayout() {
-        binding.saveLayout.visible()
+        requiredBinding.saveLayout.visible()
     }
 
     override fun setUpdatedPermissionResult(userPermission: PermissionModelUi.UserPermissionModel) {
         setFragmentResult(
             REQUEST_UPDATE_USER_PERMISSIONS,
-            bundleOf(EXTRA_UPDATED_USER_PERMISSION to userPermission)
+            bundleOf(EXTRA_UPDATED_USER_PERMISSION to userPermission),
         )
     }
 
     override fun setDeletePermissionResult(userPermission: PermissionModelUi.UserPermissionModel) {
         setFragmentResult(
             REQUEST_UPDATE_USER_PERMISSIONS,
-            bundleOf(EXTRA_DELETED_USER_PERMISSION to userPermission)
+            bundleOf(EXTRA_DELETED_USER_PERMISSION to userPermission),
         )
     }
 
     override fun showPermissionDeleteConfirmation() {
         permissionDeletionConfirmationAlertDialog(requireContext()) {
             presenter.permissionDeleteConfirmClick()
-        }
-            .show()
+        }.show()
     }
 
     override fun navigateBack() {

@@ -31,14 +31,14 @@ import com.passbolt.mobile.android.ui.PermissionModelUi
 class GetLocalFolderPermissionsUseCase(
     private val databaseProvider: DatabaseProvider,
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
-    private val permissionsModelMapper: PermissionsModelMapper
+    private val permissionsModelMapper: PermissionsModelMapper,
 ) : AsyncUseCase<GetLocalFolderPermissionsUseCase.Input, GetLocalFolderPermissionsUseCase.Output> {
-
     override suspend fun execute(input: Input): Output {
         val currentAccount = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
-        val foldersDao = databaseProvider
-            .get(currentAccount)
-            .foldersDao()
+        val foldersDao =
+            databaseProvider
+                .get(currentAccount)
+                .foldersDao()
 
         val groupsPermissions = foldersDao.getFolderGroupsPermissions(input.folderId)
         val usersPermissions = foldersDao.getFolderUsersPermissions(input.folderId)
@@ -46,16 +46,16 @@ class GetLocalFolderPermissionsUseCase(
         return Output(
             permissionsModelMapper.map(
                 groupsPermissions,
-                usersPermissions
-            )
+                usersPermissions,
+            ),
         )
     }
 
     data class Input(
-        val folderId: String
+        val folderId: String,
     )
 
     data class Output(
-        val permissions: List<PermissionModelUi>
+        val permissions: List<PermissionModelUi>,
     )
 }

@@ -42,10 +42,9 @@ class FolderDetailsPresenter(
     private val getLocalFolderLocation: GetLocalFolderLocationUseCase,
     private val getLocalFolderPermissionsUseCase: GetLocalFolderPermissionsUseCase,
     private val getRbacRulesUseCase: GetRbacRulesUseCase,
-    coroutineLaunchContext: CoroutineLaunchContext
+    coroutineLaunchContext: CoroutineLaunchContext,
 ) : DataRefreshViewReactivePresenter<FolderDetailsContract.View>(coroutineLaunchContext),
     FolderDetailsContract.Presenter {
-
     override var view: FolderDetailsContract.View? = null
     private val job = SupervisorJob()
     private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
@@ -53,14 +52,19 @@ class FolderDetailsPresenter(
     private var permissionItemWidth: Float = -1f
     private lateinit var folderId: String
 
-    private val missingItemHandler = CoroutineExceptionHandler { _, throwable ->
-        if (throwable is NullPointerException) {
-            view?.showContentNotAvailable()
-            view?.navigateToHome()
+    private val missingItemHandler =
+        CoroutineExceptionHandler { _, throwable ->
+            if (throwable is NullPointerException) {
+                view?.showContentNotAvailable()
+                view?.navigateToHome()
+            }
         }
-    }
 
-    override fun argsRetrieved(folderId: String, permissionsListWidth: Int, permissionItemWidth: Float) {
+    override fun argsRetrieved(
+        folderId: String,
+        permissionsListWidth: Int,
+        permissionItemWidth: Float,
+    ) {
         this.permissionsListWidth = permissionsListWidth
         this.permissionItemWidth = permissionItemWidth
         this.folderId = folderId
@@ -76,8 +80,10 @@ class FolderDetailsPresenter(
     }
 
     private fun showFolderDetails() {
-        scope.launch(missingItemHandler) { // get and show details
-            getLocalFolderDetailsUseCase.execute(GetLocalFolderDetailsUseCase.Input(folderId))
+        scope.launch(missingItemHandler) {
+            // get and show details
+            getLocalFolderDetailsUseCase
+                .execute(GetLocalFolderDetailsUseCase.Input(folderId))
                 .folder
                 .let {
                     view?.showFolderName(it.name)
@@ -88,28 +94,33 @@ class FolderDetailsPresenter(
                     }
                 }
         }
-        scope.launch(missingItemHandler) { // get and show location
-            getLocalFolderLocation.execute(GetLocalFolderLocationUseCase.Input(folderId))
+        scope.launch(missingItemHandler) {
+            // get and show location
+            getLocalFolderLocation
+                .execute(GetLocalFolderLocationUseCase.Input(folderId))
                 .parentFolders
                 .let { view?.showFolderLocation(it.map { folder -> folder.name }) }
         }
-        scope.launch(missingItemHandler) { // get and display permissions
+        scope.launch(missingItemHandler) {
+            // get and display permissions
             if (getRbacRulesUseCase.execute(Unit).rbacModel.shareViewRule == ALLOW) {
-                val permissions = getLocalFolderPermissionsUseCase.execute(
-                    GetLocalFolderPermissionsUseCase.Input(folderId)
-                ).permissions
+                val permissions =
+                    getLocalFolderPermissionsUseCase
+                        .execute(
+                            GetLocalFolderPermissionsUseCase.Input(folderId),
+                        ).permissions
 
-                val permissionsDisplayDataset = PermissionsDatasetCreator(
-                    permissionsListWidth,
-                    permissionItemWidth
-                )
-                    .prepareDataset(permissions)
+                val permissionsDisplayDataset =
+                    PermissionsDatasetCreator(
+                        permissionsListWidth,
+                        permissionItemWidth,
+                    ).prepareDataset(permissions)
 
                 view?.showPermissions(
                     permissionsDisplayDataset.groupPermissions,
                     permissionsDisplayDataset.userPermissions,
                     permissionsDisplayDataset.counterValue,
-                    permissionsDisplayDataset.overlap
+                    permissionsDisplayDataset.overlap,
                 )
             }
         }

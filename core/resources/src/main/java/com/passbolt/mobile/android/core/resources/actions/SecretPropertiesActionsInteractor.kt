@@ -49,9 +49,8 @@ class SecretPropertiesActionsInteractor(
     private val resource: ResourceModel,
     private val secretParser: SecretParser,
     private val secretInteractor: SecretInteractor,
-    private val idToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider
+    private val idToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider,
 ) {
-
     suspend fun provideDecryptedSecret(): Flow<SecretPropertyActionResult<SecretJsonModel>> =
         fetchAndDecrypt()
             .mapSuccess {
@@ -60,7 +59,7 @@ class SecretPropertiesActionsInteractor(
                         SecretPropertyActionResult.Success(
                             JSON_SECRET_LABEL,
                             isSecret = true,
-                            secret.secret
+                            secret.secret,
                         )
 
                     is DecryptedSecretOrError.Error ->
@@ -76,7 +75,7 @@ class SecretPropertiesActionsInteractor(
                         SecretPropertyActionResult.Success(
                             NOTE_LABEL,
                             isSecret = true,
-                            description.secret.description.orEmpty()
+                            description.secret.description.orEmpty(),
                         )
 
                     is DecryptedSecretOrError.Error ->
@@ -87,14 +86,15 @@ class SecretPropertiesActionsInteractor(
     suspend fun providePassword(): Flow<SecretPropertyActionResult<String?>> =
         fetchAndDecrypt()
             .mapSuccess {
-                val slug = idToSlugMappingProvider
-                    .provideMappingForSelectedAccount()[UUID.fromString(resource.resourceTypeId)]
+                val slug =
+                    idToSlugMappingProvider
+                        .provideMappingForSelectedAccount()[UUID.fromString(resource.resourceTypeId)]
                 when (val password = secretParser.parseSecret(resource.resourceTypeId, it.secret)) {
                     is DecryptedSecretOrError.DecryptedSecret ->
                         SecretPropertyActionResult.Success(
                             SECRET_LABEL,
                             isSecret = true,
-                            password.secret.getPassword(ContentType.fromSlug(slug!!))
+                            password.secret.getPassword(ContentType.fromSlug(slug!!)),
                         )
                     is DecryptedSecretOrError.Error ->
                         SecretPropertyActionResult.DecryptionFailure()
@@ -109,32 +109,34 @@ class SecretPropertiesActionsInteractor(
                         SecretPropertyActionResult.Success(
                             OTP_LABEL,
                             isSecret = true,
-                            requireNotNull(totp.secret.totp)
+                            requireNotNull(totp.secret.totp),
                         )
                     is DecryptedSecretOrError.Error ->
                         SecretPropertyActionResult.DecryptionFailure()
                 }
             }
 
-    private suspend fun fetchAndDecrypt(): Flow<SecretFetchAndDecryptResult> = flowOf(
-        when (val output =
-            runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
-                secretInteractor.fetchAndDecrypt(resource.resourceId)
-            }
-        ) {
-            is SecretInteractor.Output.DecryptFailure ->
-                SecretFetchAndDecryptResult.DecryptFailure
-            is SecretInteractor.Output.FetchFailure ->
-                SecretFetchAndDecryptResult.FetchFailure
-            is SecretInteractor.Output.Success ->
-                SecretFetchAndDecryptResult.Success(output.decryptedSecret)
-            is SecretInteractor.Output.Unauthorized ->
-                SecretFetchAndDecryptResult.Unauthorized
-        }
-    )
+    private suspend fun fetchAndDecrypt(): Flow<SecretFetchAndDecryptResult> =
+        flowOf(
+            when (
+                val output =
+                    runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+                        secretInteractor.fetchAndDecrypt(resource.resourceId)
+                    }
+            ) {
+                is SecretInteractor.Output.DecryptFailure ->
+                    SecretFetchAndDecryptResult.DecryptFailure
+                is SecretInteractor.Output.FetchFailure ->
+                    SecretFetchAndDecryptResult.FetchFailure
+                is SecretInteractor.Output.Success ->
+                    SecretFetchAndDecryptResult.Success(output.decryptedSecret)
+                is SecretInteractor.Output.Unauthorized ->
+                    SecretFetchAndDecryptResult.Unauthorized
+            },
+        )
 
     private inline fun <T> Flow<SecretFetchAndDecryptResult>.mapSuccess(
-        crossinline transform: suspend (value: SecretFetchAndDecryptResult.Success) -> SecretPropertyActionResult<T>
+        crossinline transform: suspend (value: SecretFetchAndDecryptResult.Success) -> SecretPropertyActionResult<T>,
     ): Flow<SecretPropertyActionResult<T>> =
         transform {
             emit(
@@ -148,19 +150,20 @@ class SecretPropertiesActionsInteractor(
                     is SecretFetchAndDecryptResult.Success -> {
                         transform(it)
                     }
-                }
+                },
             )
         }
 
     private sealed class SecretFetchAndDecryptResult {
-
         data object FetchFailure : SecretFetchAndDecryptResult()
 
         data object DecryptFailure : SecretFetchAndDecryptResult()
 
         data object Unauthorized : SecretFetchAndDecryptResult()
 
-        class Success(val secret: String) : SecretFetchAndDecryptResult()
+        class Success(
+            val secret: String,
+        ) : SecretFetchAndDecryptResult()
     }
 
     companion object {
@@ -182,7 +185,7 @@ suspend fun <T> performSecretPropertyAction(
     action: suspend () -> Flow<SecretPropertyActionResult<T>>,
     doOnFetchFailure: () -> Unit,
     doOnDecryptionFailure: () -> Unit,
-    doOnSuccess: (SecretPropertyActionResult.Success<T>) -> Unit
+    doOnSuccess: (SecretPropertyActionResult.Success<T>) -> Unit,
 ) {
     action().single().let {
         when (it) {

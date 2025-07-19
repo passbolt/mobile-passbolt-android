@@ -30,5 +30,5 @@ data class ChallengeDto(
     @SerializedName("verify_token")
     val verifyToken: String,
     @SerializedName("verify_token_expiry")
-    val verifyTokenExpiry: Long
+    val verifyTokenExpiry: Long,
 )

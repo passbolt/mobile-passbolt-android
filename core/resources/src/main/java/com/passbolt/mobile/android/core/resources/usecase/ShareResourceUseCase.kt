@@ -34,46 +34,51 @@ import com.passbolt.mobile.android.ui.EncryptedSecretOrError
  * @since v1.0
  */
 class ShareResourceUseCase(
-    private val shareRepository: ShareRepository
+    private val shareRepository: ShareRepository,
 ) : AsyncUseCase<ShareResourceUseCase.Input, ShareResourceUseCase.Output> {
-
     override suspend fun execute(input: Input) =
-        when (val response = shareRepository.shareResource(
-            input.resourceId,
-            ResourceShareRequest(
-                input.sharePermissions,
-                input.encryptedSecrets.map { EncryptedSharedSecret(input.resourceId, it.userId, it.data) })
-        )) {
+        when (
+            val response =
+                shareRepository.shareResource(
+                    input.resourceId,
+                    ResourceShareRequest(
+                        input.sharePermissions,
+                        input.encryptedSecrets.map { EncryptedSharedSecret(input.resourceId, it.userId, it.data) },
+                    ),
+                )
+        ) {
             is NetworkResult.Failure -> Output.Failure(response)
             is NetworkResult.Success -> Output.Success
         }
 
     sealed class Output : AuthenticatedUseCaseOutput {
-
         override val authenticationState: AuthenticationState
-            get() = when {
-                this is Failure<*> && this.response.isUnauthorized -> {
-                    AuthenticationState.Unauthenticated(AuthenticationState.Unauthenticated.Reason.Session)
+            get() =
+                when {
+                    this is Failure<*> && this.response.isUnauthorized -> {
+                        AuthenticationState.Unauthenticated(AuthenticationState.Unauthenticated.Reason.Session)
+                    }
+                    this is Failure<*> && this.response.isMfaRequired -> {
+                        val providers = MfaTypeProvider.get(this.response)
+                        AuthenticationState.Unauthenticated(
+                            AuthenticationState.Unauthenticated.Reason.Mfa(providers),
+                        )
+                    }
+                    else -> {
+                        AuthenticationState.Authenticated
+                    }
                 }
-                this is Failure<*> && this.response.isMfaRequired -> {
-                    val providers = MfaTypeProvider.get(this.response)
-                    AuthenticationState.Unauthenticated(
-                        AuthenticationState.Unauthenticated.Reason.Mfa(providers)
-                    )
-                }
-                else -> {
-                    AuthenticationState.Authenticated
-                }
-            }
 
         data object Success : Output()
 
-        data class Failure<T : Any>(val response: NetworkResult.Failure<T>) : Output()
+        data class Failure<T : Any>(
+            val response: NetworkResult.Failure<T>,
+        ) : Output()
     }
 
     data class Input(
         val resourceId: String,
         val sharePermissions: List<SharePermission>,
-        val encryptedSecrets: List<EncryptedSecretOrError.EncryptedSecret>
+        val encryptedSecrets: List<EncryptedSecretOrError.EncryptedSecret>,
     )
 }

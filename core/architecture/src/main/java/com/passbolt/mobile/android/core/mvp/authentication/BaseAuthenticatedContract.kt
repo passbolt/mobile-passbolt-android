@@ -26,22 +26,28 @@ import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.U
  * @since v1.0
  */
 interface BaseAuthenticatedContract {
-
     interface View : BaseContract.View {
         fun showRefreshPassphraseAuth()
+
         fun showSignInAuth()
+
         fun showMfaAuth(
             mfaReason: MfaProvider?,
-            hasMultipleProviders: Boolean
+            hasMultipleProviders: Boolean,
         )
+
         fun showUnknownProvider()
+
         fun showTotpDialog(hasOtherProviders: Boolean)
+
         fun showYubikeyDialog(hasOtherProviders: Boolean)
+
         fun showDuoDialog(hasOtherProviders: Boolean)
     }
 
     interface Presenter<T : View> : BaseContract.Presenter<T> {
         fun authenticationRefreshed()
+
         fun otherProviderClick(currentProvider: MfaProvider)
     }
 }

@@ -1,8 +1,3 @@
-package com.passbolt.mobile.android.feature.home.filtersmenu
-
-import com.passbolt.mobile.android.core.mvp.BaseContract
-import com.passbolt.mobile.android.ui.FiltersMenuModel
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -26,11 +21,15 @@ import com.passbolt.mobile.android.ui.FiltersMenuModel
  * @since v1.0
  */
 
+package com.passbolt.mobile.android.feature.home.filtersmenu
+
+import com.passbolt.mobile.android.core.mvp.BaseContract
+import com.passbolt.mobile.android.ui.FiltersMenuModel
+
 /**
  * MVP contract for the home screen filters menu.
  */
 interface FiltersMenuContract {
-
     /**
      * Home menu filters view
      */
@@ -118,13 +117,21 @@ interface FiltersMenuContract {
         fun creatingView()
 
         fun allItemsClick()
+
         fun favouritesClick()
+
         fun recentlyModifiedClick()
+
         fun sharedWithMeClick()
+
         fun ownedByMeClick()
+
         fun foldersClick()
+
         fun tagsClick()
+
         fun groupsClick()
+
         fun expiryClick()
     }
 }

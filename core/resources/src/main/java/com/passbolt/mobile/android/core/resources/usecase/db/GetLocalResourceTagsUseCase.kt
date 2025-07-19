@@ -31,9 +31,8 @@ import com.passbolt.mobile.android.ui.TagModel
 class GetLocalResourceTagsUseCase(
     private val databaseProvider: DatabaseProvider,
     private val tagsModelMapper: TagsModelMapper,
-    private val getSelectedAccountUseCase: GetSelectedAccountUseCase
+    private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
 ) : AsyncUseCase<GetLocalResourceTagsUseCase.Input, GetLocalResourceTagsUseCase.Output> {
-
     override suspend fun execute(input: Input): Output {
         val userId = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
         return Output(
@@ -41,15 +40,15 @@ class GetLocalResourceTagsUseCase(
                 .get(userId)
                 .tagsDao()
                 .getResourceTags(input.resourceId)
-                .map(tagsModelMapper::map)
+                .map(tagsModelMapper::map),
         )
     }
 
     data class Input(
-        val resourceId: String
+        val resourceId: String,
     )
 
     data class Output(
-        val tags: List<TagModel>
+        val tags: List<TagModel>,
     )
 }

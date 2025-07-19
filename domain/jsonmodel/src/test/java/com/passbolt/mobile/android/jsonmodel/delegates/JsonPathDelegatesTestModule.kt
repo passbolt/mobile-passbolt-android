@@ -37,14 +37,16 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import java.util.EnumSet
 
-val jsonPathDelegatesTestModule = module {
-    single(named(JSON_MODEL_GSON)) { Gson() }
-    singleOf(::JsonPathJsonPathOps) bind JsonPathsOps::class
-    single {
-        Configuration.builder()
-            .jsonProvider(GsonJsonProvider())
-            .mappingProvider(GsonMappingProvider())
-            .options(EnumSet.noneOf(Option::class.java))
-            .build()
+val jsonPathDelegatesTestModule =
+    module {
+        single(named(JSON_MODEL_GSON)) { Gson() }
+        singleOf(::JsonPathJsonPathOps) bind JsonPathsOps::class
+        single {
+            Configuration
+                .builder()
+                .jsonProvider(GsonJsonProvider())
+                .mappingProvider(GsonMappingProvider())
+                .options(EnumSet.noneOf(Option::class.java))
+                .build()
+        }
     }
-}

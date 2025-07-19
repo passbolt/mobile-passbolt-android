@@ -23,5 +23,5 @@ package com.passbolt.mobile.android.common.usecase
  * @since v1.0
  */
 data class UserIdInput(
-    val userId: String
+    val userId: String,
 )

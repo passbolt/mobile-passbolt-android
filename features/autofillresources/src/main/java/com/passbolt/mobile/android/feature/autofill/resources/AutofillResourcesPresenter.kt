@@ -41,10 +41,9 @@ class AutofillResourcesPresenter(
     private val getAccountsUseCase: GetAccountsUseCase,
     private val getLocalResourceUseCase: GetLocalResourceUseCase,
     private val fullDataRefreshExecutor: FullDataRefreshExecutor,
-    coroutineLaunchContext: CoroutineLaunchContext
+    coroutineLaunchContext: CoroutineLaunchContext,
 ) : BaseAuthenticatedPresenter<AutofillResourcesContract.View>(coroutineLaunchContext),
     AutofillResourcesContract.Presenter {
-
     override var view: AutofillResourcesContract.View? = null
 
     private var uri: String? = null
@@ -57,7 +56,10 @@ class AutofillResourcesPresenter(
         super<BaseAuthenticatedPresenter>.detach()
     }
 
-    override fun argsReceived(uri: String?, isRecreated: Boolean) {
+    override fun argsReceived(
+        uri: String?,
+        isRecreated: Boolean,
+    ) {
         this.uri = uri
         if (!isRecreated) {
             if (getAccountsUseCase.execute(Unit).users.isNotEmpty()) {
@@ -75,9 +77,10 @@ class AutofillResourcesPresenter(
 
     override fun itemClick(resourceModel: ResourceModel) {
         view?.showProgress()
-        val secretPropertiesActionsInteractor: SecretPropertiesActionsInteractor = get {
-            parametersOf(resourceModel, needSessionRefreshFlow, sessionRefreshedFlow)
-        }
+        val secretPropertiesActionsInteractor: SecretPropertiesActionsInteractor =
+            get {
+                parametersOf(resourceModel, needSessionRefreshFlow, sessionRefreshedFlow)
+            }
         scope.launch {
             performSecretPropertyAction(
                 action = { secretPropertiesActionsInteractor.providePassword() },
@@ -87,9 +90,9 @@ class AutofillResourcesPresenter(
                     view?.autofillReturn(
                         resourceModel.metadataJsonModel.username.orEmpty(),
                         it.result.orEmpty(),
-                        uri
+                        uri,
                     )
-                }
+                },
             )
             view?.hideProgress()
         }
@@ -98,7 +101,7 @@ class AutofillResourcesPresenter(
     override fun newResourceCreated(resourceId: String) {
         scope.launch {
             itemClick(
-                getLocalResourceUseCase.execute(GetLocalResourceUseCase.Input(resourceId)).resource
+                getLocalResourceUseCase.execute(GetLocalResourceUseCase.Input(resourceId)).resource,
             )
         }
     }

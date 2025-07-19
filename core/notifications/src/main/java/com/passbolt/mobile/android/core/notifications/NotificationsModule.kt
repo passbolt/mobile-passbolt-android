@@ -1,7 +1,6 @@
 package com.passbolt.mobile.android.core.notifications
 
 import android.app.NotificationManager
-import android.view.autofill.AutofillManager
 import com.passbolt.mobile.android.core.notifications.accessibilityautofill.AccessibilityServiceNotificationFactory
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.singleOf
@@ -30,9 +29,9 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-val notificationsModule = module {
-    factory { androidContext().getSystemService(AutofillManager::class.java) }
-    factory { androidContext().getSystemService(NotificationManager::class.java) }
-    singleOf(::AccessibilityServiceNotificationFactory)
-    singleOf(::NotificationChannelManager)
-}
+val notificationsModule =
+    module {
+        factory { androidContext().getSystemService(NotificationManager::class.java) }
+        singleOf(::AccessibilityServiceNotificationFactory)
+        singleOf(::NotificationChannelManager)
+    }

@@ -45,33 +45,39 @@ import org.koin.android.ext.android.inject
  * @since v1.0
  */
 
-abstract class BindingScopedAuthenticatedBottomSheetFragment
-<T : ViewBinding, V : BaseAuthenticatedContract.View>(viewInflater: (LayoutInflater, ViewGroup?, Boolean) -> T) :
-    BindingScopedBottomSheetFragment<T>(viewInflater), BaseAuthenticatedContract.View, EnterTotpListener,
-    ScanYubikeyListener, AuthWithDuoListener {
-
+abstract class BindingScopedAuthenticatedBottomSheetFragment<T : ViewBinding, V : BaseAuthenticatedContract.View>(
+    viewInflater: (LayoutInflater, ViewGroup?, Boolean) -> T,
+) : BindingScopedBottomSheetFragment<T>(viewInflater),
+    BaseAuthenticatedContract.View,
+    EnterTotpListener,
+    ScanYubikeyListener,
+    AuthWithDuoListener {
     abstract val presenter: BaseAuthenticatedContract.Presenter<V>
     private val getSessionUseCase: GetSessionUseCase by inject()
 
-    private val authenticationResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-        if (it.resultCode == Activity.RESULT_OK) {
-            presenter.authenticationRefreshed()
+    private val authenticationResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            if (it.resultCode == Activity.RESULT_OK) {
+                presenter.authenticationRefreshed()
+            }
         }
-    }
 
     override fun showRefreshPassphraseAuth() {
         authenticationResult.launch(
-            ActivityIntents.authentication(requireContext(), ActivityIntents.AuthConfig.RefreshPassphrase)
+            ActivityIntents.authentication(requireContext(), ActivityIntents.AuthConfig.RefreshPassphrase),
         )
     }
 
     override fun showSignInAuth() {
         authenticationResult.launch(
-            ActivityIntents.authentication(requireContext(), ActivityIntents.AuthConfig.SignIn)
+            ActivityIntents.authentication(requireContext(), ActivityIntents.AuthConfig.SignIn),
         )
     }
 
-    override fun showMfaAuth(mfaReason: Reason.Mfa.MfaProvider?, hasMultipleProviders: Boolean) {
+    override fun showMfaAuth(
+        mfaReason: Reason.Mfa.MfaProvider?,
+        hasMultipleProviders: Boolean,
+    ) {
         when (mfaReason) {
             YUBIKEY -> showYubikeyDialog(hasMultipleProviders)
             TOTP -> showTotpDialog(hasMultipleProviders)
@@ -81,35 +87,42 @@ abstract class BindingScopedAuthenticatedBottomSheetFragment
     }
 
     override fun showTotpDialog(hasOtherProviders: Boolean) {
-        EnterTotpDialog.newInstance(
-            token = getSessionUseCase.execute(Unit).accessToken,
-            hasOtherProvider = hasOtherProviders
-        ).show(
-            childFragmentManager, EnterTotpDialog::class.java.name
-        )
+        EnterTotpDialog
+            .newInstance(
+                token = getSessionUseCase.execute(Unit).accessToken,
+                hasOtherProvider = hasOtherProviders,
+            ).show(
+                childFragmentManager,
+                EnterTotpDialog::class.java.name,
+            )
     }
 
     override fun showYubikeyDialog(hasOtherProviders: Boolean) {
-        ScanYubikeyDialog.newInstance(
-            token = getSessionUseCase.execute(Unit).accessToken,
-            hasOtherProvider = hasOtherProviders
-        ).show(
-            childFragmentManager, ScanYubikeyDialog::class.java.name
-        )
+        ScanYubikeyDialog
+            .newInstance(
+                token = getSessionUseCase.execute(Unit).accessToken,
+                hasOtherProvider = hasOtherProviders,
+            ).show(
+                childFragmentManager,
+                ScanYubikeyDialog::class.java.name,
+            )
     }
 
     override fun showDuoDialog(hasOtherProviders: Boolean) {
-        AuthWithDuoDialog.newInstance(
-            token = getSessionUseCase.execute(Unit).accessToken,
-            hasOtherProvider = hasOtherProviders
-        ).show(
-            childFragmentManager, AuthWithDuoDialog::class.java.name
-        )
+        AuthWithDuoDialog
+            .newInstance(
+                token = getSessionUseCase.execute(Unit).accessToken,
+                hasOtherProvider = hasOtherProviders,
+            ).show(
+                childFragmentManager,
+                AuthWithDuoDialog::class.java.name,
+            )
     }
 
     override fun showUnknownProvider() {
         UnknownProviderDialog().show(
-            childFragmentManager, UnknownProviderDialog::class.java.name
+            childFragmentManager,
+            UnknownProviderDialog::class.java.name,
         )
     }
 

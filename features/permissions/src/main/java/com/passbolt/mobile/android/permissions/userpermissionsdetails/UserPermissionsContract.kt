@@ -29,23 +29,36 @@ import com.passbolt.mobile.android.ui.UserModel
  * @since v1.0
  */
 interface UserPermissionsContract {
-
     interface View : BaseAuthenticatedContract.View {
         fun showPermission(permission: ResourcePermission)
+
         fun showUserData(user: UserModel)
+
         fun showPermissionChoices(currentPermission: ResourcePermission)
+
         fun showSaveLayout()
+
         fun setUpdatedPermissionResult(userPermission: PermissionModelUi.UserPermissionModel)
+
         fun navigateBack()
+
         fun showPermissionDeleteConfirmation()
+
         fun setDeletePermissionResult(userPermission: PermissionModelUi.UserPermissionModel)
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
-        fun argsRetrieved(userPermission: PermissionModelUi.UserPermissionModel, mode: PermissionsMode)
+        fun argsRetrieved(
+            userPermission: PermissionModelUi.UserPermissionModel,
+            mode: PermissionsMode,
+        )
+
         fun onPermissionSelected(permission: ResourcePermission)
+
         fun saveClick()
+
         fun deletePermissionClick()
+
         fun permissionDeleteConfirmClick()
     }
 }

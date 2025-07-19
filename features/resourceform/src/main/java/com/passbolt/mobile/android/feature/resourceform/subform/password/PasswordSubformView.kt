@@ -32,29 +32,30 @@ import com.passbolt.mobile.android.feature.resourceform.databinding.ViewPassword
  * @since v1.0
  */
 
-class PasswordSubformView @JvmOverloads constructor(
-    context: Context,
-    attrs: AttributeSet? = null,
-    defStyle: Int = 0
-) : LinearLayout(context, attrs, defStyle) {
+class PasswordSubformView
+    @JvmOverloads
+    constructor(
+        context: Context,
+        attrs: AttributeSet? = null,
+        defStyle: Int = 0,
+    ) : LinearLayout(context, attrs, defStyle) {
+        private val binding = ViewPasswordSubformBinding.inflate(LayoutInflater.from(context), this)
 
-    private val binding = ViewPasswordSubformBinding.inflate(LayoutInflater.from(context), this)
+        val mainUriInput: TextInputView
+            get() = binding.passwordSectionView.findViewById(R.id.mainUriInput)
 
-    val mainUriInput: TextInputView
-        get() = binding.passwordSectionView.findViewById(R.id.mainUriInput)
+        val usernameInput: TextInputView
+            get() = binding.passwordSectionView.findViewById(R.id.usernameInput)
 
-    val usernameInput: TextInputView
-        get() = binding.passwordSectionView.findViewById(R.id.usernameInput)
+        val passwordGenerateInput: PasswordGenerateInputView
+            get() = binding.passwordSectionView.findViewById(R.id.passwordInput)
 
-    val passwordGenerateInput: PasswordGenerateInputView
-        get() = binding.passwordSectionView.findViewById(R.id.passwordInput)
-
-    init {
-        orientation = VERTICAL
-        LayoutInflater.from(context).inflate(
-            R.layout.view_password_subform_fields,
-            binding.passwordSectionView.backgroundContainer,
-            true
-        )
+        init {
+            orientation = VERTICAL
+            LayoutInflater.from(context).inflate(
+                R.layout.view_password_subform_fields,
+                binding.passwordSectionView.backgroundContainer,
+                true,
+            )
+        }
     }
-}

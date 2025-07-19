@@ -5,5 +5,5 @@ data class HeaderSectionConfiguration(
     val isInSubFoldersSectionVisible: Boolean,
     val currentFolderName: String? = null,
     val isSuggestedSectionVisible: Boolean,
-    val isOtherItemsSectionVisible: Boolean
+    val isOtherItemsSectionVisible: Boolean,
 )

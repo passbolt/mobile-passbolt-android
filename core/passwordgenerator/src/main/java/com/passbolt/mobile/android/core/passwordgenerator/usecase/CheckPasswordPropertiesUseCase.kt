@@ -32,11 +32,10 @@ import com.passbolt.mobile.android.pwnedpasswordsapi.range.PwnedPasswordsApi
 class CheckPasswordPropertiesUseCase(
     private val pwnedPasswordRepository: PwnedPasswordRepository,
     private val messageDigestHash: MessageDigestHash,
-    private val entropyCalculator: EntropyCalculator
+    private val entropyCalculator: EntropyCalculator,
 ) : AsyncUseCase<CheckPasswordPropertiesUseCase.Input, CheckPasswordPropertiesUseCase.Output> {
-
-    override suspend fun execute(input: Input): Output {
-        return if (entropyCalculator.getSecretEntropy(input.password) < Output.Weak.WEAK_ENTROPY_THRESHOLD) {
+    override suspend fun execute(input: Input): Output =
+        if (entropyCalculator.getSecretEntropy(input.password) < Output.Weak.WEAK_ENTROPY_THRESHOLD) {
             Output.Weak
         } else {
             if (input.password.length > PwnedPasswordsApi.PARTIAL_HASH_LENGTH) {
@@ -45,7 +44,6 @@ class CheckPasswordPropertiesUseCase(
                 Output.Fine
             }
         }
-    }
 
     private suspend fun checkPwnedPassword(input: Input): Output {
         val passwordHash = messageDigestHash.sha1(input.password)
@@ -67,11 +65,10 @@ class CheckPasswordPropertiesUseCase(
     }
 
     sealed class Output {
-
         data object Fine : Output()
 
         data class Pwned(
-            val dataBreachesCount: Int
+            val dataBreachesCount: Int,
         ) : Output()
 
         data object Weak : Output() {
@@ -79,11 +76,11 @@ class CheckPasswordPropertiesUseCase(
         }
 
         data class Failure<T : Any>(
-            val response: NetworkResult.Failure<T>
+            val response: NetworkResult.Failure<T>,
         ) : Output()
     }
 
     data class Input(
-        val password: String
+        val password: String,
     )
 }

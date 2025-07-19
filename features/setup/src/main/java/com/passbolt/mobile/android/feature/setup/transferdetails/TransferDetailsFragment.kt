@@ -41,25 +41,30 @@ import com.passbolt.mobile.android.core.localization.R as LocalizationR
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class TransferDetailsFragment : BindingScopedFragment<FragmentTransferDetailsBinding>(
-    FragmentTransferDetailsBinding::inflate
-), TransferDetailsContract.View {
-
+class TransferDetailsFragment :
+    BindingScopedFragment<FragmentTransferDetailsBinding>(
+        FragmentTransferDetailsBinding::inflate,
+    ),
+    TransferDetailsContract.View {
     private val presenter: TransferDetailsContract.Presenter by inject()
-    private var requestPermissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { isGranted: Boolean ->
-        if (isGranted) {
-            presenter.scanQrCodesButtonClick()
-        } else {
-            presenter.permissionRejectedClick()
+    private var requestPermissionLauncher =
+        registerForActivityResult(
+            ActivityResultContracts.RequestPermission(),
+        ) { isGranted: Boolean ->
+            if (isGranted) {
+                presenter.scanQrCodesButtonClick()
+            } else {
+                presenter.permissionRejectedClick()
+            }
         }
-    }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         presenter.attach(this)
-        initDefaultToolbar(binding.toolbar)
+        initDefaultToolbar(requiredBinding.toolbar)
         setListeners()
         addSteps()
     }
@@ -72,20 +77,20 @@ class TransferDetailsFragment : BindingScopedFragment<FragmentTransferDetailsBin
     override fun showCameraPermissionRequiredDialog() {
         provideCameraPermissionInSettingsDialog(requireContext()) {
             presenter.settingsButtonClick()
-        }
-            .show()
+        }.show()
     }
 
     override fun navigateToAppSettings() {
-        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-            .apply {
-                data = Uri.fromParts("package", requireContext().packageName, null)
-            }
+        val intent =
+            Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                .apply {
+                    data = Uri.fromParts("package", requireContext().packageName, null)
+                }
         startActivity(intent)
     }
 
     private fun setListeners() {
-        binding.scanQrCodesButton.setDebouncingOnClick {
+        requiredBinding.scanQrCodesButton.setDebouncingOnClick {
             presenter.scanQrCodesButtonClick()
         }
     }
@@ -99,15 +104,17 @@ class TransferDetailsFragment : BindingScopedFragment<FragmentTransferDetailsBin
     }
 
     private fun addSteps() {
-        binding.steps.addList(
-            requireContext().resources.getStringArray(LocalizationR.array.transfer_details_steps_array)
-                .map { CircleStepItemModel(it.fromHtml()) }
+        requiredBinding.steps.addList(
+            requireContext()
+                .resources
+                .getStringArray(LocalizationR.array.transfer_details_steps_array)
+                .map { CircleStepItemModel(it.fromHtml()) },
         )
     }
 
     override fun navigateToScanQr() {
         findNavController().navigate(
-            TransferDetailsFragmentDirections.actionTransferDetailsFragmentToScanQrFragment()
+            TransferDetailsFragmentDirections.actionTransferDetailsFragmentToScanQrFragment(),
         )
     }
 }

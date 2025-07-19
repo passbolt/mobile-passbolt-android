@@ -31,9 +31,8 @@ import kotlinx.coroutines.launch
  */
 class StartUpPresenter(
     private val getAccountsUseCase: GetAccountsUseCase,
-    coroutineLaunchContext: CoroutineLaunchContext
+    coroutineLaunchContext: CoroutineLaunchContext,
 ) : StartUpContract.Presenter {
-
     override var view: StartUpContract.View? = null
     private val job = SupervisorJob()
     private val scope = CoroutineScope(job + coroutineLaunchContext.ui)

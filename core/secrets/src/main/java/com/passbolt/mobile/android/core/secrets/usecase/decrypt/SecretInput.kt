@@ -27,5 +27,5 @@ import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.SecretJso
 
 data class SecretInput(
     val secretJsonModel: SecretJsonModel,
-    val passwordChanged: Boolean
+    val passwordChanged: Boolean,
 )

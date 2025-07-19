@@ -1,21 +1,3 @@
-package com.passbolt.mobile.android.feature.authentication
-
-import android.app.Activity
-import android.os.Bundle
-import androidx.core.content.IntentCompat
-import androidx.navigation.NavOptions
-import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
-import com.passbolt.mobile.android.core.extension.findNavHostFragment
-import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedActivity
-import com.passbolt.mobile.android.core.navigation.ActivityIntents
-import com.passbolt.mobile.android.core.navigation.AppContext
-import com.passbolt.mobile.android.core.security.flagsecure.FlagSecureSetter
-import com.passbolt.mobile.android.feature.authentication.accountslist.AccountsListFragment
-import com.passbolt.mobile.android.feature.authentication.auth.AuthFragment
-import com.passbolt.mobile.android.feature.authentication.databinding.ActivityAuthenticationMainBinding
-import org.koin.android.ext.android.inject
-import com.passbolt.mobile.android.core.ui.R as CoreUiR
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -38,14 +20,33 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+
+package com.passbolt.mobile.android.feature.authentication
+
+import android.app.Activity
+import android.os.Bundle
+import androidx.core.content.IntentCompat
+import androidx.navigation.NavOptions
+import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
+import com.passbolt.mobile.android.core.extension.findNavHostFragment
+import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedActivity
+import com.passbolt.mobile.android.core.navigation.ActivityIntents
+import com.passbolt.mobile.android.core.navigation.AppContext
+import com.passbolt.mobile.android.core.security.flagsecure.FlagSecureSetter
+import com.passbolt.mobile.android.feature.authentication.accountslist.AccountsListFragment
+import com.passbolt.mobile.android.feature.authentication.auth.AuthFragment
+import com.passbolt.mobile.android.feature.authentication.databinding.ActivityAuthenticationMainBinding
+import org.koin.android.ext.android.inject
+import com.passbolt.mobile.android.core.ui.R as CoreUiR
+
+// NOTE: When changing name or package read core/navigation/README.md
 class AuthenticationMainActivity :
     BindingScopedActivity<ActivityAuthenticationMainBinding>(ActivityAuthenticationMainBinding::inflate),
     AuthenticationMainContract.View {
-
     private val presenter: AuthenticationMainContract.Presenter by inject()
 
     private val navController by lifecycleAwareLazy {
-        findNavHostFragment(binding.fragmentContainer.id).navController
+        findNavHostFragment(requiredBinding.fragmentContainer.id).navController
     }
 
     private val navGraph by lifecycleAwareLazy {
@@ -57,8 +58,8 @@ class AuthenticationMainActivity :
             IntentCompat.getSerializableExtra(
                 intent,
                 ActivityIntents.EXTRA_AUTH_CONFIG,
-                ActivityIntents.AuthConfig::class.java
-            )
+                ActivityIntents.AuthConfig::class.java,
+            ),
         )
     }
 
@@ -67,8 +68,8 @@ class AuthenticationMainActivity :
             IntentCompat.getSerializableExtra(
                 intent,
                 ActivityIntents.EXTRA_CONTEXT,
-                AppContext::class.java
-            )
+                AppContext::class.java,
+            ),
         )
     }
 
@@ -112,12 +113,13 @@ class AuthenticationMainActivity :
         navController.navigate(
             R.id.authFragment,
             AuthFragment.newBundle(authConfig, context, currentAccount),
-            NavOptions.Builder()
+            NavOptions
+                .Builder()
                 .setEnterAnim(CoreUiR.anim.slide_in_right)
                 .setExitAnim(CoreUiR.anim.slide_out_left)
                 .setPopEnterAnim(CoreUiR.anim.slide_in_left)
                 .setPopExitAnim(CoreUiR.anim.slide_out_right)
-                .build()
+                .build(),
         )
     }
 }

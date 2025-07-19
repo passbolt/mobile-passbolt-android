@@ -15,36 +15,39 @@ import java.net.URI
 import java.net.URISyntaxException
 
 class OtpQrScanResultsMapper {
-
-    fun apply(scanResult: BarcodeScanResult) = when (scanResult) {
-        is BarcodeScanResult.Failure ->
-            OtpParseResult.ScanFailure(scanResult.throwable)
-        is BarcodeScanResult.MultipleBarcodes ->
-            OtpParseResult.UserResolvableError(MULTIPLE_BARCODES)
-        is BarcodeScanResult.NoBarcodeInRange ->
-            OtpParseResult.UserResolvableError(NO_BARCODES_IN_RANGE)
-        is BarcodeScanResult.SingleBarcode ->
-            if (isOtpQr(scanResult.data)) {
-                mapOtpQr(URI(String(scanResult.data!!))) // validated in isOtpQr
-            } else {
-                OtpParseResult.UserResolvableError(NOT_A_OTP_QR)
-            }
-    }
+    fun apply(scanResult: BarcodeScanResult) =
+        when (scanResult) {
+            is BarcodeScanResult.Failure ->
+                OtpParseResult.ScanFailure(scanResult.throwable)
+            is BarcodeScanResult.MultipleBarcodes ->
+                OtpParseResult.UserResolvableError(MULTIPLE_BARCODES)
+            is BarcodeScanResult.NoBarcodeInRange ->
+                OtpParseResult.UserResolvableError(NO_BARCODES_IN_RANGE)
+            is BarcodeScanResult.SingleBarcode ->
+                if (isOtpQr(scanResult.data)) {
+                    mapOtpQr(URI(String(scanResult.data!!))) // validated in isOtpQr
+                } else {
+                    OtpParseResult.UserResolvableError(NOT_A_OTP_QR)
+                }
+        }
 
     // hotp not supported yet
-    private fun mapOtpQr(totpUri: URI): OtpParseResult {
-        return try {
+    private fun mapOtpQr(totpUri: URI): OtpParseResult =
+        try {
             val otpUri = Uri.parse(totpUri.toString())
             val label = otpUri.lastPathSegment
             val secret = otpUri.getQueryParameter(OTP_URI_PARAMETER_SECRET)
             val issuer = otpUri.getQueryParameter(OTP_URI_PARAMETER_ISSUER)
-            val algorithm = otpUri.getQueryParameter(OTP_URI_PARAMETER_ALGORITHM)?.let {
-                OtpParseResult.OtpQr.Algorithm.valueOf(it)
-            } ?: OtpParseResult.OtpQr.Algorithm.DEFAULT
-            val digits = otpUri.getQueryParameter(OTP_URI_PARAMETER_DIGITS)?.toInt()
-                ?: OtpParseResult.OtpQr.TotpQr.DEFAULT_DIGITS
-            val period = otpUri.getQueryParameter(OTP_URI_PARAMETER_PERIOD)?.toLong()
-                ?: OtpParseResult.OtpQr.TotpQr.DEFAULT_PERIOD_SECONDS
+            val algorithm =
+                otpUri.getQueryParameter(OTP_URI_PARAMETER_ALGORITHM)?.let {
+                    OtpParseResult.OtpQr.Algorithm.valueOf(it)
+                } ?: OtpParseResult.OtpQr.Algorithm.DEFAULT
+            val digits =
+                otpUri.getQueryParameter(OTP_URI_PARAMETER_DIGITS)?.toInt()
+                    ?: OtpParseResult.OtpQr.TotpQr.DEFAULT_DIGITS
+            val period =
+                otpUri.getQueryParameter(OTP_URI_PARAMETER_PERIOD)?.toLong()
+                    ?: OtpParseResult.OtpQr.TotpQr.DEFAULT_PERIOD_SECONDS
 
             if (label == null || secret == null) {
                 OtpParseResult.IncompleteOtpParameters.IncompleteTotpParameters(
@@ -53,7 +56,7 @@ class OtpQrScanResultsMapper {
                     issuer = issuer,
                     algorithm = algorithm,
                     digits = digits,
-                    period = period
+                    period = period,
                 )
             } else {
                 OtpParseResult.OtpQr.TotpQr(
@@ -62,7 +65,7 @@ class OtpQrScanResultsMapper {
                     issuer = issuer,
                     algorithm = algorithm,
                     digits = digits,
-                    period = period
+                    period = period,
                 )
             }
         } catch (exception: Exception) {
@@ -70,7 +73,6 @@ class OtpQrScanResultsMapper {
             Timber.e("Error during parsing totp parameters")
             OtpParseResult.Failure(IOException("Error during parsing totp parameters"))
         }
-    }
 
     private fun isOtpQr(qrData: ByteArray?): Boolean {
         if (qrData == null) return false

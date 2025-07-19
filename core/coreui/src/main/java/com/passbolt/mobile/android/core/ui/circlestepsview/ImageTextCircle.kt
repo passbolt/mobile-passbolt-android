@@ -32,27 +32,33 @@ import com.passbolt.mobile.android.core.ui.databinding.ViewTextCircleBinding
  * @since v1.0
  */
 
-class ImageTextCircle @JvmOverloads constructor(
-    context: Context,
-    attrs: AttributeSet? = null,
-    defStyle: Int = 0
-) : FrameLayout(context, attrs, defStyle) {
+class ImageTextCircle
+    @JvmOverloads
+    constructor(
+        context: Context,
+        attrs: AttributeSet? = null,
+        defStyle: Int = 0,
+    ) : FrameLayout(context, attrs, defStyle) {
+        private val binding = ViewTextCircleBinding.inflate(LayoutInflater.from(context), this)
 
-    private val binding = ViewTextCircleBinding.inflate(LayoutInflater.from(context), this)
+        init {
+            background = ContextCompat.getDrawable(context, R.drawable.circle_gray)
+        }
 
-    init {
-        background = ContextCompat.getDrawable(context, R.drawable.circle_gray)
+        override fun onMeasure(
+            widthMeasureSpec: Int,
+            heightMeasureSpec: Int,
+        ) {
+            super.onMeasure(widthMeasureSpec, widthMeasureSpec)
+        }
+
+        fun setText(text: String) {
+            binding.textLabel.text = text
+        }
+
+        fun setImageResource(
+            @DrawableRes drawableRes: Int,
+        ) {
+            binding.iconImage.setImageResource(drawableRes)
+        }
     }
-
-    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        super.onMeasure(widthMeasureSpec, widthMeasureSpec)
-    }
-
-    fun setText(text: String) {
-        binding.textLabel.text = text
-    }
-
-    fun setImageResource(@DrawableRes drawableRes: Int) {
-        binding.iconImage.setImageResource(drawableRes)
-    }
-}

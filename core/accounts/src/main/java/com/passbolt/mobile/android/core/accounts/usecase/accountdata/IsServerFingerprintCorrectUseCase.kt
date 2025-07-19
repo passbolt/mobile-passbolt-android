@@ -28,9 +28,8 @@ import com.passbolt.mobile.android.encryptedstorage.EncryptedSharedPreferencesFa
  * @since v1.0
  */
 class IsServerFingerprintCorrectUseCase(
-    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory
+    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory,
 ) : UseCase<IsServerFingerprintCorrectUseCase.Input, IsServerFingerprintCorrectUseCase.Output> {
-
     override fun execute(input: Input): Output {
         val fileName = ServerFingerprintFileName(input.userId).name
         val sharedPreferences = encryptedSharedPreferencesFactory.get("$fileName.xml")
@@ -42,10 +41,10 @@ class IsServerFingerprintCorrectUseCase(
 
     data class Input(
         val userId: String,
-        val fingerprint: String
+        val fingerprint: String,
     )
 
     data class Output(
-        val isCorrect: Boolean
+        val isCorrect: Boolean,
     )
 }

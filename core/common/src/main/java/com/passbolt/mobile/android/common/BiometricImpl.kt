@@ -28,9 +28,7 @@ import androidx.biometric.BiometricManager.BIOMETRIC_SUCCESS
  */
 
 class BiometricImpl(
-    private val biometricManager: BiometricManager
+    private val biometricManager: BiometricManager,
 ) : Biometric {
-
-    override fun hasBiometricSetUp(): Boolean =
-        biometricManager.canAuthenticate(BIOMETRIC_STRONG) == BIOMETRIC_SUCCESS
+    override fun hasBiometricSetUp(): Boolean = biometricManager.canAuthenticate(BIOMETRIC_STRONG) == BIOMETRIC_SUCCESS
 }

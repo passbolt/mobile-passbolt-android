@@ -46,13 +46,15 @@ fun Module.switchAccountModule() {
             ModelAdapter(switchAccountsUiModelMapper::mapModelToItem)
         }
         scoped(named<SwitchAccountUiModel>()) {
-            FastAdapter.with(get<ModelAdapter<SwitchAccountUiModel, GenericItem>> {
-                parametersOf(get<SwitchAccountUiItemsMapper>())
-            })
+            FastAdapter.with(
+                get<ModelAdapter<SwitchAccountUiModel, GenericItem>> {
+                    parametersOf(get<SwitchAccountUiItemsMapper>())
+                },
+            )
         }
         scoped {
             DrawableListDivider(
-                ContextCompat.getDrawable(androidContext(), com.passbolt.mobile.android.core.ui.R.drawable.grey_divider)
+                ContextCompat.getDrawable(androidContext(), com.passbolt.mobile.android.core.ui.R.drawable.grey_divider),
             )
         }
     }

@@ -40,29 +40,30 @@ import java.security.SecureRandom
 internal val mockPwnedPasswordRepository = mock<PwnedPasswordRepository>()
 
 @ExperimentalCoroutinesApi
-val passwordGeneratorTestModule = module {
-    singleOf(::PasswordGenerator)
-    singleOf(::PassphraseGenerator)
-    singleOf(::SecretGenerator)
-    singleOf(::EntropyCalculator)
-    singleOf<CoroutineLaunchContext>(::TestCoroutineLaunchContext)
-    single { SecureRandom() }
-    single {
-        val testDiceInputStream = javaClass.getClassLoader()?.getResourceAsStream("eff_large_wordlist.txt")!!
-        Dice(
-            diceInputFileInputStream = testDiceInputStream,
-            coroutineLaunchContext = get(),
-            secureRandom = get()
-        ).apply {
-            runBlocking { initialize() }
+val passwordGeneratorTestModule =
+    module {
+        singleOf(::PasswordGenerator)
+        singleOf(::PassphraseGenerator)
+        singleOf(::SecretGenerator)
+        singleOf(::EntropyCalculator)
+        singleOf<CoroutineLaunchContext>(::TestCoroutineLaunchContext)
+        single { SecureRandom() }
+        single {
+            val testDiceInputStream = javaClass.getClassLoader()?.getResourceAsStream("eff_large_wordlist.txt")!!
+            Dice(
+                diceInputFileInputStream = testDiceInputStream,
+                coroutineLaunchContext = get(),
+                secureRandom = get(),
+            ).apply {
+                runBlocking { initialize() }
+            }
+        }
+        singleOf(::MessageDigestHash)
+        single {
+            CheckPasswordPropertiesUseCase(
+                pwnedPasswordRepository = mockPwnedPasswordRepository,
+                messageDigestHash = get(),
+                entropyCalculator = get(),
+            )
         }
     }
-    singleOf(::MessageDigestHash)
-    single {
-        CheckPasswordPropertiesUseCase(
-            pwnedPasswordRepository = mockPwnedPasswordRepository,
-            messageDigestHash = get(),
-            entropyCalculator = get()
-        )
-    }
-}

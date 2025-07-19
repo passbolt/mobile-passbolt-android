@@ -23,8 +23,9 @@ package com.passbolt.mobile.android.core.authenticationcore
  * @since v1.0
  */
 
-class PassphraseFileName(userId: String) {
-
+class PassphraseFileName(
+    userId: String,
+) {
     val name = PASSPHRASE_FILE_NAME_FORMAT.format(userId)
 
     private companion object {

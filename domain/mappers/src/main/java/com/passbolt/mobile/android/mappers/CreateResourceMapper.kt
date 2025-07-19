@@ -27,12 +27,17 @@ import com.passbolt.mobile.android.dto.request.TotpSecretsDto
  * @since v1.0
  */
 class CreateResourceMapper(
-    private val gson: Gson
+    private val gson: Gson,
 ) {
+    fun map(
+        password: String,
+        description: String?,
+    ): String = gson.toJson(SecretsDto(password, description.orEmpty()))
 
-    fun map(password: String, description: String?): String =
-        gson.toJson(SecretsDto(password, description.orEmpty()))
-
-    fun map(digits: Int, period: Long, algorithm: String, secretKey: String): String =
-        gson.toJson(TotpSecretsDto(TotpSecretsDto.Totp(algorithm, secretKey, digits, period)))
+    fun map(
+        digits: Int,
+        period: Long,
+        algorithm: String,
+        secretKey: String,
+    ): String = gson.toJson(TotpSecretsDto(TotpSecretsDto.Totp(algorithm, secretKey, digits, period)))
 }

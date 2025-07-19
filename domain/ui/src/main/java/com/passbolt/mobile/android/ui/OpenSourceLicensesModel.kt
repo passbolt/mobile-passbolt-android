@@ -8,15 +8,15 @@ data class LicenseModelItem(
     val name: String?,
     val scm: Scm?,
     val spdxLicenses: List<SpdxLicense>?,
-    val version: String?
+    val version: String?,
 )
 
 data class Scm(
-    val url: String?
+    val url: String?,
 )
 
 data class SpdxLicense(
     val identifier: String?,
     val name: String?,
-    val url: String
+    val url: String,
 )

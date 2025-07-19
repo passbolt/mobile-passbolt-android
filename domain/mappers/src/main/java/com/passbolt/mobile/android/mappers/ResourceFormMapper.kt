@@ -1,7 +1,11 @@
 package com.passbolt.mobile.android.mappers
 
 import com.passbolt.mobile.android.jsonmodel.delegates.TotpSecret
+import com.passbolt.mobile.android.ui.MetadataIconModel
 import com.passbolt.mobile.android.ui.PasswordUiModel
+import com.passbolt.mobile.android.ui.ResourceAppearanceModel
+import com.passbolt.mobile.android.ui.ResourceAppearanceModel.Companion.ICON_TYPE_KEEPASS
+import com.passbolt.mobile.android.ui.ResourceAppearanceModel.Companion.ICON_TYPE_PASSBOLT
 import com.passbolt.mobile.android.ui.TotpUiModel
 
 /**
@@ -27,15 +31,17 @@ import com.passbolt.mobile.android.ui.TotpUiModel
  * @since v1.0
  */
 class ResourceFormMapper {
-
-    fun mapToUiModel(totp: TotpSecret?, issuer: String): TotpUiModel =
+    fun mapToUiModel(
+        totp: TotpSecret?,
+        issuer: String,
+    ): TotpUiModel =
         totp?.let {
             TotpUiModel(
                 secret = it.key,
                 issuer = issuer,
                 expiry = it.period.toString(),
                 length = it.digits.toString(),
-                algorithm = it.algorithm
+                algorithm = it.algorithm,
             )
         } ?: TotpUiModel.emptyWithDefaults(issuer)
 
@@ -45,14 +51,38 @@ class ResourceFormMapper {
                 key = totpUiModel.secret,
                 period = totpUiModel.expiry.toLong(),
                 digits = totpUiModel.length.toInt(),
-                algorithm = totpUiModel.algorithm
+                algorithm = totpUiModel.algorithm,
             )
         }
 
-    fun mapToUiModel(password: String, mainUri: String, username: String) =
-        PasswordUiModel(
-            password = password,
-            mainUri = mainUri,
-            username = username
+    fun mapToUiModel(
+        password: String,
+        mainUri: String,
+        username: String,
+    ) = PasswordUiModel(
+        password = password,
+        mainUri = mainUri,
+        username = username,
+    )
+
+    fun mapToUiModel(resourceIcon: MetadataIconModel?): ResourceAppearanceModel =
+        if (resourceIcon != null) {
+            ResourceAppearanceModel(
+                iconType = resourceIcon.type,
+                iconValue = resourceIcon.value,
+                iconBackgroundHexColor = resourceIcon.backgroundColorHexString,
+            )
+        } else {
+            ResourceAppearanceModel()
+        }
+
+    fun toAppearanceModel(
+        keepassIconValue: Int?,
+        backgroundColorHex: String?,
+    ): ResourceAppearanceModel =
+        ResourceAppearanceModel(
+            iconType = keepassIconValue?.let { ICON_TYPE_KEEPASS } ?: ICON_TYPE_PASSBOLT,
+            iconValue = keepassIconValue,
+            iconBackgroundHexColor = backgroundColorHex,
         )
 }

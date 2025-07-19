@@ -37,41 +37,47 @@ import kotlinx.coroutines.launch
 class ResourceTagsPresenter(
     private val getLocalResourceUseCase: GetLocalResourceUseCase,
     val getLocalResourceTags: GetLocalResourceTagsUseCase,
-    coroutineLaunchContext: CoroutineLaunchContext
+    coroutineLaunchContext: CoroutineLaunchContext,
 ) : DataRefreshViewReactivePresenter<ResourceTagsContract.View>(coroutineLaunchContext),
     ResourceTagsContract.Presenter {
-
     override var view: ResourceTagsContract.View? = null
     private val job = SupervisorJob()
     private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
-    private val missingItemHandler = CoroutineExceptionHandler { _, throwable ->
-        if (throwable is NullPointerException) {
-            view?.showContentNotAvailable()
-            view?.navigateToHome()
+    private val missingItemHandler =
+        CoroutineExceptionHandler { _, throwable ->
+            if (throwable is NullPointerException) {
+                view?.showContentNotAvailable()
+                view?.navigateToHome()
+            }
         }
-    }
 
     private lateinit var resourceId: String
 
-    override fun argsRetrieved(resourceId: String, mode: PermissionsMode) {
+    override fun argsRetrieved(
+        resourceId: String,
+        mode: PermissionsMode,
+    ) {
         this.resourceId = resourceId
         showTags()
     }
 
     private fun showTags() {
         scope.launch(missingItemHandler) {
-            launch { // get and display resource
+            launch {
+                // get and display resource
                 val resourceModel = getLocalResourceUseCase.execute(GetLocalResourceUseCase.Input(resourceId)).resource
                 view?.apply {
                     displayTitle(resourceModel.metadataJsonModel.name)
-                    displayInitialsIcon(resourceModel.metadataJsonModel.name, resourceModel.initials)
+                    displayInitialsIcon(resourceModel)
                     if (resourceModel.isFavourite()) {
                         showFavouriteStar()
                     }
                 }
             }
-            launch { // get and display tags
-                getLocalResourceTags.execute(GetLocalResourceTagsUseCase.Input(resourceId))
+            launch {
+                // get and display tags
+                getLocalResourceTags
+                    .execute(GetLocalResourceTagsUseCase.Input(resourceId))
                     .tags
                     .let { view?.showTags(it) }
             }

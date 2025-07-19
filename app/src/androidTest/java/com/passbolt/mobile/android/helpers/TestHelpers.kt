@@ -27,7 +27,6 @@ import androidx.annotation.StringRes
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.closeSoftKeyboard
-import androidx.test.espresso.action.ViewActions.scrollTo
 import androidx.test.espresso.action.ViewActions.typeText
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA
@@ -45,52 +44,41 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
 import com.passbolt.mobile.android.feature.otp.R.id as OtpId
 import com.passbolt.mobile.android.feature.permissions.R.id as PermissionsId
 
-
-internal fun getString(@StringRes stringResId: Int, vararg formatArgs: String? = emptyArray()) =
-    InstrumentationRegistry.getInstrumentation().targetContext.getString(stringResId, *formatArgs)
+internal fun getString(
+    @StringRes stringResId: Int,
+    vararg formatArgs: String? = emptyArray(),
+) = InstrumentationRegistry.getInstrumentation().targetContext.getString(stringResId, *formatArgs)
 
 internal fun createNewPasswordFromHomeScreen(name: String) {
-    onView(withId(com.passbolt.mobile.android.feature.home.R.id.homeSpeedDialViewId)).perform(click())
+    onView(withId(com.passbolt.mobile.android.feature.home.R.id.createResourceFab)).perform(click())
+    onView(withId(com.passbolt.mobile.android.feature.createresourcemenu.R.id.createPassword)).perform(click())
+
     onView(withId(CoreUiR.id.generatePasswordLayout)).perform(click())
     onView(
         allOf(
-            isDescendantOfA(withHint(hasToString(EditableFieldInput.ENTER_NAME.hintName))),
-            withId(CoreUiR.id.input)
-        )
+            isDescendantOfA(withHint(hasToString(EditableFieldInput.NAME.hintName))),
+            withId(CoreUiR.id.input),
+        ),
+    ).perform(
+        typeText(name),
     )
-        .perform(
-            typeText(name)
-        )
     onView(
         allOf(
             isDescendantOfA(withHint(hasToString(EditableFieldInput.ENTER_URL.hintName))),
-            withId(CoreUiR.id.input)
-        )
+            withId(CoreUiR.id.input),
+        ),
+    ).perform(
+        typeText("TestURL"),
     )
-        .perform(
-            typeText("TestURL")
-        )
     onView(
         allOf(
             isDescendantOfA(withHint(hasToString(EditableFieldInput.ENTER_USERNAME.hintName))),
-            withId(CoreUiR.id.input)
-        )
+            withId(CoreUiR.id.input),
+        ),
+    ).perform(
+        typeText("TestUsername"),
     )
-        .perform(
-            typeText("TestUsername")
-        )
-    onView(
-        allOf(
-            isDescendantOfA(withHint(hasToString(EditableFieldInput.ENTER_DESCRIPTION.hintName))),
-            withId(CoreUiR.id.input)
-        )
-    )
-        .perform(
-            scrollTo(),
-            typeText("TestDescription"),
-            closeSoftKeyboard()
-        )
-    onView(withId(com.passbolt.mobile.android.feature.resources.R.id.updateButton)).perform(scrollTo(), click())
+    onView(withId(com.passbolt.mobile.android.feature.resourceform.R.id.primaryButton)).perform(click())
 }
 
 internal fun signIn(passphrase: String) {

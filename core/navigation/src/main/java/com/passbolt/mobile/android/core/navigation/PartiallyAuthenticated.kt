@@ -23,7 +23,6 @@ package com.passbolt.mobile.android.core.navigation
  * @since v1.0
  */
 interface PartiallyAuthenticated {
-
     val unauthenticatedFragmentIds: List<Int>
 
     val isCurrentFragmentAuthenticated: Boolean

@@ -50,178 +50,186 @@ import com.passbolt.mobile.android.core.localization.R as LocalizationR
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class PasswordGenerateInputView @JvmOverloads constructor(
-    context: Context,
-    attrs: AttributeSet? = null,
-    defStyle: Int = 0
-) : ConstraintLayout(context, attrs, defStyle), StatefulInput {
-
-    var title: String = ""
-        set(value) {
-            field = value
-            binding.titleLabel.text = uiTitle
-        }
-
-    var hint: String = ""
-        set(value) {
-            field = value
-            binding.input.hint = hint
-        }
-
-    var isRequired: Boolean = DEFAULT_REQUIRED_STATE
-        set(value) {
-            field = value
-            binding.titleLabel.text = uiTitle
-        }
-
-    private val requiredTitle: Spannable
-        get() = SpannableString(REQUIRED_TITLE_FORMAT.format(title)).apply {
-            setSpan( // the asterisk at the end is red
-                ForegroundColorSpan(context.getColor(R.color.red)),
-                length - 1,
-                length,
-                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-            )
-        }
-
-    private val uiTitle: Spannable
-        get() = if (!isRequired) SpannableString(title) else requiredTitle
-
-    private var textWatcher: TextWatcher? = null
-
-    private val binding = ViewPasswordGeneratorInputBinding.inflate(LayoutInflater.from(context), this)
-
-    init {
-        parseAttributes(attrs)
-        setInitialState()
-        setFocusChangeListener()
-        setPasswordStrength(Empty, passwordEntropy = 0.0)
-        setPasswordGenerateSize()
-    }
-
-    override fun onDetachedFromWindow() {
-        binding.input.removeTextChangedListener(textWatcher)
-        super.onDetachedFromWindow()
-    }
-
-    private fun setPasswordGenerateSize() {
-        binding.generatePasswordLayout.post {
-            binding.generatePasswordLayout.layoutParams.height =
-                binding.textLayout.measuredHeight - GENERATE_PASSWORD_PADDING
-        }
-    }
-
-    fun setPasswordStrength(
-        passwordStrength: PasswordStrength,
-        passwordEntropy: Double
-    ) = with(binding) {
-        progressBar.progress = passwordStrength.progress
-        strengthDescription.text =
-            if (passwordEntropy > Double.NEGATIVE_INFINITY && passwordEntropy < Double.POSITIVE_INFINITY) {
-                context.getString(
-                    LocalizationR.string.password_generator_known_strength_format,
-                    context.getString(getEntropyText(passwordStrength)),
-                    passwordEntropy
-                )
-            } else {
-                context.getString(LocalizationR.string.password_generator_unknown_strength_format)
+class PasswordGenerateInputView
+    @JvmOverloads
+    constructor(
+        context: Context,
+        attrs: AttributeSet? = null,
+        defStyle: Int = 0,
+    ) : ConstraintLayout(context, attrs, defStyle),
+        StatefulInput {
+        var title: String = ""
+            set(value) {
+                field = value
+                binding.titleLabel.text = uiTitle
             }
-        strengthDescription.setTextColor(ContextCompat.getColor(context, getTextColor(passwordStrength)))
 
-        val progressBarDrawable = progressBar.progressDrawable as LayerDrawable
-        val progressDrawable = progressBarDrawable.getDrawable(PROGRESS_LAYER_INDEX)
-        progressDrawable.setTint(ContextCompat.getColor(context, getProgressColor(passwordStrength)))
-    }
+        var hint: String = ""
+            set(value) {
+                field = value
+                binding.input.hint = hint
+            }
 
-    @ColorRes
-    private fun getTextColor(passwordStrength: PasswordStrength) = when (passwordStrength) {
-        Empty -> R.color.text_tertiary
-        else -> R.color.text_primary
-    }
+        var isRequired: Boolean = DEFAULT_REQUIRED_STATE
+            set(value) {
+                field = value
+                binding.titleLabel.text = uiTitle
+            }
 
-    @ColorRes
-    private fun getProgressColor(passwordStrength: PasswordStrength) = when (passwordStrength) {
-        Empty -> android.R.color.transparent
-        Fair, Strong -> R.color.orange
-        VeryStrong -> R.color.green
-        VeryWeak, Weak -> R.color.red
-    }
+        private val requiredTitle: Spannable
+            get() =
+                SpannableString(REQUIRED_TITLE_FORMAT.format(title)).apply {
+                    setSpan( // the asterisk at the end is red
+                        ForegroundColorSpan(context.getColor(R.color.red)),
+                        length - 1,
+                        length,
+                        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE,
+                    )
+                }
 
-    @StringRes
-    private fun getEntropyText(passwordStrength: PasswordStrength) = when (passwordStrength) {
-        Empty -> LocalizationR.string.password_strength_empty
-        Fair -> LocalizationR.string.password_strength_fair
-        Strong -> LocalizationR.string.password_strength_strong
-        VeryStrong -> LocalizationR.string.password_strength_very_strong
-        VeryWeak -> LocalizationR.string.password_strength_very_weak
-        Weak -> LocalizationR.string.password_strength_weak
-    }
+        private val uiTitle: Spannable
+            get() = if (!isRequired) SpannableString(title) else requiredTitle
 
-    fun showPassword(
-        password: String,
-        passwordStrength: PasswordStrength,
-        entropyBits: Double
-    ) {
-        binding.input.setText(password)
-        setPasswordStrength(passwordStrength, entropyBits)
-    }
+        private var textWatcher: TextWatcher? = null
 
-    fun setGenerateClickListener(action: () -> Unit) {
-        binding.generatePasswordLayout
-            .setDebouncingOnClick { action.invoke() }
-    }
+        private val binding = ViewPasswordGeneratorInputBinding.inflate(LayoutInflater.from(context), this)
 
-    fun setPasswordChangeListener(textChange: (String) -> Unit) {
-        textWatcher?.let { binding.input.removeTextChangedListener(it) }
-        textWatcher = binding.input.addTextChangedListener {
-            textChange.invoke(it.toString())
+        init {
+            parseAttributes(attrs)
             setInitialState()
+            setFocusChangeListener()
+            setPasswordStrength(Empty, passwordEntropy = 0.0)
+            setPasswordGenerateSize()
         }
-    }
 
-    private fun parseAttributes(attrs: AttributeSet?) {
-        attrs?.let {
-            context.obtainStyledAttributes(attrs, R.styleable.TextInputView, 0, 0).use {
-                hint = it.getString(R.styleable.TextInputView_inputHint).orEmpty()
-                title = it.getString(R.styleable.TextInputView_inputTitle).orEmpty()
-                isRequired = it.getBoolean(R.styleable.TextInputView_inputIsRequired, DEFAULT_REQUIRED_STATE)
+        override fun onDetachedFromWindow() {
+            binding.input.removeTextChangedListener(textWatcher)
+            super.onDetachedFromWindow()
+        }
+
+        private fun setPasswordGenerateSize() {
+            binding.generatePasswordLayout.post {
+                binding.generatePasswordLayout.layoutParams.height =
+                    binding.textLayout.measuredHeight - GENERATE_PASSWORD_PADDING
             }
         }
-    }
 
-    override fun setState(state: StatefulInput.State) = when (state) {
-        is StatefulInput.State.Default -> setInitialState()
-        is StatefulInput.State.Error -> setErrorState(state.message)
-    }
+        fun setPasswordStrength(
+            passwordStrength: PasswordStrength,
+            passwordEntropy: Double,
+        ) = with(binding) {
+            progressBar.progress = passwordStrength.progress
+            strengthDescription.text =
+                if (passwordEntropy > Double.NEGATIVE_INFINITY && passwordEntropy < Double.POSITIVE_INFINITY) {
+                    context.getString(
+                        LocalizationR.string.password_generator_known_strength_format,
+                        context.getString(getEntropyText(passwordStrength)),
+                        passwordEntropy,
+                    )
+                } else {
+                    context.getString(LocalizationR.string.password_generator_unknown_strength_format)
+                }
+            strengthDescription.setTextColor(ContextCompat.getColor(context, getTextColor(passwordStrength)))
 
-    private fun setFocusChangeListener() {
-        binding.textLayout.setOnFocusChangeListener { _, hasFocus ->
-            if (hasFocus) setState(StatefulInput.State.Default)
+            val progressBarDrawable = progressBar.progressDrawable as LayerDrawable
+            val progressDrawable = progressBarDrawable.getDrawable(PROGRESS_LAYER_INDEX)
+            progressDrawable.setTint(ContextCompat.getColor(context, getProgressColor(passwordStrength)))
+        }
+
+        @ColorRes
+        private fun getTextColor(passwordStrength: PasswordStrength) =
+            when (passwordStrength) {
+                Empty -> R.color.text_tertiary
+                else -> R.color.text_primary
+            }
+
+        @ColorRes
+        private fun getProgressColor(passwordStrength: PasswordStrength) =
+            when (passwordStrength) {
+                Empty -> android.R.color.transparent
+                Fair, Strong -> R.color.orange
+                VeryStrong -> R.color.green
+                VeryWeak, Weak -> R.color.red
+            }
+
+        @StringRes
+        private fun getEntropyText(passwordStrength: PasswordStrength) =
+            when (passwordStrength) {
+                Empty -> LocalizationR.string.password_strength_empty
+                Fair -> LocalizationR.string.password_strength_fair
+                Strong -> LocalizationR.string.password_strength_strong
+                VeryStrong -> LocalizationR.string.password_strength_very_strong
+                VeryWeak -> LocalizationR.string.password_strength_very_weak
+                Weak -> LocalizationR.string.password_strength_weak
+            }
+
+        fun showPassword(
+            password: String,
+            passwordStrength: PasswordStrength,
+            entropyBits: Double,
+        ) {
+            binding.input.setText(password)
+            setPasswordStrength(passwordStrength, entropyBits)
+        }
+
+        fun setGenerateClickListener(action: () -> Unit) {
+            binding.generatePasswordLayout
+                .setDebouncingOnClick { action.invoke() }
+        }
+
+        fun setPasswordChangeListener(textChange: (String) -> Unit) {
+            textWatcher?.let { binding.input.removeTextChangedListener(it) }
+            textWatcher =
+                binding.input.addTextChangedListener {
+                    textChange.invoke(it.toString())
+                    setInitialState()
+                }
+        }
+
+        private fun parseAttributes(attrs: AttributeSet?) {
+            attrs?.let {
+                context.obtainStyledAttributes(attrs, R.styleable.TextInputView, 0, 0).use {
+                    hint = it.getString(R.styleable.TextInputView_inputHint).orEmpty()
+                    title = it.getString(R.styleable.TextInputView_inputTitle).orEmpty()
+                    isRequired = it.getBoolean(R.styleable.TextInputView_inputIsRequired, DEFAULT_REQUIRED_STATE)
+                }
+            }
+        }
+
+        override fun setState(state: StatefulInput.State) =
+            when (state) {
+                is StatefulInput.State.Default -> setInitialState()
+                is StatefulInput.State.Error -> setErrorState(state.message)
+            }
+
+        private fun setFocusChangeListener() {
+            binding.textLayout.setOnFocusChangeListener { _, hasFocus ->
+                if (hasFocus) setState(StatefulInput.State.Default)
+            }
+        }
+
+        private fun setErrorState(message: String) {
+            with(binding) {
+                titleLabel.setTextColor(context.getColor(R.color.red))
+                textLayout.error = message
+            }
+        }
+
+        private fun setInitialState() {
+            with(binding) {
+                titleLabel.setTextColor(context.getColor(R.color.text_primary))
+                textLayout.error = ""
+            }
+        }
+
+        fun disableSavingInstanceState() {
+            binding.input.isSaveEnabled = false
+        }
+
+        private companion object {
+            private const val DEFAULT_REQUIRED_STATE = false
+            private const val REQUIRED_TITLE_FORMAT = "%s *"
+            private const val PROGRESS_LAYER_INDEX = 1
+            private val GENERATE_PASSWORD_PADDING = 6.px
         }
     }
-
-    private fun setErrorState(message: String) {
-        with(binding) {
-            titleLabel.setTextColor(context.getColor(R.color.red))
-            textLayout.error = message
-        }
-    }
-
-    private fun setInitialState() {
-        with(binding) {
-            titleLabel.setTextColor(context.getColor(R.color.text_primary))
-            textLayout.error = ""
-        }
-    }
-
-    fun disableSavingInstanceState() {
-        binding.input.isSaveEnabled = false
-    }
-
-    private companion object {
-        private const val DEFAULT_REQUIRED_STATE = false
-        private const val REQUIRED_TITLE_FORMAT = "%s *"
-        private const val PROGRESS_LAYER_INDEX = 1
-        private val GENERATE_PASSWORD_PADDING = 6.px
-    }
-}

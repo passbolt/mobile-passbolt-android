@@ -1,9 +1,7 @@
 package com.passbolt.mobile.android.feature.settings.screen.appsettings
 
-import androidx.biometric.BiometricPrompt
+import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.core.module.Module
-import org.koin.core.module.dsl.scopedOf
-import org.koin.dsl.bind
 
 /**
  * Passbolt - Open source password manager for teams
@@ -29,8 +27,5 @@ import org.koin.dsl.bind
  */
 
 fun Module.appSettingsModule() {
-    scope<AppSettingsFragment> {
-        scopedOf(::AppSettingsPresenter) bind AppSettingsContract.Presenter::class
-        scoped { BiometricPrompt.PromptInfo.Builder() }
-    }
+    viewModelOf(::AppSettingsViewModel)
 }

@@ -28,13 +28,18 @@ import com.passbolt.mobile.android.ui.ResourceModel
 import timber.log.Timber
 
 class AutofillUriMatcher {
-
-    fun isMatching(autofillUrl: String?, resource: ResourceModel): Boolean {
+    fun isMatching(
+        autofillUrl: String?,
+        resource: ResourceModel,
+    ): Boolean {
         val resourceUris = resource.metadataJsonModel.uris.orEmpty() + resource.metadataJsonModel.uri.orEmpty()
         return resourceUris.any { isMatching(autofillUrl, it) }
     }
 
-    fun isMatching(autofillUrl: String?, resourceUrl: String?): Boolean {
+    fun isMatching(
+        autofillUrl: String?,
+        resourceUrl: String?,
+    ): Boolean {
         // not matching if any is null or empty
         if (autofillUrl.isNullOrEmpty() || resourceUrl.isNullOrEmpty()) return false
 
@@ -42,11 +47,14 @@ class AutofillUriMatcher {
             val autofillUrlMetadata = UrlMetadata.parse(autofillUrl)
             val resourceURL = UrlMetadata.parse(resourceUrl)
 
-            val schemesMatch = autofillUrlMetadata.protocolValue == resourceURL.protocolValue ||
+            val schemesMatch =
+                autofillUrlMetadata.protocolValue == resourceURL.protocolValue ||
                     resourceURL.protocolValue == ProtocolValue.None
-            val hostsMatch = autofillUrlMetadata.host == resourceURL.host ||
+            val hostsMatch =
+                autofillUrlMetadata.host == resourceURL.host ||
                     isSubdomain(autofillUrlMetadata.host, resourceURL.host)
-            val portsMatch = autofillUrlMetadata.port == resourceURL.port ||
+            val portsMatch =
+                autofillUrlMetadata.port == resourceURL.port ||
                     resourceURL.port == UrlMetadata.Port.None
 
             schemesMatch && hostsMatch && portsMatch
@@ -56,7 +64,10 @@ class AutofillUriMatcher {
         }
     }
 
-    fun isSubdomain(child: String, parent: String): Boolean {
+    fun isSubdomain(
+        child: String,
+        parent: String,
+    ): Boolean {
         val autofillHostParts = child.split(".").reversed()
         val resourceHostParts = parent.split(".").reversed()
 

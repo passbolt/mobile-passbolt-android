@@ -33,16 +33,16 @@ import retrofit2.Response
  * @since v1.0
  */
 interface AuthDataSource {
-
     suspend fun getServerPublicPgpKey(): BaseResponse<ServerPgpResponseDto>
 
     suspend fun getServerPublicRsaKey(): BaseResponse<ServerRsaResponseDto>
 
-    suspend fun signIn(signInRequestDto: SignInRequestDto, mfaToken: String?): Response<BaseResponse<SignInResponseDto>>
+    suspend fun signIn(
+        signInRequestDto: SignInRequestDto,
+        mfaToken: String?,
+    ): Response<BaseResponse<SignInResponseDto>>
 
     suspend fun signOut(signOutRequestDto: SignOutRequestDto): BaseResponse<Unit>
 
-    suspend fun refreshSession(
-        refreshSessionRequest: RefreshSessionRequest
-    ): Response<BaseResponse<RefreshSessionResponse>>
+    suspend fun refreshSession(refreshSessionRequest: RefreshSessionRequest): Response<BaseResponse<RefreshSessionResponse>>
 }

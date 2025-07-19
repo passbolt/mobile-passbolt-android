@@ -11,6 +11,8 @@ import com.passbolt.mobile.android.core.ui.menu.OpenableSettingView
 import com.passbolt.mobile.android.feature.resourceform.R
 import com.passbolt.mobile.android.feature.resourceform.databinding.ViewMetadataSectionBinding
 import com.passbolt.mobile.android.ui.ResourceFormUiModel
+import com.passbolt.mobile.android.ui.ResourceFormUiModel.Metadata.ADDITIONAL_URIS
+import com.passbolt.mobile.android.ui.ResourceFormUiModel.Metadata.APPEARANCE
 import com.passbolt.mobile.android.ui.ResourceFormUiModel.Metadata.DESCRIPTION
 
 /**
@@ -36,39 +38,64 @@ import com.passbolt.mobile.android.ui.ResourceFormUiModel.Metadata.DESCRIPTION
  * @since v1.0
  */
 
-class MetadataSectionView @JvmOverloads constructor(
-    context: Context,
-    attrs: AttributeSet? = null,
-    defStyle: Int = 0
-) : LinearLayout(context, attrs, defStyle) {
+class MetadataSectionView
+    @JvmOverloads
+    constructor(
+        context: Context,
+        attrs: AttributeSet? = null,
+        defStyle: Int = 0,
+    ) : LinearLayout(context, attrs, defStyle) {
+        var descriptionClick: (() -> Unit)? = null
+            set(value) {
+                field = value
+                value?.let {
+                    descriptionSection.setDebouncingOnClick(action = value)
+                }
+            }
 
-    var descriptionClick: (() -> Unit)? = null
-        set(value) {
-            field = value
-            value?.let {
-                descriptionSection.setDebouncingOnClick(action = value)
+        var additionalUrisClick: (() -> Unit)? = null
+            set(value) {
+                field = value
+                value?.let {
+                    additionalUrisSection.setDebouncingOnClick(action = value)
+                }
+            }
+
+        var appearanceClick: (() -> Unit)? = null
+            set(value) {
+                field = value
+                value?.let {
+                    appearanceSection.setDebouncingOnClick(action = value)
+                }
+            }
+
+        private val binding = ViewMetadataSectionBinding.inflate(LayoutInflater.from(context), this)
+
+        private val descriptionSection: OpenableSettingView
+            get() = binding.metadataSectionView.backgroundContainer.findViewById(R.id.description)
+
+        private val additionalUrisSection: OpenableSettingView
+            get() = binding.metadataSectionView.backgroundContainer.findViewById(R.id.additionalUris)
+
+        private val appearanceSection: OpenableSettingView
+            get() = binding.metadataSectionView.backgroundContainer.findViewById(R.id.appearance)
+
+        init {
+            orientation = VERTICAL
+            LayoutInflater.from(context).inflate(
+                R.layout.view_metadata_fields,
+                binding.metadataSectionView.backgroundContainer,
+                true,
+            )
+        }
+
+        fun setUp(fields: List<ResourceFormUiModel.Metadata>) {
+            if (fields.isEmpty()) {
+                gone()
+            } else {
+                descriptionSection.isVisible = fields.contains(DESCRIPTION)
+                additionalUrisSection.isVisible = fields.contains(ADDITIONAL_URIS)
+                appearanceSection.isVisible = fields.contains(APPEARANCE)
             }
         }
-
-    private val binding = ViewMetadataSectionBinding.inflate(LayoutInflater.from(context), this)
-
-    private val descriptionSection: OpenableSettingView
-        get() = binding.metadataSectionView.backgroundContainer.findViewById(R.id.description)
-
-    init {
-        orientation = VERTICAL
-        LayoutInflater.from(context).inflate(
-            R.layout.view_metadata_fields,
-            binding.metadataSectionView.backgroundContainer,
-            true
-        )
     }
-
-    fun setUp(fields: List<ResourceFormUiModel.Metadata>) {
-        if (fields.isEmpty()) {
-            gone()
-        } else {
-            descriptionSection.isVisible = fields.contains(DESCRIPTION)
-        }
-    }
-}

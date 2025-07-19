@@ -2,8 +2,11 @@ package com.passbolt.mobile.android.permissions.grouppermissionsdetails.membersr
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import coil.load
-import coil.transform.CircleCropTransformation
+import coil3.load
+import coil3.request.error
+import coil3.request.placeholder
+import coil3.request.transformations
+import coil3.transform.CircleCropTransformation
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
 import com.passbolt.mobile.android.feature.permissions.R
 import com.passbolt.mobile.android.feature.permissions.databinding.ItemGroupUserBinding
@@ -33,13 +36,15 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
  * @since v1.0
  */
 class GroupUserItem(
-    val model: UserModel
+    val model: UserModel,
 ) : AbstractBindingItem<ItemGroupUserBinding>() {
-
     override val type: Int
         get() = R.id.groupUserItem
 
-    override fun bindView(binding: ItemGroupUserBinding, payloads: List<Any>) {
+    override fun bindView(
+        binding: ItemGroupUserBinding,
+        payloads: List<Any>,
+    ) {
         with(binding) {
             root.load(model.profile.avatarUrl) {
                 error(CoreUiR.drawable.ic_user_avatar)
@@ -49,7 +54,8 @@ class GroupUserItem(
         }
     }
 
-    override fun createBinding(inflater: LayoutInflater, parent: ViewGroup?): ItemGroupUserBinding {
-        return ItemGroupUserBinding.inflate(inflater, parent, false)
-    }
+    override fun createBinding(
+        inflater: LayoutInflater,
+        parent: ViewGroup?,
+    ): ItemGroupUserBinding = ItemGroupUserBinding.inflate(inflater, parent, false)
 }

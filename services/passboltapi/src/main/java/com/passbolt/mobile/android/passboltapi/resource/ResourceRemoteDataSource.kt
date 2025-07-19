@@ -27,18 +27,16 @@ import com.passbolt.mobile.android.dto.response.ResourceResponseDto
  * @since v1.0
  */
 internal class ResourceRemoteDataSource(
-    private val resourceApi: ResourceApi
+    private val resourceApi: ResourceApi,
 ) : ResourceDataSource {
+    override suspend fun getResources(): BaseResponse<List<ResourceResponseDto>> = resourceApi.getResources()
 
-    override suspend fun getResources(): BaseResponse<List<ResourceResponseDto>> =
-        resourceApi.getResources()
+    override suspend fun createResource(createResourceDto: CreateResourceDto) = resourceApi.createResource(createResourceDto)
 
-    override suspend fun createResource(createResourceDto: CreateResourceDto) =
-        resourceApi.createResource(createResourceDto)
+    override suspend fun deleteResource(resourceId: String) = resourceApi.deleteResource(resourceId)
 
-    override suspend fun deleteResource(resourceId: String) =
-        resourceApi.deleteResource(resourceId)
-
-    override suspend fun updateResource(resourceId: String, createResourceDto: CreateResourceDto) =
-        resourceApi.updateResource(resourceId, createResourceDto)
+    override suspend fun updateResource(
+        resourceId: String,
+        createResourceDto: CreateResourceDto,
+    ) = resourceApi.updateResource(resourceId, createResourceDto)
 }

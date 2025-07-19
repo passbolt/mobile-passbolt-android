@@ -39,24 +39,27 @@ class LocationDetailsPresenter(
     private val getLocalFolderDetailsUseCase: GetLocalFolderDetailsUseCase,
     private val getLocalFolderLocation: GetLocalFolderLocationUseCase,
     private val getLocalResourceDetailsUseCase: GetLocalResourceUseCase,
-    coroutineLaunchContext: CoroutineLaunchContext
+    coroutineLaunchContext: CoroutineLaunchContext,
 ) : DataRefreshViewReactivePresenter<LocationDetailsContract.View>(coroutineLaunchContext),
     LocationDetailsContract.Presenter {
-
     override var view: LocationDetailsContract.View? = null
     private val job = SupervisorJob()
     private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
-    private val missingItemHandler = CoroutineExceptionHandler { _, throwable ->
-        if (throwable is NullPointerException) {
-            view?.showContentNotAvailable()
-            view?.navigateToHome()
+    private val missingItemHandler =
+        CoroutineExceptionHandler { _, throwable ->
+            if (throwable is NullPointerException) {
+                view?.showContentNotAvailable()
+                view?.navigateToHome()
+            }
         }
-    }
 
     private lateinit var locationItem: LocationItem
     private lateinit var itemId: String
 
-    override fun argsRetrieved(locationItem: LocationItem, id: String) {
+    override fun argsRetrieved(
+        locationItem: LocationItem,
+        id: String,
+    ) {
         this.locationItem = locationItem
         this.itemId = id
         showItemLocation()
@@ -78,30 +81,38 @@ class LocationDetailsPresenter(
     }
 
     private fun resourceLocation(resourceId: String) {
-        val resourceModelDeferred = scope.async(missingItemHandler) { // get and show resource details
-            getLocalResourceDetailsUseCase.execute(GetLocalResourceUseCase.Input(resourceId))
-                .resource
-                .let {
-                    view?.showFolderName(it.metadataJsonModel.name)
-                    view?.displayInitialsIcon(it.metadataJsonModel.name, it.initials)
-                    it
-                }
-        }
-        scope.launch(missingItemHandler) { // get and show resource location
-            val resourceFolderId = resourceModelDeferred.await().folderId
-            val locationSegments = if (resourceFolderId != null) {
-                getLocalFolderLocation.execute(GetLocalFolderLocationUseCase.Input(resourceFolderId))
-                    .parentFolders
-            } else {
-                emptyList()
+        val resourceModelDeferred =
+            scope.async(missingItemHandler) {
+                // get and show resource details
+                getLocalResourceDetailsUseCase
+                    .execute(GetLocalResourceUseCase.Input(resourceId))
+                    .resource
+                    .let {
+                        view?.showFolderName(it.metadataJsonModel.name)
+                        view?.displayInitialsIcon(it)
+                        it
+                    }
             }
+        scope.launch(missingItemHandler) {
+            // get and show resource location
+            val resourceFolderId = resourceModelDeferred.await().folderId
+            val locationSegments =
+                if (resourceFolderId != null) {
+                    getLocalFolderLocation
+                        .execute(GetLocalFolderLocationUseCase.Input(resourceFolderId))
+                        .parentFolders
+                } else {
+                    emptyList()
+                }
             view?.showFolderLocation(locationSegments)
         }
     }
 
     private fun folderLocation(folderId: String) {
-        scope.launch(missingItemHandler) { // get and show folder details
-            getLocalFolderDetailsUseCase.execute(GetLocalFolderDetailsUseCase.Input(folderId))
+        scope.launch(missingItemHandler) {
+            // get and show folder details
+            getLocalFolderDetailsUseCase
+                .execute(GetLocalFolderDetailsUseCase.Input(folderId))
                 .folder
                 .let {
                     view?.showFolderName(it.name)
@@ -112,8 +123,10 @@ class LocationDetailsPresenter(
                     }
                 }
         }
-        scope.launch(missingItemHandler) { // get and show folder location
-            getLocalFolderLocation.execute(GetLocalFolderLocationUseCase.Input(folderId))
+        scope.launch(missingItemHandler) {
+            // get and show folder location
+            getLocalFolderLocation
+                .execute(GetLocalFolderLocationUseCase.Input(folderId))
                 .parentFolders
                 .let {
                     view?.showFolderLocation(it)

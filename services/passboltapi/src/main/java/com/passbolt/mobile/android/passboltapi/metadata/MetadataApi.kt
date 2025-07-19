@@ -38,16 +38,15 @@ import retrofit2.http.Query
  */
 
 internal interface MetadataApi {
-
     @GET(METADATA_KEYS_ENDPOINT)
     suspend fun getMetadataKeys(
-        @Query(QUERY_CONTAIN_PRIVATE_KEYS) containPrivateKeys: Int? = 1
+        @Query(QUERY_CONTAIN_PRIVATE_KEYS) containPrivateKeys: Int? = 1,
     ): BaseResponse<List<MetadataKeysResponseDto>>
 
     @PUT(METADATA_KEYS_PRIVATE_UPDATE_ENDPOINT)
     suspend fun putMetadataPrivateKey(
         @Path(QUERY_UUID) uuid: String,
-        @Body request: EncryptedDataRequest
+        @Body request: EncryptedDataRequest,
     ): BaseResponse<Unit>
 
     @GET(METADATA_TYPES_SETTINGS)
@@ -60,12 +59,14 @@ internal interface MetadataApi {
     suspend fun getMetadataSessionKeys(): BaseResponse<List<MetadataSessionKeyResponseDto>>
 
     @POST(METADATA_SESSION_KEYS_ENDPOINT)
-    suspend fun postMetadataSessionKeys(@Body request: EncryptedDataRequest): BaseResponse<Unit>
+    suspend fun postMetadataSessionKeys(
+        @Body request: EncryptedDataRequest,
+    ): BaseResponse<Unit>
 
     @POST(METADATA_SESSION_KEYS_UPDATE_ENDPOINT)
     suspend fun updateMetadataSessionKeys(
         @Path(QUERY_UUID) uuid: String,
-        @Body request: EncryptedDataAndModifiedRequest
+        @Body request: EncryptedDataAndModifiedRequest,
     ): BaseResponse<Unit>
 
     private companion object {

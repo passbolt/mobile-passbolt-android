@@ -42,13 +42,12 @@ class AccountsInteractor(
     private val updateAccountDataUseCase: UpdateAccountDataUseCase,
     private val saveCurrentApiUrlUseCase: SaveCurrentApiUrlUseCase,
     private val checkAccountExistsUseCase: CheckAccountExistsUseCase,
-    private val httpsVerifier: HttpsVerifier
+    private val httpsVerifier: HttpsVerifier,
 ) {
-
     fun injectPredefinedAccountData(
         accountSetupData: AccountSetupDataModel,
         onSuccess: (UserId) -> Unit,
-        onFailure: (InjectAccountFailureType) -> Unit
+        onFailure: (InjectAccountFailureType) -> Unit,
     ) {
         val userExistsResult =
             checkAccountExistsUseCase.execute(CheckAccountExistsUseCase.Input(accountSetupData.serverUserId))
@@ -67,8 +66,8 @@ class AccountsInteractor(
                     avatarUrl = accountSetupData.avatarUrl,
                     email = accountSetupData.userName,
                     url = accountSetupData.domain,
-                    serverId = accountSetupData.serverUserId
-                )
+                    serverId = accountSetupData.serverUserId,
+                ),
             )
 
             when (savePrivateKeyUseCase.execute(SavePrivateKeyUseCase.Input(userId, accountSetupData.armoredKey))) {
@@ -85,6 +84,6 @@ class AccountsInteractor(
     enum class InjectAccountFailureType {
         ACCOUNT_ALREADY_LINKED,
         ERROR_WHEN_SAVING_PRIVATE_KEY,
-        ERROR_NON_HTTPS_DOMAIN
+        ERROR_NON_HTTPS_DOMAIN,
     }
 }

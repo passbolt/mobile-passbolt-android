@@ -30,9 +30,8 @@ import com.passbolt.mobile.android.passboltapi.settings.SettingsRepository
  */
 class FetchFeatureFlagsUseCase(
     private val settingsRepository: SettingsRepository,
-    private val featureFlagsMapper: FeatureFlagsMapper
+    private val featureFlagsMapper: FeatureFlagsMapper,
 ) : AsyncUseCase<Unit, FetchFeatureFlagsUseCase.Output> {
-
     override suspend fun execute(input: Unit): Output =
         when (val response = settingsRepository.getSettings()) {
             is NetworkResult.Failure -> Output.Failure(response)
@@ -42,11 +41,12 @@ class FetchFeatureFlagsUseCase(
         }
 
     sealed class Output {
-
         data class Success(
-            val featureFlags: FeatureFlagsModel
+            val featureFlags: FeatureFlagsModel,
         ) : Output()
 
-        data class Failure<T : Any>(val response: NetworkResult.Failure<T>) : Output()
+        data class Failure<T : Any>(
+            val response: NetworkResult.Failure<T>,
+        ) : Output()
     }
 }

@@ -31,41 +31,44 @@ import com.passbolt.mobile.android.passboltapi.metadata.MetadataRepository
  * @since v1.0
  */
 class UpdateMetadataPrivateKeyUseCase(
-    private val metadataRepository: MetadataRepository
+    private val metadataRepository: MetadataRepository,
 ) : AsyncUseCase<UpdateMetadataPrivateKeyUseCase.Input, UpdateMetadataPrivateKeyUseCase.Output> {
-
-    override suspend fun execute(input: Input): Output {
-        return when (val response = metadataRepository.updateMetadataPrivateKey(
-            input.metadataPrivateKeyId,
-            EncryptedDataRequest(input.privateKeyPgpMessage)
-        )) {
+    override suspend fun execute(input: Input): Output =
+        when (
+            val response =
+                metadataRepository.updateMetadataPrivateKey(
+                    input.metadataPrivateKeyId,
+                    EncryptedDataRequest(input.privateKeyPgpMessage),
+                )
+        ) {
             is NetworkResult.Failure -> Output.Failure(response)
             is NetworkResult.Success -> Output.Success
         }
-    }
 
     data class Input(
         val metadataPrivateKeyId: String,
-        val privateKeyPgpMessage: String
+        val privateKeyPgpMessage: String,
     )
 
     sealed class Output : AuthenticatedUseCaseOutput {
-
         override val authenticationState: AuthenticationState
-            get() = when {
-                this is Failure<*> && this.response.isUnauthorized ->
-                    AuthenticationState.Unauthenticated(AuthenticationState.Unauthenticated.Reason.Session)
-                this is Failure<*> && this.response.isMfaRequired -> {
-                    val providers = MfaTypeProvider.get(this.response)
-                    AuthenticationState.Unauthenticated(
-                        AuthenticationState.Unauthenticated.Reason.Mfa(providers)
-                    )
+            get() =
+                when {
+                    this is Failure<*> && this.response.isUnauthorized ->
+                        AuthenticationState.Unauthenticated(AuthenticationState.Unauthenticated.Reason.Session)
+                    this is Failure<*> && this.response.isMfaRequired -> {
+                        val providers = MfaTypeProvider.get(this.response)
+                        AuthenticationState.Unauthenticated(
+                            AuthenticationState.Unauthenticated.Reason.Mfa(providers),
+                        )
+                    }
+                    else -> AuthenticationState.Authenticated
                 }
-                else -> AuthenticationState.Authenticated
-            }
 
         data object Success : Output()
 
-        data class Failure<T : Any>(val response: NetworkResult.Failure<T>) : Output()
+        data class Failure<T : Any>(
+            val response: NetworkResult.Failure<T>,
+        ) : Output()
     }
 }

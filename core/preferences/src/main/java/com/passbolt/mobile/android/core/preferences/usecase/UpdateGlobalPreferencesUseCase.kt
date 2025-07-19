@@ -29,9 +29,8 @@ import java.time.ZoneOffset
  */
 
 class UpdateGlobalPreferencesUseCase(
-    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory
+    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory,
 ) : UseCase<UpdateGlobalPreferencesUseCase.Input, Unit> {
-
     override fun execute(input: Input) {
         val sharedPreferences = encryptedSharedPreferencesFactory.get("$GLOBAL_PREFERENCES_FILE_NAME.xml")
         with(sharedPreferences.edit()) {
@@ -55,6 +54,6 @@ class UpdateGlobalPreferencesUseCase(
         val areDebugLogsEnabled: Boolean? = null,
         val debugLogFileCreationDateTime: LocalDateTime? = null,
         val isDeveloperModeEnabled: Boolean? = null,
-        val isHideRootDialogEnabled: Boolean? = null
+        val isHideRootDialogEnabled: Boolean? = null,
     )
 }

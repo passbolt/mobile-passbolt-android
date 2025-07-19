@@ -39,17 +39,21 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 class KeyInspectorMoreMenuFragment :
     BindingScopedBottomSheetFragment<BottomsheetKeyInspectorMoreMenuBinding>(
-        BottomsheetKeyInspectorMoreMenuBinding::inflate
-    ), KeyInspectorMoreMenuContract.View {
-
+        BottomsheetKeyInspectorMoreMenuBinding::inflate,
+    ),
+    KeyInspectorMoreMenuContract.View {
     private val presenter: KeyInspectorMoreMenuContract.Presenter by inject()
-    private val authenticationResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-        if (it.resultCode == Activity.RESULT_OK) {
-            presenter.authenticationSucceeded()
+    private val authenticationResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            if (it.resultCode == Activity.RESULT_OK) {
+                presenter.authenticationSucceeded()
+            }
         }
-    }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         setListeners()
         presenter.attach(this)
@@ -61,7 +65,7 @@ class KeyInspectorMoreMenuFragment :
     }
 
     private fun setListeners() {
-        with(binding) {
+        with(requiredBinding) {
             exportPrivateKey.setDebouncingOnClick {
                 presenter.exportPrivateKeyClick()
             }
@@ -78,22 +82,24 @@ class KeyInspectorMoreMenuFragment :
         authenticationResult.launch(
             ActivityIntents.authentication(
                 requireContext(),
-                ActivityIntents.AuthConfig.RefreshPassphrase
-            )
+                ActivityIntents.AuthConfig.RefreshPassphrase,
+            ),
         )
     }
 
     override fun showShareSheet(keyText: String) {
-        val sendIntent: Intent = Intent().apply {
-            action = Intent.ACTION_SEND
-            putExtra(Intent.EXTRA_TEXT, keyText)
-            type = TYPE_TEXT_PLAIN
-        }
+        val sendIntent: Intent =
+            Intent().apply {
+                action = Intent.ACTION_SEND
+                putExtra(Intent.EXTRA_TEXT, keyText)
+                type = TYPE_TEXT_PLAIN
+            }
 
-        val shareIntent = Intent.createChooser(
-            sendIntent,
-            getString(LocalizationR.string.key_inspector_menu_export_key)
-        )
+        val shareIntent =
+            Intent.createChooser(
+                sendIntent,
+                getString(LocalizationR.string.key_inspector_menu_export_key),
+            )
         startActivity(shareIntent)
     }
 
@@ -101,7 +107,7 @@ class KeyInspectorMoreMenuFragment :
         showSnackbar(
             messageResId = LocalizationR.string.key_inspector_menu_failed_to_generate_public_key,
             backgroundColor = CoreUiR.color.red,
-            messageArgs = arrayOf(message)
+            messageArgs = arrayOf(message),
         )
     }
 

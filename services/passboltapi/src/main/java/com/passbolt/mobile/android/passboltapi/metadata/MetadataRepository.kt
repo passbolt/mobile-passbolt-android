@@ -29,36 +29,44 @@ import com.passbolt.mobile.android.dto.request.EncryptedDataRequest
  */
 class MetadataRepository(
     private val metadataDataSource: MetadataDataSource,
-    private val responseHandler: ResponseHandler
+    private val responseHandler: ResponseHandler,
 ) {
-
-    suspend fun getMetadataKeys() = callWithHandler(responseHandler) {
-        metadataDataSource.getMetadataKeys()
-    }
-
-    suspend fun updateMetadataPrivateKey(uuid: String, request: EncryptedDataRequest) =
+    suspend fun getMetadataKeys() =
         callWithHandler(responseHandler) {
-            metadataDataSource.putMetadataPrivateKey(uuid, request)
+            metadataDataSource.getMetadataKeys()
         }
 
-    suspend fun getMetadataTypesSettings() = callWithHandler(responseHandler) {
-        metadataDataSource.getMetadataTypesSettings()
+    suspend fun updateMetadataPrivateKey(
+        uuid: String,
+        request: EncryptedDataRequest,
+    ) = callWithHandler(responseHandler) {
+        metadataDataSource.putMetadataPrivateKey(uuid, request)
     }
 
-    suspend fun getMetadataKeysSettings() = callWithHandler(responseHandler) {
-        metadataDataSource.getMetadataKeysSettings()
-    }
-
-    suspend fun getMetadataSessionKeys() = callWithHandler(responseHandler) {
-        metadataDataSource.getMetadataSessionKeys()
-    }
-
-    suspend fun postMetadataSessionKeys(request: EncryptedDataRequest) = callWithHandler(responseHandler) {
-        metadataDataSource.postMetadataSessionKeys(request)
-    }
-
-    suspend fun updateMetadataSessionKeys(uuid: String, request: EncryptedDataAndModifiedRequest) =
+    suspend fun getMetadataTypesSettings() =
         callWithHandler(responseHandler) {
-            metadataDataSource.updateMetadataSessionKeys(uuid, request)
+            metadataDataSource.getMetadataTypesSettings()
         }
+
+    suspend fun getMetadataKeysSettings() =
+        callWithHandler(responseHandler) {
+            metadataDataSource.getMetadataKeysSettings()
+        }
+
+    suspend fun getMetadataSessionKeys() =
+        callWithHandler(responseHandler) {
+            metadataDataSource.getMetadataSessionKeys()
+        }
+
+    suspend fun postMetadataSessionKeys(request: EncryptedDataRequest) =
+        callWithHandler(responseHandler) {
+            metadataDataSource.postMetadataSessionKeys(request)
+        }
+
+    suspend fun updateMetadataSessionKeys(
+        uuid: String,
+        request: EncryptedDataAndModifiedRequest,
+    ) = callWithHandler(responseHandler) {
+        metadataDataSource.updateMetadataSessionKeys(uuid, request)
+    }
 }

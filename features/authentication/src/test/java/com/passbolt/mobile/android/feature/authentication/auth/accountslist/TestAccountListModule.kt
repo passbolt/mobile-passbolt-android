@@ -48,24 +48,25 @@ internal val mockSaveSelectedAccountUseCase = mock<SaveSelectedAccountUseCase>()
 internal val mockDatapaseProvider = mock<DatabaseProvider>()
 
 @ExperimentalCoroutinesApi
-val testAccountListModule = module {
-    factory<AccountsListContract.Presenter> {
-        AccountsListPresenter(
-            getAllAccountsDataUseCase = mockGetAllAccountsDataUseCase,
-            getSelectedAccountUseCase = mockGetSelectedAccountUseCase,
-            accountModelMapper = get(),
-            removeAllAccountDataUseCase = mockRemoveAllAccountsDataUseCase,
-            signOutUseCase = mockSignOutUseCase,
-            coroutineLaunchContext = get(),
-            saveCurrentApiUrlUseCase = get(),
-            saveSelectedAccountUseCase = get(),
-            databaseProvider = mockDatapaseProvider
-        )
+val testAccountListModule =
+    module {
+        factory<AccountsListContract.Presenter> {
+            AccountsListPresenter(
+                getAllAccountsDataUseCase = mockGetAllAccountsDataUseCase,
+                getSelectedAccountUseCase = mockGetSelectedAccountUseCase,
+                accountModelMapper = get(),
+                removeAllAccountDataUseCase = mockRemoveAllAccountsDataUseCase,
+                signOutUseCase = mockSignOutUseCase,
+                coroutineLaunchContext = get(),
+                saveCurrentApiUrlUseCase = get(),
+                saveSelectedAccountUseCase = get(),
+                databaseProvider = mockDatapaseProvider,
+            )
+        }
+        factory<CoroutineLaunchContext> { TestCoroutineLaunchContext() }
+        factory {
+            AccountModelMapper()
+        }
+        factory { saveCurrentApiUrlUseCase }
+        factory { mockSaveSelectedAccountUseCase }
     }
-    factory<CoroutineLaunchContext> { TestCoroutineLaunchContext() }
-    factory {
-        AccountModelMapper()
-    }
-    factory { saveCurrentApiUrlUseCase }
-    factory { mockSaveSelectedAccountUseCase }
-}

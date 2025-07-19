@@ -30,40 +30,43 @@ import com.passbolt.mobile.android.core.ui.R
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class TitleToolbar @JvmOverloads constructor(
-    context: Context,
-    attrs: AttributeSet? = null,
-    defStyle: Int = R.style.Theme_Passbolt_Toolbar
-) : Toolbar(context, attrs, defStyle) {
+class TitleToolbar
+    @JvmOverloads
+    constructor(
+        context: Context,
+        attrs: AttributeSet? = null,
+        defStyle: Int = R.style.Theme_Passbolt_Toolbar,
+    ) : Toolbar(context, attrs, defStyle) {
+        var toolbarTitle: String = ""
+            set(value) {
+                field = value
+                titleTextView.text = value
+            }
 
-    var toolbarTitle: String = ""
-        set(value) {
-            field = value
-            titleTextView.text = value
+        private val titleTextView =
+            TextView(
+                context,
+                null,
+                0,
+                R.style.ToolbarTitleText,
+            ).apply {
+                addView(this)
+                layoutParams =
+                    LayoutParams(layoutParams).apply {
+                        gravity = Gravity.CENTER_HORIZONTAL or Gravity.TOP
+                    }
+            }
+
+        init {
+            setBackgroundColor(context.getColor(R.color.background))
+            parseAttributes(attrs)
         }
 
-    private val titleTextView = TextView(
-        context,
-        null,
-        0,
-        R.style.ToolbarTitleText
-    ).apply {
-        addView(this)
-        layoutParams = LayoutParams(layoutParams).apply {
-            gravity = Gravity.CENTER_HORIZONTAL or Gravity.TOP
-        }
-    }
-
-    init {
-        setBackgroundColor(context.getColor(R.color.background))
-        parseAttributes(attrs)
-    }
-
-    private fun parseAttributes(attrs: AttributeSet?) {
-        attrs?.let {
-            context.obtainStyledAttributes(attrs, R.styleable.TitleToolbar, 0, 0).use {
-                toolbarTitle = it.getString(R.styleable.TitleToolbar_toolbarTitle).orEmpty()
+        private fun parseAttributes(attrs: AttributeSet?) {
+            attrs?.let {
+                context.obtainStyledAttributes(attrs, R.styleable.TitleToolbar, 0, 0).use {
+                    toolbarTitle = it.getString(R.styleable.TitleToolbar_toolbarTitle).orEmpty()
+                }
             }
         }
     }
-}

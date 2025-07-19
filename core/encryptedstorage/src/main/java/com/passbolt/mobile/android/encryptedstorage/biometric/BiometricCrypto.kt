@@ -4,13 +4,18 @@ import android.util.Base64
 import javax.crypto.Cipher
 
 class BiometricCrypto {
-
-    fun encryptData(data: ByteArray, authenticatedCipher: Cipher): ByteArray {
+    fun encryptData(
+        data: ByteArray,
+        authenticatedCipher: Cipher,
+    ): ByteArray {
         val encrypted = authenticatedCipher.doFinal(data)
         return Base64.encodeToString(encrypted, Base64.DEFAULT).toByteArray()
     }
 
-    fun decryptData(data: String, authenticatedCipher: Cipher): ByteArray {
+    fun decryptData(
+        data: String,
+        authenticatedCipher: Cipher,
+    ): ByteArray {
         val decoded = Base64.decode(data, Base64.DEFAULT)
         return authenticatedCipher.doFinal(decoded)
     }

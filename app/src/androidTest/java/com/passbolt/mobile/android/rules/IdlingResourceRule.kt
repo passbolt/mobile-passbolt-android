@@ -12,15 +12,17 @@ import org.koin.core.component.KoinComponent
  * idling resources.
  */
 open class IdlingResourceRule(
-    private val idlingResources: Array<IdlingResource>
-) : TestRule, KoinComponent {
-
-    override fun apply(base: Statement, description: Description) =
-        object : Statement() {
-            override fun evaluate() {
-                IdlingRegistry.getInstance().register(*idlingResources)
-                base.evaluate()
-                IdlingRegistry.getInstance().unregister(*idlingResources)
-            }
+    private val idlingResources: Array<IdlingResource>,
+) : TestRule,
+    KoinComponent {
+    override fun apply(
+        base: Statement,
+        description: Description,
+    ) = object : Statement() {
+        override fun evaluate() {
+            IdlingRegistry.getInstance().register(*idlingResources)
+            base.evaluate()
+            IdlingRegistry.getInstance().unregister(*idlingResources)
         }
+    }
 }

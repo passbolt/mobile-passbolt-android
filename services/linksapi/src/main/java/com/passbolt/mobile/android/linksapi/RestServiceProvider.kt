@@ -28,11 +28,11 @@ import retrofit2.Retrofit
  */
 class RestServiceProvider(
     private val client: OkHttpClient,
-    private val converterFactory: Converter.Factory
+    private val converterFactory: Converter.Factory,
 ) {
-
     fun get(url: String) =
-        Retrofit.Builder()
+        Retrofit
+            .Builder()
             .baseUrl(url)
             .client(client)
             .addConverterFactory(converterFactory)

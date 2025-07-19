@@ -34,53 +34,54 @@ import com.passbolt.mobile.android.feature.resourceform.databinding.ViewTotpSubf
  * @since v1.0
  */
 
-class TotpSubformView @JvmOverloads constructor(
-    context: Context,
-    attrs: AttributeSet? = null,
-    defStyle: Int = 0
-) : ConstraintLayout(context, attrs, defStyle) {
+class TotpSubformView
+    @JvmOverloads
+    constructor(
+        context: Context,
+        attrs: AttributeSet? = null,
+        defStyle: Int = 0,
+    ) : ConstraintLayout(context, attrs, defStyle) {
+        private val binding = ViewTotpSubformBinding.inflate(LayoutInflater.from(context), this)
 
-    private val binding = ViewTotpSubformBinding.inflate(LayoutInflater.from(context), this)
-
-    var moreSettingsClickListener: (() -> Unit)? = null
-        set(value) {
-            field = value
-            value?.let {
-                moreSettings.setDebouncingOnClick(action = it)
+        var moreSettingsClickListener: (() -> Unit)? = null
+            set(value) {
+                field = value
+                value?.let {
+                    moreSettings.setDebouncingOnClick(action = it)
+                }
             }
-        }
 
-    var scanTotpClickListener: (() -> Unit)? = null
-        set(value) {
-            field = value
-            value?.let {
-                scanTotpButton.setDebouncingOnClick(action = it)
+        var scanTotpClickListener: (() -> Unit)? = null
+            set(value) {
+                field = value
+                value?.let {
+                    scanTotpButton.setDebouncingOnClick(action = it)
+                }
             }
+
+        var isRequired: Boolean
+            get() = secretInput.isRequired
+            set(value) {
+                secretInput.isRequired = value
+            }
+
+        val secretInput: TextInputView
+            get() = binding.totpSectionView.findViewById(R.id.secretInput)
+
+        val urlInput: TextInputView
+            get() = binding.totpSectionView.findViewById(R.id.urlInput)
+
+        private val moreSettings: OpenableSettingView
+            get() = binding.totpSectionView.findViewById(R.id.moreTotpSettings)
+
+        private val scanTotpButton: FrameLayout
+            get() = binding.totpSectionView.findViewById(R.id.scanTotpButton)
+
+        init {
+            LayoutInflater.from(context).inflate(
+                R.layout.view_totp_subform_fields,
+                binding.totpSectionView.backgroundContainer,
+                true,
+            )
         }
-
-    var isRequired: Boolean
-        get() = secretInput.isRequired
-        set(value) {
-            secretInput.isRequired = value
-        }
-
-    val secretInput: TextInputView
-        get() = binding.totpSectionView.findViewById(R.id.secretInput)
-
-    val urlInput: TextInputView
-        get() = binding.totpSectionView.findViewById(R.id.urlInput)
-
-    private val moreSettings: OpenableSettingView
-        get() = binding.totpSectionView.findViewById(R.id.moreTotpSettings)
-
-    private val scanTotpButton: FrameLayout
-        get() = binding.totpSectionView.findViewById(R.id.scanTotpButton)
-
-    init {
-        LayoutInflater.from(context).inflate(
-            R.layout.view_totp_subform_fields,
-            binding.totpSectionView.backgroundContainer,
-            true
-        )
     }
-}

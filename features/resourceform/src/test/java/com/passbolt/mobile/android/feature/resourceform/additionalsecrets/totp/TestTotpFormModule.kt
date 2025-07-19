@@ -1,7 +1,5 @@
-package com.passbolt.mobile.android.feature.resourceform.additionalsecrets.note
+package com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp
 
-import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.TotpFormContract
-import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.TotpFormPresenter
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -29,6 +27,7 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-internal val totpFormModule = module {
-    factoryOf(::TotpFormPresenter) bind TotpFormContract.Presenter::class
-}
+internal val totpFormModule =
+    module {
+        factoryOf(::TotpFormPresenter) bind TotpFormContract.Presenter::class
+    }

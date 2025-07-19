@@ -27,24 +27,25 @@ import com.google.android.material.textfield.TextInputLayout
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class PasswordInputView @JvmOverloads constructor(
-    context: Context,
-    attrs: AttributeSet? = null,
-    defStyle: Int = 0
-) : TextInputView(context, attrs, defStyle) {
-
-    init {
-        with(binding.textLayout) {
-            editText?.apply {
-                isSingleLine = true
-                inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
-                isSaveEnabled = false
+class PasswordInputView
+    @JvmOverloads
+    constructor(
+        context: Context,
+        attrs: AttributeSet? = null,
+        defStyle: Int = 0,
+    ) : TextInputView(context, attrs, defStyle) {
+        init {
+            with(binding.textLayout) {
+                editText?.apply {
+                    isSingleLine = true
+                    inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+                    isSaveEnabled = false
+                }
+                endIconMode = TextInputLayout.END_ICON_PASSWORD_TOGGLE
             }
-            endIconMode = TextInputLayout.END_ICON_PASSWORD_TOGGLE
+        }
+
+        fun clearText() {
+            binding.textLayout.editText?.setText("")
         }
     }
-
-    fun clearText() {
-        binding.textLayout.editText?.setText("")
-    }
-}

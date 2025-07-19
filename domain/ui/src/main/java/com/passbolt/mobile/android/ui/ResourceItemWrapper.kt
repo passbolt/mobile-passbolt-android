@@ -26,5 +26,5 @@ package com.passbolt.mobile.android.ui
 data class ResourceItemWrapper(
     val resourceModel: ResourceModel,
     var loaderVisible: Boolean = false,
-    var clickable: Boolean = true
+    var clickable: Boolean = true,
 )

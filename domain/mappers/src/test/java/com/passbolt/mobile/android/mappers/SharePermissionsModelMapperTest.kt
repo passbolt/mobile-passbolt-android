@@ -36,30 +36,32 @@ import org.koin.test.inject
  * @since v1.0
  */
 class SharePermissionsModelMapperTest : KoinTest {
-
     private val mapper: SharePermissionsModelMapper by inject()
     private val permissionModelMapper: PermissionsModelMapper by inject()
 
     @get:Rule
-    val koinTestRule = KoinTestRule.create {
-        printLogger(Level.ERROR)
-        modules(testMappersModule)
-    }
+    val koinTestRule =
+        KoinTestRule.create {
+            printLogger(Level.ERROR)
+            modules(testMappersModule)
+        }
 
     @Test
     fun `share and simulate permissions should be mapped correct for not changed recipients`() {
         val recipients = EXISTING_PERMISSIONS
 
-        val resultForShare = mapper.mapForShare(
-            SharePermissionsModelMapper.ShareItem.Resource(RESOURCE_ID),
-            recipients,
-            EXISTING_PERMISSIONS
-        )
-        val resultForSimulation = mapper.mapForSimulation(
-            SharePermissionsModelMapper.ShareItem.Resource(RESOURCE_ID),
-            recipients,
-            EXISTING_PERMISSIONS
-        )
+        val resultForShare =
+            mapper.mapForShare(
+                SharePermissionsModelMapper.ShareItem.Resource(RESOURCE_ID),
+                recipients,
+                EXISTING_PERMISSIONS,
+            )
+        val resultForSimulation =
+            mapper.mapForSimulation(
+                SharePermissionsModelMapper.ShareItem.Resource(RESOURCE_ID),
+                recipients,
+                EXISTING_PERMISSIONS,
+            )
 
         assertThat(resultForShare).isEmpty()
         assertThat(resultForSimulation).isEmpty()
@@ -69,16 +71,18 @@ class SharePermissionsModelMapperTest : KoinTest {
     fun `share and simulate permissions should be mapped correct for deleted recipient`() {
         val recipients = EXISTING_PERMISSIONS - EXISTING_PERMISSIONS[0]
 
-        val resultForShare = mapper.mapForShare(
-            SharePermissionsModelMapper.ShareItem.Resource(RESOURCE_ID),
-            recipients,
-            EXISTING_PERMISSIONS
-        )
-        val resultForSimulation = mapper.mapForSimulation(
-            SharePermissionsModelMapper.ShareItem.Resource(RESOURCE_ID),
-            recipients,
-            EXISTING_PERMISSIONS
-        )
+        val resultForShare =
+            mapper.mapForShare(
+                SharePermissionsModelMapper.ShareItem.Resource(RESOURCE_ID),
+                recipients,
+                EXISTING_PERMISSIONS,
+            )
+        val resultForSimulation =
+            mapper.mapForSimulation(
+                SharePermissionsModelMapper.ShareItem.Resource(RESOURCE_ID),
+                recipients,
+                EXISTING_PERMISSIONS,
+            )
 
         assertThat(resultForShare).hasSize(1)
         assertThat(resultForShare[0]).isInstanceOf(SharePermission.DeletedSharePermission::class.java)
@@ -93,23 +97,26 @@ class SharePermissionsModelMapperTest : KoinTest {
 
     @Test
     fun `share and simulate permissions should be mapped correct for new recipient`() {
-        val newRecipient = PermissionModelUi.GroupPermissionModel(
-            ResourcePermission.UPDATE,
-            SharePermissionsModelMapper.TEMPORARY_NEW_PERMISSION_ID,
-            GroupModel("newGrId", "newGrName")
-        )
+        val newRecipient =
+            PermissionModelUi.GroupPermissionModel(
+                ResourcePermission.UPDATE,
+                SharePermissionsModelMapper.TEMPORARY_NEW_PERMISSION_ID,
+                GroupModel("newGrId", "newGrName"),
+            )
         val recipients = EXISTING_PERMISSIONS + newRecipient
 
-        val resultForShare = mapper.mapForShare(
-            SharePermissionsModelMapper.ShareItem.Resource(RESOURCE_ID),
-            recipients,
-            EXISTING_PERMISSIONS
-        )
-        val resultForSimulation = mapper.mapForSimulation(
-            SharePermissionsModelMapper.ShareItem.Resource(RESOURCE_ID),
-            recipients,
-            EXISTING_PERMISSIONS
-        )
+        val resultForShare =
+            mapper.mapForShare(
+                SharePermissionsModelMapper.ShareItem.Resource(RESOURCE_ID),
+                recipients,
+                EXISTING_PERMISSIONS,
+            )
+        val resultForSimulation =
+            mapper.mapForSimulation(
+                SharePermissionsModelMapper.ShareItem.Resource(RESOURCE_ID),
+                recipients,
+                EXISTING_PERMISSIONS,
+            )
 
         assertThat(resultForShare).hasSize(1)
         assertThat(resultForShare[0]).isInstanceOf(SharePermission.NewSharePermission::class.java)
@@ -124,30 +131,33 @@ class SharePermissionsModelMapperTest : KoinTest {
 
     @Test
     fun `share and simulate permissions should be mapped correct for updated recipient`() {
-        val recipients = List(EXISTING_PERMISSIONS.size) {
-            if (it == 0) {
-                val firstMockPermission =
-                    EXISTING_PERMISSIONS[0] as PermissionModelUi.GroupPermissionModel
-                PermissionModelUi.GroupPermissionModel(
-                    ResourcePermission.OWNER,
-                    firstMockPermission.permissionId,
-                    firstMockPermission.group.copy()
-                )
-            } else {
-                EXISTING_PERMISSIONS[it]
+        val recipients =
+            List(EXISTING_PERMISSIONS.size) {
+                if (it == 0) {
+                    val firstMockPermission =
+                        EXISTING_PERMISSIONS[0] as PermissionModelUi.GroupPermissionModel
+                    PermissionModelUi.GroupPermissionModel(
+                        ResourcePermission.OWNER,
+                        firstMockPermission.permissionId,
+                        firstMockPermission.group.copy(),
+                    )
+                } else {
+                    EXISTING_PERMISSIONS[it]
+                }
             }
-        }
 
-        val resultForShare = mapper.mapForShare(
-            SharePermissionsModelMapper.ShareItem.Resource(RESOURCE_ID),
-            recipients,
-            EXISTING_PERMISSIONS
-        )
-        val resultForSimulation = mapper.mapForSimulation(
-            SharePermissionsModelMapper.ShareItem.Resource(RESOURCE_ID),
-            recipients,
-            EXISTING_PERMISSIONS
-        )
+        val resultForShare =
+            mapper.mapForShare(
+                SharePermissionsModelMapper.ShareItem.Resource(RESOURCE_ID),
+                recipients,
+                EXISTING_PERMISSIONS,
+            )
+        val resultForSimulation =
+            mapper.mapForSimulation(
+                SharePermissionsModelMapper.ShareItem.Resource(RESOURCE_ID),
+                recipients,
+                EXISTING_PERMISSIONS,
+            )
 
         assertThat(resultForShare).hasSize(1)
         assertThat(resultForShare[0]).isInstanceOf(SharePermission.UpdatedSharePermission::class.java)
@@ -161,43 +171,46 @@ class SharePermissionsModelMapperTest : KoinTest {
 
     private companion object {
         private const val RESOURCE_ID = "resId"
-        private val EXISTING_PERMISSIONS = listOf(
-            PermissionModelUi.GroupPermissionModel(
-                permission = ResourcePermission.READ,
-                permissionId = "groupPermId1",
-                group = GroupModel(groupId = "groupId1", groupName = "groupname1")
-            ),
-            PermissionModelUi.GroupPermissionModel(
-                permission = ResourcePermission.READ,
-                permissionId = "groupPermId2",
-                group = GroupModel(groupId = "groupId2", groupName = "groupname2")
-            )
-        ) + listOf(
-            PermissionModelUi.UserPermissionModel(
-                permission = ResourcePermission.OWNER,
-                permissionId = "userPermId1",
-                user = UserWithAvatar(
-                    userId = "userId1",
-                    firstName = "first",
-                    lastName = "last",
-                    userName = "userName",
-                    isDisabled = false,
-                    avatarUrl = "avatarUrl"
+        private val EXISTING_PERMISSIONS =
+            listOf(
+                PermissionModelUi.GroupPermissionModel(
+                    permission = ResourcePermission.READ,
+                    permissionId = "groupPermId1",
+                    group = GroupModel(groupId = "groupId1", groupName = "groupname1"),
+                ),
+                PermissionModelUi.GroupPermissionModel(
+                    permission = ResourcePermission.READ,
+                    permissionId = "groupPermId2",
+                    group = GroupModel(groupId = "groupId2", groupName = "groupname2"),
+                ),
+            ) +
+                listOf(
+                    PermissionModelUi.UserPermissionModel(
+                        permission = ResourcePermission.OWNER,
+                        permissionId = "userPermId1",
+                        user =
+                            UserWithAvatar(
+                                userId = "userId1",
+                                firstName = "first",
+                                lastName = "last",
+                                userName = "userName",
+                                isDisabled = false,
+                                avatarUrl = "avatarUrl",
+                            ),
+                    ),
+                    PermissionModelUi.UserPermissionModel(
+                        permission = ResourcePermission.UPDATE,
+                        permissionId = "userPermId2",
+                        user =
+                            UserWithAvatar(
+                                userId = "userId2",
+                                firstName = "first",
+                                lastName = "last",
+                                userName = "userName",
+                                isDisabled = false,
+                                avatarUrl = "avatarUrl",
+                            ),
+                    ),
                 )
-            ),
-            PermissionModelUi.UserPermissionModel(
-                permission = ResourcePermission.UPDATE,
-                permissionId = "userPermId2",
-                user = UserWithAvatar(
-                    userId = "userId2",
-                    firstName = "first",
-                    lastName = "last",
-                    userName = "userName",
-                    isDisabled = false,
-                    avatarUrl = "avatarUrl"
-                )
-            )
-        )
-
     }
 }

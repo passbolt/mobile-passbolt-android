@@ -28,7 +28,6 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 
 @Suppress("MagicNumber")
 object Migration8to9 : Migration(8, 9) {
-
     private const val ADD_RESOURCE_AND_GROUPS_CROSS_REF_PERMISSION_COLUMN =
         "ALTER TABLE ResourceAndGroupsCrossRef ADD COLUMN permissionId TEXT NOT NULL DEFAULT ''"
     private const val ADD_RESOURCE_AND_USERS_CROSS_REF_PERMISSION_COLUMN =

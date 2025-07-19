@@ -14,10 +14,10 @@ data class PermissionWithGroupDto(
     val aroForeignKey: UUID,
     val created: String?,
     val modified: String?,
-    val group: PermissionGroupDto?
+    val group: PermissionGroupDto?,
 )
 
 class PermissionGroupDto(
     val id: UUID,
-    val name: String
+    val name: String,
 )

@@ -30,7 +30,6 @@ import java.util.UUID
  */
 
 class SessionKeysMemoryCache {
-
     var value = MergedSessionKeys()
         set(value) {
             field = value
@@ -40,14 +39,20 @@ class SessionKeysMemoryCache {
     var isLocallyModified = false
     var wasInitialCacheEmpty = true
 
-    fun put(model: String, id: UUID, sessionKey: String) {
+    fun put(
+        model: String,
+        id: UUID,
+        sessionKey: String,
+    ) {
         val sessionKeyIdentifier = SessionKeyIdentifier(model, id)
         value.keys[sessionKeyIdentifier] = SessionKeyModel(sessionKey, ZonedDateTime.now())
         isLocallyModified = true
     }
 
-    fun getSessionKeyHexString(model: String, id: UUID): String? =
-        value.keys[SessionKeyIdentifier(model, id)]?.sessionKey
+    fun getSessionKeyHexString(
+        model: String,
+        id: UUID,
+    ): String? = value.keys[SessionKeyIdentifier(model, id)]?.sessionKey
 
     fun findLatestModifiedOriginBundleData(): OriginBundleMetadata? =
         value.originMetadata.entries.maxByOrNull { it.value }?.let {
@@ -57,5 +62,5 @@ class SessionKeysMemoryCache {
 
 data class OriginBundleMetadata(
     val originBundleId: String,
-    val modifiedDate: ZonedDateTime
+    val modifiedDate: ZonedDateTime,
 )

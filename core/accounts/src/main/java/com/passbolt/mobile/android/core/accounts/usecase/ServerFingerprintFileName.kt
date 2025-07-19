@@ -23,8 +23,9 @@ package com.passbolt.mobile.android.core.accounts.usecase
  * @since v1.0
  */
 
-class ServerFingerprintFileName(userId: String) {
-
+class ServerFingerprintFileName(
+    userId: String,
+) {
     val name = SERVER_FINGERPRINT_FILE_NAME_FORMAT.format(userId)
 
     private companion object {

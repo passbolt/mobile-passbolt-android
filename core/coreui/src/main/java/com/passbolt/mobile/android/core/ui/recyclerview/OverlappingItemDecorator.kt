@@ -27,10 +27,14 @@ import androidx.recyclerview.widget.RecyclerView
  * @since v1.0
  */
 class OverlappingItemDecorator : RecyclerView.ItemDecoration() {
-
     var overlap = Overlap()
 
-    override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
+    override fun getItemOffsets(
+        outRect: Rect,
+        view: View,
+        parent: RecyclerView,
+        state: RecyclerView.State,
+    ) {
         if (!EXCLUDED_POSITIONS.contains(parent.getChildAdapterPosition(view))) {
             outRect.set(overlap.left, overlap.top, overlap.right, overlap.bottom)
         }
@@ -40,7 +44,7 @@ class OverlappingItemDecorator : RecyclerView.ItemDecoration() {
         val left: Int = 0,
         val top: Int = 0,
         val right: Int = 0,
-        val bottom: Int = 0
+        val bottom: Int = 0,
     )
 
     private companion object {

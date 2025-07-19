@@ -15,8 +15,9 @@ import org.koin.core.module.Module
  * That way Koin module overrides can be injected on time (there is no way to do it inside
  * Koin Application as the instrumented applications has its own Koin Application.
  */
-class LazyKoinActivityScenarioRule<A : Activity> : ExternalResource, KoinComponent {
-
+class LazyKoinActivityScenarioRule<A : Activity> :
+    ExternalResource,
+    KoinComponent {
     constructor(
         launchActivity: Boolean,
         koinOverrideModules: List<Module>? = null,
@@ -82,15 +83,15 @@ inline fun <reified A : Activity> lazyActivityScenarioRule(
     launchActivity: Boolean = true,
     koinOverrideModules: List<Module>? = null,
     noinline intentSupplier: () -> Intent,
-): LazyKoinActivityScenarioRule<A> =
-    LazyKoinActivityScenarioRule(launchActivity, koinOverrideModules, intentSupplier)
+): LazyKoinActivityScenarioRule<A> = LazyKoinActivityScenarioRule(launchActivity, koinOverrideModules, intentSupplier)
 
 inline fun <reified A : Activity> lazyActivityScenarioRule(
     launchActivity: Boolean = true,
     intent: Intent? = null,
     koinOverrideModules: List<Module>? = null,
-): LazyKoinActivityScenarioRule<A> = if (intent == null) {
-    LazyKoinActivityScenarioRule(launchActivity, A::class.java, koinOverrideModules)
-} else {
-    LazyKoinActivityScenarioRule(launchActivity, intent, koinOverrideModules)
-}
+): LazyKoinActivityScenarioRule<A> =
+    if (intent == null) {
+        LazyKoinActivityScenarioRule(launchActivity, A::class.java, koinOverrideModules)
+    } else {
+        LazyKoinActivityScenarioRule(launchActivity, intent, koinOverrideModules)
+    }

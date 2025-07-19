@@ -24,5 +24,6 @@ package com.passbolt.mobile.android.core.mvp.progress
  */
 interface SynchronizedProgressView {
     fun showProgress()
+
     fun hideProgress()
 }

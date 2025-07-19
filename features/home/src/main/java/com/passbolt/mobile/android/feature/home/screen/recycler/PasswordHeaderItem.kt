@@ -30,17 +30,20 @@ import com.passbolt.mobile.android.ui.ResourceListUiModel
  * @since v1.0
  */
 class PasswordHeaderItem(
-    val resourceModel: ResourceListUiModel.Header
+    val resourceModel: ResourceListUiModel.Header,
 ) : AbstractBindingItem<ItemPasswordHeaderBinding>() {
-
     override val type: Int
         get() = R.id.itemHeaderPassword
 
-    override fun createBinding(inflater: LayoutInflater, parent: ViewGroup?): ItemPasswordHeaderBinding {
-        return ItemPasswordHeaderBinding.inflate(inflater, parent, false)
-    }
+    override fun createBinding(
+        inflater: LayoutInflater,
+        parent: ViewGroup?,
+    ): ItemPasswordHeaderBinding = ItemPasswordHeaderBinding.inflate(inflater, parent, false)
 
-    override fun bindView(binding: ItemPasswordHeaderBinding, payloads: List<Any>) {
+    override fun bindView(
+        binding: ItemPasswordHeaderBinding,
+        payloads: List<Any>,
+    ) {
         super.bindView(binding, payloads)
         with(binding) {
             title.text = resourceModel.title

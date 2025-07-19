@@ -10,7 +10,6 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.mockito.kotlin.mock
 
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -37,15 +36,16 @@ import org.mockito.kotlin.mock
 internal val mockCreateCreateResourceMenuModelUseCase = mock<CreateCreateResourceMenuModelUseCase>()
 
 @ExperimentalCoroutinesApi
-internal val testCreateResourceMenuModule = module {
-    factoryOf(::TestCoroutineLaunchContext) bind CoroutineLaunchContext::class
-    factoryOf(::CreateMenuModelIdlingResource)
+internal val testCreateResourceMenuModule =
+    module {
+        factoryOf(::TestCoroutineLaunchContext) bind CoroutineLaunchContext::class
+        factoryOf(::CreateMenuModelIdlingResource)
 
-    factory<CreateResourceMenuContract.Presenter> {
-        CreateResourceMenuPresenter(
-            createCreateResourceMoreMenuModelUseCase = mockCreateCreateResourceMenuModelUseCase,
-            menuModelIdlingResource = get(),
-            coroutineLaunchContext = get()
-        )
+        factory<CreateResourceMenuContract.Presenter> {
+            CreateResourceMenuPresenter(
+                createCreateResourceMoreMenuModelUseCase = mockCreateCreateResourceMenuModelUseCase,
+                menuModelIdlingResource = get(),
+                coroutineLaunchContext = get(),
+            )
+        }
     }
-}

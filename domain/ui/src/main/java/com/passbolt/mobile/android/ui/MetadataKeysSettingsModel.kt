@@ -25,5 +25,5 @@ package com.passbolt.mobile.android.ui
 
 data class MetadataKeysSettingsModel(
     val allowUsageOfPersonalKeys: Boolean,
-    val zeroKnowledgeKeyShare: Boolean
+    val zeroKnowledgeKeyShare: Boolean,
 )

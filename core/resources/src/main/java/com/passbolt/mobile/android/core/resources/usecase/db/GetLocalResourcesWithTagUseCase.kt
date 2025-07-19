@@ -32,23 +32,25 @@ import com.passbolt.mobile.android.ui.ResourceModel
 class GetLocalResourcesWithTagUseCase(
     private val databaseProvider: DatabaseProvider,
     private val resourceModelMapper: ResourceModelMapper,
-    private val getSelectedAccountUseCase: GetSelectedAccountUseCase
+    private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
 ) : AsyncUseCase<GetLocalResourcesWithTagUseCase.Input, GetLocalResourcesWithTagUseCase.Output> {
-
     override suspend fun execute(input: Input): Output {
         val userId = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
-        val resources = databaseProvider
-            .get(userId)
-            .resourcesDao()
-            .getResourcesWithTag(requireNotNull(input.tag.activeTagId), input.slugs)
+        val resources =
+            databaseProvider
+                .get(userId)
+                .resourcesDao()
+                .getResourcesWithTag(requireNotNull(input.tag.activeTagId), input.slugs)
 
         return Output(resources.map { resourceModelMapper.map(it) })
     }
 
     data class Input(
         val tag: HomeDisplayViewModel.Tags,
-        val slugs: Set<String>
+        val slugs: Set<String>,
     )
 
-    data class Output(val resources: List<ResourceModel>)
+    data class Output(
+        val resources: List<ResourceModel>,
+    )
 }

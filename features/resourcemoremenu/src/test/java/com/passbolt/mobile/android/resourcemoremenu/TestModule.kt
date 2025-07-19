@@ -36,13 +36,14 @@ import org.mockito.kotlin.mock
 internal val mockCreateResourceMoreMenuModelUseCase = mock<CreateResourceMoreMenuModelUseCase>()
 
 @ExperimentalCoroutinesApi
-val testModule = module {
-    factoryOf(::TestCoroutineLaunchContext) bind CoroutineLaunchContext::class
-    factory<ResourceMoreMenuContract.Presenter> {
-        ResourceMoreMenuPresenter(
-            createResourceMoreMenuModelUseCase = mockCreateResourceMoreMenuModelUseCase,
-            coroutineLaunchContext = get(),
-            menuModelIdlingResource = CreateMenuModelIdlingResource()
-        )
+val testModule =
+    module {
+        factoryOf(::TestCoroutineLaunchContext) bind CoroutineLaunchContext::class
+        factory<ResourceMoreMenuContract.Presenter> {
+            ResourceMoreMenuPresenter(
+                createResourceMoreMenuModelUseCase = mockCreateResourceMoreMenuModelUseCase,
+                coroutineLaunchContext = get(),
+                menuModelIdlingResource = CreateMenuModelIdlingResource(),
+            )
+        }
     }
-}

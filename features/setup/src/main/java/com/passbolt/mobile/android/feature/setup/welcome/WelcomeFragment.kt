@@ -38,9 +38,10 @@ import org.koin.android.ext.android.inject
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class WelcomeFragment : BindingScopedFragment<FragmentWelcomeBinding>(FragmentWelcomeBinding::inflate),
-    WelcomeContract.View, HelpMenuFragment.Listener {
-
+class WelcomeFragment :
+    BindingScopedFragment<FragmentWelcomeBinding>(FragmentWelcomeBinding::inflate),
+    WelcomeContract.View,
+    HelpMenuFragment.Listener {
     private val presenter: WelcomeContract.Presenter by inject()
 
     private val accountKitFileChosenResult =
@@ -54,7 +55,10 @@ class WelcomeFragment : BindingScopedFragment<FragmentWelcomeBinding>(FragmentWe
             }
         }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         setUpListeners()
         presenter.attach(this)
@@ -67,7 +71,7 @@ class WelcomeFragment : BindingScopedFragment<FragmentWelcomeBinding>(FragmentWe
     }
 
     private fun setUpListeners() {
-        with(binding) {
+        with(requiredBinding) {
             noAccountButton.setDebouncingOnClick { presenter.noAccountButtonClick() }
             connectToAccountButton.setDebouncingOnClick { presenter.connectToAccountClick() }
             helpButton.setDebouncingOnClick {
@@ -77,7 +81,7 @@ class WelcomeFragment : BindingScopedFragment<FragmentWelcomeBinding>(FragmentWe
     }
 
     override fun initBackNavigation() {
-        with(binding.toolbar) {
+        with(requiredBinding.toolbar) {
             setNavigationIcon(com.passbolt.mobile.android.core.ui.R.drawable.ic_back)
             setNavigationOnClickListener { requireActivity().finish() }
         }
@@ -89,12 +93,12 @@ class WelcomeFragment : BindingScopedFragment<FragmentWelcomeBinding>(FragmentWe
 
     override fun navigateToTransferDetails() {
         findNavController().navigate(
-            WelcomeFragmentDirections.actionWelcomeFragmentToTransferDetailsFragment()
+            WelcomeFragmentDirections.actionWelcomeFragmentToTransferDetailsFragment(),
         )
     }
 
     override fun hideToolbar() {
-        binding.toolbar.gone()
+        requiredBinding.toolbar.gone()
     }
 
     override fun showDeviceRootedDialog() {
@@ -103,14 +107,14 @@ class WelcomeFragment : BindingScopedFragment<FragmentWelcomeBinding>(FragmentWe
     }
 
     override fun showHelpMenu() {
-        HelpMenuFragment.newInstance(
-            HelpMenuModel(
-                shouldShowShowQrCodesHelp = true,
-                shouldShowImportProfile = true,
-                shouldShowImportAccountKit = true
-            )
-        )
-            .show(childFragmentManager, HelpMenuFragment::class.java.name)
+        HelpMenuFragment
+            .newInstance(
+                HelpMenuModel(
+                    shouldShowShowQrCodesHelp = true,
+                    shouldShowImportProfile = true,
+                    shouldShowImportAccountKit = true,
+                ),
+            ).show(childFragmentManager, HelpMenuFragment::class.java.name)
     }
 
     override fun menuImportProfileManuallyClick() {
@@ -119,13 +123,13 @@ class WelcomeFragment : BindingScopedFragment<FragmentWelcomeBinding>(FragmentWe
 
     override fun menuShowLogsClick() {
         findNavController().navigate(
-            WelcomeFragmentDirections.actionWelcomeFragmentToLogs()
+            WelcomeFragmentDirections.actionWelcomeFragmentToLogs(),
         )
     }
 
     override fun navigateToImportProfile() {
         findNavController().navigate(
-            WelcomeFragmentDirections.actionWelcomeFragmentToImportProfileFragment()
+            WelcomeFragmentDirections.actionWelcomeFragmentToImportProfileFragment(),
         )
     }
 
@@ -143,7 +147,7 @@ class WelcomeFragment : BindingScopedFragment<FragmentWelcomeBinding>(FragmentWe
 
     override fun navigateToSummary(status: ResultStatus) {
         findNavController().navigate(
-            WelcomeFragmentDirections.actionWelcomeFragmentToSummaryFragment(status)
+            WelcomeFragmentDirections.actionWelcomeFragmentToSummaryFragment(status),
         )
     }
 }

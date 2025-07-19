@@ -39,25 +39,26 @@ import com.passbolt.mobile.android.ui.MetadataTypesSettingsModel
  * @since v1.0
  */
 class GetMetadataTypesSettingsUseCase(
-    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory
+    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory,
 ) : AsyncUseCase<Unit, GetMetadataTypesSettingsUseCase.Output>,
     com.passbolt.mobile.android.core.accounts.usecase.SelectedAccountUseCase {
-
     override suspend fun execute(input: Unit): Output {
         val fileName = MetadataSettingsFileName(selectedAccountId).name
         encryptedSharedPreferencesFactory.get("$fileName.xml").let {
-
             return Output(
                 MetadataTypesSettingsModel(
-                    defaultMetadataType = MetadataTypeModel.valueOf(
-                        it.getString(DEFAULT_METADATA_TYPE, MetadataTypeModel.V4.name)!!
-                    ),
-                    defaultFolderType = MetadataTypeModel.valueOf(
-                        it.getString(DEFAULT_FOLDER_TYPE, MetadataTypeModel.V4.name)!!
-                    ),
-                    defaultTagType = MetadataTypeModel.valueOf(
-                        it.getString(DEFAULT_TAG_TYPE, MetadataTypeModel.V4.name)!!
-                    ),
+                    defaultMetadataType =
+                        MetadataTypeModel.valueOf(
+                            it.getString(DEFAULT_METADATA_TYPE, MetadataTypeModel.V4.name)!!,
+                        ),
+                    defaultFolderType =
+                        MetadataTypeModel.valueOf(
+                            it.getString(DEFAULT_FOLDER_TYPE, MetadataTypeModel.V4.name)!!,
+                        ),
+                    defaultTagType =
+                        MetadataTypeModel.valueOf(
+                            it.getString(DEFAULT_TAG_TYPE, MetadataTypeModel.V4.name)!!,
+                        ),
                     allowCreationOfV5Resources = it.getBoolean(ALLOW_CREATION_OF_V5_RESOURCES, false),
                     allowCreationOfV5Folders = it.getBoolean(ALLOW_CREATION_OF_V5_FOLDERS, false),
                     allowCreationOfV5Tags = it.getBoolean(ALLOW_CREATION_OF_V5_TAGS, false),
@@ -65,11 +66,13 @@ class GetMetadataTypesSettingsUseCase(
                     allowCreationOfV4Folders = it.getBoolean(ALLOW_CREATION_OF_V4_FOLDERS, true),
                     allowCreationOfV4Tags = it.getBoolean(ALLOW_CREATION_OF_V4_TAGS, true),
                     allowV4V5Upgrade = it.getBoolean(ALLOW_V4_V5_UPGRADE, false),
-                    allowV5V4Downgrade = it.getBoolean(ALLOW_V5_V4_DOWNGRADE, false)
-                )
+                    allowV5V4Downgrade = it.getBoolean(ALLOW_V5_V4_DOWNGRADE, false),
+                ),
             )
         }
     }
 
-    data class Output(val metadataTypesSettingsModel: MetadataTypesSettingsModel)
+    data class Output(
+        val metadataTypesSettingsModel: MetadataTypesSettingsModel,
+    )
 }

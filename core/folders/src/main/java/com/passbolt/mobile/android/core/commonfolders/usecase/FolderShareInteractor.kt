@@ -34,20 +34,23 @@ import java.net.HttpURLConnection
 class FolderShareInteractor(
     private val shareFolderUseCase: ShareFolderUseCase,
     private val sharePermissionsModelMapper: SharePermissionsModelMapper,
-    private val getLocalFolderPermissionsUseCase: GetLocalFolderPermissionsUseCase
+    private val getLocalFolderPermissionsUseCase: GetLocalFolderPermissionsUseCase,
 ) {
-
     suspend fun shareFolder(
         folderId: String,
-        permissions: List<PermissionModelUi>
+        permissions: List<PermissionModelUi>,
     ): Output {
         val existingPermissions =
-            getLocalFolderPermissionsUseCase.execute(GetLocalFolderPermissionsUseCase.Input(folderId))
+            getLocalFolderPermissionsUseCase
+                .execute(GetLocalFolderPermissionsUseCase.Input(folderId))
                 .permissions
 
-        val sharePermissions = sharePermissionsModelMapper.mapForShare(
-            SharePermissionsModelMapper.ShareItem.Folder(folderId), permissions, existingPermissions
-        )
+        val sharePermissions =
+            sharePermissionsModelMapper.mapForShare(
+                SharePermissionsModelMapper.ShareItem.Folder(folderId),
+                permissions,
+                existingPermissions,
+            )
 
         return when (val output = shareFolderUseCase.execute(ShareFolderUseCase.Input(folderId, sharePermissions))) {
             is ShareFolderUseCase.Output.Failure -> Output.ShareFailure(output.result.exception)
@@ -56,22 +59,28 @@ class FolderShareInteractor(
     }
 
     sealed class Output : AuthenticatedUseCaseOutput {
-
         override val authenticationState: AuthenticationState
-            get() = if (
-                (this is ShareFailure &&
-                        (this.exception as? HttpException)?.code() == HttpURLConnection.HTTP_UNAUTHORIZED)
-            ) {
-                AuthenticationState.Unauthenticated(AuthenticationState.Unauthenticated.Reason.Session)
-            } else if (this is Unauthorized) {
-                AuthenticationState.Unauthenticated(this.reason)
-            } else {
-                AuthenticationState.Authenticated
-            }
+            get() =
+                if (
+                    (
+                        this is ShareFailure &&
+                            (this.exception as? HttpException)?.code() == HttpURLConnection.HTTP_UNAUTHORIZED
+                    )
+                ) {
+                    AuthenticationState.Unauthenticated(AuthenticationState.Unauthenticated.Reason.Session)
+                } else if (this is Unauthorized) {
+                    AuthenticationState.Unauthenticated(this.reason)
+                } else {
+                    AuthenticationState.Authenticated
+                }
 
-        data class ShareFailure(val exception: Exception) : Output()
+        data class ShareFailure(
+            val exception: Exception,
+        ) : Output()
 
-        class Unauthorized(val reason: UnauthenticatedReason) : Output()
+        class Unauthorized(
+            val reason: UnauthenticatedReason,
+        ) : Output()
 
         data object Success : Output()
     }

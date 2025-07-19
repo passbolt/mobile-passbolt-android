@@ -29,13 +29,13 @@ import org.koin.core.module.Module
 internal fun Module.shareApiModule() {
     single<ShareDataSource> {
         ShareRemoteDataSource(
-            shareApi = get()
+            shareApi = get(),
         )
     }
     single {
         ShareRepository(
             shareDataSource = get(),
-            responseHandler = get()
+            responseHandler = get(),
         )
     }
     single {

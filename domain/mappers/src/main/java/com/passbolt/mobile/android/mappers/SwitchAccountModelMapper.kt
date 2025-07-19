@@ -28,37 +28,39 @@ import com.passbolt.mobile.android.ui.SwitchAccountUiModel
  * @since v1.0
  */
 class SwitchAccountModelMapper(
-    private val comparator: SwitchAccountUiModelComparator
+    private val comparator: SwitchAccountUiModelComparator,
 ) {
-
-    fun map(accounts: List<Account>, currentAccount: String?, appContext: AppContext): List<SwitchAccountUiModel> {
-        return accounts
+    fun map(
+        accounts: List<Account>,
+        currentAccount: String?,
+        appContext: AppContext,
+    ): List<SwitchAccountUiModel> =
+        accounts
             .map {
                 if (isCurrentUser(it, currentAccount)) {
                     SwitchAccountUiModel.HeaderItem(
                         label = it.label ?: AccountModelMapper.defaultLabel(it.firstName, it.lastName),
                         email = it.email.orEmpty(),
-                        avatarUrl = it.avatarUrl
+                        avatarUrl = it.avatarUrl,
                     )
                 } else {
                     SwitchAccountUiModel.AccountItem(
                         userId = it.userId,
                         label = it.label ?: AccountModelMapper.defaultLabel(it.firstName, it.lastName),
                         email = it.email.orEmpty(),
-                        avatarUrl = it.avatarUrl
+                        avatarUrl = it.avatarUrl,
                     )
                 }
-            }
-            .let {
+            }.let {
                 if (appContext == AppContext.APP) {
                     it + SwitchAccountUiModel.ManageAccountsItem
                 } else {
                     it
                 }
-            }
-            .sortedWith(comparator)
-    }
+            }.sortedWith(comparator)
 
-    private fun isCurrentUser(account: Account, currentAccount: String?) =
-        account.userId == currentAccount
+    private fun isCurrentUser(
+        account: Account,
+        currentAccount: String?,
+    ) = account.userId == currentAccount
 }

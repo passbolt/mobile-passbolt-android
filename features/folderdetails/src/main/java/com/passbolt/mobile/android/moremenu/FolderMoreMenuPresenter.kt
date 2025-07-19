@@ -26,7 +26,6 @@ import com.passbolt.mobile.android.ui.FolderMoreMenuModel
  */
 
 class FolderMoreMenuPresenter : FolderMoreMenuContract.Presenter {
-
     override var view: FolderMoreMenuContract.View? = null
 
     override fun argsRetrieved(menuModel: FolderMoreMenuModel) {

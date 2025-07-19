@@ -4,8 +4,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import coil.load
-import coil.transform.CircleCropTransformation
+import coil3.load
+import coil3.request.error
+import coil3.request.placeholder
+import coil3.request.transformations
+import coil3.transform.CircleCropTransformation
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
 import com.mikepenz.fastadapter.listeners.ClickEventHook
@@ -39,13 +42,15 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
  * @since v1.0
  */
 class SwitchAccountHeaderItem(
-    val model: SwitchAccountUiModel.HeaderItem
+    val model: SwitchAccountUiModel.HeaderItem,
 ) : AbstractBindingItem<ItemSwitchAccountHeaderBinding>() {
-
     override val type: Int
         get() = R.id.switchAccountHeader
 
-    override fun bindView(binding: ItemSwitchAccountHeaderBinding, payloads: List<Any>) {
+    override fun bindView(
+        binding: ItemSwitchAccountHeaderBinding,
+        payloads: List<Any>,
+    ) {
         with(binding) {
             currentAccountIcon.visible()
             title.text = model.label
@@ -58,46 +63,43 @@ class SwitchAccountHeaderItem(
         }
     }
 
-    override fun createBinding(inflater: LayoutInflater, parent: ViewGroup?): ItemSwitchAccountHeaderBinding {
-        return ItemSwitchAccountHeaderBinding.inflate(inflater, parent, false)
-    }
+    override fun createBinding(
+        inflater: LayoutInflater,
+        parent: ViewGroup?,
+    ): ItemSwitchAccountHeaderBinding = ItemSwitchAccountHeaderBinding.inflate(inflater, parent, false)
 }
 
 class HeaderSeeDetailsClick(
-    private val clickAction: (SwitchAccountUiModel.HeaderItem) -> Unit
+    private val clickAction: (SwitchAccountUiModel.HeaderItem) -> Unit,
 ) : ClickEventHook<SwitchAccountHeaderItem>() {
-
-    override fun onBind(viewHolder: RecyclerView.ViewHolder): View? {
-        return viewHolder.asBinding<ItemSwitchAccountHeaderBinding> {
+    override fun onBind(viewHolder: RecyclerView.ViewHolder): View? =
+        viewHolder.asBinding<ItemSwitchAccountHeaderBinding> {
             it.seeDetailsBackground
         }
-    }
 
     override fun onClick(
         v: View,
         position: Int,
         fastAdapter: FastAdapter<SwitchAccountHeaderItem>,
-        item: SwitchAccountHeaderItem
+        item: SwitchAccountHeaderItem,
     ) {
         clickAction(item.model)
     }
 }
 
 class HeaderSignOutClick(
-    private val clickAction: () -> Unit
+    private val clickAction: () -> Unit,
 ) : ClickEventHook<SwitchAccountHeaderItem>() {
-
-    override fun onBind(viewHolder: RecyclerView.ViewHolder): View? {
-        return viewHolder.asBinding<ItemSwitchAccountHeaderBinding> {
+    override fun onBind(viewHolder: RecyclerView.ViewHolder): View? =
+        viewHolder.asBinding<ItemSwitchAccountHeaderBinding> {
             it.signOutBackground
         }
-    }
 
     override fun onClick(
         v: View,
         position: Int,
         fastAdapter: FastAdapter<SwitchAccountHeaderItem>,
-        item: SwitchAccountHeaderItem
+        item: SwitchAccountHeaderItem,
     ) {
         clickAction()
     }

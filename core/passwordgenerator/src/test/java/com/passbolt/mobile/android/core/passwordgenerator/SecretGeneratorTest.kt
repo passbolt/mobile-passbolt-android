@@ -39,46 +39,51 @@ import org.koin.test.inject
 class SecretGeneratorTest : KoinTest {
     @ExperimentalCoroutinesApi
     @get:Rule
-    val koinTestRule = KoinTestRule.create {
-        printLogger(Level.ERROR)
-        modules(passwordGeneratorTestModule)
-    }
+    val koinTestRule =
+        KoinTestRule.create {
+            printLogger(Level.ERROR)
+            modules(passwordGeneratorTestModule)
+        }
 
     private val secretGenerator: SecretGenerator by inject()
 
     @Test
-    fun `generate should return low entropy failure for low password settings`() = runTest {
-        val length = 3
-        val settings = PasswordGeneratorSettingsModel(
-            length = length,
-            maskUpper = true,
-            maskLower = false,
-            maskDigit = false,
-            maskParenthesis = false,
-            maskEmoji = false,
-            maskChar1 = false,
-            maskChar2 = false,
-            maskChar3 = false,
-            maskChar4 = false,
-            maskChar5 = false,
-            excludeLookAlikeChars = false
-        )
+    fun `generate should return low entropy failure for low password settings`() =
+        runTest {
+            val length = 3
+            val settings =
+                PasswordGeneratorSettingsModel(
+                    length = length,
+                    maskUpper = true,
+                    maskLower = false,
+                    maskDigit = false,
+                    maskParenthesis = false,
+                    maskEmoji = false,
+                    maskChar1 = false,
+                    maskChar2 = false,
+                    maskChar3 = false,
+                    maskChar4 = false,
+                    maskChar5 = false,
+                    excludeLookAlikeChars = false,
+                )
 
-        val passwordGenerationResult = secretGenerator.generatePassword(settings)
+            val passwordGenerationResult = secretGenerator.generatePassword(settings)
 
-        assertThat(passwordGenerationResult).isInstanceOf(FailedToGenerateLowEntropy::class.java)
-    }
+            assertThat(passwordGenerationResult).isInstanceOf(FailedToGenerateLowEntropy::class.java)
+        }
 
     @Test
-    fun `generate should return low entropy failure for low passphrase settings`() = runTest {
-        val settings = PassphraseGeneratorSettingsModel(
-            words = 1,
-            wordSeparator = "",
-            wordCase = CaseTypeModel.LOWERCASE
-        )
+    fun `generate should return low entropy failure for low passphrase settings`() =
+        runTest {
+            val settings =
+                PassphraseGeneratorSettingsModel(
+                    words = 1,
+                    wordSeparator = "",
+                    wordCase = CaseTypeModel.LOWERCASE,
+                )
 
-        val passphraseGenerationResult = secretGenerator.generatePassphrase(settings)
+            val passphraseGenerationResult = secretGenerator.generatePassphrase(settings)
 
-        assertThat(passphraseGenerationResult).isInstanceOf(FailedToGenerateLowEntropy::class.java)
-    }
+            assertThat(passphraseGenerationResult).isInstanceOf(FailedToGenerateLowEntropy::class.java)
+        }
 }

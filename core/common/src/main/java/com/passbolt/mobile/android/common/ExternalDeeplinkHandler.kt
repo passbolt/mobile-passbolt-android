@@ -31,34 +31,35 @@ import com.passbolt.mobile.android.core.localization.R as LocalizationR
  * @since v1.0
  */
 class ExternalDeeplinkHandler {
-
-    fun openWebsite(context: Context, url: String) {
+    fun openWebsite(
+        context: Context,
+        url: String,
+    ) {
         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
 
         runCatching {
             context.startActivity(intent)
+        }.onFailure {
+            Timber.e(it)
+            Toast.makeText(context, LocalizationR.string.common_failure, Toast.LENGTH_SHORT).show()
         }
-            .onFailure {
-                Timber.e(it)
-                Toast.makeText(context, LocalizationR.string.common_failure, Toast.LENGTH_SHORT).show()
-            }
     }
 
     fun openChromeNativeAutofillSettings(context: Context) {
-        val autofillSettingsIntent = Intent(Intent.ACTION_APPLICATION_PREFERENCES).apply {
-            addCategory(Intent.CATEGORY_DEFAULT)
-            addCategory(Intent.CATEGORY_APP_BROWSER)
-            addCategory(Intent.CATEGORY_PREFERENCE)
-            setPackage(context.getString(CommonR.string.chrome_native_autofill_target_package))
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK
-        }
+        val autofillSettingsIntent =
+            Intent(Intent.ACTION_APPLICATION_PREFERENCES).apply {
+                addCategory(Intent.CATEGORY_DEFAULT)
+                addCategory(Intent.CATEGORY_APP_BROWSER)
+                addCategory(Intent.CATEGORY_PREFERENCE)
+                setPackage(context.getString(CommonR.string.chrome_native_autofill_target_package))
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            }
 
         runCatching {
             context.startActivity(autofillSettingsIntent)
+        }.onFailure {
+            Timber.e(it)
+            Toast.makeText(context, LocalizationR.string.common_failure, Toast.LENGTH_SHORT).show()
         }
-            .onFailure {
-                Timber.e(it)
-                Toast.makeText(context, LocalizationR.string.common_failure, Toast.LENGTH_SHORT).show()
-            }
     }
 }

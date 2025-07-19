@@ -24,5 +24,5 @@ package com.passbolt.mobile.android.gopenpgp.model
  */
 data class DecryptedMessageAndSessionKey(
     val decryptedMessage: String,
-    val sessionKeyHex: String
+    val sessionKeyHex: String,
 )

@@ -27,10 +27,10 @@ import com.passbolt.mobile.android.core.networking.callWithHandler
  */
 class SettingsRepository(
     private val settingsDataSource: SettingsDataSource,
-    private val responseHandler: ResponseHandler
+    private val responseHandler: ResponseHandler,
 ) {
-
-    suspend fun getSettings() = callWithHandler(responseHandler) {
-        settingsDataSource.getSettings()
-    }
+    suspend fun getSettings() =
+        callWithHandler(responseHandler) {
+            settingsDataSource.getSettings()
+        }
 }

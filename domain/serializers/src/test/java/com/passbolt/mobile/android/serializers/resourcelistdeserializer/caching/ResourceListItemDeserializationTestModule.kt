@@ -59,44 +59,43 @@ internal val mockJsonSchemaValidationRunner = mock<JsonSchemaValidationRunner>()
 internal val mockGetLocalResourceTypesUseCase = mock<GetLocalResourceTypesUseCase>()
 
 @OptIn(ExperimentalCoroutinesApi::class)
-val resourceListItemDeserializationTestModule = module {
-    singleOf(::JsonSchemaValidationRunner)
-    singleOf(::ResourceListDeserializer)
-    singleOf(::TestCoroutineLaunchContext) bind CoroutineLaunchContext::class
-    single { mock<OpenPgp>() }
-    single { (resourceTypeIdToSlugMapping: Map<UUID, String>, supportedResourceTypesIds: Set<UUID>) ->
-        ResourceListItemDeserializer(
-            jsonSchemaValidationRunner = mockJsonSchemaValidationRunner,
-            gson = get(named(STRICT_ADAPTERS_ONLY_GSON)),
-            resourceTypeIdToSlugMapping = resourceTypeIdToSlugMapping,
-            supportedResourceTypesIds = supportedResourceTypesIds,
-            metadataDecryptor = mockMetadataDecryptor,
-            resourcesSnapshot = get(),
-            coroutineLaunchContext = get()
-        )
-    }
-    singleOf(::ResourceTypeIdToSlugMappingProvider)
-    single { Validator() }
-    single { mockResourcesSnapShot }
-    single { mockIdToSlugMappingUseCase }
-    factory { mockGetSelectedAccountUseCase }
-    single { mockGetLocalResourceTypesUseCase }
-    single {
-        GsonBuilder()
-            .registerTypeAdapter(
-                object : TypeToken<List<@JvmSuppressWildcards ResourceResponseDto>>() {}.type,
-                get<ResourceListDeserializer>()
+val resourceListItemDeserializationTestModule =
+    module {
+        singleOf(::JsonSchemaValidationRunner)
+        singleOf(::ResourceListDeserializer)
+        singleOf(::TestCoroutineLaunchContext) bind CoroutineLaunchContext::class
+        single { mock<OpenPgp>() }
+        single { (resourceTypeIdToSlugMapping: Map<UUID, String>, supportedResourceTypesIds: Set<UUID>) ->
+            ResourceListItemDeserializer(
+                jsonSchemaValidationRunner = mockJsonSchemaValidationRunner,
+                gson = get(named(STRICT_ADAPTERS_ONLY_GSON)),
+                resourceTypeIdToSlugMapping = resourceTypeIdToSlugMapping,
+                supportedResourceTypesIds = supportedResourceTypesIds,
+                metadataDecryptor = mockMetadataDecryptor,
+                resourcesSnapshot = get(),
+                coroutineLaunchContext = get(),
             )
-            .create()
+        }
+        singleOf(::ResourceTypeIdToSlugMappingProvider)
+        single { Validator() }
+        single { mockResourcesSnapShot }
+        single { mockIdToSlugMappingUseCase }
+        factory { mockGetSelectedAccountUseCase }
+        single { mockGetLocalResourceTypesUseCase }
+        single {
+            GsonBuilder()
+                .registerTypeAdapter(
+                    object : TypeToken<List<@JvmSuppressWildcards ResourceResponseDto>>() {}.type,
+                    get<ResourceListDeserializer>(),
+                ).create()
+        }
+        single(named(STRICT_ADAPTERS_ONLY_GSON)) {
+            GsonBuilder()
+                .apply {
+                    strictTypeAdapters.forEach {
+                        registerTypeAdapter(it.key, it.value)
+                    }
+                }.create()
+        }
+        single { mockGetLocalMetadataKeysUseCase }
     }
-    single(named(STRICT_ADAPTERS_ONLY_GSON)) {
-        GsonBuilder()
-            .apply {
-                strictTypeAdapters.forEach {
-                    registerTypeAdapter(it.key, it.value)
-                }
-            }
-            .create()
-    }
-    single { mockGetLocalMetadataKeysUseCase }
-}

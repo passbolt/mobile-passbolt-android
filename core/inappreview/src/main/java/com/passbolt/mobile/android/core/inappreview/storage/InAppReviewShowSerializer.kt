@@ -26,7 +26,6 @@ import com.passbolt.mobile.android.core.inappreview.InAppReviewShowMode
  */
 
 class InAppReviewShowSerializer {
-
     fun serialize(model: InAppReviewShowMode) =
         when (model) {
             is InAppReviewShowMode.ConsecutiveShow -> InAppReviewShowModeEnum.CONSECUTIVE_SHOW.ordinal
@@ -41,6 +40,6 @@ class InAppReviewShowSerializer {
 
     enum class InAppReviewShowModeEnum {
         FIRST_SHOW,
-        CONSECUTIVE_SHOW
+        CONSECUTIVE_SHOW,
     }
 }

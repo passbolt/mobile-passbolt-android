@@ -3,15 +3,14 @@ package com.passbolt.mobile.android.feature.autofill.encourage.accessibility
 import com.passbolt.mobile.android.feature.autofill.informationprovider.AutofillInformationProvider
 
 class EncourageAccessibilityAutofillPresenter(
-    private val autofillInformationProvider: AutofillInformationProvider
+    private val autofillInformationProvider: AutofillInformationProvider,
 ) : EncourageAccessibilityAutofillContract.Presenter {
-
     override var view: EncourageAccessibilityAutofillContract.View? = null
 
     override fun resume() {
         view?.setOverlayEnabled(autofillInformationProvider.isAccessibilityOverlayEnabled())
         view?.setAccessibilityServiceEnabled(
-            autofillInformationProvider.isAccessibilityServiceEnabled()
+            autofillInformationProvider.isAccessibilityServiceEnabled(),
         )
     }
 

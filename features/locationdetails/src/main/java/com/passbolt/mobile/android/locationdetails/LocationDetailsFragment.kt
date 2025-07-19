@@ -11,12 +11,18 @@ import com.mikepenz.fastadapter.expandable.getExpandableExtension
 import com.mikepenz.itemanimators.SlideDownAlphaAnimator
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
 import com.passbolt.mobile.android.core.extension.showSnackbar
+import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
-import com.passbolt.mobile.android.core.ui.initialsicon.InitialsIconGenerator
+import com.passbolt.mobile.android.core.resources.resourceicon.ResourceIconProvider
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
 import com.passbolt.mobile.android.feature.locationdetails.databinding.FragmentFolderLocationDetailsBinding
 import com.passbolt.mobile.android.locationdetails.recyclerview.ExpandableFolderDatasetCreator
 import com.passbolt.mobile.android.ui.FolderModel
+import com.passbolt.mobile.android.ui.ResourceModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
@@ -46,25 +52,32 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 class LocationDetailsFragment :
     BindingScopedAuthenticatedFragment<FragmentFolderLocationDetailsBinding, LocationDetailsContract.View>(
-        FragmentFolderLocationDetailsBinding::inflate
-    ), LocationDetailsContract.View {
-
+        FragmentFolderLocationDetailsBinding::inflate,
+    ),
+    LocationDetailsContract.View {
     override val presenter: LocationDetailsContract.Presenter by inject()
     private val args: LocationDetailsFragmentArgs by navArgs()
     private val fastAdapter: FastItemAdapter<GenericItem> by inject()
     private val expandableFolderDatasetCreator: ExpandableFolderDatasetCreator by inject()
-    private val initialsIconGenerator: InitialsIconGenerator by inject()
+    private val coroutineLaunchContext: CoroutineLaunchContext by inject()
+    private val job = SupervisorJob()
+    private val coroutineUiScope = CoroutineScope(job + coroutineLaunchContext.ui)
+    private val resourceIconProvider: ResourceIconProvider by inject()
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
-        binding.swipeRefresh.isEnabled = false
-        initDefaultToolbar(binding.toolbar)
+        requiredBinding.swipeRefresh.isEnabled = false
+        initDefaultToolbar(requiredBinding.toolbar)
         initLocationDetailsRecycler(savedInstanceState)
         presenter.attach(this)
         presenter.argsRetrieved(args.locationItem, args.id)
     }
 
     override fun onDestroyView() {
+        coroutineUiScope.coroutineContext.cancelChildren()
         presenter.detach()
         super.onDestroyView()
     }
@@ -86,7 +99,7 @@ class LocationDetailsFragment :
 
     private fun initLocationDetailsRecycler(savedInstanceState: Bundle?) {
         fastAdapter.withSavedInstanceState(savedInstanceState)
-        with(binding.locationRecycler) {
+        with(requiredBinding.locationRecycler) {
             layoutManager = LinearLayoutManager(requireContext())
             itemAnimator = SlideDownAlphaAnimator()
             adapter = fastAdapter
@@ -94,15 +107,15 @@ class LocationDetailsFragment :
     }
 
     override fun showFolderName(name: String) {
-        binding.name.text = name
+        requiredBinding.name.text = name
     }
 
     override fun showFolderSharedIcon() {
-        binding.icon.setImageResource(CoreUiR.drawable.ic_filled_shared_folder_with_bg)
+        requiredBinding.icon.setImageResource(CoreUiR.drawable.ic_filled_shared_folder_with_bg)
     }
 
     override fun showFolderIcon() {
-        binding.icon.setImageResource(CoreUiR.drawable.ic_filled_folder_with_bg)
+        requiredBinding.icon.setImageResource(CoreUiR.drawable.ic_filled_folder_with_bg)
     }
 
     override fun showFolderLocation(parentFolders: List<FolderModel>) {
@@ -114,24 +127,26 @@ class LocationDetailsFragment :
         }
     }
 
-    override fun displayInitialsIcon(name: String, initials: String) {
-        binding.icon.setImageDrawable(
-            initialsIconGenerator.generate(name, initials)
-        )
+    override fun displayInitialsIcon(resource: ResourceModel) {
+        coroutineUiScope.launch {
+            requiredBinding.icon.setImageDrawable(
+                resourceIconProvider.getResourceIcon(requireContext(), resource),
+            )
+        }
     }
 
     override fun hideRefreshProgress() {
-        binding.swipeRefresh.isRefreshing = false
+        requiredBinding.swipeRefresh.isRefreshing = false
     }
 
     override fun showRefreshProgress() {
-        binding.swipeRefresh.isRefreshing = true
+        requiredBinding.swipeRefresh.isRefreshing = true
     }
 
     override fun showDataRefreshError() {
         showSnackbar(
             LocalizationR.string.common_data_refresh_error,
-            backgroundColor = CoreUiR.color.red
+            backgroundColor = CoreUiR.color.red,
         )
     }
 

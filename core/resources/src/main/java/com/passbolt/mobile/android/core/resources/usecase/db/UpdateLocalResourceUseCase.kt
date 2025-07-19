@@ -30,10 +30,9 @@ import com.passbolt.mobile.android.ui.ResourceModel
  */
 class UpdateLocalResourceUseCase(
     private val databaseProvider: DatabaseProvider,
-    private val resourceModelMapper: ResourceModelMapper
+    private val resourceModelMapper: ResourceModelMapper,
 ) : AsyncUseCase<UpdateLocalResourceUseCase.Input, Unit>,
     SelectedAccountUseCase {
-
     override suspend fun execute(input: Input) {
         val db = databaseProvider.get(selectedAccountId)
         val resourcesDao = db.resourcesDao()
@@ -46,7 +45,7 @@ class UpdateLocalResourceUseCase(
             metadataJson = requireNotNull(input.resourceModel.metadataJsonModel.json),
             name = input.resourceModel.metadataJsonModel.name,
             username = input.resourceModel.metadataJsonModel.username,
-            description = input.resourceModel.metadataJsonModel.description
+            description = input.resourceModel.metadataJsonModel.description,
         )
 
         resourceUriDao.apply {
@@ -58,6 +57,6 @@ class UpdateLocalResourceUseCase(
     }
 
     data class Input(
-        val resourceModel: ResourceModel
+        val resourceModel: ResourceModel,
     )
 }

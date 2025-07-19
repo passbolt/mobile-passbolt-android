@@ -3,10 +3,13 @@ package com.passbolt.mobile.android.core.coil.transformation
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Paint
-import coil.size.Size
-import coil.transform.Transformation
+import androidx.core.graphics.createBitmap
+import coil3.size.Size
+import coil3.transform.Transformation
 
-class AlphaTransformation(private val shouldLowerOpacity: Boolean) : Transformation {
+class AlphaTransformation(
+    private val shouldLowerOpacity: Boolean,
+) : Transformation() {
     override val cacheKey: String
         get() = javaClass.name + "$transformAlpha"
 
@@ -15,8 +18,11 @@ class AlphaTransformation(private val shouldLowerOpacity: Boolean) : Transformat
 
     private val alphaPaint = Paint().apply { alpha = transformAlpha }
 
-    override suspend fun transform(input: Bitmap, size: Size): Bitmap {
-        val newBitmap = Bitmap.createBitmap(input.width, input.height, Bitmap.Config.ARGB_8888)
+    override suspend fun transform(
+        input: Bitmap,
+        size: Size,
+    ): Bitmap {
+        val newBitmap = createBitmap(input.width, input.height)
         Canvas(newBitmap).drawBitmap(input, 0f, 0f, alphaPaint)
         return newBitmap
     }

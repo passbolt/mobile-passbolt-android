@@ -30,14 +30,13 @@ import android.os.Build
  * @since v1.0
  */
 class EnvInfoProvider(
-    private val packageInfo: PackageInfo
+    private val packageInfo: PackageInfo,
 ) {
-
     fun provideEnvInfo() =
         EnvInfo(
             deviceName = DEVICE_NAME,
             osName = OS_NAME,
-            appName = "${packageInfo.versionName}-${packageInfo.longVersionCode}"
+            appName = "${packageInfo.versionName}-${packageInfo.longVersionCode}",
         )
 
     private companion object {

@@ -27,15 +27,13 @@ import com.passbolt.mobile.android.ui.RbacModel
 
 class RbacInteractor(
     private val fetchRbacPermissionsUseCase: FetchRbacPermissionsUseCase,
-    private val saveRbacRulesUseCase: SaveRbacRulesUseCase
+    private val saveRbacRulesUseCase: SaveRbacRulesUseCase,
 ) {
-
-    suspend fun fetchAndSaveRbacRulesFlags(): Output {
-        return when (val response = fetchRbacPermissionsUseCase.execute(Unit)) {
+    suspend fun fetchAndSaveRbacRulesFlags(): Output =
+        when (val response = fetchRbacPermissionsUseCase.execute(Unit)) {
             is FetchRbacPermissionsUseCase.Output.Failure<*> -> Output.Failure
             is FetchRbacPermissionsUseCase.Output.Success -> saveRbacRules(response.rbacModel)
         }
-    }
 
     private suspend fun saveRbacRules(rbacModel: RbacModel): Output {
         saveRbacRulesUseCase.execute(SaveRbacRulesUseCase.Input(rbacModel))
@@ -43,8 +41,9 @@ class RbacInteractor(
     }
 
     sealed class Output {
-
-        data class Success(val rbacModel: RbacModel) : Output()
+        data class Success(
+            val rbacModel: RbacModel,
+        ) : Output()
 
         data object Failure : Output()
     }

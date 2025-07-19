@@ -30,7 +30,6 @@ import com.passbolt.mobile.android.entity.metadata.MetadataPrivateKey
  */
 @Dao
 interface MetadataPrivateKeysDao : BaseDao<MetadataPrivateKey> {
-
     @Transaction
     @Query("DELETE FROM MetadataPrivateKey")
     suspend fun deleteAll()

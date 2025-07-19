@@ -53,18 +53,17 @@ import org.junit.runner.RunWith
 import org.koin.test.KoinTest
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
-
 @RunWith(AndroidJUnit4::class)
 @MediumTest
 class WelcomeScreenTest : KoinTest {
-
     @get:Rule
-    val activityRule = lazyActivityScenarioRule<SetUpActivity>(
-        koinOverrideModules = listOf(instrumentationTestsModule)
-    )
+    val activityRule =
+        lazyActivityScenarioRule<SetUpActivity>(
+            koinOverrideModules = listOf(instrumentationTestsModule),
+        )
 
-    @Test
     //    https://passbolt.testrail.io/index.php?/cases/view/2332
+    @Test
     fun asAMobileUserICanSeeTheWelcomeScreenWhenIOpenTheApplicationAndNoAccountIsSetup() {
         //    Given     that the application is not configured for any users
         //    When      I launch the application
@@ -84,8 +83,8 @@ class WelcomeScreenTest : KoinTest {
         onView(withId(R.id.helpButton)).check(matches(isDisplayed()))
     }
 
-    @Test
     //    https://passbolt.testrail.io/index.php?/cases/view/2333
+    @Test
     fun asAMobileUserICanSeeAnExplanationWhyICannotCreateAnAccountOnTheMobileApp() {
         //      Given   the welcome screen is displayed
         //      When    the user click on the "I don't have an account" button
@@ -101,8 +100,8 @@ class WelcomeScreenTest : KoinTest {
             .check(matches(isClickable()))
     }
 
-    @Test
     //    https://passbolt.testrail.io/index.php?/cases/view/6190
+    @Test
     fun asAMobileUserICanGetHelpBeforeTheQrCodeScanningProcess() {
         //    Given   the user is on the “Welcome” screen
         //    When    the user clicks on the “information” icon on the top
@@ -114,30 +113,31 @@ class WelcomeScreenTest : KoinTest {
         //    And     an "Access the logs" button is available
         onView(withId(com.passbolt.mobile.android.feature.helpmenu.R.id.accessLogs)).check(matches(isDisplayed()))
         //    And     a "Visit help site" button is available
-        onView(withId(com.passbolt.mobile.android.feature.settings.R.id.visitHelpWebsite)).check(matches(isDisplayed()))
+        onView(withId(com.passbolt.mobile.android.feature.helpmenu.R.id.visitHelpWebsite)).check(matches(isDisplayed()))
     }
 
-    @Test
     //    https://passbolt.testrail.io/index.php?/cases/view/6191
+    @Test
     fun asAMobileUserICanOpenHelpWebpageBeforeTheQrCodeScanningProcess() {
         Intents.init()
 
         //        Given   the user is on the “Help” modal
         onView(withId(R.id.helpButton)).perform(click())
         //        When    the user clicks on the “Visit help site” button
-        onView(withId(com.passbolt.mobile.android.feature.settings.R.id.visitHelpWebsite)).perform(click())
+        onView(withId(com.passbolt.mobile.android.feature.helpmenu.R.id.visitHelpWebsite)).perform(click())
         //        Then    a webpage with help is presented
-        val expectedIntent: Matcher<Intent> = allOf(
-            hasAction(Intent.ACTION_VIEW),
-            hasData(getString(LocalizationR.string.help_website))
-        )
+        val expectedIntent: Matcher<Intent> =
+            allOf(
+                hasAction(Intent.ACTION_VIEW),
+                hasData(getString(LocalizationR.string.help_website)),
+            )
         intended(expectedIntent)
 
         Intents.release()
     }
 
-    @Test
     //    https://passbolt.testrail.io/index.php?/cases/view/2334
+    @Test
     fun asAMobileUserICanSeeAnExplanationOnHowToConnectAnExistingAccount() {
         //        Given   the welcome screen is displayed
         //        When    the user clicks on “connect to an existing account”

@@ -35,35 +35,36 @@ import com.passbolt.mobile.android.ui.PasswordGeneratorTypeModel
 import com.passbolt.mobile.android.ui.PasswordPolicies
 
 class PasswordPoliciesMapper {
+    fun map(dto: PasswordPoliciesDto) =
+        PasswordPolicies(
+            defaultGenerator = dto.defaultGenerator.mapToPasswordGeneratorTypeModel(),
+            passwordGeneratorSettings = dto.passwordGeneratorSettings.mapToPasswordGeneratorSettingsModel(),
+            passphraseGeneratorSettings = dto.passphraseGeneratorSettings.mapToPassphraseGeneratorSettingsModel(),
+            isExternalDictionaryCheckEnabled = dto.externalDictionaryCheck,
+        )
 
-    fun map(dto: PasswordPoliciesDto) = PasswordPolicies(
-        defaultGenerator = dto.defaultGenerator.mapToPasswordGeneratorTypeModel(),
-        passwordGeneratorSettings = dto.passwordGeneratorSettings.mapToPasswordGeneratorSettingsModel(),
-        passphraseGeneratorSettings = dto.passphraseGeneratorSettings.mapToPassphraseGeneratorSettingsModel(),
-        isExternalDictionaryCheckEnabled = dto.externalDictionaryCheck
-    )
+    private fun PasswordGeneratorType.mapToPasswordGeneratorTypeModel() =
+        when (this) {
+            PasswordGeneratorType.PASSWORD -> PasswordGeneratorTypeModel.PASSWORD
+            PasswordGeneratorType.PASSPHRASE -> PasswordGeneratorTypeModel.PASSPHRASE
+        }
 
-    private fun PasswordGeneratorType.mapToPasswordGeneratorTypeModel() = when (this) {
-        PasswordGeneratorType.PASSWORD -> PasswordGeneratorTypeModel.PASSWORD
-        PasswordGeneratorType.PASSPHRASE -> PasswordGeneratorTypeModel.PASSPHRASE
-    }
+    private fun CaseType.mapToWordCaseModel() =
+        when (this) {
+            CaseType.LOWERCASE -> CaseTypeModel.LOWERCASE
+            CaseType.UPPERCASE -> CaseTypeModel.UPPERCASE
+            CaseType.CAMELCASE -> CaseTypeModel.CAMELCASE
+        }
 
-    private fun CaseType.mapToWordCaseModel() = when (this) {
-        CaseType.LOWERCASE -> CaseTypeModel.LOWERCASE
-        CaseType.UPPERCASE -> CaseTypeModel.UPPERCASE
-        CaseType.CAMELCASE -> CaseTypeModel.CAMELCASE
-    }
-
-    private fun PassphraseGeneratorSettings.mapToPassphraseGeneratorSettingsModel(): PassphraseGeneratorSettingsModel {
-        return PassphraseGeneratorSettingsModel(
+    private fun PassphraseGeneratorSettings.mapToPassphraseGeneratorSettingsModel(): PassphraseGeneratorSettingsModel =
+        PassphraseGeneratorSettingsModel(
             words = words,
             wordSeparator = wordSeparator,
-            wordCase = wordCase.mapToWordCaseModel()
+            wordCase = wordCase.mapToWordCaseModel(),
         )
-    }
 
-    private fun PasswordGeneratorSettings.mapToPasswordGeneratorSettingsModel(): PasswordGeneratorSettingsModel {
-        return PasswordGeneratorSettingsModel(
+    private fun PasswordGeneratorSettings.mapToPasswordGeneratorSettingsModel(): PasswordGeneratorSettingsModel =
+        PasswordGeneratorSettingsModel(
             length = length,
             maskUpper = maskUpper,
             maskLower = maskLower,
@@ -75,7 +76,6 @@ class PasswordPoliciesMapper {
             maskChar3 = maskChar3,
             maskChar4 = maskChar4,
             maskChar5 = maskChar5,
-            excludeLookAlikeChars = excludeLookAlikeChars
+            excludeLookAlikeChars = excludeLookAlikeChars,
         )
-    }
 }

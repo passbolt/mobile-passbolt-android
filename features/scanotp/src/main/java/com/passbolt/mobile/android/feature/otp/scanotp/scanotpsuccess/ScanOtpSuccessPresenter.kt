@@ -63,10 +63,10 @@ class ScanOtpSuccessPresenter(
     private val idToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider,
     private val getDefaultCreateContentTypeUseCase: GetDefaultCreateContentTypeUseCase,
     private val metadataPrivateKeysHelperInteractor: MetadataPrivateKeysHelperInteractor,
-    coroutineLaunchContext: CoroutineLaunchContext
+    coroutineLaunchContext: CoroutineLaunchContext,
 ) : BaseAuthenticatedPresenter<ScanOtpSuccessContract.View>(coroutineLaunchContext),
-    ScanOtpSuccessContract.Presenter, KoinComponent {
-
+    ScanOtpSuccessContract.Presenter,
+    KoinComponent {
     override var view: ScanOtpSuccessContract.View? = null
     private val job = SupervisorJob()
     private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
@@ -74,7 +74,10 @@ class ScanOtpSuccessPresenter(
     private lateinit var scannedTotp: OtpParseResult.OtpQr.TotpQr
     private var parentFolderId: String? = null
 
-    override fun argsRetrieved(scannedTotp: OtpParseResult.OtpQr.TotpQr, parentFolderId: String?) {
+    override fun argsRetrieved(
+        scannedTotp: OtpParseResult.OtpQr.TotpQr,
+        parentFolderId: String?,
+    ) {
         this.scannedTotp = scannedTotp
         this.parentFolderId = parentFolderId
     }
@@ -82,32 +85,37 @@ class ScanOtpSuccessPresenter(
     override fun createStandaloneOtpClick() {
         scope.launch {
             view?.showProgress()
-            val resourceCreateActionsInteractor = get<ResourceCreateActionsInteractor> {
-                parametersOf(needSessionRefreshFlow, sessionRefreshedFlow)
-            }
-            val defaultType = getDefaultCreateContentTypeUseCase.execute(
-                GetDefaultCreateContentTypeUseCase.Input(LeadingContentType.TOTP)
-            )
+            val resourceCreateActionsInteractor =
+                get<ResourceCreateActionsInteractor> {
+                    parametersOf(needSessionRefreshFlow, sessionRefreshedFlow)
+                }
+            val defaultType =
+                getDefaultCreateContentTypeUseCase.execute(
+                    GetDefaultCreateContentTypeUseCase.Input(LeadingContentType.TOTP),
+                )
 
             performResourceCreateAction(
                 action = {
                     resourceCreateActionsInteractor.createGenericResource(
                         resourceParentFolderId = parentFolderId,
                         contentType = defaultType.contentType,
-                        metadataJsonModel = MetadataJsonModel.empty().apply {
-                            name = scannedTotp.label
-                            scannedTotp.issuer?.let {
-                                setMainUri(defaultType.contentType, it)
-                            }
-                        },
-                        secretJsonModel = SecretJsonModel.emptyTotp().apply {
-                            totp = TotpSecret(
-                                algorithm = scannedTotp.algorithm.name,
-                                key = scannedTotp.secret,
-                                period = scannedTotp.period,
-                                digits = scannedTotp.digits
-                            )
-                        }
+                        metadataJsonModel =
+                            MetadataJsonModel.empty().apply {
+                                name = scannedTotp.label
+                                scannedTotp.issuer?.let {
+                                    setMainUri(defaultType.contentType, it)
+                                }
+                            },
+                        secretJsonModel =
+                            SecretJsonModel.emptyTotp().apply {
+                                totp =
+                                    TotpSecret(
+                                        algorithm = scannedTotp.algorithm.name,
+                                        key = scannedTotp.secret,
+                                        period = scannedTotp.period,
+                                        digits = scannedTotp.digits,
+                                    )
+                            },
                     )
                 },
                 doOnFailure = { view?.showGenericError() },
@@ -117,7 +125,7 @@ class ScanOtpSuccessPresenter(
                 doOnCannotCreateWithCurrentConfig = { view?.showCannotUpdateTotpWithCurrentConfig() },
                 doOnMetadataKeyModified = { view?.showMetadataKeyModifiedDialog(it) },
                 doOnMetadataKeyDeleted = { view?.showMetadataKeyDeletedDialog(it) },
-                doOnMetadataKeyVerificationFailure = { view?.showFailedToVerifyMetadataKey() }
+                doOnMetadataKeyVerificationFailure = { view?.showFailedToVerifyMetadataKey() },
             )
             view?.hideProgress()
         }
@@ -130,48 +138,58 @@ class ScanOtpSuccessPresenter(
         }
     }
 
-    override fun linkedResourceReceived(action: PickResourceAction, resource: ResourceModel) {
+    @Suppress("LongMethod")
+    override fun linkedResourceReceived(
+        action: PickResourceAction,
+        resource: ResourceModel,
+    ) {
         scope.launch {
             view?.showProgress()
 
-            val slug = idToSlugMappingProvider.provideMappingForSelectedAccount()[
-                UUID.fromString(resource.resourceTypeId)
-            ]
-            val resourceUpdateActionsInteractor = get<ResourceUpdateActionsInteractor> {
-                parametersOf(resource, needSessionRefreshFlow, sessionRefreshedFlow)
-            }
+            val slug =
+                idToSlugMappingProvider.provideMappingForSelectedAccount()[
+                    UUID.fromString(resource.resourceTypeId),
+                ]
+            val resourceUpdateActionsInteractor =
+                get<ResourceUpdateActionsInteractor> {
+                    parametersOf(resource, needSessionRefreshFlow, sessionRefreshedFlow)
+                }
             val updateOperation =
                 when (ContentType.fromSlug(slug!!)) {
-                    is PasswordAndDescription, V5Default -> suspend {
-                        resourceUpdateActionsInteractor.updateGenericResource(
-                            UpdateAction.ADD_TOTP,
-                            secretModification = {
-                                it.apply {
-                                    totp = TotpSecret(
-                                        algorithm = scannedTotp.algorithm.name,
-                                        key = scannedTotp.secret,
-                                        period = scannedTotp.period,
-                                        digits = scannedTotp.digits
-                                    )
-                                }
-                            }
-                        )
-                    }
-                    is PasswordDescriptionTotp, V5DefaultWithTotp -> suspend {
-                        resourceUpdateActionsInteractor.updateGenericResource(
-                            UpdateAction.ADD_TOTP,
-                            secretModification = {
-                                it.apply {
-                                    totp = TotpSecret(
-                                        algorithm = scannedTotp.algorithm.name,
-                                        key = scannedTotp.secret,
-                                        period = scannedTotp.period,
-                                        digits = scannedTotp.digits
-                                    )
-                                }
-                            }
-                        )
-                    }
+                    is PasswordAndDescription, V5Default ->
+                        suspend {
+                            resourceUpdateActionsInteractor.updateGenericResource(
+                                UpdateAction.ADD_TOTP,
+                                secretModification = {
+                                    it.apply {
+                                        totp =
+                                            TotpSecret(
+                                                algorithm = scannedTotp.algorithm.name,
+                                                key = scannedTotp.secret,
+                                                period = scannedTotp.period,
+                                                digits = scannedTotp.digits,
+                                            )
+                                    }
+                                },
+                            )
+                        }
+                    is PasswordDescriptionTotp, V5DefaultWithTotp ->
+                        suspend {
+                            resourceUpdateActionsInteractor.updateGenericResource(
+                                UpdateAction.ADD_TOTP,
+                                secretModification = {
+                                    it.apply {
+                                        totp =
+                                            TotpSecret(
+                                                algorithm = scannedTotp.algorithm.name,
+                                                key = scannedTotp.secret,
+                                                period = scannedTotp.period,
+                                                digits = scannedTotp.digits,
+                                            )
+                                    }
+                                },
+                            )
+                        }
                     else ->
                         throw IllegalArgumentException("$slug resource type is not possible to link")
                 }
@@ -185,7 +203,7 @@ class ScanOtpSuccessPresenter(
                 doOnCannotEditWithCurrentConfig = { view?.showCannotUpdateTotpWithCurrentConfig() },
                 doOnMetadataKeyModified = { view?.showMetadataKeyModifiedDialog(it) },
                 doOnMetadataKeyDeleted = { view?.showMetadataKeyDeletedDialog(it) },
-                doOnMetadataKeyVerificationFailure = { view?.showFailedToVerifyMetadataKey() }
+                doOnMetadataKeyVerificationFailure = { view?.showFailedToVerifyMetadataKey() },
             )
 
             view?.hideProgress()
@@ -210,9 +228,12 @@ class ScanOtpSuccessPresenter(
     override fun trustNewMetadataKey(model: NewMetadataKeyToTrustModel) {
         scope.launch {
             view?.showProgress()
-            when (val output = runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
-                metadataPrivateKeysHelperInteractor.trustNewKey(model)
-            }) {
+            when (
+                val output =
+                    runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+                        metadataPrivateKeysHelperInteractor.trustNewKey(model)
+                    }
+            ) {
                 is MetadataPrivateKeysHelperInteractor.Output.Success ->
                     view?.showNewMetadataKeyIsTrusted()
                 else -> {

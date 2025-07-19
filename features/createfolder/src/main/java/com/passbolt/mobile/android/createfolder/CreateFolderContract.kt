@@ -27,28 +27,40 @@ import com.passbolt.mobile.android.ui.PermissionModelUi
  */
 
 interface CreateFolderContract {
-
     interface View : BaseAuthenticatedContract.View {
         fun showFolderLocation(parentFolders: List<String>)
+
         fun showPermissions(
             groupPermissions: List<PermissionModelUi.GroupPermissionModel>,
             userPermissions: List<PermissionModelUi.UserPermissionModel>,
             counterValue: List<String>,
-            overlap: Int
+            overlap: Int,
         )
 
         fun showFolderNameLenghtValidationError(folderNameMaxLength: Int)
+
         fun clearValidationErrors()
+
         fun showProgress()
+
         fun hideProgress()
+
         fun showCreateFolderError(errorMessage: String)
+
         fun setFolderCreatedResultAndClose(folderName: String)
+
         fun showShareFailure(errorMessage: String)
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
-        fun argsRetrieved(parentFolderId: String?, sharedWithWidth: Int, sharedWithAvatarWidth: Float)
+        fun argsRetrieved(
+            parentFolderId: String?,
+            sharedWithWidth: Int,
+            sharedWithAvatarWidth: Float,
+        )
+
         fun saveClick()
+
         fun folderNameChanged(folderName: String)
     }
 }

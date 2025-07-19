@@ -36,13 +36,16 @@ import java.net.HttpURLConnection
 class VerifyTotpUseCase(
     private val mfaRepository: MfaRepository,
     private val cookieExtractor: CookieExtractor,
-    private val errorHeaderMapper: ErrorHeaderMapper
+    private val errorHeaderMapper: ErrorHeaderMapper,
 ) : AsyncUseCase<VerifyTotpUseCase.Input, VerifyTotpUseCase.Output> {
-
     override suspend fun execute(input: Input): Output =
-        when (val result = mfaRepository.verifyTotp(
-            TotpRequest(input.totp, input.remember), "Bearer ${input.jwtHeader}"
-        )) {
+        when (
+            val result =
+                mfaRepository.verifyTotp(
+                    TotpRequest(input.totp, input.remember),
+                    "Bearer ${input.jwtHeader}",
+                )
+        ) {
             is NetworkResult.Failure.NetworkError -> Output.Failure(result)
             is NetworkResult.Failure.ServerError -> Output.Failure(result)
             is NetworkResult.Success -> {
@@ -69,36 +72,39 @@ class VerifyTotpUseCase(
     data class Input(
         val totp: String,
         val jwtHeader: String,
-        val remember: Boolean
+        val remember: Boolean,
     )
 
     sealed class Output : AuthenticatedUseCaseOutput {
-
         override val authenticationState: AuthenticationState
-            get() = when {
-                this is Failure<*> && this.response.isUnauthorized ->
-                    AuthenticationState.Unauthenticated(AuthenticationState.Unauthenticated.Reason.Session)
-                this is Failure<*> && this.response.isMfaRequired -> {
-                    val providers = MfaTypeProvider.get(this.response)
+            get() =
+                when {
+                    this is Failure<*> && this.response.isUnauthorized ->
+                        AuthenticationState.Unauthenticated(AuthenticationState.Unauthenticated.Reason.Session)
+                    this is Failure<*> && this.response.isMfaRequired -> {
+                        val providers = MfaTypeProvider.get(this.response)
 
-                    AuthenticationState.Unauthenticated(
-                        AuthenticationState.Unauthenticated.Reason.Mfa(providers)
-                    )
+                        AuthenticationState.Unauthenticated(
+                            AuthenticationState.Unauthenticated.Reason.Mfa(providers),
+                        )
+                    }
+                    else -> AuthenticationState.Authenticated
                 }
-                else -> AuthenticationState.Authenticated
-            }
 
         data class Success(
-            val mfaHeader: String?
+            val mfaHeader: String?,
         ) : Output()
 
         data class NetworkFailure(
-            val errorCode: Int
+            val errorCode: Int,
         ) : Output()
 
         data object Unauthorized : Output()
 
-        class Failure<T : Any>(val response: NetworkResult.Failure<T>) : Output()
+        class Failure<T : Any>(
+            val response: NetworkResult.Failure<T>,
+        ) : Output()
+
         data object WrongCode : Output()
     }
 

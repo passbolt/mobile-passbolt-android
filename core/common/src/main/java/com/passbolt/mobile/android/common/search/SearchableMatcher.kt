@@ -23,11 +23,13 @@ package com.passbolt.mobile.android.common.search
  * @since v1.0
  */
 class SearchableMatcher {
-
-    fun matches(searchable: Searchable, query: String): Boolean =
-        searchable.searchCriteria.removeWhiteSpace()
+    fun matches(
+        searchable: Searchable,
+        query: String,
+    ): Boolean =
+        searchable.searchCriteria
+            .removeWhiteSpace()
             .contains(query.removeWhiteSpace(), ignoreCase = true)
 
-    private fun String.removeWhiteSpace() =
-        replace("\\s".toRegex(), "")
+    private fun String.removeWhiteSpace() = replace("\\s".toRegex(), "")
 }

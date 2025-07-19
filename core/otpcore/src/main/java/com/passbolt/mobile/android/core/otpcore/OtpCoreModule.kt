@@ -26,7 +26,8 @@ package com.passbolt.mobile.android.core.otpcore
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
-val otpCoreModule = module {
-    singleOf(::TotpParametersProvider)
-    singleOf(::OtpMapper)
-}
+val otpCoreModule =
+    module {
+        singleOf(::TotpParametersProvider)
+        singleOf(::OtpMapper)
+    }

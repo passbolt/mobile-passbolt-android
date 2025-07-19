@@ -26,18 +26,23 @@ import com.passbolt.mobile.android.core.mvp.BaseContract
  */
 
 interface EncourageAutofillContract {
-
     interface View : BaseContract.View {
         fun openAutofillSettings()
+
         fun showAutofillNotSupported()
+
         fun closeWithSuccess()
+
         fun close()
     }
 
     interface Presenter : BaseContract.Presenter<View> {
         fun goToSettingsClick()
+
         fun autofillSettingsClosedWithResult()
+
         fun closeClick()
+
         fun maybeLaterClick()
     }
 }

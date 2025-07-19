@@ -30,20 +30,21 @@ import com.passbolt.mobile.android.ui.ResourceTypeModel
  */
 class GetLocalResourceTypesUseCase(
     private val databaseProvider: DatabaseProvider,
-    private val resourceTypesModelMapper: ResourceTypesModelMapper
-) : AsyncUseCase<Unit, GetLocalResourceTypesUseCase.Output>, SelectedAccountUseCase {
-
+    private val resourceTypesModelMapper: ResourceTypesModelMapper,
+) : AsyncUseCase<Unit, GetLocalResourceTypesUseCase.Output>,
+    SelectedAccountUseCase {
     override suspend fun execute(input: Unit): Output {
-        val resourceTypes = databaseProvider
-            .get(selectedAccountId)
-            .resourceTypesDao()
-            .getAll()
-            .map(resourceTypesModelMapper::map)
+        val resourceTypes =
+            databaseProvider
+                .get(selectedAccountId)
+                .resourceTypesDao()
+                .getAll()
+                .map(resourceTypesModelMapper::map)
 
         return Output(resourceTypes)
     }
 
     data class Output(
-        val resourceTypes: List<ResourceTypeModel>
+        val resourceTypes: List<ResourceTypeModel>,
     )
 }

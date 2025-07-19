@@ -39,9 +39,8 @@ class SignOutUseCase(
     private val authRepository: AuthRepository,
     private val signOutMapper: SignOutMapper,
     private val getSessionUseCase: GetSessionUseCase,
-    private val signOutIdlingResource: SignOutIdlingResource
+    private val signOutIdlingResource: SignOutIdlingResource,
 ) : AsyncUseCase<Unit, Unit> {
-
     override suspend fun execute(input: Unit) {
         signOutIdlingResource.setIdle(false)
         getSessionUseCase.execute(Unit).refreshToken?.let {

@@ -26,14 +26,15 @@ import com.passbolt.mobile.android.core.mvp.BaseContract
  */
 
 interface TransferAccountOnboardingContract {
-
     interface View : BaseContract.View {
         fun navigateToTransferAccount()
+
         fun navigateToRefreshPassphrase()
     }
 
     interface Presenter : BaseContract.Presenter<View> {
         fun startTransferButtonClick()
+
         fun authenticationSucceeded()
     }
 }

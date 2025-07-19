@@ -42,5 +42,5 @@ data class AccountKitDto(
     @SerialName("user_id")
     val userId: UUID,
     val domain: String,
-    val username: String
+    val username: String,
 )

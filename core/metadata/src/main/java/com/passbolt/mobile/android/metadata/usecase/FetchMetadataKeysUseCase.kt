@@ -33,9 +33,8 @@ import com.passbolt.mobile.android.ui.MetadataKeyModel
  */
 class FetchMetadataKeysUseCase(
     private val metadataRepository: MetadataRepository,
-    private val metadataMapper: MetadataMapper
+    private val metadataMapper: MetadataMapper,
 ) : AsyncUseCase<Unit, FetchMetadataKeysUseCase.Output> {
-
     override suspend fun execute(input: Unit): Output =
         when (val response = metadataRepository.getMetadataKeys()) {
             is NetworkResult.Failure -> Output.Failure(response)
@@ -45,24 +44,26 @@ class FetchMetadataKeysUseCase(
         }
 
     sealed class Output : AuthenticatedUseCaseOutput {
-
         override val authenticationState: AuthenticationState
-            get() = when {
-                this is Failure<*> && this.response.isUnauthorized ->
-                    AuthenticationState.Unauthenticated(AuthenticationState.Unauthenticated.Reason.Session)
-                this is Failure<*> && this.response.isMfaRequired -> {
-                    val providers = MfaTypeProvider.get(this.response)
-                    AuthenticationState.Unauthenticated(
-                        AuthenticationState.Unauthenticated.Reason.Mfa(providers)
-                    )
+            get() =
+                when {
+                    this is Failure<*> && this.response.isUnauthorized ->
+                        AuthenticationState.Unauthenticated(AuthenticationState.Unauthenticated.Reason.Session)
+                    this is Failure<*> && this.response.isMfaRequired -> {
+                        val providers = MfaTypeProvider.get(this.response)
+                        AuthenticationState.Unauthenticated(
+                            AuthenticationState.Unauthenticated.Reason.Mfa(providers),
+                        )
+                    }
+                    else -> AuthenticationState.Authenticated
                 }
-                else -> AuthenticationState.Authenticated
-            }
 
         data class Success(
-            val metadataKeysModel: List<MetadataKeyModel>
+            val metadataKeysModel: List<MetadataKeyModel>,
         ) : Output()
 
-        data class Failure<T : Any>(val response: NetworkResult.Failure<T>) : Output()
+        data class Failure<T : Any>(
+            val response: NetworkResult.Failure<T>,
+        ) : Output()
     }
 }

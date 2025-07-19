@@ -26,7 +26,8 @@ import org.koin.dsl.module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-val groupDetailsModule = module {
-    groupMembersModule()
-    groupMemberDetailsModule()
-}
+val groupDetailsModule =
+    module {
+        groupMembersModule()
+        groupMemberDetailsModule()
+    }

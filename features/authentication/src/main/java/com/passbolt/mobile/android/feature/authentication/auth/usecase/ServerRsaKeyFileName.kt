@@ -23,8 +23,9 @@ package com.passbolt.mobile.android.feature.authentication.auth.usecase
  * @since v1.0
  */
 
-class ServerRsaKeyFileName(userId: String) {
-
+class ServerRsaKeyFileName(
+    userId: String,
+) {
     val name = SERVER_RSA_KEY_FILE_NAME_FORMAT.format(userId)
 
     private companion object {

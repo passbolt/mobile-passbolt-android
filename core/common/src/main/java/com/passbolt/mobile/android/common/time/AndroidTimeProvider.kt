@@ -26,7 +26,5 @@ import java.time.Instant
  */
 
 class AndroidTimeProvider : TimeProvider {
-
-    override fun getCurrentEpochSeconds(): Long =
-        Instant.now().epochSecond
+    override fun getCurrentEpochSeconds(): Long = Instant.now().epochSecond
 }

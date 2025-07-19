@@ -23,9 +23,10 @@
 
 package com.passbolt.mobile.android.serializers.gson
 
-val strictTypeAdapters = mapOf(
-    Boolean::class.java to BooleanStrictTypeAdapter(),
-    Int::class.java to IntStrictTypeAdapter(),
-    Long::class.java to LongStrictTypeAdapter(),
-    String::class.java to StringStrictTypeAdapter()
-)
+val strictTypeAdapters =
+    mapOf(
+        Boolean::class.java to BooleanStrictTypeAdapter(),
+        Int::class.java to IntStrictTypeAdapter(),
+        Long::class.java to LongStrictTypeAdapter(),
+        String::class.java to StringStrictTypeAdapter(),
+    )

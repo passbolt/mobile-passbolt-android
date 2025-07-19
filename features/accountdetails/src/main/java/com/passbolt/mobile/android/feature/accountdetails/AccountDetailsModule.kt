@@ -27,7 +27,8 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-val accountDetailsModule = module {
-    accountDetailsModule()
-    transferAccountOnboardingModule()
-}
+val accountDetailsModule =
+    module {
+        accountDetailsModule()
+        transferAccountOnboardingModule()
+    }

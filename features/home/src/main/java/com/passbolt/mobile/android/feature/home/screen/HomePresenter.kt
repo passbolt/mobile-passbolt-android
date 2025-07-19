@@ -21,14 +21,14 @@
  * @since v1.0
  */
 
+package com.passbolt.mobile.android.feature.home.screen
+
 /**
  * Presenter responsible for managing the home resource list. The general flow is to fetch resources and resource types
  * from the backend on start and update the database. Then when applying different views (all, favourite,
  * shared with me, etc.) the reload is done from the database only. To refresh from backend again users can do the
  * swipe to refresh gesture.
  */
-
-package com.passbolt.mobile.android.feature.home.screen
 
 import com.passbolt.mobile.android.common.extension.areListsEmpty
 import com.passbolt.mobile.android.common.search.Searchable
@@ -103,10 +103,10 @@ class HomePresenter(
     private val getLocalFolderUseCase: GetLocalFolderDetailsUseCase,
     private val deleteResourceIdlingResource: DeleteResourceIdlingResource,
     private val totpParametersProvider: TotpParametersProvider,
-    private val getRbacRulesUseCase: GetRbacRulesUseCase
-) : DataRefreshViewReactivePresenter<HomeContract.View>(coroutineLaunchContext), HomeContract.Presenter,
+    private val getRbacRulesUseCase: GetRbacRulesUseCase,
+) : DataRefreshViewReactivePresenter<HomeContract.View>(coroutineLaunchContext),
+    HomeContract.Presenter,
     KoinComponent {
-
     override var view: HomeContract.View? = null
     private val job = SupervisorJob()
     private val coroutineScope = CoroutineScope(job + coroutineLaunchContext.ui)
@@ -135,13 +135,15 @@ class HomePresenter(
     private val resourcePropertiesActionsInteractor: ResourcePropertiesActionsInteractor
         get() = get { parametersOf(requireNotNull(currentMoreMenuResource)) }
     private val secretPropertiesActionsInteractor: SecretPropertiesActionsInteractor
-        get() = get {
-            parametersOf(requireNotNull(currentMoreMenuResource), needSessionRefreshFlow, sessionRefreshedFlow)
-        }
+        get() =
+            get {
+                parametersOf(requireNotNull(currentMoreMenuResource), needSessionRefreshFlow, sessionRefreshedFlow)
+            }
     private val resourceCommonActionsInteractor: ResourceCommonActionsInteractor
-        get() = get {
-            parametersOf(requireNotNull(currentMoreMenuResource), needSessionRefreshFlow, sessionRefreshedFlow)
-        }
+        get() =
+            get {
+                parametersOf(requireNotNull(currentMoreMenuResource), needSessionRefreshFlow, sessionRefreshedFlow)
+            }
 
     private var refreshInProgress: Boolean = true
 
@@ -150,12 +152,12 @@ class HomePresenter(
         homeDisplayView: HomeDisplayViewModel?,
         hasPreviousEntry: Boolean,
         shouldShowCloseButton: Boolean,
-        shouldShowResourceMoreMenu: Boolean
+        shouldShowResourceMoreMenu: Boolean,
     ) {
         val filterPreferences = getHomeDisplayViewPrefsUseCase.execute(Unit)
         this.homeView = homeDisplayView ?: homeModelMapper.map(
             filterPreferences.userSetHomeView,
-            filterPreferences.lastUsedHomeView
+            filterPreferences.lastUsedHomeView,
         )
         this.showSuggestedModel = showSuggestedModel
         this.hasPreviousBackEntry = hasPreviousEntry
@@ -204,7 +206,10 @@ class HomePresenter(
         }
     }
 
-    private fun processGroupsTitle(currentHomeView: HomeDisplayViewModel.Groups, view: HomeContract.View) {
+    private fun processGroupsTitle(
+        currentHomeView: HomeDisplayViewModel.Groups,
+        view: HomeContract.View,
+    ) {
         if (currentHomeView.activeGroupId != null) {
             view.showGroupTitle(requireNotNull(currentHomeView.activeGroupName))
         } else {
@@ -212,23 +217,30 @@ class HomePresenter(
         }
     }
 
-    private fun processTagsTitle(currentHomeView: HomeDisplayViewModel.Tags, view: HomeContract.View) {
+    private fun processTagsTitle(
+        currentHomeView: HomeDisplayViewModel.Tags,
+        view: HomeContract.View,
+    ) {
         if (currentHomeView.activeTagId != null && currentHomeView.isActiveTagShared != null) {
             view.showTagTitle(
                 requireNotNull(currentHomeView.activeTagName),
-                requireNotNull(currentHomeView.isActiveTagShared)
+                requireNotNull(currentHomeView.isActiveTagShared),
             )
         } else {
             view.showHomeScreenTitle(currentHomeView)
         }
     }
 
-    private fun processFoldersTitle(currentHomeView: HomeDisplayViewModel.Folders, view: HomeContract.View) {
+    private fun processFoldersTitle(
+        currentHomeView: HomeDisplayViewModel.Folders,
+        view: HomeContract.View,
+    ) {
         when (currentHomeView.activeFolder) {
-            is Folder.Child -> view.showChildFolderTitle(
-                requireNotNull(currentHomeView.activeFolderName),
-                requireNotNull(currentHomeView.isActiveFolderShared)
-            )
+            is Folder.Child ->
+                view.showChildFolderTitle(
+                    requireNotNull(currentHomeView.activeFolderName),
+                    requireNotNull(currentHomeView.isActiveFolderShared),
+                )
             is Folder.Root -> view.showHomeScreenTitle(currentHomeView)
         }
     }
@@ -274,7 +286,8 @@ class HomePresenter(
                 return when (val currentFolder = it.activeFolder) {
                     is Folder.Child ->
                         runWithHandlingMissingItem({
-                            getLocalFolderUseCase.execute(GetLocalFolderDetailsUseCase.Input(currentFolder.folderId))
+                            getLocalFolderUseCase
+                                .execute(GetLocalFolderDetailsUseCase.Input(currentFolder.folderId))
                                 .folder.permission in setOf(ResourcePermission.OWNER, ResourcePermission.UPDATE)
                         }, resultIfActionFails = false)
 
@@ -285,8 +298,11 @@ class HomePresenter(
         return true
     }
 
-    private suspend fun <T> runWithHandlingMissingItem(action: suspend () -> T, resultIfActionFails: T): T {
-        return try {
+    private suspend fun <T> runWithHandlingMissingItem(
+        action: suspend () -> T,
+        resultIfActionFails: T,
+    ): T =
+        try {
             action()
         } catch (exception: NullPointerException) {
             // the current filtering item (tag, folder, group)
@@ -303,18 +319,18 @@ class HomePresenter(
                     is HomeDisplayViewModel.SharedWithMe -> HomeDisplayViewModel.SharedWithMe
                     is HomeDisplayViewModel.Tags -> HomeDisplayViewModel.tagsRoot()
                     is HomeDisplayViewModel.Expiry -> HomeDisplayViewModel.Expiry
-                }
+                },
             )
             view?.showContentNotAvailable()
             resultIfActionFails
         }
-    }
 
     // show in child folders only
     private fun shouldShowFolderMoreMenu(shouldShowResourceMoreMenu: Boolean) =
-        shouldShowResourceMoreMenu && homeView.let {
-            it is HomeDisplayViewModel.Folders && it.activeFolder is Folder.Child
-        }
+        shouldShowResourceMoreMenu &&
+            homeView.let {
+                it is HomeDisplayViewModel.Folders && it.activeFolder is Folder.Child
+            }
 
     private fun handleBackArrowVisibility() {
         if (hasPreviousBackEntry) {
@@ -325,8 +341,11 @@ class HomePresenter(
     }
 
     private fun loadUserAvatar() {
-        userAvatarUrl = getSelectedAccountDataUseCase.execute(Unit).avatarUrl
-            .also { view?.displaySearchAvatar(it) }
+        userAvatarUrl =
+            getSelectedAccountDataUseCase
+                .execute(Unit)
+                .avatarUrl
+                .also { view?.displaySearchAvatar(it) }
     }
 
     private fun showActiveHomeView() {
@@ -338,18 +357,21 @@ class HomePresenter(
                 view?.hideCreateButton()
             }
             runWithHandlingMissingItem({
-                suggestedResourceList = if (shouldShowSuggested()) {
-                    getLocalResourcesUseCase.execute(GetLocalResourcesUseCase.Input(homeSlugs))
-                        .resources
-                        .filter {
-                            val autofillUrl = (showSuggestedModel as? ShowSuggestedModel.Show)?.suggestedUri
-                            autofillMatcher.isMatching(autofillUrl, it)
-                        }
-                } else {
-                    emptyList()
-                }
+                suggestedResourceList =
+                    if (shouldShowSuggested()) {
+                        getLocalResourcesUseCase
+                            .execute(GetLocalResourcesUseCase.Input(homeSlugs))
+                            .resources
+                            .filter {
+                                val autofillUrl = (showSuggestedModel as? ShowSuggestedModel.Show)?.suggestedUri
+                                autofillMatcher.isMatching(autofillUrl, it)
+                            }
+                    } else {
+                        emptyList()
+                    }
                 when (
-                    val currentHomeView = homeView) {
+                    val currentHomeView = homeView
+                ) {
                     is HomeDisplayViewModel.Folders -> showResourcesAndFoldersFromDatabase(currentHomeView)
                     is HomeDisplayViewModel.Tags -> showTagsFromDatabase(currentHomeView)
                     is HomeDisplayViewModel.Groups -> showGroupsFromDatabase(currentHomeView)
@@ -359,20 +381,22 @@ class HomePresenter(
         }
     }
 
-    private fun shouldShowSuggested() = when (val activeHomeView = homeView) {
-        is HomeDisplayViewModel.AllItems -> true
-        is HomeDisplayViewModel.Favourites -> true
-        is HomeDisplayViewModel.Folders -> when (activeHomeView.activeFolder) {
-            is Folder.Child -> false
-            is Folder.Root -> true
+    private fun shouldShowSuggested() =
+        when (val activeHomeView = homeView) {
+            is HomeDisplayViewModel.AllItems -> true
+            is HomeDisplayViewModel.Favourites -> true
+            is HomeDisplayViewModel.Folders ->
+                when (activeHomeView.activeFolder) {
+                    is Folder.Child -> false
+                    is Folder.Root -> true
+                }
+            is HomeDisplayViewModel.Groups -> activeHomeView.activeGroupId == null // groups root
+            is HomeDisplayViewModel.OwnedByMe -> true
+            is HomeDisplayViewModel.RecentlyModified -> true
+            is HomeDisplayViewModel.SharedWithMe -> true
+            is HomeDisplayViewModel.Tags -> activeHomeView.activeTagId == null // tags root
+            is HomeDisplayViewModel.Expiry -> true
         }
-        is HomeDisplayViewModel.Groups -> activeHomeView.activeGroupId == null // groups root
-        is HomeDisplayViewModel.OwnedByMe -> true
-        is HomeDisplayViewModel.RecentlyModified -> true
-        is HomeDisplayViewModel.SharedWithMe -> true
-        is HomeDisplayViewModel.Tags -> activeHomeView.activeTagId == null // tags root
-        is HomeDisplayViewModel.Expiry -> true
-    }
 
     override fun userAuthenticated() {
         initRefresh()
@@ -400,12 +424,14 @@ class HomePresenter(
     }
 
     private suspend fun showResourcesFromDatabase() {
-        resourceList = getLocalResourcesUseCase.execute(
-            GetLocalResourcesUseCase.Input(
-                homeSlugs,
-                homeView
-            )
-        ).resources
+        resourceList =
+            getLocalResourcesUseCase
+                .execute(
+                    GetLocalResourcesUseCase.Input(
+                        homeSlugs,
+                        homeView,
+                    ),
+                ).resources
         foldersList = emptyList()
         tagsList = emptyList()
         groupsList = emptyList()
@@ -424,12 +450,14 @@ class HomePresenter(
                 tagsList = emptyList()
                 foldersList = emptyList()
                 groupsList = emptyList()
-                resourceList = getLocalResourcesWithTagUseCase.execute(
-                    GetLocalResourcesWithTagUseCase.Input(
-                        tags,
-                        homeSlugs
-                    )
-                ).resources
+                resourceList =
+                    getLocalResourcesWithTagUseCase
+                        .execute(
+                            GetLocalResourcesWithTagUseCase.Input(
+                                tags,
+                                homeSlugs,
+                            ),
+                        ).resources
             }
             displayHomeData()
         } else {
@@ -449,12 +477,14 @@ class HomePresenter(
             tagsList = emptyList()
             foldersList = emptyList()
             groupsList = emptyList()
-            resourceList = getLocalResourcesWithGroupsUseCase.execute(
-                GetLocalResourcesWithGroupUseCase.Input(
-                    groups,
-                    homeSlugs
-                )
-            ).resources
+            resourceList =
+                getLocalResourcesWithGroupsUseCase
+                    .execute(
+                        GetLocalResourcesWithGroupUseCase.Input(
+                            groups,
+                            homeSlugs,
+                        ),
+                    ).resources
         }
         displayHomeData()
     }
@@ -465,12 +495,13 @@ class HomePresenter(
             tagsList = emptyList()
             groupsList = emptyList()
             when (
-                val result = getLocalResourcesAndFoldersUseCase.execute(
-                    GetLocalResourcesAndFoldersUseCase.Input(
-                        folders.activeFolder,
-                        homeSlugs
+                val result =
+                    getLocalResourcesAndFoldersUseCase.execute(
+                        GetLocalResourcesAndFoldersUseCase.Input(
+                            folders.activeFolder,
+                            homeSlugs,
+                        ),
                     )
-                )
             ) {
                 is GetLocalResourcesAndFoldersUseCase.Output.Failure -> {
                     Timber.d("Exception during getting resources and folders. Navigating to root")
@@ -506,16 +537,18 @@ class HomePresenter(
                     HeaderSectionConfiguration(
                         isInCurrentFolderSectionVisible = false,
                         isInSubFoldersSectionVisible = false,
-                        isOtherItemsSectionVisible = !areListsEmpty(
-                            resourceList,
-                            foldersList,
-                            tagsList,
-                            groupsList,
-                            filteredSubFolders,
-                            filteredSubFolderResources
-                        ) && showSuggestedModel is ShowSuggestedModel.Show,
-                        isSuggestedSectionVisible = suggestedResourceList.isNotEmpty()
-                    )
+                        isOtherItemsSectionVisible =
+                            !areListsEmpty(
+                                resourceList,
+                                foldersList,
+                                tagsList,
+                                groupsList,
+                                filteredSubFolders,
+                                filteredSubFolderResources,
+                            ) &&
+                                showSuggestedModel is ShowSuggestedModel.Show,
+                        isSuggestedSectionVisible = suggestedResourceList.isNotEmpty(),
+                    ),
                 )
             } else {
                 filteringScope.launch {
@@ -531,8 +564,9 @@ class HomePresenter(
         var filteredResources = filterSearchableList(resourceList, currentSearchText.value)
         // filtered resources + additionally append resources that have tag that matches filter
         if (homeView is HomeDisplayViewModel.AllItems) {
-            filteredResources = (filteredResources + getResourcesFilteredByTag())
-                .distinctBy { it.resourceId }
+            filteredResources =
+                (filteredResources + getResourcesFilteredByTag())
+                    .distinctBy { it.resourceId }
         }
         val filteredFolders = filterSearchableList(foldersList, currentSearchText.value)
         val filteredTags = filterSearchableList(tagsList, currentSearchText.value)
@@ -545,8 +579,12 @@ class HomePresenter(
         }
 
         if (areListsEmpty(
-                filteredResources, filteredFolders, filteredTags, filteredGroups,
-                filteredSubFolders, filteredSubFolderResources
+                filteredResources,
+                filteredFolders,
+                filteredTags,
+                filteredGroups,
+                filteredSubFolders,
+                filteredSubFolderResources,
             )
         ) {
             view?.showSearchEmptyList()
@@ -563,24 +601,27 @@ class HomePresenter(
                     isInCurrentFolderSectionVisible =
                         homeView is HomeDisplayViewModel.Folders && !areListsEmpty(filteredResources, filteredFolders),
                     isInSubFoldersSectionVisible =
-                        homeView is HomeDisplayViewModel.Folders && !areListsEmpty(
-                            filteredSubFolderResources,
-                            filteredSubFolders
-                        ),
+                        homeView is HomeDisplayViewModel.Folders &&
+                            !areListsEmpty(
+                                filteredSubFolderResources,
+                                filteredSubFolders,
+                            ),
                     (homeView as? HomeDisplayViewModel.Folders)?.activeFolderName,
                     isSuggestedSectionVisible = false,
-                    isOtherItemsSectionVisible = false
-                )
+                    isOtherItemsSectionVisible = false,
+                ),
             )
         }
     }
 
-    private suspend fun getResourcesFilteredByTag() = getLocalResourcesFilteredByTag.execute(
-        GetLocalResourcesFilteredByTagUseCase.Input(
-            currentSearchText.value,
-            homeSlugs
-        )
-    ).resources
+    private suspend fun getResourcesFilteredByTag() =
+        getLocalResourcesFilteredByTag
+            .execute(
+                GetLocalResourcesFilteredByTagUseCase.Input(
+                    currentSearchText.value,
+                    homeSlugs,
+                ),
+            ).resources
 
     private suspend fun populateSubFoldersFilteringResults(folders: HomeDisplayViewModel.Folders) {
         if (currentSearchText.value.isNotBlank()) {
@@ -598,23 +639,27 @@ class HomePresenter(
     }
 
     private suspend fun getSubFoldersFilteredResources(allSubFolders: List<FolderWithCountAndPath>) =
-        getLocalResourcesFiltered.execute(
-            GetLocalSubFolderResourcesFilteredUseCase.Input(
-                allSubFolders.map { it.folderId },
-                currentSearchText.value,
-                homeSlugs
-            )
-        ).resources
+        getLocalResourcesFiltered
+            .execute(
+                GetLocalSubFolderResourcesFilteredUseCase.Input(
+                    allSubFolders.map { it.folderId },
+                    currentSearchText.value,
+                    homeSlugs,
+                ),
+            ).resources
 
     private suspend fun getAllSubFolders(folders: HomeDisplayViewModel.Folders) =
-        getLocalSubFoldersForFolderUseCase.execute(
-            GetLocalSubFoldersForFolderUseCase.Input(folders.activeFolder)
-        ).folders
+        getLocalSubFoldersForFolderUseCase
+            .execute(
+                GetLocalSubFoldersForFolderUseCase.Input(folders.activeFolder),
+            ).folders
 
-    private fun <T : Searchable> filterSearchableList(list: List<T>, currentSearchText: String) =
-        list.filter {
-            searchableMatcher.matches(it, currentSearchText)
-        }
+    private fun <T : Searchable> filterSearchableList(
+        list: List<T>,
+        currentSearchText: String,
+    ) = list.filter {
+        searchableMatcher.matches(it, currentSearchText)
+    }
 
     override fun refreshSwipe() {
         refreshInProgress = true
@@ -637,7 +682,7 @@ class HomePresenter(
         coroutineScope.launch {
             performResourcePropertyAction(
                 action = { resourcePropertiesActionsInteractor.provideUsername() },
-                doOnResult = { view?.addToClipboard(it.label, it.result, it.isSecret) }
+                doOnResult = { view?.addToClipboard(it.label, it.result, it.isSecret) },
             )
         }
     }
@@ -645,8 +690,8 @@ class HomePresenter(
     override fun menuLaunchWebsiteClick() {
         coroutineScope.launch {
             performResourcePropertyAction(
-                action = { resourcePropertiesActionsInteractor.provideWebsiteUrl() },
-                doOnResult = { view?.openWebsite(it.result) }
+                action = { resourcePropertiesActionsInteractor.provideMainUri() },
+                doOnResult = { view?.openWebsite(it.result) },
             )
         }
     }
@@ -654,8 +699,8 @@ class HomePresenter(
     override fun menuCopyUrlClick() {
         coroutineScope.launch {
             performResourcePropertyAction(
-                action = { resourcePropertiesActionsInteractor.provideWebsiteUrl() },
-                doOnResult = { view?.addToClipboard(it.label, it.result, it.isSecret) }
+                action = { resourcePropertiesActionsInteractor.provideMainUri() },
+                doOnResult = { view?.addToClipboard(it.label, it.result, it.isSecret) },
             )
         }
     }
@@ -666,7 +711,7 @@ class HomePresenter(
                 action = { secretPropertiesActionsInteractor.providePassword() },
                 doOnDecryptionFailure = { view?.showDecryptionFailure() },
                 doOnFetchFailure = { view?.showFetchFailure() },
-                doOnSuccess = { view?.addToClipboard(it.label, it.result.orEmpty(), it.isSecret) }
+                doOnSuccess = { view?.addToClipboard(it.label, it.result.orEmpty(), it.isSecret) },
             )
         }
     }
@@ -675,7 +720,7 @@ class HomePresenter(
         coroutineScope.launch {
             performResourcePropertyAction(
                 action = { resourcePropertiesActionsInteractor.provideDescription() },
-                doOnResult = { view?.addToClipboard(it.label, it.result, it.isSecret) }
+                doOnResult = { view?.addToClipboard(it.label, it.result, it.isSecret) },
             )
         }
     }
@@ -686,7 +731,7 @@ class HomePresenter(
                 action = { secretPropertiesActionsInteractor.provideNote() },
                 doOnDecryptionFailure = { view?.showDecryptionFailure() },
                 doOnFetchFailure = { view?.showFetchFailure() },
-                doOnSuccess = { view?.addToClipboard(it.label, it.result, it.isSecret) }
+                doOnSuccess = { view?.addToClipboard(it.label, it.result, it.isSecret) },
             )
         }
     }
@@ -709,7 +754,7 @@ class HomePresenter(
             performCommonResourceAction(
                 action = { resourceCommonActionsInteractor.deleteResource() },
                 doOnFailure = { view?.showDeleteResourceFailure() },
-                doOnSuccess = { resourceDeleted(it.resourceName) }
+                doOnSuccess = { resourceDeleted(it.resourceName) },
             )
             deleteResourceIdlingResource.setIdle(true)
         }
@@ -773,7 +818,7 @@ class HomePresenter(
 
     override fun menuShareClick() {
         view?.navigateToShare(
-            requireNotNull(currentMoreMenuResource)
+            requireNotNull(currentMoreMenuResource),
         )
     }
 
@@ -817,23 +862,23 @@ class HomePresenter(
         view?.navigateToChild(
             HomeDisplayViewModel.Folders(
                 Folder.Child(
-                    folderModel.folderId
+                    folderModel.folderId,
                 ),
                 folderModel.name,
-                folderModel.isShared
-            )
+                folderModel.isShared,
+            ),
         )
     }
 
     override fun tagItemClick(tag: TagWithCount) {
         view?.navigateToChild(
-            HomeDisplayViewModel.Tags(tag.id, tag.slug, tag.isShared)
+            HomeDisplayViewModel.Tags(tag.id, tag.slug, tag.isShared),
         )
     }
 
     override fun groupItemClick(group: GroupWithCount) {
         view?.navigateToChild(
-            HomeDisplayViewModel.Groups(group.groupId, group.groupName)
+            HomeDisplayViewModel.Groups(group.groupId, group.groupName),
         )
     }
 
@@ -842,7 +887,7 @@ class HomePresenter(
             when (val currentHomeView = homeView) {
                 is HomeDisplayViewModel.Folders -> currentHomeView.activeFolder.folderId
                 else -> null
-            }
+            },
         )
     }
 
@@ -860,16 +905,17 @@ class HomePresenter(
             performCommonResourceAction(
                 action = { resourceCommonActionsInteractor.toggleFavourite(option) },
                 doOnFailure = { view?.showToggleFavouriteFailure() },
-                doOnSuccess = { showActiveHomeView() }
+                doOnSuccess = { showActiveHomeView() },
             )
         }
     }
 
     override fun moreClick() {
         when (val currentHomeView = homeView) {
-            is HomeDisplayViewModel.Folders -> view?.navigateToFolderMoreMenu(
-                FolderMoreMenuModel(currentHomeView.activeFolderName)
-            )
+            is HomeDisplayViewModel.Folders ->
+                view?.navigateToFolderMoreMenu(
+                    FolderMoreMenuModel(currentHomeView.activeFolderName),
+                )
             else -> {
                 // more is present on folders only for now
             }
@@ -895,7 +941,10 @@ class HomePresenter(
         view?.showFolderCreated(name)
     }
 
-    override fun otpQrScanReturned(isTotpCreated: Boolean, isManualCreationChosen: Boolean) {
+    override fun otpQrScanReturned(
+        isTotpCreated: Boolean,
+        isManualCreationChosen: Boolean,
+    ) {
         if (isTotpCreated) {
             initRefresh()
         } else if (isManualCreationChosen) {
@@ -903,12 +952,16 @@ class HomePresenter(
                 when (val currentHomeView = homeView) {
                     is HomeDisplayViewModel.Folders -> currentHomeView.activeFolder.folderId
                     else -> null
-                }
+                },
             )
         }
     }
 
-    override fun resourceFormReturned(isResourceCreated: Boolean, isResourceEdited: Boolean, resourceName: String?) {
+    override fun resourceFormReturned(
+        isResourceCreated: Boolean,
+        isResourceEdited: Boolean,
+        resourceName: String?,
+    ) {
         if (isResourceCreated) {
             initRefresh()
             view?.showResourceCreatedSnackbar()
@@ -919,7 +972,11 @@ class HomePresenter(
         }
     }
 
-    override fun resourceDetailsReturned(isResourceEdited: Boolean, isResourceDeleted: Boolean, resourceName: String?) {
+    override fun resourceDetailsReturned(
+        isResourceEdited: Boolean,
+        isResourceDeleted: Boolean,
+        resourceName: String?,
+    ) {
         if (isResourceEdited) {
             initRefresh()
             view?.showResourceEditedSnackbar(resourceName.orEmpty())
@@ -938,18 +995,19 @@ class HomePresenter(
                 doOnDecryptionFailure = { view?.showDecryptionFailure() },
                 doOnSuccess = {
                     if (it.result.key.isNotBlank()) {
-                        val otpParameters = totpParametersProvider.provideOtpParameters(
-                            secretKey = it.result.key,
-                            digits = it.result.digits,
-                            period = it.result.period,
-                            algorithm = it.result.algorithm
-                        )
+                        val otpParameters =
+                            totpParametersProvider.provideOtpParameters(
+                                secretKey = it.result.key,
+                                digits = it.result.digits,
+                                period = it.result.period,
+                                algorithm = it.result.algorithm,
+                            )
                         view?.addToClipboard(it.label, otpParameters.otpValue, isSecret = true)
                     } else {
                         Timber.e("Fetched totp key is empty")
                         view?.showGeneralError()
                     }
-                }
+                },
             )
         }
     }

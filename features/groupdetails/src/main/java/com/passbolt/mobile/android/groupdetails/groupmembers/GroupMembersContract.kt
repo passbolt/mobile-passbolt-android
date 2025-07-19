@@ -26,15 +26,17 @@ import com.passbolt.mobile.android.ui.UserModel
  * @since v1.0
  */
 interface GroupMembersContract {
-
     interface View : BaseAuthenticatedContract.View {
         fun showGroupMembers(users: List<UserModel>)
+
         fun navigateToGroupMemberDetails(userId: String)
+
         fun showGroupName(groupName: String)
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
         fun argsReceived(groupId: String)
+
         fun groupMemberClick(userModel: UserModel)
     }
 }

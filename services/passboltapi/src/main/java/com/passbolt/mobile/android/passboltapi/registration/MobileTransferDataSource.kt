@@ -34,16 +34,14 @@ interface MobileTransferDataSource {
         uuid: String,
         authToken: String,
         pageRequestDto: UpdateTransferRequestDto,
-        userProfile: String?
+        userProfile: String?,
     ): BaseResponse<TransferResponseDto>
 
-    suspend fun createTransfer(
-        createTransferRequest: CreateTransferRequestDto
-    ): CreateTransferResponseDto
+    suspend fun createTransfer(createTransferRequest: CreateTransferRequestDto): CreateTransferResponseDto
 
     suspend fun viewTransfer(
         authToken: String,
         mfaCookie: String?,
-        uuid: String
+        uuid: String,
     ): TransferResponseDto
 }

@@ -27,8 +27,9 @@ import org.koin.dsl.module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-internal val testOpenPgpModule = module {
-    single { Crypto.pgp() }
-    singleOf(::GopenPgpExceptionParser)
-    singleOf(::OpenPgp)
-}
+internal val testOpenPgpModule =
+    module {
+        single { Crypto.pgp() }
+        singleOf(::GopenPgpExceptionParser)
+        singleOf(::OpenPgp)
+    }

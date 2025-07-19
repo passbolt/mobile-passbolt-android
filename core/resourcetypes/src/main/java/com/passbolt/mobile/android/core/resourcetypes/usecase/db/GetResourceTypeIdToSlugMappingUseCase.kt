@@ -33,10 +33,9 @@ import java.util.UUID
  * @see ResourceTypeIdToSlugMappingProvider
  */
 class GetResourceTypeIdToSlugMappingUseCase(
-    private val databaseProvider: DatabaseProvider
+    private val databaseProvider: DatabaseProvider,
 ) : AsyncUseCase<Unit, GetResourceTypeIdToSlugMappingUseCase.Output>,
     SelectedAccountUseCase {
-
     override suspend fun execute(input: Unit) =
         Output(
             databaseProvider
@@ -47,10 +46,10 @@ class GetResourceTypeIdToSlugMappingUseCase(
                     buildMap(it.size) {
                         putAll(it.map { UUID.fromString(it.resourceTypeId) to it.slug })
                     }
-                }
+                },
         )
 
     data class Output(
-        val idToSlugMapping: Map<UUID, String>
+        val idToSlugMapping: Map<UUID, String>,
     )
 }

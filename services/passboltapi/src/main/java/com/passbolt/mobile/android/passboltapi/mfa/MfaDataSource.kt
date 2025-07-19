@@ -28,10 +28,15 @@ import retrofit2.Response
  */
 
 interface MfaDataSource {
+    suspend fun verifyTotp(
+        totpRequest: TotpRequest,
+        authHeader: String?,
+    ): Response<Void>
 
-    suspend fun verifyTotp(totpRequest: TotpRequest, authHeader: String?): Response<Void>
-
-    suspend fun verifyYubikeyOtp(hotpRequest: HotpRequest, authHeader: String?): Response<Void>
+    suspend fun verifyYubikeyOtp(
+        hotpRequest: HotpRequest,
+        authHeader: String?,
+    ): Response<Void>
 
     suspend fun getDuoPromptUrl(authHeader: String?): Response<Void>
 
@@ -39,6 +44,6 @@ interface MfaDataSource {
         authHeader: String?,
         passboltDuoStateUuid: String,
         state: String?,
-        code: String?
+        code: String?,
     ): Response<Void>
 }

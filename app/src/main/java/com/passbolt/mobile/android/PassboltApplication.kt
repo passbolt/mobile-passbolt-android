@@ -1,15 +1,3 @@
-package com.passbolt.mobile.android
-
-import android.app.Application
-import com.passbolt.mobile.android.core.navigation.ActivityIntents
-import com.passbolt.mobile.android.core.navigation.AppForegroundListener
-import com.passbolt.mobile.android.core.navigation.isAuthenticated
-import com.passbolt.mobile.android.core.security.runtimeauth.RuntimeAuthenticatedFlag
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.launch
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -32,6 +20,19 @@ import org.koin.core.component.inject
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+
+package com.passbolt.mobile.android
+
+import android.app.Application
+import com.passbolt.mobile.android.core.navigation.ActivityIntents
+import com.passbolt.mobile.android.core.navigation.AppForegroundListener
+import com.passbolt.mobile.android.core.navigation.isAuthenticated
+import com.passbolt.mobile.android.core.security.runtimeauth.RuntimeAuthenticatedFlag
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
+
 /**
  * The main entry point for the Passbolt Android application.
  * Contains code for initialization of the main components.
@@ -39,8 +40,9 @@ import org.koin.core.component.inject
  * @property appForegroundListener listener detecting when the app goes foreground
  * @property applicationScope coroutine scope for the application class
  */
-class PassboltApplication : Application(), KoinComponent {
-
+class PassboltApplication :
+    Application(),
+    KoinComponent {
     private val appForegroundListener: AppForegroundListener by inject()
     private val applicationScope = MainScope()
     private val runtimeAuthenticatedFlag: RuntimeAuthenticatedFlag by inject()
@@ -63,8 +65,8 @@ class PassboltApplication : Application(), KoinComponent {
                     it.startActivity(
                         ActivityIntents.authentication(
                             it,
-                            ActivityIntents.AuthConfig.RefreshSession
-                        )
+                            ActivityIntents.AuthConfig.RefreshSession,
+                        ),
                     )
                 }
             }

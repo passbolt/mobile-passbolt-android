@@ -39,15 +39,15 @@ import org.mockito.kotlin.whenever
  */
 @ExperimentalCoroutinesApi
 class FingerprintPresenterTest : KoinTest {
-
     private val presenter: FingerprintContract.Presenter by inject()
     private var view: FingerprintContract.View = mock()
 
     @get:Rule
-    val koinTestRule = KoinTestRule.create {
-        printLogger(Level.ERROR)
-        modules(testModule, fingerprintModule)
-    }
+    val koinTestRule =
+        KoinTestRule.create {
+            printLogger(Level.ERROR)
+            modules(testModule, fingerprintModule)
+        }
 
     @Before
     fun setUp() {
@@ -84,7 +84,7 @@ class FingerprintPresenterTest : KoinTest {
         whenever(autofillInformationProvider.isAutofillServiceSupported()).thenReturn(true)
         whenever(autofillInformationProvider.isPassboltAutofillServiceSet()).thenReturn(false)
         whenever(passphraseMemoryCache.get()).thenReturn(
-            PotentialPassphrase.Passphrase("passphrase".toByteArray())
+            PotentialPassphrase.Passphrase("passphrase".toByteArray()),
         )
 
         presenter.authenticationSucceeded()
@@ -97,7 +97,7 @@ class FingerprintPresenterTest : KoinTest {
     fun `when biometrics auth is a success and cache passphrase expired should authenticate`() {
         whenever(fingerprintInformationProvider.hasBiometricSetUp()).thenReturn(true)
         whenever(passphraseMemoryCache.get()).thenReturn(
-            PotentialPassphrase.PassphraseNotPresent()
+            PotentialPassphrase.PassphraseNotPresent(),
         )
 
         presenter.authenticationSucceeded()
@@ -112,7 +112,7 @@ class FingerprintPresenterTest : KoinTest {
         whenever(autofillInformationProvider.isAutofillServiceSupported()).thenReturn(true)
         whenever(autofillInformationProvider.isPassboltAutofillServiceSet()).thenReturn(false)
         whenever(passphraseMemoryCache.get()).thenReturn(
-            PotentialPassphrase.Passphrase("passphrase".toByteArray())
+            PotentialPassphrase.Passphrase("passphrase".toByteArray()),
         )
 
         presenter.maybeLaterClick()
@@ -127,7 +127,7 @@ class FingerprintPresenterTest : KoinTest {
         whenever(autofillInformationProvider.isAutofillServiceSupported()).thenReturn(true)
         whenever(autofillInformationProvider.isPassboltAutofillServiceSet()).thenReturn(true)
         whenever(passphraseMemoryCache.get()).thenReturn(
-            PotentialPassphrase.Passphrase("passphrase".toByteArray())
+            PotentialPassphrase.Passphrase("passphrase".toByteArray()),
         )
 
         presenter.maybeLaterClick()
@@ -143,7 +143,7 @@ class FingerprintPresenterTest : KoinTest {
         whenever(autofillInformationProvider.isPassboltAutofillServiceSet()).thenReturn(true)
         whenever(mockEncouragementsInteractor.shouldShowChromeNativeAutofillEncouragement()).thenReturn(true)
         whenever(passphraseMemoryCache.get()).thenReturn(
-            PotentialPassphrase.Passphrase("passphrase".toByteArray())
+            PotentialPassphrase.Passphrase("passphrase".toByteArray()),
         )
 
         presenter.autofillSetupSuccess()
@@ -151,4 +151,3 @@ class FingerprintPresenterTest : KoinTest {
         verify(view).showEncourageChromeNativeAutofillDialog()
     }
 }
-

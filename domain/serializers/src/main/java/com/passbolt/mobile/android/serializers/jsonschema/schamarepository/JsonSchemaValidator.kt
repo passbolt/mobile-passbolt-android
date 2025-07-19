@@ -24,8 +24,13 @@
 package com.passbolt.mobile.android.serializers.jsonschema.schamarepository
 
 interface JsonSchemaValidator {
+    suspend fun isResourceValid(
+        resourceSlug: String,
+        resourceJson: String?,
+    ): Boolean
 
-    suspend fun isResourceValid(resourceSlug: String, resourceJson: String?): Boolean
-
-    suspend fun isSecretValid(resourceSlug: String, secretJson: String?): Boolean
+    suspend fun isSecretValid(
+        resourceSlug: String,
+        secretJson: String?,
+    ): Boolean
 }

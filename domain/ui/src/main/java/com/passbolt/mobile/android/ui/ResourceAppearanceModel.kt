@@ -1,0 +1,65 @@
+package com.passbolt.mobile.android.ui
+
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
+/**
+ * Passbolt - Open source password manager for teams
+ * Copyright (c) 2021 Passbolt SA
+ *
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
+ * Public License (AGPL) as published by the Free Software Foundation version 3.
+ *
+ * The name "Passbolt" is a registered trademark of Passbolt SA, and Passbolt SA hereby declines to grant a trademark
+ * license to "Passbolt" pursuant to the GNU Affero General Public License version 3 Section 7(e), without a separate
+ * agreement with Passbolt SA.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License along with this program. If not,
+ * see GNU Affero General Public License v3 (http://www.gnu.org/licenses/agpl-3.0.html).
+ *
+ * @copyright Copyright (c) Passbolt SA (https://www.passbolt.com)
+ * @license https://opensource.org/licenses/AGPL-3.0 AGPL License
+ * @link https://www.passbolt.com Passbolt (tm)
+ * @since v1.0
+ */
+
+@Parcelize
+data class ResourceAppearanceModel(
+    val iconType: String? = ICON_TYPE_PASSBOLT,
+    val iconBackgroundHexColor: String? = DEFAULT_BACKGROUND_COLOR_HEX_STRING,
+    val iconValue: Int? = null,
+) : Parcelable {
+    val isDefaultBackgroundColorSet: Boolean
+        get() = iconBackgroundHexColor == DEFAULT_BACKGROUND_COLOR_HEX_STRING
+
+    val isDefaultIconSet: Boolean
+        get() = iconType == ICON_TYPE_PASSBOLT && iconValue == null
+
+    companion object {
+        const val ICON_TYPE_KEEPASS = "keepass-icon-set"
+        const val ICON_TYPE_PASSBOLT = "passbolt-icon-set"
+        const val DEFAULT_BACKGROUND_COLOR_HEX_STRING = "#BEBEBE"
+        const val MAX_KEEPASS_ICON_VALUE = 68
+
+        val predefinedColorHexList =
+            listOf(
+                "#BBBBBB",
+                "#888888",
+                "#575757",
+                "#9C6A55",
+                "#E64626",
+                "#F07438",
+                "#F5AA48",
+                "#FFE144",
+                "#B1D86A",
+                "#3D9B5E",
+                "#A0DAE3",
+                "#4A75DF",
+                "#AC8CFB",
+                "#E88BA8",
+            )
+    }
+}

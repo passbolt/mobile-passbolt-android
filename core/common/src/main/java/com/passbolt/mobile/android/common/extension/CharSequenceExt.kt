@@ -22,6 +22,4 @@ package com.passbolt.mobile.android.common.extension
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-fun CharSequence.firstOrEmpty(): String {
-    return if (isEmpty()) "" else this[0].toString()
-}
+fun CharSequence.firstOrEmpty(): String = if (isEmpty()) "" else this[0].toString()

@@ -31,26 +31,27 @@ import kotlinx.parcelize.Parcelize
 data class GroupModel(
     val groupId: String,
     val groupName: String,
-    override val searchCriteria: String = groupName
-) : Searchable, Parcelable
+    override val searchCriteria: String = groupName,
+) : Searchable,
+    Parcelable
 
 data class GroupModelWithUsers(
     val groupModel: GroupModel,
-    val users: List<GroupUser>
+    val users: List<GroupUser>,
 )
 
 data class GroupUser(
-    val userId: String
+    val userId: String,
 )
 
 data class GroupWithCount(
     val groupId: String,
     val groupName: String,
     val groupItemsCount: Int,
-    override val searchCriteria: String = groupName
+    override val searchCriteria: String = groupName,
 ) : Searchable
 
 data class GroupWithUsersModel(
     val group: GroupModel,
-    val users: List<UserModel>
+    val users: List<UserModel>,
 )

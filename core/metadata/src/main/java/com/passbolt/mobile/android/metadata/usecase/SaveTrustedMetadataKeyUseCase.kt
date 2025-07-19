@@ -29,65 +29,64 @@ import java.util.UUID
  * @since v1.0
  */
 class SaveTrustedMetadataKeyUseCase(
-    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory
+    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory,
 ) : AsyncUseCase<SaveTrustedMetadataKeyUseCase.Input, Unit>,
     SelectedAccountUseCase {
-
     override suspend fun execute(input: Input) {
         val fileName = TrustedMetadataKeyFileName(selectedAccountId).name
         val sharedPreferences = encryptedSharedPreferencesFactory.get("$fileName.xml")
         with(sharedPreferences.edit()) {
             putString(
                 MetadataTypesStorageConstants.TRUSTED_MD_KEY_ID,
-                input.id.toString()
+                input.id.toString(),
             )
             putString(
                 MetadataTypesStorageConstants.TRUSTED_MD_KEY_USER_ID,
-                input.userId.toString()
+                input.userId.toString(),
             )
             putString(
                 MetadataTypesStorageConstants.TRUSTED_MD_KEY_KEY_DATA,
-                input.keyData
+                input.keyData,
             )
             putString(
                 MetadataTypesStorageConstants.TRUSTED_MD_KEY_PASSPHRASE,
-                input.passphrase
+                input.passphrase,
             )
             putString(
                 MetadataTypesStorageConstants.TRUSTED_MD_KEY_CREATED,
-                input.created.toString()
+                input.created.toString(),
             )
             putString(
                 MetadataTypesStorageConstants.TRUSTED_MD_KEY_CREATED_BY,
-                input.createdBy.toString()
+                input.createdBy.toString(),
             )
             putString(
                 MetadataTypesStorageConstants.TRUSTED_MD_KEY_MODIFIED,
-                input.modified.toString()
+                input.modified.toString(),
             )
             putString(
                 MetadataTypesStorageConstants.TRUSTED_MD_KEY_MODIFIED_BY,
-                input.modifiedBy.toString()
+                input.modifiedBy.toString(),
             )
             putString(
                 MetadataTypesStorageConstants.TRUSTED_MD_KEY_KEY_PGP_MESSAGE,
-                input.keyPgpMessage
+                input.keyPgpMessage,
             )
             putString(
                 MetadataTypesStorageConstants.TRUSTED_MD_KEY_SIGNING_KEY_FINGERPRINT,
-                input.signingKeyFingerprint
+                input.signingKeyFingerprint,
             )
             putString(
                 MetadataTypesStorageConstants.TRUSTED_MD_KEY_SIGNED_USERNAME,
-                input.signedUsername
+                input.signedUsername,
             )
             putLong(
                 MetadataTypesStorageConstants.TRUSTED_MD_SIGNATURE_CREATION_TIMESTAMP,
-                input.signatureCreationTimestampSeconds
+                input.signatureCreationTimestampSeconds,
             )
             putString(
                 MetadataTypesStorageConstants.TRUSTED_MD_KEY_SIGNED_NAME,
-                input.signedName
+                input.signedName,
             )
             apply()
         }
@@ -106,6 +105,6 @@ class SaveTrustedMetadataKeyUseCase(
         val signingKeyFingerprint: String,
         val signatureCreationTimestampSeconds: Long,
         val signedUsername: String,
-        val signedName: String
+        val signedName: String,
     )
 }

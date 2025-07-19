@@ -38,15 +38,15 @@ import java.time.ZonedDateTime
             entity = Folder::class,
             parentColumns = ["folderId"],
             childColumns = ["folderId"],
-            onDelete = SET_NULL
+            onDelete = SET_NULL,
         ),
         ForeignKey(
             entity = ResourceType::class,
             parentColumns = ["resourceTypeId"],
             childColumns = ["resourceTypeId"],
-            onDelete = CASCADE
-        )
-    ]
+            onDelete = CASCADE,
+        ),
+    ],
 )
 data class Resource(
     @PrimaryKey
@@ -58,7 +58,7 @@ data class Resource(
     val modified: ZonedDateTime,
     val expiry: ZonedDateTime?,
     val metadataKeyId: String?,
-    val metadataKeyType: MetadataKeyType?
+    val metadataKeyType: MetadataKeyType?,
 )
 
 @Entity(
@@ -67,9 +67,9 @@ data class Resource(
             entity = Resource::class,
             parentColumns = ["resourceId"],
             childColumns = ["resourceId"],
-            onDelete = CASCADE
-        )
-    ]
+            onDelete = CASCADE,
+        ),
+    ],
 )
 data class ResourceMetadata(
     @PrimaryKey(autoGenerate = true)
@@ -78,7 +78,7 @@ data class ResourceMetadata(
     val metadataJson: String,
     val name: String,
     val username: String?,
-    val description: String?
+    val description: String?,
 )
 
 @Entity(
@@ -87,15 +87,15 @@ data class ResourceMetadata(
             entity = Resource::class,
             parentColumns = ["resourceId"],
             childColumns = ["resourceId"],
-            onDelete = CASCADE
-        )
-    ]
+            onDelete = CASCADE,
+        ),
+    ],
 )
 data class ResourceUri(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
     val resourceId: String,
-    val uri: String
+    val uri: String,
 )
 
 data class ResourceWithMetadata(
@@ -109,5 +109,5 @@ data class ResourceWithMetadata(
     val expiry: ZonedDateTime?,
     val metadataJson: String,
     val metadataKeyId: String?,
-    val metadataKeyType: MetadataKeyType?
+    val metadataKeyType: MetadataKeyType?,
 )

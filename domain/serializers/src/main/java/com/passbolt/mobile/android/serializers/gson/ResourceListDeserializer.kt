@@ -47,13 +47,13 @@ open class ResourceListDeserializer(
     private val resourceTypeIdToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider,
     private val getLocalMetadataKeysUseCase: GetLocalMetadataKeysUseCase,
     private val coroutineLaunchContext: CoroutineLaunchContext,
-    private val openPgp: OpenPgp
-) : JsonDeserializer<List<ResourceResponseDto>>, KoinComponent {
-
+    private val openPgp: OpenPgp,
+) : JsonDeserializer<List<ResourceResponseDto>>,
+    KoinComponent {
     override fun deserialize(
         json: JsonElement?,
         typeOfT: Type?,
-        context: JsonDeserializationContext?
+        context: JsonDeserializationContext?,
     ): List<ResourceResponseDto> {
         if (json == null || context == null) {
             Timber.e("Json element or deserialization context was null: (${json == null}), (${context == null}")
@@ -62,38 +62,42 @@ open class ResourceListDeserializer(
 
         // done on the parser thread
         return runBlocking {
-            val resourceTypeIdToSlugMapping = resourceTypeIdToSlugMappingProvider
-                .provideMappingForSelectedAccount()
+            val resourceTypeIdToSlugMapping =
+                resourceTypeIdToSlugMappingProvider
+                    .provideMappingForSelectedAccount()
 
-            val supportedResourceTypesIds = resourceTypeIdToSlugMapping
-                .filter { it.value in allSlugs }
-                .keys
+            val supportedResourceTypesIds =
+                resourceTypeIdToSlugMapping
+                    .filter { it.value in allSlugs }
+                    .keys
 
             val metadataKeys = getLocalMetadataKeysUseCase.execute(GetLocalMetadataKeysUseCase.Input(DECRYPT))
 
             val resourcesSnapshot = get<ResourcesSnapshot>()
 
-            val singleResourceDeserializer = get<ResourceListItemDeserializer> {
-                parametersOf(resourceTypeIdToSlugMapping, supportedResourceTypesIds, metadataKeys, resourcesSnapshot)
-            }
+            val singleResourceDeserializer =
+                get<ResourceListItemDeserializer> {
+                    parametersOf(resourceTypeIdToSlugMapping, supportedResourceTypesIds, metadataKeys, resourcesSnapshot)
+                }
 
             if (json.isJsonArray) {
                 Timber.d("Started resource list deserialization")
-                val jobs = json.asJsonArray.map { jsonElement ->
-                    async(context = coroutineLaunchContext.io) {
-                        if (!jsonElement.isJsonNull) {
-                            try {
-                                singleResourceDeserializer.deserialize(jsonElement)
-                            } catch (e: Exception) {
-                                Timber.e(e, "Failed to deserialize item")
+                val jobs =
+                    json.asJsonArray.map { jsonElement ->
+                        async(context = coroutineLaunchContext.io) {
+                            if (!jsonElement.isJsonNull) {
+                                try {
+                                    singleResourceDeserializer.deserialize(jsonElement)
+                                } catch (e: Exception) {
+                                    Timber.e(e, "Failed to deserialize item")
+                                    null
+                                }
+                            } else {
+                                Timber.e("Null json element")
                                 null
                             }
-                        } else {
-                            Timber.e("Null json element")
-                            null
                         }
                     }
-                }
                 val results = jobs.awaitAll()
                 openPgp.freeMemory()
                 Timber.d("Finished resource list deserialization")

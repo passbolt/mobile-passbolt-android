@@ -29,18 +29,19 @@ import com.passbolt.mobile.android.core.localization.R as LocalizationR
 sealed class ConfirmationModel(
     @StringRes val titleResId: Int,
     @StringRes val messageResId: Int,
-    @StringRes val positiveButtonResId: Int
+    @StringRes val positiveButtonResId: Int,
 ) {
+    class LinkTotpModel :
+        ConfirmationModel(
+            titleResId = LocalizationR.string.are_you_sure,
+            messageResId = LocalizationR.string.resource_picker_link_to_information,
+            positiveButtonResId = LocalizationR.string.resource_picker_add_totp,
+        )
 
-    class LinkTotpModel : ConfirmationModel(
-        titleResId = LocalizationR.string.are_you_sure,
-        messageResId = LocalizationR.string.resource_picker_link_to_information,
-        positiveButtonResId = LocalizationR.string.resource_picker_add_totp
-    )
-
-    class ReplaceTotpModel : ConfirmationModel(
-        titleResId = LocalizationR.string.resource_picker_replace_totp_title,
-        messageResId = LocalizationR.string.resource_picker_link_to_warning,
-        positiveButtonResId = LocalizationR.string.resource_picker_replace_totp
-    )
+    class ReplaceTotpModel :
+        ConfirmationModel(
+            titleResId = LocalizationR.string.resource_picker_replace_totp_title,
+            messageResId = LocalizationR.string.resource_picker_link_to_warning,
+            positiveButtonResId = LocalizationR.string.resource_picker_replace_totp,
+        )
 }

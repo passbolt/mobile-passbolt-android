@@ -20,9 +20,9 @@ import org.koin.core.qualifier.named
 
 class GroupMembersFragment :
     BindingScopedAuthenticatedFragment<FragmentGroupMembersBinding, GroupMembersContract.View>(
-        FragmentGroupMembersBinding::inflate
-    ), GroupMembersContract.View {
-
+        FragmentGroupMembersBinding::inflate,
+    ),
+    GroupMembersContract.View {
     override val presenter: GroupMembersContract.Presenter by inject()
 
     private val groupMemberItemAdapter: ItemAdapter<GroupMemberItem> by inject(named(GROUP_MEMBER_ITEM_ADAPTER))
@@ -31,27 +31,30 @@ class GroupMembersFragment :
         requireNotNull(requireArguments().getString(EXTRA_GROUP_ID))
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
-        initDefaultToolbar(binding.toolbar)
+        initDefaultToolbar(requiredBinding.toolbar)
         initGroupMembersRecycler()
         presenter.attach(this)
         presenter.argsReceived(bundledGroupId)
     }
 
     override fun onDestroyView() {
-        binding.groupMembersRecycler.adapter = null
+        requiredBinding.groupMembersRecycler.adapter = null
         presenter.detach()
         super.onDestroyView()
     }
 
     private fun initGroupMembersRecycler() {
-        with(binding.groupMembersRecycler) {
+        with(requiredBinding.groupMembersRecycler) {
             layoutManager = LinearLayoutManager(context)
             adapter = fastAdapter
         }
         fastAdapter.addEventHook(
-            GroupMemberItem.ItemClick { presenter.groupMemberClick(it) }
+            GroupMemberItem.ItemClick { presenter.groupMemberClick(it) },
         )
     }
 
@@ -61,20 +64,21 @@ class GroupMembersFragment :
     }
 
     override fun showGroupName(groupName: String) {
-        binding.nameLabel.text = groupName
+        requiredBinding.nameLabel.text = groupName
     }
 
     override fun navigateToGroupMemberDetails(userId: String) {
         findNavController().navigate(
-            GroupMembersFragmentDirections.actionGroupMembersFragmentToGroupMemberDetailsFragment(userId)
+            GroupMembersFragmentDirections.actionGroupMembersFragmentToGroupMemberDetailsFragment(userId),
         )
     }
 
     companion object {
         private const val EXTRA_GROUP_ID = "GROUP_ID"
 
-        fun newBundle(groupId: String) = bundleOf(
-            EXTRA_GROUP_ID to groupId
-        )
+        fun newBundle(groupId: String) =
+            bundleOf(
+                EXTRA_GROUP_ID to groupId,
+            )
     }
 }

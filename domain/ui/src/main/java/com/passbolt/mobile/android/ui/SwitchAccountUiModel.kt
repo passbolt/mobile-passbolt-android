@@ -23,18 +23,17 @@ package com.passbolt.mobile.android.ui
  * @since v1.0
  */
 sealed class SwitchAccountUiModel {
-
     data class HeaderItem(
         val label: String,
         val email: String,
-        val avatarUrl: String?
+        val avatarUrl: String?,
     ) : SwitchAccountUiModel()
 
     data class AccountItem(
         val userId: String,
         val label: String,
         val email: String,
-        val avatarUrl: String?
+        val avatarUrl: String?,
     ) : SwitchAccountUiModel()
 
     data object ManageAccountsItem : SwitchAccountUiModel()

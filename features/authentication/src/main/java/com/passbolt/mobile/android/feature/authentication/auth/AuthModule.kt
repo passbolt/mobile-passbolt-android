@@ -1,6 +1,5 @@
 package com.passbolt.mobile.android.feature.authentication.auth
 
-import androidx.biometric.BiometricPrompt
 import com.passbolt.mobile.android.core.idlingresource.SignInIdlingResource
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeDecryptor
@@ -77,9 +76,6 @@ fun Module.authModule() {
         scopedOf(::SignInVerifyInteractor)
         scopedOf(::GopenPgpTimeUpdater)
         scopedOf(::PostSignInActionsInteractor)
-        scoped {
-            BiometricPrompt.PromptInfo.Builder()
-        }
     }
     singleOf(::SignOutUseCase)
     singleOf(::BiometryInteractor)
@@ -106,68 +102,71 @@ private fun ScopeDSL.authPresenter() {
     }
 }
 
-private fun Scope.passphrasePresenter() = PassphrasePresenter(
-    passphraseMemoryCache = get(),
-    getPrivateKeyUseCase = get(),
-    verifyPassphraseUseCase = get(),
-    getAccountDataUseCase = get(),
-    coroutineLaunchContext = get(),
-    biometricCipher = get(),
-    getPassphraseUseCase = get(),
-    authReasonMapper = get(),
-    rootDetector = get(),
-    biometryInteractor = get(),
-    runtimeAuthenticatedFlag = get(),
-    getGlobalPreferencesUseCase = get()
-)
+private fun Scope.passphrasePresenter() =
+    PassphrasePresenter(
+        passphraseMemoryCache = get(),
+        getPrivateKeyUseCase = get(),
+        verifyPassphraseUseCase = get(),
+        getAccountDataUseCase = get(),
+        coroutineLaunchContext = get(),
+        biometricCipher = get(),
+        getPassphraseUseCase = get(),
+        authReasonMapper = get(),
+        rootDetector = get(),
+        biometryInteractor = get(),
+        runtimeAuthenticatedFlag = get(),
+        getGlobalPreferencesUseCase = get(),
+    )
 
-private fun Scope.signInPresenter() = SignInPresenter(
-    saveSessionUseCase = get(),
-    saveSelectedAccountUseCase = get(),
-    passphraseMemoryCache = get(),
-    signOutUseCase = get(),
-    saveServerFingerprintUseCase = get(),
-    mfaStatusProvider = get(),
-    getAndVerifyServerKeysInteractor = get(),
-    signInVerifyInteractor = get(),
-    inAppReviewInteractor = get(),
-    biometryInteractor = get(),
-    getAccountDataUseCase = get(),
-    biometricCipher = get(),
-    getPassphraseUseCase = get(),
-    getPrivateKeyUseCase = get(),
-    verifyPassphraseUseCase = get(),
-    coroutineLaunchContext = get(),
-    authReasonMapper = get(),
-    rootDetector = get(),
-    runtimeAuthenticatedFlag = get(),
-    signInIdlingResource = get(),
-    getGlobalPreferencesUseCase = get(),
-    postSignInActionsInteractor = get()
-)
+private fun Scope.signInPresenter() =
+    SignInPresenter(
+        saveSessionUseCase = get(),
+        saveSelectedAccountUseCase = get(),
+        passphraseMemoryCache = get(),
+        signOutUseCase = get(),
+        saveServerFingerprintUseCase = get(),
+        mfaStatusProvider = get(),
+        getAndVerifyServerKeysInteractor = get(),
+        signInVerifyInteractor = get(),
+        inAppReviewInteractor = get(),
+        biometryInteractor = get(),
+        getAccountDataUseCase = get(),
+        biometricCipher = get(),
+        getPassphraseUseCase = get(),
+        getPrivateKeyUseCase = get(),
+        verifyPassphraseUseCase = get(),
+        coroutineLaunchContext = get(),
+        authReasonMapper = get(),
+        rootDetector = get(),
+        runtimeAuthenticatedFlag = get(),
+        signInIdlingResource = get(),
+        getGlobalPreferencesUseCase = get(),
+        postSignInActionsInteractor = get(),
+    )
 
-private fun Scope.refreshSessionPresenter() = RefreshSessionPresenter(
-    refreshSessionUseCase = get(),
-    signInIdlingResource = get(),
-    passphraseMemoryCache = get(),
-    saveSessionUseCase = get(),
-    saveSelectedAccountUseCase = get(),
-    getAccountDataUseCase = get(),
-    signOutUseCase = get(),
-    saveServerFingerprintUseCase = get(),
-    mfaStatusProvider = get(),
-    biometricCipher = get(),
-    getPassphraseUseCase = get(),
-    getPrivateKeyUseCase = get(),
-    verifyPassphraseUseCase = get(),
-    coroutineLaunchContext = get(),
-    authReasonMapper = get(),
-    rootDetector = get(),
-    getAndVerifyServerKeysInteractor = get(),
-    signInVerifyInteractor = get(),
-    biometryInteractor = get(),
-    runtimeAuthenticatedFlag = get(),
-    inAppReviewInteractor = get(),
-    getGlobalPreferencesUseCase = get(),
-    postSignInActionsInteractor = get()
-)
+private fun Scope.refreshSessionPresenter() =
+    RefreshSessionPresenter(
+        refreshSessionUseCase = get(),
+        signInIdlingResource = get(),
+        passphraseMemoryCache = get(),
+        saveSessionUseCase = get(),
+        saveSelectedAccountUseCase = get(),
+        getAccountDataUseCase = get(),
+        signOutUseCase = get(),
+        saveServerFingerprintUseCase = get(),
+        mfaStatusProvider = get(),
+        biometricCipher = get(),
+        getPassphraseUseCase = get(),
+        getPrivateKeyUseCase = get(),
+        verifyPassphraseUseCase = get(),
+        coroutineLaunchContext = get(),
+        authReasonMapper = get(),
+        rootDetector = get(),
+        getAndVerifyServerKeysInteractor = get(),
+        signInVerifyInteractor = get(),
+        biometryInteractor = get(),
+        runtimeAuthenticatedFlag = get(),
+        inAppReviewInteractor = get(),
+        getGlobalPreferencesUseCase = get(),
+        postSignInActionsInteractor = get(),
+    )

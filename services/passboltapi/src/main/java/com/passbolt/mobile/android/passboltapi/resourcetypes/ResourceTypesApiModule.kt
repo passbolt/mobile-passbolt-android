@@ -30,12 +30,12 @@ internal fun Module.resourceTypesApiModule() {
     single {
         ResourceTypesRepository(
             resourceTypesDataSource = get(),
-            responseHandler = get()
+            responseHandler = get(),
         )
     }
     single<ResourceTypesDataSource> {
         ResourceTypesRemoteDataSource(
-            resourceTypesApi = get()
+            resourceTypesApi = get(),
         )
     }
     single {

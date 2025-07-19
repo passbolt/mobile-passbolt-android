@@ -41,24 +41,31 @@ import com.passbolt.mobile.android.core.localization.R as LocalizationR
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class SummaryFragment : BindingScopedFragment<FragmentSummaryBinding>(
-    FragmentSummaryBinding::inflate
-), SummaryContract.View, HelpMenuFragment.Listener {
-
+class SummaryFragment :
+    BindingScopedFragment<FragmentSummaryBinding>(
+        FragmentSummaryBinding::inflate,
+    ),
+    SummaryContract.View,
+    HelpMenuFragment.Listener {
     private val presenter: SummaryContract.Presenter by inject()
     private val args: SummaryFragmentArgs by navArgs()
-    private val authenticationResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-        if (it.resultCode == Activity.RESULT_OK) {
-            presenter.authenticationSucceeded()
+    private val authenticationResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            if (it.resultCode == Activity.RESULT_OK) {
+                presenter.authenticationSucceeded()
+            }
         }
-    }
-    private val backPressedCallback = object : OnBackPressedCallback(true) {
-        override fun handleOnBackPressed() {
-            presenter.backClick()
+    private val backPressedCallback =
+        object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                presenter.backClick()
+            }
         }
-    }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         setListeners()
         presenter.attach(this)
@@ -73,31 +80,31 @@ class SummaryFragment : BindingScopedFragment<FragmentSummaryBinding>(
     }
 
     private fun setListeners() {
-        with(binding) {
+        with(requiredBinding) {
             resultView.setButtonAction { presenter.buttonClick() }
             helpButton.setDebouncingOnClick { presenter.helpClick() }
         }
     }
 
     override fun setTitle(title: Int) {
-        binding.resultView.setTitle(getString(title))
+        requiredBinding.resultView.setTitle(getString(title))
     }
 
     override fun setDescription(message: String) {
-        binding.resultView.setDescription(message)
+        requiredBinding.resultView.setDescription(message)
     }
 
     override fun setButtonLabel(text: Int) {
-        binding.resultView.setButtonLabel(getString(text))
+        requiredBinding.resultView.setButtonLabel(getString(text))
     }
 
     override fun setIcon(icon: Int) {
-        binding.resultView.setIcon(icon)
+        requiredBinding.resultView.setIcon(icon)
     }
 
     override fun navigateToWelcome() {
         findNavController().navigate(
-            SummaryFragmentDirections.actionSummaryFragmentToWelcomeFragment()
+            SummaryFragmentDirections.actionSummaryFragmentToWelcomeFragment(),
         )
     }
 
@@ -106,7 +113,8 @@ class SummaryFragment : BindingScopedFragment<FragmentSummaryBinding>(
     }
 
     override fun showLeaveConfirmationDialog() {
-        AlertDialog.Builder(requireContext())
+        AlertDialog
+            .Builder(requireContext())
             .setTitle(LocalizationR.string.are_you_sure)
             .setMessage(LocalizationR.string.auth_exit_dialog_message)
             .setPositiveButton(LocalizationR.string.continue_setup) { _, _ -> }
@@ -119,46 +127,47 @@ class SummaryFragment : BindingScopedFragment<FragmentSummaryBinding>(
             ActivityIntents.authentication(
                 requireContext(),
                 ActivityIntents.AuthConfig.Setup,
-                userId = userId
-            )
+                userId = userId,
+            ),
         )
     }
 
     override fun navigateToManageAccounts() {
         startActivity(
-            ActivityIntents.authentication(
-                requireContext(),
-                ActivityIntents.AuthConfig.ManageAccount
-            ).apply {
-                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-            }
+            ActivityIntents
+                .authentication(
+                    requireContext(),
+                    ActivityIntents.AuthConfig.ManageAccount,
+                ).apply {
+                    addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                },
         )
     }
 
     override fun showHelpButton() {
-        binding.helpButton.visible()
+        requiredBinding.helpButton.visible()
     }
 
     override fun navigateToFingerprintSetup() {
         findNavController().navigate(
-            SummaryFragmentDirections.actionSummaryFragmentToFingerprintFragment()
+            SummaryFragmentDirections.actionSummaryFragmentToFingerprintFragment(),
         )
     }
 
     override fun showHelpMenu() {
-        HelpMenuFragment.newInstance(
-            HelpMenuModel(
-                shouldShowShowQrCodesHelp = false,
-                shouldShowImportProfile = false,
-                shouldShowImportAccountKit = false
-            )
-        )
-            .show(childFragmentManager, HelpMenuFragment::class.java.name)
+        HelpMenuFragment
+            .newInstance(
+                HelpMenuModel(
+                    shouldShowShowQrCodesHelp = false,
+                    shouldShowImportProfile = false,
+                    shouldShowImportAccountKit = false,
+                ),
+            ).show(childFragmentManager, HelpMenuFragment::class.java.name)
     }
 
     override fun menuShowLogsClick() {
         findNavController().navigate(
-            SummaryFragmentDirections.actionSummaryFragmentToLogs()
+            SummaryFragmentDirections.actionSummaryFragmentToLogs(),
         )
     }
 }

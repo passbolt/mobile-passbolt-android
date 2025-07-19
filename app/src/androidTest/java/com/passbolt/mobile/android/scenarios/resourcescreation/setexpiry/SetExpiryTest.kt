@@ -53,64 +53,63 @@ import org.koin.test.inject
 import kotlin.test.BeforeTest
 import com.google.android.material.R as MaterialR
 
-
 @RunWith(AndroidJUnit4::class)
 @MediumTest
 class SetExpiryTest : KoinTest {
-
     @get:Rule
-    val startUpActivityRule = lazyActivitySetupScenarioRule<AuthenticationMainActivity>(
-        koinOverrideModules = listOf(instrumentationTestsModule),
-        intentSupplier = {
-            ActivityIntents.authentication(
-                InstrumentationRegistry.getInstrumentation().targetContext,
-                ActivityIntents.AuthConfig.Startup,
-                AppContext.APP,
-                managedAccountIntentCreator.getUserLocalId()
-            )
-        }
-    )
+    val startUpActivityRule =
+        lazyActivitySetupScenarioRule<AuthenticationMainActivity>(
+            koinOverrideModules = listOf(instrumentationTestsModule),
+            intentSupplier = {
+                ActivityIntents.authentication(
+                    InstrumentationRegistry.getInstrumentation().targetContext,
+                    ActivityIntents.AuthConfig.Startup,
+                    AppContext.APP,
+                    managedAccountIntentCreator.getUserLocalId(),
+                )
+            },
+        )
 
     private val managedAccountIntentCreator: ManagedAccountIntentCreator by inject()
 
     private val resourcesFullRefreshIdlingResource: ResourcesFullRefreshIdlingResource by inject()
 
     @get:Rule
-    val idlingResourceRule = let {
-        val signInIdlingResource: SignInIdlingResource by inject()
-        val createResourceIdlingResource: CreateResourceIdlingResource by inject()
-        IdlingResourceRule(
-            arrayOf(
-                signInIdlingResource,
-                resourcesFullRefreshIdlingResource,
-                createResourceIdlingResource,
+    val idlingResourceRule =
+        let {
+            val signInIdlingResource: SignInIdlingResource by inject()
+            val createResourceIdlingResource: CreateResourceIdlingResource by inject()
+            IdlingResourceRule(
+                arrayOf(
+                    signInIdlingResource,
+                    resourcesFullRefreshIdlingResource,
+                    createResourceIdlingResource,
+                ),
             )
-        )
-    }
+        }
 
     @BeforeTest
     fun setup() {
-        //Given  I am logged in as a Pro or Cloud user // Cloud user
-        //And    automatic expiry is enabled on the server
-        //And    automatic expiry is set to <number of days> // 7 days
-        //When   I create a new resource
+        // Given  I am logged in as a Pro or Cloud user // Cloud user
+        // And    automatic expiry is enabled on the server
+        // And    automatic expiry is set to <number of days> // 7 days
+        // When   I create a new resource
         signIn(managedAccountIntentCreator.getPassphrase())
         createNewPasswordFromHomeScreen("PasswordWithExpirySet")
         onView(withId(MaterialR.id.text_input_start_icon)).perform(click())
         onView(withId(com.passbolt.mobile.android.feature.home.R.id.recentlyModified)).perform(click())
     }
 
-
-    @Test
     //    https://passbolt.testrail.io/index.php?/cases/view/11935
+    @Test
     fun setExpiryOfCreatedResourceToDefaultExpiryPeriod() {
         pickFirstResourceWithName("PasswordWithExpirySet")
         onView(withId(com.passbolt.mobile.android.feature.resources.R.id.expiryItem)).check(matches(isDisplayed()))
-        //Then   The resource is marked to expire after <number of days>
+        // Then   The resource is marked to expire after <number of days>
         onView(withText("In 7 days")).check(
             matches(
-                isDisplayed()
-            )
+                isDisplayed(),
+            ),
         )
     }
 }

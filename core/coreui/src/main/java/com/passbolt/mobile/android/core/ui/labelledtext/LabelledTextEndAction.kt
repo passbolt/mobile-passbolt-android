@@ -27,5 +27,5 @@ import androidx.annotation.DrawableRes
 
 data class LabelledTextEndAction(
     @DrawableRes val icon: Int,
-    val action: () -> Unit
+    val action: () -> Unit,
 )

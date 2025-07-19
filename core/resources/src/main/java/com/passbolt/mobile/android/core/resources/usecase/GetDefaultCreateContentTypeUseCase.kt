@@ -37,35 +37,39 @@ import com.passbolt.mobile.android.ui.MetadataTypeModel.V5
  * @since v1.0
  */
 class GetDefaultCreateContentTypeUseCase(
-    private val getMetadataTypesSettingsUseCase: GetMetadataTypesSettingsUseCase
+    private val getMetadataTypesSettingsUseCase: GetMetadataTypesSettingsUseCase,
 ) : AsyncUseCase<GetDefaultCreateContentTypeUseCase.Input, GetDefaultCreateContentTypeUseCase.Output> {
-
     override suspend fun execute(input: Input): Output {
-        val defaultMetadataType = getMetadataTypesSettingsUseCase.execute(Unit)
-            .metadataTypesSettingsModel
-            .defaultMetadataType
+        val defaultMetadataType =
+            getMetadataTypesSettingsUseCase
+                .execute(Unit)
+                .metadataTypesSettingsModel
+                .defaultMetadataType
 
         return Output(
             metadataType = defaultMetadataType,
-            contentType = when (defaultMetadataType) {
-                V4 -> when (input.leadingContentType) {
-                    TOTP -> Totp
-                    PASSWORD -> PasswordAndDescription
-                }
-                V5 -> when (input.leadingContentType) {
-                    TOTP -> V5TotpStandalone
-                    PASSWORD -> V5Default
-                }
-            }
+            contentType =
+                when (defaultMetadataType) {
+                    V4 ->
+                        when (input.leadingContentType) {
+                            TOTP -> Totp
+                            PASSWORD -> PasswordAndDescription
+                        }
+                    V5 ->
+                        when (input.leadingContentType) {
+                            TOTP -> V5TotpStandalone
+                            PASSWORD -> V5Default
+                        }
+                },
         )
     }
 
     data class Input(
-        val leadingContentType: LeadingContentType
+        val leadingContentType: LeadingContentType,
     )
 
     data class Output(
         val contentType: ContentType,
-        val metadataType: MetadataTypeModel
+        val metadataType: MetadataTypeModel,
     )
 }

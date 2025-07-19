@@ -1,8 +1,8 @@
 package com.passbolt.mobile.android.core.preferences.usecase
 
 import com.passbolt.mobile.android.common.usecase.UseCase
-import com.passbolt.mobile.android.core.preferences.AccountPreferencesFileName
 import com.passbolt.mobile.android.core.accounts.usecase.SelectedAccountUseCase
+import com.passbolt.mobile.android.core.preferences.AccountPreferencesFileName
 import com.passbolt.mobile.android.encryptedstorage.EncryptedSharedPreferencesFactory
 import com.passbolt.mobile.android.entity.home.HomeDisplayView
 import com.passbolt.mobile.android.ui.DefaultFilterModel
@@ -31,10 +31,9 @@ import com.passbolt.mobile.android.ui.DefaultFilterModel
  */
 
 class UpdateHomeDisplayViewPrefsUseCase(
-    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory
+    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory,
 ) : UseCase<UpdateHomeDisplayViewPrefsUseCase.Input, Unit>,
     SelectedAccountUseCase {
-
     override fun execute(input: Input) {
         val fileName = AccountPreferencesFileName(selectedAccountId).name
         val sharedPreferences = encryptedSharedPreferencesFactory.get("$fileName.xml")
@@ -48,6 +47,6 @@ class UpdateHomeDisplayViewPrefsUseCase(
 
     data class Input(
         val lastUsedHomeView: HomeDisplayView? = null,
-        val userSetHomeView: DefaultFilterModel? = null
+        val userSetHomeView: DefaultFilterModel? = null,
     )
 }

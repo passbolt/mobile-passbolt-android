@@ -1,7 +1,6 @@
 package com.passbolt.mobile.android.ui
 
 import android.os.Parcelable
-import com.passbolt.mobile.android.common.InitialsProvider
 import com.passbolt.mobile.android.common.search.Searchable
 import com.passbolt.mobile.android.jsonmodel.JsonModel
 import com.passbolt.mobile.android.jsonmodel.delegates.RootRelativeJsonPathNullableStringDelegate
@@ -10,7 +9,6 @@ import com.passbolt.mobile.android.jsonmodel.delegates.RootRelativeJsonPathStrin
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
-import org.koin.java.KoinJavaComponent.inject
 import java.time.ZonedDateTime
 
 /**
@@ -47,17 +45,9 @@ data class ResourceModel(
     val expiry: ZonedDateTime?,
     val metadataKeyId: String?,
     val metadataKeyType: MetadataKeyTypeModel?,
-    val metadataJsonModel: MetadataJsonModel
-) : Parcelable, Searchable by metadataJsonModel {
-
-    @IgnoredOnParcel
-    val initials: String
-        get() = initialsProvider.get(metadataJsonModel.name)
-
-    companion object {
-        val initialsProvider: InitialsProvider by inject(InitialsProvider::class.java)
-    }
-}
+    val metadataJsonModel: MetadataJsonModel,
+) : Parcelable,
+    Searchable by metadataJsonModel
 
 fun ResourceModel.isFavourite() = favouriteId != null
 
@@ -65,12 +55,12 @@ data class ResourceModelWithAttributes(
     val resourceModel: ResourceModel,
     val resourceTags: List<TagModel>,
     val resourcePermissions: List<PermissionModel>,
-    val favouriteId: String?
+    val favouriteId: String?,
 )
 
 enum class MetadataKeyTypeModel {
     SHARED,
-    PERSONAL
+    PERSONAL,
 }
 
 open class CreateResourceModel(
@@ -79,7 +69,7 @@ open class CreateResourceModel(
     val expiry: ZonedDateTime?,
     val metadataKeyId: String?,
     val metadataKeyType: MetadataKeyTypeModel?,
-    val metadataJsonModel: MetadataJsonModel
+    val metadataJsonModel: MetadataJsonModel,
 )
 
 class UpdateResourceModel(
@@ -89,19 +79,22 @@ class UpdateResourceModel(
     expiry: ZonedDateTime?,
     metadataKeyId: String?,
     metadataKeyType: MetadataKeyTypeModel?,
-    metadataJsonModel: MetadataJsonModel
+    metadataJsonModel: MetadataJsonModel,
 ) : CreateResourceModel(
-    contentType = contentType,
-    folderId = folderId,
-    expiry = expiry,
-    metadataKeyId = metadataKeyId,
-    metadataKeyType = metadataKeyType,
-    metadataJsonModel = metadataJsonModel
-)
+        contentType = contentType,
+        folderId = folderId,
+        expiry = expiry,
+        metadataKeyId = metadataKeyId,
+        metadataKeyType = metadataKeyType,
+        metadataJsonModel = metadataJsonModel,
+    )
 
 @Parcelize
-data class MetadataJsonModel(override var json: String?) : JsonModel, Parcelable, Searchable {
-
+data class MetadataJsonModel(
+    override var json: String?,
+) : JsonModel,
+    Parcelable,
+    Searchable {
     @IgnoredOnParcel
     var objectType: String by RootRelativeJsonPathStringDelegate(jsonPath = "object_type")
 
@@ -124,6 +117,9 @@ data class MetadataJsonModel(override var json: String?) : JsonModel, Parcelable
     var uris: List<String>? by RootRelativeJsonPathNullableStringListDelegate(jsonPath = "uris")
 
     @IgnoredOnParcel
+    var icon: MetadataIconModel? by RootRelativeJsonPathIconDelegate(jsonPath = "icon")
+
+    @IgnoredOnParcel
     override val searchCriteria: String = "$name${username.orEmpty()}${uri.orEmpty()}${uris.orEmpty().joinToString()}"
 
     fun getMainUri(contentType: ContentType) =
@@ -134,28 +130,32 @@ data class MetadataJsonModel(override var json: String?) : JsonModel, Parcelable
         }.orEmpty()
 
     @Suppress("NestedBlockDepth")
-    fun setMainUri(contentType: ContentType, mainUri: String) {
+    fun setMainUri(
+        contentType: ContentType,
+        mainUri: String,
+    ) {
         if (contentType.isV5()) {
-            uris = uris.let {
-                if (it.isNullOrEmpty()) {
-                    listOf(mainUri)
-                } else {
-                    it.toMutableList().apply {
-                        set(0, mainUri)
+            uris =
+                uris.let {
+                    if (it.isNullOrEmpty()) {
+                        listOf(mainUri)
+                    } else {
+                        it.toMutableList().apply {
+                            set(0, mainUri)
+                        }
                     }
                 }
-            }
         } else {
             uri = mainUri
         }
     }
 
     companion object {
-        fun empty(): MetadataJsonModel = MetadataJsonModel(
-            """
+        fun empty(): MetadataJsonModel =
+            MetadataJsonModel(
+                """
                 {"name": ""}
-            """
-                .trimIndent()
-        )
+                """.trimIndent(),
+            )
     }
 }

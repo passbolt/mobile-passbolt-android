@@ -6,5 +6,5 @@ data class RefreshSessionRequest(
     @SerializedName("refresh_token")
     val refreshToken: String,
     @SerializedName("user_id")
-    val userId: String
+    val userId: String,
 )

@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.feature
 
+import androidx.biometric.BiometricPrompt
 import com.passbolt.mobile.android.feature.authentication.accountslist.accountsListModule
 import com.passbolt.mobile.android.feature.authentication.auth.authModule
 import com.passbolt.mobile.android.feature.authentication.authenticationMainModule
@@ -32,13 +33,16 @@ import org.koin.dsl.module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-val authenticationModule = module {
-    accountsListModule()
-    authenticationMainModule()
-    authModule()
-    scanYubikeyModule()
-    enterTotpModuleModule()
-    unknownProviderModule()
-    authWithDuoModule()
-    duoWebViewModule()
-}
+val authenticationModule =
+    module {
+        accountsListModule()
+        authenticationMainModule()
+        authModule()
+        scanYubikeyModule()
+        enterTotpModuleModule()
+        unknownProviderModule()
+        authWithDuoModule()
+        duoWebViewModule()
+
+        single { BiometricPrompt.PromptInfo.Builder() }
+    }

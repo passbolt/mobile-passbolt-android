@@ -30,16 +30,14 @@ import androidx.security.crypto.MasterKey
 
 class EncryptedSharedPreferencesFactory internal constructor(
     private val context: Context,
-    private val masterKey: MasterKey
+    private val masterKey: MasterKey,
 ) {
-
-    fun get(fileName: String): SharedPreferences {
-        return EncryptedSharedPreferences.create(
+    fun get(fileName: String): SharedPreferences =
+        EncryptedSharedPreferences.create(
             context,
             fileName,
             masterKey,
             EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM,
         )
-    }
 }

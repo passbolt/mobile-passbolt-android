@@ -26,29 +26,29 @@ import timber.log.Timber
  * @since v1.0
  */
 class FillableInputsFinder(
-    private val autofillHintsFactory: AutofillHintsFactory
+    private val autofillHintsFactory: AutofillHintsFactory,
 ) {
-
     // TODO consider other methods apart from analyzing hints
     @SuppressLint("BinaryOperationInTimber")
     fun findStructureForAutofillFields(
         field: AutofillField,
-        autofillParsedStructure: Set<ParsedStructure>
+        autofillParsedStructure: Set<ParsedStructure>,
     ): ParsedStructure? {
         val hintValues = autofillHintsFactory.getHintValues(field)
         return autofillParsedStructure
             .asSequence()
             .filter { !it.autofillHints.isNullOrEmpty() }
             .firstOrNull { parsedStructure ->
-                parsedStructure.autofillHints!!.any { structureHint -> // filtered above
+                parsedStructure.autofillHints!!.any { structureHint ->
+                    // filtered above
                     hintValues.any {
                         val result = structureHint.contains(it, ignoreCase = true)
                         Timber.d(
                             "Marking input as fillable. \n" +
-                                    "Hint values: %s\n" +
-                                    "Structure hint: %s",
+                                "Hint values: %s\n" +
+                                "Structure hint: %s",
                             hintValues.joinToString(separator = ","),
-                            structureHint
+                            structureHint,
                         )
                         result
                     }

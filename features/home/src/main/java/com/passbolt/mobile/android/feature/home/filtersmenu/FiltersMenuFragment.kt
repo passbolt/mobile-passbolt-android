@@ -40,22 +40,24 @@ import org.koin.androidx.scope.fragmentScope
  * @since v1.0
  */
 
-class FiltersMenuFragment : BottomSheetDialogFragment(), FiltersMenuContract.View, AndroidScopeComponent {
-
+class FiltersMenuFragment :
+    BottomSheetDialogFragment(),
+    FiltersMenuContract.View,
+    AndroidScopeComponent {
     override val scope by fragmentScope(useParentActivityScope = false)
     private val presenter: FiltersMenuContract.Presenter by scope.inject()
     private lateinit var binding: FiletrsBottomsheetBinding
     private var listener: Listener? = null
     private val menuModel by lifecycleAwareLazy {
         requireNotNull(
-            BundleCompat.getParcelable(requireArguments(), EXTRA_FILTERS_MENU_MODEL, FiltersMenuModel::class.java)
+            BundleCompat.getParcelable(requireArguments(), EXTRA_FILTERS_MENU_MODEL, FiltersMenuModel::class.java),
         )
     }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         binding = FiletrsBottomsheetBinding.inflate(inflater)
         presenter.creatingView()
@@ -63,7 +65,10 @@ class FiltersMenuFragment : BottomSheetDialogFragment(), FiltersMenuContract.Vie
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         setListeners()
         presenter.argsRetrieved(menuModel)
@@ -71,11 +76,12 @@ class FiltersMenuFragment : BottomSheetDialogFragment(), FiltersMenuContract.Vie
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        listener = when {
-            activity is Listener -> activity as Listener
-            parentFragment is Listener -> parentFragment as Listener
-            else -> error("Parent must implement ${Listener::class.java.name}")
-        }
+        listener =
+            when {
+                activity is Listener -> activity as Listener
+                parentFragment is Listener -> parentFragment as Listener
+                else -> error("Parent must implement ${Listener::class.java.name}")
+            }
     }
 
     override fun onDetach() {
@@ -143,7 +149,7 @@ class FiltersMenuFragment : BottomSheetDialogFragment(), FiltersMenuContract.Vie
             binding.favourites,
             binding.recentlyModified,
             binding.sharedWithMe,
-            binding.ownedByMe
+            binding.ownedByMe,
         ).forEach {
             it.setBackgroundResource(requireContext().selectableBackgroundResourceId())
         }
@@ -203,13 +209,21 @@ class FiltersMenuFragment : BottomSheetDialogFragment(), FiltersMenuContract.Vie
 
     interface Listener {
         fun menuAllItemsClick()
+
         fun menuFavouritesClick()
+
         fun menuRecentlyModifiedClick()
+
         fun menuSharedWithMeClick()
+
         fun menuOwnedByMeClick()
+
         fun menuExpiryClick()
+
         fun menuFoldersClick()
+
         fun menuTagsClick()
+
         fun menuGroupsClick()
     }
 

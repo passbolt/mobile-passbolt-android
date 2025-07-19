@@ -33,14 +33,14 @@ fun Module.accessibilityAutofillModule() {
     scope(named<EncourageAccessibilityAutofillDialog>()) {
         scoped<EncourageAccessibilityAutofillContract.Presenter> {
             EncourageAccessibilityAutofillPresenter(
-                autofillInformationProvider = get()
+                autofillInformationProvider = get(),
             )
         }
     }
     scope(named<AutofillTutorialDialog>()) {
         scoped<AutofillTutorialContract.Presenter> {
             AutofillTutorialPresenter(
-                autofillInformationProvider = get()
+                autofillInformationProvider = get(),
             )
         }
     }

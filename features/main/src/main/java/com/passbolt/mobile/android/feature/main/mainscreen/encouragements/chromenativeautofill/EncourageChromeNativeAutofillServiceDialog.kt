@@ -39,9 +39,10 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class EncourageChromeNativeAutofillServiceDialog : DialogFragment(), EncourageChromeNativeAutofillContract.View,
+class EncourageChromeNativeAutofillServiceDialog :
+    DialogFragment(),
+    EncourageChromeNativeAutofillContract.View,
     AndroidScopeComponent {
-
     private var listener: Listener? = null
     override val scope by fragmentScope(useParentActivityScope = false)
     private val presenter: EncourageChromeNativeAutofillContract.Presenter by scope.inject()
@@ -52,7 +53,11 @@ class EncourageChromeNativeAutofillServiceDialog : DialogFragment(), EncourageCh
         setStyle(STYLE_NO_TITLE, CoreUiR.style.FullscreenDialogTheme)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
+    ): View {
         val binding = DialogEncourageChromeNativeAutofillBinding.inflate(inflater)
         setupListeners(binding)
         setupSteps(binding)
@@ -61,11 +66,12 @@ class EncourageChromeNativeAutofillServiceDialog : DialogFragment(), EncourageCh
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        listener = when {
-            activity is Listener -> activity as Listener
-            parentFragment is Listener -> parentFragment as Listener
-            else -> error("Parent must implement ${Listener::class.java.name}")
-        }
+        listener =
+            when {
+                activity is Listener -> activity as Listener
+                parentFragment is Listener -> parentFragment as Listener
+                else -> error("Parent must implement ${Listener::class.java.name}")
+            }
         presenter.attach(this)
     }
 
@@ -84,15 +90,16 @@ class EncourageChromeNativeAutofillServiceDialog : DialogFragment(), EncourageCh
             requireContext()
                 .resources
                 .getStringArray(LocalizationR.array.dialog_encourage_chrome_native_autofill_setup_steps)
-                .mapIndexed { index, text -> CircleStepItemModel(text.fromHtml(), getStepDrawable(index)) }
+                .mapIndexed { index, text -> CircleStepItemModel(text.fromHtml(), getStepDrawable(index)) },
         )
     }
 
-    private fun getStepDrawable(index: Int) = try {
-        CHROME_NATIVE_AUTOFILL_SETUP_STEPS_ICONS[index]
-    } catch (ignored: Exception) {
-        null
-    }
+    private fun getStepDrawable(index: Int) =
+        try {
+            CHROME_NATIVE_AUTOFILL_SETUP_STEPS_ICONS[index]
+        } catch (ignored: Exception) {
+            null
+        }
 
     private fun setupListeners(binding: DialogEncourageChromeNativeAutofillBinding) {
         with(binding) {
@@ -117,15 +124,17 @@ class EncourageChromeNativeAutofillServiceDialog : DialogFragment(), EncourageCh
     }
 
     private companion object {
-        private val CHROME_NATIVE_AUTOFILL_SETUP_STEPS_ICONS = listOf(
-            CoreUiR.drawable.passbolt_with_bg,
-            CoreUiR.drawable.ic_chrome,
-            CoreUiR.drawable.passbolt_with_bg
-        )
+        private val CHROME_NATIVE_AUTOFILL_SETUP_STEPS_ICONS =
+            listOf(
+                CoreUiR.drawable.passbolt_with_bg,
+                CoreUiR.drawable.ic_chrome,
+                CoreUiR.drawable.passbolt_with_bg,
+            )
     }
 
     interface Listener {
         fun chromeNativeAutofillSetupClosed() {}
+
         fun chromeNativeAutofillSetupSuccessfully() {}
     }
 }

@@ -40,9 +40,10 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 class OtpMoreMenuFragment :
     BindingScopedAuthenticatedBottomSheetFragment<BottomsheetOtpMoreMenuBinding, OtpMoreMenuContract.View>(
-        BottomsheetOtpMoreMenuBinding::inflate
-    ), OtpMoreMenuContract.View, AndroidScopeComponent {
-
+        BottomsheetOtpMoreMenuBinding::inflate,
+    ),
+    OtpMoreMenuContract.View,
+    AndroidScopeComponent {
     override val presenter: OtpMoreMenuContract.Presenter by inject()
     private val resourceId: String by lifecycleAwareLazy {
         requireNotNull(requireArguments().getString(EXTRA_RESOURCE_ID))
@@ -55,7 +56,10 @@ class OtpMoreMenuFragment :
     }
     private var listener: Listener? = null
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         showTitle(initialResourceName)
         setListeners()
@@ -65,11 +69,12 @@ class OtpMoreMenuFragment :
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        listener = when {
-            activity is Listener -> activity as Listener
-            parentFragment is Listener -> parentFragment as Listener
-            else -> error("Parent must implement ${Listener::class.java.name}")
-        }
+        listener =
+            when {
+                activity is Listener -> activity as Listener
+                parentFragment is Listener -> parentFragment as Listener
+                else -> error("Parent must implement ${Listener::class.java.name}")
+            }
     }
 
     override fun onResume() {
@@ -90,7 +95,7 @@ class OtpMoreMenuFragment :
     }
 
     private fun setListeners() {
-        with(binding) {
+        with(requiredBinding) {
             setDebouncingOnClickAndDismiss(showOtp) { listener?.menuShowOtpClick() }
             setDebouncingOnClickAndDismiss(copyOtp) { listener?.menuCopyOtpClick() }
             setDebouncingOnClickAndDismiss(deleteOtp) { listener?.menuDeleteOtpClick() }
@@ -100,29 +105,29 @@ class OtpMoreMenuFragment :
     }
 
     override fun showTitle(title: String) {
-        binding.title.text = title
+        requiredBinding.title.text = title
     }
 
     override fun showSeparator() {
-        binding.separator.visible()
+        requiredBinding.separator.visible()
     }
 
     override fun showDeleteButton() {
-        binding.deleteOtp.visible()
+        requiredBinding.deleteOtp.visible()
     }
 
     override fun showEditButton() {
-        binding.editOtp.visible()
+        requiredBinding.editOtp.visible()
     }
 
     override fun showShowOtpButton() {
-        binding.showOtp.visible()
+        requiredBinding.showOtp.visible()
     }
 
     override fun showRefreshFailure() {
         showSnackbar(
             messageResId = LocalizationR.string.common_data_refresh_error,
-            backgroundColor = CoreUiR.color.red
+            backgroundColor = CoreUiR.color.red,
         )
     }
 
@@ -139,21 +144,29 @@ class OtpMoreMenuFragment :
         private const val EXTRA_RESOURCE_NAME = "RESOURCE_NAME"
         private const val EXTRA_CAN_SHOW_TOTP = "CAN_SHOW_TOTP"
 
-        fun newInstance(resourceId: String, resourceName: String, canShowTotp: Boolean) =
-            OtpMoreMenuFragment().apply {
-                arguments = bundleOf(
+        fun newInstance(
+            resourceId: String,
+            resourceName: String,
+            canShowTotp: Boolean,
+        ) = OtpMoreMenuFragment().apply {
+            arguments =
+                bundleOf(
                     EXTRA_RESOURCE_ID to resourceId,
                     EXTRA_RESOURCE_NAME to resourceName,
-                    EXTRA_CAN_SHOW_TOTP to canShowTotp
+                    EXTRA_CAN_SHOW_TOTP to canShowTotp,
                 )
-            }
+        }
     }
 
     interface Listener {
         fun menuCopyOtpClick()
+
         fun menuShowOtpClick()
+
         fun menuEditOtpClick()
+
         fun menuDeleteOtpClick()
+
         fun otpMenuDismissed()
     }
 }

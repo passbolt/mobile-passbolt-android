@@ -1,7 +1,8 @@
 package com.passbolt.mobile.android.core.rbac.usecase
 
-class RbacRulesFileName(userId: String) {
-
+class RbacRulesFileName(
+    userId: String,
+) {
     val name = RBAC_FLAGS_FILE_NAME_FORMAT.format(userId)
 
     private companion object {

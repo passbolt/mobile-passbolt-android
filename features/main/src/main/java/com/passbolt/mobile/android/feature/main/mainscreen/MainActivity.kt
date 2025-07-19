@@ -29,26 +29,28 @@ import com.passbolt.mobile.android.feature.home.R as HomeR
 import com.passbolt.mobile.android.feature.otp.R as OtpR
 import com.passbolt.mobile.android.feature.settings.R as SettingsR
 
+// NOTE: When changing name or package read core/navigation/README.md
 class MainActivity :
     BindingScopedAuthenticatedActivity<ActivityMainBinding, MainContract.View>(ActivityMainBinding::inflate),
-    MainContract.View, EncourageChromeNativeAutofillServiceDialog.Listener {
-
+    MainContract.View,
+    EncourageChromeNativeAutofillServiceDialog.Listener {
     override val presenter: MainContract.Presenter by inject()
 
     private val bottomNavController by lifecycleAwareLazy {
-        findNavHostFragment(binding.fragmentContainer.id).navController
+        findNavHostFragment(requiredBinding.fragmentContainer.id).navController
     }
     private val runtimeAuthenticatedFlag: RuntimeAuthenticatedFlag by inject()
     private val appUpdateManager: AppUpdateManager by inject()
-    private val appUpdateStatusListener = InstallStateUpdatedListener { state ->
-        val installStatus = state.installStatus()
-        Timber.d("App update install status: $installStatus")
-        when (installStatus) {
-            InstallStatus.DOWNLOADED -> {
-                presenter.appUpdateDownloaded()
+    private val appUpdateStatusListener =
+        InstallStateUpdatedListener { state ->
+            val installStatus = state.installStatus()
+            Timber.d("App update install status: $installStatus")
+            when (installStatus) {
+                InstallStatus.DOWNLOADED -> {
+                    presenter.appUpdateDownloaded()
+                }
             }
         }
-    }
     private val appReviewManager: ReviewManager by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,18 +60,22 @@ class MainActivity :
     }
 
     override fun setupBottomNavigation(navigationModel: MainBottomNavigationModel) {
-        with(binding.mainNavigation) {
+        with(requiredBinding.mainNavigation) {
             setupWithNavController(bottomNavController)
             menu.findItem(OtpR.id.otpNav).isVisible = navigationModel.isOtpTabVisible
         }
 
         bottomNavController.addOnDestinationChangedListener { _, destination, _ ->
-            binding.mainNavigation.isVisible = bottomNavFragmentIds.contains(destination.id)
+            requiredBinding.mainNavigation.isVisible = bottomNavFragmentIds.contains(destination.id)
         }
     }
 
     @Deprecated("Deprecated in Java")
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+    override fun onActivityResult(
+        requestCode: Int,
+        resultCode: Int,
+        data: Intent?,
+    ) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_APP_UPDATE) {
             if (resultCode != RESULT_OK) {
@@ -104,29 +110,31 @@ class MainActivity :
             appUpdateInfo,
             AppUpdateType.FLEXIBLE,
             this,
-            REQUEST_APP_UPDATE
+            REQUEST_APP_UPDATE,
         )
     }
 
     override fun showAppUpdateDownloadedSnackbar() {
-        Snackbar.make(
-            getRootView(),
-            getString(LocalizationR.string.main_update_downloaded),
-            Snackbar.LENGTH_INDEFINITE
-        ).apply {
-            anchorView = binding.mainNavigation
-            setAction(
-                getString(LocalizationR.string.main_update_downloaded_install)
-            ) {
-                appUpdateManager.completeUpdate()
+        Snackbar
+            .make(
+                getRootView(),
+                getString(LocalizationR.string.main_update_downloaded),
+                Snackbar.LENGTH_INDEFINITE,
+            ).apply {
+                anchorView = requiredBinding.mainNavigation
+                setAction(
+                    getString(LocalizationR.string.main_update_downloaded_install),
+                ) {
+                    appUpdateManager.completeUpdate()
+                }
+                show()
             }
-            show()
-        }
     }
 
     override fun tryLaunchReviewFlow() {
         // review flow launch success depends on app review API quota
-        appReviewManager.requestReviewFlow()
+        appReviewManager
+            .requestReviewFlow()
             .addOnCompleteListener {
                 if (it.isSuccessful) {
                     it.result?.let { result -> appReviewManager.launchReviewFlow(this, result) }
@@ -139,24 +147,25 @@ class MainActivity :
     override fun showChromeNativeAutofillEncouragement() {
         EncourageChromeNativeAutofillServiceDialog().show(
             supportFragmentManager,
-            EncourageChromeNativeAutofillServiceDialog::class.java.name
+            EncourageChromeNativeAutofillServiceDialog::class.java.name,
         )
     }
 
     override fun chromeNativeAutofillSetupSuccessfully() {
         showSnackbar(
             getString(LocalizationR.string.main_chrome_native_autofill_setup_success),
-            backgroundColor = CoreUiR.color.green
+            backgroundColor = CoreUiR.color.green,
         )
     }
 
     private companion object {
         private const val REQUEST_APP_UPDATE = 8000
-        private val bottomNavFragmentIds = listOf(
-            HomeR.id.home,
-            HomeR.id.homeChild,
-            OtpR.id.otpFragment,
-            SettingsR.id.settings
-        )
+        private val bottomNavFragmentIds =
+            listOf(
+                HomeR.id.home,
+                HomeR.id.homeChild,
+                OtpR.id.otpFragment,
+                SettingsR.id.settingsComposeFragment,
+            )
     }
 }

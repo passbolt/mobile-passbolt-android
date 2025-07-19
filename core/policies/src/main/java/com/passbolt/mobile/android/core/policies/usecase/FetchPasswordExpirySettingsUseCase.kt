@@ -31,9 +31,8 @@ import com.passbolt.mobile.android.ui.PasswordExpirySettings
 
 class FetchPasswordExpirySettingsUseCase(
     private val passwordExpiryRepository: PasswordExpiryRepository,
-    private val passwordExpiryMapper: PasswordExpiryMapper
+    private val passwordExpiryMapper: PasswordExpiryMapper,
 ) : AsyncUseCase<Unit, FetchPasswordExpirySettingsUseCase.Output> {
-
     override suspend fun execute(input: Unit): Output =
         when (val response = passwordExpiryRepository.getPasswordExpirySettings()) {
             is NetworkResult.Failure -> Output.Failure(response)
@@ -41,11 +40,12 @@ class FetchPasswordExpirySettingsUseCase(
         }
 
     sealed class Output {
-
         data class Success(
-            val passwordExpirySettings: PasswordExpirySettings
+            val passwordExpirySettings: PasswordExpirySettings,
         ) : Output()
 
-        data class Failure<T : Any>(val response: NetworkResult.Failure<T>) : Output()
+        data class Failure<T : Any>(
+            val response: NetworkResult.Failure<T>,
+        ) : Output()
     }
 }

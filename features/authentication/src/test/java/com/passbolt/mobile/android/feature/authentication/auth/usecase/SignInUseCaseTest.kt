@@ -44,34 +44,35 @@ import java.net.HttpURLConnection
 
 @ExperimentalCoroutinesApi
 class SignInUseCaseTest : KoinTest {
-
     private val signInUseCase: SignInUseCase by inject()
 
     @get:Rule
-    val koinTestRule = KoinTestRule.create {
-        printLogger(Level.ERROR)
-        modules(testSignInUseCaseModule)
-    }
-
-    @Test
-    fun `test account not found should be mapped correct`() = runTest {
-        mockAuthRepository.stub {
-            onBlocking { signIn(any(), any()) }.doReturn(
-                NetworkResult.Failure.ServerError(
-                    HttpException(
-                        Response.error<String>(
-                            HttpURLConnection.HTTP_NOT_FOUND,
-                            "".toResponseBody("application/json".toMediaTypeOrNull())
-                        )
-                    ),
-                    HttpURLConnection.HTTP_NOT_FOUND,
-                    "error message"
-                )
-            )
+    val koinTestRule =
+        KoinTestRule.create {
+            printLogger(Level.ERROR)
+            modules(testSignInUseCaseModule)
         }
 
-        val response = signInUseCase.execute(SignInUseCase.Input("test", "test", "mfa"))
-        assertThat(response).isInstanceOf(SignInUseCase.Output.Failure::class.java)
-        assertThat((response as SignInUseCase.Output.Failure).type).isEqualTo(SignInFailureType.ACCOUNT_DOES_NOT_EXIST)
-    }
+    @Test
+    fun `test account not found should be mapped correct`() =
+        runTest {
+            mockAuthRepository.stub {
+                onBlocking { signIn(any(), any()) }.doReturn(
+                    NetworkResult.Failure.ServerError(
+                        HttpException(
+                            Response.error<String>(
+                                HttpURLConnection.HTTP_NOT_FOUND,
+                                "".toResponseBody("application/json".toMediaTypeOrNull()),
+                            ),
+                        ),
+                        HttpURLConnection.HTTP_NOT_FOUND,
+                        "error message",
+                    ),
+                )
+            }
+
+            val response = signInUseCase.execute(SignInUseCase.Input("test", "test", "mfa"))
+            assertThat(response).isInstanceOf(SignInUseCase.Output.Failure::class.java)
+            assertThat((response as SignInUseCase.Output.Failure).type).isEqualTo(SignInFailureType.ACCOUNT_DOES_NOT_EXIST)
+        }
 }

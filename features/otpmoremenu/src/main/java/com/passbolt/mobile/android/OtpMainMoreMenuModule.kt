@@ -28,8 +28,9 @@ import com.passbolt.mobile.android.otpmoremenu.usecase.CreateOtpMoreMenuModelUse
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
-val otpMainMoreMenuModule = module {
-    singleOf(::CreateOtpMoreMenuModelUseCase)
+val otpMainMoreMenuModule =
+    module {
+        singleOf(::CreateOtpMoreMenuModelUseCase)
 
-    otpMoreMenuModule()
-}
+        otpMoreMenuModule()
+    }

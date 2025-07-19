@@ -49,7 +49,6 @@ import java.time.ZonedDateTime
  */
 
 class FoldersSearchTest {
-
     private lateinit var resourcesDao: ResourcesDao
     private lateinit var foldersDao: FoldersDao
     private lateinit var db: ResourceDatabase
@@ -57,23 +56,27 @@ class FoldersSearchTest {
     @Before
     fun createDb() {
         val context = ApplicationProvider.getApplicationContext<Context>()
-        db = Room.inMemoryDatabaseBuilder(
-            context, ResourceDatabase::class.java
-        ).build()
+        db =
+            Room
+                .inMemoryDatabaseBuilder(
+                    context,
+                    ResourceDatabase::class.java,
+                ).build()
         resourcesDao = db.resourcesDao()
         foldersDao = db.foldersDao()
 
         insertTestStructure()
     }
 
-    private fun insertTestStructure() = runBlocking {
-        foldersDao.apply {
-            insertAll(listOf(FOLDER_1, FOLDER_2, FOLDER_3, FOLDER_4, FOLDER_5))
+    private fun insertTestStructure() =
+        runBlocking {
+            foldersDao.apply {
+                insertAll(listOf(FOLDER_1, FOLDER_2, FOLDER_3, FOLDER_4, FOLDER_5))
+            }
+            resourcesDao.apply {
+                insertAll(listOf(RESOURCE_1, RESOURCE_2, RESOURCE_3, RESOURCE_4, RESOURCE_5))
+            }
         }
-        resourcesDao.apply {
-            insertAll(listOf(RESOURCE_1, RESOURCE_2, RESOURCE_3, RESOURCE_4, RESOURCE_5))
-        }
-    }
 
     @After
     fun closeDb() {
@@ -81,24 +84,27 @@ class FoldersSearchTest {
     }
 
     @Test
-    fun testAllSubFoldersShouldBeReturnedForFolderWithId() = runBlocking {
-        val subFoldersForFolder1 = foldersDao.getFolderAllChildFoldersRecursively(
-            FOLDER_1.folderId
-        )
-        val subFoldersForFolder2 = foldersDao.getFolderAllChildFoldersRecursively(
-            FOLDER_2.folderId
-        )
+    fun testAllSubFoldersShouldBeReturnedForFolderWithId() =
+        runBlocking {
+            val subFoldersForFolder1 =
+                foldersDao.getFolderAllChildFoldersRecursively(
+                    FOLDER_1.folderId,
+                )
+            val subFoldersForFolder2 =
+                foldersDao.getFolderAllChildFoldersRecursively(
+                    FOLDER_2.folderId,
+                )
 
-        assertThat(subFoldersForFolder1.size).isEqualTo(0)
+            assertThat(subFoldersForFolder1.size).isEqualTo(0)
 
-        assertThat(subFoldersForFolder2.size).isEqualTo(3)
-        assertThat(subFoldersForFolder2.map { it.folderId }).containsExactly(
-            "rootFolder2Folder1",
-            "rootFolder2Folder1Folder1",
-            "rootFolder2Folder1Folder1Folder1"
-        )
-        return@runBlocking
-    }
+            assertThat(subFoldersForFolder2.size).isEqualTo(3)
+            assertThat(subFoldersForFolder2.map { it.folderId }).containsExactly(
+                "rootFolder2Folder1",
+                "rootFolder2Folder1Folder1",
+                "rootFolder2Folder1Folder1Folder1",
+            )
+            return@runBlocking
+        }
 
     object SearchFolderStructure {
         /*
@@ -115,96 +121,106 @@ class FoldersSearchTest {
                     -F root folder 2 folder 1 folder 1 folder 1
          */
 
-        val RESOURCE_1 = Resource(
-            resourceId = "1",
-            folderId = null,
-            resourcePermission = Permission.READ,
-            resourceTypeId = "1",
-            favouriteId = null,
-            modified = ZonedDateTime.now(),
-            expiry = null,
-            metadataKeyId = null,
-            metadataKeyType = null
-        )
-        val RESOURCE_2 = Resource(
-            resourceId = "2",
-            folderId = null,
-            resourcePermission = Permission.READ,
-            resourceTypeId = "1",
-            favouriteId = null,
-            modified = ZonedDateTime.now(),
-            expiry = null,
-            metadataKeyId = null,
-            metadataKeyType = null
-        )
-        val RESOURCE_3 = Resource(
-            resourceId = "3",
-            folderId = "rootFolder2",
-            resourcePermission = Permission.READ,
-            resourceTypeId = "1",
-            favouriteId = null,
-            modified = ZonedDateTime.now(),
-            expiry = null,
-            metadataKeyId = null,
-            metadataKeyType = null
-        )
-        val RESOURCE_4 = Resource(
-            resourceId = "4",
-            folderId = "rootFolder2",
-            resourcePermission = Permission.READ,
-            resourceTypeId = "1",
-            favouriteId = null,
-            modified = ZonedDateTime.now(),
-            expiry = null,
-            metadataKeyId = null,
-            metadataKeyType = null
-        )
-        val RESOURCE_5 = Resource(
-            resourceId = "5",
-            folderId = "rootFolder2Folder1",
-            resourcePermission = Permission.READ,
-            resourceTypeId = "1",
-            favouriteId = null,
-            modified = ZonedDateTime.now(),
-            expiry = null,
-            metadataKeyId = null,
-            metadataKeyType = null
-        )
+        val RESOURCE_1 =
+            Resource(
+                resourceId = "1",
+                folderId = null,
+                resourcePermission = Permission.READ,
+                resourceTypeId = "1",
+                favouriteId = null,
+                modified = ZonedDateTime.now(),
+                expiry = null,
+                metadataKeyId = null,
+                metadataKeyType = null,
+            )
+        val RESOURCE_2 =
+            Resource(
+                resourceId = "2",
+                folderId = null,
+                resourcePermission = Permission.READ,
+                resourceTypeId = "1",
+                favouriteId = null,
+                modified = ZonedDateTime.now(),
+                expiry = null,
+                metadataKeyId = null,
+                metadataKeyType = null,
+            )
+        val RESOURCE_3 =
+            Resource(
+                resourceId = "3",
+                folderId = "rootFolder2",
+                resourcePermission = Permission.READ,
+                resourceTypeId = "1",
+                favouriteId = null,
+                modified = ZonedDateTime.now(),
+                expiry = null,
+                metadataKeyId = null,
+                metadataKeyType = null,
+            )
+        val RESOURCE_4 =
+            Resource(
+                resourceId = "4",
+                folderId = "rootFolder2",
+                resourcePermission = Permission.READ,
+                resourceTypeId = "1",
+                favouriteId = null,
+                modified = ZonedDateTime.now(),
+                expiry = null,
+                metadataKeyId = null,
+                metadataKeyType = null,
+            )
+        val RESOURCE_5 =
+            Resource(
+                resourceId = "5",
+                folderId = "rootFolder2Folder1",
+                resourcePermission = Permission.READ,
+                resourceTypeId = "1",
+                favouriteId = null,
+                modified = ZonedDateTime.now(),
+                expiry = null,
+                metadataKeyId = null,
+                metadataKeyType = null,
+            )
 
-        val FOLDER_1 = Folder(
-            "rootFolder1",
-            "root folder 1",
-            Permission.READ,
-            null,
-            false
-        )
-        val FOLDER_2 = Folder(
-            "rootFolder2",
-            "root folder 2",
-            Permission.READ,
-            null,
-            false
-        )
-        val FOLDER_3 = Folder(
-            "rootFolder2Folder1",
-            "root folder 2 folder 1",
-            Permission.READ,
-            "rootFolder2",
-            false
-        )
-        val FOLDER_4 = Folder(
-            "rootFolder2Folder1Folder1",
-            "root folder 2 folder 1 folder 1",
-            Permission.READ,
-            "rootFolder2Folder1",
-            false
-        )
-        val FOLDER_5 = Folder(
-            "rootFolder2Folder1Folder1Folder1",
-            "root folder 2 folder 1 folder 1 folder 1",
-            Permission.READ,
-            "rootFolder2Folder1Folder1",
-            false
-        )
+        val FOLDER_1 =
+            Folder(
+                "rootFolder1",
+                "root folder 1",
+                Permission.READ,
+                null,
+                false,
+            )
+        val FOLDER_2 =
+            Folder(
+                "rootFolder2",
+                "root folder 2",
+                Permission.READ,
+                null,
+                false,
+            )
+        val FOLDER_3 =
+            Folder(
+                "rootFolder2Folder1",
+                "root folder 2 folder 1",
+                Permission.READ,
+                "rootFolder2",
+                false,
+            )
+        val FOLDER_4 =
+            Folder(
+                "rootFolder2Folder1Folder1",
+                "root folder 2 folder 1 folder 1",
+                Permission.READ,
+                "rootFolder2Folder1",
+                false,
+            )
+        val FOLDER_5 =
+            Folder(
+                "rootFolder2Folder1Folder1Folder1",
+                "root folder 2 folder 1 folder 1 folder 1",
+                Permission.READ,
+                "rootFolder2Folder1Folder1",
+                false,
+            )
     }
 }

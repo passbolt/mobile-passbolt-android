@@ -33,52 +33,53 @@ import com.passbolt.mobile.android.core.ui.databinding.ViewSettingBinding
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-open class SettingView @JvmOverloads constructor(
-    context: Context,
-    attrs: AttributeSet? = null,
-    defStyle: Int = 0
-) : LinearLayout(context, attrs, defStyle) {
+open class SettingView
+    @JvmOverloads
+    constructor(
+        context: Context,
+        attrs: AttributeSet? = null,
+        defStyle: Int = 0,
+    ) : LinearLayout(context, attrs, defStyle) {
+        protected val binding = ViewSettingBinding.inflate(LayoutInflater.from(context), this, true)
 
-    protected val binding = ViewSettingBinding.inflate(LayoutInflater.from(context), this, true)
+        var icon: Drawable? = null
+            set(value) {
+                field = value
+                with(binding.iconImage) {
+                    setImageDrawable(value)
+                    imageTintList = ColorStateList.valueOf(context.getColor(R.color.icon_tint))
+                }
+            }
 
-    var icon: Drawable? = null
-        set(value) {
-            field = value
-            with(binding.iconImage) {
-                setImageDrawable(value)
-                imageTintList = ColorStateList.valueOf(context.getColor(R.color.icon_tint))
+        var name: String = ""
+            set(value) {
+                field = value
+                binding.nameLabel.text = value
+            }
+
+        init {
+            parseAttributes(attrs)
+        }
+
+        private fun parseAttributes(attrs: AttributeSet?) {
+            attrs?.let {
+                context.obtainStyledAttributes(attrs, R.styleable.SettingView, 0, 0).use {
+                    icon = it.getDrawable(R.styleable.SettingView_icon)
+                    name = it.getString(R.styleable.SettingView_name).orEmpty()
+                }
             }
         }
 
-    var name: String = ""
-        set(value) {
-            field = value
-            binding.nameLabel.text = value
-        }
-
-    init {
-        parseAttributes(attrs)
-    }
-
-    private fun parseAttributes(attrs: AttributeSet?) {
-        attrs?.let {
-            context.obtainStyledAttributes(attrs, R.styleable.SettingView, 0, 0).use {
-                icon = it.getDrawable(R.styleable.SettingView_icon)
-                name = it.getString(R.styleable.SettingView_name).orEmpty()
+        override fun setEnabled(enabled: Boolean) {
+            super.setEnabled(enabled)
+            binding.root.children.forEach {
+                it.alpha = if (enabled) ALPHA_FULLY_VISIBLE else ALPHA_GREYED_OUT
+                it.isEnabled = enabled
             }
         }
-    }
 
-    override fun setEnabled(enabled: Boolean) {
-        super.setEnabled(enabled)
-        binding.root.children.forEach {
-            it.alpha = if (enabled) ALPHA_FULLY_VISIBLE else ALPHA_GREYED_OUT
-            it.isEnabled = enabled
+        protected companion object {
+            const val ALPHA_GREYED_OUT = 0.5f
+            const val ALPHA_FULLY_VISIBLE = 1f
         }
     }
-
-    protected companion object {
-        const val ALPHA_GREYED_OUT = 0.5f
-        const val ALPHA_FULLY_VISIBLE = 1f
-    }
-}

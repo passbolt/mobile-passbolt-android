@@ -23,7 +23,6 @@
 
 package com.passbolt.mobile.android.feature.otp.screen
 
-import com.google.gson.JsonObject
 import com.passbolt.mobile.android.core.accounts.usecase.accountdata.GetSelectedAccountDataUseCase
 import com.passbolt.mobile.android.core.fulldatarefresh.DataRefreshStatus
 import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
@@ -58,17 +57,17 @@ import java.time.ZonedDateTime
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class OtpMenuTest : KoinTest {
-
     private val presenter: OtpContract.Presenter by inject()
     private val view: OtpContract.View = mock()
     private val mockFullDataRefreshExecutor: FullDataRefreshExecutor by inject()
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @get:Rule
-    val koinTestRule = KoinTestRule.create {
-        printLogger(Level.ERROR)
-        modules(testOtpModule)
-    }
+    val koinTestRule =
+        KoinTestRule.create {
+            printLogger(Level.ERROR)
+            modules(testOtpModule)
+        }
 
     @Before
     fun setup() {
@@ -81,35 +80,37 @@ class OtpMenuTest : KoinTest {
                 url = "",
                 serverId = "",
                 label = "label",
-                role = "user"
-            )
+                role = "user",
+            ),
         )
         whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
-            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
+            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success)),
         )
-        mockTotpResources = listOf(
-            ResourceModel(
-                resourceId = "resId",
-                resourceTypeId = "resTypeId",
-                folderId = null,
-                permission = ResourcePermission.READ,
-                favouriteId = null,
-                modified = ZonedDateTime.now(),
-                expiry = null,
-                metadataJsonModel = MetadataJsonModel(
-                    """
-                        {
-                            "name": "",
-                            "uri": "",
-                            "username": "",
-                            "description": ""
-                        }
-                    """.trimIndent()
+        mockTotpResources =
+            listOf(
+                ResourceModel(
+                    resourceId = "resId",
+                    resourceTypeId = "resTypeId",
+                    folderId = null,
+                    permission = ResourcePermission.READ,
+                    favouriteId = null,
+                    modified = ZonedDateTime.now(),
+                    expiry = null,
+                    metadataJsonModel =
+                        MetadataJsonModel(
+                            """
+                            {
+                                "name": "",
+                                "uri": "",
+                                "username": "",
+                                "description": ""
+                            }
+                            """.trimIndent(),
+                        ),
+                    metadataKeyId = null,
+                    metadataKeyType = null,
                 ),
-                metadataKeyId = null,
-                metadataKeyType = null
             )
-        )
     }
 
     @Test
@@ -117,23 +118,24 @@ class OtpMenuTest : KoinTest {
         val mapper = get<OtpModelMapper>()
         val menuItem = mapper.map(mockTotpResources[0])
         mockSecretPropertiesActionsInteractor.stub {
-            onBlocking { provideOtp() } doReturn flowOf(
-                SecretPropertyActionResult.Success(
-                    SecretPropertiesActionsInteractor.OTP_LABEL,
-                    isSecret = true,
-                    TotpSecret(
-                        OtpParseResult.OtpQr.Algorithm.SHA1.name,
-                        "aaa",
-                        6,
-                        100
-                    )
+            onBlocking { provideOtp() } doReturn
+                flowOf(
+                    SecretPropertyActionResult.Success(
+                        SecretPropertiesActionsInteractor.OTP_LABEL,
+                        isSecret = true,
+                        TotpSecret(
+                            OtpParseResult.OtpQr.Algorithm.SHA1.name,
+                            "aaa",
+                            6,
+                            100,
+                        ),
+                    ),
                 )
-            )
         }
         val otpValue = "111111"
         val otpSecondsValid = 30L
         whenever(mockTotpParametersProvider.provideOtpParameters(any(), any(), any(), any())).doReturn(
-            TotpParametersProvider.OtpParameters(otpValue, otpSecondsValid)
+            TotpParametersProvider.OtpParameters(otpValue, otpSecondsValid),
         )
 
         presenter.attach(view)
@@ -142,7 +144,8 @@ class OtpMenuTest : KoinTest {
         presenter.menuCopyOtpClick()
 
         verify(view).copySecretToClipBoard(
-            SecretPropertiesActionsInteractor.OTP_LABEL, otpValue
+            SecretPropertiesActionsInteractor.OTP_LABEL,
+            otpValue,
         )
     }
 

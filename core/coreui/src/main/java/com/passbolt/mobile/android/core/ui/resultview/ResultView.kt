@@ -33,45 +33,48 @@ import com.passbolt.mobile.android.core.ui.databinding.ViewResultBinding
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class ResultView @JvmOverloads constructor(
-    context: Context,
-    attrs: AttributeSet? = null,
-    defStyle: Int = 0
-) : ConstraintLayout(context, attrs, defStyle) {
+class ResultView
+    @JvmOverloads
+    constructor(
+        context: Context,
+        attrs: AttributeSet? = null,
+        defStyle: Int = 0,
+    ) : ConstraintLayout(context, attrs, defStyle) {
+        private val binding = ViewResultBinding.inflate(LayoutInflater.from(context), this)
 
-    private val binding = ViewResultBinding.inflate(LayoutInflater.from(context), this)
+        init {
+            fillAttributes(context.obtainStyledAttributes(attrs, R.styleable.ResultView))
+        }
 
-    init {
-        fillAttributes(context.obtainStyledAttributes(attrs, R.styleable.ResultView))
-    }
+        fun setDescription(text: String) {
+            binding.descriptionLabel.text = text
+        }
 
-    fun setDescription(text: String) {
-        binding.descriptionLabel.text = text
-    }
+        fun setTitle(text: String) {
+            binding.titleLabel.text = text
+        }
 
-    fun setTitle(text: String) {
-        binding.titleLabel.text = text
-    }
+        fun setButtonLabel(text: String) {
+            binding.button.text = text
+        }
 
-    fun setButtonLabel(text: String) {
-        binding.button.text = text
-    }
+        fun setButtonAction(action: () -> Unit) {
+            binding.button.setDebouncingOnClick { action.invoke() }
+        }
 
-    fun setButtonAction(action: () -> Unit) {
-        binding.button.setDebouncingOnClick { action.invoke() }
-    }
+        fun setIcon(
+            @DrawableRes icon: Int,
+        ) {
+            binding.icon.setImageResource(icon)
+        }
 
-    fun setIcon(@DrawableRes icon: Int) {
-        binding.icon.setImageResource(icon)
-    }
-
-    private fun fillAttributes(attributes: TypedArray) {
-        with(binding) {
-            attributes.use {
-                titleLabel.text = it.getString(R.styleable.ResultView_resultTitle)
-                descriptionLabel.text = it.getString(R.styleable.ResultView_resultDescription)
-                icon.setImageDrawable(it.getDrawable(R.styleable.ResultView_resultIcon))
+        private fun fillAttributes(attributes: TypedArray) {
+            with(binding) {
+                attributes.use {
+                    titleLabel.text = it.getString(R.styleable.ResultView_resultTitle)
+                    descriptionLabel.text = it.getString(R.styleable.ResultView_resultDescription)
+                    icon.setImageDrawable(it.getDrawable(R.styleable.ResultView_resultIcon))
+                }
             }
         }
     }
-}

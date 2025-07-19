@@ -26,16 +26,19 @@ package com.passbolt.mobile.android.feature.settings.screen.accounts.keyinspecto
 import com.passbolt.mobile.android.core.mvp.BaseContract
 
 interface KeyInspectorMoreMenuContract {
-
     interface View : BaseContract.View {
         fun navigateToRefreshPassphrase()
+
         fun showShareSheet(keyText: String)
+
         fun showFailedToGeneratePublicKey(message: String)
     }
 
     interface Presenter : BaseContract.Presenter<View> {
         fun exportPrivateKeyClick()
+
         fun exportPublicKeyClick()
+
         fun authenticationSucceeded()
     }
 }

@@ -1,19 +1,3 @@
-package com.passbolt.mobile.android.core.fulldatarefresh
-
-import com.passbolt.mobile.android.core.commonfolders.usecase.FoldersInteractor
-import com.passbolt.mobile.android.core.commongroups.usecase.GroupsInteractor
-import com.passbolt.mobile.android.core.idlingresource.ResourcesFullRefreshIdlingResource
-import com.passbolt.mobile.android.core.mvp.authentication.AuthenticatedUseCaseOutput
-import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
-import com.passbolt.mobile.android.core.mvp.authentication.plus
-import com.passbolt.mobile.android.core.resources.usecase.ResourceInteractor
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypesInteractor
-import com.passbolt.mobile.android.core.users.UsersInteractor
-import com.passbolt.mobile.android.database.snapshot.ResourcesSnapshot
-import com.passbolt.mobile.android.featureflags.usecase.GetFeatureFlagsUseCase
-import com.passbolt.mobile.android.metadata.interactor.MetadataKeysInteractor
-import com.passbolt.mobile.android.metadata.interactor.MetadataSessionKeysInteractor
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -36,6 +20,23 @@ import com.passbolt.mobile.android.metadata.interactor.MetadataSessionKeysIntera
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+
+package com.passbolt.mobile.android.core.fulldatarefresh
+
+import com.passbolt.mobile.android.core.commonfolders.usecase.FoldersInteractor
+import com.passbolt.mobile.android.core.commongroups.usecase.GroupsInteractor
+import com.passbolt.mobile.android.core.idlingresource.ResourcesFullRefreshIdlingResource
+import com.passbolt.mobile.android.core.mvp.authentication.AuthenticatedUseCaseOutput
+import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
+import com.passbolt.mobile.android.core.mvp.authentication.plus
+import com.passbolt.mobile.android.core.resources.usecase.ResourceInteractor
+import com.passbolt.mobile.android.core.resourcetypes.ResourceTypesInteractor
+import com.passbolt.mobile.android.core.users.UsersInteractor
+import com.passbolt.mobile.android.database.snapshot.ResourcesSnapshot
+import com.passbolt.mobile.android.featureflags.usecase.GetFeatureFlagsUseCase
+import com.passbolt.mobile.android.metadata.interactor.MetadataKeysInteractor
+import com.passbolt.mobile.android.metadata.interactor.MetadataSessionKeysInteractor
+
 /**
  * Interactor that is responsible for fetching and updating the database for all home screen resources
  * (resources, resource types, folders)
@@ -50,25 +51,26 @@ class HomeDataInteractor(
     private val metadataSessionKeysInteractor: MetadataSessionKeysInteractor,
     private val featureFlagsUseCase: GetFeatureFlagsUseCase,
     private val resourcesFullRefreshIdlingResource: ResourcesFullRefreshIdlingResource,
-    private val resourcesSnapshot: ResourcesSnapshot
+    private val resourcesSnapshot: ResourcesSnapshot,
 ) {
-
     // TODO start multiple async where possible
     suspend fun refreshAllHomeScreenData(): Output {
         resourcesFullRefreshIdlingResource.setIdle(false)
         resourcesSnapshot.populateForCurrentAccount()
 
         val featureFlagsOutput = featureFlagsUseCase.execute(Unit).featureFlags
-        val metadataKeysOutput = if (featureFlagsOutput.isV5MetadataAvailable) {
-            metadataKeysInteractor.fetchAndSaveMetadataKeys()
-        } else {
-            MetadataKeysInteractor.Output.Success
-        }
-        val metadataSessionKeysOutput = if (featureFlagsOutput.isV5MetadataAvailable) {
-            metadataSessionKeysInteractor.fetchMetadataSessionKeys()
-        } else {
-            MetadataSessionKeysInteractor.Output.Success
-        }
+        val metadataKeysOutput =
+            if (featureFlagsOutput.isV5MetadataAvailable) {
+                metadataKeysInteractor.fetchAndSaveMetadataKeys()
+            } else {
+                MetadataKeysInteractor.Output.Success
+            }
+        val metadataSessionKeysOutput =
+            if (featureFlagsOutput.isV5MetadataAvailable) {
+                metadataSessionKeysInteractor.fetchMetadataSessionKeys()
+            } else {
+                MetadataSessionKeysInteractor.Output.Success
+            }
 
         val resourceTypesOutput = resourceTypesInteractor.fetchAndSaveResourceTypes()
         val userInteractorOutput = usersInteractor.fetchAndSaveUsers()
@@ -76,11 +78,12 @@ class HomeDataInteractor(
         val foldersRefreshOutput = foldersInteractor.fetchAndSaveFolders()
         val resourcesOutput = resourcesInteractor.fetchAndSaveResources()
 
-        val saveSessionKeysOutput = if (featureFlagsOutput.isV5MetadataAvailable) {
-            metadataSessionKeysInteractor.saveMetadataSessionKeysCache()
-        } else {
-            MetadataSessionKeysInteractor.Output.Success
-        }
+        val saveSessionKeysOutput =
+            if (featureFlagsOutput.isV5MetadataAvailable) {
+                metadataSessionKeysInteractor.saveMetadataSessionKeysCache()
+            } else {
+                MetadataSessionKeysInteractor.Output.Success
+            }
 
         resourcesSnapshot.clear()
         resourcesFullRefreshIdlingResource.setIdle(true)
@@ -99,23 +102,24 @@ class HomeDataInteractor(
         } else {
             Output.Failure(
                 metadataKeysOutput.authenticationState +
-                        metadataSessionKeysOutput.authenticationState +
-                        resourceTypesOutput.authenticationState +
-                        userInteractorOutput.authenticationState +
-                        groupsRefreshOutput.authenticationState +
-                        foldersRefreshOutput.authenticationState +
-                        resourcesOutput.authenticationState +
-                        saveSessionKeysOutput.authenticationState
+                    metadataSessionKeysOutput.authenticationState +
+                    resourceTypesOutput.authenticationState +
+                    userInteractorOutput.authenticationState +
+                    groupsRefreshOutput.authenticationState +
+                    foldersRefreshOutput.authenticationState +
+                    resourcesOutput.authenticationState +
+                    saveSessionKeysOutput.authenticationState,
             )
         }
     }
 
     sealed class Output : AuthenticatedUseCaseOutput {
-
         data object Success : Output() {
             override val authenticationState: AuthenticationState = AuthenticationState.Authenticated
         }
 
-        class Failure(override val authenticationState: AuthenticationState) : Output()
+        class Failure(
+            override val authenticationState: AuthenticationState,
+        ) : Output()
     }
 }

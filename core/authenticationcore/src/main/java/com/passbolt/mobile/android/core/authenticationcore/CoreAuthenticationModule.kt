@@ -27,7 +27,8 @@ import com.passbolt.mobile.android.core.authenticationcore.passphrase.passphrase
 import com.passbolt.mobile.android.core.authenticationcore.session.sessionModule
 import org.koin.dsl.module
 
-val authenticationCoreModule = module {
-    sessionModule()
-    passphraseModule()
-}
+val authenticationCoreModule =
+    module {
+        sessionModule()
+        passphraseModule()
+    }

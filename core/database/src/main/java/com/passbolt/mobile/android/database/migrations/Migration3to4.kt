@@ -29,10 +29,9 @@ import java.time.ZonedDateTime
 
 @Suppress("MagicNumber")
 object Migration3to4 : Migration(3, 4) {
-
     private val ADD_RESOURCE_MODIFIED_COLUMN =
         "ALTER TABLE Resource ADD COLUMN modified INTEGER NOT NULL DEFAULT " +
-                "'${ZonedDateTime.now().toInstant().toEpochMilli()}'"
+            "'${ZonedDateTime.now().toInstant().toEpochMilli()}'"
 
     override fun migrate(db: SupportSQLiteDatabase) {
         db.execSQL(ADD_RESOURCE_MODIFIED_COLUMN)

@@ -53,11 +53,9 @@ open class ResourceListItemDeserializer(
     private val resourceTypeIdToSlugMapping: Map<UUID, String>,
     private val supportedResourceTypesIds: Set<UUID>,
     private val resourcesSnapshot: ResourcesSnapshot,
-    private val coroutineLaunchContext: CoroutineLaunchContext
+    private val coroutineLaunchContext: CoroutineLaunchContext,
 ) : KoinComponent {
-
     suspend fun deserialize(json: JsonElement): ResourceResponseDto? {
-
         val resourceTypeId = json.asJsonObject[SerializedNames.RESOURCE_TYPE_ID].asString
         val slug = resourceTypeIdToSlugMapping[UUID.fromString(resourceTypeId)]
 
@@ -90,10 +88,11 @@ open class ResourceListItemDeserializer(
                         } else {
                             val decryptedMetadataResult = metadataDecryptor.decryptMetadata(resource)
 
-                            if (decryptedMetadataResult is MetadataDecryptor.Output.Success && isValid(
+                            if (decryptedMetadataResult is MetadataDecryptor.Output.Success &&
+                                isValid(
                                     resource.resourceTypeId,
                                     decryptedMetadataResult.decryptedMetadata,
-                                    resourceTypeIdToSlugMapping
+                                    resourceTypeIdToSlugMapping,
                                 )
                             ) {
                                 resource.copy(metadata = decryptedMetadataResult.decryptedMetadata)
@@ -122,7 +121,7 @@ open class ResourceListItemDeserializer(
     @OptIn(ExperimentalContracts::class)
     private fun canSkipDecryptionAndValidation(
         resource: ResourceResponseDto,
-        cachedResource: ResourceWithMetadata?
+        cachedResource: ResourceWithMetadata?,
     ): Boolean {
         contract { returns(true) implies (cachedResource != null) }
         if (cachedResource == null) return false
@@ -132,7 +131,7 @@ open class ResourceListItemDeserializer(
     private suspend fun isValid(
         resourceTypeId: UUID,
         resourceJson: String,
-        resourceTypeIdToSlugMapping: Map<UUID, String>
+        resourceTypeIdToSlugMapping: Map<UUID, String>,
     ): Boolean {
         val resourceTypeSlug = resourceTypeIdToSlugMapping[resourceTypeId]
         return if (resourceTypeSlug != null) {
@@ -142,6 +141,8 @@ open class ResourceListItemDeserializer(
         }
     }
 
-    private fun isSupported(resourceTypeId: String, supportedResourceTypesIds: Set<UUID>) =
-        UUID.fromString(resourceTypeId) in supportedResourceTypesIds
+    private fun isSupported(
+        resourceTypeId: String,
+        supportedResourceTypesIds: Set<UUID>,
+    ) = UUID.fromString(resourceTypeId) in supportedResourceTypesIds
 }

@@ -26,14 +26,16 @@ package com.passbolt.mobile.android.common.hash
 import java.security.MessageDigest
 
 class MessageDigestHash {
-
     fun sha256(message: String) = hashString(message, algorithm = "SHA-256")
 
     fun sha1(message: String) = hashString(message, algorithm = "SHA-1")
 
-    private fun hashString(input: String, algorithm: String): String {
-        return MessageDigest.getInstance(algorithm)
+    private fun hashString(
+        input: String,
+        algorithm: String,
+    ): String =
+        MessageDigest
+            .getInstance(algorithm)
             .digest(input.toByteArray())
             .fold("") { str, value -> str + "%02x".format(value) }
-    }
 }

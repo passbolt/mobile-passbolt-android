@@ -28,19 +28,17 @@ import com.passbolt.mobile.android.core.localization.R as LocalizationR
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-/**
- *
- */
-class RuntimeAuthenticatedFlag(
-    var isAuthenticated: Boolean = false
-) {
 
+class RuntimeAuthenticatedFlag(
+    var isAuthenticated: Boolean = false,
+) {
     fun require(activity: AppCompatActivity) {
         if (!isAuthenticated) {
             with(activity) {
                 val message = "Started ${this.javaClass.name} without authenticating first"
                 Timber.e(NoRuntimeAuthException(message))
-                Toast.makeText(this, this.getString(LocalizationR.string.authentication_required), Toast.LENGTH_SHORT)
+                Toast
+                    .makeText(this, this.getString(LocalizationR.string.authentication_required), Toast.LENGTH_SHORT)
                     .show()
                 startActivity(ActivityIntents.start(this))
                 finish()

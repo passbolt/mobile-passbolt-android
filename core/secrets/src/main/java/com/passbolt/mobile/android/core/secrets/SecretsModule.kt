@@ -30,9 +30,10 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-val secretsModule = module {
-    singleOf(::FetchSecretUseCase)
-    singleOf(::DecryptSecretUseCase)
-    singleOf(::SecretInteractor)
-    singleOf(::SecretParser)
-}
+val secretsModule =
+    module {
+        singleOf(::FetchSecretUseCase)
+        singleOf(::DecryptSecretUseCase)
+        singleOf(::SecretInteractor)
+        singleOf(::SecretParser)
+    }

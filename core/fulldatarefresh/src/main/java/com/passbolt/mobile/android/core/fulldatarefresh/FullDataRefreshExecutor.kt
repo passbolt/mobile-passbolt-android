@@ -37,9 +37,8 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 class FullDataRefreshExecutor(
     private val homeDataInteractor: HomeDataInteractor,
-    coroutineLaunchContext: CoroutineLaunchContext
+    coroutineLaunchContext: CoroutineLaunchContext,
 ) {
-
     private val job = SupervisorJob()
     private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
 
@@ -65,14 +64,16 @@ class FullDataRefreshExecutor(
             if (!refreshInProgress.get() && presenter != null) {
                 refreshInProgress.set(true)
                 _dataRefreshStatusFlow.emit(DataRefreshStatus.InProgress)
-                val output = runAuthenticatedOperation(
-                    requireNotNull(presenter).needSessionRefreshFlow,
-                    requireNotNull(presenter).sessionRefreshedFlow
-                ) {
-                    homeDataInteractor.refreshAllHomeScreenData()
-                }
+                val output =
+                    runAuthenticatedOperation(
+                        requireNotNull(presenter).needSessionRefreshFlow,
+                        requireNotNull(presenter).sessionRefreshedFlow,
+                        onUiAuthenticationRequested = { refreshInProgress.set(false) },
+                    ) {
+                        homeDataInteractor.refreshAllHomeScreenData()
+                    }
                 _dataRefreshStatusFlow.emit(
-                    DataRefreshStatus.Finished(output)
+                    DataRefreshStatus.Finished(output),
                 )
                 refreshInProgress.set(false)
             }

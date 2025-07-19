@@ -27,8 +27,9 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-val fullDataRefreshModule = module {
-    singleOf(::HomeDataInteractor)
-    singleOf(::ResourcesFullRefreshIdlingResource)
-    singleOf(::FullDataRefreshExecutor)
-}
+val fullDataRefreshModule =
+    module {
+        singleOf(::HomeDataInteractor)
+        singleOf(::ResourcesFullRefreshIdlingResource)
+        singleOf(::FullDataRefreshExecutor)
+    }

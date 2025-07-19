@@ -33,19 +33,24 @@ import org.koin.android.ext.android.inject
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class TransferAccountSummaryFragment : BindingScopedFragment<FragmentTransferAccountSummaryBinding>(
-    FragmentTransferAccountSummaryBinding::inflate
-), TransferAccountSummaryContract.View {
-
+class TransferAccountSummaryFragment :
+    BindingScopedFragment<FragmentTransferAccountSummaryBinding>(
+        FragmentTransferAccountSummaryBinding::inflate,
+    ),
+    TransferAccountSummaryContract.View {
     private val presenter: TransferAccountSummaryContract.Presenter by inject()
     private val args: TransferAccountSummaryFragmentArgs by navArgs()
-    private val backPressedCallback = object : OnBackPressedCallback(true) {
-        override fun handleOnBackPressed() {
-            presenter.backClick()
+    private val backPressedCallback =
+        object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                presenter.backClick()
+            }
         }
-    }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         setListeners()
         presenter.attach(this)
@@ -60,26 +65,26 @@ class TransferAccountSummaryFragment : BindingScopedFragment<FragmentTransferAcc
     }
 
     private fun setListeners() {
-        with(binding) {
+        with(requiredBinding) {
             resultView.setButtonAction { presenter.buttonClick() }
             tryAgainButton.setDebouncingOnClick { presenter.tryAgainClick() }
         }
     }
 
     override fun setTitle(title: Int) {
-        binding.resultView.setTitle(getString(title))
+        requiredBinding.resultView.setTitle(getString(title))
     }
 
     override fun setDescription(message: String) {
-        binding.resultView.setDescription(message)
+        requiredBinding.resultView.setDescription(message)
     }
 
     override fun setButtonLabel(text: Int) {
-        binding.resultView.setButtonLabel(getString(text))
+        requiredBinding.resultView.setButtonLabel(getString(text))
     }
 
     override fun setIcon(icon: Int) {
-        binding.resultView.setIcon(icon)
+        requiredBinding.resultView.setIcon(icon)
     }
 
     override fun finish() {
@@ -87,13 +92,13 @@ class TransferAccountSummaryFragment : BindingScopedFragment<FragmentTransferAcc
     }
 
     override fun showTryAgain() {
-        binding.tryAgainButton.visible()
+        requiredBinding.tryAgainButton.visible()
     }
 
     override fun navigateToTransferAccountStart() {
         findNavController().navigate(
             TransferAccountSummaryFragmentDirections
-                .actionTransferAccountSummaryFragmentToTransferAccountOnboardingFragment()
+                .actionTransferAccountSummaryFragmentToTransferAccountOnboardingFragment(),
         )
     }
 }

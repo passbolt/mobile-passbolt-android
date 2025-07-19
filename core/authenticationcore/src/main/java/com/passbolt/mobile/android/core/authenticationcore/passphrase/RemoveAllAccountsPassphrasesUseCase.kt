@@ -31,20 +31,21 @@ import java.io.File
  */
 class RemoveAllAccountsPassphrasesUseCase(
     private val appContext: Context,
-    private val getAllAccountsDataUseCase: GetAllAccountsDataUseCase
+    private val getAllAccountsDataUseCase: GetAllAccountsDataUseCase,
 ) : UseCase<Unit, Unit> {
-
     override fun execute(input: Unit) {
-        getAllAccountsDataUseCase.execute(Unit)
+        getAllAccountsDataUseCase
+            .execute(Unit)
             .accounts
             .map { PassphraseFileName(requireNotNull(it.userId)) }
             .map { passphraseFileName ->
                 File(
-                    com.passbolt.mobile.android.encryptedstorage.EncryptedFileBaseDirectory(appContext).baseDirectory,
-                    passphraseFileName.name
+                    com.passbolt.mobile.android.encryptedstorage
+                        .EncryptedFileBaseDirectory(appContext)
+                        .baseDirectory,
+                    passphraseFileName.name,
                 )
-            }
-            .forEach { passphraseFile ->
+            }.forEach { passphraseFile ->
                 if (passphraseFile.exists()) {
                     Timber.d("Passphrase file ${passphraseFile.name} scheduled deletion")
                     passphraseFile.delete()

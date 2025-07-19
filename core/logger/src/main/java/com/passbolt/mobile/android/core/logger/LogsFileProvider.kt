@@ -24,6 +24,7 @@ import androidx.core.content.FileProvider
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class LogsFileProvider : FileProvider(
-    R.xml.log_file_path
-)
+class LogsFileProvider :
+    FileProvider(
+        R.xml.log_file_path,
+    )

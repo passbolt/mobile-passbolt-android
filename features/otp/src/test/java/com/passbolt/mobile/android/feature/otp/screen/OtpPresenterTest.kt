@@ -24,7 +24,6 @@
 package com.passbolt.mobile.android.feature.otp.screen
 
 import com.google.common.truth.Truth.assertThat
-import com.google.gson.JsonObject
 import com.passbolt.mobile.android.core.accounts.usecase.accountdata.GetSelectedAccountDataUseCase
 import com.passbolt.mobile.android.core.fulldatarefresh.DataRefreshStatus
 import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
@@ -65,17 +64,17 @@ import java.time.ZonedDateTime
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class OtpPresenterTest : KoinTest {
-
     private val presenter: OtpContract.Presenter by inject()
     private val view: OtpContract.View = mock()
     private val mockFullDataRefreshExecutor: FullDataRefreshExecutor by inject()
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @get:Rule
-    val koinTestRule = KoinTestRule.create {
-        printLogger(Level.ERROR)
-        modules(testOtpModule)
-    }
+    val koinTestRule =
+        KoinTestRule.create {
+            printLogger(Level.ERROR)
+            modules(testOtpModule)
+        }
 
     @Before
     fun setup() {
@@ -88,35 +87,37 @@ class OtpPresenterTest : KoinTest {
                 url = "",
                 serverId = "",
                 label = "label",
-                role = "user"
-            )
+                role = "user",
+            ),
         )
         whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
-            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
+            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success)),
         )
-        mockTotpResources = listOf(
-            ResourceModel(
-                resourceId = "resId",
-                resourceTypeId = "resTypeId",
-                folderId = null,
-                permission = ResourcePermission.READ,
-                favouriteId = null,
-                modified = ZonedDateTime.now(),
-                expiry = null,
-                metadataJsonModel = MetadataJsonModel(
-                    """
-                    {
-                        "name": "",
-                        "uri": "",
-                        "username": "",
-                        "description": ""
-                    }
-                """.trimIndent()
+        mockTotpResources =
+            listOf(
+                ResourceModel(
+                    resourceId = "resId",
+                    resourceTypeId = "resTypeId",
+                    folderId = null,
+                    permission = ResourcePermission.READ,
+                    favouriteId = null,
+                    modified = ZonedDateTime.now(),
+                    expiry = null,
+                    metadataJsonModel =
+                        MetadataJsonModel(
+                            """
+                            {
+                                "name": "",
+                                "uri": "",
+                                "username": "",
+                                "description": ""
+                            }
+                            """.trimIndent(),
+                        ),
+                    metadataKeyId = null,
+                    metadataKeyType = null,
                 ),
-                metadataKeyId = null,
-                metadataKeyType = null
             )
-        )
     }
 
     @Test
@@ -173,41 +174,43 @@ class OtpPresenterTest : KoinTest {
     }
 
     @Test
-    fun `view should reveal selected otp`() = runTest(get<CoroutineLaunchContext>().ui) {
-        val mapper = get<OtpModelMapper>()
-        val clickedItem = mapper.map(mockTotpResources[0])
-        mockGetLocalResourcesUseCase.stub {
-            onBlocking { execute(any()) } doReturn GetLocalResourcesUseCase.Output(mockTotpResources)
-        }
-        mockSecretPropertiesActionsInteractor.stub {
-            onBlocking { provideOtp() } doReturn flowOf(
-                SecretPropertyActionResult.Success(
-                    SecretPropertiesActionsInteractor.OTP_LABEL,
-                    isSecret = true,
-                    TotpSecret(
-                        algorithm = OtpParseResult.OtpQr.Algorithm.SHA1.name,
-                        key = "aaa",
-                        digits = 6,
-                        period = 100
+    fun `view should reveal selected otp`() =
+        runTest(get<CoroutineLaunchContext>().ui) {
+            val mapper = get<OtpModelMapper>()
+            val clickedItem = mapper.map(mockTotpResources[0])
+            mockGetLocalResourcesUseCase.stub {
+                onBlocking { execute(any()) } doReturn GetLocalResourcesUseCase.Output(mockTotpResources)
+            }
+            mockSecretPropertiesActionsInteractor.stub {
+                onBlocking { provideOtp() } doReturn
+                    flowOf(
+                        SecretPropertyActionResult.Success(
+                            SecretPropertiesActionsInteractor.OTP_LABEL,
+                            isSecret = true,
+                            TotpSecret(
+                                algorithm = OtpParseResult.OtpQr.Algorithm.SHA1.name,
+                                key = "aaa",
+                                digits = 6,
+                                period = 100,
+                            ),
+                        ),
                     )
-                )
+            }
+            val otpValue = "111111"
+            val otpSecondsValid = 30L
+            whenever(mockTotpParametersProvider.provideOtpParameters(any(), any(), any(), any())).doReturn(
+                TotpParametersProvider.OtpParameters(otpValue, otpSecondsValid),
             )
-        }
-        val otpValue = "111111"
-        val otpSecondsValid = 30L
-        whenever(mockTotpParametersProvider.provideOtpParameters(any(), any(), any(), any())).doReturn(
-            TotpParametersProvider.OtpParameters(otpValue, otpSecondsValid)
-        )
 
-        presenter.attach(view)
-        presenter.resume(view)
-        presenter.otpItemClick(clickedItem)
+            presenter.attach(view)
+            presenter.resume(view)
+            presenter.otpItemClick(clickedItem)
 
-        argumentCaptor<List<OtpItemWrapper>> {
-            verify(view, times(5)).showOtpList(capture())
-            assertThat(lastValue.any { it.otpValue == otpValue }).isTrue()
+            argumentCaptor<List<OtpItemWrapper>> {
+                verify(view, times(5)).showOtpList(capture())
+                assertThat(lastValue.any { it.otpValue == otpValue }).isTrue()
+            }
         }
-    }
 
     private companion object {
         private const val SEARCH_AVATAR_URL = "url"

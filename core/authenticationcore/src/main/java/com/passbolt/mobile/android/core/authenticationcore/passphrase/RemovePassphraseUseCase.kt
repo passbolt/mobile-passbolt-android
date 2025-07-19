@@ -30,14 +30,16 @@ import java.io.File
  * @since v1.0
  */
 class RemovePassphraseUseCase(
-    private val appContext: Context
+    private val appContext: Context,
 ) : UseCase<UserIdInput, Unit> {
-
     override fun execute(input: UserIdInput) {
-        val passphraseFile = File(
-            com.passbolt.mobile.android.encryptedstorage.EncryptedFileBaseDirectory(appContext).baseDirectory,
-            PassphraseFileName(input.userId).name
-        )
+        val passphraseFile =
+            File(
+                com.passbolt.mobile.android.encryptedstorage
+                    .EncryptedFileBaseDirectory(appContext)
+                    .baseDirectory,
+                PassphraseFileName(input.userId).name,
+            )
         if (passphraseFile.exists()) {
             val deleted = passphraseFile.delete()
             Timber.e("Deleted passphrase file: $deleted")

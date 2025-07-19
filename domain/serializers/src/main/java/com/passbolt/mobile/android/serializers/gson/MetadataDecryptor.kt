@@ -47,27 +47,30 @@ class MetadataDecryptor(
     private val metadataKeys: List<ParsedMetadataKeyModel>,
     private val openPgp: OpenPgp,
     private val sessionKeysCache: SessionKeysMemoryCache,
-    private val coroutineLaunchContext: CoroutineLaunchContext
+    private val coroutineLaunchContext: CoroutineLaunchContext,
 ) {
-
     private val cachedSharedKeys = ConcurrentHashMap<String, Key>()
-    private var cachedPersonalKey = let {
-        val privateKey = getSelectedUserPrivateKeyUseCase.execute(Unit).privateKey
-        require(privateKey != null) { "Selected user private key not found" }
-        val passphrase = passphraseMemoryCache.get()
-        require(passphrase is PotentialPassphrase.Passphrase) { "Passphrase not present in cache" }
-        Crypto.newPrivateKeyFromArmored(privateKey, passphrase.passphrase)
-    }
+    private lateinit var cachedPersonalKey: Key
 
     suspend fun decryptMetadata(resource: ResourceResponseV5Dto): Output {
         return try {
+            if (!::cachedPersonalKey.isInitialized) {
+                val privateKey = getSelectedUserPrivateKeyUseCase.execute(Unit).privateKey
+                require(privateKey != null) { "Selected user private key not found" }
+                val passphrase = passphraseMemoryCache.get()
+                require(passphrase is PotentialPassphrase.Passphrase) { "Passphrase not present in cache" }
+                cachedPersonalKey = Crypto.newPrivateKeyFromArmored(privateKey, passphrase.passphrase)
+            }
+
             withContext(coroutineLaunchContext.io) {
                 // decrypt using cached session key
                 val cachedSessionKey = sessionKeysCache.getSessionKeyHexString(RESOURCE.value, resource.id)
                 if (cachedSessionKey != null) {
-                    val decryptUsingCachedResult = openPgp.decryptMessageArmoredWithSessionKey(
-                        cachedSessionKey, resource.metadata
-                    )
+                    val decryptUsingCachedResult =
+                        openPgp.decryptMessageArmoredWithSessionKey(
+                            cachedSessionKey,
+                            resource.metadata,
+                        )
                     // if result is success, return it; otherwise, fallback to full decrypt
                     // session key may not be valid but we know it only when trying to use it and it fails
                     if (decryptUsingCachedResult is OpenPgpResult.Result) {
@@ -76,9 +79,11 @@ class MetadataDecryptor(
                 }
 
                 // fallback to full decrypt
-                val fullDecryptResult = openPgp.decryptMessageArmoredWithSessionKeyRetrieve(
-                    getUnlockedKey(resource), resource.metadata
-                )
+                val fullDecryptResult =
+                    openPgp.decryptMessageArmoredWithSessionKeyRetrieve(
+                        getUnlockedKey(resource),
+                        resource.metadata,
+                    )
                 require(fullDecryptResult is OpenPgpResult.Result) {
                     "Failed to decrypt with session key retrieve for resource id=(${resource.id}), skipping"
                 }
@@ -93,38 +98,42 @@ class MetadataDecryptor(
         }
     }
 
-    private fun getUnlockedKey(resource: ResourceResponseV5Dto): Key {
-        return when (resource.metadataKeyType) {
+    private fun getUnlockedKey(resource: ResourceResponseV5Dto): Key =
+        when (resource.metadataKeyType) {
             SHARED -> {
                 val cachedKey = cachedSharedKeys[resource.metadataKeyId.toString()]
                 if (cachedKey != null) {
                     cachedKey
                 } else {
-                    val metadataPrivateKey = metadataKeys
-                        .firstOrNull { it.id == resource.metadataKeyId }
-                        ?.metadataPrivateKeys
-                        ?.firstOrNull()
+                    val metadataPrivateKey =
+                        metadataKeys
+                            .firstOrNull { it.id == resource.metadataKeyId }
+                            ?.metadataPrivateKeys
+                            ?.firstOrNull()
 
                     require(metadataPrivateKey != null) {
                         "Metadata private key for resource id=(${resource.id}) not found, skipping"
                     }
 
-                    Crypto.newPrivateKeyFromArmored(
-                        metadataPrivateKey.keyData,
-                        metadataPrivateKey.passphrase.toByteArray()
-                    ).also {
-                        cachedSharedKeys[resource.metadataKeyId.toString()] = it
-                    }
+                    Crypto
+                        .newPrivateKeyFromArmored(
+                            metadataPrivateKey.keyData,
+                            metadataPrivateKey.passphrase.toByteArray(),
+                        ).also {
+                            cachedSharedKeys[resource.metadataKeyId.toString()] = it
+                        }
                 }
             }
             PERSONAL -> cachedPersonalKey
         }
-    }
 
     sealed class Output {
+        data class Success(
+            val decryptedMetadata: String,
+        ) : Output()
 
-        data class Success(val decryptedMetadata: String) : Output()
-
-        data class Failure(val error: Throwable?) : Output()
+        data class Failure(
+            val error: Throwable?,
+        ) : Output()
     }
 }

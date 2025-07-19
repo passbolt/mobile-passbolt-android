@@ -56,7 +56,10 @@
     <string name="common_metadata_key_verification_failure">Could not verify metadata keys</string>
     <string name="common_metadata_key_is_trusted">New metadata key is trusted</string>
     <string name="common_metadata_key_trust_failed">Failed to trust new metadata key</string>
-
+    <string name="common_bullet_format"
+        translatable="false">• %s</string>
+    <string name="common_bullet"
+        translatable="false">• </string>
     <string name="common_message_resource_edited">%s resource was successfully edited.</string>
     <string name="common_message_resource_deleted">%s resource was deleted.</string>
     <string name="common_message_resource_shared">The resource permissions were updated.</string>
@@ -280,6 +283,7 @@
     <string name="resource_details_totp_header">Totp</string>
     <string name="resource_details_url_header">Main URI</string>
     <string name="resource_details_expiry_header">Expiry</string>
+    <string name="resource_details_additional_uris">Additional URI</string>
     <string name="resource_details_description_header">Description</string>
     <string name="resource_details_note_header">Note</string>
     <string name="resource_details_note_content">Content</string>
@@ -290,6 +294,7 @@
     <string name="resource_details_information">Information</string>
     <string name="resource_details_invalid_totp_scanned">Invalid TOTP QR code scanned</string>
     <string name="resource_details_metadata_header">Metadata</string>
+    <string name="additional_uri_format">• %s</string>
 
     <string name="more_details_copy_password">Copy password</string>
     <string name="more_details_copy_description">Copy description</string>
@@ -298,6 +303,7 @@
     <string name="resource_form_password">Password</string>
     <string name="resource_form_enter_password">Enter password</string>
     <string name="resource_form_main_uri">Main URI</string>
+    <string name="resource_form_add_uri">Add URI</string>
     <string name="resource_form_enter_uri">Enter URI</string>
     <string name="resource_form_username">Username</string>
     <string name="resource_form_enter_username">Enter username</string>
@@ -308,9 +314,12 @@
     <string name="resource_form_totp_more_settings">More TOTP settings</string>
     <string name="resource_form_totp_settings">TOTP settings</string>
     <string name="resource_form_description">Description</string>
+    <string name="resource_form_additional_uris">Additional URIs</string>
     <string name="resource_form_enter_description">Enter description</string>
     <string name="resource_form_metadata_description">Metadata description</string>
     <string name="resource_form_create_metadata_description">Create metadata description</string>
+    <string name="resource_form_create_resource_appearance">Resource appearance</string>
+    <string name="resource_form_create_additional_uris">Create additional URIs</string>
     <string name="resource_form_note">Note</string>
     <string name="resource_form_create_note">Create note</string>
     <string name="resource_form_note_content">Content</string>
@@ -332,6 +341,12 @@
     <string name="resource_form_remove_totp">Remove TOTP</string>
     <string name="resource_form_remove_note">Remove Note</string>
     <string name="resource_form_no_name">no name</string>
+    <string name="resource_form_max_additional_uris_limit">You can add a maximum of %d additional URIs</string>
+    <string name="resource_form_appearance">Appearance</string>
+    <string name="resource_form_appearance_select_color">Select color</string>
+    <string name="resource_form_appearance_select_icon">Select icon</string>
+    <string name="resource_form_appearance_default_color">Default color</string>
+    <string name="resource_form_appearance_default_icon">Default icon</string>
 
     <string name="settings_app_settings">App settings</string>
     <string name="settings_accounts">Accounts</string>
@@ -364,6 +379,7 @@
     <string name="settings_app_settings_autofill">Autofill</string>
     <string name="settings_app_settings_fingerprint">Fingerprint</string>
     <string name="settings_app_settings_biometry_error">Biometry error. %s</string>
+    <string name="settings_app_settings_biometry_authentication_error">Biometry authentication error. %s</string>
     <string name="settings_app_settings_expert_settings">Expert settings</string>
 
     <string name="settings_app_settings_expert_settings_dev_mode">Developer mode</string>

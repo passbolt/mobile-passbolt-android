@@ -28,19 +28,18 @@ import com.passbolt.mobile.android.dto.response.qrcode.ReservedBytesDto
  */
 
 sealed class ParseResult {
-
-    sealed class PassboltQr(open val reservedBytesDto: ReservedBytesDto) : ParseResult() {
-
+    sealed class PassboltQr(
+        open val reservedBytesDto: ReservedBytesDto,
+    ) : ParseResult() {
         data class FirstPage(
             override val reservedBytesDto: ReservedBytesDto,
-            val content: QrFirstPageDto
+            val content: QrFirstPageDto,
         ) : PassboltQr(reservedBytesDto)
 
         data class SubsequentPage(
             override val reservedBytesDto: ReservedBytesDto,
-            val content: ByteArray
+            val content: ByteArray,
         ) : PassboltQr(reservedBytesDto) {
-
             // generated
             override fun equals(other: Any?): Boolean {
                 if (this === other) return true
@@ -64,9 +63,8 @@ sealed class ParseResult {
 
         data class AccountKitPage(
             override val reservedBytesDto: ReservedBytesDto,
-            val content: AccountKitPageDto
+            val content: AccountKitPageDto,
         ) : PassboltQr(reservedBytesDto) {
-
             // generated
             override fun equals(other: Any?): Boolean {
                 if (this === other) return true
@@ -89,20 +87,25 @@ sealed class ParseResult {
         }
     }
 
-    class Failure(val exception: Throwable? = null) : ParseResult()
+    class Failure(
+        val exception: Throwable? = null,
+    ) : ParseResult()
 
-    class ScanFailure(val exception: Throwable? = null) : ParseResult()
+    class ScanFailure(
+        val exception: Throwable? = null,
+    ) : ParseResult()
 
-    class UserResolvableError(val errorType: ErrorType) : ParseResult() {
-
+    class UserResolvableError(
+        val errorType: ErrorType,
+    ) : ParseResult() {
         enum class ErrorType {
             MULTIPLE_BARCODES,
             NO_BARCODES_IN_RANGE,
-            NOT_A_PASSBOLT_QR
+            NOT_A_PASSBOLT_QR,
         }
     }
 
     class FinishedWithSuccess(
-        val armoredKey: String
+        val armoredKey: String,
     ) : ParseResult()
 }

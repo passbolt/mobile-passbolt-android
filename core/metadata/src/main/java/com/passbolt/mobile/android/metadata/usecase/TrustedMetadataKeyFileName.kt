@@ -1,7 +1,8 @@
 package com.passbolt.mobile.android.metadata.usecase
 
-class TrustedMetadataKeyFileName(userId: String) {
-
+class TrustedMetadataKeyFileName(
+    userId: String,
+) {
     val name = TRUSTED_METADATA_KEY_FILE_NAME_FORMAT.format(userId)
 
     private companion object {

@@ -41,86 +41,97 @@ import com.passbolt.mobile.android.core.localization.R as LocalizationR
  * @since v1.0
  */
 
-class ProgressToolbar @JvmOverloads constructor(
-    context: Context,
-    attrs: AttributeSet? = null,
-    defStyle: Int = 0
-) : Toolbar(context, attrs, defStyle) {
+class ProgressToolbar
+    @JvmOverloads
+    constructor(
+        context: Context,
+        attrs: AttributeSet? = null,
+        defStyle: Int = 0,
+    ) : Toolbar(context, attrs, defStyle) {
+        private val rootLayout: LinearLayout
+        private val progressBar: ProgressBar
+        private val progressBarHorizontalPadding by lazy { resources.getDimension(R.dimen.dp_16).toInt() }
 
-    private val rootLayout: LinearLayout
-    private val progressBar: ProgressBar
-    private val progressBarHorizontalPadding by lazy { resources.getDimension(R.dimen.dp_16).toInt() }
-
-    init {
-        setBackgroundColor(ContextCompat.getColor(context, R.color.background))
-        setNavigationIcon(R.drawable.ic_back)
-        layoutTransition = LayoutTransition()
-        rootLayout = createRootLayout()
-        progressBar = createProgressBar()
-        rootLayout.addView(progressBar)
-        addView(rootLayout)
-    }
-
-    private fun createRootLayout() = LinearLayout(context).apply {
-        orientation = LinearLayout.HORIZONTAL
-        gravity = Gravity.CENTER_VERTICAL
-        layoutParams = LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT,
-            LinearLayout.LayoutParams.MATCH_PARENT
-        )
-    }
-
-    private fun createProgressBar() =
-        ProgressBar(context, null, android.R.style.Widget_ProgressBar_Horizontal).apply {
-            layoutParams = LinearLayout.LayoutParams(
-                0,
-                resources.getDimension(R.dimen.dp_8).toInt(),
-                1f
-            )
-            updatePadding(left = progressBarHorizontalPadding, right = progressBarHorizontalPadding)
-            isIndeterminate = false
-            progressDrawable = ContextCompat.getDrawable(context, R.drawable.progress_toolbar_progress_drawable)
+        init {
+            setBackgroundColor(ContextCompat.getColor(context, R.color.background))
+            setNavigationIcon(R.drawable.ic_back)
+            layoutTransition = LayoutTransition()
+            rootLayout = createRootLayout()
+            progressBar = createProgressBar()
+            rootLayout.addView(progressBar)
+            addView(rootLayout)
         }
 
-    fun initializeProgressBar(minProgress: Int, maxProgress: Int) {
-        progressBar.min = minProgress * ANIMATION_VALUE_MULTIPLIER
-        progressBar.max = maxProgress * ANIMATION_VALUE_MULTIPLIER
-    }
+        private fun createRootLayout() =
+            LinearLayout(context).apply {
+                orientation = LinearLayout.HORIZONTAL
+                gravity = Gravity.CENTER_VERTICAL
+                layoutParams =
+                    LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                    )
+            }
 
-    fun setCurrentProgress(progress: Int) {
-        ObjectAnimator.ofInt(
-            progressBar,
-            PROGRESS_PROPERTY,
-            progressBar.progress,
-            progress * ANIMATION_VALUE_MULTIPLIER
-        ).apply {
-            setAutoCancel(true)
-            duration = PROGRESS_ANIMATION_DURATION_MILLIS
-            interpolator = DecelerateInterpolator()
+        private fun createProgressBar() =
+            ProgressBar(context, null, android.R.style.Widget_ProgressBar_Horizontal).apply {
+                layoutParams =
+                    LinearLayout.LayoutParams(
+                        0,
+                        resources.getDimension(R.dimen.dp_8).toInt(),
+                        1f,
+                    )
+                updatePadding(left = progressBarHorizontalPadding, right = progressBarHorizontalPadding)
+                isIndeterminate = false
+                progressDrawable = ContextCompat.getDrawable(context, R.drawable.progress_toolbar_progress_drawable)
+            }
+
+        fun initializeProgressBar(
+            minProgress: Int,
+            maxProgress: Int,
+        ) {
+            progressBar.min = minProgress * ANIMATION_VALUE_MULTIPLIER
+            progressBar.max = maxProgress * ANIMATION_VALUE_MULTIPLIER
         }
-            .start()
-    }
 
-    fun addIconEnd(@DrawableRes iconRes: Int, clickListener: () -> Unit) {
-        ImageView(context).apply {
-            setImageResource(iconRes)
-            setBackgroundResource(context.selectableBackgroundBorderlessResourceId())
-            setDebouncingOnClick { clickListener.invoke() }
-            contentDescription = context.getString(LocalizationR.string.help_button_description)
-        }.let {
-            rootLayout.addView(
-                it,
-                LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT
-                )
-            )
+        fun setCurrentProgress(progress: Int) {
+            ObjectAnimator
+                .ofInt(
+                    progressBar,
+                    PROGRESS_PROPERTY,
+                    progressBar.progress,
+                    progress * ANIMATION_VALUE_MULTIPLIER,
+                ).apply {
+                    setAutoCancel(true)
+                    duration = PROGRESS_ANIMATION_DURATION_MILLIS
+                    interpolator = DecelerateInterpolator()
+                }.start()
+        }
+
+        fun addIconEnd(
+            @DrawableRes iconRes: Int,
+            clickListener: () -> Unit,
+        ) {
+            ImageView(context)
+                .apply {
+                    setImageResource(iconRes)
+                    setBackgroundResource(context.selectableBackgroundBorderlessResourceId())
+                    setDebouncingOnClick { clickListener.invoke() }
+                    contentDescription = context.getString(LocalizationR.string.help_button_description)
+                }.let {
+                    rootLayout.addView(
+                        it,
+                        LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.WRAP_CONTENT,
+                            LinearLayout.LayoutParams.WRAP_CONTENT,
+                        ),
+                    )
+                }
+        }
+
+        private companion object {
+            private const val PROGRESS_ANIMATION_DURATION_MILLIS = 250L
+            private const val ANIMATION_VALUE_MULTIPLIER = 1_000
+            private const val PROGRESS_PROPERTY = "progress"
         }
     }
-
-    private companion object {
-        private const val PROGRESS_ANIMATION_DURATION_MILLIS = 250L
-        private const val ANIMATION_VALUE_MULTIPLIER = 1_000
-        private const val PROGRESS_PROPERTY = "progress"
-    }
-}

@@ -30,26 +30,28 @@ import com.passbolt.mobile.android.ui.ResourceModelWithAttributes
  */
 class AddLocalTagsUseCase(
     private val databaseProvider: DatabaseProvider,
-    private val tagModelMapper: TagsModelMapper
+    private val tagModelMapper: TagsModelMapper,
 ) : AsyncUseCase<AddLocalTagsUseCase.Input, Unit> {
-
     override suspend fun execute(input: Input) {
-        val tagsDao = databaseProvider
-            .get(input.userId)
-            .tagsDao()
+        val tagsDao =
+            databaseProvider
+                .get(input.userId)
+                .tagsDao()
 
-        val tagsAndResourcesCrossRefDao = databaseProvider
-            .get(input.userId)
-            .resourcesAndTagsCrossRefDao()
+        val tagsAndResourcesCrossRefDao =
+            databaseProvider
+                .get(input.userId)
+                .resourcesAndTagsCrossRefDao()
 
         input.resourcesWithTagsModelAndGroups.apply {
             val tags = flatMap { it.resourceTags }
-            val resourceAndTagCrossRefs = map { it.resourceModel.resourceId to it.resourceTags.map { tag -> tag.id } }
-                .flatMap { (resourceId, resourceTagsIds) ->
-                    resourceTagsIds.map { tagId ->
-                        ResourceAndTagsCrossRef(tagId, resourceId)
+            val resourceAndTagCrossRefs =
+                map { it.resourceModel.resourceId to it.resourceTags.map { tag -> tag.id } }
+                    .flatMap { (resourceId, resourceTagsIds) ->
+                        resourceTagsIds.map { tagId ->
+                            ResourceAndTagsCrossRef(tagId, resourceId)
+                        }
                     }
-                }
             tagsDao.insertAll(tagModelMapper.map(tags))
             tagsAndResourcesCrossRefDao.insertAll(resourceAndTagCrossRefs)
         }
@@ -57,6 +59,6 @@ class AddLocalTagsUseCase(
 
     data class Input(
         val resourcesWithTagsModelAndGroups: List<ResourceModelWithAttributes>,
-        val userId: String
+        val userId: String,
     )
 }

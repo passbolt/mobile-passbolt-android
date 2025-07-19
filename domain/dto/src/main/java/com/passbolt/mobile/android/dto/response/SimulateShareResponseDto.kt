@@ -26,19 +26,19 @@ import java.util.UUID
  * @since v1.0
  */
 data class SimulateShareResponse(
-    val changes: ShareChangesDto
+    val changes: ShareChangesDto,
 )
 
 data class ShareChangesDto(
     val added: List<ShareRecipientDto>,
-    val removed: List<ShareRecipientDto>
+    val removed: List<ShareRecipientDto>,
 )
 
 data class ShareRecipientDto(
     @SerializedName("User")
-    val user: ShareChangeUser
+    val user: ShareChangeUser,
 )
 
 data class ShareChangeUser(
-    val id: UUID
+    val id: UUID,
 )

@@ -2,7 +2,7 @@ package com.passbolt.mobile.android.permissions.recycler
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import coil.load
+import coil3.load
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
 import com.passbolt.mobile.android.feature.permissions.R
 import com.passbolt.mobile.android.feature.permissions.databinding.ItemGroupBinding
@@ -32,19 +32,22 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
  * @since v1.0
  */
 class GroupItem(
-    val model: PermissionModelUi.GroupPermissionModel
+    val model: PermissionModelUi.GroupPermissionModel,
 ) : AbstractBindingItem<ItemGroupBinding>() {
-
     override val type: Int
         get() = R.id.groupItem
 
-    override fun bindView(binding: ItemGroupBinding, payloads: List<Any>) {
+    override fun bindView(
+        binding: ItemGroupBinding,
+        payloads: List<Any>,
+    ) {
         with(binding) {
             root.load(CoreUiR.drawable.ic_group_avatar)
         }
     }
 
-    override fun createBinding(inflater: LayoutInflater, parent: ViewGroup?): ItemGroupBinding {
-        return ItemGroupBinding.inflate(inflater, parent, false)
-    }
+    override fun createBinding(
+        inflater: LayoutInflater,
+        parent: ViewGroup?,
+    ): ItemGroupBinding = ItemGroupBinding.inflate(inflater, parent, false)
 }

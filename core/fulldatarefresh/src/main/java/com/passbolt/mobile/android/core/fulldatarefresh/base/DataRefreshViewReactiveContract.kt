@@ -25,17 +25,21 @@ import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedCont
  * @since v1.0
  */
 interface DataRefreshViewReactiveContract {
-
     interface View : BaseAuthenticatedContract.View {
         fun hideRefreshProgress()
+
         fun showRefreshProgress()
     }
 
     interface Presenter<T : View> : BaseAuthenticatedContract.Presenter<T> {
         fun resume(view: T)
+
         fun pause()
+
         fun refreshStartAction()
+
         fun refreshSuccessAction()
+
         fun refreshFailureAction()
     }
 }

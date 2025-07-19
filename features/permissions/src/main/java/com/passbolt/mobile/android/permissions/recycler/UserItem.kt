@@ -2,8 +2,11 @@ package com.passbolt.mobile.android.permissions.recycler
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import coil.load
-import coil.transform.CircleCropTransformation
+import coil3.load
+import coil3.request.error
+import coil3.request.placeholder
+import coil3.request.transformations
+import coil3.transform.CircleCropTransformation
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
 import com.passbolt.mobile.android.core.coil.transformation.AlphaTransformation
 import com.passbolt.mobile.android.feature.permissions.R
@@ -34,20 +37,22 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
  * @since v1.0
  */
 class UserItem(
-    val model: PermissionModelUi.UserPermissionModel
+    val model: PermissionModelUi.UserPermissionModel,
 ) : AbstractBindingItem<ItemUserBinding>() {
-
     override val type: Int
         get() = R.id.userItem
 
-    override fun bindView(binding: ItemUserBinding, payloads: List<Any>) {
+    override fun bindView(
+        binding: ItemUserBinding,
+        payloads: List<Any>,
+    ) {
         with(binding) {
             root.apply {
                 load(model.user.avatarUrl) {
                     error(CoreUiR.drawable.ic_user_avatar)
                     transformations(
                         CircleCropTransformation(),
-                        AlphaTransformation(shouldLowerOpacity = model.user.isDisabled)
+                        AlphaTransformation(shouldLowerOpacity = model.user.isDisabled),
                     )
                     placeholder(CoreUiR.drawable.ic_user_avatar)
                 }
@@ -55,7 +60,8 @@ class UserItem(
         }
     }
 
-    override fun createBinding(inflater: LayoutInflater, parent: ViewGroup?): ItemUserBinding {
-        return ItemUserBinding.inflate(inflater, parent, false)
-    }
+    override fun createBinding(
+        inflater: LayoutInflater,
+        parent: ViewGroup?,
+    ): ItemUserBinding = ItemUserBinding.inflate(inflater, parent, false)
 }

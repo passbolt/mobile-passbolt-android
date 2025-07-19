@@ -12,9 +12,11 @@ import com.passbolt.mobile.android.ui.OtpParseResult
 import com.passbolt.mobile.android.ui.PasswordStrength
 import com.passbolt.mobile.android.ui.ResourceFormMode
 import com.passbolt.mobile.android.ui.ResourceFormUiModel
+import com.passbolt.mobile.android.ui.ResourceFormUiModel.Metadata.ADDITIONAL_URIS
+import com.passbolt.mobile.android.ui.ResourceFormUiModel.Metadata.APPEARANCE
 import com.passbolt.mobile.android.ui.ResourceFormUiModel.Metadata.DESCRIPTION
-import com.passbolt.mobile.android.ui.ResourceFormUiModel.Secret.PASSWORD
 import com.passbolt.mobile.android.ui.ResourceFormUiModel.Secret.NOTE
+import com.passbolt.mobile.android.ui.ResourceFormUiModel.Secret.PASSWORD
 import com.passbolt.mobile.android.ui.ResourceFormUiModel.Secret.TOTP
 import com.passbolt.mobile.android.ui.TotpUiModel
 import kotlinx.coroutines.flow.flowOf
@@ -58,15 +60,15 @@ import org.mockito.kotlin.verifyNoMoreInteractions
  */
 
 class ResourceFormPresenterTest : KoinTest {
-
     private val presenter: ResourceFormContract.Presenter by inject()
     private val view: ResourceFormContract.View = mock()
 
     @get:Rule
-    val koinTestRule = KoinTestRule.create {
-        printLogger(Level.ERROR)
-        modules(testResourceFormModule)
-    }
+    val koinTestRule =
+        KoinTestRule.create {
+            printLogger(Level.ERROR)
+            modules(testResourceFormModule)
+        }
 
     @Before
     fun setUp() {
@@ -81,8 +83,8 @@ class ResourceFormPresenterTest : KoinTest {
             onBlocking { execute(any()) }.thenReturn(
                 GetDefaultCreateContentTypeUseCase.Output(
                     metadataType = MetadataTypeModel.V5,
-                    contentType = ContentType.V5TotpStandalone
-                )
+                    contentType = ContentType.V5TotpStandalone,
+                ),
             )
         }
 
@@ -90,8 +92,8 @@ class ResourceFormPresenterTest : KoinTest {
         presenter.argsRetrieved(
             ResourceFormMode.Create(
                 leadingContentType = LeadingContentType.TOTP,
-                parentFolderId = null
-            )
+                parentFolderId = null,
+            ),
         )
 
         verify(view).showInitializationProgress()
@@ -105,8 +107,14 @@ class ResourceFormPresenterTest : KoinTest {
             assertThat(firstValue.secret).isEqualTo("")
             assertThat(firstValue.issuer).isEqualTo("")
             assertThat(firstValue.algorithm).isEqualTo(OtpParseResult.OtpQr.Algorithm.DEFAULT.name)
-            assertThat(firstValue.expiry).isEqualTo(OtpParseResult.OtpQr.TotpQr.DEFAULT_PERIOD_SECONDS.toString())
-            assertThat(firstValue.length).isEqualTo(OtpParseResult.OtpQr.TotpQr.DEFAULT_DIGITS.toString())
+            assertThat(firstValue.expiry).isEqualTo(
+                OtpParseResult.OtpQr.TotpQr.DEFAULT_PERIOD_SECONDS
+                    .toString(),
+            )
+            assertThat(firstValue.length).isEqualTo(
+                OtpParseResult.OtpQr.TotpQr.DEFAULT_DIGITS
+                    .toString(),
+            )
         }
         verify(view).hideInitializationProgress()
         verifyNoMoreInteractions(view)
@@ -118,8 +126,8 @@ class ResourceFormPresenterTest : KoinTest {
             onBlocking { execute(any()) }.thenReturn(
                 GetDefaultCreateContentTypeUseCase.Output(
                     metadataType = MetadataTypeModel.V5,
-                    contentType = ContentType.V5Default
-                )
+                    contentType = ContentType.V5Default,
+                ),
             )
         }
         mockEntropyCalculator.stub {
@@ -130,8 +138,8 @@ class ResourceFormPresenterTest : KoinTest {
         presenter.argsRetrieved(
             ResourceFormMode.Create(
                 leadingContentType = LeadingContentType.PASSWORD,
-                parentFolderId = null
-            )
+                parentFolderId = null,
+            ),
         )
 
         verify(view).showInitializationProgress()
@@ -152,8 +160,8 @@ class ResourceFormPresenterTest : KoinTest {
             onBlocking { execute(any()) }.thenReturn(
                 GetDefaultCreateContentTypeUseCase.Output(
                     metadataType = MetadataTypeModel.V5,
-                    contentType = ContentType.V5Default
-                )
+                    contentType = ContentType.V5Default,
+                ),
             )
         }
 
@@ -161,8 +169,8 @@ class ResourceFormPresenterTest : KoinTest {
         presenter.argsRetrieved(
             ResourceFormMode.Create(
                 leadingContentType = LeadingContentType.PASSWORD,
-                parentFolderId = null
-            )
+                parentFolderId = null,
+            ),
         )
         presenter.advancedSettingsClick()
 
@@ -172,7 +180,7 @@ class ResourceFormPresenterTest : KoinTest {
         }
         argumentCaptor<List<ResourceFormUiModel.Metadata>> {
             verify(view).setupMetadata(capture())
-            assertThat(firstValue).containsExactly(DESCRIPTION)
+            assertThat(firstValue).containsExactly(DESCRIPTION, ADDITIONAL_URIS, APPEARANCE)
         }
         verify(view).hideAdvancedSettings()
     }
@@ -183,8 +191,8 @@ class ResourceFormPresenterTest : KoinTest {
             onBlocking { execute(any()) }.thenReturn(
                 GetDefaultCreateContentTypeUseCase.Output(
                     metadataType = MetadataTypeModel.V5,
-                    contentType = ContentType.V5TotpStandalone
-                )
+                    contentType = ContentType.V5TotpStandalone,
+                ),
             )
         }
 
@@ -192,8 +200,8 @@ class ResourceFormPresenterTest : KoinTest {
         presenter.argsRetrieved(
             ResourceFormMode.Create(
                 leadingContentType = LeadingContentType.TOTP,
-                parentFolderId = null
-            )
+                parentFolderId = null,
+            ),
         )
         presenter.advancedSettingsClick()
 
@@ -203,7 +211,7 @@ class ResourceFormPresenterTest : KoinTest {
         }
         argumentCaptor<List<ResourceFormUiModel.Metadata>> {
             verify(view).setupMetadata(capture())
-            assertThat(firstValue).containsExactly(DESCRIPTION)
+            assertThat(firstValue).containsExactly(DESCRIPTION, ADDITIONAL_URIS, APPEARANCE)
         }
         verify(view).hideAdvancedSettings()
     }
@@ -214,16 +222,16 @@ class ResourceFormPresenterTest : KoinTest {
         presenter.argsRetrieved(
             ResourceFormMode.Create(
                 leadingContentType = LeadingContentType.PASSWORD,
-                parentFolderId = null
-            )
+                parentFolderId = null,
+            ),
         )
         presenter.advancedSettingsClick()
 
         presenter.argsRetrieved(
             ResourceFormMode.Create(
                 leadingContentType = LeadingContentType.PASSWORD,
-                parentFolderId = null
-            )
+                parentFolderId = null,
+            ),
         )
 
         verify(view, times(2)).hideAdvancedSettings()
@@ -237,8 +245,8 @@ class ResourceFormPresenterTest : KoinTest {
             onBlocking { execute(any()) }.thenReturn(
                 GetDefaultCreateContentTypeUseCase.Output(
                     metadataType = MetadataTypeModel.V5,
-                    contentType = ContentType.V5Default
-                )
+                    contentType = ContentType.V5Default,
+                ),
             )
         }
         mockEntropyCalculator.stub {
@@ -249,8 +257,8 @@ class ResourceFormPresenterTest : KoinTest {
         presenter.argsRetrieved(
             ResourceFormMode.Create(
                 leadingContentType = LeadingContentType.PASSWORD,
-                parentFolderId = null
-            )
+                parentFolderId = null,
+            ),
         )
         presenter.passwordTextChanged("t")
         presenter.passwordTextChanged("te")

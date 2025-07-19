@@ -38,23 +38,22 @@ import org.mockito.kotlin.stub
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
-
 class KeyInspectorMoreMenuPresenterTest : KoinTest {
-
     private val presenter: KeyInspectorMoreMenuContract.Presenter by inject()
     private val view = mock<KeyInspectorMoreMenuContract.View>()
 
     @get:Rule
-    val koinTestRule = KoinTestRule.create {
-        printLogger(Level.ERROR)
-        modules(testKeyInspectorMoreMenuModule)
-    }
+    val koinTestRule =
+        KoinTestRule.create {
+            printLogger(Level.ERROR)
+            modules(testKeyInspectorMoreMenuModule)
+        }
 
     @Test
     fun `view should show share sheet for exporting private key`() {
         val mockPrivateKey = "PrivateKey"
         whenever(mockGetSelectedUserPrivateKeyUseCase.execute(Unit)).thenReturn(
-            GetSelectedUserPrivateKeyUseCase.Output(mockPrivateKey)
+            GetSelectedUserPrivateKeyUseCase.Output(mockPrivateKey),
         )
 
         presenter.attach(view)
@@ -68,12 +67,12 @@ class KeyInspectorMoreMenuPresenterTest : KoinTest {
     fun `view should show share sheet for exporting public key`() {
         val mockPrivateKey = "PrivateKey"
         whenever(mockGetSelectedUserPrivateKeyUseCase.execute(Unit)).thenReturn(
-            GetSelectedUserPrivateKeyUseCase.Output(mockPrivateKey)
+            GetSelectedUserPrivateKeyUseCase.Output(mockPrivateKey),
         )
         val mockPublicKey = "PublicKey"
         mockOpenPgp.stub {
             onBlocking { mockOpenPgp.generatePublicKey(mockPrivateKey) }.thenReturn(
-                OpenPgpResult.Result(mockPublicKey)
+                OpenPgpResult.Result(mockPublicKey),
             )
         }
 
@@ -88,12 +87,12 @@ class KeyInspectorMoreMenuPresenterTest : KoinTest {
     fun `view should show error when public key cannot be generate`() {
         val mockPrivateKey = "PrivateKey"
         whenever(mockGetSelectedUserPrivateKeyUseCase.execute(Unit)).thenReturn(
-            GetSelectedUserPrivateKeyUseCase.Output(mockPrivateKey)
+            GetSelectedUserPrivateKeyUseCase.Output(mockPrivateKey),
         )
         val errorMessage = "errorMessage"
         mockOpenPgp.stub {
             onBlocking { mockOpenPgp.generatePublicKey(mockPrivateKey) }.thenReturn(
-                OpenPgpResult.Error(OpenPgpError(errorMessage))
+                OpenPgpResult.Error(OpenPgpError(errorMessage)),
             )
         }
 

@@ -1,11 +1,11 @@
 package com.passbolt.mobile.android.feature.settings.screen.termsandlicenses.licenses
 
-import com.google.gson.GsonBuilder
-import com.mikepenz.fastadapter.FastAdapter
-import com.mikepenz.fastadapter.adapters.ItemAdapter
-import com.passbolt.mobile.android.feature.settings.screen.termsandlicenses.licenses.recycler.LicenseItem
+import com.passbolt.mobile.android.feature.settings.screen.termsandlicenses.licenses.reader.LicensesAssetsReader
+import com.passbolt.mobile.android.feature.settings.screen.termsandlicenses.licenses.reader.LicensesReader
+import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.core.module.Module
-import org.koin.core.qualifier.named
+import org.koin.core.module.dsl.singleOf
+import org.koin.dsl.bind
 
 /**
  * Passbolt - Open source password manager for teams
@@ -31,20 +31,6 @@ import org.koin.core.qualifier.named
  */
 
 fun Module.licensesModule() {
-    scope<LicensesFragment> {
-        scoped<LicensesContract.Presenter> {
-            LicensesPresenter(
-                gson = get()
-            )
-        }
-        scoped<ItemAdapter<LicenseItem>> {
-            ItemAdapter.items()
-        }
-        scoped(named<LicenseItem>()) {
-            FastAdapter.with(get<ItemAdapter<LicenseItem>>())
-        }
-        scoped {
-            GsonBuilder().create()
-        }
-    }
+    viewModelOf(::LicensesViewModel)
+    singleOf(::LicensesAssetsReader) bind LicensesReader::class
 }

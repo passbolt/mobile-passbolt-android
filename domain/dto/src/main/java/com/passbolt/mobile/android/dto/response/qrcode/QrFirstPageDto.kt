@@ -40,5 +40,5 @@ data class QrFirstPageDto(
     @SerialName("authentication_token")
     val authenticationToken: String,
     val hash: String,
-    val domain: String
+    val domain: String,
 )

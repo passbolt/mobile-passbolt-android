@@ -26,12 +26,15 @@ package com.passbolt.mobile.android.serializers.gson.validation
 import com.passbolt.mobile.android.serializers.jsonschema.schamarepository.JsonSchemaValidator
 
 class JsonSchemaValidationRunner(
-    private val jsonSchemaValidator: JsonSchemaValidator
+    private val jsonSchemaValidator: JsonSchemaValidator,
 ) {
+    suspend fun isResourceValid(
+        resourceJson: String?,
+        resourceTypeSlug: String,
+    ) = jsonSchemaValidator.isResourceValid(resourceTypeSlug, resourceJson)
 
-    suspend fun isResourceValid(resourceJson: String?, resourceTypeSlug: String) =
-        jsonSchemaValidator.isResourceValid(resourceTypeSlug, resourceJson)
-
-    suspend fun isSecretValid(secretJson: String?, resourceTypeSlug: String) =
-        jsonSchemaValidator.isSecretValid(resourceTypeSlug, secretJson)
+    suspend fun isSecretValid(
+        secretJson: String?,
+        resourceTypeSlug: String,
+    ) = jsonSchemaValidator.isSecretValid(resourceTypeSlug, secretJson)
 }

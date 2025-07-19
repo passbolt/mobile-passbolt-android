@@ -42,13 +42,14 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class NewMetadataKeyTrustDialog : DialogFragment(), KoinComponent {
-
+class NewMetadataKeyTrustDialog :
+    DialogFragment(),
+    KoinComponent {
     private var listener: Listener? = null
     private val fingerprintFormatter: FingerprintFormatter by inject()
     private val bundledNewKeyToTrust by lifecycleAwareLazy {
         requireNotNull(
-            BundleCompat.getParcelable(requireArguments(), NEW_KEY_TO_TRUST, NewMetadataKeyToTrustModel::class.java)
+            BundleCompat.getParcelable(requireArguments(), NEW_KEY_TO_TRUST, NewMetadataKeyToTrustModel::class.java),
         )
     }
 
@@ -57,7 +58,11 @@ class NewMetadataKeyTrustDialog : DialogFragment(), KoinComponent {
         setStyle(STYLE_NO_TITLE, CoreUiR.style.FullscreenDialogTheme)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
+    ): View {
         val binding = DialogNewMetadataKeyTrustBinding.inflate(inflater)
         setupListeners(binding)
         showValues(binding)
@@ -66,14 +71,18 @@ class NewMetadataKeyTrustDialog : DialogFragment(), KoinComponent {
     }
 
     private fun showValues(binding: DialogNewMetadataKeyTrustBinding) {
-        fingerprintFormatter.format(
-            bundledNewKeyToTrust.metadataPrivateKey.fingerprint, appendMiddleSpacing = true
-        )?.let {
-            binding.fingerprint.text = it.uppercase()
-        }
-        binding.message1.text = getString(
-            LocalizationR.string.dialog_new_metadata_key_trust_modified_by_user, bundledNewKeyToTrust.signedName
-        )
+        fingerprintFormatter
+            .format(
+                bundledNewKeyToTrust.metadataPrivateKey.fingerprint,
+                appendMiddleSpacing = true,
+            )?.let {
+                binding.fingerprint.text = it.uppercase()
+            }
+        binding.message1.text =
+            getString(
+                LocalizationR.string.dialog_new_metadata_key_trust_modified_by_user,
+                bundledNewKeyToTrust.signedName,
+            )
         when (bundledNewKeyToTrust.modificationKind) {
             MetadataKeyModification.ROTATION -> {
                 binding.message2.text = getString(LocalizationR.string.dialog_new_metadata_key_trust_key_rotation_info)
@@ -102,11 +111,12 @@ class NewMetadataKeyTrustDialog : DialogFragment(), KoinComponent {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        listener = when {
-            activity is Listener -> activity as Listener
-            parentFragment is Listener -> parentFragment as Listener
-            else -> error("Parent must implement ${Listener::class.java.name}")
-        }
+        listener =
+            when {
+                activity is Listener -> activity as Listener
+                parentFragment is Listener -> parentFragment as Listener
+                else -> error("Parent must implement ${Listener::class.java.name}")
+            }
     }
 
     override fun onDetach() {
@@ -123,9 +133,10 @@ class NewMetadataKeyTrustDialog : DialogFragment(), KoinComponent {
 
         fun newInstance(newMetadataKeyToTrust: NewMetadataKeyToTrustModel) =
             NewMetadataKeyTrustDialog().apply {
-                arguments = bundleOf(
-                    NEW_KEY_TO_TRUST to newMetadataKeyToTrust
-                )
+                arguments =
+                    bundleOf(
+                        NEW_KEY_TO_TRUST to newMetadataKeyToTrust,
+                    )
             }
     }
 }

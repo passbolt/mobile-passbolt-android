@@ -41,10 +41,9 @@ class AccountDetailsPresenter(
     private val getSelectedAccountDataUseCase: GetSelectedAccountDataUseCase,
     private val updateAccountDataUseCase: UpdateAccountDataUseCase,
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
-    coroutineLaunchContext: CoroutineLaunchContext
-) : AccountDetailsContract.Presenter,
-    BaseAuthenticatedPresenter<AccountDetailsContract.View>(coroutineLaunchContext) {
-
+    coroutineLaunchContext: CoroutineLaunchContext,
+) : BaseAuthenticatedPresenter<AccountDetailsContract.View>(coroutineLaunchContext),
+    AccountDetailsContract.Presenter {
     override var view: AccountDetailsContract.View? = null
     private val job = SupervisorJob()
     private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
@@ -100,8 +99,8 @@ class AccountDetailsPresenter(
         updateAccountDataUseCase.execute(
             UpdateAccountDataUseCase.Input(
                 userId = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount),
-                label = this.label
-            )
+                label = this.label,
+            ),
         )
         view?.showLabelChanged()
     }

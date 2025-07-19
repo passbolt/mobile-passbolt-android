@@ -49,16 +49,16 @@ import org.mockito.kotlin.verify
  */
 
 class FolderDetailsPresenterTest : KoinTest {
-
     private val presenter: FolderDetailsContract.Presenter by inject()
     private val view: FolderDetailsContract.View = mock()
 
     @ExperimentalCoroutinesApi
     @get:Rule
-    val koinTestRule = KoinTestRule.create {
-        printLogger(Level.ERROR)
-        modules(testFolderDetailsModule)
-    }
+    val koinTestRule =
+        KoinTestRule.create {
+            printLogger(Level.ERROR)
+            modules(testFolderDetailsModule)
+        }
 
     @Before
     fun setup() {
@@ -66,14 +66,16 @@ class FolderDetailsPresenterTest : KoinTest {
             onBlocking { execute(any()) } doReturn GetLocalFolderDetailsUseCase.Output(MOCK_CHILD_FOLDER)
         }
         mockGetFolderLocationUseCase.stub {
-            onBlocking { execute(any()) } doReturn GetLocalFolderLocationUseCase.Output(
-                listOf(MOCK_PARENT_FOLDER, MOCK_CHILD_FOLDER)
-            )
+            onBlocking { execute(any()) } doReturn
+                GetLocalFolderLocationUseCase.Output(
+                    listOf(MOCK_PARENT_FOLDER, MOCK_CHILD_FOLDER),
+                )
         }
         mockGetLocalFolderPermissionsUseCase.stub {
-            onBlocking { execute(any()) } doReturn Output(
-                MOCK_PERMISSIONS
-            )
+            onBlocking { execute(any()) } doReturn
+                Output(
+                    MOCK_PERMISSIONS,
+                )
         }
         presenter.attach(view)
         presenter.argsRetrieved(MOCK_FOLDER_ID, 100, 100f)
@@ -102,50 +104,54 @@ class FolderDetailsPresenterTest : KoinTest {
             FolderModel(MOCK_FOLDER_ID, "parentId", MOCK_FOLDER_NAME, false, ResourcePermission.UPDATE)
         private val MOCK_PARENT_FOLDER =
             FolderModel("parentId", null, "parent folder in root", false, ResourcePermission.UPDATE)
-        private val MOCK_PERMISSIONS = listOf(
-            PermissionModelUi.GroupPermissionModel(
-                permission = ResourcePermission.READ,
-                permissionId = "groupPermId1",
-                group = GroupModel(
-                    groupId = "groupId1",
-                    groupName = "groupname1"
+        private val MOCK_PERMISSIONS =
+            listOf(
+                PermissionModelUi.GroupPermissionModel(
+                    permission = ResourcePermission.READ,
+                    permissionId = "groupPermId1",
+                    group =
+                        GroupModel(
+                            groupId = "groupId1",
+                            groupName = "groupname1",
+                        ),
+                ),
+                PermissionModelUi.GroupPermissionModel(
+                    permission = ResourcePermission.READ,
+                    permissionId = "groupPermId2",
+                    group =
+                        GroupModel(
+                            groupId = "groupId2",
+                            groupName = "groupname2",
+                        ),
+                ),
+            ) +
+                listOf(
+                    PermissionModelUi.UserPermissionModel(
+                        permission = ResourcePermission.OWNER,
+                        permissionId = "userPermId1",
+                        user =
+                            UserWithAvatar(
+                                userId = "userId1",
+                                firstName = "first",
+                                lastName = "last",
+                                userName = "userName",
+                                isDisabled = false,
+                                avatarUrl = "avatarUrl",
+                            ),
+                    ),
+                    PermissionModelUi.UserPermissionModel(
+                        permission = ResourcePermission.UPDATE,
+                        permissionId = "userPermId2",
+                        user =
+                            UserWithAvatar(
+                                userId = "userId2",
+                                firstName = "first",
+                                lastName = "last",
+                                userName = "userName",
+                                isDisabled = false,
+                                avatarUrl = "avatarUrl",
+                            ),
+                    ),
                 )
-            ),
-            PermissionModelUi.GroupPermissionModel(
-                permission = ResourcePermission.READ,
-                permissionId = "groupPermId2",
-                group = GroupModel(
-                    groupId = "groupId2",
-                    groupName = "groupname2"
-                )
-            )
-        ) + listOf(
-            PermissionModelUi.UserPermissionModel(
-                permission = ResourcePermission.OWNER,
-                permissionId = "userPermId1",
-                user = UserWithAvatar(
-                    userId = "userId1",
-                    firstName = "first",
-                    lastName = "last",
-                    userName = "userName",
-                    isDisabled = false,
-                    avatarUrl = "avatarUrl"
-                )
-            ),
-            PermissionModelUi.UserPermissionModel(
-                permission = ResourcePermission.UPDATE,
-                permissionId = "userPermId2",
-                user = UserWithAvatar(
-                    userId = "userId2",
-                    firstName = "first",
-                    lastName = "last",
-                    userName = "userName",
-                    isDisabled = false,
-                    avatarUrl = "avatarUrl"
-                )
-            )
-        )
-
     }
-
 }

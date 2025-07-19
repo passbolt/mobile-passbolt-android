@@ -5,5 +5,5 @@ import java.util.concurrent.ConcurrentHashMap
 
 data class MergedSessionKeys(
     val keys: ConcurrentHashMap<SessionKeyIdentifier, SessionKeyModel> = ConcurrentHashMap(),
-    val originMetadata: ConcurrentHashMap<String, ZonedDateTime> = ConcurrentHashMap()
+    val originMetadata: ConcurrentHashMap<String, ZonedDateTime> = ConcurrentHashMap(),
 )

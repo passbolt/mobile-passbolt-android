@@ -15,9 +15,8 @@ class EnterTotpPresenter(
     private val signOutUseCase: SignOutUseCase,
     private val verifyTotpUseCase: VerifyTotpUseCase,
     private val refreshSessionUseCase: RefreshSessionUseCase,
-    coroutineLaunchContext: CoroutineLaunchContext
+    coroutineLaunchContext: CoroutineLaunchContext,
 ) : EnterTotpContract.Presenter {
-
     override var view: EnterTotpContract.View? = null
 
     private val job = SupervisorJob()
@@ -36,12 +35,17 @@ class EnterTotpPresenter(
         }
     }
 
-    override fun otpEntered(otp: String, authToken: String, rememberMeChecked: Boolean) {
+    override fun otpEntered(
+        otp: String,
+        authToken: String,
+        rememberMeChecked: Boolean,
+    ) {
         Timber.d("Verifying TOTP")
         view?.showProgress()
         scope.launch {
-            when (val result =
-                verifyTotpUseCase.execute(VerifyTotpUseCase.Input(otp, authToken, rememberMeChecked))
+            when (
+                val result =
+                    verifyTotpUseCase.execute(VerifyTotpUseCase.Input(otp, authToken, rememberMeChecked))
             ) {
                 is VerifyTotpUseCase.Output.Failure<*> -> genericError()
                 is VerifyTotpUseCase.Output.NetworkFailure -> networkError()
@@ -62,8 +66,7 @@ class EnterTotpPresenter(
         }
     }
 
-    private suspend fun backgroundSessionRefreshSucceeded() =
-        refreshSessionUseCase.execute(Unit) is RefreshSessionUseCase.Output.Success
+    private suspend fun backgroundSessionRefreshSucceeded() = refreshSessionUseCase.execute(Unit) is RefreshSessionUseCase.Output.Success
 
     override fun authenticationSucceeded() {
         view?.close()
@@ -111,9 +114,10 @@ class EnterTotpPresenter(
         super.detach()
     }
 
-    private fun CharSequence?.removeWhiteSpace() = this?.let {
-        replace("\\s".toRegex(), "")
-    }
+    private fun CharSequence?.removeWhiteSpace() =
+        this?.let {
+            replace("\\s".toRegex(), "")
+        }
 
     private companion object {
         private const val OTP_LENGTH = 6

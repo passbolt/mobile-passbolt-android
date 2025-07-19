@@ -40,119 +40,131 @@ import org.mockito.kotlin.stub
 import java.util.UUID
 
 class SecretParserTest : KoinTest {
-
     @get:Rule
-    val koinTestRule = KoinTestRule.create {
-        printLogger(Level.ERROR)
-        modules(testParserModule)
-    }
+    val koinTestRule =
+        KoinTestRule.create {
+            printLogger(Level.ERROR)
+            modules(testParserModule)
+        }
 
     private val secretParser: SecretParser by inject()
 
     @Before
     fun setup() {
         mockJSFSchemaRepository.stub {
-            on { schemaForSecret(ContentType.PasswordString.slug) } doReturn SchemaStore().loadSchema(
-                this::class.java.getResource("/password-string-secret-schema.json")
-            )
-            on { schemaForSecret(ContentType.PasswordAndDescription.slug) } doReturn SchemaStore().loadSchema(
-                this::class.java.getResource("/password-and-description-secret-schema.json")
-            )
-            on { schemaForSecret(ContentType.PasswordDescriptionTotp.slug) } doReturn SchemaStore().loadSchema(
-                this::class.java.getResource("/password-description-totp-secret-schema.json")
-            )
-            on { schemaForSecret(ContentType.Totp.slug) } doReturn SchemaStore().loadSchema(
-                this::class.java.getResource("/totp-secret-schema.json")
-            )
+            on { schemaForSecret(ContentType.PasswordString.slug) } doReturn
+                SchemaStore().loadSchema(
+                    this::class.java.getResource("/password-string-secret-schema.json"),
+                )
+            on { schemaForSecret(ContentType.PasswordAndDescription.slug) } doReturn
+                SchemaStore().loadSchema(
+                    this::class.java.getResource("/password-and-description-secret-schema.json"),
+                )
+            on { schemaForSecret(ContentType.PasswordDescriptionTotp.slug) } doReturn
+                SchemaStore().loadSchema(
+                    this::class.java.getResource("/password-description-totp-secret-schema.json"),
+                )
+            on { schemaForSecret(ContentType.Totp.slug) } doReturn
+                SchemaStore().loadSchema(
+                    this::class.java.getResource("/totp-secret-schema.json"),
+                )
         }
     }
 
     @Test
-    fun `password should parse correct for password string secret`() = runTest {
-        val secret = "\\\"!@#_$%^&*()"
-        mockIdToSlugMappingProvider.stub {
-            onBlocking { provideMappingForSelectedAccount() }.doReturn(
-                mapOf(resourceTypeId to ContentType.PasswordString.slug)
-            )
+    fun `password should parse correct for password string secret`() =
+        runTest {
+            val secret = "\\\"!@#_$%^&*()"
+            mockIdToSlugMappingProvider.stub {
+                onBlocking { provideMappingForSelectedAccount() }.doReturn(
+                    mapOf(resourceTypeId to ContentType.PasswordString.slug),
+                )
+            }
+
+            val secretResult = secretParser.parseSecret(resourceTypeId.toString(), secret)
+
+            assertThat(secretResult).isInstanceOf(DecryptedSecretOrError.DecryptedSecret::class.java)
+            assertThat((secretResult as DecryptedSecretOrError.DecryptedSecret).secret.password).isEqualTo(secret)
         }
-
-        val secretResult = secretParser.parseSecret(resourceTypeId.toString(), secret)
-
-        assertThat(secretResult).isInstanceOf(DecryptedSecretOrError.DecryptedSecret::class.java)
-        assertThat((secretResult as DecryptedSecretOrError.DecryptedSecret).secret.password).isEqualTo(secret)
-    }
 
     @Test
-    fun `password and description should parse correct for password description secret`() = runTest {
-        val secret = "{\"password\":\"\\\"!@#_\$%^&*()\", \"description\":\"desc\"}"
-        mockIdToSlugMappingProvider.stub {
-            onBlocking { provideMappingForSelectedAccount() }.doReturn(
-                mapOf(resourceTypeId to ContentType.PasswordAndDescription.slug)
-            )
+    fun `password and description should parse correct for password description secret`() =
+        runTest {
+            val secret = "{\"password\":\"\\\"!@#_\$%^&*()\", \"description\":\"desc\"}"
+            mockIdToSlugMappingProvider.stub {
+                onBlocking { provideMappingForSelectedAccount() }.doReturn(
+                    mapOf(resourceTypeId to ContentType.PasswordAndDescription.slug),
+                )
+            }
+
+            val secretResult = secretParser.parseSecret(resourceTypeId.toString(), secret)
+
+            assertThat(secretResult).isInstanceOf(DecryptedSecretOrError.DecryptedSecret::class.java)
+            val parsedSecret = (secretResult as DecryptedSecretOrError.DecryptedSecret).secret
+            assertThat(parsedSecret.secret).isEqualTo("\"!@#_\$%^&*()")
+            assertThat(parsedSecret.description).isEqualTo("desc")
         }
-
-        val secretResult = secretParser.parseSecret(resourceTypeId.toString(), secret)
-
-        assertThat(secretResult).isInstanceOf(DecryptedSecretOrError.DecryptedSecret::class.java)
-        val parsedSecret = (secretResult as DecryptedSecretOrError.DecryptedSecret).secret
-        assertThat(parsedSecret.secret).isEqualTo("\"!@#_\$%^&*()")
-        assertThat(parsedSecret.description).isEqualTo("desc")
-    }
 
     @Test
-    fun `totp should parse correct for standalone totp secret`() = runTest {
-        val secret = ("{" +
-                "\"totp\":{" +
-                "\"digits\":6," +
-                "\"period\":30," +
-                "\"algorithm\":\"SHA256\"," +
-                "\"secret_key\":\"secret\"" + "}" +
-                "}")
-        mockIdToSlugMappingProvider.stub {
-            onBlocking { provideMappingForSelectedAccount() }.doReturn(
-                mapOf(resourceTypeId to ContentType.Totp.slug)
+    fun `totp should parse correct for standalone totp secret`() =
+        runTest {
+            val secret = (
+                "{" +
+                    "\"totp\":{" +
+                    "\"digits\":6," +
+                    "\"period\":30," +
+                    "\"algorithm\":\"SHA256\"," +
+                    "\"secret_key\":\"secret\"" + "}" +
+                    "}"
             )
+            mockIdToSlugMappingProvider.stub {
+                onBlocking { provideMappingForSelectedAccount() }.doReturn(
+                    mapOf(resourceTypeId to ContentType.Totp.slug),
+                )
+            }
+
+            val secretResult = secretParser.parseSecret(resourceTypeId.toString(), secret)
+
+            assertThat(secretResult).isInstanceOf(DecryptedSecretOrError.DecryptedSecret::class.java)
+            val parsedSecret = (secretResult as DecryptedSecretOrError.DecryptedSecret).secret
+            assertThat(parsedSecret.totp?.digits).isEqualTo(6)
+            assertThat(parsedSecret.totp?.period).isEqualTo(30)
+            assertThat(parsedSecret.totp?.algorithm).isEqualTo("SHA256")
+            assertThat(parsedSecret.totp?.key).isEqualTo("secret")
         }
-
-        val secretResult = secretParser.parseSecret(resourceTypeId.toString(), secret)
-
-        assertThat(secretResult).isInstanceOf(DecryptedSecretOrError.DecryptedSecret::class.java)
-        val parsedSecret = (secretResult as DecryptedSecretOrError.DecryptedSecret).secret
-        assertThat(parsedSecret.totp?.digits).isEqualTo(6)
-        assertThat(parsedSecret.totp?.period).isEqualTo(30)
-        assertThat(parsedSecret.totp?.algorithm).isEqualTo("SHA256")
-        assertThat(parsedSecret.totp?.key).isEqualTo("secret")
-    }
 
     @Test
-    fun `password description and totp should parse correct for password description totp secret`() = runTest {
-        val secret = ("{" +
-                "\"password\":\"pass\"," +
-                "\"description\":\"desc\"," +
-                "\"totp\":{" +
-                "\"digits\":6," +
-                "\"period\":30," +
-                "\"algorithm\":\"SHA256\"," +
-                "\"secret_key\":\"secret\"" +
-                "}" +
-                "}")
-        mockIdToSlugMappingProvider.stub {
-            onBlocking { provideMappingForSelectedAccount() }.doReturn(
-                mapOf(resourceTypeId to ContentType.PasswordAndDescription.slug)
+    fun `password description and totp should parse correct for password description totp secret`() =
+        runTest {
+            val secret = (
+                "{" +
+                    "\"password\":\"pass\"," +
+                    "\"description\":\"desc\"," +
+                    "\"totp\":{" +
+                    "\"digits\":6," +
+                    "\"period\":30," +
+                    "\"algorithm\":\"SHA256\"," +
+                    "\"secret_key\":\"secret\"" +
+                    "}" +
+                    "}"
             )
+            mockIdToSlugMappingProvider.stub {
+                onBlocking { provideMappingForSelectedAccount() }.doReturn(
+                    mapOf(resourceTypeId to ContentType.PasswordAndDescription.slug),
+                )
+            }
+
+            val parsedSecretResult = secretParser.parseSecret(resourceTypeId.toString(), secret)
+
+            assertThat(parsedSecretResult).isInstanceOf(DecryptedSecretOrError.DecryptedSecret::class.java)
+            val parsedSecret = (parsedSecretResult as DecryptedSecretOrError.DecryptedSecret).secret
+            assertThat(parsedSecret.secret).isEqualTo("pass")
+            assertThat(parsedSecret.description).isEqualTo("desc")
+            assertThat(parsedSecret.totp?.digits).isEqualTo(6)
+            assertThat(parsedSecret.totp?.period).isEqualTo(30)
+            assertThat(parsedSecret.totp?.algorithm).isEqualTo("SHA256")
+            assertThat(parsedSecret.totp?.key).isEqualTo("secret")
         }
-
-        val parsedSecretResult = secretParser.parseSecret(resourceTypeId.toString(), secret)
-
-        assertThat(parsedSecretResult).isInstanceOf(DecryptedSecretOrError.DecryptedSecret::class.java)
-        val parsedSecret = (parsedSecretResult as DecryptedSecretOrError.DecryptedSecret).secret
-        assertThat(parsedSecret.secret).isEqualTo("pass")
-        assertThat(parsedSecret.description).isEqualTo("desc")
-        assertThat(parsedSecret.totp?.digits).isEqualTo(6)
-        assertThat(parsedSecret.totp?.period).isEqualTo(30)
-        assertThat(parsedSecret.totp?.algorithm).isEqualTo("SHA256")
-        assertThat(parsedSecret.totp?.key).isEqualTo("secret")
-    }
 
     private companion object {
         private val resourceTypeId = UUID.randomUUID()

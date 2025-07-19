@@ -26,34 +26,55 @@ import com.passbolt.mobile.android.ui.AccountModelUi
  * @since v1.0
  */
 interface AccountsListContract {
-
     interface View : BaseContract.View {
         fun showAccounts(accounts: List<AccountModelUi>)
+
         fun hideRemoveAccounts()
+
         fun showDoneRemovingAccounts()
+
         fun hideDoneRemovingAccounts()
+
         fun showRemoveAccounts()
+
         fun showRemoveAccountConfirmationDialog(model: AccountModelUi.AccountModel)
+
         fun navigateToSignIn(model: AccountModelUi.AccountModel)
+
         fun navigateToSetup()
+
         fun finishAffinity()
+
         fun finish()
+
         fun showProgress()
+
         fun hideProgress()
+
         fun showAccountRemovedSnackbar()
+
         fun navigateToStartUp()
+
         fun navigateToNewAccountSignIn(model: AccountModelUi.AccountModel)
+
         fun navigateBack(isSelectedAccountAvailable: Boolean)
+
         fun notifySelectedAccountChanged()
     }
 
     interface Presenter : BaseContract.Presenter<View> {
         fun accountItemClick(model: AccountModelUi.AccountModel)
+
         fun addAccountClick()
+
         fun removeAnAccountClick()
+
         fun doneRemovingAccountsClick()
+
         fun removeAccountClick(model: AccountModelUi.AccountModel)
+
         fun confirmRemoveAccountClick(model: AccountModelUi.AccountModel)
+
         fun backClick()
     }
 }

@@ -27,22 +27,21 @@ import java.net.UnknownHostException
  * @since v1.0
  */
 sealed class NetworkResult<T : Any> {
-
     class Success<T : Any>(
-        val value: T
+        val value: T,
     ) : NetworkResult<T>()
 
     sealed class Failure<T : Any>(
         val exception: Exception,
         val errorCode: Int? = null,
-        val headerMessage: String
+        val headerMessage: String,
     ) : NetworkResult<T>() {
-
         val isUnauthorized: Boolean
             get() = errorCode == HttpURLConnection.HTTP_UNAUTHORIZED
 
         val isMfaRequired: Boolean
-            get() = errorCode == HttpURLConnection.HTTP_FORBIDDEN &&
+            get() =
+                errorCode == HttpURLConnection.HTTP_FORBIDDEN &&
                     this is ServerError &&
                     mfaStatus is MfaStatus.Required
 
@@ -56,12 +55,12 @@ sealed class NetworkResult<T : Any> {
             exception: Exception,
             errorCode: Int? = null,
             headerMessage: String,
-            val mfaStatus: MfaStatus = MfaStatus.NotRequired
+            val mfaStatus: MfaStatus = MfaStatus.NotRequired,
         ) : Failure<T>(exception, errorCode, headerMessage)
 
         class NetworkError<T : Any>(
             exception: Exception,
-            headerMessage: String
+            headerMessage: String,
         ) : Failure<T>(exception, null, headerMessage)
     }
 }

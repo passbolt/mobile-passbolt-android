@@ -1,19 +1,3 @@
-package com.passbolt.mobile.android.feature.authentication.auth.presenter
-
-import com.passbolt.mobile.android.common.extension.erase
-import com.passbolt.mobile.android.core.accounts.usecase.accountdata.GetAccountDataUseCase
-import com.passbolt.mobile.android.core.accounts.usecase.privatekey.GetPrivateKeyUseCase
-import com.passbolt.mobile.android.core.authenticationcore.passphrase.GetPassphraseUseCase
-import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
-import com.passbolt.mobile.android.core.passphrasememorycache.PassphraseMemoryCache
-import com.passbolt.mobile.android.core.preferences.usecase.GetGlobalPreferencesUseCase
-import com.passbolt.mobile.android.core.security.rootdetection.RootDetector
-import com.passbolt.mobile.android.core.security.runtimeauth.RuntimeAuthenticatedFlag
-import com.passbolt.mobile.android.encryptedstorage.biometric.BiometricCipher
-import com.passbolt.mobile.android.feature.authentication.auth.usecase.BiometryInteractor
-import com.passbolt.mobile.android.feature.authentication.auth.usecase.VerifyPassphraseUseCase
-import javax.crypto.Cipher
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -36,6 +20,23 @@ import javax.crypto.Cipher
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+
+package com.passbolt.mobile.android.feature.authentication.auth.presenter
+
+import com.passbolt.mobile.android.common.extension.erase
+import com.passbolt.mobile.android.core.accounts.usecase.accountdata.GetAccountDataUseCase
+import com.passbolt.mobile.android.core.accounts.usecase.privatekey.GetPrivateKeyUseCase
+import com.passbolt.mobile.android.core.authenticationcore.passphrase.GetPassphraseUseCase
+import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import com.passbolt.mobile.android.core.passphrasememorycache.PassphraseMemoryCache
+import com.passbolt.mobile.android.core.preferences.usecase.GetGlobalPreferencesUseCase
+import com.passbolt.mobile.android.core.security.rootdetection.RootDetector
+import com.passbolt.mobile.android.core.security.runtimeauth.RuntimeAuthenticatedFlag
+import com.passbolt.mobile.android.encryptedstorage.biometric.BiometricCipher
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.BiometryInteractor
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.VerifyPassphraseUseCase
+import javax.crypto.Cipher
+
 // presenter for sign in view used for just obtaining the passphrase in the cache without performing API sign in
 // handles storing passphrase in cache after sign in button clicked
 class PassphrasePresenter(
@@ -50,22 +51,21 @@ class PassphrasePresenter(
     rootDetector: RootDetector,
     biometryInteractor: BiometryInteractor,
     runtimeAuthenticatedFlag: RuntimeAuthenticatedFlag,
-    getGlobalPreferencesUseCase: GetGlobalPreferencesUseCase
+    getGlobalPreferencesUseCase: GetGlobalPreferencesUseCase,
 ) : AuthBasePresenter(
-    getAccountDataUseCase,
-    getPrivateKeyUseCase,
-    verifyPassphraseUseCase,
-    biometricCipher,
-    getPassphraseUseCase,
-    passphraseMemoryCache,
-    authReasonMapper,
-    rootDetector,
-    biometryInteractor,
-    getGlobalPreferencesUseCase,
-    runtimeAuthenticatedFlag,
-    coroutineLaunchContext
-) {
-
+        getAccountDataUseCase,
+        getPrivateKeyUseCase,
+        verifyPassphraseUseCase,
+        biometricCipher,
+        getPassphraseUseCase,
+        passphraseMemoryCache,
+        authReasonMapper,
+        rootDetector,
+        biometryInteractor,
+        getGlobalPreferencesUseCase,
+        runtimeAuthenticatedFlag,
+        coroutineLaunchContext,
+    ) {
     override fun onPassphraseVerified(passphrase: ByteArray) {
         runtimeAuthenticatedFlag.isAuthenticated = true
         passphrase.erase()

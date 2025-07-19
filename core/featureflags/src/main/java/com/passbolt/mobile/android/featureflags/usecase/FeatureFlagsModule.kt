@@ -28,12 +28,12 @@ import org.koin.core.module.Module
 fun Module.featureFlagsModule() {
     single {
         GetFeatureFlagsUseCase(
-            encryptedSharedPreferencesFactory = get()
+            encryptedSharedPreferencesFactory = get(),
         )
     }
     single {
         SaveFeatureFlagsUseCase(
-            encryptedSharedPreferencesFactory = get()
+            encryptedSharedPreferencesFactory = get(),
         )
     }
 }

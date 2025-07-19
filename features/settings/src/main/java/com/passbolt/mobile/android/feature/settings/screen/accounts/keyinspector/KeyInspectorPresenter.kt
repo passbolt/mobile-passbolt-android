@@ -42,9 +42,9 @@ class KeyInspectorPresenter(
     private val getSelectedAccountDataUseCase: GetSelectedAccountDataUseCase,
     private val dateFormatter: DateFormatter,
     private val fingerprintFormatter: FingerprintFormatter,
-    coroutineLaunchContext: CoroutineLaunchContext
-) : BaseAuthenticatedPresenter<KeyInspectorContract.View>(coroutineLaunchContext), KeyInspectorContract.Presenter {
-
+    coroutineLaunchContext: CoroutineLaunchContext,
+) : BaseAuthenticatedPresenter<KeyInspectorContract.View>(coroutineLaunchContext),
+    KeyInspectorContract.Presenter {
     override var view: KeyInspectorContract.View? = null
     private val job = SupervisorJob()
     private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
@@ -73,15 +73,18 @@ class KeyInspectorPresenter(
     }
 
     private suspend fun fetchKeyData(view: KeyInspectorContract.View) {
-        when (val userResult = runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
-            fetchCurrentUserUseCase.execute(Unit)
-        }) {
+        when (
+            val userResult =
+                runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+                    fetchCurrentUserUseCase.execute(Unit)
+                }
+        ) {
             is FetchCurrentUserUseCase.Output.Failure<*> -> view.showError(userResult.message)
             is FetchCurrentUserUseCase.Output.Success -> {
                 this.keyData = userResult.userModel.gpgKey
                 with(userResult.userModel.gpgKey) {
                     view.showFingerprint(
-                        fingerprintFormatter.format(fingerprint, appendMiddleSpacing = false).orEmpty()
+                        fingerprintFormatter.format(fingerprint, appendMiddleSpacing = false).orEmpty(),
                     )
                     view.showLength(bits.toString())
 

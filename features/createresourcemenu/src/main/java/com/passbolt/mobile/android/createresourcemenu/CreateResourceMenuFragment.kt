@@ -38,21 +38,23 @@ import org.koin.android.ext.android.inject
 
 class CreateResourceMenuFragment :
     BindingScopedBottomSheetFragment<BottomsheetCreateResourceMenuBinding>(
-        BottomsheetCreateResourceMenuBinding::inflate
+        BottomsheetCreateResourceMenuBinding::inflate,
     ),
     CreateResourceMenuContract.View {
-
     private val presenter: CreateResourceMenuContract.Presenter by inject()
     private var listener: Listener? = null
     private val homeDisplayViewModel: HomeDisplayViewModel? by lifecycleAwareLazy {
         BundleCompat.getParcelable(
             requireArguments(),
             EXTRA_HOME_DISPLAY_VIEW_MODEL,
-            HomeDisplayViewModel::class.java
+            HomeDisplayViewModel::class.java,
         )
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         setListeners()
         presenter.attach(this)
@@ -61,11 +63,12 @@ class CreateResourceMenuFragment :
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        listener = when {
-            activity is Listener -> activity as Listener
-            parentFragment is Listener -> parentFragment as Listener
-            else -> error("Parent must implement ${Listener::class.java.name}")
-        }
+        listener =
+            when {
+                activity is Listener -> activity as Listener
+                parentFragment is Listener -> parentFragment as Listener
+                else -> error("Parent must implement ${Listener::class.java.name}")
+            }
     }
 
     override fun onDetach() {
@@ -76,7 +79,7 @@ class CreateResourceMenuFragment :
     }
 
     private fun setListeners() {
-        with(binding) {
+        with(requiredBinding) {
             setDebouncingOnClickAndDismiss(createPassword) { listener?.createPasswordClick() }
             setDebouncingOnClickAndDismiss(createTotp) { listener?.createTotpClick() }
             setDebouncingOnClickAndDismiss(createFolder) { listener?.createFolderClick() }
@@ -85,15 +88,15 @@ class CreateResourceMenuFragment :
     }
 
     override fun showPasswordButton() {
-        binding.createPassword.visible()
+        requiredBinding.createPassword.visible()
     }
 
     override fun showTotpButton() {
-        binding.createTotp.visible()
+        requiredBinding.createTotp.visible()
     }
 
     override fun showFoldersButton() {
-        binding.createFolder.visible()
+        requiredBinding.createFolder.visible()
     }
 
     override fun hideMenu() {
@@ -105,16 +108,20 @@ class CreateResourceMenuFragment :
 
         fun newInstance(homeDisplayViewModel: HomeDisplayViewModel?) =
             CreateResourceMenuFragment().apply {
-                arguments = bundleOf(
-                    EXTRA_HOME_DISPLAY_VIEW_MODEL to homeDisplayViewModel
-                )
+                arguments =
+                    bundleOf(
+                        EXTRA_HOME_DISPLAY_VIEW_MODEL to homeDisplayViewModel,
+                    )
             }
     }
 
     interface Listener {
         fun createTotpClick() {}
+
         fun createPasswordClick() {}
+
         fun createFolderClick() {}
+
         fun resourceMoreMenuDismissed() {}
     }
 }

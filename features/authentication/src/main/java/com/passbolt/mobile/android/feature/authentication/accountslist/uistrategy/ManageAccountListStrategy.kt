@@ -27,9 +27,8 @@ import com.passbolt.mobile.android.core.localization.R as LocalizationR
  * @since v1.0
  */
 class ManageAccountListStrategy(
-    override var accountListFragment: AccountsListFragment?
+    override var accountListFragment: AccountsListFragment?,
 ) : AccountListStrategy {
-
     private var selectedAccountChanged: Boolean = false
 
     override fun getTitleRes(): Int = LocalizationR.string.accounts_list_manage_accounts

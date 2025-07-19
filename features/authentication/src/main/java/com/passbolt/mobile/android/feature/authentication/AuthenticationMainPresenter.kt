@@ -9,12 +9,14 @@ import com.passbolt.mobile.android.core.navigation.ActivityIntents
 class AuthenticationMainPresenter(
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
     private val getAccountDataUseCase: GetAccountDataUseCase,
-    private val saveCurrentApiUrlUseCase: SaveCurrentApiUrlUseCase
+    private val saveCurrentApiUrlUseCase: SaveCurrentApiUrlUseCase,
 ) : AuthenticationMainContract.Presenter {
-
     override var view: AuthenticationMainContract.View? = null
 
-    override fun bundleRetrieved(authConfig: ActivityIntents.AuthConfig, userId: String?) {
+    override fun bundleRetrieved(
+        authConfig: ActivityIntents.AuthConfig,
+        userId: String?,
+    ) {
         val currentAccount = userId ?: getSelectedAccountUseCase.execute(Unit).selectedAccount
 
         if (authConfig is ActivityIntents.AuthConfig.Setup && currentAccount != null) {

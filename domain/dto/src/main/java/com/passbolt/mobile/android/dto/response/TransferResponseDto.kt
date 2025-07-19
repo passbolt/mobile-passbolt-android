@@ -33,11 +33,11 @@ data class TransferResponseDto(
     val currentPage: Int,
     @SerializedName("total_pages")
     val totalPages: Int,
-    val hash: String
+    val hash: String,
 )
 
 data class UserResponseDto(
     @SerializedName("username")
     val email: String?,
-    val profile: UserProfileResponseDto?
+    val profile: UserProfileResponseDto?,
 )

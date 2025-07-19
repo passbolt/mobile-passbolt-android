@@ -47,7 +47,7 @@ fun Module.scanQrModule() {
                 saveCurrentApiUrlUseCase = get(),
                 accountsInteractor = get(),
                 accountKitParser = get(),
-                fetchFileAsStringUseCase = get()
+                fetchFileAsStringUseCase = get(),
             )
         }
         scopedOf(::QrScanResultsMapper)

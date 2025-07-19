@@ -39,7 +39,7 @@ fun Module.groupPermissionsModule() {
         scoped<GroupPermissionsContract.Presenter> {
             GroupPermissionsPresenter(
                 coroutineLaunchContext = get(),
-                getGroupWithUsersUseCase = get()
+                getGroupWithUsersUseCase = get(),
             )
         }
         scoped<ItemAdapter<GroupItem>>(named(GROUP_MEMBER_ITEM_ADAPTER)) {
@@ -52,8 +52,8 @@ fun Module.groupPermissionsModule() {
             FastAdapter.with(
                 listOf(
                     get<ItemAdapter<GroupUserItem>>(named(GROUP_MEMBER_ITEM_ADAPTER)),
-                    get<ItemAdapter<CounterItem>>(named(COUNTER_ITEM_ADAPTER))
-                )
+                    get<ItemAdapter<CounterItem>>(named(COUNTER_ITEM_ADAPTER)),
+                ),
             )
         }
     }

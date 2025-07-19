@@ -38,9 +38,8 @@ import timber.log.Timber
 class ScanOtpPresenter(
     private val otpQrParser: OtpQrParser,
     private val cameraInformationProvider: CameraInformationProvider,
-    coroutineLaunchContext: CoroutineLaunchContext
+    coroutineLaunchContext: CoroutineLaunchContext,
 ) : ScanOtpContract.Presenter {
-
     override var view: ScanOtpContract.View? = null
     private val job = SupervisorJob()
 
@@ -80,21 +79,23 @@ class ScanOtpPresenter(
     private fun processParseResult(parserResult: OtpParseResult) {
         when (parserResult) {
             is OtpParseResult.Failure -> parserFailure(parserResult.exception)
-            is OtpParseResult.OtpQr -> when (parserResult) {
-                is OtpParseResult.OtpQr.TotpQr -> {
-                    scope.coroutineContext.cancelChildren()
-                    when (mode) {
-                        SCAN_FOR_RESULT -> view?.setResultAndNavigateBack(parserResult)
-                        SCAN_WITH_SUCCESS_SCREEN -> view?.navigateToScanOtpSuccess(parserResult)
+            is OtpParseResult.OtpQr ->
+                when (parserResult) {
+                    is OtpParseResult.OtpQr.TotpQr -> {
+                        scope.coroutineContext.cancelChildren()
+                        when (mode) {
+                            SCAN_FOR_RESULT -> view?.setResultAndNavigateBack(parserResult)
+                            SCAN_WITH_SUCCESS_SCREEN -> view?.navigateToScanOtpSuccess(parserResult)
+                        }
                     }
+                    is OtpParseResult.OtpQr.HotpQr -> {} // HOTP is not supported yet
                 }
-                is OtpParseResult.OtpQr.HotpQr -> {} // HOTP is not supported yet
-            }
-            is OtpParseResult.UserResolvableError -> when (parserResult.errorType) {
-                OtpParseResult.UserResolvableError.ErrorType.MULTIPLE_BARCODES -> view?.showMultipleCodesInRange()
-                OtpParseResult.UserResolvableError.ErrorType.NO_BARCODES_IN_RANGE -> view?.showCenterCameraOnBarcode()
-                OtpParseResult.UserResolvableError.ErrorType.NOT_A_OTP_QR -> view?.showNotAnOtpBarcode()
-            }
+            is OtpParseResult.UserResolvableError ->
+                when (parserResult.errorType) {
+                    OtpParseResult.UserResolvableError.ErrorType.MULTIPLE_BARCODES -> view?.showMultipleCodesInRange()
+                    OtpParseResult.UserResolvableError.ErrorType.NO_BARCODES_IN_RANGE -> view?.showCenterCameraOnBarcode()
+                    OtpParseResult.UserResolvableError.ErrorType.NOT_A_OTP_QR -> view?.showNotAnOtpBarcode()
+                }
             is OtpParseResult.ScanFailure -> view?.showBarcodeScanError(parserResult.exception?.message)
             is OtpParseResult.IncompleteOtpParameters.IncompleteHotpParametrs -> {} // HOTP is not supported yet
             is OtpParseResult.IncompleteOtpParameters.IncompleteTotpParameters -> {

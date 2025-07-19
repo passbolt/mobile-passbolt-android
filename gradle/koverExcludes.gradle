@@ -11,8 +11,6 @@ project.ext.koverExcludes = [
     "com.passbolt.mobile.android.localization.*",
     // base MVP classes
     "com.passbolt.mobile.android.core.mvp.*",
-    // navigation plugin
-    "com.gaelmarhic.quadrant.*",
     // generated build config classes
     "*.BuildConfig",
     // koin di modules

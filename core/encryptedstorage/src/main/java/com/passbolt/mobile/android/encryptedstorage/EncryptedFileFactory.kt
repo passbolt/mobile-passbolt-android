@@ -30,16 +30,16 @@ import java.io.File
 
 class EncryptedFileFactory internal constructor(
     private val context: Context,
-    private val masterKey: MasterKey
+    private val masterKey: MasterKey,
 ) {
-
     fun get(fileName: String): EncryptedFile {
         val file = File(EncryptedFileBaseDirectory(context).baseDirectory, fileName)
-        return EncryptedFile.Builder(
-            context,
-            file,
-            masterKey,
-            EncryptedFile.FileEncryptionScheme.AES256_GCM_HKDF_4KB
-        ).build()
+        return EncryptedFile
+            .Builder(
+                context,
+                file,
+                masterKey,
+                EncryptedFile.FileEncryptionScheme.AES256_GCM_HKDF_4KB,
+            ).build()
     }
 }

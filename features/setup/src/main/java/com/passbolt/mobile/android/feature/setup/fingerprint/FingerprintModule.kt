@@ -1,6 +1,5 @@
 package com.passbolt.mobile.android.feature.setup.fingerprint
 
-import androidx.biometric.BiometricPrompt
 import org.koin.core.module.Module
 import org.koin.core.qualifier.named
 
@@ -37,9 +36,8 @@ fun Module.fingerprintModule() {
                 biometricCipher = get(),
                 saveBiometricKeyIvUseCase = get(),
                 biometryInteractor = get(),
-                encouragementsInteractor = get()
+                encouragementsInteractor = get(),
             )
         }
-        scoped { BiometricPrompt.PromptInfo.Builder() }
     }
 }

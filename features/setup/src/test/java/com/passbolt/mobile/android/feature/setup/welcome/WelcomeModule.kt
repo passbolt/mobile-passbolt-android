@@ -39,16 +39,16 @@ internal val accountsInteractor = mock<AccountsInteractor>()
 internal val accountKitParser = mock<AccountKitParser>()
 
 @OptIn(ExperimentalCoroutinesApi::class)
-val welcomeModule = module {
-    factoryOf(::TestCoroutineLaunchContext)
-    factory<WelcomeContract.Presenter> {
-        WelcomePresenter(
-            coroutineLaunchContext = get(),
-            rootDetector = mockRootDetector,
-            getGlobalPreferencesUseCase = mockGetGlobalPreferencesUseCase,
-            accountsInteractor = accountsInteractor,
-            accountKitParser = accountKitParser
-        )
+val welcomeModule =
+    module {
+        factoryOf(::TestCoroutineLaunchContext)
+        factory<WelcomeContract.Presenter> {
+            WelcomePresenter(
+                coroutineLaunchContext = get(),
+                rootDetector = mockRootDetector,
+                getGlobalPreferencesUseCase = mockGetGlobalPreferencesUseCase,
+                accountsInteractor = accountsInteractor,
+                accountKitParser = accountKitParser,
+            )
+        }
     }
-}
-

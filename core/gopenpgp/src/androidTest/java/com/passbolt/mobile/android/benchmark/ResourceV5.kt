@@ -46,11 +46,11 @@ data class ResourceV5Metadata(
 
 data class ResourceV5Icon(
     val type: String,
-    val value: String
+    val value: String,
 )
 
 data class ResourceV5CustomField(
     val id: UUID,
     val key: String,
-    val type: String
+    val type: String,
 )

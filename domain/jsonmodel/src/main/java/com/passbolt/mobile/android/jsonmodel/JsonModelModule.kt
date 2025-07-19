@@ -38,15 +38,17 @@ import java.util.EnumSet
 
 const val JSON_MODEL_GSON = "JSON_MODEL_GSON"
 
-val jsonModelModule = module {
-    single(named(JSON_MODEL_GSON)) { Gson() }
+val jsonModelModule =
+    module {
+        single(named(JSON_MODEL_GSON)) { Gson() }
 
-    single {
-        Configuration.builder()
-            .jsonProvider(GsonJsonProvider())
-            .mappingProvider(GsonMappingProvider())
-            .options(EnumSet.noneOf(Option::class.java))
-            .build()
+        single {
+            Configuration
+                .builder()
+                .jsonProvider(GsonJsonProvider())
+                .mappingProvider(GsonMappingProvider())
+                .options(EnumSet.noneOf(Option::class.java))
+                .build()
+        }
+        singleOf(::JsonPathJsonPathOps) bind JsonPathsOps::class
     }
-    singleOf(::JsonPathJsonPathOps) bind JsonPathsOps::class
-}

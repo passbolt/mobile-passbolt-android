@@ -31,20 +31,19 @@ import com.passbolt.mobile.android.ui.FolderModel
 class AddLocalFoldersUseCase(
     private val databaseProvider: DatabaseProvider,
     private val folderModelMapper: FolderModelMapper,
-    private val getSelectedAccountUseCase: GetSelectedAccountUseCase
+    private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
 ) : AsyncUseCase<AddLocalFoldersUseCase.Input, Unit> {
-
     override suspend fun execute(input: Input) {
         val currentAccount = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
         databaseProvider
             .get(currentAccount)
             .foldersDao()
             .insertAll(
-                input.folders.map { folderModelMapper.map(it) }
+                input.folders.map { folderModelMapper.map(it) },
             )
     }
 
     data class Input(
-        val folders: List<FolderModel>
+        val folders: List<FolderModel>,
     )
 }

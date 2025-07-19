@@ -25,9 +25,11 @@ package com.passbolt.mobile.android.core.resourcetypes.graph.redesigned
 
 enum class UpdateAction {
     /**
-     * Use for editing remaining metadata (description, username, name, uri, uris)
+     * Use for editing remaining metadata (description, username, name, main uri, uris)
      */
     EDIT_METADATA,
+    EDIT_APPEARANCE,
+    EDIT_ADDITIONAL_URIS,
 
     ADD_METADATA_DESCRIPTION,
     REMOVE_METADATA_DESCRIPTION,
@@ -41,5 +43,5 @@ enum class UpdateAction {
     ADD_PASSWORD,
     REMOVE_PASSWORD,
 
-    REMOVE_PASSWORD_AND_NOTE
+    REMOVE_PASSWORD_AND_NOTE,
 }

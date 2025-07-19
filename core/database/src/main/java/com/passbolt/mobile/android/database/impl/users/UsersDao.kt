@@ -30,7 +30,6 @@ import com.passbolt.mobile.android.entity.user.User
  */
 @Dao
 interface UsersDao : BaseDao<User> {
-
     @Transaction
     @Query("SELECT * FROM User WHERE id=:userId")
     suspend fun get(userId: String): User

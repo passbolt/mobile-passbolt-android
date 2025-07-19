@@ -9,11 +9,9 @@ import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 class StartupAuthStrategy(
     override var authFragment: AuthFragment?,
-    override val appContext: AppContext
+    override val appContext: AppContext,
 ) : AuthStrategy {
-
-    override fun title() =
-        activeAuthFragment.getString(LocalizationR.string.auth_sign_in)
+    override fun title() = activeAuthFragment.getString(LocalizationR.string.auth_sign_in)
 
     override fun navigateBack() {
         activeAuthFragment.findNavController().popBackStack()
@@ -22,12 +20,13 @@ class StartupAuthStrategy(
     override fun authSuccess() {
         activeAuthFragment.apply {
             requireActivity().setResult(Activity.RESULT_OK)
-            val startIntent = when (appContext) {
-                AppContext.APP ->
-                    ActivityIntents.home(requireActivity())
-                AppContext.AUTOFILL ->
-                    ActivityIntents.autofillReorderToFront(requireActivity())
-            }
+            val startIntent =
+                when (appContext) {
+                    AppContext.APP ->
+                        ActivityIntents.home(requireActivity())
+                    AppContext.AUTOFILL ->
+                        ActivityIntents.autofillReorderToFront(requireActivity())
+                }
             requireActivity().finish()
             startActivity(startIntent)
         }

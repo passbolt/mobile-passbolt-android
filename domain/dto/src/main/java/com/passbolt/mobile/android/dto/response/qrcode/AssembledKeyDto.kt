@@ -34,5 +34,5 @@ class AssembledKeyDto(
     @SerialName("user_id")
     @Serializable(with = UUIDSerializer::class)
     val userId: UUID,
-    val fingerprint: String
+    val fingerprint: String,
 )

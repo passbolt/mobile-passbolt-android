@@ -14,9 +14,8 @@ import kotlinx.coroutines.launch
 class KeyInspectorMoreMenuPresenter(
     private val getPrivateKeyUseCase: GetSelectedUserPrivateKeyUseCase,
     private val openPgp: OpenPgp,
-    coroutineLaunchContext: CoroutineLaunchContext
+    coroutineLaunchContext: CoroutineLaunchContext,
 ) : KeyInspectorMoreMenuContract.Presenter {
-
     override var view: KeyInspectorMoreMenuContract.View? = null
     private val job = SupervisorJob()
     private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
@@ -65,6 +64,6 @@ class KeyInspectorMoreMenuPresenter(
 
     private enum class CurrentFlow {
         EXPORT_PRIVATE_KEY,
-        EXPORT_PUBLIC_KEY
+        EXPORT_PUBLIC_KEY,
     }
 }

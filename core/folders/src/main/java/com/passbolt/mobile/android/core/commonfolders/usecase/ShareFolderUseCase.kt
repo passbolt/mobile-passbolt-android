@@ -33,9 +33,8 @@ import com.passbolt.mobile.android.passboltapi.share.ShareRepository
  */
 
 class ShareFolderUseCase(
-    private val shareRepository: ShareRepository
+    private val shareRepository: ShareRepository,
 ) : AsyncUseCase<ShareFolderUseCase.Input, ShareFolderUseCase.Output> {
-
     override suspend fun execute(input: Input): Output =
         when (val result = shareRepository.shareFolder(input.folderId, FolderShareRequest(input.folderPermissions))) {
             is NetworkResult.Failure.NetworkError -> Output.Failure(result)
@@ -45,29 +44,31 @@ class ShareFolderUseCase(
 
     data class Input(
         val folderId: String,
-        val folderPermissions: List<SharePermission>
+        val folderPermissions: List<SharePermission>,
     )
 
     sealed class Output : AuthenticatedUseCaseOutput {
-
         override val authenticationState: AuthenticationState
-            get() = when {
-                this is Failure && this.result.isUnauthorized -> {
-                    AuthenticationState.Unauthenticated(AuthenticationState.Unauthenticated.Reason.Session)
+            get() =
+                when {
+                    this is Failure && this.result.isUnauthorized -> {
+                        AuthenticationState.Unauthenticated(AuthenticationState.Unauthenticated.Reason.Session)
+                    }
+                    this is Failure && this.result.isMfaRequired -> {
+                        val providers = MfaTypeProvider.get(this.result)
+                        AuthenticationState.Unauthenticated(
+                            AuthenticationState.Unauthenticated.Reason.Mfa(providers),
+                        )
+                    }
+                    else -> {
+                        AuthenticationState.Authenticated
+                    }
                 }
-                this is Failure && this.result.isMfaRequired -> {
-                    val providers = MfaTypeProvider.get(this.result)
-                    AuthenticationState.Unauthenticated(
-                        AuthenticationState.Unauthenticated.Reason.Mfa(providers)
-                    )
-                }
-                else -> {
-                    AuthenticationState.Authenticated
-                }
-            }
 
         data object Success : Output()
 
-        data class Failure(val result: NetworkResult.Failure<*>) : Output()
+        data class Failure(
+            val result: NetworkResult.Failure<*>,
+        ) : Output()
     }
 }

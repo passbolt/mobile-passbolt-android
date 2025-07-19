@@ -32,13 +32,14 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-val commonModule = module {
-    single {
-        ResourceDimenProvider(
-            androidApplication().resources
-        )
+val commonModule =
+    module {
+        single {
+            ResourceDimenProvider(
+                androidApplication().resources,
+            )
+        }
+        singleOf(::AndroidTimeProvider) bind TimeProvider::class
+        singleOf(::FetchFileAsStringUseCase)
+        singleOf(::MessageDigestHash)
     }
-    singleOf(::AndroidTimeProvider) bind TimeProvider::class
-    singleOf(::FetchFileAsStringUseCase)
-    singleOf(::MessageDigestHash)
-}

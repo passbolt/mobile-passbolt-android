@@ -26,6 +26,5 @@ package com.passbolt.mobile.android.passboltapi.passwordpolicies
 import com.passbolt.mobile.android.dto.response.PasswordPoliciesDto
 
 interface PasswordPoliciesDataSource {
-
     suspend fun getPasswordPoliciesSettings(): PasswordPoliciesDto
 }

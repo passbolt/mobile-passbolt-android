@@ -2,5 +2,5 @@ package com.passbolt.mobile.android.feature.authentication.mfa.duo.duowebviewshe
 
 data class DuoState(
     val state: String?,
-    val duoCode: String?
+    val duoCode: String?,
 )
