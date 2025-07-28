@@ -4,13 +4,13 @@ import com.passbolt.mobile.android.common.CookieExtractor
 import com.passbolt.mobile.android.core.networking.interceptor.AuthInterceptor
 import com.passbolt.mobile.android.core.networking.interceptor.ChangeableBaseUrlInterceptor
 import com.passbolt.mobile.android.core.networking.interceptor.CookiesInterceptor
-import com.passbolt.mobile.android.core.networking.logging.HttpLogger
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import retrofit2.converter.gson.GsonConverterFactory
+import timber.log.Timber
 import java.time.Duration
 
 /**
@@ -37,8 +37,7 @@ import java.time.Duration
  */
 val networkingModule =
     module {
-        single { HttpLogger(getCurrentApiUrlUseCase = get()) }
-        single { provideLoggingInterceptor(httpLogger = get()) }
+        single { provideLoggingInterceptor() }
         single(named(DEFAULT_HTTP_CLIENT)) {
             provideHttpClient(
                 loggingInterceptor = get(),
@@ -120,9 +119,16 @@ val networkingModule =
         }
     }
 
-private fun provideLoggingInterceptor(httpLogger: HttpLogger): HttpLoggingInterceptor =
-    HttpLoggingInterceptor(logger = httpLogger)
+private fun provideLoggingInterceptor(): HttpLoggingInterceptor =
+    HttpLoggingInterceptor(logger = provideHttpLogger())
         .apply { level = HttpLoggingInterceptor.Level.BASIC }
+
+private fun provideHttpLogger(): HttpLoggingInterceptor.Logger =
+    object : HttpLoggingInterceptor.Logger {
+        override fun log(message: String) {
+            Timber.d(message)
+        }
+    }
 
 private fun provideHttpClient(
     loggingInterceptor: HttpLoggingInterceptor,

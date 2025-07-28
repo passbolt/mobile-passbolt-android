@@ -50,17 +50,18 @@ class MetadataDecryptor(
     private val coroutineLaunchContext: CoroutineLaunchContext,
 ) {
     private val cachedSharedKeys = ConcurrentHashMap<String, Key>()
-    private var cachedPersonalKey =
-        let {
-            val privateKey = getSelectedUserPrivateKeyUseCase.execute(Unit).privateKey
-            require(privateKey != null) { "Selected user private key not found" }
-            val passphrase = passphraseMemoryCache.get()
-            require(passphrase is PotentialPassphrase.Passphrase) { "Passphrase not present in cache" }
-            Crypto.newPrivateKeyFromArmored(privateKey, passphrase.passphrase)
-        }
+    private lateinit var cachedPersonalKey: Key
 
     suspend fun decryptMetadata(resource: ResourceResponseV5Dto): Output {
         return try {
+            if (!::cachedPersonalKey.isInitialized) {
+                val privateKey = getSelectedUserPrivateKeyUseCase.execute(Unit).privateKey
+                require(privateKey != null) { "Selected user private key not found" }
+                val passphrase = passphraseMemoryCache.get()
+                require(passphrase is PotentialPassphrase.Passphrase) { "Passphrase not present in cache" }
+                cachedPersonalKey = Crypto.newPrivateKeyFromArmored(privateKey, passphrase.passphrase)
+            }
+
             withContext(coroutineLaunchContext.io) {
                 // decrypt using cached session key
                 val cachedSessionKey = sessionKeysCache.getSessionKeyHexString(RESOURCE.value, resource.id)

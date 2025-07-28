@@ -22,7 +22,7 @@ class GopenPgpTimeUpdater(
             openPgp.setTimeOffsetSeconds(timeDeltaSeconds)
             Result.TIME_SYNCED
         } else {
-            Timber.d("Time delta to big for sync. Showing error.")
+            Timber.d("Time delta to big for sync: $timeDeltaSeconds. Showing error.")
             Result.TIME_DELTA_TOO_BIG_FOR_SYNC
         }
     }

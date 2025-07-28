@@ -12,6 +12,7 @@ import com.passbolt.mobile.android.common.HttpsVerifier
 import com.passbolt.mobile.android.common.UuidProvider
 import com.passbolt.mobile.android.core.navigation.AppForegroundListener
 import com.passbolt.mobile.android.core.networking.COIL_HTTP_CLIENT
+import okhttp3.OkHttpClient
 import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.qualifier.named
@@ -56,7 +57,7 @@ internal val appModule =
                     add(
                         OkHttpNetworkFetcherFactory(
                             callFactory = {
-                                get(named(COIL_HTTP_CLIENT))
+                                get<OkHttpClient>(named(COIL_HTTP_CLIENT))
                             },
                         ),
                     )

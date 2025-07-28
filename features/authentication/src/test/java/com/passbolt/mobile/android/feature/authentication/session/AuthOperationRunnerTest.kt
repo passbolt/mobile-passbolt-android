@@ -26,10 +26,11 @@ package com.passbolt.mobile.android.feature.authentication.session
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticatedUseCaseOutput
-import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
+import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Authenticated
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated.Reason.Passphrase
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated.Reason.Session
 import com.passbolt.mobile.android.core.mvp.authentication.UnauthenticatedReason
+import com.passbolt.mobile.android.core.navigation.AppForegroundListener
 import com.passbolt.mobile.android.core.passphrasememorycache.PassphraseMemoryCache
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetSessionExpiryUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.RefreshSessionUseCase
@@ -46,6 +47,7 @@ import org.koin.dsl.module
 import org.koin.test.KoinTestRule
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.verify
+import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.never
 import org.mockito.kotlin.spy
 import org.mockito.kotlin.stub
@@ -61,6 +63,7 @@ class AuthOperationRunnerTest {
     private val mockPassphraseMemoryCache = mock<PassphraseMemoryCache>()
     private val mockGetSessionExpiryUseCase = mock<GetSessionExpiryUseCase>()
     private val mockRefreshSessionUseCase = mock<RefreshSessionUseCase>()
+    private val mockAppForegroundListener = mock<AppForegroundListener>()
 
     @get:Rule
     val koinTestRule =
@@ -71,6 +74,7 @@ class AuthOperationRunnerTest {
                     single { mockGetSessionExpiryUseCase }
                     single { mockPassphraseMemoryCache }
                     single { mockRefreshSessionUseCase }
+                    single { mockAppForegroundListener }
                 },
             )
         }
@@ -82,10 +86,11 @@ class AuthOperationRunnerTest {
                 object : () -> AuthenticatedUseCaseOutput {
                     override fun invoke(): AuthenticatedUseCaseOutput =
                         object : AuthenticatedUseCaseOutput {
-                            override val authenticationState = AuthenticationState.Authenticated
+                            override val authenticationState = Authenticated
                         }
                 }
             val operationSpy = spy(sampleAuthenticatedOperation)
+            whenever(mockAppForegroundListener.isForeground()) doReturn true
             mockGetSessionExpiryUseCase.stub {
                 onBlocking { execute(Unit) }.thenReturn(
                     GetSessionExpiryUseCase.Output.JwtWillExpire(
@@ -95,7 +100,7 @@ class AuthOperationRunnerTest {
             }
             whenever(mockPassphraseMemoryCache.getSessionDurationSeconds()).thenReturn(60L)
 
-            runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshFlow, operationSpy)
+            runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshFlow, request = operationSpy)
 
             verify(operationSpy).invoke()
         }
@@ -107,10 +112,11 @@ class AuthOperationRunnerTest {
                 object : () -> AuthenticatedUseCaseOutput {
                     override fun invoke(): AuthenticatedUseCaseOutput =
                         object : AuthenticatedUseCaseOutput {
-                            override val authenticationState = AuthenticationState.Authenticated
+                            override val authenticationState = Authenticated
                         }
                 }
             val operationSpy = spy(sampleAuthenticatedOperation)
+            whenever(mockAppForegroundListener.isForeground()) doReturn true
             mockGetSessionExpiryUseCase.stub {
                 onBlocking { execute(Unit) }.thenReturn(
                     GetSessionExpiryUseCase.Output.JwtAlreadyExpired,
@@ -123,7 +129,7 @@ class AuthOperationRunnerTest {
             }
             whenever(mockPassphraseMemoryCache.getSessionDurationSeconds()).thenReturn(60L)
 
-            runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshFlow, operationSpy)
+            runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshFlow, request = operationSpy)
 
             verify(mockRefreshSessionUseCase).execute(Unit)
             verify(operationSpy).invoke()
@@ -136,10 +142,11 @@ class AuthOperationRunnerTest {
                 object : () -> AuthenticatedUseCaseOutput {
                     override fun invoke(): AuthenticatedUseCaseOutput =
                         object : AuthenticatedUseCaseOutput {
-                            override val authenticationState = AuthenticationState.Authenticated
+                            override val authenticationState = Authenticated
                         }
                 }
             val operationSpy = spy(sampleAuthenticatedOperation)
+            whenever(mockAppForegroundListener.isForeground()) doReturn true
             mockGetSessionExpiryUseCase.stub {
                 onBlocking { execute(Unit) }.thenReturn(
                     GetSessionExpiryUseCase.Output.JwtWillExpire(
@@ -154,7 +161,7 @@ class AuthOperationRunnerTest {
             }
             whenever(mockPassphraseMemoryCache.getSessionDurationSeconds()).thenReturn(60L)
 
-            runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshFlow, operationSpy)
+            runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshFlow, request = operationSpy)
 
             verify(mockRefreshSessionUseCase).execute(Unit)
             verify(operationSpy).invoke()
@@ -167,10 +174,11 @@ class AuthOperationRunnerTest {
                 object : () -> AuthenticatedUseCaseOutput {
                     override fun invoke(): AuthenticatedUseCaseOutput =
                         object : AuthenticatedUseCaseOutput {
-                            override val authenticationState = AuthenticationState.Authenticated
+                            override val authenticationState = Authenticated
                         }
                 }
             val operationSpy = spy(sampleAuthenticatedOperation)
+            whenever(mockAppForegroundListener.isForeground()) doReturn true
             mockGetSessionExpiryUseCase.stub {
                 onBlocking { execute(Unit) }.thenReturn(
                     GetSessionExpiryUseCase.Output.JwtWillExpire(
@@ -182,7 +190,7 @@ class AuthOperationRunnerTest {
 
             val operationJob =
                 launch {
-                    runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshFlow, operationSpy)
+                    runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshFlow, request = operationSpy)
                 }
 
             needSessionRefreshFlow
@@ -204,10 +212,11 @@ class AuthOperationRunnerTest {
                 object : () -> AuthenticatedUseCaseOutput {
                     override fun invoke(): AuthenticatedUseCaseOutput =
                         object : AuthenticatedUseCaseOutput {
-                            override val authenticationState = AuthenticationState.Authenticated
+                            override val authenticationState = Authenticated
                         }
                 }
             val operationSpy = spy(sampleAuthenticatedOperation)
+            whenever(mockAppForegroundListener.isForeground()) doReturn true
             mockGetSessionExpiryUseCase.stub {
                 onBlocking { execute(Unit) }.thenReturn(
                     GetSessionExpiryUseCase.Output.JwtAlreadyExpired,
@@ -222,7 +231,7 @@ class AuthOperationRunnerTest {
 
             val operationJob =
                 launch {
-                    runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshFlow, operationSpy)
+                    runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshFlow, request = operationSpy)
                 }
 
             needSessionRefreshFlow
@@ -238,16 +247,17 @@ class AuthOperationRunnerTest {
         }
 
     @Test
-    fun `operation should trigger full sign in if session refresh failsa`() =
+    fun `operation should continue execution after session refresh completion`() =
         runTest {
             val sampleAuthenticatedOperation =
                 object : () -> AuthenticatedUseCaseOutput {
                     override fun invoke(): AuthenticatedUseCaseOutput =
                         object : AuthenticatedUseCaseOutput {
-                            override val authenticationState = AuthenticationState.Authenticated
+                            override val authenticationState = Authenticated
                         }
                 }
             val operationSpy = spy(sampleAuthenticatedOperation)
+            whenever(mockAppForegroundListener.isForeground()) doReturn true
             mockGetSessionExpiryUseCase.stub {
                 onBlocking { execute(Unit) }.thenReturn(
                     GetSessionExpiryUseCase.Output.JwtAlreadyExpired,
@@ -262,12 +272,89 @@ class AuthOperationRunnerTest {
 
             val operationJob =
                 launch {
-                    runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshFlow, operationSpy)
+                    runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshFlow, request = operationSpy)
                 }
             delay(100)
             sessionRefreshFlow.tryEmit(Unit)
             operationJob.join()
 
             verify(operationSpy).invoke()
+        }
+
+    @Test
+    fun `operation should invoke onUiAuthenticationRequested when passphrase session expired`() =
+        runTest {
+            val sampleAuthenticatedOperation =
+                object : () -> AuthenticatedUseCaseOutput {
+                    override fun invoke(): AuthenticatedUseCaseOutput =
+                        object : AuthenticatedUseCaseOutput {
+                            override val authenticationState = Authenticated
+                        }
+                }
+            whenever(mockAppForegroundListener.isForeground()) doReturn true
+            mockGetSessionExpiryUseCase.stub {
+                onBlocking { execute(Unit) }.thenReturn(
+                    GetSessionExpiryUseCase.Output.JwtWillExpire(
+                        ZonedDateTime.now().plusSeconds(60L),
+                    ),
+                )
+            }
+            whenever(mockPassphraseMemoryCache.getSessionDurationSeconds()).thenReturn(null)
+
+            val onUiAuthenticationRequestedMock = mock<() -> Unit>()
+
+            val operationJob =
+                launch {
+                    runAuthenticatedOperation(
+                        needSessionRefreshFlow,
+                        sessionRefreshFlow,
+                        onUiAuthenticationRequested = onUiAuthenticationRequestedMock,
+                        request = sampleAuthenticatedOperation,
+                    )
+                }
+
+            delay(100)
+            verify(onUiAuthenticationRequestedMock).invoke()
+
+            operationJob.cancel()
+        }
+
+    @Test
+    fun `operation should not invoke onUiAuthenticationRequested when app is in background`() =
+        runTest {
+            val sampleAuthenticatedOperation =
+                object : () -> AuthenticatedUseCaseOutput {
+                    override fun invoke(): AuthenticatedUseCaseOutput =
+                        object : AuthenticatedUseCaseOutput {
+                            override val authenticationState = Authenticated
+                        }
+                }
+            whenever(mockAppForegroundListener.isForeground()) doReturn false
+            mockGetSessionExpiryUseCase.stub {
+                onBlocking { execute(Unit) }.thenReturn(
+                    GetSessionExpiryUseCase.Output.JwtWillExpire(
+                        ZonedDateTime.now().plusSeconds(60L),
+                    ),
+                )
+            }
+            whenever(mockPassphraseMemoryCache.getSessionDurationSeconds()).thenReturn(null)
+
+            val onUiAuthenticationRequestedMock = mock<() -> Unit>()
+
+            val operationJob =
+                launch {
+                    runAuthenticatedOperation(
+                        needSessionRefreshFlow,
+                        sessionRefreshFlow,
+                        onUiAuthenticationRequested = onUiAuthenticationRequestedMock,
+                        request = sampleAuthenticatedOperation,
+                    )
+                }
+
+            delay(100)
+
+            verify(onUiAuthenticationRequestedMock, never()).invoke()
+
+            operationJob.cancel()
         }
 }

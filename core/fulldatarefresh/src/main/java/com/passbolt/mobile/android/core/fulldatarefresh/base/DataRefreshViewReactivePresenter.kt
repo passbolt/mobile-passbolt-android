@@ -92,6 +92,7 @@ abstract class DataRefreshViewReactivePresenter<V : DataRefreshViewReactiveContr
     }
 
     override fun pause() {
+        this@DataRefreshViewReactivePresenter.view?.hideRefreshProgress()
         fullDataRefreshExecutor.detach()
         coroutineScope.coroutineContext.cancelChildren()
     }

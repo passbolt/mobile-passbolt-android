@@ -68,6 +68,7 @@ class FullDataRefreshExecutor(
                     runAuthenticatedOperation(
                         requireNotNull(presenter).needSessionRefreshFlow,
                         requireNotNull(presenter).sessionRefreshedFlow,
+                        onUiAuthenticationRequested = { refreshInProgress.set(false) },
                     ) {
                         homeDataInteractor.refreshAllHomeScreenData()
                     }

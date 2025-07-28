@@ -1,0 +1,16 @@
+# Passbolt 2.2.0-39 Android app release notes
+
+## Added
+- MOB-2655: Support for multiple URIs when creating and editing resources
+- MOB-2725: View metadata icons on the list
+- MOB-2725: Support for editing and creating resources with metadata icons
+- MOB-2760: Obfuscate passbolt backend instance URL from logs
+
+## Fixed
+- MOB-2818: Fix session refresh not triggered after restoring app from dead
+
+## Improved
+- MOB-2761: Allow nullable password in JSON schema
+
+## Maintenance
+- Architecture migration to MVI/Compose (settings, tests)

@@ -1,1 +1,1 @@
-This minor release focuses on fixing autofill for Chrome browser when the recent feature of native autofill is enabled. It also improves autofill on the Vivaldi browser.
+This release focuses on adding additional features for resource metadata - support for editing and creating resources with multiple URIs, as well as full support for resource icons. It also brings log improvements by obfuscating the passbolt backend base URL, which the users often want hidden. Additionally, the application architecture has started to be migrated to MVI/Compose.
