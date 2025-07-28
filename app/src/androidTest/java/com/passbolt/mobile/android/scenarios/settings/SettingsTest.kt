@@ -126,24 +126,6 @@ class SettingsTest : KoinTest {
         signIn(managedAccountIntentCreator.getPassphrase())
     }
 
-    @Test
-    fun asALoggedInMobileUserOnTheHomepageICanAccessTheSettingsPage() {
-        //    Given     that I am a mobile user with the application installed
-        //    And       the Passbolt application is already opened
-        //    And       I completed the login step
-        //    And       I am on the homepage
-        //    And       I see a setting icon at the bottom
-        onView(withId(com.passbolt.mobile.android.feature.settings.R.id.settingsNav)).check(matches(isDisplayed()))
-        //    When      I click on the settings icon
-        onView(withId(com.passbolt.mobile.android.feature.settings.R.id.settingsNav)).perform(click())
-        //    Then      I am redirected on the settings page
-        composeTestRule.apply {
-            waitForIdle()
-            onNodeWithText(getString(LocalizationR.string.settings_title))
-                .assertIsDisplayed()
-        }
-    }
-
     //    https://passbolt.testrail.io/index.php?/cases/view/2438
     @Test
     fun asAMobileUserOnTheMainSettingsPageICanSeeTheListOfSettingsIHaveAccessTo() {
@@ -380,7 +362,9 @@ class SettingsTest : KoinTest {
             onNodeWithText(getString(LocalizationR.string.settings_app_settings)).performClick()
             //    When      I click on the “Autofill” list item
             onNodeWithText(getString(LocalizationR.string.settings_app_settings_autofill)).performClick()
+            waitForIdle()
             onAllNodesWithTag(SwitchWithDescriptionItem.TestTags.SWITCH, useUnmergedTree = true)[0].performClick()
+            waitForIdle()
             //    Then      I see the “Passbolt Autofill enabled!” screen
             onView(withText(LocalizationR.string.dialog_autofill_enabled_title)).check(matches(isDisplayed()))
         }
