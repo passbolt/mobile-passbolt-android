@@ -18,7 +18,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingVertical="@dimen/dp_8"
-            android:textSize="@dimen/sp_16"
+            android:textSize="@dimen/sp_18"
             android:theme="@style/Theme.Passbolt.Toolbar"
             app:layout_constraintTop_toTopOf="parent"
             tools:toolbarTitle="@string/resource_form_metadata_description" />

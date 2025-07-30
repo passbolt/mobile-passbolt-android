@@ -28,7 +28,7 @@
         android:layout_marginBottom="@dimen/dp_16"
         android:layout_weight="1"
         android:textColor="@color/menu_item_selector"
-        android:textSize="@dimen/sp_14"
+        android:textSize="@dimen/sp_16"
         tools:text="Remove" />
 
 </LinearLayout>

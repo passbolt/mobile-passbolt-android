@@ -27,6 +27,7 @@ import android.content.Context
 import android.graphics.Typeface
 import android.text.util.Linkify
 import android.util.AttributeSet
+import android.util.TypedValue.COMPLEX_UNIT_PX
 import android.view.LayoutInflater
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
@@ -113,7 +114,11 @@ class ItemWithHeaderAndActionView
 
         private fun setupIsSecret(isTextSecret: Boolean) {
             val fontFamily = if (isTextSecret) secretFont else regularFont
-            binding.value.typeface = Typeface.create(fontFamily, FONT_WEIGHT, false)
+            val textSizePx = resources.getDimension(if (isTextSecret) R.dimen.sp_18 else R.dimen.sp_14)
+            with(binding.value) {
+                typeface = Typeface.create(fontFamily, FONT_WEIGHT, false)
+                setTextSize(COMPLEX_UNIT_PX, textSizePx)
+            }
         }
 
         private fun setupActionIcon(actionIcon: ActionIcon) {

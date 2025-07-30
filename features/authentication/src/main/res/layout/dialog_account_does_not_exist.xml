@@ -55,7 +55,7 @@
             android:gravity="center"
             android:text="@string/dialog_account_does_not_exist_subtitle"
             android:textColor="@color/text_secondary"
-            android:textSize="@dimen/sp_16"
+            android:textSize="@dimen/sp_18"
             android:textStyle="bold"
             app:layout_constraintBottom_toTopOf="@id/accountDataLayout"
             app:layout_constraintTop_toBottomOf="@id/titleLabel" />

@@ -11,7 +11,7 @@
 
     <style name="TextInputErrorTextAppearance"
         parent="@android:style/TextAppearance">
-        <item name="android:textSize">@dimen/sp_12</item>
+        <item name="android:textSize">@dimen/sp_14</item>
     </style>
 
     <style name="TextInputTextAppearance"
@@ -33,19 +33,19 @@
     </style>
 
     <style name="ButtonBigText">
-        <item name="android:textSize">@dimen/sp_14</item>
+        <item name="android:textSize">@dimen/sp_16</item>
         <item name="android:textFontWeight">600</item>
     </style>
 
     <style name="ButtonSmallText">
-        <item name="android:textSize">@dimen/sp_14</item>
+        <item name="android:textSize">@dimen/sp_16</item>
         <item name="android:textFontWeight">600</item>
         <item name="android:textColor">@color/text_primary</item>
     </style>
 
     <style name="Section">
         <item name="android:textFontWeight">700</item>
-        <item name="android:textSize">@dimen/sp_16</item>
+        <item name="android:textSize">@dimen/sp_18</item>
         <item name="android:textColor">@color/text_primary</item>
     </style>
 
@@ -55,42 +55,42 @@
 
     <style name="Heading1Text"
         parent="Heading">
-        <item name="android:textSize">@dimen/sp_24</item>
+        <item name="android:textSize">@dimen/sp_28</item>
     </style>
 
     <style name="Heading2Text"
         parent="Heading">
-        <item name="android:textSize">@dimen/sp_20</item>
+        <item name="android:textSize">@dimen/sp_24</item>
     </style>
 
     <style name="Heading3Text"
         parent="Heading">
-        <item name="android:textSize">@dimen/sp_16</item>
+        <item name="android:textSize">@dimen/sp_18</item>
     </style>
 
     <style name="Heading4Text"
         parent="Heading">
-        <item name="android:textSize">@dimen/sp_14</item>
+        <item name="android:textSize">@dimen/sp_16</item>
     </style>
 
     <style name="BodyText">
         <item name="android:textFontWeight">400</item>
-        <item name="android:textSize">@dimen/sp_14</item>
+        <item name="android:textSize">@dimen/sp_16</item>
     </style>
 
     <style name="Body2Text">
         <item name="android:textFontWeight">400</item>
-        <item name="android:textSize">@dimen/sp_12</item>
+        <item name="android:textSize">@dimen/sp_14</item>
     </style>
 
     <style name="ValueText">
         <item name="android:textFontWeight">500</item>
-        <item name="android:textSize">@dimen/sp_14</item>
+        <item name="android:textSize">@dimen/sp_16</item>
     </style>
 
     <style name="SecretText">
         <item name="android:textFontWeight">500</item>
-        <item name="android:textSize">@dimen/sp_14</item>
+        <item name="android:textSize">@dimen/sp_16</item>
         <item name="android:fontFamily">@font/inconsolata</item>
     </style>
 
@@ -100,7 +100,7 @@
     </style>
 
     <style name="ToolbarTitleText">
-        <item name="android:textSize">@dimen/sp_14</item>
+        <item name="android:textSize">@dimen/sp_16</item>
         <item name="android:textFontWeight">600</item>
     </style>
 

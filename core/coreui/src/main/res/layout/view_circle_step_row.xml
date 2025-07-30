@@ -19,7 +19,7 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/dp_12"
         android:textColor="@color/text_secondary"
-        android:textSize="@dimen/sp_14"
+        android:textSize="@dimen/sp_16"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/circle"
         app:layout_constraintTop_toTopOf="parent" />

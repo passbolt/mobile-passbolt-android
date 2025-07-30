@@ -29,7 +29,7 @@
         android:maxLines="2"
         android:textColor="@color/text_primary"
         android:textFontWeight="600"
-        android:textSize="@dimen/sp_24"
+        android:textSize="@dimen/sp_28"
         app:layout_constraintTop_toBottomOf="@id/icon"
         tools:text="Title" />
 

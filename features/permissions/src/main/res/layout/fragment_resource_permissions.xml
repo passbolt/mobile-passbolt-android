@@ -37,7 +37,7 @@
         android:text="@string/resource_permissions_one_owner"
         android:textColor="@color/text_primary"
         android:textFontWeight="600"
-        android:textSize="@dimen/sp_24"
+        android:textSize="@dimen/sp_28"
         android:visibility="gone"
         app:drawableBottomCompat="@drawable/ic_empty_state"
         app:layout_constraintBottom_toBottomOf="parent"
