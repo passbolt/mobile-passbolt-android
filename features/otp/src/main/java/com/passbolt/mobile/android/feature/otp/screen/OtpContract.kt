@@ -25,6 +25,7 @@ package com.passbolt.mobile.android.feature.otp.screen
 
 import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReactiveContract
 import com.passbolt.mobile.android.core.navigation.AppContext
+import com.passbolt.mobile.android.feature.otp.screen.recycler.OtpItemUpdatePayload
 import com.passbolt.mobile.android.ui.NewMetadataKeyToTrustModel
 import com.passbolt.mobile.android.ui.OtpItemWrapper
 import com.passbolt.mobile.android.ui.ResourceModel
@@ -33,7 +34,10 @@ import com.passbolt.mobile.android.ui.TrustedKeyDeletedModel
 interface OtpContract {
     @Suppress("TooManyFunctions")
     interface View : DataRefreshViewReactiveContract.View {
-        fun showOtpList(otpList: List<OtpItemWrapper>)
+        fun showOtpList(
+            otpList: List<OtpItemWrapper>,
+            otpItemUpdatePayload: OtpItemUpdatePayload,
+        )
 
         fun showEmptyView()
 

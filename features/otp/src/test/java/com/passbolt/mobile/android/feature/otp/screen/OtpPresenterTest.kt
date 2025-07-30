@@ -33,6 +33,7 @@ import com.passbolt.mobile.android.core.otpcore.TotpParametersProvider
 import com.passbolt.mobile.android.core.resources.actions.SecretPropertiesActionsInteractor
 import com.passbolt.mobile.android.core.resources.actions.SecretPropertyActionResult
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesUseCase
+import com.passbolt.mobile.android.feature.otp.screen.recycler.OtpItemUpdatePayload
 import com.passbolt.mobile.android.jsonmodel.delegates.TotpSecret
 import com.passbolt.mobile.android.mappers.OtpModelMapper
 import com.passbolt.mobile.android.ui.MetadataJsonModel
@@ -55,6 +56,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
@@ -152,7 +154,7 @@ class OtpPresenterTest : KoinTest {
 
         verify(view, times(2)).hideEmptyView()
         argumentCaptor<List<OtpItemWrapper>> {
-            verify(view, times(3)).showOtpList(capture())
+            verify(view, times(3)).showOtpList(capture(), eq(OtpItemUpdatePayload.ALL))
             assertThat(firstValue).apply {
                 hasSize(mockTotpResources.size)
                 containsExactly(*(mockTotpResources.map(mapper::map)).toTypedArray())
@@ -207,7 +209,7 @@ class OtpPresenterTest : KoinTest {
             presenter.otpItemClick(clickedItem)
 
             argumentCaptor<List<OtpItemWrapper>> {
-                verify(view, times(5)).showOtpList(capture())
+                verify(view).showOtpList(capture(), eq(OtpItemUpdatePayload.DATA))
                 assertThat(lastValue.any { it.otpValue == otpValue }).isTrue()
             }
         }

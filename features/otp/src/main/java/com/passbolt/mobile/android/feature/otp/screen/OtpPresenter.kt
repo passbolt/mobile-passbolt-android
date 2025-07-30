@@ -41,6 +41,7 @@ import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAct
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
 import com.passbolt.mobile.android.feature.home.screen.model.SearchInputEndIconMode
+import com.passbolt.mobile.android.feature.otp.screen.recycler.OtpItemUpdatePayload
 import com.passbolt.mobile.android.mappers.OtpModelMapper
 import com.passbolt.mobile.android.metadata.interactor.MetadataPrivateKeysHelperInteractor
 import com.passbolt.mobile.android.serializers.jsonschema.SchemaEntity
@@ -129,7 +130,7 @@ class OtpPresenter(
                         hideCurrentlyVisibleItem()
                         showTotp(it, copyToClipboard = true)
                     }
-                showOtps()
+                showOtps(OtpItemUpdatePayload.ALL)
             }
         }
     }
@@ -149,7 +150,7 @@ class OtpPresenter(
                     view?.showEmptyView()
                 } else {
                     view?.hideEmptyView()
-                    showOtps()
+                    showOtps(OtpItemUpdatePayload.ALL)
                 }
             }
     }
@@ -189,7 +190,7 @@ class OtpPresenter(
                                 hideCurrentlyVisibleItem(isCurrentItemRefreshing = true)
                                 showTotp(it, copyToClipboard = true)
                             }
-                        showOtps()
+                        showOtps(OtpItemUpdatePayload.DATA)
                     }
                 }
             }
@@ -206,12 +207,12 @@ class OtpPresenter(
                 .drop(1) // initial empty value
                 .collectLatest {
                     processSearchIconChange()
-                    filterOtps()
+                    filterOtps(OtpItemUpdatePayload.ALL)
                 }
         }
     }
 
-    private fun filterOtps() {
+    private fun filterOtps(updatePayload: OtpItemUpdatePayload) {
         val filtered =
             otpList.filter {
                 searchableMatcher.matches(it, currentSearchText.value)
@@ -220,7 +221,7 @@ class OtpPresenter(
             view?.showEmptyView()
         } else {
             view?.hideEmptyView()
-            view?.showOtpList(filtered)
+            view?.showOtpList(filtered, updatePayload)
         }
     }
 
@@ -247,7 +248,7 @@ class OtpPresenter(
             }
         }
         visibleOtpId = ""
-        showOtps()
+        showOtps(OtpItemUpdatePayload.ALL)
     }
 
     override fun otpItemClick(otpItemWrapper: OtpItemWrapper) {
@@ -295,7 +296,7 @@ class OtpPresenter(
                                 otpList[indexOfOld] = this
                                 visibleOtpId = otpItemWrapper.resource.resourceId
                             }
-                            showOtps()
+                            showOtps(OtpItemUpdatePayload.DATA)
                             if (copyToClipboard) {
                                 view?.copySecretToClipBoard(it.label, otpParameters.otpValue)
                             }
@@ -310,11 +311,11 @@ class OtpPresenter(
         }
     }
 
-    private fun showOtps() {
+    private fun showOtps(otpItemUpdatePayload: OtpItemUpdatePayload) {
         if (currentSearchText.value.isEmpty()) {
-            view?.showOtpList(otpList)
+            view?.showOtpList(otpList, otpItemUpdatePayload)
         } else {
-            filterOtps()
+            filterOtps(otpItemUpdatePayload)
         }
     }
 
