@@ -70,6 +70,7 @@ import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpFragment
 import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpMode
 import com.passbolt.mobile.android.feature.otp.scanotp.scanotpsuccess.ScanOtpSuccessFragment
 import com.passbolt.mobile.android.feature.otp.screen.recycler.OtpItem
+import com.passbolt.mobile.android.feature.otp.screen.recycler.OtpItemUpdatePayload
 import com.passbolt.mobile.android.feature.resourceform.main.ResourceFormFragment
 import com.passbolt.mobile.android.otpmoremenu.OtpMoreMenuFragment
 import com.passbolt.mobile.android.ui.LeadingContentType
@@ -227,9 +228,15 @@ class OtpFragment :
         requiredBinding.swipeRefresh.isRefreshing = true
     }
 
-    override fun showOtpList(otpList: List<OtpItemWrapper>) {
-        otpAdapter.set(otpList.map { OtpItem(it, resourceIconProvider) })
-        fastAdapter.notifyAdapterDataSetChanged()
+    override fun showOtpList(
+        otpList: List<OtpItemWrapper>,
+        otpItemUpdatePayload: OtpItemUpdatePayload,
+    ) {
+        val newItems = otpList.map { OtpItem(it, resourceIconProvider) }
+        otpAdapter.set(newItems)
+        for (i in 0 until fastAdapter.itemCount) {
+            fastAdapter.notifyAdapterItemChanged(i, otpItemUpdatePayload)
+        }
     }
 
     override fun showEmptyView() {

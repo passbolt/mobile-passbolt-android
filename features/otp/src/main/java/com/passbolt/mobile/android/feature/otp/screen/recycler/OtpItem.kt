@@ -75,24 +75,37 @@ class OtpItem(
         payloads: List<Any>,
     ) {
         super.bindView(binding, payloads)
+
+        setupTitleAndExpiry(binding)
+        if (payloads.contains(OtpItemUpdatePayload.DATA)) {
+            bindTotpData(binding)
+        } else {
+            bindTotpDataAndIcon(binding)
+        }
+    }
+
+    private fun bindTotpDataAndIcon(binding: ItemOtpBinding) {
+        bindTotpData(binding)
+        scope.launch {
+            val drawable =
+                withContext(coroutineLaunchContext.io) {
+                    resourceIconProvider.getResourceIcon(
+                        binding.root.context,
+                        otpModel.resource,
+                    )
+                }
+            binding.icon.setImageDrawable(drawable)
+        }
+    }
+
+    private fun bindTotpData(binding: ItemOtpBinding) {
         with(binding) {
-            setupTitleAndExpiry(this)
             eye.isVisible = !otpModel.isVisible && !otpModel.isRefreshing
             totpViewController.updateView(
                 ViewParameters(binding.progress, binding.otp, binding.generationInProgress),
                 StateParameters(otpModel.isRefreshing, otpModel.isVisible, otpModel.otpValue),
                 TimeParameters(otpModel.otpExpirySeconds, otpModel.remainingSecondsCounter),
             )
-            scope.launch {
-                val drawable =
-                    withContext(coroutineLaunchContext.io) {
-                        resourceIconProvider.getResourceIcon(
-                            binding.root.context,
-                            otpModel.resource,
-                        )
-                    }
-                icon.setImageDrawable(drawable)
-            }
         }
     }
 
