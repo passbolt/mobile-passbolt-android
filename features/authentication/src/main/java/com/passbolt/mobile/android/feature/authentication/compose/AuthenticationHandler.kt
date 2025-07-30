@@ -14,6 +14,7 @@ import com.passbolt.mobile.android.feature.authentication.compose.Authentication
 import com.passbolt.mobile.android.feature.authentication.compose.AuthenticationSideEffect.ShowTotpDialog
 import com.passbolt.mobile.android.feature.authentication.compose.AuthenticationSideEffect.ShowUnknownProvider
 import com.passbolt.mobile.android.feature.authentication.compose.AuthenticationSideEffect.ShowYubikeyDialog
+import com.passbolt.mobile.android.feature.authentication.compose.ComposeAuthenticationNavigationBridge.Companion.rememberAuthenticationNavigation
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -23,10 +24,13 @@ import kotlinx.coroutines.flow.Flow
 @Composable
 fun AuthenticationHandler(
     onAuthenticatedIntent: (AuthenticatedIntent) -> Unit,
-    authenticationNavigation: AuthenticationNavigation,
     authenticationSideEffect: Flow<AuthenticationSideEffect>,
 ) {
     val context = LocalContext.current
+    val navigation =
+        rememberAuthenticationNavigation(
+            onAuthenticatedIntent = onAuthenticatedIntent,
+        )
 
     val authenticationResult =
         rememberLauncherForActivityResult(
@@ -46,32 +50,32 @@ fun AuthenticationHandler(
                     )
                 }
                 is ShowTotpDialog -> {
-                    authenticationNavigation.showTotpDialog(
+                    navigation.showTotpDialog(
                         hasOtherProviders = sideEffect.hasOtherProviders,
                         sessionAccessToken = sideEffect.sessionAccessToken,
                     )
                 }
                 is ShowYubikeyDialog -> {
-                    authenticationNavigation.showYubikeyDialog(
+                    navigation.showYubikeyDialog(
                         hasOtherProviders = sideEffect.hasOtherProviders,
                         sessionAccessToken = sideEffect.sessionAccessToken,
                     )
                 }
                 is ShowDuoDialog -> {
-                    authenticationNavigation.showDuoDialog(
+                    navigation.showDuoDialog(
                         hasOtherProviders = sideEffect.hasOtherProviders,
                         sessionAccessToken = sideEffect.sessionAccessToken,
                     )
                 }
                 is ShowMfaAuth -> {
-                    authenticationNavigation.showMfaAuth(
+                    navigation.showMfaAuth(
                         hasMultipleProviders = sideEffect.hasMultipleProviders,
                         sessionAccessToken = sideEffect.sessionAccessToken,
                         mfaReason = sideEffect.mfaReason,
                     )
                 }
                 is ShowUnknownProvider -> {
-                    authenticationNavigation.showUnknownProvider()
+                    navigation.showUnknownProvider()
                 }
             }
         }

@@ -9,6 +9,6 @@
 
     <include app:graph="@navigation/otp" />
 
-    <include app:graph="@navigation/settings" />
+    <include app:graph="@navigation/settings_compose" />
 
 </navigation>

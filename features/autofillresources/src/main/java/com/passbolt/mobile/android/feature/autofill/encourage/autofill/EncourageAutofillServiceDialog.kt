@@ -18,6 +18,7 @@ import com.passbolt.mobile.android.core.ui.circlestepsview.CircleStepItemModel
 import com.passbolt.mobile.android.feature.autofill.databinding.DialogEncourageAutofillBinding
 import org.koin.android.scope.AndroidScopeComponent
 import org.koin.androidx.scope.fragmentScope
+import timber.log.Timber
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
@@ -48,7 +49,8 @@ class EncourageAutofillServiceDialog :
     EncourageAutofillContract.View,
     AndroidScopeComponent {
     override val scope by fragmentScope(useParentActivityScope = false)
-    private var listener: Listener? = null
+    var listener: Listener? = null
+
     private val presenter: EncourageAutofillContract.Presenter by scope.inject()
     private var autofillSystemSettingsLauncher =
         registerForActivityResult(
@@ -81,7 +83,10 @@ class EncourageAutofillServiceDialog :
             when {
                 parentFragment is Listener -> parentFragment as Listener
                 activity is Listener -> activity as Listener
-                else -> error("Parent must implement ${Listener::class.java.name}")
+                else -> {
+                    Timber.w("Parent should implement ${Listener::class.java.name} unless used in compose")
+                    null
+                }
             }
         presenter.attach(this)
     }

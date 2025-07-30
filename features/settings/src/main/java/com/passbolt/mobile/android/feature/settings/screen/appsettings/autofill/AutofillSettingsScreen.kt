@@ -56,6 +56,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
+import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
 import com.passbolt.mobile.android.core.ui.compose.switch.SwitchWithDescriptionItem
 import com.passbolt.mobile.android.core.ui.compose.topbar.BackNavigationIcon
 import com.passbolt.mobile.android.core.ui.compose.topbar.TitleAppBar
@@ -71,20 +72,23 @@ import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.AutofillSettingsIntent.ToggleChromeNativeAutofill
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.AutofillSettingsIntent.ToggleNativeAutofill
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.AutofillSettingsIntent.UpdateAutofillState
+import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.ComposeAutofillNavigationBridge.Companion.rememberAutofillNavigation
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.koinInject
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 @Composable
 internal fun AutofillSettingsScreen(
-    navigation: AutofillSettingsNavigation,
+    navigator: AppNavigator = koinInject(),
     viewModel: AutofillSettingsViewModel = koinViewModel(),
 ) {
     val context = LocalContext.current
     val state = viewModel.viewState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
+    val navigationBridge = rememberAutofillNavigation()
 
     AutofillSettingsScreen(
         state = state.value,
@@ -96,11 +100,11 @@ internal fun AutofillSettingsScreen(
 
     SideEffectDispatcher(viewModel.sideEffect) {
         when (it) {
-            NavigateUp -> navigation.navigateUp()
-            NavigateToEncourageNativeAutofill -> navigation.navigateToEncourageNativeAutofill()
-            NavigateToNativeAutofillEnabled -> navigation.navigateToNativeAutofillEnabled()
-            NavigateToChromeNativeAutofill -> navigation.navigateToChromeNativeAutofillSettings()
-            NavigateToEncourageAccessibilityAutofill -> navigation.navigateToEncourageAccessibilityAutofill()
+            NavigateUp -> navigator.navigateBack()
+            NavigateToEncourageNativeAutofill -> navigationBridge.showEncourageNativeAutofillDialog()
+            NavigateToNativeAutofillEnabled -> navigationBridge.showNativeAutofillEnabledDialog()
+            NavigateToChromeNativeAutofill -> navigator.openChromeNativeAutofillSettings(context)
+            NavigateToEncourageAccessibilityAutofill -> navigationBridge.showEncourageAccessibilityAutofillDialog()
             is ShowErrorSnackBar ->
                 coroutineScope.launch {
                     snackbarHostState.showSnackbar(getSnackbarMessage(context, it.type), duration = SnackbarDuration.Short)

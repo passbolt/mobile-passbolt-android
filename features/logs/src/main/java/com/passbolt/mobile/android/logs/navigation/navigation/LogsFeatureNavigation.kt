@@ -1,5 +1,3 @@
-package com.passbolt.mobile.android.feature.settings.screen.appsettings.expertsettings
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -22,6 +20,20 @@ package com.passbolt.mobile.android.feature.settings.screen.appsettings.expertse
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-internal interface ExpertSettingsNavigation {
-    fun navigateUp()
+package com.passbolt.mobile.android.logs.navigation.navigation
+
+import PassboltTheme
+import androidx.navigation3.runtime.entry
+import com.passbolt.mobile.android.core.navigation.compose.base.EntryProviderInstaller
+import com.passbolt.mobile.android.core.navigation.compose.base.FeatureModuleNavigation
+import com.passbolt.mobile.android.core.navigation.compose.keys.LogsNavigationKey
+import com.passbolt.mobile.android.logs.LogsScreen
+
+class LogsFeatureNavigation : FeatureModuleNavigation {
+    override fun provideEntryProviderInstaller(): EntryProviderInstaller =
+        {
+            entry<LogsNavigationKey.Logs> {
+                PassboltTheme { LogsScreen() }
+            }
+        }
 }

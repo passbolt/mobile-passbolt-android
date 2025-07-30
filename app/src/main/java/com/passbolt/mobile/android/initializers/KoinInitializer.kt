@@ -40,6 +40,7 @@ import com.passbolt.mobile.android.core.idlingresource.idlingResourcesModule
 import com.passbolt.mobile.android.core.inappreview.inAppReviewModule
 import com.passbolt.mobile.android.core.logger.loggerModule
 import com.passbolt.mobile.android.core.mvp.architectureModule
+import com.passbolt.mobile.android.core.navigation.navigationModule
 import com.passbolt.mobile.android.core.networking.networkingModule
 import com.passbolt.mobile.android.core.notifications.notificationsModule
 import com.passbolt.mobile.android.core.otpcore.otpCoreModule
@@ -177,6 +178,7 @@ class KoinInitializer : Initializer<Unit> {
                 createResourceMenuModule,
                 resourceFormModule,
                 permissionsModule,
+                navigationModule,
             )
     }
 }

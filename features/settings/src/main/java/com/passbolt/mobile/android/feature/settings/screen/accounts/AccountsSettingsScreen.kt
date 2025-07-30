@@ -29,11 +29,17 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
+import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
+import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.AccountDetails
+import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.ManageAccounts
+import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.TransferAccount
+import com.passbolt.mobile.android.core.navigation.compose.keys.SettingsNavigationKey.KeyInspector
 import com.passbolt.mobile.android.core.ui.R
 import com.passbolt.mobile.android.core.ui.compose.menu.OpenableSettingsItem
 import com.passbolt.mobile.android.core.ui.compose.topbar.BackNavigationIcon
@@ -49,14 +55,17 @@ import com.passbolt.mobile.android.feature.settings.screen.accounts.AccountsSett
 import com.passbolt.mobile.android.feature.settings.screen.accounts.AccountsSettingsIntent.GoToManageAccounts
 import com.passbolt.mobile.android.feature.settings.screen.accounts.AccountsSettingsIntent.GoToTransferAccount
 import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.koinInject
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 @Composable
 internal fun AccountsSettingsScreen(
-    navigation: AccountsSettingsNavigation,
     modifier: Modifier = Modifier,
+    navigator: AppNavigator = koinInject(),
     viewModel: AccountsSettingsViewModel = koinViewModel(),
 ) {
+    val context = LocalContext.current
+
     AccountsSettingsScreen(
         modifier = modifier,
         onIntent = viewModel::onIntent,
@@ -64,11 +73,11 @@ internal fun AccountsSettingsScreen(
 
     SideEffectDispatcher(viewModel.sideEffect) {
         when (it) {
-            NavigateToAccountDetails -> navigation.navigateToAccountDetails()
-            NavigateToKeyInspector -> navigation.navigateToKeyInspector()
-            NavigateToManageAccounts -> navigation.navigateToManageAccounts()
-            NavigateToTransferAccount -> navigation.navigateToTransferAccount()
-            NavigateUp -> navigation.navigateUp()
+            NavigateToAccountDetails -> navigator.startNavigationActivity(context, AccountDetails)
+            NavigateToKeyInspector -> navigator.navigateToKey(KeyInspector)
+            NavigateToManageAccounts -> navigator.startNavigationActivity(context, ManageAccounts)
+            NavigateToTransferAccount -> navigator.startNavigationActivity(context, TransferAccount)
+            NavigateUp -> navigator.navigateBack()
         }
     }
 }

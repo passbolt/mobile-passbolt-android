@@ -24,6 +24,7 @@ import com.passbolt.mobile.android.feature.authentication.databinding.DialogScan
 import com.yubico.yubikit.android.ui.OtpActivity
 import org.koin.android.scope.AndroidScopeComponent
 import org.koin.androidx.scope.fragmentScope
+import timber.log.Timber
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
@@ -55,7 +56,8 @@ class ScanYubikeyDialog :
     AndroidScopeComponent,
     ScanYubikeyContract.View {
     override val scope by fragmentScope(useParentActivityScope = false)
-    private var listener: ScanYubikeyListener? = null
+    var listener: ScanYubikeyListener? = null
+
     private val presenter: ScanYubikeyContract.Presenter by scope.inject()
     private lateinit var binding: DialogScanYubikeyBinding
     private val authenticationResult =
@@ -110,7 +112,10 @@ class ScanYubikeyDialog :
             when {
                 parentFragment is ScanYubikeyListener -> parentFragment as ScanYubikeyListener
                 activity is ScanYubikeyListener -> activity as ScanYubikeyListener
-                else -> error("Parent must implement ${ScanYubikeyListener::class.java.name}")
+                else -> {
+                    Timber.w("Parent should implement ${ScanYubikeyListener::class.java.name} unless used in compose")
+                    null
+                }
             }
         presenter.attach(this)
     }

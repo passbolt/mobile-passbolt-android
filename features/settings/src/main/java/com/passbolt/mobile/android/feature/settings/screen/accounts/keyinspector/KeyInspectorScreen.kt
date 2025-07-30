@@ -56,8 +56,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
+import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
 import com.passbolt.mobile.android.core.ui.compose.circularimage.CircularProfileImage
 import com.passbolt.mobile.android.core.ui.compose.labelledtext.LabelledText
 import com.passbolt.mobile.android.core.ui.compose.labelledtext.LabelledTextEndAction
@@ -65,7 +67,6 @@ import com.passbolt.mobile.android.core.ui.compose.progressdialog.ProgressDialog
 import com.passbolt.mobile.android.core.ui.compose.topbar.BackNavigationIcon
 import com.passbolt.mobile.android.core.ui.compose.topbar.TitleAppBar
 import com.passbolt.mobile.android.feature.authentication.compose.AuthenticationHandler
-import com.passbolt.mobile.android.feature.authentication.compose.AuthenticationNavigation
 import com.passbolt.mobile.android.feature.settings.screen.accounts.keyinspector.KeyInspectorIntent.GoBack
 import com.passbolt.mobile.android.feature.settings.screen.accounts.keyinspector.KeyInspectorIntent.OpenMoreMenu
 import com.passbolt.mobile.android.feature.settings.screen.accounts.keyinspector.KeyInspectorScreenSideEffect.AddFingerprintToClipboard
@@ -74,6 +75,7 @@ import com.passbolt.mobile.android.feature.settings.screen.accounts.keyinspector
 import com.passbolt.mobile.android.feature.settings.screen.accounts.keyinspector.KeyInspectorScreenSideEffect.NavigateToKeyInspectorMoreMenu
 import com.passbolt.mobile.android.feature.settings.screen.accounts.keyinspector.KeyInspectorScreenSideEffect.NavigateUp
 import com.passbolt.mobile.android.feature.settings.screen.accounts.keyinspector.KeyInspectorScreenSideEffect.ShowErrorSnackbar
+import com.passbolt.mobile.android.feature.settings.screen.accounts.keyinspector.keyinspectormoremenu.KeyInspectorMoreMenuFragment
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
@@ -82,9 +84,8 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 @Composable
 internal fun KeyInspectorScreen(
-    navigation: KeyInspectorNavigation,
-    authenticationNavigation: AuthenticationNavigation,
     modifier: Modifier = Modifier,
+    navigator: AppNavigator = koinInject(),
     viewModel: KeyInspectorViewModel = koinViewModel(),
     clipboardManager: ClipboardManager? = koinInject(),
 ) {
@@ -92,6 +93,9 @@ internal fun KeyInspectorScreen(
     val state = viewModel.viewState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
+
+    // TODO rewrite to compose
+    val fragmentManager = (context as? FragmentActivity)?.supportFragmentManager
 
     KeyInspectorScreen(
         modifier = modifier,
@@ -103,7 +107,6 @@ internal fun KeyInspectorScreen(
     AuthenticationHandler(
         onAuthenticatedIntent = viewModel::onAuthenticationIntent,
         authenticationSideEffect = viewModel.authenticationSideEffect,
-        authenticationNavigation = authenticationNavigation,
     )
 
     SideEffectDispatcher(viewModel.sideEffect) {
@@ -124,8 +127,12 @@ internal fun KeyInspectorScreen(
                     value = it.uid,
                 )
             }
-            NavigateToKeyInspectorMoreMenu -> navigation.navigateToKeyInspectorMoreMenu()
-            NavigateUp -> navigation.navigateUp()
+            NavigateToKeyInspectorMoreMenu -> {
+                // TODO rewrite to compose
+                KeyInspectorMoreMenuFragment()
+                    .show(requireNotNull(fragmentManager), KeyInspectorMoreMenuFragment::class.java.name)
+            }
+            NavigateUp -> navigator.navigateBack()
             is ShowErrorSnackbar ->
                 coroutineScope.launch {
                     snackbarHostState.showSnackbar(getSnackbarMessage(context, it), duration = Short)

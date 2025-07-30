@@ -31,12 +31,19 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
+import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
+import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.StartUp
+import com.passbolt.mobile.android.core.navigation.compose.keys.SettingsNavigationKey.Accounts
+import com.passbolt.mobile.android.core.navigation.compose.keys.SettingsNavigationKey.AppSettings
+import com.passbolt.mobile.android.core.navigation.compose.keys.SettingsNavigationKey.DebugLogs
+import com.passbolt.mobile.android.core.navigation.compose.keys.SettingsNavigationKey.TermsAndLicenses
 import com.passbolt.mobile.android.core.ui.R
 import com.passbolt.mobile.android.core.ui.compose.dialogs.SignOutAlertDialog
 import com.passbolt.mobile.android.core.ui.compose.menu.OpenableSettingsItem
@@ -51,15 +58,17 @@ import com.passbolt.mobile.android.feature.settings.screen.SettingsSideEffect.Na
 import com.passbolt.mobile.android.feature.settings.screen.SettingsSideEffect.NavigateToStartUp
 import com.passbolt.mobile.android.feature.settings.screen.SettingsSideEffect.NavigateToTermsAndLicenses
 import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.koinInject
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 @Composable
 internal fun SettingsScreen(
-    navigation: SettingsNavigation,
     modifier: Modifier = Modifier,
+    navigator: AppNavigator = koinInject(),
     viewModel: SettingsViewModel = koinViewModel(),
 ) {
     val state = viewModel.viewState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
 
     SettingsScreen(
         state = state.value,
@@ -69,11 +78,11 @@ internal fun SettingsScreen(
 
     SideEffectDispatcher(viewModel.sideEffect) {
         when (it) {
-            NavigateToAccounts -> navigation.navigateToAccounts()
-            NavigateToAppSettings -> navigation.navigateToAppSettingsLogs()
-            NavigateToDebugLogs -> navigation.navigateToDebugLogs()
-            NavigateToStartUp -> navigation.navigateToStartUp()
-            NavigateToTermsAndLicenses -> navigation.navigateToTermsAndLicenses()
+            NavigateToAccounts -> navigator.navigateToKey(Accounts)
+            NavigateToAppSettings -> navigator.navigateToKey(AppSettings)
+            NavigateToDebugLogs -> navigator.navigateToKey(DebugLogs)
+            NavigateToStartUp -> navigator.startNavigationActivity(context, StartUp)
+            NavigateToTermsAndLicenses -> navigator.navigateToKey(TermsAndLicenses)
         }
     }
 }

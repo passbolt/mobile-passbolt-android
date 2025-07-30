@@ -21,20 +21,23 @@
  * @since v1.0
  */
 
-package com.passbolt.mobile.android.feature.settings.screen.appsettings
+package com.passbolt.mobile.android.feature.settings.navigation
 
-import PassboltTheme
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.findNavController
+import com.passbolt.mobile.android.core.navigation.compose.AppNavigation
+import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
+import com.passbolt.mobile.android.core.navigation.compose.keys.SettingsNavigationKey
+import org.koin.compose.koinInject
 
-class AppSettingsComposeFragment :
-    Fragment(),
-    AppSettingsNavigation {
+// this fragment is now a container for compose screens with navigation
+// required by bottom navigation handling
+// to be removed after all bottom navigation screens are migrated to compose
+class SettingsBottomSheetContainerFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -42,33 +45,11 @@ class AppSettingsComposeFragment :
     ): View =
         ComposeView(requireContext()).apply {
             setContent {
-                PassboltTheme {
-                    AppSettingsScreen(
-                        navigation = this@AppSettingsComposeFragment,
-                    )
+                koinInject<AppNavigator>().apply {
+                    backStack.add(SettingsNavigationKey.SettingsMain)
                 }
+
+                AppNavigation()
             }
         }
-
-    override fun navigateUp() {
-        findNavController().popBackStack()
-    }
-
-    override fun navigateToAutofill() {
-        findNavController().navigate(
-            AppSettingsComposeFragmentDirections.actionAppSettingsComposeFragmentToAutofillSettingsComposeFragment(),
-        )
-    }
-
-    override fun navigateToDefaultFilter() {
-        findNavController().navigate(
-            AppSettingsComposeFragmentDirections.actionAppSettingsComposeFragmentToDefaultFilterComposeFragment(),
-        )
-    }
-
-    override fun navigateToExpertSettings() {
-        findNavController().navigate(
-            AppSettingsComposeFragmentDirections.actionAppSettingsComposeFragmentToExpertSettingsComposeFragment(),
-        )
-    }
 }

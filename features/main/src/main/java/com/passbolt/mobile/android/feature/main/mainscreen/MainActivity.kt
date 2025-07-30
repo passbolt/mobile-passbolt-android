@@ -165,7 +165,7 @@ class MainActivity :
                 HomeR.id.home,
                 HomeR.id.homeChild,
                 OtpR.id.otpFragment,
-                SettingsR.id.settingsComposeFragment,
+                SettingsR.id.settingsMainFragment,
             )
     }
 }

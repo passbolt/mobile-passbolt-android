@@ -1,6 +1,7 @@
 plugins {
     alias libs.plugins.android.library
     alias libs.plugins.kotlin.gradle
+    alias libs.plugins.compose.compiler
     alias libs.plugins.kotlin.parcelize
 }
 
@@ -8,6 +9,7 @@ android {
     namespace = "com.passbolt.mobile.android.core.navigation"
     buildFeatures {
         viewBinding true
+        compose true
     }
 }
 
@@ -16,6 +18,15 @@ kotlin {
 }
 
 dependencies {
+    implementation project(':localization')
+    implementation project(':common')
+
     implementation libs.navigation.fragment
     implementation libs.navigation.ui
+    implementation libs.navigation.fragment
+    implementation libs.navigation.ui
+    implementation(libs.androidx.navigation3.ui)
+    implementation(libs.androidx.navigation3.runtime)
+    implementation(libs.koin)
+    implementation(libs.koin.compose)
 }

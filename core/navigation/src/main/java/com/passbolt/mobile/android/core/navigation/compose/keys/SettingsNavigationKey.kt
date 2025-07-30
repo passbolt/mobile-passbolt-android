@@ -1,5 +1,3 @@
-package com.passbolt.mobile.android.feature.settings.screen.termsandlicenses.licenses
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -22,8 +20,39 @@ package com.passbolt.mobile.android.feature.settings.screen.termsandlicenses.lic
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-interface LicensesNavigation {
-    fun navigateUp()
+package com.passbolt.mobile.android.core.navigation.compose.keys
 
-    fun navigateToLicenseUrl(licenseUrl: String)
+import androidx.navigation3.runtime.NavKey
+import kotlinx.serialization.Serializable
+
+sealed interface SettingsNavigationKey : NavKey {
+    @Serializable
+    object SettingsMain : SettingsNavigationKey
+
+    @Serializable
+    object AppSettings : SettingsNavigationKey
+
+    @Serializable
+    object Accounts : SettingsNavigationKey
+
+    @Serializable
+    object TermsAndLicenses : SettingsNavigationKey
+
+    @Serializable
+    object DebugLogs : SettingsNavigationKey
+
+    @Serializable
+    object KeyInspector : SettingsNavigationKey
+
+    @Serializable
+    object OpenSourceLicences : SettingsNavigationKey
+
+    @Serializable
+    object Autofill : SettingsNavigationKey
+
+    @Serializable
+    object DefaultFilter : SettingsNavigationKey
+
+    @Serializable
+    object ExpertSettings : SettingsNavigationKey
 }

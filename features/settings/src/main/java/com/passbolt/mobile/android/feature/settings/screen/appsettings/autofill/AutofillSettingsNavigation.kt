@@ -23,13 +23,9 @@ package com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill
  * @since v1.0
  */
 internal interface AutofillSettingsNavigation {
-    fun navigateUp()
+    fun showEncourageNativeAutofillDialog()
 
-    fun navigateToEncourageNativeAutofill()
+    fun showEncourageAccessibilityAutofillDialog()
 
-    fun navigateToEncourageAccessibilityAutofill()
-
-    fun navigateToNativeAutofillEnabled()
-
-    fun navigateToChromeNativeAutofillSettings()
+    fun showNativeAutofillEnabledDialog()
 }

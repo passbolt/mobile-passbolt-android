@@ -35,6 +35,8 @@ import com.passbolt.mobile.android.core.localization.R as LocalizationR
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+
+@Deprecated("Use to integrate with legacy navigation only, use LogsScreen for Compose")
 class LogsComposeFragment :
     Fragment(),
     LogsNavigation {
@@ -46,7 +48,7 @@ class LogsComposeFragment :
         ComposeView(requireContext()).apply {
             setContent {
                 PassboltTheme {
-                    LogsScreen(
+                    LogsScreenCompat(
                         navigation = this@LogsComposeFragment,
                     )
                 }
@@ -61,7 +63,7 @@ class LogsComposeFragment :
         val contentUri =
             getUriForFile(
                 requireContext(),
-                "com.passbolt.mobile.android.core.logger.logsfileprovider",
+                LOGS_FILE_AUTHORITY,
                 File(logFilePath),
             )
 
@@ -82,7 +84,8 @@ class LogsComposeFragment :
         )
     }
 
-    private companion object {
-        private const val LOGS_MIME_TYPE = "text/plain"
+    companion object {
+        const val LOGS_MIME_TYPE = "text/plain"
+        const val LOGS_FILE_AUTHORITY = "com.passbolt.mobile.android.core.logger.logsfileprovider"
     }
 }
