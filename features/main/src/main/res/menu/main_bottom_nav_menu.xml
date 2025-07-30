@@ -14,7 +14,7 @@
         android:title="@string/main_menu_otp" />
 
     <item
-        android:id="@id/settingsNav"
+        android:id="@id/settingsNavCompose"
         android:icon="@drawable/ic_settings"
         android:title="@string/main_menu_settings" />
 </menu>

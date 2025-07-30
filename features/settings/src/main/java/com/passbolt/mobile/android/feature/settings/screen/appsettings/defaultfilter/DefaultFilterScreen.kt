@@ -48,26 +48,28 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
+import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
 import com.passbolt.mobile.android.core.ui.compose.topbar.BackNavigationIcon
 import com.passbolt.mobile.android.core.ui.compose.topbar.TitleAppBar
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.defaultfilter.DefaultFilterIntent.GoBack
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.defaultfilter.model.toUiModel
 import com.passbolt.mobile.android.ui.DefaultFilterModel
 import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.koinInject
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUi
 
 @Composable
 internal fun DefaultFilterScreen(
-    navigation: DefaultFilterNavigation,
     modifier: Modifier = Modifier,
+    navigator: AppNavigator = koinInject(),
     viewModel: DefaultFilterViewModel = koinViewModel(),
 ) {
     val state = viewModel.viewState.collectAsStateWithLifecycle()
 
     SideEffectDispatcher(viewModel.sideEffect) {
         when (it) {
-            DefaultFilterSideEffect.NavigateUp -> navigation.navigateUp()
+            DefaultFilterSideEffect.NavigateUp -> navigator.navigateBack()
         }
     }
 

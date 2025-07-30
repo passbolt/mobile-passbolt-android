@@ -1,3 +1,5 @@
+package com.passbolt.mobile.android.core.navigation.compose.base
+
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -20,37 +22,6 @@
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-
-package com.passbolt.mobile.android.feature.settings.screen.appsettings.defaultfilter
-
-import PassboltTheme
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import androidx.compose.ui.platform.ComposeView
-import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.findNavController
-
-class DefaultFilterComposeFragment :
-    Fragment(),
-    DefaultFilterNavigation {
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?,
-    ): View =
-        ComposeView(requireContext()).apply {
-            setContent {
-                PassboltTheme {
-                    DefaultFilterScreen(
-                        navigation = this@DefaultFilterComposeFragment,
-                    )
-                }
-            }
-        }
-
-    override fun navigateUp() {
-        findNavController().popBackStack()
-    }
+interface FeatureModuleNavigation {
+    fun provideEntryProviderInstaller(): EntryProviderInstaller
 }

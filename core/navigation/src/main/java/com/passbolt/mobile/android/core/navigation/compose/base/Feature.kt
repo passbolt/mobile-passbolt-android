@@ -1,5 +1,3 @@
-package com.passbolt.mobile.android.feature.settings.screen.accounts
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -22,14 +20,9 @@ package com.passbolt.mobile.android.feature.settings.screen.accounts
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-internal interface AccountsSettingsNavigation {
-    fun navigateUp()
+package com.passbolt.mobile.android.core.navigation.compose.base
 
-    fun navigateToAccountDetails()
-
-    fun navigateToKeyInspector()
-
-    fun navigateToManageAccounts()
-
-    fun navigateToTransferAccount()
+enum class Feature {
+    SETTINGS,
+    LOGS,
 }

@@ -11,6 +11,7 @@ import androidx.fragment.app.DialogFragment
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.feature.autofill.databinding.DialogAutofillEnabledBinding
+import timber.log.Timber
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 /**
@@ -36,7 +37,8 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
  * @since v1.0
  */
 class AutofillEnabledDialog : DialogFragment() {
-    private var listener: Listener? = null
+    var listener: Listener? = null
+
     private lateinit var binding: DialogAutofillEnabledBinding
     private val dialogMode by lifecycleAwareLazy {
         requireNotNull(
@@ -83,7 +85,10 @@ class AutofillEnabledDialog : DialogFragment() {
             when {
                 parentFragment is Listener -> parentFragment as Listener
                 activity is Listener -> activity as Listener
-                else -> error("Parent must implement ${Listener::class.java.name}")
+                else -> {
+                    Timber.w("Parent should implement ${Listener::class.java.name} unless used in compose")
+                    null
+                }
             }
     }
 

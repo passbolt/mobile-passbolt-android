@@ -24,6 +24,7 @@ import com.passbolt.mobile.android.feature.authentication.databinding.DialogEnte
 import org.koin.android.ext.android.inject
 import org.koin.android.scope.AndroidScopeComponent
 import org.koin.androidx.scope.fragmentScope
+import timber.log.Timber
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
@@ -55,7 +56,8 @@ class EnterTotpDialog :
     AndroidScopeComponent,
     EnterTotpContract.View {
     override val scope by fragmentScope(useParentActivityScope = false)
-    private var listener: EnterTotpListener? = null
+    var listener: EnterTotpListener? = null
+
     val presenter: EnterTotpContract.Presenter by scope.inject()
     private val clipboardManager: ClipboardManager? by inject()
     private lateinit var binding: DialogEnterTotpBinding
@@ -104,7 +106,10 @@ class EnterTotpDialog :
             when {
                 parentFragment is EnterTotpListener -> parentFragment as EnterTotpListener
                 activity is EnterTotpListener -> activity as EnterTotpListener
-                else -> error("Parent must implement ${EnterTotpListener::class.java.name}")
+                else -> {
+                    Timber.w("Parent should implement ${EnterTotpListener::class.java.name} unless used in compose")
+                    null
+                }
             }
         presenter.attach(this)
     }

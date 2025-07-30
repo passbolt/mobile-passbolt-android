@@ -1,6 +1,10 @@
 package com.passbolt.mobile.android
 
+import com.passbolt.mobile.android.core.navigation.compose.base.Feature
+import com.passbolt.mobile.android.core.navigation.compose.base.FeatureModuleNavigation
 import com.passbolt.mobile.android.logs.logsModule
+import com.passbolt.mobile.android.logs.navigation.navigation.LogsFeatureNavigation
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 /**
@@ -28,5 +32,9 @@ import org.koin.dsl.module
 
 val logsModule =
     module {
+        single<FeatureModuleNavigation>(named(Feature.LOGS)) {
+            LogsFeatureNavigation()
+        }
+
         logsModule()
     }

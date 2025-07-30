@@ -1,5 +1,8 @@
 package com.passbolt.mobile.android.feature.settings
 
+import com.passbolt.mobile.android.core.navigation.compose.base.Feature
+import com.passbolt.mobile.android.core.navigation.compose.base.FeatureModuleNavigation
+import com.passbolt.mobile.android.feature.settings.navigation.SettingsFeatureNavigation
 import com.passbolt.mobile.android.feature.settings.screen.accounts.accountsSettingsModule
 import com.passbolt.mobile.android.feature.settings.screen.accounts.keyinspector.keyInspectorModule
 import com.passbolt.mobile.android.feature.settings.screen.accounts.keyinspector.keyinspectormoremenu.keyInspectorMoreMenuModule
@@ -11,6 +14,7 @@ import com.passbolt.mobile.android.feature.settings.screen.debuglogssettings.deb
 import com.passbolt.mobile.android.feature.settings.screen.settingsModule
 import com.passbolt.mobile.android.feature.settings.screen.termsandlicenses.licenses.licensesModule
 import com.passbolt.mobile.android.feature.settings.screen.termsandlicenses.termsAndLicensesSettingsModule
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 /**
@@ -38,6 +42,10 @@ import org.koin.dsl.module
 
 val settingsModule =
     module {
+        single<FeatureModuleNavigation>(named(Feature.SETTINGS)) {
+            SettingsFeatureNavigation()
+        }
+
         settingsModule()
 
         appSettingsModule()

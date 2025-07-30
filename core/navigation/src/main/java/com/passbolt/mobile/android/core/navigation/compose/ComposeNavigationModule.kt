@@ -1,5 +1,3 @@
-package com.passbolt.mobile.android.feature.settings.screen.appsettings
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -22,12 +20,11 @@ package com.passbolt.mobile.android.feature.settings.screen.appsettings
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-interface AppSettingsNavigation {
-    fun navigateUp()
+package com.passbolt.mobile.android.core.navigation.compose
 
-    fun navigateToAutofill()
+import org.koin.core.module.Module
+import org.koin.core.module.dsl.singleOf
 
-    fun navigateToDefaultFilter()
-
-    fun navigateToExpertSettings()
+fun Module.composeNavigationModule() {
+    singleOf(::AppNavigator)
 }

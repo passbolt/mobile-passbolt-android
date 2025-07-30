@@ -1,5 +1,3 @@
-package com.passbolt.mobile.android.feature.settings.screen
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -22,14 +20,12 @@ package com.passbolt.mobile.android.feature.settings.screen
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-interface SettingsNavigation {
-    fun navigateToAppSettingsLogs()
+package com.passbolt.mobile.android.core.navigation
 
-    fun navigateToAccounts()
+import com.passbolt.mobile.android.core.navigation.compose.composeNavigationModule
+import org.koin.dsl.module
 
-    fun navigateToTermsAndLicenses()
-
-    fun navigateToDebugLogs()
-
-    fun navigateToStartUp()
-}
+val navigationModule =
+    module {
+        composeNavigationModule()
+    }
