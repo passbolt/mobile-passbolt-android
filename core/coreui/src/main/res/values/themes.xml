@@ -55,6 +55,7 @@
     <style name="BottomSheetDialogTheme"
         parent="Theme.MaterialComponents.BottomSheetDialog">
         <item name="bottomSheetStyle">@style/AppModalStyle</item>
+        <item name="android:windowIsFloating">false</item>
     </style>
 
     <style name="AppModalStyle"
