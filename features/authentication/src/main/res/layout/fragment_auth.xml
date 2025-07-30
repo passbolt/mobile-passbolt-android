@@ -69,7 +69,7 @@
             android:layout_marginTop="@dimen/dp_8"
             android:gravity="center"
             android:paddingHorizontal="@dimen/dp_32"
-            android:textSize="@dimen/sp_12"
+            android:textSize="@dimen/sp_14"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/emailLabel"

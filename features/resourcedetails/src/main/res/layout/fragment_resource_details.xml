@@ -176,7 +176,7 @@
                         android:text="@string/otp_hide_otp"
                         android:textColor="@color/text_secondary"
                         android:textFontWeight="400"
-                        android:textSize="@dimen/sp_24"
+                        android:textSize="@dimen/sp_28"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
@@ -292,7 +292,7 @@
                         android:layout_marginEnd="@dimen/dp_8"
                         android:text="@string/location"
                         android:textColor="@color/text_primary"
-                        android:textSize="@dimen/sp_12"
+                        android:textSize="@dimen/sp_14"
                         app:layout_constraintEnd_toStartOf="@id/locationNavIcon"
                         app:layout_constraintTop_toBottomOf="@+id/metadataDescriptionItem" />
 
@@ -306,7 +306,7 @@
                         android:ellipsize="middle"
                         android:maxLines="1"
                         android:textColor="@color/text_secondary"
-                        android:textSize="@dimen/sp_14"
+                        android:textSize="@dimen/sp_16"
                         app:layout_constraintEnd_toStartOf="@id/locationNavIcon"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/locationHeader"
@@ -332,7 +332,7 @@
                         android:layout_marginTop="@dimen/dp_16"
                         android:text="@string/resource_details_tags_header"
                         android:textColor="@color/text_primary"
-                        android:textSize="@dimen/sp_12"
+                        android:textSize="@dimen/sp_14"
                         app:drawableTint="@color/icon_tint"
                         app:layout_constraintTop_toBottomOf="@id/locationValue" />
 
@@ -346,7 +346,7 @@
                         android:ellipsize="middle"
                         android:maxLines="1"
                         android:textColor="@color/text_secondary"
-                        android:textSize="@dimen/sp_14"
+                        android:textSize="@dimen/sp_16"
                         app:layout_constraintEnd_toStartOf="@id/tagsNavIcon"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/tagsClickableArea"

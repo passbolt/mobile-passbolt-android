@@ -25,28 +25,28 @@ val AppTypography =
             TextStyle(
                 fontFamily = Inter,
                 fontWeight = FontWeight.SemiBold,
-                fontSize = 20.sp,
+                fontSize = 22.sp,
                 letterSpacing = 0.sp,
             ),
         titleMedium =
             TextStyle(
                 fontFamily = Inter,
                 fontWeight = FontWeight.SemiBold,
-                fontSize = 14.sp,
+                fontSize = 16.sp,
                 letterSpacing = 0.sp,
             ),
         labelMedium =
             TextStyle(
                 fontFamily = Inter,
                 fontWeight = FontWeight.SemiBold,
-                fontSize = 14.sp,
+                fontSize = 16.sp,
                 letterSpacing = 0.sp,
             ),
         displayMedium =
             TextStyle(
                 fontFamily = Inter,
                 fontWeight = FontWeight.Medium,
-                fontSize = 14.sp,
+                fontSize = 16.sp,
                 letterSpacing = 0.sp,
             ),
     )

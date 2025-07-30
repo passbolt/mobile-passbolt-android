@@ -46,7 +46,7 @@
         android:ellipsize="middle"
         android:gravity="start"
         android:maxLines="1"
-        android:textSize="@dimen/sp_12"
+        android:textSize="@dimen/sp_14"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/folderChildrenCount"
         app:layout_constraintStart_toEndOf="@+id/icon"

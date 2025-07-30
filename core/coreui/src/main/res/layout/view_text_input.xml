@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:textFontWeight="600"
         android:textIsSelectable="false"
-        android:textSize="@dimen/sp_12"
+        android:textSize="@dimen/sp_14"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
@@ -40,7 +40,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAppearance="@style/TextInputTextAppearance"
-            android:textSize="@dimen/sp_14"
+            android:textSize="@dimen/sp_16"
             tools:hint="Hint"
             tools:text="Text" />
     </com.google.android.material.textfield.TextInputLayout>

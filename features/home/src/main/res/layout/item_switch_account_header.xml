@@ -51,7 +51,7 @@
         android:layout_height="wrap_content"
         android:textColor="@color/text_primary"
         android:textFontWeight="400"
-        android:textSize="@dimen/sp_12"
+        android:textSize="@dimen/sp_14"
         app:layout_constraintBottom_toBottomOf="@id/icon"
         app:layout_constraintEnd_toEndOf="@id/title"
         app:layout_constraintStart_toStartOf="@+id/title"
