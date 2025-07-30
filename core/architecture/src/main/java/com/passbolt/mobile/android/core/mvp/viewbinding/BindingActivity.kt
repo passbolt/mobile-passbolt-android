@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.core.mvp.viewbinding
 
 import android.os.Bundle
 import android.view.LayoutInflater
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewbinding.ViewBinding
 
@@ -38,6 +39,7 @@ abstract class BindingActivity<T : ViewBinding>(
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         binding = viewInflater(layoutInflater)
         setContentView(requiredBinding.root)
     }

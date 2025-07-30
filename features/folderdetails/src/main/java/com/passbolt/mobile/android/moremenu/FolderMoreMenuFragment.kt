@@ -7,9 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.BundleCompat
 import androidx.core.os.bundleOf
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.extension.setDebouncingOnClickAndDismiss
+import com.passbolt.mobile.android.core.mvp.viewbinding.NoLimitsBottomSheetDialogFragment
 import com.passbolt.mobile.android.feature.folderdetails.databinding.ViewFolderMoreMenuBottomsheetBinding
 import com.passbolt.mobile.android.ui.FolderMoreMenuModel
 import org.koin.android.scope.AndroidScopeComponent
@@ -40,7 +40,7 @@ import com.passbolt.mobile.android.core.localization.R as LocalizationR
  */
 
 class FolderMoreMenuFragment :
-    BottomSheetDialogFragment(),
+    NoLimitsBottomSheetDialogFragment(),
     FolderMoreMenuContract.View,
     AndroidScopeComponent {
     override val scope by fragmentScope(useParentActivityScope = false)

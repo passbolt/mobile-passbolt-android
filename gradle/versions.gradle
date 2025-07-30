@@ -4,5 +4,5 @@ ext {
 
     projectCompileSdk = 36
     projectMinSdk = 29
-    projectTargetSdk = 34
+    projectTargetSdk = 35
 }
