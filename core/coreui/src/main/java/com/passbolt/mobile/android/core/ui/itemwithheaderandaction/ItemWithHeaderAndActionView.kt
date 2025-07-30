@@ -138,6 +138,7 @@ class ItemWithHeaderAndActionView
         }
 
         fun conceal() {
+            textValue = ""
             binding.conceal.visible()
         }
 
