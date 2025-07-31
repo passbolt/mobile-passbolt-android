@@ -1,6 +1,6 @@
 /**
  * Passbolt - Open source password manager for teams
- * Copyright (c) 2021, 2024 Passbolt SA
+ * Copyright (c) 2021, 2024-2025 Passbolt SA
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
  * Public License (AGPL) as published by the Free Software Foundation version 3.
@@ -279,6 +279,36 @@ fun withFormattedText(formatRegex: String): Matcher<View> {
             if (view !is TextView) return false
             val text = view.text.toString()
             return Pattern.matches(formatRegex, text)
+        }
+    }
+}
+
+/**
+ * This function returns a [Matcher] that can be used with Espresso's `onView`
+ * and `check` actions to verify that a [TextView] has the expected text color
+ * defined by a color identifier.
+ *
+ * @param colorResId The identifier of the color to match.
+ * @return A [Matcher] that matches a [TextView] with the specified text color.
+ *
+ * Example Usage:
+ *
+ * ```kotlin
+ * onView(withId(myTextView))
+ *     .check(matches(withTextColor(myTextColor)))
+ * ```
+ */
+fun withTextColor(
+    @ColorRes colorResId: Int,
+): Matcher<View> {
+    return object : BoundedMatcher<View, TextView>(TextView::class.java) {
+        override fun describeTo(description: Description) {
+            description.appendText("TextView with text color ID: $colorResId")
+        }
+
+        override fun matchesSafely(textView: TextView): Boolean {
+            val expectedColor = ContextCompat.getColor(textView.context, colorResId)
+            return textView.currentTextColor == expectedColor
         }
     }
 }

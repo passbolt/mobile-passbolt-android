@@ -398,6 +398,7 @@ class ResourceDetailsPresenter(
             view?.hideNote()
             isNoteVisible = false
         } else {
+            resourceDetailActionIdlingResource.setIdle(false)
             coroutineScope.launch {
                 performSecretPropertyAction(
                     action = { secretPropertiesActionsInteractor.provideNote() },
@@ -408,6 +409,7 @@ class ResourceDetailsPresenter(
                         isNoteVisible = true
                     },
                 )
+                resourceDetailActionIdlingResource.setIdle(true)
             }
         }
     }
@@ -452,8 +454,8 @@ class ResourceDetailsPresenter(
                 action = { resourcePropertiesActionsInteractor.provideDescription() },
                 doOnResult = { view?.addToClipboard(it.label, it.result, it.isSecret) },
             )
+            resourceDetailActionIdlingResource.setIdle(true)
         }
-        resourceDetailActionIdlingResource.setIdle(true)
     }
 
     override fun copyNoteClick() {
@@ -465,8 +467,8 @@ class ResourceDetailsPresenter(
                 doOnDecryptionFailure = { view?.showDecryptionFailure() },
                 doOnSuccess = { view?.addToClipboard(it.label, it.result, it.isSecret) },
             )
+            resourceDetailActionIdlingResource.setIdle(true)
         }
-        resourceDetailActionIdlingResource.setIdle(true)
     }
 
     override fun launchWebsiteClick() {
