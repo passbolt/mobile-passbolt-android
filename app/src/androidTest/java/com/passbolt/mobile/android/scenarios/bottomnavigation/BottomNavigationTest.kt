@@ -44,7 +44,7 @@ import com.passbolt.mobile.android.feature.authentication.AuthenticationMainActi
 import com.passbolt.mobile.android.feature.home.R.id.homeNav
 import com.passbolt.mobile.android.feature.home.R.id.rootLayout
 import com.passbolt.mobile.android.feature.otp.R.id.otpNav
-import com.passbolt.mobile.android.feature.settings.R.id.settingsNav
+import com.passbolt.mobile.android.feature.settings.R.id.settingsNavCompose
 import com.passbolt.mobile.android.helpers.getString
 import com.passbolt.mobile.android.helpers.signIn
 import com.passbolt.mobile.android.instrumentationTestsModule
@@ -109,16 +109,16 @@ class BottomNavigationTest : KoinTest {
      */
     @Test
     fun iCanGoToTheSettingsWorkspaceUsingTheBottomNavigation() {
-        onView(withId(settingsNav))
+        onView(withId(settingsNavCompose))
             .check(matches(isDisplayed()))
             .check(matches(isNotSelected()))
-        onView(withId(settingsNav)).perform(click())
+        onView(withId(settingsNavCompose)).perform(click())
         composeTestRule.apply {
             waitForIdle()
             onNodeWithText(getString(LocalizationR.string.settings_title))
                 .assertIsDisplayed()
         }
-        onView(withId(settingsNav))
+        onView(withId(settingsNavCompose))
             .check(matches(isSelected()))
     }
 
@@ -157,7 +157,7 @@ class BottomNavigationTest : KoinTest {
      */
     @Test
     fun iCanGoToTheHomeUsingBottomNavigation() {
-        onView(withId(settingsNav)).perform(click())
+        onView(withId(settingsNavCompose)).perform(click())
         onView(withId(homeNav))
             .check(matches(isDisplayed()))
             .check(matches(isNotSelected()))

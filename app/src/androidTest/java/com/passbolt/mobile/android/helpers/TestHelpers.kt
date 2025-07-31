@@ -119,3 +119,13 @@ internal fun chooseFilter(filter: Int) {
     onView(withIndex(index = 0, withId(MaterialR.id.text_input_start_icon))).perform(click())
     onView(withId(filter)).perform(click())
 }
+
+/**
+ * Gets the current text from the clipboard
+ * @return The text from the clipboard, or null if clipboard is empty or doesn't contain text
+ */
+internal fun getClipboardText(clipboardManager: android.content.ClipboardManager): String? =
+    clipboardManager.primaryClip
+        ?.getItemAt(0)
+        ?.text
+        ?.toString()

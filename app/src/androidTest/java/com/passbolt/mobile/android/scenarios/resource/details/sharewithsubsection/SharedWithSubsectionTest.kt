@@ -21,10 +21,11 @@
  * @since v1.0
  */
 
-package com.passbolt.mobile.android.scenarios.resource.sharewithsubsection
+package com.passbolt.mobile.android.scenarios.resource.details.sharewithsubsection
 
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.scrollTo
 import androidx.test.espresso.action.ViewActions.swipeUp
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA
@@ -45,6 +46,7 @@ import com.passbolt.mobile.android.instrumentationTestsModule
 import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
 import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
+import com.passbolt.mobile.android.scenarios.resource.details.TestResourceType
 import org.hamcrest.Matchers.allOf
 import org.junit.Rule
 import org.junit.Test
@@ -62,7 +64,7 @@ import com.passbolt.mobile.android.feature.resources.R.id as resourcesId
 @RunWith(Parameterized::class)
 @MediumTest
 class SharedWithSubsectionTest(
-    private val testedResource: String,
+    private val resourceType: TestResourceType,
 ) : KoinTest {
     @get:Rule
     val startUpActivityRule =
@@ -101,44 +103,45 @@ class SharedWithSubsectionTest(
         signIn(managedAccountIntentCreator.getPassphrase())
     }
 
-    //  https://passbolt.testrail.io/index.php?/cases/view/10599
+    /**
+     * [On the resource screen I can see Shared with subsection](https://passbolt.testrail.io/index.php?/cases/view/10599)
+     *
+     * Given I am a user on the <resource> display screen
+     * And   I have Shared with permission
+     * When  I review screen content
+     * Then  I see Shared with subsection with corresponding title
+     * And   Shared with subsection is filled with icons of users
+     * And   At least one icon is presented
+     * And   Shared with subsection contains caret
+     *
+     * Examples:
+     *     | resource |
+     *     | Simple password             |
+     *     | Password with description   |
+     *     | Password description totp   |
+     */
     @Test
     fun onTheResourceScreenICanSeeSharedWithSubsection() {
         onView(withId(MaterialR.id.text_input_start_icon)).perform(click())
         onView(withId(HomeId.allItems)).perform(click())
-        //      Given I have `Shared with` permission
-        //      And   I am a user on the <resource> display screen
-        pickFirstResourceWithName(testedResource)
-        //      When  I review screen content
-        //      Then  I see Shared with subsection with corresponding title
-        onView(withText(localizationString.shared_with)).check(matches(isDisplayed()))
+        pickFirstResourceWithName(resourceType.displayName)
+        onView(withText(localizationString.shared_with))
+            .perform(scrollTo())
+            .check(matches(isDisplayed()))
         onView(withId(resourcesId.root)).perform(swipeUp())
         onView(withId(resourcesId.sharedWithRecycler)).check(matches(isDisplayed()))
-        //      And   Shared with subsection is filled with icons of users
-        //      And   At least one icon is presented
         onView(
             allOf(
                 isDescendantOfA(withId(resourcesId.sharedWithRecycler)),
                 withId(permissionsId.userItem),
             ),
         ).check(matches(isDisplayed()))
-        //      And   Shared with subsection contains caret
         onView(withId(resourcesId.sharedWithNavIcon)).check(matches(isDisplayed()))
     }
 
     private companion object {
-        //  Examples:
-        //    | resource |
-        //    | Simple password             |
-        //    | Password and description   |
-        //    | Password description totp   |
         @JvmStatic
-        @Parameterized.Parameters(name = "Resource name: {0}")
-        fun resourceNames() =
-            listOf(
-                "Simple password",
-                "Password and description",
-                "Password description totp",
-            )
+        @Parameterized.Parameters(name = "Resource type: {0}")
+        fun resourceTypes() = TestResourceType.entries
     }
 }

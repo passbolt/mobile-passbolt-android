@@ -131,7 +131,7 @@ class SettingsTest : KoinTest {
     fun asAMobileUserOnTheMainSettingsPageICanSeeTheListOfSettingsIHaveAccessTo() {
         //    Given     that I am #MOBILE_USER_ON_SETTINGS_PAGE
         //    When      I'm staying on the Settings page
-        onView(withId(com.passbolt.mobile.android.feature.settings.R.id.settingsNav)).perform(click())
+        onView(withId(com.passbolt.mobile.android.feature.settings.R.id.settingsNavCompose)).perform(click())
 
         composeTestRule.apply {
             waitForIdle()
@@ -164,7 +164,7 @@ class SettingsTest : KoinTest {
     @Test
     fun asAnAndroidUserICanSeeAppSettings() {
         //    Given     that I am #MOBILE_USER_ON_SETTINGS_PAGE
-        onView(withId(com.passbolt.mobile.android.feature.settings.R.id.settingsNav)).perform(click())
+        onView(withId(com.passbolt.mobile.android.feature.settings.R.id.settingsNavCompose)).perform(click())
 
         composeTestRule.apply {
             waitForIdle()
@@ -204,7 +204,7 @@ class SettingsTest : KoinTest {
     @Test
     fun asAnAndroidUserICanSeeExpertSettings() {
         //    Given     that I am #MOBILE_USER_ON_SETTINGS_PAGE
-        onView(withId(com.passbolt.mobile.android.feature.settings.R.id.settingsNav)).perform(click())
+        onView(withId(com.passbolt.mobile.android.feature.settings.R.id.settingsNavCompose)).perform(click())
         composeTestRule.apply {
             waitForIdle()
             //    And	    I’m on the “App settings” screen
@@ -238,7 +238,7 @@ class SettingsTest : KoinTest {
     @Test
     fun asAnAndroidUserICanEnableDeveloperMode() {
         //    Given     that I am #MOBILE_USER_ON_SETTINGS_PAGE
-        onView(withId(com.passbolt.mobile.android.feature.settings.R.id.settingsNav)).perform(click())
+        onView(withId(com.passbolt.mobile.android.feature.settings.R.id.settingsNavCompose)).perform(click())
 
         composeTestRule.apply {
             waitForIdle()
@@ -258,7 +258,7 @@ class SettingsTest : KoinTest {
     @Test
     fun asAnAndroidUserICanDisableDeveloperMode() {
         //    Given     that I am #MOBILE_USER_ON_SETTINGS_PAGE
-        onView(withId(com.passbolt.mobile.android.feature.settings.R.id.settingsNav)).perform(click())
+        onView(withId(com.passbolt.mobile.android.feature.settings.R.id.settingsNavCompose)).perform(click())
 
         composeTestRule.apply {
             waitForIdle()
@@ -277,7 +277,7 @@ class SettingsTest : KoinTest {
     @Test
     fun asAnAndroidUserICanHideDeviceIsRootedDialog() {
         //    Given     that I am #MOBILE_USER_ON_SETTINGS_PAGE
-        onView(withId(com.passbolt.mobile.android.feature.settings.R.id.settingsNav)).perform(click())
+        onView(withId(com.passbolt.mobile.android.feature.settings.R.id.settingsNavCompose)).perform(click())
 
         composeTestRule.apply {
             waitForIdle()
@@ -298,7 +298,7 @@ class SettingsTest : KoinTest {
         //    When 	    I click on the “Accounts” button
         //    Then      I see the “Accounts” title
         //    And 	    I see the back button to go to the main settings page
-        onView(withId(com.passbolt.mobile.android.feature.settings.R.id.settingsNav)).perform(click())
+        onView(withId(com.passbolt.mobile.android.feature.settings.R.id.settingsNavCompose)).perform(click())
 
         composeTestRule.apply {
             waitForIdle()
@@ -332,7 +332,7 @@ class SettingsTest : KoinTest {
         //    And       I completed the login step
         //    And       Biometric is disabled on my device
         //    And       I am on the settings page
-        onView(withId(com.passbolt.mobile.android.feature.settings.R.id.settingsNav)).perform(click())
+        onView(withId(com.passbolt.mobile.android.feature.settings.R.id.settingsNavCompose)).perform(click())
 
         composeTestRule.apply {
             waitForIdle()
@@ -355,7 +355,7 @@ class SettingsTest : KoinTest {
         //    And       I completed the login step
         //    And       Autofill is enabled
         //    And       I am on the settings page
-        onView(withId(com.passbolt.mobile.android.feature.settings.R.id.settingsNav)).perform(click())
+        onView(withId(com.passbolt.mobile.android.feature.settings.R.id.settingsNavCompose)).perform(click())
 
         composeTestRule.apply {
             waitForIdle()
@@ -376,7 +376,7 @@ class SettingsTest : KoinTest {
 
         //    Given     that I am #MOBILE_USER_ON_SETTINGS_PAGE
         //    Then      I see the “Terms & licences” title
-        onView(withId(com.passbolt.mobile.android.feature.settings.R.id.settingsNav)).perform(click())
+        onView(withId(com.passbolt.mobile.android.feature.settings.R.id.settingsNavCompose)).perform(click())
 
         composeTestRule.apply {
             waitForIdle()
@@ -402,7 +402,7 @@ class SettingsTest : KoinTest {
         //    And       the Passbolt application is already opened
         //    And       I completed the login step
         //    And       I am on the settings page
-        onView(withId(com.passbolt.mobile.android.feature.settings.R.id.settingsNav)).perform(click())
+        onView(withId(com.passbolt.mobile.android.feature.settings.R.id.settingsNavCompose)).perform(click())
         composeTestRule.apply {
             waitForIdle()
             onNodeWithText(getString(LocalizationR.string.settings_terms_and_licenses)).performClick()
@@ -419,7 +419,7 @@ class SettingsTest : KoinTest {
     @Test
     fun asAnAndroidUserISeeDebugLogs() {
         //    Given     that I am #MOBILE_USER_ON_SETTINGS_PAGE
-        onView(withId(com.passbolt.mobile.android.feature.settings.R.id.settingsNav)).perform(click())
+        onView(withId(com.passbolt.mobile.android.feature.settings.R.id.settingsNavCompose)).perform(click())
 
         composeTestRule.apply {
             waitForIdle()
@@ -459,7 +459,7 @@ class SettingsTest : KoinTest {
         //    And       the Passbolt application is already opened
         //    And       I completed the login step
         //    And       I am on the settings page
-        onView(withId(com.passbolt.mobile.android.feature.settings.R.id.settingsNav)).perform(click())
+        onView(withId(com.passbolt.mobile.android.feature.settings.R.id.settingsNavCompose)).perform(click())
 
         composeTestRule.apply {
             waitForIdle()
@@ -483,7 +483,7 @@ class SettingsTest : KoinTest {
     fun asALoggedInMobileUserOnTheSettingsPageINeedToConfirmSignOut() {
         //    Given     that I am a mobile user with the application installed
         //    And       I am on the settings page
-        onView(withId(com.passbolt.mobile.android.feature.settings.R.id.settingsNav)).perform(click())
+        onView(withId(com.passbolt.mobile.android.feature.settings.R.id.settingsNavCompose)).perform(click())
 
         composeTestRule.apply {
             waitForIdle()
