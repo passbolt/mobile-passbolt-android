@@ -98,12 +98,15 @@ class ResourceIconProvider(
         resourceTypeId: String,
         backgroundHexString: String?,
     ): Drawable {
+        val resourceTypeIdToSlugMapping = resourceTypeIdToSlugMappingProvider.provideMappingForAccount(selectedAccount)
+        val slug = resourceTypeIdToSlugMapping[UUID.fromString(resourceTypeId)]
         val contentType =
-            ContentType.fromSlug(
-                resourceTypeIdToSlugMappingProvider.provideMappingForAccount(selectedAccount)[
-                    UUID.fromString(resourceTypeId),
-                ]!!,
-            )
+            if (slug != null) {
+                ContentType.fromSlug(slug)
+            } else {
+                Timber.e("Encountered null slug; Resource type mapping size: ${resourceTypeIdToSlugMapping.size} ")
+                null
+            }
 
         val drawableRes =
             when (contentType) {
@@ -111,6 +114,7 @@ class ResourceIconProvider(
                 PasswordDescriptionTotp, V5DefaultWithTotp -> CoreUiR.drawable.passbolt_totp_password_with_totp
                 PasswordString, V5PasswordString -> CoreUiR.drawable.passbolt_password
                 Totp, V5TotpStandalone -> CoreUiR.drawable.passbolt_totp
+                null -> null
             }
 
         return createCircleDrawableWithIcon(
@@ -122,7 +126,7 @@ class ResourceIconProvider(
 
     private suspend fun createCircleDrawableWithIcon(
         backgroundColorHex: String?,
-        @DrawableRes vectorResId: Int,
+        @DrawableRes vectorResId: Int?,
         context: Context,
         withSelectedBorder: Boolean = false,
         borderWidthDp: Float = 4f,
@@ -138,26 +142,32 @@ class ResourceIconProvider(
                 }
 
             val icon =
-                ContextCompat.getDrawable(context, vectorResId)?.apply {
-                    setTint(iconTint)
+                vectorResId?.let { vectorResId ->
+                    ContextCompat.getDrawable(context, vectorResId)?.apply {
+                        setTint(iconTint)
+                    }
                 }
 
-            if (!withSelectedBorder) {
-                LayerDrawable(arrayOf(backgroundShape, icon)).apply {
-                    setLayerGravity(1, Gravity.CENTER)
+            if (icon != null) {
+                if (!withSelectedBorder) {
+                    LayerDrawable(arrayOf(backgroundShape, icon)).apply {
+                        setLayerGravity(1, Gravity.CENTER)
+                    }
+                } else {
+                    val borderColor = ContextCompat.getColor(context, CoreUiR.color.primary)
+
+                    val borderShape =
+                        ShapeDrawable(OvalShape()).apply {
+                            paint.color = borderColor
+                        }
+
+                    LayerDrawable(arrayOf(borderShape, backgroundShape, icon)).apply {
+                        val borderInset = (borderWidthDp * density).toInt()
+                        setLayerInset(1, borderInset, borderInset, borderInset, borderInset)
+                    }
                 }
             } else {
-                val borderColor = ContextCompat.getColor(context, CoreUiR.color.primary)
-
-                val borderShape =
-                    ShapeDrawable(OvalShape()).apply {
-                        paint.color = borderColor
-                    }
-
-                LayerDrawable(arrayOf(borderShape, backgroundShape, icon)).apply {
-                    val borderInset = (borderWidthDp * density).toInt()
-                    setLayerInset(1, borderInset, borderInset, borderInset, borderInset)
-                }
+                ContextCompat.getDrawable(context, CoreUiR.drawable.ic_empty_placeholder)!!
             }
         }
 

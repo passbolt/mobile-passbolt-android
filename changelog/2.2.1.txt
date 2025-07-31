@@ -1,0 +1,4 @@
+# Passbolt 2.2.1-40 Android app release notes
+
+## Fixed
+- Fix crash related to a possible race condition when generating resource icon
