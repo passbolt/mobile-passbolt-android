@@ -32,6 +32,8 @@ interface KeyInspectorMoreMenuContract {
         fun showShareSheet(keyText: String)
 
         fun showFailedToGeneratePublicKey(message: String)
+
+        fun close()
     }
 
     interface Presenter : BaseContract.Presenter<View> {
