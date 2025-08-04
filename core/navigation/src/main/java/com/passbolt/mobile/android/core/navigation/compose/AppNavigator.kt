@@ -2,7 +2,6 @@ package com.passbolt.mobile.android.core.navigation.compose
 
 import android.content.Context
 import android.content.Intent
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.core.content.FileProvider.getUriForFile
 import androidx.navigation3.runtime.NavKey
@@ -42,7 +41,7 @@ import java.io.File
 class AppNavigator(
     private val externalDeeplinkHandler: ExternalDeeplinkHandler,
 ) : KoinComponent {
-    val backStack: SnapshotStateList<NavKey> = mutableStateListOf()
+    lateinit var backStack: SnapshotStateList<NavKey>
 
     fun navigateToKey(key: NavKey) = backStack.add(key)
 

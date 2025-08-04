@@ -48,7 +48,10 @@ class KeyInspectorMoreMenuPresenter(
             getPrivateKeyUseCase.execute(Unit).privateKey?.let {
                 when (val publicKeyResult = openPgp.generatePublicKey(it)) {
                     is OpenPgpResult.Error -> view?.showFailedToGeneratePublicKey(publicKeyResult.error.message)
-                    is OpenPgpResult.Result -> view?.showShareSheet(publicKeyResult.result)
+                    is OpenPgpResult.Result -> {
+                        view?.close()
+                        view?.showShareSheet(publicKeyResult.result)
+                    }
                 }
             }
         }
@@ -57,6 +60,7 @@ class KeyInspectorMoreMenuPresenter(
     private fun sharePrivateKey() {
         scope.launch {
             getPrivateKeyUseCase.execute(Unit).privateKey?.let {
+                view?.close()
                 view?.showShareSheet(it)
             }
         }

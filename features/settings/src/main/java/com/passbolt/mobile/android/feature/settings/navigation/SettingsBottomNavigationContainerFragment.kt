@@ -30,14 +30,11 @@ import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import com.passbolt.mobile.android.core.navigation.compose.AppNavigation
-import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
-import com.passbolt.mobile.android.core.navigation.compose.keys.SettingsNavigationKey
-import org.koin.compose.koinInject
 
 // this fragment is now a container for compose screens with navigation
 // required by bottom navigation handling
 // to be removed after all bottom navigation screens are migrated to compose
-class SettingsBottomSheetContainerFragment : Fragment() {
+class SettingsBottomNavigationContainerFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -45,10 +42,6 @@ class SettingsBottomSheetContainerFragment : Fragment() {
     ): View =
         ComposeView(requireContext()).apply {
             setContent {
-                koinInject<AppNavigator>().apply {
-                    backStack.add(SettingsNavigationKey.SettingsMain)
-                }
-
                 AppNavigation()
             }
         }

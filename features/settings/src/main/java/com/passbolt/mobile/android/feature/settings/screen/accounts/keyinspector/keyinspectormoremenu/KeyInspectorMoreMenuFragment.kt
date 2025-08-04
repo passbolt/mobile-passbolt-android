@@ -103,6 +103,10 @@ class KeyInspectorMoreMenuFragment :
         startActivity(shareIntent)
     }
 
+    override fun close() {
+        dismiss()
+    }
+
     override fun showFailedToGeneratePublicKey(message: String) {
         showSnackbar(
             messageResId = LocalizationR.string.key_inspector_menu_failed_to_generate_public_key,

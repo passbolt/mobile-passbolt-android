@@ -4,15 +4,24 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
+import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.runtime.rememberNavBackStack
+import androidx.navigation3.runtime.rememberSavedStateNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
+import androidx.navigation3.ui.rememberSceneSetupNavEntryDecorator
 import com.passbolt.mobile.android.core.navigation.compose.base.Feature
 import com.passbolt.mobile.android.core.navigation.compose.base.FeatureModuleNavigation
+import com.passbolt.mobile.android.core.navigation.compose.keys.SettingsNavigationKey
 import org.koin.compose.koinInject
 import org.koin.core.qualifier.named
 
 @Composable
 fun AppNavigation(navigator: AppNavigator = koinInject()) {
+    rememberNavBackStack(SettingsNavigationKey.SettingsMain).let { backstack ->
+        navigator.backStack = backstack
+    }
+
     val featureModulesNavigation: Set<FeatureModuleNavigation> =
         setOf(
             koinInject<FeatureModuleNavigation>(named(Feature.SETTINGS)),
@@ -22,6 +31,12 @@ fun AppNavigation(navigator: AppNavigator = koinInject()) {
     NavDisplay(
         backStack = navigator.backStack,
         onBack = { navigator.navigateBack() },
+        entryDecorators =
+            listOf(
+                rememberSceneSetupNavEntryDecorator(),
+                rememberSavedStateNavEntryDecorator(),
+                rememberViewModelStoreNavEntryDecorator(),
+            ),
         entryProvider =
             entryProvider {
                 featureModulesNavigation.forEach { installer ->
