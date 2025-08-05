@@ -31,4 +31,6 @@ sealed interface KeyInspectorIntent {
     object CopyFingerprint : KeyInspectorIntent
 
     object OpenMoreMenu : KeyInspectorIntent
+
+    object CloseMoreMenu : KeyInspectorIntent
 }

@@ -31,6 +31,7 @@ import com.passbolt.mobile.android.core.ui.formatter.FingerprintFormatter
 import com.passbolt.mobile.android.core.users.user.FetchCurrentUserUseCase
 import com.passbolt.mobile.android.feature.authentication.compose.AuthenticatedViewModel
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
+import com.passbolt.mobile.android.feature.settings.screen.accounts.keyinspector.KeyInspectorIntent.CloseMoreMenu
 import com.passbolt.mobile.android.feature.settings.screen.accounts.keyinspector.KeyInspectorIntent.CopyFingerprint
 import com.passbolt.mobile.android.feature.settings.screen.accounts.keyinspector.KeyInspectorIntent.CopyUid
 import com.passbolt.mobile.android.feature.settings.screen.accounts.keyinspector.KeyInspectorIntent.GoBack
@@ -38,11 +39,11 @@ import com.passbolt.mobile.android.feature.settings.screen.accounts.keyinspector
 import com.passbolt.mobile.android.feature.settings.screen.accounts.keyinspector.KeyInspectorScreenSideEffect.AddFingerprintToClipboard
 import com.passbolt.mobile.android.feature.settings.screen.accounts.keyinspector.KeyInspectorScreenSideEffect.AddUidToClipboard
 import com.passbolt.mobile.android.feature.settings.screen.accounts.keyinspector.KeyInspectorScreenSideEffect.ErrorSnackbarType.FAILED_TO_FETCH_KEY
-import com.passbolt.mobile.android.feature.settings.screen.accounts.keyinspector.KeyInspectorScreenSideEffect.NavigateToKeyInspectorMoreMenu
 import com.passbolt.mobile.android.feature.settings.screen.accounts.keyinspector.KeyInspectorScreenSideEffect.NavigateUp
 import com.passbolt.mobile.android.feature.settings.screen.accounts.keyinspector.KeyInspectorScreenSideEffect.ShowErrorSnackbar
 import com.passbolt.mobile.android.mappers.AccountModelMapper
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 internal class KeyInspectorViewModel(
     private val fetchCurrentUserUseCase: FetchCurrentUserUseCase,
@@ -52,6 +53,7 @@ internal class KeyInspectorViewModel(
     coroutineLaunchContext: CoroutineLaunchContext,
 ) : AuthenticatedViewModel<KeyInspectorState, KeyInspectorScreenSideEffect>(KeyInspectorState()) {
     init {
+        Timber.e("new view mdoel")
         viewModelScope.launch(coroutineLaunchContext.default) {
             updateViewState { copy(showProgress = true) }
             loadInitialValues()
@@ -64,7 +66,8 @@ internal class KeyInspectorViewModel(
             CopyFingerprint -> emitSideEffect(AddFingerprintToClipboard(viewState.value.fingerprint))
             CopyUid -> emitSideEffect(AddUidToClipboard(viewState.value.uid))
             GoBack -> emitSideEffect(NavigateUp)
-            OpenMoreMenu -> emitSideEffect(NavigateToKeyInspectorMoreMenu)
+            OpenMoreMenu -> updateViewState { copy(showBottomSheet = true) }
+            CloseMoreMenu -> updateViewState { copy(showBottomSheet = false) }
         }
     }
 

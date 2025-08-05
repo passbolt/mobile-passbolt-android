@@ -1,8 +1,5 @@
 package com.passbolt.mobile.android.feature.settings.screen.accounts.keyinspector.keyinspectormoremenu
 
-import org.koin.androidx.viewmodel.dsl.viewModelOf
-import org.koin.core.module.Module
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -26,6 +23,11 @@ import org.koin.core.module.Module
  * @since v1.0
  */
 
-fun Module.keyInspectorMoreMenuModule() {
-    viewModelOf(::KeyInspectorBottomSheetViewModel)
+data class KeyInspectorBottomSheetState(
+    val currentExportFlow: CurrentFlow? = null,
+) {
+    enum class CurrentFlow {
+        EXPORT_PRIVATE_KEY,
+        EXPORT_PUBLIC_KEY,
+    }
 }

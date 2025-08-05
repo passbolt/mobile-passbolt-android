@@ -33,4 +33,5 @@ data class KeyInspectorState(
     val keyLength: Int = 0,
     val algorithm: String = "",
     val showProgress: Boolean = false,
+    val showBottomSheet: Boolean = false,
 )
