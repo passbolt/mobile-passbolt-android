@@ -23,18 +23,23 @@
 
 package com.passbolt.mobile.android.feature.accountdetails
 
+import PassboltTheme
 import android.os.Bundle
-import com.passbolt.mobile.android.core.mvp.viewbinding.BindingActivity
+import androidx.activity.compose.setContent
+import androidx.appcompat.app.AppCompatActivity
 import com.passbolt.mobile.android.core.security.runtimeauth.RuntimeAuthenticatedFlag
-import com.passbolt.mobile.android.feature.accountdetails.databinding.ActivityAccountDetailsBinding
+import com.passbolt.mobile.android.feature.accountdetails.screen.AccountDetailsScreen
 import org.koin.android.ext.android.inject
 
 // NOTE: When changing name or package read core/navigation/README.md
-class AccountDetailsActivity : BindingActivity<ActivityAccountDetailsBinding>(ActivityAccountDetailsBinding::inflate) {
+class AccountDetailsActivity : AppCompatActivity() {
     private val runtimeAuthenticatedFlag: RuntimeAuthenticatedFlag by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         runtimeAuthenticatedFlag.require(this)
+        setContent {
+            PassboltTheme { AccountDetailsScreen() }
+        }
     }
 }

@@ -1,7 +1,11 @@
 package com.passbolt.mobile.android.feature.accountdetails
 
+import com.passbolt.mobile.android.core.navigation.compose.base.Feature
+import com.passbolt.mobile.android.core.navigation.compose.base.FeatureModuleNavigation
+import com.passbolt.mobile.android.feature.accountdetails.navigation.AccountDetailsFeatureNavigation
 import com.passbolt.mobile.android.feature.accountdetails.screen.accountDetailsModule
 import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccountonboarding.transferAccountOnboardingModule
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 /**
@@ -29,6 +33,10 @@ import org.koin.dsl.module
 
 val accountDetailsModule =
     module {
+        single<FeatureModuleNavigation>(named(Feature.ACCOUNT_DETAILS)) {
+            AccountDetailsFeatureNavigation()
+        }
+
         accountDetailsModule()
         transferAccountOnboardingModule()
     }

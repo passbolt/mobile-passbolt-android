@@ -1,7 +1,6 @@
 package com.passbolt.mobile.android.core.ui.textinputfield
 
 import android.content.Context
-import android.text.InputType
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
@@ -12,10 +11,8 @@ import android.view.LayoutInflater
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.res.use
 import androidx.core.widget.addTextChangedListener
-import com.google.android.material.textfield.TextInputLayout
 import com.passbolt.mobile.android.core.ui.R
 import com.passbolt.mobile.android.core.ui.databinding.ViewTextInputBinding
-import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -76,7 +73,8 @@ open class TextInputView
         private val requiredTitle: Spannable
             get() =
                 SpannableString(REQUIRED_TITLE_FORMAT.format(title)).apply {
-                    setSpan( // the asterisk at the end is red
+                    setSpan(
+                        // the asterisk at the end is red
                         ForegroundColorSpan(context.getColor(R.color.red)),
                         length - 1,
                         length,
@@ -100,24 +98,6 @@ open class TextInputView
         override fun onDetachedFromWindow() {
             binding.input.removeTextChangedListener(textWatcher)
             super.onDetachedFromWindow()
-        }
-
-        open fun enableSecretInput() =
-            with(binding.textLayout) {
-                editText?.apply {
-                    isSingleLine = true
-                    inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
-                    isSaveEnabled = false
-                }
-                endIconMode = TextInputLayout.END_ICON_PASSWORD_TOGGLE
-            }
-
-        fun setDefaultHint(name: String) {
-            hint =
-                String.format(
-                    resources.getString(LocalizationR.string.input_default_hint),
-                    name.replaceFirstChar { it.lowercase() },
-                )
         }
 
         private fun parseAttributes(attrs: AttributeSet?) {

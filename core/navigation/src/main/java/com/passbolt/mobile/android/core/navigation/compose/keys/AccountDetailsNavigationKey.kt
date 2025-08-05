@@ -20,28 +20,12 @@
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+package com.passbolt.mobile.android.core.navigation.compose.keys
 
-package com.passbolt.mobile.android.feature.accountdetails.screen.backstrategy
+import androidx.navigation3.runtime.NavKey
+import kotlinx.serialization.Serializable
 
-import android.app.Activity
-import androidx.navigation.NavController
-
-interface AccountDetailsBackNavStrategy {
-    fun backClick()
-}
-
-class OwnActivityBackNavStrategy(
-    private val activity: Activity,
-) : AccountDetailsBackNavStrategy {
-    override fun backClick() {
-        activity.finish()
-    }
-}
-
-class FragmentBackstackNavStrategy(
-    private val navController: NavController,
-) : AccountDetailsBackNavStrategy {
-    override fun backClick() {
-        navController.popBackStack()
-    }
+sealed interface AccountDetailsNavigationKey : NavKey {
+    @Serializable
+    object AccountDetails : AccountDetailsNavigationKey
 }

@@ -36,9 +36,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
 import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
-import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.AccountDetails
 import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.ManageAccounts
 import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.TransferAccount
+import com.passbolt.mobile.android.core.navigation.compose.keys.AccountDetailsNavigationKey.AccountDetails
 import com.passbolt.mobile.android.core.navigation.compose.keys.SettingsNavigationKey.KeyInspector
 import com.passbolt.mobile.android.core.ui.R
 import com.passbolt.mobile.android.core.ui.compose.menu.OpenableSettingsItem
@@ -73,7 +73,7 @@ internal fun AccountsSettingsScreen(
 
     SideEffectDispatcher(viewModel.sideEffect) {
         when (it) {
-            NavigateToAccountDetails -> navigator.startNavigationActivity(context, AccountDetails)
+            NavigateToAccountDetails -> navigator.navigateToKey(AccountDetails)
             NavigateToKeyInspector -> navigator.navigateToKey(KeyInspector)
             NavigateToManageAccounts -> navigator.startNavigationActivity(context, ManageAccounts)
             NavigateToTransferAccount -> navigator.startNavigationActivity(context, TransferAccount)

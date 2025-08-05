@@ -1,3 +1,5 @@
+package com.passbolt.mobile.android.feature.accountdetails.screen
+
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -20,10 +22,8 @@
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-package com.passbolt.mobile.android.core.navigation.compose.base
+internal sealed interface AccountDetailsScreenSideEffect {
+    data object NavigateUp : AccountDetailsScreenSideEffect
 
-enum class Feature {
-    SETTINGS,
-    LOGS,
-    ACCOUNT_DETAILS,
+    data object NavigateToTransferAccount : AccountDetailsScreenSideEffect
 }

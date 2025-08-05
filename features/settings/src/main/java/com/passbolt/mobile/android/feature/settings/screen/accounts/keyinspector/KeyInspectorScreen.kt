@@ -171,8 +171,7 @@ private fun KeyInspectorScreen(
     Box(
         modifier =
             modifier
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 16.dp),
+                .verticalScroll(rememberScrollState()),
     ) {
         Column {
             TitleAppBar(
@@ -219,6 +218,7 @@ private fun KeyInspectorScreen(
                             icon = CoreUiR.drawable.ic_copy,
                             action = { onIntent(KeyInspectorIntent.CopyUid) },
                         ),
+                    modifier = Modifier.padding(horizontal = 16.dp),
                 )
             }
 
@@ -233,6 +233,7 @@ private fun KeyInspectorScreen(
                             icon = CoreUiR.drawable.ic_copy,
                             action = { onIntent(KeyInspectorIntent.CopyFingerprint) },
                         ),
+                    modifier = Modifier.padding(horizontal = 16.dp),
                 )
             }
 
@@ -241,6 +242,7 @@ private fun KeyInspectorScreen(
                 LabelledText(
                     label = stringResource(LocalizationR.string.key_inspector_created),
                     text = state.created,
+                    modifier = Modifier.padding(horizontal = 16.dp),
                 )
             }
 
@@ -249,6 +251,7 @@ private fun KeyInspectorScreen(
                 LabelledText(
                     label = stringResource(LocalizationR.string.key_inspector_expires),
                     text = state.expires,
+                    modifier = Modifier.padding(horizontal = 16.dp),
                 )
             }
 
@@ -257,6 +260,7 @@ private fun KeyInspectorScreen(
                 LabelledText(
                     label = stringResource(LocalizationR.string.key_inspector_key_length),
                     text = state.keyLength.toString(),
+                    modifier = Modifier.padding(horizontal = 16.dp),
                 )
             }
 
@@ -265,6 +269,7 @@ private fun KeyInspectorScreen(
                 LabelledText(
                     label = stringResource(LocalizationR.string.key_inspector_key_algorithm),
                     text = state.algorithm,
+                    modifier = Modifier.padding(horizontal = 16.dp),
                 )
             }
         }
