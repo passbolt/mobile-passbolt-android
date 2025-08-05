@@ -25,8 +25,6 @@ package com.passbolt.mobile.android.feature.settings.screen.accounts.keyinspecto
 internal sealed interface KeyInspectorScreenSideEffect {
     data object NavigateUp : KeyInspectorScreenSideEffect
 
-    data object NavigateToKeyInspectorMoreMenu : KeyInspectorScreenSideEffect
-
     data class ShowErrorSnackbar(
         val type: ErrorSnackbarType,
         val errorMessage: String? = null,

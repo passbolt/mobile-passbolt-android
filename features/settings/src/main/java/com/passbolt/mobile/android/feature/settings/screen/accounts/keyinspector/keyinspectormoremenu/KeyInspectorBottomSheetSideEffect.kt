@@ -1,3 +1,5 @@
+package com.passbolt.mobile.android.feature.settings.screen.accounts.keyinspector.keyinspectormoremenu
+
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -20,27 +22,21 @@
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+internal sealed interface KeyInspectorBottomSheetSideEffect {
+    data object Dismiss : KeyInspectorBottomSheetSideEffect
 
-package com.passbolt.mobile.android.feature.settings.screen.accounts.keyinspector.keyinspectormoremenu
+    data object ConfirmPassphrase : KeyInspectorBottomSheetSideEffect
 
-import com.passbolt.mobile.android.core.mvp.BaseContract
+    data class ShowErrorSnackbar(
+        val type: ErrorSnackbarType,
+        val errorMessage: String?,
+    ) : KeyInspectorBottomSheetSideEffect
 
-interface KeyInspectorMoreMenuContract {
-    interface View : BaseContract.View {
-        fun navigateToRefreshPassphrase()
+    data class ShowTextShareSheet(
+        val text: String,
+    ) : KeyInspectorBottomSheetSideEffect
 
-        fun showShareSheet(keyText: String)
-
-        fun showFailedToGeneratePublicKey(message: String)
-
-        fun close()
-    }
-
-    interface Presenter : BaseContract.Presenter<View> {
-        fun exportPrivateKeyClick()
-
-        fun exportPublicKeyClick()
-
-        fun authenticationSucceeded()
+    enum class ErrorSnackbarType {
+        FAILED_TO_GENERATE_PUBLIC_KEY,
     }
 }

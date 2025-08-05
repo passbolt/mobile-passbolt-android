@@ -1,8 +1,3 @@
-package com.passbolt.mobile.android.feature.settings.screen.accounts.keyinspector.keyinspectormoremenu
-
-import org.koin.androidx.viewmodel.dsl.viewModelOf
-import org.koin.core.module.Module
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -26,6 +21,14 @@ import org.koin.core.module.Module
  * @since v1.0
  */
 
-fun Module.keyInspectorMoreMenuModule() {
-    viewModelOf(::KeyInspectorBottomSheetViewModel)
+package com.passbolt.mobile.android.feature.settings.screen.accounts.keyinspector.keyinspectormoremenu
+
+internal sealed interface KeyInspectorBottomSheetIntent {
+    object Close : KeyInspectorBottomSheetIntent
+
+    object ExportPrivateKey : KeyInspectorBottomSheetIntent
+
+    object ExportPublicKey : KeyInspectorBottomSheetIntent
+
+    object RefreshedPassphrase : KeyInspectorBottomSheetIntent
 }

@@ -96,4 +96,24 @@ class AppNavigator(
     fun openChromeNativeAutofillSettings(context: Context) {
         externalDeeplinkHandler.openChromeNativeAutofillSettings(context)
     }
+
+    fun startTextShareSheet(
+        context: Context,
+        text: String,
+        shareSheetTitle: String,
+    ) {
+        val sendIntent: Intent =
+            Intent().apply {
+                action = Intent.ACTION_SEND
+                putExtra(Intent.EXTRA_TEXT, text)
+                type = "text/plain"
+            }
+
+        val shareIntent =
+            Intent.createChooser(
+                sendIntent,
+                shareSheetTitle,
+            )
+        context.startActivity(shareIntent)
+    }
 }
