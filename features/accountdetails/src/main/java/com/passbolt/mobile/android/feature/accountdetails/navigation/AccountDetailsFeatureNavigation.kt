@@ -20,10 +20,20 @@
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-package com.passbolt.mobile.android.core.navigation.compose.base
+package com.passbolt.mobile.android.feature.accountdetails.navigation
 
-enum class Feature {
-    SETTINGS,
-    LOGS,
-    ACCOUNT_DETAILS,
+import PassboltTheme
+import androidx.navigation3.runtime.entry
+import com.passbolt.mobile.android.core.navigation.compose.base.EntryProviderInstaller
+import com.passbolt.mobile.android.core.navigation.compose.base.FeatureModuleNavigation
+import com.passbolt.mobile.android.core.navigation.compose.keys.AccountDetailsNavigationKey
+import com.passbolt.mobile.android.feature.accountdetails.screen.AccountDetailsScreen
+
+class AccountDetailsFeatureNavigation : FeatureModuleNavigation {
+    override fun provideEntryProviderInstaller(): EntryProviderInstaller =
+        {
+            entry<AccountDetailsNavigationKey.AccountDetails> {
+                PassboltTheme { AccountDetailsScreen() }
+            }
+        }
 }

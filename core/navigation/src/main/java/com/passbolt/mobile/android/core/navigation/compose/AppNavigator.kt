@@ -13,6 +13,9 @@ import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.Ac
 import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.ManageAccounts
 import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.StartUp
 import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.TransferAccount
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import org.koin.core.component.KoinComponent
 import java.io.File
 
@@ -43,9 +46,19 @@ class AppNavigator(
 ) : KoinComponent {
     lateinit var backStack: SnapshotStateList<NavKey>
 
-    fun navigateToKey(key: NavKey) = backStack.add(key)
+    private val _currentBackStackItem = MutableStateFlow<NavKey?>(null)
+    val currentBackStackItem: StateFlow<NavKey?> = _currentBackStackItem.asStateFlow()
 
-    fun navigateBack(): Any? = backStack.removeLastOrNull()
+    fun navigateToKey(key: NavKey) {
+        backStack.add(key)
+        _currentBackStackItem.value = key
+    }
+
+    fun navigateBack(): Any? {
+        val result = backStack.removeLastOrNull()
+        _currentBackStackItem.value = backStack.lastOrNull()
+        return result
+    }
 
     fun startNavigationActivity(
         context: Context,

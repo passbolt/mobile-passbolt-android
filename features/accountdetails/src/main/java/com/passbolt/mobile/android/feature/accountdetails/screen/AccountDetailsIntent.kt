@@ -20,10 +20,17 @@
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-package com.passbolt.mobile.android.core.navigation.compose.base
 
-enum class Feature {
-    SETTINGS,
-    LOGS,
-    ACCOUNT_DETAILS,
+package com.passbolt.mobile.android.feature.accountdetails.screen
+
+sealed interface AccountDetailsIntent {
+    object GoBack : AccountDetailsIntent
+
+    object SaveChanges : AccountDetailsIntent
+
+    object StartTransferAccount : AccountDetailsIntent
+
+    data class UpdateLabel(
+        val label: String,
+    ) : AccountDetailsIntent
 }

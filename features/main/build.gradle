@@ -26,6 +26,7 @@ dependencies {
     implementation project(':accounts')
     implementation project(':autofillresources')
     implementation project(':preferences')
+    implementation project(':navigation')
 
     implementation libs.navigation.fragment
     implementation libs.navigation.ui
@@ -34,6 +35,7 @@ dependencies {
     implementation libs.inappupdate.ktx
     implementation libs.inappreview.core
     implementation libs.inappreview.ktx
+    implementation libs.androidx.navigation3.runtime
 
     testImplementation project(':commontest')
 }

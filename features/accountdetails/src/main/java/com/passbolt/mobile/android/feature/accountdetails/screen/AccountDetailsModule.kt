@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.feature.accountdetails.screen
 
+import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.core.module.Module
 
 /**
@@ -26,14 +27,5 @@ import org.koin.core.module.Module
  */
 
 fun Module.accountDetailsModule() {
-    scope<AccountDetailsFragment> {
-        scoped<AccountDetailsContract.Presenter> {
-            AccountDetailsPresenter(
-                getSelectedAccountDataUseCase = get(),
-                coroutineLaunchContext = get(),
-                getSelectedAccountUseCase = get(),
-                updateAccountDataUseCase = get(),
-            )
-        }
-    }
+    viewModelOf(::AccountDetailsViewModel)
 }
