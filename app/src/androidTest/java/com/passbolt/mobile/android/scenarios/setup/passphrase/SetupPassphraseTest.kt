@@ -116,7 +116,7 @@ class SetupPassphraseTest : KoinTest {
         val url = managedAccountIntentCreator.getDomain()
         onView(withText(url)).check(matches(isDisplayed()))
         //    And       current user's avatar or the default avatar is presented
-        onView(withId(com.passbolt.mobile.android.feature.accountdetails.R.id.avatarImage)).check(matches(isDisplayed()))
+        onView(withId(com.passbolt.mobile.android.feature.authentication.R.id.avatarImage)).check(matches(isDisplayed()))
         //    And       a passphrase input field is presented
         onView(withId(CoreUiR.id.input)).check(matches(isDisplayed()))
         //    And       an eye icon to toggle passphrase visibility is presented
