@@ -10,6 +10,7 @@ import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetSessio
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.RefreshSessionUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.take
 import org.koin.core.component.KoinComponent
@@ -150,19 +151,21 @@ class AuthenticatedOperationRunner(
     }
 
     private suspend fun authenticateUsingSignInUi(reason: UnauthenticatedReason) {
-        if (appForegroundListener.isForeground()) {
-            Timber.d("Starting UI authentication")
-            needAuthenticationRefreshedFlow.tryEmit(reason)
-            onUiAuthenticationRequested()
-            authenticationRefreshedFlow
-                .drop(1) // drop initial value
-                .take(1) // wait for first session refreshed item
-                .collect {
-                    Timber.d("Authenticated operation runner $this got refreshed auth")
-                }
-        } else {
-            Timber.d("UI authentication requested but app is not in foreground, skipping")
+        if (!appForegroundListener.isForeground()) {
+            Timber.d("App is in background, waiting for foreground to start UI authentication")
+            appForegroundListener.appWentForegroundFlow.take(1).collect()
+            Timber.d("App is in foreground")
         }
+
+        Timber.d("Starting UI authentication")
+        needAuthenticationRefreshedFlow.tryEmit(reason)
+        onUiAuthenticationRequested()
+        authenticationRefreshedFlow
+            .drop(1) // drop initial value
+            .take(1) // wait for first session refreshed item
+            .collect {
+                Timber.d("Authenticated operation runner $this got refreshed auth")
+            }
     }
 }
 

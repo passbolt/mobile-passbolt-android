@@ -23,6 +23,7 @@
 
 package com.passbolt.mobile.android.feature.authentication.session
 
+import android.app.Activity
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticatedUseCaseOutput
@@ -35,6 +36,7 @@ import com.passbolt.mobile.android.core.passphrasememorycache.PassphraseMemoryCa
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetSessionExpiryUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.RefreshSessionUseCase
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.take
@@ -329,7 +331,9 @@ class AuthOperationRunnerTest {
                             override val authenticationState = Authenticated
                         }
                 }
+            val appForegroundFlow = MutableSharedFlow<Activity>()
             whenever(mockAppForegroundListener.isForeground()) doReturn false
+            whenever(mockAppForegroundListener.appWentForegroundFlow) doReturn appForegroundFlow
             mockGetSessionExpiryUseCase.stub {
                 onBlocking { execute(Unit) }.thenReturn(
                     GetSessionExpiryUseCase.Output.JwtWillExpire(

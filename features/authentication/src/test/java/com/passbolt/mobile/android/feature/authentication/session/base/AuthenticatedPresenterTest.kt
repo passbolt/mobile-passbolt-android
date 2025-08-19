@@ -23,6 +23,7 @@
 
 package com.passbolt.mobile.android.feature.authentication.session.base
 
+import android.app.Activity
 import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.core.navigation.AppForegroundListener
 import com.passbolt.mobile.android.core.passphrasememorycache.PassphraseMemoryCache
@@ -30,6 +31,7 @@ import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetSessio
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.RefreshSessionUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
@@ -134,7 +136,9 @@ class AuthenticatedPresenterTest {
                     RefreshSessionUseCase.Output.Failure,
                 )
             }
+            val appForegroundFlow = MutableSharedFlow<Activity>()
             whenever(appForegroundListener.isForeground()) doReturn false
+            whenever(appForegroundListener.appWentForegroundFlow) doReturn appForegroundFlow
             whenever(mockPassphraseMemoryCache.getSessionDurationSeconds()).thenReturn(null)
 
             presenter.attach(view)
@@ -158,7 +162,9 @@ class AuthenticatedPresenterTest {
                     ),
                 )
             }
+            val appForegroundFlow = MutableSharedFlow<Activity>()
             whenever(appForegroundListener.isForeground()) doReturn false
+            whenever(appForegroundListener.appWentForegroundFlow) doReturn appForegroundFlow
             whenever(mockPassphraseMemoryCache.getSessionDurationSeconds()).thenReturn(null)
 
             presenter.attach(view)
