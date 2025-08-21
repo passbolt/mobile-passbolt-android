@@ -49,10 +49,10 @@ import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
 import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
 import com.passbolt.mobile.android.core.ui.compose.topbar.BackNavigationIcon
 import com.passbolt.mobile.android.core.ui.compose.topbar.TitleAppBar
-import com.passbolt.mobile.android.logs.LogsComposeFragment.Companion.LOGS_FILE_AUTHORITY
 import com.passbolt.mobile.android.logs.LogsComposeFragment.Companion.LOGS_MIME_TYPE
 import com.passbolt.mobile.android.logs.LogsIntent.GoBack
 import com.passbolt.mobile.android.logs.LogsIntent.ShareLogs
+import com.passbolt.mobile.android.logs.LogsSideEffect.NavigateToLogsShareSheet
 import com.passbolt.mobile.android.logs.LogsSideEffect.NavigateUp
 import com.passbolt.mobile.android.logs.LogsSideEffect.ScrollLogsToLastLine
 import kotlinx.coroutines.flow.filter
@@ -89,11 +89,11 @@ internal fun LogsScreen(
                     .first()
                 logListState.scrollToItem(maxOf(state.value.logLines.lastIndex, 0))
             }
-            is LogsSideEffect.NavigateToLogsShareSheet -> {
+            is NavigateToLogsShareSheet -> {
                 navigator.startFileShareSheet(
                     context = context,
                     shareSheetTitle = context.getString(LocalizationR.string.logs_share_title),
-                    authority = LOGS_FILE_AUTHORITY,
+                    authority = LogsComposeFragment.getLogsFileProviderAuthority(context),
                     fileMimeType = LOGS_MIME_TYPE,
                     filePath = it.logsFilePath,
                 )

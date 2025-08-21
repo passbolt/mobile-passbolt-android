@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.logs
 
 import PassboltTheme
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -63,7 +64,7 @@ class LogsComposeFragment :
         val contentUri =
             getUriForFile(
                 requireContext(),
-                LOGS_FILE_AUTHORITY,
+                getLogsFileProviderAuthority(requireContext()),
                 File(logFilePath),
             )
 
@@ -86,6 +87,7 @@ class LogsComposeFragment :
 
     companion object {
         const val LOGS_MIME_TYPE = "text/plain"
-        const val LOGS_FILE_AUTHORITY = "com.passbolt.mobile.android.core.logger.logsfileprovider"
+
+        fun getLogsFileProviderAuthority(context: Context): String = "${context.packageName}.core.logger.logsfileprovider"
     }
 }
