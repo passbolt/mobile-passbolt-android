@@ -9,6 +9,8 @@ import androidx.navigation.fragment.navArgs
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
 import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
+import com.passbolt.mobile.android.core.ui.textinputfield.StatefulInput.State.Default
+import com.passbolt.mobile.android.core.ui.textinputfield.StatefulInput.State.Error
 import com.passbolt.mobile.android.feature.resourceform.databinding.FragmentNoteFormBinding
 import org.koin.android.ext.android.inject
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
@@ -86,6 +88,18 @@ class NoteFormFragment :
             bundleOf(EXTRA_NOTE to note),
         )
         findNavController().popBackStack()
+    }
+
+    override fun clearValidationErrors() {
+        requiredBinding.noteSubformView.noteInput.setState(Default)
+    }
+
+    override fun showNoteMaxLengthError(noteMaxLength: Int) {
+        requiredBinding.noteSubformView.noteInput.setState(
+            Error(
+                getString(LocalizationR.string.validation_max_length, noteMaxLength),
+            ),
+        )
     }
 
     companion object {

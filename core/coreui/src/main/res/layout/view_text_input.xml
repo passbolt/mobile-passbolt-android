@@ -29,7 +29,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/titleLabel"/>
 
-    <com.google.android.material.textfield.TextInputLayout
+    <com.passbolt.mobile.android.core.ui.textinputfield.NoMinHeightTextInputLayout
         android:id="@+id/textLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -43,6 +43,6 @@
             android:textSize="@dimen/sp_16"
             tools:hint="Hint"
             tools:text="Text" />
-    </com.google.android.material.textfield.TextInputLayout>
+    </com.passbolt.mobile.android.core.ui.textinputfield.NoMinHeightTextInputLayout>
 
 </merge>
