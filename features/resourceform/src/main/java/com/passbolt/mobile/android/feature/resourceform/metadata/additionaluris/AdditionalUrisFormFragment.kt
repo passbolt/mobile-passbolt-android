@@ -11,6 +11,8 @@ import com.passbolt.mobile.android.core.extension.initDefaultToolbar
 import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.extension.showSnackbar
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
+import com.passbolt.mobile.android.core.ui.textinputfield.StatefulInput.State.Default
+import com.passbolt.mobile.android.core.ui.textinputfield.StatefulInput.State.Error
 import com.passbolt.mobile.android.feature.resourceform.databinding.FragmentAdditionalUrisFormBinding
 import com.passbolt.mobile.android.ui.AdditionalUrisUiModel
 import org.koin.android.ext.android.inject
@@ -109,6 +111,33 @@ class AdditionalUrisFormFragment :
             length = Snackbar.LENGTH_SHORT,
             backgroundColor = CoreUiR.color.red,
         )
+    }
+
+    override fun clearValidationErrors() {
+        with(requiredBinding.additionalUrisSubformView) {
+            mainUriInput.setState(Default)
+            clearAllValidationErrors()
+        }
+    }
+
+    override fun showMainUriMaxLengthError(maxLength: Int) {
+        requiredBinding.additionalUrisSubformView.mainUriInput.setState(
+            Error(getString(LocalizationR.string.validation_max_length, maxLength)),
+        )
+    }
+
+    override fun showAdditionalUriMaxLengthError(
+        uiTag: UUID,
+        maxLength: Int,
+    ) {
+        requiredBinding.additionalUrisSubformView.setAdditionalUriError(
+            uiTag,
+            getString(LocalizationR.string.validation_max_length, maxLength),
+        )
+    }
+
+    override fun scrollToAdditionalUriWithError(uiTag: UUID) {
+        requiredBinding.additionalUrisSubformView.scrollToAdditionalUri(uiTag)
     }
 
     companion object {

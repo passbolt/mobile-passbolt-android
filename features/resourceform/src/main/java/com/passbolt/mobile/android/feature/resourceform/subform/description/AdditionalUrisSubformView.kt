@@ -7,6 +7,8 @@ import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
+import com.passbolt.mobile.android.core.ui.textinputfield.StatefulInput.State.Default
+import com.passbolt.mobile.android.core.ui.textinputfield.StatefulInput.State.Error
 import com.passbolt.mobile.android.core.ui.textinputfield.TextInputView
 import com.passbolt.mobile.android.feature.resourceform.R
 import com.passbolt.mobile.android.feature.resourceform.databinding.ViewAdditionalUrisSubformBinding
@@ -91,6 +93,7 @@ class AdditionalUrisSubformView
             view.findViewById<TextInputView>(R.id.additionalUriInput).apply {
                 tag = uiTag
                 text = url
+                setSingleLine()
                 setTextChangeListener { uri -> additionalUriChanged?.invoke(uiTag, uri) }
             }
 
@@ -108,6 +111,31 @@ class AdditionalUrisSubformView
         private fun setListeners() {
             addUriButton.setDebouncingOnClick {
                 addAdditionalUriClick?.invoke()
+            }
+        }
+
+        fun clearAllValidationErrors() {
+            for (i in 0 until additionalUrisContainer.childCount) {
+                val view = additionalUrisContainer.getChildAt(i)
+                view.findViewById<TextInputView>(R.id.additionalUriInput).apply {
+                    setState(Default)
+                }
+            }
+        }
+
+        fun setAdditionalUriError(
+            uiTag: UUID,
+            errorMessage: String,
+        ) {
+            additionalUrisContainer.findViewWithTag<TextInputView>(uiTag).setState(
+                Error(errorMessage),
+            )
+        }
+
+        fun scrollToAdditionalUri(uiTag: UUID) {
+            val scrolledView = additionalUrisContainer.findViewWithTag<TextInputView>(uiTag)
+            post {
+                binding.additionalUrisSectionView.scrollTo(0, scrolledView.top)
             }
         }
     }
