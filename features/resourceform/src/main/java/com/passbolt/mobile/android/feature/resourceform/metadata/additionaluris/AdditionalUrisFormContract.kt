@@ -40,6 +40,17 @@ interface AdditionalUrisFormContract {
         fun showAdditionalUris(uiTagToValue: LinkedHashMap<UUID, String>)
 
         fun showMaxUriLimitExceeded(maxUriLimit: Int)
+
+        fun clearValidationErrors()
+
+        fun showMainUriMaxLengthError(maxLength: Int)
+
+        fun showAdditionalUriMaxLengthError(
+            uiTag: UUID,
+            maxLength: Int,
+        )
+
+        fun scrollToAdditionalUriWithError(uiTag: UUID)
     }
 
     interface Presenter : BaseContract.Presenter<View> {

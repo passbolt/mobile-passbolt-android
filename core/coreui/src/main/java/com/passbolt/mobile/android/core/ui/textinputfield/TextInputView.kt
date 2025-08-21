@@ -10,6 +10,7 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.res.use
+import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import com.passbolt.mobile.android.core.ui.R
 import com.passbolt.mobile.android.core.ui.databinding.ViewTextInputBinding
@@ -49,6 +50,7 @@ open class TextInputView
             set(value) {
                 field = value
                 binding.titleLabel.text = uiTitle
+                binding.titleLabel.isVisible = value.isNotEmpty()
             }
 
         var hint: String = ""
@@ -163,6 +165,10 @@ open class TextInputView
 
         fun disableSavingInstanceState() {
             binding.input.isSaveEnabled = false
+        }
+
+        fun setSingleLine() {
+            binding.input.isSingleLine = true
         }
 
         private companion object {
