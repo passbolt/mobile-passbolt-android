@@ -83,6 +83,52 @@ class NoteFormPresenterTest : KoinTest {
         verify(view).showCreateTitle()
         verify(view).showNote(note)
         verify(view).goBackWithResult(changedNote)
+        verify(view).clearValidationErrors()
+        verifyNoMoreInteractions(view)
+    }
+
+    @Test
+    fun `note validation should show error when note exceeds max length`() {
+        val tooLongNote = "a".repeat(NoteFormPresenter.NOTE_MAX_LENGTH + 1)
+
+        presenter.attach(view)
+        presenter.argsRetrieved(
+            ResourceFormMode.Create(
+                leadingContentType = LeadingContentType.PASSWORD,
+                parentFolderId = null,
+            ),
+            "",
+        )
+        presenter.noteTextChanged(tooLongNote)
+        presenter.applyClick()
+
+        verify(view).showCreateTitle()
+        verify(view).showNote("")
+        verify(view).clearValidationErrors()
+        verify(view).showNoteMaxLengthError(NoteFormPresenter.NOTE_MAX_LENGTH)
+        verifyNoMoreInteractions(view)
+    }
+
+    @Test
+    fun `note validation should pass when note length is within limit`() {
+        val initialNote = "mock note"
+        val validNote = "a".repeat(NoteFormPresenter.NOTE_MAX_LENGTH - 1)
+
+        presenter.attach(view)
+        presenter.argsRetrieved(
+            ResourceFormMode.Create(
+                leadingContentType = LeadingContentType.PASSWORD,
+                parentFolderId = null,
+            ),
+            initialNote,
+        )
+        presenter.noteTextChanged(validNote)
+        presenter.applyClick()
+
+        verify(view).showCreateTitle()
+        verify(view).showNote(initialNote)
+        verify(view).clearValidationErrors()
+        verify(view).goBackWithResult(validNote)
         verifyNoMoreInteractions(view)
     }
 }

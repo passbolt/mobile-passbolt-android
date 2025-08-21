@@ -44,10 +44,9 @@ class MultilineInputView
     ) : TextInputView(context, attrs, defStyle) {
         init {
             with(binding.textLayout) {
+                minLines = MIN_LINES
                 editText?.apply {
-                    isSingleLine = false
                     inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_MULTI_LINE
-                    minLines = MIN_LINES
                     gravity = Gravity.TOP
                 }
             }

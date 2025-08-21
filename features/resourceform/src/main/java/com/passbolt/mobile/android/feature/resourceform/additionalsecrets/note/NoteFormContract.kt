@@ -34,6 +34,10 @@ interface NoteFormContract {
         fun showCreateTitle()
 
         fun showEditTitle(resourceName: String)
+
+        fun showNoteMaxLengthError(noteMaxLength: Int)
+
+        fun clearValidationErrors()
     }
 
     interface Presenter : BaseContract.Presenter<View> {
