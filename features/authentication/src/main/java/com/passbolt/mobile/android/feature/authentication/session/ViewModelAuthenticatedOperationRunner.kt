@@ -4,14 +4,15 @@ import com.passbolt.mobile.android.core.mvp.authentication.AuthenticatedUseCaseO
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated.Reason
 import com.passbolt.mobile.android.core.mvp.authentication.UnauthenticatedReason
+import com.passbolt.mobile.android.core.navigation.AppForegroundListener
 import com.passbolt.mobile.android.core.passphrasememorycache.PassphraseMemoryCache
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetSessionExpiryUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.RefreshSessionUseCase
 import com.passbolt.mobile.android.feature.authentication.compose.AuthenticatedViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.take
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -58,6 +59,7 @@ class ViewModelAuthenticatedOperationRunner(
     private val refreshSessionUseCase: RefreshSessionUseCase by inject()
     private val getSessionExpiryUseCase: GetSessionExpiryUseCase by inject()
     private val passphraseMemoryCache: PassphraseMemoryCache by inject()
+    private val appForegroundListener: AppForegroundListener by inject()
 
     suspend fun <OUTPUT : AuthenticatedUseCaseOutput> runOperation(request: suspend () -> OUTPUT): OUTPUT {
         val needFullSignIn = isFullSignInNeeded()
@@ -149,16 +151,19 @@ class ViewModelAuthenticatedOperationRunner(
     }
 
     private suspend fun authenticateUsingSignInUi(reason: UnauthenticatedReason) {
-        Timber.d("[Session] Starting UI authentication")
-        needAuthenticationRefreshedFlow.emit(reason)
+        if (!appForegroundListener.isForeground()) {
+            Timber.d("App is in background, waiting for foreground to start UI authentication")
+            appForegroundListener.appWentForegroundFlow.take(1).collect()
+            Timber.d("App is in foreground")
+        }
+
+        Timber.d("Starting UI authentication")
+        needAuthenticationRefreshedFlow.tryEmit(reason)
         authenticationRefreshedFlow
-            .map {
-                Timber.d("[Session] collection of $it")
-                it
-            }.filterNotNull()
+            .drop(1) // drop initial value
             .take(1) // wait for first session refreshed item
             .collect {
-                Timber.d("[Session] Authenticated operation runner $this got refreshed auth")
+                Timber.d("Authenticated operation runner $this got refreshed auth")
             }
     }
 }
