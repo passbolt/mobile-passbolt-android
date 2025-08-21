@@ -8,6 +8,7 @@ dependencies {
     implementation project(':coreui')
     implementation project(':common')
     implementation project(':localization')
+    implementation project(':architecture')
 
     implementation libs.fragment
     implementation libs.koin

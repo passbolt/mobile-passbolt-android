@@ -11,9 +11,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
-import androidx.fragment.app.DialogFragment
 import com.passbolt.mobile.android.common.extension.fromHtml
 import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
+import com.passbolt.mobile.android.core.mvp.EdgeToEdgeDialogFragment
 import com.passbolt.mobile.android.core.ui.circlestepsview.CircleStepItemModel
 import com.passbolt.mobile.android.feature.autofill.databinding.DialogEncourageAutofillBinding
 import org.koin.android.scope.AndroidScopeComponent
@@ -45,7 +45,7 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
  * @since v1.0
  */
 class EncourageAutofillServiceDialog :
-    DialogFragment(),
+    EdgeToEdgeDialogFragment(),
     EncourageAutofillContract.View,
     AndroidScopeComponent {
     override val scope by fragmentScope(useParentActivityScope = false)

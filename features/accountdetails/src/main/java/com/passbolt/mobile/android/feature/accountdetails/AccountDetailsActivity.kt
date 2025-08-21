@@ -27,6 +27,12 @@ import PassboltTheme
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.padding
+import androidx.compose.ui.Modifier
 import com.passbolt.mobile.android.core.security.runtimeauth.RuntimeAuthenticatedFlag
 import com.passbolt.mobile.android.feature.accountdetails.screen.AccountDetailsScreen
 import org.koin.android.ext.android.inject
@@ -38,8 +44,19 @@ class AccountDetailsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         runtimeAuthenticatedFlag.require(this)
+
         setContent {
-            PassboltTheme { AccountDetailsScreen() }
+            PassboltTheme {
+                AccountDetailsScreen(
+                    modifier =
+                        Modifier
+                            .fillMaxSize()
+                            .padding(
+                                // handle edge-to-edge insets
+                                bottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding(),
+                            ),
+                )
+            }
         }
     }
 }
