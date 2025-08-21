@@ -1,1 +1,1 @@
-This minor release contains a fix for a crash related to a possible race condition when generating resource icon
+This release add support for Czech language, increases the target Android API to 35 providing edge to edge support, and introduces password coloring by character groups for improved readability. It also improves the app's font size, note validation, and URI validation. Several bugs have been fixed, including issues with note image stretching and TOTP item blinking. The release also includes various maintenance updates related to MVI architecture.

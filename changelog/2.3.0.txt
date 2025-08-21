@@ -1,0 +1,31 @@
+# Passbolt 2.3.0-41 Android app release notes
+
+## Added
+- MOB-2792: Add Czech lang support
+- MOB-2779: Bump target for API 35 including edge to edge support
+- MOB-2829: Add password coloring by character groups
+
+## Improved
+- MOB-2786: Increase font size in the app
+- MOB-2860: Increase note max length schema validation; add note UI validation
+- MOB-2850: Validate additional URIs in the form
+- MOB-865: Allow multiple build variants on a device
+
+## Fixed
+- MOB-2872: Fix note image stretch after re-concealed
+- MOB-2821: Fix blinking of TOTP items when list longer that screen height
+- MOB-2860: Fix a possible loop when background session refresh requires UI authentication
+
+## Security
+-
+
+## Maintenance
+- MOB-2774: Rewrite instrumented tests to compose
+- MOB-2687 Key inspector MVI
+- MOB-2848: Key inspector more menu MVI
+- MOB-2754 Authentication MVI
+- MOB-2849: Account details MVI
+- MOB-2824: Move Setting button to new test class and add tests for other bottom buttons
+- MOB-2785: Navigation MVI with multimodule support
+- MOB-2517: Update Resource details tests
+- MOB-2754: Add MVI savable backstack; scope view models to nav entries
