@@ -7,9 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.BundleCompat
 import androidx.core.os.bundleOf
-import androidx.fragment.app.DialogFragment
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
+import com.passbolt.mobile.android.core.mvp.EdgeToEdgeDialogFragment
 import com.passbolt.mobile.android.feature.autofill.databinding.DialogAutofillEnabledBinding
 import timber.log.Timber
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
@@ -36,7 +36,7 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class AutofillEnabledDialog : DialogFragment() {
+class AutofillEnabledDialog : EdgeToEdgeDialogFragment() {
     var listener: Listener? = null
 
     private lateinit var binding: DialogAutofillEnabledBinding

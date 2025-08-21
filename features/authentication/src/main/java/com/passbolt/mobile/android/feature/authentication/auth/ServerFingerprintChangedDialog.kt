@@ -7,9 +7,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
-import androidx.fragment.app.DialogFragment
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
+import com.passbolt.mobile.android.core.mvp.EdgeToEdgeDialogFragment
 import com.passbolt.mobile.android.core.ui.formatter.FingerprintFormatter
 import com.passbolt.mobile.android.feature.authentication.databinding.DialogServerFingerprintBinding
 import org.koin.core.component.KoinComponent
@@ -39,7 +39,7 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
  * @since v1.0
  */
 class ServerFingerprintChangedDialog :
-    DialogFragment(),
+    EdgeToEdgeDialogFragment(),
     KoinComponent {
     private var listener: Listener? = null
     private val fingerprintFormatter: FingerprintFormatter by inject()

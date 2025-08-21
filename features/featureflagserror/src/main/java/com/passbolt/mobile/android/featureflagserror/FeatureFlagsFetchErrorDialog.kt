@@ -5,8 +5,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.DialogFragment
 import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
+import com.passbolt.mobile.android.core.mvp.EdgeToEdgeDialogFragment
 import com.passbolt.mobile.android.feature.flagserror.databinding.DialogFeatureFlagsFetchErrorBinding
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
@@ -32,7 +32,7 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class FeatureFlagsFetchErrorDialog : DialogFragment() {
+class FeatureFlagsFetchErrorDialog : EdgeToEdgeDialogFragment() {
     private var listener: Listener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {

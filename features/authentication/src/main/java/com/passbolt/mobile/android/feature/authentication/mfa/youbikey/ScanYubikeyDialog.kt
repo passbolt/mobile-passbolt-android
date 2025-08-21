@@ -11,12 +11,12 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
-import androidx.fragment.app.DialogFragment
 import com.google.android.material.snackbar.Snackbar
 import com.passbolt.mobile.android.common.dialogs.yubikeyNotFromCurrentUserAlertDialog
 import com.passbolt.mobile.android.common.dialogs.yubikeyScanFailedAlertDialog
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
+import com.passbolt.mobile.android.core.mvp.EdgeToEdgeDialogFragment
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
 import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
@@ -52,7 +52,7 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
  */
 
 class ScanYubikeyDialog :
-    DialogFragment(),
+    EdgeToEdgeDialogFragment(),
     AndroidScopeComponent,
     ScanYubikeyContract.View {
     override val scope by fragmentScope(useParentActivityScope = false)
