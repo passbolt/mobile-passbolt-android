@@ -31,6 +31,7 @@ import com.passbolt.mobile.android.common.commonModule
 import com.passbolt.mobile.android.core.accounts.accountsCoreModule
 import com.passbolt.mobile.android.core.authenticationcore.authenticationCoreModule
 import com.passbolt.mobile.android.core.autofill.autofillModule
+import com.passbolt.mobile.android.core.clipboard.clipboardModule
 import com.passbolt.mobile.android.core.commonfolders.foldersModule
 import com.passbolt.mobile.android.core.commongroups.groupsModule
 import com.passbolt.mobile.android.core.coreUiModule
@@ -179,6 +180,7 @@ class KoinInitializer : Initializer<Unit> {
                 resourceFormModule,
                 permissionsModule,
                 navigationModule,
+                clipboardModule,
             )
     }
 }

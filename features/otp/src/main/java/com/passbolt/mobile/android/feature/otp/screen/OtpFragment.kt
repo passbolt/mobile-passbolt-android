@@ -24,11 +24,7 @@
 package com.passbolt.mobile.android.feature.otp.screen
 
 import android.app.Activity
-import android.content.ClipData
-import android.content.ClipDescription
-import android.content.ClipboardManager
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -48,6 +44,7 @@ import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.passbolt.mobile.android.common.dialogs.confirmTotpDeletionAlertDialog
+import com.passbolt.mobile.android.core.clipboard.ClipboardAccess
 import com.passbolt.mobile.android.core.extension.gone
 import com.passbolt.mobile.android.core.extension.px
 import com.passbolt.mobile.android.core.extension.setSearchEndIconWithListener
@@ -96,7 +93,7 @@ class OtpFragment :
     private val otpAdapter: ItemAdapter<OtpItem> by inject()
     private val fastAdapter: FastAdapter<GenericItem> by inject()
     private val imageLoader: ImageLoader by inject()
-    private val clipboardManager: ClipboardManager? by inject()
+    private val clipboardAccess: ClipboardAccess by inject()
     private val resourceIconProvider: ResourceIconProvider by inject()
 
     private val authenticationResult =
@@ -347,15 +344,7 @@ class OtpFragment :
         label: String,
         value: String,
     ) {
-        clipboardManager?.setPrimaryClip(
-            ClipData.newPlainText(label, value).apply {
-                description.extras =
-                    PersistableBundle().apply {
-                        putBoolean(ClipDescription.EXTRA_IS_SENSITIVE, true)
-                    }
-            },
-        )
-        Toast.makeText(requireContext(), getString(LocalizationR.string.copied_info, label), Toast.LENGTH_SHORT).show()
+        clipboardAccess.setPrimaryClip(requireContext(), label, value, isSensitive = true)
     }
 
     override fun showDecryptionFailure() {

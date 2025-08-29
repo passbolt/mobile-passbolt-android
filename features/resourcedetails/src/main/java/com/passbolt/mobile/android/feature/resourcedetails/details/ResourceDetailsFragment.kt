@@ -1,11 +1,7 @@
 package com.passbolt.mobile.android.feature.resourcedetails.details
 
 import android.annotation.SuppressLint
-import android.content.ClipData
-import android.content.ClipDescription
-import android.content.ClipboardManager
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.format.DateUtils
@@ -25,6 +21,7 @@ import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
 import com.passbolt.mobile.android.common.ExternalDeeplinkHandler
 import com.passbolt.mobile.android.common.dialogs.confirmResourceDeletionAlertDialog
+import com.passbolt.mobile.android.core.clipboard.ClipboardAccess
 import com.passbolt.mobile.android.core.extension.gone
 import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.extension.showSnackbar
@@ -99,7 +96,7 @@ class ResourceDetailsFragment :
     ResourceDetailsContract.View,
     ResourceMoreMenuFragment.Listener {
     override val presenter: ResourceDetailsContract.Presenter by inject()
-    private val clipboardManager: ClipboardManager? by inject()
+    private val clipboardAccess: ClipboardAccess by inject()
     private val navArgs: ResourceDetailsFragmentArgs by navArgs()
 
     private val sharedWithFields
@@ -345,15 +342,7 @@ class ResourceDetailsFragment :
         value: String,
         isSecret: Boolean,
     ) {
-        clipboardManager?.setPrimaryClip(
-            ClipData.newPlainText(label, value).apply {
-                description.extras =
-                    PersistableBundle().apply {
-                        putBoolean(ClipDescription.EXTRA_IS_SENSITIVE, isSecret)
-                    }
-            },
-        )
-        Toast.makeText(requireContext(), getString(LocalizationR.string.copied_info, label), Toast.LENGTH_SHORT).show()
+        clipboardAccess.setPrimaryClip(requireContext(), label, value, isSecret)
     }
 
     override fun showProgress() {
