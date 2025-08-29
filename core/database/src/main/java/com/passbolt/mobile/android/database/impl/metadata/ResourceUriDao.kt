@@ -31,6 +31,10 @@ import com.passbolt.mobile.android.entity.resource.ResourceUri
 @Dao
 interface ResourceUriDao : BaseDao<ResourceUri> {
     @Transaction
+    @Query("SELECT * FROM ResourceUri")
+    suspend fun getAll(): List<ResourceUri>
+
+    @Transaction
     @Query("DELETE FROM ResourceUri WHERE resourceId=:resourceId")
     suspend fun deleteForResource(resourceId: String)
 

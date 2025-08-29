@@ -41,9 +41,7 @@ class AddLocalResourceUseCase(
 
         resourcesDao.insert(resourceModelMapper.map(input.resourceModel))
         resourceMetadataDao.insert(resourceModelMapper.mapResourceMetadata(input.resourceModel))
-        resourceModelMapper.mapResourceUri(input.resourceModel)?.let { uri ->
-            resourceUriDao.insert(uri)
-        }
+        resourceUriDao.insertAll(resourceModelMapper.mapResourceUris(input.resourceModel))
     }
 
     data class Input(
