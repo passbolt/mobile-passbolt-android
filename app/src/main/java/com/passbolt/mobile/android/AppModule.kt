@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android
 
+import android.app.AlarmManager
 import android.content.ClipboardManager
 import android.content.Context
 import android.view.autofill.AutofillManager
@@ -69,6 +70,9 @@ internal val appModule =
         single { AppForegroundListener() }
         single {
             androidContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?
+        }
+        single {
+            androidContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager
         }
         factory { androidContext().resources }
         factory { androidContext().assets }

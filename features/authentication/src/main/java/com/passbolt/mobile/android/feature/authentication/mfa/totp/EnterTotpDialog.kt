@@ -1,8 +1,6 @@
 package com.passbolt.mobile.android.feature.authentication.mfa.totp
 
 import android.app.Activity
-import android.content.ClipDescription.MIMETYPE_TEXT_PLAIN
-import android.content.ClipboardManager
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -15,6 +13,7 @@ import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import com.google.android.material.snackbar.Snackbar
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
+import com.passbolt.mobile.android.core.clipboard.ClipboardAccess
 import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.mvp.EdgeToEdgeDialogFragment
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
@@ -59,7 +58,7 @@ class EnterTotpDialog :
     var listener: EnterTotpListener? = null
 
     val presenter: EnterTotpContract.Presenter by scope.inject()
-    private val clipboardManager: ClipboardManager? by inject()
+    private val clipboardAccess: ClipboardAccess by inject()
     private lateinit var binding: DialogEnterTotpBinding
     private val bundledAuthToken by lifecycleAwareLazy {
         requireArguments().getString(EXTRA_AUTH_KEY).orEmpty()
@@ -133,7 +132,7 @@ class EnterTotpDialog :
                 presenter.closeClick()
             }
             pasteCodeButton.setDebouncingOnClick {
-                presenter.pasteButtonClick(getPasteData())
+                presenter.pasteButtonClick(clipboardAccess.getPrimaryClipTextOrNull())
             }
             otpInput.setOnPinEnteredListener {
                 presenter.otpEntered(it.toString(), bundledAuthToken, rememberMeCheckBox.isChecked)
@@ -145,15 +144,6 @@ class EnterTotpDialog :
         dismiss()
         listener?.totpOtherProviderClick(bundledAuthToken)
     }
-
-    private fun getPasteData() =
-        clipboardManager?.let {
-            if (it.hasPrimaryClip() && it.primaryClipDescription?.hasMimeType(MIMETYPE_TEXT_PLAIN) == true) {
-                it.primaryClip?.getItemAt(0)?.text
-            } else {
-                return null
-            }
-        }
 
     override fun showError() {
         Snackbar

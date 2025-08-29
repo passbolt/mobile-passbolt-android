@@ -23,10 +23,7 @@
 
 package com.passbolt.mobile.android.feature.settings.screen.accounts.keyinspector
 
-import android.content.ClipData
-import android.content.ClipboardManager
 import android.content.Context
-import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -57,6 +54,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.passbolt.mobile.android.core.clipboard.ClipboardAccess
 import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
 import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
 import com.passbolt.mobile.android.core.ui.compose.circularimage.CircularProfileImage
@@ -86,7 +84,7 @@ internal fun KeyInspectorScreen(
     modifier: Modifier = Modifier,
     navigator: AppNavigator = koinInject(),
     viewModel: KeyInspectorViewModel = koinViewModel(),
-    clipboardManager: ClipboardManager? = koinInject(),
+    clipboardAccess: ClipboardAccess = koinInject(),
 ) {
     val context = LocalContext.current
     val state = viewModel.viewState.collectAsStateWithLifecycle()
@@ -110,7 +108,7 @@ internal fun KeyInspectorScreen(
             is AddFingerprintToClipboard -> {
                 addToClipboard(
                     context = context,
-                    clipboardManager = clipboardManager,
+                    clipboardAccess = clipboardAccess,
                     label = context.getString(LocalizationR.string.copy_label_fingerprint),
                     value = it.fingerprint,
                 )
@@ -118,7 +116,7 @@ internal fun KeyInspectorScreen(
             is AddUidToClipboard -> {
                 addToClipboard(
                     context = context,
-                    clipboardManager = clipboardManager,
+                    clipboardAccess = clipboardAccess,
                     label = context.getString(LocalizationR.string.copy_label_uid),
                     value = it.uid,
                 )
@@ -146,19 +144,11 @@ private fun getSnackbarMessage(
 
 private fun addToClipboard(
     context: Context,
-    clipboardManager: ClipboardManager?,
+    clipboardAccess: ClipboardAccess,
     label: String,
     value: String,
 ) {
-    clipboardManager?.apply {
-        setPrimaryClip(ClipData.newPlainText(label, value))
-    }
-    Toast
-        .makeText(
-            context,
-            context.getString(LocalizationR.string.copied_info, label),
-            Toast.LENGTH_SHORT,
-        ).show()
+    clipboardAccess.setPrimaryClip(context, label, value, isSensitive = true)
 }
 
 @Composable

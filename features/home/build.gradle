@@ -47,6 +47,7 @@ dependencies {
     implementation project(':createresourcemenu')
     implementation project(':resourceform')
     implementation project(':permissions')
+    implementation project(':clipboard')
 
     implementation libs.navigation.fragment
     implementation libs.navigation.ui

@@ -47,6 +47,7 @@ dependencies {
     implementation project(':resourceform')
     implementation project(':metadatakeytrust')
     implementation project(':metadata')
+    implementation project(':clipboard')
 
     implementation libs.navigation.fragment
     implementation libs.navigation.ui
