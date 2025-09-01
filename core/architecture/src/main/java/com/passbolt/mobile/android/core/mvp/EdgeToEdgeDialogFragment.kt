@@ -25,6 +25,8 @@ package com.passbolt.mobile.android.core.mvp
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.DialogFragment
+import com.passbolt.mobile.android.core.mvp.EdgeToEdge.Inset.BOTTOM
+import com.passbolt.mobile.android.core.mvp.EdgeToEdge.Inset.TOP
 import com.passbolt.mobile.android.core.mvp.EdgeToEdge.addEdgeToEdgeBottomPadding
 
 open class EdgeToEdgeDialogFragment : DialogFragment() {
@@ -33,6 +35,6 @@ open class EdgeToEdgeDialogFragment : DialogFragment() {
         savedInstanceState: Bundle?,
     ) {
         super.onViewCreated(view, savedInstanceState)
-        addEdgeToEdgeBottomPadding(activity?.window!!, view)
+        addEdgeToEdgeBottomPadding(activity?.window!!, view, listOf(TOP, BOTTOM))
     }
 }
