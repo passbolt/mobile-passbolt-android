@@ -29,12 +29,15 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
+import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
+import com.passbolt.mobile.android.core.navigation.compose.keys.LogsNavigationKey
 import com.passbolt.mobile.android.core.ui.R
 import com.passbolt.mobile.android.core.ui.compose.menu.OpenableSettingsItem
 import com.passbolt.mobile.android.core.ui.compose.menu.SwitchableSettingsItem
@@ -47,15 +50,17 @@ import com.passbolt.mobile.android.feature.settings.screen.debuglogssettings.Deb
 import com.passbolt.mobile.android.feature.settings.screen.debuglogssettings.DebugLogsSettingsIntent.GoBack
 import com.passbolt.mobile.android.feature.settings.screen.debuglogssettings.DebugLogsSettingsIntent.ToggleDebugLogs
 import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.koinInject
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 @Composable
 internal fun DebugLogsSettingsScreen(
-    navigation: DebugLogSettingsNavigation,
     modifier: Modifier = Modifier,
+    navigator: AppNavigator = koinInject(),
     viewModel: DebugLogsSettingsViewModel = koinViewModel(),
 ) {
     val state = viewModel.viewState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
 
     DebugLogsSettingsScreen(
         modifier = modifier,
@@ -65,9 +70,11 @@ internal fun DebugLogsSettingsScreen(
 
     SideEffectDispatcher(viewModel.sideEffect) {
         when (it) {
-            NavigateToLogs -> navigation.navigateToLogs()
-            NavigateUp -> navigation.navigateUp()
-            OpenHelpWebsite -> navigation.openHelpWebsite()
+            NavigateToLogs -> navigator.navigateToKey(LogsNavigationKey.Logs)
+            NavigateUp -> navigator.navigateBack()
+            OpenHelpWebsite -> {
+                navigator.openExternalWebsite(context, context.getString(LocalizationR.string.help_website))
+            }
         }
     }
 }

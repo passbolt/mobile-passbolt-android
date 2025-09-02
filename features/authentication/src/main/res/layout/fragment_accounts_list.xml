@@ -53,6 +53,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dp_16"
                 android:gravity="center_horizontal"
+                android:layout_marginHorizontal="@dimen/dp_16"
                 android:text="@string/accounts_list_subtitle"
                 app:layout_constraintTop_toBottomOf="@+id/header" />
 

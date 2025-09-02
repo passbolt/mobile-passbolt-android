@@ -1,5 +1,5 @@
 [versions]
-androidGradlePlugin = "8.5.2"
+androidGradlePlugin = "8.11.0"
 commonsValidator = "1.9.0"
 dexmakerMockitoInlineExtended = "2.28.4"
 gradleVersionsPlugin = "0.48.0"
@@ -30,7 +30,7 @@ dependencyAnalysis = "2.17.0"
 licensee = "1.8.0"
 dokka = "1.9.20"
 androidXcore = "1.13.1"
-appcompat = "1.7.0"
+appcompat = "1.7.1"
 constraintLayout = "2.1.4"
 navigation = "2.7.7"
 security = "1.1.0-alpha06"
@@ -44,7 +44,7 @@ swiperefresh = "1.1.0"
 appStartUp = "1.1.1"
 splashScreen = "1.1.0-rc01"
 cameraXMlVision = "1.4.0-rc02"
-material = "1.12.0"
+material = "1.14.0-alpha03"
 retrofit = "2.11.0"
 okHttp = "4.12.0"
 timber = "5.0.1"
@@ -58,6 +58,7 @@ fastAdapterCoreAnimators = "1.1.0"
 easylauncher = "6.4.0"
 fusionauthJwt = "5.3.0"
 serializationJson = "1.6.0"
+serializationCore = "1.8.1"
 roomCore = "2.6.1"
 sqliteCipher = "4.6.1"
 sqlite = "2.4.0"
@@ -79,6 +80,8 @@ snyk = "0.7.0"
 androidxComposeBom = "2025.04.00"
 nlopez-compose-rulset = "0.4.22"
 accompanist-drawablepainer = "0.37.3"
+nav3Core = "1.0.0-alpha05"
+nav3ViewModel = "1.0.0-alpha03"
 
 [libraries]
 commons-validator = { module = "commons-validator:commons-validator", version.ref = "commonsValidator" }
@@ -91,6 +94,7 @@ koin-test = { group = "io.insert-koin", name = "koin-test", version.ref = "koin"
 koin-test-junit = { group = "io.insert-koin", name = "koin-test-junit4", version.ref = "koin" }
 kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin" }
 kotlin-coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
+kotlin-serializationCore = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "serializationCore" }
 kotlin-serializationjson = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serializationJson" }
 kotlin-reflect = { group = "org.jetbrains.kotlin", name = "kotlin-reflect", version.ref = "kotlin" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -176,9 +180,14 @@ compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview"
 compose-lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "composeLifecycleViewModel" }
 compose-ui-graphics = { module = "androidx.compose.ui:ui-graphics-android" }
 compose-activity = { module = "androidx.activity:activity-compose" }
+compose-ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4" }
+compose-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest" }
 ktlint-compose-rulset = { module = "io.nlopez.compose.rules:ktlint", version.ref = "nlopez-compose-rulset" }
 detekt-compose-rulset = { module = "io.nlopez.compose.rules:detekt", version.ref = "nlopez-compose-rulset" }
 accompanist-drawablepainter = { module = "com.google.accompanist:accompanist-drawablepainter", version.ref = "accompanist-drawablepainer" }
+androidx-navigation3-runtime = { module = "androidx.navigation3:navigation3-runtime", version.ref = "nav3Core" }
+androidx-navigation3-ui = { module = "androidx.navigation3:navigation3-ui", version.ref = "nav3Core" }
+androidx-lifecycle-viewmodel-navigation3 = { module = "androidx.lifecycle:lifecycle-viewmodel-navigation3", version.ref = "nav3ViewModel" }
 
 [plugins]
 android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }

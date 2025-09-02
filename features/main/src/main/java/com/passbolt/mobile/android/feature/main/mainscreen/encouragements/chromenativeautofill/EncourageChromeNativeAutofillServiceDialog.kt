@@ -5,10 +5,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.DialogFragment
 import com.passbolt.mobile.android.common.ExternalDeeplinkHandler
 import com.passbolt.mobile.android.common.extension.fromHtml
 import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
+import com.passbolt.mobile.android.core.mvp.EdgeToEdgeDialogFragment
 import com.passbolt.mobile.android.core.ui.circlestepsview.CircleStepItemModel
 import com.passbolt.mobile.android.feature.main.databinding.DialogEncourageChromeNativeAutofillBinding
 import org.koin.android.ext.android.inject
@@ -40,7 +40,7 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
  * @since v1.0
  */
 class EncourageChromeNativeAutofillServiceDialog :
-    DialogFragment(),
+    EdgeToEdgeDialogFragment(),
     EncourageChromeNativeAutofillContract.View,
     AndroidScopeComponent {
     private var listener: Listener? = null
@@ -68,8 +68,8 @@ class EncourageChromeNativeAutofillServiceDialog :
         super.onAttach(context)
         listener =
             when {
-                activity is Listener -> activity as Listener
                 parentFragment is Listener -> parentFragment as Listener
+                activity is Listener -> activity as Listener
                 else -> error("Parent must implement ${Listener::class.java.name}")
             }
         presenter.attach(this)

@@ -10,6 +10,7 @@ dependencies {
     implementation project(':common')
     implementation project(':localization')
     implementation project(':logger')
+    implementation project(':navigation')
 
     implementation libs.koin
     implementation libs.koin.compose
@@ -21,6 +22,8 @@ dependencies {
     implementation libs.compose.material3
     implementation libs.compose.lifecycle.viewmodel
     implementation libs.compose.ui.tooling
+    implementation(libs.androidx.navigation3.ui)
+    implementation(libs.androidx.navigation3.runtime)
     debugImplementation libs.compose.ui.tooling.preview
 }
 

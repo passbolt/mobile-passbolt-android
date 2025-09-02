@@ -7,11 +7,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.BundleCompat
 import androidx.core.os.bundleOf
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.extension.selectableBackgroundResourceId
 import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.extension.visible
+import com.passbolt.mobile.android.core.mvp.viewbinding.NoLimitsBottomSheetDialogFragment
 import com.passbolt.mobile.android.feature.home.databinding.FiletrsBottomsheetBinding
 import com.passbolt.mobile.android.ui.FiltersMenuModel
 import org.koin.android.scope.AndroidScopeComponent
@@ -41,7 +41,7 @@ import org.koin.androidx.scope.fragmentScope
  */
 
 class FiltersMenuFragment :
-    BottomSheetDialogFragment(),
+    NoLimitsBottomSheetDialogFragment(),
     FiltersMenuContract.View,
     AndroidScopeComponent {
     override val scope by fragmentScope(useParentActivityScope = false)
@@ -78,8 +78,8 @@ class FiltersMenuFragment :
         super.onAttach(context)
         listener =
             when {
-                activity is Listener -> activity as Listener
                 parentFragment is Listener -> parentFragment as Listener
+                activity is Listener -> activity as Listener
                 else -> error("Parent must implement ${Listener::class.java.name}")
             }
     }

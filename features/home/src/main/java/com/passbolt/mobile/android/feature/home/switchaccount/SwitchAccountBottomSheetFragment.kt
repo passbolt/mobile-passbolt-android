@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import androidx.core.os.BundleCompat
 import androidx.core.os.bundleOf
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.ModelAdapter
@@ -16,6 +15,7 @@ import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
 import com.passbolt.mobile.android.common.dialogs.signOutAlertDialog
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
+import com.passbolt.mobile.android.core.mvp.viewbinding.NoLimitsBottomSheetDialogFragment
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
@@ -34,7 +34,7 @@ import org.koin.androidx.scope.fragmentScope
 import org.koin.core.qualifier.named
 
 class SwitchAccountBottomSheetFragment :
-    BottomSheetDialogFragment(),
+    NoLimitsBottomSheetDialogFragment(),
     AndroidScopeComponent,
     SwitchAccountContract.View {
     override val scope by fragmentScope(useParentActivityScope = false)
@@ -74,8 +74,8 @@ class SwitchAccountBottomSheetFragment :
         super.onAttach(context)
         listener =
             when {
-                activity is Listener -> activity as Listener
                 parentFragment is Listener -> parentFragment as Listener
+                activity is Listener -> activity as Listener
                 else -> error("Parent must implement ${Listener::class.java.name}")
             }
     }

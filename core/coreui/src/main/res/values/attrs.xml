@@ -47,6 +47,8 @@
             format="boolean" />
         <attr name="itemWithHeaderAndActionView_title"
             format="string" />
+        <attr name="itemWithHeaderAndActionView_differentiateCharacterGroups"
+            format="boolean" />
         <!-- Corresponds with com.passbolt.mobile.android.core.ui.itemwithheaderandaction.Action -->
         <attr name="itemWithHeaderAndActionView_action"
             format="enum">

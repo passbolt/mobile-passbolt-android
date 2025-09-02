@@ -23,12 +23,9 @@
 
 package com.passbolt.mobile.android.feature.settings.screen.accounts.keyinspector
 
+import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.core.module.Module
-import org.koin.core.module.dsl.scopedOf
-import org.koin.dsl.bind
 
 fun Module.keyInspectorModule() {
-    scope<KeyInspectorFragment> {
-        scopedOf(::KeyInspectorPresenter) bind KeyInspectorContract.Presenter::class
-    }
+    viewModelOf(::KeyInspectorViewModel)
 }

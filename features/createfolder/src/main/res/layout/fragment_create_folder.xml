@@ -46,7 +46,7 @@
                 android:layout_marginEnd="@dimen/dp_8"
                 android:text="@string/location"
                 android:textColor="@color/text_primary"
-                android:textSize="@dimen/sp_12"
+                android:textSize="@dimen/sp_14"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/guideline"
                 app:layout_constraintTop_toBottomOf="@+id/folderNameInput" />
@@ -61,7 +61,7 @@
                 android:ellipsize="middle"
                 android:maxLines="1"
                 android:textColor="@color/text_secondary"
-                android:textSize="@dimen/sp_14"
+                android:textSize="@dimen/sp_16"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/guideline"
                 app:layout_constraintTop_toBottomOf="@+id/locationHeader"
@@ -75,7 +75,7 @@
                 android:layout_marginTop="@dimen/dp_32"
                 android:text="@string/shared_with"
                 android:textColor="@color/text_primary"
-                android:textSize="@dimen/sp_12"
+                android:textSize="@dimen/sp_14"
                 app:layout_constraintStart_toStartOf="@id/guideline"
                 app:layout_constraintTop_toBottomOf="@+id/locationValue" />
 

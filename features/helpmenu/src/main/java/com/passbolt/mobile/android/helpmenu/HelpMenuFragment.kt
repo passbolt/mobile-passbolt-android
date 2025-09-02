@@ -8,11 +8,11 @@ import android.view.ViewGroup
 import android.widget.CompoundButton
 import androidx.core.os.BundleCompat
 import androidx.core.os.bundleOf
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.passbolt.mobile.android.common.ExternalDeeplinkHandler
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.extension.visible
+import com.passbolt.mobile.android.core.mvp.viewbinding.NoLimitsBottomSheetDialogFragment
 import com.passbolt.mobile.android.feature.helpmenu.databinding.ViewHelpBottomsheetBinding
 import com.passbolt.mobile.android.ui.HelpMenuModel
 import org.koin.android.ext.android.inject
@@ -45,7 +45,7 @@ import com.passbolt.mobile.android.core.localization.R as LocalizationR
  */
 
 class HelpMenuFragment :
-    BottomSheetDialogFragment(),
+    NoLimitsBottomSheetDialogFragment(),
     AndroidScopeComponent,
     HelpMenuContract.View {
     override val scope: Scope by fragmentScope(useParentActivityScope = false)
@@ -90,8 +90,8 @@ class HelpMenuFragment :
         super.onAttach(context)
         listener =
             when {
-                activity is Listener -> activity as Listener
                 parentFragment is Listener -> parentFragment as Listener
+                activity is Listener -> activity as Listener
                 else -> error("Parent must implement ${Listener::class.java.name}")
             }
     }

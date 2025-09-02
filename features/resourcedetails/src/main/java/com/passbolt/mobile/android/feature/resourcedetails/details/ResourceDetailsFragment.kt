@@ -259,14 +259,15 @@ class ResourceDetailsFragment :
     override fun displayExpirySection(expiry: ZonedDateTime) {
         with(requiredBinding) {
             expiryItem.visible()
-            expiryItem.textValue =
+            expiryItem.setVisibleTextValue(
                 DateUtils
                     .getRelativeTimeSpanString(
                         expiry.toInstant().toEpochMilli(),
                         ZonedDateTime.now().toInstant().toEpochMilli(),
                         DateUtils.MINUTE_IN_MILLIS,
                         DateUtils.FORMAT_ABBREV_RELATIVE,
-                    ).toString()
+                    ).toString(),
+            )
         }
     }
 
@@ -275,7 +276,7 @@ class ResourceDetailsFragment :
     }
 
     override fun displayUsername(username: String) {
-        requiredBinding.usernameItem.textValue = username
+        requiredBinding.usernameItem.setVisibleTextValue(username)
     }
 
     override fun showTotpSection() {
@@ -316,7 +317,7 @@ class ResourceDetailsFragment :
 
     override fun displayUrl(url: String) {
         with(requiredBinding) {
-            urlItem.textValue = url
+            urlItem.setVisibleTextValue(url)
         }
     }
 
@@ -330,10 +331,11 @@ class ResourceDetailsFragment :
 
     override fun displayAdditionalUrls(uris: List<String>) {
         requiredBinding.additionalUrisItem.apply {
-            textValue =
+            setVisibleTextValue(
                 uris
                     .map { getString(LocalizationR.string.additional_uri_format, it) }
-                    .joinToString(separator = "\n") { it }
+                    .joinToString(separator = "\n") { it },
+            )
             visible()
         }
     }
@@ -377,30 +379,30 @@ class ResourceDetailsFragment :
     override fun showPassword(decryptedSecret: String) {
         with(requiredBinding.passwordItem) {
             actionIcon = ActionIcon.HIDE
-            textValue = decryptedSecret
+            setVisibleTextValue(decryptedSecret)
         }
     }
 
     override fun hidePassword() {
         with(requiredBinding.passwordItem) {
             actionIcon = ActionIcon.VIEW
-            textValue = getString(LocalizationR.string.hidden_secret)
+            setHiddenSecretValue()
         }
     }
 
     override fun clearPasswordInput() {
-        requiredBinding.passwordItem.textValue = ""
+        requiredBinding.passwordItem.setVisibleTextValue("")
     }
 
     override fun clearNoteInput() {
-        requiredBinding.noteItem.textValue = ""
+        requiredBinding.noteItem.setVisibleTextValue("")
     }
 
     override fun showNote(note: String) {
         with(requiredBinding) {
             noteItem.show()
             noteItem.isValueSecret = true
-            noteItem.textValue = note
+            noteItem.setVisibleTextValue(note)
             noteItem.actionIcon = ActionIcon.HIDE
             noteItem.setTextIsSelectable(true)
             noteSectionTitle.visible()
@@ -425,7 +427,7 @@ class ResourceDetailsFragment :
     override fun showMetadataDescription(description: String) {
         with(requiredBinding.metadataDescriptionItem) {
             visible()
-            textValue = description
+            setVisibleTextValue(description)
             setTextIsSelectable(true)
         }
     }

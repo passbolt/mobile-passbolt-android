@@ -18,7 +18,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingVertical="@dimen/dp_8"
-            android:textSize="@dimen/sp_16"
+            android:textSize="@dimen/sp_18"
             android:theme="@style/Theme.Passbolt.Toolbar"
             app:layout_constraintTop_toTopOf="parent"
             tools:toolbarTitle="@string/resource_form_note" />
@@ -40,7 +40,7 @@
             android:drawablePadding="@dimen/dp_8"
             android:text="@string/resource_form_remove_note"
             android:textFontWeight="600"
-            android:textSize="@dimen/sp_14"
+            android:textSize="@dimen/sp_16"
             app:drawableStartCompat="@drawable/ic_trash"
             app:drawableTint="@color/icon_tint" />
 

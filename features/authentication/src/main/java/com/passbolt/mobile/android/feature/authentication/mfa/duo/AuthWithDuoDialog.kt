@@ -33,10 +33,10 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
-import androidx.fragment.app.DialogFragment
 import com.google.android.material.snackbar.Snackbar
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
+import com.passbolt.mobile.android.core.mvp.EdgeToEdgeDialogFragment
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
 import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
@@ -45,16 +45,18 @@ import com.passbolt.mobile.android.feature.authentication.mfa.duo.duowebviewshee
 import com.passbolt.mobile.android.feature.authentication.mfa.duo.duowebviewsheet.DuoWebViewBottomSheetFragment
 import org.koin.android.scope.AndroidScopeComponent
 import org.koin.androidx.scope.fragmentScope
+import timber.log.Timber
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 class AuthWithDuoDialog :
-    DialogFragment(),
+    EdgeToEdgeDialogFragment(),
     AndroidScopeComponent,
     AuthWithDuoContract.View,
     DuoWebViewBottomSheetFragment.Listener {
     override val scope by fragmentScope(useParentActivityScope = false)
-    private var listener: AuthWithDuoListener? = null
+    var listener: AuthWithDuoListener? = null
+
     private val presenter: AuthWithDuoContract.Presenter by scope.inject()
     private lateinit var binding: DialogAuthWithDuoBinding
     private val authenticationResult =
@@ -101,7 +103,10 @@ class AuthWithDuoDialog :
             when {
                 activity is AuthWithDuoListener -> activity as AuthWithDuoListener
                 parentFragment is AuthWithDuoListener -> parentFragment as AuthWithDuoListener
-                else -> error("Parent must implement ${AuthWithDuoListener::class.java.name}")
+                else -> {
+                    Timber.w("Parent should implement ${AuthWithDuoListener::class.java.name} unless used in compose")
+                    null
+                }
             }
         presenter.attach(this)
     }
@@ -142,7 +147,7 @@ class AuthWithDuoDialog :
                 presenter.authWithDuoClick()
             }
             otherProviderButton.setDebouncingOnClick {
-                listener?.duoOtherProviderClick(bundledAuthToken)
+                otherProviderClick()
             }
             closeButton.setDebouncingOnClick {
                 presenter.closeClick()
@@ -188,6 +193,11 @@ class AuthWithDuoDialog :
                 view.setBackgroundColor(context.getColor(CoreUiR.color.red))
                 show()
             }
+    }
+
+    private fun otherProviderClick() {
+        dismiss()
+        listener?.duoOtherProviderClick(bundledAuthToken)
     }
 
     companion object {

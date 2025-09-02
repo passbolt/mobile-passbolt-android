@@ -189,6 +189,7 @@ dependencies {
     implementation project(':createresourcemenu')
     implementation project(':resourceform')
     implementation project(':permissions')
+    implementation project(':navigation')
 
     debugImplementation libs.leakcanary
 
@@ -212,4 +213,7 @@ dependencies {
     androidTestImplementation libs.koin.test.junit
     androidTestImplementation libs.android.test.intents
     androidTestImplementation libs.mockito.android
+    androidTestImplementation platform(libs.compose.bom)
+    androidTestImplementation libs.compose.ui.test.junit4
+    androidTestDebugImplementation libs.compose.ui.test.manifest
 }

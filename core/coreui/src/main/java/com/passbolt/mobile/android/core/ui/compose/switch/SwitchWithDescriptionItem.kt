@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.core.ui.compose.switch
 
+import androidx.annotation.VisibleForTesting
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,10 +12,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.passbolt.mobile.android.core.ui.R
+import com.passbolt.mobile.android.core.ui.compose.switch.SwitchWithDescriptionItem.TestTags.ITEM
+import com.passbolt.mobile.android.core.ui.compose.switch.SwitchWithDescriptionItem.TestTags.SWITCH
 
 @Composable
 fun SwitchWithDescriptionItem(
@@ -35,7 +39,8 @@ fun SwitchWithDescriptionItem(
                 .fillMaxWidth()
                 .padding(vertical = 16.dp, horizontal = 16.dp)
                 .clickable(enabled = isEnabled) { onClick() }
-                .alpha(alpha),
+                .alpha(alpha)
+                .testTag(ITEM),
     ) {
         Column(
             modifier =
@@ -68,6 +73,7 @@ fun SwitchWithDescriptionItem(
             checked = isChecked,
             onCheckedChange = null,
             enabled = isEnabled,
+            modifier = Modifier.testTag(SWITCH),
         )
     }
 }
@@ -81,4 +87,12 @@ private fun SwitchWithDescriptionItemPreview() {
         additionalDescription = "Additional description for the switch",
         isChecked = true,
     )
+}
+
+@VisibleForTesting
+object SwitchWithDescriptionItem {
+    object TestTags {
+        const val ITEM = "SwitchWithDescriptionItem"
+        const val SWITCH = "SwitchWithDescriptionItemSwitch"
+    }
 }

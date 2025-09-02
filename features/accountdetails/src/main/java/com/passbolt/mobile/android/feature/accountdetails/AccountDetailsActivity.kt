@@ -23,18 +23,40 @@
 
 package com.passbolt.mobile.android.feature.accountdetails
 
+import PassboltTheme
 import android.os.Bundle
-import com.passbolt.mobile.android.core.mvp.viewbinding.BindingActivity
+import androidx.activity.compose.setContent
+import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.padding
+import androidx.compose.ui.Modifier
 import com.passbolt.mobile.android.core.security.runtimeauth.RuntimeAuthenticatedFlag
-import com.passbolt.mobile.android.feature.accountdetails.databinding.ActivityAccountDetailsBinding
+import com.passbolt.mobile.android.feature.accountdetails.screen.AccountDetailsScreen
 import org.koin.android.ext.android.inject
 
 // NOTE: When changing name or package read core/navigation/README.md
-class AccountDetailsActivity : BindingActivity<ActivityAccountDetailsBinding>(ActivityAccountDetailsBinding::inflate) {
+class AccountDetailsActivity : AppCompatActivity() {
     private val runtimeAuthenticatedFlag: RuntimeAuthenticatedFlag by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         runtimeAuthenticatedFlag.require(this)
+
+        setContent {
+            PassboltTheme {
+                AccountDetailsScreen(
+                    modifier =
+                        Modifier
+                            .fillMaxSize()
+                            .padding(
+                                // handle edge-to-edge insets
+                                bottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding(),
+                            ),
+                )
+            }
+        }
     }
 }

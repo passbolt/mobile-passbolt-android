@@ -6,9 +6,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
-import androidx.fragment.app.DialogFragment
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
+import com.passbolt.mobile.android.core.mvp.EdgeToEdgeDialogFragment
 import com.passbolt.mobile.android.feature.authentication.databinding.DialogAccountDoesNotExistBinding
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
@@ -34,7 +34,7 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class AccountDoesNotExistDialog : DialogFragment() {
+class AccountDoesNotExistDialog : EdgeToEdgeDialogFragment() {
     private var listener: Listener? = null
     private val bundledName by lifecycleAwareLazy {
         requireArguments().getString(EXTRA_NAME).orEmpty()
@@ -67,8 +67,8 @@ class AccountDoesNotExistDialog : DialogFragment() {
         super.onAttach(context)
         listener =
             when {
-                activity is Listener -> activity as Listener
                 parentFragment is Listener -> parentFragment as Listener
+                activity is Listener -> activity as Listener
                 else -> error("Parent must implement ${Listener::class.java.name}")
             }
     }

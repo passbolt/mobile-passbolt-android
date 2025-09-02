@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.logs
 
 import PassboltTheme
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -35,6 +36,8 @@ import com.passbolt.mobile.android.core.localization.R as LocalizationR
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+
+@Deprecated("Use to integrate with legacy navigation only, use LogsScreen for Compose")
 class LogsComposeFragment :
     Fragment(),
     LogsNavigation {
@@ -46,7 +49,7 @@ class LogsComposeFragment :
         ComposeView(requireContext()).apply {
             setContent {
                 PassboltTheme {
-                    LogsScreen(
+                    LogsScreenCompat(
                         navigation = this@LogsComposeFragment,
                     )
                 }
@@ -61,7 +64,7 @@ class LogsComposeFragment :
         val contentUri =
             getUriForFile(
                 requireContext(),
-                "com.passbolt.mobile.android.core.logger.logsfileprovider",
+                getLogsFileProviderAuthority(requireContext()),
                 File(logFilePath),
             )
 
@@ -82,7 +85,9 @@ class LogsComposeFragment :
         )
     }
 
-    private companion object {
-        private const val LOGS_MIME_TYPE = "text/plain"
+    companion object {
+        const val LOGS_MIME_TYPE = "text/plain"
+
+        fun getLogsFileProviderAuthority(context: Context): String = "${context.packageName}.core.logger.logsfileprovider"
     }
 }

@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.viewbinding.ViewBinding
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 /**
  * Passbolt - Open source password manager for teams
@@ -32,7 +31,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 abstract class BindingBottomSheetFragment<T : ViewBinding>(
     private val viewInflater: (LayoutInflater, ViewGroup?, Boolean) -> T,
-) : BottomSheetDialogFragment() {
+) : NoLimitsBottomSheetDialogFragment() {
     private var binding: T? = null
 
     protected val requiredBinding: T

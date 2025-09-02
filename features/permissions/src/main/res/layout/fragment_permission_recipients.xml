@@ -93,7 +93,7 @@
         android:text="@string/permission_recipients_user_or_group_not_found"
         android:textColor="@color/text_primary"
         android:textFontWeight="600"
-        android:textSize="@dimen/sp_24"
+        android:textSize="@dimen/sp_28"
         android:visibility="gone"
         app:drawableBottomCompat="@drawable/ic_empty_state"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"

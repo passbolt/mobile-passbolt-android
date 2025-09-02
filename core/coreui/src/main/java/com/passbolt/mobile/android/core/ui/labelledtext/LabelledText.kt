@@ -34,6 +34,7 @@ import androidx.core.content.res.use
 import com.passbolt.mobile.android.core.extension.selectableBackgroundBorderlessResourceId
 import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.ui.R
+import com.passbolt.mobile.android.core.ui.compose.labelledtext.LabelledTextEndAction
 import com.passbolt.mobile.android.core.ui.databinding.ViewLabelledTextBinding
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
 

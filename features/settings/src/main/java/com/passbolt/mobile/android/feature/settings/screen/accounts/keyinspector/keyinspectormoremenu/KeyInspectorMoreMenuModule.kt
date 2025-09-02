@@ -1,8 +1,7 @@
 package com.passbolt.mobile.android.feature.settings.screen.accounts.keyinspector.keyinspectormoremenu
 
+import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.core.module.Module
-import org.koin.core.module.dsl.scopedOf
-import org.koin.dsl.bind
 
 /**
  * Passbolt - Open source password manager for teams
@@ -28,7 +27,5 @@ import org.koin.dsl.bind
  */
 
 fun Module.keyInspectorMoreMenuModule() {
-    scope<KeyInspectorMoreMenuFragment> {
-        scopedOf(::KeyInspectorMoreMenuPresenter) bind KeyInspectorMoreMenuContract.Presenter::class
-    }
+    viewModelOf(::KeyInspectorBottomSheetViewModel)
 }

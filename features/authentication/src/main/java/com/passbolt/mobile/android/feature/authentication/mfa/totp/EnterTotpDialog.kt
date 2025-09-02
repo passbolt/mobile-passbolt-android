@@ -13,10 +13,10 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
-import androidx.fragment.app.DialogFragment
 import com.google.android.material.snackbar.Snackbar
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
+import com.passbolt.mobile.android.core.mvp.EdgeToEdgeDialogFragment
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
 import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
@@ -24,6 +24,7 @@ import com.passbolt.mobile.android.feature.authentication.databinding.DialogEnte
 import org.koin.android.ext.android.inject
 import org.koin.android.scope.AndroidScopeComponent
 import org.koin.androidx.scope.fragmentScope
+import timber.log.Timber
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
@@ -51,11 +52,12 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
  */
 
 class EnterTotpDialog :
-    DialogFragment(),
+    EdgeToEdgeDialogFragment(),
     AndroidScopeComponent,
     EnterTotpContract.View {
     override val scope by fragmentScope(useParentActivityScope = false)
-    private var listener: EnterTotpListener? = null
+    var listener: EnterTotpListener? = null
+
     val presenter: EnterTotpContract.Presenter by scope.inject()
     private val clipboardManager: ClipboardManager? by inject()
     private lateinit var binding: DialogEnterTotpBinding
@@ -102,9 +104,12 @@ class EnterTotpDialog :
         isCancelable = false
         listener =
             when {
-                activity is EnterTotpListener -> activity as EnterTotpListener
                 parentFragment is EnterTotpListener -> parentFragment as EnterTotpListener
-                else -> error("Parent must implement ${EnterTotpListener::class.java.name}")
+                activity is EnterTotpListener -> activity as EnterTotpListener
+                else -> {
+                    Timber.w("Parent should implement ${EnterTotpListener::class.java.name} unless used in compose")
+                    null
+                }
             }
         presenter.attach(this)
     }
@@ -122,7 +127,7 @@ class EnterTotpDialog :
     private fun setupListeners() {
         with(binding) {
             otherProviderButton.setDebouncingOnClick {
-                listener?.totpOtherProviderClick(bundledAuthToken)
+                otherProviderClick()
             }
             closeButton.setDebouncingOnClick {
                 presenter.closeClick()
@@ -134,6 +139,11 @@ class EnterTotpDialog :
                 presenter.otpEntered(it.toString(), bundledAuthToken, rememberMeCheckBox.isChecked)
             }
         }
+    }
+
+    private fun otherProviderClick() {
+        dismiss()
+        listener?.totpOtherProviderClick(bundledAuthToken)
     }
 
     private fun getPasteData() =
@@ -211,6 +221,7 @@ class EnterTotpDialog :
     }
 
     override fun notifyVerificationSucceeded(mfaHeader: String) {
+        dismiss()
         listener?.totpVerificationSucceeded(mfaHeader)
     }
 

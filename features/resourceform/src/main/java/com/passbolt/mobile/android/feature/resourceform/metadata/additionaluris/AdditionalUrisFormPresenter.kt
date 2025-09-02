@@ -1,5 +1,8 @@
 package com.passbolt.mobile.android.feature.resourceform.metadata.additionaluris
 
+import androidx.annotation.VisibleForTesting
+import com.passbolt.mobile.android.common.validation.StringMaxLength
+import com.passbolt.mobile.android.common.validation.validation
 import com.passbolt.mobile.android.ui.AdditionalUrisUiModel
 import com.passbolt.mobile.android.ui.ResourceFormMode
 import java.util.UUID
@@ -43,8 +46,8 @@ class AdditionalUrisFormPresenter : AdditionalUrisFormContract.Presenter {
     ) {
         mainUri = additionalUris.mainUri
         additionalUrisUiModel =
-            additionalUris.additionalUris.associateTo(additionalUrisUiModel) {
-                UUID.randomUUID() to it
+            additionalUris.additionalUris.associateByTo(additionalUrisUiModel) {
+                UUID.randomUUID()
             }
 
         when (mode) {
@@ -81,15 +84,39 @@ class AdditionalUrisFormPresenter : AdditionalUrisFormContract.Presenter {
     }
 
     override fun applyClick() {
-        view?.goBackWithResult(
-            AdditionalUrisUiModel(
-                mainUri = mainUri,
-                additionalUris = additionalUrisUiModel.values.toList(),
-            ),
-        )
+        view?.clearValidationErrors()
+        validation {
+            of(mainUri) {
+                withRules(StringMaxLength(URI_MAX_LENGTH)) {
+                    onInvalid { view?.showMainUriMaxLengthError(URI_MAX_LENGTH) }
+                }
+            }
+            additionalUrisUiModel.forEach {
+                of(it.value) {
+                    withRules(StringMaxLength(URI_MAX_LENGTH)) {
+                        onInvalid {
+                            view?.showAdditionalUriMaxLengthError(it.key, URI_MAX_LENGTH)
+                            view?.scrollToAdditionalUriWithError(it.key)
+                        }
+                    }
+                }
+            }
+
+            onValid {
+                view?.goBackWithResult(
+                    AdditionalUrisUiModel(
+                        mainUri = mainUri,
+                        additionalUris = additionalUrisUiModel.values.toList(),
+                    ),
+                )
+            }
+        }
     }
 
-    private companion object {
-        private const val MAX_ADDITIONAL_URIS = 20
+    companion object {
+        private const val MAX_ADDITIONAL_URIS = 19
+
+        @VisibleForTesting
+        val URI_MAX_LENGTH = 1024
     }
 }

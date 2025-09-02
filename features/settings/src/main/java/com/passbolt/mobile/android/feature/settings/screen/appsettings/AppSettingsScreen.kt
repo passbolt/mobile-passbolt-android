@@ -55,6 +55,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.ActivityIntents.AuthConfig.RefreshPassphrase
+import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
+import com.passbolt.mobile.android.core.navigation.compose.keys.SettingsNavigationKey.Autofill
+import com.passbolt.mobile.android.core.navigation.compose.keys.SettingsNavigationKey.DefaultFilter
+import com.passbolt.mobile.android.core.navigation.compose.keys.SettingsNavigationKey.ExpertSettings
 import com.passbolt.mobile.android.core.ui.R
 import com.passbolt.mobile.android.core.ui.compose.dialogs.ConfigureFingerprintAlertDialog
 import com.passbolt.mobile.android.core.ui.compose.dialogs.DisableFingerprintAlertDialog
@@ -90,6 +94,7 @@ import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettin
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.koinInject
 import org.koin.compose.rememberKoinInject
 import java.util.concurrent.Executor
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
@@ -97,8 +102,8 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 @Composable
 internal fun AppSettingsScreen(
-    navigation: AppSettingsNavigation,
     modifier: Modifier = Modifier,
+    navigator: AppNavigator = koinInject(),
     viewModel: AppSettingsViewModel = koinViewModel(),
 ) {
     val state = viewModel.viewState.collectAsStateWithLifecycle()
@@ -108,7 +113,7 @@ internal fun AppSettingsScreen(
         sideEffectFlow = viewModel.sideEffect,
         environment = environment,
         onIntent = viewModel::onIntent,
-        navigation = navigation,
+        navigator = navigator,
     )
 
     AppSettingsScreen(
@@ -152,14 +157,14 @@ private fun AppSettingsSideEffectsHandler(
     sideEffectFlow: Flow<AppSettingsSideEffect>,
     environment: AppSettingsEnvironment,
     onIntent: (AppSettingsIntent) -> Unit,
-    navigation: AppSettingsNavigation,
+    navigator: AppNavigator,
 ) {
     SideEffectDispatcher(sideEffectFlow) {
         when (it) {
-            NavigateToAutofill -> navigation.navigateToAutofill()
-            NavigateToDefaultFilter -> navigation.navigateToDefaultFilter()
-            NavigateToExpertSettings -> navigation.navigateToExpertSettings()
-            NavigateUp -> navigation.navigateUp()
+            NavigateToAutofill -> navigator.navigateToKey(Autofill)
+            NavigateToDefaultFilter -> navigator.navigateToKey(DefaultFilter)
+            NavigateToExpertSettings -> navigator.navigateToKey(ExpertSettings)
+            NavigateUp -> navigator.navigateBack()
             NavigateToGetPassphrase ->
                 environment.authenticationLauncher.launch(
                     ActivityIntents.authentication(

@@ -1,11 +1,14 @@
 package com.passbolt.mobile.android.core.ui.compose.topbar
 
+import androidx.annotation.VisibleForTesting
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
+import com.passbolt.mobile.android.core.ui.compose.topbar.BackNavigationIcon.TestTags.ICON
 
 /**
  * Passbolt - Open source password manager for teams
@@ -38,6 +41,14 @@ fun BackNavigationIcon(
         Icon(
             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
             contentDescription = null,
+            modifier = Modifier.testTag(ICON),
         )
+    }
+}
+
+@VisibleForTesting
+object BackNavigationIcon {
+    object TestTags {
+        const val ICON = "BackNavigationIcon"
     }
 }

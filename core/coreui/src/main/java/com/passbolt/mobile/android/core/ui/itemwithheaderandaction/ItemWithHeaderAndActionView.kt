@@ -25,8 +25,12 @@ package com.passbolt.mobile.android.core.ui.itemwithheaderandaction
 
 import android.content.Context
 import android.graphics.Typeface
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
 import android.text.util.Linkify
 import android.util.AttributeSet
+import android.util.TypedValue.COMPLEX_UNIT_PX
 import android.view.LayoutInflater
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
@@ -37,6 +41,7 @@ import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.extension.visible
 import com.passbolt.mobile.android.core.ui.R
 import com.passbolt.mobile.android.core.ui.databinding.ViewItemWithTitleAndHeaderBinding
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 class ItemWithHeaderAndActionView
     @JvmOverloads
@@ -46,11 +51,10 @@ class ItemWithHeaderAndActionView
         defStyle: Int = 0,
     ) : ConstraintLayout(context, attrs, defStyle) {
         var actionClickListener: (() -> Unit)? = null
-        var textValue = ""
-            set(value) {
-                field = value
-                binding.value.text = value
-            }
+
+        private val redTextColor = ContextCompat.getColor(context, R.color.red)
+        private val blueTextColor = ContextCompat.getColor(context, R.color.primary)
+
         var actionIcon: ActionIcon = ActionIcon.NONE
             set(value) {
                 field = value
@@ -61,8 +65,9 @@ class ItemWithHeaderAndActionView
                 field = value
                 setupIsSecret(value)
             }
-
         private val binding = ViewItemWithTitleAndHeaderBinding.inflate(LayoutInflater.from(context), this)
+
+        private var shouldDifferentiateCharacterGroups = false
         private val regularFont = ResourcesCompat.getFont(context, R.font.inter)
         private val secretFont = ResourcesCompat.getFont(context, R.font.inconsolata)
 
@@ -97,8 +102,50 @@ class ItemWithHeaderAndActionView
                     setupTitle(
                         it.getString(R.styleable.ItemWithHeaderAndActionView_itemWithHeaderAndActionView_title),
                     )
+                    shouldDifferentiateCharacterGroups =
+                        it.getBoolean(
+                            R.styleable.ItemWithHeaderAndActionView_itemWithHeaderAndActionView_differentiateCharacterGroups,
+                            false,
+                        )
                 }
             }
+        }
+
+        fun setVisibleTextValue(textValue: String) {
+            if (!shouldDifferentiateCharacterGroups) {
+                binding.value.text = textValue
+            } else {
+                binding.value.text = getCharacterGroupsSpannedText(textValue)
+            }
+        }
+
+        fun setHiddenSecretValue() {
+            binding.value.text = context.getString(LocalizationR.string.hidden_secret)
+        }
+
+        // use same algorithm as in the web-ext for compatibility
+        private fun getCharacterGroupsSpannedText(text: String): SpannableString {
+            val spannableString = SpannableString(text)
+
+            text.forEachIndexed { index, char ->
+                val characterColor =
+                    when {
+                        char.isDigit() -> redTextColor
+                        !char.isLetterOrDigit() -> blueTextColor
+                        else -> null
+                    }
+
+                characterColor?.let {
+                    spannableString.setSpan(
+                        ForegroundColorSpan(characterColor),
+                        index,
+                        index + 1,
+                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE,
+                    )
+                }
+            }
+
+            return spannableString
         }
 
         private fun setupTitle(title: String?) {
@@ -113,7 +160,11 @@ class ItemWithHeaderAndActionView
 
         private fun setupIsSecret(isTextSecret: Boolean) {
             val fontFamily = if (isTextSecret) secretFont else regularFont
-            binding.value.typeface = Typeface.create(fontFamily, FONT_WEIGHT, false)
+            val textSizePx = resources.getDimension(if (isTextSecret) R.dimen.sp_18 else R.dimen.sp_14)
+            with(binding.value) {
+                typeface = Typeface.create(fontFamily, FONT_WEIGHT, false)
+                setTextSize(COMPLEX_UNIT_PX, textSizePx)
+            }
         }
 
         private fun setupActionIcon(actionIcon: ActionIcon) {
@@ -138,6 +189,7 @@ class ItemWithHeaderAndActionView
         }
 
         fun conceal() {
+            setVisibleTextValue("")
             binding.conceal.visible()
         }
 

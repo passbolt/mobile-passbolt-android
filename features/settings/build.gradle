@@ -21,7 +21,6 @@ dependencies {
     implementation project(':logger')
     implementation project(':localization')
     implementation project(':entity')
-    implementation project(':logs')
     implementation project(':users')
     implementation project(':transferaccounttoanotherdevice')
     implementation project(':gopenpgp')
@@ -35,6 +34,8 @@ dependencies {
 
     implementation libs.navigation.fragment
     implementation libs.navigation.ui
+    implementation(libs.androidx.navigation3.ui)
+    implementation(libs.androidx.navigation3.runtime)
     implementation libs.koin
     implementation libs.koin.compose
     implementation libs.biometric

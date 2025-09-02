@@ -7,9 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.BundleCompat
 import androidx.core.os.bundleOf
-import androidx.fragment.app.DialogFragment
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
+import com.passbolt.mobile.android.core.mvp.EdgeToEdgeDialogFragment
 import com.passbolt.mobile.android.feature.metadatakeytrust.databinding.DialogTrustedMetadataKeyDeletedBinding
 import com.passbolt.mobile.android.ui.TrustedKeyDeletedModel
 import org.koin.core.component.KoinComponent
@@ -38,7 +38,7 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
  * @since v1.0
  */
 class NewTrustedMetadataKeyDeletedDialog :
-    DialogFragment(),
+    EdgeToEdgeDialogFragment(),
     KoinComponent {
     private var listener: Listener? = null
     private val bundledDeletedKey by lifecycleAwareLazy {
@@ -78,8 +78,8 @@ class NewTrustedMetadataKeyDeletedDialog :
         super.onAttach(context)
         listener =
             when {
-                activity is Listener -> activity as Listener
                 parentFragment is Listener -> parentFragment as Listener
+                activity is Listener -> activity as Listener
                 else -> error("Parent must implement ${Listener::class.java.name}")
             }
     }

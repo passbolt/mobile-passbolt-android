@@ -31,7 +31,7 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="@dimen/dp_16"
         android:textColor="@color/text_primary"
-        android:textSize="@dimen/sp_20"
+        android:textSize="@dimen/sp_24"
         tools:text="Passbolt" />
 
     <androidx.recyclerview.widget.RecyclerView

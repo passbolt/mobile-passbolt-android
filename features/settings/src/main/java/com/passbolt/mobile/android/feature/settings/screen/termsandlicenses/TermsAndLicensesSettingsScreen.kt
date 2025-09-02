@@ -29,12 +29,15 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
+import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
+import com.passbolt.mobile.android.core.navigation.compose.keys.SettingsNavigationKey.OpenSourceLicences
 import com.passbolt.mobile.android.core.ui.R
 import com.passbolt.mobile.android.core.ui.compose.menu.OpenableSettingsItem
 import com.passbolt.mobile.android.core.ui.compose.topbar.BackNavigationIcon
@@ -45,15 +48,17 @@ import com.passbolt.mobile.android.feature.settings.screen.termsandlicenses.Term
 import com.passbolt.mobile.android.feature.settings.screen.termsandlicenses.TermsAndLicensesSettingsSideEffect.NavigateToTermsAndConditionsSettings
 import com.passbolt.mobile.android.feature.settings.screen.termsandlicenses.TermsAndLicensesSettingsSideEffect.NavigateUp
 import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.koinInject
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 @Composable
 internal fun TermsAndLicensesScreen(
-    navigation: TermsAndLicensesSettingsNavigation,
     modifier: Modifier = Modifier,
+    navigator: AppNavigator = koinInject(),
     viewModel: TermsAndLicensesSettingsViewModel = koinViewModel(),
 ) {
     val state = viewModel.viewState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
 
     TermsAndLicensesScreen(
         modifier = modifier,
@@ -63,10 +68,10 @@ internal fun TermsAndLicensesScreen(
 
     SideEffectDispatcher(viewModel.sideEffect) {
         when (it) {
-            NavigateToOpenSourceLicensesSettings -> navigation.navigateToOpenSourceLicenses()
-            is NavigateToPrivacyPolicy -> navigation.navigateToPrivacyPolicy(it.privacyPolicyUrl)
-            is NavigateToTermsAndConditionsSettings -> navigation.navigateToTermsAndConditions(it.termsAndConditionsUrl)
-            NavigateUp -> navigation.navigateUp()
+            NavigateToOpenSourceLicensesSettings -> navigator.navigateToKey(OpenSourceLicences)
+            is NavigateToPrivacyPolicy -> navigator.openExternalWebsite(context, it.privacyPolicyUrl)
+            is NavigateToTermsAndConditionsSettings -> navigator.openExternalWebsite(context, it.termsAndConditionsUrl)
+            NavigateUp -> navigator.navigateBack()
         }
     }
 }

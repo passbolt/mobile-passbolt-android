@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:textFontWeight="600"
         android:textIsSelectable="false"
-        android:textSize="@dimen/sp_12" />
+        android:textSize="@dimen/sp_14" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/dropdownLayout"
@@ -28,7 +28,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="none"
-            android:textSize="@dimen/sp_14" />
+            android:textSize="@dimen/sp_16" />
 
     </com.google.android.material.textfield.TextInputLayout>
 

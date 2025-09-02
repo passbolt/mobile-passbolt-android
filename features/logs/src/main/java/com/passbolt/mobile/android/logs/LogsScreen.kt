@@ -39,32 +39,38 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
+import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
 import com.passbolt.mobile.android.core.ui.compose.topbar.BackNavigationIcon
 import com.passbolt.mobile.android.core.ui.compose.topbar.TitleAppBar
+import com.passbolt.mobile.android.logs.LogsComposeFragment.Companion.LOGS_MIME_TYPE
 import com.passbolt.mobile.android.logs.LogsIntent.GoBack
 import com.passbolt.mobile.android.logs.LogsIntent.ShareLogs
+import com.passbolt.mobile.android.logs.LogsSideEffect.NavigateToLogsShareSheet
 import com.passbolt.mobile.android.logs.LogsSideEffect.NavigateUp
 import com.passbolt.mobile.android.logs.LogsSideEffect.ScrollLogsToLastLine
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
 import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.koinInject
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 @Composable
 internal fun LogsScreen(
-    navigation: LogsNavigation,
     modifier: Modifier = Modifier,
+    navigator: AppNavigator = koinInject(),
     viewModel: LogsViewModel = koinViewModel(),
 ) {
     val state = viewModel.viewState.collectAsStateWithLifecycle()
     val logListState = rememberLazyListState()
+    val context = LocalContext.current
 
     LogsScreen(
         modifier = modifier,
@@ -75,7 +81,7 @@ internal fun LogsScreen(
 
     SideEffectDispatcher(viewModel.sideEffect) {
         when (it) {
-            NavigateUp -> navigation.navigateUp()
+            NavigateUp -> navigator.navigateBack()
             ScrollLogsToLastLine -> {
                 // wait until list is populated before scrolling
                 snapshotFlow { logListState.layoutInfo.totalItemsCount }
@@ -83,7 +89,15 @@ internal fun LogsScreen(
                     .first()
                 logListState.scrollToItem(maxOf(state.value.logLines.lastIndex, 0))
             }
-            is LogsSideEffect.NavigateToLogsShareSheet -> navigation.navigateToLogsShareSheet(it.logsFilePath)
+            is NavigateToLogsShareSheet -> {
+                navigator.startFileShareSheet(
+                    context = context,
+                    shareSheetTitle = context.getString(LocalizationR.string.logs_share_title),
+                    authority = LogsComposeFragment.getLogsFileProviderAuthority(context),
+                    fileMimeType = LOGS_MIME_TYPE,
+                    filePath = it.logsFilePath,
+                )
+            }
         }
     }
 }

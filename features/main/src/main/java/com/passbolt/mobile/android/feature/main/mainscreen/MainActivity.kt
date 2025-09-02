@@ -16,11 +16,18 @@ import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.extension.findNavHostFragment
 import com.passbolt.mobile.android.core.extension.getRootView
 import com.passbolt.mobile.android.core.extension.showSnackbar
+import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
+import com.passbolt.mobile.android.core.navigation.compose.keys.AccountDetailsNavigationKey.AccountDetails
 import com.passbolt.mobile.android.core.security.runtimeauth.RuntimeAuthenticatedFlag
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedActivity
 import com.passbolt.mobile.android.feature.main.databinding.ActivityMainBinding
 import com.passbolt.mobile.android.feature.main.mainscreen.bottomnavigation.MainBottomNavigationModel
 import com.passbolt.mobile.android.feature.main.mainscreen.encouragements.chromenativeautofill.EncourageChromeNativeAutofillServiceDialog
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import timber.log.Timber
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
@@ -35,6 +42,8 @@ class MainActivity :
     MainContract.View,
     EncourageChromeNativeAutofillServiceDialog.Listener {
     override val presenter: MainContract.Presenter by inject()
+    private val job = SupervisorJob()
+    private val coroutineScope = CoroutineScope(job + Dispatchers.Main)
 
     private val bottomNavController by lifecycleAwareLazy {
         findNavHostFragment(requiredBinding.fragmentContainer.id).navController
@@ -52,6 +61,7 @@ class MainActivity :
             }
         }
     private val appReviewManager: ReviewManager by inject()
+    private val appNavigator: AppNavigator by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,8 +75,16 @@ class MainActivity :
             menu.findItem(OtpR.id.otpNav).isVisible = navigationModel.isOtpTabVisible
         }
 
+        // hide bottom navigation for fragments
         bottomNavController.addOnDestinationChangedListener { _, destination, _ ->
             requiredBinding.mainNavigation.isVisible = bottomNavFragmentIds.contains(destination.id)
+        }
+
+        // hide bottom navigation for composables
+        coroutineScope.launch {
+            appNavigator.currentBackStackItem.collect {
+                requiredBinding.mainNavigation.isVisible = !bottomNavGoneComposableKeys.contains(it)
+            }
         }
     }
 
@@ -85,6 +103,7 @@ class MainActivity :
     }
 
     override fun onDestroy() {
+        coroutineScope.coroutineContext.cancelChildren()
         appUpdateManager.unregisterListener(appUpdateStatusListener)
         presenter.detach()
         super.onDestroy()
@@ -165,7 +184,12 @@ class MainActivity :
                 HomeR.id.home,
                 HomeR.id.homeChild,
                 OtpR.id.otpFragment,
-                SettingsR.id.settingsComposeFragment,
+                SettingsR.id.settingsMainFragment,
+            )
+
+        private val bottomNavGoneComposableKeys =
+            listOf(
+                AccountDetails,
             )
     }
 }

@@ -11,12 +11,12 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
-import androidx.fragment.app.DialogFragment
 import com.google.android.material.snackbar.Snackbar
 import com.passbolt.mobile.android.common.dialogs.yubikeyNotFromCurrentUserAlertDialog
 import com.passbolt.mobile.android.common.dialogs.yubikeyScanFailedAlertDialog
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
+import com.passbolt.mobile.android.core.mvp.EdgeToEdgeDialogFragment
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
 import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
@@ -24,6 +24,7 @@ import com.passbolt.mobile.android.feature.authentication.databinding.DialogScan
 import com.yubico.yubikit.android.ui.OtpActivity
 import org.koin.android.scope.AndroidScopeComponent
 import org.koin.androidx.scope.fragmentScope
+import timber.log.Timber
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
@@ -51,11 +52,12 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
  */
 
 class ScanYubikeyDialog :
-    DialogFragment(),
+    EdgeToEdgeDialogFragment(),
     AndroidScopeComponent,
     ScanYubikeyContract.View {
     override val scope by fragmentScope(useParentActivityScope = false)
-    private var listener: ScanYubikeyListener? = null
+    var listener: ScanYubikeyListener? = null
+
     private val presenter: ScanYubikeyContract.Presenter by scope.inject()
     private lateinit var binding: DialogScanYubikeyBinding
     private val authenticationResult =
@@ -108,9 +110,12 @@ class ScanYubikeyDialog :
         isCancelable = false
         listener =
             when {
-                activity is ScanYubikeyListener -> activity as ScanYubikeyListener
                 parentFragment is ScanYubikeyListener -> parentFragment as ScanYubikeyListener
-                else -> error("Parent must implement ${ScanYubikeyListener::class.java.name}")
+                activity is ScanYubikeyListener -> activity as ScanYubikeyListener
+                else -> {
+                    Timber.w("Parent should implement ${ScanYubikeyListener::class.java.name} unless used in compose")
+                    null
+                }
             }
         presenter.attach(this)
     }
@@ -145,7 +150,7 @@ class ScanYubikeyDialog :
                 presenter.scanYubikeyClick()
             }
             otherProviderButton.setDebouncingOnClick {
-                listener?.yubikeyOtherProviderClick(bundledAuthToken)
+                otherProviderClick()
             }
             closeButton.setDebouncingOnClick {
                 presenter.closeClick()
@@ -162,6 +167,11 @@ class ScanYubikeyDialog :
     override fun showYubikeyDoesNotBelongToCurrentUser() {
         yubikeyNotFromCurrentUserAlertDialog(requireContext())
             .show()
+    }
+
+    private fun otherProviderClick() {
+        dismiss()
+        listener?.yubikeyOtherProviderClick(bundledAuthToken)
     }
 
     override fun showScanOtpCancelled() {

@@ -11,6 +11,7 @@ import org.koin.test.KoinTest
 import org.koin.test.KoinTestRule
 import org.koin.test.inject
 import org.mockito.Mockito.mockStatic
+import org.mockito.Mockito.never
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
@@ -165,6 +166,64 @@ class AdditionalUrisFormPresenterTest : KoinTest {
                 verify(view).goBackWithResult(capture())
                 assertThat(firstValue.additionalUris).isEmpty()
             }
+        }
+    }
+
+    @Test
+    fun `validation should fail when main uri exceeds max length`() {
+        val mockUrisModel =
+            AdditionalUrisUiModel(
+                mainUri = "main",
+                additionalUris = emptyList(),
+            )
+
+        presenter.attach(view)
+        presenter.argsRetrieved(
+            ResourceFormMode.Create(
+                leadingContentType = LeadingContentType.PASSWORD,
+                parentFolderId = null,
+            ),
+            mockUrisModel,
+        )
+
+        val tooLongUri = "a".repeat(AdditionalUrisFormPresenter.URI_MAX_LENGTH + 1)
+        presenter.mainUriChanged(tooLongUri)
+        presenter.applyClick()
+
+        verify(view).clearValidationErrors()
+        verify(view).showMainUriMaxLengthError(AdditionalUrisFormPresenter.URI_MAX_LENGTH)
+        verify(view, never()).goBackWithResult(org.mockito.kotlin.any())
+    }
+
+    @Test
+    fun `validation should fail when additional uri exceeds max length`() {
+        val mockUrisModel =
+            AdditionalUrisUiModel(
+                mainUri = "main",
+                additionalUris = listOf("uri1"),
+            )
+        val fixedUUID = UUID.fromString("123e4567-e89b-12d3-a456-426614174000")
+
+        mockStatic(UUID::class.java).use { mockedUUID ->
+            mockedUUID.`when`<Any?> { UUID.randomUUID() }.thenReturn(fixedUUID)
+
+            presenter.attach(view)
+            presenter.argsRetrieved(
+                ResourceFormMode.Create(
+                    leadingContentType = LeadingContentType.PASSWORD,
+                    parentFolderId = null,
+                ),
+                mockUrisModel,
+            )
+
+            val tooLongUri = "a".repeat(AdditionalUrisFormPresenter.URI_MAX_LENGTH + 1)
+            presenter.additionalUriChanged(fixedUUID, tooLongUri)
+            presenter.applyClick()
+
+            verify(view).clearValidationErrors()
+            verify(view).showAdditionalUriMaxLengthError(fixedUUID, AdditionalUrisFormPresenter.URI_MAX_LENGTH)
+            verify(view).scrollToAdditionalUriWithError(fixedUUID)
+            verify(view, never()).goBackWithResult(org.mockito.kotlin.any())
         }
     }
 }
