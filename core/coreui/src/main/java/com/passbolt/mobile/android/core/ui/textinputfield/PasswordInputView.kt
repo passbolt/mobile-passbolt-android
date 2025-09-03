@@ -3,7 +3,9 @@ package com.passbolt.mobile.android.core.ui.textinputfield
 import android.content.Context
 import android.text.InputType
 import android.util.AttributeSet
+import androidx.core.content.res.ResourcesCompat
 import com.google.android.material.textfield.TextInputLayout
+import com.passbolt.mobile.android.core.ui.R
 
 /**
  * Passbolt - Open source password manager for teams
@@ -40,6 +42,8 @@ class PasswordInputView
                     isSingleLine = true
                     inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
                     isSaveEnabled = false
+                    typeface = ResourcesCompat.getFont(context, R.font.inconsolata)
+                    textSize = TEXT_SIZE
                 }
                 endIconMode = TextInputLayout.END_ICON_PASSWORD_TOGGLE
             }
@@ -47,5 +51,9 @@ class PasswordInputView
 
         fun clearText() {
             binding.textLayout.editText?.setText("")
+        }
+
+        private companion object {
+            private const val TEXT_SIZE = 18f
         }
     }
