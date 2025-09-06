@@ -72,6 +72,7 @@
     <string name="validation_max_length">Maximum length is %d</string>
     <string name="validation_is_required">This input is required</string>
     <string name="validation_required_integer">Should be an integer number</string>
+    <string name="validation_invalid_totp_secret">Invalid TOTP secret</string>
 
     <string name="fingerprint_biometric_error_generic">An error has occurred with the fingerprint sensor.</string>
     <string name="fingerprint_biometric_error_too_many_attempts">Biometric authorization has been blocked due to too many attempts.</string>

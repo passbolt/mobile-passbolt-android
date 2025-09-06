@@ -87,7 +87,7 @@ interface OtpContract {
 
         fun navigateToScanOtpCodeForResult()
 
-        fun showError(message: String)
+        fun showGeneralError(message: String)
 
         fun showEncryptionError(message: String)
 

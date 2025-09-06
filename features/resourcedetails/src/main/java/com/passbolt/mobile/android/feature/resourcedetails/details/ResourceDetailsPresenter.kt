@@ -9,6 +9,7 @@ import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReac
 import com.passbolt.mobile.android.core.idlingresource.ResourceDetailActionIdlingResource
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.otpcore.TotpParametersProvider
+import com.passbolt.mobile.android.core.otpcore.TotpParametersProvider.OtpParametersResult.OtpParameters
 import com.passbolt.mobile.android.core.rbac.usecase.GetRbacRulesUseCase
 import com.passbolt.mobile.android.core.resources.actions.ResourceCommonActionsInteractor
 import com.passbolt.mobile.android.core.resources.actions.ResourcePropertiesActionsInteractor
@@ -619,7 +620,7 @@ class ResourceDetailsPresenter(
         action: (
             ClipboardLabel,
             TotpSecret,
-            TotpParametersProvider.OtpParameters,
+            OtpParameters,
         ) -> Unit,
     ) {
         coroutineScope.launch {
@@ -629,14 +630,22 @@ class ResourceDetailsPresenter(
                 doOnDecryptionFailure = { view?.showDecryptionFailure() },
                 doOnSuccess = {
                     if (it.result.key.isNotBlank()) {
-                        val otpParameters =
+                        val otpParametersResult =
                             totpParametersProvider.provideOtpParameters(
                                 secretKey = it.result.key,
                                 digits = it.result.digits,
                                 period = it.result.period,
                                 algorithm = it.result.algorithm,
                             )
-                        action(it.label, it.result, otpParameters)
+                        when (otpParametersResult) {
+                            is OtpParameters ->
+                                action(it.label, it.result, otpParametersResult)
+                            is TotpParametersProvider.OtpParametersResult.InvalidTotpInput -> {
+                                val error = "Invalid TOTP input"
+                                Timber.e(error)
+                                view?.showGeneralError(error)
+                            }
+                        }
                     } else {
                         val error = "Fetched totp key is empty"
                         Timber.e(error)

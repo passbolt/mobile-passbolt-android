@@ -40,4 +40,9 @@ class UriIsOfAuthority(
     private val authority: String,
 ) : Rule<URI>({ authority == it.authority })
 
+object StringIsBase32 :
+    Rule<String>({ Regex(BASE_32_PATTERN).matches(it.uppercase()) })
+
 private const val UUID_PATTERN = "^[{]?[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}[}]?$"
+
+private const val BASE_32_PATTERN = "^[A-Z2-7]+=*$"

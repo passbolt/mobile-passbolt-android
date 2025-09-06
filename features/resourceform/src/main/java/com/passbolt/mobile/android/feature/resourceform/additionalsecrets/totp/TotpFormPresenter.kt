@@ -1,5 +1,8 @@
 package com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp
 
+import com.passbolt.mobile.android.common.validation.StringIsBase32
+import com.passbolt.mobile.android.common.validation.StringNotBlank
+import com.passbolt.mobile.android.common.validation.validation
 import com.passbolt.mobile.android.ui.OtpParseResult
 import com.passbolt.mobile.android.ui.ResourceFormMode
 import com.passbolt.mobile.android.ui.TotpUiModel
@@ -100,6 +103,20 @@ class TotpFormPresenter : TotpFormContract.Presenter {
     }
 
     override fun applyClick() {
-        view?.goBackWithResult(totpUiModel)
+        validation {
+            of(totpUiModel.secret) {
+                withRules(StringNotBlank) {
+                    onInvalid {
+                        view?.showSecretMustNotBeEmpty()
+                    }
+                }
+                withRules(StringIsBase32) {
+                    onInvalid {
+                        view?.showSecretMustBeBase32()
+                    }
+                }
+            }
+            onValid { view?.goBackWithResult(totpUiModel) }
+        }
     }
 }

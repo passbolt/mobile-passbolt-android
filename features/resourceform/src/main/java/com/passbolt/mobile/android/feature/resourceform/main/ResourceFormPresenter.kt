@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.feature.resourceform.main
 
+import com.passbolt.mobile.android.common.validation.StringIsBase32
 import com.passbolt.mobile.android.core.fulldatarefresh.DataRefreshStatus
 import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
 import com.passbolt.mobile.android.core.idlingresource.CreateResourceIdlingResource
@@ -523,8 +524,17 @@ class ResourceFormPresenter(
     }
 
     private fun onValid(action: () -> Unit) {
-        if (uiModel.leadingContentType == TOTP && resourceSecret.totp?.key.isNullOrBlank()) {
-            view?.showTotpRequired()
+        if (uiModel.leadingContentType == TOTP) {
+            val totpKey = resourceSecret.totp?.key
+            if (totpKey.isNullOrBlank()) {
+                view?.showTotpRequired()
+                return
+            }
+            if (!StringIsBase32.condition(totpKey)) {
+                view?.showSecretMustBeBase32()
+                return
+            }
+            action()
         } else {
             action()
         }

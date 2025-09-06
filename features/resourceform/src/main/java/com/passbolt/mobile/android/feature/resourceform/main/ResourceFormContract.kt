@@ -140,6 +140,8 @@ interface ResourceFormContract {
         fun navigateToAdditionalUris(model: AdditionalUrisUiModel)
 
         fun navigateToAppearance(appearanceModel: ResourceAppearanceModel)
+
+        fun showSecretMustBeBase32()
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {

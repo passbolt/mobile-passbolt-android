@@ -402,7 +402,7 @@ class OtpFragment :
         )
     }
 
-    override fun showError(message: String) {
+    override fun showGeneralError(message: String) {
         showSnackbar(
             getString(LocalizationR.string.common_failure_format, message),
             backgroundColor = CoreUiR.color.red,

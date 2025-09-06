@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.core.otpcore
 import dev.turingcomplete.kotlinonetimepassword.TimeBasedOneTimePasswordConfig
 import dev.turingcomplete.kotlinonetimepassword.TimeBasedOneTimePasswordGenerator
 import org.apache.commons.codec.binary.Base32
+import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
 class TotpParametersProvider(
@@ -13,7 +14,7 @@ class TotpParametersProvider(
         digits: Int,
         period: Long,
         algorithm: String,
-    ): OtpParameters {
+    ): OtpParametersResult {
         val generatorConfig =
             TimeBasedOneTimePasswordConfig(
                 codeDigits = digits,
@@ -31,11 +32,20 @@ class TotpParametersProvider(
         @Suppress("MagicNumber")
         val secondsValid = (currentTimeslotEndMillis - System.currentTimeMillis()) / 1_000
 
-        return OtpParameters(otpValue = totpGenerator.generate(), secondsValid = secondsValid)
+        return try {
+            OtpParametersResult.OtpParameters(otpValue = totpGenerator.generate(), secondsValid = secondsValid)
+        } catch (e: Exception) {
+            Timber.e(e, "Error generating TOTP")
+            OtpParametersResult.InvalidTotpInput
+        }
     }
 
-    data class OtpParameters(
-        val otpValue: String,
-        val secondsValid: Long,
-    )
+    sealed class OtpParametersResult {
+        data class OtpParameters(
+            val otpValue: String,
+            val secondsValid: Long,
+        ) : OtpParametersResult()
+
+        data object InvalidTotpInput : OtpParametersResult()
+    }
 }

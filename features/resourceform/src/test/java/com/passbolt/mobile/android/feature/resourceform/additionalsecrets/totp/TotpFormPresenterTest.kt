@@ -69,7 +69,7 @@ class TotpFormPresenterTest : KoinTest {
 
     @Test
     fun `secret and issuer changes should be applied`() {
-        val changedSecret = "changed secret"
+        val changedSecret = "AAAAAAAA"
         val changedIssuer = "changed issuer"
 
         presenter.attach(view)
@@ -112,6 +112,7 @@ class TotpFormPresenterTest : KoinTest {
             totp,
         )
         presenter.totpAdvancedSettingsChanged(changedAdvancedSettings)
+        presenter.totpSecretChanged("AAAAAAAA")
         presenter.applyClick()
 
         argumentCaptor<TotpUiModel> {
@@ -127,7 +128,7 @@ class TotpFormPresenterTest : KoinTest {
         val scannedTotp =
             OtpParseResult.OtpQr.TotpQr(
                 label = "label",
-                secret = "secret",
+                secret = "AAAAAAAA",
                 issuer = "issuer",
                 algorithm = OtpParseResult.OtpQr.Algorithm.SHA1,
                 digits = 6,

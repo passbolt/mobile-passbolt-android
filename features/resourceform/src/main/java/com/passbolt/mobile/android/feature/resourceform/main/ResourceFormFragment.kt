@@ -20,6 +20,7 @@ import com.passbolt.mobile.android.core.ui.R
 import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
 import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
 import com.passbolt.mobile.android.core.ui.textinputfield.StatefulInput
+import com.passbolt.mobile.android.core.ui.textinputfield.StatefulInput.State.Error
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
 import com.passbolt.mobile.android.feature.metadatakeytrust.ui.NewMetadataKeyTrustDialog
 import com.passbolt.mobile.android.feature.metadatakeytrust.ui.NewTrustedMetadataKeyDeletedDialog
@@ -317,11 +318,15 @@ class ResourceFormFragment :
     override fun showTotpRequired() {
         requiredBinding.root.findViewWithTag<TotpSubformView>(TAG_TOTP_SUBFORM).apply {
             secretInput.setState(
-                StatefulInput.State.Error(
-                    getString(LocalizationR.string.validation_is_required),
-                ),
+                Error(getString(LocalizationR.string.validation_is_required)),
             )
         }
+    }
+
+    override fun showSecretMustBeBase32() {
+        requiredBinding.root.findViewWithTag<TotpSubformView>(TAG_TOTP_SUBFORM).secretInput.setState(
+            Error(getString(LocalizationR.string.validation_invalid_totp_secret)),
+        )
     }
 
     override fun showTotpSecret(secret: String) {
