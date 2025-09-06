@@ -201,7 +201,7 @@ class OtpPresenterTest : KoinTest {
             val otpValue = "111111"
             val otpSecondsValid = 30L
             whenever(mockTotpParametersProvider.provideOtpParameters(any(), any(), any(), any())).doReturn(
-                TotpParametersProvider.OtpParameters(otpValue, otpSecondsValid),
+                TotpParametersProvider.OtpParametersResult.OtpParameters(otpValue, otpSecondsValid),
             )
 
             presenter.attach(view)

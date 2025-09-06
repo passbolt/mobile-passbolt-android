@@ -11,6 +11,7 @@ import androidx.navigation.fragment.navArgs
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
 import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
+import com.passbolt.mobile.android.core.ui.textinputfield.StatefulInput.State.Error
 import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpFragment
 import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpMode
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.advanced.TotpAdvancedSettingsFormFragment
@@ -136,6 +137,18 @@ class TotpFormFragment :
 
     override fun showUrl(issuer: String) {
         requiredBinding.totpSubformView.urlInput.text = issuer
+    }
+
+    override fun showSecretMustNotBeEmpty() {
+        requiredBinding.totpSubformView.secretInput.setState(
+            Error(getString(LocalizationR.string.validation_is_required)),
+        )
+    }
+
+    override fun showSecretMustBeBase32() {
+        requiredBinding.totpSubformView.secretInput.setState(
+            Error(getString(LocalizationR.string.validation_invalid_totp_secret)),
+        )
     }
 
     override fun goBackWithResult(totpUiModel: TotpUiModel?) {

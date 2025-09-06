@@ -30,6 +30,8 @@ import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReac
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.core.otpcore.TotpParametersProvider
+import com.passbolt.mobile.android.core.otpcore.TotpParametersProvider.OtpParametersResult.InvalidTotpInput
+import com.passbolt.mobile.android.core.otpcore.TotpParametersProvider.OtpParametersResult.OtpParameters
 import com.passbolt.mobile.android.core.resources.actions.ResourceCommonActionsInteractor
 import com.passbolt.mobile.android.core.resources.actions.ResourceUpdateActionsInteractor
 import com.passbolt.mobile.android.core.resources.actions.SecretPropertiesActionsInteractor
@@ -273,38 +275,46 @@ class OtpPresenter(
                 doOnSuccess = {
                     if (it.result.key.isNotBlank()) {
                         view?.apply {
-                            val otpParameters =
+                            val otpParametersResult =
                                 totpParametersProvider.provideOtpParameters(
                                     secretKey = it.result.key,
                                     digits = it.result.digits,
                                     period = it.result.period,
                                     algorithm = it.result.algorithm,
                                 )
+                            when (otpParametersResult) {
+                                is InvalidTotpInput -> {
+                                    showGeneralError("Invalid TOTP input")
+                                    return@apply
+                                }
 
-                            val newOtp =
-                                otpItemWrapper.copy(
-                                    otpValue = otpParameters.otpValue,
-                                    isVisible = true,
-                                    otpExpirySeconds = it.result.period,
-                                    remainingSecondsCounter = otpParameters.secondsValid,
-                                    isRefreshing = false,
-                                )
-                            with(newOtp) {
-                                val indexOfOld =
-                                    otpList
-                                        .indexOfFirst { it.resource.resourceId == otpItemWrapper.resource.resourceId }
-                                otpList[indexOfOld] = this
-                                visibleOtpId = otpItemWrapper.resource.resourceId
-                            }
-                            showOtps(OtpItemUpdatePayload.DATA)
-                            if (copyToClipboard) {
-                                view?.copySecretToClipBoard(it.label, otpParameters.otpValue)
+                                is OtpParameters -> {
+                                    val newOtp =
+                                        otpItemWrapper.copy(
+                                            otpValue = otpParametersResult.otpValue,
+                                            isVisible = true,
+                                            otpExpirySeconds = it.result.period,
+                                            remainingSecondsCounter = otpParametersResult.secondsValid,
+                                            isRefreshing = false,
+                                        )
+                                    with(newOtp) {
+                                        val indexOfOld =
+                                            otpList
+                                                .indexOfFirst { it.resource.resourceId == otpItemWrapper.resource.resourceId }
+                                        otpList[indexOfOld] = this
+                                        visibleOtpId = otpItemWrapper.resource.resourceId
+                                    }
+                                    showOtps(OtpItemUpdatePayload.DATA)
+                                    if (copyToClipboard) {
+                                        view?.copySecretToClipBoard(it.label, otpParametersResult.otpValue)
+                                    }
+                                }
                             }
                         }
                     } else {
                         val error = "Fetched totp key is empty"
                         Timber.e(error)
-                        view?.showError(error)
+                        view?.showGeneralError(error)
                     }
                 },
             )
@@ -376,18 +386,21 @@ class OtpPresenter(
                 doOnFetchFailure = { view?.showFetchFailure() },
                 doOnSuccess = {
                     if (it.result.key.isNotBlank()) {
-                        val otpParameters =
+                        val otpParametersResult =
                             totpParametersProvider.provideOtpParameters(
                                 secretKey = it.result.key,
                                 digits = it.result.digits,
                                 period = it.result.period,
                                 algorithm = it.result.algorithm,
                             )
-                        view?.copySecretToClipBoard(it.label, otpParameters.otpValue)
+                        when (otpParametersResult) {
+                            is OtpParameters -> view?.copySecretToClipBoard(it.label, otpParametersResult.otpValue)
+                            InvalidTotpInput -> view?.showGeneralError("Invalid TOTP input")
+                        }
                     } else {
                         val error = "Fetched totp key is empty"
                         Timber.e(error)
-                        view?.showError(error)
+                        view?.showGeneralError(error)
                     }
                 },
             )
@@ -440,7 +453,7 @@ class OtpPresenter(
                 )
             },
             doOnCryptoFailure = { view?.showEncryptionError(it) },
-            doOnFailure = { view?.showError(it) },
+            doOnFailure = { view?.showGeneralError(it) },
             doOnSuccess = {
                 view?.showResourceDeleted()
                 initRefresh()
