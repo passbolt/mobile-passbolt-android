@@ -4,10 +4,13 @@ import com.passbolt.mobile.android.core.mvp.authentication.UnauthenticatedReason
 import com.passbolt.mobile.android.core.resources.actions.SecretPropertiesActionsInteractor
 import com.passbolt.mobile.android.core.resources.actions.SecretPropertyActionResult
 import com.passbolt.mobile.android.core.resources.usecase.GetDefaultCreateContentTypeUseCase
+import com.passbolt.mobile.android.core.resources.usecase.GetDefaultCreateContentTypeUseCase.Output.CreationContentType
+import com.passbolt.mobile.android.core.resources.usecase.GetDefaultCreateContentTypeUseCase.Output.NotPossibleNotCreateResource
 import com.passbolt.mobile.android.core.resources.usecase.GetEditContentTypeUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUseCase
 import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.ResourceTypesUpdatesAdjacencyGraph
 import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction
+import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction.ADD_CUSTOM_FIELDS
 import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction.ADD_METADATA_DESCRIPTION
 import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction.ADD_NOTE
 import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction.ADD_PASSWORD
@@ -17,12 +20,14 @@ import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAct
 import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction.REMOVE_PASSWORD
 import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction.REMOVE_TOTP
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.SecretJsonModel
+import com.passbolt.mobile.android.jsonmodel.delegates.SecretCustomFieldsModel
 import com.passbolt.mobile.android.jsonmodel.delegates.TotpSecret
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordAndDescription
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordDescriptionTotp
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordString
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.Totp
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5CustomFields
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5Default
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5DefaultWithTotp
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5PasswordString
@@ -31,10 +36,12 @@ import com.passbolt.mobile.android.ui.LeadingContentType
 import com.passbolt.mobile.android.ui.MetadataJsonModel
 import com.passbolt.mobile.android.ui.MetadataTypeModel
 import com.passbolt.mobile.android.ui.OtpParseResult
+import com.passbolt.mobile.android.ui.ResourceFormMode
 import com.passbolt.mobile.android.ui.ResourceFormUiModel
 import com.passbolt.mobile.android.ui.ResourceFormUiModel.Metadata.ADDITIONAL_URIS
 import com.passbolt.mobile.android.ui.ResourceFormUiModel.Metadata.APPEARANCE
 import com.passbolt.mobile.android.ui.ResourceFormUiModel.Metadata.DESCRIPTION
+import com.passbolt.mobile.android.ui.ResourceFormUiModel.Secret.CUSTOM_FIELDS
 import com.passbolt.mobile.android.ui.ResourceFormUiModel.Secret.NOTE
 import com.passbolt.mobile.android.ui.ResourceFormUiModel.Secret.PASSWORD
 import com.passbolt.mobile.android.ui.ResourceFormUiModel.Secret.TOTP
@@ -85,17 +92,27 @@ class ResourceModelHandler(
             getDefaultCreateContentTypeUseCase.execute(
                 GetDefaultCreateContentTypeUseCase.Input(leadingContentType),
             )
-        contentType = initialContentTypeToCreate.contentType
-        metadataType = initialContentTypeToCreate.metadataType
 
-        resourceMetadata = MetadataJsonModel.empty()
-        resourceSecret =
-            when (leadingContentType) {
-                LeadingContentType.TOTP -> SecretJsonModel.emptyTotp()
-                LeadingContentType.PASSWORD -> SecretJsonModel.emptyPassword()
+        when (initialContentTypeToCreate) {
+            is CreationContentType -> {
+                contentType = initialContentTypeToCreate.contentType
+                metadataType = initialContentTypeToCreate.metadataType
+
+                resourceMetadata = MetadataJsonModel.empty()
+                resourceSecret =
+                    when (leadingContentType) {
+                        LeadingContentType.TOTP -> SecretJsonModel.emptyTotp()
+                        LeadingContentType.PASSWORD -> SecretJsonModel.emptyPassword()
+                        LeadingContentType.CUSTOM_FIELDS -> SecretJsonModel.emptyCustomFields()
+                    }
+
+                Timber.d("Initialized creation model with content type: $contentType and metadata type: $metadataType")
             }
-
-        Timber.d("Initialized creation model with content type: $contentType and metadata type: $metadataType")
+            NotPossibleNotCreateResource -> {
+                Timber.e("Could not initialize model for creation with leading content type: $leadingContentType")
+                error("Tried to create resource with unsupported leading content type: $leadingContentType")
+            }
+        }
     }
 
     @Throws(Exception::class)
@@ -163,6 +180,9 @@ class ResourceModelHandler(
         if (contentType.hasPassword() && resourceSecret.getPassword(contentType) == null) {
             resourceSecret.setPassword(contentType, "")
         }
+        if (contentType.hasCustomFields() && resourceSecret.customFields == null) {
+            resourceSecret.customFields = SecretCustomFieldsModel()
+        }
     }
 
     private fun ensureNoAdditionalFields() {
@@ -174,6 +194,9 @@ class ResourceModelHandler(
         }
         if (!contentType.hasPassword() && resourceSecret.getPassword(contentType) != null) {
             resourceSecret.setPassword(contentType, null)
+        }
+        if (!contentType.hasCustomFields() && resourceSecret.customFields != null) {
+            resourceSecret.customFields = null
         }
     }
 
@@ -252,6 +275,9 @@ class ResourceModelHandler(
                         Timber.e("Attempt to create or edit totp resource with empty totp")
                     }
                 }
+                V5CustomFields -> {
+                    // only editing of custom fields - all required fields are there
+                }
             }
         }
 
@@ -263,7 +289,7 @@ class ResourceModelHandler(
         }
 
     @Suppress("CyclomaticComplexMethod")
-    fun getUiModel(): ResourceFormUiModel {
+    fun getUiModel(mode: ResourceFormMode): ResourceFormUiModel {
         val contentTypeUpdateActions =
             resourceActionsGraph
                 .getUpdateActionsMetadata(contentType.slug)
@@ -271,6 +297,8 @@ class ResourceModelHandler(
         val leadingContentType =
             if (contentType in setOf(Totp, V5TotpStandalone)) {
                 LeadingContentType.TOTP
+            } else if (contentType is V5CustomFields) {
+                LeadingContentType.CUSTOM_FIELDS
             } else {
                 LeadingContentType.PASSWORD
             }
@@ -292,6 +320,9 @@ class ResourceModelHandler(
                         (it.contains(ADD_PASSWORD) || it.contains(REMOVE_PASSWORD))
                     ) {
                         additionalSecrets.add(PASSWORD)
+                    }
+                    if (it.contains(ADD_CUSTOM_FIELDS) && mode !is ResourceFormMode.Create) {
+                        additionalSecrets.add(CUSTOM_FIELDS)
                     }
                     additionalSecrets
                 },

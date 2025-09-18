@@ -35,8 +35,10 @@ import com.passbolt.mobile.android.metadata.interactor.MetadataPrivateKeysHelper
 import com.passbolt.mobile.android.serializers.jsonschema.SchemaEntity
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType
 import com.passbolt.mobile.android.ui.AdditionalUrisUiModel
+import com.passbolt.mobile.android.ui.CustomFieldsModel
 import com.passbolt.mobile.android.ui.Entropy
 import com.passbolt.mobile.android.ui.LeadingContentType
+import com.passbolt.mobile.android.ui.LeadingContentType.CUSTOM_FIELDS
 import com.passbolt.mobile.android.ui.LeadingContentType.PASSWORD
 import com.passbolt.mobile.android.ui.LeadingContentType.TOTP
 import com.passbolt.mobile.android.ui.MetadataIconModel
@@ -135,9 +137,15 @@ class ResourceFormPresenter(
             if (!argsConsumed) {
                 when (mode) {
                     is Create -> {
-                        Timber.d("Initializing model with leading content type: ${mode.leadingContentType}")
-                        parentFolderId = mode.parentFolderId
-                        resourceModelHandler.initializeModelForCreation(mode.leadingContentType)
+                        try {
+                            Timber.d("Initializing model with leading content type: ${mode.leadingContentType}")
+                            parentFolderId = mode.parentFolderId
+                            resourceModelHandler.initializeModelForCreation(mode.leadingContentType)
+                        } catch (_: Exception) {
+                            view?.showCreateResourceInitializationError()
+                            view?.navigateBack()
+                            return@launch
+                        }
                     }
                     is Edit -> {
                         Timber.d("Initializing model for edition")
@@ -157,7 +165,7 @@ class ResourceFormPresenter(
                 argsConsumed = true
             }
 
-            uiModel = resourceModelHandler.getUiModel()
+            uiModel = resourceModelHandler.getUiModel(mode)
             view?.showName(resourceMetadata.name)
             setupAdvancedSettings()
             setupLeadingContentType(uiModel.leadingContentType)
@@ -174,6 +182,7 @@ class ResourceFormPresenter(
                     when (uiModel.leadingContentType) {
                         TOTP -> view?.showCreateTotpTitle()
                         PASSWORD -> view?.showCreatePasswordTitle()
+                        CUSTOM_FIELDS -> view?.showCreateCustomFieldsTitle()
                     }
                 is Edit -> view?.showEditTitle(it.resourceName)
             }
@@ -221,6 +230,9 @@ class ResourceFormPresenter(
                 view?.showPasswordUsername(resourceMetadata.username.orEmpty())
                 view?.showPasswordMainUri(resourceMetadata.getMainUri(newContentType))
                 showPassword(resourceSecret.getPassword(newContentType).orEmpty())
+            }
+            CUSTOM_FIELDS -> {
+                // no leading form to setup
             }
         }
     }
@@ -383,6 +395,12 @@ class ResourceFormPresenter(
         )
     }
 
+    override fun customFieldsClick() {
+        view?.navigateToCustomFields(
+            resourceFormMapper.mapToUiModel(resourceMetadata.customFields, resourceSecret.customFields),
+        )
+    }
+
     override fun additionalPasswordClick() {
         view?.navigateToPassword(
             resourceFormMapper.mapToUiModel(
@@ -432,6 +450,10 @@ class ResourceFormPresenter(
                 metadata.setMainUri(newContentType, totpUiModel.issuer)
             }
         }
+    }
+
+    override fun customFieldsChanged(models: CustomFieldsModel?) {
+        // TODO("Not yet implemented")
     }
 
     override fun passwordChanged(passwordUiModel: PasswordUiModel?) {

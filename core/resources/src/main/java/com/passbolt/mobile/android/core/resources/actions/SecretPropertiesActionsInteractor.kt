@@ -30,6 +30,7 @@ import com.passbolt.mobile.android.core.secrets.usecase.decrypt.SecretInteractor
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.SecretJsonModel
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.SecretParser
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
+import com.passbolt.mobile.android.jsonmodel.delegates.SecretCustomFieldsModel
 import com.passbolt.mobile.android.jsonmodel.delegates.TotpSecret
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType
 import com.passbolt.mobile.android.ui.DecryptedSecretOrError
@@ -116,6 +117,22 @@ class SecretPropertiesActionsInteractor(
                 }
             }
 
+    suspend fun provideCustomFields(): Flow<SecretPropertyActionResult<SecretCustomFieldsModel?>> =
+        fetchAndDecrypt()
+            .mapSuccess {
+                when (val secretModel = secretParser.parseSecret(resource.resourceTypeId, it.secret)) {
+                    is DecryptedSecretOrError.DecryptedSecret -> {
+                        SecretPropertyActionResult.Success(
+                            CUSTOM_FIELD_LABEL,
+                            isSecret = true,
+                            secretModel.secret.customFields,
+                        )
+                    }
+                    is DecryptedSecretOrError.Error ->
+                        SecretPropertyActionResult.DecryptionFailure()
+                }
+            }
+
     private suspend fun fetchAndDecrypt(): Flow<SecretFetchAndDecryptResult> =
         flowOf(
             when (
@@ -178,6 +195,9 @@ class SecretPropertiesActionsInteractor(
 
         @VisibleForTesting
         const val OTP_LABEL = "TOTP"
+
+        @VisibleForTesting
+        const val CUSTOM_FIELD_LABEL = "Custom Field"
     }
 }
 

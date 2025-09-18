@@ -81,7 +81,7 @@ class ResourceFormPresenterTest : KoinTest {
     fun `view should show correct ui for create totp`() {
         mockGetDefaultCreateContentTypeUseCase.stub {
             onBlocking { execute(any()) }.thenReturn(
-                GetDefaultCreateContentTypeUseCase.Output(
+                GetDefaultCreateContentTypeUseCase.Output.CreationContentType(
                     metadataType = MetadataTypeModel.V5,
                     contentType = ContentType.V5TotpStandalone,
                 ),
@@ -124,7 +124,7 @@ class ResourceFormPresenterTest : KoinTest {
     fun `view should show correct ui for create password`() {
         mockGetDefaultCreateContentTypeUseCase.stub {
             onBlocking { execute(any()) }.thenReturn(
-                GetDefaultCreateContentTypeUseCase.Output(
+                GetDefaultCreateContentTypeUseCase.Output.CreationContentType(
                     metadataType = MetadataTypeModel.V5,
                     contentType = ContentType.V5Default,
                 ),
@@ -158,7 +158,7 @@ class ResourceFormPresenterTest : KoinTest {
     fun `advanced settings should show additional password sections`() {
         mockGetDefaultCreateContentTypeUseCase.stub {
             onBlocking { execute(any()) }.thenReturn(
-                GetDefaultCreateContentTypeUseCase.Output(
+                GetDefaultCreateContentTypeUseCase.Output.CreationContentType(
                     metadataType = MetadataTypeModel.V5,
                     contentType = ContentType.V5Default,
                 ),
@@ -189,7 +189,7 @@ class ResourceFormPresenterTest : KoinTest {
     fun `advanced settings should show additional totp sections`() {
         mockGetDefaultCreateContentTypeUseCase.stub {
             onBlocking { execute(any()) }.thenReturn(
-                GetDefaultCreateContentTypeUseCase.Output(
+                GetDefaultCreateContentTypeUseCase.Output.CreationContentType(
                     metadataType = MetadataTypeModel.V5,
                     contentType = ContentType.V5TotpStandalone,
                 ),
@@ -243,7 +243,7 @@ class ResourceFormPresenterTest : KoinTest {
     fun `password change should trigger entropy recalculation`() {
         mockGetDefaultCreateContentTypeUseCase.stub {
             onBlocking { execute(any()) }.thenReturn(
-                GetDefaultCreateContentTypeUseCase.Output(
+                GetDefaultCreateContentTypeUseCase.Output.CreationContentType(
                     metadataType = MetadataTypeModel.V5,
                     contentType = ContentType.V5Default,
                 ),

@@ -55,6 +55,12 @@ class ItemWithHeaderAndActionView
         private val redTextColor = ContextCompat.getColor(context, R.color.red)
         private val blueTextColor = ContextCompat.getColor(context, R.color.primary)
 
+        var title: String = ""
+            set(value) {
+                field = value
+                binding.title.text = title
+            }
+
         var actionIcon: ActionIcon = ActionIcon.NONE
             set(value) {
                 field = value
@@ -99,9 +105,7 @@ class ItemWithHeaderAndActionView
                             false,
                         ),
                     )
-                    setupTitle(
-                        it.getString(R.styleable.ItemWithHeaderAndActionView_itemWithHeaderAndActionView_title),
-                    )
+                    title = it.getString(R.styleable.ItemWithHeaderAndActionView_itemWithHeaderAndActionView_title).orEmpty()
                     shouldDifferentiateCharacterGroups =
                         it.getBoolean(
                             R.styleable.ItemWithHeaderAndActionView_itemWithHeaderAndActionView_differentiateCharacterGroups,
@@ -146,10 +150,6 @@ class ItemWithHeaderAndActionView
             }
 
             return spannableString
-        }
-
-        private fun setupTitle(title: String?) {
-            binding.title.text = title.orEmpty()
         }
 
         private fun setupListeners() {

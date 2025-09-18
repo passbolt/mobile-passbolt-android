@@ -49,6 +49,7 @@ fun Module.detailsModule() {
                 idToSlugMappingProvider = get(),
                 getRbacRulesUseCase = get(),
                 resourceDetailActionIdlingResource = get(),
+                resourceFormMapper = get(),
                 coroutineLaunchContext = get(),
             )
         }

@@ -120,7 +120,12 @@ data class MetadataJsonModel(
     var icon: MetadataIconModel? by RootRelativeJsonPathIconDelegate(jsonPath = "icon")
 
     @IgnoredOnParcel
-    override val searchCriteria: String = "$name${username.orEmpty()}${uri.orEmpty()}${uris.orEmpty().joinToString()}"
+    var customFields: MetadataCustomFieldsModel? by RootRelativeJsonPathMetadataCustomFieldsDelegate(jsonPath = "custom_fields")
+
+    @IgnoredOnParcel
+    override val searchCriteria: String = "$name${username.orEmpty()}${uri.orEmpty()}${uris.orEmpty().joinToString()}${
+        customFields?.map { it.metadataKey }.orEmpty().joinToString()
+    }"
 
     fun getMainUri(contentType: ContentType) =
         if (contentType.isV5()) {

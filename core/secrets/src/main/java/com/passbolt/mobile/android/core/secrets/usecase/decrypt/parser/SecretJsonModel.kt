@@ -26,7 +26,9 @@ package com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser
 import com.passbolt.mobile.android.jsonmodel.JsonModel
 import com.passbolt.mobile.android.jsonmodel.delegates.NullableStringDelegate
 import com.passbolt.mobile.android.jsonmodel.delegates.RootRelativeJsonPathNullableStringDelegate
+import com.passbolt.mobile.android.jsonmodel.delegates.RootRelativeJsonPathSecretCustomFieldsDelegate
 import com.passbolt.mobile.android.jsonmodel.delegates.RootRelativeJsonPathTotpDelegate
+import com.passbolt.mobile.android.jsonmodel.delegates.SecretCustomFieldsModel
 import com.passbolt.mobile.android.jsonmodel.delegates.TotpSecret
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType
 import com.passbolt.mobile.android.ui.OtpParseResult
@@ -46,6 +48,8 @@ class SecretJsonModel(
     var description: String? by RootRelativeJsonPathNullableStringDelegate(jsonPath = "description")
 
     var totp: TotpSecret? by RootRelativeJsonPathTotpDelegate(jsonPath = "totp")
+
+    var customFields: SecretCustomFieldsModel? by RootRelativeJsonPathSecretCustomFieldsDelegate(jsonPath = "custom_fields")
 
     fun getPassword(contentType: ContentType): String? =
         when (contentType) {
@@ -69,6 +73,15 @@ class SecretJsonModel(
                 """
                 {
                     "password": ""
+                }
+                """.trimIndent(),
+            )
+
+        fun emptyCustomFields(): SecretJsonModel =
+            SecretJsonModel(
+                """
+                {
+                    "custom_fields": []
                 }
                 """.trimIndent(),
             )

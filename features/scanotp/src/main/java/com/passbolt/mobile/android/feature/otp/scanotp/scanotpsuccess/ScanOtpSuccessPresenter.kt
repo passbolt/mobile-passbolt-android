@@ -94,39 +94,43 @@ class ScanOtpSuccessPresenter(
                     GetDefaultCreateContentTypeUseCase.Input(LeadingContentType.TOTP),
                 )
 
-            performResourceCreateAction(
-                action = {
-                    resourceCreateActionsInteractor.createGenericResource(
-                        resourceParentFolderId = parentFolderId,
-                        contentType = defaultType.contentType,
-                        metadataJsonModel =
-                            MetadataJsonModel.empty().apply {
-                                name = scannedTotp.label
-                                scannedTotp.issuer?.let {
-                                    setMainUri(defaultType.contentType, it)
-                                }
-                            },
-                        secretJsonModel =
-                            SecretJsonModel.emptyTotp().apply {
-                                totp =
-                                    TotpSecret(
-                                        algorithm = scannedTotp.algorithm.name,
-                                        key = scannedTotp.secret,
-                                        period = scannedTotp.period,
-                                        digits = scannedTotp.digits,
-                                    )
-                            },
-                    )
-                },
-                doOnFailure = { view?.showGenericError() },
-                doOnCryptoFailure = { view?.showEncryptionError(it) },
-                doOnSchemaValidationFailure = ::handleSchemaValidationFailure,
-                doOnSuccess = { view?.navigateToOtpList(scannedTotp, otpCreated = true) },
-                doOnCannotCreateWithCurrentConfig = { view?.showCannotUpdateTotpWithCurrentConfig() },
-                doOnMetadataKeyModified = { view?.showMetadataKeyModifiedDialog(it) },
-                doOnMetadataKeyDeleted = { view?.showMetadataKeyDeletedDialog(it) },
-                doOnMetadataKeyVerificationFailure = { view?.showFailedToVerifyMetadataKey() },
-            )
+            if (defaultType is GetDefaultCreateContentTypeUseCase.Output.CreationContentType) {
+                performResourceCreateAction(
+                    action = {
+                        resourceCreateActionsInteractor.createGenericResource(
+                            resourceParentFolderId = parentFolderId,
+                            contentType = defaultType.contentType,
+                            metadataJsonModel =
+                                MetadataJsonModel.empty().apply {
+                                    name = scannedTotp.label
+                                    scannedTotp.issuer?.let {
+                                        setMainUri(defaultType.contentType, it)
+                                    }
+                                },
+                            secretJsonModel =
+                                SecretJsonModel.emptyTotp().apply {
+                                    totp =
+                                        TotpSecret(
+                                            algorithm = scannedTotp.algorithm.name,
+                                            key = scannedTotp.secret,
+                                            period = scannedTotp.period,
+                                            digits = scannedTotp.digits,
+                                        )
+                                },
+                        )
+                    },
+                    doOnFailure = { view?.showGenericError() },
+                    doOnCryptoFailure = { view?.showEncryptionError(it) },
+                    doOnSchemaValidationFailure = ::handleSchemaValidationFailure,
+                    doOnSuccess = { view?.navigateToOtpList(scannedTotp, otpCreated = true) },
+                    doOnCannotCreateWithCurrentConfig = { view?.showCannotUpdateTotpWithCurrentConfig() },
+                    doOnMetadataKeyModified = { view?.showMetadataKeyModifiedDialog(it) },
+                    doOnMetadataKeyDeleted = { view?.showMetadataKeyDeletedDialog(it) },
+                    doOnMetadataKeyVerificationFailure = { view?.showFailedToVerifyMetadataKey() },
+                )
+            } else {
+                Timber.e("Could not determine default content type for TOTP")
+            }
             view?.hideProgress()
         }
     }

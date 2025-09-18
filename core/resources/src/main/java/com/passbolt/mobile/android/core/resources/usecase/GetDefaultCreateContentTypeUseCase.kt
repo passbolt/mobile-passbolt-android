@@ -8,11 +8,13 @@ import com.passbolt.mobile.android.supportedresourceTypes.ContentType.Totp
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5Default
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5TotpStandalone
 import com.passbolt.mobile.android.ui.LeadingContentType
+import com.passbolt.mobile.android.ui.LeadingContentType.CUSTOM_FIELDS
 import com.passbolt.mobile.android.ui.LeadingContentType.PASSWORD
 import com.passbolt.mobile.android.ui.LeadingContentType.TOTP
 import com.passbolt.mobile.android.ui.MetadataTypeModel
 import com.passbolt.mobile.android.ui.MetadataTypeModel.V4
 import com.passbolt.mobile.android.ui.MetadataTypeModel.V5
+import timber.log.Timber
 
 /**
  * Passbolt - Open source password manager for teams
@@ -46,30 +48,41 @@ class GetDefaultCreateContentTypeUseCase(
                 .metadataTypesSettingsModel
                 .defaultMetadataType
 
-        return Output(
-            metadataType = defaultMetadataType,
-            contentType =
-                when (defaultMetadataType) {
-                    V4 ->
-                        when (input.leadingContentType) {
-                            TOTP -> Totp
-                            PASSWORD -> PasswordAndDescription
-                        }
-                    V5 ->
-                        when (input.leadingContentType) {
-                            TOTP -> V5TotpStandalone
-                            PASSWORD -> V5Default
-                        }
-                },
-        )
+        return try {
+            Output.CreationContentType(
+                metadataType = defaultMetadataType,
+                contentType =
+                    when (defaultMetadataType) {
+                        V4 ->
+                            when (input.leadingContentType) {
+                                TOTP -> Totp
+                                PASSWORD -> PasswordAndDescription
+                                CUSTOM_FIELDS -> error("Custom fields creation not supported")
+                            }
+                        V5 ->
+                            when (input.leadingContentType) {
+                                TOTP -> V5TotpStandalone
+                                PASSWORD -> V5Default
+                                CUSTOM_FIELDS -> error("Custom fields creation not supported")
+                            }
+                    },
+            )
+        } catch (e: IllegalStateException) {
+            Timber.e(e, "Failed to get default create content type")
+            Output.NotPossibleNotCreateResource
+        }
     }
 
     data class Input(
         val leadingContentType: LeadingContentType,
     )
 
-    data class Output(
-        val contentType: ContentType,
-        val metadataType: MetadataTypeModel,
-    )
+    sealed class Output {
+        data object NotPossibleNotCreateResource : Output()
+
+        data class CreationContentType(
+            val contentType: ContentType,
+            val metadataType: MetadataTypeModel,
+        ) : Output()
+    }
 }

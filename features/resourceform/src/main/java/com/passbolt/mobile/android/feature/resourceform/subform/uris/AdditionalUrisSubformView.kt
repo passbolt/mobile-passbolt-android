@@ -1,4 +1,4 @@
-package com.passbolt.mobile.android.feature.resourceform.subform.description
+package com.passbolt.mobile.android.feature.resourceform.subform.uris
 
 import android.content.Context
 import android.util.AttributeSet
@@ -7,8 +7,7 @@ import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
-import com.passbolt.mobile.android.core.ui.textinputfield.StatefulInput.State.Default
-import com.passbolt.mobile.android.core.ui.textinputfield.StatefulInput.State.Error
+import com.passbolt.mobile.android.core.ui.textinputfield.StatefulInput
 import com.passbolt.mobile.android.core.ui.textinputfield.TextInputView
 import com.passbolt.mobile.android.feature.resourceform.R
 import com.passbolt.mobile.android.feature.resourceform.databinding.ViewAdditionalUrisSubformBinding
@@ -118,7 +117,7 @@ class AdditionalUrisSubformView
             for (i in 0 until additionalUrisContainer.childCount) {
                 val view = additionalUrisContainer.getChildAt(i)
                 view.findViewById<TextInputView>(R.id.additionalUriInput).apply {
-                    setState(Default)
+                    setState(StatefulInput.State.Default)
                 }
             }
         }
@@ -128,7 +127,7 @@ class AdditionalUrisSubformView
             errorMessage: String,
         ) {
             additionalUrisContainer.findViewWithTag<TextInputView>(uiTag).setState(
-                Error(errorMessage),
+                StatefulInput.State.Error(errorMessage),
             )
         }
 

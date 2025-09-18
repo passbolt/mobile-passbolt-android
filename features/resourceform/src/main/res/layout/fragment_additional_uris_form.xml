@@ -23,7 +23,7 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:toolbarTitle="@string/resource_form_metadata_description" />
 
-        <com.passbolt.mobile.android.feature.resourceform.subform.description.AdditionalUrisSubformView
+        <com.passbolt.mobile.android.feature.resourceform.subform.uris.AdditionalUrisSubformView
             android:id="@+id/additionalUrisSubformView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

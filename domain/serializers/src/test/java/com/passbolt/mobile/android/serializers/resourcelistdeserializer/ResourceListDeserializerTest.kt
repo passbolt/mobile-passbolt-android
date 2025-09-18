@@ -39,6 +39,7 @@ import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordAn
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordDescriptionTotp
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordString
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.Totp
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5CustomFields
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5Default
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5DefaultWithTotp
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5PasswordString
@@ -84,7 +85,7 @@ class ResourceListDeserializerTest : KoinTest {
                         ResourceTypeModel(UUID.randomUUID(), Totp.slug, "", deleted = null),
                         ResourceTypeModel(UUID.randomUUID(), V5TotpStandalone.slug, "", deleted = null),
                         ResourceTypeModel(UUID.randomUUID(), PasswordDescriptionTotp.slug, "", deleted = null),
-                        ResourceTypeModel(UUID.randomUUID(), V5DefaultWithTotp.slug, "", deleted = null),
+                        ResourceTypeModel(UUID.randomUUID(), V5CustomFields.slug, "", deleted = null),
                     ),
                 ),
             )
@@ -121,6 +122,10 @@ class ResourceListDeserializerTest : KoinTest {
             on { schemaForResource(V5TotpStandalone.slug) } doReturn
                 SchemaStore().loadSchema(
                     this::class.java.getResource("/v5-totp-standalone-resource-schema.json"),
+                )
+            on { schemaForResource(V5CustomFields.slug) } doReturn
+                SchemaStore().loadSchema(
+                    this::class.java.getResource("/v5-custom-fields-resource-schema.json"),
                 )
         }
     }
@@ -393,6 +398,41 @@ class ResourceListDeserializerTest : KoinTest {
                 ),
                 resourceWithUsernameOfLength(
                     PASSWORD_DESCRIPTION_TOTP_USERNAME_MAX_LENGTH + 1,
+                    testedResourceTypeUuid,
+                ),
+            )
+
+        val listJson = gson.toJson(invalidResources)
+        val resulList =
+            gson.fromJson<List<ResourceResponseDto>>(
+                listJson,
+                object : TypeToken<List<@JvmSuppressWildcards ResourceResponseDto>>() {}.type,
+            )
+
+        assertThat(resulList).isEmpty()
+    }
+
+    @Test
+    fun `resources with invalid fields for v5 custom fields type should be filtered`() {
+        mockIdToSlugMappingUseCase.stub {
+            onBlocking { execute(Unit) }.doReturn(
+                GetResourceTypeIdToSlugMappingUseCase.Output(
+                    mapOf(testedResourceTypeUuid to V5CustomFields.slug),
+                ),
+            )
+        }
+        val invalidResources =
+            listOf(
+                resourceWithNameOfLength(
+                    V5_CUSTOM_FIELDS_NAME_MAX_LENGTH + 1,
+                    testedResourceTypeUuid,
+                ),
+                resourceWithUriOfLength(
+                    V5_CUSTOM_FIELDS_URI_MAX_LENGTH + 1,
+                    testedResourceTypeUuid,
+                ),
+                resourceWithDescriptionOfLength(
+                    V5_CUSTOM_FIELDS_DESCRIPTION_MAX_LENGTH + 1,
                     testedResourceTypeUuid,
                 ),
             )
@@ -813,6 +853,91 @@ class ResourceListDeserializerTest : KoinTest {
         assertThat(resulList[0].id).isEqualTo(validResources[0].id)
     }
 
+    @Test
+    fun `resources with valid fields for v5 custom fields type should not be filtered`() {
+        mockIdToSlugMappingUseCase.stub {
+            onBlocking { execute(Unit) }.doReturn(
+                GetResourceTypeIdToSlugMappingUseCase.Output(
+                    mapOf(testedResourceTypeUuid to V5CustomFields.slug),
+                ),
+            )
+        }
+        val validResources =
+            listOf(
+                ResourceResponseV5Dto(
+                    id = UUID.randomUUID(),
+                    resourceTypeId = testedResourceTypeUuid,
+                    resourceFolderId = null,
+                    permission = PermissionDto(UUID.randomUUID(), 1, "", UUID.randomUUID(), "", UUID.randomUUID(), "", ""),
+                    favorite = null,
+                    modified = "",
+                    tags = emptyList(),
+                    permissions = emptyList(),
+                    expired = null,
+                    metadataKeyType = MetadataKeyTypeDto.SHARED,
+                    metadata = "encrypted metadata",
+                    metadataKeyId = UUID.randomUUID(),
+                ),
+            )
+        mockMetadataDecryptor.stub {
+            onBlocking { decryptMetadata(any()) }.doReturn(
+                MetadataDecryptor.Output.Success(
+                    """
+                    {
+                        "object_type": "PASSBOLT_RESOURCE_METADATA",
+                        "name": "name",
+                        "uris": ["uri1"],
+                        "username": "username",
+                        "description": "description",
+                        "custom_fields": [
+                            {
+                                "id": "550e8400-e29b-41d4-a716-446655440000",
+                                "type": "text",
+                                "metadata_key": "text",
+                                "metadata_value": "value1"
+                            },
+                            {
+                                "id": "550e8400-e29b-41d4-a716-446655440001",
+                                "type": "password",
+                                "metadata_key": "password",
+                                "metadata_value": "value2"
+                            },
+                            {
+                                "id": "550e8400-e29b-41d4-a716-446655440002",
+                                "type": "boolean",
+                                "metadata_key": "boolean",
+                                "metadata_value": true
+                            },
+                            {
+                                "id": "550e8400-e29b-41d4-a716-446655440003",
+                                "type": "number",
+                                "metadata_key": "number",
+                                "metadata_value": 8080
+                            },
+                            {
+                                "id": "550e8400-e29b-41d4-a716-446655440003",
+                                "type": "uri",
+                                "metadata_key": "uri",
+                                "metadata_value": "https://passbolt.com"
+                            }
+                        ]
+                    }
+                    """.trimIndent(),
+                ),
+            )
+        }
+
+        val listJson = gson.toJson(validResources)
+        val resulList =
+            gson.fromJson<List<ResourceResponseDto>>(
+                listJson,
+                object : TypeToken<List<@JvmSuppressWildcards ResourceResponseDto>>() {}.type,
+            )
+
+        assertThat(resulList).hasSize(1)
+        assertThat(resulList[0].id).isEqualTo(validResources[0].id)
+    }
+
     private companion object {
         private val testedResourceTypeUuid = UUID.randomUUID()
 
@@ -843,5 +968,12 @@ class ResourceListDeserializerTest : KoinTest {
         const val TOTP_NAME_MAX_LENGTH = 255
         const val TOTP_URI_MIN_LENGTH = 0
         const val TOTP_URI_MAX_LENGTH = 1024
+
+        const val V5_CUSTOM_FIELDS_NAME_MIN_LENGTH = 0
+        const val V5_CUSTOM_FIELDS_NAME_MAX_LENGTH = 255
+        const val V5_CUSTOM_FIELDS_URI_MIN_LENGTH = 0
+        const val V5_CUSTOM_FIELDS_URI_MAX_LENGTH = 1024
+        const val V5_CUSTOM_FIELDS_DESCRIPTION_MIN_LENGTH = 0
+        const val V5_CUSTOM_FIELDS_DESCRIPTION_MAX_LENGTH = 10_000
     }
 }

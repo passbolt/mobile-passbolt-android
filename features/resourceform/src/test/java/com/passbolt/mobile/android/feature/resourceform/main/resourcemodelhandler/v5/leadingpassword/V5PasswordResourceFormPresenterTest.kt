@@ -74,7 +74,7 @@ class V5PasswordResourceFormPresenterTest : KoinTest {
             }
             mockGetDefaultCreateContentTypeUseCase.stub {
                 onBlocking { execute(any()) }.thenReturn(
-                    GetDefaultCreateContentTypeUseCase.Output(
+                    GetDefaultCreateContentTypeUseCase.Output.CreationContentType(
                         metadataType = MetadataTypeModel.V5,
                         contentType = ContentType.V5Default,
                     ),
@@ -144,7 +144,8 @@ class V5PasswordResourceFormPresenterTest : KoinTest {
                 """
                 {
                     "password": "$mockPassword",
-                    "description": ""
+                    "description": "",
+                    "custom_fields": []
                 }
                 """.trimIndent(),
                 resourceModelHandler.resourceSecret.json,
@@ -163,7 +164,8 @@ class V5PasswordResourceFormPresenterTest : KoinTest {
                 """
                 {
                     "password": "$mockPassword",
-                    "description": ""
+                    "description": "",
+                    "custom_fields": []
                 }
                 """.trimIndent(),
                 resourceModelHandler.resourceSecret.json,
@@ -182,7 +184,8 @@ class V5PasswordResourceFormPresenterTest : KoinTest {
                 """
                 {
                     "password": "",
-                    "description": "$mockNote"
+                    "description": "$mockNote",
+                    "custom_fields": []
                 }
                 """.trimIndent(),
                 resourceModelHandler.resourceSecret.json,
@@ -232,7 +235,8 @@ class V5PasswordResourceFormPresenterTest : KoinTest {
                         "period": $mockPeriod,
                         "digits": $mockDigits,
                         "algorithm": "$mockAlgorithm"
-                    }
+                    },
+                    "custom_fields": []
                 }
                 """.trimIndent(),
                 resourceModelHandler.resourceSecret.json,
@@ -265,6 +269,7 @@ class V5PasswordResourceFormPresenterTest : KoinTest {
                 {
                     "description": "",
                     "password": "",
+                    "custom_fields": []
                 }
                 """.trimIndent(),
                 resourceModelHandler.resourceSecret.json,

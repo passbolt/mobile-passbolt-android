@@ -6,10 +6,12 @@ import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.format.DateUtils
 import android.view.View
+import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.core.view.doOnLayout
+import androidx.core.view.isNotEmpty
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
@@ -34,6 +36,9 @@ import com.passbolt.mobile.android.core.ui.controller.TotpViewController.StatePa
 import com.passbolt.mobile.android.core.ui.controller.TotpViewController.TimeParameters
 import com.passbolt.mobile.android.core.ui.controller.TotpViewController.ViewParameters
 import com.passbolt.mobile.android.core.ui.itemwithheaderandaction.ActionIcon
+import com.passbolt.mobile.android.core.ui.itemwithheaderandaction.ActionIcon.HIDE
+import com.passbolt.mobile.android.core.ui.itemwithheaderandaction.ActionIcon.VIEW
+import com.passbolt.mobile.android.core.ui.itemwithheaderandaction.ItemWithHeaderAndActionView
 import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
 import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
 import com.passbolt.mobile.android.core.ui.recyclerview.OverlappingItemDecorator
@@ -51,6 +56,12 @@ import com.passbolt.mobile.android.permissions.recycler.CounterItem
 import com.passbolt.mobile.android.permissions.recycler.GroupItem
 import com.passbolt.mobile.android.permissions.recycler.UserItem
 import com.passbolt.mobile.android.resourcemoremenu.ResourceMoreMenuFragment
+import com.passbolt.mobile.android.ui.CustomFieldModel
+import com.passbolt.mobile.android.ui.CustomFieldModel.BooleanCustomField
+import com.passbolt.mobile.android.ui.CustomFieldModel.NumberCustomField
+import com.passbolt.mobile.android.ui.CustomFieldModel.PasswordCustomField
+import com.passbolt.mobile.android.ui.CustomFieldModel.TextCustomField
+import com.passbolt.mobile.android.ui.CustomFieldModel.UriCustomField
 import com.passbolt.mobile.android.ui.OtpItemWrapper
 import com.passbolt.mobile.android.ui.PermissionModelUi
 import com.passbolt.mobile.android.ui.ResourceFormMode
@@ -63,6 +74,7 @@ import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.core.qualifier.named
 import java.time.ZonedDateTime
+import java.util.UUID
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
@@ -123,6 +135,9 @@ class ResourceDetailsFragment :
 
     private val locationFields
         get() = listOf(requiredBinding.locationHeader, requiredBinding.locationValue, requiredBinding.locationNavIcon)
+
+    private val customFieldsFields
+        get() = listOf(requiredBinding.customFieldsSectionTitle, requiredBinding.customFieldsContainer)
 
     private val externalDeeplinkHandler: ExternalDeeplinkHandler by inject()
     private val groupPermissionsItemAdapter: ItemAdapter<GroupItem> by inject(named(GROUP_ITEM_ADAPTER))
@@ -367,14 +382,14 @@ class ResourceDetailsFragment :
 
     override fun showPassword(decryptedSecret: String) {
         with(requiredBinding.passwordItem) {
-            actionIcon = ActionIcon.HIDE
+            actionIcon = HIDE
             setVisibleTextValue(decryptedSecret)
         }
     }
 
     override fun hidePassword() {
         with(requiredBinding.passwordItem) {
-            actionIcon = ActionIcon.VIEW
+            actionIcon = VIEW
             setHiddenSecretValue()
         }
     }
@@ -392,7 +407,7 @@ class ResourceDetailsFragment :
             noteItem.show()
             noteItem.isValueSecret = true
             noteItem.setVisibleTextValue(note)
-            noteItem.actionIcon = ActionIcon.HIDE
+            noteItem.actionIcon = HIDE
             noteItem.setTextIsSelectable(true)
             noteSectionTitle.visible()
             noteContainer.visible()
@@ -402,7 +417,7 @@ class ResourceDetailsFragment :
     override fun hideNote() {
         with(requiredBinding.noteItem) {
             conceal()
-            actionIcon = ActionIcon.VIEW
+            actionIcon = VIEW
         }
     }
 
@@ -489,7 +504,7 @@ class ResourceDetailsFragment :
     }
 
     override fun showPasswordEyeIcon() {
-        requiredBinding.passwordItem.actionIcon = ActionIcon.VIEW
+        requiredBinding.passwordItem.actionIcon = VIEW
     }
 
     override fun hidePasswordEyeIcon() {
@@ -699,6 +714,74 @@ class ResourceDetailsFragment :
 
     override fun resourceMoreMenuDismissed() {
         presenter.resume(this)
+    }
+
+    override fun showCustomFieldsSection() {
+        customFieldsFields.forEach { it.visible() }
+    }
+
+    override fun hideCustomFieldsSection() {
+        customFieldsFields.forEach { it.gone() }
+    }
+
+    override fun showCustomFields(customFields: Map<UUID, String>) {
+        requiredBinding.customFieldsListContainer.let { container ->
+            container.removeAllViews()
+
+            customFields.forEach { (key, label) ->
+                val customFieldItem =
+                    ItemWithHeaderAndActionView(requireContext()).apply {
+                        title = label
+                        actionIcon = VIEW
+                        isValueSecret = true
+                        setHiddenSecretValue()
+
+                        setDebouncingOnClick { presenter.copyCustomFieldClick(key) }
+                        actionClickListener = { presenter.customFieldActionClick(key) }
+
+                        tag = key
+                    }
+
+                val layoutParams =
+                    LinearLayout
+                        .LayoutParams(
+                            LinearLayout.LayoutParams.MATCH_PARENT,
+                            LinearLayout.LayoutParams.WRAP_CONTENT,
+                        ).apply {
+                            if (container.isNotEmpty()) {
+                                topMargin = resources.getDimensionPixelSize(CoreUiR.dimen.dp_16)
+                            }
+                        }
+
+                container.addView(customFieldItem, layoutParams)
+            }
+        }
+    }
+
+    override fun showCustomFieldValue(
+        key: UUID,
+        model: CustomFieldModel?,
+    ) {
+        (requiredBinding.customFieldsListContainer.findViewWithTag(key) as? ItemWithHeaderAndActionView)?.apply {
+            actionIcon = HIDE
+            val textValue =
+                when (model) {
+                    is BooleanCustomField -> model.secretValue?.toString() ?: ""
+                    is NumberCustomField -> model.secretValue?.toString() ?: ""
+                    is PasswordCustomField -> model.secretValue ?: ""
+                    is UriCustomField -> model.secretValue ?: ""
+                    is TextCustomField -> model.secretValue ?: ""
+                    null -> ""
+                }
+            setVisibleTextValue(textValue)
+        }
+    }
+
+    override fun hideCustomFieldValue(key: UUID) {
+        (requiredBinding.customFieldsListContainer.findViewWithTag(key) as? ItemWithHeaderAndActionView)?.apply {
+            actionIcon = VIEW
+            setHiddenSecretValue()
+        }
     }
 
     companion object {
