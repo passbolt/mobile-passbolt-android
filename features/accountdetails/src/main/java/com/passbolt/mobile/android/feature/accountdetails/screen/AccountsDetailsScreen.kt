@@ -184,7 +184,7 @@ private fun AccountDetailsScreen(
 
         LabelledText(
             label = stringResource(LocalizationR.string.account_details_label_org),
-            text = state.name,
+            text = state.organizationUrl,
             modifier =
                 Modifier
                     .fillMaxWidth()
