@@ -26,6 +26,7 @@ import com.passbolt.mobile.android.feature.metadatakeytrust.ui.NewMetadataKeyTru
 import com.passbolt.mobile.android.feature.metadatakeytrust.ui.NewTrustedMetadataKeyDeletedDialog
 import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpFragment
 import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpMode
+import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.customfields.CustomFieldsComposeFragment
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.note.NoteFormFragment
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.password.PasswordFormFragment
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.TotpFormFragment
@@ -37,6 +38,7 @@ import com.passbolt.mobile.android.feature.resourceform.metadata.description.Des
 import com.passbolt.mobile.android.feature.resourceform.subform.password.PasswordSubformView
 import com.passbolt.mobile.android.feature.resourceform.subform.totp.TotpSubformView
 import com.passbolt.mobile.android.ui.AdditionalUrisUiModel
+import com.passbolt.mobile.android.ui.CustomFieldsModel
 import com.passbolt.mobile.android.ui.NewMetadataKeyToTrustModel
 import com.passbolt.mobile.android.ui.OtpParseResult
 import com.passbolt.mobile.android.ui.PasswordStrength
@@ -157,6 +159,18 @@ class ResourceFormFragment :
         )
     }
 
+    private val customFieldsResult = { _: String, result: Bundle ->
+        if (result.containsKey(CustomFieldsComposeFragment.EXTRA_CUSTOM_FIELDS)) {
+            presenter.customFieldsChanged(
+                BundleCompat.getSerializable<CustomFieldsModel>(
+                    result,
+                    CustomFieldsComposeFragment.EXTRA_CUSTOM_FIELDS,
+                    CustomFieldsModel::class.java,
+                ),
+            )
+        }
+    }
+
     override fun onViewCreated(
         view: View,
         savedInstanceState: Bundle?,
@@ -198,6 +212,7 @@ class ResourceFormFragment :
             additionalPasswordClick = { presenter.additionalPasswordClick() }
             additionalTotpClick = { presenter.additionalTotpClick() }
             additionalNoteClick = { presenter.additionalNoteClick() }
+            customFieldsClick = { presenter.customFieldsClick() }
         }
     }
 
@@ -255,6 +270,13 @@ class ResourceFormFragment :
         )
     }
 
+    override fun navigateToCustomFields(model: CustomFieldsModel) {
+        setFragmentResultListener(CustomFieldsComposeFragment.REQUEST_CUSTOM_FIELDS, customFieldsResult)
+        findNavController().navigate(
+            ResourceFormFragmentDirections.actionResourceFormFragmentToCustomFieldsComposeFragment(model),
+        )
+    }
+
     override fun navigateToScanTotp(scanMode: ScanOtpMode) {
         setFragmentResultListener(ScanOtpFragment.REQUEST_SCAN_OTP_FOR_RESULT, totpScanQrReturned)
         findNavController().navigate(
@@ -274,6 +296,10 @@ class ResourceFormFragment :
 
     override fun showCreatePasswordTitle() {
         requiredBinding.toolbar.toolbarTitle = getString(LocalizationR.string.resource_form_create_password)
+    }
+
+    override fun showCreateCustomFieldsTitle() {
+        requiredBinding.toolbar.toolbarTitle = getString(LocalizationR.string.resource_form_create_custom_fields)
     }
 
     override fun showCreateTotpTitle() {
@@ -434,6 +460,10 @@ class ResourceFormFragment :
 
     override fun showEditResourceInitializationError() {
         Toast.makeText(requireContext(), LocalizationR.string.resource_form_edit_init_error, Toast.LENGTH_LONG).show()
+    }
+
+    override fun showCreateResourceInitializationError() {
+        Toast.makeText(requireContext(), LocalizationR.string.resource_form_create_init_error, Toast.LENGTH_LONG).show()
     }
 
     override fun showCannotCreateTotpWithCurrentConfig() {

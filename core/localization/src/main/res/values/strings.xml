@@ -299,6 +299,7 @@
     <string name="resource_details_information">Information</string>
     <string name="resource_details_invalid_totp_scanned">Invalid TOTP QR code scanned</string>
     <string name="resource_details_metadata_header">Metadata</string>
+    <string name="resource_details_custom_fields_header">Custom fields</string>
     <string name="additional_uri_format">• %s</string>
 
     <string name="more_details_copy_password">Copy password</string>
@@ -324,8 +325,10 @@
     <string name="resource_form_metadata_description">Metadata description</string>
     <string name="resource_form_create_metadata_description">Create metadata description</string>
     <string name="resource_form_create_resource_appearance">Resource appearance</string>
+    <string name="resource_form_create_resource_custom_fields">Custom fields</string>
     <string name="resource_form_create_additional_uris">Create additional URIs</string>
     <string name="resource_form_note">Note</string>
+    <string name="resource_form_custom_fields">Custom fields</string>
     <string name="resource_form_create_note">Create note</string>
     <string name="resource_form_note_content">Content</string>
     <string name="resource_form_enter_note">Enter note</string>
@@ -334,6 +337,7 @@
     <string name="resource_form_resource_name">Resource name</string>
     <string name="resource_form_name">Name</string>
     <string name="resource_form_create_password">Create a password</string>
+    <string name="resource_form_create_custom_fields">Create custom fields</string>
     <string name="resource_form_edit_resource">Edit %s</string>
     <string name="resource_form_create_totp">Create a TOTP</string>
     <string name="resource_form_view_advanced_settings">View advanced settings</string>
@@ -343,6 +347,7 @@
     <string name="resource_form_create">Create</string>
     <string name="resource_form_save">Save</string>
     <string name="resource_form_edit_init_error">Failed to initialize resource edition</string>
+    <string name="resource_form_create_init_error">Failed to initialize resource creation</string>
     <string name="resource_form_remove_totp">Remove TOTP</string>
     <string name="resource_form_remove_note">Remove Note</string>
     <string name="resource_form_no_name">no name</string>
@@ -352,6 +357,8 @@
     <string name="resource_form_appearance_select_icon">Select icon</string>
     <string name="resource_form_appearance_default_color">Default color</string>
     <string name="resource_form_appearance_default_icon">Default icon</string>
+    <string name="resource_form_no_custom_fields_set">No custom fields set</string>
+    <string name="resource_form_custom_fields_edit_not_supported">Edition of custom fields is currently not supported</string>
 
     <string name="settings_app_settings">App settings</string>
     <string name="settings_accounts">Accounts</string>
@@ -671,7 +678,7 @@
     <string-array name="transfer_account_onboarding_steps_array">
         <item>Install the app on another mobile</item>
         <item>Launch the app</item>
-        <item>Select \"Connect to an existing account\"</item>
+        <item>Select "Connect to an existing account"</item>
         <item>Scan the qr codes sequence</item>
     </string-array>
 </resources>

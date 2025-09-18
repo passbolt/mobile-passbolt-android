@@ -83,7 +83,7 @@ class ResourceTypesUpdatesAdjacencyGraphTest {
     fun `actions are correct for v5-default`() {
         val actions = graph.getUpdateActionsMetadata(ContentType.V5Default.slug)
 
-        assertThat(actions).hasSize(10)
+        assertThat(actions).hasSize(11)
         assertThat(actions.map { it.action }).containsExactly(
             UpdateAction.EDIT_METADATA,
             UpdateAction.ADD_NOTE,
@@ -95,6 +95,7 @@ class ResourceTypesUpdatesAdjacencyGraphTest {
             UpdateAction.REMOVE_METADATA_DESCRIPTION,
             UpdateAction.EDIT_ADDITIONAL_URIS,
             UpdateAction.EDIT_APPEARANCE,
+            UpdateAction.ADD_CUSTOM_FIELDS,
         )
     }
 
@@ -119,7 +120,7 @@ class ResourceTypesUpdatesAdjacencyGraphTest {
     fun `actions are correct for v5-default-with-totp`() {
         val actions = graph.getUpdateActionsMetadata(ContentType.V5DefaultWithTotp.slug)
 
-        assertThat(actions).hasSize(12)
+        assertThat(actions).hasSize(13)
         assertThat(actions.map { it.action }).containsExactly(
             UpdateAction.EDIT_METADATA,
             UpdateAction.ADD_TOTP,
@@ -133,6 +134,7 @@ class ResourceTypesUpdatesAdjacencyGraphTest {
             UpdateAction.REMOVE_METADATA_DESCRIPTION,
             UpdateAction.EDIT_ADDITIONAL_URIS,
             UpdateAction.EDIT_APPEARANCE,
+            UpdateAction.ADD_CUSTOM_FIELDS,
         )
     }
 
@@ -165,6 +167,23 @@ class ResourceTypesUpdatesAdjacencyGraphTest {
             UpdateAction.ADD_METADATA_DESCRIPTION,
             UpdateAction.EDIT_ADDITIONAL_URIS,
             UpdateAction.EDIT_APPEARANCE,
+        )
+    }
+
+    @Test
+    fun `actions are correct for v5-custom-fields`() {
+        val actions = graph.getUpdateActionsMetadata(ContentType.V5CustomFields.slug)
+
+        assertThat(actions).hasSize(8)
+        assertThat(actions.map { it.action }).containsExactly(
+            UpdateAction.EDIT_METADATA,
+            UpdateAction.ADD_METADATA_DESCRIPTION,
+            UpdateAction.REMOVE_METADATA_DESCRIPTION,
+            UpdateAction.EDIT_ADDITIONAL_URIS,
+            UpdateAction.EDIT_APPEARANCE,
+            UpdateAction.ADD_CUSTOM_FIELDS,
+            UpdateAction.ADD_PASSWORD,
+            UpdateAction.ADD_TOTP,
         )
     }
 }

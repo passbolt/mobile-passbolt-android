@@ -1,6 +1,15 @@
 package com.passbolt.mobile.android.mappers
 
+import com.passbolt.mobile.android.jsonmodel.delegates.SecretCustomFieldType.BOOLEAN
+import com.passbolt.mobile.android.jsonmodel.delegates.SecretCustomFieldType.NUMBER
+import com.passbolt.mobile.android.jsonmodel.delegates.SecretCustomFieldType.PASSWORD
+import com.passbolt.mobile.android.jsonmodel.delegates.SecretCustomFieldType.TEXT
+import com.passbolt.mobile.android.jsonmodel.delegates.SecretCustomFieldType.URI
+import com.passbolt.mobile.android.jsonmodel.delegates.SecretCustomFieldsModel
 import com.passbolt.mobile.android.jsonmodel.delegates.TotpSecret
+import com.passbolt.mobile.android.ui.CustomFieldModel
+import com.passbolt.mobile.android.ui.CustomFieldsModel
+import com.passbolt.mobile.android.ui.MetadataCustomFieldsModel
 import com.passbolt.mobile.android.ui.MetadataIconModel
 import com.passbolt.mobile.android.ui.PasswordUiModel
 import com.passbolt.mobile.android.ui.ResourceAppearanceModel
@@ -85,4 +94,59 @@ class ResourceFormMapper {
             iconValue = keepassIconValue,
             iconBackgroundHexColor = backgroundColorHex,
         )
+
+    fun mapToUiModel(
+        metadataCustomFields: MetadataCustomFieldsModel?,
+        secretCustomFields: SecretCustomFieldsModel?,
+    ): CustomFieldsModel {
+        val result = CustomFieldsModel()
+
+        if (metadataCustomFields == null || secretCustomFields == null) {
+            return result
+        }
+
+        metadataCustomFields.forEach { metadataField ->
+            val secretField = secretCustomFields.find { it.id == metadataField.id }
+
+            secretField?.let { secret ->
+                val customField =
+                    when (secret.type) {
+                        TEXT ->
+                            CustomFieldModel.TextCustomField(
+                                id = metadataField.id,
+                                metadataKey = metadataField.metadataKey,
+                                secretValue = secret.secretValue?.asString,
+                            )
+                        PASSWORD ->
+                            CustomFieldModel.PasswordCustomField(
+                                id = metadataField.id,
+                                metadataKey = metadataField.metadataKey,
+                                secretValue = secret.secretValue?.asString,
+                            )
+                        URI ->
+                            CustomFieldModel.UriCustomField(
+                                id = metadataField.id,
+                                metadataKey = metadataField.metadataKey,
+                                secretValue = secret.secretValue?.asString,
+                            )
+                        NUMBER ->
+                            CustomFieldModel.NumberCustomField(
+                                id = metadataField.id,
+                                metadataKey = metadataField.metadataKey,
+                                secretValue = secret.secretValue?.asNumber?.toDouble(),
+                            )
+                        BOOLEAN ->
+                            CustomFieldModel.BooleanCustomField(
+                                id = metadataField.id,
+                                metadataKey = metadataField.metadataKey,
+                                secretValue = secret.secretValue?.asBoolean,
+                            )
+                    }
+
+                result.add(customField)
+            }
+        }
+
+        return result
+    }
 }

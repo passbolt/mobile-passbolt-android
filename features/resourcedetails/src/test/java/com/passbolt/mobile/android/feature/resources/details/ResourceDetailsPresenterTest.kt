@@ -279,6 +279,7 @@ class ResourceDetailsPresenterTest : KoinTest {
         verify(view, times(2)).showPasswordSection()
         verify(view, times(2)).showPasswordEyeIcon()
         verify(view, times(2)).hideExpirySection()
+        verify(view, times(2)).hideCustomFieldsSection()
         verify(view).hideRefreshProgress()
         verifyNoMoreInteractions(view)
     }
@@ -315,6 +316,7 @@ class ResourceDetailsPresenterTest : KoinTest {
         verify(view, times(2)).showPasswordSection()
         verify(view, times(2)).showPasswordEyeIcon()
         verify(view, times(2)).hideExpirySection()
+        verify(view, times(2)).hideCustomFieldsSection()
         verify(view).hideRefreshProgress()
         verifyNoMoreInteractions(view)
     }
@@ -350,6 +352,7 @@ class ResourceDetailsPresenterTest : KoinTest {
         verify(view, times(2)).showPasswordEyeIcon()
         verify(view, times(2)).disableMetadataDescription()
         verify(view, times(2)).hideExpirySection()
+        verify(view, times(2)).hideCustomFieldsSection()
         verify(view).hideRefreshProgress()
         verifyNoMoreInteractions(view)
     }
@@ -387,6 +390,7 @@ class ResourceDetailsPresenterTest : KoinTest {
         verify(view, times(2)).disableNote()
         verify(view, times(2)).showPasswordEyeIcon()
         verify(view, times(2)).hideExpirySection()
+        verify(view, times(2)).hideCustomFieldsSection()
         verify(view).hideRefreshProgress()
         verifyNoMoreInteractions(view)
     }
@@ -425,6 +429,7 @@ class ResourceDetailsPresenterTest : KoinTest {
         verify(view, times(2)).showFolderLocation(emptyList())
         verify(view, times(2)).hideTotpSection()
         verify(view, times(2)).showPasswordEyeIcon()
+        verify(view, times(2)).hideCustomFieldsSection()
         verify(view).hideRefreshProgress()
         verifyNoMoreInteractions(view)
     }

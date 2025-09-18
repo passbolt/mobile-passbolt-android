@@ -44,4 +44,6 @@ enum class UpdateAction {
     REMOVE_PASSWORD,
 
     REMOVE_PASSWORD_AND_NOTE,
+
+    ADD_CUSTOM_FIELDS,
 }

@@ -67,7 +67,7 @@ class ScanOtpSuccessPresenterTest : KoinTest {
         runBlocking {
             mockGetDefaultCreateContentTypeUseCase.stub {
                 onBlocking { execute(any()) }.doReturn(
-                    GetDefaultCreateContentTypeUseCase.Output(
+                    GetDefaultCreateContentTypeUseCase.Output.CreationContentType(
                         ContentType.V5TotpStandalone,
                         MetadataTypeModel.V5,
                     ),

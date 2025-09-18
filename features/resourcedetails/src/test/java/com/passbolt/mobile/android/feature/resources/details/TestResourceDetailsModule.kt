@@ -29,6 +29,7 @@ import com.passbolt.mobile.android.jsonmodel.jsonpathops.JsonPathsOps
 import com.passbolt.mobile.android.mappers.GroupsModelMapper
 import com.passbolt.mobile.android.mappers.OtpModelMapper
 import com.passbolt.mobile.android.mappers.PermissionsModelMapper
+import com.passbolt.mobile.android.mappers.ResourceFormMapper
 import com.passbolt.mobile.android.mappers.UsersModelMapper
 import com.passbolt.mobile.android.ui.ResourceModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -63,6 +64,7 @@ internal val testResourceDetailsModule =
         factoryOf(::PermissionsModelMapper)
         factoryOf(::GroupsModelMapper)
         factoryOf(::UsersModelMapper)
+        factoryOf(::ResourceFormMapper)
         factory<ResourceDetailsContract.Presenter> {
             ResourceDetailsPresenter(
                 getFeatureFlagsUseCase = mockGetFeatureFlagsUseCase,
@@ -75,6 +77,7 @@ internal val testResourceDetailsModule =
                 coroutineLaunchContext = get(),
                 getRbacRulesUseCase = mockGetRbacRulesUseCase,
                 resourceDetailActionIdlingResource = mock(),
+                resourceFormMapper = get(),
                 idToSlugMappingProvider = mockResourceTypeIdToSlugMappingProvider,
             )
         }
