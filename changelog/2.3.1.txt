@@ -1,0 +1,4 @@
+# Passbolt 2.3.1-42 Android app release notes
+
+## Fixed
+- MOB-2963: Align session key format between browser extension and mobile clients

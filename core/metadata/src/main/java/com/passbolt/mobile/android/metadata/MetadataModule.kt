@@ -8,6 +8,7 @@ import com.passbolt.mobile.android.metadata.interactor.MetadataSessionKeysIntera
 import com.passbolt.mobile.android.metadata.interactor.MetadataTypesSettingsInteractor
 import com.passbolt.mobile.android.metadata.privatekeys.MetadataPrivateKeysValidator
 import com.passbolt.mobile.android.metadata.sessionkeys.SessionKeysBundleMerger
+import com.passbolt.mobile.android.metadata.sessionkeys.SessionKeysBundleProcessor
 import com.passbolt.mobile.android.metadata.sessionkeys.SessionKeysBundleValidator
 import com.passbolt.mobile.android.metadata.sessionkeys.SessionKeysMemoryCache
 import com.passbolt.mobile.android.metadata.usecase.DeleteTrustedMetadataKeyUseCase
@@ -72,6 +73,7 @@ val metadataModule =
         singleOf(::SessionKeysBundleMerger)
         singleOf(::SessionKeysMemoryCache)
         singleOf(::SessionKeysBundleValidator)
+        singleOf(::SessionKeysBundleProcessor)
         singleOf(::MetadataPrivateKeysValidator)
         singleOf(::PostMetadataSessionKeysUseCase)
         singleOf(::UpdateMetadataSessionKeysUseCase)
@@ -88,6 +90,7 @@ val metadataModule =
                 metadataMapper = get(),
                 gson = get(),
                 sessionKeysBundleValidator = get(),
+                sessionKeysBundleProcessor = get(),
             )
         }
         singleOf(::UpdateMetadataPrivateKeyUseCase)

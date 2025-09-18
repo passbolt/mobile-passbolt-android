@@ -14,6 +14,7 @@ import com.passbolt.mobile.android.gopenpgp.OpenPgp
 import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpResult
 import com.passbolt.mobile.android.mappers.MetadataMapper
 import com.passbolt.mobile.android.metadata.sessionkeys.SessionKeysBundleMerger
+import com.passbolt.mobile.android.metadata.sessionkeys.SessionKeysBundleProcessor
 import com.passbolt.mobile.android.metadata.sessionkeys.SessionKeysBundleValidator
 import com.passbolt.mobile.android.metadata.sessionkeys.SessionKeysMemoryCache
 import com.passbolt.mobile.android.metadata.usecase.FetchMetadataSessionKeysUseCase
@@ -59,6 +60,7 @@ class MetadataSessionKeysInteractor(
     private val metadataMapper: MetadataMapper,
     private val gson: Gson,
     private val sessionKeysBundleValidator: SessionKeysBundleValidator,
+    private val sessionKeysBundleProcessor: SessionKeysBundleProcessor,
 ) {
     suspend fun fetchMetadataSessionKeys(): Output =
         when (val response = fetchMetadataSessionKeysUseCase.execute(Unit)) {
@@ -109,7 +111,10 @@ class MetadataSessionKeysInteractor(
         }
         return when (val passphrase = passphraseMemoryCache.get()) {
             is PotentialPassphrase.Passphrase -> {
-                val mappedCache = metadataMapper.map(sessionKeysMemoryCache.value.keys)
+                val mappedCache =
+                    sessionKeysBundleProcessor.processPrePush(
+                        metadataMapper.map(sessionKeysMemoryCache.value.keys),
+                    )
 
                 when (
                     val encryptedCacheResult =
@@ -263,9 +268,11 @@ class MetadataSessionKeysInteractor(
                 is OpenPgpResult.Result -> {
                     Timber.d("Decrypted session keys bundle")
                     val parsedBundle =
-                        gson.fromJson(
-                            decryptedBundleResult.result,
-                            SessionKeysBundleDto::class.java,
+                        sessionKeysBundleProcessor.processPostFetch(
+                            gson.fromJson(
+                                decryptedBundleResult.result,
+                                SessionKeysBundleDto::class.java,
+                            ),
                         )
                     if (sessionKeysBundleValidator.isValid(parsedBundle)) {
                         DecryptedMetadataSessionKeysBundleModel(
