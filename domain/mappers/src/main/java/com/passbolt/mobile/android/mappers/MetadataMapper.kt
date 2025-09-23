@@ -48,6 +48,7 @@ import com.passbolt.mobile.android.ui.ParsedMetadataPrivateKeyModel
 import com.passbolt.mobile.android.ui.SessionKeyIdentifier
 import com.passbolt.mobile.android.ui.SessionKeyModel
 import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 
@@ -158,7 +159,7 @@ class MetadataMapper {
                     foreignModel = id.foreignModel,
                     foreignId = id.foreignId,
                     sessionKey = keyModel.sessionKey,
-                    modified = keyModel.modified.toString(),
+                    modified = keyModel.modified.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME),
                 )
             }.toList()
             .let {
