@@ -54,7 +54,7 @@ interface TotpFormContract {
 
         fun argsRetrieved(
             mode: ResourceFormMode,
-            totpUiModel: TotpUiModel,
+            totpModel: TotpUiModel,
         )
 
         fun totpAdvancedSettingsChanged(totpModel: TotpUiModel?)

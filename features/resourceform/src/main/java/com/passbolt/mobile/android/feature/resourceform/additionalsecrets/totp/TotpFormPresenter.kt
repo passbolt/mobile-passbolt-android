@@ -38,16 +38,20 @@ class TotpFormPresenter : TotpFormContract.Presenter {
     override var view: TotpFormContract.View? = null
 
     private lateinit var totpUiModel: TotpUiModel
+    private var argsConsumed = false
 
     override fun argsRetrieved(
         mode: ResourceFormMode,
-        totpUiModel: TotpUiModel,
+        totpModel: TotpUiModel,
     ) {
-        this.totpUiModel = totpUiModel
+        if (!argsConsumed) {
+            totpUiModel = totpModel
 
-        when (mode) {
-            is ResourceFormMode.Create -> view?.showCreateTitle()
-            is ResourceFormMode.Edit -> view?.showEditTitle(mode.resourceName)
+            when (mode) {
+                is ResourceFormMode.Create -> view?.showCreateTitle()
+                is ResourceFormMode.Edit -> view?.showEditTitle(mode.resourceName)
+            }
+            argsConsumed = true
         }
 
         view?.showSecret(totpUiModel.secret)
