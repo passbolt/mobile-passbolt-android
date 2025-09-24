@@ -36,6 +36,13 @@ val AppTypography =
                 fontSize = 16.sp,
                 letterSpacing = 0.sp,
             ),
+        titleSmall =
+            TextStyle(
+                fontFamily = Inter,
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 14.sp,
+                letterSpacing = 0.sp,
+            ),
         labelMedium =
             TextStyle(
                 fontFamily = Inter,

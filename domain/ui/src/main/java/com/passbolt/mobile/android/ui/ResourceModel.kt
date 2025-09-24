@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.ui
 
 import android.os.Parcelable
+import com.passbolt.mobile.android.common.extension.isInFuture
 import com.passbolt.mobile.android.common.search.Searchable
 import com.passbolt.mobile.android.jsonmodel.JsonModel
 import com.passbolt.mobile.android.jsonmodel.delegates.RootRelativeJsonPathNullableStringDelegate
@@ -50,6 +51,8 @@ data class ResourceModel(
     Searchable by metadataJsonModel
 
 fun ResourceModel.isFavourite() = favouriteId != null
+
+fun ResourceModel.isExpired() = expiry != null && !expiry.isInFuture()
 
 data class ResourceModelWithAttributes(
     val resourceModel: ResourceModel,

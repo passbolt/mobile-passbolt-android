@@ -4,6 +4,8 @@ import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.core.idlingresource.CreateMenuModelIdlingResource
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.createresourcemenu.usecase.CreateCreateResourceMenuModelUseCase
+import com.passbolt.mobile.android.createresourcemenu.view.CreateResourceMenuContract
+import com.passbolt.mobile.android.createresourcemenu.view.CreateResourceMenuPresenter
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.bind

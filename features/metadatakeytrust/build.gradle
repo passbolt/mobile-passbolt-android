@@ -1,6 +1,7 @@
 plugins {
     alias libs.plugins.android.library
     alias libs.plugins.kotlin.gradle
+    alias libs.plugins.compose.compiler
 }
 
 dependencies {
@@ -12,13 +13,21 @@ dependencies {
 
     implementation libs.fragment
     implementation libs.koin
+    implementation libs.koin.compose
     implementation libs.constraintlayout
+    implementation platform(libs.compose.bom)
+    implementation libs.compose.foundation
+    implementation libs.compose.material3
+    implementation libs.compose.lifecycle.viewmodel
+    implementation libs.compose.ui.tooling
+    debugImplementation libs.compose.ui.tooling.preview
 }
 
 android {
     namespace = "com.passbolt.mobile.android.feature.metadatakeytrust"
     buildFeatures {
         viewBinding true
+        compose true
     }
 }
 

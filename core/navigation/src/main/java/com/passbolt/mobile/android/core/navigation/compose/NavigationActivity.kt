@@ -1,7 +1,11 @@
 package com.passbolt.mobile.android.core.navigation.compose
 
+import com.passbolt.mobile.android.core.navigation.AppContext
+
 sealed interface NavigationActivity {
-    object StartUp : NavigationActivity
+    data class StartUp(
+        val appContext: AppContext,
+    ) : NavigationActivity
 
     object ManageAccounts : NavigationActivity
 

@@ -44,6 +44,7 @@ import com.passbolt.mobile.android.feature.authentication.compose.Authentication
 import com.passbolt.mobile.android.feature.authentication.compose.AuthenticationSideEffect.ShowYubikeyDialog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -157,7 +158,7 @@ class AuthenticatedViewModelTest : KoinTest {
         runTest {
             viewModel = get()
 
-            viewModel.sessionRefreshedFlow.test {
+            viewModel.sessionRefreshedFlow.filterNotNull().test {
                 viewModel.onAuthenticationIntent(AuthenticationRefreshed)
 
                 val refreshEvent = expectItem()

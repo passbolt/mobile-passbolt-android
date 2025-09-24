@@ -59,8 +59,8 @@ import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesUs
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesWithGroupUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesWithTagUseCase
 import com.passbolt.mobile.android.core.tags.usecase.db.GetLocalTagsUseCase
+import com.passbolt.mobile.android.core.ui.compose.search.SearchInputEndIconMode
 import com.passbolt.mobile.android.feature.home.screen.model.HeaderSectionConfiguration
-import com.passbolt.mobile.android.feature.home.screen.model.SearchInputEndIconMode
 import com.passbolt.mobile.android.mappers.HomeDisplayViewMapper
 import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.homeSlugs
 import com.passbolt.mobile.android.ui.Folder

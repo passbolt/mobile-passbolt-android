@@ -25,7 +25,6 @@ package com.passbolt.mobile.android.feature.settings.screen
 
 import androidx.lifecycle.viewModelScope
 import com.passbolt.mobile.android.core.compose.SideEffectViewModel
-import com.passbolt.mobile.android.core.fulldatarefresh.DataRefreshStatus
 import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
 import com.passbolt.mobile.android.feature.settings.screen.SettingsIntent.ConfirmSignOut
@@ -40,7 +39,6 @@ import com.passbolt.mobile.android.feature.settings.screen.SettingsSideEffect.Na
 import com.passbolt.mobile.android.feature.settings.screen.SettingsSideEffect.NavigateToDebugLogs
 import com.passbolt.mobile.android.feature.settings.screen.SettingsSideEffect.NavigateToStartUp
 import com.passbolt.mobile.android.feature.settings.screen.SettingsSideEffect.NavigateToTermsAndLicenses
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 internal class SettingsViewModel(
@@ -64,7 +62,7 @@ internal class SettingsViewModel(
         viewModelScope.launch {
             updateViewState { copy(isSignOutDialogVisible = false, isProgressDialogVisible = true) }
             // wait for full refresh to finish to minimize leaving db in an inconsistent state
-            fullDataRefreshExecutor.dataRefreshStatusFlow.first { it is DataRefreshStatus.Finished }
+            fullDataRefreshExecutor.awaitFinish()
             signOutUseCase.execute(Unit)
             updateViewState { copy(isProgressDialogVisible = false) }
             emitSideEffect(NavigateToStartUp)

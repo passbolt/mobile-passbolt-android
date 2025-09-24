@@ -1,7 +1,6 @@
 package com.passbolt.mobile.android.feature.resourceform.main
 
 import com.passbolt.mobile.android.common.validation.StringIsBase32
-import com.passbolt.mobile.android.core.fulldatarefresh.DataRefreshStatus
 import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
 import com.passbolt.mobile.android.core.idlingresource.CreateResourceIdlingResource
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
@@ -60,7 +59,6 @@ import com.passbolt.mobile.android.ui.TrustedKeyDeletedModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
@@ -133,7 +131,7 @@ class ResourceFormPresenter(
 
         scope.launch {
             view?.showInitializationProgress()
-            fullDataRefreshExecutor.dataRefreshStatusFlow.first { it is DataRefreshStatus.Finished }
+            fullDataRefreshExecutor.awaitFinish()
             if (!argsConsumed) {
                 when (mode) {
                     is Create -> {

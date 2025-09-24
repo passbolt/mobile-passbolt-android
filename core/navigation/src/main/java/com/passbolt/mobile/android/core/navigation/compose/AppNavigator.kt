@@ -66,7 +66,7 @@ class AppNavigator(
     ) {
         val intent =
             when (activity) {
-                StartUp -> ActivityIntents.authentication(context, Startup)
+                is StartUp -> ActivityIntents.authentication(context, Startup, appContext = activity.appContext)
                 ManageAccounts -> ActivityIntents.authentication(context, ManageAccount)
                 TransferAccount -> ActivityIntents.transferAccountToAnotherDevice(context)
                 AccountDetails -> ActivityIntents.accountDetails(context)

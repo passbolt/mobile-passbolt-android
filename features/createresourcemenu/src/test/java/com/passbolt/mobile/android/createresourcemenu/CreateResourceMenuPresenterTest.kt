@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.createresourcemenu
 
 import com.passbolt.mobile.android.createresourcemenu.usecase.CreateCreateResourceMenuModelUseCase
+import com.passbolt.mobile.android.createresourcemenu.view.CreateResourceMenuContract
 import com.passbolt.mobile.android.ui.CreateResourceMenuModel
 import com.passbolt.mobile.android.ui.HomeDisplayViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi

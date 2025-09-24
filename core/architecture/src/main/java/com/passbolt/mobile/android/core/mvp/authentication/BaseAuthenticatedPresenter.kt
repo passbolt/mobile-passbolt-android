@@ -46,12 +46,13 @@ import timber.log.Timber
 abstract class BaseAuthenticatedPresenter<T : BaseAuthenticatedContract.View>(
     coroutineLaunchContext: CoroutineLaunchContext,
 ) : BaseAuthenticatedContract.Presenter<T>,
-    KoinComponent {
+    KoinComponent,
+    SessionListener {
     private var _sessionRefreshedFlow = MutableStateFlow<Unit?>(null)
-    val sessionRefreshedFlow
+    override val sessionRefreshedFlow
         get() = _sessionRefreshedFlow.asStateFlow()
 
-    lateinit var needSessionRefreshFlow: MutableStateFlow<UnauthenticatedReason?>
+    override lateinit var needSessionRefreshFlow: MutableStateFlow<UnauthenticatedReason?>
     private val job = SupervisorJob()
     private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
 

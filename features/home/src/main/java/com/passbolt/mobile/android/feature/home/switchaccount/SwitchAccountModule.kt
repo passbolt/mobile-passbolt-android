@@ -5,9 +5,11 @@ import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.ModelAdapter
 import com.passbolt.mobile.android.core.ui.recyclerview.DrawableListDivider
+import com.passbolt.mobile.android.feature.home.switchaccount.compose.SwitchAccountViewModel
 import com.passbolt.mobile.android.feature.home.switchaccount.recycler.SwitchAccountUiItemsMapper
 import com.passbolt.mobile.android.ui.SwitchAccountUiModel
 import org.koin.android.ext.koin.androidContext
+import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.scopedOf
 import org.koin.core.parameter.parametersOf
@@ -38,6 +40,8 @@ import org.koin.dsl.bind
  */
 
 fun Module.switchAccountModule() {
+    viewModelOf(::SwitchAccountViewModel)
+
     scope<SwitchAccountBottomSheetFragment> {
         scopedOf(::SwitchAccountPresenter) bind SwitchAccountContract.Presenter::class
         scopedOf(::SwitchAccountUiItemsMapper)

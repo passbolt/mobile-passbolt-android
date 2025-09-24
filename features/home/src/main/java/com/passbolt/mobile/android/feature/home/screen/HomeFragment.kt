@@ -43,7 +43,7 @@ import com.passbolt.mobile.android.core.resources.resourceicon.ResourceIconProvi
 import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
 import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
 import com.passbolt.mobile.android.createfolder.CreateFolderFragment
-import com.passbolt.mobile.android.createresourcemenu.CreateResourceMenuFragment
+import com.passbolt.mobile.android.createresourcemenu.view.CreateResourceMenuFragment
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
 import com.passbolt.mobile.android.feature.home.databinding.FragmentHomeBinding
 import com.passbolt.mobile.android.feature.home.filtersmenu.FiltersMenuFragment
