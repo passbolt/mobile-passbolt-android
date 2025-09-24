@@ -82,6 +82,10 @@ class TotpFormFragment :
         super.onViewCreated(view, savedInstanceState)
         initDefaultToolbar(requiredBinding.toolbar)
         setListeners()
+        with(requiredBinding.totpSubformView) {
+            secretInput.disableSavingInstanceState()
+            urlInput.disableSavingInstanceState()
+        }
         presenter.attach(this)
         presenter.argsRetrieved(navArgs.mode, navArgs.totpUiModel)
     }
