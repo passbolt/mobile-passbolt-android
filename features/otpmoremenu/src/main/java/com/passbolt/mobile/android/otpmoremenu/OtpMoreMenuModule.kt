@@ -1,5 +1,7 @@
 package com.passbolt.mobile.android.otpmoremenu
 
+import com.passbolt.mobile.android.otpmoremenu.compose.OtpMoreMenuViewModel
+import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.scopedOf
 import org.koin.dsl.bind
@@ -28,6 +30,7 @@ import org.koin.dsl.bind
  */
 
 fun Module.otpMoreMenuModule() {
+    viewModelOf(::OtpMoreMenuViewModel)
     scope<OtpMoreMenuFragment> {
         scopedOf(::OtpMoreMenuPresenter) bind OtpMoreMenuContract.Presenter::class
     }

@@ -1,6 +1,7 @@
 plugins {
     alias libs.plugins.android.library
     alias libs.plugins.kotlin.gradle
+    alias libs.plugins.compose.compiler
 }
 
 dependencies {
@@ -21,7 +22,14 @@ dependencies {
     implementation libs.constraintlayout
     implementation libs.material
     implementation libs.koin
+    implementation libs.koin.compose
     implementation libs.espresso.idling.resource
+    implementation platform(libs.compose.bom)
+    implementation libs.compose.foundation
+    implementation libs.compose.material3
+    implementation libs.compose.lifecycle.viewmodel
+    implementation libs.compose.ui.tooling
+    debugImplementation libs.compose.ui.tooling.preview
 
     testImplementation project(':commontest')
 }
@@ -30,6 +38,7 @@ android {
     namespace = "com.passbolt.mobile.android.feature.otpmoremenu"
     buildFeatures {
         viewBinding true
+        compose true
     }
 }
 

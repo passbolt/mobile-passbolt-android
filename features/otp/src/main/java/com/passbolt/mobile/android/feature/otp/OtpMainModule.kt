@@ -23,12 +23,18 @@
 
 package com.passbolt.mobile.android.feature.otp
 
-import com.passbolt.mobile.android.feature.otp.scanotp.scanotpsuccess.scanOtpSuccessModule
-import com.passbolt.mobile.android.feature.otp.screen.otpModule
+import com.passbolt.mobile.android.common.coroutinetimer.CoroutineTimerFactory
+import com.passbolt.mobile.android.common.coroutinetimer.TimerFactory
+import com.passbolt.mobile.android.core.ui.controller.TotpComposeController
+import com.passbolt.mobile.android.feature.otp.screen.OtpViewModel
+import org.koin.androidx.viewmodel.dsl.viewModelOf
+import org.koin.core.module.dsl.singleOf
+import org.koin.dsl.bind
 import org.koin.dsl.module
 
-val otpMainModule =
+val otpModule =
     module {
-        otpModule()
-        scanOtpSuccessModule()
+        viewModelOf(::OtpViewModel)
+        singleOf(::TotpComposeController)
+        singleOf(::CoroutineTimerFactory) bind TimerFactory::class
     }

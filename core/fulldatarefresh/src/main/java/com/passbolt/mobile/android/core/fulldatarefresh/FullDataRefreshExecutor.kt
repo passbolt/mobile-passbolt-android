@@ -1,13 +1,13 @@
 package com.passbolt.mobile.android.core.fulldatarefresh
 
-import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
-import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
+import com.passbolt.mobile.android.core.mvp.authentication.SessionListener
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.concurrent.atomic.AtomicBoolean
@@ -45,29 +45,29 @@ class FullDataRefreshExecutor(
     val dataRefreshStatusFlow: Flow<DataRefreshStatus>
         get() = _dataRefreshStatusFlow
     private val _dataRefreshStatusFlow = MutableSharedFlow<DataRefreshStatus>(replay = 1)
-    private var presenter: BaseAuthenticatedPresenter<BaseAuthenticatedContract.View>? = null
+    private var sessionListener: SessionListener? = null
     private val refreshInProgress = AtomicBoolean(false)
 
-    fun <V : BaseAuthenticatedContract.View, P : BaseAuthenticatedPresenter<V>> attach(presenter: P) {
-        Timber.d("Refresh executor attaching to: ${presenter.javaClass.name}")
-        this.presenter = presenter as BaseAuthenticatedPresenter<BaseAuthenticatedContract.View>
+    fun attach(sessionListener: SessionListener) {
+        Timber.d("Refresh executor attaching to: ${sessionListener.javaClass.name}")
+        this.sessionListener = sessionListener
     }
 
     fun detach() {
-        Timber.d("Refresh executor detaching from: ${presenter?.javaClass?.name}")
-        presenter = null
+        Timber.d("Refresh executor detaching from: ${sessionListener?.javaClass?.name}")
+        sessionListener = null
     }
 
     fun performFullDataRefresh() {
         scope.launch {
             Timber.d("Full data refresh initiated")
-            if (!refreshInProgress.get() && presenter != null) {
+            if (!refreshInProgress.get() && sessionListener != null) {
                 refreshInProgress.set(true)
                 _dataRefreshStatusFlow.emit(DataRefreshStatus.InProgress)
                 val output =
                     runAuthenticatedOperation(
-                        requireNotNull(presenter).needSessionRefreshFlow,
-                        requireNotNull(presenter).sessionRefreshedFlow,
+                        requireNotNull(sessionListener).needSessionRefreshFlow,
+                        requireNotNull(sessionListener).sessionRefreshedFlow,
                         onUiAuthenticationRequested = { refreshInProgress.set(false) },
                     ) {
                         homeDataInteractor.refreshAllHomeScreenData()
@@ -78,5 +78,9 @@ class FullDataRefreshExecutor(
                 refreshInProgress.set(false)
             }
         }
+    }
+
+    suspend fun awaitFinish() {
+        dataRefreshStatusFlow.first { it is DataRefreshStatus.Finished }
     }
 }

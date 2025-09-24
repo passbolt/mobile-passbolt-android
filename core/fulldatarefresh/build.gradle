@@ -33,6 +33,7 @@ dependencies {
     implementation project(':featureflags')
     implementation project(':accounts')
     implementation project(':database')
+    implementation project(':coreui')
 
     implementation libs.koin
     implementation libs.room.core

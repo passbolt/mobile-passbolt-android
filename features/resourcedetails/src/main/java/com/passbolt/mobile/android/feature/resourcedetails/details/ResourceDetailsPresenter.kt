@@ -155,7 +155,7 @@ class ResourceDetailsPresenter(
 
             // wait for full refresh to finish to perform db operations
             if (fullDataRefreshExecutor.dataRefreshStatusFlow.first() is DataRefreshStatus.InProgress) {
-                fullDataRefreshExecutor.dataRefreshStatusFlow.first { it is DataRefreshStatus.Finished }
+                fullDataRefreshExecutor.awaitFinish()
 
                 // refresh resource data based on latest db state
                 resourceModel =

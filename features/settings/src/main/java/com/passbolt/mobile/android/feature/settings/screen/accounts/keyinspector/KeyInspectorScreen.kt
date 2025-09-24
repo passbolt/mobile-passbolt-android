@@ -105,22 +105,20 @@ internal fun KeyInspectorScreen(
 
     SideEffectDispatcher(viewModel.sideEffect) {
         when (it) {
-            is AddFingerprintToClipboard -> {
-                addToClipboard(
+            is AddFingerprintToClipboard ->
+                clipboardAccess.setPrimaryClip(
                     context = context,
-                    clipboardAccess = clipboardAccess,
                     label = context.getString(LocalizationR.string.copy_label_fingerprint),
                     value = it.fingerprint,
+                    isSensitive = true,
                 )
-            }
-            is AddUidToClipboard -> {
-                addToClipboard(
+            is AddUidToClipboard ->
+                clipboardAccess.setPrimaryClip(
                     context = context,
-                    clipboardAccess = clipboardAccess,
                     label = context.getString(LocalizationR.string.copy_label_uid),
                     value = it.uid,
+                    isSensitive = true,
                 )
-            }
             NavigateUp -> navigator.navigateBack()
             is ShowErrorSnackbar ->
                 coroutineScope.launch {
@@ -141,15 +139,6 @@ private fun getSnackbarMessage(
                 snackbar.errorMessage.orEmpty(),
             )
     }
-
-private fun addToClipboard(
-    context: Context,
-    clipboardAccess: ClipboardAccess,
-    label: String,
-    value: String,
-) {
-    clipboardAccess.setPrimaryClip(context, label, value, isSensitive = true)
-}
 
 @Composable
 private fun KeyInspectorScreen(

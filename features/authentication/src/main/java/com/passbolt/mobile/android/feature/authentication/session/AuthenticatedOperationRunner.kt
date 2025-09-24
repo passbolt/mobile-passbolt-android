@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.feature.authentication.session
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticatedUseCaseOutput
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated.Reason
+import com.passbolt.mobile.android.core.mvp.authentication.SessionListener
 import com.passbolt.mobile.android.core.mvp.authentication.UnauthenticatedReason
 import com.passbolt.mobile.android.core.navigation.AppForegroundListener
 import com.passbolt.mobile.android.core.passphrasememorycache.PassphraseMemoryCache
@@ -180,5 +181,18 @@ suspend fun <OUTPUT : AuthenticatedUseCaseOutput> runAuthenticatedOperation(
     request: suspend () -> OUTPUT,
 ): OUTPUT =
     AuthenticatedOperationRunner(needAuthenticationRefresh, authenticationRefreshedFlow, onUiAuthenticationRequested).runOperation(
+        request,
+    )
+
+suspend fun <OUTPUT : AuthenticatedUseCaseOutput> runAuthenticatedOperation(
+    sessionListener: SessionListener,
+    onUiAuthenticationRequested: () -> Unit = {},
+    request: suspend () -> OUTPUT,
+): OUTPUT =
+    AuthenticatedOperationRunner(
+        sessionListener.needSessionRefreshFlow,
+        sessionListener.sessionRefreshedFlow,
+        onUiAuthenticationRequested,
+    ).runOperation(
         request,
     )

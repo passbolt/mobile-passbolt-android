@@ -2,18 +2,16 @@
 <navigation
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/otpNav"
-    app:startDestination="@id/otpFragment">
+    app:startDestination="@id/otpBottomNavigationContainerFragment">
 
     <fragment
-        android:id="@+id/otpFragment"
-        android:name="com.passbolt.mobile.android.feature.otp.screen.OtpFragment"
-        android:label="OtpFragment"
-        tools:layout="@layout/fragment_otp">
+        android:id="@+id/otpBottomNavigationContainerFragment"
+        android:name="com.passbolt.mobile.android.feature.otp.navigation.OtpBottomNavigationContainerFragment"
+        android:label="OtpComposeFragment">
 
         <action
-            android:id="@+id/action_otpFragment_to_scanOtpFragment"
+            android:id="@+id/action_otpComposeFragment_to_scanOtpFragment"
             app:destination="@id/scanOtpNav"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
@@ -21,9 +19,9 @@
             app:popExitAnim="@anim/slide_out_right">
             <argument
                 android:name="parentFolderId"
+                android:defaultValue="@null"
                 app:argType="string"
-                app:nullable="true"
-                android:defaultValue="@null"/>
+                app:nullable="true" />
             <argument
                 android:name="scanOtpMode"
                 app:argType="com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpMode" />
@@ -31,7 +29,7 @@
     </fragment>
 
     <action
-        android:id="@+id/action_home_to_resourceForm"
+        android:id="@+id/action_otp_to_resourceForm"
         app:destination="@id/resourceFormNav"
         app:enterAnim="@anim/slide_in_right"
         app:exitAnim="@anim/slide_out_left"
