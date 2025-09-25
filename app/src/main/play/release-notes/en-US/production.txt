@@ -1,1 +1,1 @@
-This minor release focuses on fixing client compatibility issues caused by using a different date format and a different session key encoded payload format.
+This release adds support for reading custom fields and clearing the primary clip. It improves TOTP secret validation and updates the sign-in screen to use the Inconsolata font for passwords. Bugs with the TOTP form, organization URL field, and resource folder search have been fixed. The TOTP tab and related modules were migrated to the MVI architecture.
