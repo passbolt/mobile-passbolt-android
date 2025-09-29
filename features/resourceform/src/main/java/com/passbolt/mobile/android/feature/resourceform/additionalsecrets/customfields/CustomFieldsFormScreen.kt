@@ -113,17 +113,23 @@ private fun CustomFieldsFormScreen(
             ) {
                 Column {
                     state.customFieldsModel.forEach { customField ->
-                        Text(text = customField.metadataKey.orEmpty(), style = MaterialTheme.typography.titleMedium)
+                        Text(
+                            text = customField.metadataKey.orEmpty(),
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.onBackground,
+                        )
 
                         Spacer(modifier = Modifier.height(4.dp))
 
-                        when (customField) {
-                            is BooleanCustomField -> Text(text = customField.secretValue?.toString().orEmpty())
-                            is NumberCustomField -> Text(text = customField.secretValue?.toString().orEmpty())
-                            is PasswordCustomField -> Text(text = customField.secretValue.orEmpty())
-                            is TextCustomField -> Text(text = customField.secretValue.orEmpty())
-                            is UriCustomField -> Text(text = customField.secretValue.orEmpty())
-                        }
+                        val fieldValue =
+                            when (customField) {
+                                is BooleanCustomField -> customField.secretValue?.toString().orEmpty()
+                                is NumberCustomField -> customField.secretValue?.toString().orEmpty()
+                                is PasswordCustomField -> customField.secretValue.orEmpty()
+                                is TextCustomField -> customField.secretValue.orEmpty()
+                                is UriCustomField -> customField.secretValue.orEmpty()
+                            }
+                        Text(text = fieldValue, color = MaterialTheme.colorScheme.onBackground)
 
                         Spacer(modifier = Modifier.height(16.dp))
                     }
