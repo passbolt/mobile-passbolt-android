@@ -380,7 +380,7 @@
                         android:textSize="@dimen/sp_16"
                         app:layout_constraintEnd_toStartOf="@id/tagsNavIcon"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/tagsClickableArea"
+                        app:layout_constraintTop_toBottomOf="@+id/tagsHeader"
                         tools:text="Tag, Tag2" />
 
                     <ImageView
