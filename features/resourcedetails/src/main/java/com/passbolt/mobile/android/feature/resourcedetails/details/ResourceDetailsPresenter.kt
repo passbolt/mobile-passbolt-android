@@ -24,6 +24,7 @@ import com.passbolt.mobile.android.featureflags.usecase.GetFeatureFlagsUseCase
 import com.passbolt.mobile.android.jsonmodel.delegates.TotpSecret
 import com.passbolt.mobile.android.mappers.OtpModelMapper
 import com.passbolt.mobile.android.mappers.ResourceFormMapper
+import com.passbolt.mobile.android.metadata.usecase.CanShareResourceUseCase
 import com.passbolt.mobile.android.permissions.permissions.PermissionsMode
 import com.passbolt.mobile.android.permissions.recycler.PermissionsDatasetCreator
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType
@@ -85,6 +86,7 @@ class ResourceDetailsPresenter(
     private val idToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider,
     private val getRbacRulesUseCase: GetRbacRulesUseCase,
     private val resourceDetailActionIdlingResource: ResourceDetailActionIdlingResource,
+    private val canShareResourceUse: CanShareResourceUseCase,
     private val resourceFormMapper: ResourceFormMapper,
     coroutineLaunchContext: CoroutineLaunchContext,
 ) : DataRefreshViewReactivePresenter<ResourceDetailsContract.View>(coroutineLaunchContext),
@@ -617,7 +619,9 @@ class ResourceDetailsPresenter(
     }
 
     override fun shareClick() {
-        view?.navigateToResourcePermissions(resourceModel.resourceId, PermissionsMode.EDIT)
+        onCanShareResource {
+            view?.navigateToResourcePermissions(resourceModel.resourceId, PermissionsMode.EDIT)
+        }
     }
 
     override fun sharedWithClick() {
@@ -744,6 +748,16 @@ class ResourceDetailsPresenter(
                     }
                 },
             )
+        }
+    }
+
+    private fun onCanShareResource(function: () -> Unit) {
+        coroutineScope.launch {
+            if (canShareResourceUse.execute(Unit).canShareResource) {
+                function()
+            } else {
+                view?.showCannotPerformThisActionMessage()
+            }
         }
     }
 }

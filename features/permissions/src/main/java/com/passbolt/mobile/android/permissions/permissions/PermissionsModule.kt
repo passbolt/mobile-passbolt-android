@@ -6,7 +6,6 @@ import com.passbolt.mobile.android.permissions.permissions.recycler.PermissionIt
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.scopedOf
 import org.koin.core.qualifier.named
-import org.koin.dsl.bind
 
 /**
  * Passbolt - Open source password manager for teams
@@ -36,7 +35,21 @@ internal const val PERMISSIONS_ITEM_ADAPTER = "PERMISSIONS_ITEM_ADAPTER"
 fun Module.permissionsModule() {
     scope<PermissionsFragment> {
         scopedOf(::PermissionModelUiComparator)
-        scopedOf(::PermissionsPresenter) bind PermissionsContract.Presenter::class
+        scoped<PermissionsContract.Presenter> {
+            PermissionsPresenter(
+                getLocalResourcePermissionsUseCase = get(),
+                getLocalResourceUseCase = get(),
+                getLocalFolderPermissionsUseCase = get(),
+                getLocalFolderUseCase = get(),
+                permissionModelUiComparator = get(),
+                resourceShareInteractor = get(),
+                homeDataInteractor = get(),
+                resourceTypeIdToSlugMappingProvider = get(),
+                metadataPrivateKeysHelperInteractor = get(),
+                canShareResourceUseCase = get(),
+                coroutineLaunchContext = get(),
+            )
+        }
         scoped<ItemAdapter<PermissionItem>>(named(PERMISSIONS_ITEM_ADAPTER)) {
             ItemAdapter.items()
         }

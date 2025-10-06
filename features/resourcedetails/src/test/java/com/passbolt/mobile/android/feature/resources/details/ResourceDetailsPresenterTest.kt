@@ -12,6 +12,7 @@ import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUse
 import com.passbolt.mobile.android.entity.featureflags.FeatureFlagsModel
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsContract
 import com.passbolt.mobile.android.featureflags.usecase.GetFeatureFlagsUseCase
+import com.passbolt.mobile.android.metadata.usecase.CanShareResourceUseCase
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType
 import com.passbolt.mobile.android.ui.GroupModel
 import com.passbolt.mobile.android.ui.MetadataJsonModel
@@ -182,6 +183,9 @@ class ResourceDetailsPresenterTest : KoinTest {
                     ),
                 ),
             )
+        }
+        mockCanShareResourceUseCase.stub {
+            onBlocking { execute(any()) }.doReturn(CanShareResourceUseCase.Output(canShareResource = true))
         }
         presenter.attach(view)
     }

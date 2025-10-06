@@ -104,6 +104,8 @@ interface PermissionsContract {
         fun showNewMetadataKeyIsTrusted()
 
         fun showFailedToTrustMetadataKey()
+
+        fun showCannotPerformThisActionMessage()
     }
 
     interface Presenter : DataRefreshViewReactiveContract.Presenter<View> {

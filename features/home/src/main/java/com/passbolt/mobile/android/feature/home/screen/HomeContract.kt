@@ -177,6 +177,8 @@ interface HomeContract {
         fun navigateToCreateTotpManually(parentFolderId: String?)
 
         fun navigateToScanTotp(parentFolderId: String?)
+
+        fun showCannotPerformThisActionMessage()
     }
 
     interface Presenter : DataRefreshViewReactiveContract.Presenter<View> {

@@ -15,6 +15,7 @@ import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUse
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
 import com.passbolt.mobile.android.metadata.interactor.MetadataPrivateKeysHelperInteractor
+import com.passbolt.mobile.android.metadata.usecase.CanShareResourceUseCase
 import com.passbolt.mobile.android.permissions.permissions.validation.HasAtLeastOneOwnerPermission
 import com.passbolt.mobile.android.serializers.jsonschema.SchemaEntity
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType
@@ -65,6 +66,7 @@ class PermissionsPresenter(
     private val homeDataInteractor: HomeDataInteractor,
     private val resourceTypeIdToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider,
     private val metadataPrivateKeysHelperInteractor: MetadataPrivateKeysHelperInteractor,
+    private val canShareResourceUseCase: CanShareResourceUseCase,
     coroutineLaunchContext: CoroutineLaunchContext,
 ) : DataRefreshViewReactivePresenter<PermissionsContract.View>(coroutineLaunchContext),
     PermissionsContract.Presenter {
@@ -181,8 +183,18 @@ class PermissionsPresenter(
 
     override fun actionButtonClick() {
         when (mode) {
-            PermissionsMode.VIEW -> view?.navigateToSelfWithMode(id, PermissionsMode.EDIT)
+            PermissionsMode.VIEW -> onCanShareResource { view?.navigateToSelfWithMode(id, PermissionsMode.EDIT) }
             PermissionsMode.EDIT -> validatePermissions()
+        }
+    }
+
+    private fun onCanShareResource(function: () -> Unit) {
+        scope.launch {
+            if (canShareResourceUseCase.execute(Unit).canShareResource) {
+                function()
+            } else {
+                view?.showCannotPerformThisActionMessage()
+            }
         }
     }
 

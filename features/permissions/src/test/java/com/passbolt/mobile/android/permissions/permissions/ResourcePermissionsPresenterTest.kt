@@ -31,6 +31,7 @@ import com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor
 import com.passbolt.mobile.android.core.resources.actions.ResourceUpdateActionResult
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcePermissionsUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUseCase
+import com.passbolt.mobile.android.metadata.usecase.CanShareResourceUseCase
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType
 import com.passbolt.mobile.android.ui.GroupModel
 import com.passbolt.mobile.android.ui.MetadataJsonModel
@@ -100,6 +101,9 @@ class ResourcePermissionsPresenterTest : KoinTest {
             onBlocking { execute(GetLocalResourceUseCase.Input(RESOURCE_ID)) }
                 .doReturn(GetLocalResourceUseCase.Output(resourceModel))
         }
+        mockCanShareResourceUseCase.stub {
+            onBlocking { execute(Unit) } doReturn CanShareResourceUseCase.Output(canShareResource = true)
+        }
         presenter.attach(view)
         get<DataRefreshTrackingFlow>().updateStatus(FinishedWithSuccess)
     }
@@ -124,6 +128,23 @@ class ResourcePermissionsPresenterTest : KoinTest {
         presenter.resume(view)
 
         verify(view).showEditButton()
+    }
+
+    @Test
+    fun `error should be shown when sharing not possible`() {
+        mockCanShareResourceUseCase.stub {
+            onBlocking { execute(Unit) } doReturn CanShareResourceUseCase.Output(canShareResource = false)
+        }
+        mockGetLocalResourceUseCase.stub {
+            onBlocking { execute(GetLocalResourceUseCase.Input(resourceModel.resourceId)) }
+                .doReturn(GetLocalResourceUseCase.Output(resourceModel.copy(permission = ResourcePermission.OWNER)))
+        }
+
+        presenter.argsReceived(PermissionsItem.RESOURCE, RESOURCE_ID, PermissionsMode.VIEW)
+        presenter.resume(view)
+        presenter.actionButtonClick()
+
+        verify(view).showCannotPerformThisActionMessage()
     }
 
     @Test
