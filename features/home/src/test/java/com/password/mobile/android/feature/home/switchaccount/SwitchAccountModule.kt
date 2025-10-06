@@ -1,9 +1,9 @@
 package com.password.mobile.android.feature.home.switchaccount
 
+import com.passbolt.mobile.android.common.datarefresh.DataRefreshTrackingFlow
 import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.core.accounts.usecase.accounts.GetAllAccountsDataUseCase
 import com.passbolt.mobile.android.core.accounts.usecase.selectedaccount.GetSelectedAccountUseCase
-import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.entity.account.Account
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
@@ -12,6 +12,7 @@ import com.passbolt.mobile.android.feature.home.switchaccount.SwitchAccountPrese
 import com.passbolt.mobile.android.mappers.SwitchAccountModelMapper
 import com.passbolt.mobile.android.mappers.comparator.SwitchAccountUiModelComparator
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
@@ -46,11 +47,11 @@ internal val mockGetAllAccountsDataUseCase =
 internal val mockSignOutUseCase = mock<SignOutUseCase>()
 internal val mockGetSelectedAccountUseCase = mock<GetSelectedAccountUseCase>()
 internal val switchAccountModelMapper = SwitchAccountModelMapper(SwitchAccountUiModelComparator())
-internal val mockFullDataRefreshExecutor = mock<FullDataRefreshExecutor>()
 
 @ExperimentalCoroutinesApi
 val testSwitchAccountModule =
     module {
+        singleOf(::DataRefreshTrackingFlow)
         factory<CoroutineLaunchContext> { TestCoroutineLaunchContext() }
         factory<SwitchAccountContract.Presenter> {
             SwitchAccountPresenter(
@@ -59,7 +60,7 @@ val testSwitchAccountModule =
                 switchAccountModelMapper = switchAccountModelMapper,
                 signOutUseCase = mockSignOutUseCase,
                 saveSelectedAccountUseCase = mock(),
-                fullDataRefreshExecutor = mockFullDataRefreshExecutor,
+                dataRefreshTrackingFlow = get(),
                 getSelectedAccountUseCase = mockGetSelectedAccountUseCase,
             )
         }

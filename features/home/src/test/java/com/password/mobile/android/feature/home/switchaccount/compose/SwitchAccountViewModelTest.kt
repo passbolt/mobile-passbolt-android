@@ -2,12 +2,12 @@ package com.password.mobile.android.feature.home.switchaccount.compose
 
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
+import com.passbolt.mobile.android.common.datarefresh.DataRefreshTrackingFlow
 import com.passbolt.mobile.android.common.usecase.UserIdInput
 import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.core.accounts.usecase.accounts.GetAllAccountsDataUseCase
 import com.passbolt.mobile.android.core.accounts.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.core.accounts.usecase.selectedaccount.SaveSelectedAccountUseCase
-import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.entity.account.Account
@@ -78,8 +78,8 @@ class SwitchAccountViewModelTest : KoinTest {
                         single { mock<GetAllAccountsDataUseCase>() }
                         single { mock<SignOutUseCase>() }
                         single { mock<SaveSelectedAccountUseCase>() }
-                        single { mock<FullDataRefreshExecutor>() }
                         single { mock<GetSelectedAccountUseCase>() }
+                        singleOf(::DataRefreshTrackingFlow)
                         singleOf(::TestCoroutineLaunchContext) bind CoroutineLaunchContext::class
                         factoryOf(::SwitchAccountViewModel)
                         factoryOf(::SwitchAccountModelMapper)
@@ -251,9 +251,6 @@ class SwitchAccountViewModelTest : KoinTest {
 
                 val signOutUseCase = get<SignOutUseCase>()
                 verify(signOutUseCase).execute(Unit)
-
-                val fullDataRefreshExecutor = get<FullDataRefreshExecutor>()
-                verify(fullDataRefreshExecutor).awaitFinish()
             }
 
             viewModel.sideEffect.test {

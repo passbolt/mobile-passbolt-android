@@ -33,6 +33,7 @@ val passphraseMemoryCacheModule =
             PassphraseMemoryCache(
                 coroutineLaunchContext = get(),
                 lifecycleOwner = get(named<ProcessLifecycleOwner>()),
+                dataRefreshTrackingFlow = get(),
             )
         }
     }

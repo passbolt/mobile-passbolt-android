@@ -1,12 +1,13 @@
 package com.password.mobile.android.feature.home.screen
 
 import com.google.common.truth.Truth.assertThat
+import com.passbolt.mobile.android.common.datarefresh.DataRefreshStatus.Idle.FinishedWithFailure
+import com.passbolt.mobile.android.common.datarefresh.DataRefreshStatus.Idle.FinishedWithSuccess
+import com.passbolt.mobile.android.common.datarefresh.DataRefreshStatus.InProgress
+import com.passbolt.mobile.android.common.datarefresh.DataRefreshTrackingFlow
 import com.passbolt.mobile.android.core.accounts.usecase.accountdata.GetSelectedAccountDataUseCase
 import com.passbolt.mobile.android.core.accounts.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalResourcesAndFoldersUseCase
-import com.passbolt.mobile.android.core.fulldatarefresh.DataRefreshStatus
-import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
-import com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
 import com.passbolt.mobile.android.core.preferences.usecase.GetHomeDisplayViewPrefsUseCase
 import com.passbolt.mobile.android.core.rbac.usecase.GetRbacRulesUseCase
@@ -26,12 +27,11 @@ import com.passbolt.mobile.android.ui.RbacRuleModel.ALLOW
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourcePermission
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.koin.core.component.get
 import org.koin.core.logger.Level
 import org.koin.test.KoinTest
 import org.koin.test.KoinTestRule
@@ -56,7 +56,6 @@ import java.time.ZonedDateTime
 class HomePresenterTest : KoinTest {
     private val presenter: HomeContract.Presenter by inject()
     private val view: HomeContract.View = mock()
-    private val mockFullDataRefreshExecutor: FullDataRefreshExecutor by inject()
 
     @get:Rule
     val koinTestRule =
@@ -104,9 +103,6 @@ class HomePresenterTest : KoinTest {
             whenever(mockResourcesInteractor.fetchAndSaveResources()).thenReturn(
                 ResourceInteractor.Output.Success,
             )
-            whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
-                flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success)),
-            )
             val url = "avatar_url"
 
             mockAccountData(url)
@@ -128,9 +124,6 @@ class HomePresenterTest : KoinTest {
     fun `search input end icon should switch correctly based on input`() {
         val url = "avatar_url"
         mockAccountData(url)
-        whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
-            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success)),
-        )
 
         presenter.attach(view)
         presenter.argsRetrieved(
@@ -151,12 +144,6 @@ class HomePresenterTest : KoinTest {
     @Test
     fun `all fetched resources should be displayed when empty search text`() =
         runTest {
-            whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
-                flowOf(
-                    DataRefreshStatus.InProgress,
-                    DataRefreshStatus.Finished(HomeDataInteractor.Output.Success),
-                ),
-            )
             whenever(mockResourcesInteractor.fetchAndSaveResources()).thenReturn(
                 ResourceInteractor.Output.Success,
             )
@@ -174,6 +161,10 @@ class HomePresenterTest : KoinTest {
                 shouldShowResourceMoreMenu = false,
             )
             presenter.resume(view)
+            get<DataRefreshTrackingFlow>().apply {
+                updateStatus(InProgress)
+                updateStatus(FinishedWithSuccess)
+            }
 
             verify(view, times(2)).showHomeScreenTitle(HomeDisplayViewModel.AllItems)
             verify(view).showAllItemsSearchHint()
@@ -199,26 +190,6 @@ class HomePresenterTest : KoinTest {
                 GetLocalResourcesUseCase.Output(mockResourcesList()),
             )
             mockAccountData(null)
-            whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
-                flowOf(
-                    DataRefreshStatus.InProgress,
-                    DataRefreshStatus.Finished(HomeDataInteractor.Output.Success),
-                ),
-            )
-            val refreshFlow =
-                MutableStateFlow(
-                    DataRefreshStatus.Finished(
-                        HomeDataInteractor.Output.Success,
-                    ),
-                )
-            whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(refreshFlow)
-            whenever(mockFullDataRefreshExecutor.performFullDataRefresh()).then {
-                refreshFlow.tryEmit(
-                    DataRefreshStatus.Finished(
-                        HomeDataInteractor.Output.Success,
-                    ),
-                )
-            }
 
             presenter.attach(view)
             presenter.argsRetrieved(
@@ -230,11 +201,14 @@ class HomePresenterTest : KoinTest {
             )
             presenter.resume(view)
             presenter.searchTextChange("second")
-            presenter.refreshSwipe()
+            get<DataRefreshTrackingFlow>().apply {
+                updateStatus(InProgress)
+                updateStatus(FinishedWithSuccess)
+            }
 
             verify(view).hideCreateButton()
             verify(view).hideRefreshProgress()
-            verify(view, times(2)).showItems(any(), any(), any(), any(), any(), any(), any(), any())
+            verify(view).showItems(any(), any(), any(), any(), any(), any(), any(), any())
             verify(view, times(2)).showCreateButton()
         }
 
@@ -248,12 +222,6 @@ class HomePresenterTest : KoinTest {
                 GetLocalResourcesUseCase.Output(mockResourcesList()),
             )
             mockAccountData(null)
-            whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
-                flowOf(
-                    DataRefreshStatus.InProgress,
-                    DataRefreshStatus.Finished(HomeDataInteractor.Output.Success),
-                ),
-            )
 
             presenter.attach(view)
             presenter.argsRetrieved(
@@ -266,17 +234,13 @@ class HomePresenterTest : KoinTest {
             presenter.resume(view)
             presenter.searchTextChange("empty search")
 
-            verify(view).hideCreateButton()
             verify(view).showSearchEmptyList()
-            verify(view, times(2)).showCreateButton()
+            verify(view).showCreateButton()
         }
 
     @Test
     fun `empty view should be displayed when there are no resources`() =
         runTest {
-            whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
-                flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success)),
-            )
             whenever(mockResourcesInteractor.fetchAndSaveResources()).thenReturn(
                 ResourceInteractor.Output.Success,
             )
@@ -295,18 +259,12 @@ class HomePresenterTest : KoinTest {
             )
             presenter.resume(view)
 
-            verify(view, times(2)).showEmptyList()
+            verify(view).showEmptyList()
         }
 
     @Test
     fun `error should be displayed when request failures`() =
         runTest {
-            whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
-                flowOf(
-                    DataRefreshStatus.InProgress,
-                    DataRefreshStatus.Finished(HomeDataInteractor.Output.Failure(AuthenticationState.Authenticated)),
-                ),
-            )
             mockAccountData(null)
             whenever(mockGetLocalResourcesUseCase.execute(any())).thenReturn(
                 GetLocalResourcesUseCase.Output(emptyList()),
@@ -321,6 +279,10 @@ class HomePresenterTest : KoinTest {
                 shouldShowResourceMoreMenu = false,
             )
             presenter.resume(view)
+            get<DataRefreshTrackingFlow>().apply {
+                updateStatus(InProgress)
+                updateStatus(FinishedWithFailure)
+            }
 
             verify(view).hideBackArrow()
             verify(view).showHomeScreenTitle(HomeDisplayViewModel.AllItems)
@@ -335,26 +297,12 @@ class HomePresenterTest : KoinTest {
     @Test
     fun `error during refresh clicked should show correct ui`() =
         runTest {
-            val refreshFlow =
-                MutableStateFlow(
-                    DataRefreshStatus.Finished(
-                        HomeDataInteractor.Output.Failure(AuthenticationState.Authenticated),
-                    ),
-                )
-            whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(refreshFlow)
             whenever(mockGetLocalResourcesUseCase.execute(any())).thenReturn(
                 GetLocalResourcesUseCase.Output(emptyList()),
             )
             whenever(mockResourcesInteractor.fetchAndSaveResources()).thenReturn(
                 ResourceInteractor.Output.Failure(AuthenticationState.Authenticated),
             )
-            whenever(mockFullDataRefreshExecutor.performFullDataRefresh()).then {
-                refreshFlow.tryEmit(
-                    DataRefreshStatus.Finished(
-                        HomeDataInteractor.Output.Failure(AuthenticationState.Authenticated),
-                    ),
-                )
-            }
             mockAccountData(null)
 
             presenter.attach(view)
@@ -366,6 +314,10 @@ class HomePresenterTest : KoinTest {
                 shouldShowResourceMoreMenu = false,
             )
             presenter.resume(view)
+            get<DataRefreshTrackingFlow>().apply {
+                updateStatus(InProgress)
+                updateStatus(FinishedWithFailure)
+            }
 
             verify(view).hideBackArrow()
             verify(view).hideRefreshProgress()
@@ -377,9 +329,6 @@ class HomePresenterTest : KoinTest {
         runTest {
             whenever(mockResourcesInteractor.fetchAndSaveResources()).thenReturn(
                 ResourceInteractor.Output.Failure(AuthenticationState.Authenticated),
-            )
-            whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
-                flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success)),
             )
             val model =
                 ResourceModel(
@@ -431,9 +380,6 @@ class HomePresenterTest : KoinTest {
                     FolderModel("childId", "root", "child folder", false, ResourcePermission.UPDATE),
                 )
         }
-        whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
-            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success)),
-        )
         mockAccountData(null)
 
         presenter.attach(view)
@@ -446,15 +392,12 @@ class HomePresenterTest : KoinTest {
         )
         presenter.resume(view)
 
-        verify(view, times(2)).navigateToRootHomeFromChildHome(HomeDisplayViewModel.folderRoot())
-        verify(view, times(2)).showCreateButton()
+        verify(view).navigateToRootHomeFromChildHome(HomeDisplayViewModel.folderRoot())
+        verify(view).showCreateButton()
     }
 
     @Test
     fun `view should show correct titles for child items`() {
-        whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
-            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success)),
-        )
         mockAccountData(null)
 
         presenter.attach(view)
@@ -519,14 +462,11 @@ class HomePresenterTest : KoinTest {
         verify(view).showChildFolderTitle("folder name", isShared = false)
         verify(view).showTagTitle("tag name", isShared = false)
         verify(view).showGroupTitle("group name")
-        verify(view, times(6)).showHomeScreenTitle(any())
+        verify(view, times(5)).showHomeScreenTitle(any())
     }
 
     @Test
     fun `view should show back arrow when in child item`() {
-        whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
-            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success)),
-        )
         mockAccountData(null)
 
         presenter.attach(view)
@@ -558,9 +498,6 @@ class HomePresenterTest : KoinTest {
 
     @Test
     fun `view should navigate to selected item correctly based on root or child item`() {
-        whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
-            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success)),
-        )
         mockAccountData(null)
 
         presenter.attach(view)
@@ -588,9 +525,6 @@ class HomePresenterTest : KoinTest {
 
     @Test
     fun `view root should user selected filter by default`() {
-        whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
-            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success)),
-        )
         whenever(mockGetHomeDisplayPrefsUseCase.execute(any())).doReturn(
             GetHomeDisplayViewPrefsUseCase.Output(
                 lastUsedHomeView = HomeDisplayView.ALL_ITEMS,
@@ -610,16 +544,13 @@ class HomePresenterTest : KoinTest {
         presenter.resume(view)
 
         argumentCaptor<HomeDisplayViewModel> {
-            verify(view, times(2)).showHomeScreenTitle(capture())
+            verify(view).showHomeScreenTitle(capture())
             assertThat(firstValue).isInstanceOf(HomeDisplayViewModel.Folders::class.java)
         }
     }
 
     @Test
     fun `view should apply visibility settings correct`() {
-        whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
-            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success)),
-        )
         whenever(mockGetHomeDisplayPrefsUseCase.execute(any())).doReturn(
             GetHomeDisplayViewPrefsUseCase.Output(
                 lastUsedHomeView = HomeDisplayView.ALL_ITEMS,

@@ -15,7 +15,7 @@ sealed class AuthenticationState {
 
             data object Session : Reason()
 
-            class Mfa(
+            data class Mfa(
                 val providers: List<MfaProvider?>?,
             ) : Reason() {
                 enum class MfaProvider(

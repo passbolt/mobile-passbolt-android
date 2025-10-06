@@ -1,7 +1,7 @@
 package com.passbolt.mobile.android.feature.resourceform.main
 
+import com.passbolt.mobile.android.common.datarefresh.DataRefreshTrackingFlow
 import com.passbolt.mobile.android.common.validation.StringIsBase32
-import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
 import com.passbolt.mobile.android.core.idlingresource.CreateResourceIdlingResource
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
@@ -101,7 +101,7 @@ class ResourceFormPresenter(
     private val resourceFormMapper: ResourceFormMapper,
     private val resourceModelHandler: ResourceModelHandler,
     private val getLocalResourceUseCase: GetLocalResourceUseCase,
-    private val fullDataRefreshExecutor: FullDataRefreshExecutor,
+    private val dataRefreshTrackingFlow: DataRefreshTrackingFlow,
     private val metadataPrivateKeysHelperInteractor: MetadataPrivateKeysHelperInteractor,
     private val createResourceIdlingResource: CreateResourceIdlingResource,
     coroutineLaunchContext: CoroutineLaunchContext,
@@ -131,7 +131,7 @@ class ResourceFormPresenter(
 
         scope.launch {
             view?.showInitializationProgress()
-            fullDataRefreshExecutor.awaitFinish()
+            dataRefreshTrackingFlow.awaitIdle()
             if (!argsConsumed) {
                 when (mode) {
                     is Create -> {
@@ -148,11 +148,7 @@ class ResourceFormPresenter(
                     is Edit -> {
                         Timber.d("Initializing model for edition")
                         try {
-                            resourceModelHandler.initializeModelForEdition(
-                                mode.resourceId,
-                                needSessionRefreshFlow,
-                                sessionRefreshedFlow,
-                            )
+                            resourceModelHandler.initializeModelForEdition(mode.resourceId)
                         } catch (_: Exception) {
                             view?.showEditResourceInitializationError()
                             view?.navigateBack()
@@ -473,10 +469,7 @@ class ResourceFormPresenter(
             scope.launch {
                 createResourceIdlingResource.setIdle(false)
                 view?.showProgress()
-                val resourceCreateActionsInteractor =
-                    get<ResourceCreateActionsInteractor> {
-                        parametersOf(needSessionRefreshFlow, sessionRefreshedFlow)
-                    }
+                val resourceCreateActionsInteractor = get<ResourceCreateActionsInteractor>()
                 performResourceCreateAction(
                     action = {
                         resourceCreateActionsInteractor.createGenericResource(
@@ -517,10 +510,7 @@ class ResourceFormPresenter(
                         .execute(
                             GetLocalResourceUseCase.Input((mode as Edit).resourceId),
                         ).resource
-                val resourceUpdateActionsInteractor =
-                    get<ResourceUpdateActionsInteractor> {
-                        parametersOf(editedResource, needSessionRefreshFlow, sessionRefreshedFlow)
-                    }
+                val resourceUpdateActionsInteractor = get<ResourceUpdateActionsInteractor> { parametersOf(editedResource) }
                 performResourceUpdateAction(
                     action = {
                         resourceUpdateActionsInteractor.updateGenericResource(
@@ -571,7 +561,7 @@ class ResourceFormPresenter(
             view?.showProgress()
             when (
                 val output =
-                    runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+                    runAuthenticatedOperation {
                         metadataPrivateKeysHelperInteractor.trustNewKey(model)
                     }
             ) {

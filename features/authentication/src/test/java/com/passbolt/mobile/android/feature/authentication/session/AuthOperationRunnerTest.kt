@@ -30,22 +30,23 @@ import com.passbolt.mobile.android.core.mvp.authentication.AuthenticatedUseCaseO
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Authenticated
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated.Reason.Passphrase
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated.Reason.Session
-import com.passbolt.mobile.android.core.mvp.authentication.UnauthenticatedReason
+import com.passbolt.mobile.android.core.mvp.authentication.SessionRefreshTrackingFlow
+import com.passbolt.mobile.android.core.mvp.authentication.SessionState.NeedsRefresh
 import com.passbolt.mobile.android.core.navigation.AppForegroundListener
 import com.passbolt.mobile.android.core.passphrasememorycache.PassphraseMemoryCache
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetSessionExpiryUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.RefreshSessionUseCase
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.drop
-import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
+import org.koin.core.component.get
 import org.koin.core.logger.Level
+import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
+import org.koin.test.KoinTest
 import org.koin.test.KoinTestRule
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.verify
@@ -58,10 +59,7 @@ import java.time.ZonedDateTime
 import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalTime::class)
-class AuthOperationRunnerTest {
-    private var sessionRefreshFlow = MutableStateFlow<Unit?>(null)
-    private var needSessionRefreshFlow = MutableStateFlow<UnauthenticatedReason?>(null)
-
+class AuthOperationRunnerTest : KoinTest {
     private val mockPassphraseMemoryCache = mock<PassphraseMemoryCache>()
     private val mockGetSessionExpiryUseCase = mock<GetSessionExpiryUseCase>()
     private val mockRefreshSessionUseCase = mock<RefreshSessionUseCase>()
@@ -77,6 +75,7 @@ class AuthOperationRunnerTest {
                     single { mockPassphraseMemoryCache }
                     single { mockRefreshSessionUseCase }
                     single { mockAppForegroundListener }
+                    singleOf(::SessionRefreshTrackingFlow)
                 },
             )
         }
@@ -102,7 +101,7 @@ class AuthOperationRunnerTest {
             }
             whenever(mockPassphraseMemoryCache.getSessionDurationSeconds()).thenReturn(60L)
 
-            runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshFlow, request = operationSpy)
+            runAuthenticatedOperation(request = operationSpy)
 
             verify(operationSpy).invoke()
         }
@@ -131,7 +130,7 @@ class AuthOperationRunnerTest {
             }
             whenever(mockPassphraseMemoryCache.getSessionDurationSeconds()).thenReturn(60L)
 
-            runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshFlow, request = operationSpy)
+            runAuthenticatedOperation(request = operationSpy)
 
             verify(mockRefreshSessionUseCase).execute(Unit)
             verify(operationSpy).invoke()
@@ -163,7 +162,7 @@ class AuthOperationRunnerTest {
             }
             whenever(mockPassphraseMemoryCache.getSessionDurationSeconds()).thenReturn(60L)
 
-            runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshFlow, request = operationSpy)
+            runAuthenticatedOperation(request = operationSpy)
 
             verify(mockRefreshSessionUseCase).execute(Unit)
             verify(operationSpy).invoke()
@@ -192,15 +191,15 @@ class AuthOperationRunnerTest {
 
             val operationJob =
                 launch {
-                    runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshFlow, request = operationSpy)
+                    runAuthenticatedOperation(request = operationSpy)
                 }
 
-            needSessionRefreshFlow
-                .drop(1)
-                .take(1)
+            val sessionRefreshTrackingFlow = get<SessionRefreshTrackingFlow>()
+            sessionRefreshTrackingFlow
+                .needSessionRefreshFlow()
                 .test {
-                    assertThat(expectItem()).isEqualTo(Passphrase)
-                    expectComplete()
+                    assertThat(expectItem()).isEqualTo(NeedsRefresh(Passphrase))
+                    cancelAndIgnoreRemainingEvents()
                 }
             operationJob.cancel()
 
@@ -233,16 +232,17 @@ class AuthOperationRunnerTest {
 
             val operationJob =
                 launch {
-                    runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshFlow, request = operationSpy)
+                    runAuthenticatedOperation(request = operationSpy)
                 }
 
-            needSessionRefreshFlow
-                .drop(1)
-                .take(1)
+            val sessionRefreshTrackingFlow = get<SessionRefreshTrackingFlow>()
+            sessionRefreshTrackingFlow
+                .needSessionRefreshFlow()
                 .test {
-                    assertThat(expectItem()).isEqualTo(Session)
-                    expectComplete()
+                    assertThat(expectItem()).isEqualTo(NeedsRefresh(Session))
+                    cancelAndIgnoreRemainingEvents()
                 }
+
             operationJob.cancel()
 
             verify(operationSpy, never()).invoke()
@@ -274,51 +274,14 @@ class AuthOperationRunnerTest {
 
             val operationJob =
                 launch {
-                    runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshFlow, request = operationSpy)
+                    runAuthenticatedOperation(request = operationSpy)
                 }
             delay(100)
-            sessionRefreshFlow.tryEmit(Unit)
+            val sessionRefreshTrackingFlow = get<SessionRefreshTrackingFlow>()
+            sessionRefreshTrackingFlow.notifySessionRefreshed()
             operationJob.join()
 
             verify(operationSpy).invoke()
-        }
-
-    @Test
-    fun `operation should invoke onUiAuthenticationRequested when passphrase session expired`() =
-        runTest {
-            val sampleAuthenticatedOperation =
-                object : () -> AuthenticatedUseCaseOutput {
-                    override fun invoke(): AuthenticatedUseCaseOutput =
-                        object : AuthenticatedUseCaseOutput {
-                            override val authenticationState = Authenticated
-                        }
-                }
-            whenever(mockAppForegroundListener.isForeground()) doReturn true
-            mockGetSessionExpiryUseCase.stub {
-                onBlocking { execute(Unit) }.thenReturn(
-                    GetSessionExpiryUseCase.Output.JwtWillExpire(
-                        ZonedDateTime.now().plusSeconds(60L),
-                    ),
-                )
-            }
-            whenever(mockPassphraseMemoryCache.getSessionDurationSeconds()).thenReturn(null)
-
-            val onUiAuthenticationRequestedMock = mock<() -> Unit>()
-
-            val operationJob =
-                launch {
-                    runAuthenticatedOperation(
-                        needSessionRefreshFlow,
-                        sessionRefreshFlow,
-                        onUiAuthenticationRequested = onUiAuthenticationRequestedMock,
-                        request = sampleAuthenticatedOperation,
-                    )
-                }
-
-            delay(100)
-            verify(onUiAuthenticationRequestedMock).invoke()
-
-            operationJob.cancel()
         }
 
     @Test
@@ -348,9 +311,6 @@ class AuthOperationRunnerTest {
             val operationJob =
                 launch {
                     runAuthenticatedOperation(
-                        needSessionRefreshFlow,
-                        sessionRefreshFlow,
-                        onUiAuthenticationRequested = onUiAuthenticationRequestedMock,
                         request = sampleAuthenticatedOperation,
                     )
                 }

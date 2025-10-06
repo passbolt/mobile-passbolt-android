@@ -10,6 +10,7 @@ import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.extension.setDebouncingOnClickAndDismiss
 import com.passbolt.mobile.android.core.extension.showSnackbar
 import com.passbolt.mobile.android.core.extension.visible
+import com.passbolt.mobile.android.core.fulldatarefresh.service.DataRefreshService
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedBottomSheetFragment
 import com.passbolt.mobile.android.feature.resourcemoremenu.databinding.ViewPasswordBottomsheetBinding
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
@@ -188,6 +189,10 @@ class ResourceMoreMenuFragment :
             messageResId = LocalizationR.string.common_data_refresh_error,
             backgroundColor = CoreUiR.color.red,
         )
+    }
+
+    override fun performFullDataRefresh() {
+        DataRefreshService.start(requireContext())
     }
 
     companion object {

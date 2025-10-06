@@ -34,10 +34,12 @@ dependencies {
     implementation project(':accounts')
     implementation project(':database')
     implementation project(':coreui')
+    implementation project(':notifications')
 
     implementation libs.koin
     implementation libs.room.core
     implementation libs.espresso.idling.resource
+    implementation libs.androidx.lifecycle.service
 
     testImplementation project(':commontest')
 }

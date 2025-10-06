@@ -24,7 +24,6 @@
 package com.passbolt.mobile.android.core.resources.actions
 
 import androidx.annotation.VisibleForTesting
-import com.passbolt.mobile.android.core.mvp.authentication.UnauthenticatedReason
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.SecretInteractor
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.SecretJsonModel
@@ -36,8 +35,6 @@ import com.passbolt.mobile.android.supportedresourceTypes.ContentType
 import com.passbolt.mobile.android.ui.DecryptedSecretOrError
 import com.passbolt.mobile.android.ui.ResourceModel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.flow.transform
@@ -45,8 +42,6 @@ import timber.log.Timber
 import java.util.UUID
 
 class SecretPropertiesActionsInteractor(
-    private val needSessionRefreshFlow: MutableStateFlow<UnauthenticatedReason?>,
-    private val sessionRefreshedFlow: StateFlow<Unit?>,
     private val resource: ResourceModel,
     private val secretParser: SecretParser,
     private val secretInteractor: SecretInteractor,
@@ -137,7 +132,7 @@ class SecretPropertiesActionsInteractor(
         flowOf(
             when (
                 val output =
-                    runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+                    runAuthenticatedOperation {
                         secretInteractor.fetchAndDecrypt(resource.resourceId)
                     }
             ) {

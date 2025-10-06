@@ -35,6 +35,7 @@ import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.extension.setSearchEndIconWithListener
 import com.passbolt.mobile.android.core.extension.showSnackbar
 import com.passbolt.mobile.android.core.extension.visible
+import com.passbolt.mobile.android.core.fulldatarefresh.service.DataRefreshService
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.core.navigation.constants.Autofillresources
@@ -358,7 +359,7 @@ class HomeFragment :
     private fun setListeners() {
         with(requiredBinding) {
             swipeRefresh.setOnRefreshListener {
-                presenter.refreshSwipe()
+                performFullDataRefresh()
             }
             searchEditText.doAfterTextChanged {
                 presenter.searchTextChange(it.toString())
@@ -1027,6 +1028,10 @@ class HomeFragment :
             LocalizationR.string.common_json_schema_secret_validation_error,
             backgroundColor = CoreUiR.color.red,
         )
+    }
+
+    override fun performFullDataRefresh() {
+        DataRefreshService.start(requireContext())
     }
 
     companion object {

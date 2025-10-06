@@ -2,8 +2,8 @@ package com.passbolt.mobile.android.otpmoremenu.compose
 
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
+import com.passbolt.mobile.android.common.datarefresh.DataRefreshTrackingFlow
 import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
-import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.otpmoremenu.compose.OtpMoreMenuIntent.Close
 import com.passbolt.mobile.android.otpmoremenu.compose.OtpMoreMenuIntent.CopyOtp
@@ -39,7 +39,6 @@ import org.koin.test.get
 import org.mockito.Mockito.mock
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.stub
 import kotlin.time.ExperimentalTime
 
@@ -53,7 +52,7 @@ class OtpMoreMenuViewModelTest : KoinTest {
                 listOf(
                     module {
                         single { mock<CreateOtpMoreMenuModelUseCase>() }
-                        single { mock<FullDataRefreshExecutor>() }
+                        singleOf(::DataRefreshTrackingFlow)
                         singleOf(::TestCoroutineLaunchContext) bind CoroutineLaunchContext::class
                         factoryOf(::OtpMoreMenuViewModel)
                     },
@@ -79,11 +78,6 @@ class OtpMoreMenuViewModelTest : KoinTest {
                         canEdit = true,
                     ),
                 )
-        }
-
-        val fullDataRefreshExecutor = get<FullDataRefreshExecutor>()
-        fullDataRefreshExecutor.stub {
-            onBlocking { awaitFinish() } doSuspendableAnswer { }
         }
     }
 

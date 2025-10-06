@@ -31,13 +31,17 @@ class NotificationChannelManager(
     fun createNotificationChannel(
         channelId: String,
         name: String,
+        importance: Int,
     ) {
-        val serviceChannel =
+        val channel =
             NotificationChannel(
                 channelId,
                 name,
-                NotificationManager.IMPORTANCE_HIGH,
-            )
-        notificationManager.createNotificationChannel(serviceChannel)
+                importance,
+            ).apply {
+                enableVibration(false)
+                setSound(null, null)
+            }
+        notificationManager.createNotificationChannel(channel)
     }
 }

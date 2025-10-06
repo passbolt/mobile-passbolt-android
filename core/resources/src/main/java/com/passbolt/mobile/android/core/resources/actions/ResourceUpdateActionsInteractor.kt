@@ -24,7 +24,6 @@
 package com.passbolt.mobile.android.core.resources.actions
 
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalFolderPermissionsUseCase
-import com.passbolt.mobile.android.core.mvp.authentication.UnauthenticatedReason
 import com.passbolt.mobile.android.core.resources.interactor.update.UpdateResourceInteractor
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcePermissionsUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.UpdateLocalResourceUseCase
@@ -50,8 +49,6 @@ import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.TrustedKeyDeletedModel
 import com.passbolt.mobile.android.ui.UpdateResourceModel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.single
 import org.koin.core.component.KoinComponent
@@ -60,8 +57,6 @@ import java.util.UUID
 
 class ResourceUpdateActionsInteractor(
     private val existingResource: ResourceModel,
-    private val needSessionRefreshFlow: MutableStateFlow<UnauthenticatedReason?>,
-    private val sessionRefreshedFlow: StateFlow<Unit?>,
     private val secretPropertiesActionsInteractor: SecretPropertiesActionsInteractor,
     private val updateResourceInteractor: UpdateResourceInteractor,
     private val resourceTypesUpdateGraph: ResourceTypesUpdatesAdjacencyGraph,
@@ -201,7 +196,7 @@ class ResourceUpdateActionsInteractor(
         return when (metadataKeyType) {
             MetadataKeyTypeModel.SHARED -> {
                 val verifyOutput =
-                    runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+                    runAuthenticatedOperation {
                         metadataPrivateKeysInteractor.verifyMetadataPrivateKey()
                     }
 
@@ -289,7 +284,7 @@ class ResourceUpdateActionsInteractor(
     private suspend fun runUpdateOperation(operation: suspend () -> UpdateResourceInteractor.Output): ResourceUpdateActionResult =
         when (
             val operationResult =
-                runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+                runAuthenticatedOperation {
                     operation()
                 }
         ) {

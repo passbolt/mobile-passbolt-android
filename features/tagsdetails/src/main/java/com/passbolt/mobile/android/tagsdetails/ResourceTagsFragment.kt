@@ -11,6 +11,7 @@ import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
 import com.passbolt.mobile.android.core.extension.showSnackbar
 import com.passbolt.mobile.android.core.extension.visible
+import com.passbolt.mobile.android.core.fulldatarefresh.service.DataRefreshService
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.resources.resourceicon.ResourceIconProvider
@@ -119,5 +120,9 @@ class ResourceTagsFragment :
 
     override fun navigateToHome() {
         requireActivity().startActivity(ActivityIntents.bringHome(requireContext()))
+    }
+
+    override fun performFullDataRefresh() {
+        DataRefreshService.start(requireContext())
     }
 }

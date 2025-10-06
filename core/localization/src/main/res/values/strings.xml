@@ -241,8 +241,10 @@
     <string name="autofill_error">Autofill error occurred</string>
     <string name="autofill_select_password">Select password</string>
     <string name="autofill_service_channel_name">Passbolt autofill services</string>
+    <string name="data_sync_service_channel_name">Passbolt data sync service</string>
     <string name="autofill_service_title">Passbolt</string>
     <string name="autofill_service_content">Accessibility autofill service enabled</string>
+    <string name="data_sync_service_content">Refreshing resources</string>
     <string name="autofill_service_enable_overlay">Enable overlay permission</string>
     <string name="autofill_service_overlay_description"><![CDATA[Autofill usernames & passwords for Android web browsers. Please enable the ‘Draw over other apps’ permission for Passbolt Autofill]]></string>
     <string name="autofill_service_enable_service">Enable Autofill for most apps</string>

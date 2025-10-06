@@ -25,11 +25,13 @@ package com.passbolt.mobile.android.feature.otp.screen
 
 import androidx.lifecycle.viewModelScope
 import com.passbolt.mobile.android.common.coroutinetimer.TimerFactory
+import com.passbolt.mobile.android.common.datarefresh.DataRefreshStatus.Idle.FinishedWithFailure
+import com.passbolt.mobile.android.common.datarefresh.DataRefreshStatus.Idle.FinishedWithSuccess
+import com.passbolt.mobile.android.common.datarefresh.DataRefreshStatus.Idle.NotCompleted
+import com.passbolt.mobile.android.common.datarefresh.DataRefreshStatus.InProgress
+import com.passbolt.mobile.android.common.datarefresh.DataRefreshTrackingFlow
 import com.passbolt.mobile.android.common.search.SearchableMatcher
 import com.passbolt.mobile.android.core.accounts.usecase.accountdata.GetSelectedAccountDataUseCase
-import com.passbolt.mobile.android.core.fulldatarefresh.DataRefreshStatus.Finished
-import com.passbolt.mobile.android.core.fulldatarefresh.DataRefreshStatus.InProgress
-import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.otpcore.TotpParametersProvider
 import com.passbolt.mobile.android.core.otpcore.TotpParametersProvider.OtpParametersResult.InvalidTotpInput
@@ -60,7 +62,6 @@ import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.CreatePassword
 import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.CreateTotp
 import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.DeleteOtp
 import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.EditOtp
-import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.InitiateFullDataRefresh
 import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.OpenCreateResourceMenu
 import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.OpenOtpMoreMenu
 import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.OtpQRScanReturned
@@ -71,6 +72,7 @@ import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.SearchEndIconAct
 import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.TrustMetadataKeyDeletion
 import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.TrustNewMetadataKey
 import com.passbolt.mobile.android.feature.otp.screen.OtpSideEffect.CopyToClipboard
+import com.passbolt.mobile.android.feature.otp.screen.OtpSideEffect.InitiateDataRefresh
 import com.passbolt.mobile.android.feature.otp.screen.OtpSideEffect.NavigateToCreateResourceForm
 import com.passbolt.mobile.android.feature.otp.screen.OtpSideEffect.NavigateToCreateTotp
 import com.passbolt.mobile.android.feature.otp.screen.OtpSideEffect.NavigateToEditResourceForm
@@ -80,6 +82,7 @@ import com.passbolt.mobile.android.feature.otp.screen.SnackbarErrorType.CANNOT_U
 import com.passbolt.mobile.android.feature.otp.screen.SnackbarErrorType.DECRYPTION_FAILURE
 import com.passbolt.mobile.android.feature.otp.screen.SnackbarErrorType.ERROR
 import com.passbolt.mobile.android.feature.otp.screen.SnackbarErrorType.FAILED_TO_DELETE_RESOURCE
+import com.passbolt.mobile.android.feature.otp.screen.SnackbarErrorType.FAILED_TO_REFRESH_DATA
 import com.passbolt.mobile.android.feature.otp.screen.SnackbarErrorType.FAILED_TO_TRUST_METADATA_KEY
 import com.passbolt.mobile.android.feature.otp.screen.SnackbarErrorType.FAILED_TO_VERIFY_METADATA_KEYS
 import com.passbolt.mobile.android.feature.otp.screen.SnackbarErrorType.FETCH_FAILURE
@@ -128,14 +131,13 @@ internal class OtpViewModel(
     private val otpModelMapper: OtpModelMapper,
     private val totpParametersProvider: TotpParametersProvider,
     private val coroutineLaunchContext: CoroutineLaunchContext,
-    private val fullDataRefreshExecutor: FullDataRefreshExecutor,
+    private val dataRefreshTrackingFlow: DataRefreshTrackingFlow,
     private val idToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider,
     private val metadataPrivateKeysHelperInteractor: MetadataPrivateKeysHelperInteractor,
     private val timerFactory: TimerFactory,
 ) : AuthenticatedViewModel<OtpState, OtpSideEffect>(OtpState()),
     KoinComponent {
     init {
-        fullDataRefreshExecutor.attach(this)
         loadUserAvatar()
         viewModelScope.launch(coroutineLaunchContext.io) {
             synchronizeWithDataRefresh()
@@ -147,18 +149,12 @@ internal class OtpViewModel(
         }
     }
 
-    override fun onCleared() {
-        fullDataRefreshExecutor.detach()
-        super.onCleared()
-    }
-
     // TODO refactor after feature completion
     @Suppress("CyclomaticComplexMethod")
     fun onIntent(intent: OtpIntent) {
         when (intent) {
             OpenCreateResourceMenu -> updateViewState { copy(showCreateResourceBottomSheet = true) }
             CloseCreateResourceMenu -> updateViewState { copy(showCreateResourceBottomSheet = false) }
-            InitiateFullDataRefresh -> fullDataRefreshExecutor.performFullDataRefresh()
             is Search -> searchQueryChanged(intent.searchQuery)
             is RevealOtp -> otpClick(intent.otpItemWrapper)
             is OpenOtpMoreMenu -> updateViewState { copy(showOtpMoreBottomSheet = true, moreMenuResource = intent.otpItemWrapper) }
@@ -217,7 +213,7 @@ internal class OtpViewModel(
         viewModelScope.launch(coroutineLaunchContext.io) {
             when (
                 val output =
-                    runAuthenticatedOperation(this@OtpViewModel) {
+                    runAuthenticatedOperation {
                         metadataPrivateKeysHelperInteractor.trustNewKey(model)
                     }
             ) {
@@ -270,26 +266,19 @@ internal class OtpViewModel(
     }
 
     private suspend fun deleteStandaloneTotpResource(otpResource: ResourceModel) {
-        val resourceCommonActionsInteractor =
-            get<ResourceCommonActionsInteractor> {
-                parametersOf(otpResource, needSessionRefreshFlow, sessionRefreshedFlow)
-            }
+        val resourceCommonActionsInteractor = get<ResourceCommonActionsInteractor> { parametersOf(otpResource) }
         performCommonResourceAction(
             action = { resourceCommonActionsInteractor.deleteResource() },
             doOnFailure = { emitSideEffect(ShowErrorSnackbar(FAILED_TO_DELETE_RESOURCE)) },
             doOnSuccess = {
                 emitSideEffect(ShowSuccessSnackbar(RESOURCE_DELETED))
-                fullDataRefreshExecutor.performFullDataRefresh()
+                emitSideEffect(InitiateDataRefresh)
             },
         )
     }
 
     private suspend fun downgradeToPasswordAndDescriptionResource(otpResource: ResourceModel) {
-        val resourceUpdateActionInteractor =
-            get<ResourceUpdateActionsInteractor> {
-                parametersOf(otpResource, needSessionRefreshFlow, sessionRefreshedFlow)
-            }
-
+        val resourceUpdateActionInteractor = get<ResourceUpdateActionsInteractor> { parametersOf(otpResource) }
         performResourceUpdateAction(
             action = {
                 resourceUpdateActionInteractor.updateGenericResource(
@@ -301,7 +290,7 @@ internal class OtpViewModel(
             doOnFailure = { emitSideEffect(ShowErrorSnackbar(ERROR)) },
             doOnSuccess = {
                 emitSideEffect(ShowSuccessSnackbar(RESOURCE_DELETED))
-                fullDataRefreshExecutor.performFullDataRefresh()
+                emitSideEffect(InitiateDataRefresh)
             },
             doOnSchemaValidationFailure = {
                 when (it) {
@@ -353,18 +342,18 @@ internal class OtpViewModel(
 
     private fun processResourceFormResult(intent: ResourceFormReturned) {
         if (intent.resourceCreated) {
-            fullDataRefreshExecutor.performFullDataRefresh()
+            emitSideEffect(InitiateDataRefresh)
             emitSideEffect(ShowSuccessSnackbar(RESOURCE_CREATED, intent.resourceName))
         }
         if (intent.resourceEdited) {
-            fullDataRefreshExecutor.performFullDataRefresh()
+            emitSideEffect(InitiateDataRefresh)
             emitSideEffect(ShowSuccessSnackbar(RESOURCE_EDITED))
         }
     }
 
     private fun processOtpScanResult(intent: OtpQRScanReturned) {
         if (intent.otpCreated) {
-            fullDataRefreshExecutor.performFullDataRefresh()
+            emitSideEffect(InitiateDataRefresh)
         } else {
             if (intent.otpManualCreationChosen) {
                 emitSideEffect(NavigateToCreateResourceForm(leadingContentType = TOTP))
@@ -402,10 +391,7 @@ internal class OtpViewModel(
                 copy(otps = otps.refreshingOnly(otpItemWrapper.resource.resourceId))
             }
 
-            val secretPropertiesActionsInteractor =
-                get<SecretPropertiesActionsInteractor> {
-                    parametersOf(otpItemWrapper.resource, needSessionRefreshFlow, sessionRefreshedFlow)
-                }
+            val secretPropertiesActionsInteractor = get<SecretPropertiesActionsInteractor> { parametersOf(otpItemWrapper.resource) }
 
             performSecretPropertyAction(
                 action = { secretPropertiesActionsInteractor.provideOtp() },
@@ -485,12 +471,19 @@ internal class OtpViewModel(
     }
 
     private suspend fun synchronizeWithDataRefresh() {
-        fullDataRefreshExecutor.dataRefreshStatusFlow.collect {
+        dataRefreshTrackingFlow.dataRefreshStatusFlow.collect {
             when (it) {
                 InProgress -> updateViewState { copy(isRefreshing = true) }
-                is Finished -> {
+                FinishedWithFailure -> {
+                    emitSideEffect(ShowErrorSnackbar(FAILED_TO_REFRESH_DATA))
+                    updateViewState { copy(isRefreshing = false) }
+                }
+                FinishedWithSuccess -> {
                     val otps = getOtpResources()
-                    updateViewState { copy(isRefreshing = false, otps = otps) }
+                    updateViewState { copy(otps = otps, isRefreshing = false) }
+                }
+                NotCompleted -> {
+                    // do nothing
                 }
             }
         }

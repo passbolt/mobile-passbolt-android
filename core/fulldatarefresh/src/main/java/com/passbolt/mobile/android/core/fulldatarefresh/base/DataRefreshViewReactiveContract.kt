@@ -29,6 +29,8 @@ interface DataRefreshViewReactiveContract {
         fun hideRefreshProgress()
 
         fun showRefreshProgress()
+
+        fun performFullDataRefresh()
     }
 
     interface Presenter<T : View> : BaseAuthenticatedContract.Presenter<T> {
@@ -36,10 +38,12 @@ interface DataRefreshViewReactiveContract {
 
         fun pause()
 
-        fun refreshStartAction()
+        fun refreshInProgressAction()
 
         fun refreshSuccessAction()
 
         fun refreshFailureAction()
+
+        fun performFullDataRefresh()
     }
 }

@@ -78,7 +78,7 @@ class TransferAccountPresenter(
     private suspend fun createTransfer(parameters: CreateTransferInputParametersGenerator.Output.Parameters) {
         when (
             val response =
-                runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+                runAuthenticatedOperation {
                     createTransferUseCase.execute(
                         CreateTransferUseCase.Input(
                             parameters.totalPagesCount,
@@ -139,7 +139,7 @@ class TransferAccountPresenter(
                 delay(GET_TRANSFER_LOOP_INTERVAL_DELAY_MILLIS)
                 when (
                     val response =
-                        runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+                        runAuthenticatedOperation {
                             viewTransferUseCase.execute(ViewTransferUseCase.Input(accessToken, mfaCookie, transferId))
                         }
                 ) {

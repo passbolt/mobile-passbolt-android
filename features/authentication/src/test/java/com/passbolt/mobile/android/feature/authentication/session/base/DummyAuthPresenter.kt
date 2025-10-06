@@ -13,7 +13,7 @@ class DummyAuthPresenter(
     override var view: DummyAuthContract.View? = null
 
     override suspend fun authenticatedOperation() {
-        runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+        runAuthenticatedOperation {
             object : AuthenticatedUseCaseOutput {
                 override val authenticationState = AuthenticationState.Authenticated
             }

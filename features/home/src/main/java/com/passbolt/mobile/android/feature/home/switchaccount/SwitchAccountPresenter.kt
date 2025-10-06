@@ -1,10 +1,10 @@
 package com.passbolt.mobile.android.feature.home.switchaccount
 
+import com.passbolt.mobile.android.common.datarefresh.DataRefreshTrackingFlow
 import com.passbolt.mobile.android.common.usecase.UserIdInput
 import com.passbolt.mobile.android.core.accounts.usecase.accounts.GetAllAccountsDataUseCase
 import com.passbolt.mobile.android.core.accounts.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.core.accounts.usecase.selectedaccount.SaveSelectedAccountUseCase
-import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
@@ -43,7 +43,7 @@ class SwitchAccountPresenter(
     private val switchAccountModelMapper: SwitchAccountModelMapper,
     private val signOutUseCase: SignOutUseCase,
     private val saveSelectedAccountUseCase: SaveSelectedAccountUseCase,
-    private val fullDataRefreshExecutor: FullDataRefreshExecutor,
+    private val dataRefreshTrackingFlow: DataRefreshTrackingFlow,
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
     coroutineLaunchContext: CoroutineLaunchContext,
 ) : SwitchAccountContract.Presenter {
@@ -79,7 +79,7 @@ class SwitchAccountPresenter(
     override fun signOutClick() {
         scope.launch {
             view?.showProgress()
-            fullDataRefreshExecutor.awaitFinish()
+            dataRefreshTrackingFlow.awaitIdle()
             view?.hideProgress()
             view?.showSignOutDialog()
         }

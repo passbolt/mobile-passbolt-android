@@ -137,17 +137,9 @@ class HomePresenter(
     private val resourcePropertiesActionsInteractor: ResourcePropertiesActionsInteractor
         get() = get { parametersOf(requireNotNull(currentMoreMenuResource)) }
     private val secretPropertiesActionsInteractor: SecretPropertiesActionsInteractor
-        get() =
-            get {
-                parametersOf(requireNotNull(currentMoreMenuResource), needSessionRefreshFlow, sessionRefreshedFlow)
-            }
+        get() = get { parametersOf(requireNotNull(currentMoreMenuResource)) }
     private val resourceCommonActionsInteractor: ResourceCommonActionsInteractor
-        get() =
-            get {
-                parametersOf(requireNotNull(currentMoreMenuResource), needSessionRefreshFlow, sessionRefreshedFlow)
-            }
-
-    private var refreshInProgress: Boolean = true
+        get() = get { parametersOf(requireNotNull(currentMoreMenuResource)) }
 
     override fun argsRetrieved(
         showSuggestedModel: ShowSuggestedModel,
@@ -247,13 +239,12 @@ class HomePresenter(
         }
     }
 
-    override fun refreshStartAction() {
+    override fun refreshInProgressAction() {
         view?.hideCreateButton()
     }
 
     override fun refreshSuccessAction() {
         coroutineScope.launch {
-            refreshInProgress = false
             showActiveHomeView()
         }
     }
@@ -663,14 +654,6 @@ class HomePresenter(
         searchableMatcher.matches(it, currentSearchText)
     }
 
-    override fun refreshSwipe() {
-        refreshInProgress = true
-        view?.apply {
-            hideCreateButton()
-            fullDataRefreshExecutor.performFullDataRefresh()
-        }
-    }
-
     override fun resourceMoreClick(resourceModel: ResourceModel) {
         currentMoreMenuResource = resourceModel
         view?.navigateToMore(resourceModel.resourceId, resourceModel.metadataJsonModel.name)
@@ -739,7 +722,7 @@ class HomePresenter(
     }
 
     override fun searchAvatarClick() {
-        if (refreshInProgress) {
+        if (dataRefreshTrackingFlow.isInProgress()) {
             view?.showPleaseWaitForDataRefresh()
         } else {
             view?.navigateToSwitchAccount()
@@ -790,8 +773,7 @@ class HomePresenter(
     }
 
     private fun initRefresh() {
-        refreshInProgress = true
-        fullDataRefreshExecutor.performFullDataRefresh()
+        view?.performFullDataRefresh()
     }
 
     override fun menuEditClick() {

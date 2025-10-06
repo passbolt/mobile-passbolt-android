@@ -4,7 +4,6 @@ import com.passbolt.mobile.android.common.coroutinetimer.infiniteTimer
 import com.passbolt.mobile.android.common.extension.isBeforeNow
 import com.passbolt.mobile.android.common.types.ClipboardLabel
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalFolderLocationUseCase
-import com.passbolt.mobile.android.core.fulldatarefresh.DataRefreshStatus
 import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReactivePresenter
 import com.passbolt.mobile.android.core.idlingresource.ResourceDetailActionIdlingResource
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
@@ -44,7 +43,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
@@ -115,15 +113,9 @@ class ResourceDetailsPresenter(
     private val resourcePropertiesActionsInteractor: ResourcePropertiesActionsInteractor
         get() = get { parametersOf(resourceModel) }
     private val secretPropertiesActionsInteractor: SecretPropertiesActionsInteractor
-        get() =
-            get {
-                parametersOf(resourceModel, needSessionRefreshFlow, sessionRefreshedFlow)
-            }
+        get() = get { parametersOf(resourceModel) }
     private val resourceCommonActionsInteractor: ResourceCommonActionsInteractor
-        get() =
-            get {
-                parametersOf(resourceModel, needSessionRefreshFlow, sessionRefreshedFlow)
-            }
+        get() = get { parametersOf(resourceModel) }
 
     private val visibleCustomFields = mutableMapOf<UUID, Boolean>()
 
@@ -154,8 +146,8 @@ class ResourceDetailsPresenter(
             getAndDisplayResource()
 
             // wait for full refresh to finish to perform db operations
-            if (fullDataRefreshExecutor.dataRefreshStatusFlow.first() is DataRefreshStatus.InProgress) {
-                fullDataRefreshExecutor.awaitFinish()
+            if (dataRefreshTrackingFlow.isInProgress()) {
+                dataRefreshTrackingFlow.awaitIdle()
 
                 // refresh resource data based on latest db state
                 resourceModel =

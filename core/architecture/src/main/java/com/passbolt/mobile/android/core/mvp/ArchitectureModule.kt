@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.core.mvp
 
 import com.passbolt.mobile.android.core.mvp.authentication.MfaProvidersHandler
+import com.passbolt.mobile.android.core.mvp.authentication.SessionRefreshTrackingFlow
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.AppCoroutineContext
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import org.koin.core.module.dsl.factoryOf
@@ -34,4 +35,5 @@ val architectureModule =
     module {
         factoryOf(::MfaProvidersHandler)
         singleOf(::AppCoroutineContext) bind CoroutineLaunchContext::class
+        singleOf(::SessionRefreshTrackingFlow)
     }

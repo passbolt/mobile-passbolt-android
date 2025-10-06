@@ -1,9 +1,7 @@
 package com.passbolt.mobile.android.feature.main.mainscreen
 
-import com.passbolt.mobile.android.core.fulldatarefresh.DataRefreshStatus.Finished
-import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
+import com.passbolt.mobile.android.common.datarefresh.DataRefreshTrackingFlow
 import com.passbolt.mobile.android.core.inappreview.InAppReviewInteractor
-import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.feature.main.mainscreen.bottomnavigation.MainBottomNavigationModel
 import com.passbolt.mobile.android.feature.main.mainscreen.encouragements.EncouragementsInteractor
@@ -11,23 +9,21 @@ import com.passbolt.mobile.android.featureflags.usecase.GetFeatureFlagsUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class MainPresenter(
     private val inAppReviewInteractor: InAppReviewInteractor,
-    private val fullDataRefreshExecutor: FullDataRefreshExecutor,
+    private val dataRefreshTrackingFlow: DataRefreshTrackingFlow,
     private val getFeatureFlagsUseCase: GetFeatureFlagsUseCase,
     private val encouragementsInteractor: EncouragementsInteractor,
     coroutineLaunchContext: CoroutineLaunchContext,
-) : BaseAuthenticatedPresenter<MainContract.View>(coroutineLaunchContext),
-    MainContract.Presenter {
+) : MainContract.Presenter {
     override var view: MainContract.View? = null
     private val job = SupervisorJob()
     private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
 
     override fun attach(view: MainContract.View) {
-        super<BaseAuthenticatedPresenter>.attach(view)
+        super.attach(view)
         setupBottomNavigation()
         performFullDataRefresh()
         if (encouragementsInteractor.shouldShowChromeNativeAutofillEncouragement()) {
@@ -50,11 +46,10 @@ class MainPresenter(
     }
 
     override fun performFullDataRefresh() {
-        fullDataRefreshExecutor.performFullDataRefresh()
+        view?.performFullDataRefresh()
         scope.launch {
-            fullDataRefreshExecutor.dataRefreshStatusFlow.collectLatest {
-                if (it is Finished) setupBottomNavigation()
-            }
+            dataRefreshTrackingFlow.awaitIdle()
+            setupBottomNavigation()
         }
     }
 
@@ -64,6 +59,6 @@ class MainPresenter(
 
     override fun detach() {
         scope.coroutineContext.cancelChildren()
-        super<BaseAuthenticatedPresenter>.detach()
+        super.detach()
     }
 }

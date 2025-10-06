@@ -46,6 +46,7 @@ import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.extension.setSearchEndIconWithListener
 import com.passbolt.mobile.android.core.extension.showSnackbar
 import com.passbolt.mobile.android.core.extension.visible
+import com.passbolt.mobile.android.core.fulldatarefresh.service.DataRefreshService
 import com.passbolt.mobile.android.core.resources.resourceicon.ResourceIconProvider
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
 import com.passbolt.mobile.android.feature.resourcepicker.databinding.FragmentResourcePickerBinding
@@ -297,6 +298,10 @@ class ResourcePickerFragment :
             ),
         )
         findNavController().popBackStack()
+    }
+
+    override fun performFullDataRefresh() {
+        DataRefreshService.start(requireContext())
     }
 
     companion object {

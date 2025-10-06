@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.common
 
 import com.passbolt.mobile.android.common.coroutinetimer.CoroutineTimerFactory
 import com.passbolt.mobile.android.common.coroutinetimer.TimerFactory
+import com.passbolt.mobile.android.common.datarefresh.DataRefreshTrackingFlow
 import com.passbolt.mobile.android.common.hash.MessageDigestHash
 import com.passbolt.mobile.android.common.time.AndroidTimeProvider
 import com.passbolt.mobile.android.common.time.TimeProvider
@@ -45,4 +46,5 @@ val commonModule =
         singleOf(::FetchFileAsStringUseCase)
         singleOf(::MessageDigestHash)
         singleOf(::CoroutineTimerFactory) bind TimerFactory::class
+        singleOf(::DataRefreshTrackingFlow)
     }

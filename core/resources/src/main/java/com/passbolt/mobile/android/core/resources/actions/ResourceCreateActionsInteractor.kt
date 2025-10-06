@@ -26,7 +26,6 @@ package com.passbolt.mobile.android.core.resources.actions
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalFolderPermissionsUseCase
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalParentFolderPermissionsToApplyToNewItemUseCase
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.ItemIdResourceId
-import com.passbolt.mobile.android.core.mvp.authentication.UnauthenticatedReason
 import com.passbolt.mobile.android.core.resources.actions.ResourceCreateActionResult.CannotCreateWithCurrentConfig
 import com.passbolt.mobile.android.core.resources.actions.ResourceCreateActionResult.CryptoFailure
 import com.passbolt.mobile.android.core.resources.actions.ResourceCreateActionResult.Failure
@@ -64,16 +63,12 @@ import com.passbolt.mobile.android.ui.PermissionModelUi
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.TrustedKeyDeletedModel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.single
 import org.koin.core.component.KoinComponent
 import timber.log.Timber
 
 class ResourceCreateActionsInteractor(
-    private val needSessionRefreshFlow: MutableStateFlow<UnauthenticatedReason?>,
-    private val sessionRefreshedFlow: StateFlow<Unit?>,
     private val createResourceInteractor: CreateResourceInteractor,
     private val addLocalResourceUseCase: AddLocalResourceUseCase,
     private val addLocalResourcePermissionsUseCase: AddLocalResourcePermissionsUseCase,
@@ -158,7 +153,7 @@ class ResourceCreateActionsInteractor(
         return when (metadataKeyType) {
             MetadataKeyTypeModel.SHARED -> {
                 val verifyOutput =
-                    runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+                    runAuthenticatedOperation {
                         metadataPrivateKeysInteractor.verifyMetadataPrivateKey()
                     }
 
@@ -239,7 +234,7 @@ class ResourceCreateActionsInteractor(
     private suspend fun runCreateOperation(operation: suspend () -> CreateResourceInteractor.Output): ResourceCreateActionResult =
         when (
             val operationResult =
-                runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+                runAuthenticatedOperation {
                     operation()
                 }
         ) {
@@ -292,7 +287,7 @@ class ResourceCreateActionsInteractor(
     ): ResourceCreateActionResult =
         when (
             val shareResult =
-                runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+                runAuthenticatedOperation {
                     resourceShareInteractor.simulateAndShareResource(resource.resourceId, newPermissionsToApply)
                 }
         ) {

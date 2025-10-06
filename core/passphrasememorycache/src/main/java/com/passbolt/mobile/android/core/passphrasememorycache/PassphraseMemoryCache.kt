@@ -4,6 +4,7 @@ import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import com.passbolt.mobile.android.common.coroutinetimer.timerFlow
+import com.passbolt.mobile.android.common.datarefresh.DataRefreshTrackingFlow
 import com.passbolt.mobile.android.common.extension.erase
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import kotlinx.coroutines.CoroutineScope
@@ -39,6 +40,7 @@ import timber.log.Timber
 class PassphraseMemoryCache(
     coroutineLaunchContext: CoroutineLaunchContext,
     private val lifecycleOwner: LifecycleOwner,
+    private val dataRefreshTrackingFlow: DataRefreshTrackingFlow,
 ) : DefaultLifecycleObserver {
     private var value: PotentialPassphrase = PotentialPassphrase.PassphraseNotPresent()
 
@@ -77,7 +79,7 @@ class PassphraseMemoryCache(
         }
         timerScope.launch {
             timerFlow.collect { currentTimerMillis = it * TIMER_TICK_MILLIS }
-            clear()
+            scheduleClear()
         }
     }
 
@@ -95,9 +97,17 @@ class PassphraseMemoryCache(
         Timber.d("[Session] Passphrase cache cleared")
     }
 
+    fun scheduleClear() {
+        lifecycleObserverScope.launch {
+            Timber.d("[Session] Scheduling passphrase cache clear")
+            dataRefreshTrackingFlow.awaitIdle()
+            clear()
+        }
+    }
+
     override fun onStop(owner: LifecycleOwner) {
         Timber.d("[Session] App went background")
-        clear()
+        scheduleClear()
     }
 
     companion object {
