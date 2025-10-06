@@ -584,6 +584,13 @@ class ResourceDetailsFragment :
         )
     }
 
+    override fun showCannotPerformThisActionMessage() {
+        showSnackbar(
+            LocalizationR.string.common_lack_shared_key_access,
+            backgroundColor = CoreUiR.color.red,
+        )
+    }
+
     override fun showDeleteConfirmationDialog() {
         confirmResourceDeletionAlertDialog(requireContext()) {
             presenter.deleteResourceConfirmed()

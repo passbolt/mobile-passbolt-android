@@ -17,6 +17,8 @@ import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesUs
 import com.passbolt.mobile.android.entity.home.HomeDisplayView
 import com.passbolt.mobile.android.feature.home.screen.HomeContract
 import com.passbolt.mobile.android.feature.home.screen.ShowSuggestedModel
+import com.passbolt.mobile.android.metadata.usecase.CanCreateResourceUseCase
+import com.passbolt.mobile.android.metadata.usecase.CanShareResourceUseCase
 import com.passbolt.mobile.android.ui.DefaultFilterModel
 import com.passbolt.mobile.android.ui.Folder
 import com.passbolt.mobile.android.ui.FolderModel
@@ -94,6 +96,14 @@ class HomePresenterTest : KoinTest {
                     ),
                 ),
             )
+        }
+        mockCanCreateResourceUseCase.stub {
+            onBlocking { execute(any()) } doReturn
+                CanCreateResourceUseCase.Output(canCreateResource = true)
+        }
+        mockCanShareResourceUseCase.stub {
+            onBlocking { execute(any()) } doReturn
+                CanShareResourceUseCase.Output(canShareResource = true)
         }
     }
 
@@ -581,6 +591,63 @@ class HomePresenterTest : KoinTest {
         )
 
         verify(view).showCloseButton()
+    }
+
+    @Test
+    fun `error should be shown when sharing not possible`() {
+        whenever(mockGetHomeDisplayPrefsUseCase.execute(any())).doReturn(
+            GetHomeDisplayViewPrefsUseCase.Output(
+                lastUsedHomeView = HomeDisplayView.ALL_ITEMS,
+                userSetHomeView = DefaultFilterModel.FOLDERS,
+            ),
+        )
+        mockCanShareResourceUseCase.stub {
+            onBlocking { execute(any()) } doReturn
+                CanShareResourceUseCase.Output(canShareResource = false)
+        }
+        mockAccountData(null)
+
+        presenter.attach(view)
+        presenter.argsRetrieved(
+            showSuggestedModel = ShowSuggestedModel.DoNotShow,
+            homeDisplayView = null,
+            hasPreviousEntry = false,
+            shouldShowCloseButton = false,
+            shouldShowResourceMoreMenu = false,
+        )
+        presenter.resume(view)
+        presenter.menuShareClick()
+
+        verify(view).showCannotPerformThisActionMessage()
+    }
+
+    @Test
+    fun `error should be shown when creation not possible`() {
+        whenever(mockGetHomeDisplayPrefsUseCase.execute(any())).doReturn(
+            GetHomeDisplayViewPrefsUseCase.Output(
+                lastUsedHomeView = HomeDisplayView.ALL_ITEMS,
+                userSetHomeView = DefaultFilterModel.FOLDERS,
+            ),
+        )
+        mockCanCreateResourceUseCase.stub {
+            onBlocking { execute(any()) } doReturn
+                CanCreateResourceUseCase.Output(canCreateResource = false)
+        }
+        mockAccountData(null)
+
+        presenter.attach(view)
+        presenter.argsRetrieved(
+            showSuggestedModel = ShowSuggestedModel.DoNotShow,
+            homeDisplayView = null,
+            hasPreviousEntry = false,
+            shouldShowCloseButton = false,
+            shouldShowResourceMoreMenu = false,
+        )
+        presenter.resume(view)
+        presenter.createTotpClick()
+        presenter.createResourceClick()
+
+        verify(view, times(2)).showCannotPerformThisActionMessage()
     }
 
     private fun mockResourcesList() =

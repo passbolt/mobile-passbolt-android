@@ -32,6 +32,7 @@ import com.passbolt.mobile.android.mappers.OtpModelMapper
 import com.passbolt.mobile.android.mappers.PermissionsModelMapper
 import com.passbolt.mobile.android.mappers.ResourceFormMapper
 import com.passbolt.mobile.android.mappers.UsersModelMapper
+import com.passbolt.mobile.android.metadata.usecase.CanShareResourceUseCase
 import com.passbolt.mobile.android.ui.ResourceModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.core.module.dsl.factoryOf
@@ -55,6 +56,7 @@ internal val mockResourceCommonActionsInteractor = mock<ResourceCommonActionsInt
 internal val mockResourceUpdateActionsInteractor = mock<ResourceUpdateActionsInteractor>()
 internal val mockGetRbacRulesUseCase = mock<GetRbacRulesUseCase>()
 internal val mockResourceTypeIdToSlugMappingProvider = mock<ResourceTypeIdToSlugMappingProvider>()
+internal val mockCanShareResourceUseCase = mock<CanShareResourceUseCase>()
 
 @ExperimentalCoroutinesApi
 internal val testResourceDetailsModule =
@@ -81,6 +83,7 @@ internal val testResourceDetailsModule =
                 resourceDetailActionIdlingResource = mock(),
                 resourceFormMapper = get(),
                 idToSlugMappingProvider = mockResourceTypeIdToSlugMappingProvider,
+                canShareResourceUse = mockCanShareResourceUseCase,
             )
         }
         factory { (resource: ResourceModel) ->

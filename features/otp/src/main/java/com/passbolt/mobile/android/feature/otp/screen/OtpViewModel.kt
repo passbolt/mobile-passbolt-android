@@ -86,6 +86,7 @@ import com.passbolt.mobile.android.feature.otp.screen.SnackbarErrorType.FAILED_T
 import com.passbolt.mobile.android.feature.otp.screen.SnackbarErrorType.FAILED_TO_TRUST_METADATA_KEY
 import com.passbolt.mobile.android.feature.otp.screen.SnackbarErrorType.FAILED_TO_VERIFY_METADATA_KEYS
 import com.passbolt.mobile.android.feature.otp.screen.SnackbarErrorType.FETCH_FAILURE
+import com.passbolt.mobile.android.feature.otp.screen.SnackbarErrorType.NO_SHARED_KEY_ACCESS
 import com.passbolt.mobile.android.feature.otp.screen.SnackbarErrorType.RESOURCE_SCHEMA_INVALID
 import com.passbolt.mobile.android.feature.otp.screen.SnackbarErrorType.SECRET_SCHEMA_INVALID
 import com.passbolt.mobile.android.feature.otp.screen.SnackbarSuccessType.METADATA_KEY_IS_TRUSTED
@@ -95,6 +96,7 @@ import com.passbolt.mobile.android.feature.otp.screen.SnackbarSuccessType.RESOUR
 import com.passbolt.mobile.android.jsonmodel.delegates.TotpSecret
 import com.passbolt.mobile.android.mappers.OtpModelMapper
 import com.passbolt.mobile.android.metadata.interactor.MetadataPrivateKeysHelperInteractor
+import com.passbolt.mobile.android.metadata.usecase.CanCreateResourceUseCase
 import com.passbolt.mobile.android.serializers.jsonschema.SchemaEntity.RESOURCE
 import com.passbolt.mobile.android.serializers.jsonschema.SchemaEntity.SECRET
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType
@@ -135,6 +137,7 @@ internal class OtpViewModel(
     private val idToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider,
     private val metadataPrivateKeysHelperInteractor: MetadataPrivateKeysHelperInteractor,
     private val timerFactory: TimerFactory,
+    private val canCreateResourceUse: CanCreateResourceUseCase,
 ) : AuthenticatedViewModel<OtpState, OtpSideEffect>(OtpState()),
     KoinComponent {
     init {
@@ -149,6 +152,16 @@ internal class OtpViewModel(
         }
     }
 
+    private fun onCanCreateResource(function: () -> Unit) {
+        viewModelScope.launch {
+            if (canCreateResourceUse.execute(CanCreateResourceUseCase.Input(folderId = null)).canCreateResource) {
+                function()
+            } else {
+                emitSideEffect(ShowErrorSnackbar(NO_SHARED_KEY_ACCESS))
+            }
+        }
+    }
+
     // TODO refactor after feature completion
     @Suppress("CyclomaticComplexMethod")
     fun onIntent(intent: OtpIntent) {
@@ -159,8 +172,14 @@ internal class OtpViewModel(
             is RevealOtp -> otpClick(intent.otpItemWrapper)
             is OpenOtpMoreMenu -> updateViewState { copy(showOtpMoreBottomSheet = true, moreMenuResource = intent.otpItemWrapper) }
             is CloseOtpMoreMenu -> updateViewState { copy(showOtpMoreBottomSheet = false) }
-            CreatePassword -> emitSideEffect(NavigateToCreateResourceForm(leadingContentType = PASSWORD))
-            CreateTotp -> emitSideEffect(NavigateToCreateTotp)
+            CreatePassword -> {
+                updateViewState { copy(showCreateResourceBottomSheet = false) }
+                onCanCreateResource { emitSideEffect(NavigateToCreateResourceForm(leadingContentType = PASSWORD)) }
+            }
+            CreateTotp -> {
+                updateViewState { copy(showCreateResourceBottomSheet = false) }
+                onCanCreateResource { emitSideEffect(NavigateToCreateTotp) }
+            }
             is OtpQRScanReturned -> processOtpScanResult(intent)
             is ResourceFormReturned -> processResourceFormResult(intent)
             is CopyOtp -> copyTotp(intent.otpItemWrapper)

@@ -11,6 +11,8 @@ import com.passbolt.mobile.android.metadata.sessionkeys.SessionKeysBundleMerger
 import com.passbolt.mobile.android.metadata.sessionkeys.SessionKeysBundleProcessor
 import com.passbolt.mobile.android.metadata.sessionkeys.SessionKeysBundleValidator
 import com.passbolt.mobile.android.metadata.sessionkeys.SessionKeysMemoryCache
+import com.passbolt.mobile.android.metadata.usecase.CanCreateResourceUseCase
+import com.passbolt.mobile.android.metadata.usecase.CanShareResourceUseCase
 import com.passbolt.mobile.android.metadata.usecase.DeleteTrustedMetadataKeyUseCase
 import com.passbolt.mobile.android.metadata.usecase.FetchMetadataKeysSettingsUseCase
 import com.passbolt.mobile.android.metadata.usecase.FetchMetadataKeysUseCase
@@ -99,4 +101,6 @@ val metadataModule =
         singleOf(::DeleteTrustedMetadataKeyUseCase)
         singleOf(::MetadataPrivateKeysInteractor)
         singleOf(::MetadataPrivateKeysHelperInteractor)
+        singleOf(::CanCreateResourceUseCase)
+        singleOf(::CanShareResourceUseCase)
     }

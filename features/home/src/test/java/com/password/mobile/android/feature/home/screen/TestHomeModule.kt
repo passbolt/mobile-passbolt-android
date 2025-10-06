@@ -41,6 +41,8 @@ import com.passbolt.mobile.android.jsonmodel.JSON_MODEL_GSON
 import com.passbolt.mobile.android.jsonmodel.jsonpathops.JsonPathJsonPathOps
 import com.passbolt.mobile.android.jsonmodel.jsonpathops.JsonPathsOps
 import com.passbolt.mobile.android.mappers.HomeDisplayViewMapper
+import com.passbolt.mobile.android.metadata.usecase.CanCreateResourceUseCase
+import com.passbolt.mobile.android.metadata.usecase.CanShareResourceUseCase
 import com.passbolt.mobile.android.resourcemoremenu.usecase.CreateResourceMoreMenuModelUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.core.module.dsl.factoryOf
@@ -75,6 +77,8 @@ internal val mockResourceCommonActionsInteractor = mock<ResourceCommonActionsInt
 internal val mockResourceUpdateActionsInteractor = mock<ResourceUpdateActionsInteractor>()
 internal val mockGetRbacRulesUseCase = mock<GetRbacRulesUseCase>()
 internal val mockIdToSlugMappingProvider = mock<ResourceTypeIdToSlugMappingProvider>()
+internal val mockCanCreateResourceUseCase = mock<CanCreateResourceUseCase>()
+internal val mockCanShareResourceUseCase = mock<CanShareResourceUseCase>()
 
 @ExperimentalCoroutinesApi
 val testHomeModule =
@@ -110,6 +114,8 @@ val testHomeModule =
                 deleteResourceIdlingResource = get(),
                 totpParametersProvider = mockTotpParametersProvider,
                 getRbacRulesUseCase = mockGetRbacRulesUseCase,
+                canCreateResourceUse = mockCanCreateResourceUseCase,
+                canShareResourceUse = mockCanShareResourceUseCase,
             )
         }
         factory { mockResourceCommonActionsInteractor }

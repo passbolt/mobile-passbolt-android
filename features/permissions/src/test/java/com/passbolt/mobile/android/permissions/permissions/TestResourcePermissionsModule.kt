@@ -21,6 +21,7 @@ import com.passbolt.mobile.android.jsonmodel.JSON_MODEL_GSON
 import com.passbolt.mobile.android.jsonmodel.jsonpathops.JsonPathJsonPathOps
 import com.passbolt.mobile.android.jsonmodel.jsonpathops.JsonPathsOps
 import com.passbolt.mobile.android.metadata.interactor.MetadataPrivateKeysHelperInteractor
+import com.passbolt.mobile.android.metadata.usecase.CanShareResourceUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier.named
@@ -61,6 +62,7 @@ internal val mockGetLocalFolderUseCase = mock<GetLocalFolderDetailsUseCase>()
 internal val mockResourceTypeIdToSlugMappingProvider = mock<ResourceTypeIdToSlugMappingProvider>()
 internal val mockMetadataPrivateKeysHelperInteractor = mock<MetadataPrivateKeysHelperInteractor>()
 internal val mockResourceUpdateActionsInteractor = mock<ResourceUpdateActionsInteractor>()
+internal val mockCanShareResourceUseCase = mock<CanShareResourceUseCase>()
 
 @ExperimentalCoroutinesApi
 internal val testResourcePermissionsModule =
@@ -79,6 +81,7 @@ internal val testResourcePermissionsModule =
                 coroutineLaunchContext = get(),
                 resourceTypeIdToSlugMappingProvider = mockResourceTypeIdToSlugMappingProvider,
                 metadataPrivateKeysHelperInteractor = mockMetadataPrivateKeysHelperInteractor,
+                canShareResourceUseCase = mockCanShareResourceUseCase,
             )
         }
         single(named(JSON_MODEL_GSON)) { Gson() }

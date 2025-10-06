@@ -611,6 +611,14 @@ class HomeFragment :
         )
     }
 
+    override fun showCannotPerformThisActionMessage() {
+        showSnackbar(
+            LocalizationR.string.common_lack_shared_key_access,
+            anchorView = snackbarAnchorView,
+            backgroundColor = CoreUiR.color.red,
+        )
+    }
+
     override fun showResourceDeletedSnackbar(name: String) {
         showSnackbar(
             messageResId = LocalizationR.string.common_message_resource_deleted,

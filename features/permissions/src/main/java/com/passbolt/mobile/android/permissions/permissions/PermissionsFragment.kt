@@ -38,7 +38,6 @@ import com.passbolt.mobile.android.ui.PermissionModelUi
 import com.passbolt.mobile.android.ui.TrustedKeyDeletedModel
 import org.koin.android.ext.android.inject
 import org.koin.core.qualifier.named
-import kotlin.jvm.java
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
@@ -446,6 +445,14 @@ class PermissionsFragment :
         showSnackbar(
             LocalizationR.string.common_encryption_failure,
             anchorView = snackbarAnchorView,
+            backgroundColor = R.color.red,
+        )
+    }
+
+    override fun showCannotPerformThisActionMessage() {
+        showSnackbar(
+            LocalizationR.string.common_lack_shared_key_access,
+            anchorView = requiredBinding.actionButtonLayout,
             backgroundColor = R.color.red,
         )
     }

@@ -51,6 +51,7 @@ fun Module.detailsModule() {
                 resourceDetailActionIdlingResource = get(),
                 resourceFormMapper = get(),
                 coroutineLaunchContext = get(),
+                canShareResourceUse = get(),
             )
         }
         scoped<ItemAdapter<GroupItem>>(named(GROUP_ITEM_ADAPTER)) {

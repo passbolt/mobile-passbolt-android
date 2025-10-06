@@ -72,6 +72,8 @@ fun Module.homeModule() {
                 deleteResourceIdlingResource = get(),
                 totpParametersProvider = get(),
                 getRbacRulesUseCase = get(),
+                canCreateResourceUse = get(),
+                canShareResourceUse = get(),
             )
         }
         declareHomeListAdapters()

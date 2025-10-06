@@ -62,6 +62,8 @@ import com.passbolt.mobile.android.core.tags.usecase.db.GetLocalTagsUseCase
 import com.passbolt.mobile.android.core.ui.compose.search.SearchInputEndIconMode
 import com.passbolt.mobile.android.feature.home.screen.model.HeaderSectionConfiguration
 import com.passbolt.mobile.android.mappers.HomeDisplayViewMapper
+import com.passbolt.mobile.android.metadata.usecase.CanCreateResourceUseCase
+import com.passbolt.mobile.android.metadata.usecase.CanShareResourceUseCase
 import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.homeSlugs
 import com.passbolt.mobile.android.ui.Folder
 import com.passbolt.mobile.android.ui.FolderMoreMenuModel
@@ -106,6 +108,8 @@ class HomePresenter(
     private val deleteResourceIdlingResource: DeleteResourceIdlingResource,
     private val totpParametersProvider: TotpParametersProvider,
     private val getRbacRulesUseCase: GetRbacRulesUseCase,
+    private val canCreateResourceUse: CanCreateResourceUseCase,
+    private val canShareResourceUse: CanShareResourceUseCase,
 ) : DataRefreshViewReactivePresenter<HomeContract.View>(coroutineLaunchContext),
     HomeContract.Presenter,
     KoinComponent {
@@ -801,9 +805,11 @@ class HomePresenter(
     }
 
     override fun menuShareClick() {
-        view?.navigateToShare(
-            requireNotNull(currentMoreMenuResource),
-        )
+        onCanShareResource {
+            view?.navigateToShare(
+                requireNotNull(currentMoreMenuResource),
+            )
+        }
     }
 
     override fun allItemsClick() {
@@ -867,17 +873,42 @@ class HomePresenter(
     }
 
     override fun createResourceClick() {
-        view?.navigateToCreateResource(
-            when (val currentHomeView = homeView) {
-                is HomeDisplayViewModel.Folders -> currentHomeView.activeFolder.folderId
-                else -> null
-            },
-        )
+        onCanCreateResource {
+            view?.navigateToCreateResource(
+                when (val currentHomeView = homeView) {
+                    is HomeDisplayViewModel.Folders -> currentHomeView.activeFolder.folderId
+                    else -> null
+                },
+            )
+        }
     }
 
     override fun createTotpClick() {
-        val parentFolderId = (homeView as? HomeDisplayViewModel.Folders)?.activeFolder?.folderId
-        view?.navigateToScanTotp(parentFolderId)
+        onCanCreateResource {
+            val parentFolderId = (homeView as? HomeDisplayViewModel.Folders)?.activeFolder?.folderId
+            view?.navigateToScanTotp(parentFolderId)
+        }
+    }
+
+    private fun onCanCreateResource(function: () -> Unit) {
+        coroutineScope.launch {
+            val folderId = (homeView as? HomeDisplayViewModel.Folders)?.activeFolder?.folderId
+            if (canCreateResourceUse.execute(CanCreateResourceUseCase.Input(folderId)).canCreateResource) {
+                function()
+            } else {
+                view?.showCannotPerformThisActionMessage()
+            }
+        }
+    }
+
+    private fun onCanShareResource(function: () -> Unit) {
+        coroutineScope.launch {
+            if (canShareResourceUse.execute(Unit).canShareResource) {
+                function()
+            } else {
+                view?.showCannotPerformThisActionMessage()
+            }
+        }
     }
 
     override fun closeClick() {

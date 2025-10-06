@@ -67,6 +67,7 @@ import com.passbolt.mobile.android.jsonmodel.jsonpathops.JsonPathJsonPathOps
 import com.passbolt.mobile.android.jsonmodel.jsonpathops.JsonPathsOps
 import com.passbolt.mobile.android.mappers.OtpModelMapper
 import com.passbolt.mobile.android.metadata.interactor.MetadataPrivateKeysHelperInteractor
+import com.passbolt.mobile.android.metadata.usecase.CanCreateResourceUseCase
 import com.passbolt.mobile.android.ui.LeadingContentType.PASSWORD
 import com.passbolt.mobile.android.ui.LeadingContentType.TOTP
 import com.passbolt.mobile.android.ui.MetadataJsonModel
@@ -116,6 +117,7 @@ class OtpViewModelTest : KoinTest {
                         single { mock<TotpParametersProvider>() }
                         single { mock<ResourceTypeIdToSlugMappingProvider>() }
                         single { mock<MetadataPrivateKeysHelperInteractor>() }
+                        single { mock<CanCreateResourceUseCase>() }
                         singleOf(::TestCoroutineTimerFactory) bind TimerFactory::class
                         singleOf(::TestCoroutineLaunchContext) bind CoroutineLaunchContext::class
                         factoryOf(::OtpViewModel)
@@ -150,6 +152,12 @@ class OtpViewModelTest : KoinTest {
         val getLocalResourcesUseCase = get<GetLocalResourcesUseCase>()
         getLocalResourcesUseCase.stub {
             onBlocking { execute(any()) } doReturn GetLocalResourcesUseCase.Output(otpResources)
+        }
+
+        val canCreateResourceUseCase = get<CanCreateResourceUseCase>()
+        canCreateResourceUseCase.stub {
+            onBlocking { execute(any()) } doReturn
+                CanCreateResourceUseCase.Output(canCreateResource = true)
         }
     }
 
@@ -398,6 +406,28 @@ class OtpViewModelTest : KoinTest {
                 assertThat(expectItem().showDeleteTotpConfirmationDialog).isTrue()
                 viewModel.onIntent(OtpIntent.CloseDeleteConfirmationDialog)
                 assertThat(expectItem().showDeleteTotpConfirmationDialog).isFalse()
+            }
+        }
+
+    @Test
+    fun `should show error when resource creation not possible`() =
+        runTest {
+            val canCreateResourceUseCase = get<CanCreateResourceUseCase>()
+            whenever(canCreateResourceUseCase.execute(any())) doReturn
+                CanCreateResourceUseCase.Output(canCreateResource = false)
+
+            viewModel = get()
+
+            viewModel.sideEffect.test {
+                viewModel.onIntent(CreatePassword)
+                val stateAfterCreatePassword = expectItem()
+                assertIs<OtpSideEffect.ShowErrorSnackbar>(stateAfterCreatePassword)
+                assertThat(stateAfterCreatePassword.type).isEqualTo(SnackbarErrorType.NO_SHARED_KEY_ACCESS)
+
+                viewModel.onIntent(CreateTotp)
+                val stateAfterCreateTotp = expectItem()
+                assertIs<OtpSideEffect.ShowErrorSnackbar>(stateAfterCreateTotp)
+                assertThat(stateAfterCreateTotp.type).isEqualTo(SnackbarErrorType.NO_SHARED_KEY_ACCESS)
             }
         }
 

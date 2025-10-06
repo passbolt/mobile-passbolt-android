@@ -17,6 +17,7 @@ dependencies {
     implementation project(':dto')
     implementation project(':passphrasememorycache')
     implementation project(':users')
+    implementation project(':folders')
 
     implementation libs.koin
     implementation libs.room.core
