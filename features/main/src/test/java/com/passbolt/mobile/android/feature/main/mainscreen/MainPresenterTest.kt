@@ -1,15 +1,14 @@
 package com.passbolt.mobile.android.feature.main.mainscreen
 
-import com.passbolt.mobile.android.core.fulldatarefresh.DataRefreshStatus
-import com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor
+import com.passbolt.mobile.android.common.datarefresh.DataRefreshStatus
+import com.passbolt.mobile.android.common.datarefresh.DataRefreshTrackingFlow
 import com.passbolt.mobile.android.entity.featureflags.FeatureFlagsModel
 import com.passbolt.mobile.android.feature.main.mainscreen.bottomnavigation.MainBottomNavigationModel
 import com.passbolt.mobile.android.featureflags.usecase.GetFeatureFlagsUseCase
 import junit.framework.TestCase.assertTrue
-import kotlinx.coroutines.flow.MutableSharedFlow
-import org.junit.After
 import org.junit.Rule
 import org.junit.Test
+import org.koin.core.component.get
 import org.koin.core.logger.Level
 import org.koin.test.KoinTest
 import org.koin.test.KoinTestRule
@@ -17,8 +16,8 @@ import org.koin.test.inject
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.reset
 import org.mockito.kotlin.stub
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
@@ -56,16 +55,11 @@ class MainPresenterTest : KoinTest {
             modules(testMainModule)
         }
 
-    @After
-    fun tearDown() {
-        reset(mockFullDataRefreshExecutor)
-    }
-
     @Test
     fun `full data refresh should start on attach`() {
         presenter.attach(view)
 
-        verify(mockFullDataRefreshExecutor).performFullDataRefresh()
+        verify(view).performFullDataRefresh()
     }
 
     @Test
@@ -95,9 +89,6 @@ class MainPresenterTest : KoinTest {
 
     @Test
     fun `totp should be visible based on feature flag`() {
-        val mockDataRefreshFlow = MutableSharedFlow<DataRefreshStatus>()
-        whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow)
-            .doReturn(mockDataRefreshFlow)
         mockGetFeatureFlagsUseCase.stub {
             onBlocking { execute(Unit) } doReturn
                 GetFeatureFlagsUseCase.Output(
@@ -117,10 +108,10 @@ class MainPresenterTest : KoinTest {
                 )
 
             presenter.attach(view)
-            mockDataRefreshFlow.tryEmit(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
+            get<DataRefreshTrackingFlow>().updateStatus(DataRefreshStatus.Idle.FinishedWithSuccess)
 
             argumentCaptor<MainBottomNavigationModel> {
-                verify(view).setupBottomNavigation(capture())
+                verify(view, times(2)).setupBottomNavigation(capture())
                 assertTrue(firstValue.isOtpTabVisible)
             }
         }

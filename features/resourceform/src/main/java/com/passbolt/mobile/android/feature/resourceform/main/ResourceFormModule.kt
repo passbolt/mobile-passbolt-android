@@ -39,7 +39,7 @@ fun Module.resourceFormModule() {
                 resourceFormMapper = get(),
                 resourceModelHandler = get(),
                 getLocalResourceUseCase = get(),
-                fullDataRefreshExecutor = get(),
+                dataRefreshTrackingFlow = get(),
                 metadataPrivateKeysHelperInteractor = get(),
                 createResourceIdlingResource = get(),
                 coroutineLaunchContext = get(),

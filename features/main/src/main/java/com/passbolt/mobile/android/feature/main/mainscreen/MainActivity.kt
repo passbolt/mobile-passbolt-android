@@ -16,10 +16,11 @@ import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.extension.findNavHostFragment
 import com.passbolt.mobile.android.core.extension.getRootView
 import com.passbolt.mobile.android.core.extension.showSnackbar
+import com.passbolt.mobile.android.core.fulldatarefresh.service.DataRefreshService
+import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedActivity
 import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
 import com.passbolt.mobile.android.core.navigation.compose.keys.AccountDetailsNavigationKey.AccountDetails
 import com.passbolt.mobile.android.core.security.runtimeauth.RuntimeAuthenticatedFlag
-import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedActivity
 import com.passbolt.mobile.android.feature.main.databinding.ActivityMainBinding
 import com.passbolt.mobile.android.feature.main.mainscreen.bottomnavigation.MainBottomNavigationModel
 import com.passbolt.mobile.android.feature.main.mainscreen.encouragements.chromenativeautofill.EncourageChromeNativeAutofillServiceDialog
@@ -38,10 +39,10 @@ import com.passbolt.mobile.android.feature.settings.R as SettingsR
 
 // NOTE: When changing name or package read core/navigation/README.md
 class MainActivity :
-    BindingScopedAuthenticatedActivity<ActivityMainBinding, MainContract.View>(ActivityMainBinding::inflate),
+    BindingScopedActivity<ActivityMainBinding>(ActivityMainBinding::inflate),
     MainContract.View,
     EncourageChromeNativeAutofillServiceDialog.Listener {
-    override val presenter: MainContract.Presenter by inject()
+    private val presenter: MainContract.Presenter by inject()
     private val job = SupervisorJob()
     private val coroutineScope = CoroutineScope(job + Dispatchers.Main)
 
@@ -175,6 +176,10 @@ class MainActivity :
             getString(LocalizationR.string.main_chrome_native_autofill_setup_success),
             backgroundColor = CoreUiR.color.green,
         )
+    }
+
+    override fun performFullDataRefresh() {
+        DataRefreshService.start(this)
     }
 
     private companion object {

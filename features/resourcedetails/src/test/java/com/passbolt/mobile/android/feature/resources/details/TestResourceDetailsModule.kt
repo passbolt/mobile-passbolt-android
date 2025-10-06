@@ -5,9 +5,10 @@ import com.jayway.jsonpath.Configuration
 import com.jayway.jsonpath.Option
 import com.jayway.jsonpath.spi.json.GsonJsonProvider
 import com.jayway.jsonpath.spi.mapper.GsonMappingProvider
+import com.passbolt.mobile.android.common.datarefresh.DataRefreshTrackingFlow
 import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalFolderLocationUseCase
-import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
+import com.passbolt.mobile.android.core.mvp.authentication.SessionRefreshTrackingFlow
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.otpcore.TotpParametersProvider
 import com.passbolt.mobile.android.core.rbac.usecase.GetRbacRulesUseCase
@@ -58,7 +59,8 @@ internal val mockResourceTypeIdToSlugMappingProvider = mock<ResourceTypeIdToSlug
 @ExperimentalCoroutinesApi
 internal val testResourceDetailsModule =
     module {
-        single { mock<FullDataRefreshExecutor>() }
+        singleOf(::DataRefreshTrackingFlow)
+        singleOf(::SessionRefreshTrackingFlow)
         factoryOf(::TestCoroutineLaunchContext) bind CoroutineLaunchContext::class
         factoryOf(::OtpModelMapper)
         factoryOf(::PermissionsModelMapper)

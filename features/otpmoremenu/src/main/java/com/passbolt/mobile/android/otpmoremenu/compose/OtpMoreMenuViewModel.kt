@@ -1,8 +1,8 @@
 package com.passbolt.mobile.android.otpmoremenu.compose
 
 import androidx.lifecycle.viewModelScope
+import com.passbolt.mobile.android.common.datarefresh.DataRefreshTrackingFlow
 import com.passbolt.mobile.android.core.compose.SideEffectViewModel
-import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
 import com.passbolt.mobile.android.otpmoremenu.compose.OtpMoreMenuIntent.Close
 import com.passbolt.mobile.android.otpmoremenu.compose.OtpMoreMenuIntent.CopyOtp
 import com.passbolt.mobile.android.otpmoremenu.compose.OtpMoreMenuIntent.DeleteOtp
@@ -10,6 +10,10 @@ import com.passbolt.mobile.android.otpmoremenu.compose.OtpMoreMenuIntent.EditOtp
 import com.passbolt.mobile.android.otpmoremenu.compose.OtpMoreMenuIntent.Initialize
 import com.passbolt.mobile.android.otpmoremenu.compose.OtpMoreMenuIntent.ShowOtp
 import com.passbolt.mobile.android.otpmoremenu.compose.OtpMoreMenuSideEffect.Dismiss
+import com.passbolt.mobile.android.otpmoremenu.compose.OtpMoreMenuSideEffect.InvokeCopyOtp
+import com.passbolt.mobile.android.otpmoremenu.compose.OtpMoreMenuSideEffect.InvokeDeleteOtp
+import com.passbolt.mobile.android.otpmoremenu.compose.OtpMoreMenuSideEffect.InvokeEditOtp
+import com.passbolt.mobile.android.otpmoremenu.compose.OtpMoreMenuSideEffect.InvokeShowOtp
 import com.passbolt.mobile.android.otpmoremenu.usecase.CreateOtpMoreMenuModelUseCase
 import kotlinx.coroutines.launch
 
@@ -38,15 +42,15 @@ import kotlinx.coroutines.launch
 
 class OtpMoreMenuViewModel(
     private val createOtpMoreMenuModelUseCase: CreateOtpMoreMenuModelUseCase,
-    private val fullDataRefreshExecutor: FullDataRefreshExecutor,
+    private val dataRefreshTrackingFlow: DataRefreshTrackingFlow,
 ) : SideEffectViewModel<OtpMoreMenuState, OtpMoreMenuSideEffect>(OtpMoreMenuState()) {
     fun onIntent(intent: OtpMoreMenuIntent) {
         when (intent) {
             Close -> emitSideEffect(Dismiss)
-            CopyOtp -> emitSideEffect(OtpMoreMenuSideEffect.InvokeCopyOtp)
-            DeleteOtp -> emitSideEffect(OtpMoreMenuSideEffect.InvokeDeleteOtp)
-            EditOtp -> emitSideEffect(OtpMoreMenuSideEffect.InvokeEditOtp)
-            ShowOtp -> emitSideEffect(OtpMoreMenuSideEffect.InvokeShowOtp)
+            CopyOtp -> emitSideEffect(InvokeCopyOtp)
+            DeleteOtp -> emitSideEffect(InvokeDeleteOtp)
+            EditOtp -> emitSideEffect(InvokeEditOtp)
+            ShowOtp -> emitSideEffect(InvokeShowOtp)
             is Initialize -> initialize(intent)
         }
     }
@@ -60,7 +64,7 @@ class OtpMoreMenuViewModel(
                         CreateOtpMoreMenuModelUseCase.Input(initialize.resourceId),
                     ).otpMoreMenuModel
 
-            fullDataRefreshExecutor.awaitFinish()
+            dataRefreshTrackingFlow.awaitIdle()
 
             updateViewState {
                 copy(

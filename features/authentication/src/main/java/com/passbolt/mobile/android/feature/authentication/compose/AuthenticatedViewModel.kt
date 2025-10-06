@@ -11,8 +11,7 @@ import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.U
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated.Reason.Passphrase
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated.Reason.Session
 import com.passbolt.mobile.android.core.mvp.authentication.MfaProvidersHandler
-import com.passbolt.mobile.android.core.mvp.authentication.SessionListener
-import com.passbolt.mobile.android.core.mvp.authentication.UnauthenticatedReason
+import com.passbolt.mobile.android.core.mvp.authentication.SessionRefreshTrackingFlow
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.feature.authentication.compose.AuthenticatedIntent.AuthenticationRefreshed
 import com.passbolt.mobile.android.feature.authentication.compose.AuthenticatedIntent.OtherProviderClick
@@ -22,10 +21,8 @@ import com.passbolt.mobile.android.feature.authentication.compose.Authentication
 import com.passbolt.mobile.android.feature.authentication.compose.AuthenticationSideEffect.ShowYubikeyDialog
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -56,16 +53,11 @@ import timber.log.Timber
 open class AuthenticatedViewModel<ViewState, SideEffect>(
     initialState: ViewState,
 ) : SideEffectViewModel<ViewState, SideEffect>(initialState),
-    KoinComponent,
-    SessionListener {
+    KoinComponent {
     private val authenticationSideEffectChannel = Channel<AuthenticationSideEffect>()
     val authenticationSideEffect: Flow<AuthenticationSideEffect> = authenticationSideEffectChannel.receiveAsFlow()
 
-    private var _sessionRefreshedFlow = MutableStateFlow<Unit?>(null)
-    override val sessionRefreshedFlow
-        get() = _sessionRefreshedFlow.asStateFlow()
-
-    override val needSessionRefreshFlow: MutableStateFlow<UnauthenticatedReason?> = MutableStateFlow(null)
+    private val sessionRefreshTrackingFlow: SessionRefreshTrackingFlow by inject()
 
     private val mfaProvidersHandler: MfaProvidersHandler by inject()
     private val getSessionUseCase: GetSessionUseCase by inject()
@@ -77,13 +69,14 @@ open class AuthenticatedViewModel<ViewState, SideEffect>(
     private fun listenForRefreshSessionEvents() {
         Timber.d("[Session] Listening for new session events in ${this::class.simpleName}")
         viewModelScope.launch {
-            needSessionRefreshFlow
-                .filterNotNull()
+            sessionRefreshTrackingFlow
+                .needSessionRefreshFlow()
+                .take(1)
                 .collect {
-                    Timber.d("[Session] Session refresh needed, reason [$it] - showing auth")
-                    when (it) {
+                    Timber.d("[Session] MVI Session refresh is needed: [${it.reason}] in ${this@AuthenticatedViewModel}. Showing UI.")
+                    when (val reason = it.reason) {
                         is Mfa -> {
-                            mfaProvidersHandler.setProviders(it.providers.orEmpty())
+                            mfaProvidersHandler.setProviders(reason.providers.orEmpty())
                             emitSideAuthenticationEffect(
                                 AuthenticationSideEffect.ShowMfaAuth(
                                     mfaReason = mfaProvidersHandler.firstMfaProvider(),
@@ -145,9 +138,7 @@ open class AuthenticatedViewModel<ViewState, SideEffect>(
     }
 
     private fun authenticationRefreshed() {
-        launch {
-            _sessionRefreshedFlow.emit(Unit)
-        }
+        sessionRefreshTrackingFlow.notifySessionRefreshed()
     }
 
     private fun emitSideAuthenticationEffect(event: AuthenticationSideEffect) {

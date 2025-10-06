@@ -156,7 +156,7 @@ class CreateFolderPresenter(
         scope.launch {
             when (
                 val output =
-                    runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+                    runAuthenticatedOperation {
                         createFolderUseCase.execute(CreateFolderUseCase.Input(folderName, parentFolderId))
                     }
             ) {
@@ -204,7 +204,7 @@ class CreateFolderPresenter(
 
         when (
             val output =
-                runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+                runAuthenticatedOperation {
                     folderShareInteractor.shareFolder(folderModel.folderId, newPermissionsToApply)
                 }
         ) {

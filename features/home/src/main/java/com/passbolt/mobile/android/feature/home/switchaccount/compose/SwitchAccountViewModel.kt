@@ -1,12 +1,12 @@
 package com.passbolt.mobile.android.feature.home.switchaccount.compose
 
 import androidx.lifecycle.viewModelScope
+import com.passbolt.mobile.android.common.datarefresh.DataRefreshTrackingFlow
 import com.passbolt.mobile.android.common.usecase.UserIdInput
 import com.passbolt.mobile.android.core.accounts.usecase.accounts.GetAllAccountsDataUseCase
 import com.passbolt.mobile.android.core.accounts.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.core.accounts.usecase.selectedaccount.SaveSelectedAccountUseCase
 import com.passbolt.mobile.android.core.compose.SideEffectViewModel
-import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
 import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
 import com.passbolt.mobile.android.feature.home.switchaccount.compose.SwitchAccountIntent.Close
@@ -54,7 +54,7 @@ class SwitchAccountViewModel(
     private val switchAccountModelMapper: SwitchAccountModelMapper,
     private val signOutUseCase: SignOutUseCase,
     private val saveSelectedAccountUseCase: SaveSelectedAccountUseCase,
-    private val fullDataRefreshExecutor: FullDataRefreshExecutor,
+    private val dataRefreshTrackingFlow: DataRefreshTrackingFlow,
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
 ) : SideEffectViewModel<SwitchAccountState, SwitchAccountSideEffect>(SwitchAccountState()) {
     val appContext: AppContext
@@ -88,7 +88,7 @@ class SwitchAccountViewModel(
     private fun signOut() {
         viewModelScope.launch {
             updateViewState { copy(showSignOutDialog = false, showProgress = true) }
-            fullDataRefreshExecutor.awaitFinish()
+            dataRefreshTrackingFlow.awaitIdle()
             signOutUseCase.execute(Unit)
             updateViewState { copy(showProgress = false) }
             emitSideEffect(NavigateToStartup(appContext))

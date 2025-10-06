@@ -1,3 +1,11 @@
+package com.passbolt.mobile.android.core.mvp.authentication
+
+import com.passbolt.mobile.android.core.mvp.authentication.SessionState.NeedsRefresh
+import com.passbolt.mobile.android.core.mvp.authentication.SessionState.Valid
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.filterIsInstance
+import timber.log.Timber
+
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -20,16 +28,28 @@
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+class SessionRefreshTrackingFlow {
+    private val sessionTrackingFlow = MutableStateFlow<SessionState>(Valid)
 
-package com.passbolt.mobile.android.core.fulldatarefresh
+    fun needSessionRefreshFlow() = sessionTrackingFlow.filterIsInstance<NeedsRefresh>()
 
-/**
- * Class representing status of all home data refresh.
- */
-sealed class DataRefreshStatus {
-    data object InProgress : DataRefreshStatus()
+    fun sessionRefreshedFlow() = sessionTrackingFlow.filterIsInstance<Valid>()
 
-    data class Finished(
-        val output: HomeDataInteractor.Output,
-    ) : DataRefreshStatus()
+    fun notifySessionRefreshed() {
+        Timber.d("[Session] Notifying session is valid")
+        sessionTrackingFlow.value = Valid
+    }
+
+    fun notifySessionRefreshNeeded(reason: UnauthenticatedReason) {
+        Timber.d("[Session] Notifying session refresh is needed")
+        sessionTrackingFlow.value = NeedsRefresh(reason)
+    }
+}
+
+sealed class SessionState {
+    object Valid : SessionState()
+
+    data class NeedsRefresh(
+        val reason: UnauthenticatedReason,
+    ) : SessionState()
 }

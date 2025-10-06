@@ -15,6 +15,7 @@ import com.passbolt.mobile.android.core.extension.initDefaultToolbar
 import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.extension.showSnackbar
 import com.passbolt.mobile.android.core.extension.visible
+import com.passbolt.mobile.android.core.fulldatarefresh.service.DataRefreshService
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.deeplinks.NavDeepLinkProvider
 import com.passbolt.mobile.android.core.ui.recyclerview.OverlappingItemDecorator
@@ -209,5 +210,9 @@ class FolderDetailsFragment :
 
     override fun navigateToHome() {
         requireActivity().startActivity(ActivityIntents.bringHome(requireContext()))
+    }
+
+    override fun performFullDataRefresh() {
+        DataRefreshService.start(requireContext())
     }
 }

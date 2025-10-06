@@ -94,7 +94,7 @@ class ResourcePickerPresenter(
     }
 
     override fun refreshSwipe() {
-        fullDataRefreshExecutor.performFullDataRefresh()
+        view?.performFullDataRefresh()
     }
 
     override fun resourcePicked(

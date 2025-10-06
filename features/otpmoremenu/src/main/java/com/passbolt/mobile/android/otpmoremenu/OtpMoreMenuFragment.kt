@@ -31,6 +31,7 @@ import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.extension.setDebouncingOnClickAndDismiss
 import com.passbolt.mobile.android.core.extension.showSnackbar
 import com.passbolt.mobile.android.core.extension.visible
+import com.passbolt.mobile.android.core.fulldatarefresh.service.DataRefreshService
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedBottomSheetFragment
 import com.passbolt.mobile.android.feature.otpmoremenu.databinding.BottomsheetOtpMoreMenuBinding
 import org.koin.android.ext.android.inject
@@ -156,6 +157,10 @@ class OtpMoreMenuFragment :
                     EXTRA_CAN_SHOW_TOTP to canShowTotp,
                 )
         }
+    }
+
+    override fun performFullDataRefresh() {
+        DataRefreshService.start(requireContext())
     }
 
     interface Listener {

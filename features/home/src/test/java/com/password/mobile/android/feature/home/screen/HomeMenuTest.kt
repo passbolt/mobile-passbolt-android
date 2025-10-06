@@ -3,9 +3,6 @@ package com.password.mobile.android.feature.home.screen
 import com.passbolt.mobile.android.core.accounts.usecase.accountdata.GetSelectedAccountDataUseCase
 import com.passbolt.mobile.android.core.accounts.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalResourcesAndFoldersUseCase
-import com.passbolt.mobile.android.core.fulldatarefresh.DataRefreshStatus
-import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
-import com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor
 import com.passbolt.mobile.android.core.resources.actions.ResourceCommonActionResult
 import com.passbolt.mobile.android.core.resources.actions.ResourcePropertiesActionsInteractor
 import com.passbolt.mobile.android.core.resources.actions.ResourcePropertyActionResult
@@ -48,7 +45,6 @@ import java.util.UUID
 class HomeMenuTest : KoinTest {
     private val presenter: HomeContract.Presenter by inject()
     private val view: HomeContract.View = mock()
-    private val mockFullDataRefreshExecutor: FullDataRefreshExecutor by inject()
 
     @get:Rule
     val koinTestRule =
@@ -76,9 +72,6 @@ class HomeMenuTest : KoinTest {
             onBlocking { fetchAndSaveResources() } doReturn ResourceInteractor.Output.Success
         }
 
-        whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
-            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success)),
-        )
         whenever(mockGetSelectedAccountDataUseCase.execute(anyOrNull())).thenReturn(
             GetSelectedAccountDataUseCase.Output(
                 firstName = "",

@@ -184,8 +184,6 @@ interface HomeContract {
 
         fun itemClick(resourceModel: ResourceModel)
 
-        fun refreshSwipe()
-
         fun searchTextChange(text: String)
 
         fun menuLaunchWebsiteClick()

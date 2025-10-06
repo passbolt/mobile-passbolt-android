@@ -1,6 +1,5 @@
 package com.passbolt.mobile.android.feature.resourceform.main
 
-import com.passbolt.mobile.android.core.mvp.authentication.UnauthenticatedReason
 import com.passbolt.mobile.android.core.resources.actions.SecretPropertiesActionsInteractor
 import com.passbolt.mobile.android.core.resources.actions.SecretPropertyActionResult
 import com.passbolt.mobile.android.core.resources.usecase.GetDefaultCreateContentTypeUseCase
@@ -45,8 +44,6 @@ import com.passbolt.mobile.android.ui.ResourceFormUiModel.Secret.CUSTOM_FIELDS
 import com.passbolt.mobile.android.ui.ResourceFormUiModel.Secret.NOTE
 import com.passbolt.mobile.android.ui.ResourceFormUiModel.Secret.PASSWORD
 import com.passbolt.mobile.android.ui.ResourceFormUiModel.Secret.TOTP
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.single
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
@@ -116,11 +113,7 @@ class ResourceModelHandler(
     }
 
     @Throws(Exception::class)
-    suspend fun initializeModelForEdition(
-        existingResourceId: String,
-        needSessionRefreshFlow: MutableStateFlow<UnauthenticatedReason?>,
-        sessionRefreshedFlow: StateFlow<Unit?>,
-    ) {
+    suspend fun initializeModelForEdition(existingResourceId: String) {
         try {
             // init resource
             val resource =
@@ -139,10 +132,7 @@ class ResourceModelHandler(
             metadataType = initialEditContentType.metadataType
 
             // init secret
-            val secretPropertiesActionsInteractor: SecretPropertiesActionsInteractor =
-                get {
-                    parametersOf(resource, needSessionRefreshFlow, sessionRefreshedFlow)
-                }
+            val secretPropertiesActionsInteractor: SecretPropertiesActionsInteractor = get { parametersOf(resource) }
             val secret = secretPropertiesActionsInteractor.provideDecryptedSecret().single()
             resourceSecret = (secret as SecretPropertyActionResult.Success<SecretJsonModel>).result
 

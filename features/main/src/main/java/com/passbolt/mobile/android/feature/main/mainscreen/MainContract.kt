@@ -1,6 +1,6 @@
 package com.passbolt.mobile.android.feature.main.mainscreen
 
-import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
+import com.passbolt.mobile.android.core.mvp.BaseContract
 import com.passbolt.mobile.android.feature.main.mainscreen.bottomnavigation.MainBottomNavigationModel
 
 /**
@@ -27,7 +27,7 @@ import com.passbolt.mobile.android.feature.main.mainscreen.bottomnavigation.Main
  */
 
 interface MainContract {
-    interface View : BaseAuthenticatedContract.View {
+    interface View : BaseContract.View {
         fun checkForAppUpdates()
 
         fun showAppUpdateDownloadedSnackbar()
@@ -37,9 +37,11 @@ interface MainContract {
         fun setupBottomNavigation(navigationModel: MainBottomNavigationModel)
 
         fun showChromeNativeAutofillEncouragement()
+
+        fun performFullDataRefresh()
     }
 
-    interface Presenter : BaseAuthenticatedContract.Presenter<View> {
+    interface Presenter : BaseContract.Presenter<View> {
         fun appUpdateDownloaded()
 
         fun performFullDataRefresh()

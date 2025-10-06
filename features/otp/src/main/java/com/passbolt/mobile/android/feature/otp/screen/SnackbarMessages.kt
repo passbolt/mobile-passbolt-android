@@ -7,6 +7,7 @@ import com.passbolt.mobile.android.feature.otp.screen.SnackbarErrorType.DECRYPTI
 import com.passbolt.mobile.android.feature.otp.screen.SnackbarErrorType.ENCRYPTION_FAILURE
 import com.passbolt.mobile.android.feature.otp.screen.SnackbarErrorType.ERROR
 import com.passbolt.mobile.android.feature.otp.screen.SnackbarErrorType.FAILED_TO_DELETE_RESOURCE
+import com.passbolt.mobile.android.feature.otp.screen.SnackbarErrorType.FAILED_TO_REFRESH_DATA
 import com.passbolt.mobile.android.feature.otp.screen.SnackbarErrorType.FAILED_TO_TRUST_METADATA_KEY
 import com.passbolt.mobile.android.feature.otp.screen.SnackbarErrorType.FAILED_TO_VERIFY_METADATA_KEYS
 import com.passbolt.mobile.android.feature.otp.screen.SnackbarErrorType.FETCH_FAILURE
@@ -52,4 +53,5 @@ internal fun getErrorMessage(
             )
         FAILED_TO_VERIFY_METADATA_KEYS -> context.getString(LocalizationR.string.common_metadata_key_verification_failure)
         FAILED_TO_TRUST_METADATA_KEY -> context.getString(LocalizationR.string.common_metadata_key_trust_failed)
+        FAILED_TO_REFRESH_DATA -> context.getString(LocalizationR.string.common_data_refresh_error)
     }

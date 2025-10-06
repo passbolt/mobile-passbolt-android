@@ -20,6 +20,7 @@ import com.passbolt.mobile.android.core.extension.initDefaultToolbar
 import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.extension.showSnackbar
 import com.passbolt.mobile.android.core.extension.visible
+import com.passbolt.mobile.android.core.fulldatarefresh.service.DataRefreshService
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.ui.R
 import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
@@ -447,6 +448,10 @@ class PermissionsFragment :
             anchorView = snackbarAnchorView,
             backgroundColor = R.color.red,
         )
+    }
+
+    override fun performFullDataRefresh() {
+        DataRefreshService.start(requireContext())
     }
 
     companion object {

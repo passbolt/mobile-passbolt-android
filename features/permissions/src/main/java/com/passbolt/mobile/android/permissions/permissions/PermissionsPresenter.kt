@@ -211,7 +211,7 @@ class PermissionsPresenter(
                 )
             val resourceUpdateActionsInteractor =
                 get<ResourceUpdateActionsInteractor> {
-                    parametersOf(resource, needSessionRefreshFlow, sessionRefreshedFlow)
+                    parametersOf(resource)
                 }
 
             if (contentType.isV5()) {
@@ -246,7 +246,7 @@ class PermissionsPresenter(
 
     private suspend fun shareResource() {
         when (
-            runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+            runAuthenticatedOperation {
                 resourceShareInteractor.simulateAndShareResource(id, recipients)
             }
         ) {
@@ -263,7 +263,7 @@ class PermissionsPresenter(
     }
 
     private suspend fun shareSuccess() {
-        runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+        runAuthenticatedOperation {
             homeDataInteractor.refreshAllHomeScreenData()
         }
         view?.closeWithShareSuccessResult()
@@ -337,7 +337,7 @@ class PermissionsPresenter(
             view?.showProgress()
             when (
                 val output =
-                    runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+                    runAuthenticatedOperation {
                         metadataPrivateKeysHelperInteractor.trustNewKey(model)
                     }
             ) {

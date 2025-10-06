@@ -85,10 +85,7 @@ class ScanOtpSuccessPresenter(
     override fun createStandaloneOtpClick() {
         scope.launch {
             view?.showProgress()
-            val resourceCreateActionsInteractor =
-                get<ResourceCreateActionsInteractor> {
-                    parametersOf(needSessionRefreshFlow, sessionRefreshedFlow)
-                }
+            val resourceCreateActionsInteractor = get<ResourceCreateActionsInteractor>()
             val defaultType =
                 getDefaultCreateContentTypeUseCase.execute(
                     GetDefaultCreateContentTypeUseCase.Input(LeadingContentType.TOTP),
@@ -154,10 +151,7 @@ class ScanOtpSuccessPresenter(
                 idToSlugMappingProvider.provideMappingForSelectedAccount()[
                     UUID.fromString(resource.resourceTypeId),
                 ]
-            val resourceUpdateActionsInteractor =
-                get<ResourceUpdateActionsInteractor> {
-                    parametersOf(resource, needSessionRefreshFlow, sessionRefreshedFlow)
-                }
+            val resourceUpdateActionsInteractor = get<ResourceUpdateActionsInteractor> { parametersOf(resource) }
             val updateOperation =
                 when (ContentType.fromSlug(slug!!)) {
                     is PasswordAndDescription, V5Default ->
@@ -234,7 +228,7 @@ class ScanOtpSuccessPresenter(
             view?.showProgress()
             when (
                 val output =
-                    runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+                    runAuthenticatedOperation {
                         metadataPrivateKeysHelperInteractor.trustNewKey(model)
                     }
             ) {

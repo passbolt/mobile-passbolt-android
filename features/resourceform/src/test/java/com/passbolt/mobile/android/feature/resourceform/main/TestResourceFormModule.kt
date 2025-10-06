@@ -5,9 +5,10 @@ import com.jayway.jsonpath.Configuration
 import com.jayway.jsonpath.Option
 import com.jayway.jsonpath.spi.json.GsonJsonProvider
 import com.jayway.jsonpath.spi.mapper.GsonMappingProvider
+import com.passbolt.mobile.android.common.datarefresh.DataRefreshTrackingFlow
 import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
-import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
 import com.passbolt.mobile.android.core.idlingresource.CreateResourceIdlingResource
+import com.passbolt.mobile.android.core.mvp.authentication.SessionRefreshTrackingFlow
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.passwordgenerator.SecretGenerator
 import com.passbolt.mobile.android.core.passwordgenerator.entropy.EntropyCalculator
@@ -60,7 +61,6 @@ internal val mockEntropyCalculator = mock<EntropyCalculator>()
 internal val mockGetDefaultCreateContentTypeUseCase = mock<GetDefaultCreateContentTypeUseCase>()
 internal val mockGetEditContentTypeUseCase = mock<GetEditContentTypeUseCase>()
 internal val mockGetLocalResourceUseCase = mock<GetLocalResourceUseCase>()
-internal val mockFullDataRefreshExecutor = mock<FullDataRefreshExecutor>()
 internal val mockMetadataPrivateKeysHelperInteractor = mock<MetadataPrivateKeysHelperInteractor>()
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -76,7 +76,6 @@ internal val testResourceFormModule =
         single { mockGetDefaultCreateContentTypeUseCase }
         single { mockGetEditContentTypeUseCase }
         single { mockGetLocalResourceUseCase }
-        single { mockFullDataRefreshExecutor }
         single {
             mapOf(
                 DefaultValue.NAME to "no name",
@@ -94,7 +93,7 @@ internal val testResourceFormModule =
                 resourceFormMapper = get(),
                 coroutineLaunchContext = get(),
                 resourceModelHandler = get(),
-                fullDataRefreshExecutor = get(),
+                dataRefreshTrackingFlow = get(),
                 createResourceIdlingResource = get(),
             )
         }
@@ -109,4 +108,6 @@ internal val testResourceFormModule =
                 .build()
         }
         singleOf(::JsonPathJsonPathOps) bind JsonPathsOps::class
+        singleOf(::DataRefreshTrackingFlow)
+        singleOf(::SessionRefreshTrackingFlow)
     }

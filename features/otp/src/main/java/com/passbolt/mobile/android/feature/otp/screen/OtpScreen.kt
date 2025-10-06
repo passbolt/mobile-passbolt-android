@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.passbolt.mobile.android.core.clipboard.ClipboardAccess
 import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
+import com.passbolt.mobile.android.core.fulldatarefresh.service.DataRefreshService
 import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.core.resources.resourceicon.ResourceIconProvider
 import com.passbolt.mobile.android.core.ui.compose.dialogs.ConfirmTotpDeleteAlertDialog
@@ -66,7 +67,6 @@ import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.CreatePassword
 import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.CreateTotp
 import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.DeleteOtp
 import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.EditOtp
-import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.InitiateFullDataRefresh
 import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.OpenCreateResourceMenu
 import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.OpenOtpMoreMenu
 import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.RevealOtp
@@ -74,6 +74,7 @@ import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.Search
 import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.SearchEndIconAction
 import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.TrustMetadataKeyDeletion
 import com.passbolt.mobile.android.feature.otp.screen.OtpSideEffect.CopyToClipboard
+import com.passbolt.mobile.android.feature.otp.screen.OtpSideEffect.InitiateDataRefresh
 import com.passbolt.mobile.android.feature.otp.screen.OtpSideEffect.NavigateToCreateResourceForm
 import com.passbolt.mobile.android.feature.otp.screen.OtpSideEffect.NavigateToCreateTotp
 import com.passbolt.mobile.android.feature.otp.screen.OtpSideEffect.NavigateToEditResourceForm
@@ -142,6 +143,7 @@ internal fun OtpScreen(
             NavigateToCreateTotp -> navigation.navigateToScanOtpCodeForResult()
             is NavigateToCreateResourceForm -> navigation.navigateToCreateResourceForm(it.leadingContentType)
             is NavigateToEditResourceForm -> navigation.navigateToEditResourceForm(it.resourceId, it.resourceName)
+            InitiateDataRefresh -> DataRefreshService.start(context)
         }
     }
 }
@@ -179,9 +181,10 @@ fun OtpScreen(
             }
         },
         { paddingValues ->
+            val context = LocalContext.current
             PullToRefreshBox(
                 isRefreshing = state.isRefreshing,
-                onRefresh = { onIntent(InitiateFullDataRefresh) },
+                onRefresh = { DataRefreshService.start(context) },
                 modifier =
                     Modifier
                         .fillMaxSize()

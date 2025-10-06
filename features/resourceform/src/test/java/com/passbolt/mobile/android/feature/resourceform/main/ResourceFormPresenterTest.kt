@@ -1,8 +1,6 @@
 package com.passbolt.mobile.android.feature.resourceform.main
 
 import com.google.common.truth.Truth.assertThat
-import com.passbolt.mobile.android.core.fulldatarefresh.DataRefreshStatus
-import com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor.Output.Success
 import com.passbolt.mobile.android.core.passwordgenerator.codepoints.toCodepoints
 import com.passbolt.mobile.android.core.resources.usecase.GetDefaultCreateContentTypeUseCase
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType
@@ -19,8 +17,6 @@ import com.passbolt.mobile.android.ui.ResourceFormUiModel.Secret.NOTE
 import com.passbolt.mobile.android.ui.ResourceFormUiModel.Secret.PASSWORD
 import com.passbolt.mobile.android.ui.ResourceFormUiModel.Secret.TOTP
 import com.passbolt.mobile.android.ui.TotpUiModel
-import kotlinx.coroutines.flow.flowOf
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.koin.core.logger.Level
@@ -29,7 +25,6 @@ import org.koin.test.KoinTestRule
 import org.koin.test.inject
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
-import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
@@ -69,13 +64,6 @@ class ResourceFormPresenterTest : KoinTest {
             printLogger(Level.ERROR)
             modules(testResourceFormModule)
         }
-
-    @Before
-    fun setUp() {
-        mockFullDataRefreshExecutor.stub {
-            onBlocking { dataRefreshStatusFlow }.doReturn(flowOf(DataRefreshStatus.Finished(Success)))
-        }
-    }
 
     @Test
     fun `view should show correct ui for create totp`() {

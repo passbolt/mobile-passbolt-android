@@ -5,6 +5,7 @@ import com.jayway.jsonpath.Configuration
 import com.jayway.jsonpath.Option
 import com.jayway.jsonpath.spi.json.GsonJsonProvider
 import com.jayway.jsonpath.spi.mapper.GsonMappingProvider
+import com.passbolt.mobile.android.common.datarefresh.DataRefreshTrackingFlow
 import com.passbolt.mobile.android.common.search.SearchableMatcher
 import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.core.accounts.usecase.accountdata.GetSelectedAccountDataUseCase
@@ -15,8 +16,8 @@ import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalResourc
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalSubFolderResourcesFilteredUseCase
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalSubFoldersForFolderUseCase
 import com.passbolt.mobile.android.core.commongroups.usecase.db.GetLocalGroupsWithShareItemsCountUseCase
-import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
 import com.passbolt.mobile.android.core.idlingresource.DeleteResourceIdlingResource
+import com.passbolt.mobile.android.core.mvp.authentication.SessionRefreshTrackingFlow
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.otpcore.TotpParametersProvider
 import com.passbolt.mobile.android.core.preferences.usecase.GetHomeDisplayViewPrefsUseCase
@@ -83,7 +84,6 @@ val testHomeModule =
         factory { mockFetchAndUpdateDatabaseUseCase }
         factory { mockSecretParser }
         factory { mockCreateResourceMoreMenuModelUseCase }
-        single { mock<FullDataRefreshExecutor>() }
         factoryOf(::TestCoroutineLaunchContext) bind CoroutineLaunchContext::class
         factoryOf(::AutofillUriMatcher)
         factoryOf(::HomeDisplayViewMapper)
@@ -127,4 +127,6 @@ val testHomeModule =
                 .build()
         }
         singleOf(::JsonPathJsonPathOps) bind JsonPathsOps::class
+        singleOf(::DataRefreshTrackingFlow)
+        singleOf(::SessionRefreshTrackingFlow)
     }

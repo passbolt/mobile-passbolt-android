@@ -32,6 +32,7 @@ import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.U
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated.Reason.Passphrase
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated.Reason.Session
 import com.passbolt.mobile.android.core.mvp.authentication.MfaProvidersHandler
+import com.passbolt.mobile.android.core.mvp.authentication.SessionRefreshTrackingFlow
 import com.passbolt.mobile.android.core.navigation.ActivityIntents.AuthConfig.RefreshPassphrase
 import com.passbolt.mobile.android.core.navigation.ActivityIntents.AuthConfig.SignIn
 import com.passbolt.mobile.android.feature.authentication.compose.AuthenticatedIntent.AuthenticationRefreshed
@@ -44,7 +45,6 @@ import com.passbolt.mobile.android.feature.authentication.compose.Authentication
 import com.passbolt.mobile.android.feature.authentication.compose.AuthenticationSideEffect.ShowYubikeyDialog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -55,12 +55,16 @@ import org.junit.Rule
 import org.junit.Test
 import org.koin.core.logger.Level
 import org.koin.core.module.dsl.factoryOf
+import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 import org.koin.test.KoinTest
 import org.koin.test.KoinTestRule
 import org.koin.test.get
+import org.koin.test.mock.declare
 import org.mockito.Mockito.mock
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.spy
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import kotlin.time.ExperimentalTime
 
@@ -75,6 +79,7 @@ class AuthenticatedViewModelTest : KoinTest {
                     module {
                         single { mock<GetSessionUseCase>() }
                         single { mock<MfaProvidersHandler>() }
+                        singleOf(::SessionRefreshTrackingFlow)
                         factoryOf(::TestAuthenticatedViewModel)
                     },
                 ),
@@ -83,6 +88,8 @@ class AuthenticatedViewModelTest : KoinTest {
 
     private val testDispatcher = StandardTestDispatcher()
     private lateinit var viewModel: TestAuthenticatedViewModel
+    private val sessionTrackingFlow
+        get() = get<SessionRefreshTrackingFlow>()
 
     @Before
     fun setUp() {
@@ -108,7 +115,7 @@ class AuthenticatedViewModelTest : KoinTest {
             viewModel = get()
 
             viewModel.authenticationSideEffect.test {
-                viewModel.needSessionRefreshFlow.value = Session
+                sessionTrackingFlow.notifySessionRefreshNeeded(Session)
 
                 val sideEffect = expectItem()
                 assertThat(sideEffect).isInstanceOf(ShowAuth::class.java)
@@ -123,7 +130,7 @@ class AuthenticatedViewModelTest : KoinTest {
             viewModel = get()
 
             viewModel.authenticationSideEffect.test {
-                viewModel.needSessionRefreshFlow.value = Passphrase
+                sessionTrackingFlow.notifySessionRefreshNeeded(Passphrase)
 
                 val sideEffect = expectItem()
                 assertThat(sideEffect).isInstanceOf(ShowAuth::class.java)
@@ -142,7 +149,7 @@ class AuthenticatedViewModelTest : KoinTest {
             viewModel = get()
 
             viewModel.authenticationSideEffect.test {
-                viewModel.needSessionRefreshFlow.value = Mfa(providers = listOf(TOTP))
+                sessionTrackingFlow.notifySessionRefreshNeeded(Mfa(providers = listOf(TOTP)))
 
                 val sideEffect = expectItem()
                 assertThat(sideEffect).isInstanceOf(ShowMfaAuth::class.java)
@@ -156,14 +163,13 @@ class AuthenticatedViewModelTest : KoinTest {
     @Test
     fun `should emit session refreshed flow when authentication refreshed intent is received`() =
         runTest {
+            val sessionRefreshFlowSpy = spy(sessionTrackingFlow)
+            declare { sessionRefreshFlowSpy }
+
             viewModel = get()
 
-            viewModel.sessionRefreshedFlow.filterNotNull().test {
-                viewModel.onAuthenticationIntent(AuthenticationRefreshed)
-
-                val refreshEvent = expectItem()
-                assertThat(refreshEvent).isEqualTo(Unit)
-            }
+            viewModel.onAuthenticationIntent(AuthenticationRefreshed)
+            verify(sessionRefreshFlowSpy).notifySessionRefreshed()
         }
 
     @Test

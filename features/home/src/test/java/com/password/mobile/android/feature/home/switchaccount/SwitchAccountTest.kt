@@ -1,14 +1,10 @@
 package com.password.mobile.android.feature.home.switchaccount
 
 import com.passbolt.mobile.android.core.accounts.usecase.selectedaccount.GetSelectedAccountUseCase
-import com.passbolt.mobile.android.core.fulldatarefresh.DataRefreshStatus
-import com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor
 import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.feature.home.switchaccount.SwitchAccountContract
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.koin.core.logger.Level
@@ -32,13 +28,6 @@ class SwitchAccountTest : KoinTest {
             printLogger(Level.ERROR)
             modules(testSwitchAccountModule)
         }
-
-    @Before
-    fun setUp() {
-        whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
-            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success)),
-        )
-    }
 
     @Test
     fun `sign out click should sign out the user`() =
