@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.feature.resourceform.main
 
 import com.passbolt.mobile.android.common.datarefresh.DataRefreshTrackingFlow
 import com.passbolt.mobile.android.common.validation.StringIsBase32
+import com.passbolt.mobile.android.common.validation.StringMaxLength
 import com.passbolt.mobile.android.core.idlingresource.CreateResourceIdlingResource
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
@@ -27,6 +28,7 @@ import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAct
 import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction.REMOVE_TOTP
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.SecretJsonModel
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
+import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.note.NoteFormPresenter
 import com.passbolt.mobile.android.jsonmodel.delegates.TotpSecret
 import com.passbolt.mobile.android.mappers.EntropyViewMapper
 import com.passbolt.mobile.android.mappers.ResourceFormMapper
@@ -39,6 +41,7 @@ import com.passbolt.mobile.android.ui.Entropy
 import com.passbolt.mobile.android.ui.LeadingContentType
 import com.passbolt.mobile.android.ui.LeadingContentType.CUSTOM_FIELDS
 import com.passbolt.mobile.android.ui.LeadingContentType.PASSWORD
+import com.passbolt.mobile.android.ui.LeadingContentType.STANDALONE_NOTE
 import com.passbolt.mobile.android.ui.LeadingContentType.TOTP
 import com.passbolt.mobile.android.ui.MetadataIconModel
 import com.passbolt.mobile.android.ui.MetadataJsonModel
@@ -177,6 +180,7 @@ class ResourceFormPresenter(
                         TOTP -> view?.showCreateTotpTitle()
                         PASSWORD -> view?.showCreatePasswordTitle()
                         CUSTOM_FIELDS -> view?.showCreateCustomFieldsTitle()
+                        STANDALONE_NOTE -> view?.showCreateNoteTitle()
                     }
                 is Edit -> view?.showEditTitle(it.resourceName)
             }
@@ -227,6 +231,10 @@ class ResourceFormPresenter(
             }
             CUSTOM_FIELDS -> {
                 // no leading form to setup
+            }
+            STANDALONE_NOTE -> {
+                view?.addNoteLeadingForm()
+                view?.showNote(resourceSecret.description.orEmpty())
             }
         }
     }
@@ -534,19 +542,29 @@ class ResourceFormPresenter(
     }
 
     private fun onValid(action: () -> Unit) {
-        if (uiModel.leadingContentType == TOTP) {
-            val totpKey = resourceSecret.totp?.key
-            if (totpKey.isNullOrBlank()) {
-                view?.showTotpRequired()
-                return
+        when (uiModel.leadingContentType) {
+            TOTP -> {
+                val totpKey = resourceSecret.totp?.key
+                if (totpKey.isNullOrBlank()) {
+                    view?.showTotpRequired()
+                    return
+                }
+                if (!StringIsBase32.condition(totpKey)) {
+                    view?.showSecretMustBeBase32()
+                    return
+                }
+                action()
             }
-            if (!StringIsBase32.condition(totpKey)) {
-                view?.showSecretMustBeBase32()
-                return
+            STANDALONE_NOTE -> {
+                if (!StringMaxLength(NoteFormPresenter.NOTE_MAX_LENGTH).condition(resourceSecret.description.orEmpty())) {
+                    view?.showNoteMaxLenghtExceeded(NoteFormPresenter.NOTE_MAX_LENGTH)
+                    return
+                }
+                action()
             }
-            action()
-        } else {
-            action()
+            else -> {
+                action()
+            }
         }
     }
 

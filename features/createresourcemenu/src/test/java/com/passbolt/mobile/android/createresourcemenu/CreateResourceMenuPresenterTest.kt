@@ -62,6 +62,7 @@ class CreateResourceMenuPresenterTest : KoinTest {
                         isTotpEnabled = true,
                         isFolderEnabled = true,
                         isPasswordEnabled = true,
+                        isNoteEnabled = true,
                     ),
                 ),
             )
@@ -73,6 +74,7 @@ class CreateResourceMenuPresenterTest : KoinTest {
         verify(view).showTotpButton()
         verify(view).showFoldersButton()
         verify(view).showPasswordButton()
+        verify(view).showNoteButton()
     }
 
     @Test
@@ -84,6 +86,7 @@ class CreateResourceMenuPresenterTest : KoinTest {
                         isTotpEnabled = false,
                         isFolderEnabled = false,
                         isPasswordEnabled = false,
+                        isNoteEnabled = false,
                     ),
                 ),
             )
@@ -94,5 +97,30 @@ class CreateResourceMenuPresenterTest : KoinTest {
         verify(view, never()).showTotpButton()
         verify(view, never()).showFoldersButton()
         verify(view, never()).showPasswordButton()
+        verify(view, never()).showNoteButton()
+    }
+
+    @Test
+    fun `note item should be visible when enabled`() {
+        mockCreateCreateResourceMenuModelUseCase.stub {
+            onBlocking { execute(any()) }.doReturn(
+                CreateCreateResourceMenuModelUseCase.Output(
+                    CreateResourceMenuModel(
+                        isTotpEnabled = false,
+                        isFolderEnabled = false,
+                        isPasswordEnabled = false,
+                        isNoteEnabled = true,
+                    ),
+                ),
+            )
+        }
+
+        presenter.attach(view)
+        presenter.argsRetrieved(HomeDisplayViewModel.folderRoot())
+
+        verify(view, never()).showTotpButton()
+        verify(view, never()).showFoldersButton()
+        verify(view, never()).showPasswordButton()
+        verify(view).showNoteButton()
     }
 }

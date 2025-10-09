@@ -4,11 +4,13 @@ import androidx.lifecycle.viewModelScope
 import com.passbolt.mobile.android.core.compose.SideEffectViewModel
 import com.passbolt.mobile.android.createresourcemenu.compose.CreateResourceMenuIntent.Close
 import com.passbolt.mobile.android.createresourcemenu.compose.CreateResourceMenuIntent.CreateFolder
+import com.passbolt.mobile.android.createresourcemenu.compose.CreateResourceMenuIntent.CreateNote
 import com.passbolt.mobile.android.createresourcemenu.compose.CreateResourceMenuIntent.CreatePassword
 import com.passbolt.mobile.android.createresourcemenu.compose.CreateResourceMenuIntent.CreateTotp
 import com.passbolt.mobile.android.createresourcemenu.compose.CreateResourceMenuIntent.Initialize
 import com.passbolt.mobile.android.createresourcemenu.compose.CreateResourceMenuSideEffect.Dismiss
 import com.passbolt.mobile.android.createresourcemenu.compose.CreateResourceMenuSideEffect.InvokeCreateFolder
+import com.passbolt.mobile.android.createresourcemenu.compose.CreateResourceMenuSideEffect.InvokeCreateNote
 import com.passbolt.mobile.android.createresourcemenu.compose.CreateResourceMenuSideEffect.InvokeCreatePassword
 import com.passbolt.mobile.android.createresourcemenu.compose.CreateResourceMenuSideEffect.InvokeCreateTotp
 import com.passbolt.mobile.android.createresourcemenu.usecase.CreateCreateResourceMenuModelUseCase
@@ -47,6 +49,7 @@ class CreateResourceMenuViewModel(
             CreatePassword -> emitSideEffect(InvokeCreatePassword)
             CreateTotp -> emitSideEffect(InvokeCreateTotp)
             CreateFolder -> emitSideEffect(InvokeCreateFolder)
+            CreateNote -> emitSideEffect(InvokeCreateNote)
             is Initialize -> initialize(intent.homeDisplayViewModel)
         }
     }
@@ -62,6 +65,7 @@ class CreateResourceMenuViewModel(
                         copy(
                             showPasswordButton = isPasswordEnabled,
                             showTotpButton = isTotpEnabled,
+                            showNoteButton = isNoteEnabled,
                             showFoldersButton = isFolderEnabled,
                         )
                     }

@@ -6,10 +6,12 @@ import com.passbolt.mobile.android.supportedresourceTypes.ContentType
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordAndDescription
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.Totp
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5Default
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5Note
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5TotpStandalone
 import com.passbolt.mobile.android.ui.LeadingContentType
 import com.passbolt.mobile.android.ui.LeadingContentType.CUSTOM_FIELDS
 import com.passbolt.mobile.android.ui.LeadingContentType.PASSWORD
+import com.passbolt.mobile.android.ui.LeadingContentType.STANDALONE_NOTE
 import com.passbolt.mobile.android.ui.LeadingContentType.TOTP
 import com.passbolt.mobile.android.ui.MetadataTypeModel
 import com.passbolt.mobile.android.ui.MetadataTypeModel.V4
@@ -57,13 +59,15 @@ class GetDefaultCreateContentTypeUseCase(
                             when (input.leadingContentType) {
                                 TOTP -> Totp
                                 PASSWORD -> PasswordAndDescription
-                                CUSTOM_FIELDS -> error("Custom fields creation not supported")
+                                CUSTOM_FIELDS -> error("Custom fields creation not supported for v4")
+                                STANDALONE_NOTE -> error("Standalone note creation not supported for v4")
                             }
                         V5 ->
                             when (input.leadingContentType) {
                                 TOTP -> V5TotpStandalone
                                 PASSWORD -> V5Default
                                 CUSTOM_FIELDS -> error("Custom fields creation not supported")
+                                STANDALONE_NOTE -> V5Note
                             }
                     },
             )

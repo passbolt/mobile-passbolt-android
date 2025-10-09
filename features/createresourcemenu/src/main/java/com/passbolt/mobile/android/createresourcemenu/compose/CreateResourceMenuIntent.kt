@@ -34,6 +34,8 @@ sealed interface CreateResourceMenuIntent {
 
     data object CreateTotp : CreateResourceMenuIntent
 
+    data object CreateNote : CreateResourceMenuIntent
+
     data object CreateFolder : CreateResourceMenuIntent
 
     data object Close : CreateResourceMenuIntent

@@ -41,6 +41,9 @@ class CreateResourceMenuPresenter(
                     if (isTotpEnabled) {
                         view?.showTotpButton()
                     }
+                    if (isNoteEnabled) {
+                        view?.showNoteButton()
+                    }
                     if (isFolderEnabled) {
                         view?.showFoldersButton()
                     }

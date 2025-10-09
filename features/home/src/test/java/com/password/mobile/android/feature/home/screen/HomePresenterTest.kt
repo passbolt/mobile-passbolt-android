@@ -645,7 +645,7 @@ class HomePresenterTest : KoinTest {
         )
         presenter.resume(view)
         presenter.createTotpClick()
-        presenter.createResourceClick()
+        presenter.createPasswordClick()
 
         verify(view, times(2)).showCannotPerformThisActionMessage()
     }

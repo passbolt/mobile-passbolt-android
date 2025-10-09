@@ -63,6 +63,7 @@ import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.CloseDeleteConfi
 import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.CloseTrustedKeyDeletedDialog
 import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.ConfirmDeleteTotp
 import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.CopyOtp
+import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.CreateNote
 import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.CreatePassword
 import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.CreateTotp
 import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.DeleteOtp
@@ -212,6 +213,7 @@ fun OtpScreen(
                     CreateResourceMenuBottomSheet(
                         onCreatePassword = { onIntent(CreatePassword) },
                         onCreateTotp = { onIntent(CreateTotp) },
+                        onCreateNote = { onIntent(CreateNote) },
                         onDismissRequest = { onIntent(CloseCreateResourceMenu) },
                     )
                 }

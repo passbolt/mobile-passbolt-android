@@ -33,6 +33,7 @@ import com.passbolt.mobile.android.supportedresourceTypes.ContentType.Totp
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5CustomFields
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5Default
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5DefaultWithTotp
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5Note
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5PasswordString
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5TotpStandalone
 
@@ -52,6 +53,7 @@ class ResourceTypesUpdatesAdjacencyGraph {
         val v5Totp = ResourceTypeVertex(V5TotpStandalone)
         val v5DefaultWithTotp = ResourceTypeVertex(V5DefaultWithTotp)
         val v5CustomFields = ResourceTypeVertex(V5CustomFields)
+        val v5Note = ResourceTypeVertex(V5Note)
 
         // edges (actions)
         map[simplePassword] =
@@ -157,6 +159,20 @@ class ResourceTypesUpdatesAdjacencyGraph {
                 ResourceTypeEdge(v5CustomFields, v5CustomFields, UpdateAction.ADD_CUSTOM_FIELDS),
                 ResourceTypeEdge(v5CustomFields, v5Default, UpdateAction.ADD_PASSWORD),
                 ResourceTypeEdge(v5CustomFields, v5DefaultWithTotp, UpdateAction.ADD_TOTP),
+            )
+
+        map[v5Note] =
+            listOf(
+                ResourceTypeEdge(v5Note, v5Note, UpdateAction.EDIT_METADATA),
+                ResourceTypeEdge(v5Note, v5Note, UpdateAction.ADD_NOTE),
+                ResourceTypeEdge(v5Note, v5Note, UpdateAction.REMOVE_NOTE),
+                ResourceTypeEdge(v5Note, v5Note, UpdateAction.ADD_METADATA_DESCRIPTION),
+                ResourceTypeEdge(v5Note, v5Note, UpdateAction.REMOVE_METADATA_DESCRIPTION),
+                ResourceTypeEdge(v5Note, v5Note, UpdateAction.EDIT_ADDITIONAL_URIS),
+                ResourceTypeEdge(v5Note, v5Note, UpdateAction.EDIT_APPEARANCE),
+                ResourceTypeEdge(v5Note, v5Default, UpdateAction.ADD_PASSWORD),
+                ResourceTypeEdge(v5Note, v5DefaultWithTotp, UpdateAction.ADD_TOTP),
+                ResourceTypeEdge(v5Note, v5Default, UpdateAction.ADD_CUSTOM_FIELDS),
             )
 
         adjacencyMap = map

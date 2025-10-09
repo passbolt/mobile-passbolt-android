@@ -7,6 +7,7 @@ import com.passbolt.mobile.android.ui.FolderMoreMenuModel
 import com.passbolt.mobile.android.ui.FolderWithCountAndPath
 import com.passbolt.mobile.android.ui.GroupWithCount
 import com.passbolt.mobile.android.ui.HomeDisplayViewModel
+import com.passbolt.mobile.android.ui.LeadingContentType
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
 import com.passbolt.mobile.android.ui.TagWithCount
@@ -112,7 +113,10 @@ interface HomeContract {
 
         fun navigateRootHomeFromRootHome(homeView: HomeDisplayViewModel)
 
-        fun navigateToCreateResource(parentFolderId: String?)
+        fun navigateToCreateResource(
+            parentFolderId: String?,
+            leadingContentType: LeadingContentType,
+        )
 
         fun showChildFolderTitle(
             activeFolderName: String,
@@ -242,7 +246,7 @@ interface HomeContract {
 
         fun folderItemClick(folderModel: FolderWithCountAndPath)
 
-        fun createResourceClick()
+        fun createPasswordClick()
 
         fun tagsClick()
 
@@ -296,5 +300,7 @@ interface HomeContract {
         )
 
         fun createTotpClick()
+
+        fun createNoteClick()
     }
 }

@@ -26,4 +26,5 @@ enum class LeadingContentType {
     TOTP,
     PASSWORD,
     CUSTOM_FIELDS,
+    STANDALONE_NOTE,
 }

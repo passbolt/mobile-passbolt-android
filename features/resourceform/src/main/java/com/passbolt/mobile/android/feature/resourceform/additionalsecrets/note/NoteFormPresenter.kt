@@ -3,7 +3,6 @@ package com.passbolt.mobile.android.feature.resourceform.additionalsecrets.note
 import com.passbolt.mobile.android.common.validation.StringMaxLength
 import com.passbolt.mobile.android.common.validation.validation
 import com.passbolt.mobile.android.ui.ResourceFormMode
-import org.jetbrains.annotations.VisibleForTesting
 
 /**
  * Passbolt - Open source password manager for teams
@@ -70,7 +69,6 @@ class NoteFormPresenter : NoteFormContract.Presenter {
     }
 
     companion object {
-        @VisibleForTesting
-        val NOTE_MAX_LENGTH = 50_000
+        const val NOTE_MAX_LENGTH = 50_000
     }
 }
