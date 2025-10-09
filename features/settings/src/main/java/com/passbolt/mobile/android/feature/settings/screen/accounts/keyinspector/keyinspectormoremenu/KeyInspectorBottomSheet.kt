@@ -27,22 +27,14 @@ import android.app.Activity
 import android.content.Context
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarDuration.Short
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -58,6 +50,7 @@ import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.ActivityIntents.AuthConfig.RefreshPassphrase
 import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
+import com.passbolt.mobile.android.core.ui.compose.bottomsheet.BottomSheetHeader
 import com.passbolt.mobile.android.core.ui.compose.menu.OpenableSettingsItem
 import com.passbolt.mobile.android.feature.settings.screen.accounts.keyinspector.keyinspectormoremenu.KeyInspectorBottomSheetIntent.Close
 import com.passbolt.mobile.android.feature.settings.screen.accounts.keyinspector.keyinspectormoremenu.KeyInspectorBottomSheetIntent.ExportPrivateKey
@@ -145,42 +138,10 @@ private fun KeyInspectorBottomSheet(
         ModalBottomSheet(
             onDismissRequest = onDismissRequest,
         ) {
-            Row(
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
-            ) {
-                Text(
-                    text = stringResource(LocalizationR.string.key_inspector_menu_title),
-                    style = MaterialTheme.typography.titleLarge,
-                    modifier =
-                        Modifier
-                            .weight(1f)
-                            .align(Alignment.CenterVertically),
-                    color = colorResource(id = CoreUiR.color.text_primary),
-                )
-
-                Icon(
-                    painter = painterResource(id = CoreUiR.drawable.ic_close),
-                    contentDescription = null,
-                    modifier =
-                        Modifier
-                            .size(24.dp)
-                            .clickable { onIntent(Close) },
-                    tint = colorResource(id = CoreUiR.color.icon_tint),
-                )
-            }
-
-            HorizontalDivider(
-                color = colorResource(id = CoreUiR.color.divider),
-                modifier =
-                    Modifier
-                        .padding(horizontal = 16.dp)
-                        .padding(top = 16.dp),
-                thickness = 1.dp,
+            BottomSheetHeader(
+                title = stringResource(LocalizationR.string.key_inspector_menu_title),
+                onClose = { onIntent(Close) },
             )
-
             OpenableSettingsItem(
                 title = stringResource(LocalizationR.string.key_inspector_menu_export_private_key),
                 iconPainter = painterResource(CoreUiR.drawable.ic_export),

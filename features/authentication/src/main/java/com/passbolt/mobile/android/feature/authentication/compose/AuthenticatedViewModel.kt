@@ -11,6 +11,7 @@ import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.U
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated.Reason.Passphrase
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated.Reason.Session
 import com.passbolt.mobile.android.core.mvp.authentication.MfaProvidersHandler
+import com.passbolt.mobile.android.core.mvp.authentication.SessionListener
 import com.passbolt.mobile.android.core.mvp.authentication.UnauthenticatedReason
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.feature.authentication.compose.AuthenticatedIntent.AuthenticationRefreshed
@@ -21,9 +22,8 @@ import com.passbolt.mobile.android.feature.authentication.compose.Authentication
 import com.passbolt.mobile.android.feature.authentication.compose.AuthenticationSideEffect.ShowYubikeyDialog
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
@@ -56,15 +56,16 @@ import timber.log.Timber
 open class AuthenticatedViewModel<ViewState, SideEffect>(
     initialState: ViewState,
 ) : SideEffectViewModel<ViewState, SideEffect>(initialState),
-    KoinComponent {
+    KoinComponent,
+    SessionListener {
     private val authenticationSideEffectChannel = Channel<AuthenticationSideEffect>()
     val authenticationSideEffect: Flow<AuthenticationSideEffect> = authenticationSideEffectChannel.receiveAsFlow()
 
-    private var _sessionRefreshedFlow = MutableSharedFlow<Unit?>()
-    val sessionRefreshedFlow
-        get() = _sessionRefreshedFlow.asSharedFlow()
+    private var _sessionRefreshedFlow = MutableStateFlow<Unit?>(null)
+    override val sessionRefreshedFlow
+        get() = _sessionRefreshedFlow.asStateFlow()
 
-    val needSessionRefreshFlow: MutableStateFlow<UnauthenticatedReason?> = MutableStateFlow(null)
+    override val needSessionRefreshFlow: MutableStateFlow<UnauthenticatedReason?> = MutableStateFlow(null)
 
     private val mfaProvidersHandler: MfaProvidersHandler by inject()
     private val getSessionUseCase: GetSessionUseCase by inject()

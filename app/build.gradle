@@ -190,6 +190,7 @@ dependencies {
     implementation project(':resourceform')
     implementation project(':permissions')
     implementation project(':navigation')
+    implementation project(':clipboard')
 
     debugImplementation libs.leakcanary
 

@@ -55,6 +55,7 @@ coreModule "encryptedstorage"
 coreModule "authenticationcore"
 coreModule "preferences"
 coreModule "passphrasememorycache"
+coreModule "clipboard"
 
 featureModule "startup"
 featureModule "setup"

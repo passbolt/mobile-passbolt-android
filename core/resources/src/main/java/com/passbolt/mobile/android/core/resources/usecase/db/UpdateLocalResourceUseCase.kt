@@ -50,9 +50,7 @@ class UpdateLocalResourceUseCase(
 
         resourceUriDao.apply {
             deleteForResource(input.resourceModel.resourceId)
-            resourceModelMapper.mapResourceUri(input.resourceModel)?.let { uri ->
-                resourceUriDao.insert(uri)
-            }
+            insertAll(resourceModelMapper.mapResourceUris(input.resourceModel))
         }
     }
 

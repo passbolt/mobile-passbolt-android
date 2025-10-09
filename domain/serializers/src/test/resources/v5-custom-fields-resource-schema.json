@@ -1,0 +1,123 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": [
+    "name",
+    "custom_fields"
+  ],
+  "properties": {
+    "name": {
+      "type": "string",
+      "maxLength": 255
+    },
+    "uris": {
+      "type": "array",
+      "items": {
+        "anyOf": [
+          {
+            "type": "string",
+            "maxLength": 1024
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "maxItems": 32
+    },
+    "description": {
+      "anyOf": [
+        {
+          "type": "string",
+          "maxLength": 10000
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "icon": {
+      "type": "object",
+      "required": [],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "keepass-icon-set",
+            "passbolt-icon-set"
+          ]
+        },
+        "value": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "background_color": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^#(?:[0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "custom_fields": {
+      "type": "array",
+      "maxItems": 128,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "type"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "text",
+              "password",
+              "boolean",
+              "number",
+              "uri"
+            ]
+          },
+          "metadata_key": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 255
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "metadata_value": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 20000
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      }
+    }
+  }
+}

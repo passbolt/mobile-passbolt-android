@@ -74,7 +74,7 @@ class V5TotpResourceFormPresenterTest : KoinTest {
             }
             mockGetDefaultCreateContentTypeUseCase.stub {
                 onBlocking { execute(any()) }.thenReturn(
-                    GetDefaultCreateContentTypeUseCase.Output(
+                    GetDefaultCreateContentTypeUseCase.Output.CreationContentType(
                         metadataType = MetadataTypeModel.V5,
                         contentType = ContentType.V5TotpStandalone,
                     ),
@@ -222,7 +222,8 @@ class V5TotpResourceFormPresenterTest : KoinTest {
                         "period": $mockPeriod,
                         "digits": $mockDigits,
                         "algorithm": "$mockAlgorithm"
-                    }
+                    },
+                    "custom_fields": []
                 }
                 """.trimIndent(),
                 resourceModelHandler.resourceSecret.json,
@@ -285,7 +286,8 @@ class V5TotpResourceFormPresenterTest : KoinTest {
                         "period": $mockPeriod,
                         "digits": $mockDigits,
                         "algorithm": "$mockAlgorithm"
-                    }
+                    },
+                    "custom_fields": []
                 }
                 """.trimIndent(),
                 resourceModelHandler.resourceSecret.json,

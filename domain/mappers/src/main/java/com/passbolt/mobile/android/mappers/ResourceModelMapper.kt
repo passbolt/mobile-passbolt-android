@@ -116,10 +116,15 @@ class ResourceModelMapper(
             description = resourceModel.metadataJsonModel.description,
         )
 
-    fun mapResourceUri(resourceModel: ResourceModel) =
-        resourceModel.metadataJsonModel.uri?.let {
-            ResourceUri(resourceId = resourceModel.resourceId, uri = it)
-        }
+    fun mapResourceUris(resourceModel: ResourceModel): List<ResourceUri> =
+        resourceModel.metadataJsonModel.uri
+            ?.let {
+                listOf(ResourceUri(resourceId = resourceModel.resourceId, uri = it))
+            }.orEmpty() +
+            resourceModel.metadataJsonModel.uris
+                ?.map {
+                    ResourceUri(resourceId = resourceModel.resourceId, uri = it)
+                }.orEmpty()
 
     fun map(resourceEntity: ResourceWithMetadata): ResourceModel =
         ResourceModel(

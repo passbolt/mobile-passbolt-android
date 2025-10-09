@@ -44,6 +44,8 @@ import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReac
 import com.passbolt.mobile.android.core.idlingresource.DeleteResourceIdlingResource
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.otpcore.TotpParametersProvider
+import com.passbolt.mobile.android.core.otpcore.TotpParametersProvider.OtpParametersResult.InvalidTotpInput
+import com.passbolt.mobile.android.core.otpcore.TotpParametersProvider.OtpParametersResult.OtpParameters
 import com.passbolt.mobile.android.core.preferences.usecase.GetHomeDisplayViewPrefsUseCase
 import com.passbolt.mobile.android.core.rbac.usecase.GetRbacRulesUseCase
 import com.passbolt.mobile.android.core.resources.actions.ResourceCommonActionsInteractor
@@ -57,8 +59,8 @@ import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesUs
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesWithGroupUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesWithTagUseCase
 import com.passbolt.mobile.android.core.tags.usecase.db.GetLocalTagsUseCase
+import com.passbolt.mobile.android.core.ui.compose.search.SearchInputEndIconMode
 import com.passbolt.mobile.android.feature.home.screen.model.HeaderSectionConfiguration
-import com.passbolt.mobile.android.feature.home.screen.model.SearchInputEndIconMode
 import com.passbolt.mobile.android.mappers.HomeDisplayViewMapper
 import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.homeSlugs
 import com.passbolt.mobile.android.ui.Folder
@@ -995,14 +997,17 @@ class HomePresenter(
                 doOnDecryptionFailure = { view?.showDecryptionFailure() },
                 doOnSuccess = {
                     if (it.result.key.isNotBlank()) {
-                        val otpParameters =
+                        val otpParametersResult =
                             totpParametersProvider.provideOtpParameters(
                                 secretKey = it.result.key,
                                 digits = it.result.digits,
                                 period = it.result.period,
                                 algorithm = it.result.algorithm,
                             )
-                        view?.addToClipboard(it.label, otpParameters.otpValue, isSecret = true)
+                        when (otpParametersResult) {
+                            is OtpParameters -> view?.addToClipboard(it.label, otpParametersResult.otpValue, isSecret = true)
+                            InvalidTotpInput -> view?.showGeneralError()
+                        }
                     } else {
                         Timber.e("Fetched totp key is empty")
                         view?.showGeneralError()

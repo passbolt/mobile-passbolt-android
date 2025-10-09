@@ -54,3 +54,58 @@ data class OtpAdvancedSettingsModel(
     val algorithm: String,
     val digits: Int,
 ) : Parcelable
+
+fun List<OtpItemWrapper>.refreshingOnly(resourceId: String) =
+    map { otp ->
+        otp.copy(isRefreshing = otp.resource.resourceId == resourceId)
+    }
+
+fun List<OtpItemWrapper>.refreshingNone() =
+    map { otp ->
+        otp.copy(isRefreshing = false)
+    }
+
+fun List<OtpItemWrapper>.allReset() =
+    map {
+        it.copy(
+            isVisible = false,
+            isRefreshing = false,
+            otpValue = null,
+            otpExpirySeconds = null,
+            remainingSecondsCounter = null,
+        )
+    }
+
+fun List<OtpItemWrapper>.revealed(
+    resourceId: String,
+    otpValue: String?,
+    otpPeriod: Long?,
+    otpSecondsValid: Long?,
+) = map { otp ->
+    if (otp.resource.resourceId == resourceId) {
+        otp.copy(
+            isVisible = true,
+            isRefreshing = false,
+            otpValue = otpValue,
+            otpExpirySeconds = otpPeriod,
+            remainingSecondsCounter = otpSecondsValid,
+        )
+    } else {
+        otp.copy(
+            isVisible = false,
+            isRefreshing = false,
+            otpValue = null,
+            otpExpirySeconds = null,
+            remainingSecondsCounter = null,
+        )
+    }
+}
+
+fun List<OtpItemWrapper>.replaceOnId(updated: OtpItemWrapper) =
+    map {
+        if (it.resource.resourceId == updated.resource.resourceId) updated else it
+    }
+
+fun List<OtpItemWrapper>.findVisible() = find { it.isVisible }
+
+fun OtpItemWrapper.isExpired(): Boolean = remainingSecondsCounter!! < 0

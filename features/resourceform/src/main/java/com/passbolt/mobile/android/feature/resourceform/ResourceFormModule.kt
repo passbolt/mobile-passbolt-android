@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.feature.resourceform
 
 import com.passbolt.mobile.android.core.resources.usecase.GetDefaultCreateContentTypeUseCase
 import com.passbolt.mobile.android.core.resources.usecase.GetEditContentTypeUseCase
+import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.customfields.customFieldsFormModule
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.note.noteFormModule
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.password.passwordFormModule
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.advanced.totpAdvancedSettingsFormModule
@@ -46,6 +47,7 @@ val resourceFormModule =
         passwordFormModule()
         additionalUrisFormModule()
         appearanceFormModule()
+        customFieldsFormModule()
 
         factoryOf(::GetDefaultCreateContentTypeUseCase)
         factoryOf(::GetEditContentTypeUseCase)

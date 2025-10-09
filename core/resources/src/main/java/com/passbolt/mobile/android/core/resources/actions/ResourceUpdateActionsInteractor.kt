@@ -329,8 +329,10 @@ suspend fun performResourceUpdateAction(
     doOnFetchFailure: () -> Unit = {},
     doOnUnauthorized: () -> Unit = {},
     doOnMetadataKeyVerificationFailure: () -> Unit = {},
+    doOnFinish: () -> Unit = {},
 ) {
     action().single().let {
+        doOnFinish()
         when (it) {
             is ResourceUpdateActionResult.CryptoFailure -> doOnCryptoFailure(it.message.orEmpty())
             is ResourceUpdateActionResult.Failure -> doOnFailure(it.message.orEmpty())

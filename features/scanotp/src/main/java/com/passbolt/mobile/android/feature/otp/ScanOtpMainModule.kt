@@ -24,9 +24,11 @@
 package com.passbolt.mobile.android.feature.otp
 
 import com.passbolt.mobile.android.feature.otp.scanotp.scanOtpModule
+import com.passbolt.mobile.android.feature.otp.scanotp.scanotpsuccess.scanOtpSuccessModule
 import org.koin.dsl.module
 
 val scanOtpMainModule =
     module {
         scanOtpModule()
+        scanOtpSuccessModule()
     }

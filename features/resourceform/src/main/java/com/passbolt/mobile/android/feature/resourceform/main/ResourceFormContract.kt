@@ -4,6 +4,7 @@ import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedCont
 import com.passbolt.mobile.android.core.passwordgenerator.codepoints.Codepoint
 import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpMode
 import com.passbolt.mobile.android.ui.AdditionalUrisUiModel
+import com.passbolt.mobile.android.ui.CustomFieldsModel
 import com.passbolt.mobile.android.ui.NewMetadataKeyToTrustModel
 import com.passbolt.mobile.android.ui.OtpParseResult
 import com.passbolt.mobile.android.ui.PasswordStrength
@@ -140,6 +141,14 @@ interface ResourceFormContract {
         fun navigateToAdditionalUris(model: AdditionalUrisUiModel)
 
         fun navigateToAppearance(appearanceModel: ResourceAppearanceModel)
+
+        fun navigateToCustomFields(model: CustomFieldsModel)
+
+        fun showCreateCustomFieldsTitle()
+
+        fun showCreateResourceInitializationError()
+
+        fun showSecretMustBeBase32()
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
@@ -199,5 +208,9 @@ interface ResourceFormContract {
         fun appearanceClick()
 
         fun appearanceChanged(model: ResourceAppearanceModel?)
+
+        fun customFieldsClick()
+
+        fun customFieldsChanged(models: CustomFieldsModel?)
     }
 }

@@ -19,6 +19,7 @@ import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordAn
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordDescriptionTotp
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordString
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.Totp
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5CustomFields
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5Default
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5DefaultWithTotp
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5PasswordString
@@ -114,6 +115,7 @@ class ResourceIconProvider(
                 PasswordDescriptionTotp, V5DefaultWithTotp -> CoreUiR.drawable.passbolt_totp_password_with_totp
                 PasswordString, V5PasswordString -> CoreUiR.drawable.passbolt_password
                 Totp, V5TotpStandalone -> CoreUiR.drawable.passbolt_totp
+                V5CustomFields -> CoreUiR.drawable.passbolt_key_value
                 null -> null
             }
 

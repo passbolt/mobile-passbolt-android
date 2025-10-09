@@ -2,11 +2,13 @@ package com.passbolt.mobile.android.feature.resourcedetails.details
 
 import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReactiveContract
 import com.passbolt.mobile.android.permissions.permissions.PermissionsMode
+import com.passbolt.mobile.android.ui.CustomFieldModel
 import com.passbolt.mobile.android.ui.OtpItemWrapper
 import com.passbolt.mobile.android.ui.PermissionModelUi
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
 import java.time.ZonedDateTime
+import java.util.UUID
 
 /**
  * Passbolt - Open source password manager for teams
@@ -164,6 +166,19 @@ interface ResourceDetailsContract {
         fun hideLocation()
 
         fun displayAdditionalUrls(uris: List<String>)
+
+        fun showCustomFields(customFields: Map<UUID, String>)
+
+        fun showCustomFieldValue(
+            key: UUID,
+            model: CustomFieldModel?,
+        )
+
+        fun hideCustomFieldValue(key: UUID)
+
+        fun showCustomFieldsSection()
+
+        fun hideCustomFieldsSection()
     }
 
     @Suppress("TooManyFunctions")
@@ -219,6 +234,10 @@ interface ResourceDetailsContract {
         fun copyTotpClick()
 
         fun copyNoteClick()
+
+        fun customFieldActionClick(key: UUID)
+
+        fun copyCustomFieldClick(key: UUID)
 
         fun noteActionClick()
     }

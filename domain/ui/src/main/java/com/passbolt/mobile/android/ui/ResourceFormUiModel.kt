@@ -37,5 +37,6 @@ data class ResourceFormUiModel(
         PASSWORD,
         NOTE,
         TOTP,
+        CUSTOM_FIELDS,
     }
 }

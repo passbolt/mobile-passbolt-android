@@ -34,6 +34,7 @@ import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordAn
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordDescriptionTotp
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordString
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.Totp
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5CustomFields
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5Default
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5DefaultWithTotp
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5PasswordString
@@ -51,6 +52,7 @@ import org.koin.test.inject
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.stub
 
+@Suppress("LargeClass")
 class SecretValidationTest : KoinTest {
     @get:Rule
     val koinTestRule =
@@ -96,6 +98,10 @@ class SecretValidationTest : KoinTest {
             on { schemaForSecret(V5TotpStandalone.slug) } doReturn
                 SchemaStore().loadSchema(
                     this::class.java.getResource("/v5-totp-standalone-secret-schema.json"),
+                )
+            on { schemaForSecret(V5CustomFields.slug) } doReturn
+                SchemaStore().loadSchema(
+                    this::class.java.getResource("/v5-custom-fields-secret-schema.json"),
                 )
         }
     }
@@ -632,6 +638,83 @@ class SecretValidationTest : KoinTest {
             assertThat(results.all { it }).isTrue()
         }
 
+    @Test
+    fun `valid secret for v5 custom fields resource type should not be rejected`() =
+        runTest {
+            val validSecret =
+                """
+                {
+                    "object_type": "PASSBOLT_SECRET_DATA",
+                    "custom_fields": [
+                        {
+                            "id": "550e8400-e29b-41d4-a716-446655440000",
+                            "type": "text",
+                            "secret_value": "text value"
+                        },
+                        {
+                            "id": "550e8400-e29b-41d4-a716-446655440001",
+                            "type": "password",
+                            "secret_value": "secret password"
+                        },
+                        {
+                            "id": "550e8400-e29b-41d4-a716-446655440002",
+                            "type": "boolean",
+                            "secret_value": true
+                        },
+                        {
+                            "id": "550e8400-e29b-41d4-a716-446655440003",
+                            "type": "number",
+                            "secret_value": 8080
+                        },
+                        {
+                            "id": "550e8400-e29b-41d4-a716-446655440004",
+                            "type": "uri",
+                            "secret_value": "https://passbolt.com"
+                        }
+                    ]
+                }
+                """.trimIndent()
+
+            val result = secretValidationRunner.isSecretValid(validSecret, V5CustomFields.slug)
+
+            assertThat(result).isTrue()
+        }
+
+    @Test
+    fun `invalid secret for v5 custom fields resource type should be rejected`() =
+        runTest {
+            val invalidSecrets =
+                listOf(
+                    """
+                    {
+                        "object_type": "PASSBOLT_SECRET_DATA",
+                        "custom_fields": [
+                            {
+                                "id": "550e8400-e29b-41d4-a716-446655440000",
+                                "type": "invalid_type",
+                                "secret_value": "value"
+                            }
+                        ]
+                    }
+                    """.trimIndent(),
+                    """
+                    {
+                        "object_type": "PASSBOLT_SECRET_DATA", 
+                        "custom_fields": [
+                            {
+                                "type": "text",
+                                "secret_value": "value"
+                            }
+                        ]
+                    }
+                    """.trimIndent(),
+                )
+
+            val results = invalidSecrets.map { secretValidationRunner.isSecretValid(it, V5CustomFields.slug) }
+
+            assertThat(results.none { it }).isTrue()
+        }
+
     private companion object {
         const val PASSWORD_AND_DESCRIPTION_PASSWORD_MIN_LENGTH = 0
         const val PASSWORD_AND_DESCRIPTION_PASSWORD_MAX_LENGTH = 4096
@@ -656,5 +739,9 @@ class SecretValidationTest : KoinTest {
         const val TOTP_KEY_MAX_LENGTH = 1024
         const val TOTP_DIGITS_INCLUSIVE_MIN = 6
         const val TOTP_DIGITS_INCLUSIVE_MAX = 8
+
+        const val V5_CUSTOM_FIELDS_NAME_MAX_LENGTH = 255
+        const val V5_CUSTOM_FIELDS_USERNAME_MAX_LENGTH = 255
+        const val V5_CUSTOM_FIELDS_DESCRIPTION_MAX_LENGTH = 10_000
     }
 }

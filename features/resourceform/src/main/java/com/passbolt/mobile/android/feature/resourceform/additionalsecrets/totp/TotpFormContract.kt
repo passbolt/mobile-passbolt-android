@@ -43,6 +43,10 @@ interface TotpFormContract {
         fun navigateToScanTotp(scanMode: ScanOtpMode)
 
         fun showEditTitle(resourceName: String)
+
+        fun showSecretMustNotBeEmpty()
+
+        fun showSecretMustBeBase32()
     }
 
     interface Presenter : BaseContract.Presenter<View> {
@@ -50,7 +54,7 @@ interface TotpFormContract {
 
         fun argsRetrieved(
             mode: ResourceFormMode,
-            totpUiModel: TotpUiModel,
+            totpModel: TotpUiModel,
         )
 
         fun totpAdvancedSettingsChanged(totpModel: TotpUiModel?)

@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.ui
 
 import android.os.Parcelable
+import com.passbolt.mobile.android.common.extension.isInFuture
 import com.passbolt.mobile.android.common.search.Searchable
 import com.passbolt.mobile.android.jsonmodel.JsonModel
 import com.passbolt.mobile.android.jsonmodel.delegates.RootRelativeJsonPathNullableStringDelegate
@@ -50,6 +51,8 @@ data class ResourceModel(
     Searchable by metadataJsonModel
 
 fun ResourceModel.isFavourite() = favouriteId != null
+
+fun ResourceModel.isExpired() = expiry != null && !expiry.isInFuture()
 
 data class ResourceModelWithAttributes(
     val resourceModel: ResourceModel,
@@ -120,7 +123,12 @@ data class MetadataJsonModel(
     var icon: MetadataIconModel? by RootRelativeJsonPathIconDelegate(jsonPath = "icon")
 
     @IgnoredOnParcel
-    override val searchCriteria: String = "$name${username.orEmpty()}${uri.orEmpty()}${uris.orEmpty().joinToString()}"
+    var customFields: MetadataCustomFieldsModel? by RootRelativeJsonPathMetadataCustomFieldsDelegate(jsonPath = "custom_fields")
+
+    @IgnoredOnParcel
+    override val searchCriteria: String = "$name${username.orEmpty()}${uri.orEmpty()}${uris.orEmpty().joinToString()}${
+        customFields?.map { it.metadataKey }.orEmpty().joinToString()
+    }"
 
     fun getMainUri(contentType: ContentType) =
         if (contentType.isV5()) {

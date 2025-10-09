@@ -221,6 +221,36 @@
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
+                <!-- CUSTOM FIELDS -->
+                <TextView
+                    android:id="@+id/customFieldsSectionTitle"
+                    style="@style/Section"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dp_16"
+                    android:text="@string/resource_details_custom_fields_header"
+                    app:layout_constraintTop_toBottomOf="@id/totpContainer" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/customFieldsContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dp_16"
+                    android:background="@color/section_background"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="@dimen/dp_24"
+                    android:paddingVertical="@dimen/dp_16"
+                    app:layout_constraintTop_toBottomOf="@id/customFieldsSectionTitle">
+
+                    <LinearLayout
+                        android:id="@+id/customFieldsListContainer"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
                 <!-- NOTE -->
                 <TextView
                     android:id="@+id/note_section_title"
@@ -229,7 +259,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/dp_16"
                     android:text="@string/resource_details_note_header"
-                    app:layout_constraintTop_toBottomOf="@id/totpContainer" />
+                    app:layout_constraintTop_toBottomOf="@id/customFieldsContainer" />
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/note_container"
@@ -350,7 +380,7 @@
                         android:textSize="@dimen/sp_16"
                         app:layout_constraintEnd_toStartOf="@id/tagsNavIcon"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/tagsClickableArea"
+                        app:layout_constraintTop_toBottomOf="@+id/tagsHeader"
                         tools:text="Tag, Tag2" />
 
                     <ImageView

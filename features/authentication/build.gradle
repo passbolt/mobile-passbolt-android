@@ -38,6 +38,7 @@ dependencies {
     implementation project(':encryptedstorage')
     implementation project(':preferences')
     implementation project(':encryptedstorage')
+    implementation project(':clipboard')
 
     implementation libs.navigation.fragment
     implementation libs.navigation.ui

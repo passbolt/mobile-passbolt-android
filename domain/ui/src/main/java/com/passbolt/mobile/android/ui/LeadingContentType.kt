@@ -25,4 +25,5 @@ package com.passbolt.mobile.android.ui
 enum class LeadingContentType {
     TOTP,
     PASSWORD,
+    CUSTOM_FIELDS,
 }

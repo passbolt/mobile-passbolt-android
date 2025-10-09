@@ -71,6 +71,13 @@
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_resourceFormFragment_to_customFieldsComposeFragment"
+            app:destination="@id/customFieldsComposeFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
 
     <fragment
@@ -185,6 +192,14 @@
         <argument
             android:name="appearanceModel"
             app:argType="com.passbolt.mobile.android.ui.ResourceAppearanceModel" />
+    </fragment>
+    <fragment
+        android:id="@+id/customFieldsComposeFragment"
+        android:name="com.passbolt.mobile.android.feature.resourceform.additionalsecrets.customfields.CustomFieldsComposeFragment"
+        android:label="CustomFieldsComposeFragment" >
+        <argument
+            android:name="customFieldsModel"
+            app:argType="com.passbolt.mobile.android.ui.CustomFieldsModel" />
     </fragment>
 
 </navigation>

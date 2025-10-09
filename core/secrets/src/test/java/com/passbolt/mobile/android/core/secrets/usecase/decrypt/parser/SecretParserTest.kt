@@ -24,7 +24,16 @@
 package com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser
 
 import com.google.common.truth.Truth.assertThat
-import com.passbolt.mobile.android.supportedresourceTypes.ContentType
+import com.passbolt.mobile.android.jsonmodel.delegates.SecretCustomFieldType.BOOLEAN
+import com.passbolt.mobile.android.jsonmodel.delegates.SecretCustomFieldType.NUMBER
+import com.passbolt.mobile.android.jsonmodel.delegates.SecretCustomFieldType.PASSWORD
+import com.passbolt.mobile.android.jsonmodel.delegates.SecretCustomFieldType.TEXT
+import com.passbolt.mobile.android.jsonmodel.delegates.SecretCustomFieldType.URI
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordAndDescription
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordDescriptionTotp
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordString
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.Totp
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5CustomFields
 import com.passbolt.mobile.android.ui.DecryptedSecretOrError
 import kotlinx.coroutines.test.runTest
 import net.jimblackler.jsonschemafriend.SchemaStore
@@ -52,21 +61,25 @@ class SecretParserTest : KoinTest {
     @Before
     fun setup() {
         mockJSFSchemaRepository.stub {
-            on { schemaForSecret(ContentType.PasswordString.slug) } doReturn
+            on { schemaForSecret(PasswordString.slug) } doReturn
                 SchemaStore().loadSchema(
                     this::class.java.getResource("/password-string-secret-schema.json"),
                 )
-            on { schemaForSecret(ContentType.PasswordAndDescription.slug) } doReturn
+            on { schemaForSecret(PasswordAndDescription.slug) } doReturn
                 SchemaStore().loadSchema(
                     this::class.java.getResource("/password-and-description-secret-schema.json"),
                 )
-            on { schemaForSecret(ContentType.PasswordDescriptionTotp.slug) } doReturn
+            on { schemaForSecret(PasswordDescriptionTotp.slug) } doReturn
                 SchemaStore().loadSchema(
                     this::class.java.getResource("/password-description-totp-secret-schema.json"),
                 )
-            on { schemaForSecret(ContentType.Totp.slug) } doReturn
+            on { schemaForSecret(Totp.slug) } doReturn
                 SchemaStore().loadSchema(
                     this::class.java.getResource("/totp-secret-schema.json"),
+                )
+            on { schemaForSecret(V5CustomFields.slug) } doReturn
+                SchemaStore().loadSchema(
+                    this::class.java.getResource("/v5-custom-fields-secret-schema.json"),
                 )
         }
     }
@@ -77,7 +90,7 @@ class SecretParserTest : KoinTest {
             val secret = "\\\"!@#_$%^&*()"
             mockIdToSlugMappingProvider.stub {
                 onBlocking { provideMappingForSelectedAccount() }.doReturn(
-                    mapOf(resourceTypeId to ContentType.PasswordString.slug),
+                    mapOf(resourceTypeId to PasswordString.slug),
                 )
             }
 
@@ -90,10 +103,16 @@ class SecretParserTest : KoinTest {
     @Test
     fun `password and description should parse correct for password description secret`() =
         runTest {
-            val secret = "{\"password\":\"\\\"!@#_\$%^&*()\", \"description\":\"desc\"}"
+            val secret =
+                """
+                {
+                    "password": "\"!@#_$%^&*()",
+                    "description": "desc"
+                }
+                """.trimIndent()
             mockIdToSlugMappingProvider.stub {
                 onBlocking { provideMappingForSelectedAccount() }.doReturn(
-                    mapOf(resourceTypeId to ContentType.PasswordAndDescription.slug),
+                    mapOf(resourceTypeId to PasswordAndDescription.slug),
                 )
             }
 
@@ -108,18 +127,20 @@ class SecretParserTest : KoinTest {
     @Test
     fun `totp should parse correct for standalone totp secret`() =
         runTest {
-            val secret = (
-                "{" +
-                    "\"totp\":{" +
-                    "\"digits\":6," +
-                    "\"period\":30," +
-                    "\"algorithm\":\"SHA256\"," +
-                    "\"secret_key\":\"secret\"" + "}" +
-                    "}"
-            )
+            val secret =
+                """
+                {
+                    "totp": {
+                        "digits": 6,
+                        "period": 30,
+                        "algorithm": "SHA256",
+                        "secret_key": "secret"
+                    }
+                }
+                """.trimIndent()
             mockIdToSlugMappingProvider.stub {
                 onBlocking { provideMappingForSelectedAccount() }.doReturn(
-                    mapOf(resourceTypeId to ContentType.Totp.slug),
+                    mapOf(resourceTypeId to Totp.slug),
                 )
             }
 
@@ -136,21 +157,22 @@ class SecretParserTest : KoinTest {
     @Test
     fun `password description and totp should parse correct for password description totp secret`() =
         runTest {
-            val secret = (
-                "{" +
-                    "\"password\":\"pass\"," +
-                    "\"description\":\"desc\"," +
-                    "\"totp\":{" +
-                    "\"digits\":6," +
-                    "\"period\":30," +
-                    "\"algorithm\":\"SHA256\"," +
-                    "\"secret_key\":\"secret\"" +
-                    "}" +
-                    "}"
-            )
+            val secret =
+                """
+                {
+                    "password": "pass",
+                    "description": "desc",
+                    "totp": {
+                        "digits": 6,
+                        "period": 30,
+                        "algorithm": "SHA256",
+                        "secret_key": "secret"
+                    }
+                }
+                """.trimIndent()
             mockIdToSlugMappingProvider.stub {
                 onBlocking { provideMappingForSelectedAccount() }.doReturn(
-                    mapOf(resourceTypeId to ContentType.PasswordAndDescription.slug),
+                    mapOf(resourceTypeId to PasswordAndDescription.slug),
                 )
             }
 
@@ -164,6 +186,71 @@ class SecretParserTest : KoinTest {
             assertThat(parsedSecret.totp?.period).isEqualTo(30)
             assertThat(parsedSecret.totp?.algorithm).isEqualTo("SHA256")
             assertThat(parsedSecret.totp?.key).isEqualTo("secret")
+        }
+
+    @Test
+    fun `custom fields should parse correct for v5 custom fields secret`() =
+        runTest {
+            val secret =
+                """
+                {
+                    "object_type": "PASSBOLT_SECRET_DATA",
+                    "custom_fields": [
+                        {
+                            "id": "550e8400-e29b-41d4-a716-446655440000",
+                            "type": "text",
+                            "secret_value": "value1"
+                        },
+                        {
+                            "id": "550e8400-e29b-41d4-a716-446655440001",
+                            "type": "password",
+                            "secret_value": "value2"
+                        },
+                        {
+                            "id": "550e8400-e29b-41d4-a716-446655440002",
+                            "type": "boolean",
+                            "secret_value": true
+                        },
+                        {
+                            "id": "550e8400-e29b-41d4-a716-446655440003",
+                            "type": "number",
+                            "secret_value": 8080
+                        },
+                        {
+                            "id": "550e8400-e29b-41d4-a716-446655440004",
+                            "type": "uri",
+                            "secret_value": "https://passbolt.com"
+                        }
+                    ]
+                }
+                """.trimIndent()
+            mockIdToSlugMappingProvider.stub {
+                onBlocking { provideMappingForSelectedAccount() }.doReturn(
+                    mapOf(resourceTypeId to V5CustomFields.slug),
+                )
+            }
+
+            val secretResult = secretParser.parseSecret(resourceTypeId.toString(), secret)
+            assertThat(secretResult).isInstanceOf(DecryptedSecretOrError.DecryptedSecret::class.java)
+            val parsedSecret = (secretResult as DecryptedSecretOrError.DecryptedSecret).secret
+
+            assertThat(parsedSecret.customFields).hasSize(5)
+
+            val customFields = parsedSecret.customFields!!
+            assertThat(customFields[0].type).isEqualTo(TEXT)
+            assertThat(customFields[0].secretValue?.asString).isEqualTo("value1")
+
+            assertThat(customFields[1].type).isEqualTo(PASSWORD)
+            assertThat(customFields[1].secretValue?.asString).isEqualTo("value2")
+
+            assertThat(customFields[2].type).isEqualTo(BOOLEAN)
+            assertThat(customFields[2].secretValue?.asBoolean).isEqualTo(true)
+
+            assertThat(customFields[3].type).isEqualTo(NUMBER)
+            assertThat(customFields[3].secretValue?.asInt).isEqualTo(8080)
+
+            assertThat(customFields[4].type).isEqualTo(URI)
+            assertThat(customFields[4].secretValue?.asString).isEqualTo("https://passbolt.com")
         }
 
     private companion object {

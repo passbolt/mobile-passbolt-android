@@ -1,0 +1,17 @@
+# Passbolt 2.4.0-43 Android app release notes
+
+## Added
+- MOB-2873: Add custom fields read support
+- MOB-2851: Add primary clip clear
+
+## Improved
+- MOB-2894: Validate totp secret during creation and before display
+- MOB-2900: Use inconsolata font for password on sign in screen
+
+## Fixed
+- MOB-2958: Fix overwriting inputs on TOTP form when coming back from scan by back press
+- MOB-2960: Fix organization URL field on account details
+- MOB-2820: MOB-2820: Fix v5 resources recursive subfolder search
+
+## Maintenance
+- MOB-2893: TOTP tab and related modules (menus, switch account) migration to MVI architecture

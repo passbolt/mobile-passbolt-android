@@ -183,7 +183,7 @@ class MainActivity :
             listOf(
                 HomeR.id.home,
                 HomeR.id.homeChild,
-                OtpR.id.otpFragment,
+                OtpR.id.otpBottomNavigationContainerFragment,
                 SettingsR.id.settingsMainFragment,
             )
 

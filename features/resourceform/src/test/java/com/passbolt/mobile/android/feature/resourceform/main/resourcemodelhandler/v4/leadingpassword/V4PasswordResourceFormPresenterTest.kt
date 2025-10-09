@@ -74,7 +74,7 @@ class V4PasswordResourceFormPresenterTest : KoinTest {
             }
             mockGetDefaultCreateContentTypeUseCase.stub {
                 onBlocking { execute(any()) }.thenReturn(
-                    GetDefaultCreateContentTypeUseCase.Output(
+                    GetDefaultCreateContentTypeUseCase.Output.CreationContentType(
                         metadataType = MetadataTypeModel.V4,
                         contentType = ContentType.PasswordAndDescription,
                     ),

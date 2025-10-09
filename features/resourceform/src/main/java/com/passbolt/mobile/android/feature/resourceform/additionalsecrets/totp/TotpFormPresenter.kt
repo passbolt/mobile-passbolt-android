@@ -1,5 +1,8 @@
 package com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp
 
+import com.passbolt.mobile.android.common.validation.StringIsBase32
+import com.passbolt.mobile.android.common.validation.StringNotBlank
+import com.passbolt.mobile.android.common.validation.validation
 import com.passbolt.mobile.android.ui.OtpParseResult
 import com.passbolt.mobile.android.ui.ResourceFormMode
 import com.passbolt.mobile.android.ui.TotpUiModel
@@ -35,16 +38,20 @@ class TotpFormPresenter : TotpFormContract.Presenter {
     override var view: TotpFormContract.View? = null
 
     private lateinit var totpUiModel: TotpUiModel
+    private var argsConsumed = false
 
     override fun argsRetrieved(
         mode: ResourceFormMode,
-        totpUiModel: TotpUiModel,
+        totpModel: TotpUiModel,
     ) {
-        this.totpUiModel = totpUiModel
+        if (!argsConsumed) {
+            totpUiModel = totpModel
 
-        when (mode) {
-            is ResourceFormMode.Create -> view?.showCreateTitle()
-            is ResourceFormMode.Edit -> view?.showEditTitle(mode.resourceName)
+            when (mode) {
+                is ResourceFormMode.Create -> view?.showCreateTitle()
+                is ResourceFormMode.Edit -> view?.showEditTitle(mode.resourceName)
+            }
+            argsConsumed = true
         }
 
         view?.showSecret(totpUiModel.secret)
@@ -100,6 +107,20 @@ class TotpFormPresenter : TotpFormContract.Presenter {
     }
 
     override fun applyClick() {
-        view?.goBackWithResult(totpUiModel)
+        validation {
+            of(totpUiModel.secret) {
+                withRules(StringNotBlank) {
+                    onInvalid {
+                        view?.showSecretMustNotBeEmpty()
+                    }
+                }
+                withRules(StringIsBase32) {
+                    onInvalid {
+                        view?.showSecretMustBeBase32()
+                    }
+                }
+            }
+            onValid { view?.goBackWithResult(totpUiModel) }
+        }
     }
 }

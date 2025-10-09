@@ -31,6 +31,7 @@ import com.passbolt.mobile.android.common.commonModule
 import com.passbolt.mobile.android.core.accounts.accountsCoreModule
 import com.passbolt.mobile.android.core.authenticationcore.authenticationCoreModule
 import com.passbolt.mobile.android.core.autofill.autofillModule
+import com.passbolt.mobile.android.core.clipboard.clipboardModule
 import com.passbolt.mobile.android.core.commonfolders.foldersModule
 import com.passbolt.mobile.android.core.commongroups.groupsModule
 import com.passbolt.mobile.android.core.coreUiModule
@@ -57,7 +58,7 @@ import com.passbolt.mobile.android.core.security.securityModule
 import com.passbolt.mobile.android.core.tags.tagsModule
 import com.passbolt.mobile.android.core.users.usersModule
 import com.passbolt.mobile.android.createFolderModule
-import com.passbolt.mobile.android.createresourcemenu.createResourceMenuModule
+import com.passbolt.mobile.android.createresourcemenu.view.createResourceMenuModule
 import com.passbolt.mobile.android.database.databaseModule
 import com.passbolt.mobile.android.encryptedstorage.encryptedStorageModule
 import com.passbolt.mobile.android.feature.accountdetails.accountDetailsModule
@@ -65,7 +66,7 @@ import com.passbolt.mobile.android.feature.authenticationModule
 import com.passbolt.mobile.android.feature.autofill.autofillResourcesModule
 import com.passbolt.mobile.android.feature.home.homeModule
 import com.passbolt.mobile.android.feature.main.mainModule
-import com.passbolt.mobile.android.feature.otp.otpMainModule
+import com.passbolt.mobile.android.feature.otp.otpModule
 import com.passbolt.mobile.android.feature.otp.scanOtpMainModule
 import com.passbolt.mobile.android.feature.resourcedetails.resourceDetailsModule
 import com.passbolt.mobile.android.feature.resourceform.resourceFormModule
@@ -157,7 +158,7 @@ class KoinInitializer : Initializer<Unit> {
                 envInfoModule,
                 idlingResourcesModule,
                 transferAccountToAnotherDeviceModule,
-                otpMainModule,
+                otpModule,
                 otpCoreModule,
                 serializersModule,
                 resourcePickerModule,
@@ -179,6 +180,7 @@ class KoinInitializer : Initializer<Unit> {
                 resourceFormModule,
                 permissionsModule,
                 navigationModule,
+                clipboardModule,
             )
     }
 }

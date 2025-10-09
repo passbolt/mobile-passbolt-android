@@ -39,11 +39,11 @@ class AddLocalResourcesUseCase(
 
         val resources = input.resourceModels.map { resourceModelMapper.map(it) }
         val resourceMetadata = input.resourceModels.map { resourceModelMapper.mapResourceMetadata(it) }
-        val resourceUris = input.resourceModels.mapNotNull { resourceModelMapper.mapResourceUri(it) }
+        val resourceUris = input.resourceModels.map { resourceModelMapper.mapResourceUris(it) }
 
         resourcesDao.insertAll(resources)
         resourceMetadataDao.insertAll(resourceMetadata)
-        resourceUriDao.insertAll(resourceUris)
+        resourceUriDao.insertAll(resourceUris.flatten())
     }
 
     data class Input(

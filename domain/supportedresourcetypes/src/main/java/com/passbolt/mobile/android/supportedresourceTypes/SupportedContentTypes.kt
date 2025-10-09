@@ -27,6 +27,7 @@ import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordAn
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordDescriptionTotp
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordString
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.Totp
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5CustomFields
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5Default
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5DefaultWithTotp
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5PasswordString
@@ -40,6 +41,7 @@ private const val V5_TOTP_STANDALONE_SLUG = "v5-totp-standalone"
 private const val V5_DEFAULT_SLUG = "v5-default"
 private const val V5_DEFAULT_WITH_TOTP = "v5-default-with-totp"
 private const val V5_PASSWORD_STRING_SLUG = "v5-password-string"
+private const val V5_CUSTOM_FIELDS = "v5-custom-fields"
 
 sealed class ContentType(
     val slug: String,
@@ -59,6 +61,8 @@ sealed class ContentType(
     data object V5DefaultWithTotp : ContentType(V5_DEFAULT_WITH_TOTP)
 
     data object V5PasswordString : ContentType(V5_PASSWORD_STRING_SLUG)
+
+    data object V5CustomFields : ContentType(V5_CUSTOM_FIELDS)
 
     fun isSimplePassword() = this == PasswordString || this == V5PasswordString
 
@@ -92,6 +96,7 @@ sealed class ContentType(
                 V5Default,
                 V5DefaultWithTotp,
                 V5TotpStandalone,
+                V5CustomFields,
             )
 
     fun hasPassword() =
@@ -105,6 +110,14 @@ sealed class ContentType(
                 V5PasswordString,
             )
 
+    fun hasCustomFields() =
+        this in
+            setOf(
+                V5Default,
+                V5DefaultWithTotp,
+                V5CustomFields,
+            )
+
     companion object {
         fun fromSlug(slug: String): ContentType =
             when (slug) {
@@ -116,6 +129,7 @@ sealed class ContentType(
                 V5_DEFAULT_SLUG -> V5Default
                 V5_DEFAULT_WITH_TOTP -> V5DefaultWithTotp
                 V5_PASSWORD_STRING_SLUG -> V5PasswordString
+                V5_CUSTOM_FIELDS -> V5CustomFields
                 else -> throw IllegalArgumentException("Unsupported content type slug: $slug")
             }
     }
@@ -134,6 +148,7 @@ object SupportedContentTypes {
             PasswordDescriptionTotp,
             V5TotpStandalone,
             V5DefaultWithTotp,
+            V5CustomFields,
         ).map { it.slug }.toSet()
 
     val totpSlugs =
@@ -160,6 +175,7 @@ object SupportedContentTypes {
             V5PasswordString,
             V5DefaultWithTotp,
             V5TotpStandalone,
+            V5CustomFields,
         ).map { it.slug }.toSet()
 
     val resourcesSlugsSupportingExpiry =

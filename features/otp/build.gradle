@@ -1,6 +1,7 @@
 plugins {
     alias libs.plugins.android.library
     alias libs.plugins.kotlin.gradle
+    alias libs.plugins.compose.compiler
     alias libs.plugins.kotlin.parcelize
     alias libs.plugins.navigation.safeargs
 }
@@ -47,10 +48,12 @@ dependencies {
     implementation project(':resourceform')
     implementation project(':metadatakeytrust')
     implementation project(':metadata')
+    implementation project(':clipboard')
 
     implementation libs.navigation.fragment
     implementation libs.navigation.ui
     implementation libs.koin
+    implementation libs.koin.compose
     implementation libs.swiperefresh
     implementation libs.fastadapter.core
     implementation libs.fastadapter.binding
@@ -60,6 +63,15 @@ dependencies {
     implementation libs.camerax
     implementation libs.camerax.lifecycle
     implementation libs.retrofit
+    implementation libs.accompanist.drawablepainter
+
+    implementation platform(libs.compose.bom)
+    implementation libs.compose.foundation
+    implementation libs.compose.material3
+    implementation libs.compose.lifecycle.viewmodel
+    implementation libs.compose.ui.tooling
+    implementation libs.compose.activity
+    debugImplementation libs.compose.ui.tooling.preview
 
     testImplementation project(':commontest')
     testImplementation libs.gson
@@ -69,6 +81,7 @@ dependencies {
 android {
     namespace = "com.passbolt.mobile.android.feature.otp"
     buildFeatures {
+        compose true
         viewBinding true
     }
 }

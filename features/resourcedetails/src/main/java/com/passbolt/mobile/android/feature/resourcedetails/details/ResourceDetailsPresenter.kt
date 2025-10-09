@@ -9,6 +9,7 @@ import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReac
 import com.passbolt.mobile.android.core.idlingresource.ResourceDetailActionIdlingResource
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.otpcore.TotpParametersProvider
+import com.passbolt.mobile.android.core.otpcore.TotpParametersProvider.OtpParametersResult.OtpParameters
 import com.passbolt.mobile.android.core.rbac.usecase.GetRbacRulesUseCase
 import com.passbolt.mobile.android.core.resources.actions.ResourceCommonActionsInteractor
 import com.passbolt.mobile.android.core.resources.actions.ResourcePropertiesActionsInteractor
@@ -23,9 +24,15 @@ import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdT
 import com.passbolt.mobile.android.featureflags.usecase.GetFeatureFlagsUseCase
 import com.passbolt.mobile.android.jsonmodel.delegates.TotpSecret
 import com.passbolt.mobile.android.mappers.OtpModelMapper
+import com.passbolt.mobile.android.mappers.ResourceFormMapper
 import com.passbolt.mobile.android.permissions.permissions.PermissionsMode
 import com.passbolt.mobile.android.permissions.recycler.PermissionsDatasetCreator
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType
+import com.passbolt.mobile.android.ui.CustomFieldModel.BooleanCustomField
+import com.passbolt.mobile.android.ui.CustomFieldModel.NumberCustomField
+import com.passbolt.mobile.android.ui.CustomFieldModel.PasswordCustomField
+import com.passbolt.mobile.android.ui.CustomFieldModel.TextCustomField
+import com.passbolt.mobile.android.ui.CustomFieldModel.UriCustomField
 import com.passbolt.mobile.android.ui.OtpItemWrapper
 import com.passbolt.mobile.android.ui.RbacModel
 import com.passbolt.mobile.android.ui.RbacRuleModel.ALLOW
@@ -68,7 +75,7 @@ import kotlin.time.Duration.Companion.seconds
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-@Suppress("TooManyFunctions")
+@Suppress("TooManyFunctions", "LargeClass")
 class ResourceDetailsPresenter(
     private val getFeatureFlagsUseCase: GetFeatureFlagsUseCase,
     private val getLocalResourceUseCase: GetLocalResourceUseCase,
@@ -80,6 +87,7 @@ class ResourceDetailsPresenter(
     private val idToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider,
     private val getRbacRulesUseCase: GetRbacRulesUseCase,
     private val resourceDetailActionIdlingResource: ResourceDetailActionIdlingResource,
+    private val resourceFormMapper: ResourceFormMapper,
     coroutineLaunchContext: CoroutineLaunchContext,
 ) : DataRefreshViewReactivePresenter<ResourceDetailsContract.View>(coroutineLaunchContext),
     ResourceDetailsContract.Presenter,
@@ -117,6 +125,8 @@ class ResourceDetailsPresenter(
                 parametersOf(resourceModel, needSessionRefreshFlow, sessionRefreshedFlow)
             }
 
+    private val visibleCustomFields = mutableMapOf<UUID, Boolean>()
+
     override fun argsReceived(
         resourceModel: ResourceModel,
         permissionsListWidth: Int,
@@ -145,7 +155,7 @@ class ResourceDetailsPresenter(
 
             // wait for full refresh to finish to perform db operations
             if (fullDataRefreshExecutor.dataRefreshStatusFlow.first() is DataRefreshStatus.InProgress) {
-                fullDataRefreshExecutor.dataRefreshStatusFlow.first { it is DataRefreshStatus.Finished }
+                fullDataRefreshExecutor.awaitFinish()
 
                 // refresh resource data based on latest db state
                 resourceModel =
@@ -248,6 +258,7 @@ class ResourceDetailsPresenter(
             handlePassword(resourceModel)
             handleTotpField(resourceModel)
             handleDescriptionAndNoteField(resourceModel)
+            handleCustomFields(resourceModel)
             handleFeatureFlagsAndRbac()
         }
     }
@@ -331,6 +342,64 @@ class ResourceDetailsPresenter(
             } else {
                 view?.disableMetadataDescription()
             }
+        }
+    }
+
+    private fun handleCustomFields(resourceModel: ResourceModel) {
+        coroutineScope.launch {
+            val slug =
+                idToSlugMappingProvider.provideMappingForSelectedAccount()[
+                    UUID.fromString(resourceModel.resourceTypeId),
+                ]
+            val contentType = ContentType.fromSlug(slug!!)
+
+            if (contentType.hasCustomFields()) {
+                resourceModel.metadataJsonModel.customFields?.forEach { field ->
+                    if (!visibleCustomFields.containsKey(field.id)) {
+                        visibleCustomFields[field.id] = false
+                    }
+                }
+
+                val customFieldsMap =
+                    resourceModel.metadataJsonModel.customFields?.associate {
+                        it.id to it.metadataKey.orEmpty()
+                    } ?: emptyMap()
+
+                if (customFieldsMap.isNotEmpty()) {
+                    view?.showCustomFieldsSection()
+                    view?.showCustomFields(customFieldsMap)
+                } else {
+                    view?.hideCustomFieldsSection()
+                }
+            } else {
+                view?.hideCustomFieldsSection()
+            }
+        }
+    }
+
+    override fun customFieldActionClick(key: UUID) {
+        val isVisible = visibleCustomFields[key] ?: false
+        if (!isVisible) {
+            resourceDetailActionIdlingResource.setIdle(false)
+            coroutineScope.launch {
+                performSecretPropertyAction(
+                    action = { secretPropertiesActionsInteractor.provideCustomFields() },
+                    doOnDecryptionFailure = { view?.showDecryptionFailure() },
+                    doOnFetchFailure = { view?.showFetchFailure() },
+                    doOnSuccess = {
+                        val customFields = resourceFormMapper.mapToUiModel(resourceModel.metadataJsonModel.customFields, it.result)
+                        val field = customFields.find { field -> field.id == key }
+                        view?.showCustomFieldValue(key, field)
+                        visibleCustomFields[key] = true
+                    },
+                )
+                resourceDetailActionIdlingResource.setIdle(true)
+            }
+        } else {
+            view?.apply {
+                hideCustomFieldValue(key)
+            }
+            visibleCustomFields[key] = false
         }
     }
 
@@ -429,6 +498,37 @@ class ResourceDetailsPresenter(
                 action = { resourcePropertiesActionsInteractor.provideMainUri() },
                 doOnResult = { view?.addToClipboard(it.label, it.result, it.isSecret) },
             )
+        }
+    }
+
+    override fun copyCustomFieldClick(key: UUID) {
+        resourceDetailActionIdlingResource.setIdle(false)
+        coroutineScope.launch {
+            val customFieldLabel =
+                resourceModel.metadataJsonModel.customFields
+                    ?.find { it.id == key }
+                    ?.metadataKey
+
+            performSecretPropertyAction(
+                action = { secretPropertiesActionsInteractor.provideCustomFields() },
+                doOnFetchFailure = { view?.showFetchFailure() },
+                doOnDecryptionFailure = { view?.showDecryptionFailure() },
+                doOnSuccess = {
+                    val customFields = resourceFormMapper.mapToUiModel(resourceModel.metadataJsonModel.customFields, it.result)
+                    val field = customFields.find { field -> field.id == key }
+                    val fieldValue =
+                        when (field) {
+                            is BooleanCustomField -> field.secretValue?.toString() ?: ""
+                            is NumberCustomField -> field.secretValue?.toString() ?: ""
+                            is PasswordCustomField -> field.secretValue ?: ""
+                            is UriCustomField -> field.secretValue ?: ""
+                            is TextCustomField -> field.secretValue ?: ""
+                            null -> ""
+                        }
+                    view?.addToClipboard(customFieldLabel.orEmpty(), fieldValue, isSecret = true)
+                },
+            )
+            resourceDetailActionIdlingResource.setIdle(true)
         }
     }
 
@@ -619,7 +719,7 @@ class ResourceDetailsPresenter(
         action: (
             ClipboardLabel,
             TotpSecret,
-            TotpParametersProvider.OtpParameters,
+            OtpParameters,
         ) -> Unit,
     ) {
         coroutineScope.launch {
@@ -629,14 +729,22 @@ class ResourceDetailsPresenter(
                 doOnDecryptionFailure = { view?.showDecryptionFailure() },
                 doOnSuccess = {
                     if (it.result.key.isNotBlank()) {
-                        val otpParameters =
+                        val otpParametersResult =
                             totpParametersProvider.provideOtpParameters(
                                 secretKey = it.result.key,
                                 digits = it.result.digits,
                                 period = it.result.period,
                                 algorithm = it.result.algorithm,
                             )
-                        action(it.label, it.result, otpParameters)
+                        when (otpParametersResult) {
+                            is OtpParameters ->
+                                action(it.label, it.result, otpParametersResult)
+                            is TotpParametersProvider.OtpParametersResult.InvalidTotpInput -> {
+                                val error = "Invalid TOTP input"
+                                Timber.e(error)
+                                view?.showGeneralError(error)
+                            }
+                        }
                     } else {
                         val error = "Fetched totp key is empty"
                         Timber.e(error)

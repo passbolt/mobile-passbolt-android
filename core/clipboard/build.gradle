@@ -1,0 +1,18 @@
+plugins {
+    alias libs.plugins.android.library
+    alias libs.plugins.kotlin.gradle
+}
+
+android {
+    namespace = "com.passbolt.mobile.android.core.clipboard"
+}
+
+dependencies {
+    implementation project(':localization')
+
+    implementation libs.koin
+}
+
+kotlin {
+    jvmToolchain(17)
+}
