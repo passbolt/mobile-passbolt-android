@@ -28,6 +28,11 @@ import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdT
 import com.passbolt.mobile.android.featureflags.usecase.GetFeatureFlagsUseCase
 import com.passbolt.mobile.android.metadata.usecase.GetMetadataTypesSettingsUseCase
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordAndDescription
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.Totp
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5Default
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5Note
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5TotpStandalone
 import com.passbolt.mobile.android.ui.CreateResourceMenuModel
 import com.passbolt.mobile.android.ui.HomeDisplayViewModel
 import com.passbolt.mobile.android.ui.HomeDisplayViewModel.Folders
@@ -63,18 +68,32 @@ class CreateCreateResourceMenuModelUseCase(
                         supportedContentTypes,
                     ) &&
                         isTotpFeatureFlagEnabled,
+                isNoteEnabled =
+                    isLeadingNoteResourceSupported(
+                        defaultMetadataType,
+                        supportedContentTypes,
+                    ),
                 isFolderEnabled = isFoldersViewSelected,
             ),
         )
     }
+
+    private fun isLeadingNoteResourceSupported(
+        defaultMetadataType: MetadataTypeModel,
+        supportedSlugs: List<ContentType>,
+    ): Boolean =
+        when (defaultMetadataType) {
+            V4 -> false
+            V5 -> supportedSlugs.contains(V5Note)
+        }
 
     private fun isLeadingPasswordResourceSupported(
         defaultMetadataType: MetadataTypeModel,
         supportedSlugs: List<ContentType>,
     ): Boolean =
         when (defaultMetadataType) {
-            V4 -> supportedSlugs.contains(ContentType.PasswordAndDescription)
-            V5 -> supportedSlugs.contains(ContentType.V5Default)
+            V4 -> supportedSlugs.contains(PasswordAndDescription)
+            V5 -> supportedSlugs.contains(V5Default)
         }
 
     private fun isLeadingTotpResourceSupported(
@@ -82,8 +101,8 @@ class CreateCreateResourceMenuModelUseCase(
         supportedSlugs: List<ContentType>,
     ): Boolean =
         when (defaultMetadataType) {
-            V4 -> supportedSlugs.contains(ContentType.Totp)
-            V5 -> supportedSlugs.contains(ContentType.V5TotpStandalone)
+            V4 -> supportedSlugs.contains(Totp)
+            V5 -> supportedSlugs.contains(V5TotpStandalone)
         }
 
     data class Input(

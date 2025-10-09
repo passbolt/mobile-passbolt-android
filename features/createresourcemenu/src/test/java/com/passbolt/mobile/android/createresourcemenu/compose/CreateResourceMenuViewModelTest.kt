@@ -29,6 +29,7 @@ import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.createresourcemenu.compose.CreateResourceMenuIntent.Close
 import com.passbolt.mobile.android.createresourcemenu.compose.CreateResourceMenuIntent.CreateFolder
+import com.passbolt.mobile.android.createresourcemenu.compose.CreateResourceMenuIntent.CreateNote
 import com.passbolt.mobile.android.createresourcemenu.compose.CreateResourceMenuIntent.CreatePassword
 import com.passbolt.mobile.android.createresourcemenu.compose.CreateResourceMenuIntent.CreateTotp
 import com.passbolt.mobile.android.createresourcemenu.compose.CreateResourceMenuIntent.Initialize
@@ -61,6 +62,7 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.stub
 import kotlin.time.ExperimentalTime
 import com.passbolt.mobile.android.createresourcemenu.compose.CreateResourceMenuSideEffect.InvokeCreateFolder as CreateFolderEffect
+import com.passbolt.mobile.android.createresourcemenu.compose.CreateResourceMenuSideEffect.InvokeCreateNote as CreateNoteEffect
 import com.passbolt.mobile.android.createresourcemenu.compose.CreateResourceMenuSideEffect.InvokeCreatePassword as CreatePasswordEffect
 import com.passbolt.mobile.android.createresourcemenu.compose.CreateResourceMenuSideEffect.InvokeCreateTotp as CreateTotpEffect
 
@@ -98,6 +100,7 @@ class CreateResourceMenuViewModelTest : KoinTest {
                             isPasswordEnabled = true,
                             isTotpEnabled = true,
                             isFolderEnabled = true,
+                            isNoteEnabled = true,
                         ),
                 )
         }
@@ -121,6 +124,7 @@ class CreateResourceMenuViewModelTest : KoinTest {
                 assertThat(state.showPasswordButton).isTrue()
                 assertThat(state.showTotpButton).isTrue()
                 assertThat(state.showFoldersButton).isTrue()
+                assertThat(state.showNoteButton).isTrue()
             }
         }
 
@@ -136,6 +140,7 @@ class CreateResourceMenuViewModelTest : KoinTest {
                                 isPasswordEnabled = false,
                                 isTotpEnabled = false,
                                 isFolderEnabled = false,
+                                isNoteEnabled = false,
                             ),
                     )
             }
@@ -150,6 +155,38 @@ class CreateResourceMenuViewModelTest : KoinTest {
                 assertThat(state.showPasswordButton).isFalse()
                 assertThat(state.showTotpButton).isFalse()
                 assertThat(state.showFoldersButton).isFalse()
+                assertThat(state.showNoteButton).isFalse()
+            }
+        }
+
+    @Test
+    fun `note item should be visible when enabled`() =
+        runTest {
+            val createCreateResourceMenuModelUseCase: CreateCreateResourceMenuModelUseCase = get()
+            createCreateResourceMenuModelUseCase.stub {
+                onBlocking { execute(any()) } doReturn
+                    CreateCreateResourceMenuModelUseCase.Output(
+                        model =
+                            CreateResourceMenuModel(
+                                isPasswordEnabled = false,
+                                isTotpEnabled = false,
+                                isFolderEnabled = false,
+                                isNoteEnabled = true,
+                            ),
+                    )
+            }
+
+            viewModel = get()
+            val homeDisplayViewModel = AllItems
+
+            viewModel.onIntent(Initialize(homeDisplayViewModel))
+
+            viewModel.viewState.drop(1).test {
+                val state = expectItem()
+                assertThat(state.showPasswordButton).isFalse()
+                assertThat(state.showTotpButton).isFalse()
+                assertThat(state.showFoldersButton).isFalse()
+                assertThat(state.showNoteButton).isTrue()
             }
         }
 
@@ -198,6 +235,18 @@ class CreateResourceMenuViewModelTest : KoinTest {
                 viewModel.onIntent(CreateFolder)
                 val effect = expectItem()
                 assertThat(effect).isEqualTo(CreateFolderEffect)
+            }
+        }
+
+    @Test
+    fun `intent create note should emit create note side effect`() =
+        runTest {
+            viewModel = get()
+
+            viewModel.sideEffect.test {
+                viewModel.onIntent(CreateNote)
+                val effect = expectItem()
+                assertThat(effect).isEqualTo(CreateNoteEffect)
             }
         }
 }

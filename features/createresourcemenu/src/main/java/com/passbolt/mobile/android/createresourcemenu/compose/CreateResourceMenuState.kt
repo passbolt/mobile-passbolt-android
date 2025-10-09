@@ -26,5 +26,6 @@ package com.passbolt.mobile.android.createresourcemenu.compose
 data class CreateResourceMenuState(
     val showPasswordButton: Boolean = false,
     val showTotpButton: Boolean = false,
+    val showNoteButton: Boolean = false,
     val showFoldersButton: Boolean = false,
 )

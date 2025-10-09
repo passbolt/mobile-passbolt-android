@@ -29,6 +29,7 @@ import com.passbolt.mobile.android.supportedresourceTypes.ContentType.Totp
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5CustomFields
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5Default
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5DefaultWithTotp
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5Note
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5PasswordString
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5TotpStandalone
 import com.passbolt.mobile.android.ui.LeadingContentType
@@ -101,6 +102,7 @@ class ResourceModelHandler(
                         LeadingContentType.TOTP -> SecretJsonModel.emptyTotp()
                         LeadingContentType.PASSWORD -> SecretJsonModel.emptyPassword()
                         LeadingContentType.CUSTOM_FIELDS -> SecretJsonModel.emptyCustomFields()
+                        LeadingContentType.STANDALONE_NOTE -> SecretJsonModel.emptyDescription()
                     }
 
                 Timber.d("Initialized creation model with content type: $contentType and metadata type: $metadataType")
@@ -268,6 +270,11 @@ class ResourceModelHandler(
                 V5CustomFields -> {
                     // only editing of custom fields - all required fields are there
                 }
+                V5Note -> {
+                    if (description.isNullOrBlank()) {
+                        description = ""
+                    }
+                }
             }
         }
 
@@ -285,12 +292,11 @@ class ResourceModelHandler(
                 .getUpdateActionsMetadata(contentType.slug)
                 .map { it.action }
         val leadingContentType =
-            if (contentType in setOf(Totp, V5TotpStandalone)) {
-                LeadingContentType.TOTP
-            } else if (contentType is V5CustomFields) {
-                LeadingContentType.CUSTOM_FIELDS
-            } else {
-                LeadingContentType.PASSWORD
+            when (contentType) {
+                in setOf(Totp, V5TotpStandalone) -> LeadingContentType.TOTP
+                is V5CustomFields -> LeadingContentType.CUSTOM_FIELDS
+                is V5Note -> LeadingContentType.STANDALONE_NOTE
+                else -> LeadingContentType.PASSWORD
             }
 
         return ResourceFormUiModel(
@@ -303,7 +309,9 @@ class ResourceModelHandler(
                     ) {
                         additionalSecrets.add(TOTP)
                     }
-                    if (it.contains(ADD_NOTE) || it.contains(REMOVE_NOTE)) {
+                    if (leadingContentType != LeadingContentType.STANDALONE_NOTE &&
+                        (it.contains(ADD_NOTE) || it.contains(REMOVE_NOTE))
+                    ) {
                         additionalSecrets.add(NOTE)
                     }
                     if (leadingContentType != LeadingContentType.PASSWORD &&

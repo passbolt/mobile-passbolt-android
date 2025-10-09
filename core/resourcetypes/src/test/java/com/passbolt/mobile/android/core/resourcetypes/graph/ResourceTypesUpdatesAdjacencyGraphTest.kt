@@ -186,4 +186,23 @@ class ResourceTypesUpdatesAdjacencyGraphTest {
             UpdateAction.ADD_TOTP,
         )
     }
+
+    @Test
+    fun `actions are correct for v5-note`() {
+        val actions = graph.getUpdateActionsMetadata(ContentType.V5Note.slug)
+
+        assertThat(actions).hasSize(10)
+        assertThat(actions.map { it.action }).containsExactly(
+            UpdateAction.EDIT_METADATA,
+            UpdateAction.ADD_NOTE,
+            UpdateAction.REMOVE_NOTE,
+            UpdateAction.ADD_METADATA_DESCRIPTION,
+            UpdateAction.REMOVE_METADATA_DESCRIPTION,
+            UpdateAction.EDIT_ADDITIONAL_URIS,
+            UpdateAction.EDIT_APPEARANCE,
+            UpdateAction.ADD_PASSWORD,
+            UpdateAction.ADD_TOTP,
+            UpdateAction.ADD_CUSTOM_FIELDS,
+        )
+    }
 }

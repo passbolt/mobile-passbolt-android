@@ -77,6 +77,15 @@ class SecretJsonModel(
                 """.trimIndent(),
             )
 
+        fun emptyDescription(): SecretJsonModel =
+            SecretJsonModel(
+                """
+                {
+                    "description": ""
+                }
+                """.trimIndent(),
+            )
+
         fun emptyCustomFields(): SecretJsonModel =
             SecretJsonModel(
                 """

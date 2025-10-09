@@ -250,7 +250,11 @@ class HomeFragment :
     }
 
     override fun createPasswordClick() {
-        presenter.createResourceClick()
+        presenter.createPasswordClick()
+    }
+
+    override fun createNoteClick() {
+        presenter.createNoteClick()
     }
 
     override fun createFolderClick() {
@@ -906,11 +910,14 @@ class HomeFragment :
         requiredBinding.backButton.gone()
     }
 
-    override fun navigateToCreateResource(parentFolderId: String?) {
+    override fun navigateToCreateResource(
+        parentFolderId: String?,
+        leadingContentType: LeadingContentType,
+    ) {
         findNavController().navigate(
             HomeFragmentDirections.actionHomeToResourceForm(
                 ResourceFormMode.Create(
-                    LeadingContentType.PASSWORD,
+                    leadingContentType,
                     parentFolderId,
                 ),
             ),

@@ -35,6 +35,7 @@ import com.passbolt.mobile.android.feature.resourceform.databinding.FragmentReso
 import com.passbolt.mobile.android.feature.resourceform.metadata.additionaluris.AdditionalUrisFormFragment
 import com.passbolt.mobile.android.feature.resourceform.metadata.appearance.AppearanceFormComposeFragment
 import com.passbolt.mobile.android.feature.resourceform.metadata.description.DescriptionFormFragment
+import com.passbolt.mobile.android.feature.resourceform.subform.note.NoteSubformView
 import com.passbolt.mobile.android.feature.resourceform.subform.password.PasswordSubformView
 import com.passbolt.mobile.android.feature.resourceform.subform.totp.TotpSubformView
 import com.passbolt.mobile.android.ui.AdditionalUrisUiModel
@@ -302,6 +303,10 @@ class ResourceFormFragment :
         requiredBinding.toolbar.toolbarTitle = getString(LocalizationR.string.resource_form_create_custom_fields)
     }
 
+    override fun showCreateNoteTitle() {
+        requiredBinding.toolbar.toolbarTitle = getString(LocalizationR.string.resource_form_create_note)
+    }
+
     override fun showCreateTotpTitle() {
         requiredBinding.toolbar.toolbarTitle = getString(LocalizationR.string.resource_form_create_totp)
     }
@@ -355,6 +360,12 @@ class ResourceFormFragment :
         )
     }
 
+    override fun showNoteMaxLenghtExceeded(noteMaxLength: Int) {
+        requiredBinding.root.findViewWithTag<NoteSubformView>(TAG_NOTE_SUBFORM).noteInput.setState(
+            Error(getString(LocalizationR.string.validation_max_length, noteMaxLength)),
+        )
+    }
+
     override fun showTotpSecret(secret: String) {
         requiredBinding.leadingTypeContainer.findViewWithTag<TotpSubformView>(TAG_TOTP_SUBFORM).apply {
             secretInput.text = secret
@@ -392,6 +403,25 @@ class ResourceFormFragment :
             }.let {
                 requiredBinding.leadingTypeContainer.addView(it)
             }
+    }
+
+    override fun addNoteLeadingForm() {
+        NoteSubformView(requireContext())
+            .apply {
+                tag = TAG_NOTE_SUBFORM
+                noteInput.apply {
+                    disableSavingInstanceState()
+                    setTextChangeListener { presenter.noteChanged(it) }
+                }
+            }.let {
+                requiredBinding.leadingTypeContainer.addView(it)
+            }
+    }
+
+    override fun showNote(description: String) {
+        requiredBinding.leadingTypeContainer.findViewWithTag<NoteSubformView>(TAG_NOTE_SUBFORM).apply {
+            noteInput.text = description
+        }
     }
 
     override fun showPasswordUsername(username: String) {
@@ -591,6 +621,7 @@ class ResourceFormFragment :
         const val EXTRA_RESOURCE_NAME = "RESOURCE_NAME"
 
         private const val TAG_PASSWORD_SUBFORM = "PasswordSubform"
+        private const val TAG_NOTE_SUBFORM = "NoteSubform"
         private const val TAG_TOTP_SUBFORM = "TotpSubform"
     }
 }

@@ -622,6 +622,7 @@
     <string name="create_resource_menu_create_a_resource">Create a resource</string>
     <string name="create_resource_menu_create_totp">TOTP</string>
     <string name="create_resource_menu_create_password">Password</string>
+    <string name="create_resource_menu_create_note">Note</string>
     <string name="create_resource_menu_create_folder">Folder</string>
 
     <string name="dialog_new_metadata_key_trust_changed">The metadata key has changed.</string>

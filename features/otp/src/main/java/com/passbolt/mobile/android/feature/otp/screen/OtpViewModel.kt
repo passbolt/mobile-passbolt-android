@@ -58,6 +58,7 @@ import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.CloseTrustNewKey
 import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.CloseTrustedKeyDeletedDialog
 import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.ConfirmDeleteTotp
 import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.CopyOtp
+import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.CreateNote
 import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.CreatePassword
 import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.CreateTotp
 import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.DeleteOtp
@@ -106,6 +107,7 @@ import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5DefaultW
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5TotpStandalone
 import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.totpSlugs
 import com.passbolt.mobile.android.ui.LeadingContentType.PASSWORD
+import com.passbolt.mobile.android.ui.LeadingContentType.STANDALONE_NOTE
 import com.passbolt.mobile.android.ui.LeadingContentType.TOTP
 import com.passbolt.mobile.android.ui.NewMetadataKeyToTrustModel
 import com.passbolt.mobile.android.ui.OtpItemWrapper
@@ -178,6 +180,10 @@ internal class OtpViewModel(
             CreatePassword -> {
                 updateViewState { copy(showCreateResourceBottomSheet = false) }
                 onCanCreateResource { emitSideEffect(NavigateToCreateResourceForm(leadingContentType = PASSWORD)) }
+            }
+            CreateNote -> {
+                updateViewState { copy(showCreateResourceBottomSheet = false) }
+                onCanCreateResource { emitSideEffect(NavigateToCreateResourceForm(leadingContentType = STANDALONE_NOTE)) }
             }
             CreateTotp -> {
                 updateViewState { copy(showCreateResourceBottomSheet = false) }

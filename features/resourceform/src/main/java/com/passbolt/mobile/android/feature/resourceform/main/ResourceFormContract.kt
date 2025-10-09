@@ -149,6 +149,14 @@ interface ResourceFormContract {
         fun showCreateResourceInitializationError()
 
         fun showSecretMustBeBase32()
+
+        fun showCreateNoteTitle()
+
+        fun addNoteLeadingForm()
+
+        fun showNote(description: String)
+
+        fun showNoteMaxLenghtExceeded(noteMaxLength: Int)
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {

@@ -70,6 +70,8 @@ import com.passbolt.mobile.android.ui.FolderMoreMenuModel
 import com.passbolt.mobile.android.ui.FolderWithCountAndPath
 import com.passbolt.mobile.android.ui.GroupWithCount
 import com.passbolt.mobile.android.ui.HomeDisplayViewModel
+import com.passbolt.mobile.android.ui.LeadingContentType.PASSWORD
+import com.passbolt.mobile.android.ui.LeadingContentType.STANDALONE_NOTE
 import com.passbolt.mobile.android.ui.RbacRuleModel.ALLOW
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
@@ -872,13 +874,14 @@ class HomePresenter(
         )
     }
 
-    override fun createResourceClick() {
+    override fun createPasswordClick() {
         onCanCreateResource {
             view?.navigateToCreateResource(
                 when (val currentHomeView = homeView) {
                     is HomeDisplayViewModel.Folders -> currentHomeView.activeFolder.folderId
                     else -> null
                 },
+                PASSWORD,
             )
         }
     }
@@ -908,6 +911,18 @@ class HomePresenter(
             } else {
                 view?.showCannotPerformThisActionMessage()
             }
+        }
+    }
+
+    override fun createNoteClick() {
+        onCanCreateResource {
+            view?.navigateToCreateResource(
+                when (val currentHomeView = homeView) {
+                    is HomeDisplayViewModel.Folders -> currentHomeView.activeFolder.folderId
+                    else -> null
+                },
+                STANDALONE_NOTE,
+            )
         }
     }
 

@@ -82,6 +82,7 @@ class CreateResourceMenuFragment :
         with(requiredBinding) {
             setDebouncingOnClickAndDismiss(createPassword) { listener?.createPasswordClick() }
             setDebouncingOnClickAndDismiss(createTotp) { listener?.createTotpClick() }
+            setDebouncingOnClickAndDismiss(createNote) { listener?.createNoteClick() }
             setDebouncingOnClickAndDismiss(createFolder) { listener?.createFolderClick() }
             setDebouncingOnClickAndDismiss(close)
         }
@@ -97,6 +98,10 @@ class CreateResourceMenuFragment :
 
     override fun showFoldersButton() {
         requiredBinding.createFolder.visible()
+    }
+
+    override fun showNoteButton() {
+        requiredBinding.createNote.visible()
     }
 
     override fun hideMenu() {
@@ -119,6 +124,8 @@ class CreateResourceMenuFragment :
         fun createTotpClick() {}
 
         fun createPasswordClick() {}
+
+        fun createNoteClick() {}
 
         fun createFolderClick() {}
 

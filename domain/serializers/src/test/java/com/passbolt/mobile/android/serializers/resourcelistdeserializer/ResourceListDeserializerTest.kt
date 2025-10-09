@@ -42,6 +42,7 @@ import com.passbolt.mobile.android.supportedresourceTypes.ContentType.Totp
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5CustomFields
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5Default
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5DefaultWithTotp
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5Note
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5PasswordString
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5TotpStandalone
 import com.passbolt.mobile.android.ui.ResourceTypeModel
@@ -86,6 +87,7 @@ class ResourceListDeserializerTest : KoinTest {
                         ResourceTypeModel(UUID.randomUUID(), V5TotpStandalone.slug, "", deleted = null),
                         ResourceTypeModel(UUID.randomUUID(), PasswordDescriptionTotp.slug, "", deleted = null),
                         ResourceTypeModel(UUID.randomUUID(), V5CustomFields.slug, "", deleted = null),
+                        ResourceTypeModel(UUID.randomUUID(), V5Note.slug, "", deleted = null),
                     ),
                 ),
             )
@@ -126,6 +128,10 @@ class ResourceListDeserializerTest : KoinTest {
             on { schemaForResource(V5CustomFields.slug) } doReturn
                 SchemaStore().loadSchema(
                     this::class.java.getResource("/v5-custom-fields-resource-schema.json"),
+                )
+            on { schemaForResource(V5Note.slug) } doReturn
+                SchemaStore().loadSchema(
+                    this::class.java.getResource("/v5-note-resource-schema.json"),
                 )
         }
     }

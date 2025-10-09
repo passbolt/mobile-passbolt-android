@@ -15,10 +15,12 @@ import com.passbolt.mobile.android.core.ui.compose.bottomsheet.BottomSheetHeader
 import com.passbolt.mobile.android.core.ui.compose.menu.OpenableSettingsItem
 import com.passbolt.mobile.android.createresourcemenu.compose.CreateResourceMenuIntent.Close
 import com.passbolt.mobile.android.createresourcemenu.compose.CreateResourceMenuIntent.CreateFolder
+import com.passbolt.mobile.android.createresourcemenu.compose.CreateResourceMenuIntent.CreateNote
 import com.passbolt.mobile.android.createresourcemenu.compose.CreateResourceMenuIntent.CreatePassword
 import com.passbolt.mobile.android.createresourcemenu.compose.CreateResourceMenuIntent.CreateTotp
 import com.passbolt.mobile.android.createresourcemenu.compose.CreateResourceMenuIntent.Initialize
 import com.passbolt.mobile.android.createresourcemenu.compose.CreateResourceMenuSideEffect.Dismiss
+import com.passbolt.mobile.android.createresourcemenu.compose.CreateResourceMenuSideEffect.InvokeCreateNote
 import com.passbolt.mobile.android.ui.HomeDisplayViewModel
 import org.koin.androidx.compose.koinViewModel
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
@@ -55,6 +57,7 @@ import com.passbolt.mobile.android.createresourcemenu.compose.CreateResourceMenu
 fun CreateResourceMenuBottomSheet(
     onCreatePassword: () -> Unit,
     onCreateTotp: () -> Unit,
+    onCreateNote: () -> Unit,
     onDismissRequest: () -> Unit,
     onCreateFolder: (() -> Unit)? = null,
     homeDisplayViewModel: HomeDisplayViewModel? = null,
@@ -75,6 +78,7 @@ fun CreateResourceMenuBottomSheet(
             Dismiss -> onDismissRequest()
             CreatePasswordEffect -> onCreatePassword()
             CreateTotpEffect -> onCreateTotp()
+            InvokeCreateNote -> onCreateNote()
             CreateFolderEffect -> onCreateFolder?.invoke()
         }
     }
@@ -112,6 +116,15 @@ private fun CreateResourceMenuBottomSheet(
                     title = stringResource(LocalizationR.string.create_resource_menu_create_totp),
                     iconPainter = painterResource(CoreUiR.drawable.ic_time_lock),
                     onClick = { onIntent(CreateTotp) },
+                    opensInternally = false,
+                )
+            }
+
+            if (state.showNoteButton) {
+                OpenableSettingsItem(
+                    title = stringResource(LocalizationR.string.create_resource_menu_create_note),
+                    iconPainter = painterResource(CoreUiR.drawable.ic_notes),
+                    onClick = { onIntent(CreateNote) },
                     opensInternally = false,
                 )
             }
