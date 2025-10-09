@@ -57,11 +57,7 @@ data class OtpAdvancedSettingsModel(
 
 fun List<OtpItemWrapper>.refreshingOnly(resourceId: String) =
     map { otp ->
-        if (otp.resource.resourceId == resourceId) {
-            otp.copy(isRefreshing = true)
-        } else {
-            otp
-        }
+        otp.copy(isRefreshing = otp.resource.resourceId == resourceId)
     }
 
 fun List<OtpItemWrapper>.refreshingNone() =
@@ -75,6 +71,7 @@ fun List<OtpItemWrapper>.allReset() =
             isVisible = false,
             isRefreshing = false,
             otpValue = null,
+            otpExpirySeconds = null,
             remainingSecondsCounter = null,
         )
     }
@@ -94,7 +91,13 @@ fun List<OtpItemWrapper>.revealed(
             remainingSecondsCounter = otpSecondsValid,
         )
     } else {
-        otp
+        otp.copy(
+            isVisible = false,
+            isRefreshing = false,
+            otpValue = null,
+            otpExpirySeconds = null,
+            remainingSecondsCounter = null,
+        )
     }
 }
 

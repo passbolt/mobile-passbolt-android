@@ -163,13 +163,16 @@ internal class OtpViewModel(
     }
 
     // TODO refactor after feature completion
-    @Suppress("CyclomaticComplexMethod")
+    @Suppress("CyclomaticComplexMethod", "LongMethod")
     fun onIntent(intent: OtpIntent) {
         when (intent) {
             OpenCreateResourceMenu -> updateViewState { copy(showCreateResourceBottomSheet = true) }
             CloseCreateResourceMenu -> updateViewState { copy(showCreateResourceBottomSheet = false) }
             is Search -> searchQueryChanged(intent.searchQuery)
-            is RevealOtp -> otpClick(intent.otpItemWrapper)
+            is RevealOtp -> {
+                updateViewState { copy(showOtpMoreBottomSheet = false) }
+                otpClick(intent.otpItemWrapper)
+            }
             is OpenOtpMoreMenu -> updateViewState { copy(showOtpMoreBottomSheet = true, moreMenuResource = intent.otpItemWrapper) }
             is CloseOtpMoreMenu -> updateViewState { copy(showOtpMoreBottomSheet = false) }
             CreatePassword -> {
@@ -182,17 +185,25 @@ internal class OtpViewModel(
             }
             is OtpQRScanReturned -> processOtpScanResult(intent)
             is ResourceFormReturned -> processResourceFormResult(intent)
-            is CopyOtp -> copyTotp(intent.otpItemWrapper)
-            is DeleteOtp -> updateViewState { copy(showDeleteTotpConfirmationDialog = true) }
-            is EditOtp ->
+            is CopyOtp -> {
+                updateViewState { copy(showOtpMoreBottomSheet = false) }
+                copyTotp(intent.otpItemWrapper)
+            }
+            is DeleteOtp -> updateViewState { copy(showOtpMoreBottomSheet = false, showDeleteTotpConfirmationDialog = true) }
+            is EditOtp -> {
+                updateViewState { copy(showOtpMoreBottomSheet = false) }
                 emitSideEffect(
                     NavigateToEditResourceForm(
                         resourceId = intent.otpItemWrapper.resource.resourceId,
                         resourceName = intent.otpItemWrapper.resource.metadataJsonModel.name,
                     ),
                 )
+            }
             CloseDeleteConfirmationDialog -> updateViewState { copy(showDeleteTotpConfirmationDialog = false) }
-            ConfirmDeleteTotp -> deleteTotp(viewState.value.moreMenuResource)
+            ConfirmDeleteTotp -> {
+                updateViewState { copy(showProgress = true, showDeleteTotpConfirmationDialog = false) }
+                deleteTotp(viewState.value.moreMenuResource)
+            }
             CloseTrustedKeyDeletedDialog ->
                 updateViewState {
                     copy(
@@ -265,7 +276,6 @@ internal class OtpViewModel(
     }
 
     private fun deleteTotp(moreMenuResource: OtpItemWrapper?) {
-        updateViewState { copy(showProgress = true) }
         viewModelScope.launch(coroutineLaunchContext.io) {
             val otpResource = requireNotNull(moreMenuResource)
             val slug =
@@ -396,6 +406,7 @@ internal class OtpViewModel(
     }
 
     private fun otpClick(otpItemWrapper: OtpItemWrapper) {
+        updateViewState { copy(showOtpMoreBottomSheet = false) }
         fetchTotp(otpItemWrapper) {
             showTotp(it, otpItemWrapper.resource.resourceId)
         }

@@ -58,13 +58,12 @@ class OtpMoreMenuViewModel(
     private fun initialize(initialize: Initialize) {
         updateViewState { copy(title = initialize.resourceName, showShowOtpButton = initialize.canShowTotp) }
         viewModelScope.launch {
+            dataRefreshTrackingFlow.awaitIdle()
             val menuModel =
                 createOtpMoreMenuModelUseCase
                     .execute(
                         CreateOtpMoreMenuModelUseCase.Input(initialize.resourceId),
                     ).otpMoreMenuModel
-
-            dataRefreshTrackingFlow.awaitIdle()
 
             updateViewState {
                 copy(

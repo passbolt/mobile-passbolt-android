@@ -54,6 +54,7 @@ import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.stub
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyBlocking
 import java.time.ZonedDateTime
@@ -303,10 +304,10 @@ class ResourcePermissionsPresenterTest : KoinTest {
         presenter.resume(view)
         presenter.actionButtonClick()
 
-        verify(view).showProgress()
+        verify(view, times(3)).showProgress()
         verifyBlocking(mockHomeDataInteractor) { refreshAllHomeScreenData() }
         verify(view).closeWithShareSuccessResult()
-        verify(view).hideProgress()
+        verify(view, times(3)).hideProgress()
     }
 
     private companion object {

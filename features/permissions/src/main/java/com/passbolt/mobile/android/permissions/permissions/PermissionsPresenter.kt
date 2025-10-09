@@ -229,7 +229,7 @@ class PermissionsPresenter(
             if (contentType.isV5()) {
                 performResourceUpdateAction(
                     action =
-                        suspend {
+                        {
                             resourceUpdateActionsInteractor.reEncryptResourceMetadata()
                         },
                     doOnFailure = { view?.showGenericError() },
@@ -240,12 +240,12 @@ class PermissionsPresenter(
                     doOnMetadataKeyModified = { view?.showMetadataKeyModifiedDialog(it) },
                     doOnMetadataKeyDeleted = { view?.showMetadataKeyDeletedDialog(it) },
                     doOnMetadataKeyVerificationFailure = { view?.showFailedToVerifyMetadataKey() },
+                    doOnFinish = { view?.hideProgress() },
                 )
             } else {
+                view?.hideProgress()
                 shareResource()
             }
-
-            view?.hideProgress()
         }
     }
 
@@ -257,9 +257,12 @@ class PermissionsPresenter(
     }
 
     private suspend fun shareResource() {
+        view?.showProgress()
         when (
             runAuthenticatedOperation {
-                resourceShareInteractor.simulateAndShareResource(id, recipients)
+                resourceShareInteractor.simulateAndShareResource(id, recipients).also {
+                    view?.hideProgress()
+                }
             }
         ) {
             is Output.SecretDecryptFailure -> view?.showSecretDecryptFailure()
@@ -275,9 +278,11 @@ class PermissionsPresenter(
     }
 
     private suspend fun shareSuccess() {
+        view?.showProgress()
         runAuthenticatedOperation {
             homeDataInteractor.refreshAllHomeScreenData()
         }
+        view?.hideProgress()
         view?.closeWithShareSuccessResult()
     }
 
