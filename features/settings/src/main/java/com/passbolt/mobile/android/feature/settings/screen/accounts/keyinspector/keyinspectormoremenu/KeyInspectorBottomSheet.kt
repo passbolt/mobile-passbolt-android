@@ -50,6 +50,7 @@ import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.ActivityIntents.AuthConfig.RefreshPassphrase
 import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
+import com.passbolt.mobile.android.core.ui.R
 import com.passbolt.mobile.android.core.ui.compose.bottomsheet.BottomSheetHeader
 import com.passbolt.mobile.android.core.ui.compose.menu.OpenableSettingsItem
 import com.passbolt.mobile.android.feature.settings.screen.accounts.keyinspector.keyinspectormoremenu.KeyInspectorBottomSheetIntent.Close
@@ -137,6 +138,7 @@ private fun KeyInspectorBottomSheet(
     Box {
         ModalBottomSheet(
             onDismissRequest = onDismissRequest,
+            containerColor = colorResource(R.color.elevated_background),
         ) {
             BottomSheetHeader(
                 title = stringResource(LocalizationR.string.key_inspector_menu_title),

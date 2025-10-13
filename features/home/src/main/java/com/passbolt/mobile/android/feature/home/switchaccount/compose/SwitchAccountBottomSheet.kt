@@ -10,6 +10,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
 import com.passbolt.mobile.android.core.navigation.AppContext
@@ -17,6 +18,7 @@ import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
 import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity
 import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.AccountDetails
 import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.StartUp
+import com.passbolt.mobile.android.core.ui.R
 import com.passbolt.mobile.android.core.ui.compose.bottomsheet.BottomSheetHeader
 import com.passbolt.mobile.android.core.ui.compose.dialogs.SignOutAlertDialog
 import com.passbolt.mobile.android.core.ui.compose.progressdialog.ProgressDialog
@@ -126,6 +128,7 @@ private fun SwitchAccountBottomSheet(
     state: SwitchAccountState,
 ) {
     ModalBottomSheet(
+        containerColor = colorResource(R.color.elevated_background),
         onDismissRequest = onDismissRequest,
     ) {
         Column(

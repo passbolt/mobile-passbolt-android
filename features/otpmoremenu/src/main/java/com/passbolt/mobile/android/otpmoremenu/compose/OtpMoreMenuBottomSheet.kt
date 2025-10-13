@@ -15,6 +15,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
+import com.passbolt.mobile.android.core.ui.R
 import com.passbolt.mobile.android.core.ui.compose.bottomsheet.BottomSheetHeader
 import com.passbolt.mobile.android.core.ui.compose.menu.OpenableSettingsItem
 import com.passbolt.mobile.android.otpmoremenu.compose.OtpMoreMenuIntent.Close
@@ -97,6 +98,7 @@ private fun OtpMoreMenuBottomSheet(
 ) {
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,
+        containerColor = colorResource(R.color.elevated_background),
     ) {
         Column(
             modifier = Modifier.fillMaxWidth(),
