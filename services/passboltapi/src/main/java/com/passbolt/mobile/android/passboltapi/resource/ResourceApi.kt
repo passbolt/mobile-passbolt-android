@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.passboltapi.resource
 
 import com.passbolt.mobile.android.dto.request.CreateResourceDto
+import com.passbolt.mobile.android.dto.response.BasePaginatedResponse
 import com.passbolt.mobile.android.dto.response.BaseResponse
 import com.passbolt.mobile.android.dto.response.ResourceResponseDto
 import retrofit2.http.Body
@@ -47,6 +48,26 @@ internal interface ResourceApi {
         @Query(QUERY_CONTAIN_PERMISSIONS) containingGroup: Int? = 1,
     ): BaseResponse<List<ResourceResponseDto>>
 
+    @GET(RESOURCES)
+    suspend fun getResourcesPaginated(
+        // always return index with current user permission
+        @Query(QUERY_CONTAIN_PERMISSION) containingPermissions: Int? = 1,
+        // always return index with favourite info
+        @Query(QUERY_CONTAIN_FAVOURITE) containingFavourite: Int? = 1,
+        // always return index with tag info
+        @Query(QUERY_CONTAIN_TAG) containingTag: Int? = 1,
+        // always return index with all permissions
+        @Query(QUERY_CONTAIN_PERMISSIONS) containingGroup: Int? = 1,
+        // limit resources per page
+        @Query(QUERY_LIMIT) limit: Int,
+        // page number
+        @Query(QUERY_PAGE) page: Int,
+        // sort by modified date
+        @Query(QUERY_SORT) sort: String = "Resources.modified",
+        // sort direction descending
+        @Query(QUERY_DIRECTION) direction: String = "desc",
+    ): BasePaginatedResponse<List<ResourceResponseDto>>
+
     @DELETE(RESOURCE_BY_ID)
     suspend fun deleteResource(
         @Path(PATH_RESOURCE_ID) resourceId: String,
@@ -72,6 +93,10 @@ internal interface ResourceApi {
         private const val QUERY_CONTAIN_FAVOURITE = "contain[favorite]"
         private const val QUERY_CONTAIN_TAG = "contain[tag]"
         private const val QUERY_CONTAIN_PERMISSIONS = "contain[permissions.group]"
+        private const val QUERY_LIMIT = "limit"
+        private const val QUERY_PAGE = "page"
+        private const val QUERY_SORT = "sort"
+        private const val QUERY_DIRECTION = "direction"
         private const val RESOURCES = "resources.json"
         private const val RESOURCE_BY_ID = "$PATH_RESOURCES/{$PATH_RESOURCE_ID}.json"
     }

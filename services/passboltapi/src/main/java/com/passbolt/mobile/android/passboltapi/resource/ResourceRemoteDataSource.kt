@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.passboltapi.resource
 
 import com.passbolt.mobile.android.dto.request.CreateResourceDto
+import com.passbolt.mobile.android.dto.response.BasePaginatedResponse
 import com.passbolt.mobile.android.dto.response.BaseResponse
 import com.passbolt.mobile.android.dto.response.ResourceResponseDto
 
@@ -30,6 +31,15 @@ internal class ResourceRemoteDataSource(
     private val resourceApi: ResourceApi,
 ) : ResourceDataSource {
     override suspend fun getResources(): BaseResponse<List<ResourceResponseDto>> = resourceApi.getResources()
+
+    override suspend fun getResourcesPaginated(
+        limit: Int,
+        page: Int,
+    ): BasePaginatedResponse<List<ResourceResponseDto>> =
+        resourceApi.getResourcesPaginated(
+            limit = limit,
+            page = page,
+        )
 
     override suspend fun createResource(createResourceDto: CreateResourceDto) = resourceApi.createResource(createResourceDto)
 

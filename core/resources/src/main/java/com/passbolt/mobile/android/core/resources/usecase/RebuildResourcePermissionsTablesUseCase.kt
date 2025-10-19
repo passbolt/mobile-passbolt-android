@@ -1,12 +1,3 @@
-package com.passbolt.mobile.android.core.resources.usecase
-
-import com.passbolt.mobile.android.common.usecase.AsyncUseCase
-import com.passbolt.mobile.android.common.usecase.UserIdInput
-import com.passbolt.mobile.android.core.accounts.usecase.SelectedAccountUseCase
-import com.passbolt.mobile.android.core.resources.usecase.db.AddLocalResourcePermissionsUseCase
-import com.passbolt.mobile.android.core.resources.usecase.db.RemoveLocalResourcePermissionsUseCase
-import com.passbolt.mobile.android.ui.ResourceModelWithAttributes
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -29,13 +20,21 @@ import com.passbolt.mobile.android.ui.ResourceModelWithAttributes
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+
+package com.passbolt.mobile.android.core.resources.usecase
+
+import com.passbolt.mobile.android.common.usecase.AsyncUseCase
+import com.passbolt.mobile.android.core.accounts.usecase.SelectedAccountUseCase
+import com.passbolt.mobile.android.core.resources.usecase.db.AddLocalResourcePermissionsUseCase
+import com.passbolt.mobile.android.ui.ResourceModelWithAttributes
+
+// TODO MOB-3051 do not delete existing when rebuilding
 class RebuildResourcePermissionsTablesUseCase(
-    private val removeLocalResourcePermissionsUseCase: RemoveLocalResourcePermissionsUseCase,
     private val addLocalResourcePermissionsUseCase: AddLocalResourcePermissionsUseCase,
 ) : AsyncUseCase<RebuildResourcePermissionsTablesUseCase.Input, Unit>,
     SelectedAccountUseCase {
     override suspend fun execute(input: Input) {
-        removeLocalResourcePermissionsUseCase.execute(UserIdInput(selectedAccountId))
+//        removeLocalResourcePermissionsUseCase.execute(UserIdInput(selectedAccountId))
         addLocalResourcePermissionsUseCase.execute(
             AddLocalResourcePermissionsUseCase.Input(input.resourcesWithTagsAndPermissions),
         )

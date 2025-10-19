@@ -6,6 +6,7 @@ import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
 import com.passbolt.mobile.android.core.networking.MfaTypeProvider
 import com.passbolt.mobile.android.core.networking.NetworkResult
 import com.passbolt.mobile.android.dto.PassphraseNotInCacheException
+import com.passbolt.mobile.android.dto.response.Pagination
 import com.passbolt.mobile.android.mappers.PermissionsModelMapper
 import com.passbolt.mobile.android.mappers.ResourceModelMapper
 import com.passbolt.mobile.android.mappers.TagsModelMapper
@@ -34,18 +35,18 @@ import com.passbolt.mobile.android.ui.ResourceModelWithAttributes
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-@Deprecated("Use GetResourcesPaginatedUseCase")
-class GetResourcesUseCase(
+class GetResourcesPaginatedUseCase(
     private val resourceRepository: ResourceRepository,
     private val resourceModelMapper: ResourceModelMapper,
     private val tagModelMapper: TagsModelMapper,
     private val permissionsModelMapper: PermissionsModelMapper,
-) : AsyncUseCase<Unit, GetResourcesUseCase.Output> {
-    override suspend fun execute(input: Unit): Output =
-        when (val response = resourceRepository.getResources()) {
+) : AsyncUseCase<GetResourcesPaginatedUseCase.Input, GetResourcesPaginatedUseCase.Output> {
+    override suspend fun execute(input: Input): Output =
+        when (val response = resourceRepository.getResourcesPaginated(input.limit, input.page)) {
             is NetworkResult.Failure -> Output.Failure(response)
             is NetworkResult.Success ->
                 Output.Success(
+                    pagination = response.value.header.pagination,
                     response.value.body.map {
                         ResourceModelWithAttributes(
                             resourceModelMapper.map(it),
@@ -56,6 +57,11 @@ class GetResourcesUseCase(
                     },
                 )
         }
+
+    data class Input(
+        val page: Int,
+        val limit: Int,
+    )
 
     sealed class Output : AuthenticatedUseCaseOutput {
         override val authenticationState: AuthenticationState
@@ -79,6 +85,7 @@ class GetResourcesUseCase(
                 }
 
         data class Success(
+            val pagination: Pagination,
             val resources: List<ResourceModelWithAttributes>,
         ) : Output()
 

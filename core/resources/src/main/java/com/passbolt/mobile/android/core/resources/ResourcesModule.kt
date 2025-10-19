@@ -13,6 +13,7 @@ import com.passbolt.mobile.android.core.resources.resourceicon.ResourceIconProvi
 import com.passbolt.mobile.android.core.resources.usecase.AddToFavouritesUseCase
 import com.passbolt.mobile.android.core.resources.usecase.DeleteResourceUseCase
 import com.passbolt.mobile.android.core.resources.usecase.FavouritesInteractor
+import com.passbolt.mobile.android.core.resources.usecase.GetResourcesPaginatedUseCase
 import com.passbolt.mobile.android.core.resources.usecase.GetResourcesUseCase
 import com.passbolt.mobile.android.core.resources.usecase.RebuildResourcePermissionsTablesUseCase
 import com.passbolt.mobile.android.core.resources.usecase.RebuildResourceTablesUseCase
@@ -55,6 +56,7 @@ val resourcesModule =
         resourcesDbModule()
 
         singleOf(::GetResourcesUseCase)
+        singleOf(::GetResourcesPaginatedUseCase)
         singleOf(::ResourceInteractor)
         singleOf(::SearchableMatcher)
         singleOf(::DeleteResourceUseCase)
