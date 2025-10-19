@@ -26,3 +26,8 @@ class BaseResponse<T>(
     val header: HeaderResponse,
     val body: T,
 )
+
+class BasePaginatedResponse<T>(
+    val header: HeaderWithPaginationResponse,
+    val body: T,
+)

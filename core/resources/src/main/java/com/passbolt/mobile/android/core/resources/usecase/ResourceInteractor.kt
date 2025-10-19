@@ -1,10 +1,19 @@
 package com.passbolt.mobile.android.core.resources.usecase
 
 import android.database.SQLException
+import com.passbolt.mobile.android.common.usecase.UserIdInput
+import com.passbolt.mobile.android.core.accounts.usecase.SelectedAccountUseCase
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticatedUseCaseOutput
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
+import com.passbolt.mobile.android.core.resources.usecase.GetResourcesPaginatedUseCase.Output.Failure
+import com.passbolt.mobile.android.core.resources.usecase.GetResourcesPaginatedUseCase.Output.Success
+import com.passbolt.mobile.android.core.resources.usecase.db.RemoveLocalResourcePermissionsUseCase
+import com.passbolt.mobile.android.core.resources.usecase.db.RemoveLocalResourcesUseCase
 import com.passbolt.mobile.android.core.tags.RebuildTagsTablesUseCase
+import com.passbolt.mobile.android.core.tags.usecase.db.RemoveLocalTagsUseCase
+import com.passbolt.mobile.android.ui.ResourceModelWithAttributes
 import timber.log.Timber
+import kotlin.math.ceil
 
 /**
  * Passbolt - Open source password manager for teams
@@ -29,36 +38,71 @@ import timber.log.Timber
  * @since v1.0
  */
 class ResourceInteractor(
-    private val getResourcesUseCase: GetResourcesUseCase,
+    private val removeLocalResourcePermissionsUseCase: RemoveLocalResourcePermissionsUseCase,
+    private val removeLocalTagsUseCase: RemoveLocalTagsUseCase,
+    private val removeLocalResourcesUseCase: RemoveLocalResourcesUseCase,
+    private val getResourcesPaginatedUseCase: GetResourcesPaginatedUseCase,
     private val rebuildResourceTablesUseCase: RebuildResourceTablesUseCase,
     private val rebuildTagsTablesUseCase: RebuildTagsTablesUseCase,
     private val rebuildResourcePermissionsTablesUseCase: RebuildResourcePermissionsTablesUseCase,
-) {
+) : SelectedAccountUseCase {
+    @Suppress("ReturnCount")
     suspend fun fetchAndSaveResources(): Output {
-        val resourcesResult = getResourcesUseCase.execute(Unit)
+        try {
+            // TODO MOB-3051 do not delete existing when rebuilding
+            removeLocalResourcesUseCase.execute(UserIdInput(selectedAccountId))
+            removeLocalTagsUseCase.execute(UserIdInput(selectedAccountId))
+            removeLocalResourcePermissionsUseCase.execute(UserIdInput(selectedAccountId))
 
-        return if (resourcesResult is GetResourcesUseCase.Output.Success) {
-            try {
-                rebuildResourceTablesUseCase.execute(
-                    RebuildResourceTablesUseCase.Input(resourcesResult.resources.map { it.resourceModel }),
+            // get first page
+            val firstPageResult =
+                getResourcesPaginatedUseCase.execute(
+                    GetResourcesPaginatedUseCase.Input(page = FIRST_PAGE, limit = RESOURCES_PAGE_SIZE),
                 )
-                rebuildTagsTablesUseCase.execute(
-                    RebuildTagsTablesUseCase.Input(resourcesResult.resources),
-                )
-                rebuildResourcePermissionsTablesUseCase.execute(
-                    RebuildResourcePermissionsTablesUseCase.Input(resourcesResult.resources),
-                )
-                Output.Success
-            } catch (exception: SQLException) {
-                Timber.e(
-                    exception,
-                    "There was an error during resources, tags and resource permissions db insert",
-                )
-                Output.Failure(resourcesResult.authenticationState)
+
+            when (firstPageResult) {
+                is Failure<*> -> return Output.Failure(firstPageResult.authenticationState)
+                is Success -> {
+                    // process first page
+                    processResources(firstPageResult.resources)
+
+                    // process remaining pages
+                    val totalPages = ceil(firstPageResult.pagination.count.toDouble() / RESOURCES_PAGE_SIZE).toInt()
+
+                    for (page in SECOND_PAGE..totalPages) {
+                        when (
+                            val pageResult =
+                                getResourcesPaginatedUseCase.execute(
+                                    GetResourcesPaginatedUseCase.Input(page = page, limit = RESOURCES_PAGE_SIZE),
+                                )
+                        ) {
+                            is Failure<*> -> return Output.Failure(pageResult.authenticationState)
+                            is Success -> processResources(pageResult.resources)
+                        }
+                    }
+                }
             }
-        } else {
-            Output.Failure(resourcesResult.authenticationState)
+
+            return Output.Success
+        } catch (exception: SQLException) {
+            Timber.e(
+                exception,
+                "There was an error during resources, tags and resource permissions db insert",
+            )
+            return Output.Failure(AuthenticationState.Authenticated)
         }
+    }
+
+    private suspend fun processResources(resources: List<ResourceModelWithAttributes>) {
+        rebuildResourceTablesUseCase.execute(
+            RebuildResourceTablesUseCase.Input(resources.map { it.resourceModel }),
+        )
+        rebuildTagsTablesUseCase.execute(
+            RebuildTagsTablesUseCase.Input(resources),
+        )
+        rebuildResourcePermissionsTablesUseCase.execute(
+            RebuildResourcePermissionsTablesUseCase.Input(resources),
+        )
     }
 
     sealed class Output : AuthenticatedUseCaseOutput {
@@ -70,5 +114,11 @@ class ResourceInteractor(
         class Failure(
             override val authenticationState: AuthenticationState,
         ) : Output()
+    }
+
+    private companion object {
+        private const val RESOURCES_PAGE_SIZE = 2_000
+        private const val FIRST_PAGE = 1
+        private const val SECOND_PAGE = 2
     }
 }

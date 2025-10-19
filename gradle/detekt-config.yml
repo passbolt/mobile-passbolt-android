@@ -141,6 +141,7 @@ complexity:
     ignoreAnnotatedParameter: [ ]
     ignoreAnnotated:
       - 'Composable'
+      - 'GET'
   MethodOverloading:
     active: false
     threshold: 6
