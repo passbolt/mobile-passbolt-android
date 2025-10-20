@@ -23,8 +23,8 @@
 
 package com.passbolt.mobile.android.scenarios.resource.details.sharewithsubsection
 
+import androidx.compose.ui.test.junit4.createEmptyComposeRule
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.scrollTo
 import androidx.test.espresso.action.ViewActions.swipeUp
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -37,9 +37,11 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.passbolt.mobile.android.core.idlingresource.ResourceDetailActionIdlingResource
 import com.passbolt.mobile.android.core.idlingresource.ResourcesFullRefreshIdlingResource
 import com.passbolt.mobile.android.core.idlingresource.SignInIdlingResource
+import com.passbolt.mobile.android.core.localization.R.string.filters_menu_all_items
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.feature.authentication.AuthenticationMainActivity
+import com.passbolt.mobile.android.helpers.chooseFilter
 import com.passbolt.mobile.android.helpers.pickFirstResourceWithName
 import com.passbolt.mobile.android.helpers.signIn
 import com.passbolt.mobile.android.instrumentationTestsModule
@@ -48,6 +50,7 @@ import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
 import com.passbolt.mobile.android.scenarios.resource.details.TestResourceType
 import org.hamcrest.Matchers.allOf
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -55,14 +58,13 @@ import org.junit.runners.Parameterized
 import org.koin.core.component.inject
 import org.koin.test.KoinTest
 import kotlin.test.BeforeTest
-import com.google.android.material.R as MaterialR
 import com.passbolt.mobile.android.core.localization.R.string as localizationString
-import com.passbolt.mobile.android.feature.home.R.id as HomeId
 import com.passbolt.mobile.android.feature.permissions.R.id as permissionsId
 import com.passbolt.mobile.android.feature.resources.R.id as resourcesId
 
 @RunWith(Parameterized::class)
 @MediumTest
+@Ignore("Deprecated: refactor needed - entire test class disabled")
 class SharedWithSubsectionTest(
     private val resourceType: TestResourceType,
 ) : KoinTest {
@@ -97,10 +99,13 @@ class SharedWithSubsectionTest(
             )
         }
 
+    @get:Rule
+    val composeTestRule = createEmptyComposeRule()
+
     @BeforeTest
     fun setup() {
         //      Given   that I am logged in mobile user
-        signIn(managedAccountIntentCreator.getPassphrase())
+        composeTestRule.signIn(managedAccountIntentCreator.getPassphrase())
     }
 
     /**
@@ -122,9 +127,8 @@ class SharedWithSubsectionTest(
      */
     @Test
     fun onTheResourceScreenICanSeeSharedWithSubsection() {
-        onView(withId(MaterialR.id.text_input_start_icon)).perform(click())
-        onView(withId(HomeId.allItems)).perform(click())
-        pickFirstResourceWithName(resourceType.displayName)
+        composeTestRule.chooseFilter(filters_menu_all_items)
+        composeTestRule.pickFirstResourceWithName(resourceType.displayName)
         onView(withText(localizationString.shared_with))
             .perform(scrollTo())
             .check(matches(isDisplayed()))

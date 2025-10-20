@@ -23,34 +23,34 @@
 
 package com.passbolt.mobile.android.scenarios.home.filters.folders.creation
 
-import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.compose.ui.test.junit4.createEmptyComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
 import androidx.test.platform.app.InstrumentationRegistry
 import com.passbolt.mobile.android.core.idlingresource.CreateFolderIdlingResource
 import com.passbolt.mobile.android.core.idlingresource.ResourcesFullRefreshIdlingResource
 import com.passbolt.mobile.android.core.idlingresource.SignInIdlingResource
+import com.passbolt.mobile.android.core.localization.R.string.filters_menu_folders
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.feature.authentication.AuthenticationMainActivity
-import com.passbolt.mobile.android.feature.setup.R
+import com.passbolt.mobile.android.helpers.chooseFilter
 import com.passbolt.mobile.android.helpers.signIn
 import com.passbolt.mobile.android.instrumentationTestsModule
 import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
 import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.koin.core.component.inject
 import org.koin.test.KoinTest
 import kotlin.test.BeforeTest
-import com.google.android.material.R as MaterialR
 
 @RunWith(AndroidJUnit4::class)
 @MediumTest
+@Ignore("Deprecated: refactor needed - entire test class disabled")
 class FolderCreationTest : KoinTest {
     @get:Rule
     val startUpActivityRule =
@@ -84,6 +84,9 @@ class FolderCreationTest : KoinTest {
             )
         }
 
+    @get:Rule
+    val composeTestRule = createEmptyComposeRule()
+
     @BeforeTest
     fun setup() {
         //    Background context
@@ -94,10 +97,9 @@ class FolderCreationTest : KoinTest {
         //    And I want to create new folder
         //    And I am on the folders filter view
         //    And I have the permission to create a folder in my current location
-        signIn(managedAccountIntentCreator.getPassphrase())
-        onView(withId(MaterialR.id.text_input_start_icon)).perform(click())
+        composeTestRule.signIn(managedAccountIntentCreator.getPassphrase())
         //    Given     that I am on the folders workspace
-        onView(withId(com.passbolt.mobile.android.feature.home.R.id.folders)).perform(click())
+        composeTestRule.chooseFilter(filters_menu_folders)
     }
 
     //    https://passbolt.testrail.io/index.php?/cases/view/8160

@@ -26,10 +26,10 @@ package com.passbolt.mobile.android.scenarios.resource.details
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import androidx.compose.ui.test.junit4.createEmptyComposeRule
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.scrollTo
-import androidx.test.espresso.action.ViewActions.typeText
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
@@ -40,6 +40,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.passbolt.mobile.android.core.idlingresource.ResourceDetailActionIdlingResource
 import com.passbolt.mobile.android.core.idlingresource.ResourcesFullRefreshIdlingResource
 import com.passbolt.mobile.android.core.idlingresource.SignInIdlingResource
+import com.passbolt.mobile.android.core.localization.R.string.filters_menu_all_items
 import com.passbolt.mobile.android.core.localization.R.string.location
 import com.passbolt.mobile.android.core.localization.R.string.resource_details_metadata_header
 import com.passbolt.mobile.android.core.localization.R.string.resource_details_password_header
@@ -57,12 +58,11 @@ import com.passbolt.mobile.android.core.ui.R.drawable.ic_more
 import com.passbolt.mobile.android.core.ui.R.id.actionIcon
 import com.passbolt.mobile.android.feature.authentication.AuthenticationMainActivity
 import com.passbolt.mobile.android.feature.autofill.R.id.close
-import com.passbolt.mobile.android.feature.otp.R.id.name
-import com.passbolt.mobile.android.feature.otp.R.id.searchEditText
 import com.passbolt.mobile.android.feature.resources.R.id.backArrow
 import com.passbolt.mobile.android.feature.resources.R.id.locationHeader
 import com.passbolt.mobile.android.feature.resources.R.id.metadataSectionTitle
 import com.passbolt.mobile.android.feature.resources.R.id.moreIcon
+import com.passbolt.mobile.android.feature.resources.R.id.name
 import com.passbolt.mobile.android.feature.resources.R.id.passwordItem
 import com.passbolt.mobile.android.feature.resources.R.id.passwordSectionTitle
 import com.passbolt.mobile.android.feature.resources.R.id.sharedWithLabel
@@ -71,7 +71,9 @@ import com.passbolt.mobile.android.feature.resources.R.id.urlItem
 import com.passbolt.mobile.android.feature.resources.R.id.usernameItem
 import com.passbolt.mobile.android.feature.setup.R.id.icon
 import com.passbolt.mobile.android.feature.setup.R.id.title
+import com.passbolt.mobile.android.helpers.chooseFilter
 import com.passbolt.mobile.android.helpers.getClipboardText
+import com.passbolt.mobile.android.helpers.pickFirstResourceWithName
 import com.passbolt.mobile.android.helpers.signIn
 import com.passbolt.mobile.android.instrumentationTestsModule
 import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
@@ -155,9 +157,13 @@ class ResourcesDetailsTest(
             EXCLUDED_ITEMS_MAP[resourceType] ?: emptyList()
     }
 
+    @get:Rule
+    val composeTestRule = createEmptyComposeRule()
+
     @Before
     fun setup() {
-        signIn(managedAccountIntentCreator.getPassphrase())
+        composeTestRule.signIn(managedAccountIntentCreator.getPassphrase())
+        composeTestRule.chooseFilter(filters_menu_all_items)
         clipboardManager =
             InstrumentationRegistry
                 .getInstrumentation()
@@ -192,17 +198,7 @@ class ResourcesDetailsTest(
      */
     @Test
     fun asAUserOnTheHomepageICanAccessTheResourcePageForWhichIHaveFullPermissions() {
-        onView(withId(searchEditText))
-            .perform(
-                click(),
-                typeText(resourceType.displayName),
-            )
-        onView(
-            allOf(
-                withId(title),
-                withText(resourceType.displayName),
-            ),
-        ).perform(click())
+        composeTestRule.pickFirstResourceWithName(resourceType.displayName)
         onView(withId(backArrow))
             .check(matches(isDisplayed()))
             .check(matches(hasDrawable(id = ic_arrow_left, tint = icon_tint)))
@@ -286,10 +282,7 @@ class ResourcesDetailsTest(
      */
     @Test
     fun asAUserOnTheResourceDisplayICanTriggerTheActionMenu() {
-        onView(withId(searchEditText))
-            .perform(click(), typeText(resourceType.displayName))
-        onView(allOf(withId(title), withText(resourceType.displayName)))
-            .perform(click())
+        composeTestRule.pickFirstResourceWithName(resourceType.displayName)
         onView(withId(moreIcon))
             .perform(click())
         onView(withId(title))
@@ -331,12 +324,7 @@ class ResourcesDetailsTest(
      */
     @Test
     fun asALoggedInMobileUserOnTheResourceDisplayICanTriggerTheActionMenuAndCopyCredentialsToTheClipboard() {
-        onView(withId(searchEditText))
-            .check(matches(isDisplayed()))
-            .perform(click(), typeText(resourceType.displayName))
-        onView(allOf(withId(title), withText(resourceType.displayName)))
-            .check(matches(isDisplayed()))
-            .perform(click())
+        composeTestRule.pickFirstResourceWithName(resourceType.displayName)
         onView(withId(moreIcon))
             .check(matches(isDisplayed()))
             .perform(click())

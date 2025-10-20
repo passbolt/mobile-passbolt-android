@@ -50,6 +50,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
@@ -85,7 +86,8 @@ fun ResourceItem(
                 .fillMaxWidth()
                 .height(64.dp)
                 .clickable { onItemClick(resource) }
-                .padding(horizontal = 16.dp),
+                .padding(horizontal = 16.dp)
+                .testTag("home_resource_row"),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Box(modifier = Modifier.size(46.dp, 52.dp)) {

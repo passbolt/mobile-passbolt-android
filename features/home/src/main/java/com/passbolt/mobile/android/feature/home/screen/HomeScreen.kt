@@ -42,6 +42,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -203,7 +204,9 @@ private fun HomeScreen(
 
     HomeScaffold(
         snackbarHostState = snackbarHostState,
-        modifier = modifier,
+        modifier =
+            modifier
+                .testTag("home_screen"),
         appBarTitle = getAppBarTitle(context, state),
         appBarIconRes = getAppBarIconResId(state),
         shouldShowMoreIcon = homeNavigation.resourceHandlingStrategy.shouldShowFolderMoreMenu() && state.showMoreMenu,
@@ -223,13 +226,17 @@ private fun HomeScreen(
                     Image(
                         painter = painterResource(CoreUiR.drawable.ic_filter),
                         contentDescription = null,
-                        modifier = Modifier.clickable { onIntent(OpenFiltersBottomSheet) },
+                        modifier =
+                            Modifier
+                                .clickable { onIntent(OpenFiltersBottomSheet) }
+                                .testTag("home_search_filter"),
                     )
                 },
                 modifier =
                     Modifier
                         .fillMaxWidth()
-                        .padding(end = 16.dp),
+                        .padding(end = 16.dp)
+                        .testTag("home_search_input"),
                 onEndIconClick = { onIntent(SearchEndIconAction) },
             )
         },

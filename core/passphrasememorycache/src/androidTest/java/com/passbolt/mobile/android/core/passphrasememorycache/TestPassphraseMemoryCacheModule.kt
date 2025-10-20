@@ -1,9 +1,11 @@
 package com.passbolt.mobile.android.core.passphrasememorycache
 
 import androidx.lifecycle.ProcessLifecycleOwner
+import com.passbolt.mobile.android.common.datarefresh.DataRefreshTrackingFlow
 import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
@@ -40,6 +42,7 @@ internal val testPassphraseMemoryCacheModule =
             PassphraseMemoryCache(
                 coroutineLaunchContext = get(),
                 lifecycleOwner = get(named<ProcessLifecycleOwner>()),
+                dataRefreshTrackingFlow = get(),
             )
         }
         factory<CoroutineLaunchContext> {
@@ -48,4 +51,5 @@ internal val testPassphraseMemoryCacheModule =
         factory(named<ProcessLifecycleOwner>()) {
             ProcessLifecycleOwner.get()
         }
+        singleOf(::DataRefreshTrackingFlow)
     }
