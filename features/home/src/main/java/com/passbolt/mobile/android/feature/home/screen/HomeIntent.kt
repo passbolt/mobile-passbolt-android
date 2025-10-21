@@ -44,6 +44,10 @@ sealed interface HomeIntent {
 
     data object SearchEndIconAction : HomeIntent
 
+    data object OpenFiltersBottomSheet : HomeIntent
+
+    data object CloseFiltersBottomSheet : HomeIntent
+
     // switch account
     object CloseSwitchAccount : HomeIntent
 

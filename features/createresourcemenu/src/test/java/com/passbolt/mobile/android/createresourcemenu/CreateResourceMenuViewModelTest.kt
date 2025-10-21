@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.createresourcemenu
 
 import app.cash.turbine.test
+import com.google.common.truth.Truth
 import com.google.common.truth.Truth.assertThat
 import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
@@ -151,10 +152,10 @@ class CreateResourceMenuViewModelTest : KoinTest {
 
             viewModel.viewState.test {
                 val state = expectItem()
-                assertThat(state.showPasswordButton).isFalse()
-                assertThat(state.showTotpButton).isFalse()
-                assertThat(state.showFoldersButton).isFalse()
-                assertThat(state.showNoteButton).isFalse()
+                Truth.assertThat(state.showPasswordButton).isFalse()
+                Truth.assertThat(state.showTotpButton).isFalse()
+                Truth.assertThat(state.showFoldersButton).isFalse()
+                Truth.assertThat(state.showNoteButton).isFalse()
             }
         }
 

@@ -20,6 +20,7 @@
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+
 package com.passbolt.mobile.android.feature.home.screen.data
 
 import com.passbolt.mobile.android.ui.FolderWithCountAndPath
