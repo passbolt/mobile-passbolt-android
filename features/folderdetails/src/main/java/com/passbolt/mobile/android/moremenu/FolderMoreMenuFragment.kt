@@ -1,15 +1,16 @@
 package com.passbolt.mobile.android.moremenu
 
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.BundleCompat
 import androidx.core.os.bundleOf
+import androidx.navigation.fragment.findNavController
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.extension.setDebouncingOnClickAndDismiss
 import com.passbolt.mobile.android.core.mvp.viewbinding.NoLimitsBottomSheetDialogFragment
+import com.passbolt.mobile.android.core.navigation.deeplinks.NavDeepLinkProvider
 import com.passbolt.mobile.android.feature.folderdetails.databinding.ViewFolderMoreMenuBottomsheetBinding
 import com.passbolt.mobile.android.ui.FolderMoreMenuModel
 import org.koin.android.scope.AndroidScopeComponent
@@ -46,7 +47,6 @@ class FolderMoreMenuFragment :
     override val scope by fragmentScope(useParentActivityScope = false)
     private val presenter: FolderMoreMenuContract.Presenter by scope.inject()
     private lateinit var binding: ViewFolderMoreMenuBottomsheetBinding
-    private var listener: Listener? = null
     private val menuModel by lifecycleAwareLazy {
         requireNotNull(
             BundleCompat.getParcelable(requireArguments(), EXTRA_FOLDER_MENU_MODEL, FolderMoreMenuModel::class.java),
@@ -72,24 +72,13 @@ class FolderMoreMenuFragment :
         setListeners()
     }
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        listener =
-            when {
-                parentFragment is Listener -> parentFragment as Listener
-                activity is Listener -> activity as Listener
-                else -> error("Parent must implement ${Listener::class.java.name}")
-            }
-    }
-
-    override fun onDetach() {
-        listener = null
-        super.onDetach()
-    }
-
     private fun setListeners() {
         with(binding) {
-            setDebouncingOnClickAndDismiss(seeDetails) { listener?.menuSeeFolderDetailsClick() }
+            setDebouncingOnClickAndDismiss(seeDetails) {
+                findNavController().navigate(
+                    NavDeepLinkProvider.folderDetailsDeepLinkRequest(menuModel.folderId),
+                )
+            }
             setDebouncingOnClickAndDismiss(close)
         }
     }
@@ -105,9 +94,5 @@ class FolderMoreMenuFragment :
             FolderMoreMenuFragment().apply {
                 arguments = bundleOf(EXTRA_FOLDER_MENU_MODEL to model)
             }
-    }
-
-    interface Listener {
-        fun menuSeeFolderDetailsClick()
     }
 }

@@ -53,6 +53,10 @@ internal sealed interface OtpSideEffect {
         val type: SnackbarSuccessType,
         val message: String? = null,
     ) : OtpSideEffect
+
+    data class ShowToast(
+        val type: ToastType,
+    ) : OtpSideEffect
 }
 
 internal enum class SnackbarErrorType {
@@ -75,4 +79,8 @@ internal enum class SnackbarSuccessType {
     RESOURCE_CREATED,
     RESOURCE_DELETED,
     METADATA_KEY_IS_TRUSTED,
+}
+
+internal enum class ToastType {
+    WAIT_FOR_DATA_REFRESH_FINISH,
 }

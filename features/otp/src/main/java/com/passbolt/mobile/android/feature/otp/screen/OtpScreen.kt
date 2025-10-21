@@ -23,13 +23,17 @@
 
 package com.passbolt.mobile.android.feature.otp.screen
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
@@ -46,16 +50,16 @@ import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
 import com.passbolt.mobile.android.core.fulldatarefresh.service.DataRefreshService
 import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.core.resources.resourceicon.ResourceIconProvider
-import com.passbolt.mobile.android.core.ui.compose.dialogs.ConfirmTotpDeleteAlertDialog
+import com.passbolt.mobile.android.core.ui.compose.dialogs.ConfirmResourceDeleteAlertDialog
 import com.passbolt.mobile.android.core.ui.compose.empty.EmptyResourceListState
 import com.passbolt.mobile.android.core.ui.compose.fab.AddFloatingActionButton
 import com.passbolt.mobile.android.core.ui.compose.progressdialog.ProgressDialog
 import com.passbolt.mobile.android.core.ui.compose.scaffold.HomeScaffold
 import com.passbolt.mobile.android.core.ui.compose.search.SearchInput
 import com.passbolt.mobile.android.core.ui.compose.snackbar.ColoredSnackbarVisuals
-import com.passbolt.mobile.android.createresourcemenu.compose.CreateResourceMenuBottomSheet
+import com.passbolt.mobile.android.createresourcemenu.CreateResourceMenuBottomSheet
 import com.passbolt.mobile.android.feature.authentication.compose.AuthenticationHandler
-import com.passbolt.mobile.android.feature.home.switchaccount.compose.SwitchAccountBottomSheet
+import com.passbolt.mobile.android.feature.home.switchaccount.SwitchAccountBottomSheet
 import com.passbolt.mobile.android.feature.metadatakeytrust.ui.compose.NewMetadataKeyTrustDialog
 import com.passbolt.mobile.android.feature.metadatakeytrust.ui.compose.TrustedMetadataKeyDeletedDialog
 import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.CloseCreateResourceMenu
@@ -81,6 +85,7 @@ import com.passbolt.mobile.android.feature.otp.screen.OtpSideEffect.NavigateToCr
 import com.passbolt.mobile.android.feature.otp.screen.OtpSideEffect.NavigateToEditResourceForm
 import com.passbolt.mobile.android.feature.otp.screen.OtpSideEffect.ShowErrorSnackbar
 import com.passbolt.mobile.android.feature.otp.screen.OtpSideEffect.ShowSuccessSnackbar
+import com.passbolt.mobile.android.feature.otp.screen.OtpSideEffect.ShowToast
 import com.passbolt.mobile.android.otpmoremenu.compose.OtpMoreMenuBottomSheet
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
@@ -145,6 +150,7 @@ internal fun OtpScreen(
             is NavigateToCreateResourceForm -> navigation.navigateToCreateResourceForm(it.leadingContentType)
             is NavigateToEditResourceForm -> navigation.navigateToEditResourceForm(it.resourceId, it.resourceName)
             InitiateDataRefresh -> DataRefreshService.start(context)
+            is ShowToast -> Toast.makeText(context, getToastMessage(context, it.type), Toast.LENGTH_SHORT).show()
         }
     }
 }
@@ -161,7 +167,7 @@ fun OtpScreen(
     HomeScaffold(
         snackbarHostState = snackbarHostState,
         modifier = modifier,
-        appBarTitleRes = LocalizationR.string.main_menu_otp,
+        appBarTitle = stringResource(LocalizationR.string.main_menu_otp),
         appBarIconRes = CoreUiR.drawable.ic_time_lock,
         appBarSearchInput = {
             SearchInput(
@@ -170,98 +176,101 @@ fun OtpScreen(
                 placeholder = stringResource(LocalizationR.string.otp_search),
                 avatarUrl = state.userAvatar,
                 endIconMode = state.searchInputEndIconMode,
+                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
                 modifier =
                     Modifier
                         .fillMaxWidth()
                         .padding(end = 16.dp),
-            ) { onIntent(SearchEndIconAction) }
+                onEndIconClick = { onIntent(SearchEndIconAction) },
+            )
         },
         floatingActionButton = {
             if (!state.isRefreshing) {
                 AddFloatingActionButton(onClick = { onIntent(OpenCreateResourceMenu) })
             }
         },
-        { paddingValues ->
-            val context = LocalContext.current
-            PullToRefreshBox(
-                isRefreshing = state.isRefreshing,
-                onRefresh = { DataRefreshService.start(context) },
-                modifier =
-                    Modifier
-                        .fillMaxSize()
-                        .padding(paddingValues),
-            ) {
-                if (state.shouldShowEmptyState) {
-                    EmptyResourceListState(title = stringResource(LocalizationR.string.no_otps))
-                } else {
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(vertical = 16.dp),
-                    ) {
-                        items(state.uiOtps) { otpItem ->
-                            OtpItem(
-                                otpItem = otpItem,
-                                resourceIconProvider = resourceIconProvider,
-                                onItemClick = { onIntent(RevealOtp(otpItem)) },
-                                onMoreClick = { onIntent(OpenOtpMoreMenu(otpItem)) },
-                            )
+        content =
+            { paddingValues ->
+                val context = LocalContext.current
+                PullToRefreshBox(
+                    isRefreshing = state.isRefreshing,
+                    onRefresh = { DataRefreshService.start(context) },
+                    modifier =
+                        Modifier
+                            .fillMaxSize()
+                            .padding(paddingValues),
+                ) {
+                    if (state.shouldShowEmptyState) {
+                        EmptyResourceListState(title = stringResource(LocalizationR.string.no_otps))
+                    } else {
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize(),
+                            contentPadding = PaddingValues(vertical = 16.dp),
+                        ) {
+                            items(state.uiOtps) { otpItem ->
+                                OtpItem(
+                                    otpItem = otpItem,
+                                    resourceIconProvider = resourceIconProvider,
+                                    onItemClick = { onIntent(RevealOtp(otpItem)) },
+                                    onMoreClick = { onIntent(OpenOtpMoreMenu(otpItem)) },
+                                )
+                            }
                         }
                     }
-                }
 
-                if (state.showCreateResourceBottomSheet) {
-                    CreateResourceMenuBottomSheet(
-                        onCreatePassword = { onIntent(CreatePassword) },
-                        onCreateTotp = { onIntent(CreateTotp) },
-                        onCreateNote = { onIntent(CreateNote) },
-                        onDismissRequest = { onIntent(CloseCreateResourceMenu) },
+                    if (state.showCreateResourceBottomSheet) {
+                        CreateResourceMenuBottomSheet(
+                            onCreatePassword = { onIntent(CreatePassword) },
+                            onCreateTotp = { onIntent(CreateTotp) },
+                            onCreateNote = { onIntent(CreateNote) },
+                            onDismissRequest = { onIntent(CloseCreateResourceMenu) },
+                        )
+                    }
+
+                    if (state.showOtpMoreBottomSheet) {
+                        val moreMenuResource = requireNotNull(state.moreMenuResource)
+                        OtpMoreMenuBottomSheet(
+                            resourceId = moreMenuResource.resource.resourceId,
+                            resourceName = moreMenuResource.resource.metadataJsonModel.name,
+                            onDismissRequest = { onIntent(OtpIntent.CloseOtpMoreMenu) },
+                            onShowOtp = { onIntent(RevealOtp(moreMenuResource)) },
+                            onCopyOtp = { onIntent(CopyOtp(moreMenuResource)) },
+                            onEditOtp = { onIntent(EditOtp(moreMenuResource)) },
+                            onDeleteOtp = { onIntent(DeleteOtp(moreMenuResource)) },
+                        )
+                    }
+
+                    ConfirmResourceDeleteAlertDialog(
+                        isVisible = state.showDeleteTotpConfirmationDialog,
+                        onConfirm = { onIntent(ConfirmDeleteTotp) },
+                        onDismiss = { onIntent(CloseDeleteConfirmationDialog) },
                     )
+
+                    if (state.showMetadataTrustedKeyDeletedDialog && state.metadataDeletedKeyModel != null) {
+                        TrustedMetadataKeyDeletedDialog(
+                            trustedKeyDeletedModel = state.metadataDeletedKeyModel,
+                            onDismiss = { onIntent(CloseTrustedKeyDeletedDialog) },
+                            onTrustClick = { onIntent(TrustMetadataKeyDeletion) },
+                        )
+                    }
+
+                    if (state.showNewMetadataTrustDialog && state.newMetadataKeyTrustModel != null) {
+                        NewMetadataKeyTrustDialog(
+                            newKeyToTrustModel = state.newMetadataKeyTrustModel,
+                            onTrustClick = { onIntent(OtpIntent.TrustNewMetadataKey(state.newMetadataKeyTrustModel)) },
+                            onDismiss = { onIntent(OtpIntent.CloseTrustNewKeyDialog) },
+                        )
+                    }
+
+                    if (state.showAccountSwitchBottomSheet) {
+                        SwitchAccountBottomSheet(
+                            onDismissRequest = { onIntent(OtpIntent.CloseSwitchAccount) },
+                            appContext = AppContext.APP,
+                        )
+                    }
+
+                    ProgressDialog(state.showProgress)
                 }
-
-                if (state.showOtpMoreBottomSheet) {
-                    val moreMenuResource = requireNotNull(state.moreMenuResource)
-                    OtpMoreMenuBottomSheet(
-                        resourceId = moreMenuResource.resource.resourceId,
-                        resourceName = moreMenuResource.resource.metadataJsonModel.name,
-                        onDismissRequest = { onIntent(OtpIntent.CloseOtpMoreMenu) },
-                        onShowOtp = { onIntent(RevealOtp(moreMenuResource)) },
-                        onCopyOtp = { onIntent(CopyOtp(moreMenuResource)) },
-                        onEditOtp = { onIntent(EditOtp(moreMenuResource)) },
-                        onDeleteOtp = { onIntent(DeleteOtp(moreMenuResource)) },
-                    )
-                }
-
-                ConfirmTotpDeleteAlertDialog(
-                    isVisible = state.showDeleteTotpConfirmationDialog,
-                    onConfirm = { onIntent(ConfirmDeleteTotp) },
-                    onDismiss = { onIntent(CloseDeleteConfirmationDialog) },
-                )
-
-                if (state.showMetadataTrustedKeyDeletedDialog && state.metadataDeletedKeyModel != null) {
-                    TrustedMetadataKeyDeletedDialog(
-                        trustedKeyDeletedModel = state.metadataDeletedKeyModel,
-                        onDismiss = { onIntent(CloseTrustedKeyDeletedDialog) },
-                        onTrustClick = { onIntent(TrustMetadataKeyDeletion) },
-                    )
-                }
-
-                if (state.showNewMetadataTrustDialog && state.newMetadataKeyTrustModel != null) {
-                    NewMetadataKeyTrustDialog(
-                        newKeyToTrustModel = state.newMetadataKeyTrustModel,
-                        onTrustClick = { onIntent(OtpIntent.TrustNewMetadataKey(state.newMetadataKeyTrustModel)) },
-                        onDismiss = { onIntent(OtpIntent.CloseTrustNewKeyDialog) },
-                    )
-                }
-
-                if (state.showAccountSwitchBottomSheet) {
-                    SwitchAccountBottomSheet(
-                        onDismissRequest = { onIntent(OtpIntent.CloseSwitchAccount) },
-                        appContext = AppContext.APP,
-                    )
-                }
-
-                ProgressDialog(state.showProgress)
-            }
-        },
+            },
     )
 }

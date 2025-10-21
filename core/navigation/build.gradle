@@ -21,6 +21,7 @@ kotlin {
 dependencies {
     implementation project(':localization')
     implementation project(':common')
+    implementation project(':ui')
 
     implementation libs.navigation.fragment
     implementation libs.navigation.ui

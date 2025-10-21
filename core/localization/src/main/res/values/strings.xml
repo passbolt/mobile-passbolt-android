@@ -277,6 +277,7 @@
     <string name="filters_menu_shared_with_me">Shared with me</string>
     <string name="filters_menu_owned_by_me">Owned by me</string>
     <string name="filters_menu_expiry">Expiry</string>
+    <string name="filters_menu_loading">Loading</string>
     <string name="filters_menu_folders">Folders</string>
     <string name="filters_menu_tags">Tags</string>
     <string name="filters_menu_groups">Groups</string>

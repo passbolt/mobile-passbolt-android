@@ -46,6 +46,9 @@ class FiltersMenuPresenter(
                 is HomeDisplayViewModel.Tags -> selectTagsMenuItem()
                 is HomeDisplayViewModel.Groups -> selectGroupsMenuItem()
                 is HomeDisplayViewModel.Expiry -> selectExpiryMenuItem()
+                HomeDisplayViewModel.NotLoaded -> {
+                    // no-op
+                }
             }
         }
     }

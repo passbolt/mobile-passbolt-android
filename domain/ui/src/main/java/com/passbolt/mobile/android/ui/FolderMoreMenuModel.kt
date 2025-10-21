@@ -6,4 +6,5 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class FolderMoreMenuModel(
     val folderName: String?,
+    val folderId: String,
 ) : Parcelable

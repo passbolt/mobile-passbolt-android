@@ -78,6 +78,7 @@ import com.passbolt.mobile.android.feature.otp.screen.OtpSideEffect.NavigateToCr
 import com.passbolt.mobile.android.feature.otp.screen.OtpSideEffect.NavigateToEditResourceForm
 import com.passbolt.mobile.android.feature.otp.screen.OtpSideEffect.ShowErrorSnackbar
 import com.passbolt.mobile.android.feature.otp.screen.OtpSideEffect.ShowSuccessSnackbar
+import com.passbolt.mobile.android.feature.otp.screen.OtpSideEffect.ShowToast
 import com.passbolt.mobile.android.feature.otp.screen.SnackbarErrorType.CANNOT_UPDATE_WITH_CURRENT_CONFIGURATION
 import com.passbolt.mobile.android.feature.otp.screen.SnackbarErrorType.DECRYPTION_FAILURE
 import com.passbolt.mobile.android.feature.otp.screen.SnackbarErrorType.ERROR
@@ -93,6 +94,7 @@ import com.passbolt.mobile.android.feature.otp.screen.SnackbarSuccessType.METADA
 import com.passbolt.mobile.android.feature.otp.screen.SnackbarSuccessType.RESOURCE_CREATED
 import com.passbolt.mobile.android.feature.otp.screen.SnackbarSuccessType.RESOURCE_DELETED
 import com.passbolt.mobile.android.feature.otp.screen.SnackbarSuccessType.RESOURCE_EDITED
+import com.passbolt.mobile.android.feature.otp.screen.ToastType.WAIT_FOR_DATA_REFRESH_FINISH
 import com.passbolt.mobile.android.jsonmodel.delegates.TotpSecret
 import com.passbolt.mobile.android.mappers.OtpModelMapper
 import com.passbolt.mobile.android.metadata.interactor.MetadataPrivateKeysHelperInteractor
@@ -231,7 +233,15 @@ internal class OtpViewModel(
 
     private fun searchEndIconAction() {
         when (viewState.value.searchInputEndIconMode) {
-            AVATAR -> updateViewState { copy(showAccountSwitchBottomSheet = true) }
+            AVATAR -> {
+                viewModelScope.launch(coroutineLaunchContext.io) {
+                    if (dataRefreshTrackingFlow.isInProgress()) {
+                        emitSideEffect(ShowToast(WAIT_FOR_DATA_REFRESH_FINISH))
+                        dataRefreshTrackingFlow.awaitIdle()
+                    }
+                    updateViewState { copy(showAccountSwitchBottomSheet = true) }
+                }
+            }
             CLEAR ->
                 updateViewState {
                     copy(
@@ -380,7 +390,7 @@ internal class OtpViewModel(
         }
         if (intent.resourceEdited) {
             emitSideEffect(InitiateDataRefresh)
-            emitSideEffect(ShowSuccessSnackbar(RESOURCE_EDITED))
+            emitSideEffect(ShowSuccessSnackbar(RESOURCE_EDITED, intent.resourceName))
         }
     }
 

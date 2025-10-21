@@ -26,7 +26,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -56,6 +55,7 @@ fun SearchInput(
     endIconMode: SearchInputEndIconMode,
     modifier: Modifier = Modifier,
     onEndIconClick: (() -> Unit)? = null,
+    leadingIcon: @Composable (() -> Unit)? = null,
 ) {
     var textFieldValue by remember { mutableStateOf(TextFieldValue(value)) }
 
@@ -72,7 +72,7 @@ fun SearchInput(
             onValueChange(newValue.text)
         },
         singleLine = true,
-        leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+        leadingIcon = leadingIcon,
         trailingIcon = {
             when (endIconMode) {
                 AVATAR ->

@@ -22,15 +22,14 @@
  */
 package com.passbolt.mobile.android.feature.home.screen.data
 
-import com.passbolt.mobile.android.feature.home.screen.model.HeaderSectionConfiguration
 import com.passbolt.mobile.android.ui.FolderWithCountAndPath
 import com.passbolt.mobile.android.ui.GroupWithCount
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.TagWithCount
 
 data class HomeDataWithHeader(
-    val data: HomeData,
-    val headerSectionConfiguration: HeaderSectionConfiguration,
+    val data: HomeData = HomeData(),
+    val headerSectionConfiguration: HeaderSectionConfiguration = HeaderSectionConfiguration(),
 )
 
 data class HomeData(

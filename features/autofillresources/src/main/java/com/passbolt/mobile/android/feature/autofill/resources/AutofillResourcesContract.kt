@@ -74,7 +74,5 @@ interface AutofillResourcesContract {
         fun userAuthenticated()
 
         fun itemClick(resourceModel: ResourceModel)
-
-        fun newResourceCreated(resourceId: String)
     }
 }
