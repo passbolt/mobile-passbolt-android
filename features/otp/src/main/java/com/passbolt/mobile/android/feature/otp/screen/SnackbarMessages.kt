@@ -18,7 +18,16 @@ import com.passbolt.mobile.android.feature.otp.screen.SnackbarSuccessType.METADA
 import com.passbolt.mobile.android.feature.otp.screen.SnackbarSuccessType.RESOURCE_CREATED
 import com.passbolt.mobile.android.feature.otp.screen.SnackbarSuccessType.RESOURCE_DELETED
 import com.passbolt.mobile.android.feature.otp.screen.SnackbarSuccessType.RESOURCE_EDITED
+import com.passbolt.mobile.android.feature.otp.screen.ToastType.WAIT_FOR_DATA_REFRESH_FINISH
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
+
+internal fun getToastMessage(
+    context: Context,
+    type: ToastType,
+): String =
+    when (type) {
+        WAIT_FOR_DATA_REFRESH_FINISH -> context.getString(LocalizationR.string.home_please_wait_for_refresh)
+    }
 
 internal fun getSuccessMessage(
     context: Context,

@@ -14,8 +14,16 @@ import com.passbolt.mobile.android.core.extension.visible
 import com.passbolt.mobile.android.core.mvp.viewbinding.NoLimitsBottomSheetDialogFragment
 import com.passbolt.mobile.android.feature.home.databinding.FiletrsBottomsheetBinding
 import com.passbolt.mobile.android.ui.FiltersMenuModel
+import com.passbolt.mobile.android.ui.HomeDisplayViewModel
+import com.passbolt.mobile.android.ui.HomeDisplayViewModel.AllItems
+import com.passbolt.mobile.android.ui.HomeDisplayViewModel.Expiry
+import com.passbolt.mobile.android.ui.HomeDisplayViewModel.Favourites
+import com.passbolt.mobile.android.ui.HomeDisplayViewModel.OwnedByMe
+import com.passbolt.mobile.android.ui.HomeDisplayViewModel.RecentlyModified
+import com.passbolt.mobile.android.ui.HomeDisplayViewModel.SharedWithMe
 import org.koin.android.scope.AndroidScopeComponent
 import org.koin.androidx.scope.fragmentScope
+import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -98,39 +106,39 @@ class FiltersMenuFragment :
         with(binding) {
             allItems.setListenerWithDismiss {
                 presenter.allItemsClick()
-                listener?.menuAllItemsClick()
+                listener?.filterChanged(AllItems)
             }
             favourites.setListenerWithDismiss {
                 presenter.favouritesClick()
-                listener?.menuFavouritesClick()
+                listener?.filterChanged(Favourites)
             }
             recentlyModified.setListenerWithDismiss {
                 presenter.recentlyModifiedClick()
-                listener?.menuRecentlyModifiedClick()
+                listener?.filterChanged(RecentlyModified)
             }
             sharedWithMe.setListenerWithDismiss {
                 presenter.sharedWithMeClick()
-                listener?.menuSharedWithMeClick()
+                listener?.filterChanged(SharedWithMe)
             }
             ownedByMe.setListenerWithDismiss {
                 presenter.ownedByMeClick()
-                listener?.menuOwnedByMeClick()
+                listener?.filterChanged(OwnedByMe)
             }
             expiry.setListenerWithDismiss {
                 presenter.expiryClick()
-                listener?.menuExpiryClick()
+                listener?.filterChanged(Expiry)
             }
             folders.setListenerWithDismiss {
                 presenter.foldersClick()
-                listener?.menuFoldersClick()
+                listener?.filterChanged(HomeDisplayViewModel.folderRoot())
             }
             tags.setListenerWithDismiss {
                 presenter.tagsClick()
-                listener?.menuTagsClick()
+                listener?.filterChanged(HomeDisplayViewModel.tagsRoot())
             }
             groups.setListenerWithDismiss {
                 presenter.groupsClick()
-                listener?.menuGroupsClick()
+                listener?.filterChanged(HomeDisplayViewModel.groupsRoot())
             }
             close.setListenerWithDismiss { }
         }
@@ -192,7 +200,7 @@ class FiltersMenuFragment :
     }
 
     private fun setBackgroundPrimaryColor(view: View) {
-        view.setBackgroundColor(requireContext().getColor(com.passbolt.mobile.android.core.ui.R.color.primary))
+        view.setBackgroundColor(requireContext().getColor(CoreUiR.color.primary))
     }
 
     override fun showFoldersMenuItem() {
@@ -208,23 +216,7 @@ class FiltersMenuFragment :
     }
 
     interface Listener {
-        fun menuAllItemsClick()
-
-        fun menuFavouritesClick()
-
-        fun menuRecentlyModifiedClick()
-
-        fun menuSharedWithMeClick()
-
-        fun menuOwnedByMeClick()
-
-        fun menuExpiryClick()
-
-        fun menuFoldersClick()
-
-        fun menuTagsClick()
-
-        fun menuGroupsClick()
+        fun filterChanged(filter: HomeDisplayViewModel)
     }
 
     companion object {

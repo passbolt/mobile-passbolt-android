@@ -34,7 +34,7 @@ import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesWi
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesWithTagUseCase
 import com.passbolt.mobile.android.core.tags.usecase.db.GetLocalTagsUseCase
 import com.passbolt.mobile.android.feature.home.screen.ShowSuggestedModel
-import com.passbolt.mobile.android.feature.home.screen.model.HeaderSectionConfiguration
+import com.passbolt.mobile.android.feature.home.screen.data.HeaderSectionConfiguration
 import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.homeSlugs
 import com.passbolt.mobile.android.ui.Folder
 import com.passbolt.mobile.android.ui.HomeDisplayViewModel
@@ -43,6 +43,7 @@ import com.passbolt.mobile.android.ui.HomeDisplayViewModel.Expiry
 import com.passbolt.mobile.android.ui.HomeDisplayViewModel.Favourites
 import com.passbolt.mobile.android.ui.HomeDisplayViewModel.Folders
 import com.passbolt.mobile.android.ui.HomeDisplayViewModel.Groups
+import com.passbolt.mobile.android.ui.HomeDisplayViewModel.NotLoaded
 import com.passbolt.mobile.android.ui.HomeDisplayViewModel.OwnedByMe
 import com.passbolt.mobile.android.ui.HomeDisplayViewModel.RecentlyModified
 import com.passbolt.mobile.android.ui.HomeDisplayViewModel.SharedWithMe
@@ -89,6 +90,7 @@ class HomeDataProvider(
             is Tags -> getTagsHomeData(searchQuery, homeView, showSuggestedModel)
             is Groups -> getGroupsHomeData(searchQuery, homeView, showSuggestedModel)
             is Folders -> getFoldersHomeData(searchQuery, homeView, showSuggestedModel)
+            NotLoaded -> HomeData()
         }
 
     private suspend fun getFoldersHomeData(
@@ -297,6 +299,7 @@ class HomeDataProvider(
             is SharedWithMe -> true
             is Tags -> activeHomeView.activeTagId == null // tags root
             is Expiry -> true
+            NotLoaded -> false
         }
     } else {
         false

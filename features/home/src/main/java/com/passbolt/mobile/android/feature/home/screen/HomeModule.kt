@@ -1,19 +1,9 @@
 package com.passbolt.mobile.android.feature.home.screen
 
-import com.mikepenz.fastadapter.FastAdapter
-import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.passbolt.mobile.android.feature.home.screen.data.HomeDataProvider
-import com.passbolt.mobile.android.feature.home.screen.recycler.FolderItem
-import com.passbolt.mobile.android.feature.home.screen.recycler.GroupWithCountItem
-import com.passbolt.mobile.android.feature.home.screen.recycler.InCurrentFoldersHeaderItem
-import com.passbolt.mobile.android.feature.home.screen.recycler.InSubFoldersHeaderItem
-import com.passbolt.mobile.android.feature.home.screen.recycler.PasswordHeaderItem
-import com.passbolt.mobile.android.feature.home.screen.recycler.PasswordItem
-import com.passbolt.mobile.android.feature.home.screen.recycler.TagWithCountItem
+import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.singleOf
-import org.koin.core.qualifier.named
-import org.koin.dsl.ScopeDSL
 
 /**
  * Passbolt - Open source password manager for teams
@@ -38,91 +28,7 @@ import org.koin.dsl.ScopeDSL
  * @since v1.0
  */
 
-internal const val SUGGESTED_HEADER_ITEM_ADAPTER = "SUGGESTED_HEADER_ITEM_ADAPTER"
-internal const val SUGGESTED_ITEMS_ITEM_ADAPTER = "SUGGESTED_ITEMS_ITEM_ADAPTER"
-internal const val OTHER_ITEMS_HEADER_ITEM_ADAPTER = "OTHER_ITEMS_HEADER_ITEM_ADAPTER"
-internal const val RESOURCE_ITEM_ADAPTER = "RESOURCE_ITEM_ADAPTER"
-internal const val SUB_RESOURCE_ITEM_ADAPTER = "SUB_RESOURCE_ITEM_ADAPTER"
-internal const val FOLDER_ITEM_ADAPTER = "FOLDER_ITEM_ADAPTER"
-internal const val SUB_FOLDER_ITEM_ADAPTER = "SUB_FOLDER_ITEM_ADAPTER"
-internal const val IN_SUB_FOLDERS_HEADER_ITEM_ADAPTER = "IN_SUB_FOLDERS_HEADER_ITEM_ADAPTER"
-internal const val IN_CURRENT_FOLDER_HEADER_ITEM_ADAPTER = "IN_CURRENT_FOLDER_HEADER_ITEM_ADAPTER"
-internal const val TAGS_ITEM_ADAPTER = "TAGS_ITEM_ADAPTER"
-internal const val GROUPS_ITEM_ADAPTER = "GROUPS_ITEM_ADAPTER"
-
 fun Module.homeModule() {
     singleOf(::HomeDataProvider)
-    scope<HomeFragment> {
-        scoped<HomeContract.Presenter> {
-            HomePresenter(
-                coroutineLaunchContext = get(),
-                getSelectedAccountDataUseCase = get(),
-                getHomeDisplayViewPrefsUseCase = get(),
-                homeModelMapper = get(),
-                getLocalFolderUseCase = get(),
-                deleteResourceIdlingResource = get(),
-                totpParametersProvider = get(),
-                canCreateResourceUse = get(),
-                canShareResourceUse = get(),
-            )
-        }
-        declareHomeListAdapters()
-        declareHomeListItemAdapters()
-    }
-}
-
-private fun ScopeDSL.declareHomeListItemAdapters() {
-    scoped {
-        FastAdapter.with(
-            listOf(
-                get<ItemAdapter<PasswordHeaderItem>>(named(SUGGESTED_HEADER_ITEM_ADAPTER)),
-                get<ItemAdapter<PasswordItem>>(named(SUGGESTED_ITEMS_ITEM_ADAPTER)),
-                get<ItemAdapter<PasswordHeaderItem>>(named(OTHER_ITEMS_HEADER_ITEM_ADAPTER)),
-                get<ItemAdapter<InCurrentFoldersHeaderItem>>(named(IN_CURRENT_FOLDER_HEADER_ITEM_ADAPTER)),
-                get<ItemAdapter<FolderItem>>(named(FOLDER_ITEM_ADAPTER)),
-                get<ItemAdapter<TagWithCountItem>>(named(TAGS_ITEM_ADAPTER)),
-                get<ItemAdapter<GroupWithCountItem>>(named(GROUPS_ITEM_ADAPTER)),
-                get<ItemAdapter<PasswordItem>>(named(RESOURCE_ITEM_ADAPTER)),
-                get<ItemAdapter<InSubFoldersHeaderItem>>(named(IN_SUB_FOLDERS_HEADER_ITEM_ADAPTER)),
-                get<ItemAdapter<FolderItem>>(named(SUB_FOLDER_ITEM_ADAPTER)),
-                get<ItemAdapter<PasswordItem>>(named(SUB_RESOURCE_ITEM_ADAPTER)),
-            ),
-        )
-    }
-}
-
-fun ScopeDSL.declareHomeListAdapters() {
-    scoped<ItemAdapter<PasswordHeaderItem>>(named(SUGGESTED_HEADER_ITEM_ADAPTER)) {
-        ItemAdapter.items()
-    }
-    scoped<ItemAdapter<PasswordItem>>(named(SUGGESTED_ITEMS_ITEM_ADAPTER)) {
-        ItemAdapter.items()
-    }
-    scoped<ItemAdapter<PasswordHeaderItem>>(named(OTHER_ITEMS_HEADER_ITEM_ADAPTER)) {
-        ItemAdapter.items()
-    }
-    scoped<ItemAdapter<PasswordItem>>(named(RESOURCE_ITEM_ADAPTER)) {
-        ItemAdapter.items()
-    }
-    scoped<ItemAdapter<FolderItem>>(named(FOLDER_ITEM_ADAPTER)) {
-        ItemAdapter.items()
-    }
-    scoped<ItemAdapter<InSubFoldersHeaderItem>>(named(IN_SUB_FOLDERS_HEADER_ITEM_ADAPTER)) {
-        ItemAdapter.items()
-    }
-    scoped<ItemAdapter<PasswordItem>>(named(SUB_RESOURCE_ITEM_ADAPTER)) {
-        ItemAdapter.items()
-    }
-    scoped<ItemAdapter<FolderItem>>(named(SUB_FOLDER_ITEM_ADAPTER)) {
-        ItemAdapter.items()
-    }
-    scoped<ItemAdapter<InCurrentFoldersHeaderItem>>(named(IN_CURRENT_FOLDER_HEADER_ITEM_ADAPTER)) {
-        ItemAdapter.items()
-    }
-    scoped<ItemAdapter<TagWithCountItem>>(named(TAGS_ITEM_ADAPTER)) {
-        ItemAdapter.items()
-    }
-    scoped<ItemAdapter<GroupWithCountItem>>(named(GROUPS_ITEM_ADAPTER)) {
-        ItemAdapter.items()
-    }
+    viewModelOf(::HomeViewModel)
 }

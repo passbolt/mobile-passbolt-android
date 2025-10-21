@@ -5,7 +5,6 @@ import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPres
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.resources.actions.SecretPropertiesActionsInteractor
 import com.passbolt.mobile.android.core.resources.actions.performSecretPropertyAction
-import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUseCase
 import com.passbolt.mobile.android.ui.ResourceModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -38,7 +37,6 @@ import org.koin.core.parameter.parametersOf
  */
 class AutofillResourcesPresenter(
     private val getAccountsUseCase: GetAccountsUseCase,
-    private val getLocalResourceUseCase: GetLocalResourceUseCase,
     coroutineLaunchContext: CoroutineLaunchContext,
 ) : BaseAuthenticatedPresenter<AutofillResourcesContract.View>(coroutineLaunchContext),
     AutofillResourcesContract.Presenter {
@@ -90,14 +88,6 @@ class AutofillResourcesPresenter(
                 },
             )
             view?.hideProgress()
-        }
-    }
-
-    override fun newResourceCreated(resourceId: String) {
-        scope.launch {
-            itemClick(
-                getLocalResourceUseCase.execute(GetLocalResourceUseCase.Input(resourceId)).resource,
-            )
         }
     }
 }

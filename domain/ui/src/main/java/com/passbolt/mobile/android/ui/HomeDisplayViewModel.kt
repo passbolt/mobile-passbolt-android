@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.ui
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.Serializable
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,25 +27,37 @@ import kotlinx.parcelize.Parcelize
  * @since v1.0
  */
 
+@Serializable
 sealed class HomeDisplayViewModel : Parcelable {
+    @Serializable
     @Parcelize
     object AllItems : HomeDisplayViewModel(), Parcelable
 
+    @Serializable
     @Parcelize
     object Favourites : HomeDisplayViewModel(), Parcelable
 
+    @Serializable
     @Parcelize
     object RecentlyModified : HomeDisplayViewModel(), Parcelable
 
+    @Serializable
     @Parcelize
     object SharedWithMe : HomeDisplayViewModel(), Parcelable
 
+    @Serializable
     @Parcelize
     object OwnedByMe : HomeDisplayViewModel(), Parcelable
 
+    @Serializable
     @Parcelize
     object Expiry : HomeDisplayViewModel(), Parcelable
 
+    @Serializable
+    @Parcelize
+    object NotLoaded : HomeDisplayViewModel(), Parcelable
+
+    @Serializable
     @Parcelize
     data class Folders(
         val activeFolder: Folder,
@@ -53,6 +66,7 @@ sealed class HomeDisplayViewModel : Parcelable {
     ) : HomeDisplayViewModel(),
         Parcelable
 
+    @Serializable
     @Parcelize
     data class Tags(
         val activeTagId: String? = null,
@@ -61,6 +75,7 @@ sealed class HomeDisplayViewModel : Parcelable {
     ) : HomeDisplayViewModel(),
         Parcelable
 
+    @Serializable
     @Parcelize
     data class Groups(
         val activeGroupId: String? = null,

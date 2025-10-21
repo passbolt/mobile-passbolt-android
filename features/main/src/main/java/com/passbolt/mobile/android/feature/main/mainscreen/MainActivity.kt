@@ -186,10 +186,9 @@ class MainActivity :
         private const val REQUEST_APP_UPDATE = 8000
         private val bottomNavFragmentIds =
             listOf(
-                HomeR.id.home,
-                HomeR.id.homeChild,
+                HomeR.id.homeBottomNavigationContainerFragment,
                 OtpR.id.otpBottomNavigationContainerFragment,
-                SettingsR.id.settingsMainFragment,
+                SettingsR.id.settingsBottomNavigationContainerFragment,
             )
 
         private val bottomNavGoneComposableKeys =
