@@ -60,6 +60,7 @@ import com.passbolt.mobile.android.core.ui.compose.search.SearchInput
 import com.passbolt.mobile.android.core.ui.compose.snackbar.ColoredSnackbarVisuals
 import com.passbolt.mobile.android.createresourcemenu.CreateResourceMenuBottomSheet
 import com.passbolt.mobile.android.feature.authentication.compose.AuthenticationHandler
+import com.passbolt.mobile.android.feature.home.filtersmenu.FiltersMenuBottomSheet
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.CloseCreateResourceMenu
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.CloseDeleteConfirmationDialog
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.CloseSwitchAccount
@@ -70,6 +71,7 @@ import com.passbolt.mobile.android.feature.home.screen.HomeIntent.CreatePassword
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.CreateTotp
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.Initialize
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.OpenCreateResourceMenu
+import com.passbolt.mobile.android.feature.home.screen.HomeIntent.OpenFiltersBottomSheet
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.Search
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.SearchEndIconAction
 import com.passbolt.mobile.android.feature.home.screen.HomeSideEffect.CopyToClipboard
@@ -86,6 +88,7 @@ import com.passbolt.mobile.android.feature.home.screen.HomeSideEffect.ShowSucces
 import com.passbolt.mobile.android.feature.home.screen.HomeSideEffect.ShowToast
 import com.passbolt.mobile.android.feature.home.screen.ShowSuggestedModel.DoNotShow
 import com.passbolt.mobile.android.feature.home.switchaccount.SwitchAccountBottomSheet
+import com.passbolt.mobile.android.ui.FiltersMenuModel
 import com.passbolt.mobile.android.ui.Folder.Child
 import com.passbolt.mobile.android.ui.Folder.Root
 import com.passbolt.mobile.android.ui.HomeDisplayViewModel
@@ -220,10 +223,7 @@ private fun HomeScreen(
                     Image(
                         painter = painterResource(CoreUiR.drawable.ic_filter),
                         contentDescription = null,
-                        modifier =
-                            Modifier.clickable {
-                                homeNavigation.openFiltersBottomSheet(state.homeView)
-                            },
+                        modifier = Modifier.clickable { onIntent(OpenFiltersBottomSheet) },
                     )
                 },
                 modifier =
@@ -274,6 +274,14 @@ private fun HomeScreen(
                     SwitchAccountBottomSheet(
                         appContext = AppContext.APP,
                         onDismissRequest = { onIntent(CloseSwitchAccount) },
+                    )
+                }
+
+                if (state.showFiltersBottomSheet) {
+                    FiltersMenuBottomSheet(
+                        onDismissRequest = { onIntent(HomeIntent.CloseFiltersBottomSheet) },
+                        onHomeViewChange = { homeNavigation.navigateToRoot(it) },
+                        filtersMenuModel = FiltersMenuModel(state.homeView),
                     )
                 }
 

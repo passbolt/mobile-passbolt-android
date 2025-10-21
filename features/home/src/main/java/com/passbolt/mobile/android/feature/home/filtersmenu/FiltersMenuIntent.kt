@@ -1,3 +1,7 @@
+package com.passbolt.mobile.android.feature.home.filtersmenu
+
+import com.passbolt.mobile.android.ui.FiltersMenuModel
+
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -21,40 +25,28 @@
  * @since v1.0
  */
 
-package com.passbolt.mobile.android.feature.home.screen
+sealed interface FiltersMenuIntent {
+    data class Initialize(
+        val menuModel: FiltersMenuModel,
+    ) : FiltersMenuIntent
 
-import com.passbolt.mobile.android.ui.HomeDisplayViewModel
-import com.passbolt.mobile.android.ui.LeadingContentType
+    data object AllItemsClick : FiltersMenuIntent
 
-interface HomeNavigation {
-    val resourceHandlingStrategy: ResourceHandlingStrategy
+    data object FavouritesClick : FiltersMenuIntent
 
-    fun navigateToScanOtpCodeForResult(folderId: String?)
+    data object RecentlyModifiedClick : FiltersMenuIntent
 
-    fun navigateToCreateResourceForm(
-        leadingContentType: LeadingContentType,
-        folderId: String?,
-    )
+    data object SharedWithMeClick : FiltersMenuIntent
 
-    fun navigateToEditResourceForm(
-        resourceId: String,
-        resourceName: String,
-    )
+    data object OwnedByMeClick : FiltersMenuIntent
 
-    fun navigateToChild(homeView: HomeDisplayViewModel)
+    data object ExpiryClick : FiltersMenuIntent
 
-    fun navigateBack()
+    data object FoldersClick : FiltersMenuIntent
 
-    fun openFolderMoreMenu(homeView: HomeDisplayViewModel)
+    data object TagsClick : FiltersMenuIntent
 
-    fun openResourceMoreMenu(
-        resourceId: String,
-        resourceName: String,
-    )
+    data object GroupsClick : FiltersMenuIntent
 
-    fun navigateToShare(resourceId: String)
-
-    fun navigateToCreateFolder(folderId: String?)
-
-    fun navigateToRoot(homeView: HomeDisplayViewModel)
+    data object Close : FiltersMenuIntent
 }

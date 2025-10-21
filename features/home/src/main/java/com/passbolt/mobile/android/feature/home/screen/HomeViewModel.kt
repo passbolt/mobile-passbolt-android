@@ -43,6 +43,7 @@ import com.passbolt.mobile.android.core.ui.compose.search.SearchInputEndIconMode
 import com.passbolt.mobile.android.feature.authentication.compose.AuthenticatedViewModel
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.CloseCreateResourceMenu
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.CloseDeleteConfirmationDialog
+import com.passbolt.mobile.android.feature.home.screen.HomeIntent.CloseFiltersBottomSheet
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.CloseResourceMoreMenu
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.CloseSwitchAccount
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.ConfirmDeleteResource
@@ -61,6 +62,7 @@ import com.passbolt.mobile.android.feature.home.screen.HomeIntent.FolderCreateRe
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.Initialize
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.LaunchResourceWebsite
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.OpenCreateResourceMenu
+import com.passbolt.mobile.android.feature.home.screen.HomeIntent.OpenFiltersBottomSheet
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.OpenResourceMenu
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.OtpQRScanReturned
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.ResourceDetailsReturned
@@ -154,10 +156,12 @@ internal class HomeViewModel(
         when (intent) {
             CloseCreateResourceMenu -> updateViewState { copy(showCreateResourceBottomSheet = false) }
             CloseDeleteConfirmationDialog -> updateViewState { copy(showDeleteResourceConfirmationDialog = false) }
-            CloseResourceMoreMenu -> updateViewState { copy(showResourceMoreBottomSheet = false, moreMenuResource = null) }
             CloseSwitchAccount -> updateViewState { copy(showAccountSwitchBottomSheet = false) }
             OpenCreateResourceMenu -> updateViewState { copy(showCreateResourceBottomSheet = true) }
             DeleteResource -> updateViewState { copy(showDeleteResourceConfirmationDialog = true) }
+            OpenFiltersBottomSheet -> updateViewState { copy(showFiltersBottomSheet = true) }
+            CloseFiltersBottomSheet -> updateViewState { copy(showFiltersBottomSheet = false) }
+            CloseResourceMoreMenu -> updateViewState { copy(showResourceMoreBottomSheet = false, moreMenuResource = null) }
             ConfirmDeleteResource -> deleteResource()
             CreateNote -> createNote()
             CreatePassword -> createPassword()

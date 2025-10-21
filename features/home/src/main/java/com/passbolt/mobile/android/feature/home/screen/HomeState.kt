@@ -47,6 +47,7 @@ data class HomeState(
     val moreMenuResource: ResourceModel? = null,
     val showAccountSwitchBottomSheet: Boolean = false,
     val showDeleteResourceConfirmationDialog: Boolean = false,
+    val showFiltersBottomSheet: Boolean = false,
 ) {
     val shouldShowEmptyState: Boolean
         get() =

@@ -31,7 +31,7 @@ class HomeDisplayViewMapper {
             is HomeDisplayViewModel.Expiry -> ResourceDatabaseView.HasExpiry
         }
 
-    private fun map(homeView: HomeDisplayView): HomeDisplayViewModel =
+    fun map(homeView: HomeDisplayView): HomeDisplayViewModel =
         when (homeView) {
             HomeDisplayView.ALL_ITEMS -> HomeDisplayViewModel.AllItems
             HomeDisplayView.FAVOURITES -> HomeDisplayViewModel.Favourites

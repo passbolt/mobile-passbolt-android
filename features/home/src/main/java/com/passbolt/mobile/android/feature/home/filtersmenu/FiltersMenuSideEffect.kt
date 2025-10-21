@@ -21,40 +21,14 @@
  * @since v1.0
  */
 
-package com.passbolt.mobile.android.feature.home.screen
+package com.passbolt.mobile.android.feature.home.filtersmenu
 
 import com.passbolt.mobile.android.ui.HomeDisplayViewModel
-import com.passbolt.mobile.android.ui.LeadingContentType
 
-interface HomeNavigation {
-    val resourceHandlingStrategy: ResourceHandlingStrategy
+sealed interface FiltersMenuSideEffect {
+    data object Dismiss : FiltersMenuSideEffect
 
-    fun navigateToScanOtpCodeForResult(folderId: String?)
-
-    fun navigateToCreateResourceForm(
-        leadingContentType: LeadingContentType,
-        folderId: String?,
-    )
-
-    fun navigateToEditResourceForm(
-        resourceId: String,
-        resourceName: String,
-    )
-
-    fun navigateToChild(homeView: HomeDisplayViewModel)
-
-    fun navigateBack()
-
-    fun openFolderMoreMenu(homeView: HomeDisplayViewModel)
-
-    fun openResourceMoreMenu(
-        resourceId: String,
-        resourceName: String,
-    )
-
-    fun navigateToShare(resourceId: String)
-
-    fun navigateToCreateFolder(folderId: String?)
-
-    fun navigateToRoot(homeView: HomeDisplayViewModel)
+    data class HomeViewChanged(
+        val homeDisplay: HomeDisplayViewModel,
+    ) : FiltersMenuSideEffect
 }

@@ -23,7 +23,6 @@ import com.passbolt.mobile.android.core.navigation.constants.Autofillresources
 import com.passbolt.mobile.android.core.navigation.deeplinks.NavDeepLinkProvider
 import com.passbolt.mobile.android.core.preferences.usecase.GetHomeDisplayViewPrefsUseCase
 import com.passbolt.mobile.android.createfolder.CreateFolderFragment
-import com.passbolt.mobile.android.feature.home.filtersmenu.FiltersMenuFragment
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.CopyNote
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.CopyPassword
@@ -52,7 +51,6 @@ import com.passbolt.mobile.android.permissions.permissions.PermissionsFragment
 import com.passbolt.mobile.android.permissions.permissions.PermissionsItem
 import com.passbolt.mobile.android.permissions.permissions.PermissionsMode
 import com.passbolt.mobile.android.resourcemoremenu.ResourceMoreMenuFragment
-import com.passbolt.mobile.android.ui.FiltersMenuModel
 import com.passbolt.mobile.android.ui.Folder
 import com.passbolt.mobile.android.ui.FolderMoreMenuModel
 import com.passbolt.mobile.android.ui.HomeDisplayViewModel
@@ -89,7 +87,6 @@ class HomeBottomNavigationContainerFragment :
     Fragment(),
     HomeNavigation,
     ResourceHandlingStrategy,
-    FiltersMenuFragment.Listener,
     ResourceMoreMenuFragment.Listener {
     private val otpScanQrReturned = { _: String, result: Bundle ->
         viewModel.onIntent(
@@ -205,6 +202,11 @@ class HomeBottomNavigationContainerFragment :
         backstackList.add(Home(homeView))
     }
 
+    override fun navigateToRoot(homeView: HomeDisplayViewModel) {
+        backstackList.clear()
+        backstackList.add(Home(homeView))
+    }
+
     override fun navigateBack() {
         backstackList.removeLastOrNull()
     }
@@ -295,18 +297,6 @@ class HomeBottomNavigationContainerFragment :
     override fun showSuggestedModel() = ShowSuggestedModel.DoNotShow
 
     override fun shouldShowCloseButton() = false
-
-    // filters
-    override fun openFiltersBottomSheet(homeView: HomeDisplayViewModel) {
-        FiltersMenuFragment
-            .newInstance(FiltersMenuModel(homeView))
-            .show(childFragmentManager, FiltersMenuFragment::class.java.name)
-    }
-
-    override fun filterChanged(filter: HomeDisplayViewModel) {
-        backstackList.clear()
-        backstackList.add(Home(filter))
-    }
 
     override fun openFolderMoreMenu(homeView: HomeDisplayViewModel) {
         (homeView as? HomeDisplayViewModel.Folders)?.let { folder ->
