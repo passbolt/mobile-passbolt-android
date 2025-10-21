@@ -68,7 +68,7 @@ class SortByModifiedDateTest {
         runBlocking {
             resourcesDao.insertAll(listOf(RESOURCE_1, RESOURCE_2, RESOURCE_3))
 
-            val sortedByModifiedDate = resourcesDao.getAllOrderedByModifiedDate(setOf(PASSWORD_DESCRIPTION_SLUG))
+            val sortedByModifiedDate = resourcesDao.getAllOrderedByModifiedDate(setOf(PASSWORD_DESCRIPTION_SLUG), input.searchQuery)
 
             assertThat(
                 sortedByModifiedDate.map { it.modified.toInstant().toEpochMilli() },
@@ -80,7 +80,7 @@ class SortByModifiedDateTest {
         runBlocking {
             resourcesDao.insertAll(listOf(RESOURCE_1, RESOURCE_2, RESOURCE_3, RESOURCE_1_ZONE_MINUS, RESOURCE_1_ZONE_PLUS))
 
-            val sortedByModifiedDate = resourcesDao.getAllOrderedByModifiedDate(setOf(PASSWORD_DESCRIPTION_SLUG))
+            val sortedByModifiedDate = resourcesDao.getAllOrderedByModifiedDate(setOf(PASSWORD_DESCRIPTION_SLUG), input.searchQuery)
 
             assertThat(
                 sortedByModifiedDate.map { it.modified.toInstant().toEpochMilli() },

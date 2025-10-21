@@ -89,10 +89,12 @@ class FoldersSearchTest {
             val subFoldersForFolder1 =
                 foldersDao.getFolderAllChildFoldersRecursively(
                     FOLDER_1.folderId,
+                    input.searchQuery,
                 )
             val subFoldersForFolder2 =
                 foldersDao.getFolderAllChildFoldersRecursively(
                     FOLDER_2.folderId,
+                    input.searchQuery,
                 )
 
             assertThat(subFoldersForFolder1.size).isEqualTo(0)

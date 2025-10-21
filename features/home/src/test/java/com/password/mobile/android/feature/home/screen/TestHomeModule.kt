@@ -13,9 +13,6 @@ import com.passbolt.mobile.android.core.accounts.usecase.selectedaccount.GetSele
 import com.passbolt.mobile.android.core.autofill.urlmatcher.AutofillUriMatcher
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalFolderDetailsUseCase
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalResourcesAndFoldersUseCase
-import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalSubFolderResourcesFilteredUseCase
-import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalSubFoldersForFolderUseCase
-import com.passbolt.mobile.android.core.commongroups.usecase.db.GetLocalGroupsWithShareItemsCountUseCase
 import com.passbolt.mobile.android.core.idlingresource.DeleteResourceIdlingResource
 import com.passbolt.mobile.android.core.mvp.authentication.SessionRefreshTrackingFlow
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
@@ -30,13 +27,11 @@ import com.passbolt.mobile.android.core.resources.usecase.RebuildResourceTablesU
 import com.passbolt.mobile.android.core.resources.usecase.ResourceInteractor
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesFilteredByTagUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesUseCase
-import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesWithGroupUseCase
-import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesWithTagUseCase
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.SecretParser
-import com.passbolt.mobile.android.core.tags.usecase.db.GetLocalTagsUseCase
 import com.passbolt.mobile.android.feature.home.screen.HomeContract
 import com.passbolt.mobile.android.feature.home.screen.HomePresenter
+import com.passbolt.mobile.android.feature.home.screen.data.HomeDataProvider
 import com.passbolt.mobile.android.jsonmodel.JSON_MODEL_GSON
 import com.passbolt.mobile.android.jsonmodel.jsonpathops.JsonPathJsonPathOps
 import com.passbolt.mobile.android.jsonmodel.jsonpathops.JsonPathsOps
@@ -59,13 +54,7 @@ internal val mockGetSelectedAccountUseCase = mock<GetSelectedAccountUseCase>()
 internal val mockFetchAndUpdateDatabaseUseCase = mock<RebuildResourceTablesUseCase>()
 internal val mockSecretParser = mock<SecretParser>()
 internal val mockGetLocalResourcesUseCase = mock<GetLocalResourcesUseCase>()
-internal val mockGetSubFoldersUseCase = mock<GetLocalSubFoldersForFolderUseCase>()
-internal val mockGetSubFoldersResourcesUseCase = mock<GetLocalSubFolderResourcesFilteredUseCase>()
 internal val mockGetLocalResourcesAndFoldersUseCase = mock<GetLocalResourcesAndFoldersUseCase>()
-internal val mockGetLocalTagsUseCase = mock<GetLocalTagsUseCase>()
-internal val mockGetLocalResourcesWithTagsUseCase = mock<GetLocalResourcesWithTagUseCase>()
-internal val mockGetLocalGroupsWithItemCountUseCase = mock<GetLocalGroupsWithShareItemsCountUseCase>()
-internal val mockGetLocalResourcesWithGroupsUseCase = mock<GetLocalResourcesWithGroupUseCase>()
 internal val mockGetLocalResourcesFilteredByTagUseCase = mock<GetLocalResourcesFilteredByTagUseCase>()
 internal val mockGetHomeDisplayPrefsUseCase = mock<GetHomeDisplayViewPrefsUseCase>()
 internal val mockGetLocalFolderUseCase = mock<GetLocalFolderDetailsUseCase>()
@@ -79,6 +68,7 @@ internal val mockGetRbacRulesUseCase = mock<GetRbacRulesUseCase>()
 internal val mockIdToSlugMappingProvider = mock<ResourceTypeIdToSlugMappingProvider>()
 internal val mockCanCreateResourceUseCase = mock<CanCreateResourceUseCase>()
 internal val mockCanShareResourceUseCase = mock<CanShareResourceUseCase>()
+internal val homeDataProvider = mock<HomeDataProvider>()
 
 @ExperimentalCoroutinesApi
 val testHomeModule =
@@ -97,23 +87,11 @@ val testHomeModule =
             HomePresenter(
                 coroutineLaunchContext = get(),
                 getSelectedAccountDataUseCase = get(),
-                searchableMatcher = get(),
-                getLocalResourcesUseCase = mockGetLocalResourcesUseCase,
-                getLocalResourcesFilteredByTag = mockGetLocalResourcesFilteredByTagUseCase,
-                getLocalSubFoldersForFolderUseCase = mockGetSubFoldersUseCase,
-                getLocalResourcesAndFoldersUseCase = mockGetLocalResourcesAndFoldersUseCase,
-                getLocalResourcesFiltered = mockGetSubFoldersResourcesUseCase,
-                getLocalTagsUseCase = mockGetLocalTagsUseCase,
-                getLocalResourcesWithTagUseCase = mockGetLocalResourcesWithTagsUseCase,
-                getLocalGroupsWithShareItemsCountUseCase = mockGetLocalGroupsWithItemCountUseCase,
-                getLocalResourcesWithGroupsUseCase = mockGetLocalResourcesWithGroupsUseCase,
                 getHomeDisplayViewPrefsUseCase = mockGetHomeDisplayPrefsUseCase,
                 homeModelMapper = get(),
-                autofillMatcher = get(),
                 getLocalFolderUseCase = mockGetLocalFolderUseCase,
                 deleteResourceIdlingResource = get(),
                 totpParametersProvider = mockTotpParametersProvider,
-                getRbacRulesUseCase = mockGetRbacRulesUseCase,
                 canCreateResourceUse = mockCanCreateResourceUseCase,
                 canShareResourceUse = mockCanShareResourceUseCase,
             )
@@ -135,4 +113,5 @@ val testHomeModule =
         singleOf(::JsonPathJsonPathOps) bind JsonPathsOps::class
         singleOf(::DataRefreshTrackingFlow)
         singleOf(::SessionRefreshTrackingFlow)
+        single { homeDataProvider }
     }

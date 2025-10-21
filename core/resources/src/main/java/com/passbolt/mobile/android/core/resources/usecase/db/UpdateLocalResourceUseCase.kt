@@ -46,6 +46,9 @@ class UpdateLocalResourceUseCase(
             name = input.resourceModel.metadataJsonModel.name,
             username = input.resourceModel.metadataJsonModel.username,
             description = input.resourceModel.metadataJsonModel.description,
+            customFieldsKeys =
+                input.resourceModel.metadataJsonModel.customFields
+                    ?.joinToString(),
         )
 
         resourceUriDao.apply {

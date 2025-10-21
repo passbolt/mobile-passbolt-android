@@ -30,7 +30,6 @@ import com.passbolt.mobile.android.common.datarefresh.DataRefreshStatus.Idle.Fin
 import com.passbolt.mobile.android.common.datarefresh.DataRefreshStatus.Idle.NotCompleted
 import com.passbolt.mobile.android.common.datarefresh.DataRefreshStatus.InProgress
 import com.passbolt.mobile.android.common.datarefresh.DataRefreshTrackingFlow
-import com.passbolt.mobile.android.common.search.SearchableMatcher
 import com.passbolt.mobile.android.core.accounts.usecase.accountdata.GetSelectedAccountDataUseCase
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.otpcore.TotpParametersProvider
@@ -130,7 +129,6 @@ import kotlin.time.Duration.Companion.seconds
 
 internal class OtpViewModel(
     private val getSelectedAccountDataUseCase: GetSelectedAccountDataUseCase,
-    private val searchableMatcher: SearchableMatcher,
     private val getLocalResourcesUseCase: GetLocalResourcesUseCase,
     private val otpModelMapper: OtpModelMapper,
     private val totpParametersProvider: TotpParametersProvider,
@@ -398,16 +396,15 @@ internal class OtpViewModel(
 
     private fun searchQueryChanged(searchQuery: String) {
         val searchEndIcon = if (searchQuery.isNotBlank()) CLEAR else AVATAR
-        val filteredOtps =
-            viewState.value.otps.filter {
-                searchableMatcher.matches(it, searchQuery)
+        viewModelScope.launch {
+            val filteredOtps = getOtpResources(searchQuery)
+            updateViewState {
+                copy(
+                    searchInputEndIconMode = searchEndIcon,
+                    searchQuery = searchQuery,
+                    filteredOtps = filteredOtps,
+                )
             }
-        updateViewState {
-            copy(
-                searchInputEndIconMode = searchEndIcon,
-                searchQuery = searchQuery,
-                filteredOtps = filteredOtps,
-            )
         }
     }
 
@@ -534,9 +531,9 @@ internal class OtpViewModel(
         updateViewState { copy(userAvatar = avatarUrl) }
     }
 
-    private suspend fun getOtpResources(): List<OtpItemWrapper> =
+    private suspend fun getOtpResources(searchQuery: String? = null): List<OtpItemWrapper> =
         getLocalResourcesUseCase
-            .execute(GetLocalResourcesUseCase.Input(totpSlugs))
+            .execute(GetLocalResourcesUseCase.Input(totpSlugs, searchQuery = searchQuery))
             .resources
             .map(otpModelMapper::map)
 

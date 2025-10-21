@@ -40,7 +40,7 @@ class GetLocalResourcesWithTagUseCase(
             databaseProvider
                 .get(userId)
                 .resourcesDao()
-                .getResourcesWithTag(requireNotNull(input.tag.activeTagId), input.slugs)
+                .getResourcesWithTag(requireNotNull(input.tag.activeTagId), input.slugs, input.searchQuery)
 
         return Output(resources.map { resourceModelMapper.map(it) })
     }
@@ -48,6 +48,7 @@ class GetLocalResourcesWithTagUseCase(
     data class Input(
         val tag: HomeDisplayViewModel.Tags,
         val slugs: Set<String>,
+        val searchQuery: String? = null,
     )
 
     data class Output(

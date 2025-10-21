@@ -40,7 +40,7 @@ class GetLocalResourcesWithGroupUseCase(
             databaseProvider
                 .get(userId)
                 .resourcesDao()
-                .getResourcesWithGroup(requireNotNull(input.group.activeGroupId), input.slugs)
+                .getResourcesWithGroup(requireNotNull(input.group.activeGroupId), input.slugs, input.searchQuery)
 
         return Output(resources.map { resourceModelMapper.map(it) })
     }
@@ -48,6 +48,7 @@ class GetLocalResourcesWithGroupUseCase(
     data class Input(
         val group: HomeDisplayViewModel.Groups,
         val slugs: Set<String>,
+        val searchQuery: String? = null,
     )
 
     data class Output(
