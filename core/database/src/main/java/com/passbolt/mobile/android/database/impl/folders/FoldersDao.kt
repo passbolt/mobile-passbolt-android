@@ -59,9 +59,11 @@ interface FoldersDao : BaseDao<Folder> {
             "FROM " +
             "   (SELECT name FROM ancestor a order by a.level)" +
             ") as path " +
-            "FROM Folder f",
+            "FROM Folder f " +
+            "WHERE :searchQuery IS NULL OR " +
+            "f.name LIKE '%' || :searchQuery || '%'",
     )
-    suspend fun getAllFolders(): List<FolderWithChildItemsCountAndPath>
+    suspend fun getAllFolders(searchQuery: String?): List<FolderWithChildItemsCountAndPath>
 
     @Transaction
     @Query(
@@ -134,9 +136,14 @@ interface FoldersDao : BaseDao<Folder> {
             "" +
             "FROM ancestor a " +
             "WHERE level > 0 " +
+            "AND (:searchQuery IS NULL OR " +
+            "a.name LIKE '%' || :searchQuery || '%') " +
             "ORDER BY level",
     )
-    suspend fun getFolderAllChildFoldersRecursively(folderId: String): List<FolderWithChildItemsCountAndPath>
+    suspend fun getFolderAllChildFoldersRecursively(
+        folderId: String,
+        searchQuery: String?,
+    ): List<FolderWithChildItemsCountAndPath>
 
     @Transaction
     @Query("DELETE FROM Folder")

@@ -17,11 +17,13 @@ import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesUs
 import com.passbolt.mobile.android.entity.home.HomeDisplayView
 import com.passbolt.mobile.android.feature.home.screen.HomeContract
 import com.passbolt.mobile.android.feature.home.screen.ShowSuggestedModel
+import com.passbolt.mobile.android.feature.home.screen.data.HomeData
+import com.passbolt.mobile.android.feature.home.screen.data.HomeDataWithHeader
+import com.passbolt.mobile.android.feature.home.screen.model.HeaderSectionConfiguration
 import com.passbolt.mobile.android.metadata.usecase.CanCreateResourceUseCase
 import com.passbolt.mobile.android.metadata.usecase.CanShareResourceUseCase
 import com.passbolt.mobile.android.ui.DefaultFilterModel
 import com.passbolt.mobile.android.ui.Folder
-import com.passbolt.mobile.android.ui.FolderModel
 import com.passbolt.mobile.android.ui.HomeDisplayViewModel
 import com.passbolt.mobile.android.ui.MetadataJsonModel
 import com.passbolt.mobile.android.ui.RbacModel
@@ -42,6 +44,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.doThrow
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
@@ -157,8 +160,21 @@ class HomePresenterTest : KoinTest {
             whenever(mockResourcesInteractor.fetchAndSaveResources()).thenReturn(
                 ResourceInteractor.Output.Success,
             )
-            whenever(mockGetLocalResourcesUseCase.execute(any())).thenReturn(
-                GetLocalResourcesUseCase.Output(mockResourcesList()),
+            whenever(homeDataProvider.provideData(any(), any(), any())).thenReturn(
+                HomeDataWithHeader(
+                    data =
+                        HomeData(
+                            resourceList = mockResourcesList(),
+                        ),
+                    headerSectionConfiguration =
+                        HeaderSectionConfiguration(
+                            isInCurrentFolderSectionVisible = false,
+                            isInSubFoldersSectionVisible = false,
+                            currentFolderName = null,
+                            isSuggestedSectionVisible = false,
+                            isOtherItemsSectionVisible = false,
+                        ),
+                ),
             )
 
             mockAccountData(null)
@@ -192,12 +208,24 @@ class HomePresenterTest : KoinTest {
     @Test
     fun `refresh swiped should reload data with filter applied when search text entered`() =
         runTest {
-            mockResourcesList()
             whenever(mockResourcesInteractor.fetchAndSaveResources()).thenReturn(
                 ResourceInteractor.Output.Success,
             )
-            whenever(mockGetLocalResourcesUseCase.execute(any())).thenReturn(
-                GetLocalResourcesUseCase.Output(mockResourcesList()),
+            whenever(homeDataProvider.provideData(any(), any(), any())).thenReturn(
+                HomeDataWithHeader(
+                    data =
+                        HomeData(
+                            resourceList = mockResourcesList(),
+                        ),
+                    headerSectionConfiguration =
+                        HeaderSectionConfiguration(
+                            isInCurrentFolderSectionVisible = false,
+                            isInSubFoldersSectionVisible = false,
+                            currentFolderName = null,
+                            isSuggestedSectionVisible = false,
+                            isOtherItemsSectionVisible = false,
+                        ),
+                ),
             )
             mockAccountData(null)
 
@@ -218,8 +246,8 @@ class HomePresenterTest : KoinTest {
 
             verify(view).hideCreateButton()
             verify(view).hideRefreshProgress()
-            verify(view).showItems(any(), any(), any(), any(), any(), any(), any(), any())
-            verify(view, times(2)).showCreateButton()
+            verify(view, times(3)).showItems(any(), any(), any(), any(), any(), any(), any(), any())
+            verify(view, times(3)).showCreateButton()
         }
 
     @Test
@@ -228,8 +256,18 @@ class HomePresenterTest : KoinTest {
             whenever(mockResourcesInteractor.fetchAndSaveResources()).thenReturn(
                 ResourceInteractor.Output.Success,
             )
-            whenever(mockGetLocalResourcesUseCase.execute(any())).thenReturn(
-                GetLocalResourcesUseCase.Output(mockResourcesList()),
+            whenever(homeDataProvider.provideData(any(), any(), any())).thenReturn(
+                HomeDataWithHeader(
+                    data = HomeData(),
+                    headerSectionConfiguration =
+                        HeaderSectionConfiguration(
+                            isInCurrentFolderSectionVisible = false,
+                            isInSubFoldersSectionVisible = false,
+                            currentFolderName = null,
+                            isSuggestedSectionVisible = false,
+                            isOtherItemsSectionVisible = false,
+                        ),
+                ),
             )
             mockAccountData(null)
 
@@ -245,7 +283,7 @@ class HomePresenterTest : KoinTest {
             presenter.searchTextChange("empty search")
 
             verify(view).showSearchEmptyList()
-            verify(view).showCreateButton()
+            verify(view, times(2)).showCreateButton()
         }
 
     @Test
@@ -254,9 +292,20 @@ class HomePresenterTest : KoinTest {
             whenever(mockResourcesInteractor.fetchAndSaveResources()).thenReturn(
                 ResourceInteractor.Output.Success,
             )
-            whenever(mockGetLocalResourcesUseCase.execute(any())).thenReturn(
-                GetLocalResourcesUseCase.Output(emptyList()),
+            whenever(homeDataProvider.provideData(any(), any(), any())).thenReturn(
+                HomeDataWithHeader(
+                    data = HomeData(),
+                    headerSectionConfiguration =
+                        HeaderSectionConfiguration(
+                            isInCurrentFolderSectionVisible = false,
+                            isInSubFoldersSectionVisible = false,
+                            currentFolderName = null,
+                            isSuggestedSectionVisible = false,
+                            isOtherItemsSectionVisible = false,
+                        ),
+                ),
             )
+
             mockAccountData(null)
 
             presenter.attach(view)
@@ -380,31 +429,26 @@ class HomePresenterTest : KoinTest {
         }
 
     @Test
-    fun `home should navigate to root when current folder cannot be retrieved`() {
-        mockGetLocalResourcesAndFoldersUseCase.stub {
-            onBlocking { execute(any()) } doReturn GetLocalResourcesAndFoldersUseCase.Output.Failure
-        }
-        mockGetLocalFolderUseCase.stub {
-            onBlocking { execute(any()) } doReturn
-                com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalFolderDetailsUseCase.Output(
-                    FolderModel("childId", "root", "child folder", false, ResourcePermission.UPDATE),
-                )
-        }
-        mockAccountData(null)
+    fun `home should navigate to root when current folder cannot be retrieved`() =
+        runTest {
+            mockGetLocalResourcesAndFoldersUseCase.stub {
+                onBlocking { execute(any()) } doReturn GetLocalResourcesAndFoldersUseCase.Output.Failure
+            }
+            whenever(homeDataProvider.provideData(any(), any(), any())).doThrow(NullPointerException())
+            mockAccountData(null)
 
-        presenter.attach(view)
-        presenter.argsRetrieved(
-            ShowSuggestedModel.DoNotShow,
-            HomeDisplayViewModel.Folders(Folder.Child("childId"), "child name", isActiveFolderShared = false),
-            hasPreviousEntry = false,
-            shouldShowCloseButton = false,
-            shouldShowResourceMoreMenu = false,
-        )
-        presenter.resume(view)
+            presenter.attach(view)
+            presenter.argsRetrieved(
+                ShowSuggestedModel.DoNotShow,
+                HomeDisplayViewModel.Folders(Folder.Child("childId"), "child name", isActiveFolderShared = false),
+                hasPreviousEntry = false,
+                shouldShowCloseButton = false,
+                shouldShowResourceMoreMenu = false,
+            )
+            presenter.resume(view)
 
-        verify(view).navigateToRootHomeFromChildHome(HomeDisplayViewModel.folderRoot())
-        verify(view).showCreateButton()
-    }
+            verify(view, times(2)).navigateRootHomeFromRootHome(HomeDisplayViewModel.folderRoot())
+        }
 
     @Test
     fun `view should show correct titles for child items`() {

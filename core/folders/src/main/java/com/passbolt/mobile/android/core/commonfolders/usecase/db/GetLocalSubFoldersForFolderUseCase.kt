@@ -45,10 +45,10 @@ class GetLocalSubFoldersForFolderUseCase(
             foldersDao.let {
                 when (input.folder) {
                     // get all children recursively
-                    is Folder.Child -> it.getFolderAllChildFoldersRecursively(input.folder.folderId)
+                    is Folder.Child -> it.getFolderAllChildFoldersRecursively(input.folder.folderId, input.searchQuery)
                     // getting all children recursively for root == getting all possible children
                     // could also use it.getFolderAllChildFoldersRecursively(null), but UNION does not work with nulls
-                    is Folder.Root -> it.getAllFolders()
+                    is Folder.Root -> it.getAllFolders(input.searchQuery)
                 }
             }
 
@@ -59,6 +59,7 @@ class GetLocalSubFoldersForFolderUseCase(
 
     data class Input(
         val folder: Folder,
+        val searchQuery: String? = null,
     )
 
     data class Output(

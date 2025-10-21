@@ -114,6 +114,7 @@ class ResourceModelMapper(
             name = resourceModel.metadataJsonModel.name,
             username = resourceModel.metadataJsonModel.username,
             description = resourceModel.metadataJsonModel.description,
+            customFieldsKeys = resourceModel.metadataJsonModel.customFields?.joinToString(),
         )
 
     fun mapResourceUris(resourceModel: ResourceModel): List<ResourceUri> =

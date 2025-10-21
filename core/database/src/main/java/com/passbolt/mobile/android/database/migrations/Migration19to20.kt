@@ -1,11 +1,7 @@
-package com.passbolt.mobile.android.database.impl.tags
+package com.passbolt.mobile.android.database.migrations
 
-import androidx.room.Dao
-import androidx.room.Query
-import androidx.room.Transaction
-import com.passbolt.mobile.android.database.impl.base.BaseDao
-import com.passbolt.mobile.android.entity.resource.Tag
-import com.passbolt.mobile.android.entity.resource.TagWithTaggedItemsCount
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 
 /**
  * Passbolt - Open source password manager for teams
@@ -29,30 +25,15 @@ import com.passbolt.mobile.android.entity.resource.TagWithTaggedItemsCount
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-@Dao
-interface TagsDao : BaseDao<Tag> {
-    @Transaction
-    @Query(
-        "SELECT id, slug, isShared, " +
-            "(SELECT" +
-            "(" +
-            "(select distinct count(resourceId) from resourceandtagscrossref rTCR where rTCR.tagId is t.id) " +
-            ")" +
-            ") AS taggedItemsCount " +
-            "FROM Tag t " +
-            "WHERE (:searchQuery IS NULL OR slug LIKE '%' || :searchQuery || '%')",
-    )
-    suspend fun getAllWithTaggedItemsCount(searchQuery: String?): List<TagWithTaggedItemsCount>
 
-    @Transaction
-    @Query(
-        "SELECT * FROM Tag t " +
-            "WHERE t.id IN " +
-            "(select distinct tagId from resourceandtagscrossref rTCR where rTCR.resourceId is :resourceId)",
-    )
-    suspend fun getResourceTags(resourceId: String): List<Tag>
+@Suppress("MagicNumber")
+object Migration19to20 : Migration(19, 20) {
+    private const val ADD_CUSTOM_FIELDS_KEYS_COLUMN =
+        "ALTER TABLE ResourceMetadata ADD COLUMN customFieldsKeys TEXT DEFAULT NULL"
 
-    @Transaction
-    @Query("DELETE FROM Tag")
-    suspend fun deleteAll()
+    override fun migrate(db: SupportSQLiteDatabase) {
+        with(db) {
+            execSQL(ADD_CUSTOM_FIELDS_KEYS_COLUMN)
+        }
+    }
 }

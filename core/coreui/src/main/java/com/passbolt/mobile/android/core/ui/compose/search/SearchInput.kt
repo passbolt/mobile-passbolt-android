@@ -33,8 +33,14 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import com.passbolt.mobile.android.core.ui.R
 import com.passbolt.mobile.android.core.ui.compose.circularimage.CircularProfileImage
@@ -51,9 +57,20 @@ fun SearchInput(
     modifier: Modifier = Modifier,
     onEndIconClick: (() -> Unit)? = null,
 ) {
+    var textFieldValue by remember { mutableStateOf(TextFieldValue(value)) }
+
+    LaunchedEffect(value) {
+        if (value != textFieldValue.text) {
+            textFieldValue = textFieldValue.copy(text = value)
+        }
+    }
+
     OutlinedTextField(
-        value = value,
-        onValueChange = onValueChange,
+        value = textFieldValue,
+        onValueChange = { newValue ->
+            textFieldValue = newValue
+            onValueChange(newValue.text)
+        },
         singleLine = true,
         leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
         trailingIcon = {
@@ -69,9 +86,7 @@ fun SearchInput(
                     Icon(
                         imageVector = Icons.Default.Clear,
                         contentDescription = null,
-                        modifier =
-                            Modifier
-                                .clickable { onEndIconClick?.invoke() },
+                        modifier = Modifier.clickable { onEndIconClick?.invoke() },
                     )
             }
         },
@@ -84,8 +99,6 @@ fun SearchInput(
                 focusedIndicatorColor = colorResource(R.color.input_box_stroke),
                 unfocusedIndicatorColor = colorResource(R.color.input_box_stroke),
             ),
-        modifier =
-            modifier
-                .fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
     )
 }

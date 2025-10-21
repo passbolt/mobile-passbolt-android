@@ -2,7 +2,7 @@ package com.passbolt.mobile.android.feature.home.screen
 
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
-import com.passbolt.mobile.android.common.search.SearchableMatcher
+import com.passbolt.mobile.android.feature.home.screen.data.HomeDataProvider
 import com.passbolt.mobile.android.feature.home.screen.recycler.FolderItem
 import com.passbolt.mobile.android.feature.home.screen.recycler.GroupWithCountItem
 import com.passbolt.mobile.android.feature.home.screen.recycler.InCurrentFoldersHeaderItem
@@ -11,6 +11,7 @@ import com.passbolt.mobile.android.feature.home.screen.recycler.PasswordHeaderIt
 import com.passbolt.mobile.android.feature.home.screen.recycler.PasswordItem
 import com.passbolt.mobile.android.feature.home.screen.recycler.TagWithCountItem
 import org.koin.core.module.Module
+import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.ScopeDSL
 
@@ -50,28 +51,17 @@ internal const val TAGS_ITEM_ADAPTER = "TAGS_ITEM_ADAPTER"
 internal const val GROUPS_ITEM_ADAPTER = "GROUPS_ITEM_ADAPTER"
 
 fun Module.homeModule() {
+    singleOf(::HomeDataProvider)
     scope<HomeFragment> {
         scoped<HomeContract.Presenter> {
             HomePresenter(
                 coroutineLaunchContext = get(),
                 getSelectedAccountDataUseCase = get(),
-                searchableMatcher = SearchableMatcher(),
-                getLocalResourcesUseCase = get(),
-                getLocalResourcesFilteredByTag = get(),
-                getLocalSubFoldersForFolderUseCase = get(),
-                getLocalResourcesAndFoldersUseCase = get(),
-                getLocalResourcesFiltered = get(),
-                getLocalTagsUseCase = get(),
-                getLocalResourcesWithTagUseCase = get(),
-                getLocalGroupsWithShareItemsCountUseCase = get(),
-                getLocalResourcesWithGroupsUseCase = get(),
                 getHomeDisplayViewPrefsUseCase = get(),
                 homeModelMapper = get(),
-                autofillMatcher = get(),
                 getLocalFolderUseCase = get(),
                 deleteResourceIdlingResource = get(),
                 totpParametersProvider = get(),
-                getRbacRulesUseCase = get(),
                 canCreateResourceUse = get(),
                 canShareResourceUse = get(),
             )

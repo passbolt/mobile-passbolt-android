@@ -51,9 +51,11 @@ interface GroupsDao : BaseDao<UsersGroup> {
             "where rGCR.groupId is g.groupId) " +
             ")" +
             ") AS childItemsCount " +
-            "FROM UsersGroup g ORDER BY name ASC",
+            "FROM UsersGroup g " +
+            "WHERE (:searchQuery IS NULL OR name LIKE '%' || :searchQuery || '%') " +
+            "ORDER BY name ASC",
     )
-    suspend fun getAllWithSharedItemsCount(): List<UsersGroupWithChildItemsCount>
+    suspend fun getAllWithSharedItemsCount(searchQuery: String?): List<UsersGroupWithChildItemsCount>
 
     @Transaction
     @Query("SELECT * FROM UsersGroup WHERE groupId=:groupId ORDER BY name ASC")

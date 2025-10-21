@@ -31,15 +31,8 @@ package com.passbolt.mobile.android.feature.home.screen
  */
 
 import com.passbolt.mobile.android.common.extension.areListsEmpty
-import com.passbolt.mobile.android.common.search.Searchable
-import com.passbolt.mobile.android.common.search.SearchableMatcher
 import com.passbolt.mobile.android.core.accounts.usecase.accountdata.GetSelectedAccountDataUseCase
-import com.passbolt.mobile.android.core.autofill.urlmatcher.AutofillUriMatcher
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalFolderDetailsUseCase
-import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalResourcesAndFoldersUseCase
-import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalSubFolderResourcesFilteredUseCase
-import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalSubFoldersForFolderUseCase
-import com.passbolt.mobile.android.core.commongroups.usecase.db.GetLocalGroupsWithShareItemsCountUseCase
 import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReactivePresenter
 import com.passbolt.mobile.android.core.idlingresource.DeleteResourceIdlingResource
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
@@ -47,32 +40,34 @@ import com.passbolt.mobile.android.core.otpcore.TotpParametersProvider
 import com.passbolt.mobile.android.core.otpcore.TotpParametersProvider.OtpParametersResult.InvalidTotpInput
 import com.passbolt.mobile.android.core.otpcore.TotpParametersProvider.OtpParametersResult.OtpParameters
 import com.passbolt.mobile.android.core.preferences.usecase.GetHomeDisplayViewPrefsUseCase
-import com.passbolt.mobile.android.core.rbac.usecase.GetRbacRulesUseCase
 import com.passbolt.mobile.android.core.resources.actions.ResourceCommonActionsInteractor
 import com.passbolt.mobile.android.core.resources.actions.ResourcePropertiesActionsInteractor
 import com.passbolt.mobile.android.core.resources.actions.SecretPropertiesActionsInteractor
 import com.passbolt.mobile.android.core.resources.actions.performCommonResourceAction
 import com.passbolt.mobile.android.core.resources.actions.performResourcePropertyAction
 import com.passbolt.mobile.android.core.resources.actions.performSecretPropertyAction
-import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesFilteredByTagUseCase
-import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesUseCase
-import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesWithGroupUseCase
-import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesWithTagUseCase
-import com.passbolt.mobile.android.core.tags.usecase.db.GetLocalTagsUseCase
 import com.passbolt.mobile.android.core.ui.compose.search.SearchInputEndIconMode
-import com.passbolt.mobile.android.feature.home.screen.model.HeaderSectionConfiguration
+import com.passbolt.mobile.android.feature.home.screen.data.HomeDataProvider
 import com.passbolt.mobile.android.mappers.HomeDisplayViewMapper
 import com.passbolt.mobile.android.metadata.usecase.CanCreateResourceUseCase
 import com.passbolt.mobile.android.metadata.usecase.CanShareResourceUseCase
-import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.homeSlugs
-import com.passbolt.mobile.android.ui.Folder
+import com.passbolt.mobile.android.ui.Folder.Child
+import com.passbolt.mobile.android.ui.Folder.Root
 import com.passbolt.mobile.android.ui.FolderMoreMenuModel
 import com.passbolt.mobile.android.ui.FolderWithCountAndPath
 import com.passbolt.mobile.android.ui.GroupWithCount
 import com.passbolt.mobile.android.ui.HomeDisplayViewModel
+import com.passbolt.mobile.android.ui.HomeDisplayViewModel.AllItems
+import com.passbolt.mobile.android.ui.HomeDisplayViewModel.Expiry
+import com.passbolt.mobile.android.ui.HomeDisplayViewModel.Favourites
+import com.passbolt.mobile.android.ui.HomeDisplayViewModel.Folders
+import com.passbolt.mobile.android.ui.HomeDisplayViewModel.Groups
+import com.passbolt.mobile.android.ui.HomeDisplayViewModel.OwnedByMe
+import com.passbolt.mobile.android.ui.HomeDisplayViewModel.RecentlyModified
+import com.passbolt.mobile.android.ui.HomeDisplayViewModel.SharedWithMe
+import com.passbolt.mobile.android.ui.HomeDisplayViewModel.Tags
 import com.passbolt.mobile.android.ui.LeadingContentType.PASSWORD
 import com.passbolt.mobile.android.ui.LeadingContentType.STANDALONE_NOTE
-import com.passbolt.mobile.android.ui.RbacRuleModel.ALLOW
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
 import com.passbolt.mobile.android.ui.ResourcePermission
@@ -84,32 +79,22 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
+import org.koin.core.component.inject
 import org.koin.core.parameter.parametersOf
 import timber.log.Timber
 
-@Suppress("TooManyFunctions", "LargeClass", "LongParameterList") // TODO MOB-321
+@Suppress("TooManyFunctions", "LargeClass") // TODO MOB-321
 class HomePresenter(
-    coroutineLaunchContext: CoroutineLaunchContext,
+    private val coroutineLaunchContext: CoroutineLaunchContext,
     private val getSelectedAccountDataUseCase: GetSelectedAccountDataUseCase,
-    private val searchableMatcher: SearchableMatcher,
-    private val getLocalResourcesUseCase: GetLocalResourcesUseCase,
-    private val getLocalResourcesFilteredByTag: GetLocalResourcesFilteredByTagUseCase,
-    private val getLocalSubFoldersForFolderUseCase: GetLocalSubFoldersForFolderUseCase,
-    private val getLocalResourcesAndFoldersUseCase: GetLocalResourcesAndFoldersUseCase,
-    private val getLocalResourcesFiltered: GetLocalSubFolderResourcesFilteredUseCase,
-    private val getLocalTagsUseCase: GetLocalTagsUseCase,
-    private val getLocalResourcesWithTagUseCase: GetLocalResourcesWithTagUseCase,
-    private val getLocalGroupsWithShareItemsCountUseCase: GetLocalGroupsWithShareItemsCountUseCase,
-    private val getLocalResourcesWithGroupsUseCase: GetLocalResourcesWithGroupUseCase,
     private val getHomeDisplayViewPrefsUseCase: GetHomeDisplayViewPrefsUseCase,
     private val homeModelMapper: HomeDisplayViewMapper,
-    private val autofillMatcher: AutofillUriMatcher,
     private val getLocalFolderUseCase: GetLocalFolderDetailsUseCase,
     private val deleteResourceIdlingResource: DeleteResourceIdlingResource,
     private val totpParametersProvider: TotpParametersProvider,
-    private val getRbacRulesUseCase: GetRbacRulesUseCase,
     private val canCreateResourceUse: CanCreateResourceUseCase,
     private val canShareResourceUse: CanShareResourceUseCase,
 ) : DataRefreshViewReactivePresenter<HomeContract.View>(coroutineLaunchContext),
@@ -125,15 +110,7 @@ class HomePresenter(
     private var currentSearchText = MutableStateFlow("")
     private var hasPreviousBackEntry = false
     private lateinit var showSuggestedModel: ShowSuggestedModel
-    private var suggestedResourceList: List<ResourceModel> = emptyList()
 
-    private var resourceList: List<ResourceModel> = emptyList()
-    private var foldersList: List<FolderWithCountAndPath> = emptyList()
-    private var tagsList: List<TagWithCount> = emptyList()
-    private var groupsList: List<GroupWithCount> = emptyList()
-    private var filteredSubFolderResources: List<ResourceModel> = emptyList()
-
-    private var filteredSubFolders: List<FolderWithCountAndPath> = emptyList()
     private var currentMoreMenuResource: ResourceModel? = null
 
     private var userAvatarUrl: String? = null
@@ -146,6 +123,8 @@ class HomePresenter(
         get() = get { parametersOf(requireNotNull(currentMoreMenuResource)) }
     private val resourceCommonActionsInteractor: ResourceCommonActionsInteractor
         get() = get { parametersOf(requireNotNull(currentMoreMenuResource)) }
+
+    private val homeDataProvider: HomeDataProvider by inject()
 
     override fun argsRetrieved(
         showSuggestedModel: ShowSuggestedModel,
@@ -192,22 +171,22 @@ class HomePresenter(
 
     private fun processSearchHint(view: HomeContract.View) {
         when (homeView) {
-            is HomeDisplayViewModel.AllItems -> view.showAllItemsSearchHint()
+            is AllItems -> view.showAllItemsSearchHint()
             else -> view.showDefaultSearchHint()
         }
     }
 
     private fun processScreenTitle(view: HomeContract.View) {
         when (val currentHomeView = homeView) {
-            is HomeDisplayViewModel.Folders -> processFoldersTitle(currentHomeView, view)
-            is HomeDisplayViewModel.Tags -> processTagsTitle(currentHomeView, view)
-            is HomeDisplayViewModel.Groups -> processGroupsTitle(currentHomeView, view)
+            is Folders -> processFoldersTitle(currentHomeView, view)
+            is Tags -> processTagsTitle(currentHomeView, view)
+            is Groups -> processGroupsTitle(currentHomeView, view)
             else -> view.showHomeScreenTitle(currentHomeView)
         }
     }
 
     private fun processGroupsTitle(
-        currentHomeView: HomeDisplayViewModel.Groups,
+        currentHomeView: Groups,
         view: HomeContract.View,
     ) {
         if (currentHomeView.activeGroupId != null) {
@@ -218,7 +197,7 @@ class HomePresenter(
     }
 
     private fun processTagsTitle(
-        currentHomeView: HomeDisplayViewModel.Tags,
+        currentHomeView: Tags,
         view: HomeContract.View,
     ) {
         if (currentHomeView.activeTagId != null && currentHomeView.isActiveTagShared != null) {
@@ -232,16 +211,16 @@ class HomePresenter(
     }
 
     private fun processFoldersTitle(
-        currentHomeView: HomeDisplayViewModel.Folders,
+        currentHomeView: Folders,
         view: HomeContract.View,
     ) {
         when (currentHomeView.activeFolder) {
-            is Folder.Child ->
+            is Child ->
                 view.showChildFolderTitle(
                     requireNotNull(currentHomeView.activeFolderName),
                     requireNotNull(currentHomeView.isActiveFolderShared),
                 )
-            is Folder.Root -> view.showHomeScreenTitle(currentHomeView)
+            is Root -> view.showHomeScreenTitle(currentHomeView)
         }
     }
 
@@ -267,9 +246,7 @@ class HomePresenter(
                 .collectLatest {
                     Timber.d("New search text received")
                     processSearchIconChange()
-                    runWithHandlingMissingItem({
-                        filterHomeData()
-                    }, resultIfActionFails = Unit)
+                    showActiveHomeView()
                 }
         }
     }
@@ -277,20 +254,20 @@ class HomePresenter(
     private suspend fun shouldShowCreateButton(): Boolean {
         homeView.let {
             // currently do not show add button on tags and groups
-            if (it is HomeDisplayViewModel.Tags || it is HomeDisplayViewModel.Groups) {
+            if (it is Tags || it is Groups) {
                 return false
             }
             // show only in folder with update permission
-            if (it is HomeDisplayViewModel.Folders) {
+            if (it is Folders) {
                 return when (val currentFolder = it.activeFolder) {
-                    is Folder.Child ->
+                    is Child ->
                         runWithHandlingMissingItem({
                             getLocalFolderUseCase
                                 .execute(GetLocalFolderDetailsUseCase.Input(currentFolder.folderId))
                                 .folder.permission in setOf(ResourcePermission.OWNER, ResourcePermission.UPDATE)
                         }, resultIfActionFails = false)
 
-                    is Folder.Root -> true
+                    is Root -> true
                 }
             }
         }
@@ -303,21 +280,21 @@ class HomePresenter(
     ): T =
         try {
             action()
-        } catch (exception: NullPointerException) {
+        } catch (exception: Exception) {
             // the current filtering item (tag, folder, group)
             // was deleted from other application instance and full refresh was done while being on that item
             // in that case navigate to selected filter root and show info message
             navigateToHomeView(
                 when (homeView) {
-                    is HomeDisplayViewModel.AllItems -> HomeDisplayViewModel.AllItems
-                    is HomeDisplayViewModel.Favourites -> HomeDisplayViewModel.Favourites
-                    is HomeDisplayViewModel.Folders -> HomeDisplayViewModel.folderRoot()
-                    is HomeDisplayViewModel.Groups -> HomeDisplayViewModel.groupsRoot()
-                    is HomeDisplayViewModel.OwnedByMe -> HomeDisplayViewModel.OwnedByMe
-                    is HomeDisplayViewModel.RecentlyModified -> HomeDisplayViewModel.RecentlyModified
-                    is HomeDisplayViewModel.SharedWithMe -> HomeDisplayViewModel.SharedWithMe
-                    is HomeDisplayViewModel.Tags -> HomeDisplayViewModel.tagsRoot()
-                    is HomeDisplayViewModel.Expiry -> HomeDisplayViewModel.Expiry
+                    is AllItems -> AllItems
+                    is Favourites -> Favourites
+                    is Folders -> HomeDisplayViewModel.folderRoot()
+                    is Groups -> HomeDisplayViewModel.groupsRoot()
+                    is OwnedByMe -> OwnedByMe
+                    is RecentlyModified -> RecentlyModified
+                    is SharedWithMe -> SharedWithMe
+                    is Tags -> HomeDisplayViewModel.tagsRoot()
+                    is Expiry -> Expiry
                 },
             )
             view?.showContentNotAvailable()
@@ -328,7 +305,7 @@ class HomePresenter(
     private fun shouldShowFolderMoreMenu(shouldShowResourceMoreMenu: Boolean) =
         shouldShowResourceMoreMenu &&
             homeView.let {
-                it is HomeDisplayViewModel.Folders && it.activeFolder is Folder.Child
+                it is Folders && it.activeFolder is Child
             }
 
     private fun handleBackArrowVisibility() {
@@ -348,54 +325,52 @@ class HomePresenter(
     }
 
     private fun showActiveHomeView() {
+        view?.let { processScreenTitle(it) }
         coroutineScope.launch {
-            view?.let { processScreenTitle(it) }
             if (shouldShowCreateButton()) {
                 view?.showCreateButton()
             } else {
                 view?.hideCreateButton()
             }
-            runWithHandlingMissingItem({
-                suggestedResourceList =
-                    if (shouldShowSuggested()) {
-                        getLocalResourcesUseCase
-                            .execute(GetLocalResourcesUseCase.Input(homeSlugs))
-                            .resources
-                            .filter {
-                                val autofillUrl = (showSuggestedModel as? ShowSuggestedModel.Show)?.suggestedUri
-                                autofillMatcher.isMatching(autofillUrl, it)
-                            }
-                    } else {
-                        emptyList()
+
+            runWithHandlingMissingItem(action = {
+                val homeData =
+                    withContext(coroutineLaunchContext.io) {
+                        homeDataProvider.provideData(
+                            currentSearchText.value,
+                            homeView,
+                            showSuggestedModel,
+                        )
                     }
-                when (
-                    val currentHomeView = homeView
+
+                if (areListsEmpty(
+                        homeData.data.resourceList,
+                        homeData.data.foldersList,
+                        homeData.data.tagsList,
+                        homeData.data.groupsList,
+                        homeData.data.suggestedResourceList,
+                    )
                 ) {
-                    is HomeDisplayViewModel.Folders -> showResourcesAndFoldersFromDatabase(currentHomeView)
-                    is HomeDisplayViewModel.Tags -> showTagsFromDatabase(currentHomeView)
-                    is HomeDisplayViewModel.Groups -> showGroupsFromDatabase(currentHomeView)
-                    else -> showResourcesFromDatabase()
+                    if (currentSearchText.value.isNotBlank()) {
+                        view?.showSearchEmptyList()
+                    } else {
+                        view?.showEmptyList()
+                    }
+                } else {
+                    view?.showItems(
+                        homeData.data.suggestedResourceList,
+                        homeData.data.resourceList,
+                        homeData.data.foldersList,
+                        homeData.data.tagsList,
+                        homeData.data.groupsList,
+                        homeData.data.filteredSubFolders,
+                        homeData.data.filteredSubFolderResources,
+                        homeData.headerSectionConfiguration,
+                    )
                 }
             }, resultIfActionFails = Unit)
         }
     }
-
-    private fun shouldShowSuggested() =
-        when (val activeHomeView = homeView) {
-            is HomeDisplayViewModel.AllItems -> true
-            is HomeDisplayViewModel.Favourites -> true
-            is HomeDisplayViewModel.Folders ->
-                when (activeHomeView.activeFolder) {
-                    is Folder.Child -> false
-                    is Folder.Root -> true
-                }
-            is HomeDisplayViewModel.Groups -> activeHomeView.activeGroupId == null // groups root
-            is HomeDisplayViewModel.OwnedByMe -> true
-            is HomeDisplayViewModel.RecentlyModified -> true
-            is HomeDisplayViewModel.SharedWithMe -> true
-            is HomeDisplayViewModel.Tags -> activeHomeView.activeTagId == null // tags root
-            is HomeDisplayViewModel.Expiry -> true
-        }
 
     override fun userAuthenticated() {
         initRefresh()
@@ -420,244 +395,6 @@ class HomePresenter(
             SearchInputEndIconMode.AVATAR -> view?.displaySearchAvatar(userAvatarUrl)
             SearchInputEndIconMode.CLEAR -> view?.displaySearchClearIcon()
         }
-    }
-
-    private suspend fun showResourcesFromDatabase() {
-        resourceList =
-            getLocalResourcesUseCase
-                .execute(
-                    GetLocalResourcesUseCase.Input(
-                        homeSlugs,
-                        homeView,
-                    ),
-                ).resources
-        foldersList = emptyList()
-        tagsList = emptyList()
-        groupsList = emptyList()
-        displayHomeData()
-    }
-
-    private suspend fun showTagsFromDatabase(tags: HomeDisplayViewModel.Tags) {
-        val tagsRbac = getRbacRulesUseCase.execute(Unit).rbacModel.tagsUseRule
-        if (tagsRbac == ALLOW) {
-            if (tags.activeTagId == null) { // tags root - list of tags
-                resourceList = emptyList()
-                tagsList = getLocalTagsUseCase.execute(Unit)
-                foldersList = emptyList()
-                groupsList = emptyList()
-            } else { // resources with active tag
-                tagsList = emptyList()
-                foldersList = emptyList()
-                groupsList = emptyList()
-                resourceList =
-                    getLocalResourcesWithTagUseCase
-                        .execute(
-                            GetLocalResourcesWithTagUseCase.Input(
-                                tags,
-                                homeSlugs,
-                            ),
-                        ).resources
-            }
-            displayHomeData()
-        } else {
-            // if tags were disabled by rbac after selecting fallback to all items
-            homeView = HomeDisplayViewModel.AllItems
-            showActiveHomeView()
-        }
-    }
-
-    private suspend fun showGroupsFromDatabase(groups: HomeDisplayViewModel.Groups) {
-        if (groups.activeGroupId == null) { // groups root - list of groups
-            resourceList = emptyList()
-            tagsList = emptyList()
-            foldersList = emptyList()
-            groupsList = getLocalGroupsWithShareItemsCountUseCase.execute(Unit)
-        } else { // resources shared with group
-            tagsList = emptyList()
-            foldersList = emptyList()
-            groupsList = emptyList()
-            resourceList =
-                getLocalResourcesWithGroupsUseCase
-                    .execute(
-                        GetLocalResourcesWithGroupUseCase.Input(
-                            groups,
-                            homeSlugs,
-                        ),
-                    ).resources
-        }
-        displayHomeData()
-    }
-
-    private suspend fun showResourcesAndFoldersFromDatabase(folders: HomeDisplayViewModel.Folders) {
-        val foldersRbac = getRbacRulesUseCase.execute(Unit).rbacModel.foldersUseRule
-        if (foldersRbac == ALLOW) {
-            tagsList = emptyList()
-            groupsList = emptyList()
-            when (
-                val result =
-                    getLocalResourcesAndFoldersUseCase.execute(
-                        GetLocalResourcesAndFoldersUseCase.Input(
-                            folders.activeFolder,
-                            homeSlugs,
-                        ),
-                    )
-            ) {
-                is GetLocalResourcesAndFoldersUseCase.Output.Failure -> {
-                    Timber.d("Exception during getting resources and folders. Navigating to root")
-                    this.view?.navigateToRootHomeFromChildHome(HomeDisplayViewModel.folderRoot())
-                }
-                is GetLocalResourcesAndFoldersUseCase.Output.Success -> {
-                    foldersList = result.folders
-                    resourceList = result.resources
-                }
-            }
-
-            displayHomeData()
-        } else {
-            // if folders were disabled by rbac after selecting fallback to all items
-            homeView = HomeDisplayViewModel.AllItems
-            showActiveHomeView()
-        }
-    }
-
-    private fun displayHomeData() {
-        if (areListsEmpty(resourceList, foldersList, tagsList, groupsList, suggestedResourceList)) {
-            view?.showEmptyList()
-        } else {
-            if (currentSearchText.value.isEmpty()) {
-                view?.showItems(
-                    suggestedResourceList,
-                    resourceList,
-                    foldersList,
-                    tagsList,
-                    groupsList,
-                    filteredSubFolders,
-                    filteredSubFolderResources,
-                    HeaderSectionConfiguration(
-                        isInCurrentFolderSectionVisible = false,
-                        isInSubFoldersSectionVisible = false,
-                        isOtherItemsSectionVisible =
-                            !areListsEmpty(
-                                resourceList,
-                                foldersList,
-                                tagsList,
-                                groupsList,
-                                filteredSubFolders,
-                                filteredSubFolderResources,
-                            ) &&
-                                showSuggestedModel is ShowSuggestedModel.Show,
-                        isSuggestedSectionVisible = suggestedResourceList.isNotEmpty(),
-                    ),
-                )
-            } else {
-                filteringScope.launch {
-                    Timber.d("Applying existing search criteria")
-                    processSearchIconChange()
-                    filterHomeData()
-                }
-            }
-        }
-    }
-
-    private suspend fun filterHomeData() {
-        var filteredResources = filterSearchableList(resourceList, currentSearchText.value)
-        // filtered resources + additionally append resources that have tag that matches filter
-        if (homeView is HomeDisplayViewModel.AllItems) {
-            filteredResources =
-                (filteredResources + getResourcesFilteredByTag())
-                    .distinctBy { it.resourceId }
-        }
-        val filteredFolders = filterSearchableList(foldersList, currentSearchText.value)
-        val filteredTags = filterSearchableList(tagsList, currentSearchText.value)
-        val filteredGroups = filterSearchableList(groupsList, currentSearchText.value)
-
-        homeView.apply {
-            if (this is HomeDisplayViewModel.Folders) {
-                populateSubFoldersFilteringResults(this)
-            }
-        }
-
-        if (areListsEmpty(
-                filteredResources,
-                filteredFolders,
-                filteredTags,
-                filteredGroups,
-                filteredSubFolders,
-                filteredSubFolderResources,
-            )
-        ) {
-            view?.showSearchEmptyList()
-        } else {
-            view?.showItems(
-                suggestedResources = emptyList(),
-                filteredResources,
-                filteredFolders,
-                filteredTags,
-                filteredGroups,
-                filteredSubFolders,
-                filteredSubFolderResources,
-                HeaderSectionConfiguration(
-                    isInCurrentFolderSectionVisible =
-                        homeView is HomeDisplayViewModel.Folders && !areListsEmpty(filteredResources, filteredFolders),
-                    isInSubFoldersSectionVisible =
-                        homeView is HomeDisplayViewModel.Folders &&
-                            !areListsEmpty(
-                                filteredSubFolderResources,
-                                filteredSubFolders,
-                            ),
-                    (homeView as? HomeDisplayViewModel.Folders)?.activeFolderName,
-                    isSuggestedSectionVisible = false,
-                    isOtherItemsSectionVisible = false,
-                ),
-            )
-        }
-    }
-
-    private suspend fun getResourcesFilteredByTag() =
-        getLocalResourcesFilteredByTag
-            .execute(
-                GetLocalResourcesFilteredByTagUseCase.Input(
-                    currentSearchText.value,
-                    homeSlugs,
-                ),
-            ).resources
-
-    private suspend fun populateSubFoldersFilteringResults(folders: HomeDisplayViewModel.Folders) {
-        if (currentSearchText.value.isNotBlank()) {
-            // resources need to be shown for all child folders
-            val allSubFolders = getAllSubFolders(folders)
-            // direct child folders are shown in top section; in filters show only child folders level>=1
-            val subFoldersChildren = allSubFolders.filter { it.parentId != folders.activeFolder.folderId }
-
-            filteredSubFolders = filterSearchableList(subFoldersChildren, currentSearchText.value)
-            filteredSubFolderResources = getSubFoldersFilteredResources(allSubFolders)
-        } else {
-            filteredSubFolders = emptyList()
-            filteredSubFolderResources = emptyList()
-        }
-    }
-
-    private suspend fun getSubFoldersFilteredResources(allSubFolders: List<FolderWithCountAndPath>) =
-        getLocalResourcesFiltered
-            .execute(
-                GetLocalSubFolderResourcesFilteredUseCase.Input(
-                    allSubFolders.map { it.folderId },
-                    currentSearchText.value,
-                    homeSlugs,
-                ),
-            ).resources
-
-    private suspend fun getAllSubFolders(folders: HomeDisplayViewModel.Folders) =
-        getLocalSubFoldersForFolderUseCase
-            .execute(
-                GetLocalSubFoldersForFolderUseCase.Input(folders.activeFolder),
-            ).folders
-
-    private fun <T : Searchable> filterSearchableList(
-        list: List<T>,
-        currentSearchText: String,
-    ) = list.filter {
-        searchableMatcher.matches(it, currentSearchText)
     }
 
     override fun resourceMoreClick(resourceModel: ResourceModel) {
@@ -815,27 +552,27 @@ class HomePresenter(
     }
 
     override fun allItemsClick() {
-        navigateToHomeView(HomeDisplayViewModel.AllItems)
+        navigateToHomeView(AllItems)
     }
 
     override fun favouritesClick() {
-        navigateToHomeView(HomeDisplayViewModel.Favourites)
+        navigateToHomeView(Favourites)
     }
 
     override fun recentlyModifiedClick() {
-        navigateToHomeView(HomeDisplayViewModel.RecentlyModified)
+        navigateToHomeView(RecentlyModified)
     }
 
     override fun sharedWithMeClick() {
-        navigateToHomeView(HomeDisplayViewModel.SharedWithMe)
+        navigateToHomeView(SharedWithMe)
     }
 
     override fun ownedByMeClick() {
-        navigateToHomeView(HomeDisplayViewModel.OwnedByMe)
+        navigateToHomeView(OwnedByMe)
     }
 
     override fun expiryClick() {
-        navigateToHomeView(HomeDisplayViewModel.Expiry)
+        navigateToHomeView(Expiry)
     }
 
     override fun foldersClick() {
@@ -852,8 +589,8 @@ class HomePresenter(
 
     override fun folderItemClick(folderModel: FolderWithCountAndPath) {
         view?.navigateToChild(
-            HomeDisplayViewModel.Folders(
-                Folder.Child(
+            Folders(
+                Child(
                     folderModel.folderId,
                 ),
                 folderModel.name,
@@ -864,13 +601,13 @@ class HomePresenter(
 
     override fun tagItemClick(tag: TagWithCount) {
         view?.navigateToChild(
-            HomeDisplayViewModel.Tags(tag.id, tag.slug, tag.isShared),
+            Tags(tag.id, tag.slug, tag.isShared),
         )
     }
 
     override fun groupItemClick(group: GroupWithCount) {
         view?.navigateToChild(
-            HomeDisplayViewModel.Groups(group.groupId, group.groupName),
+            Groups(group.groupId, group.groupName),
         )
     }
 
@@ -878,7 +615,7 @@ class HomePresenter(
         onCanCreateResource {
             view?.navigateToCreateResource(
                 when (val currentHomeView = homeView) {
-                    is HomeDisplayViewModel.Folders -> currentHomeView.activeFolder.folderId
+                    is Folders -> currentHomeView.activeFolder.folderId
                     else -> null
                 },
                 PASSWORD,
@@ -888,14 +625,14 @@ class HomePresenter(
 
     override fun createTotpClick() {
         onCanCreateResource {
-            val parentFolderId = (homeView as? HomeDisplayViewModel.Folders)?.activeFolder?.folderId
+            val parentFolderId = (homeView as? Folders)?.activeFolder?.folderId
             view?.navigateToScanTotp(parentFolderId)
         }
     }
 
     private fun onCanCreateResource(function: () -> Unit) {
         coroutineScope.launch {
-            val folderId = (homeView as? HomeDisplayViewModel.Folders)?.activeFolder?.folderId
+            val folderId = (homeView as? Folders)?.activeFolder?.folderId
             if (canCreateResourceUse.execute(CanCreateResourceUseCase.Input(folderId)).canCreateResource) {
                 function()
             } else {
@@ -918,7 +655,7 @@ class HomePresenter(
         onCanCreateResource {
             view?.navigateToCreateResource(
                 when (val currentHomeView = homeView) {
-                    is HomeDisplayViewModel.Folders -> currentHomeView.activeFolder.folderId
+                    is Folders -> currentHomeView.activeFolder.folderId
                     else -> null
                 },
                 STANDALONE_NOTE,
@@ -942,7 +679,7 @@ class HomePresenter(
 
     override fun moreClick() {
         when (val currentHomeView = homeView) {
-            is HomeDisplayViewModel.Folders ->
+            is Folders ->
                 view?.navigateToFolderMoreMenu(
                     FolderMoreMenuModel(currentHomeView.activeFolderName),
                 )
@@ -953,13 +690,13 @@ class HomePresenter(
     }
 
     override fun seeFolderDetailsClick() {
-        val currentHomeView = homeView as HomeDisplayViewModel.Folders
-        require(currentHomeView.activeFolder is Folder.Child)
-        view?.navigateToFolderDetails(currentHomeView.activeFolder as Folder.Child)
+        val currentHomeView = homeView as Folders
+        require(currentHomeView.activeFolder is Child)
+        view?.navigateToFolderDetails(currentHomeView.activeFolder as Child)
     }
 
     override fun createFolderClick() {
-        val currentHomeView = homeView as? HomeDisplayViewModel.Folders
+        val currentHomeView = homeView as? Folders
         requireNotNull(currentHomeView) {
             "Create folder accessed not from folder context (${currentHomeView?.javaClass?.name})"
         }
@@ -980,7 +717,7 @@ class HomePresenter(
         } else if (isManualCreationChosen) {
             view?.navigateToCreateTotpManually(
                 when (val currentHomeView = homeView) {
-                    is HomeDisplayViewModel.Folders -> currentHomeView.activeFolder.folderId
+                    is Folders -> currentHomeView.activeFolder.folderId
                     else -> null
                 },
             )

@@ -52,13 +52,30 @@ interface ResourcesDao : BaseDao<Resource> {
             "FROM Resource r " +
             "INNER JOIN ResourceMetadata rm " +
             "ON r.resourceId = rm.resourceId " +
+            "LEFT JOIN ResourceUri ru " +
+            "ON r.resourceId = ru.resourceId " +
+            "LEFT JOIN ResourceAndTagsCrossRef rTCR " +
+            "ON r.resourceId = rTCR.resourceId " +
+            "LEFT JOIN Tag t " +
+            "ON t.id = rTCR.tagId " +
             "WHERE r.resourceTypeId IN(" +
             "   SELECT resourceTypeId FROM ResourceType WHERE slug IN (:slugs)" +
+            ") " +
+            "AND (" +
+            "   :searchQuery IS NULL OR " +
+            "   rm.name LIKE '%' || :searchQuery || '%' OR " +
+            "   rm.username LIKE '%' || :searchQuery || '%' OR " +
+            "   rm.customFieldsKeys LIKE '%' || :searchQuery || '%' OR " +
+            "   ru.uri LIKE '%' || :searchQuery || '%' OR " +
+            "   t.slug LIKE '%' || :searchQuery || '%'" +
             ") " +
             "ORDER BY rm.name " +
             "COLLATE NOCASE ASC",
     )
-    suspend fun getAllOrderedByName(slugs: Set<String>): List<ResourceWithMetadata>
+    suspend fun getAllOrderedByName(
+        slugs: Set<String>,
+        searchQuery: String?,
+    ): List<ResourceWithMetadata>
 
     @Transaction
     @Query(
@@ -67,26 +84,61 @@ interface ResourcesDao : BaseDao<Resource> {
             "FROM Resource r " +
             "INNER JOIN ResourceMetadata rm " +
             "ON r.resourceId = rm.resourceId " +
+            "LEFT JOIN ResourceUri ru " +
+            "ON r.resourceId = ru.resourceId " +
+            "LEFT JOIN ResourceAndTagsCrossRef rTCR " +
+            "ON r.resourceId = rTCR.resourceId " +
+            "LEFT JOIN Tag t " +
+            "ON t.id = rTCR.tagId " +
             "WHERE r.favouriteId IS NOT NULL AND r.resourceTypeId IN(" +
             "   SELECT resourceTypeId FROM ResourceType WHERE slug IN (:slugs)" +
             ") " +
-            "ORDER BY modified DESC",
-    )
-    suspend fun getFavourites(slugs: Set<String>): List<ResourceWithMetadata>
-
-    @Transaction
-    @Query(
-        "SELECT r.resourceId, r.folderId, r.expiry, r.favouriteId, r.modified, " +
-            "r.resourcePermission, r.resourceTypeId, r.metadataKeyId, r.metadataKeyType, rm.metadataJson " +
-            "FROM Resource r " +
-            "INNER JOIN ResourceMetadata rm " +
-            "ON r.resourceId = rm.resourceId " +
-            "WHERE r.resourceTypeId IN(" +
-            "   SELECT resourceTypeId FROM ResourceType WHERE slug IN (:slugs)" +
+            "AND (" +
+            "   :searchQuery IS NULL OR " +
+            "   rm.name LIKE '%' || :searchQuery || '%' OR " +
+            "   rm.username LIKE '%' || :searchQuery || '%' OR " +
+            "   rm.customFieldsKeys LIKE '%' || :searchQuery || '%' OR " +
+            "   ru.uri LIKE '%' || :searchQuery || '%' OR " +
+            "   t.slug LIKE '%' || :searchQuery || '%'" +
             ") " +
             "ORDER BY modified DESC",
     )
-    suspend fun getAllOrderedByModifiedDate(slugs: Set<String>): List<ResourceWithMetadata>
+    suspend fun getFavourites(
+        slugs: Set<String>,
+        searchQuery: String?,
+    ): List<ResourceWithMetadata>
+
+    @Transaction
+    @Query(
+        "SELECT DISTINCT r.resourceId, r.folderId, r.expiry, r.favouriteId, r.modified, " +
+            "r.resourcePermission, r.resourceTypeId, r.metadataKeyId, r.metadataKeyType, rm.metadataJson " +
+            "FROM Resource r " +
+            "INNER JOIN ResourceMetadata rm " +
+            "ON r.resourceId = rm.resourceId " +
+            "LEFT JOIN ResourceUri ru " +
+            "ON r.resourceId = ru.resourceId " +
+            "LEFT JOIN ResourceAndTagsCrossRef rTCR " +
+            "ON r.resourceId = rTCR.resourceId " +
+            "LEFT JOIN Tag t " +
+            "ON t.id = rTCR.tagId " +
+            "WHERE r.resourceTypeId IN(" +
+            "   SELECT resourceTypeId FROM ResourceType WHERE slug IN (:slugs)" +
+            ") " +
+            "AND (" +
+            "   :searchQuery IS NULL OR " +
+            "   rm.name LIKE '%' || :searchQuery || '%' OR " +
+            "   rm.username LIKE '%' || :searchQuery || '%' OR " +
+            "   rm.customFieldsKeys LIKE '%' || :searchQuery || '%' OR " +
+            "   ru.uri LIKE '%' || :searchQuery || '%' OR " +
+            "   t.slug LIKE '%' || :searchQuery || '%'" +
+            ") " +
+            "GROUP BY r.resourceId " +
+            "ORDER BY r.modified DESC",
+    )
+    suspend fun getAllOrderedByModifiedDate(
+        slugs: Set<String>,
+        searchQuery: String?,
+    ): List<ResourceWithMetadata>
 
     @Transaction
     @Query(
@@ -95,14 +147,29 @@ interface ResourcesDao : BaseDao<Resource> {
             "FROM Resource r " +
             "INNER JOIN ResourceMetadata rm " +
             "ON r.resourceId = rm.resourceId " +
+            "LEFT JOIN ResourceUri ru " +
+            "ON r.resourceId = ru.resourceId " +
+            "LEFT JOIN ResourceAndTagsCrossRef rTCR " +
+            "ON r.resourceId = rTCR.resourceId " +
+            "LEFT JOIN Tag t " +
+            "ON t.id = rTCR.tagId " +
             "WHERE r.resourcePermission IN (:permissions) AND r.resourceTypeId IN(" +
             "   SELECT resourceTypeId FROM ResourceType WHERE slug IN (:slugs)" +
             ")" +
+            "AND (" +
+            "   :searchQuery IS NULL OR " +
+            "   rm.name LIKE '%' || :searchQuery || '%' OR " +
+            "   rm.username LIKE '%' || :searchQuery || '%' OR " +
+            "   rm.customFieldsKeys LIKE '%' || :searchQuery || '%' OR " +
+            "   ru.uri LIKE '%' || :searchQuery || '%' OR " +
+            "   t.slug LIKE '%' || :searchQuery || '%'" +
+            ") " +
             "ORDER BY modified DESC",
     )
     suspend fun getWithPermissions(
         permissions: Set<Permission>,
         slugs: Set<String>,
+        searchQuery: String?,
     ): List<ResourceWithMetadata>
 
     @Transaction
@@ -123,12 +190,19 @@ interface ResourcesDao : BaseDao<Resource> {
             "FROM Resource r " +
             "INNER JOIN ResourceMetadata rm " +
             "ON r.resourceId = rm.resourceId " +
-            "INNER JOIN ResourceUri ru " +
+            "LEFT JOIN ResourceUri ru " +
             "ON r.resourceId = ru.resourceId " +
+            "LEFT JOIN ResourceAndTagsCrossRef rTCR " +
+            "ON r.resourceId = rTCR.resourceId " +
+            "LEFT JOIN Tag t " +
+            "ON t.id = rTCR.tagId " +
             "WHERE (" +
-            "rm.name LIKE '%' || :searchQuery || '%' OR " +
-            "ru.uri LIKE '%' || :searchQuery || '%' OR " +
-            "r.folderId LIKE '%' || :searchQuery || '%') " +
+            "   :searchQuery IS NULL OR " +
+            "   rm.name LIKE '%' || :searchQuery || '%' OR " +
+            "   rm.username LIKE '%' || :searchQuery || '%' OR " +
+            "   rm.customFieldsKeys LIKE '%' || :searchQuery || '%' OR " +
+            "   ru.uri LIKE '%' || :searchQuery || '%' OR " +
+            "   t.slug LIKE '%' || :searchQuery || '%' )" +
             "AND " +
             "r.folderId IN (:inOneOfFolders) " +
             "AND " +
@@ -166,15 +240,25 @@ interface ResourcesDao : BaseDao<Resource> {
             "FROM Resource r " +
             "INNER JOIN ResourceMetadata rm " +
             "ON r.resourceId = rm.resourceId " +
-            "INNER JOIN ResourceAndTagsCrossRef cr " +
+            "LEFT JOIN ResourceUri ru " +
+            "ON r.resourceId = ru.resourceId " +
+            "LEFT JOIN ResourceAndTagsCrossRef cr " +
             "ON r.resourceId=cr.resourceId " +
             "WHERE cr.tagId=:tagId AND r.resourceTypeId IN(" +
             "   SELECT resourceTypeId FROM ResourceType WHERE slug IN (:slugs)" +
-            ")",
+            ") " +
+            "AND (" +
+            "   :searchQuery IS NULL OR " +
+            "   rm.name LIKE '%' || :searchQuery || '%' OR " +
+            "   rm.username LIKE '%' || :searchQuery || '%' OR " +
+            "   rm.customFieldsKeys LIKE '%' || :searchQuery || '%' OR " +
+            "   ru.uri LIKE '%' || :searchQuery || '%'" +
+            ") ",
     )
     suspend fun getResourcesWithTag(
         tagId: String,
         slugs: Set<String>,
+        searchQuery: String?,
     ): List<ResourceWithMetadata>
 
     @Transaction
@@ -184,15 +268,25 @@ interface ResourcesDao : BaseDao<Resource> {
             "FROM Resource r " +
             "INNER JOIN ResourceMetadata rm " +
             "ON r.resourceId = rm.resourceId " +
+            "LEFT JOIN ResourceUri ru " +
+            "ON r.resourceId = ru.resourceId " +
             "INNER JOIN ResourceAndGroupsCrossRef cr " +
             "ON r.resourceId=cr.resourceId " +
             "WHERE cr.groupId=:groupId AND r.resourceTypeId IN(" +
             "   SELECT resourceTypeId FROM ResourceType WHERE slug IN (:slugs)" +
-            ")",
+            ") " +
+            "AND (" +
+            "   :searchQuery IS NULL OR " +
+            "   rm.name LIKE '%' || :searchQuery || '%' OR " +
+            "   rm.username LIKE '%' || :searchQuery || '%' OR " +
+            "   rm.customFieldsKeys LIKE '%' || :searchQuery || '%' OR " +
+            "   ru.uri LIKE '%' || :searchQuery || '%'" +
+            ") ",
     )
     suspend fun getResourcesWithGroup(
         groupId: String,
         slugs: Set<String>,
+        searchQuery: String?,
     ): List<ResourceWithMetadata>
 
     @Transaction
@@ -248,13 +342,28 @@ interface ResourcesDao : BaseDao<Resource> {
             "FROM Resource r " +
             "INNER JOIN ResourceMetadata rm " +
             "ON r.resourceId = rm.resourceId " +
+            "LEFT JOIN ResourceUri ru " +
+            "ON r.resourceId = ru.resourceId " +
+            "LEFT JOIN ResourceAndTagsCrossRef rTCR " +
+            "ON r.resourceId = rTCR.resourceId " +
+            "LEFT JOIN Tag t " +
+            "ON t.id = rTCR.tagId " +
             "WHERE r.expiry IS NOT NULL AND r.expiry < :expiryTimestampMillis AND r.resourceTypeId IN(" +
             "   SELECT resourceTypeId FROM ResourceType WHERE slug IN (:slugs)" +
+            ") " +
+            "AND (" +
+            "   :searchQuery IS NULL OR " +
+            "   rm.name LIKE '%' || :searchQuery || '%' OR " +
+            "   rm.username LIKE '%' || :searchQuery || '%' OR " +
+            "   rm.customFieldsKeys LIKE '%' || :searchQuery || '%' OR " +
+            "   ru.uri LIKE '%' || :searchQuery || '%' OR " +
+            "   t.slug LIKE '%' || :searchQuery || '%'" +
             ") " +
             "ORDER BY expiry ASC",
     )
     suspend fun getExpiredResources(
         slugs: Set<String>,
+        searchQuery: String?,
         expiryTimestampMillis: Long = ZonedDateTime.now().toInstant().toEpochMilli(),
     ): List<ResourceWithMetadata>
 

@@ -1,11 +1,3 @@
-package com.passbolt.mobile.android.core.tags.usecase.db
-
-import com.passbolt.mobile.android.common.usecase.AsyncUseCase
-import com.passbolt.mobile.android.core.accounts.usecase.selectedaccount.GetSelectedAccountUseCase
-import com.passbolt.mobile.android.database.DatabaseProvider
-import com.passbolt.mobile.android.mappers.TagsModelMapper
-import com.passbolt.mobile.android.ui.TagWithCount
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -28,19 +20,25 @@ import com.passbolt.mobile.android.ui.TagWithCount
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class GetLocalTagsUseCase(
-    private val databaseProvider: DatabaseProvider,
-    private val tagModelMapper: TagsModelMapper,
-    private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
-) : AsyncUseCase<GetLocalTagsUseCase.Input, List<TagWithCount>> {
-    override suspend fun execute(input: Input) =
-        databaseProvider
-            .get(requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount))
-            .tagsDao()
-            .getAllWithTaggedItemsCount(input.searchQuery)
-            .map { tagModelMapper.map(it) }
+package com.passbolt.mobile.android.feature.home.screen.data
 
-    data class Input(
-        val searchQuery: String? = null,
-    )
-}
+import com.passbolt.mobile.android.feature.home.screen.model.HeaderSectionConfiguration
+import com.passbolt.mobile.android.ui.FolderWithCountAndPath
+import com.passbolt.mobile.android.ui.GroupWithCount
+import com.passbolt.mobile.android.ui.ResourceModel
+import com.passbolt.mobile.android.ui.TagWithCount
+
+data class HomeDataWithHeader(
+    val data: HomeData,
+    val headerSectionConfiguration: HeaderSectionConfiguration,
+)
+
+data class HomeData(
+    val suggestedResourceList: List<ResourceModel> = emptyList(),
+    val resourceList: List<ResourceModel> = emptyList(),
+    val foldersList: List<FolderWithCountAndPath> = emptyList(),
+    val tagsList: List<TagWithCount> = emptyList(),
+    val groupsList: List<GroupWithCount> = emptyList(),
+    val filteredSubFolderResources: List<ResourceModel> = emptyList(),
+    val filteredSubFolders: List<FolderWithCountAndPath> = emptyList(),
+)

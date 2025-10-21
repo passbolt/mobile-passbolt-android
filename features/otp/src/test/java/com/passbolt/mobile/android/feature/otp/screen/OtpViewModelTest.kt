@@ -42,7 +42,6 @@ import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchCont
 import com.passbolt.mobile.android.core.otpcore.TotpParametersProvider
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesUseCase
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
-import com.passbolt.mobile.android.core.ui.compose.search.SearchInputEndIconMode
 import com.passbolt.mobile.android.core.ui.compose.search.SearchInputEndIconMode.AVATAR
 import com.passbolt.mobile.android.core.ui.compose.search.SearchInputEndIconMode.CLEAR
 import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.CloseCreateResourceMenu
@@ -221,7 +220,7 @@ class OtpViewModelTest : KoinTest {
 
             viewModel.onIntent(Search("abc"))
 
-            viewModel.viewState.test {
+            viewModel.viewState.drop(1).test {
                 assertThat(expectItem().searchInputEndIconMode).isEqualTo(CLEAR)
 
                 viewModel.onIntent(SearchEndIconAction)
@@ -232,23 +231,17 @@ class OtpViewModelTest : KoinTest {
         }
 
     @Test
-    fun `should filter otps based on search query`() =
+    fun `should enter filtering mode on search query`() =
         runTest {
             viewModel = get()
 
             viewModel.onIntent(Search("resource 2"))
 
-            viewModel.viewState.test {
+            viewModel.viewState.drop(1).test {
                 val state = expectItem()
                 assertThat(state.searchQuery).isEqualTo("resource 2")
-                assertThat(state.searchInputEndIconMode).isEqualTo(SearchInputEndIconMode.CLEAR)
+                assertThat(state.searchInputEndIconMode).isEqualTo(CLEAR)
                 assertThat(state.isInFilteringMode).isTrue()
-                assertThat(state.filteredOtps).hasSize(1)
-                assertThat(
-                    state.filteredOtps
-                        .first()
-                        .resource.resourceId,
-                ).isEqualTo("resId2")
             }
         }
 
