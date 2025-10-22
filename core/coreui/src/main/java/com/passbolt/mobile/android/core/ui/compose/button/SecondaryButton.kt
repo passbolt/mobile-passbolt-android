@@ -1,15 +1,18 @@
 package com.passbolt.mobile.android.core.ui.compose.button
 
-import androidx.compose.foundation.border
+import PassboltTheme
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,7 +24,7 @@ import androidx.compose.ui.unit.dp
 import com.passbolt.mobile.android.core.ui.R
 
 @Composable
-fun OutlinedButton(
+fun SecondaryButton(
     onClick: () -> Unit,
     text: String,
     icon: Painter,
@@ -29,15 +32,20 @@ fun OutlinedButton(
     iconSize: Int = 16,
     iconSpacing: Int = 8,
 ) {
-    TextButton(
+    Button(
         onClick = onClick,
-        modifier =
-            modifier
-                .border(
-                    width = 1.dp,
-                    color = colorResource(R.color.divider),
-                    shape = RoundedCornerShape(8.dp),
-                ),
+        modifier = modifier.defaultMinSize(minHeight = 48.dp),
+        colors =
+            ButtonDefaults.outlinedButtonColors(
+                containerColor = colorResource(R.color.secondary_button_background),
+                contentColor = MaterialTheme.colorScheme.onBackground,
+            ),
+        border =
+            BorderStroke(
+                width = 1.dp,
+                color = colorResource(R.color.secondary_button_border),
+            ),
+        shape = RoundedCornerShape(4.dp),
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -56,10 +64,12 @@ fun OutlinedButton(
 
 @Preview(showBackground = true)
 @Composable
-private fun OutlinedButtonPreview() {
-    OutlinedButton(
-        onClick = {},
-        text = "Sign out",
-        icon = painterResource(id = R.drawable.ic_sign_out),
-    )
+private fun SecondaryButtonPreview() {
+    PassboltTheme {
+        SecondaryButton(
+            onClick = {},
+            text = "Sign out",
+            icon = painterResource(id = R.drawable.ic_sign_out),
+        )
+    }
 }

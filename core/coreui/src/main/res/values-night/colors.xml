@@ -11,4 +11,7 @@
     <color name="icon_tint">#FFFFFF</color>
     <color name="elevated_background">#282828</color>
     <color name="section_background">#1A1A1A</color>
+
+    <color name="secondary_button_background">#333333</color>
+    <color name="secondary_button_border">#0F0F0F</color>
 </resources>
