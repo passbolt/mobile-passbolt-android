@@ -45,8 +45,7 @@ class RebuildLocalResourceTypesUseCase(
             resourceTypesModelMapper
                 .map(input.resourceTypesDto)
 
-        resourceTypesDao.deleteAll()
-        resourceTypesDao.insertAll(resourceTypeDbModel)
+        resourceTypesDao.upsertAll(resourceTypeDbModel)
     }
 
     data class Input(

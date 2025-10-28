@@ -79,7 +79,7 @@ import com.passbolt.mobile.android.entity.user.User
         MetadataKey::class,
         MetadataPrivateKey::class,
     ],
-    version = 20,
+    version = 21,
 )
 @TypeConverters(Converters::class)
 abstract class ResourceDatabase : RoomDatabase() {

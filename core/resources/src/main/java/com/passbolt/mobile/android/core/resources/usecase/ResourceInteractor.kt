@@ -7,10 +7,15 @@ import com.passbolt.mobile.android.core.mvp.authentication.AuthenticatedUseCaseO
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
 import com.passbolt.mobile.android.core.resources.usecase.GetResourcesPaginatedUseCase.Output.Failure
 import com.passbolt.mobile.android.core.resources.usecase.GetResourcesPaginatedUseCase.Output.Success
+import com.passbolt.mobile.android.core.resources.usecase.db.AddLocalResourcePermissionsUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.RemoveLocalResourcePermissionsUseCase
-import com.passbolt.mobile.android.core.resources.usecase.db.RemoveLocalResourcesUseCase
-import com.passbolt.mobile.android.core.tags.RebuildTagsTablesUseCase
+import com.passbolt.mobile.android.core.resources.usecase.db.RemoveLocalResourcesWithUpdateStateUseCase
+import com.passbolt.mobile.android.core.resources.usecase.db.RemoveLocalUrisUseCase
+import com.passbolt.mobile.android.core.resources.usecase.db.SetLocalResourcesUpdateStateUseCase
+import com.passbolt.mobile.android.core.resources.usecase.db.UpsertLocalResourcesUseCase
+import com.passbolt.mobile.android.core.tags.usecase.db.AddLocalTagsUseCase
 import com.passbolt.mobile.android.core.tags.usecase.db.RemoveLocalTagsUseCase
+import com.passbolt.mobile.android.entity.resource.ResourceUpdateState.PENDING
 import com.passbolt.mobile.android.ui.ResourceModelWithAttributes
 import timber.log.Timber
 import kotlin.math.ceil
@@ -40,17 +45,26 @@ import kotlin.math.ceil
 class ResourceInteractor(
     private val removeLocalResourcePermissionsUseCase: RemoveLocalResourcePermissionsUseCase,
     private val removeLocalTagsUseCase: RemoveLocalTagsUseCase,
-    private val removeLocalResourcesUseCase: RemoveLocalResourcesUseCase,
+    private val removeLocalUrisUseCase: RemoveLocalUrisUseCase,
     private val getResourcesPaginatedUseCase: GetResourcesPaginatedUseCase,
-    private val rebuildResourceTablesUseCase: RebuildResourceTablesUseCase,
-    private val rebuildTagsTablesUseCase: RebuildTagsTablesUseCase,
-    private val rebuildResourcePermissionsTablesUseCase: RebuildResourcePermissionsTablesUseCase,
+    private val upsertLocalResourcesUseCase: UpsertLocalResourcesUseCase,
+    private val addLocalTagsUseCase: AddLocalTagsUseCase,
+    private val addLocalResourcePermissionsUseCase: AddLocalResourcePermissionsUseCase,
+    private val setLocalResourcesUpdateStateUseCase: SetLocalResourcesUpdateStateUseCase,
+    private val removeLocalResourcesWithUpdateStateUseCase: RemoveLocalResourcesWithUpdateStateUseCase,
 ) : SelectedAccountUseCase {
     @Suppress("ReturnCount")
     suspend fun fetchAndSaveResources(): Output {
         try {
-            // TODO MOB-3051 do not delete existing when rebuilding
-            removeLocalResourcesUseCase.execute(UserIdInput(selectedAccountId))
+            // set all resource update states to pending
+            setLocalResourcesUpdateStateUseCase.execute(
+                SetLocalResourcesUpdateStateUseCase.Input(
+                    PENDING,
+                ),
+            )
+
+            // uris, tags and resource permissions are re-inserted
+            removeLocalUrisUseCase.execute(UserIdInput(selectedAccountId))
             removeLocalTagsUseCase.execute(UserIdInput(selectedAccountId))
             removeLocalResourcePermissionsUseCase.execute(UserIdInput(selectedAccountId))
 
@@ -80,6 +94,13 @@ class ResourceInteractor(
                             is Success -> processResources(pageResult.resources)
                         }
                     }
+
+                    // remove resources that are still pending - they have been deleted on the server
+                    removeLocalResourcesWithUpdateStateUseCase.execute(
+                        RemoveLocalResourcesWithUpdateStateUseCase.Input(
+                            PENDING,
+                        ),
+                    )
                 }
             }
 
@@ -94,14 +115,15 @@ class ResourceInteractor(
     }
 
     private suspend fun processResources(resources: List<ResourceModelWithAttributes>) {
-        rebuildResourceTablesUseCase.execute(
-            RebuildResourceTablesUseCase.Input(resources.map { it.resourceModel }),
+        upsertLocalResourcesUseCase.execute(
+            UpsertLocalResourcesUseCase.Input(resources.map { it.resourceModel }, selectedAccountId),
         )
-        rebuildTagsTablesUseCase.execute(
-            RebuildTagsTablesUseCase.Input(resources),
+
+        addLocalTagsUseCase.execute(
+            AddLocalTagsUseCase.Input(resources, selectedAccountId),
         )
-        rebuildResourcePermissionsTablesUseCase.execute(
-            RebuildResourcePermissionsTablesUseCase.Input(resources),
+        addLocalResourcePermissionsUseCase.execute(
+            AddLocalResourcePermissionsUseCase.Input(resources),
         )
     }
 

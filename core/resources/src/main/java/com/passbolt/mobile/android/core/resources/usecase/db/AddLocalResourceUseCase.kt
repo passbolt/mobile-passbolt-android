@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.core.resources.usecase.db
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
 import com.passbolt.mobile.android.core.accounts.usecase.SelectedAccountUseCase
 import com.passbolt.mobile.android.database.DatabaseProvider
+import com.passbolt.mobile.android.entity.resource.ResourceUpdateState.UPDATED
 import com.passbolt.mobile.android.mappers.ResourceModelMapper
 import com.passbolt.mobile.android.ui.ResourceModel
 
@@ -39,7 +40,7 @@ class AddLocalResourceUseCase(
         val resourceMetadataDao = db.resourceMetadataDao()
         val resourceUriDao = db.resourceUriDao()
 
-        resourcesDao.insert(resourceModelMapper.map(input.resourceModel))
+        resourcesDao.insert(resourceModelMapper.map(input.resourceModel, resourceUpdateState = UPDATED))
         resourceMetadataDao.insert(resourceModelMapper.mapResourceMetadata(input.resourceModel))
         resourceUriDao.insertAll(resourceModelMapper.mapResourceUris(input.resourceModel))
     }

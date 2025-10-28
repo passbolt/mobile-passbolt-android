@@ -26,11 +26,18 @@ package com.passbolt.mobile.android.database.impl.base
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Update
+import androidx.room.Upsert
 
 /**
  * Base DAO class implementing simple CRUD ops.
  */
 interface BaseDao<T> {
+    @Upsert
+    suspend fun upsert(entity: T): Long
+
+    @Upsert
+    suspend fun upsertAll(entities: List<T>)
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(entities: List<T>)
 

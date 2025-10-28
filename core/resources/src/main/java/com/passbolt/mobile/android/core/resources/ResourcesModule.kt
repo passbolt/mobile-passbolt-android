@@ -15,13 +15,15 @@ import com.passbolt.mobile.android.core.resources.usecase.DeleteResourceUseCase
 import com.passbolt.mobile.android.core.resources.usecase.FavouritesInteractor
 import com.passbolt.mobile.android.core.resources.usecase.GetResourcesPaginatedUseCase
 import com.passbolt.mobile.android.core.resources.usecase.GetResourcesUseCase
-import com.passbolt.mobile.android.core.resources.usecase.RebuildResourcePermissionsTablesUseCase
-import com.passbolt.mobile.android.core.resources.usecase.RebuildResourceTablesUseCase
 import com.passbolt.mobile.android.core.resources.usecase.RemoveFromFavouritesUseCase
 import com.passbolt.mobile.android.core.resources.usecase.ResourceInteractor
 import com.passbolt.mobile.android.core.resources.usecase.ResourceShareInteractor
 import com.passbolt.mobile.android.core.resources.usecase.ShareResourceUseCase
 import com.passbolt.mobile.android.core.resources.usecase.SimulateShareResourceUseCase
+import com.passbolt.mobile.android.core.resources.usecase.db.RemoveLocalResourcesWithUpdateStateUseCase
+import com.passbolt.mobile.android.core.resources.usecase.db.RemoveLocalUrisUseCase
+import com.passbolt.mobile.android.core.resources.usecase.db.SetLocalResourcesUpdateStateUseCase
+import com.passbolt.mobile.android.core.resources.usecase.db.UpsertLocalResourcesUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.resourcesDbModule
 import com.passbolt.mobile.android.ui.ResourceModel
 import org.koin.core.module.dsl.factoryOf
@@ -60,8 +62,6 @@ val resourcesModule =
         singleOf(::ResourceInteractor)
         singleOf(::SearchableMatcher)
         singleOf(::DeleteResourceUseCase)
-        singleOf(::RebuildResourceTablesUseCase)
-        singleOf(::RebuildResourcePermissionsTablesUseCase)
         singleOf(::SimulateShareResourceUseCase)
         singleOf(::ShareResourceUseCase)
         singleOf(::AddToFavouritesUseCase)
@@ -72,6 +72,10 @@ val resourcesModule =
         singleOf(::CreateResourceInteractor)
         factoryOf(::ResourceIconProvider)
         factoryOf(::BackgroundColorIconProvider)
+        singleOf(::SetLocalResourcesUpdateStateUseCase)
+        singleOf(::RemoveLocalUrisUseCase)
+        singleOf(::RemoveLocalResourcesWithUpdateStateUseCase)
+        singleOf(::UpsertLocalResourcesUseCase)
 
         factory { (resource: ResourceModel) ->
             ResourcePropertiesActionsInteractor(

@@ -59,7 +59,13 @@ data class Resource(
     val expiry: ZonedDateTime?,
     val metadataKeyId: String?,
     val metadataKeyType: MetadataKeyType?,
+    val updateState: ResourceUpdateState,
 )
+
+enum class ResourceUpdateState {
+    PENDING,
+    UPDATED,
+}
 
 @Entity(
     foreignKeys = [
@@ -72,8 +78,7 @@ data class Resource(
     ],
 )
 data class ResourceMetadata(
-    @PrimaryKey(autoGenerate = true)
-    val id: Long = 0,
+    @PrimaryKey
     val resourceId: String,
     val metadataJson: String,
     val name: String,

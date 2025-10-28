@@ -1,7 +1,7 @@
-package com.passbolt.mobile.android.core.resources.usecase.db
+package com.passbolt.mobile.android.database.migrations
 
-import org.koin.core.module.Module
-import org.koin.core.module.dsl.singleOf
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,16 +26,30 @@ import org.koin.core.module.dsl.singleOf
  * @since v1.0
  */
 
-internal fun Module.resourcesDbModule() {
-    singleOf(::GetLocalResourcesWithGroupUseCase)
-    singleOf(::GetLocalResourcesWithTagUseCase)
-    singleOf(::AddLocalResourceUseCase)
-    singleOf(::GetLocalResourcesUseCase)
-    singleOf(::GetLocalResourceUseCase)
-    singleOf(::UpdateLocalResourceUseCase)
-    singleOf(::AddLocalResourcePermissionsUseCase)
-    singleOf(::RemoveLocalResourcePermissionsUseCase)
-    singleOf(::GetLocalResourcePermissionsUseCase)
-    singleOf(::GetLocalResourcesFilteredByTagUseCase)
-    singleOf(::GetLocalResourceTagsUseCase)
+@Suppress("MagicNumber")
+object Migration20to21 : Migration(20, 21) {
+    private const val ADD_RESOURCE_UPDATE_STATE_COLUMN =
+        "ALTER TABLE Resource ADD COLUMN updateState TEXT NOT NULL DEFAULT 'PENDING'"
+
+    private const val DROP_RESOURCE_METADATA_TABLE =
+        "DROP TABLE ResourceMetadata"
+
+    private const val CREATE_RESOURCE_METADATA_TABLE =
+        "CREATE TABLE IF NOT EXISTS ResourceMetadata (" +
+            "`resourceId` TEXT NOT NULL, " +
+            "`metadataJson` TEXT NOT NULL, " +
+            "`name` TEXT NOT NULL, " +
+            "`username` TEXT, " +
+            "`description` TEXT, " +
+            "`customFieldsKeys` TEXT, " +
+            "PRIMARY KEY(`resourceId`), " +
+            "FOREIGN KEY(`resourceId`) REFERENCES `Resource`(`resourceId`) ON UPDATE NO ACTION ON DELETE CASCADE )"
+
+    override fun migrate(db: SupportSQLiteDatabase) {
+        with(db) {
+            execSQL(ADD_RESOURCE_UPDATE_STATE_COLUMN)
+            execSQL(DROP_RESOURCE_METADATA_TABLE)
+            execSQL(CREATE_RESOURCE_METADATA_TABLE)
+        }
+    }
 }
