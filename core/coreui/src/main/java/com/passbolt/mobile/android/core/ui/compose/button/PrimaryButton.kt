@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.core.ui.compose.button
 
+import PassboltTheme
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -32,5 +33,7 @@ fun PrimaryButton(
 @Preview(showBackground = true)
 @Composable
 private fun PrimaryButtonPreview() {
-    PrimaryButton(text = "Primary Button", onClick = {})
+    PassboltTheme {
+        PrimaryButton(text = "Primary Button", onClick = {})
+    }
 }

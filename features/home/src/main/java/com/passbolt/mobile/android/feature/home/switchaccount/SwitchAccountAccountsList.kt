@@ -26,7 +26,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.passbolt.mobile.android.core.localization.R
-import com.passbolt.mobile.android.core.ui.compose.button.OutlinedButton
+import com.passbolt.mobile.android.core.ui.compose.button.SecondaryButton
 import com.passbolt.mobile.android.core.ui.compose.circularimage.CircularProfileImage
 import com.passbolt.mobile.android.core.ui.compose.menu.OpenableSettingsItem
 import com.passbolt.mobile.android.ui.SwitchAccountUiModel
@@ -161,7 +161,7 @@ private fun AccountHeaderItem(
         Row(
             modifier = Modifier.fillMaxWidth(),
         ) {
-            OutlinedButton(
+            SecondaryButton(
                 onClick = onSeeDetailsClick,
                 text = stringResource(id = LocalizationR.string.switch_account_see_details),
                 icon = painterResource(id = CoreUiR.drawable.ic_permission_owner),
@@ -170,7 +170,7 @@ private fun AccountHeaderItem(
 
             Spacer(modifier = Modifier.width(16.dp))
 
-            OutlinedButton(
+            SecondaryButton(
                 onClick = onSignOutClick,
                 text = stringResource(id = LocalizationR.string.switch_account_sign_out),
                 icon = painterResource(id = CoreUiR.drawable.ic_sign_out),
