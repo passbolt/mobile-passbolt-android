@@ -543,12 +543,16 @@ class ResourceFormFragment :
         )
     }
 
-    override fun navigateBackWithCreateSuccess(name: String) {
+    override fun navigateBackWithCreateSuccess(
+        name: String,
+        resourceId: String,
+    ) {
         setFragmentResult(
             REQUEST_RESOURCE_FORM,
             bundleOf(
                 EXTRA_RESOURCE_CREATED to true,
                 EXTRA_RESOURCE_NAME to name,
+                EXTRA_CREATED_RESOURCE_ID to resourceId,
             ),
         )
         findNavController().popBackStack()
@@ -617,6 +621,7 @@ class ResourceFormFragment :
         const val REQUEST_RESOURCE_FORM = "RESOURCE_FORM"
 
         const val EXTRA_RESOURCE_CREATED = "RESOURCE_CREATED"
+        const val EXTRA_CREATED_RESOURCE_ID = "CREATED_RESOURCE_ID"
         const val EXTRA_RESOURCE_EDITED = "RESOURCE_EDITED"
         const val EXTRA_RESOURCE_NAME = "RESOURCE_NAME"
 

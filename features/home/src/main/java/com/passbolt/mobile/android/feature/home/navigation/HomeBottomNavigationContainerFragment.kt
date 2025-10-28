@@ -89,12 +89,18 @@ class HomeBottomNavigationContainerFragment :
     ResourceHandlingStrategy,
     ResourceMoreMenuFragment.Listener {
     private val otpScanQrReturned = { _: String, result: Bundle ->
+        val otpCreated = result.getBoolean(ScanOtpSuccessFragment.EXTRA_OTP_CREATED, false)
         viewModel.onIntent(
             OtpQRScanReturned(
-                otpCreated = result.getBoolean(ScanOtpSuccessFragment.EXTRA_OTP_CREATED, false),
+                otpCreated = otpCreated,
                 otpManualCreationChosen = result.getBoolean(ScanOtpFragment.EXTRA_MANUAL_CREATION_CHOSEN),
             ),
         )
+        if (otpCreated) {
+            result.getString(ScanOtpSuccessFragment.EXTRA_CREATED_OTP_ID)?.let {
+                resourceHandlingStrategy.resourcePostCreateAction(it)
+            }
+        }
     }
 
     private val resourceFormReturned = { _: String, result: Bundle ->
@@ -106,6 +112,11 @@ class HomeBottomNavigationContainerFragment :
                 result.getString(ResourceFormFragment.EXTRA_RESOURCE_NAME),
             ),
         )
+        if (resourceCreated) {
+            result.getString(ResourceFormFragment.EXTRA_CREATED_RESOURCE_ID)?.let {
+                resourceHandlingStrategy.resourcePostCreateAction(it)
+            }
+        }
     }
 
     private val detailsReturned = { _: String, result: Bundle ->
@@ -307,6 +318,10 @@ class HomeBottomNavigationContainerFragment :
                     .show(childFragmentManager, FolderMoreMenuModel::class.java.name)
             }
         }
+    }
+
+    override fun resourcePostCreateAction(resourceId: String) {
+        // no-op
     }
 
     // more menu

@@ -151,6 +151,10 @@ class AutofillResourcesActivity :
             ShowSuggestedModel.Show(it)
         } ?: ShowSuggestedModel.DoNotShow
 
+    override fun resourcePostCreateAction(resourceId: String) {
+        presenter.newResourceCreated(resourceId)
+    }
+
     override fun showProgress() {
         showProgressDialog(supportFragmentManager)
     }

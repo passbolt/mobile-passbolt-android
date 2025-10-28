@@ -490,7 +490,7 @@ class ResourceFormPresenter(
                     doOnFailure = { view?.showGenericError() },
                     doOnCryptoFailure = { view?.showEncryptionError(it) },
                     doOnSchemaValidationFailure = ::handleSchemaValidationFailure,
-                    doOnSuccess = { view?.navigateBackWithCreateSuccess(resourceMetadata.name) },
+                    doOnSuccess = { view?.navigateBackWithCreateSuccess(it.resourceName, it.resourceId) },
                     doOnCannotCreateWithCurrentConfig = { view?.showCannotCreateTotpWithCurrentConfig() },
                     doOnMetadataKeyModified = { view?.showMetadataKeyModifiedDialog(it) },
                     doOnMetadataKeyDeleted = { view?.showMetadataKeyDeletedDialog(it) },

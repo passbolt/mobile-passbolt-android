@@ -36,6 +36,8 @@ interface ResourceHandlingStrategy {
 
     fun showSuggestedModel(): ShowSuggestedModel
 
+    fun resourcePostCreateAction(resourceId: String)
+
     fun shouldShowFolderMoreMenu(): Boolean
 }
 

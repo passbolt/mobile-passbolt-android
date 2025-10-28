@@ -106,7 +106,10 @@ interface ResourceFormContract {
 
         fun showJsonSecretSchemaValidationError()
 
-        fun navigateBackWithCreateSuccess(name: String)
+        fun navigateBackWithCreateSuccess(
+            name: String,
+            resourceId: String,
+        )
 
         fun navigateToScanTotp(scanMode: ScanOtpMode)
 
