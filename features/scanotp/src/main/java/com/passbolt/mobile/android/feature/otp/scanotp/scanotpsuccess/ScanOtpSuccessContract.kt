@@ -39,6 +39,7 @@ interface ScanOtpSuccessContract {
         fun navigateToOtpList(
             totp: OtpParseResult.OtpQr.TotpQr,
             otpCreated: Boolean,
+            resourceId: String,
         )
 
         fun showProgress()

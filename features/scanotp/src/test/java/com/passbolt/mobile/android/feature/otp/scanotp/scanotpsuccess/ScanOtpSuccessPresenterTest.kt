@@ -96,7 +96,7 @@ class ScanOtpSuccessPresenterTest : KoinTest {
 
             verify(view).showProgress()
             verify(view).hideProgress()
-            verify(view).navigateToOtpList(mockScannedTotp, otpCreated = true)
+            verify(view).navigateToOtpList(mockScannedTotp, otpCreated = true, resourceId = mockResourceId.toString())
         }
 
     @Test
@@ -142,7 +142,7 @@ class ScanOtpSuccessPresenterTest : KoinTest {
 
             verify(view).showProgress()
             verify(view).hideProgress()
-            verify(view).navigateToOtpList(mockScannedTotp, otpCreated = true)
+            verify(view).navigateToOtpList(mockScannedTotp, otpCreated = true, resourceId = mockResourceId.toString())
         }
 
     @Test
@@ -188,6 +188,6 @@ class ScanOtpSuccessPresenterTest : KoinTest {
 
             verify(view).showProgress()
             verify(view).hideProgress()
-            verify(view).navigateToOtpList(mockScannedTotp, otpCreated = true)
+            verify(view).navigateToOtpList(mockScannedTotp, otpCreated = true, resourceId = mockResourceId.toString())
         }
 }

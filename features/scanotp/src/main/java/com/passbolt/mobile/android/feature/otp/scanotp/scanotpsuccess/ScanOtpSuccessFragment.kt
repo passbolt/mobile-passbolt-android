@@ -149,12 +149,14 @@ class ScanOtpSuccessFragment :
     override fun navigateToOtpList(
         totp: OtpParseResult.OtpQr.TotpQr,
         otpCreated: Boolean,
+        resourceId: String,
     ) {
         setFragmentResult(
             ScanOtpFragment.REQUEST_SCAN_OTP_FOR_RESULT,
             bundleOf(
                 ScanOtpFragment.EXTRA_SCANNED_OTP to totp,
                 EXTRA_OTP_CREATED to otpCreated,
+                EXTRA_CREATED_OTP_ID to resourceId,
             ),
         )
         findNavController().popBackStack(destinationId = R.id.scanOtpFragment, true)
@@ -227,5 +229,6 @@ class ScanOtpSuccessFragment :
 
     companion object {
         const val EXTRA_OTP_CREATED = "OTP_CREATED"
+        const val EXTRA_CREATED_OTP_ID = "CREATED_OTP_ID"
     }
 }
