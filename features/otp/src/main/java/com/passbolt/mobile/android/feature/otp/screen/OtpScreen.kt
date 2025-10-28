@@ -217,60 +217,59 @@ fun OtpScreen(
                             }
                         }
                     }
-
-                    if (state.showCreateResourceBottomSheet) {
-                        CreateResourceMenuBottomSheet(
-                            onCreatePassword = { onIntent(CreatePassword) },
-                            onCreateTotp = { onIntent(CreateTotp) },
-                            onCreateNote = { onIntent(CreateNote) },
-                            onDismissRequest = { onIntent(CloseCreateResourceMenu) },
-                        )
-                    }
-
-                    if (state.showOtpMoreBottomSheet) {
-                        val moreMenuResource = requireNotNull(state.moreMenuResource)
-                        OtpMoreMenuBottomSheet(
-                            resourceId = moreMenuResource.resource.resourceId,
-                            resourceName = moreMenuResource.resource.metadataJsonModel.name,
-                            onDismissRequest = { onIntent(OtpIntent.CloseOtpMoreMenu) },
-                            onShowOtp = { onIntent(RevealOtp(moreMenuResource)) },
-                            onCopyOtp = { onIntent(CopyOtp(moreMenuResource)) },
-                            onEditOtp = { onIntent(EditOtp(moreMenuResource)) },
-                            onDeleteOtp = { onIntent(DeleteOtp(moreMenuResource)) },
-                        )
-                    }
-
-                    ConfirmResourceDeleteAlertDialog(
-                        isVisible = state.showDeleteTotpConfirmationDialog,
-                        onConfirm = { onIntent(ConfirmDeleteTotp) },
-                        onDismiss = { onIntent(CloseDeleteConfirmationDialog) },
-                    )
-
-                    if (state.showMetadataTrustedKeyDeletedDialog && state.metadataDeletedKeyModel != null) {
-                        TrustedMetadataKeyDeletedDialog(
-                            trustedKeyDeletedModel = state.metadataDeletedKeyModel,
-                            onDismiss = { onIntent(CloseTrustedKeyDeletedDialog) },
-                            onTrustClick = { onIntent(TrustMetadataKeyDeletion) },
-                        )
-                    }
-
-                    if (state.showNewMetadataTrustDialog && state.newMetadataKeyTrustModel != null) {
-                        NewMetadataKeyTrustDialog(
-                            newKeyToTrustModel = state.newMetadataKeyTrustModel,
-                            onTrustClick = { onIntent(OtpIntent.TrustNewMetadataKey(state.newMetadataKeyTrustModel)) },
-                            onDismiss = { onIntent(OtpIntent.CloseTrustNewKeyDialog) },
-                        )
-                    }
-
-                    if (state.showAccountSwitchBottomSheet) {
-                        SwitchAccountBottomSheet(
-                            onDismissRequest = { onIntent(OtpIntent.CloseSwitchAccount) },
-                            appContext = AppContext.APP,
-                        )
-                    }
-
-                    ProgressDialog(state.showProgress)
                 }
+                if (state.showCreateResourceBottomSheet) {
+                    CreateResourceMenuBottomSheet(
+                        onCreatePassword = { onIntent(CreatePassword) },
+                        onCreateTotp = { onIntent(CreateTotp) },
+                        onCreateNote = { onIntent(CreateNote) },
+                        onDismissRequest = { onIntent(CloseCreateResourceMenu) },
+                    )
+                }
+
+                if (state.showOtpMoreBottomSheet) {
+                    val moreMenuResource = requireNotNull(state.moreMenuResource)
+                    OtpMoreMenuBottomSheet(
+                        resourceId = moreMenuResource.resource.resourceId,
+                        resourceName = moreMenuResource.resource.metadataJsonModel.name,
+                        onDismissRequest = { onIntent(OtpIntent.CloseOtpMoreMenu) },
+                        onShowOtp = { onIntent(RevealOtp(moreMenuResource)) },
+                        onCopyOtp = { onIntent(CopyOtp(moreMenuResource)) },
+                        onEditOtp = { onIntent(EditOtp(moreMenuResource)) },
+                        onDeleteOtp = { onIntent(DeleteOtp(moreMenuResource)) },
+                    )
+                }
+
+                ConfirmResourceDeleteAlertDialog(
+                    isVisible = state.showDeleteTotpConfirmationDialog,
+                    onConfirm = { onIntent(ConfirmDeleteTotp) },
+                    onDismiss = { onIntent(CloseDeleteConfirmationDialog) },
+                )
+
+                if (state.showMetadataTrustedKeyDeletedDialog && state.metadataDeletedKeyModel != null) {
+                    TrustedMetadataKeyDeletedDialog(
+                        trustedKeyDeletedModel = state.metadataDeletedKeyModel,
+                        onDismiss = { onIntent(CloseTrustedKeyDeletedDialog) },
+                        onTrustClick = { onIntent(TrustMetadataKeyDeletion) },
+                    )
+                }
+
+                if (state.showNewMetadataTrustDialog && state.newMetadataKeyTrustModel != null) {
+                    NewMetadataKeyTrustDialog(
+                        newKeyToTrustModel = state.newMetadataKeyTrustModel,
+                        onTrustClick = { onIntent(OtpIntent.TrustNewMetadataKey(state.newMetadataKeyTrustModel)) },
+                        onDismiss = { onIntent(OtpIntent.CloseTrustNewKeyDialog) },
+                    )
+                }
+
+                if (state.showAccountSwitchBottomSheet) {
+                    SwitchAccountBottomSheet(
+                        onDismissRequest = { onIntent(OtpIntent.CloseSwitchAccount) },
+                        appContext = AppContext.APP,
+                    )
+                }
+
+                ProgressDialog(state.showProgress)
             },
     )
 }

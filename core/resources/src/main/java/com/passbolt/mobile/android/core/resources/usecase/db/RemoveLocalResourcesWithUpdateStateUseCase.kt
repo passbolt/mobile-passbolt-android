@@ -1,3 +1,10 @@
+package com.passbolt.mobile.android.core.resources.usecase.db
+
+import com.passbolt.mobile.android.common.usecase.AsyncUseCase
+import com.passbolt.mobile.android.core.accounts.usecase.selectedaccount.GetSelectedAccountUseCase
+import com.passbolt.mobile.android.database.DatabaseProvider
+import com.passbolt.mobile.android.entity.resource.ResourceUpdateState
+
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -20,27 +27,19 @@
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-
-package com.passbolt.mobile.android.core.resources.usecase
-
-import com.passbolt.mobile.android.common.usecase.AsyncUseCase
-import com.passbolt.mobile.android.core.accounts.usecase.SelectedAccountUseCase
-import com.passbolt.mobile.android.core.resources.usecase.db.AddLocalResourcePermissionsUseCase
-import com.passbolt.mobile.android.ui.ResourceModelWithAttributes
-
-// TODO MOB-3051 do not delete existing when rebuilding
-class RebuildResourcePermissionsTablesUseCase(
-    private val addLocalResourcePermissionsUseCase: AddLocalResourcePermissionsUseCase,
-) : AsyncUseCase<RebuildResourcePermissionsTablesUseCase.Input, Unit>,
-    SelectedAccountUseCase {
+class RemoveLocalResourcesWithUpdateStateUseCase(
+    private val databaseProvider: DatabaseProvider,
+    private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
+) : AsyncUseCase<RemoveLocalResourcesWithUpdateStateUseCase.Input, Unit> {
     override suspend fun execute(input: Input) {
-//        removeLocalResourcePermissionsUseCase.execute(UserIdInput(selectedAccountId))
-        addLocalResourcePermissionsUseCase.execute(
-            AddLocalResourcePermissionsUseCase.Input(input.resourcesWithTagsAndPermissions),
-        )
+        val userId = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
+        databaseProvider
+            .get(userId)
+            .resourcesDao()
+            .removeWithUpdateState(input.updateState)
     }
 
     data class Input(
-        val resourcesWithTagsAndPermissions: List<ResourceModelWithAttributes>,
+        val updateState: ResourceUpdateState,
     )
 }

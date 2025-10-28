@@ -8,6 +8,7 @@ import com.passbolt.mobile.android.entity.permission.GroupPermission
 import com.passbolt.mobile.android.entity.permission.UserPermission
 import com.passbolt.mobile.android.entity.resource.Permission
 import com.passbolt.mobile.android.entity.resource.Resource
+import com.passbolt.mobile.android.entity.resource.ResourceUpdateState
 import com.passbolt.mobile.android.entity.resource.ResourceWithMetadata
 import java.time.ZonedDateTime
 
@@ -368,6 +369,10 @@ interface ResourcesDao : BaseDao<Resource> {
     ): List<ResourceWithMetadata>
 
     @Transaction
-    @Query("DELETE FROM Resource")
-    suspend fun deleteAll()
+    @Query("UPDATE Resource SET updateState = :updateState")
+    suspend fun setAllUpdateState(updateState: ResourceUpdateState)
+
+    @Transaction
+    @Query("DELETE FROM Resource WHERE updateState = :updateState")
+    suspend fun removeWithUpdateState(updateState: ResourceUpdateState)
 }

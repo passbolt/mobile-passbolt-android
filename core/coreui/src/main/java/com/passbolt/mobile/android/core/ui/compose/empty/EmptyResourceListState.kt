@@ -24,10 +24,11 @@ package com.passbolt.mobile.android.core.ui.compose.empty
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -38,24 +39,36 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.passbolt.mobile.android.core.ui.R
 
+// needs to be lazy colum as it's used inside PullToRefresh
+// which requires scrollable container to trigger pull to refresh
 @Composable
 fun EmptyResourceListState(
     modifier: Modifier = Modifier,
     title: String? = null,
 ) {
-    Column(
+    LazyColumn(
         modifier = modifier.fillMaxSize(),
+        contentPadding = PaddingValues(vertical = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
         if (!title.isNullOrBlank()) {
-            Text(title, style = MaterialTheme.typography.titleLarge)
+            item {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleLarge,
+                )
+            }
         }
-        Spacer(Modifier.height(32.dp))
-        Image(
-            painter = painterResource(R.drawable.generic_list),
-            contentDescription = null,
-        )
+        item {
+            Spacer(Modifier.height(32.dp))
+        }
+        item {
+            Image(
+                painter = painterResource(R.drawable.generic_list),
+                contentDescription = null,
+            )
+        }
     }
 }
 

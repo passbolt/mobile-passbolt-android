@@ -8,6 +8,7 @@ import com.passbolt.mobile.android.database.impl.resources.ResourcesDao
 import com.passbolt.mobile.android.entity.resource.Permission
 import com.passbolt.mobile.android.entity.resource.Resource
 import com.passbolt.mobile.android.entity.resource.ResourceType
+import com.passbolt.mobile.android.entity.resource.ResourceUpdateState
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
@@ -68,7 +69,7 @@ class SortByModifiedDateTest {
         runBlocking {
             resourcesDao.insertAll(listOf(RESOURCE_1, RESOURCE_2, RESOURCE_3))
 
-            val sortedByModifiedDate = resourcesDao.getAllOrderedByModifiedDate(setOf(PASSWORD_DESCRIPTION_SLUG), input.searchQuery)
+            val sortedByModifiedDate = resourcesDao.getAllOrderedByModifiedDate(setOf(PASSWORD_DESCRIPTION_SLUG), searchQuery = null)
 
             assertThat(
                 sortedByModifiedDate.map { it.modified.toInstant().toEpochMilli() },
@@ -80,7 +81,7 @@ class SortByModifiedDateTest {
         runBlocking {
             resourcesDao.insertAll(listOf(RESOURCE_1, RESOURCE_2, RESOURCE_3, RESOURCE_1_ZONE_MINUS, RESOURCE_1_ZONE_PLUS))
 
-            val sortedByModifiedDate = resourcesDao.getAllOrderedByModifiedDate(setOf(PASSWORD_DESCRIPTION_SLUG), input.searchQuery)
+            val sortedByModifiedDate = resourcesDao.getAllOrderedByModifiedDate(setOf(PASSWORD_DESCRIPTION_SLUG), searchQuery = null)
 
             assertThat(
                 sortedByModifiedDate.map { it.modified.toInstant().toEpochMilli() },
@@ -109,6 +110,7 @@ class SortByModifiedDateTest {
                 expiry = null,
                 metadataKeyId = null,
                 metadataKeyType = null,
+                updateState = ResourceUpdateState.PENDING,
             )
         private val RESOURCE_2 =
             Resource(
@@ -121,6 +123,7 @@ class SortByModifiedDateTest {
                 expiry = null,
                 metadataKeyId = null,
                 metadataKeyType = null,
+                updateState = ResourceUpdateState.PENDING,
             )
         private val RESOURCE_3 =
             Resource(
@@ -133,6 +136,7 @@ class SortByModifiedDateTest {
                 expiry = null,
                 metadataKeyId = null,
                 metadataKeyType = null,
+                updateState = ResourceUpdateState.PENDING,
             )
         private val RESOURCE_1_ZONE_MINUS =
             Resource(
@@ -145,6 +149,7 @@ class SortByModifiedDateTest {
                 expiry = null,
                 metadataKeyId = null,
                 metadataKeyType = null,
+                updateState = ResourceUpdateState.PENDING,
             )
         private val RESOURCE_1_ZONE_PLUS =
             Resource(
@@ -157,6 +162,7 @@ class SortByModifiedDateTest {
                 expiry = null,
                 metadataKeyId = null,
                 metadataKeyType = null,
+                updateState = ResourceUpdateState.PENDING,
             )
     }
 }

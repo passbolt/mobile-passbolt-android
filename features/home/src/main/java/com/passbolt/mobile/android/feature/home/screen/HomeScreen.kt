@@ -252,41 +252,41 @@ private fun HomeScreen(
                 } else {
                     HomeResourceList(state, homeNavigation, onIntent)
                 }
-
-                if (state.showCreateResourceBottomSheet) {
-                    CreateResourceMenuBottomSheet(
-                        homeDisplayViewModel = state.homeView,
-                        onCreatePassword = { onIntent(CreatePassword) },
-                        onCreateTotp = { onIntent(CreateTotp) },
-                        onCreateNote = { onIntent(CreateNote) },
-                        onCreateFolder = { onIntent(CreateFolder) },
-                        onDismissRequest = { onIntent(CloseCreateResourceMenu) },
-                    )
-                }
-
-                ConfirmResourceDeleteAlertDialog(
-                    isVisible = state.showDeleteResourceConfirmationDialog,
-                    onConfirm = { onIntent(ConfirmDeleteResource) },
-                    onDismiss = { onIntent(CloseDeleteConfirmationDialog) },
-                )
-
-                if (state.showAccountSwitchBottomSheet) {
-                    SwitchAccountBottomSheet(
-                        appContext = AppContext.APP,
-                        onDismissRequest = { onIntent(CloseSwitchAccount) },
-                    )
-                }
-
-                if (state.showFiltersBottomSheet) {
-                    FiltersMenuBottomSheet(
-                        onDismissRequest = { onIntent(HomeIntent.CloseFiltersBottomSheet) },
-                        onHomeViewChange = { homeNavigation.navigateToRoot(it) },
-                        filtersMenuModel = FiltersMenuModel(state.homeView),
-                    )
-                }
-
-                ProgressDialog(state.showProgress)
             }
+
+            if (state.showCreateResourceBottomSheet) {
+                CreateResourceMenuBottomSheet(
+                    homeDisplayViewModel = state.homeView,
+                    onCreatePassword = { onIntent(CreatePassword) },
+                    onCreateTotp = { onIntent(CreateTotp) },
+                    onCreateNote = { onIntent(CreateNote) },
+                    onCreateFolder = { onIntent(CreateFolder) },
+                    onDismissRequest = { onIntent(CloseCreateResourceMenu) },
+                )
+            }
+
+            ConfirmResourceDeleteAlertDialog(
+                isVisible = state.showDeleteResourceConfirmationDialog,
+                onConfirm = { onIntent(ConfirmDeleteResource) },
+                onDismiss = { onIntent(CloseDeleteConfirmationDialog) },
+            )
+
+            if (state.showAccountSwitchBottomSheet) {
+                SwitchAccountBottomSheet(
+                    appContext = AppContext.APP,
+                    onDismissRequest = { onIntent(CloseSwitchAccount) },
+                )
+            }
+
+            if (state.showFiltersBottomSheet) {
+                FiltersMenuBottomSheet(
+                    onDismissRequest = { onIntent(HomeIntent.CloseFiltersBottomSheet) },
+                    onHomeViewChange = { homeNavigation.navigateToRoot(it) },
+                    filtersMenuModel = FiltersMenuModel(state.homeView),
+                )
+            }
+
+            ProgressDialog(state.showProgress)
         },
     )
 }

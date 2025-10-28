@@ -38,8 +38,4 @@ interface ResourceTypesDao : BaseDao<ResourceType> {
     @Transaction
     @Query("SELECT resourceTypeId, slug FROM ResourceType")
     suspend fun getResourceTypesIdToSlugMapping(): List<ResourceTypeIdToSlugMapping>
-
-    @Transaction
-    @Query("DELETE FROM ResourceType")
-    suspend fun deleteAll()
 }

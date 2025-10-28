@@ -1,8 +1,10 @@
 package com.passbolt.mobile.android.core.resources.usecase.db
 
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
-import com.passbolt.mobile.android.common.usecase.UserIdInput
 import com.passbolt.mobile.android.database.DatabaseProvider
+import com.passbolt.mobile.android.entity.resource.ResourceUpdateState.UPDATED
+import com.passbolt.mobile.android.mappers.ResourceModelMapper
+import com.passbolt.mobile.android.ui.ResourceModel
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,14 +28,28 @@ import com.passbolt.mobile.android.database.DatabaseProvider
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class RemoveLocalResourcesUseCase(
+class UpsertLocalResourcesUseCase(
     private val databaseProvider: DatabaseProvider,
-) : AsyncUseCase<UserIdInput, Unit> {
-    override suspend fun execute(input: UserIdInput) {
-        databaseProvider.get(input.userId).apply {
-            resourceUriDao().deleteAll()
-            resourceMetadataDao().deleteAll()
-            resourcesDao().deleteAll()
-        }
+    private val resourceModelMapper: ResourceModelMapper,
+) : AsyncUseCase<UpsertLocalResourcesUseCase.Input, Unit> {
+    override suspend fun execute(input: Input) {
+        val db = databaseProvider.get(input.userId)
+        val resourcesDao = db.resourcesDao()
+        val resourceMetadataDao = db.resourceMetadataDao()
+        val resourceUriDao = db.resourceUriDao()
+
+        val resources = input.resourceModels.map { resourceModelMapper.map(it, resourceUpdateState = UPDATED) }
+        val resourceMetadata = input.resourceModels.map { resourceModelMapper.mapResourceMetadata(it) }
+        val resourceUris = input.resourceModels.map { resourceModelMapper.mapResourceUris(it) }
+
+        resourcesDao.upsertAll(resources)
+        resourceMetadataDao.upsertAll(resourceMetadata)
+        // URIs are still deleted and re-inserted
+        resourceUriDao.insertAll(resourceUris.flatten())
     }
+
+    data class Input(
+        val resourceModels: List<ResourceModel>,
+        val userId: String,
+    )
 }

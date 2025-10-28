@@ -1,9 +1,8 @@
 package com.passbolt.mobile.android.core.resources.usecase.db
 
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
+import com.passbolt.mobile.android.common.usecase.UserIdInput
 import com.passbolt.mobile.android.database.DatabaseProvider
-import com.passbolt.mobile.android.mappers.ResourceModelMapper
-import com.passbolt.mobile.android.ui.ResourceModel
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,27 +26,13 @@ import com.passbolt.mobile.android.ui.ResourceModel
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class AddLocalResourcesUseCase(
+class RemoveLocalUrisUseCase(
     private val databaseProvider: DatabaseProvider,
-    private val resourceModelMapper: ResourceModelMapper,
-) : AsyncUseCase<AddLocalResourcesUseCase.Input, Unit> {
-    override suspend fun execute(input: Input) {
-        val db = databaseProvider.get(input.userId)
-        val resourcesDao = db.resourcesDao()
-        val resourceMetadataDao = db.resourceMetadataDao()
-        val resourceUriDao = db.resourceUriDao()
-
-        val resources = input.resourceModels.map { resourceModelMapper.map(it) }
-        val resourceMetadata = input.resourceModels.map { resourceModelMapper.mapResourceMetadata(it) }
-        val resourceUris = input.resourceModels.map { resourceModelMapper.mapResourceUris(it) }
-
-        resourcesDao.insertAll(resources)
-        resourceMetadataDao.insertAll(resourceMetadata)
-        resourceUriDao.insertAll(resourceUris.flatten())
+) : AsyncUseCase<UserIdInput, Unit> {
+    override suspend fun execute(input: UserIdInput) {
+        databaseProvider
+            .get(input.userId)
+            .resourceUriDao()
+            .deleteAll()
     }
-
-    data class Input(
-        val resourceModels: List<ResourceModel>,
-        val userId: String,
-    )
 }
