@@ -22,10 +22,13 @@
  */
 package com.passbolt.mobile.android.core.ui.compose.search
 
+import PassboltTheme
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -40,6 +43,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.passbolt.mobile.android.core.ui.R
 import com.passbolt.mobile.android.core.ui.compose.circularimage.CircularProfileImage
@@ -90,7 +95,7 @@ fun SearchInput(
                     )
             }
         },
-        placeholder = { Text(placeholder) },
+        placeholder = { Text(placeholder, maxLines = 1, overflow = TextOverflow.Ellipsis) },
         textStyle = MaterialTheme.typography.displayMedium,
         colors =
             TextFieldDefaults.colors(
@@ -101,4 +106,73 @@ fun SearchInput(
             ),
         modifier = modifier.fillMaxWidth(),
     )
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun SearchInputPreview() {
+    var searchText by remember { mutableStateOf("") }
+
+    PassboltTheme {
+        SearchInput(
+            value = searchText,
+            onValueChange = { searchText = it },
+            placeholder = "Search passwords",
+            avatarUrl = null,
+            endIconMode = CLEAR,
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Default.Search,
+                    contentDescription = null,
+                )
+            },
+            modifier = Modifier.padding(16.dp),
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun SearchInputWithLongPlaceholderPreview() {
+    var searchText by remember { mutableStateOf("") }
+
+    PassboltTheme {
+        SearchInput(
+            value = searchText,
+            onValueChange = { searchText = it },
+            placeholder = "Search for passwords, usernames, and and other items",
+            avatarUrl = null,
+            endIconMode = CLEAR,
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Default.Search,
+                    contentDescription = null,
+                )
+            },
+            modifier = Modifier.padding(16.dp),
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun SearchInputWithAvatarPreview() {
+    var searchText by remember { mutableStateOf("Searched query") }
+
+    PassboltTheme {
+        SearchInput(
+            value = searchText,
+            onValueChange = { searchText = it },
+            placeholder = "Search passwords",
+            avatarUrl = null,
+            endIconMode = AVATAR,
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Default.Search,
+                    contentDescription = null,
+                )
+            },
+            modifier = Modifier.padding(16.dp),
+        )
+    }
 }
