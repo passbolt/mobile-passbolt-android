@@ -45,6 +45,8 @@ import com.passbolt.mobile.android.ui.MetadataJsonModel
 import com.passbolt.mobile.android.ui.MetadataKeyParamsModel
 import com.passbolt.mobile.android.ui.MetadataKeyTypeModel
 import com.passbolt.mobile.android.ui.NewMetadataKeyToTrustModel
+import com.passbolt.mobile.android.ui.PermissionModelUi.GroupPermissionModel
+import com.passbolt.mobile.android.ui.PermissionModelUi.UserPermissionModel
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.TrustedKeyDeletedModel
 import com.passbolt.mobile.android.ui.UpdateResourceModel
@@ -172,11 +174,17 @@ class ResourceUpdateActionsInteractor(
                         GetLocalFolderPermissionsUseCase.Input(parentFolderId),
                     ).permissions.size > 1
             } ?: false
-        val isResourceShared =
+
+        val resourcePermissions =
             getLocalResourcePermissionsUseCase
                 .execute(
                     GetLocalResourcePermissionsUseCase.Input(existingResource.resourceId),
-                ).permissions.size > 1
+                ).permissions
+        val isResourceShared =
+            resourcePermissions.any { it is GroupPermissionModel } ||
+                resourcePermissions
+                    .filterIsInstance<UserPermissionModel>()
+                    .any { it.user.userId != getLocalCurrentUserUseCase.execute(Unit).user.id }
 
         return !forceMetadataSharedKey && isPersonalKeyAllowed && !isParentFolderShared && !isResourceShared
     }
