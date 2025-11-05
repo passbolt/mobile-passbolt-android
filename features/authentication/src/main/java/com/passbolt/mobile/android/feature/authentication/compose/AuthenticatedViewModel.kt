@@ -14,15 +14,17 @@ import com.passbolt.mobile.android.core.mvp.authentication.MfaProvidersHandler
 import com.passbolt.mobile.android.core.mvp.authentication.SessionRefreshTrackingFlow
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.feature.authentication.compose.AuthenticatedIntent.AuthenticationRefreshed
+import com.passbolt.mobile.android.feature.authentication.compose.AuthenticatedIntent.Disposed
+import com.passbolt.mobile.android.feature.authentication.compose.AuthenticatedIntent.Launched
 import com.passbolt.mobile.android.feature.authentication.compose.AuthenticatedIntent.OtherProviderClick
 import com.passbolt.mobile.android.feature.authentication.compose.AuthenticationSideEffect.ShowDuoDialog
 import com.passbolt.mobile.android.feature.authentication.compose.AuthenticationSideEffect.ShowTotpDialog
 import com.passbolt.mobile.android.feature.authentication.compose.AuthenticationSideEffect.ShowUnknownProvider
 import com.passbolt.mobile.android.feature.authentication.compose.AuthenticationSideEffect.ShowYubikeyDialog
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -62,45 +64,51 @@ open class AuthenticatedViewModel<ViewState, SideEffect>(
     private val mfaProvidersHandler: MfaProvidersHandler by inject()
     private val getSessionUseCase: GetSessionUseCase by inject()
 
-    init {
-        listenForRefreshSessionEvents()
-    }
+    private var authenticationJob: Job? = null
 
     private fun listenForRefreshSessionEvents() {
         Timber.d("[Session] Listening for new session events in ${this::class.simpleName}")
-        viewModelScope.launch {
-            sessionRefreshTrackingFlow
-                .needSessionRefreshFlow()
-                .take(1)
-                .collect {
-                    Timber.d("[Session] MVI Session refresh is needed: [${it.reason}] in ${this@AuthenticatedViewModel}. Showing UI.")
-                    when (val reason = it.reason) {
-                        is Mfa -> {
-                            mfaProvidersHandler.setProviders(reason.providers.orEmpty())
-                            emitSideAuthenticationEffect(
-                                AuthenticationSideEffect.ShowMfaAuth(
-                                    mfaReason = mfaProvidersHandler.firstMfaProvider(),
-                                    hasMultipleProviders = mfaProvidersHandler.hasMultipleProviders(),
-                                    sessionAccessToken = getSessionUseCase.execute(Unit).accessToken,
-                                ),
-                            )
-                        }
-                        is Passphrase -> {
-                            emitSideAuthenticationEffect(
-                                AuthenticationSideEffect.ShowAuth(ActivityIntents.AuthConfig.RefreshPassphrase),
-                            )
-                        }
-                        is Session -> {
-                            emitSideAuthenticationEffect(AuthenticationSideEffect.ShowAuth(ActivityIntents.AuthConfig.SignIn))
+        authenticationJob =
+            viewModelScope.launch {
+                sessionRefreshTrackingFlow
+                    .needSessionRefreshFlow()
+                    .collect {
+                        Timber.d("[Session] MVI Session refresh is needed: [${it.reason}] in ${this@AuthenticatedViewModel}. Showing UI.")
+                        when (val reason = it.reason) {
+                            is Mfa -> {
+                                mfaProvidersHandler.setProviders(reason.providers.orEmpty())
+                                emitSideAuthenticationEffect(
+                                    AuthenticationSideEffect.ShowMfaAuth(
+                                        mfaReason = mfaProvidersHandler.firstMfaProvider(),
+                                        hasMultipleProviders = mfaProvidersHandler.hasMultipleProviders(),
+                                        sessionAccessToken = getSessionUseCase.execute(Unit).accessToken,
+                                    ),
+                                )
+                            }
+                            is Passphrase -> {
+                                emitSideAuthenticationEffect(
+                                    AuthenticationSideEffect.ShowAuth(ActivityIntents.AuthConfig.RefreshPassphrase),
+                                )
+                            }
+                            is Session -> {
+                                emitSideAuthenticationEffect(AuthenticationSideEffect.ShowAuth(ActivityIntents.AuthConfig.SignIn))
+                            }
                         }
                     }
-                }
-        }
+            }
+    }
+
+    private fun stopListeningForRefreshSessionEvents() {
+        Timber.d("[Session] Stopping authentication flow in ${this::class.simpleName}")
+        authenticationJob?.cancel()
+        authenticationJob = null
     }
 
     fun onAuthenticationIntent(intent: AuthenticatedIntent) {
         Timber.d("[Session] Received authentication intent [${intent::class.simpleName}]")
         when (intent) {
+            Launched -> listenForRefreshSessionEvents()
+            Disposed -> stopListeningForRefreshSessionEvents()
             AuthenticationRefreshed -> authenticationRefreshed()
             is OtherProviderClick -> otherProviderClick(intent.provider)
         }

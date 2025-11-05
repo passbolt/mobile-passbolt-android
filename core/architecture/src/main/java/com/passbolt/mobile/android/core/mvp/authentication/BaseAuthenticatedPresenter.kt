@@ -35,7 +35,6 @@ import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchCont
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
-import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -65,7 +64,6 @@ abstract class BaseAuthenticatedPresenter<T : BaseAuthenticatedContract.View>(
         scope.launch {
             sessionRefreshTrackingFlow
                 .needSessionRefreshFlow()
-                .take(1)
                 .collect {
                     Timber.d("[Session] MVP Session refresh is needed: [${it.reason}] in ${this@BaseAuthenticatedPresenter}. Showing UI.")
                     when (val reason = it.reason) {

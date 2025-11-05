@@ -10,6 +10,7 @@ import com.passbolt.mobile.android.core.passphrasememorycache.PassphraseMemoryCa
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetSessionExpiryUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.RefreshSessionUseCase
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.take
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -154,10 +155,8 @@ class AuthenticatedOperationRunner : KoinComponent {
         sessionRefreshTrackingFlow.notifySessionRefreshNeeded(reason)
         sessionRefreshTrackingFlow
             .sessionRefreshedFlow()
-            .take(1)
-            .collect {
-                Timber.d("[Session] Authenticated operation runner $this got refreshed auth")
-            }
+            .first()
+        Timber.d("[Session] Authenticated operation runner $this got refreshed auth")
     }
 }
 

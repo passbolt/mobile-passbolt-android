@@ -4,10 +4,15 @@ import android.app.Activity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.platform.LocalContext
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.feature.authentication.compose.AuthenticatedIntent.AuthenticationRefreshed
+import com.passbolt.mobile.android.feature.authentication.compose.AuthenticatedIntent.Disposed
+import com.passbolt.mobile.android.feature.authentication.compose.AuthenticatedIntent.Launched
 import com.passbolt.mobile.android.feature.authentication.compose.AuthenticationSideEffect.ShowAuth
 import com.passbolt.mobile.android.feature.authentication.compose.AuthenticationSideEffect.ShowDuoDialog
 import com.passbolt.mobile.android.feature.authentication.compose.AuthenticationSideEffect.ShowMfaAuth
@@ -27,10 +32,22 @@ fun AuthenticationHandler(
     authenticationSideEffect: Flow<AuthenticationSideEffect>,
 ) {
     val context = LocalContext.current
+
+    val currentOnAuthenticatedIntent by rememberUpdatedState(onAuthenticatedIntent)
+
     val navigation =
         rememberAuthenticationNavigation(
             onAuthenticatedIntent = onAuthenticatedIntent,
         )
+
+    // Needed as long as all navigation child screens are not migrated to compose
+    // Then authentication can be handled once in MainActivity and these can be removed
+    DisposableEffect(Unit) {
+        currentOnAuthenticatedIntent(Launched)
+        onDispose {
+            currentOnAuthenticatedIntent(Disposed)
+        }
+    }
 
     val authenticationResult =
         rememberLauncherForActivityResult(

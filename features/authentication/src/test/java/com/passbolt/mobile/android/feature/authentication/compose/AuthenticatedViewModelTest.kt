@@ -36,6 +36,7 @@ import com.passbolt.mobile.android.core.mvp.authentication.SessionRefreshTrackin
 import com.passbolt.mobile.android.core.navigation.ActivityIntents.AuthConfig.RefreshPassphrase
 import com.passbolt.mobile.android.core.navigation.ActivityIntents.AuthConfig.SignIn
 import com.passbolt.mobile.android.feature.authentication.compose.AuthenticatedIntent.AuthenticationRefreshed
+import com.passbolt.mobile.android.feature.authentication.compose.AuthenticatedIntent.Launched
 import com.passbolt.mobile.android.feature.authentication.compose.AuthenticatedIntent.OtherProviderClick
 import com.passbolt.mobile.android.feature.authentication.compose.AuthenticationSideEffect.ShowAuth
 import com.passbolt.mobile.android.feature.authentication.compose.AuthenticationSideEffect.ShowDuoDialog
@@ -113,6 +114,7 @@ class AuthenticatedViewModelTest : KoinTest {
     fun `should emit session side effect when session refresh reason is session`() =
         runTest {
             viewModel = get()
+            viewModel.onAuthenticationIntent(Launched)
 
             viewModel.authenticationSideEffect.test {
                 sessionTrackingFlow.notifySessionRefreshNeeded(Session)
@@ -128,6 +130,7 @@ class AuthenticatedViewModelTest : KoinTest {
     fun `should emit passphrase side effect when session refresh reason is passphrase`() =
         runTest {
             viewModel = get()
+            viewModel.onAuthenticationIntent(Launched)
 
             viewModel.authenticationSideEffect.test {
                 sessionTrackingFlow.notifySessionRefreshNeeded(Passphrase)
@@ -147,6 +150,7 @@ class AuthenticatedViewModelTest : KoinTest {
             whenever(mfaProvidersHandler.hasMultipleProviders()) doReturn false
 
             viewModel = get()
+            viewModel.onAuthenticationIntent(Launched)
 
             viewModel.authenticationSideEffect.test {
                 sessionTrackingFlow.notifySessionRefreshNeeded(Mfa(providers = listOf(TOTP)))
