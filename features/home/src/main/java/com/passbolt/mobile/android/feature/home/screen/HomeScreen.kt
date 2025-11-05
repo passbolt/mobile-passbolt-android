@@ -52,7 +52,6 @@ import com.passbolt.mobile.android.core.fulldatarefresh.service.DataRefreshServi
 import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
 import com.passbolt.mobile.android.core.ui.compose.dialogs.ConfirmResourceDeleteAlertDialog
-import com.passbolt.mobile.android.core.ui.compose.empty.EmptyResourceListState
 import com.passbolt.mobile.android.core.ui.compose.fab.AddFloatingActionButton
 import com.passbolt.mobile.android.core.ui.compose.progressdialog.ProgressDialog
 import com.passbolt.mobile.android.core.ui.compose.scaffold.HomeScaffold
@@ -86,7 +85,6 @@ import com.passbolt.mobile.android.feature.home.screen.HomeSideEffect.OpenResour
 import com.passbolt.mobile.android.feature.home.screen.HomeSideEffect.ShowErrorSnackbar
 import com.passbolt.mobile.android.feature.home.screen.HomeSideEffect.ShowSuccessSnackbar
 import com.passbolt.mobile.android.feature.home.screen.HomeSideEffect.ShowToast
-import com.passbolt.mobile.android.feature.home.screen.ShowSuggestedModel.DoNotShow
 import com.passbolt.mobile.android.feature.home.switchaccount.SwitchAccountBottomSheet
 import com.passbolt.mobile.android.ui.FiltersMenuModel
 import com.passbolt.mobile.android.ui.Folder.Child
@@ -127,7 +125,7 @@ internal fun HomeScreen(
         viewModel.onIntent(
             Initialize(
                 homeView = homeView,
-                showSuggestedModel = DoNotShow,
+                showSuggestedModel = showSuggestedModel,
             ),
         )
     }
@@ -247,11 +245,7 @@ private fun HomeScreen(
                         .fillMaxSize()
                         .padding(paddingValues),
             ) {
-                if (state.shouldShowEmptyState) {
-                    EmptyResourceListState(title = stringResource(LocalizationR.string.no_passwords))
-                } else {
-                    HomeResourceList(state, homeNavigation, onIntent)
-                }
+                HomeResourceList(state, homeNavigation, onIntent)
             }
 
             if (state.showCreateResourceBottomSheet) {

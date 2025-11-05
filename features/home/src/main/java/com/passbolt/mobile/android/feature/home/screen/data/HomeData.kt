@@ -23,22 +23,20 @@
 
 package com.passbolt.mobile.android.feature.home.screen.data
 
+import androidx.paging.PagingData
 import com.passbolt.mobile.android.ui.FolderWithCountAndPath
 import com.passbolt.mobile.android.ui.GroupWithCount
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.TagWithCount
-
-data class HomeDataWithHeader(
-    val data: HomeData = HomeData(),
-    val headerSectionConfiguration: HeaderSectionConfiguration = HeaderSectionConfiguration(),
-)
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 
 data class HomeData(
-    val suggestedResourceList: List<ResourceModel> = emptyList(),
-    val resourceList: List<ResourceModel> = emptyList(),
-    val foldersList: List<FolderWithCountAndPath> = emptyList(),
-    val tagsList: List<TagWithCount> = emptyList(),
-    val groupsList: List<GroupWithCount> = emptyList(),
-    val filteredSubFolderResources: List<ResourceModel> = emptyList(),
-    val filteredSubFolders: List<FolderWithCountAndPath> = emptyList(),
+    val suggestedResourceList: Flow<PagingData<ResourceModel>> = flowOf(PagingData.empty()),
+    val resourceList: Flow<PagingData<ResourceModel>> = flowOf(PagingData.empty()),
+    val foldersList: Flow<PagingData<FolderWithCountAndPath>> = flowOf(PagingData.empty()),
+    val tagsList: Flow<PagingData<TagWithCount>> = flowOf(PagingData.empty()),
+    val groupsList: Flow<PagingData<GroupWithCount>> = flowOf(PagingData.empty()),
+    val filteredSubFolderResources: Flow<PagingData<ResourceModel>> = flowOf(PagingData.empty()),
+    val filteredSubFolders: Flow<PagingData<FolderWithCountAndPath>> = flowOf(PagingData.empty()),
 )

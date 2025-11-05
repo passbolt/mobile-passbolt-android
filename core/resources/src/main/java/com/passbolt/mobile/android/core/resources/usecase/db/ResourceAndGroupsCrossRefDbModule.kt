@@ -28,9 +28,12 @@ import org.koin.core.module.dsl.singleOf
 
 internal fun Module.resourcesDbModule() {
     singleOf(::GetLocalResourcesWithGroupUseCase)
+    singleOf(::GetLocalResourcesWithGroupPaginatedUseCase)
     singleOf(::GetLocalResourcesWithTagUseCase)
+    singleOf(::GetLocalResourcesWithTagPaginatedUseCase)
     singleOf(::AddLocalResourceUseCase)
     singleOf(::GetLocalResourcesUseCase)
+    singleOf(::GetLocalResourcesPaginatedUseCase)
     singleOf(::GetLocalResourceUseCase)
     singleOf(::UpdateLocalResourceUseCase)
     singleOf(::AddLocalResourcePermissionsUseCase)

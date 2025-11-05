@@ -57,8 +57,8 @@ import com.passbolt.mobile.android.feature.home.screen.HomeSideEffect.NavigateTo
 import com.passbolt.mobile.android.feature.home.screen.HomeSideEffect.OpenResourceMoreMenu
 import com.passbolt.mobile.android.feature.home.screen.HomeSideEffect.ShowErrorSnackbar
 import com.passbolt.mobile.android.feature.home.screen.SnackbarErrorType.TOGGLE_FAVOURITE_FAILURE
+import com.passbolt.mobile.android.feature.home.screen.data.HomeData
 import com.passbolt.mobile.android.feature.home.screen.data.HomeDataProvider
-import com.passbolt.mobile.android.feature.home.screen.data.HomeDataWithHeader
 import com.passbolt.mobile.android.jsonmodel.JSON_MODEL_GSON
 import com.passbolt.mobile.android.jsonmodel.jsonpathops.JsonPathJsonPathOps
 import com.passbolt.mobile.android.jsonmodel.jsonpathops.JsonPathsOps
@@ -173,7 +173,7 @@ class HomeViewModelMenuTest : KoinTest {
                     any(),
                     any(),
                 )
-            }.doReturn(HomeDataWithHeader())
+            }.doReturn(HomeData())
         }
 
         get<CanCreateResourceUseCase>().stub {

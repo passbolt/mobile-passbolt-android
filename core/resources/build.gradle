@@ -35,6 +35,7 @@ dependencies {
     implementation(libs.sqlite.cipher) { artifact { type = "aar" } }
     implementation libs.koin
     implementation libs.json.path
+    implementation libs.paging.runtime
 }
 
 android {

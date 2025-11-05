@@ -23,6 +23,7 @@
 
 package com.passbolt.mobile.android.feature.home.screen
 
+import androidx.paging.PagingData
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
 import com.google.gson.GsonBuilder
@@ -67,10 +68,8 @@ import com.passbolt.mobile.android.feature.home.screen.SnackbarSuccessType.RESOU
 import com.passbolt.mobile.android.feature.home.screen.SnackbarSuccessType.RESOURCE_DELETED
 import com.passbolt.mobile.android.feature.home.screen.SnackbarSuccessType.RESOURCE_EDITED
 import com.passbolt.mobile.android.feature.home.screen.SnackbarSuccessType.RESOURCE_SHARED
-import com.passbolt.mobile.android.feature.home.screen.data.HeaderSectionConfiguration
 import com.passbolt.mobile.android.feature.home.screen.data.HomeData
 import com.passbolt.mobile.android.feature.home.screen.data.HomeDataProvider
-import com.passbolt.mobile.android.feature.home.screen.data.HomeDataWithHeader
 import com.passbolt.mobile.android.jsonmodel.JSON_MODEL_GSON
 import com.passbolt.mobile.android.jsonmodel.jsonpathops.JsonPathJsonPathOps
 import com.passbolt.mobile.android.jsonmodel.jsonpathops.JsonPathsOps
@@ -90,6 +89,7 @@ import com.passbolt.mobile.android.ui.ResourcePermission
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
@@ -189,7 +189,7 @@ class HomeViewModelTest : KoinTest {
                     any(),
                     any(),
                 )
-            }.doReturn(HomeDataWithHeader())
+            }.doReturn(HomeData())
         }
 
         get<CanCreateResourceUseCase>().stub {
@@ -573,22 +573,15 @@ class HomeViewModelTest : KoinTest {
     }
 
     private fun mockResourcesData() =
-        HomeDataWithHeader(
-            data =
-                HomeData(
-                    resourceList =
+        HomeData(
+            resourceList =
+                flowOf(
+                    PagingData.from(
                         listOf(
                             mockResourceModel("id1", "Resource 1"),
                             mockResourceModel("id2", "Resource 2"),
                         ),
-                ),
-            headerSectionConfiguration =
-                HeaderSectionConfiguration(
-                    isInCurrentFolderSectionVisible = false,
-                    isInSubFoldersSectionVisible = false,
-                    currentFolderName = null,
-                    isSuggestedSectionVisible = false,
-                    isOtherItemsSectionVisible = false,
+                    ),
                 ),
         )
 
