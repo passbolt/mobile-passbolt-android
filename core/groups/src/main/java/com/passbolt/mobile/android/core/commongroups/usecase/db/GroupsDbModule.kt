@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.core.commongroups.usecase.db
 
 import org.koin.core.module.Module
+import org.koin.core.module.dsl.singleOf
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,38 +27,10 @@ import org.koin.core.module.Module
  */
 
 internal fun Module.groupsDbModule() {
-    single {
-        AddLocalGroupsUseCase(
-            databaseProvider = get(),
-            groupsModelMapper = get(),
-            getSelectedAccountUseCase = get(),
-        )
-    }
-    single {
-        RemoveLocalGroupsUseCase(
-            databaseProvider = get(),
-        )
-    }
-    single {
-        GetLocalGroupsWithShareItemsCountUseCase(
-            databaseProvider = get(),
-            groupModelMapper = get(),
-            getSelectedAccountUseCase = get(),
-        )
-    }
-    single {
-        GetGroupWithUsersUseCase(
-            databaseProvider = get(),
-            groupModelMapper = get(),
-            getSelectedAccountUseCase = get(),
-            usersModelMapper = get(),
-        )
-    }
-    single {
-        GetLocalGroupsUseCase(
-            databaseProvider = get(),
-            groupModelMapper = get(),
-            getSelectedAccountUseCase = get(),
-        )
-    }
+    singleOf(::AddLocalGroupsUseCase)
+    singleOf(::RemoveLocalGroupsUseCase)
+    singleOf(::GetLocalGroupsWithShareItemsCountUseCase)
+    singleOf(::GetLocalGroupsWithShareItemsCountPaginatedUseCase)
+    singleOf(::GetGroupWithUsersUseCase)
+    singleOf(::GetLocalGroupsUseCase)
 }

@@ -1,7 +1,12 @@
-package com.passbolt.mobile.android.core.tags.usecase.db
+package com.passbolt.mobile.android.database.impl.tags
 
-import org.koin.core.module.Module
-import org.koin.core.module.dsl.singleOf
+import androidx.paging.PagingSource
+import androidx.room.Dao
+import androidx.room.Query
+import androidx.room.Transaction
+import com.passbolt.mobile.android.database.impl.base.BaseDao
+import com.passbolt.mobile.android.entity.resource.Tag
+import com.passbolt.mobile.android.entity.resource.TagWithTaggedItemsCount
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,10 +30,18 @@ import org.koin.core.module.dsl.singleOf
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-
-internal fun Module.tagsDbModule() {
-    singleOf(::RemoveLocalTagsUseCase)
-    singleOf(::AddLocalTagsUseCase)
-    singleOf(::GetLocalTagsUseCase)
-    singleOf(::GetLocalTagsPaginatedUseCase)
+@Dao
+interface PaginatedTagsDao : BaseDao<Tag> {
+    @Transaction
+    @Query(
+        "SELECT id, slug, isShared, " +
+            "(SELECT" +
+            "(" +
+            "(select distinct count(resourceId) from resourceandtagscrossref rTCR where rTCR.tagId is t.id) " +
+            ")" +
+            ") AS taggedItemsCount " +
+            "FROM Tag t " +
+            "WHERE (:searchQuery IS NULL OR slug LIKE '%' || :searchQuery || '%')",
+    )
+    fun getAllWithTaggedItemsCount(searchQuery: String?): PagingSource<Int, TagWithTaggedItemsCount>
 }

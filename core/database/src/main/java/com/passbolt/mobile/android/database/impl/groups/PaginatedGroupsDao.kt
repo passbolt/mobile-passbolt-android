@@ -1,7 +1,12 @@
-package com.passbolt.mobile.android.core.tags.usecase.db
+package com.passbolt.mobile.android.database.impl.groups
 
-import org.koin.core.module.Module
-import org.koin.core.module.dsl.singleOf
+import androidx.paging.PagingSource
+import androidx.room.Dao
+import androidx.room.Query
+import androidx.room.Transaction
+import com.passbolt.mobile.android.database.impl.base.BaseDao
+import com.passbolt.mobile.android.entity.group.UsersGroup
+import com.passbolt.mobile.android.entity.group.UsersGroupWithChildItemsCount
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,9 +31,21 @@ import org.koin.core.module.dsl.singleOf
  * @since v1.0
  */
 
-internal fun Module.tagsDbModule() {
-    singleOf(::RemoveLocalTagsUseCase)
-    singleOf(::AddLocalTagsUseCase)
-    singleOf(::GetLocalTagsUseCase)
-    singleOf(::GetLocalTagsPaginatedUseCase)
+@Dao
+interface PaginatedGroupsDao : BaseDao<UsersGroup> {
+    @Transaction
+    @Query(
+        "SELECT groupId, name, " +
+            "(SELECT" +
+            "(" +
+            "(select distinct count(resourceId) " +
+            "from resourceandgroupscrossref rGCR " +
+            "where rGCR.groupId is g.groupId) " +
+            ")" +
+            ") AS childItemsCount " +
+            "FROM UsersGroup g " +
+            "WHERE (:searchQuery IS NULL OR name LIKE '%' || :searchQuery || '%') " +
+            "ORDER BY name ASC",
+    )
+    fun getAllWithSharedItemsCount(searchQuery: String?): PagingSource<Int, UsersGroupWithChildItemsCount>
 }

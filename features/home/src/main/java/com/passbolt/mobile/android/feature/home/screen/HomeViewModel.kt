@@ -402,6 +402,7 @@ internal class HomeViewModel(
     private fun showHomeView(homeDisplay: HomeDisplayViewModel) {
         viewModelScope.launch {
             val homeData = getHomeData(homeDisplay, viewState.value.searchQuery)
+
             updateViewState {
                 copy(
                     homeView = homeDisplay,

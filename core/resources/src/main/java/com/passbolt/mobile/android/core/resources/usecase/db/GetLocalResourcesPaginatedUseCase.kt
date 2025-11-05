@@ -1,13 +1,24 @@
 package com.passbolt.mobile.android.core.resources.usecase.db
 
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import androidx.paging.map
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
 import com.passbolt.mobile.android.core.accounts.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.database.DatabaseProvider
-import com.passbolt.mobile.android.entity.resource.ResourceDatabaseView
+import com.passbolt.mobile.android.entity.resource.ResourceDatabaseView.ByModifiedDateDescending
+import com.passbolt.mobile.android.entity.resource.ResourceDatabaseView.ByNameAscending
+import com.passbolt.mobile.android.entity.resource.ResourceDatabaseView.HasExpiry
+import com.passbolt.mobile.android.entity.resource.ResourceDatabaseView.HasPermissions
+import com.passbolt.mobile.android.entity.resource.ResourceDatabaseView.IsFavourite
 import com.passbolt.mobile.android.mappers.HomeDisplayViewMapper
 import com.passbolt.mobile.android.mappers.ResourceModelMapper
+import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.homeSlugs
 import com.passbolt.mobile.android.ui.HomeDisplayViewModel
 import com.passbolt.mobile.android.ui.ResourceModel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 /**
  * Passbolt - Open source password manager for teams
@@ -31,44 +42,52 @@ import com.passbolt.mobile.android.ui.ResourceModel
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-@Deprecated("Use GetLocalResourcesPaginatedUseCase")
-class GetLocalResourcesUseCase(
+class GetLocalResourcesPaginatedUseCase(
     private val databaseProvider: DatabaseProvider,
     private val resourceModelMapper: ResourceModelMapper,
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
     private val homeDisplayViewMapper: HomeDisplayViewMapper,
-) : AsyncUseCase<GetLocalResourcesUseCase.Input, GetLocalResourcesUseCase.Output> {
-    override suspend fun execute(input: Input): Output {
-        val userId = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
-        val resources =
-            databaseProvider
-                .get(userId)
-                .resourcesDao()
-                .let {
+) : AsyncUseCase<GetLocalResourcesPaginatedUseCase.Input, GetLocalResourcesPaginatedUseCase.Output> {
+    override suspend fun execute(input: Input): Output =
+        Output(
+            Pager(
+                config = PagingConfig(pageSize = input.pageSize, enablePlaceholders = false),
+                pagingSourceFactory = {
+                    val selectedAccount = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
+                    val resourceDao = databaseProvider.get(selectedAccount).paginatedResourcesDao()
+
                     when (val viewType = homeDisplayViewMapper.map(input.homeDisplayView)) {
-                        is ResourceDatabaseView.ByModifiedDateDescending -> it.getAllOrderedByModifiedDate(input.slugs, input.searchQuery)
-                        is ResourceDatabaseView.ByNameAscending -> it.getAllOrderedByName(input.slugs, input.searchQuery)
-                        is ResourceDatabaseView.IsFavourite -> it.getFavourites(input.slugs, input.searchQuery)
-                        is ResourceDatabaseView.HasPermissions ->
-                            it.getWithPermissions(
+                        is ByModifiedDateDescending -> resourceDao.getAllOrderedByModifiedDatePaginated(input.slugs, input.searchQuery)
+                        is ByNameAscending -> resourceDao.getAllOrderedByNamePaginated(homeSlugs, input.searchQuery)
+                        is IsFavourite -> resourceDao.getFavouritesPaginated(input.slugs, input.searchQuery)
+                        is HasPermissions ->
+                            resourceDao.getWithPermissionsPaginated(
                                 viewType.permissions,
                                 input.slugs,
                                 input.searchQuery,
                             )
-                        is ResourceDatabaseView.HasExpiry -> it.getExpiredResources(input.slugs, input.searchQuery)
+                        is HasExpiry -> resourceDao.getExpiredResourcesPaginated(input.slugs, input.searchQuery)
                     }
+                },
+            ).flow.map { pagingData ->
+                pagingData.map {
+                    resourceModelMapper.map(it)
                 }
-
-        return Output(resources.map { resourceModelMapper.map(it) })
-    }
+            },
+        )
 
     data class Input(
         val slugs: Set<String>,
         val homeDisplayView: HomeDisplayViewModel = HomeDisplayViewModel.AllItems,
         val searchQuery: String? = null,
+        val pageSize: Int = DEFAULT_PAGE_SIZE,
     )
 
     data class Output(
-        val resources: List<ResourceModel>,
+        val pagedResourcesFlow: Flow<PagingData<ResourceModel>>,
     )
+
+    private companion object {
+        private const val DEFAULT_PAGE_SIZE = 20
+    }
 }

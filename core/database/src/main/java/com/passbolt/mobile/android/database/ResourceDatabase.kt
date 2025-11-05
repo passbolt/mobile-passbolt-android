@@ -6,7 +6,9 @@ import androidx.room.TypeConverters
 import com.passbolt.mobile.android.database.impl.folderandgroupscrossref.FolderAndGroupsCrossRefDao
 import com.passbolt.mobile.android.database.impl.folderanduserscrossref.FoldersAndUsersCrossRefDao
 import com.passbolt.mobile.android.database.impl.folders.FoldersDao
+import com.passbolt.mobile.android.database.impl.folders.PaginatedFoldersDao
 import com.passbolt.mobile.android.database.impl.groups.GroupsDao
+import com.passbolt.mobile.android.database.impl.groups.PaginatedGroupsDao
 import com.passbolt.mobile.android.database.impl.metadata.MetadataKeysDao
 import com.passbolt.mobile.android.database.impl.metadata.MetadataPrivateKeysDao
 import com.passbolt.mobile.android.database.impl.metadata.ResourceMetadataDao
@@ -14,8 +16,10 @@ import com.passbolt.mobile.android.database.impl.metadata.ResourceUriDao
 import com.passbolt.mobile.android.database.impl.resourceandgroupscrossref.ResourceAndGroupsCrossRefDao
 import com.passbolt.mobile.android.database.impl.resourceandtagcrossref.ResourcesAndTagsCrossRefDao
 import com.passbolt.mobile.android.database.impl.resourceanduserscrossref.ResourcesAndUsersCrossRefDao
+import com.passbolt.mobile.android.database.impl.resources.PaginatedResourcesDao
 import com.passbolt.mobile.android.database.impl.resources.ResourcesDao
 import com.passbolt.mobile.android.database.impl.resourcetypes.ResourceTypesDao
+import com.passbolt.mobile.android.database.impl.tags.PaginatedTagsDao
 import com.passbolt.mobile.android.database.impl.tags.TagsDao
 import com.passbolt.mobile.android.database.impl.users.UsersDao
 import com.passbolt.mobile.android.database.impl.usersandgroupscrossref.UsersAndGroupsCrossRefDao
@@ -85,6 +89,8 @@ import com.passbolt.mobile.android.entity.user.User
 abstract class ResourceDatabase : RoomDatabase() {
     abstract fun resourcesDao(): ResourcesDao
 
+    abstract fun paginatedResourcesDao(): PaginatedResourcesDao
+
     abstract fun resourceMetadataDao(): ResourceMetadataDao
 
     abstract fun resourceUriDao(): ResourceUriDao
@@ -93,11 +99,17 @@ abstract class ResourceDatabase : RoomDatabase() {
 
     abstract fun foldersDao(): FoldersDao
 
+    abstract fun paginatedFoldersDao(): PaginatedFoldersDao
+
     abstract fun tagsDao(): TagsDao
+
+    abstract fun paginatedTagsDao(): PaginatedTagsDao
 
     abstract fun resourcesAndTagsCrossRefDao(): ResourcesAndTagsCrossRefDao
 
     abstract fun groupsDao(): GroupsDao
+
+    abstract fun paginatedGroupsDao(): PaginatedGroupsDao
 
     abstract fun resourcesAndGroupsCrossRefDao(): ResourceAndGroupsCrossRefDao
 

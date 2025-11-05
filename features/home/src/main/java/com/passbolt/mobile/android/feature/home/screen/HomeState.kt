@@ -23,17 +23,18 @@
 
 package com.passbolt.mobile.android.feature.home.screen
 
-import com.passbolt.mobile.android.common.extension.areListsEmpty
 import com.passbolt.mobile.android.core.ui.compose.search.SearchInputEndIconMode
 import com.passbolt.mobile.android.core.ui.compose.search.SearchInputEndIconMode.AVATAR
-import com.passbolt.mobile.android.feature.home.screen.data.HomeDataWithHeader
-import com.passbolt.mobile.android.ui.Folder
+import com.passbolt.mobile.android.feature.home.screen.data.HomeData
+import com.passbolt.mobile.android.ui.Folder.Child
 import com.passbolt.mobile.android.ui.HomeDisplayViewModel
 import com.passbolt.mobile.android.ui.HomeDisplayViewModel.Folders
+import com.passbolt.mobile.android.ui.HomeDisplayViewModel.Groups
+import com.passbolt.mobile.android.ui.HomeDisplayViewModel.Tags
 import com.passbolt.mobile.android.ui.ResourceModel
 
 data class HomeState(
-    val homeData: HomeDataWithHeader = HomeDataWithHeader(),
+    val homeData: HomeData = HomeData(),
     val homeView: HomeDisplayViewModel = HomeDisplayViewModel.AllItems,
     val showSuggestedModel: ShowSuggestedModel = ShowSuggestedModel.DoNotShow,
     val canCreateResource: Boolean = false,
@@ -49,29 +50,19 @@ data class HomeState(
     val showDeleteResourceConfirmationDialog: Boolean = false,
     val showFiltersBottomSheet: Boolean = false,
 ) {
-    val shouldShowEmptyState: Boolean
-        get() =
-            areListsEmpty(
-                homeData.data.resourceList,
-                homeData.data.foldersList,
-                homeData.data.tagsList,
-                homeData.data.groupsList,
-                homeData.data.suggestedResourceList,
-            )
-
     val showBackIcon: Boolean
         get() =
             when (homeView) {
-                is HomeDisplayViewModel.Folders -> {
-                    homeView.activeFolder is Folder.Child
+                is Folders -> {
+                    homeView.activeFolder is Child
                 }
-                is HomeDisplayViewModel.Tags -> homeView.activeTagId != null
-                is HomeDisplayViewModel.Groups -> homeView.activeGroupId != null
+                is Tags -> homeView.activeTagId != null
+                is Groups -> homeView.activeGroupId != null
                 else -> false
             }
 
     val showMoreMenu: Boolean
-        get() = homeView is HomeDisplayViewModel.Folders && homeView.activeFolder is Folder.Child
+        get() = homeView is Folders && homeView.activeFolder is Child
 
     val requireMoreMenuResource: ResourceModel
         get() = requireNotNull(moreMenuResource)
