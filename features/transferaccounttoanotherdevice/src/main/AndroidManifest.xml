@@ -6,6 +6,7 @@
     <application>
         <activity
             android:name="com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.TransferAccountToAnotherDeviceActivity"
+            android:exported="false"
             android:screenOrientation="portrait"
             tools:ignore="DiscouragedApi" />
     </application>
