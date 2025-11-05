@@ -10,16 +10,21 @@
         android:layout_height="wrap_content"
         android:background="@color/background">
 
-        <ImageView
+        <FrameLayout
             android:id="@+id/close"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingEnd="@dimen/dp_8"
             android:layout_marginStart="@dimen/dp_40"
-            android:src="@drawable/ic_close"
+            android:padding="@dimen/dp_8"
             app:layout_constraintBottom_toBottomOf="@+id/logo"
             app:layout_constraintStart_toEndOf="@+id/logo"
-            app:layout_constraintTop_toTopOf="@+id/logo"/>
+            app:layout_constraintTop_toTopOf="@+id/logo">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_close" />
+        </FrameLayout>
 
         <ImageView
             android:id="@+id/logo"
