@@ -23,12 +23,13 @@
 
 package com.passbolt.mobile.android.scenarios.home.filters
 
-import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
-import androidx.test.espresso.matcher.ViewMatchers.withId
-import androidx.test.espresso.matcher.ViewMatchers.withText
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasAnyDescendant
+import androidx.compose.ui.test.hasClickAction
+import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.junit4.createEmptyComposeRule
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.FlakyTest
 import androidx.test.filters.LargeTest
@@ -38,11 +39,10 @@ import com.passbolt.mobile.android.core.idlingresource.SignInIdlingResource
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.feature.authentication.AuthenticationMainActivity
-import com.passbolt.mobile.android.feature.home.R.id.titleDrawable
+import com.passbolt.mobile.android.helpers.getString
 import com.passbolt.mobile.android.helpers.signIn
 import com.passbolt.mobile.android.instrumentationTestsModule
 import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
-import com.passbolt.mobile.android.matchers.hasDrawable
 import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
 import org.junit.Rule
@@ -51,7 +51,6 @@ import org.junit.runner.RunWith
 import org.koin.core.component.inject
 import org.koin.test.KoinTest
 import kotlin.test.BeforeTest
-import com.google.android.material.R as MaterialR
 
 @RunWith(AndroidJUnit4::class)
 @LargeTest
@@ -83,40 +82,53 @@ class FilteringResourcesTest : KoinTest {
             IdlingResourceRule(arrayOf(signInIdlingResource, resourcesFullRefreshIdlingResource))
         }
 
+    @get:Rule
+    val composeTestRule = createEmptyComposeRule()
+
     @BeforeTest
     fun setup() {
-        signIn(managedAccountIntentCreator.getPassphrase())
+        composeTestRule.signIn(managedAccountIntentCreator.getPassphrase())
     }
 
-    //  https://passbolt.testrail.io/index.php?/cases/view/2621
+    /**
+     *  [As a logged in mobile user on the homepage I can change the current active filter](https://passbolt.testrail.io/index.php?/cases/view/11224)
+     *
+     * Given       that I am a logged in mobile user
+     * And         the active filter is   not   <filter>
+     * When        I open the filter drawer
+     * And         I click on the <filter> list item
+     * Then        I do not see the filter drawer
+     * And         I see the homepage
+     * And         I see the title is <filter> with its corresponding icon //TODO: how to reliably check the icon is correctly placed near corresponding filter element
+     * And         I see the list of resources contains <filter> elements //TODO: how to reliably check items corresponding to filter name
+     *
+     * Examples:
+     *
+     * | filter              |
+     *
+     * | “All items”         |
+     * | “Favourites”        |
+     * | “Recently modified” |
+     * | “Shared with me”    |
+     * | “Owned by me”       |
+     * | “Expiry”            |
+     * | “Folders”           |
+     * | “Tags”              |
+     * | “Groups”            |
+     */
     @Test
     @FlakyTest(detail = "It is currently failing nondeterministic on Android 12 - reason unknown")
     fun asALoggedInMobileUserOnTheHomepageICanChangeTheCurrentActiveFilter() {
-        //        Given       that I am a logged in mobile user
-        //        And         the active filter is   not   <filter>
         ResourceFilterModel.entries.forEach { model ->
-            //        When        I open the filter drawer
-            onView(withId(MaterialR.id.text_input_start_icon)).perform(click())
-            //        And         I click on the <filter> list item
-            onView(withId(model.filterId)).perform(click())
-            //        Then        I do not see the filter drawer
-            //        And         I see the homepage
-            onView(withId(com.passbolt.mobile.android.feature.permissions.R.id.rootLayout)).check(matches(isDisplayed()))
-            //        And         I see the title is <filter> with its corresponding icon
-            onView(withText(model.filterNameId)).check(matches(isDisplayed()))
-            onView(withId(titleDrawable)).check(matches(hasDrawable(model.filterIconId)))
-            //        And         I see the list of resources contains <filter> elements // TODO: unitTest?
-            //        And         I see the list of resources is <sorted> // TODO: unitTest?
-            //        Examples:
-            //           | filter              | sorted         |
-            //           | “All items”         | alphabetically |
-            //           | “Favourites”        | chronologically with the latest modifications on top |
-            //           | “Recently modified” | chronologically with the latest modifications on top |
-            //           | “Shared with me”    | chronologically with the latest modifications on top |
-            //           | “Owned by me”       | chronologically with the latest modifications on top |
-            //           | “Folders”           | alphabetically |
-            //           | “Tags”              | alphabetically |
-            //           | “Groups”            | alphabetically |
+            composeTestRule.onNodeWithTag("home_search_filter").performClick()
+            composeTestRule
+                .onNode(
+                    hasClickAction().and(
+                        hasAnyDescendant(hasText(getString(model.filterNameId))),
+                    ),
+                    useUnmergedTree = true,
+                ).performClick()
+            composeTestRule.onNodeWithTag("home_screen").assertIsDisplayed()
         }
     }
 }

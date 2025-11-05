@@ -25,6 +25,7 @@ package com.passbolt.mobile.android.scenarios.bottomnavigation
 
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
@@ -42,7 +43,6 @@ import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.feature.authentication.AuthenticationMainActivity
 import com.passbolt.mobile.android.feature.home.R.id.homeNav
-import com.passbolt.mobile.android.feature.home.R.id.rootLayout
 import com.passbolt.mobile.android.feature.otp.R.id.otpNav
 import com.passbolt.mobile.android.feature.settings.R.id.settingsNavCompose
 import com.passbolt.mobile.android.helpers.getString
@@ -94,7 +94,8 @@ class BottomNavigationTest : KoinTest {
 
     @BeforeTest
     fun setup() {
-        signIn(managedAccountIntentCreator.getPassphrase())
+        composeTestRule
+            .signIn(managedAccountIntentCreator.getPassphrase())
     }
 
     /**
@@ -139,8 +140,10 @@ class BottomNavigationTest : KoinTest {
             .check(matches(isDisplayed()))
             .check(matches(isNotSelected()))
         onView(withId(otpNav)).perform(click())
-        onView(withId(com.passbolt.mobile.android.feature.otp.R.id.otpRootLayout))
-            .check(matches(isDisplayed()))
+        composeTestRule.apply {
+            onNodeWithTag("otp_screen")
+                .assertIsDisplayed()
+        }
         onView(withId(otpNav))
             .check(matches(isSelected()))
     }
@@ -162,9 +165,14 @@ class BottomNavigationTest : KoinTest {
             .check(matches(isDisplayed()))
             .check(matches(isNotSelected()))
         onView(withId(homeNav)).perform(click())
-        onView(withId(rootLayout))
-            .check(matches(isDisplayed()))
+        composeTestRule.apply {
+            onNodeWithTag("home_screen").assertIsDisplayed()
+        }
         onView(withId(homeNav))
             .check(matches(isSelected()))
+        onView(withId(otpNav))
+            .check(matches(isNotSelected()))
+        onView(withId(settingsNavCompose))
+            .check(matches(isNotSelected()))
     }
 }

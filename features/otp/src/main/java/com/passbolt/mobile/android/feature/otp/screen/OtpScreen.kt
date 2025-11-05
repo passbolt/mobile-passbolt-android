@@ -42,6 +42,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -166,7 +167,9 @@ fun OtpScreen(
 ) {
     HomeScaffold(
         snackbarHostState = snackbarHostState,
-        modifier = modifier,
+        modifier =
+            modifier
+                .testTag("otp_screen"),
         appBarTitle = stringResource(LocalizationR.string.main_menu_otp),
         appBarIconRes = CoreUiR.drawable.ic_time_lock,
         appBarSearchInput = {

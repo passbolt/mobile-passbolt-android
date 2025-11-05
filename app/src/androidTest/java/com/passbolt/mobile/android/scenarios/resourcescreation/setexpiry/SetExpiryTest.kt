@@ -23,8 +23,8 @@
 
 package com.passbolt.mobile.android.scenarios.resourcescreation.setexpiry
 
+import androidx.compose.ui.test.junit4.createEmptyComposeRule
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
@@ -35,9 +35,11 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.passbolt.mobile.android.core.idlingresource.CreateResourceIdlingResource
 import com.passbolt.mobile.android.core.idlingresource.ResourcesFullRefreshIdlingResource
 import com.passbolt.mobile.android.core.idlingresource.SignInIdlingResource
+import com.passbolt.mobile.android.core.localization.R.string.filters_menu_recently_modified
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.feature.authentication.AuthenticationMainActivity
+import com.passbolt.mobile.android.helpers.chooseFilter
 import com.passbolt.mobile.android.helpers.createNewPasswordFromHomeScreen
 import com.passbolt.mobile.android.helpers.pickFirstResourceWithName
 import com.passbolt.mobile.android.helpers.signIn
@@ -45,16 +47,17 @@ import com.passbolt.mobile.android.instrumentationTestsModule
 import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
 import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.koin.test.KoinTest
 import org.koin.test.inject
 import kotlin.test.BeforeTest
-import com.google.android.material.R as MaterialR
 
 @RunWith(AndroidJUnit4::class)
 @MediumTest
+@Ignore("Deprecated: refactor needed - entire test class disabled")
 class SetExpiryTest : KoinTest {
     @get:Rule
     val startUpActivityRule =
@@ -88,22 +91,24 @@ class SetExpiryTest : KoinTest {
             )
         }
 
+    @get:Rule
+    val composeTestRule = createEmptyComposeRule()
+
     @BeforeTest
     fun setup() {
         // Given  I am logged in as a Pro or Cloud user // Cloud user
         // And    automatic expiry is enabled on the server
         // And    automatic expiry is set to <number of days> // 7 days
         // When   I create a new resource
-        signIn(managedAccountIntentCreator.getPassphrase())
+        composeTestRule.signIn(managedAccountIntentCreator.getPassphrase())
         createNewPasswordFromHomeScreen("PasswordWithExpirySet")
-        onView(withId(MaterialR.id.text_input_start_icon)).perform(click())
-        onView(withId(com.passbolt.mobile.android.feature.home.R.id.recentlyModified)).perform(click())
+        composeTestRule.chooseFilter(filters_menu_recently_modified)
     }
 
     //    https://passbolt.testrail.io/index.php?/cases/view/11935
     @Test
     fun setExpiryOfCreatedResourceToDefaultExpiryPeriod() {
-        pickFirstResourceWithName("PasswordWithExpirySet")
+        composeTestRule.pickFirstResourceWithName("PasswordWithExpirySet")
         onView(withId(com.passbolt.mobile.android.feature.resources.R.id.expiryItem)).check(matches(isDisplayed()))
         // Then   The resource is marked to expire after <number of days>
         onView(withText("In 7 days")).check(

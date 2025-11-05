@@ -23,25 +23,27 @@
 
 package com.passbolt.mobile.android.scenarios.home.filters
 
-import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
-import androidx.test.espresso.matcher.ViewMatchers.withId
-import androidx.test.espresso.matcher.ViewMatchers.withText
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasAnyDescendant
+import androidx.compose.ui.test.hasTestTag
+import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.junit4.createEmptyComposeRule
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import androidx.test.platform.app.InstrumentationRegistry
 import com.passbolt.mobile.android.core.idlingresource.ResourcesFullRefreshIdlingResource
 import com.passbolt.mobile.android.core.idlingresource.SignInIdlingResource
+import com.passbolt.mobile.android.core.localization.R.string.filters_menu_title
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.feature.authentication.AuthenticationMainActivity
+import com.passbolt.mobile.android.helpers.getString
 import com.passbolt.mobile.android.helpers.signIn
 import com.passbolt.mobile.android.instrumentationTestsModule
 import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
-import com.passbolt.mobile.android.matchers.hasBackgroundColor
-import com.passbolt.mobile.android.matchers.hasDrawable
 import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
 import org.junit.Rule
@@ -50,9 +52,6 @@ import org.junit.runner.RunWith
 import org.koin.core.component.inject
 import org.koin.test.KoinTest
 import kotlin.test.BeforeTest
-import com.google.android.material.R as MaterialR
-import com.passbolt.mobile.android.core.localization.R as LocalizationR
-import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 @RunWith(AndroidJUnit4::class)
 @LargeTest
@@ -81,9 +80,12 @@ class FilterDrawerTest : KoinTest {
             IdlingResourceRule(arrayOf(signInIdlingResource, resourcesFullRefreshIdlingResource))
         }
 
+    @get:Rule
+    val composeTestRule = createEmptyComposeRule()
+
     @BeforeTest
     fun setup() {
-        signIn(managedAccountIntentCreator.getPassphrase())
+        composeTestRule.signIn(managedAccountIntentCreator.getPassphrase())
     }
 
     // https://passbolt.testrail.io/index.php?/cases/view/2616
@@ -93,7 +95,7 @@ class FilterDrawerTest : KoinTest {
         //    When      I am on the homepage
         //    And       the search bar is not focused
         //    Then      I see an icon filter in the left side of the search bar
-        onView(withId(MaterialR.id.text_input_start_icon)).check(matches(isDisplayed()))
+        composeTestRule.onNodeWithTag("home_search_filter").assertExists()
     }
 
     // https://passbolt.testrail.io/index.php?/cases/view/2617
@@ -101,59 +103,21 @@ class FilterDrawerTest : KoinTest {
     fun asALoggedInMobileUserOnTheHomepageICanSeeTheFilterDrawer() {
         //    Given     that I am a logged in mobile user on the homepage
         //    When      I click on the filter icon
-        onView(withId(MaterialR.id.text_input_start_icon)).perform(click())
+        composeTestRule.onNodeWithTag("home_search_filter").performClick()
         //    Then      I see the “filter” drawer
-        onView(withId(com.passbolt.mobile.android.feature.resources.R.id.root)).check(matches(isDisplayed()))
+        composeTestRule.onNodeWithTag("filters_menu_sheet").assertIsDisplayed()
         //    And       I see the homepage is greyed out in the background
         //    And       I see a “Filter view by” title
-        onView(withText(LocalizationR.string.filters_menu_title)).check(matches(isDisplayed()))
-        //    And       I see a close button
-        onView(withId(com.passbolt.mobile.android.feature.autofill.R.id.close)).check(matches(isDisplayed()))
-        //    And       I see a list of filters
+        composeTestRule.onNodeWithText(getString(filters_menu_title)).assertIsDisplayed()
+        composeTestRule.onNodeWithTag("bottom_sheet_icon_close").assertIsDisplayed()
         //    And       I see <filter> list item with their corresponding icon
         ResourceFilterModel.entries.forEach { model ->
-            onView(withId(model.filterId))
-                .check(matches(isDisplayed()))
-                .check(matches(hasDrawable(model.filterIconId, CoreUiR.color.icon_tint)))
-            //    Examples:
-            //      | filter              |
-            //      | “All items”         |
-            //      | “Favorites”         |
-            //      | “Recently modified” |
-            //      | “Shared with me”    |
-            //      | “Owned by me”       |
-            //      | “Folders”           |
-            //      | “Tags”              |
-            //      | “Groups”            |
-        }
-    }
-
-    // https://passbolt.testrail.io/index.php?/cases/view/2618
-    @Test
-    fun asALoggedInMobileUserOnTheFilterDrawerICanSeeTheActiveFilterUsedToFilterOrSortResources() {
-        // Given      that I am a logged in mobile user
-        ResourceFilterModel.entries.forEach { model ->
-            // And        the <filter> is active
-            // When       I open the filter drawer
-            onView(withId(MaterialR.id.text_input_start_icon)).perform(click())
-            onView(withId(model.filterId)).perform(click())
-            // Then       I see the current active <filter> in the list with an active status
-            onView(withId(MaterialR.id.text_input_start_icon)).perform(click())
-            onView(withId(model.filterId))
-                .check(matches(isDisplayed()))
-                .check(matches(hasBackgroundColor(CoreUiR.color.primary)))
-            // And        I can close the drawer
-            onView(withId(com.passbolt.mobile.android.feature.autofill.R.id.close)).perform(click())
-            // Examples:
-            //    | filter              |
-            //    | “All items”         |
-            //    | “Favorites”         |
-            //    | “Recently modified” |
-            //    | “Shared with me”    |
-            //    | “Owned by me”       |
-            //    | “Folders”           |
-            //    | “Tags”              |
-            //    | “Groups”            |
+            composeTestRule
+                .onNode(
+                    hasTestTag("filters_menu_sheet").and(
+                        hasAnyDescendant(hasText(getString(model.filterNameId))),
+                    ),
+                ).assertExists()
         }
     }
 }

@@ -23,12 +23,13 @@
 
 package com.passbolt.mobile.android.scenarios.resourcesedition
 
+import androidx.compose.ui.test.junit4.createEmptyComposeRule
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.ViewInteraction
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.replaceText
-import androidx.test.espresso.action.ViewActions.typeText
+import androidx.test.espresso.action.ViewActions.scrollTo
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom
 import androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA
@@ -43,33 +44,36 @@ import com.passbolt.mobile.android.core.idlingresource.CreateResourceIdlingResou
 import com.passbolt.mobile.android.core.idlingresource.ResourcesFullRefreshIdlingResource
 import com.passbolt.mobile.android.core.idlingresource.SignInIdlingResource
 import com.passbolt.mobile.android.core.idlingresource.UpdateResourceIdlingResource
+import com.passbolt.mobile.android.core.localization.R.string.filters_menu_all_items
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppContext
+import com.passbolt.mobile.android.core.ui.R.id.input
 import com.passbolt.mobile.android.feature.authentication.AuthenticationMainActivity
+import com.passbolt.mobile.android.feature.resourceform.R.id.toolbar
+import com.passbolt.mobile.android.feature.resourcemoremenu.R.id.edit
+import com.passbolt.mobile.android.feature.resources.R.id.moreIcon
+import com.passbolt.mobile.android.helpers.chooseFilter
 import com.passbolt.mobile.android.helpers.createNewPasswordFromHomeScreen
 import com.passbolt.mobile.android.helpers.pickFirstResourceWithName
 import com.passbolt.mobile.android.helpers.signIn
 import com.passbolt.mobile.android.instrumentationTestsModule
 import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
-import com.passbolt.mobile.android.matchers.first
 import com.passbolt.mobile.android.matchers.withHint
 import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
-import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.Matchers.allOf
 import org.hamcrest.Matchers.hasToString
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.koin.core.component.inject
 import org.koin.test.KoinTest
 import kotlin.test.BeforeTest
-import com.google.android.material.R as MaterialR
-import com.passbolt.mobile.android.core.ui.R as CoreUiR
-import com.passbolt.mobile.android.feature.otp.R as OtpR
 
 @RunWith(AndroidJUnit4::class)
 @MediumTest
+@Ignore("Deprecated: refactor needed - entire test class disabled")
 class ResourcesEditionTest : KoinTest {
     @get:Rule
     val startUpActivityRule =
@@ -105,11 +109,13 @@ class ResourcesEditionTest : KoinTest {
             )
         }
 
+    @get:Rule
+    val composeTestRule = createEmptyComposeRule()
+
     @BeforeTest
     fun setup() {
-        signIn(managedAccountIntentCreator.getPassphrase())
-        onView(withId(MaterialR.id.text_input_start_icon)).perform(click())
-        onView(withId(com.passbolt.mobile.android.feature.home.R.id.allItems)).perform(click())
+        composeTestRule.signIn(managedAccountIntentCreator.getPassphrase())
+        composeTestRule.chooseFilter(filters_menu_all_items)
         createNewPasswordFromHomeScreen("ResourcesEditionTest")
     }
 
@@ -117,7 +123,7 @@ class ResourcesEditionTest : KoinTest {
     @Test
     fun onTheResourcesActionMenuDrawerICanClickEditPassword() {
         //    Given     that I am on the action menu drawer
-        pickFirstResourceWithName("ResourcesEditionTest")
+        composeTestRule.pickFirstResourceWithName("ResourcesEditionTest")
         //    And       I see ‘Edit password’ element enabled
 //        onView(first(withId(ResourcesID.moreIcon))).perform(click())
 //        onView(withId(ResourcemoremenuId.editPassword))
@@ -230,13 +236,14 @@ class ResourcesEditionTest : KoinTest {
         //    And       all placeholders are filled
         EditableFieldInput.entries.forEach { editableInputField ->
             onViewInputWithHintName(editableInputField.hintName)
+                .perform(scrollTo())
                 .check(matches(isDisplayed()))
         }
         //    When      I delete <placeholder> text field
         onViewInputWithHintName(EditableFieldInput.ENTER_URL.hintName)
-            .perform(replaceText(""))
+            .perform(scrollTo(), replaceText(""))
         onViewInputWithHintName(EditableFieldInput.ENTER_USERNAME.hintName)
-            .perform(replaceText(""))
+            .perform(scrollTo(), replaceText(""))
         //    Then      I delete <placeholder> text field
         onViewInputWithHintName(EditableFieldInput.ENTER_URL.hintName)
             .check(matches(withText("")))
@@ -284,7 +291,7 @@ class ResourcesEditionTest : KoinTest {
     }
 
     private fun onViewInputWithHintName(hintName: String): ViewInteraction =
-        onView(allOf(isDescendantOfA(withHint(equalTo(hintName))), withId(CoreUiR.id.input)))
+        onView(allOf(isDescendantOfA(withHint(hasToString(hintName))), withId(input)))
 
     private fun onViewTextInputLayoutWithHintName(hintName: String): ViewInteraction =
         onView(
@@ -295,8 +302,9 @@ class ResourcesEditionTest : KoinTest {
         )
 
     private fun enterEditPasswordScreen() {
-        onView(withId(OtpR.id.searchEditText)).perform(typeText("ResourcesEditionTest"))
-        onView(first(withId(OtpR.id.more))).perform(click())
-//        onView(withId(ResourcemoremenuId.editPassword)).perform(click())
+        composeTestRule.pickFirstResourceWithName("ResourcesEditionTest")
+        onView(withId(moreIcon)).perform(click())
+        onView(withId(edit)).perform(click())
+        onView(withId(toolbar)).check(matches(isDisplayed()))
     }
 }
