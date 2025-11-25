@@ -198,16 +198,10 @@ interface ResourcesDao : BaseDao<Resource> {
     @Transaction
     @Query(
         "SELECT r.resourceId, r.folderId, r.expiry, r.favouriteId, r.modified, " +
-            "r.resourcePermission, r.resourceTypeId, r.metadataKeyId, r.metadataKeyType, rm.metadataJson, ru.uri " +
+            "r.resourcePermission, r.resourceTypeId, r.metadataKeyId, r.metadataKeyType, rm.metadataJson " +
             "FROM Resource r " +
             "INNER JOIN ResourceMetadata rm " +
             "ON r.resourceId = rm.resourceId " +
-            "LEFT JOIN ResourceUri ru " +
-            "ON r.resourceId = ru.resourceId " +
-            "LEFT JOIN ResourceAndTagsCrossRef rTCR " +
-            "ON r.resourceId = rTCR.resourceId " +
-            "LEFT JOIN Tag t " +
-            "ON t.id = rTCR.tagId " +
             "WHERE r.folderId IN (:inOneOfFolders) AND r.resourceTypeId IN(" +
             "   SELECT resourceTypeId FROM ResourceType WHERE slug IN (:slugs)" +
             ") AND (" +
@@ -258,23 +252,25 @@ interface ResourcesDao : BaseDao<Resource> {
             "FROM Resource r " +
             "INNER JOIN ResourceMetadata rm " +
             "ON r.resourceId = rm.resourceId " +
-            "LEFT JOIN ResourceUri ru " +
-            "ON r.resourceId = ru.resourceId " +
-            "LEFT JOIN ResourceAndTagsCrossRef cr " +
-            "ON r.resourceId=cr.resourceId " +
-            "WHERE cr.tagId=:tagId AND r.resourceTypeId IN(" +
+            "WHERE r.resourceTypeId IN (" +
             "   SELECT resourceTypeId FROM ResourceType WHERE slug IN (:slugs)" +
-            ") AND (" +
+            ") " +
+            "AND EXISTS (" +
+            "   SELECT 1 FROM ResourceAndTagsCrossRef rTCR " +
+            "   WHERE rTCR.resourceId = r.resourceId AND rTCR.tagId = :tagId" +
+            ") " +
+            "AND (" +
             "   :searchQuery IS NULL OR " +
             "   rm.name LIKE '%' || :searchQuery || '%' OR " +
             "   rm.username LIKE '%' || :searchQuery || '%' OR " +
             "   rm.customFieldsKeys LIKE '%' || :searchQuery || '%' OR " +
-            "   EXISTS ( " +
+            "   EXISTS (" +
             "       SELECT 1 FROM ResourceUri ru " +
             "       WHERE ru.resourceId = r.resourceId " +
             "       AND ru.uri LIKE '%' || :searchQuery || '%' " +
             "   )" +
-            ")",
+            ") " +
+            "ORDER BY modified DESC",
     )
     suspend fun getResourcesWithTag(
         tagId: String,

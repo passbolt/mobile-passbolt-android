@@ -82,7 +82,7 @@ internal fun getHeaderConfig(
             isSuggestedSectionVisible = false,
             isOtherItemsSectionVisible = false,
             currentFolderName = currentFolderName,
-            areAllSectionsEmpty = loadState.areAllEmpty,
+            areAllSectionsEmpty = loadState.areAllEmpty && !loadState.isAnyLoading,
         )
     }
 }
