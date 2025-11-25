@@ -41,12 +41,6 @@ interface PaginatedResourcesDao : BaseDao<Resource> {
             "FROM Resource r " +
             "INNER JOIN ResourceMetadata rm " +
             "ON r.resourceId = rm.resourceId " +
-            "LEFT JOIN ResourceUri ru " +
-            "ON r.resourceId = ru.resourceId " +
-            "LEFT JOIN ResourceAndTagsCrossRef rTCR " +
-            "ON r.resourceId = rTCR.resourceId " +
-            "LEFT JOIN Tag t " +
-            "ON t.id = rTCR.tagId " +
             "WHERE r.resourceTypeId IN(" +
             "   SELECT resourceTypeId FROM ResourceType WHERE slug IN (:slugs)" +
             ") " +
@@ -55,8 +49,17 @@ interface PaginatedResourcesDao : BaseDao<Resource> {
             "   rm.name LIKE '%' || :searchQuery || '%' OR " +
             "   rm.username LIKE '%' || :searchQuery || '%' OR " +
             "   rm.customFieldsKeys LIKE '%' || :searchQuery || '%' OR " +
-            "   ru.uri LIKE '%' || :searchQuery || '%' OR " +
-            "   t.slug LIKE '%' || :searchQuery || '%'" +
+            "   EXISTS ( " +
+            "       SELECT 1 FROM ResourceUri ru " +
+            "       WHERE ru.resourceId = r.resourceId " +
+            "       AND ru.uri LIKE '%' || :searchQuery || '%' " +
+            "   ) OR " +
+            "   EXISTS ( " +
+            "       SELECT 1 FROM ResourceAndTagsCrossRef rTCR " +
+            "       INNER JOIN Tag t ON t.id = rTCR.tagId " +
+            "       WHERE rTCR.resourceId = r.resourceId " +
+            "       AND t.slug LIKE '%' || :searchQuery || '%' " +
+            "   )" +
             ") " +
             "ORDER BY rm.name " +
             "COLLATE NOCASE ASC",
@@ -68,17 +71,11 @@ interface PaginatedResourcesDao : BaseDao<Resource> {
 
     @Transaction
     @Query(
-        "SELECT DISTINCT r.resourceId, r.folderId, r.expiry, r.favouriteId, r.modified, " +
+        "SELECT r.resourceId, r.folderId, r.expiry, r.favouriteId, r.modified, " +
             "r.resourcePermission, r.resourceTypeId, r.metadataKeyId, r.metadataKeyType, rm.metadataJson " +
             "FROM Resource r " +
             "INNER JOIN ResourceMetadata rm " +
             "ON r.resourceId = rm.resourceId " +
-            "LEFT JOIN ResourceUri ru " +
-            "ON r.resourceId = ru.resourceId " +
-            "LEFT JOIN ResourceAndTagsCrossRef rTCR " +
-            "ON r.resourceId = rTCR.resourceId " +
-            "LEFT JOIN Tag t " +
-            "ON t.id = rTCR.tagId " +
             "WHERE r.resourceTypeId IN(" +
             "   SELECT resourceTypeId FROM ResourceType WHERE slug IN (:slugs)" +
             ") " +
@@ -87,10 +84,18 @@ interface PaginatedResourcesDao : BaseDao<Resource> {
             "   rm.name LIKE '%' || :searchQuery || '%' OR " +
             "   rm.username LIKE '%' || :searchQuery || '%' OR " +
             "   rm.customFieldsKeys LIKE '%' || :searchQuery || '%' OR " +
-            "   ru.uri LIKE '%' || :searchQuery || '%' OR " +
-            "   t.slug LIKE '%' || :searchQuery || '%'" +
+            "   EXISTS ( " +
+            "       SELECT 1 FROM ResourceUri ru " +
+            "       WHERE ru.resourceId = r.resourceId " +
+            "       AND ru.uri LIKE '%' || :searchQuery || '%' " +
+            "   ) OR " +
+            "   EXISTS ( " +
+            "       SELECT 1 FROM ResourceAndTagsCrossRef rTCR " +
+            "       INNER JOIN Tag t ON t.id = rTCR.tagId " +
+            "       WHERE rTCR.resourceId = r.resourceId " +
+            "       AND t.slug LIKE '%' || :searchQuery || '%' " +
+            "   )" +
             ") " +
-            "GROUP BY r.resourceId " +
             "ORDER BY r.modified DESC",
     )
     fun getAllOrderedByModifiedDatePaginated(
@@ -105,12 +110,6 @@ interface PaginatedResourcesDao : BaseDao<Resource> {
             "FROM Resource r " +
             "INNER JOIN ResourceMetadata rm " +
             "ON r.resourceId = rm.resourceId " +
-            "LEFT JOIN ResourceUri ru " +
-            "ON r.resourceId = ru.resourceId " +
-            "LEFT JOIN ResourceAndTagsCrossRef rTCR " +
-            "ON r.resourceId = rTCR.resourceId " +
-            "LEFT JOIN Tag t " +
-            "ON t.id = rTCR.tagId " +
             "WHERE r.favouriteId IS NOT NULL AND r.resourceTypeId IN(" +
             "   SELECT resourceTypeId FROM ResourceType WHERE slug IN (:slugs)" +
             ") " +
@@ -119,8 +118,17 @@ interface PaginatedResourcesDao : BaseDao<Resource> {
             "   rm.name LIKE '%' || :searchQuery || '%' OR " +
             "   rm.username LIKE '%' || :searchQuery || '%' OR " +
             "   rm.customFieldsKeys LIKE '%' || :searchQuery || '%' OR " +
-            "   ru.uri LIKE '%' || :searchQuery || '%' OR " +
-            "   t.slug LIKE '%' || :searchQuery || '%'" +
+            "   EXISTS ( " +
+            "       SELECT 1 FROM ResourceUri ru " +
+            "       WHERE ru.resourceId = r.resourceId " +
+            "       AND ru.uri LIKE '%' || :searchQuery || '%' " +
+            "   ) OR " +
+            "   EXISTS ( " +
+            "       SELECT 1 FROM ResourceAndTagsCrossRef rTCR " +
+            "       INNER JOIN Tag t ON t.id = rTCR.tagId " +
+            "       WHERE rTCR.resourceId = r.resourceId " +
+            "       AND t.slug LIKE '%' || :searchQuery || '%' " +
+            "   )" +
             ") " +
             "ORDER BY modified DESC",
     )
@@ -136,12 +144,6 @@ interface PaginatedResourcesDao : BaseDao<Resource> {
             "FROM Resource r " +
             "INNER JOIN ResourceMetadata rm " +
             "ON r.resourceId = rm.resourceId " +
-            "LEFT JOIN ResourceUri ru " +
-            "ON r.resourceId = ru.resourceId " +
-            "LEFT JOIN ResourceAndTagsCrossRef rTCR " +
-            "ON r.resourceId = rTCR.resourceId " +
-            "LEFT JOIN Tag t " +
-            "ON t.id = rTCR.tagId " +
             "WHERE r.resourcePermission IN (:permissions) AND r.resourceTypeId IN(" +
             "   SELECT resourceTypeId FROM ResourceType WHERE slug IN (:slugs)" +
             ")" +
@@ -150,8 +152,17 @@ interface PaginatedResourcesDao : BaseDao<Resource> {
             "   rm.name LIKE '%' || :searchQuery || '%' OR " +
             "   rm.username LIKE '%' || :searchQuery || '%' OR " +
             "   rm.customFieldsKeys LIKE '%' || :searchQuery || '%' OR " +
-            "   ru.uri LIKE '%' || :searchQuery || '%' OR " +
-            "   t.slug LIKE '%' || :searchQuery || '%'" +
+            "   EXISTS ( " +
+            "       SELECT 1 FROM ResourceUri ru " +
+            "       WHERE ru.resourceId = r.resourceId " +
+            "       AND ru.uri LIKE '%' || :searchQuery || '%' " +
+            "   ) OR " +
+            "   EXISTS ( " +
+            "       SELECT 1 FROM ResourceAndTagsCrossRef rTCR " +
+            "       INNER JOIN Tag t ON t.id = rTCR.tagId " +
+            "       WHERE rTCR.resourceId = r.resourceId " +
+            "       AND t.slug LIKE '%' || :searchQuery || '%' " +
+            "   )" +
             ") " +
             "ORDER BY modified DESC",
     )
@@ -168,12 +179,6 @@ interface PaginatedResourcesDao : BaseDao<Resource> {
             "FROM Resource r " +
             "INNER JOIN ResourceMetadata rm " +
             "ON r.resourceId = rm.resourceId " +
-            "LEFT JOIN ResourceUri ru " +
-            "ON r.resourceId = ru.resourceId " +
-            "LEFT JOIN ResourceAndTagsCrossRef rTCR " +
-            "ON r.resourceId = rTCR.resourceId " +
-            "LEFT JOIN Tag t " +
-            "ON t.id = rTCR.tagId " +
             "WHERE r.expiry IS NOT NULL AND r.expiry < :expiryTimestampMillis AND r.resourceTypeId IN(" +
             "   SELECT resourceTypeId FROM ResourceType WHERE slug IN (:slugs)" +
             ") " +
@@ -182,8 +187,17 @@ interface PaginatedResourcesDao : BaseDao<Resource> {
             "   rm.name LIKE '%' || :searchQuery || '%' OR " +
             "   rm.username LIKE '%' || :searchQuery || '%' OR " +
             "   rm.customFieldsKeys LIKE '%' || :searchQuery || '%' OR " +
-            "   ru.uri LIKE '%' || :searchQuery || '%' OR " +
-            "   t.slug LIKE '%' || :searchQuery || '%'" +
+            "   EXISTS ( " +
+            "       SELECT 1 FROM ResourceUri ru " +
+            "       WHERE ru.resourceId = r.resourceId " +
+            "       AND ru.uri LIKE '%' || :searchQuery || '%' " +
+            "   ) OR " +
+            "   EXISTS ( " +
+            "       SELECT 1 FROM ResourceAndTagsCrossRef rTCR " +
+            "       INNER JOIN Tag t ON t.id = rTCR.tagId " +
+            "       WHERE rTCR.resourceId = r.resourceId " +
+            "       AND t.slug LIKE '%' || :searchQuery || '%' " +
+            "   )" +
             ") " +
             "ORDER BY expiry ASC",
     )
@@ -200,9 +214,7 @@ interface PaginatedResourcesDao : BaseDao<Resource> {
             "FROM Resource r " +
             "INNER JOIN ResourceMetadata rm " +
             "ON r.resourceId = rm.resourceId " +
-            "LEFT JOIN ResourceUri ru " +
-            "ON r.resourceId = ru.resourceId " +
-            "LEFT JOIN ResourceAndTagsCrossRef cr " +
+            "INNER JOIN ResourceAndTagsCrossRef cr " +
             "ON r.resourceId=cr.resourceId " +
             "WHERE cr.tagId=:tagId AND r.resourceTypeId IN(" +
             "   SELECT resourceTypeId FROM ResourceType WHERE slug IN (:slugs)" +
@@ -212,7 +224,11 @@ interface PaginatedResourcesDao : BaseDao<Resource> {
             "   rm.name LIKE '%' || :searchQuery || '%' OR " +
             "   rm.username LIKE '%' || :searchQuery || '%' OR " +
             "   rm.customFieldsKeys LIKE '%' || :searchQuery || '%' OR " +
-            "   ru.uri LIKE '%' || :searchQuery || '%'" +
+            "   EXISTS ( " +
+            "       SELECT 1 FROM ResourceUri ru " +
+            "       WHERE ru.resourceId = r.resourceId " +
+            "       AND ru.uri LIKE '%' || :searchQuery || '%' " +
+            "   )" +
             ") ",
     )
     fun getResourcesWithTag(
@@ -228,8 +244,6 @@ interface PaginatedResourcesDao : BaseDao<Resource> {
             "FROM Resource r " +
             "INNER JOIN ResourceMetadata rm " +
             "ON r.resourceId = rm.resourceId " +
-            "LEFT JOIN ResourceUri ru " +
-            "ON r.resourceId = ru.resourceId " +
             "INNER JOIN ResourceAndGroupsCrossRef cr " +
             "ON r.resourceId=cr.resourceId " +
             "WHERE cr.groupId=:groupId AND r.resourceTypeId IN(" +
@@ -240,7 +254,11 @@ interface PaginatedResourcesDao : BaseDao<Resource> {
             "   rm.name LIKE '%' || :searchQuery || '%' OR " +
             "   rm.username LIKE '%' || :searchQuery || '%' OR " +
             "   rm.customFieldsKeys LIKE '%' || :searchQuery || '%' OR " +
-            "   ru.uri LIKE '%' || :searchQuery || '%'" +
+            "   EXISTS ( " +
+            "       SELECT 1 FROM ResourceUri ru " +
+            "       WHERE ru.resourceId = r.resourceId " +
+            "       AND ru.uri LIKE '%' || :searchQuery || '%' " +
+            "   )" +
             ") ",
     )
     fun getResourcesWithGroup(
@@ -274,17 +292,19 @@ interface PaginatedResourcesDao : BaseDao<Resource> {
             "ON r.resourceId = rm.resourceId " +
             "LEFT JOIN ResourceUri ru " +
             "ON r.resourceId = ru.resourceId " +
-            "LEFT JOIN ResourceAndTagsCrossRef rTCR " +
-            "ON r.resourceId = rTCR.resourceId " +
-            "LEFT JOIN Tag t " +
-            "ON t.id = rTCR.tagId " +
             "WHERE (" +
             "   :searchQuery IS NULL OR " +
             "   rm.name LIKE '%' || :searchQuery || '%' OR " +
             "   rm.username LIKE '%' || :searchQuery || '%' OR " +
             "   rm.customFieldsKeys LIKE '%' || :searchQuery || '%' OR " +
             "   ru.uri LIKE '%' || :searchQuery || '%' OR " +
-            "   t.slug LIKE '%' || :searchQuery || '%' )" +
+            "   EXISTS ( " +
+            "       SELECT 1 FROM ResourceAndTagsCrossRef rTCR " +
+            "       INNER JOIN Tag t ON t.id = rTCR.tagId " +
+            "       WHERE rTCR.resourceId = r.resourceId " +
+            "       AND t.slug LIKE '%' || :searchQuery || '%' " +
+            "   )" +
+            ")" +
             "AND " +
             "r.folderId IN (:inOneOfFolders) " +
             "AND " +
