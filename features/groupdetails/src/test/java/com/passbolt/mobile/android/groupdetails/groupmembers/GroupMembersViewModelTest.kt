@@ -107,11 +107,11 @@ class GroupMembersViewModelTest : KoinTest {
             viewModel = get()
 
             viewModel.viewState.test {
-                assertThat(expectItem()).isEqualTo(GroupMembersState())
+                assertThat(awaitItem()).isEqualTo(GroupMembersState())
 
                 viewModel.onIntent(Initialize(testGroup.groupId))
 
-                val updatedState = expectItem()
+                val updatedState = awaitItem()
                 assertThat(updatedState.groupName).isEqualTo(testGroup.groupName)
                 assertThat(updatedState.members).isEqualTo(testUsers)
                 assertThat(updatedState.members).hasSize(2)
@@ -136,11 +136,11 @@ class GroupMembersViewModelTest : KoinTest {
             viewModel = get()
 
             viewModel.viewState.test {
-                assertThat(expectItem()).isEqualTo(GroupMembersState())
+                assertThat(awaitItem()).isEqualTo(GroupMembersState())
 
                 viewModel.onIntent(Initialize(testGroup.groupId))
 
-                val updatedState = expectItem()
+                val updatedState = awaitItem()
                 assertThat(updatedState.groupName).isEqualTo(testGroup.groupName)
                 assertThat(updatedState.members).isEmpty()
             }
@@ -154,7 +154,7 @@ class GroupMembersViewModelTest : KoinTest {
 
             viewModel.sideEffect.test {
                 viewModel.onIntent(GoBack)
-                assertThat(expectItem()).isEqualTo(NavigateUp)
+                assertThat(awaitItem()).isEqualTo(NavigateUp)
             }
         }
 
@@ -167,7 +167,7 @@ class GroupMembersViewModelTest : KoinTest {
             viewModel.sideEffect.test {
                 val userId = "test-user-id"
                 viewModel.onIntent(GoToMemberDetails(userId))
-                assertThat(expectItem()).isEqualTo(NavigateToMemberDetails(userId))
+                assertThat(awaitItem()).isEqualTo(NavigateToMemberDetails(userId))
             }
         }
 
