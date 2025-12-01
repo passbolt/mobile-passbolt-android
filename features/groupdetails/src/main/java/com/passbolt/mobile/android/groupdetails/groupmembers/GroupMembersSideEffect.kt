@@ -1,8 +1,3 @@
-package com.passbolt.mobile.android.groupdetails.groupmemberdetails
-
-import org.koin.androidx.viewmodel.dsl.viewModelOf
-import org.koin.core.module.Module
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -26,6 +21,12 @@ import org.koin.core.module.Module
  * @since v1.0
  */
 
-fun Module.groupMemberDetailsModule() {
-    viewModelOf(::GroupMemberDetailsViewModel)
+package com.passbolt.mobile.android.groupdetails.groupmembers
+
+internal sealed interface GroupMembersSideEffect {
+    data object NavigateUp : GroupMembersSideEffect
+
+    data class NavigateToMemberDetails(
+        val userId: String,
+    ) : GroupMembersSideEffect
 }

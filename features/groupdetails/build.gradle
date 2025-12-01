@@ -1,6 +1,7 @@
 plugins {
     alias libs.plugins.android.library
     alias libs.plugins.kotlin.gradle
+    alias libs.plugins.compose.compiler
     alias libs.plugins.navigation.safeargs
 }
 
@@ -20,18 +21,28 @@ dependencies {
     implementation project(':localization')
 
     implementation libs.koin
+    implementation libs.koin.compose
     implementation libs.navigation.fragment
     implementation libs.navigation.ui
     implementation libs.fastadapter.core
     implementation libs.fastadapter.binding
     implementation libs.fastadapter.diff
     implementation libs.coil.views
+    implementation libs.coil.compose
+    implementation platform(libs.compose.bom)
+    implementation libs.compose.foundation
+    implementation libs.compose.material3
+    implementation libs.compose.ui.tooling
+    debugImplementation libs.compose.ui.tooling.preview
+
+    testImplementation project(':commontest')
 }
 
 android {
     namespace = "com.passbolt.mobile.android.feature.groupdetails"
     buildFeatures {
         viewBinding true
+        compose true
     }
 }
 

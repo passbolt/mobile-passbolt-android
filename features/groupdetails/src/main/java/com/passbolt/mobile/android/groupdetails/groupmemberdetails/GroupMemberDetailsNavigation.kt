@@ -1,8 +1,3 @@
-package com.passbolt.mobile.android.groupdetails.groupmemberdetails
-
-import org.koin.androidx.viewmodel.dsl.viewModelOf
-import org.koin.core.module.Module
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -25,7 +20,8 @@ import org.koin.core.module.Module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+package com.passbolt.mobile.android.groupdetails.groupmemberdetails
 
-fun Module.groupMemberDetailsModule() {
-    viewModelOf(::GroupMemberDetailsViewModel)
+interface GroupMemberDetailsNavigation {
+    fun navigateUp()
 }
