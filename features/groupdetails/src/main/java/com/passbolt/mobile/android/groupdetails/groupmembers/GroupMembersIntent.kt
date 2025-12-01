@@ -1,8 +1,3 @@
-package com.passbolt.mobile.android.groupdetails.groupmembers
-
-import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
-import com.passbolt.mobile.android.ui.UserModel
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -25,18 +20,17 @@ import com.passbolt.mobile.android.ui.UserModel
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-interface GroupMembersContract {
-    interface View : BaseAuthenticatedContract.View {
-        fun showGroupMembers(users: List<UserModel>)
 
-        fun navigateToGroupMemberDetails(userId: String)
+package com.passbolt.mobile.android.groupdetails.groupmembers
 
-        fun showGroupName(groupName: String)
-    }
+internal sealed interface GroupMembersIntent {
+    data object GoBack : GroupMembersIntent
 
-    interface Presenter : BaseAuthenticatedContract.Presenter<View> {
-        fun argsReceived(groupId: String)
+    data class Initialize(
+        val groupId: String,
+    ) : GroupMembersIntent
 
-        fun groupMemberClick(userModel: UserModel)
-    }
+    data class GoToMemberDetails(
+        val userId: String,
+    ) : GroupMembersIntent
 }
