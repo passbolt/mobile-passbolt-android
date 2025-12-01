@@ -19,6 +19,7 @@ dependencies {
     implementation project(':users')
     implementation project(':localization')
 
+    implementation platform(libs.koin.bom)
     implementation libs.koin
     implementation libs.navigation.fragment
     implementation libs.navigation.ui

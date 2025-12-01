@@ -209,11 +209,11 @@ class HomeViewModelMenuTest : KoinTest {
             viewModel.onIntent(OpenResourceMenu(mockResourceModel("Resource 1")))
 
             viewModel.sideEffect.test {
-                assertIs<OpenResourceMoreMenu>(expectItem())
+                assertIs<OpenResourceMoreMenu>(awaitItem())
 
                 viewModel.onIntent(CopyResourceUsername)
 
-                val effect = expectItem()
+                val effect = awaitItem()
                 assertIs<CopyToClipboard>(effect)
                 assertThat(effect.label).isEqualTo("Username")
                 assertThat(effect.value).isEqualTo("testuser")
@@ -240,11 +240,11 @@ class HomeViewModelMenuTest : KoinTest {
             viewModel.onIntent(OpenResourceMenu(mockResourceModel("Resource 1")))
 
             viewModel.sideEffect.test {
-                assertIs<OpenResourceMoreMenu>(expectItem())
+                assertIs<OpenResourceMoreMenu>(awaitItem())
 
                 viewModel.onIntent(CopyResourceMetadataDescription)
 
-                val effect = expectItem()
+                val effect = awaitItem()
                 assertIs<CopyToClipboard>(effect)
                 assertThat(effect.label).isEqualTo("Description")
                 assertThat(effect.value).isEqualTo("description text")
@@ -271,11 +271,11 @@ class HomeViewModelMenuTest : KoinTest {
             viewModel.onIntent(OpenResourceMenu(mockResourceModel("Resource 1")))
 
             viewModel.sideEffect.test {
-                assertIs<OpenResourceMoreMenu>(expectItem())
+                assertIs<OpenResourceMoreMenu>(awaitItem())
 
                 viewModel.onIntent(CopyResourceUri)
 
-                val effect = expectItem()
+                val effect = awaitItem()
                 assertIs<CopyToClipboard>(effect)
                 assertThat(effect.label).isEqualTo("Uri")
                 assertThat(effect.value).isEqualTo("main uri")
@@ -302,11 +302,11 @@ class HomeViewModelMenuTest : KoinTest {
             viewModel.onIntent(OpenResourceMenu(mockResourceModel("Resource 1")))
 
             viewModel.sideEffect.test {
-                assertIs<OpenResourceMoreMenu>(expectItem())
+                assertIs<OpenResourceMoreMenu>(awaitItem())
 
                 viewModel.onIntent(CopyPassword)
 
-                val effect = expectItem()
+                val effect = awaitItem()
                 assertIs<CopyToClipboard>(effect)
                 assertThat(effect.label).isEqualTo("Password")
                 assertThat(effect.value).isEqualTo("password")
@@ -333,11 +333,11 @@ class HomeViewModelMenuTest : KoinTest {
             viewModel.onIntent(OpenResourceMenu(mockResourceModel("Resource 1")))
 
             viewModel.sideEffect.test {
-                assertIs<OpenResourceMoreMenu>(expectItem())
+                assertIs<OpenResourceMoreMenu>(awaitItem())
 
                 viewModel.onIntent(CopyNote)
 
-                val effect = expectItem()
+                val effect = awaitItem()
                 assertIs<CopyToClipboard>(effect)
                 assertThat(effect.label).isEqualTo("Note")
                 assertThat(effect.value).isEqualTo("note content")
@@ -364,11 +364,11 @@ class HomeViewModelMenuTest : KoinTest {
             viewModel.onIntent(OpenResourceMenu(mockResourceModel("Resource 1")))
 
             viewModel.sideEffect.test {
-                assertIs<OpenResourceMoreMenu>(expectItem())
+                assertIs<OpenResourceMoreMenu>(awaitItem())
 
                 viewModel.onIntent(LaunchResourceWebsite)
 
-                val effect = expectItem()
+                val effect = awaitItem()
                 assertIs<NavigateToResourceUri>(effect)
                 assertThat(effect.url).isEqualTo("main uri")
             }
@@ -390,7 +390,7 @@ class HomeViewModelMenuTest : KoinTest {
             viewModel.onIntent(OpenResourceMenu(mockResourceModel("Test Resource")))
 
             viewModel.sideEffect.test {
-                assertIs<OpenResourceMoreMenu>(expectItem())
+                assertIs<OpenResourceMoreMenu>(awaitItem())
 
                 viewModel.onIntent(ToggleResourceFavourite(ADD_TO_FAVOURITES))
             }
@@ -412,7 +412,7 @@ class HomeViewModelMenuTest : KoinTest {
             viewModel.onIntent(OpenResourceMenu(mockResourceModel("Test Resource")))
 
             viewModel.sideEffect.test {
-                assertIs<OpenResourceMoreMenu>(expectItem())
+                assertIs<OpenResourceMoreMenu>(awaitItem())
 
                 viewModel.onIntent(ToggleResourceFavourite(REMOVE_FROM_FAVOURITES))
             }
@@ -432,11 +432,11 @@ class HomeViewModelMenuTest : KoinTest {
             viewModel.onIntent(OpenResourceMenu(mockResourceModel("Test Resource")))
 
             viewModel.sideEffect.test {
-                assertIs<OpenResourceMoreMenu>(expectItem())
+                assertIs<OpenResourceMoreMenu>(awaitItem())
 
                 viewModel.onIntent(ToggleResourceFavourite(ADD_TO_FAVOURITES))
 
-                val effect = expectItem()
+                val effect = awaitItem()
                 assertIs<ShowErrorSnackbar>(effect)
                 assertThat(effect.type).isEqualTo(TOGGLE_FAVOURITE_FAILURE)
             }

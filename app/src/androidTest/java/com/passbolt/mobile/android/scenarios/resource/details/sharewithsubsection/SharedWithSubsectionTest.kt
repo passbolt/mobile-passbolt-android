@@ -50,6 +50,7 @@ import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
 import com.passbolt.mobile.android.scenarios.resource.details.TestResourceType
 import org.hamcrest.Matchers.allOf
+import org.junit.Before
 import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
@@ -57,7 +58,6 @@ import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
 import org.koin.core.component.inject
 import org.koin.test.KoinTest
-import kotlin.test.BeforeTest
 import com.passbolt.mobile.android.core.localization.R.string as localizationString
 import com.passbolt.mobile.android.feature.permissions.R.id as permissionsId
 import com.passbolt.mobile.android.feature.resources.R.id as resourcesId
@@ -102,7 +102,7 @@ class SharedWithSubsectionTest(
     @get:Rule
     val composeTestRule = createEmptyComposeRule()
 
-    @BeforeTest
+    @Before
     fun setup() {
         //      Given   that I am logged in mobile user
         composeTestRule.signIn(managedAccountIntentCreator.getPassphrase())

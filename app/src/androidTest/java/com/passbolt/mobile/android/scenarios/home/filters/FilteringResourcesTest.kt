@@ -45,12 +45,12 @@ import com.passbolt.mobile.android.instrumentationTestsModule
 import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
 import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.koin.core.component.inject
 import org.koin.test.KoinTest
-import kotlin.test.BeforeTest
 
 @RunWith(AndroidJUnit4::class)
 @LargeTest
@@ -85,7 +85,7 @@ class FilteringResourcesTest : KoinTest {
     @get:Rule
     val composeTestRule = createEmptyComposeRule()
 
-    @BeforeTest
+    @Before
     fun setup() {
         composeTestRule.signIn(managedAccountIntentCreator.getPassphrase())
     }

@@ -14,9 +14,8 @@ import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
-import androidx.navigation3.runtime.rememberSavedStateNavEntryDecorator
+import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
-import androidx.navigation3.ui.rememberSceneSetupNavEntryDecorator
 import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpFragment
 import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpMode
 import com.passbolt.mobile.android.feature.otp.scanotp.scanotpsuccess.ScanOtpSuccessFragment
@@ -74,7 +73,7 @@ class OtpBottomNavigationContainerFragment :
     }
 
     private lateinit var viewModel: OtpViewModel
-    private lateinit var backstackList: NavBackStack
+    private lateinit var backstackList: NavBackStack<NavKey>
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -84,7 +83,7 @@ class OtpBottomNavigationContainerFragment :
         ComposeView(requireContext()).apply {
             setContent {
                 val backStack =
-                    rememberNavBackStack<NavKey>(Otp).apply {
+                    rememberNavBackStack(Otp).apply {
                         backstackList = this
                     }
 
@@ -93,8 +92,7 @@ class OtpBottomNavigationContainerFragment :
                     onBack = { backStack.removeLastOrNull() },
                     entryDecorators =
                         listOf(
-                            rememberSceneSetupNavEntryDecorator(),
-                            rememberSavedStateNavEntryDecorator(),
+                            rememberSaveableStateHolderNavEntryDecorator(),
                             rememberViewModelStoreNavEntryDecorator(),
                         ),
                     entryProvider = { key ->

@@ -7,9 +7,8 @@ import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
-import androidx.navigation3.runtime.rememberSavedStateNavEntryDecorator
+import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
-import androidx.navigation3.ui.rememberSceneSetupNavEntryDecorator
 import com.passbolt.mobile.android.core.navigation.compose.base.Feature
 import com.passbolt.mobile.android.core.navigation.compose.base.FeatureModuleNavigation
 import com.passbolt.mobile.android.core.navigation.compose.keys.SettingsNavigationKey
@@ -34,8 +33,7 @@ fun AppNavigation(navigator: AppNavigator = koinInject()) {
         onBack = { navigator.navigateBack() },
         entryDecorators =
             listOf(
-                rememberSceneSetupNavEntryDecorator(),
-                rememberSavedStateNavEntryDecorator(),
+                rememberSaveableStateHolderNavEntryDecorator(),
                 rememberViewModelStoreNavEntryDecorator(),
             ),
         entryProvider =

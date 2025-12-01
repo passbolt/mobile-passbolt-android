@@ -55,6 +55,7 @@ dependencies {
     implementation libs.navigation.fragment
     implementation libs.navigation.ui
     implementation libs.swiperefresh
+    implementation platform(libs.koin.bom)
     implementation libs.koin
     implementation libs.koin.compose
     implementation libs.fastadapter.core
@@ -65,6 +66,7 @@ dependencies {
     implementation libs.espresso.idling.resource
     implementation platform(libs.compose.bom)
     implementation libs.compose.foundation
+    implementation libs.compose.icons
     implementation libs.compose.material3
     implementation libs.compose.lifecycle.viewmodel
     implementation libs.compose.ui.tooling

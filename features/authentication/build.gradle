@@ -51,6 +51,7 @@ dependencies {
     implementation libs.fastadapter.core
     implementation libs.fastadapter.binding
     implementation libs.fastadapter.diff
+    implementation platform(libs.koin.bom)
     implementation libs.koin
     implementation libs.coil.views
     implementation libs.gson
@@ -65,6 +66,7 @@ dependencies {
     implementation libs.compose.activity
 
     testImplementation project(":commontest")
+    testImplementation platform(libs.koin.bom)
     testImplementation libs.koin.test.junit
     testImplementation libs.kotlin.reflect
 }

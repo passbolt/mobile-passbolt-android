@@ -35,7 +35,7 @@ import androidx.fragment.app.setFragmentResult
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.passbolt.mobile.android.ui.CustomFieldsModel
-import org.koin.androidx.compose.getViewModel
+import org.koin.androidx.compose.koinViewModel
 
 class CustomFieldsComposeFragment :
     Fragment(),
@@ -49,7 +49,7 @@ class CustomFieldsComposeFragment :
     ): View =
         ComposeView(requireContext()).apply {
             setContent {
-                getViewModel<CustomFieldsFormViewModel>().onIntent(CustomFieldsFormIntent.Initialize(navArgs.customFieldsModel))
+                koinViewModel<CustomFieldsFormViewModel>().onIntent(CustomFieldsFormIntent.Initialize(navArgs.customFieldsModel))
 
                 PassboltTheme {
                     CustomFieldsFormScreen(

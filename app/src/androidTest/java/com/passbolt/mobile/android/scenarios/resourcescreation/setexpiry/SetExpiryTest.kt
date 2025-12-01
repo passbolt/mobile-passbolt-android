@@ -47,13 +47,13 @@ import com.passbolt.mobile.android.instrumentationTestsModule
 import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
 import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
+import org.junit.Before
 import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.koin.test.KoinTest
 import org.koin.test.inject
-import kotlin.test.BeforeTest
 
 @RunWith(AndroidJUnit4::class)
 @MediumTest
@@ -94,7 +94,7 @@ class SetExpiryTest : KoinTest {
     @get:Rule
     val composeTestRule = createEmptyComposeRule()
 
-    @BeforeTest
+    @Before
     fun setup() {
         // Given  I am logged in as a Pro or Cloud user // Cloud user
         // And    automatic expiry is enabled on the server

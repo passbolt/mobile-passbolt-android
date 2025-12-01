@@ -16,6 +16,7 @@ dependencies {
     api libs.okhttp.logging.interceptor
 
     implementation libs.retrofit.gsonconverter
+    implementation platform(libs.koin.bom)
     implementation libs.koin
     implementation libs.gson
 }

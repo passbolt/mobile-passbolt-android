@@ -217,7 +217,7 @@ class SwitchAccountViewModelTest : KoinTest {
             viewModel.sideEffect.test {
                 viewModel.onIntent(SwitchAccountIntent.SeeCurrentAccountDetails)
 
-                val sideEffect = expectItem()
+                val sideEffect = awaitItem()
                 assertIs<SwitchAccountSideEffect.NavigateToAccountDetails>(sideEffect)
             }
         }
@@ -234,16 +234,16 @@ class SwitchAccountViewModelTest : KoinTest {
             viewModel.onIntent(SwitchAccountIntent.SignOut)
 
             viewModel.viewState.test {
-                val showDialogState = expectItem()
+                val showDialogState = awaitItem()
                 assertThat(showDialogState.showSignOutDialog).isTrue()
 
                 viewModel.onIntent(SwitchAccountIntent.SignOutConfirmed)
 
-                val signOutState = expectItem()
+                val signOutState = awaitItem()
                 assertThat(signOutState.showSignOutDialog).isFalse()
                 assertThat(signOutState.showProgress).isTrue()
 
-                val doneSignOut = expectItem()
+                val doneSignOut = awaitItem()
                 assertThat(doneSignOut.showProgress).isFalse()
 
                 val signOutUseCase = get<SignOutUseCase>()
@@ -251,7 +251,7 @@ class SwitchAccountViewModelTest : KoinTest {
             }
 
             viewModel.sideEffect.test {
-                val sideEffect = expectItem()
+                val sideEffect = awaitItem()
                 assertIs<SwitchAccountSideEffect.NavigateToStartup>(sideEffect)
                 assertThat(sideEffect.appContext).isEqualTo(AppContext.APP)
             }
@@ -317,7 +317,7 @@ class SwitchAccountViewModelTest : KoinTest {
                     ),
                 )
 
-                val sideEffect = expectItem()
+                val sideEffect = awaitItem()
                 assertIs<SwitchAccountSideEffect.NavigateToSignInForAccount>(sideEffect)
                 assertThat(sideEffect.appContext).isEqualTo(AppContext.APP)
 
@@ -334,7 +334,7 @@ class SwitchAccountViewModelTest : KoinTest {
             viewModel.sideEffect.test {
                 viewModel.onIntent(SwitchAccountIntent.ManageAccounts)
 
-                val sideEffect = expectItem()
+                val sideEffect = awaitItem()
                 assertIs<SwitchAccountSideEffect.NavigateToManageAccounts>(sideEffect)
             }
         }

@@ -28,6 +28,7 @@ dependencies {
     implementation project(':serializers')
     implementation project(':metadatakeytrust')
 
+    implementation platform(libs.koin.bom)
     implementation libs.koin
     implementation libs.fastadapter.core
     implementation libs.fastadapter.binding

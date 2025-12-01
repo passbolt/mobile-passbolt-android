@@ -13,17 +13,13 @@ class CreateResourceModelSerializer : JsonSerializer<CreateResourceDto> {
         src: CreateResourceDto,
         typeOfSrc: Type,
         context: JsonSerializationContext,
-    ): JsonElement {
+    ): JsonElement =
         when (src) {
             is CreateV4ResourceDto -> {
-                return context.serialize(src, CreateV4ResourceDto::class.java)
+                context.serialize(src, CreateV4ResourceDto::class.java)
             }
             is CreateV5ResourceDto -> {
-                return context.serialize(src, CreateV5ResourceDto::class.java)
-            }
-            else -> {
-                throw IllegalArgumentException("Unknown type of CreateResourceModel")
+                context.serialize(src, CreateV5ResourceDto::class.java)
             }
         }
-    }
 }

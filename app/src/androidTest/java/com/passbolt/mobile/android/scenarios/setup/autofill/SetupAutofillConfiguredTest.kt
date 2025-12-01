@@ -44,12 +44,12 @@ import com.passbolt.mobile.android.instrumentationTestsModule
 import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
 import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivityScenarioRule
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.koin.test.KoinTest
 import org.koin.test.inject
-import kotlin.test.BeforeTest
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 @RunWith(AndroidJUnit4::class)
@@ -83,7 +83,7 @@ class SetupAutofillConfiguredTest : KoinTest {
     private val accountDataCleaner: AccountDataCleaner by inject()
     private val accountDataInitializer: AccountInitializer by inject()
 
-    @BeforeTest
+    @Before
     fun setup() {
         accountDataCleaner.clearAccountData()
         onView(withId(R.id.connectToAccountButton)).perform(click())

@@ -22,6 +22,7 @@ dependencies {
     implementation project(':authenticationcore')
     implementation project(':accounts')
 
+    implementation platform(libs.koin.bom)
     implementation libs.koin
     implementation libs.fragment
     implementation libs.activity

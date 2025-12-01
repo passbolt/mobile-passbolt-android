@@ -14,9 +14,8 @@ import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
-import androidx.navigation3.runtime.rememberSavedStateNavEntryDecorator
+import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
-import androidx.navigation3.ui.rememberSceneSetupNavEntryDecorator
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.core.navigation.constants.Autofillresources
@@ -157,7 +156,7 @@ class HomeBottomNavigationContainerFragment :
         }
     }
 
-    lateinit var backstackList: NavBackStack
+    lateinit var backstackList: NavBackStack<NavKey>
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -174,7 +173,7 @@ class HomeBottomNavigationContainerFragment :
         return ComposeView(requireContext()).apply {
             setContent {
                 val backStack =
-                    rememberNavBackStack<NavKey>(Home(initialHomeDisplay)).apply {
+                    rememberNavBackStack(Home(initialHomeDisplay)).apply {
                         backstackList = this
                     }
 
@@ -183,8 +182,7 @@ class HomeBottomNavigationContainerFragment :
                     onBack = { backStack.removeLastOrNull() },
                     entryDecorators =
                         listOf(
-                            rememberSceneSetupNavEntryDecorator(),
-                            rememberSavedStateNavEntryDecorator(),
+                            rememberSaveableStateHolderNavEntryDecorator(),
                             rememberViewModelStoreNavEntryDecorator(),
                         ),
                     entryProvider = { key ->

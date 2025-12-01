@@ -33,6 +33,7 @@ dependencies {
     implementation libs.gson
     implementation libs.room.core
     implementation(libs.sqlite.cipher) { artifact { type = "aar" } }
+    implementation platform(libs.koin.bom)
     implementation libs.koin
     implementation libs.json.path
     implementation libs.paging.runtime

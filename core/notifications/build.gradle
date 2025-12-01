@@ -7,6 +7,7 @@ dependencies {
     implementation project(':localization')
     implementation project(':coreui')
 
+    implementation platform(libs.koin.bom)
     implementation libs.koin
 }
 

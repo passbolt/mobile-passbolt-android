@@ -13,6 +13,7 @@ dependencies {
     implementation project(':navigation')
     implementation project(':ui')
 
+    implementation platform(libs.koin.bom)
     implementation libs.koin
     implementation libs.kotlin.serializationjson
     implementation libs.security

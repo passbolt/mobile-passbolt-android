@@ -36,8 +36,8 @@ class CoroutineTimerKtTest {
             val expectedTickCount = 10
 
             timer.test {
-                repeat(expectedTickCount) { expectItem() }
-                expectComplete()
+                repeat(expectedTickCount) { awaitItem() }
+                awaitComplete()
             }
         }
 

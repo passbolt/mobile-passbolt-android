@@ -11,6 +11,7 @@ dependencies {
     implementation project(':navigation')
     implementation project(':jsonmodel')
 
+    implementation platform(libs.koin.bom)
     implementation libs.koin
     implementation libs.gson
     implementation project(':supportedresourcetypes')

@@ -12,6 +12,7 @@ dependencies {
     implementation project(':dto')
     implementation project(':ui')
 
+    implementation platform(libs.koin.bom)
     implementation libs.koin
 }
 

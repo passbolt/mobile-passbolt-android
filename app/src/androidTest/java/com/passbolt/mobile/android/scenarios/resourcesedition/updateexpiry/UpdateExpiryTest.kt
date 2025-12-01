@@ -49,13 +49,13 @@ import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.Matchers.allOf
+import org.junit.Before
 import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.koin.core.component.inject
 import org.koin.test.KoinTest
-import kotlin.test.BeforeTest
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 @RunWith(AndroidJUnit4::class)
@@ -99,7 +99,7 @@ class UpdateExpiryTest : KoinTest {
     @get:Rule
     val composeTestRule = createEmptyComposeRule()
 
-    @BeforeTest
+    @Before
     fun setup() {
         composeTestRule.signIn(managedAccountIntentCreator.getPassphrase())
         composeTestRule.chooseFilter(filters_menu_expiry)

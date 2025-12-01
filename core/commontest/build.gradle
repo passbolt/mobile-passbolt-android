@@ -9,6 +9,7 @@ dependencies {
     implementation project(':passphrasememorycache')
     implementation project(':common')
 
+    implementation platform(libs.koin.bom)
     implementation libs.koin
     implementation libs.kotlin.coroutines.test
     implementation libs.espresso.core

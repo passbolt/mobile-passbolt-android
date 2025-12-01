@@ -73,12 +73,12 @@ import com.passbolt.mobile.android.scenarios.setup.autofill.autofillConfiguredMo
 import com.passbolt.mobile.android.scenarios.setup.configurebiometric.biometricSetupUnavailableModuleTests
 import org.hamcrest.Matcher
 import org.hamcrest.Matchers.allOf
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.koin.core.component.inject
 import org.koin.test.KoinTest
-import kotlin.test.BeforeTest
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 @RunWith(AndroidJUnit4::class)
@@ -117,7 +117,7 @@ class SettingsTest : KoinTest {
             IdlingResourceRule(arrayOf(signInIdlingResource, resourcesFullRefreshIdlingResource, signOutIdlingResource))
         }
 
-    @BeforeTest
+    @Before
     fun setup() {
         //    #MOBILE_USER_ON_SETTINGS_PAGE:
         //    Given	I am a mobile user with the application installed

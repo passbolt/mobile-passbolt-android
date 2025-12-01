@@ -5,13 +5,6 @@ plugins {
 
 android {
     namespace = "com.passbolt.mobile.android.core.fulldatarefresh"
-    defaultConfig {
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-    }
-
-    useLibrary("android.test.runner")
-    useLibrary("android.test.base")
-    useLibrary("android.test.mock")
 }
 
 kotlin {
@@ -36,6 +29,7 @@ dependencies {
     implementation project(':coreui')
     implementation project(':notifications')
 
+    implementation platform(libs.koin.bom)
     implementation libs.koin
     implementation libs.room.core
     implementation libs.espresso.idling.resource

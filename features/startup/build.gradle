@@ -16,6 +16,7 @@ dependencies {
     implementation libs.navigation.ui
     implementation libs.fragment
     implementation libs.activity
+    implementation platform(libs.koin.bom)
     implementation libs.koin
     implementation libs.splashscreen
 }

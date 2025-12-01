@@ -24,6 +24,7 @@ dependencies {
     implementation libs.appcompat
     implementation libs.constraintlayout
     implementation libs.material
+    implementation platform(libs.koin.bom)
     implementation libs.koin
     implementation libs.room.core
     implementation libs.fastadapter.core

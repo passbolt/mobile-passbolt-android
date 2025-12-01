@@ -30,6 +30,7 @@ import org.koin.dsl.module
  */
 val testParserModule =
     module {
+
         factory { ScanQrParser(get(), get(), get()) }
         factory { Json { ignoreUnknownKeys = true } }
         factory { KeyAssembler(json = get()) }

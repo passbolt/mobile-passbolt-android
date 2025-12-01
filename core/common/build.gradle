@@ -13,6 +13,7 @@ dependencies {
     implementation libs.material
     implementation libs.retrofit
     implementation libs.okhttp
+    implementation platform(libs.koin.bom)
     implementation libs.koin
 }
 
