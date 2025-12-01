@@ -26,6 +26,7 @@ dependencies {
     implementation project(':rbac')
     implementation project(':accounts')
 
+    implementation platform(libs.koin.bom)
     implementation libs.koin
     implementation libs.material
     implementation libs.navigation.fragment

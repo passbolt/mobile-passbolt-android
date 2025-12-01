@@ -119,7 +119,7 @@ class AuthenticatedViewModelTest : KoinTest {
             viewModel.authenticationSideEffect.test {
                 sessionTrackingFlow.notifySessionRefreshNeeded(Session)
 
-                val sideEffect = expectItem()
+                val sideEffect = awaitItem()
                 assertThat(sideEffect).isInstanceOf(ShowAuth::class.java)
                 val showAuthEffect = sideEffect as ShowAuth
                 assertThat(showAuthEffect.type).isEqualTo(SignIn)
@@ -135,7 +135,7 @@ class AuthenticatedViewModelTest : KoinTest {
             viewModel.authenticationSideEffect.test {
                 sessionTrackingFlow.notifySessionRefreshNeeded(Passphrase)
 
-                val sideEffect = expectItem()
+                val sideEffect = awaitItem()
                 assertThat(sideEffect).isInstanceOf(ShowAuth::class.java)
                 val showAuthEffect = sideEffect as ShowAuth
                 assertThat(showAuthEffect.type).isEqualTo(RefreshPassphrase)
@@ -155,7 +155,7 @@ class AuthenticatedViewModelTest : KoinTest {
             viewModel.authenticationSideEffect.test {
                 sessionTrackingFlow.notifySessionRefreshNeeded(Mfa(providers = listOf(TOTP)))
 
-                val sideEffect = expectItem()
+                val sideEffect = awaitItem()
                 assertThat(sideEffect).isInstanceOf(ShowMfaAuth::class.java)
                 val showMfaEffect = sideEffect as ShowMfaAuth
                 assertThat(showMfaEffect.mfaReason).isEqualTo(TOTP)
@@ -188,7 +188,7 @@ class AuthenticatedViewModelTest : KoinTest {
             viewModel.authenticationSideEffect.test {
                 viewModel.onAuthenticationIntent(OtherProviderClick(YUBIKEY))
 
-                val sideEffect = expectItem()
+                val sideEffect = awaitItem()
                 assertThat(sideEffect).isInstanceOf(ShowTotpDialog::class.java)
                 val showTotpEffect = sideEffect as ShowTotpDialog
                 assertThat(showTotpEffect.hasOtherProviders).isTrue()
@@ -208,7 +208,7 @@ class AuthenticatedViewModelTest : KoinTest {
             viewModel.authenticationSideEffect.test {
                 viewModel.onAuthenticationIntent(OtherProviderClick(TOTP))
 
-                val sideEffect = expectItem()
+                val sideEffect = awaitItem()
                 assertThat(sideEffect).isInstanceOf(ShowYubikeyDialog::class.java)
                 val showYubikeyEffect = sideEffect as ShowYubikeyDialog
                 assertThat(showYubikeyEffect.hasOtherProviders).isTrue()
@@ -228,7 +228,7 @@ class AuthenticatedViewModelTest : KoinTest {
             viewModel.authenticationSideEffect.test {
                 viewModel.onAuthenticationIntent(OtherProviderClick(TOTP))
 
-                val sideEffect = expectItem()
+                val sideEffect = awaitItem()
                 assertThat(sideEffect).isInstanceOf(ShowDuoDialog::class.java)
                 val showDuoEffect = sideEffect as ShowDuoDialog
                 assertThat(showDuoEffect.hasOtherProviders).isTrue()
@@ -248,7 +248,7 @@ class AuthenticatedViewModelTest : KoinTest {
             viewModel.authenticationSideEffect.test {
                 viewModel.onAuthenticationIntent(OtherProviderClick(TOTP))
 
-                val sideEffect = expectItem()
+                val sideEffect = awaitItem()
                 assertThat(sideEffect).isInstanceOf(ShowUnknownProvider::class.java)
                 val showUnknownEffect = sideEffect as ShowUnknownProvider
                 assertThat(showUnknownEffect.hasOtherProviders).isFalse()

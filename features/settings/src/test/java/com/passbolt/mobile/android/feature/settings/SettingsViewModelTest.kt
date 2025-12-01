@@ -95,13 +95,13 @@ class SettingsViewModelTest : KoinTest {
 
             viewModel.viewState.drop(1).test {
                 viewModel.onIntent(SignOut)
-                assertThat(expectItem().isSignOutDialogVisible).isTrue()
+                assertThat(awaitItem().isSignOutDialogVisible).isTrue()
                 viewModel.onIntent(ConfirmSignOut)
-                expectItem().let { signingOutState ->
+                awaitItem().let { signingOutState ->
                     assertThat(signingOutState.isSignOutDialogVisible).isFalse()
                     assertThat(signingOutState.isProgressDialogVisible).isTrue()
                 }
-                assertThat(expectItem().isProgressDialogVisible).isFalse()
+                assertThat(awaitItem().isProgressDialogVisible).isFalse()
             }
         }
 }

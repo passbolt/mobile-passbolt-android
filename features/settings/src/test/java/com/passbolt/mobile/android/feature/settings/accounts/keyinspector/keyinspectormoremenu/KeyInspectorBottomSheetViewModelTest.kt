@@ -109,12 +109,12 @@ class KeyInspectorBottomSheetViewModelTest : KoinTest {
             viewModel.onIntent(ExportPrivateKey)
 
             viewModel.sideEffect.test {
-                assertIs<ConfirmPassphrase>(expectItem())
+                assertIs<ConfirmPassphrase>(awaitItem())
 
                 viewModel.onIntent(RefreshedPassphrase)
-                assertIs<Dismiss>(expectItem())
+                assertIs<Dismiss>(awaitItem())
 
-                val shareEffect = expectItem()
+                val shareEffect = awaitItem()
                 assertIs<ShowTextShareSheet>(shareEffect)
                 assertThat(shareEffect.text).isEqualTo(mockPrivateKey)
             }
@@ -138,12 +138,12 @@ class KeyInspectorBottomSheetViewModelTest : KoinTest {
             viewModel.onIntent(ExportPublicKey)
 
             viewModel.sideEffect.test {
-                assertIs<ConfirmPassphrase>(expectItem())
+                assertIs<ConfirmPassphrase>(awaitItem())
 
                 viewModel.onIntent(RefreshedPassphrase)
-                assertIs<Dismiss>(expectItem())
+                assertIs<Dismiss>(awaitItem())
 
-                val shareEffect = expectItem()
+                val shareEffect = awaitItem()
                 assertIs<ShowTextShareSheet>(shareEffect)
                 assertThat(shareEffect.text).isEqualTo(mockPublicKey)
             }
@@ -167,11 +167,11 @@ class KeyInspectorBottomSheetViewModelTest : KoinTest {
             viewModel.onIntent(ExportPublicKey)
 
             viewModel.sideEffect.test {
-                assertIs<ConfirmPassphrase>(expectItem())
+                assertIs<ConfirmPassphrase>(awaitItem())
 
                 viewModel.onIntent(RefreshedPassphrase)
 
-                val errorEffect = expectItem()
+                val errorEffect = awaitItem()
                 assertIs<ShowErrorSnackbar>(errorEffect)
                 assertThat(errorEffect.type).isEqualTo(FAILED_TO_GENERATE_PUBLIC_KEY)
                 assertThat(errorEffect.errorMessage).isEqualTo(errorMessage)

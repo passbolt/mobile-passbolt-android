@@ -19,8 +19,6 @@ android {
         applicationId "com.passbolt.mobile.android"
         versionCode getVersionCode()
         versionName projectVersionName
-
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     // connected android tests use qa config
@@ -194,6 +192,7 @@ dependencies {
 
     debugImplementation libs.leakcanary
 
+    implementation platform(libs.koin.bom)
     implementation libs.lifecycle.process
     implementation libs.coil.views
     implementation libs.coil.networking
@@ -204,6 +203,7 @@ dependencies {
     implementation libs.json.path
 
     androidTestImplementation project(':commontest')
+    androidTestImplementation platform(libs.koin.bom)
     androidTestImplementation libs.appcompat
     androidTestImplementation libs.material
     androidTestImplementation libs.android.tests.runner

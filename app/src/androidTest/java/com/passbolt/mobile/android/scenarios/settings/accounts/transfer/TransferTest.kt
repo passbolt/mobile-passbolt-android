@@ -54,13 +54,13 @@ import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
 import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
 import com.passbolt.mobile.android.scenarios.setup.configurebiometric.biometricSetupUnavailableModuleTests
+import org.junit.Before
 import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.koin.core.component.inject
 import org.koin.test.KoinTest
-import kotlin.test.BeforeTest
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 @RunWith(AndroidJUnit4::class)
@@ -104,7 +104,7 @@ class TransferTest : KoinTest {
             )
         }
 
-    @BeforeTest
+    @Before
     fun setup() {
         //    #MOBILE_USER_ON_SETTINGS_PAGE:
         //    Given	I am a mobile user with the application installed

@@ -10,6 +10,8 @@ licensee {
     allowUrl "https://developer.android.com/guide/playcore/license"
     allowUrl "https://github.com/journeyapps/zxing-android-embedded/blob/master/COPYING" // it's Apache-2.0
     allowUrl "https://asm.ow2.io/license.html" // 3-Clause BSD
+    allowUrl "https://opensource.org/license/mit"
+    allowUrl "https://www.gnu.org/licenses/old-licenses/lgpl-2.1.en.html" // https://opensource.org/license/lgpl-2-1
 
     // Unicode license v3 is open source (https://opensource.org/license/unicode-license-v3)
     allowUrl "https://raw.githubusercontent.com/unicode-org/icu/main/LICENSE"

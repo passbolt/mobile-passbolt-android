@@ -63,13 +63,13 @@ import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
 import org.hamcrest.Matchers.allOf
 import org.hamcrest.Matchers.hasToString
+import org.junit.Before
 import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.koin.core.component.inject
 import org.koin.test.KoinTest
-import kotlin.test.BeforeTest
 
 @RunWith(AndroidJUnit4::class)
 @MediumTest
@@ -112,7 +112,7 @@ class ResourcesEditionTest : KoinTest {
     @get:Rule
     val composeTestRule = createEmptyComposeRule()
 
-    @BeforeTest
+    @Before
     fun setup() {
         composeTestRule.signIn(managedAccountIntentCreator.getPassphrase())
         composeTestRule.chooseFilter(filters_menu_all_items)

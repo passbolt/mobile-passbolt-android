@@ -2,9 +2,9 @@ FROM --platform=linux/amd64 amazoncorretto:17-alpine
 
 ENV ANDROID_HOME="/usr/local/android-sdk" \
     ANDROID_SDK_ROOT="/usr/local/android-sdk" \
-    ANDROID_VERSION=34 \
-    ANDROID_BUILD_TOOLS_VERSION="34.0.0" \
-    ANDROID_SDK_TOOLS_VERSION="11076708"
+    ANDROID_VERSION=36 \
+    ANDROID_BUILD_TOOLS_VERSION="36.0.0" \
+    ANDROID_SDK_TOOLS_VERSION="13114758"
 
 # the base image does not have fonts (needed for easy launcher plugin)
 RUN apk add --no-cache freetype fontconfig ttf-dejavu

@@ -10,6 +10,7 @@ dependencies {
     implementation project(':ui')
     implementation project(':jsonmodel')
 
+    implementation platform(libs.koin.bom)
     implementation libs.koin
     implementation(libs.commons.validator)
 }

@@ -30,6 +30,7 @@ dependencies {
 
     implementation libs.navigation.fragment
     implementation libs.navigation.ui
+    implementation platform(libs.koin.bom)
     implementation libs.koin
     implementation libs.fastadapter.binding
     implementation libs.fastadapter.core

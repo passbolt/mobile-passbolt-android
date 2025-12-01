@@ -173,10 +173,10 @@ class OtpViewModelTest : KoinTest {
             viewModel.onIntent(OpenCreateResourceMenu)
 
             viewModel.viewState.test {
-                assertThat(expectItem().showCreateResourceBottomSheet).isTrue()
+                assertThat(awaitItem().showCreateResourceBottomSheet).isTrue()
 
                 viewModel.onIntent(CloseCreateResourceMenu)
-                assertThat(expectItem().showCreateResourceBottomSheet).isFalse()
+                assertThat(awaitItem().showCreateResourceBottomSheet).isFalse()
             }
         }
 
@@ -188,10 +188,10 @@ class OtpViewModelTest : KoinTest {
             viewModel.onIntent(SearchEndIconAction)
 
             viewModel.viewState.test {
-                assertThat(expectItem().showAccountSwitchBottomSheet).isTrue()
+                assertThat(awaitItem().showAccountSwitchBottomSheet).isTrue()
 
                 viewModel.onIntent(CloseSwitchAccount)
-                assertThat(expectItem().showAccountSwitchBottomSheet).isFalse()
+                assertThat(awaitItem().showAccountSwitchBottomSheet).isFalse()
             }
         }
 
@@ -203,12 +203,12 @@ class OtpViewModelTest : KoinTest {
             viewModel.onIntent(OpenOtpMoreMenu(clickedOtp))
 
             viewModel.viewState.test {
-                val state = expectItem()
+                val state = awaitItem()
                 assertThat(state.showOtpMoreBottomSheet).isTrue()
                 assertThat(state.moreMenuResource).isEqualTo(clickedOtp)
 
                 viewModel.onIntent(CloseOtpMoreMenu)
-                val stateAfter = expectItem()
+                val stateAfter = awaitItem()
                 assertThat(stateAfter.showAccountSwitchBottomSheet).isFalse()
             }
         }
@@ -221,10 +221,10 @@ class OtpViewModelTest : KoinTest {
             viewModel.onIntent(Search("abc"))
 
             viewModel.viewState.drop(1).test {
-                assertThat(expectItem().searchInputEndIconMode).isEqualTo(CLEAR)
+                assertThat(awaitItem().searchInputEndIconMode).isEqualTo(CLEAR)
 
                 viewModel.onIntent(SearchEndIconAction)
-                val state = expectItem()
+                val state = awaitItem()
                 assertThat(state.searchQuery).isEmpty()
                 assertThat(state.searchInputEndIconMode).isEqualTo(AVATAR)
             }
@@ -238,7 +238,7 @@ class OtpViewModelTest : KoinTest {
             viewModel.onIntent(Search("resource 2"))
 
             viewModel.viewState.drop(1).test {
-                val state = expectItem()
+                val state = awaitItem()
                 assertThat(state.searchQuery).isEqualTo("resource 2")
                 assertThat(state.searchInputEndIconMode).isEqualTo(CLEAR)
                 assertThat(state.isInFilteringMode).isTrue()
@@ -253,12 +253,12 @@ class OtpViewModelTest : KoinTest {
             viewModel.viewState.drop(1).test {
                 val dataRefreshStatusFlow = get<DataRefreshTrackingFlow>()
                 dataRefreshStatusFlow.updateStatus(InProgress)
-                val state = expectItem()
+                val state = awaitItem()
                 assertThat(state.isRefreshing).isTrue()
 
                 dataRefreshStatusFlow.updateStatus(FinishedWithSuccess)
 
-                val stateAfter = expectItem()
+                val stateAfter = awaitItem()
                 assertThat(stateAfter.isRefreshing).isFalse()
             }
         }
@@ -269,7 +269,7 @@ class OtpViewModelTest : KoinTest {
             viewModel = get()
 
             viewModel.viewState.test {
-                val state = expectItem()
+                val state = awaitItem()
                 assertThat(state.userAvatar).isEqualTo(selectedAccountData.avatarUrl)
                 assertThat(state.otps).hasSize(otpResources.size)
             }
@@ -283,7 +283,7 @@ class OtpViewModelTest : KoinTest {
             viewModel.sideEffect.test {
                 viewModel.onIntent(CreatePassword)
 
-                val sideEffect = expectItem()
+                val sideEffect = awaitItem()
                 assertIs<NavigateToCreateResourceForm>(sideEffect)
                 assertThat(sideEffect.leadingContentType).isEqualTo(PASSWORD)
             }
@@ -297,7 +297,7 @@ class OtpViewModelTest : KoinTest {
             viewModel.sideEffect.test {
                 viewModel.onIntent(CreateTotp)
 
-                val sideEffect = expectItem()
+                val sideEffect = awaitItem()
                 assertIs<NavigateToCreateTotp>(sideEffect)
             }
         }
@@ -310,7 +310,7 @@ class OtpViewModelTest : KoinTest {
             viewModel.onIntent(OtpQRScanReturned(otpCreated = true, otpManualCreationChosen = false))
 
             viewModel.sideEffect.test {
-                assertIs<InitiateDataRefresh>(expectItem())
+                assertIs<InitiateDataRefresh>(awaitItem())
             }
         }
 
@@ -322,7 +322,7 @@ class OtpViewModelTest : KoinTest {
             viewModel.sideEffect.test {
                 viewModel.onIntent(OtpQRScanReturned(otpCreated = false, otpManualCreationChosen = true))
 
-                val sideEffect = expectItem()
+                val sideEffect = awaitItem()
                 assertIs<NavigateToCreateResourceForm>(sideEffect)
                 assertThat(sideEffect.leadingContentType).isEqualTo(TOTP)
             }
@@ -342,9 +342,9 @@ class OtpViewModelTest : KoinTest {
                     ),
                 )
 
-                assertIs<InitiateDataRefresh>(expectItem())
+                assertIs<InitiateDataRefresh>(awaitItem())
 
-                val snackbarSideEffect = expectItem()
+                val snackbarSideEffect = awaitItem()
                 assertIs<ShowSuccessSnackbar>(snackbarSideEffect)
                 assertThat(snackbarSideEffect.type).isEqualTo(RESOURCE_CREATED)
                 assertThat(snackbarSideEffect.message).isEqualTo("New Resource")
@@ -365,9 +365,9 @@ class OtpViewModelTest : KoinTest {
                     ),
                 )
 
-                assertIs<InitiateDataRefresh>(expectItem())
+                assertIs<InitiateDataRefresh>(awaitItem())
 
-                val snackbarSideEffect = expectItem()
+                val snackbarSideEffect = awaitItem()
                 assertIs<ShowSuccessSnackbar>(snackbarSideEffect)
                 assertThat(snackbarSideEffect.type).isEqualTo(RESOURCE_EDITED)
             }
@@ -381,7 +381,7 @@ class OtpViewModelTest : KoinTest {
             viewModel.sideEffect.test {
                 viewModel.onIntent(EditOtp(clickedOtp))
 
-                val sideEffect = expectItem()
+                val sideEffect = awaitItem()
                 assertIs<NavigateToEditResourceForm>(sideEffect)
                 assertThat(sideEffect.resourceId).isEqualTo(clickedOtp.resource.resourceId)
                 assertThat(sideEffect.resourceName).isEqualTo(clickedOtp.resource.metadataJsonModel.name)
@@ -396,9 +396,9 @@ class OtpViewModelTest : KoinTest {
             viewModel.onIntent(OtpIntent.DeleteOtp(clickedOtp))
 
             viewModel.viewState.test {
-                assertThat(expectItem().showDeleteTotpConfirmationDialog).isTrue()
+                assertThat(awaitItem().showDeleteTotpConfirmationDialog).isTrue()
                 viewModel.onIntent(OtpIntent.CloseDeleteConfirmationDialog)
-                assertThat(expectItem().showDeleteTotpConfirmationDialog).isFalse()
+                assertThat(awaitItem().showDeleteTotpConfirmationDialog).isFalse()
             }
         }
 
@@ -413,12 +413,12 @@ class OtpViewModelTest : KoinTest {
 
             viewModel.sideEffect.test {
                 viewModel.onIntent(CreatePassword)
-                val stateAfterCreatePassword = expectItem()
+                val stateAfterCreatePassword = awaitItem()
                 assertIs<OtpSideEffect.ShowErrorSnackbar>(stateAfterCreatePassword)
                 assertThat(stateAfterCreatePassword.type).isEqualTo(SnackbarErrorType.NO_SHARED_KEY_ACCESS)
 
                 viewModel.onIntent(CreateTotp)
-                val stateAfterCreateTotp = expectItem()
+                val stateAfterCreateTotp = awaitItem()
                 assertIs<OtpSideEffect.ShowErrorSnackbar>(stateAfterCreateTotp)
                 assertThat(stateAfterCreateTotp.type).isEqualTo(SnackbarErrorType.NO_SHARED_KEY_ACCESS)
             }

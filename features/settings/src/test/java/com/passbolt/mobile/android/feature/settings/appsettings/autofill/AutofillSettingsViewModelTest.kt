@@ -144,7 +144,7 @@ class AutofillSettingsViewModelTest : KoinTest {
             viewModel.sideEffect.test {
                 viewModel.onIntent(ToggleNativeAutofill)
 
-                assertThat(expectItem()).isEqualTo(NavigateToNativeAutofillEnabled)
+                assertThat(awaitItem()).isEqualTo(NavigateToNativeAutofillEnabled)
             }
         }
 
@@ -167,7 +167,7 @@ class AutofillSettingsViewModelTest : KoinTest {
             viewModel.sideEffect.test {
                 viewModel.onIntent(ToggleNativeAutofill)
 
-                assertThat(expectItem()).isEqualTo(NavigateToEncourageNativeAutofill)
+                assertThat(awaitItem()).isEqualTo(NavigateToEncourageNativeAutofill)
 
                 whenever(autofillInformationProvider.isPassboltAutofillServiceSet()) doReturn true
                 viewModel.onIntent(UpdateAutofillState)
@@ -196,7 +196,7 @@ class AutofillSettingsViewModelTest : KoinTest {
             viewModel.sideEffect.test {
                 viewModel.onIntent(ToggleChromeNativeAutofill)
 
-                assertThat(expectItem()).isEqualTo(NavigateToChromeNativeAutofill)
+                assertThat(awaitItem()).isEqualTo(NavigateToChromeNativeAutofill)
             }
         }
 
@@ -219,7 +219,7 @@ class AutofillSettingsViewModelTest : KoinTest {
             viewModel.sideEffect.test {
                 viewModel.onIntent(ToggleAccessibilityAutofill)
 
-                assertThat(expectItem()).isEqualTo(NavigateToEncourageAccessibilityAutofill)
+                assertThat(awaitItem()).isEqualTo(NavigateToEncourageAccessibilityAutofill)
 
                 whenever(autofillInformationProvider.isAccessibilityAutofillSetup()) doReturn true
                 assertThat(viewModel.viewState.value.isAccessibilityAutofillChecked).isFalse()

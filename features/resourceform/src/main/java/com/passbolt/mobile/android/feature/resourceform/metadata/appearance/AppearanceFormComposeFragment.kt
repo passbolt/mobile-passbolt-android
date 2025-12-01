@@ -36,7 +36,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.passbolt.mobile.android.feature.resourceform.metadata.appearance.AppearanceFormIntent.Initialize
 import com.passbolt.mobile.android.ui.ResourceAppearanceModel
-import org.koin.androidx.compose.getViewModel
+import org.koin.androidx.compose.koinViewModel
 
 class AppearanceFormComposeFragment :
     Fragment(),
@@ -50,7 +50,7 @@ class AppearanceFormComposeFragment :
     ): View =
         ComposeView(requireContext()).apply {
             setContent {
-                getViewModel<AppearanceFormViewModel>().onIntent(Initialize(navArgs.mode, navArgs.appearanceModel))
+                koinViewModel<AppearanceFormViewModel>().onIntent(Initialize(navArgs.mode, navArgs.appearanceModel))
 
                 PassboltTheme {
                     AppearanceFormScreen(
@@ -64,10 +64,10 @@ class AppearanceFormComposeFragment :
         findNavController().popBackStack()
     }
 
-    override fun navigateBackWithResult(appearanceModel: ResourceAppearanceModel) {
+    override fun navigateBackWithResult(model: ResourceAppearanceModel) {
         setFragmentResult(
             REQUEST_APPEARANCE,
-            bundleOf(EXTRA_APPEARANCE to appearanceModel),
+            bundleOf(EXTRA_APPEARANCE to model),
         )
         findNavController().popBackStack()
     }

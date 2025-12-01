@@ -159,13 +159,13 @@ class AppSettingsViewModelTest : KoinTest {
             viewModel.onIntent(AppSettingsIntent.ToggleFingerprint)
 
             viewModel.viewState.test {
-                assertThat(expectItem().isConfigureFingerprintDialogVisible).isTrue()
+                assertThat(awaitItem().isConfigureFingerprintDialogVisible).isTrue()
 
                 viewModel.onIntent(ConfigureFingerprint)
-                assertThat(expectItem().isConfigureFingerprintDialogVisible).isFalse()
+                assertThat(awaitItem().isConfigureFingerprintDialogVisible).isFalse()
 
                 viewModel.sideEffect.test {
-                    assertThat(expectItem()).isInstanceOf(NavigateToSystemSettings::class.java)
+                    assertThat(awaitItem()).isInstanceOf(NavigateToSystemSettings::class.java)
                 }
             }
         }
@@ -184,14 +184,14 @@ class AppSettingsViewModelTest : KoinTest {
             viewModel.onIntent(AppSettingsIntent.ToggleFingerprint)
 
             viewModel.viewState.test {
-                assertThat(expectItem().isDisableFingerprintDialogVisible).isTrue()
+                assertThat(awaitItem().isDisableFingerprintDialogVisible).isTrue()
 
                 viewModel.onIntent(ConfirmDisableFingerprint)
 
                 val userIdInput = UserIdInput(SELECTED_ACCOUNT_ID)
                 verify(get<RemovePassphraseUseCase>()).execute(userIdInput)
 
-                val stateAfterDisabling = expectItem()
+                val stateAfterDisabling = awaitItem()
                 assertThat(stateAfterDisabling.isDisableFingerprintDialogVisible).isFalse()
                 assertThat(stateAfterDisabling.isFingerprintEnabled).isFalse()
             }
@@ -219,7 +219,7 @@ class AppSettingsViewModelTest : KoinTest {
 
             viewModel.viewState.drop(1).test {
                 viewModel.sideEffect.test {
-                    assertThat(expectItem()).isInstanceOf(LaunchBiometricPrompt::class.java)
+                    assertThat(awaitItem()).isInstanceOf(LaunchBiometricPrompt::class.java)
                 }
                 val authenticatedCipher = mock<Cipher>()
                 whenever(authenticatedCipher.iv) doReturn ByteArray(256)
@@ -231,7 +231,7 @@ class AppSettingsViewModelTest : KoinTest {
                 }
                 verify(get<SaveBiometricKeyIvUseCase>()).execute(any())
 
-                assertThat(expectItem().isFingerprintEnabled).isTrue()
+                assertThat(awaitItem().isFingerprintEnabled).isTrue()
             }
         }
 
@@ -257,7 +257,7 @@ class AppSettingsViewModelTest : KoinTest {
 
             viewModel.viewState.drop(1).test {
                 viewModel.sideEffect.test {
-                    assertThat(expectItem()).isInstanceOf(AppSettingsSideEffect.NavigateToGetPassphrase::class.java)
+                    assertThat(awaitItem()).isInstanceOf(AppSettingsSideEffect.NavigateToGetPassphrase::class.java)
                 }
                 whenever(passphraseMemoryCache.hasPassphrase()) doReturn true
                 whenever(passphraseMemoryCache.get()) doReturn Passphrase(PASSPHRASE)
@@ -273,7 +273,7 @@ class AppSettingsViewModelTest : KoinTest {
                 }
                 verify(get<SaveBiometricKeyIvUseCase>()).execute(any())
 
-                assertThat(expectItem().isFingerprintEnabled).isTrue()
+                assertThat(awaitItem().isFingerprintEnabled).isTrue()
             }
         }
 

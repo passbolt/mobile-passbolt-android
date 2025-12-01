@@ -101,7 +101,7 @@ class OtpMoreMenuViewModelTest : KoinTest {
             )
 
             viewModel.viewState.drop(1).test {
-                val state = expectItem()
+                val state = awaitItem()
                 assertThat(state.title).isEqualTo(RESOURCE_NAME)
                 assertThat(state.showShowOtpButton).isEqualTo(CAN_SHOW_TOTP)
                 assertThat(state.showDeleteButton).isTrue()
@@ -118,19 +118,19 @@ class OtpMoreMenuViewModelTest : KoinTest {
 
             viewModel.sideEffect.test {
                 viewModel.onIntent(Close)
-                assertThat(expectItem()).isEqualTo(Dismiss)
+                assertThat(awaitItem()).isEqualTo(Dismiss)
 
                 viewModel.onIntent(CopyOtp)
-                assertThat(expectItem()).isEqualTo(InvokeCopyOtp)
+                assertThat(awaitItem()).isEqualTo(InvokeCopyOtp)
 
                 viewModel.onIntent(DeleteOtp)
-                assertThat(expectItem()).isEqualTo(InvokeDeleteOtp)
+                assertThat(awaitItem()).isEqualTo(InvokeDeleteOtp)
 
                 viewModel.onIntent(EditOtp)
-                assertThat(expectItem()).isEqualTo(InvokeEditOtp)
+                assertThat(awaitItem()).isEqualTo(InvokeEditOtp)
 
                 viewModel.onIntent(ShowOtp)
-                assertThat(expectItem()).isEqualTo(InvokeShowOtp)
+                assertThat(awaitItem()).isEqualTo(InvokeShowOtp)
             }
         }
 
@@ -161,7 +161,7 @@ class OtpMoreMenuViewModelTest : KoinTest {
             )
 
             viewModel.viewState.test {
-                val state = expectItem()
+                val state = awaitItem()
                 assertThat(state.showDeleteButton).isFalse()
                 assertThat(state.showEditButton).isFalse()
                 assertThat(state.showSeparator).isFalse()

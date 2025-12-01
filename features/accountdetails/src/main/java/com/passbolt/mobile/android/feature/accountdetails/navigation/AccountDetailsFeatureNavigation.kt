@@ -23,7 +23,6 @@
 package com.passbolt.mobile.android.feature.accountdetails.navigation
 
 import PassboltTheme
-import androidx.navigation3.runtime.entry
 import com.passbolt.mobile.android.core.navigation.compose.base.EntryProviderInstaller
 import com.passbolt.mobile.android.core.navigation.compose.base.FeatureModuleNavigation
 import com.passbolt.mobile.android.core.navigation.compose.keys.AccountDetailsNavigationKey

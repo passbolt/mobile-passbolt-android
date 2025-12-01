@@ -20,6 +20,7 @@ dependencies {
     implementation project(':localization')
     implementation project(':jsonmodel')
 
+    implementation platform(libs.koin.bom)
     implementation libs.koin
     implementation libs.sqlite
     implementation libs.fastadapter.binding

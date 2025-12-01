@@ -16,6 +16,7 @@ dependencies {
     implementation project(':entity')
     implementation project(':accounts')
 
+    implementation platform(libs.koin.bom)
     implementation libs.koin
     implementation(libs.sqlite.cipher) { artifact { type = "aar" } }
     implementation libs.room.core

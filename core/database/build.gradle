@@ -11,6 +11,7 @@ dependencies {
     implementation project(':encryptedstorage')
     implementation project(':accounts')
 
+    implementation platform(libs.koin.bom)
     implementation libs.koin
     implementation libs.room.core
     implementation libs.room.runtime
@@ -21,6 +22,7 @@ dependencies {
     implementation(libs.paging.runtime)
     implementation(libs.room.paging)
 
+    androidTestImplementation platform(libs.koin.bom)
     androidTestImplementation libs.koin.test
     androidTestImplementation libs.koin.test.junit
     androidTestImplementation libs.kotlin.coroutines.test
@@ -32,13 +34,6 @@ dependencies {
 
 android {
     namespace = "com.passbolt.mobile.android.core.database"
-    defaultConfig {
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-    }
-
-    useLibrary("android.test.runner")
-    useLibrary("android.test.base")
-    useLibrary("android.test.mock")
 
     sourceSets {
         androidTest.assets.srcDirs += files("$projectDir/schemas".toString())

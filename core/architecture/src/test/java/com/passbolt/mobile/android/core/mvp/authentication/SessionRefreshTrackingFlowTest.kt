@@ -20,7 +20,7 @@ class SessionRefreshTrackingFlowTest {
                 sessionRefreshTrackingFlow.notifySessionRefreshNeeded(Session)
                 sessionRefreshTrackingFlow.notifySessionRefreshNeeded(Session)
 
-                assertThat(expectItem()).isEqualTo(NeedsRefresh(Session))
+                assertThat(awaitItem()).isEqualTo(NeedsRefresh(Session))
 
                 expectNoEvents()
             }

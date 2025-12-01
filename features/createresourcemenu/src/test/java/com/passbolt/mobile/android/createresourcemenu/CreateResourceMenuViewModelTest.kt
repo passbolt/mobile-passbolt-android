@@ -120,7 +120,7 @@ class CreateResourceMenuViewModelTest : KoinTest {
             viewModel.onIntent(Initialize(homeDisplayViewModel))
 
             viewModel.viewState.drop(1).test {
-                val state = expectItem()
+                val state = awaitItem()
                 assertThat(state.showPasswordButton).isTrue()
                 assertThat(state.showTotpButton).isTrue()
                 assertThat(state.showFoldersButton).isTrue()
@@ -151,7 +151,7 @@ class CreateResourceMenuViewModelTest : KoinTest {
             viewModel.onIntent(Initialize(homeDisplayViewModel))
 
             viewModel.viewState.test {
-                val state = expectItem()
+                val state = awaitItem()
                 Truth.assertThat(state.showPasswordButton).isFalse()
                 Truth.assertThat(state.showTotpButton).isFalse()
                 Truth.assertThat(state.showFoldersButton).isFalse()
@@ -182,7 +182,7 @@ class CreateResourceMenuViewModelTest : KoinTest {
             viewModel.onIntent(Initialize(homeDisplayViewModel))
 
             viewModel.viewState.drop(1).test {
-                val state = expectItem()
+                val state = awaitItem()
                 assertThat(state.showPasswordButton).isFalse()
                 assertThat(state.showTotpButton).isFalse()
                 assertThat(state.showFoldersButton).isFalse()
@@ -197,7 +197,7 @@ class CreateResourceMenuViewModelTest : KoinTest {
 
             viewModel.sideEffect.test {
                 viewModel.onIntent(Close)
-                val effect = expectItem()
+                val effect = awaitItem()
                 assertThat(effect).isEqualTo(CreateResourceMenuSideEffect.Dismiss)
             }
         }
@@ -209,7 +209,7 @@ class CreateResourceMenuViewModelTest : KoinTest {
 
             viewModel.sideEffect.test {
                 viewModel.onIntent(CreatePassword)
-                val effect = expectItem()
+                val effect = awaitItem()
                 assertThat(effect).isEqualTo(InvokeCreatePassword)
             }
         }
@@ -221,7 +221,7 @@ class CreateResourceMenuViewModelTest : KoinTest {
 
             viewModel.sideEffect.test {
                 viewModel.onIntent(CreateTotp)
-                val effect = expectItem()
+                val effect = awaitItem()
                 assertThat(effect).isEqualTo(InvokeCreateTotp)
             }
         }
@@ -233,7 +233,7 @@ class CreateResourceMenuViewModelTest : KoinTest {
 
             viewModel.sideEffect.test {
                 viewModel.onIntent(CreateFolder)
-                val effect = expectItem()
+                val effect = awaitItem()
                 assertThat(effect).isEqualTo(InvokeCreateFolder)
             }
         }
@@ -245,7 +245,7 @@ class CreateResourceMenuViewModelTest : KoinTest {
 
             viewModel.sideEffect.test {
                 viewModel.onIntent(CreateNote)
-                val effect = expectItem()
+                val effect = awaitItem()
                 assertThat(effect).isEqualTo(InvokeCreateNote)
             }
         }

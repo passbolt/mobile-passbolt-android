@@ -15,12 +15,12 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.koin.core.logger.Level
-import org.koin.core.time.measureDurationForResult
 import org.koin.dsl.module
 import org.koin.test.KoinTest
 import org.koin.test.KoinTestRule
 import org.koin.test.inject
 import java.util.UUID
+import kotlin.time.measureTimedValue
 
 /**
  * Passbolt - Open source password manager for teams
@@ -158,7 +158,7 @@ class FullSolutionBenchmark : KoinTest {
         val gracePk = Crypto.newKeyFromArmored(gracePublicKey)
 
         val (result, duration) =
-            measureDurationForResult {
+            measureTimedValue {
                 list.map { resource ->
                     // create a session key
                     val sessionKey = generateSessionKey()
@@ -209,7 +209,7 @@ class FullSolutionBenchmark : KoinTest {
                 .new_()
 
         val (result, duration) =
-            measureDurationForResult {
+            measureTimedValue {
                 list.map { resource ->
                     val pgpMessage = Crypto.newPGPMessageFromArmored(resource.metadata)
 

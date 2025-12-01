@@ -182,10 +182,10 @@ class FiltersMenuViewModelTest : KoinTest {
             viewModel.sideEffect.test {
                 testCases.forEach { (homeIntent, homeDisplayView, expectedHomeDisplayViewModel) ->
                     viewModel.onIntent(homeIntent)
-                    val effect = expectItem()
+                    val effect = awaitItem()
                     assertIs<HomeViewChanged>(effect)
                     assertThat(effect.homeDisplay).isEqualTo(homeDisplayViewMapper.map(homeDisplayView))
-                    assertIs<Dismiss>(expectItem())
+                    assertIs<Dismiss>(awaitItem())
                     verify(updateHomeDisplayViewPrefsUseCase).execute(
                         UpdateHomeDisplayViewPrefsUseCase.Input(lastUsedHomeView = homeDisplayView),
                     )
@@ -200,7 +200,7 @@ class FiltersMenuViewModelTest : KoinTest {
 
             viewModel.sideEffect.test {
                 viewModel.onIntent(Close)
-                assertIs<Dismiss>(expectItem())
+                assertIs<Dismiss>(awaitItem())
             }
         }
 }

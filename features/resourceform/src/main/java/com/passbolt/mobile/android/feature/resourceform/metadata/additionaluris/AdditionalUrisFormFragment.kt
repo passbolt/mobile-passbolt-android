@@ -101,8 +101,8 @@ class AdditionalUrisFormFragment :
         requiredBinding.additionalUrisSubformView.mainUriInput.text = mainUri
     }
 
-    override fun showAdditionalUris(uiTagToModel: LinkedHashMap<UUID, String>) {
-        requiredBinding.additionalUrisSubformView.showAdditionalUris(uiTagToModel)
+    override fun showAdditionalUris(uiTagToValue: LinkedHashMap<UUID, String>) {
+        requiredBinding.additionalUrisSubformView.showAdditionalUris(uiTagToValue)
     }
 
     override fun showMaxUriLimitExceeded(maxUriLimit: Int) {

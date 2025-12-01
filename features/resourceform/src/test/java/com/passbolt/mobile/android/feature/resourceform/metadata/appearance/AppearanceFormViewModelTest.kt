@@ -101,7 +101,7 @@ class AppearanceFormViewModelTest : KoinTest {
             )
 
             viewModel.viewState.test {
-                val state = expectItem()
+                val state = awaitItem()
                 assertThat(state.resourceFormMode).isEqualTo(resourceFormMode)
                 assertThat(state.isDefaultIconChecked).isFalse()
                 assertThat(state.isDefaultColorChecked).isFalse()
@@ -123,7 +123,7 @@ class AppearanceFormViewModelTest : KoinTest {
             )
 
             viewModel.viewState.test {
-                val state = expectItem()
+                val state = awaitItem()
                 assertThat(state.resourceFormMode).isEqualTo(resourceFormMode)
                 assertThat(state.isDefaultIconChecked).isTrue()
                 assertThat(state.isDefaultColorChecked).isFalse()
@@ -145,7 +145,7 @@ class AppearanceFormViewModelTest : KoinTest {
             )
 
             viewModel.viewState.test {
-                val state = expectItem()
+                val state = awaitItem()
                 assertThat(state.resourceFormMode).isEqualTo(resourceFormMode)
                 assertThat(state.isDefaultIconChecked).isFalse()
                 assertThat(state.isDefaultColorChecked).isFalse()
@@ -173,7 +173,7 @@ class AppearanceFormViewModelTest : KoinTest {
             viewModel.onIntent(ToggleDefaultColor)
 
             viewModel.viewState.test {
-                val state = expectItem()
+                val state = awaitItem()
                 assertThat(state.isDefaultColorChecked).isTrue()
                 assertThat(state.iconBackgroundColorHex).isEqualTo(DEFAULT_BACKGROUND_COLOR_HEX_STRING)
             }
@@ -194,7 +194,7 @@ class AppearanceFormViewModelTest : KoinTest {
             viewModel.onIntent(ToggleDefaultIcon)
 
             viewModel.viewState.test {
-                val state = expectItem()
+                val state = awaitItem()
                 assertThat(state.isDefaultIconChecked).isTrue()
                 assertThat(state.keepassIconValue).isNull()
             }
@@ -216,7 +216,7 @@ class AppearanceFormViewModelTest : KoinTest {
             viewModel.onIntent(SetCustomIconBackgroundColor(colorHexString))
 
             viewModel.viewState.test {
-                val state = expectItem()
+                val state = awaitItem()
                 assertThat(state.iconBackgroundColorHex).isEqualTo(colorHexString)
                 assertThat(state.isDefaultColorChecked).isFalse()
             }
@@ -238,7 +238,7 @@ class AppearanceFormViewModelTest : KoinTest {
             viewModel.onIntent(SetKeepassIcon(iconValue))
 
             viewModel.viewState.test {
-                val state = expectItem()
+                val state = awaitItem()
                 assertThat(state.keepassIconValue).isEqualTo(iconValue)
                 assertThat(state.isDefaultIconChecked).isFalse()
             }
@@ -258,7 +258,7 @@ class AppearanceFormViewModelTest : KoinTest {
 
             viewModel.sideEffect.test {
                 viewModel.onIntent(AppearanceFormIntent.GoBack)
-                assertThat(expectItem()).isInstanceOf(AppearanceFormSideEffect.NavigateUp::class.java)
+                assertThat(awaitItem()).isInstanceOf(AppearanceFormSideEffect.NavigateUp::class.java)
             }
         }
 
@@ -285,7 +285,7 @@ class AppearanceFormViewModelTest : KoinTest {
             viewModel.sideEffect.test {
                 viewModel.onIntent(ApplyChanges)
 
-                val sideEffect = expectItem()
+                val sideEffect = awaitItem()
                 assertThat(sideEffect).isInstanceOf(ApplyAndGoBack::class.java)
                 assertThat((sideEffect as ApplyAndGoBack).model).isEqualTo(mockAppearanceModel)
 

@@ -19,6 +19,7 @@ dependencies {
     implementation project(':users')
     implementation project(':folders')
 
+    implementation platform(libs.koin.bom)
     implementation libs.koin
     implementation libs.room.core
     implementation libs.gson
@@ -26,6 +27,7 @@ dependencies {
     testImplementation project(':commontest')
 
     androidTestImplementation(name: "gopenpgp", ext: "aar")
+    androidTestImplementation platform(libs.koin.bom)
     androidTestImplementation libs.koin.test
     androidTestImplementation libs.koin.test.junit
     androidTestImplementation libs.kotlin.coroutines.test
@@ -37,10 +39,6 @@ dependencies {
 
 android {
     namespace = "com.passbolt.mobile.android.core.metadata"
-
-    defaultConfig {
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-    }
 }
 
 kotlin {

@@ -76,14 +76,13 @@ The passbolt team will take the following actions:
 # How run verifications locally
 
 1. Navigate to project root directory
-2. Execute `./gradlew detekt ktlint lintDebug unitTest koverMergedHtmlReport licenseeRelease dependencyUpdates buildHealth`
+2. Execute `./gradlew detekt ktlint lintDebug unitTest licenseeRelease dependencyUpdates buildHealth`
 
 You can also run each check individually if needed:
 
 * `detekt` and `ktlint` - run static analysis for kotlin
 * `lintRelease` - run Android linter
 * `unitTest` - execute all unit tests
-* `koverMergedHtmlReport` - generate unit test coverage report
 * `licenseeRelease` - check if all dependencies have appropriate licenses
 * `dependencyUpdates` - check if any dependencies have updates in the release channel
 * `buildHealth` - produce a report about unused dependencies or incorrect dependency declaration

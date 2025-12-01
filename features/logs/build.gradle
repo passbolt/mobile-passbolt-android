@@ -12,6 +12,7 @@ dependencies {
     implementation project(':logger')
     implementation project(':navigation')
 
+    implementation platform(libs.koin.bom)
     implementation libs.koin
     implementation libs.koin.compose
     implementation libs.material

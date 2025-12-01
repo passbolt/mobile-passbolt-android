@@ -2,8 +2,8 @@ package com.passbolt.mobile.android.core.navigation.compose
 
 import android.content.Context
 import android.content.Intent
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.core.content.FileProvider.getUriForFile
+import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import com.passbolt.mobile.android.common.ExternalDeeplinkHandler
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
@@ -44,7 +44,7 @@ import java.io.File
 class AppNavigator(
     private val externalDeeplinkHandler: ExternalDeeplinkHandler,
 ) : KoinComponent {
-    lateinit var backStack: SnapshotStateList<NavKey>
+    lateinit var backStack: NavBackStack<NavKey>
 
     private val _currentBackStackItem = MutableStateFlow<NavKey?>(null)
     val currentBackStackItem: StateFlow<NavKey?> = _currentBackStackItem.asStateFlow()

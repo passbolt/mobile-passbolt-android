@@ -238,7 +238,7 @@ class HomeViewModelTest : KoinTest {
             viewModel.onIntent(Search("test query"))
 
             viewModel.viewState.drop(1).test {
-                val updatedState = expectItem()
+                val updatedState = awaitItem()
                 assertThat(updatedState.searchQuery).isEqualTo("test query")
                 assertThat(updatedState.searchInputEndIconMode).isEqualTo(CLEAR)
                 assertThat(updatedState.homeData).isEqualTo(mockHomeData)
@@ -253,7 +253,7 @@ class HomeViewModelTest : KoinTest {
 
             viewModel.viewState.drop(1).test {
                 viewModel.onIntent(SearchEndIconAction)
-                val updatedState = expectItem()
+                val updatedState = awaitItem()
                 assertThat(updatedState.searchQuery).isEmpty()
                 assertThat(updatedState.searchInputEndIconMode).isEqualTo(AVATAR)
             }
@@ -266,9 +266,9 @@ class HomeViewModelTest : KoinTest {
 
             viewModel.viewState.drop(1).test {
                 viewModel.onIntent(SearchEndIconAction)
-                assertThat(expectItem().showAccountSwitchBottomSheet).isTrue()
+                assertThat(awaitItem().showAccountSwitchBottomSheet).isTrue()
                 viewModel.onIntent(CloseSwitchAccount)
-                assertThat(expectItem().showAccountSwitchBottomSheet).isFalse()
+                assertThat(awaitItem().showAccountSwitchBottomSheet).isFalse()
             }
         }
 
@@ -279,9 +279,9 @@ class HomeViewModelTest : KoinTest {
 
             viewModel.viewState.drop(1).test {
                 viewModel.onIntent(OpenCreateResourceMenu)
-                assertThat(expectItem().showCreateResourceBottomSheet).isTrue()
+                assertThat(awaitItem().showCreateResourceBottomSheet).isTrue()
                 viewModel.onIntent(CloseCreateResourceMenu)
-                assertThat(expectItem().showCreateResourceBottomSheet).isFalse()
+                assertThat(awaitItem().showCreateResourceBottomSheet).isFalse()
             }
         }
 
@@ -293,24 +293,24 @@ class HomeViewModelTest : KoinTest {
 
             viewModel.sideEffect.test {
                 viewModel.onIntent(CreatePassword)
-                val createPasswordEffect = expectItem()
+                val createPasswordEffect = awaitItem()
                 assertIs<NavigateToCreateResourceForm>(createPasswordEffect)
                 assertThat(createPasswordEffect.leadingContentType).isEqualTo(PASSWORD)
                 assertThat(createPasswordEffect.folderId).isNull()
 
                 viewModel.onIntent(CreateNote)
-                val createNoteEffect = expectItem()
+                val createNoteEffect = awaitItem()
                 assertIs<NavigateToCreateResourceForm>(createNoteEffect)
                 assertThat(createNoteEffect.leadingContentType).isEqualTo(STANDALONE_NOTE)
                 assertThat(createNoteEffect.folderId).isNull()
 
                 viewModel.onIntent(CreateTotp)
-                val createTotpEffect = expectItem()
+                val createTotpEffect = awaitItem()
                 assertIs<NavigateToCreateTotp>(createTotpEffect)
                 assertThat(createTotpEffect.folderId).isNull()
 
                 viewModel.onIntent(CreateFolder)
-                val createFolderEffect = expectItem()
+                val createFolderEffect = awaitItem()
                 assertIs<NavigateToCreateFolder>(createFolderEffect)
                 assertThat(createFolderEffect.folderId).isNull()
             }
@@ -333,24 +333,24 @@ class HomeViewModelTest : KoinTest {
 
             viewModel.sideEffect.test {
                 viewModel.onIntent(CreatePassword)
-                val createPasswordEffect = expectItem()
+                val createPasswordEffect = awaitItem()
                 assertIs<NavigateToCreateResourceForm>(createPasswordEffect)
                 assertThat(createPasswordEffect.leadingContentType).isEqualTo(PASSWORD)
                 assertThat(createPasswordEffect.folderId).isEqualTo("folderId")
 
                 viewModel.onIntent(CreateNote)
-                val createNoteEffect = expectItem()
+                val createNoteEffect = awaitItem()
                 assertIs<NavigateToCreateResourceForm>(createNoteEffect)
                 assertThat(createNoteEffect.leadingContentType).isEqualTo(STANDALONE_NOTE)
                 assertThat(createNoteEffect.folderId).isEqualTo("folderId")
 
                 viewModel.onIntent(CreateTotp)
-                val createTotpEffect = expectItem()
+                val createTotpEffect = awaitItem()
                 assertIs<NavigateToCreateTotp>(createTotpEffect)
                 assertThat(createTotpEffect.folderId).isEqualTo("folderId")
 
                 viewModel.onIntent(CreateFolder)
-                val createFolderEffect = expectItem()
+                val createFolderEffect = awaitItem()
                 assertIs<NavigateToCreateFolder>(createFolderEffect)
                 assertThat(createFolderEffect.folderId).isEqualTo("folderId")
             }
@@ -364,22 +364,22 @@ class HomeViewModelTest : KoinTest {
 
             viewModel.sideEffect.test {
                 viewModel.onIntent(CreatePassword)
-                val createPasswordEffect = expectItem()
+                val createPasswordEffect = awaitItem()
                 assertIs<ShowErrorSnackbar>(createPasswordEffect)
                 assertThat(createPasswordEffect.type).isEqualTo(NO_SHARED_KEY_ACCESS)
 
                 viewModel.onIntent(CreateNote)
-                val createNoteEffect = expectItem()
+                val createNoteEffect = awaitItem()
                 assertIs<ShowErrorSnackbar>(createNoteEffect)
                 assertThat(createNoteEffect.type).isEqualTo(NO_SHARED_KEY_ACCESS)
 
                 viewModel.onIntent(CreateTotp)
-                val createTotpEffect = expectItem()
+                val createTotpEffect = awaitItem()
                 assertIs<ShowErrorSnackbar>(createTotpEffect)
                 assertThat(createTotpEffect.type).isEqualTo(NO_SHARED_KEY_ACCESS)
 
                 viewModel.onIntent(CreateFolder)
-                val createFolderEffect = expectItem()
+                val createFolderEffect = awaitItem()
                 assertIs<NavigateToCreateFolder>(createFolderEffect)
                 assertThat(createFolderEffect.folderId).isEqualTo(null)
             }
@@ -396,12 +396,12 @@ class HomeViewModelTest : KoinTest {
 
             viewModel.viewState.drop(2).test {
                 dataRefreshFlow.updateStatus(InProgress)
-                val inProgress = expectItem()
+                val inProgress = awaitItem()
                 assertThat(inProgress.isRefreshing).isTrue()
                 assertThat(inProgress.canCreateResource).isFalse()
 
                 dataRefreshFlow.updateStatus(FinishedWithSuccess)
-                val finished = expectItem()
+                val finished = awaitItem()
                 assertThat(finished.isRefreshing).isFalse()
                 assertThat(finished.canCreateResource).isTrue()
             }
@@ -417,17 +417,17 @@ class HomeViewModelTest : KoinTest {
 
             viewModel.viewState.drop(2).test {
                 dataRefreshFlow.updateStatus(InProgress)
-                val inProgress = expectItem()
+                val inProgress = awaitItem()
                 assertThat(inProgress.isRefreshing).isTrue()
                 assertThat(inProgress.canCreateResource).isFalse()
 
                 dataRefreshFlow.updateStatus(FinishedWithFailure)
-                val finished = expectItem()
+                val finished = awaitItem()
                 assertThat(finished.isRefreshing).isFalse()
                 assertThat(finished.canCreateResource).isFalse()
 
                 viewModel.sideEffect.test {
-                    val effect = expectItem()
+                    val effect = awaitItem()
                     assertIs<ShowErrorSnackbar>(effect)
                     assertThat(effect.type).isEqualTo(FAILED_TO_REFRESH_DATA)
                 }
@@ -449,8 +449,8 @@ class HomeViewModelTest : KoinTest {
                     ),
                 )
 
-                assertIs<InitiateDataRefresh>(expectItem())
-                val createSnackbarEffect = expectItem()
+                assertIs<InitiateDataRefresh>(awaitItem())
+                val createSnackbarEffect = awaitItem()
                 assertIs<ShowSuccessSnackbar>(createSnackbarEffect)
                 assertEquals(RESOURCE_CREATED, createSnackbarEffect.type)
                 assertEquals("Test Resource", createSnackbarEffect.message)
@@ -464,8 +464,8 @@ class HomeViewModelTest : KoinTest {
                     ),
                 )
 
-                assertIs<InitiateDataRefresh>(expectItem())
-                val editSnackbarEffect = expectItem()
+                assertIs<InitiateDataRefresh>(awaitItem())
+                val editSnackbarEffect = awaitItem()
                 assertIs<ShowSuccessSnackbar>(editSnackbarEffect)
                 assertEquals(RESOURCE_EDITED, editSnackbarEffect.type)
                 assertEquals("Test Resource", editSnackbarEffect.message)
@@ -487,11 +487,11 @@ class HomeViewModelTest : KoinTest {
                     ),
                 )
 
-                val editSnackbarEffect = expectItem()
+                val editSnackbarEffect = awaitItem()
                 assertIs<ShowSuccessSnackbar>(editSnackbarEffect)
                 assertEquals(RESOURCE_EDITED, editSnackbarEffect.type)
                 assertEquals("Test Resource", editSnackbarEffect.message)
-                assertIs<InitiateDataRefresh>(expectItem())
+                assertIs<InitiateDataRefresh>(awaitItem())
 
                 // delete
                 viewModel.onIntent(
@@ -502,11 +502,11 @@ class HomeViewModelTest : KoinTest {
                     ),
                 )
 
-                val deleteSnackbarEffect = expectItem()
+                val deleteSnackbarEffect = awaitItem()
                 assertIs<ShowSuccessSnackbar>(deleteSnackbarEffect)
                 assertEquals(RESOURCE_DELETED, deleteSnackbarEffect.type)
                 assertEquals("Test Resource", deleteSnackbarEffect.message)
-                assertIs<InitiateDataRefresh>(expectItem())
+                assertIs<InitiateDataRefresh>(awaitItem())
             }
         }
 
@@ -522,11 +522,11 @@ class HomeViewModelTest : KoinTest {
                     ),
                 )
 
-                val createSnackbarEffect = expectItem()
+                val createSnackbarEffect = awaitItem()
                 assertIs<ShowSuccessSnackbar>(createSnackbarEffect)
                 assertEquals(FOLDER_CREATED, createSnackbarEffect.type)
                 assertEquals("Test Folder", createSnackbarEffect.message)
-                assertIs<InitiateDataRefresh>(expectItem())
+                assertIs<InitiateDataRefresh>(awaitItem())
             }
         }
 
@@ -542,10 +542,10 @@ class HomeViewModelTest : KoinTest {
                     ),
                 )
 
-                val shareSnackbarEffect = expectItem()
+                val shareSnackbarEffect = awaitItem()
                 assertIs<ShowSuccessSnackbar>(shareSnackbarEffect)
                 assertEquals(RESOURCE_SHARED, shareSnackbarEffect.type)
-                assertIs<InitiateDataRefresh>(expectItem())
+                assertIs<InitiateDataRefresh>(awaitItem())
             }
         }
 
