@@ -2,9 +2,6 @@ package com.passbolt.mobile.android.feature.resources.details
 
 import com.google.common.truth.Truth.assertThat
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalFolderLocationUseCase
-import com.passbolt.mobile.android.core.fulldatarefresh.DataRefreshStatus
-import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
-import com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor
 import com.passbolt.mobile.android.core.rbac.usecase.GetRbacRulesUseCase
 import com.passbolt.mobile.android.core.resources.actions.SecretPropertiesActionsInteractor
 import com.passbolt.mobile.android.core.resources.actions.SecretPropertyActionResult
@@ -15,6 +12,7 @@ import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUse
 import com.passbolt.mobile.android.entity.featureflags.FeatureFlagsModel
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsContract
 import com.passbolt.mobile.android.featureflags.usecase.GetFeatureFlagsUseCase
+import com.passbolt.mobile.android.metadata.usecase.CanShareResourceUseCase
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType
 import com.passbolt.mobile.android.ui.GroupModel
 import com.passbolt.mobile.android.ui.MetadataJsonModel
@@ -46,7 +44,6 @@ import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoMoreInteractions
-import org.mockito.kotlin.whenever
 import java.time.ZonedDateTime
 import java.util.UUID
 
@@ -76,7 +73,6 @@ import java.util.UUID
 class ResourceDetailsPresenterTest : KoinTest {
     private val presenter: ResourceDetailsContract.Presenter by inject()
     private val view: ResourceDetailsContract.View = mock()
-    private val mockFullDataRefreshExecutor: FullDataRefreshExecutor by inject()
 
     @ExperimentalCoroutinesApi
     @get:Rule
@@ -167,9 +163,6 @@ class ResourceDetailsPresenterTest : KoinTest {
         mockResourceTagsUseCase.stub {
             onBlocking { execute(any()) }.doReturn(GetLocalResourceTagsUseCase.Output(RESOURCE_TAGS))
         }
-        whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
-            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success)),
-        )
         mockGetFolderLocationUseCase.stub {
             onBlocking { execute(any()) }.doReturn(GetLocalFolderLocationUseCase.Output(emptyList()))
         }
@@ -190,6 +183,9 @@ class ResourceDetailsPresenterTest : KoinTest {
                     ),
                 ),
             )
+        }
+        mockCanShareResourceUseCase.stub {
+            onBlocking { execute(any()) }.doReturn(CanShareResourceUseCase.Output(canShareResource = true))
         }
         presenter.attach(view)
     }
@@ -241,9 +237,9 @@ class ResourceDetailsPresenterTest : KoinTest {
         )
         presenter.resume(view)
 
-        verify(view, times(2)).displayUrl(URL1)
+        verify(view).displayUrl(URL1)
         argumentCaptor<List<String>> {
-            verify(view, times(2)).displayAdditionalUrls(capture())
+            verify(view).displayAdditionalUrls(capture())
             assertThat(firstValue).containsExactlyElementsIn(listOf(URL2))
         }
     }
@@ -263,24 +259,23 @@ class ResourceDetailsPresenterTest : KoinTest {
         )
         presenter.resume(view)
 
-        verify(view, times(2)).showFavouriteStar()
-        verify(view, times(2)).displayTitle(NAME)
+        verify(view).showFavouriteStar()
+        verify(view).displayTitle(NAME)
         verify(view, never()).displayExpiryTitle(any())
         verify(view, never()).displayExpirySection(any())
-        verify(view, times(2)).displayUsername(USERNAME)
-        verify(view, times(2)).displayInitialsIcon(resourceModel)
-        verify(view, times(2)).displayUrl(URL1)
-        verify(view, times(2)).hidePassword()
-        verify(view, times(2)).showPermissions(eq(listOf(groupPermission)), eq(listOf(userPermission)), any(), any())
-        verify(view, times(2)).showTags(RESOURCE_TAGS.map { it.slug })
-        verify(view, times(2)).disableMetadataDescription()
-        verify(view, times(2)).showFolderLocation(emptyList())
-        verify(view, times(2)).hideTotpSection()
-        verify(view, times(2)).showPasswordSection()
-        verify(view, times(2)).showPasswordEyeIcon()
-        verify(view, times(2)).hideExpirySection()
-        verify(view, times(2)).hideCustomFieldsSection()
-        verify(view).hideRefreshProgress()
+        verify(view).displayUsername(USERNAME)
+        verify(view).displayInitialsIcon(resourceModel)
+        verify(view).displayUrl(URL1)
+        verify(view).hidePassword()
+        verify(view).showPermissions(eq(listOf(groupPermission)), eq(listOf(userPermission)), any(), any())
+        verify(view).showTags(RESOURCE_TAGS.map { it.slug })
+        verify(view).disableMetadataDescription()
+        verify(view).showFolderLocation(emptyList())
+        verify(view).hideTotpSection()
+        verify(view).showPasswordSection()
+        verify(view).showPasswordEyeIcon()
+        verify(view).hideExpirySection()
+        verify(view).hideCustomFieldsSection()
         verifyNoMoreInteractions(view)
     }
 
@@ -299,25 +294,24 @@ class ResourceDetailsPresenterTest : KoinTest {
         )
         presenter.resume(view)
 
-        verify(view, times(2)).showFavouriteStar()
-        verify(view, times(2)).displayTitle(NAME)
+        verify(view).showFavouriteStar()
+        verify(view).displayTitle(NAME)
         verify(view, never()).displayExpiryTitle(any())
         verify(view, never()).displayExpirySection(any())
-        verify(view, times(2)).displayUsername(USERNAME)
-        verify(view, times(2)).displayInitialsIcon(resourceModel)
-        verify(view, times(2)).displayUrl(URL1)
-        verify(view, times(2)).hidePassword()
-        verify(view, times(2)).showPermissions(eq(listOf(groupPermission)), eq(listOf(userPermission)), any(), any())
-        verify(view, times(2)).showTags(RESOURCE_TAGS.map { it.slug })
-        verify(view, times(2)).showMetadataDescription(DESCRIPTION)
-        verify(view, times(2)).showFolderLocation(emptyList())
-        verify(view, times(2)).hideTotpSection()
-        verify(view, times(2)).disableNote()
-        verify(view, times(2)).showPasswordSection()
-        verify(view, times(2)).showPasswordEyeIcon()
-        verify(view, times(2)).hideExpirySection()
-        verify(view, times(2)).hideCustomFieldsSection()
-        verify(view).hideRefreshProgress()
+        verify(view).displayUsername(USERNAME)
+        verify(view).displayInitialsIcon(resourceModel)
+        verify(view).displayUrl(URL1)
+        verify(view).hidePassword()
+        verify(view).showPermissions(eq(listOf(groupPermission)), eq(listOf(userPermission)), any(), any())
+        verify(view).showTags(RESOURCE_TAGS.map { it.slug })
+        verify(view).showMetadataDescription(DESCRIPTION)
+        verify(view).showFolderLocation(emptyList())
+        verify(view).hideTotpSection()
+        verify(view).disableNote()
+        verify(view).showPasswordSection()
+        verify(view).showPasswordEyeIcon()
+        verify(view).hideExpirySection()
+        verify(view).hideCustomFieldsSection()
         verifyNoMoreInteractions(view)
     }
 
@@ -336,24 +330,23 @@ class ResourceDetailsPresenterTest : KoinTest {
         )
         presenter.resume(view)
 
-        verify(view, times(2)).showFavouriteStar()
-        verify(view, times(2)).displayTitle(NAME)
+        verify(view).showFavouriteStar()
+        verify(view).displayTitle(NAME)
         verify(view, never()).displayExpiryTitle(any())
         verify(view, never()).displayExpirySection(any())
-        verify(view, times(2)).displayUsername(USERNAME)
-        verify(view, times(2)).displayInitialsIcon(resourceModel)
-        verify(view, times(2)).displayUrl(URL1)
-        verify(view, times(2)).hidePassword()
-        verify(view, times(2)).showPermissions(eq(listOf(groupPermission)), eq(listOf(userPermission)), any(), any())
-        verify(view, times(2)).showTags(RESOURCE_TAGS.map { it.slug })
-        verify(view, times(2)).showFolderLocation(emptyList())
-        verify(view, times(2)).showTotpSection()
-        verify(view, times(2)).showPasswordSection()
-        verify(view, times(2)).showPasswordEyeIcon()
-        verify(view, times(2)).disableMetadataDescription()
-        verify(view, times(2)).hideExpirySection()
-        verify(view, times(2)).hideCustomFieldsSection()
-        verify(view).hideRefreshProgress()
+        verify(view).displayUsername(USERNAME)
+        verify(view).displayInitialsIcon(resourceModel)
+        verify(view).displayUrl(URL1)
+        verify(view).hidePassword()
+        verify(view).showPermissions(eq(listOf(groupPermission)), eq(listOf(userPermission)), any(), any())
+        verify(view).showTags(RESOURCE_TAGS.map { it.slug })
+        verify(view).showFolderLocation(emptyList())
+        verify(view).showTotpSection()
+        verify(view).showPasswordSection()
+        verify(view).showPasswordEyeIcon()
+        verify(view).disableMetadataDescription()
+        verify(view).hideExpirySection()
+        verify(view).hideCustomFieldsSection()
         verifyNoMoreInteractions(view)
     }
 
@@ -372,26 +365,25 @@ class ResourceDetailsPresenterTest : KoinTest {
         )
         presenter.resume(view)
 
-        verify(view, times(2)).showFavouriteStar()
-        verify(view, times(2)).displayTitle(NAME)
+        verify(view).showFavouriteStar()
+        verify(view).displayTitle(NAME)
         verify(view, never()).displayExpiryTitle(any())
         verify(view, never()).displayExpirySection(any())
-        verify(view, times(2)).displayUsername(USERNAME)
-        verify(view, times(2)).displayInitialsIcon(resourceModel)
-        verify(view, times(2)).displayUrl(URL1)
-        verify(view, times(2)).hidePassword()
-        verify(view, times(2)).showPermissions(eq(listOf(groupPermission)), eq(listOf(userPermission)), any(), any())
-        verify(view, times(2)).showTags(RESOURCE_TAGS.map { it.slug })
-        verify(view, times(2)).showFolderLocation(emptyList())
-        verify(view, times(2)).showTotpSection()
-        verify(view, times(2)).hidePasswordSection()
-        verify(view, times(2)).hidePassword()
-        verify(view, times(2)).disableMetadataDescription()
-        verify(view, times(2)).disableNote()
-        verify(view, times(2)).showPasswordEyeIcon()
-        verify(view, times(2)).hideExpirySection()
-        verify(view, times(2)).hideCustomFieldsSection()
-        verify(view).hideRefreshProgress()
+        verify(view).displayUsername(USERNAME)
+        verify(view).displayInitialsIcon(resourceModel)
+        verify(view).displayUrl(URL1)
+        verify(view).hidePassword()
+        verify(view).showPermissions(eq(listOf(groupPermission)), eq(listOf(userPermission)), any(), any())
+        verify(view).showTags(RESOURCE_TAGS.map { it.slug })
+        verify(view).showFolderLocation(emptyList())
+        verify(view).showTotpSection()
+        verify(view).hidePasswordSection()
+        verify(view).hidePassword()
+        verify(view).disableMetadataDescription()
+        verify(view).disableNote()
+        verify(view).showPasswordEyeIcon()
+        verify(view).hideExpirySection()
+        verify(view).hideCustomFieldsSection()
         verifyNoMoreInteractions(view)
     }
 
@@ -413,24 +405,23 @@ class ResourceDetailsPresenterTest : KoinTest {
         )
         presenter.resume(view)
 
-        verify(view, times(2)).showFavouriteStar()
+        verify(view).showFavouriteStar()
         verify(view, never()).displayTitle(NAME)
-        verify(view, times(2)).displayExpiryTitle(any())
-        verify(view, times(2)).showExpiryIndicator()
-        verify(view, times(2)).displayExpirySection(resourceModelExpired.expiry!!)
-        verify(view, times(2)).displayUsername(USERNAME)
-        verify(view, times(2)).displayInitialsIcon(resourceModelExpired)
-        verify(view, times(2)).displayUrl(URL1)
-        verify(view, times(2)).hidePassword()
-        verify(view, times(2)).showPermissions(eq(listOf(groupPermission)), eq(listOf(userPermission)), any(), any())
-        verify(view, times(2)).showTags(RESOURCE_TAGS.map { it.slug })
-        verify(view, times(2)).disableMetadataDescription()
-        verify(view, times(2)).showPasswordSection()
-        verify(view, times(2)).showFolderLocation(emptyList())
-        verify(view, times(2)).hideTotpSection()
-        verify(view, times(2)).showPasswordEyeIcon()
-        verify(view, times(2)).hideCustomFieldsSection()
-        verify(view).hideRefreshProgress()
+        verify(view).displayExpiryTitle(any())
+        verify(view).showExpiryIndicator()
+        verify(view).displayExpirySection(resourceModelExpired.expiry!!)
+        verify(view).displayUsername(USERNAME)
+        verify(view).displayInitialsIcon(resourceModelExpired)
+        verify(view).displayUrl(URL1)
+        verify(view).hidePassword()
+        verify(view).showPermissions(eq(listOf(groupPermission)), eq(listOf(userPermission)), any(), any())
+        verify(view).showTags(RESOURCE_TAGS.map { it.slug })
+        verify(view).disableMetadataDescription()
+        verify(view).showPasswordSection()
+        verify(view).showFolderLocation(emptyList())
+        verify(view).hideTotpSection()
+        verify(view).showPasswordEyeIcon()
+        verify(view).hideCustomFieldsSection()
         verifyNoMoreInteractions(view)
     }
 
@@ -463,7 +454,7 @@ class ResourceDetailsPresenterTest : KoinTest {
         presenter.passwordActionClick()
 
         verify(view).showPassword(password)
-        verify(view, times(3)).hidePassword()
+        verify(view, times(2)).hidePassword()
     }
 
     @Test
@@ -545,7 +536,7 @@ class ResourceDetailsPresenterTest : KoinTest {
             )
             presenter.resume(view)
 
-            verify(view, times(2)).showPermissions(eq(listOf(groupPermission)), eq(listOf(userPermission)), any(), any())
+            verify(view).showPermissions(eq(listOf(groupPermission)), eq(listOf(userPermission)), any(), any())
         }
 
     @Test

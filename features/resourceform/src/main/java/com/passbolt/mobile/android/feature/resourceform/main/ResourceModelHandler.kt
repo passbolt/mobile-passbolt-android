@@ -1,6 +1,5 @@
 package com.passbolt.mobile.android.feature.resourceform.main
 
-import com.passbolt.mobile.android.core.mvp.authentication.UnauthenticatedReason
 import com.passbolt.mobile.android.core.resources.actions.SecretPropertiesActionsInteractor
 import com.passbolt.mobile.android.core.resources.actions.SecretPropertyActionResult
 import com.passbolt.mobile.android.core.resources.usecase.GetDefaultCreateContentTypeUseCase
@@ -30,6 +29,7 @@ import com.passbolt.mobile.android.supportedresourceTypes.ContentType.Totp
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5CustomFields
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5Default
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5DefaultWithTotp
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5Note
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5PasswordString
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5TotpStandalone
 import com.passbolt.mobile.android.ui.LeadingContentType
@@ -45,8 +45,6 @@ import com.passbolt.mobile.android.ui.ResourceFormUiModel.Secret.CUSTOM_FIELDS
 import com.passbolt.mobile.android.ui.ResourceFormUiModel.Secret.NOTE
 import com.passbolt.mobile.android.ui.ResourceFormUiModel.Secret.PASSWORD
 import com.passbolt.mobile.android.ui.ResourceFormUiModel.Secret.TOTP
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.single
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
@@ -104,6 +102,7 @@ class ResourceModelHandler(
                         LeadingContentType.TOTP -> SecretJsonModel.emptyTotp()
                         LeadingContentType.PASSWORD -> SecretJsonModel.emptyPassword()
                         LeadingContentType.CUSTOM_FIELDS -> SecretJsonModel.emptyCustomFields()
+                        LeadingContentType.STANDALONE_NOTE -> SecretJsonModel.emptyDescription()
                     }
 
                 Timber.d("Initialized creation model with content type: $contentType and metadata type: $metadataType")
@@ -116,11 +115,7 @@ class ResourceModelHandler(
     }
 
     @Throws(Exception::class)
-    suspend fun initializeModelForEdition(
-        existingResourceId: String,
-        needSessionRefreshFlow: MutableStateFlow<UnauthenticatedReason?>,
-        sessionRefreshedFlow: StateFlow<Unit?>,
-    ) {
+    suspend fun initializeModelForEdition(existingResourceId: String) {
         try {
             // init resource
             val resource =
@@ -139,10 +134,7 @@ class ResourceModelHandler(
             metadataType = initialEditContentType.metadataType
 
             // init secret
-            val secretPropertiesActionsInteractor: SecretPropertiesActionsInteractor =
-                get {
-                    parametersOf(resource, needSessionRefreshFlow, sessionRefreshedFlow)
-                }
+            val secretPropertiesActionsInteractor: SecretPropertiesActionsInteractor = get { parametersOf(resource) }
             val secret = secretPropertiesActionsInteractor.provideDecryptedSecret().single()
             resourceSecret = (secret as SecretPropertyActionResult.Success<SecretJsonModel>).result
 
@@ -278,6 +270,11 @@ class ResourceModelHandler(
                 V5CustomFields -> {
                     // only editing of custom fields - all required fields are there
                 }
+                V5Note -> {
+                    if (description.isNullOrBlank()) {
+                        description = ""
+                    }
+                }
             }
         }
 
@@ -295,12 +292,11 @@ class ResourceModelHandler(
                 .getUpdateActionsMetadata(contentType.slug)
                 .map { it.action }
         val leadingContentType =
-            if (contentType in setOf(Totp, V5TotpStandalone)) {
-                LeadingContentType.TOTP
-            } else if (contentType is V5CustomFields) {
-                LeadingContentType.CUSTOM_FIELDS
-            } else {
-                LeadingContentType.PASSWORD
+            when (contentType) {
+                in setOf(Totp, V5TotpStandalone) -> LeadingContentType.TOTP
+                is V5CustomFields -> LeadingContentType.CUSTOM_FIELDS
+                is V5Note -> LeadingContentType.STANDALONE_NOTE
+                else -> LeadingContentType.PASSWORD
             }
 
         return ResourceFormUiModel(
@@ -313,7 +309,9 @@ class ResourceModelHandler(
                     ) {
                         additionalSecrets.add(TOTP)
                     }
-                    if (it.contains(ADD_NOTE) || it.contains(REMOVE_NOTE)) {
+                    if (leadingContentType != LeadingContentType.STANDALONE_NOTE &&
+                        (it.contains(ADD_NOTE) || it.contains(REMOVE_NOTE))
+                    ) {
                         additionalSecrets.add(NOTE)
                     }
                     if (leadingContentType != LeadingContentType.PASSWORD &&

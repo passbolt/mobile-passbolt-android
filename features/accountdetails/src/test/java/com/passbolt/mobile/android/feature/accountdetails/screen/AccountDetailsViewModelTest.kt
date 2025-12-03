@@ -28,6 +28,7 @@ import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.core.accounts.usecase.accountdata.GetSelectedAccountDataUseCase
 import com.passbolt.mobile.android.core.accounts.usecase.accountdata.UpdateAccountDataUseCase
 import com.passbolt.mobile.android.core.accounts.usecase.selectedaccount.GetSelectedAccountUseCase
+import com.passbolt.mobile.android.core.mvp.authentication.SessionRefreshTrackingFlow
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.feature.accountdetails.screen.AccountDetailsIntent.SaveChanges
 import com.passbolt.mobile.android.feature.accountdetails.screen.AccountDetailsIntent.StartTransferAccount
@@ -71,6 +72,7 @@ class AccountDetailsViewModelTest : KoinTest {
                         single { mock<GetSelectedAccountDataUseCase>() }
                         single { mock<GetSelectedAccountUseCase>() }
                         single { mock<UpdateAccountDataUseCase>() }
+                        singleOf(::SessionRefreshTrackingFlow)
                         singleOf(::TestCoroutineLaunchContext) bind CoroutineLaunchContext::class
                         factoryOf(::AccountDetailsViewModel)
                     },

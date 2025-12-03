@@ -23,8 +23,8 @@
 package com.passbolt.mobile.android.core.ui.compose.scaffold
 
 import androidx.annotation.DrawableRes
-import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -38,8 +38,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
@@ -56,13 +61,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.passbolt.mobile.android.core.ui.compose.fab.AddFloatingActionButton
 import com.passbolt.mobile.android.core.ui.compose.snackbar.ColoredSnackbarVisuals
-import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -70,10 +73,16 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
 fun HomeScaffold(
     snackbarHostState: SnackbarHostState,
     modifier: Modifier = Modifier,
-    @StringRes appBarTitleRes: Int? = null,
+    appBarTitle: String? = null,
     @DrawableRes appBarIconRes: Int? = null,
     appBarSearchInput: @Composable () -> Unit = {},
     floatingActionButton: @Composable () -> Unit = {},
+    onBackClick: () -> Unit = {},
+    shouldShowBackIcon: Boolean = false,
+    onCloseClick: () -> Unit = {},
+    shouldShowCloseIcon: Boolean = false,
+    onMoreClick: () -> Unit = {},
+    shouldShowMoreIcon: Boolean = false,
     content: @Composable (PaddingValues) -> Unit,
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
@@ -101,27 +110,58 @@ fun HomeScaffold(
                                 modifier =
                                     Modifier
                                         .fillMaxWidth()
-                                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                                        .padding(vertical = 8.dp),
                                 verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.Center,
                             ) {
-                                appBarIconRes?.let {
-                                    Image(
-                                        painter = painterResource(it),
+                                if (shouldShowBackIcon) {
+                                    Icon(
+                                        Icons.AutoMirrored.Filled.ArrowBack,
                                         contentDescription = null,
-                                        modifier = Modifier.size(24.dp),
-                                    )
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                }
-                                appBarTitleRes?.let {
-                                    Text(
-                                        text = stringResource(it),
-                                        style = MaterialTheme.typography.bodySmall,
-                                        fontWeight = FontWeight.Bold,
-                                        color = MaterialTheme.colorScheme.onBackground,
+                                        tint = colorResource(CoreUiR.color.icon_tint),
+                                        modifier = Modifier.clickable { onBackClick() },
                                     )
                                 }
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.Center,
+                                    modifier = Modifier.weight(1f),
+                                ) {
+                                    appBarIconRes?.let {
+                                        Image(
+                                            painter = painterResource(it),
+                                            contentDescription = null,
+                                            modifier = Modifier.size(24.dp),
+                                        )
+                                        Spacer(modifier = Modifier.width(8.dp))
+                                    }
+                                    appBarTitle?.let {
+                                        Text(
+                                            text = it,
+                                            style = MaterialTheme.typography.bodySmall,
+                                            fontWeight = FontWeight.Bold,
+                                            color = MaterialTheme.colorScheme.onBackground,
+                                        )
+                                    }
+                                }
+                                if (shouldShowMoreIcon) {
+                                    Icon(
+                                        Icons.Default.MoreVert,
+                                        contentDescription = null,
+                                        tint = colorResource(CoreUiR.color.icon_tint),
+                                        modifier = Modifier.clickable { onMoreClick() },
+                                    )
+                                }
+                                if (shouldShowCloseIcon) {
+                                    Icon(
+                                        Icons.Default.Close,
+                                        contentDescription = null,
+                                        tint = colorResource(CoreUiR.color.icon_tint),
+                                        modifier = Modifier.clickable { onCloseClick() },
+                                    )
+                                }
+                                Spacer(modifier = Modifier.width(16.dp))
                             }
+
                             Spacer(modifier = Modifier.height(8.dp))
                             appBarSearchInput()
                             Spacer(modifier = Modifier.height(8.dp))
@@ -160,7 +200,7 @@ fun HomeScaffold(
 private fun HomeScaffoldPreview() {
     HomeScaffold(
         snackbarHostState = SnackbarHostState(),
-        appBarTitleRes = LocalizationR.string.main_menu_otp,
+        appBarTitle = "TOTP",
         appBarIconRes = CoreUiR.drawable.ic_time_lock,
         appBarSearchInput = {
             Text("Search input placeholder")
@@ -170,6 +210,9 @@ private fun HomeScaffoldPreview() {
                 onClick = { },
             )
         },
+        shouldShowBackIcon = true,
+        shouldShowCloseIcon = true,
+        shouldShowMoreIcon = true,
         content = { padding ->
             Box(
                 modifier =

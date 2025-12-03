@@ -30,4 +30,5 @@ internal fun Module.tagsDbModule() {
     singleOf(::RemoveLocalTagsUseCase)
     singleOf(::AddLocalTagsUseCase)
     singleOf(::GetLocalTagsUseCase)
+    singleOf(::GetLocalTagsPaginatedUseCase)
 }

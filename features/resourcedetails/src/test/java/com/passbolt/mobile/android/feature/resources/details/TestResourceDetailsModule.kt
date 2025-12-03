@@ -5,9 +5,10 @@ import com.jayway.jsonpath.Configuration
 import com.jayway.jsonpath.Option
 import com.jayway.jsonpath.spi.json.GsonJsonProvider
 import com.jayway.jsonpath.spi.mapper.GsonMappingProvider
+import com.passbolt.mobile.android.common.datarefresh.DataRefreshTrackingFlow
 import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalFolderLocationUseCase
-import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
+import com.passbolt.mobile.android.core.mvp.authentication.SessionRefreshTrackingFlow
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.otpcore.TotpParametersProvider
 import com.passbolt.mobile.android.core.rbac.usecase.GetRbacRulesUseCase
@@ -31,6 +32,7 @@ import com.passbolt.mobile.android.mappers.OtpModelMapper
 import com.passbolt.mobile.android.mappers.PermissionsModelMapper
 import com.passbolt.mobile.android.mappers.ResourceFormMapper
 import com.passbolt.mobile.android.mappers.UsersModelMapper
+import com.passbolt.mobile.android.metadata.usecase.CanShareResourceUseCase
 import com.passbolt.mobile.android.ui.ResourceModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.core.module.dsl.factoryOf
@@ -54,11 +56,13 @@ internal val mockResourceCommonActionsInteractor = mock<ResourceCommonActionsInt
 internal val mockResourceUpdateActionsInteractor = mock<ResourceUpdateActionsInteractor>()
 internal val mockGetRbacRulesUseCase = mock<GetRbacRulesUseCase>()
 internal val mockResourceTypeIdToSlugMappingProvider = mock<ResourceTypeIdToSlugMappingProvider>()
+internal val mockCanShareResourceUseCase = mock<CanShareResourceUseCase>()
 
 @ExperimentalCoroutinesApi
 internal val testResourceDetailsModule =
     module {
-        single { mock<FullDataRefreshExecutor>() }
+        singleOf(::DataRefreshTrackingFlow)
+        singleOf(::SessionRefreshTrackingFlow)
         factoryOf(::TestCoroutineLaunchContext) bind CoroutineLaunchContext::class
         factoryOf(::OtpModelMapper)
         factoryOf(::PermissionsModelMapper)
@@ -79,6 +83,7 @@ internal val testResourceDetailsModule =
                 resourceDetailActionIdlingResource = mock(),
                 resourceFormMapper = get(),
                 idToSlugMappingProvider = mockResourceTypeIdToSlugMappingProvider,
+                canShareResourceUse = mockCanShareResourceUseCase,
             )
         }
         factory { (resource: ResourceModel) ->

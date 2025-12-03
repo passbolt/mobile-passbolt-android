@@ -33,6 +33,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.IntentCompat
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.extension.findNavHostFragment
+import com.passbolt.mobile.android.core.fulldatarefresh.service.DataRefreshService
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.core.navigation.AutofillMode
@@ -172,5 +173,9 @@ class AutofillResourcesActivity :
         Toast
             .makeText(this, LocalizationR.string.common_fetch_failure, Toast.LENGTH_SHORT)
             .show()
+    }
+
+    override fun performFullDataRefresh() {
+        DataRefreshService.start(this)
     }
 }

@@ -19,6 +19,7 @@ import com.passbolt.mobile.android.database.impl.resources.ResourcesDao
 import com.passbolt.mobile.android.entity.folder.Folder
 import com.passbolt.mobile.android.entity.resource.Permission
 import com.passbolt.mobile.android.entity.resource.Resource
+import com.passbolt.mobile.android.entity.resource.ResourceUpdateState
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
@@ -89,10 +90,12 @@ class FoldersSearchTest {
             val subFoldersForFolder1 =
                 foldersDao.getFolderAllChildFoldersRecursively(
                     FOLDER_1.folderId,
+                    searchQuery = null,
                 )
             val subFoldersForFolder2 =
                 foldersDao.getFolderAllChildFoldersRecursively(
                     FOLDER_2.folderId,
+                    searchQuery = null,
                 )
 
             assertThat(subFoldersForFolder1.size).isEqualTo(0)
@@ -132,6 +135,7 @@ class FoldersSearchTest {
                 expiry = null,
                 metadataKeyId = null,
                 metadataKeyType = null,
+                updateState = ResourceUpdateState.PENDING,
             )
         val RESOURCE_2 =
             Resource(
@@ -144,6 +148,7 @@ class FoldersSearchTest {
                 expiry = null,
                 metadataKeyId = null,
                 metadataKeyType = null,
+                updateState = ResourceUpdateState.PENDING,
             )
         val RESOURCE_3 =
             Resource(
@@ -156,6 +161,7 @@ class FoldersSearchTest {
                 expiry = null,
                 metadataKeyId = null,
                 metadataKeyType = null,
+                updateState = ResourceUpdateState.PENDING,
             )
         val RESOURCE_4 =
             Resource(
@@ -168,6 +174,7 @@ class FoldersSearchTest {
                 expiry = null,
                 metadataKeyId = null,
                 metadataKeyType = null,
+                updateState = ResourceUpdateState.PENDING,
             )
         val RESOURCE_5 =
             Resource(
@@ -180,6 +187,7 @@ class FoldersSearchTest {
                 expiry = null,
                 metadataKeyId = null,
                 metadataKeyType = null,
+                updateState = ResourceUpdateState.PENDING,
             )
 
         val FOLDER_1 =

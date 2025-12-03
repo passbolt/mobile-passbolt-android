@@ -10,6 +10,7 @@ import com.passbolt.mobile.android.dto.response.ResourceResponseV5Dto
 import com.passbolt.mobile.android.entity.metadata.MetadataKeyType
 import com.passbolt.mobile.android.entity.resource.Resource
 import com.passbolt.mobile.android.entity.resource.ResourceMetadata
+import com.passbolt.mobile.android.entity.resource.ResourceUpdateState
 import com.passbolt.mobile.android.entity.resource.ResourceUri
 import com.passbolt.mobile.android.entity.resource.ResourceWithMetadata
 import com.passbolt.mobile.android.ui.MetadataJsonModel
@@ -94,7 +95,10 @@ class ResourceModelMapper(
             null -> null
         }
 
-    fun map(resourceModel: ResourceModel): Resource =
+    fun map(
+        resourceModel: ResourceModel,
+        resourceUpdateState: ResourceUpdateState,
+    ): Resource =
         Resource(
             resourceId = resourceModel.resourceId,
             folderId = resourceModel.folderId,
@@ -105,6 +109,7 @@ class ResourceModelMapper(
             expiry = resourceModel.expiry,
             metadataKeyId = resourceModel.metadataKeyId,
             metadataKeyType = map(resourceModel.metadataKeyType),
+            updateState = resourceUpdateState,
         )
 
     fun mapResourceMetadata(resourceModel: ResourceModel): ResourceMetadata =
@@ -114,6 +119,7 @@ class ResourceModelMapper(
             name = resourceModel.metadataJsonModel.name,
             username = resourceModel.metadataJsonModel.username,
             description = resourceModel.metadataJsonModel.description,
+            customFieldsKeys = resourceModel.metadataJsonModel.customFields?.joinToString(),
         )
 
     fun mapResourceUris(resourceModel: ResourceModel): List<ResourceUri> =

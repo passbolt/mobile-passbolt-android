@@ -1,0 +1,28 @@
+# Passbolt 2.5.0-44 Android app release notes
+
+## Added
+- MOB-3028: Add standalone note support
+- MOB-2903: Add support for zero knowledge user state
+- MOB-3049: Support for large datasets: resource list pagination
+- MOB-3049: Support for large datasets: search using database
+- MOB-3049: Support for large datasets: local database pagination
+- MOB-3051: Do not delete all resources before refresh, use upsert instead
+- MOB-3126: Autofill - when a new resource is created during flow, it's auto-filled right away
+
+## Improved
+- MOB-2955: Use background service for full data refresh (allows to finish refresh when app is in backgrounded)
+- MOB-3157: Increase accessibility autofill close dialog clickable area
+
+## Fixed
+- MOB-3046: UI fix for long user and group names on user and group details screens
+- MOB-3040: Fix M3 modal bottom sheet tint color
+- MOB-3041: Adjust secondary button to design
+- MOB-3133: Fix search input multiline for long placeholder texts in some languages
+- MOB-3134: Share to group with shared key even with single current user member
+
+## Security
+- MOB-3122: Add exported=false attr explicitly to activities
+
+## Maintenance
+- MOB-3060: Home resource list is refactored to MVI
+- MOB-3060: Filters mechanism is refactored to MVI

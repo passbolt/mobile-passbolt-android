@@ -24,13 +24,14 @@
 package com.passbolt.mobile.android.permissions.permissions
 
 import com.google.common.truth.Truth.assertThat
+import com.passbolt.mobile.android.common.datarefresh.DataRefreshStatus.Idle.FinishedWithSuccess
+import com.passbolt.mobile.android.common.datarefresh.DataRefreshTrackingFlow
 import com.passbolt.mobile.android.commontest.session.validSessionTestModule
-import com.passbolt.mobile.android.core.fulldatarefresh.DataRefreshStatus
-import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
 import com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor
 import com.passbolt.mobile.android.core.resources.actions.ResourceUpdateActionResult
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcePermissionsUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUseCase
+import com.passbolt.mobile.android.metadata.usecase.CanShareResourceUseCase
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType
 import com.passbolt.mobile.android.ui.GroupModel
 import com.passbolt.mobile.android.ui.MetadataJsonModel
@@ -43,6 +44,7 @@ import kotlinx.coroutines.flow.flowOf
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.koin.core.component.get
 import org.koin.core.logger.Level
 import org.koin.test.KoinTest
 import org.koin.test.KoinTestRule
@@ -55,7 +57,6 @@ import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyBlocking
-import org.mockito.kotlin.whenever
 import java.time.ZonedDateTime
 import java.util.UUID
 
@@ -63,7 +64,6 @@ import java.util.UUID
 class ResourcePermissionsPresenterTest : KoinTest {
     private val presenter: PermissionsContract.Presenter by inject()
     private val view: PermissionsContract.View = mock()
-    private val mockFullDataRefreshExecutor: FullDataRefreshExecutor by inject()
 
     @ExperimentalCoroutinesApi
     @get:Rule
@@ -102,10 +102,11 @@ class ResourcePermissionsPresenterTest : KoinTest {
             onBlocking { execute(GetLocalResourceUseCase.Input(RESOURCE_ID)) }
                 .doReturn(GetLocalResourceUseCase.Output(resourceModel))
         }
-        whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
-            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success)),
-        )
+        mockCanShareResourceUseCase.stub {
+            onBlocking { execute(Unit) } doReturn CanShareResourceUseCase.Output(canShareResource = true)
+        }
         presenter.attach(view)
+        get<DataRefreshTrackingFlow>().updateStatus(FinishedWithSuccess)
     }
 
     @Test
@@ -128,6 +129,23 @@ class ResourcePermissionsPresenterTest : KoinTest {
         presenter.resume(view)
 
         verify(view).showEditButton()
+    }
+
+    @Test
+    fun `error should be shown when sharing not possible`() {
+        mockCanShareResourceUseCase.stub {
+            onBlocking { execute(Unit) } doReturn CanShareResourceUseCase.Output(canShareResource = false)
+        }
+        mockGetLocalResourceUseCase.stub {
+            onBlocking { execute(GetLocalResourceUseCase.Input(resourceModel.resourceId)) }
+                .doReturn(GetLocalResourceUseCase.Output(resourceModel.copy(permission = ResourcePermission.OWNER)))
+        }
+
+        presenter.argsReceived(PermissionsItem.RESOURCE, RESOURCE_ID, PermissionsMode.VIEW)
+        presenter.resume(view)
+        presenter.actionButtonClick()
+
+        verify(view).showCannotPerformThisActionMessage()
     }
 
     @Test

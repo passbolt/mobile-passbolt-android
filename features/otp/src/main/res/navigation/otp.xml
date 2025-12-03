@@ -26,19 +26,19 @@
                 android:name="scanOtpMode"
                 app:argType="com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpMode" />
         </action>
-    </fragment>
 
-    <action
-        android:id="@+id/action_otp_to_resourceForm"
-        app:destination="@id/resourceFormNav"
-        app:enterAnim="@anim/slide_in_right"
-        app:exitAnim="@anim/slide_out_left"
-        app:popEnterAnim="@anim/slide_in_left"
-        app:popExitAnim="@anim/slide_out_right">
-        <argument
-            android:name="mode"
-            app:argType="com.passbolt.mobile.android.ui.ResourceFormMode" />
-    </action>
+        <action
+            android:id="@+id/action_otp_to_resourceForm"
+            app:destination="@id/resourceFormNav"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right">
+            <argument
+                android:name="mode"
+                app:argType="com.passbolt.mobile.android.ui.ResourceFormMode" />
+        </action>
+    </fragment>
 
     <include app:graph="@navigation/scan_otp" />
 

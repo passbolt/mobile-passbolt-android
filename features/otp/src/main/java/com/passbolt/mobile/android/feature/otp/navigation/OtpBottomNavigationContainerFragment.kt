@@ -8,7 +8,15 @@ import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
+import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation.fragment.findNavController
+import androidx.navigation3.runtime.NavBackStack
+import androidx.navigation3.runtime.NavEntry
+import androidx.navigation3.runtime.NavKey
+import androidx.navigation3.runtime.rememberNavBackStack
+import androidx.navigation3.runtime.rememberSavedStateNavEntryDecorator
+import androidx.navigation3.ui.NavDisplay
+import androidx.navigation3.ui.rememberSceneSetupNavEntryDecorator
 import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpFragment
 import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpMode
 import com.passbolt.mobile.android.feature.otp.scanotp.scanotpsuccess.ScanOtpSuccessFragment
@@ -19,7 +27,7 @@ import com.passbolt.mobile.android.feature.otp.screen.OtpViewModel
 import com.passbolt.mobile.android.feature.resourceform.main.ResourceFormFragment
 import com.passbolt.mobile.android.ui.LeadingContentType
 import com.passbolt.mobile.android.ui.ResourceFormMode
-import org.koin.compose.koinInject
+import org.koin.androidx.compose.koinViewModel
 
 /**
  * Passbolt - Open source password manager for teams
@@ -66,6 +74,7 @@ class OtpBottomNavigationContainerFragment :
     }
 
     private lateinit var viewModel: OtpViewModel
+    private lateinit var backstackList: NavBackStack
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -74,13 +83,38 @@ class OtpBottomNavigationContainerFragment :
     ): View =
         ComposeView(requireContext()).apply {
             setContent {
-                viewModel = koinInject()
-                PassboltTheme {
-                    OtpScreen(
-                        navigation = this@OtpBottomNavigationContainerFragment,
-                        viewModel = viewModel,
-                    )
-                }
+                val backStack =
+                    rememberNavBackStack<NavKey>(Otp).apply {
+                        backstackList = this
+                    }
+
+                NavDisplay(
+                    backStack = backStack,
+                    onBack = { backStack.removeLastOrNull() },
+                    entryDecorators =
+                        listOf(
+                            rememberSceneSetupNavEntryDecorator(),
+                            rememberSavedStateNavEntryDecorator(),
+                            rememberViewModelStoreNavEntryDecorator(),
+                        ),
+                    entryProvider = { key ->
+                        when (key) {
+                            is Otp ->
+                                NavEntry(key) {
+                                    viewModel = koinViewModel()
+                                    PassboltTheme {
+                                        PassboltTheme {
+                                            OtpScreen(
+                                                navigation = this@OtpBottomNavigationContainerFragment,
+                                                viewModel = viewModel,
+                                            )
+                                        }
+                                    }
+                                }
+                            else -> error("Unsupported home key: $key")
+                        }
+                    },
+                )
             }
         }
 

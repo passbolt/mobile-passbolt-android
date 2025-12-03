@@ -23,6 +23,7 @@ import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchCont
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AutofillMode
 import com.passbolt.mobile.android.core.notifications.accessibilityautofill.AccessibilityServiceNotificationFactory
+import com.passbolt.mobile.android.core.notifications.accessibilityautofill.AccessibilityServiceNotificationFactory.Companion.ACCESSIBILITY_SERVICE_NOTIFICATION_ID
 import com.passbolt.mobile.android.feature.autofill.databinding.ViewAutofillLabelBinding
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -79,7 +80,10 @@ class AccessibilityService :
 
     override fun onCreate() {
         super.onCreate()
-        startForeground(NOTIFICATION_ID, accessibilityServiceNotificationFactory.getNotification(this))
+        startForeground(
+            ACCESSIBILITY_SERVICE_NOTIFICATION_ID,
+            accessibilityServiceNotificationFactory.getAccessibilityServiceNotification(this),
+        )
     }
 
     override fun onServiceConnected() {
@@ -331,6 +335,5 @@ class AccessibilityService :
         private const val SYSTEM_UI_PACKAGE = "com.android.systemui"
         private const val CLEAR_CREDENTIALS_DELAY = 1000L
         private const val OBSERVE_POSITION_DELAY = 250L
-        private const val NOTIFICATION_ID = 1
     }
 }

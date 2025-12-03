@@ -25,16 +25,19 @@ package com.passbolt.mobile.android.ui
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.Serializable
 
 /**
  * Ui model class representing currently chosen folder.
  */
+@Serializable
 sealed class Folder : Parcelable {
     abstract val folderId: String?
 
     /**
      * Root folder is currently chosen
      */
+    @Serializable
     @Parcelize
     object Root : Folder(), Parcelable {
         override val folderId: String?
@@ -45,6 +48,7 @@ sealed class Folder : Parcelable {
      * A non-root nested folder is chosen.
      * @param folderId id of the chosen folder
      */
+    @Serializable
     @Parcelize
     data class Child(
         override val folderId: String,

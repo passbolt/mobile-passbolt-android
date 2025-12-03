@@ -25,7 +25,7 @@ import com.google.gson.annotations.SerializedName
  * @since v1.0
  */
 
-class HeaderResponse(
+data class HeaderResponse(
     val id: String,
     val status: StatusResponse,
     val message: String,
@@ -33,4 +33,21 @@ class HeaderResponse(
     val code: Int,
     @SerializedName("servertime")
     val serverTime: Long,
+)
+
+data class HeaderWithPaginationResponse(
+    val id: String,
+    val status: StatusResponse,
+    val message: String,
+    val url: String,
+    val code: Int,
+    @SerializedName("servertime")
+    val serverTime: Long,
+    val pagination: Pagination,
+)
+
+data class Pagination(
+    val count: Int,
+    val page: Int,
+    val limit: Int?,
 )

@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.core.resources.usecase.db
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
 import com.passbolt.mobile.android.core.accounts.usecase.SelectedAccountUseCase
 import com.passbolt.mobile.android.database.DatabaseProvider
+import com.passbolt.mobile.android.entity.resource.ResourceUpdateState.UPDATED
 import com.passbolt.mobile.android.mappers.ResourceModelMapper
 import com.passbolt.mobile.android.ui.ResourceModel
 
@@ -39,13 +40,16 @@ class UpdateLocalResourceUseCase(
         val resourceMetadataDao = db.resourceMetadataDao()
         val resourceUriDao = db.resourceUriDao()
 
-        resourcesDao.update(resourceModelMapper.map(input.resourceModel))
+        resourcesDao.update(resourceModelMapper.map(input.resourceModel, resourceUpdateState = UPDATED))
         resourceMetadataDao.updateMetadataForResource(
             resourceId = input.resourceModel.resourceId,
             metadataJson = requireNotNull(input.resourceModel.metadataJsonModel.json),
             name = input.resourceModel.metadataJsonModel.name,
             username = input.resourceModel.metadataJsonModel.username,
             description = input.resourceModel.metadataJsonModel.description,
+            customFieldsKeys =
+                input.resourceModel.metadataJsonModel.customFields
+                    ?.joinToString(),
         )
 
         resourceUriDao.apply {

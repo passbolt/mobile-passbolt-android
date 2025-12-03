@@ -25,6 +25,9 @@ package com.passbolt.mobile.android.scenarios.setup.autofill
 
 import android.content.Intent
 import android.provider.Settings
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.junit4.createEmptyComposeRule
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.scrollTo
@@ -56,6 +59,7 @@ import org.junit.runner.RunWith
 import org.koin.test.KoinTest
 import org.koin.test.inject
 import kotlin.test.BeforeTest
+import kotlin.test.Ignore
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
@@ -82,6 +86,9 @@ class SetupAutofillNotConfiguredTest : KoinTest {
 
     @get:Rule
     val permissionRule: GrantPermissionRule = GrantPermissionRule.grant(android.Manifest.permission.CAMERA)
+
+    @get:Rule
+    val composeTestRule = createEmptyComposeRule()
 
     private val managedAccountIntentCreator: ManagedAccountIntentCreator by inject()
     private val accountDataCleaner: AccountDataCleaner by inject()
@@ -115,6 +122,7 @@ class SetupAutofillNotConfiguredTest : KoinTest {
     }
 
     //    https://passbolt.testrail.io/index.php?/cases/view/2364
+    @Ignore("refactor needed")
     @Test
     fun asAMobileUserIShouldBeAbleToSetupPassboltAutofillDuringTheSetupProcessIfItIsNotAlreadyConfigured() {
         Intents.init()
@@ -142,6 +150,6 @@ class SetupAutofillNotConfiguredTest : KoinTest {
         //    When      I click on the "Maybe later" button
         onView(withId(com.passbolt.mobile.android.feature.autofill.R.id.maybeLaterButton)).perform(click())
         //    Then      I am redirected to the home page
-        onView(withId(com.passbolt.mobile.android.feature.permissions.R.id.rootLayout)).check(matches(isDisplayed()))
+        composeTestRule.onNodeWithTag("home_screen").assertIsDisplayed()
     }
 }

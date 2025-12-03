@@ -32,11 +32,15 @@ class GetLocalGroupsWithShareItemsCountUseCase(
     private val databaseProvider: DatabaseProvider,
     private val groupModelMapper: GroupsModelMapper,
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
-) : AsyncUseCase<Unit, List<GroupWithCount>> {
-    override suspend fun execute(input: Unit) =
+) : AsyncUseCase<GetLocalGroupsWithShareItemsCountUseCase.Input, List<GroupWithCount>> {
+    override suspend fun execute(input: Input) =
         databaseProvider
             .get(requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount))
             .groupsDao()
-            .getAllWithSharedItemsCount()
+            .getAllWithSharedItemsCount(input.searchQuery)
             .map { groupModelMapper.map(it) }
+
+    data class Input(
+        val searchQuery: String? = null,
+    )
 }

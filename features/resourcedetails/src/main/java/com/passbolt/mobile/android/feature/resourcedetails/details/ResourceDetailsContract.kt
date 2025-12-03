@@ -179,6 +179,8 @@ interface ResourceDetailsContract {
         fun showCustomFieldsSection()
 
         fun hideCustomFieldsSection()
+
+        fun showCannotPerformThisActionMessage()
     }
 
     @Suppress("TooManyFunctions")

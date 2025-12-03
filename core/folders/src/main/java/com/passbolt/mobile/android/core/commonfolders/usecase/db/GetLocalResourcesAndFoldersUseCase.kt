@@ -62,6 +62,7 @@ class GetLocalResourcesAndFoldersUseCase(
     data class Input(
         val folder: Folder,
         val slugs: Set<String>,
+        val searchQuery: String? = null,
     )
 
     sealed class Output {

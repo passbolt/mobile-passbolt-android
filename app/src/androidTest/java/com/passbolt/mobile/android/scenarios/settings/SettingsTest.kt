@@ -123,7 +123,7 @@ class SettingsTest : KoinTest {
         //    Given	I am a mobile user with the application installed
         //    And	I am logged in
         //    And 	I am on Passbolt PRO/CE/Cloud
-        signIn(managedAccountIntentCreator.getPassphrase())
+        composeTestRule.signIn(managedAccountIntentCreator.getPassphrase())
     }
 
     //    https://passbolt.testrail.io/index.php?/cases/view/2438

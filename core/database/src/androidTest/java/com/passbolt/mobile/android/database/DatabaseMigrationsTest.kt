@@ -36,7 +36,9 @@ import com.passbolt.mobile.android.database.migrations.Migration15to16
 import com.passbolt.mobile.android.database.migrations.Migration16to17
 import com.passbolt.mobile.android.database.migrations.Migration17to18
 import com.passbolt.mobile.android.database.migrations.Migration18to19
+import com.passbolt.mobile.android.database.migrations.Migration19to20
 import com.passbolt.mobile.android.database.migrations.Migration1to2
+import com.passbolt.mobile.android.database.migrations.Migration20to21
 import com.passbolt.mobile.android.database.migrations.Migration2to3
 import com.passbolt.mobile.android.database.migrations.Migration3to4
 import com.passbolt.mobile.android.database.migrations.Migration4to5
@@ -500,6 +502,54 @@ class DatabaseMigrationsTest {
     }
 
     @Test
+    fun migrate19To20() {
+        helper
+            .createDatabase(TEST_DB, 19)
+            .apply {
+                execSQL("INSERT INTO ResourceMetadata VALUES(0, 'id', 'metadataJson', 'name', 'username', 'desc')")
+                close()
+            }
+
+        helper
+            .runMigrationsAndValidate(TEST_DB, 20, true, Migration19to20)
+            .apply {
+                execSQL(
+                    "INSERT INTO ResourceMetadata VALUES(1, 'id', 'metadataJson', 'name', 'username', 'desc', 'customFieldsKeys')",
+                )
+                close()
+            }
+    }
+
+    @Test
+    fun migrate20To21() {
+        helper
+            .createDatabase(TEST_DB, 20)
+            .apply {
+                execSQL(
+                    "INSERT INTO Resource VALUES('id3','folderid','READ', '1'," +
+                        " 'favouriteId', 1644909225833, 1644909225833, null, 'SHARED')",
+                )
+                execSQL(
+                    "INSERT INTO ResourceMetadata VALUES(1, 'id3', 'metadataJson', 'name', 'username', 'desc', 'customFieldsKeys')",
+                )
+                close()
+            }
+
+        helper
+            .runMigrationsAndValidate(TEST_DB, 21, true, Migration20to21)
+            .apply {
+                execSQL(
+                    "INSERT INTO Resource VALUES('id4','folderid','READ', '1'," +
+                        " 'favouriteId', 1644909225833, 1644909225833, null, 'SHARED', 'PENDING')",
+                )
+                execSQL(
+                    "INSERT INTO ResourceMetadata VALUES('id3', 'metadataJson', 'name', 'username', 'desc', 'customFieldsKeys')",
+                )
+                close()
+            }
+    }
+
+    @Test
     fun migrateAll() {
         helper.createDatabase(TEST_DB, 1).apply {
             close()
@@ -529,6 +579,8 @@ class DatabaseMigrationsTest {
                 Migration16to17,
                 Migration17to18,
                 Migration18to19,
+                Migration19to20,
+                Migration20to21,
             ).build()
             .apply {
                 openHelper.writableDatabase

@@ -92,17 +92,6 @@ fun confirmResourceDeletionAlertDialog(
     .setNegativeButton(LocalizationR.string.delete) { _, _ -> confirmAction() }
     .create()
 
-fun confirmTotpDeletionAlertDialog(
-    context: Context,
-    confirmAction: () -> Unit,
-) = AlertDialog
-    .Builder(context)
-    .setTitle(LocalizationR.string.are_you_sure)
-    .setMessage(LocalizationR.string.otp_delete_confirmation)
-    .setPositiveButton(LocalizationR.string.cancel) { _, _ -> }
-    .setNegativeButton(LocalizationR.string.otp_delete_totp) { _, _ -> confirmAction() }
-    .create()
-
 fun serverNotReachableAlertDialog(
     context: Context,
     domain: String,

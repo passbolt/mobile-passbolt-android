@@ -39,9 +39,10 @@ interface TagsDao : BaseDao<Tag> {
             "(select distinct count(resourceId) from resourceandtagscrossref rTCR where rTCR.tagId is t.id) " +
             ")" +
             ") AS taggedItemsCount " +
-            "FROM Tag t",
+            "FROM Tag t " +
+            "WHERE (:searchQuery IS NULL OR slug LIKE '%' || :searchQuery || '%')",
     )
-    suspend fun getAllWithTaggedItemsCount(): List<TagWithTaggedItemsCount>
+    suspend fun getAllWithTaggedItemsCount(searchQuery: String?): List<TagWithTaggedItemsCount>
 
     @Transaction
     @Query(

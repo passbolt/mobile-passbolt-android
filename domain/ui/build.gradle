@@ -2,6 +2,7 @@ plugins {
     alias libs.plugins.android.library
     alias libs.plugins.kotlin.gradle
     alias libs.plugins.kotlin.parcelize
+    alias libs.plugins.kotlin.serialization
 }
 
 dependencies {
@@ -13,6 +14,7 @@ dependencies {
     implementation libs.koin
     implementation libs.gson
     implementation libs.json.path
+    implementation libs.kotlin.serializationjson
 }
 
 android {

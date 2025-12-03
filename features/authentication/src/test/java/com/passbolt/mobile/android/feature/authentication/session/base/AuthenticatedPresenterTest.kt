@@ -25,6 +25,7 @@ package com.passbolt.mobile.android.feature.authentication.session.base
 
 import android.app.Activity
 import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
+import com.passbolt.mobile.android.core.mvp.authentication.SessionRefreshTrackingFlow
 import com.passbolt.mobile.android.core.navigation.AppForegroundListener
 import com.passbolt.mobile.android.core.passphrasememorycache.PassphraseMemoryCache
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetSessionExpiryUseCase
@@ -37,6 +38,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
 import org.koin.core.logger.Level
+import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 import org.koin.test.KoinTestRule
 import org.mockito.Mockito.mock
@@ -68,6 +70,7 @@ class AuthenticatedPresenterTest {
                     single { mockPassphraseMemoryCache }
                     single { mockRefreshSessionUseCase }
                     single { appForegroundListener }
+                    singleOf(::SessionRefreshTrackingFlow)
                 },
             )
         }

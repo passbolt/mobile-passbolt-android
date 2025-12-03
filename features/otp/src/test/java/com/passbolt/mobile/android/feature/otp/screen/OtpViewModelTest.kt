@@ -30,20 +30,18 @@ import com.jayway.jsonpath.Option
 import com.jayway.jsonpath.spi.json.GsonJsonProvider
 import com.jayway.jsonpath.spi.mapper.GsonMappingProvider
 import com.passbolt.mobile.android.common.coroutinetimer.TimerFactory
+import com.passbolt.mobile.android.common.datarefresh.DataRefreshStatus.Idle.FinishedWithSuccess
+import com.passbolt.mobile.android.common.datarefresh.DataRefreshStatus.InProgress
+import com.passbolt.mobile.android.common.datarefresh.DataRefreshTrackingFlow
 import com.passbolt.mobile.android.common.search.SearchableMatcher
 import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.commontest.coroutinetimer.TestCoroutineTimerFactory
 import com.passbolt.mobile.android.core.accounts.usecase.accountdata.GetSelectedAccountDataUseCase
-import com.passbolt.mobile.android.core.fulldatarefresh.DataRefreshStatus
-import com.passbolt.mobile.android.core.fulldatarefresh.DataRefreshStatus.Finished
-import com.passbolt.mobile.android.core.fulldatarefresh.DataRefreshStatus.InProgress
-import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
-import com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor.Output.Success
+import com.passbolt.mobile.android.core.mvp.authentication.SessionRefreshTrackingFlow
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.otpcore.TotpParametersProvider
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesUseCase
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
-import com.passbolt.mobile.android.core.ui.compose.search.SearchInputEndIconMode
 import com.passbolt.mobile.android.core.ui.compose.search.SearchInputEndIconMode.AVATAR
 import com.passbolt.mobile.android.core.ui.compose.search.SearchInputEndIconMode.CLEAR
 import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.CloseCreateResourceMenu
@@ -57,15 +55,18 @@ import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.OpenOtpMoreMenu
 import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.OtpQRScanReturned
 import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.Search
 import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.SearchEndIconAction
+import com.passbolt.mobile.android.feature.otp.screen.OtpSideEffect.InitiateDataRefresh
 import com.passbolt.mobile.android.feature.otp.screen.OtpSideEffect.NavigateToCreateResourceForm
 import com.passbolt.mobile.android.feature.otp.screen.OtpSideEffect.NavigateToCreateTotp
 import com.passbolt.mobile.android.feature.otp.screen.OtpSideEffect.NavigateToEditResourceForm
 import com.passbolt.mobile.android.feature.otp.screen.OtpSideEffect.ShowSuccessSnackbar
 import com.passbolt.mobile.android.feature.otp.screen.SnackbarSuccessType.RESOURCE_CREATED
+import com.passbolt.mobile.android.feature.otp.screen.SnackbarSuccessType.RESOURCE_EDITED
 import com.passbolt.mobile.android.jsonmodel.jsonpathops.JsonPathJsonPathOps
 import com.passbolt.mobile.android.jsonmodel.jsonpathops.JsonPathsOps
 import com.passbolt.mobile.android.mappers.OtpModelMapper
 import com.passbolt.mobile.android.metadata.interactor.MetadataPrivateKeysHelperInteractor
+import com.passbolt.mobile.android.metadata.usecase.CanCreateResourceUseCase
 import com.passbolt.mobile.android.ui.LeadingContentType.PASSWORD
 import com.passbolt.mobile.android.ui.LeadingContentType.TOTP
 import com.passbolt.mobile.android.ui.MetadataJsonModel
@@ -74,9 +75,7 @@ import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourcePermission
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.drop
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -97,7 +96,6 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.stub
-import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.time.ZonedDateTime
 import java.util.EnumSet
@@ -116,9 +114,9 @@ class OtpViewModelTest : KoinTest {
                         single { mock<GetSelectedAccountDataUseCase>() }
                         single { mock<GetLocalResourcesUseCase>() }
                         single { mock<TotpParametersProvider>() }
-                        single { mock<FullDataRefreshExecutor>() }
                         single { mock<ResourceTypeIdToSlugMappingProvider>() }
                         single { mock<MetadataPrivateKeysHelperInteractor>() }
+                        single { mock<CanCreateResourceUseCase>() }
                         singleOf(::TestCoroutineTimerFactory) bind TimerFactory::class
                         singleOf(::TestCoroutineLaunchContext) bind CoroutineLaunchContext::class
                         factoryOf(::OtpViewModel)
@@ -133,6 +131,8 @@ class OtpViewModelTest : KoinTest {
                         }
                         factoryOf(::OtpModelMapper)
                         factoryOf(::SearchableMatcher)
+                        singleOf(::DataRefreshTrackingFlow)
+                        singleOf(::SessionRefreshTrackingFlow)
                     },
                 ),
             )
@@ -148,17 +148,15 @@ class OtpViewModelTest : KoinTest {
         val getSelectedAccountDataUseCase = get<GetSelectedAccountDataUseCase>()
         whenever(getSelectedAccountDataUseCase.execute(Unit)) doReturn selectedAccountData
 
-        val fullDataRefreshExecutor = get<FullDataRefreshExecutor>()
-        whenever(fullDataRefreshExecutor.dataRefreshStatusFlow) doReturn
-            flowOf(
-                Finished(
-                    Success,
-                ),
-            )
-
         val getLocalResourcesUseCase = get<GetLocalResourcesUseCase>()
         getLocalResourcesUseCase.stub {
             onBlocking { execute(any()) } doReturn GetLocalResourcesUseCase.Output(otpResources)
+        }
+
+        val canCreateResourceUseCase = get<CanCreateResourceUseCase>()
+        canCreateResourceUseCase.stub {
+            onBlocking { execute(any()) } doReturn
+                CanCreateResourceUseCase.Output(canCreateResource = true)
         }
     }
 
@@ -222,7 +220,7 @@ class OtpViewModelTest : KoinTest {
 
             viewModel.onIntent(Search("abc"))
 
-            viewModel.viewState.test {
+            viewModel.viewState.drop(1).test {
                 assertThat(expectItem().searchInputEndIconMode).isEqualTo(CLEAR)
 
                 viewModel.onIntent(SearchEndIconAction)
@@ -233,41 +231,32 @@ class OtpViewModelTest : KoinTest {
         }
 
     @Test
-    fun `should filter otps based on search query`() =
+    fun `should enter filtering mode on search query`() =
         runTest {
             viewModel = get()
 
             viewModel.onIntent(Search("resource 2"))
 
-            viewModel.viewState.test {
+            viewModel.viewState.drop(1).test {
                 val state = expectItem()
                 assertThat(state.searchQuery).isEqualTo("resource 2")
-                assertThat(state.searchInputEndIconMode).isEqualTo(SearchInputEndIconMode.CLEAR)
+                assertThat(state.searchInputEndIconMode).isEqualTo(CLEAR)
                 assertThat(state.isInFilteringMode).isTrue()
-                assertThat(state.filteredOtps).hasSize(1)
-                assertThat(
-                    state.filteredOtps
-                        .first()
-                        .resource.resourceId,
-                ).isEqualTo("resId2")
             }
         }
 
     @Test
     fun `should show refresh while resources are loading`() =
         runTest {
-            val dataRefreshStatusFlow = MutableSharedFlow<DataRefreshStatus>()
-            val fullDataRefreshExecutor = get<FullDataRefreshExecutor>()
-            whenever(fullDataRefreshExecutor.dataRefreshStatusFlow) doReturn dataRefreshStatusFlow
-
             viewModel = get()
 
             viewModel.viewState.drop(1).test {
-                dataRefreshStatusFlow.emit(InProgress)
+                val dataRefreshStatusFlow = get<DataRefreshTrackingFlow>()
+                dataRefreshStatusFlow.updateStatus(InProgress)
                 val state = expectItem()
                 assertThat(state.isRefreshing).isTrue()
 
-                dataRefreshStatusFlow.emit(Finished(Success))
+                dataRefreshStatusFlow.updateStatus(FinishedWithSuccess)
 
                 val stateAfter = expectItem()
                 assertThat(stateAfter.isRefreshing).isFalse()
@@ -320,8 +309,9 @@ class OtpViewModelTest : KoinTest {
 
             viewModel.onIntent(OtpQRScanReturned(otpCreated = true, otpManualCreationChosen = false))
 
-            val fullDataRefreshExecutor: FullDataRefreshExecutor = get()
-            verify(fullDataRefreshExecutor).performFullDataRefresh()
+            viewModel.sideEffect.test {
+                assertIs<InitiateDataRefresh>(expectItem())
+            }
         }
 
     @Test
@@ -352,13 +342,12 @@ class OtpViewModelTest : KoinTest {
                     ),
                 )
 
-                val sideEffect = expectItem()
-                assertIs<ShowSuccessSnackbar>(sideEffect)
-                assertThat(sideEffect.type).isEqualTo(RESOURCE_CREATED)
-                assertThat(sideEffect.message).isEqualTo("New Resource")
+                assertIs<InitiateDataRefresh>(expectItem())
 
-                val fullDataRefreshExecutor: FullDataRefreshExecutor = get()
-                verify(fullDataRefreshExecutor).performFullDataRefresh()
+                val snackbarSideEffect = expectItem()
+                assertIs<ShowSuccessSnackbar>(snackbarSideEffect)
+                assertThat(snackbarSideEffect.type).isEqualTo(RESOURCE_CREATED)
+                assertThat(snackbarSideEffect.message).isEqualTo("New Resource")
             }
         }
 
@@ -376,12 +365,11 @@ class OtpViewModelTest : KoinTest {
                     ),
                 )
 
-                val sideEffect = expectItem()
-                assertIs<ShowSuccessSnackbar>(sideEffect)
-                assertThat(sideEffect.type).isEqualTo(SnackbarSuccessType.RESOURCE_EDITED)
+                assertIs<InitiateDataRefresh>(expectItem())
 
-                val fullDataRefreshExecutor: FullDataRefreshExecutor = get()
-                verify(fullDataRefreshExecutor).performFullDataRefresh()
+                val snackbarSideEffect = expectItem()
+                assertIs<ShowSuccessSnackbar>(snackbarSideEffect)
+                assertThat(snackbarSideEffect.type).isEqualTo(RESOURCE_EDITED)
             }
         }
 
@@ -411,6 +399,28 @@ class OtpViewModelTest : KoinTest {
                 assertThat(expectItem().showDeleteTotpConfirmationDialog).isTrue()
                 viewModel.onIntent(OtpIntent.CloseDeleteConfirmationDialog)
                 assertThat(expectItem().showDeleteTotpConfirmationDialog).isFalse()
+            }
+        }
+
+    @Test
+    fun `should show error when resource creation not possible`() =
+        runTest {
+            val canCreateResourceUseCase = get<CanCreateResourceUseCase>()
+            whenever(canCreateResourceUseCase.execute(any())) doReturn
+                CanCreateResourceUseCase.Output(canCreateResource = false)
+
+            viewModel = get()
+
+            viewModel.sideEffect.test {
+                viewModel.onIntent(CreatePassword)
+                val stateAfterCreatePassword = expectItem()
+                assertIs<OtpSideEffect.ShowErrorSnackbar>(stateAfterCreatePassword)
+                assertThat(stateAfterCreatePassword.type).isEqualTo(SnackbarErrorType.NO_SHARED_KEY_ACCESS)
+
+                viewModel.onIntent(CreateTotp)
+                val stateAfterCreateTotp = expectItem()
+                assertIs<OtpSideEffect.ShowErrorSnackbar>(stateAfterCreateTotp)
+                assertThat(stateAfterCreateTotp.type).isEqualTo(SnackbarErrorType.NO_SHARED_KEY_ACCESS)
             }
         }
 

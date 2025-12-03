@@ -1,7 +1,6 @@
 package com.passbolt.mobile.android.core.resources
 
 import com.passbolt.mobile.android.common.search.SearchableMatcher
-import com.passbolt.mobile.android.core.mvp.authentication.UnauthenticatedReason
 import com.passbolt.mobile.android.core.resources.actions.ResourceCommonActionsInteractor
 import com.passbolt.mobile.android.core.resources.actions.ResourceCreateActionsInteractor
 import com.passbolt.mobile.android.core.resources.actions.ResourcePropertiesActionsInteractor
@@ -14,18 +13,19 @@ import com.passbolt.mobile.android.core.resources.resourceicon.ResourceIconProvi
 import com.passbolt.mobile.android.core.resources.usecase.AddToFavouritesUseCase
 import com.passbolt.mobile.android.core.resources.usecase.DeleteResourceUseCase
 import com.passbolt.mobile.android.core.resources.usecase.FavouritesInteractor
+import com.passbolt.mobile.android.core.resources.usecase.GetResourcesPaginatedUseCase
 import com.passbolt.mobile.android.core.resources.usecase.GetResourcesUseCase
-import com.passbolt.mobile.android.core.resources.usecase.RebuildResourcePermissionsTablesUseCase
-import com.passbolt.mobile.android.core.resources.usecase.RebuildResourceTablesUseCase
 import com.passbolt.mobile.android.core.resources.usecase.RemoveFromFavouritesUseCase
 import com.passbolt.mobile.android.core.resources.usecase.ResourceInteractor
 import com.passbolt.mobile.android.core.resources.usecase.ResourceShareInteractor
 import com.passbolt.mobile.android.core.resources.usecase.ShareResourceUseCase
 import com.passbolt.mobile.android.core.resources.usecase.SimulateShareResourceUseCase
+import com.passbolt.mobile.android.core.resources.usecase.db.RemoveLocalResourcesWithUpdateStateUseCase
+import com.passbolt.mobile.android.core.resources.usecase.db.RemoveLocalUrisUseCase
+import com.passbolt.mobile.android.core.resources.usecase.db.SetLocalResourcesUpdateStateUseCase
+import com.passbolt.mobile.android.core.resources.usecase.db.UpsertLocalResourcesUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.resourcesDbModule
 import com.passbolt.mobile.android.ui.ResourceModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.parameter.parametersOf
@@ -58,11 +58,10 @@ val resourcesModule =
         resourcesDbModule()
 
         singleOf(::GetResourcesUseCase)
+        singleOf(::GetResourcesPaginatedUseCase)
         singleOf(::ResourceInteractor)
         singleOf(::SearchableMatcher)
         singleOf(::DeleteResourceUseCase)
-        singleOf(::RebuildResourceTablesUseCase)
-        singleOf(::RebuildResourcePermissionsTablesUseCase)
         singleOf(::SimulateShareResourceUseCase)
         singleOf(::ShareResourceUseCase)
         singleOf(::AddToFavouritesUseCase)
@@ -73,6 +72,10 @@ val resourcesModule =
         singleOf(::CreateResourceInteractor)
         factoryOf(::ResourceIconProvider)
         factoryOf(::BackgroundColorIconProvider)
+        singleOf(::SetLocalResourcesUpdateStateUseCase)
+        singleOf(::RemoveLocalUrisUseCase)
+        singleOf(::RemoveLocalResourcesWithUpdateStateUseCase)
+        singleOf(::UpsertLocalResourcesUseCase)
 
         factory { (resource: ResourceModel) ->
             ResourcePropertiesActionsInteractor(
@@ -80,78 +83,40 @@ val resourcesModule =
                 idToSlugMappingProvider = get(),
             )
         }
-        factory {
-            (
-                resource: ResourceModel,
-                needSessionRefreshFlow: MutableStateFlow<UnauthenticatedReason?>,
-                sessionRefreshedFlow: StateFlow<Unit?>,
-            ),
-            ->
+        factory { (resource: ResourceModel) ->
             ResourceCommonActionsInteractor(
-                needSessionRefreshFlow,
-                sessionRefreshedFlow,
                 resource,
                 favouritesInteractor = get(),
                 deleteResourceUseCase = get(),
             )
         }
-        factory {
-            (
-                resource: ResourceModel,
-                needSessionRefreshFlow: MutableStateFlow<UnauthenticatedReason?>,
-                sessionRefreshedFlow: StateFlow<Unit?>,
-            ),
-            ->
+        factory { (resource: ResourceModel) ->
             SecretPropertiesActionsInteractor(
-                needSessionRefreshFlow,
-                sessionRefreshedFlow,
                 resource,
                 secretParser = get(),
                 secretInteractor = get(),
                 idToSlugMappingProvider = get(),
             )
         }
-        factory {
-            (
-                resource: ResourceModel,
-                needSessionRefreshFlow: MutableStateFlow<UnauthenticatedReason?>,
-                sessionRefreshedFlow: StateFlow<Unit?>,
-            ),
-            ->
+        factory { (resource: ResourceModel) ->
             ResourceUpdateActionsInteractor(
                 resource,
-                needSessionRefreshFlow,
-                sessionRefreshedFlow,
-                secretPropertiesActionsInteractor =
-                    get {
-                        parametersOf(
-                            resource,
-                            needSessionRefreshFlow,
-                            sessionRefreshedFlow,
-                        )
-                    },
+                secretPropertiesActionsInteractor = get { parametersOf(resource) },
                 updateResourceInteractor = get(),
                 resourceTypesUpdateGraph = get(),
                 updateLocalResourceUseCase = get(),
                 idToSlugMappingProvider = get(),
-                getLocalFolderPermissionsUseCase = get(),
-                getMetadataKeysSettingsUseCase = get(),
-                getMetadataKeysUseCase = get(),
                 getLocalCurrentUserUseCase = get(),
                 metadataPrivateKeysInteractor = get(),
+                getLocalFolderPermissionsUseCase = get(),
                 getLocalResourcePermissionsUseCase = get(),
+                getMetadataKeysSettingsUseCase = get(),
+                getMetadataKeysUseCase = get(),
                 resourceTypeIdToSlugMappingProvider = get(),
             )
         }
         factory {
-            (
-                needSessionRefreshFlow: MutableStateFlow<UnauthenticatedReason?>,
-                sessionRefreshedFlow: StateFlow<Unit?>,
-            ),
-            ->
             ResourceCreateActionsInteractor(
-                needSessionRefreshFlow,
-                sessionRefreshedFlow,
                 createResourceInteractor = get(),
                 addLocalResourceUseCase = get(),
                 addLocalResourcePermissionsUseCase = get(),

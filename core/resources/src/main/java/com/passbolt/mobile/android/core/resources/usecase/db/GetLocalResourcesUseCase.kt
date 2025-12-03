@@ -31,6 +31,7 @@ import com.passbolt.mobile.android.ui.ResourceModel
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+@Deprecated("Use GetLocalResourcesPaginatedUseCase")
 class GetLocalResourcesUseCase(
     private val databaseProvider: DatabaseProvider,
     private val resourceModelMapper: ResourceModelMapper,
@@ -45,11 +46,16 @@ class GetLocalResourcesUseCase(
                 .resourcesDao()
                 .let {
                     when (val viewType = homeDisplayViewMapper.map(input.homeDisplayView)) {
-                        is ResourceDatabaseView.ByModifiedDateDescending -> it.getAllOrderedByModifiedDate(input.slugs)
-                        is ResourceDatabaseView.ByNameAscending -> it.getAllOrderedByName(input.slugs)
-                        is ResourceDatabaseView.IsFavourite -> it.getFavourites(input.slugs)
-                        is ResourceDatabaseView.HasPermissions -> it.getWithPermissions(viewType.permissions, input.slugs)
-                        is ResourceDatabaseView.HasExpiry -> it.getExpiredResources(input.slugs)
+                        is ResourceDatabaseView.ByModifiedDateDescending -> it.getAllOrderedByModifiedDate(input.slugs, input.searchQuery)
+                        is ResourceDatabaseView.ByNameAscending -> it.getAllOrderedByName(input.slugs, input.searchQuery)
+                        is ResourceDatabaseView.IsFavourite -> it.getFavourites(input.slugs, input.searchQuery)
+                        is ResourceDatabaseView.HasPermissions ->
+                            it.getWithPermissions(
+                                viewType.permissions,
+                                input.slugs,
+                                input.searchQuery,
+                            )
+                        is ResourceDatabaseView.HasExpiry -> it.getExpiredResources(input.slugs, input.searchQuery)
                     }
                 }
 
@@ -59,6 +65,7 @@ class GetLocalResourcesUseCase(
     data class Input(
         val slugs: Set<String>,
         val homeDisplayView: HomeDisplayViewModel = HomeDisplayViewModel.AllItems,
+        val searchQuery: String? = null,
     )
 
     data class Output(

@@ -5,11 +5,12 @@ import com.jayway.jsonpath.Configuration
 import com.jayway.jsonpath.Option
 import com.jayway.jsonpath.spi.json.GsonJsonProvider
 import com.jayway.jsonpath.spi.mapper.GsonMappingProvider
+import com.passbolt.mobile.android.common.datarefresh.DataRefreshTrackingFlow
 import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalFolderDetailsUseCase
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalFolderPermissionsUseCase
-import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
 import com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor
+import com.passbolt.mobile.android.core.mvp.authentication.SessionRefreshTrackingFlow
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.resources.actions.ResourceUpdateActionsInteractor
 import com.passbolt.mobile.android.core.resources.usecase.ResourceShareInteractor
@@ -20,6 +21,7 @@ import com.passbolt.mobile.android.jsonmodel.JSON_MODEL_GSON
 import com.passbolt.mobile.android.jsonmodel.jsonpathops.JsonPathJsonPathOps
 import com.passbolt.mobile.android.jsonmodel.jsonpathops.JsonPathsOps
 import com.passbolt.mobile.android.metadata.interactor.MetadataPrivateKeysHelperInteractor
+import com.passbolt.mobile.android.metadata.usecase.CanShareResourceUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier.named
@@ -60,13 +62,13 @@ internal val mockGetLocalFolderUseCase = mock<GetLocalFolderDetailsUseCase>()
 internal val mockResourceTypeIdToSlugMappingProvider = mock<ResourceTypeIdToSlugMappingProvider>()
 internal val mockMetadataPrivateKeysHelperInteractor = mock<MetadataPrivateKeysHelperInteractor>()
 internal val mockResourceUpdateActionsInteractor = mock<ResourceUpdateActionsInteractor>()
+internal val mockCanShareResourceUseCase = mock<CanShareResourceUseCase>()
 
 @ExperimentalCoroutinesApi
 internal val testResourcePermissionsModule =
     module {
         factory<CoroutineLaunchContext> { TestCoroutineLaunchContext() }
         factory { PermissionModelUiComparator() }
-        single { mock<FullDataRefreshExecutor>() }
         factory<PermissionsContract.Presenter> {
             PermissionsPresenter(
                 getLocalResourcePermissionsUseCase = mockGetLocalResourcePermissionsUseCase,
@@ -79,6 +81,7 @@ internal val testResourcePermissionsModule =
                 coroutineLaunchContext = get(),
                 resourceTypeIdToSlugMappingProvider = mockResourceTypeIdToSlugMappingProvider,
                 metadataPrivateKeysHelperInteractor = mockMetadataPrivateKeysHelperInteractor,
+                canShareResourceUseCase = mockCanShareResourceUseCase,
             )
         }
         single(named(JSON_MODEL_GSON)) { Gson() }
@@ -92,4 +95,6 @@ internal val testResourcePermissionsModule =
         }
         singleOf(::JsonPathJsonPathOps) bind JsonPathsOps::class
         single { mockResourceUpdateActionsInteractor }
+        singleOf(::SessionRefreshTrackingFlow)
+        singleOf(::DataRefreshTrackingFlow)
     }

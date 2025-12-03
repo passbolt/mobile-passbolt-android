@@ -34,6 +34,7 @@ import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordDe
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordString
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.Totp
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5CustomFields
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5Note
 import com.passbolt.mobile.android.ui.DecryptedSecretOrError
 import kotlinx.coroutines.test.runTest
 import net.jimblackler.jsonschemafriend.SchemaStore
@@ -80,6 +81,10 @@ class SecretParserTest : KoinTest {
             on { schemaForSecret(V5CustomFields.slug) } doReturn
                 SchemaStore().loadSchema(
                     this::class.java.getResource("/v5-custom-fields-secret-schema.json"),
+                )
+            on { schemaForSecret(V5Note.slug) } doReturn
+                SchemaStore().loadSchema(
+                    this::class.java.getResource("/v5-note-secret-schema.json"),
                 )
         }
     }
@@ -251,6 +256,29 @@ class SecretParserTest : KoinTest {
 
             assertThat(customFields[4].type).isEqualTo(URI)
             assertThat(customFields[4].secretValue?.asString).isEqualTo("https://passbolt.com")
+        }
+
+    @Test
+    fun `note should parse correct for description secret`() =
+        runTest {
+            val secret =
+                """
+                {
+                    "object_type": "PASSBOLT_SECRET_DATA",
+                    "description": "desc"
+                }
+                """.trimIndent()
+            mockIdToSlugMappingProvider.stub {
+                onBlocking { provideMappingForSelectedAccount() }.doReturn(
+                    mapOf(resourceTypeId to V5Note.slug),
+                )
+            }
+
+            val secretResult = secretParser.parseSecret(resourceTypeId.toString(), secret)
+
+            assertThat(secretResult).isInstanceOf(DecryptedSecretOrError.DecryptedSecret::class.java)
+            val parsedSecret = (secretResult as DecryptedSecretOrError.DecryptedSecret).secret
+            assertThat(parsedSecret.description).isEqualTo("desc")
         }
 
     private companion object {

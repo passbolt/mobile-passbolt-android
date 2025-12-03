@@ -37,6 +37,7 @@ import com.passbolt.mobile.android.supportedresourceTypes.ContentType.Totp
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5CustomFields
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5Default
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5DefaultWithTotp
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5Note
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5PasswordString
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5TotpStandalone
 import kotlinx.coroutines.test.runTest
@@ -102,6 +103,10 @@ class SecretValidationTest : KoinTest {
             on { schemaForSecret(V5CustomFields.slug) } doReturn
                 SchemaStore().loadSchema(
                     this::class.java.getResource("/v5-custom-fields-secret-schema.json"),
+                )
+            on { schemaForSecret(V5Note.slug) } doReturn
+                SchemaStore().loadSchema(
+                    this::class.java.getResource("/v5-note-secret-schema.json"),
                 )
         }
     }
@@ -190,6 +195,26 @@ class SecretValidationTest : KoinTest {
                         addProperty("object_type", "PASSBOLT_SECRET_DATA")
                         addProperty("description", tooLongDescription)
                         addProperty("secret", "pass")
+                    },
+                ).map { gson.toJson(it) }
+
+            val results = invalidSecrets.map { secretValidationRunner.isSecretValid(it, V5Default.slug) }
+
+            assertThat(results.none { it }).isTrue()
+        }
+
+    @Test
+    fun `invalid secret for note resource type should be rejected - v5`() =
+        runTest {
+            val tooLongDescription =
+                (0..PASSWORD_AND_DESCRIPTION_DESCRIPTION_MAX_LENGTH + 1)
+                    .joinToString { "a" }
+
+            val invalidSecrets =
+                listOf(
+                    JsonObject().apply {
+                        addProperty("object_type", "PASSBOLT_SECRET_DATA")
+                        addProperty("description", tooLongDescription)
                     },
                 ).map { gson.toJson(it) }
 
@@ -523,6 +548,22 @@ class SecretValidationTest : KoinTest {
                 ).map { gson.toJson(it) }
 
             val results = validSecrets.map { secretValidationRunner.isSecretValid(it, V5Default.slug) }
+
+            assertThat(results.all { it }).isTrue()
+        }
+
+    @Test
+    fun `valid secret for note resource type should not be rejected - v5`() =
+        runTest {
+            val validSecrets =
+                listOf(
+                    JsonObject().apply {
+                        addProperty("object_type", "PASSBOLT_SECRET_DATA")
+                        addProperty("description", "desc")
+                    },
+                ).map { gson.toJson(it) }
+
+            val results = validSecrets.map { secretValidationRunner.isSecretValid(it, V5Note.slug) }
 
             assertThat(results.all { it }).isTrue()
         }

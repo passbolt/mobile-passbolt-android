@@ -45,6 +45,7 @@ dependencies {
     implementation project(':jsonmodel')
     implementation project(':resourceform')
     implementation project(':clipboard')
+    implementation project(':metadata')
 
     implementation libs.navigation.fragment
     implementation libs.navigation.ui

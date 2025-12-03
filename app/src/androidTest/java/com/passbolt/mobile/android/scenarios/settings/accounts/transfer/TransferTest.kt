@@ -23,35 +23,49 @@
 
 package com.passbolt.mobile.android.scenarios.settings.accounts.transfer
 
+import androidx.compose.ui.test.junit4.createEmptyComposeRule
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.scrollTo
 import androidx.test.espresso.action.ViewActions.typeText
+import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import com.passbolt.mobile.android.core.idlingresource.SignInIdlingResource
 import com.passbolt.mobile.android.core.idlingresource.TransferAccountIdlingResource
+import com.passbolt.mobile.android.core.localization.R.string.settings_accounts
+import com.passbolt.mobile.android.core.localization.R.string.settings_accounts_transfer_account
+import com.passbolt.mobile.android.core.localization.R.string.transfer_account_title
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.feature.authentication.AuthenticationMainActivity
+import com.passbolt.mobile.android.feature.settings.R.id.settingsNavCompose
+import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.R.id.startTransferButton
+import com.passbolt.mobile.android.helpers.getString
+import com.passbolt.mobile.android.helpers.signIn
 import com.passbolt.mobile.android.instrumentationTestsModule
 import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
 import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
 import com.passbolt.mobile.android.scenarios.setup.configurebiometric.biometricSetupUnavailableModuleTests
+import org.junit.Ignore
 import org.junit.Rule
+import org.junit.Test
 import org.junit.runner.RunWith
 import org.koin.core.component.inject
 import org.koin.test.KoinTest
+import kotlin.test.BeforeTest
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
-
-// TODO settings are migrated to Compose
-// Instrumented tests needs to be rewritten using compose library
 
 @RunWith(AndroidJUnit4::class)
 @LargeTest
+@Ignore("Deprecated: refactor needed - entire test class disabled")
 class TransferTest : KoinTest {
     @get:Rule
     val startUpActivityRule =
@@ -74,6 +88,9 @@ class TransferTest : KoinTest {
     private val managedAccountIntentCreator: ManagedAccountIntentCreator by inject()
 
     @get:Rule
+    val composeTestRule = createEmptyComposeRule()
+
+    @get:Rule
     val idlingResourceRule =
         let {
             val signInIdlingResource: SignInIdlingResource by inject()
@@ -87,42 +104,34 @@ class TransferTest : KoinTest {
             )
         }
 
-//    @BeforeTest
-//    fun setup() {
-//        //    #MOBILE_USER_ON_SETTINGS_PAGE:
-//        //    Given	I am a mobile user with the application installed
-//        //    And	I am logged in
-//        //    And 	I am on Passbolt PRO/CE/Cloud
-//        signIn(managedAccountIntentCreator.getPassphrase())
-//        onView(withId(com.passbolt.mobile.android.feature.settings.R.id.settingsNav)).perform(click())
-//        onView(withId(com.passbolt.mobile.android.feature.settings.R.id.accountsSettings)).perform(click())
-//        onView(withId(com.passbolt.mobile.android.feature.settings.R.id.transferAccountSetting)).perform(click())
-//    }
-//
-//    // https://passbolt.testrail.io/index.php?/cases/view/8147
-//    @Test
-//    fun asAUserICanSeeAnExplanationOnHowToTransferAnExistingAccount() {
-//        //      Given   I’m logged in user on <page> screen
-//        //      When    I click “Transfer account to another device”
-//        //      Then    the “Transfer account details” explanation screen is presented with a corresponding title
-//        onView(withText(LocalizationR.string.transfer_account_title)).check(matches(isDisplayed()))
-//        //      And     the screen has an arrow button on the top left to go back to the previous screen
-//        onView(ViewMatchers.isAssignableFrom(Toolbar::class.java))
-//            .check(CastedViewAssertion<Toolbar> { it.navigationIcon != null })
-//        //      And     it has an explanation of the different steps of the transfer process
-//        onView(withId(com.passbolt.mobile.android.feature.setup.R.id.steps)).check(matches(isDisplayed()))
-//        //      And     an illustration giving some context about the process
-//        onView(withId(com.passbolt.mobile.android.feature.setup.R.id.qrCode)).check(matches(isDisplayed()))
-//        //      And     a "Start transfer" primary action button
-//        onView(
-//            withId(com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.R.id.startTransferButton),
-//        ).check(matches(isDisplayed()))
-//        //
-//        //          | page            |
-//        //          | Account details |
-//        //          | Accounts        |
-//    }
-//
+    @BeforeTest
+    fun setup() {
+        //    #MOBILE_USER_ON_SETTINGS_PAGE:
+        //    Given	I am a mobile user with the application installed
+        //    And	I am logged in
+        //    And 	I am on Passbolt PRO/CE/Cloud
+        composeTestRule.signIn(managedAccountIntentCreator.getPassphrase())
+        onView(withId(settingsNavCompose)).perform(click())
+        composeTestRule.apply {
+            waitForIdle()
+            onNodeWithText(getString(settings_accounts)).performClick()
+            waitForIdle()
+            onNodeWithText(getString(settings_accounts_transfer_account)).performClick()
+            waitForIdle()
+        }
+    }
+
+    // https://passbolt.testrail.io/index.php?/cases/view/8147
+    @Test
+    fun asAUserICanSeeAnExplanationOnHowToTransferAnExistingAccount() {
+        //      Given   I’m logged in user on <page> screen (handled in setup)
+        //      Then    the “Transfer account details” explanation screen is presented with a corresponding title
+        onView(withText(transfer_account_title)).check(matches(isDisplayed()))
+        //      And     a "Start transfer" primary action button is visible
+        onView(
+            withId(startTransferButton),
+        ).check(matches(isDisplayed()))
+    }
 //    // https://passbolt.testrail.io/index.php?/cases/view/8150
 //    @Test
 //    @FlakyTest(detail = "On Huawei Mate 30 Pro it is not working when iterated in a group")

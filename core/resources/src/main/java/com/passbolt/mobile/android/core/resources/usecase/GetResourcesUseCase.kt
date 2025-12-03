@@ -34,6 +34,7 @@ import com.passbolt.mobile.android.ui.ResourceModelWithAttributes
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+@Deprecated("Use GetResourcesPaginatedUseCase")
 class GetResourcesUseCase(
     private val resourceRepository: ResourceRepository,
     private val resourceModelMapper: ResourceModelMapper,

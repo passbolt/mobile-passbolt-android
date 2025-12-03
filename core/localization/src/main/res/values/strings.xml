@@ -67,6 +67,7 @@
     <string name="common_message_resource_deleted">%s resource was deleted.</string>
     <string name="common_message_resource_shared">The resource permissions were updated.</string>
     <string name="common_message_folder_created">New folder %s has been created!</string>
+    <string name="common_lack_shared_key_access">You cannot perform this action because you lack access to the shared metadata key.</string>
 
     <string name="validation_required_with_max_length">Length should be between 1 and %d</string>
     <string name="validation_max_length">Maximum length is %d</string>
@@ -241,8 +242,10 @@
     <string name="autofill_error">Autofill error occurred</string>
     <string name="autofill_select_password">Select password</string>
     <string name="autofill_service_channel_name">Passbolt autofill services</string>
+    <string name="data_sync_service_channel_name">Passbolt data sync service</string>
     <string name="autofill_service_title">Passbolt</string>
     <string name="autofill_service_content">Accessibility autofill service enabled</string>
+    <string name="data_sync_service_content">Refreshing resources</string>
     <string name="autofill_service_enable_overlay">Enable overlay permission</string>
     <string name="autofill_service_overlay_description"><![CDATA[Autofill usernames & passwords for Android web browsers. Please enable the ‘Draw over other apps’ permission for Passbolt Autofill]]></string>
     <string name="autofill_service_enable_service">Enable Autofill for most apps</string>
@@ -274,6 +277,7 @@
     <string name="filters_menu_shared_with_me">Shared with me</string>
     <string name="filters_menu_owned_by_me">Owned by me</string>
     <string name="filters_menu_expiry">Expiry</string>
+    <string name="filters_menu_loading">Loading</string>
     <string name="filters_menu_folders">Folders</string>
     <string name="filters_menu_tags">Tags</string>
     <string name="filters_menu_groups">Groups</string>
@@ -619,6 +623,7 @@
     <string name="create_resource_menu_create_a_resource">Create a resource</string>
     <string name="create_resource_menu_create_totp">TOTP</string>
     <string name="create_resource_menu_create_password">Password</string>
+    <string name="create_resource_menu_create_note">Note</string>
     <string name="create_resource_menu_create_folder">Folder</string>
 
     <string name="dialog_new_metadata_key_trust_changed">The metadata key has changed.</string>

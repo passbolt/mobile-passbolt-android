@@ -28,6 +28,7 @@ import com.passbolt.mobile.android.core.extension.gone
 import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.extension.showSnackbar
 import com.passbolt.mobile.android.core.extension.visible
+import com.passbolt.mobile.android.core.fulldatarefresh.service.DataRefreshService
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.navigation.deeplinks.NavDeepLinkProvider
 import com.passbolt.mobile.android.core.resources.resourceicon.ResourceIconProvider
@@ -583,6 +584,13 @@ class ResourceDetailsFragment :
         )
     }
 
+    override fun showCannotPerformThisActionMessage() {
+        showSnackbar(
+            LocalizationR.string.common_lack_shared_key_access,
+            backgroundColor = CoreUiR.color.red,
+        )
+    }
+
     override fun showDeleteConfirmationDialog() {
         confirmResourceDeletionAlertDialog(requireContext()) {
             presenter.deleteResourceConfirmed()
@@ -714,6 +722,10 @@ class ResourceDetailsFragment :
 
     override fun resourceMoreMenuDismissed() {
         presenter.resume(this)
+    }
+
+    override fun performFullDataRefresh() {
+        DataRefreshService.start(requireContext())
     }
 
     override fun showCustomFieldsSection() {

@@ -1,6 +1,6 @@
 /**
  * Passbolt - Open source password manager for teams
- * Copyright (c) 2021-2023 Passbolt SA
+ * Copyright (c) 2021-2023,2025 Passbolt SA
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
  * Public License (AGPL) as published by the Free Software Foundation version 3.
@@ -23,12 +23,13 @@
 
 package com.passbolt.mobile.android.scenarios.setup.autofill
 
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.junit4.createEmptyComposeRule
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.scrollTo
 import androidx.test.espresso.action.ViewActions.typeText
-import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
@@ -75,6 +76,9 @@ class SetupAutofillConfiguredTest : KoinTest {
     @get:Rule
     val permissionRule: GrantPermissionRule = GrantPermissionRule.grant(android.Manifest.permission.CAMERA)
 
+    @get:Rule
+    val composeTestRule = createEmptyComposeRule()
+
     private val managedAccountIntentCreator: ManagedAccountIntentCreator by inject()
     private val accountDataCleaner: AccountDataCleaner by inject()
     private val accountDataInitializer: AccountInitializer by inject()
@@ -98,6 +102,6 @@ class SetupAutofillConfiguredTest : KoinTest {
         onView(withId(R.id.maybeLaterButton)).perform((click()))
         //    Then      I do not see the page explaining the autofill configuration
         //    And       I see the home page
-        onView(withId(com.passbolt.mobile.android.feature.permissions.R.id.rootLayout)).check(matches(isDisplayed()))
+        composeTestRule.onNodeWithTag("home_screen").assertIsDisplayed()
     }
 }

@@ -1,7 +1,6 @@
 package com.passbolt.mobile.android.feature.autofill.resources
 
 import com.passbolt.mobile.android.core.accounts.usecase.accounts.GetAccountsUseCase
-import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.resources.actions.SecretPropertiesActionsInteractor
@@ -40,7 +39,6 @@ import org.koin.core.parameter.parametersOf
 class AutofillResourcesPresenter(
     private val getAccountsUseCase: GetAccountsUseCase,
     private val getLocalResourceUseCase: GetLocalResourceUseCase,
-    private val fullDataRefreshExecutor: FullDataRefreshExecutor,
     coroutineLaunchContext: CoroutineLaunchContext,
 ) : BaseAuthenticatedPresenter<AutofillResourcesContract.View>(coroutineLaunchContext),
     AutofillResourcesContract.Presenter {
@@ -72,15 +70,12 @@ class AutofillResourcesPresenter(
 
     override fun userAuthenticated() {
         view?.navigateToAutofillHome()
-        fullDataRefreshExecutor.performFullDataRefresh()
+        view?.performFullDataRefresh()
     }
 
     override fun itemClick(resourceModel: ResourceModel) {
         view?.showProgress()
-        val secretPropertiesActionsInteractor: SecretPropertiesActionsInteractor =
-            get {
-                parametersOf(resourceModel, needSessionRefreshFlow, sessionRefreshedFlow)
-            }
+        val secretPropertiesActionsInteractor: SecretPropertiesActionsInteractor = get { parametersOf(resourceModel) }
         scope.launch {
             performSecretPropertyAction(
                 action = { secretPropertiesActionsInteractor.providePassword() },

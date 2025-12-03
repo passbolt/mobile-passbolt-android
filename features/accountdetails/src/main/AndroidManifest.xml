@@ -3,6 +3,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <application>
-        <activity android:name="com.passbolt.mobile.android.feature.accountdetails.AccountDetailsActivity" />
+        <activity
+            android:name="com.passbolt.mobile.android.feature.accountdetails.AccountDetailsActivity"
+            android:exported="false" />
     </application>
 </manifest>

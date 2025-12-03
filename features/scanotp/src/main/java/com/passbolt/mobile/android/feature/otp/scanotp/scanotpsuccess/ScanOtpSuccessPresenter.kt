@@ -85,10 +85,7 @@ class ScanOtpSuccessPresenter(
     override fun createStandaloneOtpClick() {
         scope.launch {
             view?.showProgress()
-            val resourceCreateActionsInteractor =
-                get<ResourceCreateActionsInteractor> {
-                    parametersOf(needSessionRefreshFlow, sessionRefreshedFlow)
-                }
+            val resourceCreateActionsInteractor = get<ResourceCreateActionsInteractor>()
             val defaultType =
                 getDefaultCreateContentTypeUseCase.execute(
                     GetDefaultCreateContentTypeUseCase.Input(LeadingContentType.TOTP),
@@ -122,7 +119,7 @@ class ScanOtpSuccessPresenter(
                     doOnFailure = { view?.showGenericError() },
                     doOnCryptoFailure = { view?.showEncryptionError(it) },
                     doOnSchemaValidationFailure = ::handleSchemaValidationFailure,
-                    doOnSuccess = { view?.navigateToOtpList(scannedTotp, otpCreated = true) },
+                    doOnSuccess = { view?.navigateToOtpList(scannedTotp, otpCreated = true, it.resourceId) },
                     doOnCannotCreateWithCurrentConfig = { view?.showCannotUpdateTotpWithCurrentConfig() },
                     doOnMetadataKeyModified = { view?.showMetadataKeyModifiedDialog(it) },
                     doOnMetadataKeyDeleted = { view?.showMetadataKeyDeletedDialog(it) },
@@ -154,10 +151,7 @@ class ScanOtpSuccessPresenter(
                 idToSlugMappingProvider.provideMappingForSelectedAccount()[
                     UUID.fromString(resource.resourceTypeId),
                 ]
-            val resourceUpdateActionsInteractor =
-                get<ResourceUpdateActionsInteractor> {
-                    parametersOf(resource, needSessionRefreshFlow, sessionRefreshedFlow)
-                }
+            val resourceUpdateActionsInteractor = get<ResourceUpdateActionsInteractor> { parametersOf(resource) }
             val updateOperation =
                 when (ContentType.fromSlug(slug!!)) {
                     is PasswordAndDescription, V5Default ->
@@ -203,7 +197,7 @@ class ScanOtpSuccessPresenter(
                 doOnFetchFailure = { view?.showGenericError() },
                 doOnCryptoFailure = { view?.showEncryptionError(it) },
                 doOnSchemaValidationFailure = ::handleSchemaValidationFailure,
-                doOnSuccess = { view?.navigateToOtpList(totp = scannedTotp, otpCreated = true) },
+                doOnSuccess = { view?.navigateToOtpList(totp = scannedTotp, otpCreated = true, it.resourceId) },
                 doOnCannotEditWithCurrentConfig = { view?.showCannotUpdateTotpWithCurrentConfig() },
                 doOnMetadataKeyModified = { view?.showMetadataKeyModifiedDialog(it) },
                 doOnMetadataKeyDeleted = { view?.showMetadataKeyDeletedDialog(it) },
@@ -234,7 +228,7 @@ class ScanOtpSuccessPresenter(
             view?.showProgress()
             when (
                 val output =
-                    runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+                    runAuthenticatedOperation {
                         metadataPrivateKeysHelperInteractor.trustNewKey(model)
                     }
             ) {

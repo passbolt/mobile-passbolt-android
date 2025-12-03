@@ -1,6 +1,8 @@
 package com.passbolt.mobile.android.core.notifications.accessibilityautofill
 
 import android.app.Notification
+import android.app.NotificationManager.IMPORTANCE_HIGH
+import android.app.NotificationManager.IMPORTANCE_LOW
 import android.content.Context
 import com.passbolt.mobile.android.core.notifications.NotificationChannelManager
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
@@ -31,20 +33,41 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
 class AccessibilityServiceNotificationFactory(
     private val notificationChannelManager: NotificationChannelManager,
 ) {
-    fun getNotification(context: Context): Notification {
+    fun getAccessibilityServiceNotification(context: Context): Notification {
         notificationChannelManager.createNotificationChannel(
-            CHANNEL_ID,
-            context.getString(LocalizationR.string.autofill_service_channel_name),
+            channelId = AUTOFILL_SERVICES_CHANNEL_ID,
+            name = context.getString(LocalizationR.string.autofill_service_channel_name),
+            importance = IMPORTANCE_HIGH,
         )
         return Notification
-            .Builder(context, CHANNEL_ID)
+            .Builder(context, AUTOFILL_SERVICES_CHANNEL_ID)
             .setContentTitle(context.getString(LocalizationR.string.autofill_service_title))
             .setContentText(context.getString(LocalizationR.string.autofill_service_content))
             .setSmallIcon(CoreUiR.drawable.ic_key)
             .build()
     }
 
-    private companion object {
-        private const val CHANNEL_ID = "ForegroundServiceChannel"
+    fun getDataServiceNotification(context: Context): Notification {
+        notificationChannelManager.createNotificationChannel(
+            channelId = DATA_SYNC_SERVICES_CHANNEL_ID,
+            name = context.getString(LocalizationR.string.data_sync_service_channel_name),
+            importance = IMPORTANCE_LOW,
+        )
+        return Notification
+            .Builder(context, DATA_SYNC_SERVICES_CHANNEL_ID)
+            .setContentTitle(context.getString(LocalizationR.string.autofill_service_title))
+            .setContentText(context.getString(LocalizationR.string.data_sync_service_content))
+            .setSmallIcon(CoreUiR.drawable.ic_key)
+            .setProgress(0, 0, true)
+            .setOngoing(true)
+            .build()
+    }
+
+    companion object {
+        const val ACCESSIBILITY_SERVICE_NOTIFICATION_ID = 1000
+        const val DATA_SYNC_SERVICE_NOTIFICATION_ID = 1001
+
+        private const val AUTOFILL_SERVICES_CHANNEL_ID = "ForegroundServiceChannel"
+        private const val DATA_SYNC_SERVICES_CHANNEL_ID = "DataSyncForegroundServiceChannel"
     }
 }

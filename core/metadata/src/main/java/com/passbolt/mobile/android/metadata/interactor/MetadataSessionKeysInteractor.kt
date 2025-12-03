@@ -21,6 +21,7 @@ import com.passbolt.mobile.android.metadata.usecase.FetchMetadataSessionKeysUseC
 import com.passbolt.mobile.android.metadata.usecase.FetchMetadataSessionKeysUseCase.Output.Success
 import com.passbolt.mobile.android.metadata.usecase.PostMetadataSessionKeysUseCase
 import com.passbolt.mobile.android.metadata.usecase.UpdateMetadataSessionKeysUseCase
+import com.passbolt.mobile.android.ui.MergedSessionKeys
 import com.passbolt.mobile.android.ui.MetadataSessionKeysBundleModel
 import timber.log.Timber
 import java.util.UUID
@@ -85,16 +86,23 @@ class MetadataSessionKeysInteractor(
         return when (val passphrase = passphraseMemoryCache.get()) {
             is PotentialPassphrase.Passphrase -> {
                 Timber.d("Building session keys cache; Bundles count: ${metadataKeysBundles.size}")
-                metadataKeysBundles
-                    .mapDecryptNotNull(privateKey, passphrase.passphrase)
-                    .let {
-                        Timber.d("Merging session keys cache")
-                        if (it.isNotEmpty()) sessionKeysMemoryCache.wasInitialCacheEmpty = false
-                        sessionKeysBundleMerger.merge(it)
-                    }.let {
-                        Timber.d("Session keys cache loaded")
-                        sessionKeysMemoryCache.value = it
-                    }
+                if (metadataKeysBundles.isNotEmpty()) {
+                    metadataKeysBundles
+                        .mapDecryptNotNull(privateKey, passphrase.passphrase)
+                        .let {
+                            Timber.d("Merging session keys cache")
+                            if (it.isNotEmpty()) sessionKeysMemoryCache.wasInitialCacheEmpty = false
+                            sessionKeysBundleMerger.merge(it)
+                        }.let {
+                            Timber.d("Session keys cache loaded")
+                            sessionKeysMemoryCache.isLocallyModified = false
+                            sessionKeysMemoryCache.value = it
+                        }
+                } else {
+                    sessionKeysMemoryCache.value = MergedSessionKeys()
+                    sessionKeysMemoryCache.wasInitialCacheEmpty = true
+                    sessionKeysMemoryCache.isLocallyModified = false
+                }
                 Output.Success
             }
             is PotentialPassphrase.PassphraseNotPresent ->

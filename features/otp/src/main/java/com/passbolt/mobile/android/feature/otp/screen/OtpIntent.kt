@@ -28,8 +28,6 @@ import com.passbolt.mobile.android.ui.OtpItemWrapper
 
 sealed interface OtpIntent {
     // screen
-    data object InitiateFullDataRefresh : OtpIntent
-
     data class Search(
         val searchQuery: String,
     ) : OtpIntent
@@ -60,6 +58,8 @@ sealed interface OtpIntent {
     data object CreatePassword : OtpIntent
 
     data object CreateTotp : OtpIntent
+
+    data object CreateNote : OtpIntent
 
     data object CloseCreateResourceMenu : OtpIntent
 

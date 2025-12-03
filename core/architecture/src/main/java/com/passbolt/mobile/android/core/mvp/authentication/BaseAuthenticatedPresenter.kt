@@ -24,18 +24,17 @@
 package com.passbolt.mobile.android.core.mvp.authentication
 
 import androidx.annotation.CallSuper
+import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated.Reason.Mfa
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated.Reason.Mfa.MfaProvider
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated.Reason.Mfa.MfaProvider.DUO
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated.Reason.Mfa.MfaProvider.TOTP
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated.Reason.Mfa.MfaProvider.YUBIKEY
+import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated.Reason.Passphrase
+import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated.Reason.Session
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.drop
-import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -46,13 +45,8 @@ import timber.log.Timber
 abstract class BaseAuthenticatedPresenter<T : BaseAuthenticatedContract.View>(
     coroutineLaunchContext: CoroutineLaunchContext,
 ) : BaseAuthenticatedContract.Presenter<T>,
-    KoinComponent,
-    SessionListener {
-    private var _sessionRefreshedFlow = MutableStateFlow<Unit?>(null)
-    override val sessionRefreshedFlow
-        get() = _sessionRefreshedFlow.asStateFlow()
-
-    override lateinit var needSessionRefreshFlow: MutableStateFlow<UnauthenticatedReason?>
+    KoinComponent {
+    private val sessionRefreshTrackingFlow: SessionRefreshTrackingFlow by inject()
     private val job = SupervisorJob()
     private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
 
@@ -67,31 +61,26 @@ abstract class BaseAuthenticatedPresenter<T : BaseAuthenticatedContract.View>(
 
     private fun listenForRefreshSessionEvents() {
         Timber.d("[Session] Listening for new session events")
-        needSessionRefreshFlow = MutableStateFlow(null)
         scope.launch {
-            needSessionRefreshFlow
-                .drop(1) // drop initial value
-                .take(1)
+            sessionRefreshTrackingFlow
+                .needSessionRefreshFlow()
                 .collect {
-                    Timber.d("[Session] Session refresh needed, reason [$it] - showing auth")
-                    it?.let {
-                        when (it) {
-                            is AuthenticationState.Unauthenticated.Reason.Mfa -> {
-                                mfaProvidersHandler.setProviders(it.providers.orEmpty())
-                                view?.showMfaAuth(
-                                    mfaProvidersHandler.firstMfaProvider(),
-                                    mfaProvidersHandler.hasMultipleProviders(),
-                                )
-                            }
-                            is AuthenticationState.Unauthenticated.Reason.Passphrase -> {
-                                view?.showRefreshPassphraseAuth()
-                            }
-                            is AuthenticationState.Unauthenticated.Reason.Session -> {
-                                view?.showSignInAuth()
-                            }
+                    Timber.d("[Session] MVP Session refresh is needed: [${it.reason}] in ${this@BaseAuthenticatedPresenter}. Showing UI.")
+                    when (val reason = it.reason) {
+                        is Mfa -> {
+                            mfaProvidersHandler.setProviders(reason.providers.orEmpty())
+                            view?.showMfaAuth(
+                                mfaProvidersHandler.firstMfaProvider(),
+                                mfaProvidersHandler.hasMultipleProviders(),
+                            )
+                        }
+                        is Passphrase -> {
+                            view?.showRefreshPassphraseAuth()
+                        }
+                        is Session -> {
+                            view?.showSignInAuth()
                         }
                     }
-                    listenForRefreshSessionEvents()
                 }
         }
     }
@@ -104,8 +93,7 @@ abstract class BaseAuthenticatedPresenter<T : BaseAuthenticatedContract.View>(
     }
 
     override fun authenticationRefreshed() {
-        _sessionRefreshedFlow.value = Unit
-        _sessionRefreshedFlow = MutableStateFlow(null)
+        sessionRefreshTrackingFlow.notifySessionRefreshed()
     }
 
     override fun otherProviderClick(currentProvider: MfaProvider) {

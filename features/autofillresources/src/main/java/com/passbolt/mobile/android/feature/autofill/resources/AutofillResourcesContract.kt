@@ -61,6 +61,8 @@ interface AutofillResourcesContract {
         fun showFetchFailure()
 
         fun showDecryptionFailure()
+
+        fun performFullDataRefresh()
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {

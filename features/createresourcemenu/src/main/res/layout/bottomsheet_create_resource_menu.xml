@@ -67,6 +67,18 @@
         tools:visibility="visible" />
 
     <TextView
+        android:id="@+id/createNote"
+        style="@style/PasswordMenuItem"
+        android:drawablePadding="@dimen/dp_16"
+        android:text="@string/create_resource_menu_create_note"
+        android:visibility="gone"
+        app:drawableStartCompat="@drawable/ic_notes"
+        app:drawableTint="@color/icon_tint"
+        app:layout_constraintTop_toBottomOf="@+id/createTotp"
+        tools:drawableStart="@drawable/ic_notes"
+        tools:visibility="visible" />
+
+    <TextView
         android:id="@+id/createFolder"
         style="@style/PasswordMenuItem"
         android:drawablePadding="@dimen/dp_16"
@@ -74,7 +86,7 @@
         android:visibility="gone"
         app:drawableStartCompat="@drawable/ic_folder"
         app:drawableTint="@color/icon_tint"
-        app:layout_constraintTop_toBottomOf="@+id/createTotp"
+        app:layout_constraintTop_toBottomOf="@+id/createNote"
         tools:drawableStart="@drawable/ic_folder"
         tools:visibility="visible" />
 

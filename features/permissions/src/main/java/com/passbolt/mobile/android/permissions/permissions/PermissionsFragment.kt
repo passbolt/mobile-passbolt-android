@@ -20,6 +20,7 @@ import com.passbolt.mobile.android.core.extension.initDefaultToolbar
 import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.extension.showSnackbar
 import com.passbolt.mobile.android.core.extension.visible
+import com.passbolt.mobile.android.core.fulldatarefresh.service.DataRefreshService
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.ui.R
 import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
@@ -37,7 +38,6 @@ import com.passbolt.mobile.android.ui.PermissionModelUi
 import com.passbolt.mobile.android.ui.TrustedKeyDeletedModel
 import org.koin.android.ext.android.inject
 import org.koin.core.qualifier.named
-import kotlin.jvm.java
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
@@ -447,6 +447,18 @@ class PermissionsFragment :
             anchorView = snackbarAnchorView,
             backgroundColor = R.color.red,
         )
+    }
+
+    override fun showCannotPerformThisActionMessage() {
+        showSnackbar(
+            LocalizationR.string.common_lack_shared_key_access,
+            anchorView = requiredBinding.actionButtonLayout,
+            backgroundColor = R.color.red,
+        )
+    }
+
+    override fun performFullDataRefresh() {
+        DataRefreshService.start(requireContext())
     }
 
     companion object {

@@ -3,16 +3,14 @@ package com.passbolt.mobile.android.feature.authentication.session
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticatedUseCaseOutput
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated.Reason
-import com.passbolt.mobile.android.core.mvp.authentication.SessionListener
+import com.passbolt.mobile.android.core.mvp.authentication.SessionRefreshTrackingFlow
 import com.passbolt.mobile.android.core.mvp.authentication.UnauthenticatedReason
 import com.passbolt.mobile.android.core.navigation.AppForegroundListener
 import com.passbolt.mobile.android.core.passphrasememorycache.PassphraseMemoryCache
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetSessionExpiryUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.RefreshSessionUseCase
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.take
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -49,18 +47,13 @@ private const val SESSION_DURATION_BEFORE_SKEW_SECONDS = 30L
  * it is communicated to the caller (@see BaseAuthenticatedContract) and awaiting on authentication refresh starts. After receiving authentication
  * refreshed event the initial operation is automatically restarted.
  *
- * @param needAuthenticationRefreshedFlow Flow which sends event when authentication needs to be refreshed
- * @param authenticationRefreshedFlow Flow which collects event when authentication was refresshed
  */
-class AuthenticatedOperationRunner(
-    private val needAuthenticationRefreshedFlow: MutableStateFlow<UnauthenticatedReason?>,
-    private val authenticationRefreshedFlow: StateFlow<Unit?>,
-    private val onUiAuthenticationRequested: () -> Unit = {},
-) : KoinComponent {
+class AuthenticatedOperationRunner : KoinComponent {
     private val refreshSessionUseCase: RefreshSessionUseCase by inject()
     private val getSessionExpiryUseCase: GetSessionExpiryUseCase by inject()
     private val passphraseMemoryCache: PassphraseMemoryCache by inject()
     private val appForegroundListener: AppForegroundListener by inject()
+    private val sessionRefreshTrackingFlow: SessionRefreshTrackingFlow by inject()
 
     suspend fun <OUTPUT : AuthenticatedUseCaseOutput> runOperation(request: suspend () -> OUTPUT): OUTPUT {
         val needFullSignIn = isFullSignInNeeded()
@@ -70,13 +63,13 @@ class AuthenticatedOperationRunner(
         // bot local and backend sessions are checked
         refreshSessionProactively(needFullSignIn, needPassphraseRefresh)
 
-        Timber.d("Running operation")
+        Timber.d("[Session] Running operation")
         val response = request.invoke()
         val authenticationState = response.authenticationState
         return if (authenticationState is Unauthenticated) {
             // sometimes even with proactive refresh we may receive Unauthenticated state from backend
             // i.e. after server key rotation for all the users
-            Timber.d("Operation is unauthenticated, starting UI authentication")
+            Timber.d("[Session] Operation is unauthenticated, starting UI authentication")
             authenticateUsingSignInUi(authenticationState.reason)
             runOperation(request)
         } else {
@@ -105,10 +98,10 @@ class AuthenticatedOperationRunner(
     private fun isPassphraseRefreshNeeded(): Boolean {
         val sessionDurationSeconds = passphraseMemoryCache.getSessionDurationSeconds()
         return if (sessionDurationSeconds == null || sessionDurationSeconds < SESSION_DURATION_BEFORE_SKEW_SECONDS) {
-            Timber.d("Passphrase session is not valid for request")
+            Timber.d("[Session] Passphrase session is not valid for request")
             true
         } else {
-            Timber.d("Passphrase session is valid for request")
+            Timber.d("[Session] Passphrase session is valid for request")
             false
         }
     }
@@ -116,11 +109,11 @@ class AuthenticatedOperationRunner(
     private suspend fun isFullSignInNeeded() =
         when (val sessionExpiry = getSessionExpiryUseCase.execute(Unit)) {
             is GetSessionExpiryUseCase.Output.NoJwt -> {
-                Timber.d("Access token expiry is null")
+                Timber.d("[Session] Access token expiry is null")
                 true
             }
             is GetSessionExpiryUseCase.Output.JwtAlreadyExpired -> {
-                Timber.d("Session is expired, refreshing in background")
+                Timber.d("[Session] Session is expired, refreshing in background")
                 !backgroundRefreshSessionSessionSucceeded()
             }
             is GetSessionExpiryUseCase.Output.JwtWillExpire -> {
@@ -128,24 +121,24 @@ class AuthenticatedOperationRunner(
                         ZonedDateTime.now().plusSeconds(SESSION_DURATION_BEFORE_SKEW_SECONDS),
                     )
                 ) {
-                    Timber.d("Session may end before finishing current request, refreshing in background")
+                    Timber.d("[Session] Session may end before finishing current request, refreshing in background")
                     !backgroundRefreshSessionSessionSucceeded()
                 } else {
-                    Timber.d("Session is valid for request")
+                    Timber.d("[Session] Session is valid for request")
                     false
                 }
             }
         }
 
     private suspend fun backgroundRefreshSessionSessionSucceeded(): Boolean {
-        Timber.d("Starting background session refresh")
+        Timber.d("[Session] Starting background session refresh")
         return when (refreshSessionUseCase.execute(Unit)) {
             is RefreshSessionUseCase.Output.Success -> {
-                Timber.d("Background session refresh succeeded")
+                Timber.d("[Session] Background session refresh succeeded")
                 true
             }
             is RefreshSessionUseCase.Output.Failure -> {
-                Timber.d("Background session refresh did not succeed - launching sign in")
+                Timber.d("[Session] Background session refresh did not succeed - launching sign in")
                 false
             }
         }
@@ -153,20 +146,17 @@ class AuthenticatedOperationRunner(
 
     private suspend fun authenticateUsingSignInUi(reason: UnauthenticatedReason) {
         if (!appForegroundListener.isForeground()) {
-            Timber.d("App is in background, waiting for foreground to start UI authentication")
+            Timber.d("[Session] App is in background, waiting for foreground to start UI authentication")
             appForegroundListener.appWentForegroundFlow.take(1).collect()
-            Timber.d("App is in foreground")
+            Timber.d("[Session] App is in foreground")
         }
 
-        Timber.d("Starting UI authentication")
-        needAuthenticationRefreshedFlow.tryEmit(reason)
-        onUiAuthenticationRequested()
-        authenticationRefreshedFlow
-            .drop(1) // drop initial value
-            .take(1) // wait for first session refreshed item
-            .collect {
-                Timber.d("Authenticated operation runner $this got refreshed auth")
-            }
+        Timber.d("[Session] Starting UI authentication")
+        sessionRefreshTrackingFlow.notifySessionRefreshNeeded(reason)
+        sessionRefreshTrackingFlow
+            .sessionRefreshedFlow()
+            .first()
+        Timber.d("[Session] Authenticated operation runner $this got refreshed auth")
     }
 }
 
@@ -174,25 +164,5 @@ class AuthenticatedOperationRunner(
  * Runs an operation which requires authentication using AuthenticatedOperationRunner
  * @see AuthenticatedOperationRunner
  */
-suspend fun <OUTPUT : AuthenticatedUseCaseOutput> runAuthenticatedOperation(
-    needAuthenticationRefresh: MutableStateFlow<UnauthenticatedReason?>,
-    authenticationRefreshedFlow: StateFlow<Unit?>,
-    onUiAuthenticationRequested: () -> Unit = {},
-    request: suspend () -> OUTPUT,
-): OUTPUT =
-    AuthenticatedOperationRunner(needAuthenticationRefresh, authenticationRefreshedFlow, onUiAuthenticationRequested).runOperation(
-        request,
-    )
-
-suspend fun <OUTPUT : AuthenticatedUseCaseOutput> runAuthenticatedOperation(
-    sessionListener: SessionListener,
-    onUiAuthenticationRequested: () -> Unit = {},
-    request: suspend () -> OUTPUT,
-): OUTPUT =
-    AuthenticatedOperationRunner(
-        sessionListener.needSessionRefreshFlow,
-        sessionListener.sessionRefreshedFlow,
-        onUiAuthenticationRequested,
-    ).runOperation(
-        request,
-    )
+suspend fun <OUTPUT : AuthenticatedUseCaseOutput> runAuthenticatedOperation(request: suspend () -> OUTPUT): OUTPUT =
+    AuthenticatedOperationRunner().runOperation(request)

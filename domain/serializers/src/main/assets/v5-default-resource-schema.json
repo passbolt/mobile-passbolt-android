@@ -49,6 +49,34 @@
         }
       ]
     },
+    "icon": {
+      "type": "object",
+      "required": [],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "keepass-icon-set",
+            "passbolt-icon-set"
+          ]
+        },
+        "value": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "background_color": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^#(?:[0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
     "custom_fields": {
       "type": "array",
       "maxItems": 128,

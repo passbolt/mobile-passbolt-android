@@ -25,6 +25,14 @@ import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.U
  * @since v1.0
  */
 sealed interface AuthenticatedIntent {
+    // Needed as long as all navigation child screens are not migrated to compose
+    // Then authentication can be handled once in MainActivity and these can be removed
+    object Launched : AuthenticatedIntent
+
+    // Needed as long as all navigation child screens are not migrated to compose
+    // Then authentication can be handled once in MainActivity and these can be removed
+    object Disposed : AuthenticatedIntent
+
     object AuthenticationRefreshed : AuthenticatedIntent
 
     data class OtherProviderClick(

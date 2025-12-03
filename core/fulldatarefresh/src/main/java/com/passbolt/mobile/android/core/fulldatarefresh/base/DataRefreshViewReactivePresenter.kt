@@ -1,8 +1,11 @@
 package com.passbolt.mobile.android.core.fulldatarefresh.base
 
-import com.passbolt.mobile.android.core.fulldatarefresh.DataRefreshStatus
-import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
-import com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor
+import com.passbolt.mobile.android.common.datarefresh.DataRefreshStatus.Idle
+import com.passbolt.mobile.android.common.datarefresh.DataRefreshStatus.Idle.FinishedWithFailure
+import com.passbolt.mobile.android.common.datarefresh.DataRefreshStatus.Idle.FinishedWithSuccess
+import com.passbolt.mobile.android.common.datarefresh.DataRefreshStatus.Idle.NotCompleted
+import com.passbolt.mobile.android.common.datarefresh.DataRefreshStatus.InProgress
+import com.passbolt.mobile.android.common.datarefresh.DataRefreshTrackingFlow
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import kotlinx.coroutines.CoroutineScope
@@ -42,63 +45,51 @@ abstract class DataRefreshViewReactivePresenter<V : DataRefreshViewReactiveContr
 ) : BaseAuthenticatedPresenter<V>(coroutineLaunchContext),
     DataRefreshViewReactiveContract.Presenter<V>,
     KoinComponent {
-    protected val fullDataRefreshExecutor: FullDataRefreshExecutor by inject()
+    protected val dataRefreshTrackingFlow: DataRefreshTrackingFlow by inject()
 
     private val job = SupervisorJob()
     private val coroutineScope = CoroutineScope(job + coroutineLaunchContext.ui)
 
-    // used to not invoke the refresh twice on the same presenter
-    // invoking twice can happen in both BE session and biometric session expire
-    // this calls attach twice (second one is after coming back from biometric auth UI screen)
-    private var mostRecentCollection: LatestStatusUpdateCollection? = null
-
     override fun resume(view: V) {
-        fullDataRefreshExecutor.attach(this)
-
         coroutineScope.launch {
-            fullDataRefreshExecutor.dataRefreshStatusFlow.collectLatest {
-                val currentCollection = LatestStatusUpdateCollection(this.javaClass.name, it.toString())
-                if (currentCollection != mostRecentCollection) {
-                    mostRecentCollection = currentCollection
-
-                    when (it) {
-                        is DataRefreshStatus.Finished -> {
-                            this@DataRefreshViewReactivePresenter.view?.hideRefreshProgress()
-                            when (it.output) {
-                                is HomeDataInteractor.Output.Failure -> {
-                                    Timber.d("Full data refresh failed - executing failure action")
-                                    refreshFailureAction()
-                                }
-                                is HomeDataInteractor.Output.Success -> {
-                                    Timber.d("Full data refresh succeeded - executing success action")
-                                    refreshSuccessAction()
-                                }
+            dataRefreshTrackingFlow.dataRefreshStatusFlow.collectLatest {
+                when (it) {
+                    is Idle -> {
+                        when (it) {
+                            FinishedWithFailure -> {
+                                Timber.d("Full data refresh failed - executing failure action")
+                                this@DataRefreshViewReactivePresenter.view?.hideRefreshProgress()
+                                refreshFailureAction()
+                            }
+                            FinishedWithSuccess -> {
+                                Timber.d("Full data refresh succeeded - executing success action")
+                                this@DataRefreshViewReactivePresenter.view?.hideRefreshProgress()
+                                refreshSuccessAction()
+                            }
+                            NotCompleted -> {
+                                // do nothing
                             }
                         }
-                        DataRefreshStatus.InProgress -> {
-                            refreshStartAction()
-                            this@DataRefreshViewReactivePresenter.view?.showRefreshProgress()
-                        }
                     }
-                } else {
-                    Timber.d("This status refresh is already collected - skipping")
+                    InProgress -> {
+                        refreshInProgressAction()
+                        this@DataRefreshViewReactivePresenter.view?.showRefreshProgress()
+                    }
                 }
             }
         }
     }
 
-    override fun refreshStartAction() {
+    override fun performFullDataRefresh() {
+        view?.performFullDataRefresh()
+    }
+
+    override fun refreshInProgressAction() {
         // do nothing by default
     }
 
     override fun pause() {
         this@DataRefreshViewReactivePresenter.view?.hideRefreshProgress()
-        fullDataRefreshExecutor.detach()
         coroutineScope.coroutineContext.cancelChildren()
     }
-
-    private data class LatestStatusUpdateCollection(
-        val className: String,
-        val statusName: String,
-    )
 }

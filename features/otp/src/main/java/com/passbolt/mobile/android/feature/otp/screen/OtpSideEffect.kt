@@ -25,6 +25,8 @@ import com.passbolt.mobile.android.ui.LeadingContentType
  * @since v1.0
  */
 internal sealed interface OtpSideEffect {
+    data object InitiateDataRefresh : OtpSideEffect
+
     data object NavigateToCreateTotp : OtpSideEffect
 
     data class NavigateToCreateResourceForm(
@@ -51,6 +53,10 @@ internal sealed interface OtpSideEffect {
         val type: SnackbarSuccessType,
         val message: String? = null,
     ) : OtpSideEffect
+
+    data class ShowToast(
+        val type: ToastType,
+    ) : OtpSideEffect
 }
 
 internal enum class SnackbarErrorType {
@@ -63,6 +69,8 @@ internal enum class SnackbarErrorType {
     CANNOT_UPDATE_WITH_CURRENT_CONFIGURATION,
     FAILED_TO_VERIFY_METADATA_KEYS,
     FAILED_TO_TRUST_METADATA_KEY,
+    FAILED_TO_REFRESH_DATA,
+    NO_SHARED_KEY_ACCESS,
     ERROR,
 }
 
@@ -71,4 +79,8 @@ internal enum class SnackbarSuccessType {
     RESOURCE_CREATED,
     RESOURCE_DELETED,
     METADATA_KEY_IS_TRUSTED,
+}
+
+internal enum class ToastType {
+    WAIT_FOR_DATA_REFRESH_FINISH,
 }

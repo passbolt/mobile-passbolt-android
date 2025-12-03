@@ -23,13 +23,17 @@
 
 package com.passbolt.mobile.android.feature.otp.screen
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
@@ -38,23 +42,25 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.passbolt.mobile.android.core.clipboard.ClipboardAccess
 import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
+import com.passbolt.mobile.android.core.fulldatarefresh.service.DataRefreshService
 import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.core.resources.resourceicon.ResourceIconProvider
-import com.passbolt.mobile.android.core.ui.compose.dialogs.ConfirmTotpDeleteAlertDialog
+import com.passbolt.mobile.android.core.ui.compose.dialogs.ConfirmResourceDeleteAlertDialog
 import com.passbolt.mobile.android.core.ui.compose.empty.EmptyResourceListState
 import com.passbolt.mobile.android.core.ui.compose.fab.AddFloatingActionButton
 import com.passbolt.mobile.android.core.ui.compose.progressdialog.ProgressDialog
 import com.passbolt.mobile.android.core.ui.compose.scaffold.HomeScaffold
 import com.passbolt.mobile.android.core.ui.compose.search.SearchInput
 import com.passbolt.mobile.android.core.ui.compose.snackbar.ColoredSnackbarVisuals
-import com.passbolt.mobile.android.createresourcemenu.compose.CreateResourceMenuBottomSheet
+import com.passbolt.mobile.android.createresourcemenu.CreateResourceMenuBottomSheet
 import com.passbolt.mobile.android.feature.authentication.compose.AuthenticationHandler
-import com.passbolt.mobile.android.feature.home.switchaccount.compose.SwitchAccountBottomSheet
+import com.passbolt.mobile.android.feature.home.switchaccount.SwitchAccountBottomSheet
 import com.passbolt.mobile.android.feature.metadatakeytrust.ui.compose.NewMetadataKeyTrustDialog
 import com.passbolt.mobile.android.feature.metadatakeytrust.ui.compose.TrustedMetadataKeyDeletedDialog
 import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.CloseCreateResourceMenu
@@ -62,11 +68,11 @@ import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.CloseDeleteConfi
 import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.CloseTrustedKeyDeletedDialog
 import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.ConfirmDeleteTotp
 import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.CopyOtp
+import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.CreateNote
 import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.CreatePassword
 import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.CreateTotp
 import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.DeleteOtp
 import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.EditOtp
-import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.InitiateFullDataRefresh
 import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.OpenCreateResourceMenu
 import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.OpenOtpMoreMenu
 import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.RevealOtp
@@ -74,11 +80,13 @@ import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.Search
 import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.SearchEndIconAction
 import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.TrustMetadataKeyDeletion
 import com.passbolt.mobile.android.feature.otp.screen.OtpSideEffect.CopyToClipboard
+import com.passbolt.mobile.android.feature.otp.screen.OtpSideEffect.InitiateDataRefresh
 import com.passbolt.mobile.android.feature.otp.screen.OtpSideEffect.NavigateToCreateResourceForm
 import com.passbolt.mobile.android.feature.otp.screen.OtpSideEffect.NavigateToCreateTotp
 import com.passbolt.mobile.android.feature.otp.screen.OtpSideEffect.NavigateToEditResourceForm
 import com.passbolt.mobile.android.feature.otp.screen.OtpSideEffect.ShowErrorSnackbar
 import com.passbolt.mobile.android.feature.otp.screen.OtpSideEffect.ShowSuccessSnackbar
+import com.passbolt.mobile.android.feature.otp.screen.OtpSideEffect.ShowToast
 import com.passbolt.mobile.android.otpmoremenu.compose.OtpMoreMenuBottomSheet
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
@@ -142,6 +150,8 @@ internal fun OtpScreen(
             NavigateToCreateTotp -> navigation.navigateToScanOtpCodeForResult()
             is NavigateToCreateResourceForm -> navigation.navigateToCreateResourceForm(it.leadingContentType)
             is NavigateToEditResourceForm -> navigation.navigateToEditResourceForm(it.resourceId, it.resourceName)
+            InitiateDataRefresh -> DataRefreshService.start(context)
+            is ShowToast -> Toast.makeText(context, getToastMessage(context, it.type), Toast.LENGTH_SHORT).show()
         }
     }
 }
@@ -157,8 +167,10 @@ fun OtpScreen(
 ) {
     HomeScaffold(
         snackbarHostState = snackbarHostState,
-        modifier = modifier,
-        appBarTitleRes = LocalizationR.string.main_menu_otp,
+        modifier =
+            modifier
+                .testTag("otp_screen"),
+        appBarTitle = stringResource(LocalizationR.string.main_menu_otp),
         appBarIconRes = CoreUiR.drawable.ic_time_lock,
         appBarSearchInput = {
             SearchInput(
@@ -167,48 +179,53 @@ fun OtpScreen(
                 placeholder = stringResource(LocalizationR.string.otp_search),
                 avatarUrl = state.userAvatar,
                 endIconMode = state.searchInputEndIconMode,
+                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
                 modifier =
                     Modifier
                         .fillMaxWidth()
                         .padding(end = 16.dp),
-            ) { onIntent(SearchEndIconAction) }
+                onEndIconClick = { onIntent(SearchEndIconAction) },
+            )
         },
         floatingActionButton = {
             if (!state.isRefreshing) {
                 AddFloatingActionButton(onClick = { onIntent(OpenCreateResourceMenu) })
             }
         },
-        { paddingValues ->
-            PullToRefreshBox(
-                isRefreshing = state.isRefreshing,
-                onRefresh = { onIntent(InitiateFullDataRefresh) },
-                modifier =
-                    Modifier
-                        .fillMaxSize()
-                        .padding(paddingValues),
-            ) {
-                if (state.shouldShowEmptyState) {
-                    EmptyResourceListState(title = stringResource(LocalizationR.string.no_otps))
-                } else {
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(vertical = 16.dp),
-                    ) {
-                        items(state.uiOtps) { otpItem ->
-                            OtpItem(
-                                otpItem = otpItem,
-                                resourceIconProvider = resourceIconProvider,
-                                onItemClick = { onIntent(RevealOtp(otpItem)) },
-                                onMoreClick = { onIntent(OpenOtpMoreMenu(otpItem)) },
-                            )
+        content =
+            { paddingValues ->
+                val context = LocalContext.current
+                PullToRefreshBox(
+                    isRefreshing = state.isRefreshing,
+                    onRefresh = { DataRefreshService.start(context) },
+                    modifier =
+                        Modifier
+                            .fillMaxSize()
+                            .padding(paddingValues),
+                ) {
+                    if (state.shouldShowEmptyState) {
+                        EmptyResourceListState(title = stringResource(LocalizationR.string.no_otps))
+                    } else {
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize(),
+                            contentPadding = PaddingValues(vertical = 16.dp),
+                        ) {
+                            items(state.uiOtps) { otpItem ->
+                                OtpItem(
+                                    otpItem = otpItem,
+                                    resourceIconProvider = resourceIconProvider,
+                                    onItemClick = { onIntent(RevealOtp(otpItem)) },
+                                    onMoreClick = { onIntent(OpenOtpMoreMenu(otpItem)) },
+                                )
+                            }
                         }
                     }
                 }
-
                 if (state.showCreateResourceBottomSheet) {
                     CreateResourceMenuBottomSheet(
                         onCreatePassword = { onIntent(CreatePassword) },
                         onCreateTotp = { onIntent(CreateTotp) },
+                        onCreateNote = { onIntent(CreateNote) },
                         onDismissRequest = { onIntent(CloseCreateResourceMenu) },
                     )
                 }
@@ -226,7 +243,7 @@ fun OtpScreen(
                     )
                 }
 
-                ConfirmTotpDeleteAlertDialog(
+                ConfirmResourceDeleteAlertDialog(
                     isVisible = state.showDeleteTotpConfirmationDialog,
                     onConfirm = { onIntent(ConfirmDeleteTotp) },
                     onDismiss = { onIntent(CloseDeleteConfirmationDialog) },
@@ -256,7 +273,6 @@ fun OtpScreen(
                 }
 
                 ProgressDialog(state.showProgress)
-            }
-        },
+            },
     )
 }

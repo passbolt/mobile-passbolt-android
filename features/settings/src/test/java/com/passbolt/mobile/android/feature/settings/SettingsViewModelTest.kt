@@ -2,9 +2,7 @@ package com.passbolt.mobile.android.feature.settings
 
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
-import com.passbolt.mobile.android.core.fulldatarefresh.DataRefreshStatus.Finished
-import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
-import com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor.Output.Success
+import com.passbolt.mobile.android.common.datarefresh.DataRefreshTrackingFlow
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
 import com.passbolt.mobile.android.feature.settings.screen.SettingsIntent.ConfirmSignOut
 import com.passbolt.mobile.android.feature.settings.screen.SettingsIntent.SignOut
@@ -12,7 +10,6 @@ import com.passbolt.mobile.android.feature.settings.screen.SettingsViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.drop
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -23,6 +20,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.koin.core.logger.Level
 import org.koin.core.module.dsl.factoryOf
+import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 import org.koin.test.KoinTest
 import org.koin.test.KoinTestRule
@@ -65,8 +63,8 @@ class SettingsViewModelTest : KoinTest {
                 listOf(
                     module {
                         single { mock<SignOutUseCase>() }
-                        single { mock<FullDataRefreshExecutor>() }
                         factoryOf(::SettingsViewModel)
+                        singleOf(::DataRefreshTrackingFlow)
                     },
                 ),
             )
@@ -92,8 +90,6 @@ class SettingsViewModelTest : KoinTest {
         runTest {
             val signOutUseCase: SignOutUseCase = get()
             whenever(signOutUseCase.execute(Unit)) doReturn Unit
-            val fullDataRefreshExecutor: FullDataRefreshExecutor = get()
-            whenever(fullDataRefreshExecutor.dataRefreshStatusFlow) doReturn flowOf(Finished(Success))
 
             viewModel = get()
 

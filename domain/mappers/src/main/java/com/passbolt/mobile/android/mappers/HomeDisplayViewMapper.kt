@@ -17,7 +17,7 @@ class HomeDisplayViewMapper {
      */
     fun map(homeView: HomeDisplayViewModel) =
         when (homeView) {
-            is HomeDisplayViewModel.AllItems -> ResourceDatabaseView.ByNameAscending
+            is HomeDisplayViewModel.AllItems, HomeDisplayViewModel.NotLoaded -> ResourceDatabaseView.ByNameAscending
             is HomeDisplayViewModel.RecentlyModified -> ResourceDatabaseView.ByModifiedDateDescending
             is HomeDisplayViewModel.Favourites -> ResourceDatabaseView.IsFavourite
             is HomeDisplayViewModel.OwnedByMe -> ResourceDatabaseView.HasPermissions(setOf(Permission.OWNER))
@@ -31,7 +31,7 @@ class HomeDisplayViewMapper {
             is HomeDisplayViewModel.Expiry -> ResourceDatabaseView.HasExpiry
         }
 
-    private fun map(homeView: HomeDisplayView): HomeDisplayViewModel =
+    fun map(homeView: HomeDisplayView): HomeDisplayViewModel =
         when (homeView) {
             HomeDisplayView.ALL_ITEMS -> HomeDisplayViewModel.AllItems
             HomeDisplayView.FAVOURITES -> HomeDisplayViewModel.Favourites

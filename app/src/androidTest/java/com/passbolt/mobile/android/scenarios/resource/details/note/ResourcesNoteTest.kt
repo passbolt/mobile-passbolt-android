@@ -23,11 +23,10 @@
 
 package com.passbolt.mobile.android.scenarios.resource.details.note
 
+import androidx.compose.ui.test.junit4.createEmptyComposeRule
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.action.ViewActions.closeSoftKeyboard
 import androidx.test.espresso.action.ViewActions.scrollTo
-import androidx.test.espresso.action.ViewActions.typeText
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
@@ -43,9 +42,8 @@ import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.core.ui.R.id.actionIcon
 import com.passbolt.mobile.android.core.ui.R.id.conceal
 import com.passbolt.mobile.android.feature.authentication.AuthenticationMainActivity
-import com.passbolt.mobile.android.feature.otp.R.id.searchEditText
 import com.passbolt.mobile.android.feature.resources.R.id.note_item
-import com.passbolt.mobile.android.feature.setup.R.id.title
+import com.passbolt.mobile.android.helpers.pickFirstResourceWithName
 import com.passbolt.mobile.android.helpers.signIn
 import com.passbolt.mobile.android.instrumentationTestsModule
 import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
@@ -134,9 +132,12 @@ class ResourcesNoteTest(
             )
     }
 
+    @get:Rule
+    val composeTestRule = createEmptyComposeRule()
+
     @Before
     fun setup() {
-        signIn(managedAccountIntentCreator.getPassphrase())
+        composeTestRule.signIn(managedAccountIntentCreator.getPassphrase())
     }
 
     /**
@@ -158,18 +159,7 @@ class ResourcesNoteTest(
      */
     @Test
     fun asALoggedInMobileUserOnTheResourceDisplayICanShowOrHideResourceNote() {
-        onView(withId(searchEditText))
-            .perform(
-                click(),
-                typeText(testedResource),
-                closeSoftKeyboard(),
-            )
-        onView(
-            allOf(
-                withId(title),
-                withText(testedResource),
-            ),
-        ).perform(click())
+        composeTestRule.pickFirstResourceWithName(testedResource)
         onView(
             allOf(
                 isDescendantOfA(withId(note_item)),

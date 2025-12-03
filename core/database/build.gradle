@@ -18,6 +18,8 @@ dependencies {
     ksp libs.room.compiler
     implementation libs.sqlite
     implementation libs.gson
+    implementation(libs.paging.runtime)
+    implementation(libs.room.paging)
 
     androidTestImplementation libs.koin.test
     androidTestImplementation libs.koin.test.junit

@@ -35,6 +35,13 @@ class ResourceRepository(
             resourceDataSource.getResources()
         }
 
+    suspend fun getResourcesPaginated(
+        limit: Int,
+        page: Int,
+    ) = callWithHandler(responseHandler) {
+        resourceDataSource.getResourcesPaginated(limit, page)
+    }
+
     suspend fun createResource(createResourceDto: CreateResourceDto) =
         callWithHandler(responseHandler) {
             resourceDataSource.createResource(createResourceDto)

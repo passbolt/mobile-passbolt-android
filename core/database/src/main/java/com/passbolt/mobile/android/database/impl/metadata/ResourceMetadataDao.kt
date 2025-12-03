@@ -36,7 +36,8 @@ interface ResourceMetadataDao : BaseDao<ResourceMetadata> {
             "metadataJson = :metadataJson, " +
             "name = :name, " +
             "username = :username, " +
-            "description = :description " +
+            "description = :description, " +
+            "customFieldsKeys = :customFieldsKeys " +
             "WHERE resourceId = :resourceId",
     )
     suspend fun updateMetadataForResource(
@@ -45,6 +46,7 @@ interface ResourceMetadataDao : BaseDao<ResourceMetadata> {
         name: String,
         username: String?,
         description: String?,
+        customFieldsKeys: String?,
     )
 
     @Transaction

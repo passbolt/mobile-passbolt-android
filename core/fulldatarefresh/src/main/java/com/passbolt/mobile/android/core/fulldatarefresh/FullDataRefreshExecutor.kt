@@ -1,16 +1,17 @@
 package com.passbolt.mobile.android.core.fulldatarefresh
 
-import com.passbolt.mobile.android.core.mvp.authentication.SessionListener
+import com.passbolt.mobile.android.common.datarefresh.DataRefreshStatus.Idle.FinishedWithFailure
+import com.passbolt.mobile.android.common.datarefresh.DataRefreshStatus.Idle.FinishedWithSuccess
+import com.passbolt.mobile.android.common.datarefresh.DataRefreshStatus.InProgress
+import com.passbolt.mobile.android.common.datarefresh.DataRefreshTrackingFlow
+import com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor.Output.Failure
+import com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor.Output.Success
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * Passbolt - Open source password manager for teams
@@ -37,50 +38,47 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 class FullDataRefreshExecutor(
     private val homeDataInteractor: HomeDataInteractor,
+    private val dataRefreshTrackingFlow: DataRefreshTrackingFlow,
     coroutineLaunchContext: CoroutineLaunchContext,
 ) {
     private val job = SupervisorJob()
     private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
 
-    val dataRefreshStatusFlow: Flow<DataRefreshStatus>
-        get() = _dataRefreshStatusFlow
-    private val _dataRefreshStatusFlow = MutableSharedFlow<DataRefreshStatus>(replay = 1)
-    private var sessionListener: SessionListener? = null
-    private val refreshInProgress = AtomicBoolean(false)
-
-    fun attach(sessionListener: SessionListener) {
-        Timber.d("Refresh executor attaching to: ${sessionListener.javaClass.name}")
-        this.sessionListener = sessionListener
-    }
-
-    fun detach() {
-        Timber.d("Refresh executor detaching from: ${sessionListener?.javaClass?.name}")
-        sessionListener = null
-    }
-
     fun performFullDataRefresh() {
         scope.launch {
             Timber.d("Full data refresh initiated")
-            if (!refreshInProgress.get() && sessionListener != null) {
-                refreshInProgress.set(true)
-                _dataRefreshStatusFlow.emit(DataRefreshStatus.InProgress)
+            if (!dataRefreshTrackingFlow.isInProgress()) {
+                dataRefreshTrackingFlow.updateStatus(InProgress)
                 val output =
-                    runAuthenticatedOperation(
-                        requireNotNull(sessionListener).needSessionRefreshFlow,
-                        requireNotNull(sessionListener).sessionRefreshedFlow,
-                        onUiAuthenticationRequested = { refreshInProgress.set(false) },
-                    ) {
+                    runAuthenticatedOperation {
                         homeDataInteractor.refreshAllHomeScreenData()
                     }
-                _dataRefreshStatusFlow.emit(
-                    DataRefreshStatus.Finished(output),
+
+                dataRefreshTrackingFlow.updateStatus(
+                    when (output) {
+                        is Success -> FinishedWithSuccess
+                        is Failure -> FinishedWithFailure
+                    },
                 )
-                refreshInProgress.set(false)
             }
         }
     }
 
-    suspend fun awaitFinish() {
-        dataRefreshStatusFlow.first { it is DataRefreshStatus.Finished }
+    suspend fun susPerformFullDataRefresh() {
+        Timber.d("Full data refresh initiated")
+        if (!dataRefreshTrackingFlow.isInProgress()) {
+            dataRefreshTrackingFlow.updateStatus(InProgress)
+            val output =
+                runAuthenticatedOperation {
+                    homeDataInteractor.refreshAllHomeScreenData()
+                }
+
+            dataRefreshTrackingFlow.updateStatus(
+                when (output) {
+                    is Success -> FinishedWithSuccess
+                    is Failure -> FinishedWithFailure
+                },
+            )
+        }
     }
 }

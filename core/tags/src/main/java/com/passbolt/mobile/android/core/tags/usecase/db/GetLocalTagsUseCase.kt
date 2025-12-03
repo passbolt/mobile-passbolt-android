@@ -32,11 +32,15 @@ class GetLocalTagsUseCase(
     private val databaseProvider: DatabaseProvider,
     private val tagModelMapper: TagsModelMapper,
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
-) : AsyncUseCase<Unit, List<TagWithCount>> {
-    override suspend fun execute(input: Unit) =
+) : AsyncUseCase<GetLocalTagsUseCase.Input, List<TagWithCount>> {
+    override suspend fun execute(input: Input) =
         databaseProvider
             .get(requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount))
             .tagsDao()
-            .getAllWithTaggedItemsCount()
+            .getAllWithTaggedItemsCount(input.searchQuery)
             .map { tagModelMapper.map(it) }
+
+    data class Input(
+        val searchQuery: String? = null,
+    )
 }
