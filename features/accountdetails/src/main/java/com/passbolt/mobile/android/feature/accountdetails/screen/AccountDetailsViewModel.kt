@@ -63,6 +63,8 @@ internal class AccountDetailsViewModel(
     }
 
     private fun saveChanges() {
+        overrideEmptyLabelWithDefault()
+
         updateViewState { copy(labelValidationErrors = emptyList()) }
         validation {
             of(viewState.value.label) {
@@ -103,6 +105,15 @@ internal class AccountDetailsViewModel(
                     avatarUrl = data.avatarUrl,
                 )
             }
+        }
+    }
+
+    fun overrideEmptyLabelWithDefault() {
+        val data = getSelectedAccountDataUseCase.execute(Unit)
+        val defaultLabel = AccountModelMapper.defaultLabel(data.firstName, data.lastName)
+
+        if (viewState.value.label.isEmpty()) {
+            updateViewState { copy(label = defaultLabel) }
         }
     }
 
