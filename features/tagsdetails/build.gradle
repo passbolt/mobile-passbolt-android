@@ -34,9 +34,6 @@ dependencies {
     implementation platform(libs.koin.bom)
     implementation libs.koin
     implementation libs.koin.compose
-    implementation libs.fastadapter.binding
-    implementation libs.fastadapter.core
-    implementation libs.fastadapter.diff
     implementation libs.room.core
     implementation libs.swiperefresh
     implementation platform(libs.compose.bom)

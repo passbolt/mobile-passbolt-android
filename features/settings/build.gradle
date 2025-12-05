@@ -42,9 +42,6 @@ dependencies {
     implementation libs.koin.compose
     implementation libs.biometric
     implementation libs.gson
-    implementation libs.fastadapter.binding
-    implementation libs.fastadapter.core
-    implementation libs.fastadapter.diff
     implementation libs.coil.views
     implementation platform(libs.compose.bom)
     implementation libs.compose.foundation

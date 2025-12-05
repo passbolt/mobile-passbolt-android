@@ -16,7 +16,7 @@
             app:argType="string" />
         <argument
             android:name="locationItem"
-            app:argType="com.passbolt.mobile.android.locationdetails.LocationItem" />
+            app:argType="com.passbolt.mobile.android.locationdetails.ui.LocationItem" />
         <deepLink
             android:id="@+id/deepLink"
             app:uri="passbolt://locationDetails/{locationItem}/{id}" />

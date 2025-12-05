@@ -1,12 +1,3 @@
-package com.passbolt.mobile.android.locationdetails
-
-import com.passbolt.mobile.android.locationdetails.data.ExpandableFolderTreeCreator
-import org.koin.android.ext.koin.androidContext
-import org.koin.androidx.viewmodel.dsl.viewModelOf
-import org.koin.core.module.Module
-import org.koin.core.qualifier.named
-import com.passbolt.mobile.android.core.localization.R as LocalizationR
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -30,16 +21,25 @@ import com.passbolt.mobile.android.core.localization.R as LocalizationR
  * @since v1.0
  */
 
-private const val ROOT_FOLDER_NAME = "ROOT_FOLDER_NAME"
+package com.passbolt.mobile.android.locationdetails
 
-fun Module.locationDetailsModule() {
-    single(named(ROOT_FOLDER_NAME)) {
-        androidContext().getString(LocalizationR.string.folder_root)
+import android.content.Context
+import com.passbolt.mobile.android.locationdetails.SnackbarErrorType.FAILED_TO_REFRESH_DATA
+import com.passbolt.mobile.android.locationdetails.ToastType.CONTENT_NOT_AVAILABLE
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
+
+internal fun getToastMessage(
+    context: Context,
+    type: ToastType,
+): String =
+    when (type) {
+        CONTENT_NOT_AVAILABLE -> context.getString(LocalizationR.string.content_not_available)
     }
-    single {
-        ExpandableFolderTreeCreator(
-            fakeRootFolderName = get(named(ROOT_FOLDER_NAME)),
-        )
+
+internal fun getErrorMessage(
+    context: Context,
+    type: SnackbarErrorType,
+): String =
+    when (type) {
+        FAILED_TO_REFRESH_DATA -> context.getString(LocalizationR.string.common_data_refresh_error)
     }
-    viewModelOf(::LocationDetailsViewModel)
-}
