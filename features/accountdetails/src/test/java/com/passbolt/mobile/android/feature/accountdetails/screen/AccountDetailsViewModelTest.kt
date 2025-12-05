@@ -35,6 +35,7 @@ import com.passbolt.mobile.android.feature.accountdetails.screen.AccountDetailsI
 import com.passbolt.mobile.android.feature.accountdetails.screen.AccountDetailsIntent.UpdateLabel
 import com.passbolt.mobile.android.feature.accountdetails.screen.AccountDetailsScreenSideEffect.NavigateUp
 import com.passbolt.mobile.android.feature.accountdetails.screen.AccountDetailsValidationError.MaxLengthExceeded
+import com.passbolt.mobile.android.mappers.AccountModelMapper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -205,6 +206,25 @@ class AccountDetailsViewModelTest : KoinTest {
 
             viewModel.sideEffect.test {
                 assertIs<NavigateUp>(awaitItem())
+            }
+        }
+
+    @OptIn(ExperimentalTime::class)
+    @Test
+    fun `should set default label when current label is empty`() =
+        runTest {
+            viewModel = get()
+
+            viewModel.viewState.test {
+                awaitItem()
+
+                viewModel.onIntent(UpdateLabel(""))
+                assertThat(awaitItem().label).isEmpty()
+
+                viewModel.onIntent(SaveChanges)
+
+                val updatedState = awaitItem()
+                assertThat(updatedState.label).isEqualTo(AccountModelMapper.defaultLabel(FIRST_NAME, LAST_NAME))
             }
         }
 
