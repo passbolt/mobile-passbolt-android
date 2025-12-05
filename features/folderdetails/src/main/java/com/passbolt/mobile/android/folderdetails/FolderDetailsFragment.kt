@@ -1,38 +1,19 @@
 package com.passbolt.mobile.android.folderdetails
 
+import PassboltTheme
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
-import android.widget.Toast
-import androidx.core.view.doOnLayout
+import android.view.ViewGroup
+import androidx.compose.ui.platform.ComposeView
+import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import androidx.recyclerview.widget.LinearLayoutManager
-import com.mikepenz.fastadapter.FastAdapter
-import com.mikepenz.fastadapter.GenericItem
-import com.mikepenz.fastadapter.adapters.ItemAdapter
-import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
-import com.passbolt.mobile.android.core.extension.initDefaultToolbar
-import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
-import com.passbolt.mobile.android.core.extension.showSnackbar
-import com.passbolt.mobile.android.core.extension.visible
-import com.passbolt.mobile.android.core.fulldatarefresh.service.DataRefreshService
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.deeplinks.NavDeepLinkProvider
-import com.passbolt.mobile.android.core.ui.recyclerview.OverlappingItemDecorator
-import com.passbolt.mobile.android.core.ui.recyclerview.OverlappingItemDecorator.Overlap
-import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
-import com.passbolt.mobile.android.feature.folderdetails.databinding.FragmentFolderDetailsBinding
 import com.passbolt.mobile.android.locationdetails.ui.LocationItem
 import com.passbolt.mobile.android.permissions.permissions.PermissionsItem
 import com.passbolt.mobile.android.permissions.permissions.PermissionsMode
-import com.passbolt.mobile.android.permissions.recycler.CounterItem
-import com.passbolt.mobile.android.permissions.recycler.GroupItem
-import com.passbolt.mobile.android.permissions.recycler.UserItem
-import com.passbolt.mobile.android.ui.PermissionModelUi
-import org.koin.android.ext.android.inject
-import org.koin.core.qualifier.named
-import com.passbolt.mobile.android.core.localization.R as LocalizationR
-import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -58,116 +39,33 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
  */
 
 class FolderDetailsFragment :
-    BindingScopedAuthenticatedFragment<FragmentFolderDetailsBinding, FolderDetailsContract.View>(
-        FragmentFolderDetailsBinding::inflate,
-    ),
-    FolderDetailsContract.View {
-    override val presenter: FolderDetailsContract.Presenter by inject()
+    Fragment(),
+    FolderDetailsNavigation {
     private val args: FolderDetailsFragmentArgs by navArgs()
-    private val groupPermissionsItemAdapter: ItemAdapter<GroupItem> by inject(named(GROUP_ITEM_ADAPTER))
-    private val userPermissionsItemAdapter: ItemAdapter<UserItem> by inject(named(USER_ITEM_ADAPTER))
-    private val permissionsCounterItemAdapter: ItemAdapter<CounterItem> by inject(named(COUNTER_ITEM_ADAPTER))
-    private val fastAdapter: FastAdapter<GenericItem> by inject()
-    private val sharedWithFields
-        get() =
-            listOf(
-                requiredBinding.sharedWithLabel,
-                requiredBinding.sharedWithRecycler,
-                requiredBinding.sharedWithRecyclerClickableArea,
-                requiredBinding.sharedWithNavIcon,
-            )
-    private val sharedWithDecorator: OverlappingItemDecorator by inject()
-    private val locationFields
-        get() = listOf(requiredBinding.locationHeader, requiredBinding.locationValue, requiredBinding.locationNavIcon)
 
-    override fun onViewCreated(
-        view: View,
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ) {
-        super.onViewCreated(view, savedInstanceState)
-        requiredBinding.swipeRefresh.isEnabled = false
-        initDefaultToolbar(requiredBinding.toolbar)
-        initSharedWithRecycler()
-        initListeners()
-        presenter.attach(this)
-        requiredBinding.sharedWithRecycler.doOnLayout {
-            requiredBinding.sharedWithRecycler.addItemDecoration(sharedWithDecorator)
-            presenter.argsRetrieved(
-                args.folderId,
-                it.width,
-                resources.getDimension(CoreUiR.dimen.dp_40),
-            )
-        }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        // has to be invoked using post to make sure binding.sharedWithRecycler.doOnLayout has finished
-        requiredBinding.sharedWithRecycler.post {
-            presenter.resume(this)
-        }
-    }
-
-    override fun onPause() {
-        presenter.pause()
-        super.onPause()
-    }
-
-    private fun initListeners() {
-        sharedWithFields.forEach { it.setDebouncingOnClick { presenter.sharedWithClick() } }
-        locationFields.forEach { it.setDebouncingOnClick { presenter.locationClick() } }
-        fastAdapter.onClickListener = { _, _, _, _ ->
-            presenter.sharedWithClick()
-            true
-        }
-    }
-
-    private fun initSharedWithRecycler() {
-        with(requiredBinding.sharedWithRecycler) {
-            layoutManager =
-                object : LinearLayoutManager(context, HORIZONTAL, false) {
-                    override fun canScrollHorizontally() = false
+    ): View =
+        ComposeView(requireContext()).apply {
+            setContent {
+                PassboltTheme {
+                    FolderDetailsScreen(
+                        folderId = args.folderId,
+                        // Default width, will be updated when available
+                        navigation = this@FolderDetailsFragment,
+                    )
                 }
-            adapter = fastAdapter
-        }
-    }
-
-    override fun showFolderName(name: String) {
-        requiredBinding.name.text = name
-        requiredBinding.folderNameValue.text = name
-    }
-
-    override fun showFolderSharedIcon() {
-        requiredBinding.icon.setImageResource(CoreUiR.drawable.ic_filled_shared_folder_with_bg)
-    }
-
-    override fun showFolderIcon() {
-        requiredBinding.icon.setImageResource(CoreUiR.drawable.ic_filled_folder_with_bg)
-    }
-
-    override fun showFolderLocation(parentFolders: List<String>) {
-        requiredBinding.locationValue.text =
-            parentFolders.let {
-                val mutable = it.toMutableList()
-                mutable.add(0, getString(LocalizationR.string.folder_root))
-                mutable.joinToString(
-                    separator = " %s ".format(getString(LocalizationR.string.folder_details_location_separator)),
-                )
             }
+        }
+
+    override fun navigateUp() {
+        findNavController().popBackStack()
     }
 
-    override fun showPermissions(
-        groupPermissions: List<PermissionModelUi.GroupPermissionModel>,
-        userPermissions: List<PermissionModelUi.UserPermissionModel>,
-        counterValue: List<String>,
-        overlap: Int,
-    ) {
-        sharedWithFields.forEach { it.visible() }
-        sharedWithDecorator.overlap = Overlap(left = overlap)
-        FastAdapterDiffUtil.calculateDiff(groupPermissionsItemAdapter, groupPermissions.map { GroupItem(it) })
-        FastAdapterDiffUtil.calculateDiff(userPermissionsItemAdapter, userPermissions.map { UserItem(it) })
-        FastAdapterDiffUtil.calculateDiff(permissionsCounterItemAdapter, counterValue.map { CounterItem(it) })
-        fastAdapter.notifyAdapterDataSetChanged()
+    override fun navigateToHome() {
+        requireActivity().startActivity(ActivityIntents.bringHome(requireContext()))
     }
 
     override fun navigateToFolderPermissions(
@@ -190,29 +88,5 @@ class FolderDetailsFragment :
                 locationDetailsItemId = folderId,
             )
         findNavController().navigate(request)
-    }
-
-    override fun hideRefreshProgress() {
-        requiredBinding.swipeRefresh.isRefreshing = false
-    }
-
-    override fun showRefreshProgress() {
-        requiredBinding.swipeRefresh.isRefreshing = true
-    }
-
-    override fun showDataRefreshError() {
-        showSnackbar(LocalizationR.string.common_data_refresh_error)
-    }
-
-    override fun showContentNotAvailable() {
-        Toast.makeText(requireContext(), LocalizationR.string.content_not_available, Toast.LENGTH_SHORT).show()
-    }
-
-    override fun navigateToHome() {
-        requireActivity().startActivity(ActivityIntents.bringHome(requireContext()))
-    }
-
-    override fun performFullDataRefresh() {
-        DataRefreshService.start(requireContext())
     }
 }

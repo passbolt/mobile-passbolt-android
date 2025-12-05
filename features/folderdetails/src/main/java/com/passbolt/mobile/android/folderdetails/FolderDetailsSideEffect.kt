@@ -1,8 +1,3 @@
-package com.passbolt.mobile.android.folderdetails
-
-import org.koin.androidx.viewmodel.dsl.viewModelOf
-import org.koin.core.module.Module
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -26,10 +21,37 @@ import org.koin.core.module.Module
  * @since v1.0
  */
 
-internal const val GROUP_ITEM_ADAPTER = "GROUP_ITEM_ADAPTER"
-internal const val USER_ITEM_ADAPTER = "USER_ITEM_ADAPTER"
-internal const val COUNTER_ITEM_ADAPTER = "COUNTER_ITEM_ADAPTER"
+package com.passbolt.mobile.android.folderdetails
 
-fun Module.folderDetailsModule() {
-    viewModelOf(::FolderDetailsViewModel)
+import com.passbolt.mobile.android.permissions.permissions.PermissionsMode
+
+sealed class FolderDetailsSideEffect {
+    data object NavigateUp : FolderDetailsSideEffect()
+
+    data object NavigateToHome : FolderDetailsSideEffect()
+
+    data class NavigateToFolderPermissions(
+        val folderId: String,
+        val mode: PermissionsMode,
+    ) : FolderDetailsSideEffect()
+
+    data class NavigateToFolderLocation(
+        val folderId: String,
+    ) : FolderDetailsSideEffect()
+
+    data class ShowErrorSnackbar(
+        val type: SnackbarErrorType,
+    ) : FolderDetailsSideEffect()
+
+    data class ShowToast(
+        val type: ToastType,
+    ) : FolderDetailsSideEffect()
+}
+
+enum class SnackbarErrorType {
+    FAILED_TO_REFRESH_DATA,
+}
+
+enum class ToastType {
+    CONTENT_NOT_AVAILABLE,
 }

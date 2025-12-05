@@ -2,6 +2,7 @@ plugins {
     alias libs.plugins.android.library
     alias libs.plugins.kotlin.gradle
     alias libs.plugins.navigation.safeargs
+    alias libs.plugins.compose.compiler
 }
 
 dependencies {
@@ -28,15 +29,27 @@ dependencies {
 
     implementation platform(libs.koin.bom)
     implementation libs.koin
+    implementation libs.koin.compose
     implementation libs.material
     implementation libs.navigation.fragment
-    implementation libs.navigation.ui
     implementation libs.navigation.ui
     implementation libs.fastadapter.binding
     implementation libs.fastadapter.core
     implementation libs.fastadapter.diff
     implementation libs.room.core
     implementation libs.swiperefresh
+
+    // Compose BOM
+    implementation platform(libs.compose.bom)
+    implementation libs.compose.foundation
+    implementation libs.compose.material3
+    implementation libs.compose.ui.tooling.preview
+    implementation libs.compose.activity
+    implementation libs.compose.lifecycle.viewmodel
+    implementation libs.coil.compose
+
+    debugImplementation libs.compose.ui.tooling
+    debugImplementation libs.compose.ui.test.manifest
 
     testImplementation project(':commontest')
 }
@@ -45,6 +58,7 @@ android {
     namespace = "com.passbolt.mobile.android.feature.folderdetails"
     buildFeatures {
         viewBinding true
+        compose true
     }
 }
 
