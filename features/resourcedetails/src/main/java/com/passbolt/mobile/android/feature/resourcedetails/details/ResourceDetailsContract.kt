@@ -112,10 +112,7 @@ interface ResourceDetailsContract {
 
         fun showTags(tags: List<String>)
 
-        fun navigateToResourceTags(
-            resourceId: String,
-            mode: PermissionsMode,
-        )
+        fun navigateToResourceTags(resourceId: String)
 
         fun showFolderLocation(locationPathSegments: List<String>)
 

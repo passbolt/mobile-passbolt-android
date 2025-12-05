@@ -3,6 +3,7 @@ plugins {
     alias libs.plugins.kotlin.gradle
     alias libs.plugins.kotlin.parcelize
     alias libs.plugins.navigation.safeargs
+    alias libs.plugins.compose.compiler
 }
 
 dependencies {
@@ -32,11 +33,22 @@ dependencies {
     implementation libs.navigation.ui
     implementation platform(libs.koin.bom)
     implementation libs.koin
+    implementation libs.koin.compose
     implementation libs.fastadapter.binding
     implementation libs.fastadapter.core
     implementation libs.fastadapter.diff
     implementation libs.room.core
     implementation libs.swiperefresh
+    implementation platform(libs.compose.bom)
+    implementation libs.compose.foundation
+    implementation libs.compose.ui.graphics
+    implementation libs.compose.material3
+    implementation libs.compose.ui.tooling.preview
+    implementation libs.compose.lifecycle.viewmodel
+    implementation libs.compose.activity
+    implementation libs.accompanist.drawablepainter
+
+    debugImplementation libs.compose.ui.tooling
 
     testImplementation project(':commontest')
     testImplementation libs.gson
@@ -47,6 +59,7 @@ android {
     namespace = "com.passbolt.mobile.android.feature.tagsdetails"
     buildFeatures {
         viewBinding true
+        compose true
     }
 }
 

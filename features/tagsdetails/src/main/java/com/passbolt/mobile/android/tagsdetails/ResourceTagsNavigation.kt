@@ -1,8 +1,3 @@
-package com.passbolt.mobile.android.tagsdetails
-
-import org.koin.androidx.viewmodel.dsl.viewModelOf
-import org.koin.core.module.Module
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -26,9 +21,10 @@ import org.koin.core.module.Module
  * @since v1.0
  */
 
-internal const val TAGS_ITEM_ADAPTER = "TAGS_ITEM_ADAPTER"
-internal const val TAGS_ADAPTER = "TAGS_ADAPTER"
+package com.passbolt.mobile.android.tagsdetails
 
-fun Module.resourceTagsModule() {
-    viewModelOf(::ResourceTagsViewModel)
+interface ResourceTagsNavigation {
+    fun navigateUp()
+
+    fun navigateToHome()
 }

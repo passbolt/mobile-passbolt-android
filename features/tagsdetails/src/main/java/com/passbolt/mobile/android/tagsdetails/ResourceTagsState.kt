@@ -1,10 +1,3 @@
-package com.passbolt.mobile.android.tagsdetails
-
-import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReactiveContract
-import com.passbolt.mobile.android.permissions.permissions.PermissionsMode
-import com.passbolt.mobile.android.ui.ResourceModel
-import com.passbolt.mobile.android.ui.TagModel
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -27,27 +20,14 @@ import com.passbolt.mobile.android.ui.TagModel
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-interface ResourceTagsContract {
-    interface Presenter : DataRefreshViewReactiveContract.Presenter<View> {
-        fun argsRetrieved(
-            resourceId: String,
-            mode: PermissionsMode,
-        )
-    }
 
-    interface View : DataRefreshViewReactiveContract.View {
-        fun displayTitle(name: String)
+package com.passbolt.mobile.android.tagsdetails
 
-        fun displayInitialsIcon(resource: ResourceModel)
+import com.passbolt.mobile.android.ui.ResourceModel
+import com.passbolt.mobile.android.ui.TagModel
 
-        fun showFavouriteStar()
-
-        fun showTags(tags: List<TagModel>)
-
-        fun showDataRefreshError()
-
-        fun showContentNotAvailable()
-
-        fun navigateToHome()
-    }
-}
+data class ResourceTagsState(
+    val resourceModel: ResourceModel? = null,
+    val tags: List<TagModel> = emptyList(),
+    val isRefreshing: Boolean = false,
+)

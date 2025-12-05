@@ -567,12 +567,9 @@ class ResourceDetailsFragment :
         )
     }
 
-    override fun navigateToResourceTags(
-        resourceId: String,
-        mode: PermissionsMode,
-    ) {
+    override fun navigateToResourceTags(resourceId: String) {
         findNavController().navigate(
-            NavDeepLinkProvider.resourceTagsDeepLinkRequest(resourceId, mode.name),
+            NavDeepLinkProvider.resourceTagsDeepLinkRequest(resourceId),
         )
     }
 

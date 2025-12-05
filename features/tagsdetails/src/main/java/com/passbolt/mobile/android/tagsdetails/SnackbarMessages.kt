@@ -1,13 +1,3 @@
-package com.passbolt.mobile.android.tagsdetails.tagsrecycler
-
-import android.view.LayoutInflater
-import android.view.ViewGroup
-import com.mikepenz.fastadapter.binding.AbstractBindingItem
-import com.passbolt.mobile.android.feature.tagsdetails.R
-import com.passbolt.mobile.android.feature.tagsdetails.databinding.ItemTagBinding
-import com.passbolt.mobile.android.ui.TagModel
-import com.passbolt.mobile.android.core.ui.R as CoreUiR
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -30,31 +20,26 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class TagItem(
-    private val tagModel: TagModel,
-) : AbstractBindingItem<ItemTagBinding>() {
-    override val type: Int
-        get() = R.id.itemTag
 
-    override fun createBinding(
-        inflater: LayoutInflater,
-        parent: ViewGroup?,
-    ): ItemTagBinding = ItemTagBinding.inflate(inflater, parent, false)
+package com.passbolt.mobile.android.tagsdetails
 
-    override fun bindView(
-        binding: ItemTagBinding,
-        payloads: List<Any>,
-    ) {
-        super.bindView(binding, payloads)
-        with(binding) {
-            name.text = tagModel.slug
-            icon.setImageResource(
-                if (tagModel.isShared) {
-                    CoreUiR.drawable.ic_filled_shared_tag_with_bg
-                } else {
-                    CoreUiR.drawable.ic_filled_tag_with_bg
-                },
-            )
-        }
+import android.content.Context
+import com.passbolt.mobile.android.tagsdetails.SnackbarErrorType.FAILED_TO_REFRESH_DATA
+import com.passbolt.mobile.android.tagsdetails.ToastType.CONTENT_NOT_AVAILABLE
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
+
+internal fun getToastMessage(
+    context: Context,
+    type: ToastType,
+): String =
+    when (type) {
+        CONTENT_NOT_AVAILABLE -> context.getString(LocalizationR.string.content_not_available)
     }
-}
+
+internal fun getErrorMessage(
+    context: Context,
+    type: SnackbarErrorType,
+): String =
+    when (type) {
+        FAILED_TO_REFRESH_DATA -> context.getString(LocalizationR.string.common_data_refresh_error)
+    }

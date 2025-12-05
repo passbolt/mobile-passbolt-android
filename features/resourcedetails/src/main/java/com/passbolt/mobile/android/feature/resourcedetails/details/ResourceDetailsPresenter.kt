@@ -629,7 +629,7 @@ class ResourceDetailsPresenter(
     }
 
     override fun tagsClick() {
-        view?.navigateToResourceTags(resourceModel.resourceId, PermissionsMode.VIEW)
+        view?.navigateToResourceTags(resourceModel.resourceId)
     }
 
     override fun favouriteClick(option: ResourceMoreMenuModel.FavouriteOption) {

@@ -78,19 +78,16 @@ object NavDeepLinkProvider {
                     .build(),
             ).build()
 
-    fun resourceTagsDeepLinkRequest(
-        resourceId: String,
-        permissionsModeName: String,
-    ) = NavDeepLinkRequest.Builder
-        .fromUri(
-            Uri
-                .Builder()
-                .scheme(NAV_DEEP_LINK_SCHEME)
-                .authority(AUTHORITY_TAGS_DETAILS)
-                .appendPath(resourceId)
-                .appendQueryParameter(QUERY_PERMISSIONS_MODE, permissionsModeName)
-                .build(),
-        ).build()
+    fun resourceTagsDeepLinkRequest(resourceId: String) =
+        NavDeepLinkRequest.Builder
+            .fromUri(
+                Uri
+                    .Builder()
+                    .scheme(NAV_DEEP_LINK_SCHEME)
+                    .authority(AUTHORITY_TAGS_DETAILS)
+                    .appendPath(resourceId)
+                    .build(),
+            ).build()
 
     fun resourceResourcePickerDeepLinkRequest(suggestionUri: String?) =
         NavDeepLinkRequest.Builder
