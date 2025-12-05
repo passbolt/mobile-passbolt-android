@@ -1,4 +1,4 @@
-# Passbolt 2.5.0-44 Android app release notes
+# Passbolt 2.5.0-45 Android app release notes
 
 ## Added
 - MOB-3028: Add standalone note support
