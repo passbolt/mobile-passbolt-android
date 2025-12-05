@@ -388,7 +388,7 @@ internal class HomeViewModel(
     private fun searchQueryChanged(searchQuery: String) {
         val searchEndIcon = if (searchQuery.isNotBlank()) CLEAR else AVATAR
         viewModelScope.launch {
-            val homeData = getHomeData(viewState.value.homeView, searchQuery)
+            val homeData = getHomeData(viewState.value.homeView, searchQuery, viewState.value.showSuggestedModel)
             updateViewState {
                 copy(
                     searchInputEndIconMode = searchEndIcon,
@@ -401,7 +401,7 @@ internal class HomeViewModel(
 
     private fun showHomeView(homeDisplay: HomeDisplayViewModel) {
         viewModelScope.launch {
-            val homeData = getHomeData(homeDisplay, viewState.value.searchQuery)
+            val homeData = getHomeData(homeDisplay, viewState.value.searchQuery, viewState.value.showSuggestedModel)
 
             updateViewState {
                 copy(
@@ -421,7 +421,7 @@ internal class HomeViewModel(
                     filterPreferences.userSetHomeView,
                     filterPreferences.lastUsedHomeView,
                 )
-            val homeData = getHomeData(homeView, viewState.value.searchQuery)
+            val homeData = getHomeData(homeView, viewState.value.searchQuery, intent.showSuggestedModel)
             updateViewState {
                 copy(
                     showSuggestedModel = intent.showSuggestedModel,
@@ -430,7 +430,7 @@ internal class HomeViewModel(
                 )
             }
             viewModelScope.launch(coroutineLaunchContext.io) {
-                synchronizeWithDataRefresh()
+                synchronizeWithDataRefresh(intent.showSuggestedModel)
             }
         }
     }
@@ -438,10 +438,11 @@ internal class HomeViewModel(
     private suspend fun getHomeData(
         homeView: HomeDisplayViewModel,
         searchQuery: String? = null,
+        showSuggestedModel: ShowSuggestedModel,
     ) = homeDataProvider.provideData(
         searchQuery,
         homeView,
-        viewState.value.showSuggestedModel,
+        showSuggestedModel,
     )
 
     private suspend fun shouldShowCreateButton(): Boolean {
@@ -486,7 +487,7 @@ internal class HomeViewModel(
             resultIfActionFails
         }
 
-    private suspend fun synchronizeWithDataRefresh() {
+    private suspend fun synchronizeWithDataRefresh(showSuggestedModel: ShowSuggestedModel) {
         dataRefreshTrackingFlow.dataRefreshStatusFlow.collect {
             when (it) {
                 InProgress -> updateViewState { copy(isRefreshing = true, canCreateResource = false) }
@@ -496,7 +497,7 @@ internal class HomeViewModel(
                 }
                 FinishedWithSuccess -> {
                     val showCreateResourceButton = shouldShowCreateButton()
-                    val homeData = getHomeData(viewState.value.homeView, viewState.value.searchQuery)
+                    val homeData = getHomeData(viewState.value.homeView, viewState.value.searchQuery, showSuggestedModel)
                     updateViewState {
                         copy(
                             homeData = homeData,
