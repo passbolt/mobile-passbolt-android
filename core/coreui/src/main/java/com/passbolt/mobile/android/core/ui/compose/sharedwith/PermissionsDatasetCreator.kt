@@ -1,4 +1,4 @@
-package com.passbolt.mobile.android.permissions.recycler
+package com.passbolt.mobile.android.core.ui.compose.sharedwith
 
 import com.passbolt.mobile.android.core.ui.recyclerview.OverlapCalculator
 import com.passbolt.mobile.android.ui.PermissionModelUi

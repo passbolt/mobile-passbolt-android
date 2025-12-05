@@ -1,8 +1,3 @@
-package com.passbolt.mobile.android.folderdetails
-
-import org.koin.androidx.viewmodel.dsl.viewModelOf
-import org.koin.core.module.Module
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -26,10 +21,23 @@ import org.koin.core.module.Module
  * @since v1.0
  */
 
-internal const val GROUP_ITEM_ADAPTER = "GROUP_ITEM_ADAPTER"
-internal const val USER_ITEM_ADAPTER = "USER_ITEM_ADAPTER"
-internal const val COUNTER_ITEM_ADAPTER = "COUNTER_ITEM_ADAPTER"
+package com.passbolt.mobile.android.folderdetails
 
-fun Module.folderDetailsModule() {
-    viewModelOf(::FolderDetailsViewModel)
-}
+import android.content.Context
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
+
+internal fun getErrorMessage(
+    context: Context,
+    type: SnackbarErrorType,
+): String =
+    when (type) {
+        SnackbarErrorType.FAILED_TO_REFRESH_DATA -> context.getString(LocalizationR.string.common_data_refresh_error)
+    }
+
+internal fun getToastMessage(
+    context: Context,
+    type: ToastType,
+): String =
+    when (type) {
+        ToastType.CONTENT_NOT_AVAILABLE -> context.getString(LocalizationR.string.content_not_available)
+    }

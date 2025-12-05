@@ -497,6 +497,7 @@
     <string name="resource_tags_section">Tags</string>
     <string name="resource_tags_title">Resource Tags</string>
 
+    <string name="folder_details_title">Folder details</string>
     <string name="folder_details_name_header">Folder name</string>
     <string name="folder_details_location_separator"
         translatable="false">›</string>
