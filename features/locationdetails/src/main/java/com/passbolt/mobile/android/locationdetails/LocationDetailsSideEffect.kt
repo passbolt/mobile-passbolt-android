@@ -1,9 +1,3 @@
-package com.passbolt.mobile.android.locationdetails
-
-import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReactiveContract
-import com.passbolt.mobile.android.ui.FolderModel
-import com.passbolt.mobile.android.ui.ResourceModel
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -27,29 +21,27 @@ import com.passbolt.mobile.android.ui.ResourceModel
  * @since v1.0
  */
 
-interface LocationDetailsContract {
-    interface View : DataRefreshViewReactiveContract.View {
-        fun showFolderName(name: String)
+package com.passbolt.mobile.android.locationdetails
 
-        fun showFolderSharedIcon()
+internal sealed interface LocationDetailsSideEffect {
+    data object NavigateUp : LocationDetailsSideEffect
 
-        fun showFolderIcon()
+    data object NavigateToHome : LocationDetailsSideEffect
 
-        fun showFolderLocation(parentFolders: List<FolderModel>)
+    data class ShowErrorSnackbar(
+        val type: SnackbarErrorType,
+        val message: String? = null,
+    ) : LocationDetailsSideEffect
 
-        fun displayInitialsIcon(resource: ResourceModel)
+    data class ShowToast(
+        val type: ToastType,
+    ) : LocationDetailsSideEffect
+}
 
-        fun showDataRefreshError()
+internal enum class SnackbarErrorType {
+    FAILED_TO_REFRESH_DATA,
+}
 
-        fun showContentNotAvailable()
-
-        fun navigateToHome()
-    }
-
-    interface Presenter : DataRefreshViewReactiveContract.Presenter<View> {
-        fun argsRetrieved(
-            locationItem: LocationItem,
-            id: String,
-        )
-    }
+internal enum class ToastType {
+    CONTENT_NOT_AVAILABLE,
 }

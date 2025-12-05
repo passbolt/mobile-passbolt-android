@@ -11,10 +11,6 @@ dependencies {
     implementation project(':accounts')
 
     implementation libs.koin
-    implementation libs.material
-    implementation libs.androidx.core
-    implementation libs.fastadapter.binding
-    implementation libs.fastadapter.core
 }
 
 android {

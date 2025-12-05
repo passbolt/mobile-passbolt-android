@@ -1,5 +1,3 @@
-package com.passbolt.mobile.android.locationdetails
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -22,7 +20,19 @@ package com.passbolt.mobile.android.locationdetails
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-enum class LocationItem {
-    RESOURCE,
-    FOLDER,
-}
+
+package com.passbolt.mobile.android.locationdetails
+
+import com.passbolt.mobile.android.locationdetails.data.ExpandableFolderTree
+import com.passbolt.mobile.android.ui.FolderModel
+import com.passbolt.mobile.android.ui.ResourceModel
+
+data class LocationDetailsState(
+    val isRefreshing: Boolean = false,
+    val itemName: String = "",
+    val isSharedFolder: Boolean = false,
+    val resource: ResourceModel? = null,
+    val parentFolders: List<FolderModel> = emptyList(),
+    val folderTree: ExpandableFolderTree? = null,
+    val expandedItemIds: Set<String> = emptySet(),
+)

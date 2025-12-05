@@ -1,32 +1,15 @@
 package com.passbolt.mobile.android.locationdetails
 
+import PassboltTheme
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
-import android.widget.Toast
+import android.view.ViewGroup
+import androidx.compose.ui.platform.ComposeView
+import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import androidx.recyclerview.widget.LinearLayoutManager
-import com.mikepenz.fastadapter.GenericItem
-import com.mikepenz.fastadapter.adapters.FastItemAdapter
-import com.mikepenz.fastadapter.expandable.getExpandableExtension
-import com.mikepenz.itemanimators.SlideDownAlphaAnimator
-import com.passbolt.mobile.android.core.extension.initDefaultToolbar
-import com.passbolt.mobile.android.core.extension.showSnackbar
-import com.passbolt.mobile.android.core.fulldatarefresh.service.DataRefreshService
-import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
-import com.passbolt.mobile.android.core.resources.resourceicon.ResourceIconProvider
-import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
-import com.passbolt.mobile.android.feature.locationdetails.databinding.FragmentFolderLocationDetailsBinding
-import com.passbolt.mobile.android.locationdetails.recyclerview.ExpandableFolderDatasetCreator
-import com.passbolt.mobile.android.ui.FolderModel
-import com.passbolt.mobile.android.ui.ResourceModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancelChildren
-import kotlinx.coroutines.launch
-import org.koin.android.ext.android.inject
-import com.passbolt.mobile.android.core.localization.R as LocalizationR
-import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -52,114 +35,32 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
  */
 
 class LocationDetailsFragment :
-    BindingScopedAuthenticatedFragment<FragmentFolderLocationDetailsBinding, LocationDetailsContract.View>(
-        FragmentFolderLocationDetailsBinding::inflate,
-    ),
-    LocationDetailsContract.View {
-    override val presenter: LocationDetailsContract.Presenter by inject()
+    Fragment(),
+    LocationDetailsNavigation {
     private val args: LocationDetailsFragmentArgs by navArgs()
-    private val fastAdapter: FastItemAdapter<GenericItem> by inject()
-    private val expandableFolderDatasetCreator: ExpandableFolderDatasetCreator by inject()
-    private val coroutineLaunchContext: CoroutineLaunchContext by inject()
-    private val job = SupervisorJob()
-    private val coroutineUiScope = CoroutineScope(job + coroutineLaunchContext.ui)
-    private val resourceIconProvider: ResourceIconProvider by inject()
 
-    override fun onViewCreated(
-        view: View,
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ) {
-        super.onViewCreated(view, savedInstanceState)
-        requiredBinding.swipeRefresh.isEnabled = false
-        initDefaultToolbar(requiredBinding.toolbar)
-        initLocationDetailsRecycler(savedInstanceState)
-        presenter.attach(this)
-        presenter.argsRetrieved(args.locationItem, args.id)
-    }
-
-    override fun onDestroyView() {
-        coroutineUiScope.coroutineContext.cancelChildren()
-        presenter.detach()
-        super.onDestroyView()
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        val withSavedSelections = fastAdapter.saveInstanceState(outState)
-        super.onSaveInstanceState(withSavedSelections)
-    }
-
-    override fun onResume() {
-        super.onResume()
-        presenter.resume(this)
-    }
-
-    override fun onPause() {
-        presenter.pause()
-        super.onPause()
-    }
-
-    private fun initLocationDetailsRecycler(savedInstanceState: Bundle?) {
-        fastAdapter.withSavedInstanceState(savedInstanceState)
-        with(requiredBinding.locationRecycler) {
-            layoutManager = LinearLayoutManager(requireContext())
-            itemAnimator = SlideDownAlphaAnimator()
-            adapter = fastAdapter
+    ): View =
+        ComposeView(requireContext()).apply {
+            setContent {
+                PassboltTheme {
+                    LocationDetailsScreen(
+                        locationItem = args.locationItem,
+                        itemId = args.id,
+                        navigation = this@LocationDetailsFragment,
+                    )
+                }
+            }
         }
-    }
 
-    override fun showFolderName(name: String) {
-        requiredBinding.name.text = name
-    }
-
-    override fun showFolderSharedIcon() {
-        requiredBinding.icon.setImageResource(CoreUiR.drawable.ic_filled_shared_folder_with_bg)
-    }
-
-    override fun showFolderIcon() {
-        requiredBinding.icon.setImageResource(CoreUiR.drawable.ic_filled_folder_with_bg)
-    }
-
-    override fun showFolderLocation(parentFolders: List<FolderModel>) {
-        val expandableListModel = expandableFolderDatasetCreator.create(parentFolders)
-        with(fastAdapter) {
-            clear()
-            add(expandableListModel.dataset)
-            getExpandableExtension().expandAllOnPath(expandableListModel.expandToItem)
-        }
-    }
-
-    override fun displayInitialsIcon(resource: ResourceModel) {
-        coroutineUiScope.launch {
-            requiredBinding.icon.setImageDrawable(
-                resourceIconProvider.getResourceIcon(requireContext(), resource),
-            )
-        }
-    }
-
-    override fun hideRefreshProgress() {
-        requiredBinding.swipeRefresh.isRefreshing = false
-    }
-
-    override fun showRefreshProgress() {
-        requiredBinding.swipeRefresh.isRefreshing = true
-    }
-
-    override fun showDataRefreshError() {
-        showSnackbar(
-            LocalizationR.string.common_data_refresh_error,
-            backgroundColor = CoreUiR.color.red,
-        )
-    }
-
-    override fun showContentNotAvailable() {
-        Toast.makeText(requireContext(), LocalizationR.string.content_not_available, Toast.LENGTH_SHORT).show()
+    override fun navigateUp() {
+        findNavController().popBackStack()
     }
 
     override fun navigateToHome() {
         requireActivity().startActivity(ActivityIntents.bringHome(requireContext()))
-    }
-
-    override fun performFullDataRefresh() {
-        DataRefreshService.start(requireContext())
     }
 }

@@ -1,12 +1,3 @@
-package com.passbolt.mobile.android.locationdetails
-
-import com.passbolt.mobile.android.locationdetails.data.ExpandableFolderTreeCreator
-import org.koin.android.ext.koin.androidContext
-import org.koin.androidx.viewmodel.dsl.viewModelOf
-import org.koin.core.module.Module
-import org.koin.core.qualifier.named
-import com.passbolt.mobile.android.core.localization.R as LocalizationR
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -30,16 +21,19 @@ import com.passbolt.mobile.android.core.localization.R as LocalizationR
  * @since v1.0
  */
 
-private const val ROOT_FOLDER_NAME = "ROOT_FOLDER_NAME"
+package com.passbolt.mobile.android.locationdetails
 
-fun Module.locationDetailsModule() {
-    single(named(ROOT_FOLDER_NAME)) {
-        androidContext().getString(LocalizationR.string.folder_root)
-    }
-    single {
-        ExpandableFolderTreeCreator(
-            fakeRootFolderName = get(named(ROOT_FOLDER_NAME)),
-        )
-    }
-    viewModelOf(::LocationDetailsViewModel)
+import com.passbolt.mobile.android.locationdetails.ui.LocationItem
+
+internal sealed interface LocationDetailsIntent {
+    data object GoBack : LocationDetailsIntent
+
+    data class Initialize(
+        val locationItem: LocationItem,
+        val itemId: String,
+    ) : LocationDetailsIntent
+
+    data class ToggleExpanded(
+        val itemId: String,
+    ) : LocationDetailsIntent
 }
