@@ -3,7 +3,9 @@ package com.passbolt.mobile.android.feature.home.screen
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -45,6 +47,16 @@ fun HomeResourceList(
 ) {
     val homeListData = rememberHomeListData(state)
     val headerConfig = rememberHeaderConfig(state, homeListData)
+    val listState = rememberLazyListState()
+
+    // Auto-scroll to top when suggested section is visible and first items load
+    // resources and suggested are emitted at the same time - there can be race condition that makes list scrolled to resources
+    // and then suggested section appears above resources section
+    LaunchedEffect(headerConfig.isSuggestedSectionVisible) {
+        if (headerConfig.isSuggestedSectionVisible) {
+            listState.scrollToItem(0)
+        }
+    }
 
     if (headerConfig.areAllSectionsEmpty) {
         EmptyResourceListState(title = stringResource(LocalizationR.string.no_passwords))
@@ -52,6 +64,7 @@ fun HomeResourceList(
         LazyColumn(
             modifier = modifier.fillMaxSize(),
             contentPadding = PaddingValues(vertical = 16.dp),
+            state = listState,
         ) {
             // suggested
             if (headerConfig.isSuggestedSectionVisible) {

@@ -59,9 +59,16 @@ interface PaginatedFoldersDao : BaseDao<Folder> {
             "   (SELECT name FROM ancestor a order by a.level)" +
             ") as path " +
             "FROM folder k  " +
-            "WHERE k.parentId IS :folderId",
+            "WHERE k.parentId IS :folderId " +
+            "AND ( " +
+            "   :searchQuery IS NULL OR " +
+            "   k.name LIKE '%' || :searchQuery || '%' " +
+            ")",
     )
-    fun getFolderDirectChildFolders(folderId: String?): PagingSource<Int, FolderWithChildItemsCountAndPath>
+    fun getFolderDirectChildFolders(
+        folderId: String?,
+        searchQuery: String?,
+    ): PagingSource<Int, FolderWithChildItemsCountAndPath>
 
     @Transaction
     @Query(

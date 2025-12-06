@@ -54,7 +54,7 @@ class GetLocalResourcesAndFoldersPaginatedUseCase(
                             databaseProvider
                                 .get(requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount))
                                 .paginatedFoldersDao()
-                                .getFolderDirectChildFolders(input.folder.folderId)
+                                .getFolderDirectChildFolders(input.folder.folderId, input.searchQuery)
                         },
                     ).flow.map { pagingData ->
                         pagingData.map {
@@ -68,7 +68,7 @@ class GetLocalResourcesAndFoldersPaginatedUseCase(
                             databaseProvider
                                 .get(requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount))
                                 .paginatedResourcesDao()
-                                .getResourcesForFolderWithId(input.folder.folderId, input.slugs)
+                                .getResourcesForFolderWithId(input.folder.folderId, input.slugs, input.searchQuery)
                         },
                     ).flow.map { pagingData ->
                         pagingData.map {
