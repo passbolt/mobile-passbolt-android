@@ -66,6 +66,7 @@ import com.passbolt.mobile.android.core.ui.compose.pulltorefresh.PullToRefreshIn
 import com.passbolt.mobile.android.core.ui.compose.snackbar.ColoredSnackbarVisuals
 import com.passbolt.mobile.android.core.ui.compose.topbar.BackNavigationIcon
 import com.passbolt.mobile.android.core.ui.compose.topbar.TitleAppBar
+import com.passbolt.mobile.android.feature.authentication.compose.AuthenticationHandler
 import com.passbolt.mobile.android.locationdetails.LocationDetailsIntent.GoBack
 import com.passbolt.mobile.android.locationdetails.LocationDetailsIntent.Initialize
 import com.passbolt.mobile.android.locationdetails.LocationDetailsIntent.ToggleExpanded
@@ -101,6 +102,11 @@ internal fun LocationDetailsScreen(
     LaunchedEffect(locationItem, itemId) {
         viewModel.onIntent(Initialize(locationItem, itemId))
     }
+
+    AuthenticationHandler(
+        onAuthenticatedIntent = viewModel::onAuthenticationIntent,
+        authenticationSideEffect = viewModel.authenticationSideEffect,
+    )
 
     LocationDetailsContent(
         state = state.value,
@@ -182,7 +188,7 @@ private fun LocationDetailsContent(
                     val context = LocalContext.current
                     var itemIcon by remember { mutableStateOf<Drawable?>(null) }
 
-                    LaunchedEffect(state.resource) {
+                    LaunchedEffect(state.itemName) {
                         itemIcon =
                             if (state.resource != null) {
                                 resourceIconProvider.getResourceIcon(context, state.resource)

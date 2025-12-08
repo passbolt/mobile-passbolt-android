@@ -47,6 +47,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
 import com.passbolt.mobile.android.core.ui.compose.topbar.BackNavigationIcon
 import com.passbolt.mobile.android.core.ui.compose.topbar.TitleAppBar
+import com.passbolt.mobile.android.feature.authentication.compose.AuthenticationHandler
 import com.passbolt.mobile.android.groupdetails.groupmembers.GroupMembersIntent.GoBack
 import com.passbolt.mobile.android.groupdetails.groupmembers.GroupMembersIntent.GoToMemberDetails
 import com.passbolt.mobile.android.groupdetails.groupmembers.GroupMembersIntent.Initialize
@@ -72,6 +73,11 @@ internal fun GroupMembersScreen(
     LaunchedEffect(groupId) {
         viewModel.onIntent(Initialize(groupId))
     }
+
+    AuthenticationHandler(
+        onAuthenticatedIntent = viewModel::onAuthenticationIntent,
+        authenticationSideEffect = viewModel.authenticationSideEffect,
+    )
 
     GroupMembersContent(
         state = state.value,

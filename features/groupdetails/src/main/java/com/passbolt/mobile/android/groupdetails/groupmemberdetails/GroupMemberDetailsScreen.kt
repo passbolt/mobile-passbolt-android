@@ -47,6 +47,7 @@ import com.passbolt.mobile.android.core.ui.compose.circularimage.CircularProfile
 import com.passbolt.mobile.android.core.ui.compose.topbar.BackNavigationIcon
 import com.passbolt.mobile.android.core.ui.compose.topbar.TitleAppBar
 import com.passbolt.mobile.android.core.ui.formatter.FingerprintFormatter
+import com.passbolt.mobile.android.feature.authentication.compose.AuthenticationHandler
 import com.passbolt.mobile.android.groupdetails.groupmemberdetails.GroupMemberDetailsIntent.GoBack
 import com.passbolt.mobile.android.groupdetails.groupmemberdetails.GroupMemberDetailsIntent.Initialize
 import com.passbolt.mobile.android.groupdetails.groupmemberdetails.GroupMemberDetailsSideEffect.NavigateUp
@@ -66,6 +67,11 @@ internal fun GroupMemberDetailsScreen(
     LaunchedEffect(userId) {
         viewModel.onIntent(Initialize(userId))
     }
+
+    AuthenticationHandler(
+        onAuthenticatedIntent = viewModel::onAuthenticationIntent,
+        authenticationSideEffect = viewModel.authenticationSideEffect,
+    )
 
     GroupMemberDetailsContent(
         state = state.value,
