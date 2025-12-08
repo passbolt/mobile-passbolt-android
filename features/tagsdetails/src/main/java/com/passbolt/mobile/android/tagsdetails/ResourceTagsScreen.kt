@@ -67,6 +67,7 @@ import com.passbolt.mobile.android.core.ui.compose.pulltorefresh.PullToRefreshIn
 import com.passbolt.mobile.android.core.ui.compose.snackbar.ColoredSnackbarVisuals
 import com.passbolt.mobile.android.core.ui.compose.topbar.BackNavigationIcon
 import com.passbolt.mobile.android.core.ui.compose.topbar.TitleAppBar
+import com.passbolt.mobile.android.feature.authentication.compose.AuthenticationHandler
 import com.passbolt.mobile.android.tagsdetails.ResourceTagsIntent.GoBack
 import com.passbolt.mobile.android.tagsdetails.ResourceTagsIntent.Initialize
 import com.passbolt.mobile.android.tagsdetails.ResourceTagsSideEffect.NavigateToHome
@@ -95,6 +96,11 @@ internal fun ResourceTagsScreen(
     LaunchedEffect(resourceId) {
         viewModel.onIntent(Initialize(resourceId))
     }
+
+    AuthenticationHandler(
+        onAuthenticatedIntent = viewModel::onAuthenticationIntent,
+        authenticationSideEffect = viewModel.authenticationSideEffect,
+    )
 
     ResourceTagsContent(
         state = state,

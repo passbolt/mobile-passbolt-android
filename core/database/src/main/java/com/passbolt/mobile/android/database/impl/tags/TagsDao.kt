@@ -40,7 +40,8 @@ interface TagsDao : BaseDao<Tag> {
             ")" +
             ") AS taggedItemsCount " +
             "FROM Tag t " +
-            "WHERE (:searchQuery IS NULL OR slug LIKE '%' || :searchQuery || '%')",
+            "WHERE (:searchQuery IS NULL OR slug LIKE '%' || :searchQuery || '%') " +
+            "ORDER BY slug COLLATE NOCASE ASC",
     )
     suspend fun getAllWithTaggedItemsCount(searchQuery: String?): List<TagWithTaggedItemsCount>
 
