@@ -89,6 +89,7 @@ fun HomeScaffold(
 
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        contentWindowInsets = WindowInsets(0.dp),
         topBar = {
             Surface(shadowElevation = 4.dp) {
                 TopAppBar(
