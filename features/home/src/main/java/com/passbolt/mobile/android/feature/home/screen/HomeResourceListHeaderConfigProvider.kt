@@ -22,7 +22,6 @@
  */
 package com.passbolt.mobile.android.feature.home.screen
 
-import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import com.passbolt.mobile.android.feature.home.screen.ShowSuggestedModel.Show
 import com.passbolt.mobile.android.feature.home.screen.data.HeaderSectionConfiguration
@@ -46,8 +45,8 @@ internal fun getHeaderConfig(
     homeView: HomeDisplayViewModel,
     showSuggestedModel: ShowSuggestedModel,
 ): HeaderSectionConfiguration {
-    val loadState =
-        getSectionState(
+    val areAllSectionsEmpty =
+        areAllSectionsEmpty(
             resources,
             folders,
             tags,
@@ -63,10 +62,10 @@ internal fun getHeaderConfig(
             isInCurrentFolderSectionVisible = false,
             isInSubFoldersSectionVisible = false,
             isOtherItemsSectionVisible =
-                !loadState.areAllEmpty && showSuggestedModel is Show && !suggestedResources.itemSnapshotList.isEmpty(),
+                !areAllSectionsEmpty && showSuggestedModel is Show && !suggestedResources.itemSnapshotList.isEmpty(),
             isSuggestedSectionVisible = !suggestedResources.itemSnapshotList.isEmpty(),
             currentFolderName = currentFolderName,
-            areAllSectionsEmpty = loadState.areAllEmpty && !loadState.isAnyLoading,
+            areAllSectionsEmpty = areAllSectionsEmpty,
         )
     } else {
         HeaderSectionConfiguration(
@@ -82,18 +81,9 @@ internal fun getHeaderConfig(
             isSuggestedSectionVisible = false,
             isOtherItemsSectionVisible = false,
             currentFolderName = currentFolderName,
-            areAllSectionsEmpty = loadState.areAllEmpty && !loadState.isAnyLoading,
+            areAllSectionsEmpty = areAllSectionsEmpty,
         )
     }
 }
 
-private data class SectionLoadState(
-    val isAnyLoading: Boolean,
-    val areAllEmpty: Boolean,
-)
-
-private fun getSectionState(vararg lists: LazyPagingItems<*>): SectionLoadState {
-    val isAnyLoading = lists.any { it.loadState.refresh is LoadState.Loading }
-    val areAllEmpty = lists.all { it.itemSnapshotList.isEmpty() }
-    return SectionLoadState(isAnyLoading, areAllEmpty)
-}
+private fun areAllSectionsEmpty(vararg lists: LazyPagingItems<*>): Boolean = lists.all { it.itemSnapshotList.isEmpty() }

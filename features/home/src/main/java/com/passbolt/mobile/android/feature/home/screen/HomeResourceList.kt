@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
+import com.passbolt.mobile.android.core.compose.rememberDebouncedBoolean
 import com.passbolt.mobile.android.core.localization.R
 import com.passbolt.mobile.android.core.resources.resourceicon.ResourceIconProvider
 import com.passbolt.mobile.android.core.ui.compose.empty.EmptyResourceListState
@@ -58,7 +59,9 @@ fun HomeResourceList(
         }
     }
 
-    if (headerConfig.areAllSectionsEmpty) {
+    val showEmpty = rememberDebouncedBoolean(headerConfig.areAllSectionsEmpty)
+
+    if (showEmpty) {
         EmptyResourceListState(title = stringResource(LocalizationR.string.no_passwords))
     } else {
         LazyColumn(
