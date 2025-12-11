@@ -12,9 +12,9 @@ import android.service.autofill.SaveRequest
 import com.passbolt.mobile.android.core.autofill.system.AssistStructureParser
 import com.passbolt.mobile.android.core.autofill.system.AutofillField
 import com.passbolt.mobile.android.core.autofill.system.FillableInputsFinder
-import com.passbolt.mobile.android.core.autofill.system.ParsedStructure
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AutofillMode
+import com.passbolt.mobile.android.ui.ParsedStructure
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import timber.log.Timber
@@ -61,27 +61,30 @@ class PassboltAutofillService :
                 assistStructureParser
                     .parse(
                         request.fillContexts.last().structure,
-                    ).also {
-                        Timber.d("Parsed domain: ${it.domain}")
-                    }
+                    )
 
             val autofillableViews =
                 arrayOf(
                     findAutofillableView(AutofillField.USERNAME, parsedAutofillStructures.structures),
                     findAutofillableView(AutofillField.PASSWORD, parsedAutofillStructures.structures),
-                )
+                ).filterNotNull()
+                    .let { structures ->
+                        // enforce same domain for all fields
+                        val domains = structures.map { it.domain }.toSet()
+                        if (domains.size == 1) structures else emptyList()
+                    }
 
             // autofillable views not found
-            if (autofillableViews.all { it == null }) {
-                Timber.d("Did not find any autofillable views")
+            if (parsedAutofillStructures.hasDifferentDomains || autofillableViews.isEmpty()) {
+                Timber.d("Did not find any autofillable views or views have different web domains")
                 null
             } else {
                 Timber.d("Showing authentication prompt")
                 FillResponse
                     .Builder()
                     .setAuthentication(
-                        autofillableViews.filterNotNull().map { it.id }.toTypedArray(),
-                        autofillResourcesPendingIntent(parsedAutofillStructures.domain).intentSender,
+                        autofillableViews.map { it.id }.toTypedArray(),
+                        autofillResourcesPendingIntent(autofillableViews.first().domain).intentSender,
                         remoteViewsFactory.getAutofillSelectDropdown(packageName),
                     ).build()
             }

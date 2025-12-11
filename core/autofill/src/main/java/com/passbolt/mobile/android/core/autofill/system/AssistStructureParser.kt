@@ -4,6 +4,8 @@ import android.annotation.SuppressLint
 import android.app.assist.AssistStructure
 import android.view.ViewStructure
 import com.passbolt.mobile.android.core.autofill.BuildConfig
+import com.passbolt.mobile.android.ui.ParsedStructure
+import com.passbolt.mobile.android.ui.ParsedStructures
 import timber.log.Timber
 
 /**
@@ -32,43 +34,29 @@ class AssistStructureParser {
     fun parse(assistStructure: AssistStructure): ParsedStructures {
         val structuresRef = mutableSetOf<ParsedStructure>()
 
-        // web domain and package id is not present in every view node - store it once found during traversing
-        val domainBuilder = StringBuilder()
-        val packageIdBuilder = StringBuilder()
-
         // iterate recursively through all nodes
         for (i in 0.rangeUntil(assistStructure.windowNodeCount)) {
             val rootViewNode = assistStructure.getWindowNodeAt(i).rootViewNode
-            visitNode(rootViewNode, structuresRef, domainBuilder, packageIdBuilder)
+            visitNode(rootViewNode, structuresRef)
         }
 
-        return ParsedStructures(
-            domainBuilder.toString(),
-            packageIdBuilder.toString(),
-            structuresRef,
-        )
+        return ParsedStructures(structuresRef)
     }
 
     private fun visitNode(
         viewNode: AssistStructure.ViewNode,
         structuresRef: MutableSet<ParsedStructure>,
-        domainBuilder: StringBuilder,
-        packageIdBuilder: StringBuilder,
     ) {
-        parseNode(viewNode, domainBuilder, packageIdBuilder)
+        parseNode(viewNode)
             ?.let { structuresRef.add(it) }
 
         for (i in 0.rangeUntil(viewNode.childCount)) {
             val child = viewNode.getChildAt(i)
-            visitNode(child, structuresRef, domainBuilder, packageIdBuilder)
+            visitNode(child, structuresRef)
         }
     }
 
-    private fun parseNode(
-        viewNode: AssistStructure.ViewNode,
-        domainBuilder: StringBuilder,
-        packageIdBuilder: StringBuilder,
-    ): ParsedStructure? {
+    private fun parseNode(viewNode: AssistStructure.ViewNode): ParsedStructure? {
         if (BuildConfig.DEBUG) {
             logNodeVisit(viewNode)
         }
@@ -76,9 +64,8 @@ class AssistStructureParser {
         val autofillId = viewNode.autofillId ?: return null
         val autofillHints = viewNode.autofillHints
         val inputType = viewNode.inputType
-
-        processDomain(viewNode.webScheme, viewNode.webDomain, domainBuilder)
-        processPackageId(viewNode.idPackage, packageIdBuilder)
+        val domain = processDomain(viewNode.webScheme, viewNode.webDomain)
+        val packageId = viewNode.idPackage
 
         val heuristicAutofillHints =
             if (!autofillHints.isNullOrEmpty()) {
@@ -86,41 +73,26 @@ class AssistStructureParser {
             } else {
                 gatherHtmlHints(viewNode) + gatherHintHints(viewNode) + gatherContentDescriptionHints(viewNode)
             }
-        return ParsedStructure(autofillId, heuristicAutofillHints, inputType)
-    }
-
-    private fun processPackageId(
-        idPackage: String?,
-        packageIdBuilder: StringBuilder,
-    ) {
-        if (idPackage != null) {
-            with(packageIdBuilder) {
-                clear()
-                append(idPackage)
-            }
-        }
+        return ParsedStructure(
+            id = autofillId,
+            autofillHints = heuristicAutofillHints,
+            inputType = inputType,
+            domain = domain,
+            packageId = packageId,
+        )
     }
 
     private fun processDomain(
         webScheme: String?,
         webDomain: String?,
-        domainBuilder: StringBuilder,
-    ) {
-        val domain =
-            webScheme.orEmpty().let {
-                if (it.isEmpty()) {
-                    webDomain
-                } else {
-                    "%s://%s".format(it, webDomain)
-                }
-            }
-        if (domain != null) {
-            with(domainBuilder) {
-                clear()
-                append(domain)
-            }
+    ): String? =
+        if (!webScheme.isNullOrBlank() && !webDomain.isNullOrBlank()) {
+            "%s://%s".format(webScheme, webDomain)
+        } else if (!webDomain.isNullOrBlank()) {
+            webDomain
+        } else {
+            null
         }
-    }
 
     private fun gatherContentDescriptionHints(viewNode: AssistStructure.ViewNode): List<String> =
         viewNode.contentDescription.let {
@@ -145,34 +117,36 @@ class AssistStructureParser {
             viewNode.htmlInfo
                 .getAttribute(HTML_AUTOCOMPLETE_ATTR)
                 ?.split(HTML_AUTOCOMPLETE_ATTR_VALUES_DELIMITER)
-                ?.filter { it.isBlank() } ?: emptyList()
+                ?.filter { it.isNotBlank() } ?: emptyList()
         } else {
             emptyList()
         }
 
     @SuppressLint("BinaryOperationInTimber")
     private fun logNodeVisit(viewNode: AssistStructure.ViewNode) {
-        Timber.d(
-            "Visiting view node with id: %d " +
-                "scheme + domain: %s://%s " +
-                "package: %s " +
-                "content description: %s " +
-                "autofill hints %s " +
-                "hint: %s " +
-                "html autocomplete attr: %s " +
-                "important for autofill: %d " +
-                "input type: %d ",
-            viewNode.id,
-            viewNode.webScheme,
-            viewNode.webDomain,
-            viewNode.idPackage,
-            viewNode.contentDescription,
-            viewNode.autofillHints?.joinToString(separator = ","),
-            viewNode.hint,
-            viewNode.htmlInfo.getAttribute("autocomplete"),
-            viewNode.importantForAutofill,
-            viewNode.inputType,
-        )
+        if (BuildConfig.DEBUG) {
+            Timber.d(
+                "Visiting view node with id: %d " +
+                    "scheme + domain: %s://%s " +
+                    "package: %s " +
+                    "content description: %s " +
+                    "autofill hints %s " +
+                    "hint: %s " +
+                    "html autocomplete attr: %s " +
+                    "important for autofill: %d " +
+                    "input type: %d ",
+                viewNode.id,
+                viewNode.webScheme,
+                viewNode.webDomain,
+                viewNode.idPackage,
+                viewNode.contentDescription,
+                viewNode.autofillHints?.joinToString(separator = ","),
+                viewNode.hint,
+                viewNode.htmlInfo.getAttribute("autocomplete"),
+                viewNode.importantForAutofill,
+                viewNode.inputType,
+            )
+        }
     }
 
     private fun ViewStructure.HtmlInfo?.getAttribute(name: String) = this?.attributes?.firstOrNull { it.first == name }?.second
