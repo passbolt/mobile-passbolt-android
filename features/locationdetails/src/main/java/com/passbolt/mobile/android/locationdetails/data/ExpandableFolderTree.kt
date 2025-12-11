@@ -42,10 +42,6 @@ class ExpandableFolderTreeCreator(
     private val fakeRootFolderName: String,
 ) {
     fun create(parentFolders: List<FolderModel>): ExpandableFolderTree {
-        if (parentFolders.isEmpty()) {
-            return ExpandableFolderTree(emptyList(), null)
-        }
-
         val foldersWithFakeRoot = createFoldersWithFakeRoot(parentFolders)
         val rootFolder = foldersWithFakeRoot.first()
 
