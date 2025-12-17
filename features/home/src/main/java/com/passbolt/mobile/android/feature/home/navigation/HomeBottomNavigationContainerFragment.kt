@@ -179,7 +179,11 @@ class HomeBottomNavigationContainerFragment :
 
                 NavDisplay(
                     backStack = backStack,
-                    onBack = { backStack.removeLastOrNull() },
+                    onBack = {
+                        if (backStack.size > 1) {
+                            backStack.removeLastOrNull()
+                        }
+                    },
                     entryDecorators =
                         listOf(
                             rememberSaveableStateHolderNavEntryDecorator(),
@@ -217,7 +221,9 @@ class HomeBottomNavigationContainerFragment :
     }
 
     override fun navigateBack() {
-        backstackList.removeLastOrNull()
+        if (backstackList.size > 1) {
+            backstackList.removeLastOrNull()
+        }
     }
 
     override fun onViewCreated(
