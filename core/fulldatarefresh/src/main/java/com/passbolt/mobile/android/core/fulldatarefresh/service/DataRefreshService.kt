@@ -24,11 +24,13 @@ package com.passbolt.mobile.android.core.fulldatarefresh.service
 
 import android.content.Context
 import android.content.Intent
+import androidx.core.app.ServiceCompat
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
 import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
 import com.passbolt.mobile.android.core.notifications.accessibilityautofill.AccessibilityServiceNotificationFactory
 import com.passbolt.mobile.android.core.notifications.accessibilityautofill.AccessibilityServiceNotificationFactory.Companion.DATA_SYNC_SERVICE_NOTIFICATION_ID
+import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 
@@ -49,11 +51,20 @@ class DataRefreshService : LifecycleService() {
         )
 
         lifecycleScope.launch {
-            fullDataRefreshExecutor.susPerformFullDataRefresh()
-            stopSelf()
+            try {
+                fullDataRefreshExecutor.susPerformFullDataRefresh()
+            } finally {
+                stopForeground(ServiceCompat.STOP_FOREGROUND_REMOVE)
+                stopSelf(startId)
+            }
         }
 
         return START_NOT_STICKY
+    }
+
+    override fun onDestroy() {
+        lifecycleScope.coroutineContext.cancelChildren()
+        super.onDestroy()
     }
 
     companion object {
