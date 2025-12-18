@@ -138,7 +138,7 @@ class KeyInspectorViewModelTest : KoinTest {
             viewModel = get()
 
             viewModel.viewState.test {
-                val state = expectItem()
+                val state = awaitItem()
                 assertThat(state.avatarUrl).isEqualTo(selectedAccountData.avatarUrl)
                 assertThat(state.label).isEqualTo(selectedAccountData.label)
                 assertThat(state.fingerprint).isEqualTo(user.userModel.gpgKey.fingerprint)
@@ -177,7 +177,7 @@ class KeyInspectorViewModelTest : KoinTest {
             viewModel = get()
 
             viewModel.sideEffect.test {
-                val effect = expectItem()
+                val effect = awaitItem()
                 assertThat(effect).isInstanceOf(ShowErrorSnackbar::class.java)
                 assertThat((effect as ShowErrorSnackbar).type).isEqualTo(FAILED_TO_FETCH_KEY)
             }
@@ -191,13 +191,13 @@ class KeyInspectorViewModelTest : KoinTest {
 
             viewModel.sideEffect.test {
                 viewModel.onIntent(CopyUid)
-                val copyUidEffect = expectItem()
+                val copyUidEffect = awaitItem()
                 assertThat(copyUidEffect).isInstanceOf(AddUidToClipboard::class.java)
                 assertThat((copyUidEffect as AddUidToClipboard).uid)
                     .isEqualTo(user.userModel.gpgKey.uid)
 
                 viewModel.onIntent(CopyFingerprint)
-                val copyFingerprintEffect = expectItem()
+                val copyFingerprintEffect = awaitItem()
                 assertThat(copyFingerprintEffect).isInstanceOf(AddFingerprintToClipboard::class.java)
                 assertThat((copyFingerprintEffect as AddFingerprintToClipboard).fingerprint)
                     .isEqualTo(user.userModel.gpgKey.fingerprint)

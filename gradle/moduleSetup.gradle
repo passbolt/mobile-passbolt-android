@@ -19,12 +19,18 @@ def setupModule(isAndroid, isAndroidComponent) {
             defaultConfig {
                 minSdk projectMinSdk
                 targetSdk projectTargetSdk
+
+                testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
             }
 
             compileOptions {
                 coreLibraryDesugaringEnabled true
                 sourceCompatibility = JavaVersion.VERSION_17
                 targetCompatibility = JavaVersion.VERSION_17
+            }
+
+            kotlinOptions {
+                jvmTarget = JavaVersion.VERSION_17.toString()
             }
 
             if (isAndroidComponent) {
@@ -77,11 +83,11 @@ def setupCommonDependencies(isAndroid) {
         implementation libs.kotlin.coroutines
         implementation libs.timber
         testImplementation libs.junit
-        testImplementation libs.mockito.core
         testImplementation libs.mockito.kotlin
         testImplementation libs.truth
         testImplementation libs.turbine
         testImplementation libs.kotlin.coroutines.test
+        testImplementation platform(libs.koin.bom)
         testImplementation libs.koin.test
         testImplementation libs.koin.test.junit
         if (isAndroid) {

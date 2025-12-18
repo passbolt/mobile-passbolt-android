@@ -87,6 +87,11 @@ class CreateFolderFragment :
         }
     }
 
+    override fun onDestroyView() {
+        presenter.detach()
+        super.onDestroyView()
+    }
+
     private fun setListeners() {
         with(requiredBinding) {
             folderNameInput.setTextChangeListener { presenter.folderNameChanged(it) }

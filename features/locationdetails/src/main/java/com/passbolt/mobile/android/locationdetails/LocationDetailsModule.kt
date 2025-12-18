@@ -1,13 +1,10 @@
 package com.passbolt.mobile.android.locationdetails
 
-import com.mikepenz.fastadapter.GenericItem
-import com.mikepenz.fastadapter.adapters.FastItemAdapter
-import com.passbolt.mobile.android.locationdetails.recyclerview.ExpandableFolderDatasetCreator
+import com.passbolt.mobile.android.locationdetails.data.ExpandableFolderTreeCreator
 import org.koin.android.ext.koin.androidContext
+import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.core.module.Module
-import org.koin.core.module.dsl.scopedOf
 import org.koin.core.qualifier.named
-import org.koin.dsl.bind
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 /**
@@ -36,12 +33,13 @@ import com.passbolt.mobile.android.core.localization.R as LocalizationR
 private const val ROOT_FOLDER_NAME = "ROOT_FOLDER_NAME"
 
 fun Module.locationDetailsModule() {
-    scope<LocationDetailsFragment> {
-        scopedOf(::LocationDetailsPresenter) bind LocationDetailsContract.Presenter::class
-        scoped(named(ROOT_FOLDER_NAME)) {
-            androidContext().getString(LocalizationR.string.folder_root)
-        }
-        scoped { ExpandableFolderDatasetCreator(get(named(ROOT_FOLDER_NAME))) }
-        scoped { FastItemAdapter<GenericItem>() }
+    single(named(ROOT_FOLDER_NAME)) {
+        androidContext().getString(LocalizationR.string.folder_root)
     }
+    single {
+        ExpandableFolderTreeCreator(
+            fakeRootFolderName = get(named(ROOT_FOLDER_NAME)),
+        )
+    }
+    viewModelOf(::LocationDetailsViewModel)
 }

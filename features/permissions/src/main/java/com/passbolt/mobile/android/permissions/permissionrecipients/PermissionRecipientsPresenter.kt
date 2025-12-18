@@ -5,10 +5,10 @@ import com.passbolt.mobile.android.common.search.SearchableMatcher
 import com.passbolt.mobile.android.core.commongroups.usecase.db.GetLocalGroupsUseCase
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import com.passbolt.mobile.android.core.ui.compose.sharedwith.PermissionsDatasetCreator
 import com.passbolt.mobile.android.core.users.usecase.db.GetLocalUsersUseCase
 import com.passbolt.mobile.android.mappers.PermissionsModelMapper
 import com.passbolt.mobile.android.mappers.SharePermissionsModelMapper.Companion.TEMPORARY_NEW_PERMISSION_ID
-import com.passbolt.mobile.android.permissions.recycler.PermissionsDatasetCreator
 import com.passbolt.mobile.android.ui.GroupModel
 import com.passbolt.mobile.android.ui.PermissionModelUi
 import com.passbolt.mobile.android.ui.ResourcePermission

@@ -198,7 +198,7 @@ class AuthOperationRunnerTest : KoinTest {
             sessionRefreshTrackingFlow
                 .needSessionRefreshFlow()
                 .test {
-                    assertThat(expectItem()).isEqualTo(NeedsRefresh(Passphrase))
+                    assertThat(awaitItem()).isEqualTo(NeedsRefresh(Passphrase))
                     cancelAndIgnoreRemainingEvents()
                 }
             operationJob.cancel()
@@ -239,7 +239,7 @@ class AuthOperationRunnerTest : KoinTest {
             sessionRefreshTrackingFlow
                 .needSessionRefreshFlow()
                 .test {
-                    assertThat(expectItem()).isEqualTo(NeedsRefresh(Session))
+                    assertThat(awaitItem()).isEqualTo(NeedsRefresh(Session))
                     cancelAndIgnoreRemainingEvents()
                 }
 

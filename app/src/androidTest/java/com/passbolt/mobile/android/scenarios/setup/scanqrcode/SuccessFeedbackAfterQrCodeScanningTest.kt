@@ -39,12 +39,12 @@ import com.passbolt.mobile.android.feature.startup.StartUpActivity
 import com.passbolt.mobile.android.instrumentationTestsModule
 import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
 import com.passbolt.mobile.android.rules.lazyActivityScenarioRule
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.koin.test.KoinTest
 import org.koin.test.inject
-import kotlin.test.BeforeTest
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 @RunWith(AndroidJUnit4::class)
@@ -66,7 +66,7 @@ class SuccessFeedbackAfterQrCodeScanningTest : KoinTest {
 
     private val managedAccountIntentCreator: ManagedAccountIntentCreator by inject()
 
-    @BeforeTest
+    @Before
     fun setup() {
         onView(withId(R.id.connectToAccountButton)).perform(click())
         onView(withId(R.id.qrCode)).perform(swipeUp())

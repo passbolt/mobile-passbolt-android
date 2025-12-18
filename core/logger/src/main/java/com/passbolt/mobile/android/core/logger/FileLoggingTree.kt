@@ -63,13 +63,13 @@ class FileLoggingTree(
         priority: Int,
         tag: String?,
         message: String,
-        throwable: Throwable?,
+        t: Throwable?,
     ) {
         val logTime = timeFormat.format(Date())
         FileOutputStream(logFile, true).use {
             PrintWriter(it.writer()).use { printWriter ->
                 printWriter.appendLine("$logTime ${obfuscate(message)}")
-                throwable?.let { throwable ->
+                t?.let { throwable ->
                     printWriter.append(obfuscate(throwable.stackTraceToString()))
                 }
             }

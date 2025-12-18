@@ -44,11 +44,11 @@ import com.passbolt.mobile.android.instrumentationTestsModule
 import com.passbolt.mobile.android.rules.lazyActivityScenarioRule
 import org.hamcrest.Matcher
 import org.hamcrest.core.AllOf
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.koin.test.KoinTest
-import kotlin.test.BeforeTest
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 @RunWith(AndroidJUnit4::class)
@@ -63,7 +63,7 @@ class ScanQrCodeTest : KoinTest {
     @get:Rule
     val permissionRule: GrantPermissionRule = GrantPermissionRule.grant(android.Manifest.permission.CAMERA)
 
-    @BeforeTest
+    @Before
     fun setup() {
         onView(withId(R.id.connectToAccountButton)).perform(click())
         onView(withId(R.id.scanQrCodesButton)).perform(scrollTo(), click())

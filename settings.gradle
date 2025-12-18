@@ -1,6 +1,12 @@
 pluginManagement {
     repositories {
-        google()
+        google {
+            content {
+                includeGroupAndSubgroups("com.android")
+                includeGroupAndSubgroups("com.google")
+                includeGroupAndSubgroups("androidx")
+            }
+        }
         mavenCentral()
         gradlePluginPortal()
     }
@@ -8,7 +14,13 @@ pluginManagement {
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
-        google()
+        google {
+            content {
+                includeGroupAndSubgroups("com.android")
+                includeGroupAndSubgroups("com.google")
+                includeGroupAndSubgroups("androidx")
+            }
+        }
         mavenCentral()
         maven { url "https://jitpack.io" }
         flatDir { dirs "${rootProject.projectDir}/core/gopenpgp/libs" }

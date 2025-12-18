@@ -12,6 +12,7 @@ dependencies {
     implementation project(':ui')
     implementation project(':preferences')
 
+    implementation platform(libs.koin.bom)
     implementation libs.koin
     implementation libs.material
     implementation libs.androidx.core

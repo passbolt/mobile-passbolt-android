@@ -13,11 +13,8 @@
         <argument
             android:name="resourceId"
             app:argType="string" />
-        <argument
-            android:name="mode"
-            app:argType="com.passbolt.mobile.android.permissions.permissions.PermissionsMode" />
         <deepLink
             android:id="@+id/deepLink2"
-            app:uri="passbolt://tagsDetails/{resourceId}?mode={mode}" />
+            app:uri="passbolt://tagsDetails/{resourceId}" />
     </fragment>
 </navigation>

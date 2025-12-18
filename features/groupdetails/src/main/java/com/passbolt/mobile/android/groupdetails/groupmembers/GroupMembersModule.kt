@@ -1,10 +1,7 @@
 package com.passbolt.mobile.android.groupdetails.groupmembers
 
-import com.mikepenz.fastadapter.FastAdapter
-import com.mikepenz.fastadapter.adapters.ItemAdapter
-import com.passbolt.mobile.android.groupdetails.groupmembers.recycler.GroupMemberItem
+import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.core.module.Module
-import org.koin.core.qualifier.named
 
 /**
  * Passbolt - Open source password manager for teams
@@ -29,25 +26,6 @@ import org.koin.core.qualifier.named
  * @since v1.0
  */
 
-internal const val GROUP_MEMBER_ITEM_ADAPTER = "GROUP_MEMBER_ITEM_ADAPTER"
-
 fun Module.groupMembersModule() {
-    scope<GroupMembersFragment> {
-        scoped<GroupMembersContract.Presenter> {
-            GroupMembersPresenter(
-                coroutineLaunchContext = get(),
-                getGroupWithUsersUseCase = get(),
-            )
-        }
-        scoped<ItemAdapter<GroupMemberItem>>(named(GROUP_MEMBER_ITEM_ADAPTER)) {
-            ItemAdapter.items()
-        }
-        scoped {
-            FastAdapter.with(
-                listOf(
-                    get<ItemAdapter<GroupMemberItem>>(named(GROUP_MEMBER_ITEM_ADAPTER)),
-                ),
-            )
-        }
-    }
+    viewModelOf(::GroupMembersViewModel)
 }

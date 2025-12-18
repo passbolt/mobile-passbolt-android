@@ -1,6 +1,8 @@
 package com.passbolt.mobile.android.core.autofill.system
 
 import android.annotation.SuppressLint
+import com.passbolt.mobile.android.core.autofill.BuildConfig
+import com.passbolt.mobile.android.ui.ParsedStructure
 import timber.log.Timber
 
 /**
@@ -35,24 +37,58 @@ class FillableInputsFinder(
         autofillParsedStructure: Set<ParsedStructure>,
     ): ParsedStructure? {
         val hintValues = autofillHintsFactory.getHintValues(field)
+        // if any view has domain set, treat as browser
+        val isBrowser = autofillParsedStructure.any { it.domain != null }
         return autofillParsedStructure
             .asSequence()
             .filter { !it.autofillHints.isNullOrEmpty() }
             .firstOrNull { parsedStructure ->
-                parsedStructure.autofillHints!!.any { structureHint ->
-                    // filtered above
-                    hintValues.any {
-                        val result = structureHint.contains(it, ignoreCase = true)
-                        Timber.d(
-                            "Marking input as fillable. \n" +
-                                "Hint values: %s\n" +
-                                "Structure hint: %s",
-                            hintValues.joinToString(separator = ","),
-                            structureHint,
-                        )
-                        result
-                    }
+                val autofillMatching = isAutofillMatching(parsedStructure, hintValues)
+                if (BuildConfig.DEBUG && autofillMatching) {
+                    Timber.d(
+                        "Autofill matching structure found for field. " +
+                            "\nField hint values: %s " +
+                            "\nStructure hints: %s " +
+                            "\nWeb domain: %s" +
+                            "\nPackage: %s",
+                        hintValues.joinToString(separator = ","),
+                        parsedStructure.autofillHints!!.joinToString(separator = ","),
+                        parsedStructure.domain,
+                        parsedStructure.packageId,
+                    )
+                }
+
+                val hasDomainSet = hasDomainSet(parsedStructure)
+                if (BuildConfig.DEBUG) {
+                    Timber.d("Checking if found structure has domain set: %s", hasDomainSet)
+                }
+
+                if (isBrowser) {
+                    autofillMatching && hasDomainSet
+                } else {
+                    autofillMatching
                 }
             }
     }
+
+    private fun hasDomainSet(parsedStructure: ParsedStructure) = !parsedStructure.domain.isNullOrEmpty()
+
+    private fun isAutofillMatching(
+        parsedStructure: ParsedStructure,
+        hintValues: Array<String>,
+    ): Boolean =
+        parsedStructure.autofillHints!!.any { structureHint ->
+            // filtered above
+            hintValues.any {
+                val result = structureHint.contains(it, ignoreCase = true)
+                if (BuildConfig.DEBUG) {
+                    Timber.d(
+                        "Marking input as fillable. \nHint values: %s \nStructure hint: %s",
+                        hintValues.joinToString(separator = ","),
+                        structureHint,
+                    )
+                }
+                result
+            }
+        }
 }

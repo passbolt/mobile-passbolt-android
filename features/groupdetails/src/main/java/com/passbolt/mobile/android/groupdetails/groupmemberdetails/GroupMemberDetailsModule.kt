@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.groupdetails.groupmemberdetails
 
+import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.core.module.Module
 
 /**
@@ -26,12 +27,5 @@ import org.koin.core.module.Module
  */
 
 fun Module.groupMemberDetailsModule() {
-    scope<GroupMemberDetailsFragment> {
-        scoped<GroupMemberDetailsContract.Presenter> {
-            GroupMemberDetailsPresenter(
-                coroutineLaunchContext = get(),
-                getLocalUserUseCase = get(),
-            )
-        }
-    }
+    viewModelOf(::GroupMemberDetailsViewModel)
 }

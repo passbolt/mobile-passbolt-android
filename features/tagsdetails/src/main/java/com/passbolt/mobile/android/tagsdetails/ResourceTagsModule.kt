@@ -1,13 +1,7 @@
 package com.passbolt.mobile.android.tagsdetails
 
-import com.mikepenz.fastadapter.FastAdapter
-import com.mikepenz.fastadapter.adapters.ItemAdapter
-import com.passbolt.mobile.android.permissions.recycler.GroupItem
-import com.passbolt.mobile.android.tagsdetails.tagsrecycler.TagItem
+import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.core.module.Module
-import org.koin.core.module.dsl.scopedOf
-import org.koin.core.qualifier.named
-import org.koin.dsl.bind
 
 /**
  * Passbolt - Open source password manager for teams
@@ -36,16 +30,5 @@ internal const val TAGS_ITEM_ADAPTER = "TAGS_ITEM_ADAPTER"
 internal const val TAGS_ADAPTER = "TAGS_ADAPTER"
 
 fun Module.resourceTagsModule() {
-    scope<ResourceTagsFragment> {
-        scopedOf(::ResourceTagsPresenter) bind ResourceTagsContract.Presenter::class
-
-        scoped<ItemAdapter<TagItem>>(named(TAGS_ITEM_ADAPTER)) {
-            ItemAdapter.items()
-        }
-        scoped(named(TAGS_ADAPTER)) {
-            FastAdapter.with(
-                get<ItemAdapter<GroupItem>>(named(TAGS_ITEM_ADAPTER)),
-            )
-        }
-    }
+    viewModelOf(::ResourceTagsViewModel)
 }

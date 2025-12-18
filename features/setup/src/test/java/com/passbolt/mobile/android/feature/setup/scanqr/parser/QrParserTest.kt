@@ -3,6 +3,8 @@ package com.passbolt.mobile.android.feature.setup.scanqr.parser
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
 import com.passbolt.mobile.android.core.qrscan.analyzer.BarcodeScanResult
+import com.passbolt.mobile.android.core.qrscan.analyzer.BarcodeScanResult.NoBarcodeInRange
+import com.passbolt.mobile.android.core.qrscan.analyzer.BarcodeScanResult.SingleBarcode
 import com.passbolt.mobile.android.feature.setup.di.testModule
 import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.ParseResult
 import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.ScanQrParser
@@ -11,6 +13,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.yield
 import org.junit.Rule
 import org.junit.Test
 import org.koin.core.logger.Level
@@ -65,17 +68,23 @@ class QrParserTest : KoinTest {
                     scanQrParser.startParsing(mockScanningFlow)
                 }
 
-            launch {
-                scanQrParser.parseResultFlow.test {
-                    assertNoBarcodesInRange(expectItem())
-                    assertMultipleBarcodesItem(expectItem())
-                    assertNotAPassboltQrCode(expectItem())
-                    cancelAndIgnoreRemainingEvents()
+            val testJob =
+                launch {
+                    scanQrParser.parseResultFlow.test {
+                        assertNoBarcodesInRange(awaitItem())
+                        assertMultipleBarcodesItem(awaitItem())
+                        assertNotAPassboltQrCode(awaitItem())
+                        cancelAndIgnoreRemainingEvents()
+                    }
                 }
-            }
-            mockScanningFlow.emit(BarcodeScanResult.MultipleBarcodes)
-            mockScanningFlow.emit(BarcodeScanResult.SingleBarcode(SAMPLE_BYTE_ARRAY))
 
+            yield()
+            mockScanningFlow.emit(BarcodeScanResult.MultipleBarcodes)
+            yield()
+            mockScanningFlow.emit(SingleBarcode(SAMPLE_BYTE_ARRAY))
+            yield()
+
+            testJob.join()
             scanningJob.cancel()
         }
 
@@ -105,17 +114,22 @@ class QrParserTest : KoinTest {
                     scanQrParser.startParsing(mockScanningFlow)
                 }
 
-            launch {
-                scanQrParser.parseResultFlow.test {
-                    assertNoBarcodesInRange(expectItem())
-                    assertPassboltQrFirstPage(expectItem())
-                    assertPassboltQrSubsequentPage(expectItem())
-                    cancelAndIgnoreRemainingEvents()
+            val testJob =
+                launch {
+                    scanQrParser.parseResultFlow.test {
+                        assertNoBarcodesInRange(awaitItem())
+                        assertPassboltQrFirstPage(awaitItem())
+                        assertPassboltQrSubsequentPage(awaitItem())
+                        cancelAndIgnoreRemainingEvents()
+                    }
                 }
-            }
-            mockScanningFlow.emit(BarcodeScanResult.SingleBarcode(PASSBOLT_FIRST_PAGE_SCAN))
-            mockScanningFlow.emit(BarcodeScanResult.SingleBarcode(PASSBOLT_SUBSEQUENT_PAGE_SCAN))
+            yield()
+            mockScanningFlow.emit(SingleBarcode(PASSBOLT_FIRST_PAGE_SCAN))
+            yield()
+            mockScanningFlow.emit(SingleBarcode(PASSBOLT_SUBSEQUENT_PAGE_SCAN))
+            yield()
 
+            testJob.join()
             scanningJob.cancel()
         }
 
@@ -127,20 +141,25 @@ class QrParserTest : KoinTest {
                     scanQrParser.startParsing(mockScanningFlow)
                 }
 
-            launch {
-                scanQrParser.parseResultFlow.test {
-                    assertNoBarcodesInRange(expectItem())
-                    assertPassboltQrFirstPage(expectItem())
-                    assertNoBarcodesInRange(expectItem())
-                    expectComplete()
+            val tesJob =
+                launch {
+                    scanQrParser.parseResultFlow.test {
+                        assertNoBarcodesInRange(awaitItem())
+                        assertPassboltQrFirstPage(awaitItem())
+                        assertNoBarcodesInRange(awaitItem())
+                        assertScanningFailure(awaitItem())
+                        cancelAndConsumeRemainingEvents()
+                    }
                 }
-            }
-            mockScanningFlow.emit(BarcodeScanResult.SingleBarcode(PASSBOLT_FIRST_PAGE_SCAN))
-            mockScanningFlow.emit(BarcodeScanResult.SingleBarcode(PASSBOLT_FIRST_PAGE_SCAN))
-            mockScanningFlow.emit(BarcodeScanResult.NoBarcodeInRange)
-            mockScanningFlow.emit(BarcodeScanResult.SingleBarcode(PASSBOLT_FIRST_PAGE_SCAN))
-            mockScanningFlow.emit(BarcodeScanResult.SingleBarcode(PASSBOLT_FIRST_PAGE_SCAN))
+            yield()
+            mockScanningFlow.emit(SingleBarcode(PASSBOLT_FIRST_PAGE_SCAN))
+            yield()
+            mockScanningFlow.emit(NoBarcodeInRange)
+            yield()
+            mockScanningFlow.emit(SingleBarcode(PASSBOLT_FIRST_PAGE_SCAN))
+            yield()
 
+            tesJob.join()
             scanningJob.cancel()
         }
 
@@ -152,41 +171,53 @@ class QrParserTest : KoinTest {
                     scanQrParser.startParsing(mockScanningFlow)
                 }
 
-            launch {
-                scanQrParser.parseResultFlow.test {
-                    assertNoBarcodesInRange(expectItem())
-                    assertPassboltQrFirstPage(expectItem())
-                    assertPassboltQrSubsequentPage(expectItem())
-                    assertNoBarcodesInRange(expectItem())
-                    expectComplete()
+            val testJob =
+                launch {
+                    scanQrParser.parseResultFlow.test {
+                        assertNoBarcodesInRange(awaitItem())
+                        assertPassboltQrFirstPage(awaitItem())
+                        assertPassboltQrSubsequentPage(awaitItem())
+                        assertNoBarcodesInRange(awaitItem())
+                        cancelAndConsumeRemainingEvents()
+                    }
                 }
-            }
-            mockScanningFlow.emit(BarcodeScanResult.SingleBarcode(PASSBOLT_FIRST_PAGE_SCAN))
-            mockScanningFlow.emit(BarcodeScanResult.SingleBarcode(PASSBOLT_SUBSEQUENT_PAGE_SCAN))
-            mockScanningFlow.emit(BarcodeScanResult.NoBarcodeInRange)
-            mockScanningFlow.emit(BarcodeScanResult.SingleBarcode(PASSBOLT_SUBSEQUENT_PAGE_SCAN))
-            mockScanningFlow.emit(BarcodeScanResult.SingleBarcode(PASSBOLT_SUBSEQUENT_PAGE_SCAN))
+            yield()
+            mockScanningFlow.emit(SingleBarcode(PASSBOLT_FIRST_PAGE_SCAN))
+            yield()
+            mockScanningFlow.emit(SingleBarcode(PASSBOLT_SUBSEQUENT_PAGE_SCAN))
+            yield()
+            mockScanningFlow.emit(NoBarcodeInRange)
+            yield()
+            mockScanningFlow.emit(SingleBarcode(PASSBOLT_SUBSEQUENT_PAGE_SCAN))
+            yield()
+            mockScanningFlow.emit(SingleBarcode(PASSBOLT_SUBSEQUENT_PAGE_SCAN))
+            yield()
 
+            testJob.join()
             scanningJob.cancel()
         }
 
     @Test
-    fun `parser should report error when subsequent page scaned without first page`() =
+    fun `parser should report error when subsequent page scanned without first page`() =
         runTest {
             scanningJob =
                 launch {
                     scanQrParser.startParsing(mockScanningFlow)
                 }
 
-            launch {
-                scanQrParser.parseResultFlow.test {
-                    assertNoBarcodesInRange(expectItem())
-                    assertParserError(expectItem())
-                    expectComplete()
+            val testJob =
+                launch {
+                    scanQrParser.parseResultFlow.test {
+                        assertNoBarcodesInRange(awaitItem())
+                        assertScanningFailure(awaitItem())
+                        cancelAndConsumeRemainingEvents()
+                    }
                 }
-            }
-            mockScanningFlow.emit(BarcodeScanResult.SingleBarcode(PASSBOLT_SUBSEQUENT_PAGE_SCAN))
+            yield()
+            mockScanningFlow.emit(SingleBarcode(PASSBOLT_SUBSEQUENT_PAGE_SCAN))
+            yield()
 
+            testJob.join()
             scanningJob.cancel()
         }
 
@@ -198,15 +229,19 @@ class QrParserTest : KoinTest {
                     scanQrParser.startParsing(mockScanningFlow)
                 }
 
-            launch {
-                scanQrParser.parseResultFlow.test {
-                    assertNoBarcodesInRange(expectItem())
-                    assertFailWithScanException(expectItem())
-                    cancelAndIgnoreRemainingEvents()
+            val testJob =
+                launch {
+                    scanQrParser.parseResultFlow.test {
+                        assertNoBarcodesInRange(awaitItem())
+                        assertFailWithScanException(awaitItem())
+                        cancelAndIgnoreRemainingEvents()
+                    }
                 }
-            }
+            yield()
             mockScanningFlow.emit(BarcodeScanResult.Failure(TEST_EXCEPTION))
+            yield()
 
+            testJob.join()
             scanningJob.cancel()
         }
 
@@ -218,15 +253,19 @@ class QrParserTest : KoinTest {
                     scanQrParser.startParsing(mockScanningFlow)
                 }
 
-            launch {
-                scanQrParser.parseResultFlow.test {
-                    assertNoBarcodesInRange(expectItem())
-                    assertParserError(expectItem())
-                    expectComplete()
+            val testJob =
+                launch {
+                    scanQrParser.parseResultFlow.test {
+                        assertNoBarcodesInRange(awaitItem())
+                        assertScanningFailure(awaitItem())
+                        cancelAndConsumeRemainingEvents()
+                    }
                 }
-            }
-            mockScanningFlow.emit(BarcodeScanResult.SingleBarcode(PASSBOLT_SUBSEQUENT_PAGE_SCAN))
+            yield()
+            mockScanningFlow.emit(SingleBarcode(PASSBOLT_SUBSEQUENT_PAGE_SCAN))
+            yield()
 
+            testJob.join()
             scanningJob.cancel()
         }
 
@@ -238,15 +277,19 @@ class QrParserTest : KoinTest {
                     scanQrParser.startParsing(mockScanningFlow)
                 }
 
-            launch {
-                scanQrParser.parseResultFlow.test {
-                    assertNoBarcodesInRange(expectItem())
-                    assertPassboltAccountKitPage(expectItem())
-                    cancelAndIgnoreRemainingEvents()
+            val testJob =
+                launch {
+                    scanQrParser.parseResultFlow.test {
+                        assertNoBarcodesInRange(awaitItem())
+                        assertPassboltAccountKitPage(awaitItem())
+                        cancelAndIgnoreRemainingEvents()
+                    }
                 }
-            }
-            mockScanningFlow.emit(BarcodeScanResult.SingleBarcode(PASSBOLT_ACCOUNT_KIT_PAGE_SCAN))
+            yield()
+            mockScanningFlow.emit(SingleBarcode(PASSBOLT_ACCOUNT_KIT_PAGE_SCAN))
+            yield()
 
+            testJob.join()
             scanningJob.cancel()
         }
 
@@ -258,10 +301,6 @@ class QrParserTest : KoinTest {
         assertThat(item).isInstanceOf(ParseResult.PassboltQr.SubsequentPage::class.java)
     }
 
-    private fun assertParserError(item: ParseResult) {
-        assertThat(item).isInstanceOf(ParseResult.Failure::class.java)
-    }
-
     private fun assertPassboltAccountKitPage(item: ParseResult) {
         assertThat(item).isInstanceOf(ParseResult.PassboltQr.AccountKitPage::class.java)
     }
@@ -270,6 +309,10 @@ class QrParserTest : KoinTest {
         assertThat(item).isInstanceOf(ParseResult.ScanFailure::class.java)
         val exception = (item as ParseResult.ScanFailure).exception
         assertThat(exception).isEqualTo(TEST_EXCEPTION)
+    }
+
+    private fun assertScanningFailure(item: ParseResult) {
+        assertThat(item).isInstanceOf(ParseResult.ScanFailure::class.java)
     }
 
     private companion object {

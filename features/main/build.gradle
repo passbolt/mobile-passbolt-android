@@ -31,6 +31,7 @@ dependencies {
 
     implementation libs.navigation.fragment
     implementation libs.navigation.ui
+    implementation platform(libs.koin.bom)
     implementation libs.koin
     implementation libs.inappupdate.core
     implementation libs.inappupdate.ktx

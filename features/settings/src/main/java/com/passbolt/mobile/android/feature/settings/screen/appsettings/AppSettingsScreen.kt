@@ -94,8 +94,8 @@ import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettin
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.getKoin
 import org.koin.compose.koinInject
-import org.koin.compose.rememberKoinInject
 import java.util.concurrent.Executor
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
@@ -135,8 +135,8 @@ private fun rememberAppSettingsEnvironment(onIntent: (AppSettingsIntent) -> Unit
                 onIntent(RefreshedPassphrase)
             }
         }
-    val biometricPromptBuilder = rememberKoinInject<BiometricPrompt.PromptInfo.Builder>()
-    val executor = rememberKoinInject<Executor>()
+    val biometricPromptBuilder = getKoin().get<BiometricPrompt.PromptInfo.Builder>()
+    val executor = getKoin().get<Executor>()
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
 

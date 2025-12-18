@@ -35,6 +35,7 @@ import com.passbolt.mobile.android.feature.accountdetails.screen.AccountDetailsI
 import com.passbolt.mobile.android.feature.accountdetails.screen.AccountDetailsIntent.UpdateLabel
 import com.passbolt.mobile.android.feature.accountdetails.screen.AccountDetailsScreenSideEffect.NavigateUp
 import com.passbolt.mobile.android.feature.accountdetails.screen.AccountDetailsValidationError.MaxLengthExceeded
+import com.passbolt.mobile.android.mappers.AccountModelMapper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -107,7 +108,7 @@ class AccountDetailsViewModelTest : KoinTest {
             viewModel = get()
 
             viewModel.viewState.test {
-                val state = expectItem()
+                val state = awaitItem()
                 assertThat(state.label).isEqualTo(LABEL)
                 assertThat(state.avatarUrl).isEqualTo(AVATAR_URL)
                 assertThat(state.organizationUrl).isEqualTo(SERVER_URL)
@@ -128,11 +129,11 @@ class AccountDetailsViewModelTest : KoinTest {
 
             viewModel.viewState.test {
                 // default
-                expectItem()
+                awaitItem()
 
                 viewModel.onIntent(UpdateLabel(newLabel))
 
-                val updatedState = expectItem()
+                val updatedState = awaitItem()
                 assertThat(updatedState.label).isEqualTo(newLabel)
 
                 viewModel.onIntent(SaveChanges)
@@ -146,7 +147,7 @@ class AccountDetailsViewModelTest : KoinTest {
             )
 
             viewModel.sideEffect.test {
-                assertIs<NavigateUp>(expectItem())
+                assertIs<NavigateUp>(awaitItem())
             }
         }
 
@@ -159,7 +160,7 @@ class AccountDetailsViewModelTest : KoinTest {
             viewModel.sideEffect.test {
                 viewModel.onIntent(StartTransferAccount)
 
-                assertIs<AccountDetailsScreenSideEffect.NavigateToTransferAccount>(expectItem())
+                assertIs<AccountDetailsScreenSideEffect.NavigateToTransferAccount>(awaitItem())
             }
         }
 
@@ -173,14 +174,14 @@ class AccountDetailsViewModelTest : KoinTest {
 
             viewModel.viewState.test {
                 // default
-                expectItem()
+                awaitItem()
 
                 viewModel.onIntent(UpdateLabel(tooLongLabel))
-                assertThat(expectItem().label).isEqualTo(tooLongLabel)
+                assertThat(awaitItem().label).isEqualTo(tooLongLabel)
 
                 viewModel.onIntent(SaveChanges)
 
-                assertThat(expectItem().labelValidationErrors).contains(MaxLengthExceeded(64))
+                assertThat(awaitItem().labelValidationErrors).contains(MaxLengthExceeded(64))
             }
         }
 
@@ -204,7 +205,26 @@ class AccountDetailsViewModelTest : KoinTest {
             )
 
             viewModel.sideEffect.test {
-                assertIs<NavigateUp>(expectItem())
+                assertIs<NavigateUp>(awaitItem())
+            }
+        }
+
+    @OptIn(ExperimentalTime::class)
+    @Test
+    fun `should set default label when current label is empty`() =
+        runTest {
+            viewModel = get()
+
+            viewModel.viewState.test {
+                awaitItem()
+
+                viewModel.onIntent(UpdateLabel(""))
+                assertThat(awaitItem().label).isEmpty()
+
+                viewModel.onIntent(SaveChanges)
+
+                val updatedState = awaitItem()
+                assertThat(updatedState.label).isEqualTo(AccountModelMapper.defaultLabel(FIRST_NAME, LAST_NAME))
             }
         }
 

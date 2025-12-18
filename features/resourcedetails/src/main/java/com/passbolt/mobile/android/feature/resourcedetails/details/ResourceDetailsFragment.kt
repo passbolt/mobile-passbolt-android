@@ -49,7 +49,7 @@ import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthentic
 import com.passbolt.mobile.android.feature.resourceform.main.ResourceFormFragment
 import com.passbolt.mobile.android.feature.resources.ResourcesDetailsDirections
 import com.passbolt.mobile.android.feature.resources.databinding.FragmentResourceDetailsBinding
-import com.passbolt.mobile.android.locationdetails.LocationItem
+import com.passbolt.mobile.android.locationdetails.ui.LocationItem
 import com.passbolt.mobile.android.permissions.permissions.PermissionsFragment
 import com.passbolt.mobile.android.permissions.permissions.PermissionsItem
 import com.passbolt.mobile.android.permissions.permissions.PermissionsMode
@@ -567,12 +567,9 @@ class ResourceDetailsFragment :
         )
     }
 
-    override fun navigateToResourceTags(
-        resourceId: String,
-        mode: PermissionsMode,
-    ) {
+    override fun navigateToResourceTags(resourceId: String) {
         findNavController().navigate(
-            NavDeepLinkProvider.resourceTagsDeepLinkRequest(resourceId, mode.name),
+            NavDeepLinkProvider.resourceTagsDeepLinkRequest(resourceId),
         )
     }
 

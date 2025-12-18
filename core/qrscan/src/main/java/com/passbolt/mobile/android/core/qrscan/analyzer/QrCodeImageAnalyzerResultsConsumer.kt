@@ -39,15 +39,13 @@ class QrCodeImageAnalyzerResultsConsumer(
 
     private val _resultFlow = MutableStateFlow<BarcodeScanResult>(BarcodeScanResult.NoBarcodeInRange)
 
-    override fun accept(result: MlKitAnalyzer.Result?) {
-        if (result == null) return
-
-        result.getThrowable(barcodeScanner)?.let { throwable ->
-            Timber.e("Error during qr code scan", throwable)
+    override fun accept(value: MlKitAnalyzer.Result) {
+        value.getThrowable(barcodeScanner)?.let { throwable ->
+            Timber.e(throwable, "Error during qr code scan")
             _resultFlow.tryEmit(BarcodeScanResult.Failure(throwable))
         }
 
-        result.getValue(barcodeScanner)?.let { value ->
+        value.getValue(barcodeScanner)?.let { value ->
             _resultFlow.tryEmit(
                 when {
                     value.isEmpty() -> BarcodeScanResult.NoBarcodeInRange

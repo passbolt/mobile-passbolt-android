@@ -4,14 +4,6 @@ import android.content.Context
 import android.text.InputType
 import android.util.AttributeSet
 import android.view.Gravity
-import com.passbolt.mobile.android.core.extension.px
-import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
-import com.passbolt.mobile.android.core.extension.visible
-import com.passbolt.mobile.android.core.ui.R
-import com.skydoves.balloon.ArrowOrientation
-import com.skydoves.balloon.createBalloon
-import com.skydoves.balloon.showAlignLeft
-import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -53,41 +45,7 @@ class MultilineInputView
             }
         }
 
-        // TODO confirm if lock will be entirely removed
-        @Suppress("Unused")
-        fun addLockIcon() {
-            with(binding.icon) {
-                setImageResource(R.drawable.ic_lock)
-                setDebouncingOnClick { showIconTooltip() }
-                visible()
-            }
-        }
-
-        fun updateLockIconVisibility(isSecret: Boolean) {
-            if (isSecret) {
-                binding.icon.setImageResource(R.drawable.ic_lock)
-            } else {
-                binding.icon.setImageResource(R.drawable.ic_lock_open)
-            }
-        }
-
-        private fun showIconTooltip() {
-            binding.icon.showAlignLeft(
-                createBalloon(context) {
-                    setArrowOrientation(ArrowOrientation.END)
-                    setTextResource(LocalizationR.string.password_description_encrypted)
-                    paddingBottom = TOOLTIP_PADDING
-                    paddingLeft = TOOLTIP_PADDING
-                    paddingTop = TOOLTIP_PADDING
-                    paddingRight = TOOLTIP_PADDING
-                },
-                TOOLTIP_ALIGN_PADDING,
-            )
-        }
-
         companion object {
             private const val MIN_LINES = 3
-            private val TOOLTIP_PADDING = 16.px
-            private val TOOLTIP_ALIGN_PADDING = (-8).px
         }
     }

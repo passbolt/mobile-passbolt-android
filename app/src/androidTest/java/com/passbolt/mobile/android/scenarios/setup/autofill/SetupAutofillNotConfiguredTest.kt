@@ -53,13 +53,13 @@ import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivityScenarioRule
 import org.hamcrest.Matcher
 import org.hamcrest.core.AllOf
+import org.junit.Before
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.koin.test.KoinTest
 import org.koin.test.inject
-import kotlin.test.BeforeTest
-import kotlin.test.Ignore
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
@@ -94,7 +94,7 @@ class SetupAutofillNotConfiguredTest : KoinTest {
     private val accountDataCleaner: AccountDataCleaner by inject()
     private val accountDataInitializer: AccountInitializer by inject()
 
-    @BeforeTest
+    @Before
     fun setup() {
         accountDataCleaner.clearAccountData()
         onView(withId(R.id.connectToAccountButton)).perform(click())

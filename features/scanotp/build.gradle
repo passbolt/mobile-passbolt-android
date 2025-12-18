@@ -7,13 +7,6 @@ plugins {
 
 android {
     namespace = "com.passbolt.mobile.android.feature.scanotp"
-    defaultConfig {
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-    }
-
-    useLibrary("android.test.runner")
-    useLibrary("android.test.base")
-    useLibrary("android.test.mock")
 }
 
 dependencies {
@@ -40,6 +33,7 @@ dependencies {
 
     implementation libs.navigation.fragment
     implementation libs.navigation.ui
+    implementation platform(libs.koin.bom)
     implementation libs.koin
     implementation libs.camerax.view
     implementation libs.camerax

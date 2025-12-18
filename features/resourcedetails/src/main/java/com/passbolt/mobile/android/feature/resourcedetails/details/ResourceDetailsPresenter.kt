@@ -20,13 +20,13 @@ import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcePer
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceTagsUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUseCase
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
+import com.passbolt.mobile.android.core.ui.compose.sharedwith.PermissionsDatasetCreator
 import com.passbolt.mobile.android.featureflags.usecase.GetFeatureFlagsUseCase
 import com.passbolt.mobile.android.jsonmodel.delegates.TotpSecret
 import com.passbolt.mobile.android.mappers.OtpModelMapper
 import com.passbolt.mobile.android.mappers.ResourceFormMapper
 import com.passbolt.mobile.android.metadata.usecase.CanShareResourceUseCase
 import com.passbolt.mobile.android.permissions.permissions.PermissionsMode
-import com.passbolt.mobile.android.permissions.recycler.PermissionsDatasetCreator
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType
 import com.passbolt.mobile.android.ui.CustomFieldModel.BooleanCustomField
 import com.passbolt.mobile.android.ui.CustomFieldModel.NumberCustomField
@@ -629,7 +629,7 @@ class ResourceDetailsPresenter(
     }
 
     override fun tagsClick() {
-        view?.navigateToResourceTags(resourceModel.resourceId, PermissionsMode.VIEW)
+        view?.navigateToResourceTags(resourceModel.resourceId)
     }
 
     override fun favouriteClick(option: ResourceMoreMenuModel.FavouriteOption) {

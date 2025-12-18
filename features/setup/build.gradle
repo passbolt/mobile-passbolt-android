@@ -43,6 +43,7 @@ dependencies {
     implementation libs.camerax
     implementation libs.camerax.lifecycle
     implementation libs.gson
+    implementation platform(libs.koin.bom)
     implementation libs.koin
     implementation libs.coil.views
     implementation libs.kotlin.serializationjson

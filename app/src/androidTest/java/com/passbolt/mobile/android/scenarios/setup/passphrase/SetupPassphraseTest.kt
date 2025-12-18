@@ -56,7 +56,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.koin.test.KoinTest
 import org.koin.test.inject
-import kotlin.test.BeforeTest
 import com.google.android.material.R as MaterialR
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
@@ -90,10 +89,6 @@ class SetupPassphraseTest : KoinTest {
                 ),
             )
         }
-
-    @BeforeTest
-    fun setup() {
-    }
 
     //    https://passbolt.testrail.io/index.php?/cases/view/2349
     @Test

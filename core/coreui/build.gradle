@@ -8,6 +8,7 @@ plugins {
 dependencies {
     implementation project(':localization')
     implementation project(':ui')
+    implementation project(':common')
 
     implementation libs.androidx.core
     implementation libs.appcompat
@@ -15,7 +16,6 @@ dependencies {
     implementation libs.constraintlayout
     implementation libs.navigation.fragment
     implementation libs.navigation.ui
-    implementation libs.balloon
     implementation libs.koin
     implementation libs.fastadapter.binding
     implementation libs.fastadapter.core
@@ -27,6 +27,7 @@ dependencies {
     implementation libs.compose.ui.graphics
     implementation libs.compose.material3
     implementation libs.compose.ui.tooling
+    implementation libs.compose.icons
     debugImplementation libs.compose.ui.tooling.preview
 }
 

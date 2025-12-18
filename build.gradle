@@ -17,8 +17,6 @@ plugins {
     alias libs.plugins.playstore.publisher apply false
     alias(libs.plugins.compose.compiler) apply false
     alias libs.plugins.dependency.analysis
-    alias libs.plugins.kover
-    alias libs.plugins.dokka
     alias libs.plugins.detekt
     alias libs.plugins.kotlin.ksp
     alias libs.plugins.snyk
@@ -64,12 +62,7 @@ subprojects {
 }
 
 apply from: "gradle/dependencyUpdates.gradle"
-apply from: 'gradle/koverExcludes.gradle'
 
-task clean(type: Delete) {
-    delete rootProject.buildDir
-}
-
-tasks.koverMergedHtmlReport {
-    excludes = project.koverExcludes
+tasks.register('clean', Delete) {
+    delete rootProject.layout.buildDirectory
 }
