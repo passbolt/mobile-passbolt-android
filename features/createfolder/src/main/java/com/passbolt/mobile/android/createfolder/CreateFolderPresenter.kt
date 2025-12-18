@@ -25,6 +25,7 @@ import com.passbolt.mobile.android.ui.PermissionModelUi
 import com.passbolt.mobile.android.ui.ResourcePermission
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
 
 /**
@@ -216,6 +217,11 @@ class CreateFolderPresenter(
                 // handled by runAuthenticatedOperation
             }
         }
+    }
+
+    override fun detach() {
+        scope.coroutineContext.cancelChildren()
+        super<BaseAuthenticatedPresenter>.detach()
     }
 
     private companion object {

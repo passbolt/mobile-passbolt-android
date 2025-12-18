@@ -37,6 +37,8 @@ class FillableInputsFinder(
         autofillParsedStructure: Set<ParsedStructure>,
     ): ParsedStructure? {
         val hintValues = autofillHintsFactory.getHintValues(field)
+        // if any view has domain set, treat as browser
+        val isBrowser = autofillParsedStructure.any { it.domain != null }
         return autofillParsedStructure
             .asSequence()
             .filter { !it.autofillHints.isNullOrEmpty() }
@@ -47,10 +49,12 @@ class FillableInputsFinder(
                         "Autofill matching structure found for field. " +
                             "\nField hint values: %s " +
                             "\nStructure hints: %s " +
-                            "\nWeb domain: %s",
+                            "\nWeb domain: %s" +
+                            "\nPackage: %s",
                         hintValues.joinToString(separator = ","),
                         parsedStructure.autofillHints!!.joinToString(separator = ","),
                         parsedStructure.domain,
+                        parsedStructure.packageId,
                     )
                 }
 
@@ -59,7 +63,11 @@ class FillableInputsFinder(
                     Timber.d("Checking if found structure has domain set: %s", hasDomainSet)
                 }
 
-                autofillMatching && hasDomainSet
+                if (isBrowser) {
+                    autofillMatching && hasDomainSet
+                } else {
+                    autofillMatching
+                }
             }
     }
 

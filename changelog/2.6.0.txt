@@ -1,0 +1,17 @@
+# Passbolt 2.6.0-46 Android app release notes
+
+## Fixed
+- MOB-3213: Use default label if whole label is deleted
+- MOB-3211: Fix tags sorting, fix shared folder icon
+- MOB-3206: Adjust empty state for paginated objects; add debounce
+- MOB-3248: Fix data refresh service not stopped on time on devices with aggressive battery saver
+
+## Security
+- MOB-3218: Enforce autofill web domain field and a single web domain value to enable autofill; this enhances security, but may cause the autofill not to open on browsers that don’t support this
+
+## Maintenance
+- MOB-3058: Update dependencies
+- MOB-3202: Group details MVI
+- MOB-3204: Tags details MVI
+- MOB-3207: Location details MVI
+- MOB-1977: Folder details MVI

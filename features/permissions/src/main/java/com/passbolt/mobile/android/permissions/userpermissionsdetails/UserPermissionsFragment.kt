@@ -48,6 +48,11 @@ class UserPermissionsFragment :
         presenter.argsRetrieved(args.permission, args.mode)
     }
 
+    override fun onDestroyView() {
+        presenter.detach()
+        super.onDestroyView()
+    }
+
     private fun setListeners() {
         with(requiredBinding) {
             permissionSelect.onPermissionSelectedListener = {

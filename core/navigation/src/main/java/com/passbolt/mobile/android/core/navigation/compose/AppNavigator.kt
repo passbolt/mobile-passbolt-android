@@ -55,6 +55,8 @@ class AppNavigator(
     }
 
     fun navigateBack(): Any? {
+        if (backStack.size <= 1) return null
+
         val result = backStack.removeLastOrNull()
         _currentBackStackItem.value = backStack.lastOrNull()
         return result
