@@ -1,8 +1,3 @@
-package com.passbolt.mobile.android.createfolder
-
-import org.koin.core.module.Module
-import org.koin.core.module.dsl.viewModelOf
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -26,6 +21,32 @@ import org.koin.core.module.dsl.viewModelOf
  * @since v1.0
  */
 
-fun Module.createFolderModule() {
-    viewModelOf(::CreateFolderViewModel)
-}
+package com.passbolt.mobile.android.createfolder
+
+import android.content.Context
+import com.passbolt.mobile.android.createfolder.CreateFolderValidationError.MaxLengthExceeded
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
+
+internal fun getErrorMessage(
+    context: Context,
+    type: SnackbarErrorType,
+    errorMessage: String?,
+): String =
+    when (type) {
+        SnackbarErrorType.CREATE_FOLDER_ERROR ->
+            context.getString(LocalizationR.string.create_folder_error_format, errorMessage.orEmpty())
+        SnackbarErrorType.SHARE_FOLDER_ERROR ->
+            context.getString(LocalizationR.string.share_folder_error_format, errorMessage.orEmpty())
+    }
+
+internal fun getFolderNameErrorMessage(
+    context: Context,
+    folderNameValidationErrors: List<CreateFolderValidationError>,
+): String =
+    when (val error = folderNameValidationErrors.first()) {
+        is MaxLengthExceeded ->
+            context.getString(
+                LocalizationR.string.validation_required_with_max_length,
+                error.maxLength,
+            )
+    }

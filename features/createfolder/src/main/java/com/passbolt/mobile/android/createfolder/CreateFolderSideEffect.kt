@@ -1,8 +1,3 @@
-package com.passbolt.mobile.android.createfolder
-
-import org.koin.core.module.Module
-import org.koin.core.module.dsl.viewModelOf
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -26,6 +21,22 @@ import org.koin.core.module.dsl.viewModelOf
  * @since v1.0
  */
 
-fun Module.createFolderModule() {
-    viewModelOf(::CreateFolderViewModel)
+package com.passbolt.mobile.android.createfolder
+
+sealed class CreateFolderSideEffect {
+    data object NavigateUp : CreateFolderSideEffect()
+
+    data class FolderCreated(
+        val folderName: String,
+    ) : CreateFolderSideEffect()
+
+    data class ShowErrorSnackbar(
+        val type: SnackbarErrorType,
+        val message: String? = null,
+    ) : CreateFolderSideEffect()
+}
+
+enum class SnackbarErrorType {
+    CREATE_FOLDER_ERROR,
+    SHARE_FOLDER_ERROR,
 }

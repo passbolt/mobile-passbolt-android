@@ -43,7 +43,6 @@ import com.passbolt.mobile.android.feature.settings.screen.accounts.keyinspector
 import com.passbolt.mobile.android.feature.settings.screen.accounts.keyinspector.KeyInspectorScreenSideEffect.ShowErrorSnackbar
 import com.passbolt.mobile.android.mappers.AccountModelMapper
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 internal class KeyInspectorViewModel(
     private val fetchCurrentUserUseCase: FetchCurrentUserUseCase,
@@ -53,7 +52,6 @@ internal class KeyInspectorViewModel(
     coroutineLaunchContext: CoroutineLaunchContext,
 ) : AuthenticatedViewModel<KeyInspectorState, KeyInspectorScreenSideEffect>(KeyInspectorState()) {
     init {
-        Timber.e("new view mdoel")
         viewModelScope.launch(coroutineLaunchContext.default) {
             updateViewState { copy(showProgress = true) }
             loadInitialValues()
