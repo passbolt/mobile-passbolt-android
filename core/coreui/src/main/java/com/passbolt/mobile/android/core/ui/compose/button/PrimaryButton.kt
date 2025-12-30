@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -17,10 +19,12 @@ fun PrimaryButton(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    colors: ButtonColors = ButtonDefaults.buttonColors(),
 ) {
     Button(
         shape = RoundedCornerShape(4.dp),
         onClick = onClick,
+        colors = colors,
         modifier =
             modifier
                 .fillMaxWidth()
@@ -34,6 +38,6 @@ fun PrimaryButton(
 @Composable
 private fun PrimaryButtonPreview() {
     PassboltTheme {
-        PrimaryButton(text = "Primary Button", onClick = {})
+        PrimaryButton(text = "Primary Button", {})
     }
 }

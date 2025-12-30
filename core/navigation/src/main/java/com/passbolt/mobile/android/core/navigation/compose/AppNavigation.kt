@@ -26,6 +26,7 @@ fun AppNavigation(navigator: AppNavigator = koinInject()) {
             koinInject<FeatureModuleNavigation>(named(Feature.SETTINGS)),
             koinInject<FeatureModuleNavigation>(named(Feature.LOGS)),
             koinInject<FeatureModuleNavigation>(named(Feature.ACCOUNT_DETAILS)),
+            koinInject<FeatureModuleNavigation>(named(Feature.TRANSFER_ACCOUNT_TO_ANOTHER_DEVICE)),
         )
 
     NavDisplay(

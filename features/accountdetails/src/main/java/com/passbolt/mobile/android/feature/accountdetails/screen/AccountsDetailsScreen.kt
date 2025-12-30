@@ -44,6 +44,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
 import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
 import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.TransferAccount
+import com.passbolt.mobile.android.core.navigation.compose.keys.TransferAccountToAnotherDeviceKey.Onboarding
 import com.passbolt.mobile.android.core.ui.compose.button.PrimaryButton
 import com.passbolt.mobile.android.core.ui.compose.circularimage.CircularProfileImage
 import com.passbolt.mobile.android.core.ui.compose.labelledtext.LabelledText
@@ -87,7 +88,13 @@ internal fun AccountDetailsScreen(
                 } else {
                     navigator.navigateBack()
                 }
-            NavigateToTransferAccount -> navigator.startNavigationActivity(context, TransferAccount)
+            NavigateToTransferAccount ->
+                if (context is AccountDetailsActivity) {
+                    // TODO handle after migration switch account flow to compose
+                    navigator.startNavigationActivity(context, TransferAccount)
+                } else {
+                    navigator.navigateToKey(Onboarding)
+                }
         }
     }
 }

@@ -22,45 +22,9 @@ package com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.summa
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class TransferAccountSummaryPresenter : TransferAccountSummaryContract.Presenter {
-    override var view: TransferAccountSummaryContract.View? = null
-    private lateinit var status: TransferAccountStatus
 
-    override fun argsRetrieved(status: TransferAccountStatus) {
-        this.status = status
-        setupView(status)
-    }
+internal sealed interface TransferAccountSummarySideEffect {
+    data object NavigateToMyAccount : TransferAccountSummarySideEffect
 
-    private fun setupView(status: TransferAccountStatus) {
-        view?.apply {
-            setTitle(status.title)
-            setButtonLabel(status.buttonText)
-            setIcon(status.icon)
-
-            when (status) {
-                is TransferAccountStatus.Canceled -> {
-                    showTryAgain()
-                }
-                is TransferAccountStatus.Failure -> {
-                    setDescription(status.message)
-                    showTryAgain()
-                }
-                is TransferAccountStatus.Success -> {
-                    // no-op
-                }
-            }
-        }
-    }
-
-    override fun buttonClick() {
-        view?.finish()
-    }
-
-    override fun backClick() {
-        view?.navigateToTransferAccountStart()
-    }
-
-    override fun tryAgainClick() {
-        view?.navigateToTransferAccountStart()
-    }
+    data object NavigateToTransferAccountStart : TransferAccountSummarySideEffect
 }

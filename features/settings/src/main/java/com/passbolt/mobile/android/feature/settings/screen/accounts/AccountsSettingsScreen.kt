@@ -37,9 +37,9 @@ import androidx.compose.ui.unit.dp
 import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
 import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
 import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.ManageAccounts
-import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.TransferAccount
 import com.passbolt.mobile.android.core.navigation.compose.keys.AccountDetailsNavigationKey.AccountDetails
 import com.passbolt.mobile.android.core.navigation.compose.keys.SettingsNavigationKey.KeyInspector
+import com.passbolt.mobile.android.core.navigation.compose.keys.TransferAccountToAnotherDeviceKey
 import com.passbolt.mobile.android.core.ui.R
 import com.passbolt.mobile.android.core.ui.compose.menu.OpenableSettingsItem
 import com.passbolt.mobile.android.core.ui.compose.topbar.BackNavigationIcon
@@ -76,7 +76,7 @@ internal fun AccountsSettingsScreen(
             NavigateToAccountDetails -> navigator.navigateToKey(AccountDetails)
             NavigateToKeyInspector -> navigator.navigateToKey(KeyInspector)
             NavigateToManageAccounts -> navigator.startNavigationActivity(context, ManageAccounts)
-            NavigateToTransferAccount -> navigator.startNavigationActivity(context, TransferAccount)
+            NavigateToTransferAccount -> navigator.navigateToKey(TransferAccountToAnotherDeviceKey.Onboarding)
             NavigateUp -> navigator.navigateBack()
         }
     }

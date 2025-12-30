@@ -1,7 +1,6 @@
 package com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccount
 
-import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
-import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.summary.TransferAccountStatus
+import com.passbolt.mobile.android.ui.TransferAccountStatusType
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,29 +24,20 @@ import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.summar
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+internal sealed interface TransferAccountScreenSideEffect {
+    data class NavigateToResult(
+        val statusType: TransferAccountStatusType,
+    ) : TransferAccountScreenSideEffect
 
-interface TransferAccountContract {
-    interface Presenter : BaseAuthenticatedContract.Presenter<View> {
-        fun cancelTransferButtonClick()
+    data class ShowErrorSnackbar(
+        val type: ErrorSnackbarType,
+        val errorMessage: String? = null,
+    ) : TransferAccountScreenSideEffect
 
-        fun stopTransferClick()
-
-        fun backClick()
-    }
-
-    interface View : BaseAuthenticatedContract.View {
-        fun showCancelTransferDialog()
-
-        fun showCouldNotInitializeTransferParameters()
-
-        fun showCouldNotCreateTransfer(message: String)
-
-        fun showCouldNotGenerateQrTransferData()
-
-        fun showQrCodeForData(qrCodeContent: String)
-
-        fun showErrorDuringTransferDetailsFetch(message: String)
-
-        fun navigateToResult(result: TransferAccountStatus)
+    enum class ErrorSnackbarType {
+        FAILED_TO_INITIALIZE_PARAMETERS,
+        FAILED_TO_CREATE_TRANSFER,
+        FAILED_TO_GENERATE_QR_DATA,
+        FAILED_TO_FETCH_TRANSFER_DETAILS,
     }
 }

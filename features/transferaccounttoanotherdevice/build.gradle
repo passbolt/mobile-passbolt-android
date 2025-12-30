@@ -1,6 +1,7 @@
 plugins {
     alias libs.plugins.android.library
     alias libs.plugins.kotlin.gradle
+    alias libs.plugins.compose.compiler
     alias libs.plugins.kotlin.serialization
     alias libs.plugins.navigation.safeargs
 }
@@ -24,6 +25,7 @@ dependencies {
 
     implementation platform(libs.koin.bom)
     implementation libs.koin
+    implementation libs.koin.compose
     implementation libs.fragment
     implementation libs.activity
     implementation libs.constraintlayout
@@ -35,13 +37,26 @@ dependencies {
     implementation libs.qr.generation
     implementation libs.okio
     implementation libs.espresso.idling.resource
+    implementation platform(libs.compose.bom)
+    implementation libs.compose.foundation
+    implementation libs.compose.icons
+    implementation libs.compose.material3
+    implementation libs.compose.lifecycle.viewmodel
+    implementation libs.compose.ui.tooling
+    debugImplementation libs.compose.ui.tooling.preview
+    implementation libs.compose.activity
+    implementation libs.androidx.navigation3.ui
+    implementation libs.androidx.navigation3.runtime
+    implementation libs.androidx.lifecycle.viewmodel.navigation3
 
     testImplementation project(':commontest')
+    testImplementation project(':passphrasememorycache')
 }
 
 android {
     namespace = "com.passbolt.mobile.android.feature.transferaccounttoanotherdevice"
     buildFeatures {
+        compose true
         viewBinding true
     }
 }

@@ -1,8 +1,4 @@
-package com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.summary
-
-import org.koin.core.module.Module
-import org.koin.core.module.dsl.singleOf
-import org.koin.core.module.dsl.viewModelOf
+package com.passbolt.mobile.android.ui
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,7 +23,8 @@ import org.koin.core.module.dsl.viewModelOf
  * @since v1.0
  */
 
-fun Module.transferAccountSummaryModule() {
-    viewModelOf(::TransferAccountSummaryViewModel)
-    singleOf(::TransferAccountStatusFactory)
+enum class TransferAccountStatusType {
+    SUCCESS,
+    FAILURE,
+    CANCELED,
 }
