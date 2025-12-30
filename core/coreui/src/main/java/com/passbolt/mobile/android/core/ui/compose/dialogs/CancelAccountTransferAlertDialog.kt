@@ -1,9 +1,3 @@
-package com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.summary
-
-import org.koin.core.module.Module
-import org.koin.core.module.dsl.singleOf
-import org.koin.core.module.dsl.viewModelOf
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -27,7 +21,36 @@ import org.koin.core.module.dsl.viewModelOf
  * @since v1.0
  */
 
-fun Module.transferAccountSummaryModule() {
-    viewModelOf(::TransferAccountSummaryViewModel)
-    singleOf(::TransferAccountStatusFactory)
+package com.passbolt.mobile.android.core.ui.compose.dialogs
+
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
+
+@Composable
+fun CancelAccountTransferAlertDialog(
+    isVisible: Boolean,
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    if (isVisible) {
+        AlertDialog(
+            onDismissRequest = onDismiss,
+            title = { Text(stringResource(LocalizationR.string.are_you_sure)) },
+            text = { Text(stringResource(LocalizationR.string.transfer_account_stop_confirmation_dialog_message)) },
+            confirmButton = {
+                TextButton(onClick = onConfirm) {
+                    Text(stringResource(LocalizationR.string.transfer_account_stop_button))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = onDismiss) {
+                    Text(stringResource(LocalizationR.string.cancel))
+                }
+            },
+        )
+    }
 }

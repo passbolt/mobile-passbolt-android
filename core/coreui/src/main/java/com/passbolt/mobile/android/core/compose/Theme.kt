@@ -13,6 +13,7 @@ private val LightColors =
         background = Color(0xFFFFFFFF),
         surface = Color(0xFFFFFFFF),
         onBackground = Color(0xFF333333),
+        outline = Color(0xFFDDDDDD),
     )
 
 @Suppress("MagicNumber")
@@ -22,6 +23,7 @@ private val DarkColors =
         background = Color(0xFF000000),
         surface = Color(0xFF000000),
         onBackground = Color(0xFFDDDDDD),
+        outline = Color(0xFF0f0f0f),
     )
 
 @Composable

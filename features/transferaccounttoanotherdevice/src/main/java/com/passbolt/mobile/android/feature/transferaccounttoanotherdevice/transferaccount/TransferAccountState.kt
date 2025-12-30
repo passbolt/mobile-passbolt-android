@@ -1,8 +1,4 @@
-package com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.summary
-
-import androidx.annotation.DrawableRes
-import androidx.annotation.StringRes
-import com.passbolt.mobile.android.core.mvp.BaseContract
+package com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccount
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,36 +22,11 @@ import com.passbolt.mobile.android.core.mvp.BaseContract
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-interface TransferAccountSummaryContract {
-    interface View : BaseContract.View {
-        fun setTitle(
-            @StringRes title: Int,
-        )
 
-        fun setDescription(message: String)
-
-        fun setButtonLabel(
-            @StringRes text: Int,
-        )
-
-        fun setIcon(
-            @DrawableRes icon: Int,
-        )
-
-        fun finish()
-
-        fun showTryAgain()
-
-        fun navigateToTransferAccountStart()
-    }
-
-    interface Presenter : BaseContract.Presenter<View> {
-        fun argsRetrieved(status: TransferAccountStatus)
-
-        fun buttonClick()
-
-        fun backClick()
-
-        fun tryAgainClick()
-    }
-}
+data class TransferAccountState(
+    val qrCodeContent: String = "",
+    val currentPage: Int = 0,
+    val totalPages: Int = 0,
+    val showProgress: Boolean = false,
+    val showCancelDialog: Boolean = false,
+)

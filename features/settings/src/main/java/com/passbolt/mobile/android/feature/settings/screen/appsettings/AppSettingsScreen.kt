@@ -60,9 +60,9 @@ import com.passbolt.mobile.android.core.navigation.compose.keys.SettingsNavigati
 import com.passbolt.mobile.android.core.navigation.compose.keys.SettingsNavigationKey.DefaultFilter
 import com.passbolt.mobile.android.core.navigation.compose.keys.SettingsNavigationKey.ExpertSettings
 import com.passbolt.mobile.android.core.ui.R
+import com.passbolt.mobile.android.core.ui.compose.dialogs.CancelAccountTransferAlertDialog
 import com.passbolt.mobile.android.core.ui.compose.dialogs.ConfigureFingerprintAlertDialog
 import com.passbolt.mobile.android.core.ui.compose.dialogs.DisableFingerprintAlertDialog
-import com.passbolt.mobile.android.core.ui.compose.dialogs.KeyChangesDetectedAlertDialog
 import com.passbolt.mobile.android.core.ui.compose.menu.OpenableSettingsItem
 import com.passbolt.mobile.android.core.ui.compose.menu.SwitchableSettingsItem
 import com.passbolt.mobile.android.core.ui.compose.topbar.BackNavigationIcon
@@ -270,7 +270,7 @@ private fun AppSettingsScreen(
             onDismiss = { onIntent(CancelConfigureFingerprint) },
         )
 
-        KeyChangesDetectedAlertDialog(
+        CancelAccountTransferAlertDialog(
             isVisible = state.isKeyChangesDialogDetectedVisible,
             onConfirm = { onIntent(ConfirmKeyChangeClick) },
             onDismiss = { onIntent(CancelConfirmKeyChange) },

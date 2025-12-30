@@ -24,20 +24,84 @@
 package com.passbolt.mobile.android.feature.transferaccounttoanotherdevice
 
 import android.os.Bundle
+import androidx.activity.compose.setContent
+import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
+import androidx.navigation3.runtime.NavBackStack
+import androidx.navigation3.runtime.NavKey
+import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.runtime.rememberNavBackStack
+import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
+import androidx.navigation3.ui.NavDisplay
 import com.passbolt.mobile.android.core.mvp.viewbinding.BindingActivity
+import com.passbolt.mobile.android.core.navigation.compose.base.Feature
+import com.passbolt.mobile.android.core.navigation.compose.base.FeatureModuleNavigation
+import com.passbolt.mobile.android.core.navigation.compose.keys.TransferAccountToAnotherDeviceKey.Onboarding
 import com.passbolt.mobile.android.core.security.runtimeauth.RuntimeAuthenticatedFlag
 import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.databinding.ActivityTransferAccountToAnotherDeviceBinding
 import org.koin.android.ext.android.inject
+import org.koin.core.qualifier.named
 
 // NOTE: When changing name or package read core/navigation/README.md
 class TransferAccountToAnotherDeviceActivity :
     BindingActivity<ActivityTransferAccountToAnotherDeviceBinding>(
         ActivityTransferAccountToAnotherDeviceBinding::inflate,
-    ) {
+    ),
+    TransferAccountNavigation {
     private val runtimeAuthenticatedFlag: RuntimeAuthenticatedFlag by inject()
+    private val transferAccountNavigation: FeatureModuleNavigation by inject(
+        named(Feature.TRANSFER_ACCOUNT_TO_ANOTHER_DEVICE),
+    )
+    lateinit var backstackList: NavBackStack<NavKey>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         runtimeAuthenticatedFlag.require(this)
+
+        setContent {
+            val backStack =
+                rememberNavBackStack(Onboarding).apply {
+                    backstackList = this
+                }
+
+            NavDisplay(
+                backStack = backStack,
+                onBack = {
+                    if (backStack.size > 1) {
+                        backStack.removeLastOrNull()
+                    }
+                },
+                entryDecorators =
+                    listOf(
+                        rememberSaveableStateHolderNavEntryDecorator(),
+                        rememberViewModelStoreNavEntryDecorator(),
+                    ),
+                entryProvider =
+                    entryProvider {
+                        transferAccountNavigation.provideEntryProviderInstaller().invoke(this)
+                    },
+            )
+        }
+    }
+
+    override fun navigateToKey(key: NavKey) {
+        backstackList.add(key)
+    }
+
+    override fun navigateBack() {
+        if (backstackList.size > 1) {
+            backstackList.removeLastOrNull()
+        } else {
+            finish()
+        }
+    }
+
+    override fun popToKey(key: NavKey) {
+        while (backstackList.size > 1 && backstackList.last() != key) {
+            backstackList.removeAt(backstackList.lastIndex)
+        }
+    }
+
+    override fun close() {
+        finish()
     }
 }

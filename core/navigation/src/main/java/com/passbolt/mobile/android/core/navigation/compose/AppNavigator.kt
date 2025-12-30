@@ -54,6 +54,13 @@ class AppNavigator(
         _currentBackStackItem.value = key
     }
 
+    fun popToKey(key: NavKey) {
+        while (backStack.size > 1 && backStack.last() != key) {
+            backStack.removeAt(backStack.lastIndex)
+        }
+        _currentBackStackItem.value = key
+    }
+
     fun navigateBack(): Any? {
         if (backStack.size <= 1) return null
 

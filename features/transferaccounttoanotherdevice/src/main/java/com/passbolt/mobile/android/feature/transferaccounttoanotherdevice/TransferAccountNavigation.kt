@@ -1,9 +1,3 @@
-package com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.summary
-
-import org.koin.core.module.Module
-import org.koin.core.module.dsl.singleOf
-import org.koin.core.module.dsl.viewModelOf
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -26,8 +20,16 @@ import org.koin.core.module.dsl.viewModelOf
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+package com.passbolt.mobile.android.feature.transferaccounttoanotherdevice
 
-fun Module.transferAccountSummaryModule() {
-    viewModelOf(::TransferAccountSummaryViewModel)
-    singleOf(::TransferAccountStatusFactory)
+import androidx.navigation3.runtime.NavKey
+
+interface TransferAccountNavigation {
+    fun navigateBack()
+
+    fun navigateToKey(key: NavKey)
+
+    fun popToKey(key: NavKey)
+
+    fun close()
 }

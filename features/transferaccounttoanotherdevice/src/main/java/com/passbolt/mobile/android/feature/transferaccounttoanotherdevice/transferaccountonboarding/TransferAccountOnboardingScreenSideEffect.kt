@@ -23,14 +23,10 @@ package com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.trans
  * @since v1.0
  */
 
-class TransferAccountOnboardingPresenter : TransferAccountOnboardingContract.Presenter {
-    override var view: TransferAccountOnboardingContract.View? = null
+internal sealed interface TransferAccountOnboardingScreenSideEffect {
+    data object NavigateUp : TransferAccountOnboardingScreenSideEffect
 
-    override fun startTransferButtonClick() {
-        view?.navigateToRefreshPassphrase()
-    }
+    data object NavigateToRefreshPassphrase : TransferAccountOnboardingScreenSideEffect
 
-    override fun authenticationSucceeded() {
-        view?.navigateToTransferAccount()
-    }
+    data object NavigateToTransferAccount : TransferAccountOnboardingScreenSideEffect
 }

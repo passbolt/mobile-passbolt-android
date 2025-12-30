@@ -1,9 +1,3 @@
-package com.passbolt.mobile.android.feature.transferaccounttodevice.transferaccountonboarding
-
-import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccountonboarding.TransferAccountOnboardingContract
-import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccountonboarding.TransferAccountOnboardingPresenter
-import org.koin.dsl.module
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -27,9 +21,14 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-val transferAccountOnboardingModule =
-    module {
-        factory<TransferAccountOnboardingContract.Presenter> {
-            TransferAccountOnboardingPresenter()
-        }
-    }
+package com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccount
+
+sealed interface TransferAccountIntent {
+    data object GoBack : TransferAccountIntent
+
+    data object CancelTransfer : TransferAccountIntent
+
+    data object ConfirmCancelTransfer : TransferAccountIntent
+
+    data object DismissCancelDialog : TransferAccountIntent
+}
