@@ -89,7 +89,7 @@ fun HomeScaffold(
 
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        contentWindowInsets = WindowInsets(0.dp),
+        contentWindowInsets = WindowInsets(bottom = 0.dp),
         topBar = {
             Surface(shadowElevation = 4.dp) {
                 TopAppBar(
@@ -101,7 +101,6 @@ fun HomeScaffold(
                             titleContentColor = MaterialTheme.colorScheme.onSurface,
                             actionIconContentColor = MaterialTheme.colorScheme.onSurface,
                         ),
-                    windowInsets = WindowInsets(0.dp),
                     scrollBehavior = scrollBehavior,
                     expandedHeight = 124.dp,
                     title = {
