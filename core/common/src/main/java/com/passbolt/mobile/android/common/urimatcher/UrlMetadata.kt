@@ -1,4 +1,4 @@
-package com.passbolt.mobile.android.core.autofill.urlmatcher
+package com.passbolt.mobile.android.common.urimatcher
 
 import org.apache.commons.validator.routines.UrlValidator
 import java.net.URL

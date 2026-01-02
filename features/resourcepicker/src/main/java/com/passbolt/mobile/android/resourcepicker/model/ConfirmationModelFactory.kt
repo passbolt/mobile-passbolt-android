@@ -23,7 +23,10 @@
 
 package com.passbolt.mobile.android.resourcepicker.model
 
-enum class HeaderType {
-    OTHER,
-    SUGGESTED,
+class ConfirmationModelFactory {
+    fun create(confirmationType: ConfirmationType): ConfirmationModel =
+        when (confirmationType) {
+            ConfirmationType.LINK_TOTP -> ConfirmationModel.LinkTotpModel()
+            ConfirmationType.REPLACE_TOTP -> ConfirmationModel.ReplaceTotpModel()
+        }
 }

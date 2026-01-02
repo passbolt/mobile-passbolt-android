@@ -208,7 +208,7 @@ private fun AccountDetailsScreen(
 
         PrimaryButton(
             text = stringResource(LocalizationR.string.save),
-            onClick = { onIntent(AccountDetailsIntent.SaveChanges) },
+            { onIntent(AccountDetailsIntent.SaveChanges) },
             modifier =
                 Modifier
                     .fillMaxWidth()

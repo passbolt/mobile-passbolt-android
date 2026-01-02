@@ -23,49 +23,15 @@
 
 package com.passbolt.mobile.android.resourcepicker
 
-import com.mikepenz.fastadapter.FastAdapter
-import com.mikepenz.fastadapter.adapters.ItemAdapter
-import com.passbolt.mobile.android.resourcepicker.recycler.HeaderItem
-import com.passbolt.mobile.android.resourcepicker.recycler.SelectableResourceItem
+import com.passbolt.mobile.android.resourcepicker.model.ConfirmationModelFactory
+import com.passbolt.mobile.android.resourcepicker.screen.ResourcePickerViewModel
+import com.passbolt.mobile.android.resourcepicker.screen.data.ResourcePickerDataProvider
 import org.koin.core.module.Module
-import org.koin.core.module.dsl.scopedOf
-import org.koin.core.qualifier.named
-import org.koin.dsl.ScopeDSL
-import org.koin.dsl.bind
-
-internal const val SUGGESTED_HEADER_ITEM_ADAPTER = "SUGGESTED_HEADER_ITEM_ADAPTER"
-internal const val SUGGESTED_ITEMS_ITEM_ADAPTER = "SUGGESTED_ITEMS_ITEM_ADAPTER"
-internal const val OTHER_ITEMS_HEADER_ITEM_ADAPTER = "OTHER_ITEMS_HEADER_ITEM_ADAPTER"
-internal const val RESOURCE_ITEM_ADAPTER = "RESOURCE_ITEM_ADAPTER"
+import org.koin.core.module.dsl.factoryOf
+import org.koin.core.module.dsl.viewModelOf
 
 fun Module.resourcePickerScreenModule() {
-    scope<ResourcePickerFragment> {
-        scopedOf(::ResourcePickerPresenter) bind ResourcePickerContract.Presenter::class
-        declareResourcePickerRecyclerDependencies()
-    }
-}
-
-private fun ScopeDSL.declareResourcePickerRecyclerDependencies() {
-    scoped<ItemAdapter<SelectableResourceItem>>(named(RESOURCE_ITEM_ADAPTER)) {
-        ItemAdapter.items()
-    }
-    scoped<ItemAdapter<SelectableResourceItem>>(named(SUGGESTED_ITEMS_ITEM_ADAPTER)) {
-        ItemAdapter.items()
-    }
-    scoped<ItemAdapter<HeaderItem>>(named(SUGGESTED_HEADER_ITEM_ADAPTER)) {
-        ItemAdapter.items()
-    }
-    scoped<ItemAdapter<HeaderItem>>(named(OTHER_ITEMS_HEADER_ITEM_ADAPTER)) {
-        ItemAdapter.items()
-    }
-    scoped {
-        FastAdapter.with(
-            listOf(
-                get<ItemAdapter<HeaderItem>>(named(SUGGESTED_HEADER_ITEM_ADAPTER)),
-                get<ItemAdapter<SelectableResourceItem>>(named(SUGGESTED_ITEMS_ITEM_ADAPTER)),
-                get<ItemAdapter<HeaderItem>>(named(OTHER_ITEMS_HEADER_ITEM_ADAPTER)),
-                get<ItemAdapter<SelectableResourceItem>>(named(RESOURCE_ITEM_ADAPTER)),
-            ),
-        )
-    }
+    factoryOf(::ResourcePickerDataProvider)
+    factoryOf(::ConfirmationModelFactory)
+    viewModelOf(::ResourcePickerViewModel)
 }

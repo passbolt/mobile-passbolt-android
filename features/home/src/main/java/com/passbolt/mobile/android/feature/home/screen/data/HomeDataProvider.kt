@@ -24,7 +24,7 @@ package com.passbolt.mobile.android.feature.home.screen.data
 
 import androidx.paging.PagingData
 import androidx.paging.filter
-import com.passbolt.mobile.android.core.autofill.urlmatcher.AutofillUriMatcher
+import com.passbolt.mobile.android.common.urimatcher.AutofillUriMatcher
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalResourcesAndFoldersPaginatedUseCase
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalSubFolderResourcesFilteredPaginatedUseCase
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalSubFoldersForFolderPaginatedUseCase
@@ -206,7 +206,7 @@ class HomeDataProvider(
             resourceList.map { pagingData ->
                 pagingData.filter {
                     val autofillUrl = (showSuggestedModel as? ShowSuggestedModel.Show)?.suggestedUri
-                    autofillMatcher.isMatching(autofillUrl, it)
+                    autofillMatcher.isMatching(autofillUrl, it.metadataJsonModel.uris.orEmpty() + it.metadataJsonModel.uri.orEmpty())
                 }
             }
         } else {

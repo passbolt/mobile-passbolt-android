@@ -126,7 +126,7 @@ private fun AppearanceFormScreen(
                 ) {
                     PrimaryButton(
                         text = stringResource(LocalizationR.string.apply),
-                        onClick = { onIntent(ApplyChanges) },
+                        { onIntent(ApplyChanges) },
                     )
                 }
             }

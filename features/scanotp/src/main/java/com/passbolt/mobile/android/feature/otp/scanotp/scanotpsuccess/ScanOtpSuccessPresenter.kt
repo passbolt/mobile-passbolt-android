@@ -209,7 +209,7 @@ class ScanOtpSuccessPresenter(
     }
 
     override fun linkToResourceClick() {
-        view?.navigateToResourcePicker()
+        view?.navigateToResourcePicker(scannedTotp.issuer)
     }
 
     override fun detach() {

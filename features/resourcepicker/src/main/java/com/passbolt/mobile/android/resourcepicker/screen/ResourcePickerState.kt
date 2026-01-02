@@ -1,13 +1,3 @@
-package com.passbolt.mobile.android.core.autofill
-
-import com.passbolt.mobile.android.core.autofill.accessibility.AccessibilityOperationsProvider
-import com.passbolt.mobile.android.core.autofill.system.AutofillHintsFactory
-import com.passbolt.mobile.android.core.autofill.system.FillableInputsFinder
-import org.koin.android.ext.koin.androidContext
-import org.koin.core.module.dsl.factoryOf
-import org.koin.core.module.dsl.singleOf
-import org.koin.dsl.module
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -31,14 +21,27 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-val autofillModule =
-    module {
-        factoryOf(::FillableInputsFinder)
-        singleOf(::AccessibilityOperationsProvider)
-        factory {
-            AutofillHintsFactory(
-                resources = get(),
-                appContext = androidContext(),
-            )
-        }
-    }
+package com.passbolt.mobile.android.resourcepicker.screen
+
+import com.passbolt.mobile.android.core.ui.compose.search.SearchInputEndIconMode
+import com.passbolt.mobile.android.resourcepicker.model.ConfirmationType
+import com.passbolt.mobile.android.resourcepicker.model.PickResourceAction
+import com.passbolt.mobile.android.resourcepicker.screen.data.ResourcePickerData
+import com.passbolt.mobile.android.ui.ResourcePickerListItem
+
+data class ResourcePickerState(
+    val resourcePickerData: ResourcePickerData = ResourcePickerData(),
+    val searchQuery: String = "",
+    val isRefreshing: Boolean = false,
+    val searchInputEndIconMode: SearchInputEndIconMode = SearchInputEndIconMode.NONE,
+    val isApplyButtonEnabled: Boolean = false,
+    val pickedResource: ResourcePickerListItem? = null,
+    val showConfirmationDialog: Boolean = false,
+    val confirmationType: ConfirmationType? = null,
+    val pickAction: PickResourceAction? = null,
+) {
+    val hasResources: Boolean
+        get() =
+            resourcePickerData.suggestedResources.isNotEmpty() ||
+                resourcePickerData.resources.isNotEmpty()
+}

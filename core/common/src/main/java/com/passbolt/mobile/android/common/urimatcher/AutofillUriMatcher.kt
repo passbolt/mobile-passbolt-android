@@ -21,20 +21,16 @@
  * @since v1.0
  */
 
-package com.passbolt.mobile.android.core.autofill.urlmatcher
+package com.passbolt.mobile.android.common.urimatcher
 
-import com.passbolt.mobile.android.core.autofill.urlmatcher.UrlMetadata.ProtocolValue
-import com.passbolt.mobile.android.ui.ResourceModel
+import com.passbolt.mobile.android.common.urimatcher.UrlMetadata.ProtocolValue
 import timber.log.Timber
 
 class AutofillUriMatcher {
     fun isMatching(
         autofillUrl: String?,
-        resource: ResourceModel,
-    ): Boolean {
-        val resourceUris = resource.metadataJsonModel.uris.orEmpty() + resource.metadataJsonModel.uri.orEmpty()
-        return resourceUris.any { isMatching(autofillUrl, it) }
-    }
+        uris: List<String>,
+    ): Boolean = uris.any { isMatching(autofillUrl, it) }
 
     fun isMatching(
         autofillUrl: String?,
