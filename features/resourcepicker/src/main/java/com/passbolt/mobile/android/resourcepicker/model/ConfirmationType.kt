@@ -23,7 +23,7 @@
 
 package com.passbolt.mobile.android.resourcepicker.model
 
-enum class SearchInputEndIconMode {
-    NONE,
-    CLEAR,
+enum class ConfirmationType {
+    LINK_TOTP,
+    REPLACE_TOTP,
 }

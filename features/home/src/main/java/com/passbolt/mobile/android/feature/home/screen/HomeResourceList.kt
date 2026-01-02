@@ -19,11 +19,11 @@ import com.passbolt.mobile.android.core.compose.rememberDebouncedBoolean
 import com.passbolt.mobile.android.core.localization.R
 import com.passbolt.mobile.android.core.resources.resourceicon.ResourceIconProvider
 import com.passbolt.mobile.android.core.ui.compose.empty.EmptyResourceListState
+import com.passbolt.mobile.android.core.ui.lists.HeaderItem
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.OpenResourceMenu
 import com.passbolt.mobile.android.feature.home.screen.data.HeaderSectionConfiguration
 import com.passbolt.mobile.android.feature.home.screen.list.FolderItem
 import com.passbolt.mobile.android.feature.home.screen.list.GroupItem
-import com.passbolt.mobile.android.feature.home.screen.list.HeaderItem
 import com.passbolt.mobile.android.feature.home.screen.list.ResourceItem
 import com.passbolt.mobile.android.feature.home.screen.list.TagItem
 import com.passbolt.mobile.android.ui.Folder.Child

@@ -1,13 +1,3 @@
-package com.passbolt.mobile.android.core.autofill
-
-import com.passbolt.mobile.android.core.autofill.accessibility.AccessibilityOperationsProvider
-import com.passbolt.mobile.android.core.autofill.system.AutofillHintsFactory
-import com.passbolt.mobile.android.core.autofill.system.FillableInputsFinder
-import org.koin.android.ext.koin.androidContext
-import org.koin.core.module.dsl.factoryOf
-import org.koin.core.module.dsl.singleOf
-import org.koin.dsl.module
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -31,14 +21,27 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-val autofillModule =
-    module {
-        factoryOf(::FillableInputsFinder)
-        singleOf(::AccessibilityOperationsProvider)
-        factory {
-            AutofillHintsFactory(
-                resources = get(),
-                appContext = androidContext(),
-            )
-        }
-    }
+package com.passbolt.mobile.android.resourcepicker.screen
+
+import com.passbolt.mobile.android.resourcepicker.model.PickResourceAction
+import com.passbolt.mobile.android.ui.ResourceModel
+
+internal sealed class ResourcePickerSideEffect {
+    data class NavigateBackWithResult(
+        val pickAction: PickResourceAction,
+        val resourceModel: ResourceModel,
+    ) : ResourcePickerSideEffect()
+
+    data class ShowErrorSnackbar(
+        val type: SnackbarErrorType,
+        val message: String? = null,
+    ) : ResourcePickerSideEffect()
+
+    object NavigateUp : ResourcePickerSideEffect()
+}
+
+internal enum class SnackbarErrorType {
+    FAILED_TO_REFRESH_DATA,
+    NO_PERMISSION,
+    UNSUPPORTED_RESOURCE_TYPE,
+}

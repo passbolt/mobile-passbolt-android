@@ -1,12 +1,12 @@
-package com.passbolt.mobile.android.core.autofill
+package com.passbolt.mobile.android.core.ui.compose.dialogs
 
-import com.passbolt.mobile.android.core.autofill.accessibility.AccessibilityOperationsProvider
-import com.passbolt.mobile.android.core.autofill.system.AutofillHintsFactory
-import com.passbolt.mobile.android.core.autofill.system.FillableInputsFinder
-import org.koin.android.ext.koin.androidContext
-import org.koin.core.module.dsl.factoryOf
-import org.koin.core.module.dsl.singleOf
-import org.koin.dsl.module
+import androidx.annotation.StringRes
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -31,14 +31,27 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-val autofillModule =
-    module {
-        factoryOf(::FillableInputsFinder)
-        singleOf(::AccessibilityOperationsProvider)
-        factory {
-            AutofillHintsFactory(
-                resources = get(),
-                appContext = androidContext(),
-            )
-        }
-    }
+@Composable
+fun ConfirmAlertDialog(
+    @StringRes titleResId: Int,
+    @StringRes messageResId: Int,
+    @StringRes positiveButtonResId: Int,
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(titleResId)) },
+        text = { Text(stringResource(messageResId)) },
+        confirmButton = {
+            TextButton(onClick = onConfirm) {
+                Text(stringResource(positiveButtonResId))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(LocalizationR.string.cancel))
+            }
+        },
+    )
+}

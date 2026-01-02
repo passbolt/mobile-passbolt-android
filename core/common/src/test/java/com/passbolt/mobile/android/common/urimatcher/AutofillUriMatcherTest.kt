@@ -21,7 +21,7 @@
  * @since v1.0
  */
 
-package com.passbolt.mobile.android.core.autofill.urlmatcher
+package com.passbolt.mobile.android.common.urimatcher
 
 import com.google.common.truth.Truth.assertWithMessage
 import org.junit.Test

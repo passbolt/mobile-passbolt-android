@@ -50,6 +50,7 @@ import com.passbolt.mobile.android.core.ui.R
 import com.passbolt.mobile.android.core.ui.compose.circularimage.CircularProfileImage
 import com.passbolt.mobile.android.core.ui.compose.search.SearchInputEndIconMode.AVATAR
 import com.passbolt.mobile.android.core.ui.compose.search.SearchInputEndIconMode.CLEAR
+import com.passbolt.mobile.android.core.ui.compose.search.SearchInputEndIconMode.NONE
 
 @Composable
 fun SearchInput(
@@ -93,6 +94,9 @@ fun SearchInput(
                         contentDescription = null,
                         modifier = Modifier.clickable { onEndIconClick?.invoke() },
                     )
+                NONE -> {
+                    // No icon
+                }
             }
         },
         placeholder = { Text(placeholder, maxLines = 1, overflow = TextOverflow.Ellipsis) },
@@ -116,7 +120,7 @@ private fun SearchInputPreview() {
     PassboltTheme {
         SearchInput(
             value = searchText,
-            onValueChange = { searchText = it },
+            onValueChange = { },
             placeholder = "Search passwords",
             avatarUrl = null,
             endIconMode = CLEAR,
@@ -139,7 +143,7 @@ private fun SearchInputWithLongPlaceholderPreview() {
     PassboltTheme {
         SearchInput(
             value = searchText,
-            onValueChange = { searchText = it },
+            onValueChange = { },
             placeholder = "Search for passwords, usernames, and and other items",
             avatarUrl = null,
             endIconMode = CLEAR,
@@ -162,10 +166,33 @@ private fun SearchInputWithAvatarPreview() {
     PassboltTheme {
         SearchInput(
             value = searchText,
-            onValueChange = { searchText = it },
+            onValueChange = { },
             placeholder = "Search passwords",
             avatarUrl = null,
             endIconMode = AVATAR,
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Default.Search,
+                    contentDescription = null,
+                )
+            },
+            modifier = Modifier.padding(16.dp),
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun SearchInputWithNoIconPreview() {
+    var searchText by remember { mutableStateOf("Searched query") }
+
+    PassboltTheme {
+        SearchInput(
+            value = searchText,
+            onValueChange = { },
+            placeholder = "Search passwords",
+            avatarUrl = null,
+            endIconMode = NONE,
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Default.Search,

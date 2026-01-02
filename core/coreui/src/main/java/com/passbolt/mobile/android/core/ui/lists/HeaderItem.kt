@@ -1,4 +1,4 @@
-package com.passbolt.mobile.android.feature.home.screen.list
+package com.passbolt.mobile.android.core.ui.lists
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth

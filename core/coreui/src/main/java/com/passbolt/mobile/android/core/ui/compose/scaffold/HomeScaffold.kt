@@ -83,6 +83,7 @@ fun HomeScaffold(
     shouldShowCloseIcon: Boolean = false,
     onMoreClick: () -> Unit = {},
     shouldShowMoreIcon: Boolean = false,
+    bottomBar: @Composable () -> Unit = {},
     content: @Composable (PaddingValues) -> Unit,
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
@@ -192,6 +193,7 @@ fun HomeScaffold(
             )
         },
         content = content,
+        bottomBar = bottomBar,
     )
 }
 

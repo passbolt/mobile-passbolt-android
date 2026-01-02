@@ -47,6 +47,7 @@ import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAct
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
 import com.passbolt.mobile.android.core.ui.compose.search.SearchInputEndIconMode.AVATAR
 import com.passbolt.mobile.android.core.ui.compose.search.SearchInputEndIconMode.CLEAR
+import com.passbolt.mobile.android.core.ui.compose.search.SearchInputEndIconMode.NONE
 import com.passbolt.mobile.android.feature.authentication.compose.AuthenticatedViewModel
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
 import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.CloseCreateResourceMenu
@@ -249,6 +250,9 @@ internal class OtpViewModel(
                         searchInputEndIconMode = AVATAR,
                     )
                 }
+            NONE -> {
+                // no-op
+            }
         }
     }
 
