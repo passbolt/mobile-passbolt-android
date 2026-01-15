@@ -54,7 +54,7 @@ import com.passbolt.mobile.android.feature.resourcemoremenu.R.id.edit
 import com.passbolt.mobile.android.feature.resources.R.id.moreIcon
 import com.passbolt.mobile.android.helpers.chooseFilter
 import com.passbolt.mobile.android.helpers.createNewPasswordFromHomeScreen
-import com.passbolt.mobile.android.helpers.pickFirstResourceWithName
+import com.passbolt.mobile.android.helpers.searchAndOpenFirstResourceByName
 import com.passbolt.mobile.android.helpers.signIn
 import com.passbolt.mobile.android.instrumentationTestsModule
 import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
@@ -123,7 +123,7 @@ class ResourcesEditionTest : KoinTest {
     @Test
     fun onTheResourcesActionMenuDrawerICanClickEditPassword() {
         //    Given     that I am on the action menu drawer
-        composeTestRule.pickFirstResourceWithName("ResourcesEditionTest")
+        composeTestRule.searchAndOpenFirstResourceByName("ResourcesEditionTest")
         //    And       I see ‘Edit password’ element enabled
 //        onView(first(withId(ResourcesID.moreIcon))).perform(click())
 //        onView(withId(ResourcemoremenuId.editPassword))
@@ -302,7 +302,7 @@ class ResourcesEditionTest : KoinTest {
         )
 
     private fun enterEditPasswordScreen() {
-        composeTestRule.pickFirstResourceWithName("ResourcesEditionTest")
+        composeTestRule.searchAndOpenFirstResourceByName("ResourcesEditionTest")
         onView(withId(moreIcon)).perform(click())
         onView(withId(edit)).perform(click())
         onView(withId(toolbar)).check(matches(isDisplayed()))

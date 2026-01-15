@@ -21,19 +21,15 @@
  * @since v1.0
  */
 
-package com.passbolt.mobile.android.scenarios.resource.details
+package com.passbolt.mobile.android.scenarios.resource
 
-/**
- * Enum representing different types of resources used in tests
- */
 enum class TestResourceType(
     val displayName: String,
 ) {
     SIMPLE_PASSWORD("Simple password"),
     PASSWORD_WITH_DESCRIPTION("Password with description"),
     PASSWORD_DESCRIPTION_TOTP("Password, Description and TOTP"),
-    // TODO - These need to be enabled after enabling V5 on cloud's `Betty` user
-    // SIMPLE_PASSWORD_DEPRECATED("Simple Password (Deprecated)"),
-    // DEFAULT_RESOURCE_TYPE("Default resource type"),
-    // DEFAULT_RESOURCE_TYPE_WITH_TOTP("Default resource type with TOTP")
+    SIMPLE_PASSWORD_DEPRECATED("Simple Password (Deprecated)"),
+    DEFAULT_RESOURCE_TYPE("Default resource type"),
+    DEFAULT_RESOURCE_TYPE_WITH_TOTP("Default resource with TOTP"),
 }

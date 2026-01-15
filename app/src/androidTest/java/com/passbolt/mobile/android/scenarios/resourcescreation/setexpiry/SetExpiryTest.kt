@@ -41,7 +41,7 @@ import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.feature.authentication.AuthenticationMainActivity
 import com.passbolt.mobile.android.helpers.chooseFilter
 import com.passbolt.mobile.android.helpers.createNewPasswordFromHomeScreen
-import com.passbolt.mobile.android.helpers.pickFirstResourceWithName
+import com.passbolt.mobile.android.helpers.searchAndOpenFirstResourceByName
 import com.passbolt.mobile.android.helpers.signIn
 import com.passbolt.mobile.android.instrumentationTestsModule
 import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
@@ -108,7 +108,7 @@ class SetExpiryTest : KoinTest {
     //    https://passbolt.testrail.io/index.php?/cases/view/11935
     @Test
     fun setExpiryOfCreatedResourceToDefaultExpiryPeriod() {
-        composeTestRule.pickFirstResourceWithName("PasswordWithExpirySet")
+        composeTestRule.searchAndOpenFirstResourceByName("PasswordWithExpirySet")
         onView(withId(com.passbolt.mobile.android.feature.resources.R.id.expiryItem)).check(matches(isDisplayed()))
         // Then   The resource is marked to expire after <number of days>
         onView(withText("In 7 days")).check(

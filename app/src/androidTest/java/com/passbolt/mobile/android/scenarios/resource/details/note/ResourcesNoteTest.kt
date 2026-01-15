@@ -43,7 +43,7 @@ import com.passbolt.mobile.android.core.ui.R.id.actionIcon
 import com.passbolt.mobile.android.core.ui.R.id.conceal
 import com.passbolt.mobile.android.feature.authentication.AuthenticationMainActivity
 import com.passbolt.mobile.android.feature.resources.R.id.note_item
-import com.passbolt.mobile.android.helpers.pickFirstResourceWithName
+import com.passbolt.mobile.android.helpers.searchAndOpenFirstResourceByName
 import com.passbolt.mobile.android.helpers.signIn
 import com.passbolt.mobile.android.instrumentationTestsModule
 import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
@@ -159,7 +159,7 @@ class ResourcesNoteTest(
      */
     @Test
     fun asALoggedInMobileUserOnTheResourceDisplayICanShowOrHideResourceNote() {
-        composeTestRule.pickFirstResourceWithName(testedResource)
+        composeTestRule.searchAndOpenFirstResourceByName(testedResource)
         onView(
             allOf(
                 isDescendantOfA(withId(note_item)),

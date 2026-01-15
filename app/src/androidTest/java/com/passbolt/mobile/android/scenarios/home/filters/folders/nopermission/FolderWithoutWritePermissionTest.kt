@@ -35,7 +35,7 @@ import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.feature.authentication.AuthenticationMainActivity
 import com.passbolt.mobile.android.helpers.chooseFilter
-import com.passbolt.mobile.android.helpers.pickFirstResourceWithName
+import com.passbolt.mobile.android.helpers.searchAndOpenFirstResourceByName
 import com.passbolt.mobile.android.helpers.signIn
 import com.passbolt.mobile.android.instrumentationTestsModule
 import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
@@ -99,7 +99,7 @@ class FolderWithoutWritePermissionTest : KoinTest {
         composeTestRule.chooseFilter(filters_menu_folders)
         //  And I have a folder which is shared with me
         //  And I do not have permission to create an item in this folder
-        composeTestRule.pickFirstResourceWithName("Shared without permission to add")
+        composeTestRule.searchAndOpenFirstResourceByName("Shared without permission to add")
     }
 
     //  https://passbolt.testrail.io/index.php?/cases/view/11939

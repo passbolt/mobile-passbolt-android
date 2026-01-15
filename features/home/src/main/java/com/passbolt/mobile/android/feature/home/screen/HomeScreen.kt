@@ -233,8 +233,7 @@ private fun HomeScreen(
                 modifier =
                     Modifier
                         .fillMaxWidth()
-                        .padding(end = 16.dp)
-                        .testTag("home_search_input"),
+                        .padding(end = 16.dp),
                 onEndIconClick = { onIntent(SearchEndIconAction) },
             )
         },
