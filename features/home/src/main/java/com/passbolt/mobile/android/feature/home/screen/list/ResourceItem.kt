@@ -155,7 +155,10 @@ fun ResourceItem(
         if (showMoreMenu) {
             IconButton(
                 onClick = { onMoreClick(resource) },
-                modifier = Modifier.size(40.dp),
+                modifier =
+                    Modifier
+                        .size(40.dp)
+                        .testTag("home_resource_more"),
             ) {
                 Icon(Icons.Default.MoreVert, contentDescription = null)
             }

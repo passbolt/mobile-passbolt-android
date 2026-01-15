@@ -73,13 +73,14 @@ import com.passbolt.mobile.android.feature.setup.R.id.icon
 import com.passbolt.mobile.android.feature.setup.R.id.title
 import com.passbolt.mobile.android.helpers.chooseFilter
 import com.passbolt.mobile.android.helpers.getClipboardText
-import com.passbolt.mobile.android.helpers.pickFirstResourceWithName
+import com.passbolt.mobile.android.helpers.searchAndOpenFirstResourceByName
 import com.passbolt.mobile.android.helpers.signIn
 import com.passbolt.mobile.android.instrumentationTestsModule
 import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
 import com.passbolt.mobile.android.matchers.hasDrawable
 import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
+import com.passbolt.mobile.android.scenarios.resource.TestResourceType
 import org.hamcrest.Matchers.allOf
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -198,7 +199,7 @@ class ResourcesDetailsTest(
      */
     @Test
     fun asAUserOnTheHomepageICanAccessTheResourcePageForWhichIHaveFullPermissions() {
-        composeTestRule.pickFirstResourceWithName(resourceType.displayName)
+        composeTestRule.searchAndOpenFirstResourceByName(resourceType.displayName)
         onView(withId(backArrow))
             .check(matches(isDisplayed()))
             .check(matches(hasDrawable(id = ic_arrow_left, tint = icon_tint)))
@@ -282,7 +283,7 @@ class ResourcesDetailsTest(
      */
     @Test
     fun asAUserOnTheResourceDisplayICanTriggerTheActionMenu() {
-        composeTestRule.pickFirstResourceWithName(resourceType.displayName)
+        composeTestRule.searchAndOpenFirstResourceByName(resourceType.displayName)
         onView(withId(moreIcon))
             .perform(click())
         onView(withId(title))
@@ -324,7 +325,7 @@ class ResourcesDetailsTest(
      */
     @Test
     fun asALoggedInMobileUserOnTheResourceDisplayICanTriggerTheActionMenuAndCopyCredentialsToTheClipboard() {
-        composeTestRule.pickFirstResourceWithName(resourceType.displayName)
+        composeTestRule.searchAndOpenFirstResourceByName(resourceType.displayName)
         onView(withId(moreIcon))
             .check(matches(isDisplayed()))
             .perform(click())
