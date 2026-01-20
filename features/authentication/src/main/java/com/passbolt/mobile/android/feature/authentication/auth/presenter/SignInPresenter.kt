@@ -253,7 +253,7 @@ open class SignInPresenter(
                     view?.hideProgress()
                     signInIdlingResource.setIdle(true)
                     when (it) {
-                        PostSignInActionsInteractor.Error.ConfigurationFetchError -> view?.showGenericError()
+                        PostSignInActionsInteractor.Error.ConfigurationFetchError -> view?.showFeatureFlagsErrorDialog()
                         PostSignInActionsInteractor.Error.UserProfileFetchError -> view?.showGenericError()
                     }
                 },
