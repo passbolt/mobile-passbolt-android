@@ -204,7 +204,7 @@ private fun HomeScreen(
         snackbarHostState = snackbarHostState,
         modifier =
             modifier
-                .testTag("home_screen"),
+                .testTag(HomeScreenTestTags.HOME_SCREEN),
         appBarTitle = getAppBarTitle(context, state),
         appBarIconRes = getAppBarIconResId(state),
         shouldShowMoreIcon = homeNavigation.resourceHandlingStrategy.shouldShowFolderMoreMenu() && state.showMoreMenu,
@@ -227,7 +227,7 @@ private fun HomeScreen(
                         modifier =
                             Modifier
                                 .clickable { onIntent(OpenFiltersBottomSheet) }
-                                .testTag("home_search_filter"),
+                                .testTag(HomeScreenTestTags.SEARCH_FILTER),
                     )
                 },
                 modifier =
@@ -289,6 +289,11 @@ private fun HomeScreen(
             ProgressDialog(state.showProgress)
         },
     )
+}
+
+object HomeScreenTestTags {
+    const val HOME_SCREEN: String = "home_screen"
+    const val SEARCH_FILTER: String = "home_search_filter"
 }
 
 @Suppress("CyclomaticComplexMethod")

@@ -1,6 +1,6 @@
 /*
  * Passbolt - Open source password manager for teams
- * Copyright (c) 2021-2024 Passbolt SA
+ * Copyright (c) 2021-2026 Passbolt SA
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
  * Public License (AGPL) as published by the Free Software Foundation version 3.
@@ -23,25 +23,46 @@
 
 package com.passbolt.mobile.android.scenarios.home.filters.folders.creation
 
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasTestTag
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
+import androidx.compose.ui.test.onAllNodesWithTag
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTextReplacement
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
 import androidx.test.platform.app.InstrumentationRegistry
 import com.passbolt.mobile.android.core.idlingresource.CreateFolderIdlingResource
 import com.passbolt.mobile.android.core.idlingresource.ResourcesFullRefreshIdlingResource
 import com.passbolt.mobile.android.core.idlingresource.SignInIdlingResource
+import com.passbolt.mobile.android.core.localization.R.string.create_folder_name
+import com.passbolt.mobile.android.core.localization.R.string.create_folder_title
+import com.passbolt.mobile.android.core.localization.R.string.create_resource_menu_create_a_resource
+import com.passbolt.mobile.android.core.localization.R.string.create_resource_menu_create_folder
+import com.passbolt.mobile.android.core.localization.R.string.create_resource_menu_create_note
+import com.passbolt.mobile.android.core.localization.R.string.create_resource_menu_create_password
+import com.passbolt.mobile.android.core.localization.R.string.create_resource_menu_create_totp
 import com.passbolt.mobile.android.core.localization.R.string.filters_menu_folders
+import com.passbolt.mobile.android.core.localization.R.string.folder_root
+import com.passbolt.mobile.android.core.localization.R.string.location
+import com.passbolt.mobile.android.core.localization.R.string.save
+import com.passbolt.mobile.android.core.localization.R.string.shared_with
+import com.passbolt.mobile.android.core.localization.R.string.validation_required_with_max_length
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppContext
+import com.passbolt.mobile.android.core.ui.compose.topbar.BackNavigationIcon.TestTags.ICON
 import com.passbolt.mobile.android.feature.authentication.AuthenticationMainActivity
 import com.passbolt.mobile.android.helpers.chooseFilter
+import com.passbolt.mobile.android.helpers.getString
 import com.passbolt.mobile.android.helpers.signIn
 import com.passbolt.mobile.android.instrumentationTestsModule
 import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
 import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -50,7 +71,6 @@ import org.koin.test.KoinTest
 
 @RunWith(AndroidJUnit4::class)
 @MediumTest
-@Ignore("Deprecated: refactor needed - entire test class disabled")
 class FolderCreationTest : KoinTest {
     @get:Rule
     val startUpActivityRule =
@@ -89,250 +109,176 @@ class FolderCreationTest : KoinTest {
 
     @Before
     fun setup() {
-        //    Background context
-        //    #PRO_FOLDER_CREATION_WITH_PERMISSION ●
-        //    Given I already have account admin_automated
-        //    And I am logged in mobile app
-        //    And I am on Passbolt PRO
-        //    And I want to create new folder
-        //    And I am on the folders filter view
-        //    And I have the permission to create a folder in my current location
         composeTestRule.signIn(managedAccountIntentCreator.getPassphrase())
-        //    Given     that I am on the folders workspace
         composeTestRule.chooseFilter(filters_menu_folders)
     }
 
-    //    https://passbolt.testrail.io/index.php?/cases/view/8160
+    /**  [On the folders workspace I can click ‘Create Button’ when v5 resources are enabled and default](https://passbolt.testrail.io/index.php?/cases/view/17611)
+     *
+     *      Given   The <resource type> is allowed
+     *      When    I click on “Create a resource” button
+     *      Then    I see a drawer named “Create a resource” with a list
+     *      And     I see ‘X’ close button
+     *      And I see a <resource icon> list item
+     *      And I see a <resource name> list item
+     *
+     *      | resource type | resource icon | resource name |
+     *      |---------------|---------------|---------------|
+     *      | password v5   | key         | Password      |
+     *      | TOTP  v5     | lock        | TOTP          |
+     *      | Note   | notebook        | Note          |
+     *      | folders v5    | folder        | Folder          |
+     *
+     */
     @Test
-    fun onTheFoldersWorkspaceICanClickCreateButton() {
-        //    Given     that I am on #PRO_FOLDER_CREATION_WITH_PERMISSION
-        //    And       I see a create button with an icon in @blue
-//        onView(withId(com.passbolt.mobile.android.feature.home.R.id.homeSpeedDialViewId))
-//            .check(matches(isDisplayed()))
-//            .check(matches(hasDrawable(id = CoreUiR.drawable.ic_plus, tint = CoreUiR.color.icon_tint)))
-//        //    When      I click create button
-//        onView(withId(com.passbolt.mobile.android.feature.home.R.id.homeSpeedDialViewId)).perform(click())
-//        //    Then      I see ‘Add folder’ with folder icon
-//        onView(
-//            allOf(
-//                isDescendantOfA(withId(com.passbolt.mobile.android.feature.home.R.id.homeSpeedDialViewAddFolderId)),
-//                withId(
-//                    com.leinardi.android.speeddial.R.id.sd_fab,
-//                ),
-//            ),
-//        ).check(matches(isDisplayed()))
-//            .check(matches(hasDrawable(id = CoreUiR.drawable.ic_folder, tint = CoreUiR.color.icon_tint)))
-//        onView(
-//            allOf(
-//                isDescendantOfA(withId(com.passbolt.mobile.android.feature.home.R.id.homeSpeedDialViewAddFolderId)),
-//                withId(
-//                    com.leinardi.android.speeddial.R.id.sd_label,
-//                ),
-//            ),
-//        ).check(matches(isDisplayed()))
-//            .check(matches(withText(LocalizationR.string.home_speed_dial_add_folder)))
-//        //    And       I see ‘Add password’ with key icon
-//        onView(
-//            allOf(
-//                isDescendantOfA(withId(com.passbolt.mobile.android.feature.home.R.id.homeSpeedDialViewAddPasswordId)),
-//                withId(
-//                    com.leinardi.android.speeddial.R.id.sd_fab,
-//                ),
-//            ),
-//        ).check(matches(isDisplayed()))
-//            .check(matches(hasDrawable(id = CoreUiR.drawable.ic_key, tint = CoreUiR.color.icon_tint)))
-//        onView(
-//            allOf(
-//                isDescendantOfA(withId(com.passbolt.mobile.android.feature.home.R.id.homeSpeedDialViewAddPasswordId)),
-//                withId(
-//                    com.leinardi.android.speeddial.R.id.sd_label,
-//                ),
-//            ),
-//        ).check(matches(isDisplayed()))
-//            .check(matches(withText(LocalizationR.string.home_speed_dial_add_password)))
-//        //    And       And I see ‘X’ close button (Note: this is actually the "plus" icon but rotated 45 degrees)
-//        onView(withId(com.passbolt.mobile.android.feature.home.R.id.homeSpeedDialViewId))
-//            .check(matches(isDisplayed()))
-//            .check(matches(hasDrawable(id = CoreUiR.drawable.ic_plus, tint = CoreUiR.color.icon_tint)))
+    fun onTheFoldersWorkspaceICanClickCreateButtonWhenV5ResourcesAreEnabledAndDefault() {
+        composeTestRule
+            .onNodeWithTag("home_fab")
+            .performClick()
+        composeTestRule
+            .onNodeWithText(getString(create_resource_menu_create_a_resource))
+            .assertIsDisplayed()
+        composeTestRule.onNodeWithTag("bottom_sheet_icon_close").assertIsDisplayed()
+        composeTestRule
+            .onNodeWithText(getString(create_resource_menu_create_password))
+            .assertIsDisplayed()
+        composeTestRule
+            .onNodeWithText(getString(create_resource_menu_create_totp))
+            .assertIsDisplayed()
+        composeTestRule
+            .onNodeWithText(getString(create_resource_menu_create_note))
+            .assertIsDisplayed()
+        composeTestRule
+            .onNodeWithText(getString(create_resource_menu_create_folder))
+            .assertIsDisplayed()
     }
 
-    //    https://passbolt.testrail.io/index.php?/cases/view/8161
-    @Test
-    fun onTheFoldersWorkspaceICanClickAddPasswordAndOpenNewPasswordWorkspace() {
-        //    Given     that I am on #PRO_FOLDER_CREATION_WITH_PERMISSION
-//        onView(withId(com.passbolt.mobile.android.feature.home.R.id.homeSpeedDialViewId))
-//            .check(matches(isDisplayed()))
-//            .check(matches(hasDrawable(id = CoreUiR.drawable.ic_plus, tint = CoreUiR.color.icon_tint)))
-//        //    When      I click create button
-//        onView(withId(com.passbolt.mobile.android.feature.home.R.id.homeSpeedDialViewId)).perform(click())
-//        //    When      When I click ‘Add password’
-//        onView(withIndex(1, withId(com.leinardi.android.speeddial.R.id.sd_fab))).perform(click())
-//        //    Then      Then I see ‘New password’ workspace
-//        onView(
-//            allOf(
-//                isDescendantOfA(withId(R.id.toolbar)),
-//                withText(LocalizationR.string.resource_update_password_title),
-//            ),
-//        ).check(matches(isDisplayed()))
-    }
-
-    //    https://passbolt.testrail.io/index.php?/cases/view/8162
+    /**  [On the folder workspace I can cancel creation process](https://passbolt.testrail.io/index.php?/cases/view/8162)
+     *
+     *      Given  I clicked on the create button
+     *      When    I click ‘X’ button
+     *      Then    I am back on folders workspace
+     */
     @Test
     fun onTheFolderWorkspaceICanCancelCreationProcess() {
-//        //    Given     that I am on #PRO_FOLDER_CREATION_WITH_PERMISSION
-//        //    And       I see a create button with an icon in @blue
-//        onView(withId(com.passbolt.mobile.android.feature.home.R.id.homeSpeedDialViewId))
-//            .check(matches(isDisplayed()))
-//            .check(matches(hasDrawable(id = CoreUiR.drawable.ic_plus, tint = CoreUiR.color.icon_tint)))
-//        //    When      I click create button
-//        onView(withId(com.passbolt.mobile.android.feature.home.R.id.homeSpeedDialViewId)).perform(click())
-//        //    When      I click ‘X’ button
-//        //    Then      I am on folders workspace
-//        onView(
-//            allOf(
-//                withId(com.passbolt.mobile.android.feature.home.R.id.homeSpeedDialViewId),
-//                isAssignableFrom(SpeedDialView::class.java),
-//            ),
-//        ).check(matches(withSpeedDialViewOpenState(isOpen = true)))
+        composeTestRule.onNodeWithTag("home_fab").performClick()
+        composeTestRule.onNodeWithTag("bottom_sheet_icon_close").performClick()
+        composeTestRule.onNodeWithTag("home_screen").assertIsDisplayed()
     }
 
-    //    https://passbolt.testrail.io/index.php?/cases/view/8163
+    /**  [I can enter `Create folder` screen](https://passbolt.testrail.io/index.php?/cases/view/8163)
+     *
+     *      Given  I clicked on the create button
+     *      When   I click ‘Folder’ button
+     *      Then   I see ‘Create folder’ workspace
+     *      And I see a back arrow to go back to the previous page
+     *      And I see a mandatory input text field with a ‘Name’ label
+     *      And I see ‘Location’ label with ‘Root’ information
+     *      And I see an icon of a user who creates a folder
+     *      And I see ‘Save’ button in @blue
+     */
     @Test
-    fun onTheFolderWorkspaceICanClickAddFolderAndOpenCreateFolderWorkspace() {
-//        //    Given     that I am on #PRO_FOLDER_CREATION_WITH_PERMISSION
-//        onView(withId(com.passbolt.mobile.android.feature.home.R.id.homeSpeedDialViewId))
-//            .check(matches(isDisplayed()))
-//            .check(matches(hasDrawable(id = CoreUiR.drawable.ic_plus, tint = CoreUiR.color.icon_tint)))
-//        //    When      I click create button
-//        onView(withId(com.passbolt.mobile.android.feature.home.R.id.homeSpeedDialViewId)).perform(click())
-//        //    When      I click ‘Add folder’ button
-//        onView(withIndex(0, withId(com.leinardi.android.speeddial.R.id.sd_label_container))).perform(click())
-//        //    Then      I see ‘Create folder’ workspace
-//        onView(
-//            allOf(
-//                isDescendantOfA(withId(R.id.toolbar)),
-//                withText(LocalizationR.string.create_folder_title),
-//            ),
-//        ).check(matches(isDisplayed()))
-//        //    And       I see a back arrow to go back to the previous page
-//        onView(isAssignableFrom(Toolbar::class.java)).check(CastedViewAssertion<Toolbar> { it.navigationIcon != null })
-//        //    And       I see a mandatory input text field with a ‘Name’ label
-//        onView(withText("Name *")).check(matches(isDisplayed()))
-//        //    And       I see ‘Location’ label with ‘Root’ information
-//        onView(withText("Location")).check(matches(isDisplayed()))
-//        onView(withText("Root")).check(matches(isDisplayed()))
-//        //    And       I see user's avatar under ‘Share with’ label
-//        onView(withText("Shared with")).check(matches(isDisplayed()))
-//        //    And       I see ‘Save’ button in @blue
-//        onView(withText(LocalizationR.string.save)).check(matches(isDisplayed()))
+    fun iCanEnterCreateFolderScreen() {
+        composeTestRule
+            .onNodeWithTag("home_fab")
+            .performClick()
+        composeTestRule
+            .onNodeWithText(getString(create_resource_menu_create_folder))
+            .performClick()
+        composeTestRule
+            .onNodeWithText(getString(create_folder_title))
+            .assertIsDisplayed()
+        composeTestRule
+            .onNode(
+                hasTestTag(ICON),
+                useUnmergedTree = true,
+            ).assertExists()
+        composeTestRule
+            .onNode(
+                hasText(getString(create_folder_name), substring = true, ignoreCase = true),
+                useUnmergedTree = true,
+            ).assertExists()
+        // TODO: [Placeholder is missing](https://app.clickup.com/t/2593179/MOB-3309)
+        composeTestRule
+            .onNode(hasText(getString(location), substring = true, ignoreCase = true), useUnmergedTree = true)
+            .assertExists()
+        composeTestRule
+            .onNode(hasText(getString(folder_root), substring = true, ignoreCase = true), useUnmergedTree = true)
+            .assertExists()
+        composeTestRule
+            .onNode(hasText(getString(shared_with), substring = true, ignoreCase = true), useUnmergedTree = true)
+            .assertExists()
+        composeTestRule
+            .onNodeWithText(getString(save))
+            .assertExists()
     }
 
-    //    https://passbolt.testrail.io/index.php?/cases/view/8164
+    /**  [On the root folder workspace I will see an error when saving folder without its name](https://passbolt.testrail.io/index.php?/cases/view/8164)
+     *
+     *      Given I clicked on the create button
+     *      And I clicked on the Folder button
+     *      When I click ‘Save’ button
+     *      Then I see the label of the ‘Name’ field in @red
+     *      And I see the "Name" field have a @red border
+     *      And I see exclamation mark in @red
+     *      And I see error ‘Length should be between 1 and 256’ below the field in @red
+     */
     @Test
     fun onTheRootFolderWorkspaceIWillSeeAnErrorWhenSavingFolderWithoutItsName() {
-//        //    Given     that I am on #PRO_FOLDER_CREATION_WITH_PERMISSION
-//        onView(withId(com.passbolt.mobile.android.feature.home.R.id.homeSpeedDialViewId))
-//            .check(matches(isDisplayed()))
-//            .check(matches(hasDrawable(id = CoreUiR.drawable.ic_plus, tint = CoreUiR.color.icon_tint)))
-//        //    When      I click create button
-//        onView(withId(com.passbolt.mobile.android.feature.home.R.id.homeSpeedDialViewId)).perform(click())
-//        //    When      I click ‘Add folder’ button
-//        onView(withIndex(0, withId(com.leinardi.android.speeddial.R.id.sd_label_container))).perform(click())
-//        //    Given     that I am on ‘Create folder’ workspace
-//        //    When      I click ‘Save’ button
-//        onView(withText(LocalizationR.string.save)).perform(click())
-//        //    Then      Then I see the label of the ‘Name’ field in @red
-//        onView(withText("Name *")).check(matches(hasTextColor(CoreUiR.color.red)))
-//        //    And       I see stroke of the ‘Name’ field in @red
-//        onView(withId(CoreUiR.id.textLayout))
-//            .check(matches(withTextInputStrokeColorOf(CoreUiR.color.red)))
-//        //    And       I see exclamation mark in @red
-//        onView(withId(MaterialR.id.text_input_error_icon)).check(matches(isDisplayed()))
-//        //    And       I see error ‘Length should be between 1 and 256’ below the field in @red
-//        onView(withText("Length should be between 1 and 256"))
-//            .check(matches(isDisplayed()))
-//            .check(matches(hasTextColor(CoreUiR.color.red)))
+        composeTestRule
+            .onNodeWithTag("home_fab")
+            .performClick()
+        composeTestRule
+            .onNodeWithText(getString(create_resource_menu_create_folder))
+            .performClick()
+        composeTestRule
+            .onNodeWithText(getString(save))
+            .performClick()
+
+        val expectedError =
+            InstrumentationRegistry
+                .getInstrumentation()
+                .targetContext
+                .getString(validation_required_with_max_length, 256)
+        composeTestRule
+            .onNodeWithText(expectedError)
+            .assertIsDisplayed()
     }
 
-    //    https://passbolt.testrail.io/index.php?/cases/view/8165
+    /**  [On the root folder workspace I can save new folder](https://passbolt.testrail.io/index.php?/cases/view/8165)
+     *
+     *      Given I clicked on the create button
+     *      And I clicked on the create folder button
+     *      And I filled out mandatory ‘Name’ field
+     *      When I click ‘Save’ button
+     *      Then I see ‘New folder {folder’s name} has been created!’ in @green
+     *      And I am redirected to the folders workspace
+     */
     @Test
     fun onTheRootFolderWorkspaceICanSaveNewFolder() {
-//        // unregister refresh idling resource after first refresh not to block the snackbar checks
-//        // (second refresh is during snackbar is showing)
-//        IdlingRegistry.getInstance().unregister(resourcesFullRefreshIdlingResource)
-//
-//        //    Given     that I am on #PRO_FOLDER_CREATION_WITH_PERMISSION
-//        onView(withId(com.passbolt.mobile.android.feature.home.R.id.homeSpeedDialViewId))
-//            .check(matches(isDisplayed()))
-//            .check(matches(hasDrawable(id = CoreUiR.drawable.ic_plus, tint = CoreUiR.color.icon_tint)))
-//        //    When      I click create button
-//        onView(withId(com.passbolt.mobile.android.feature.home.R.id.homeSpeedDialViewId)).perform(click())
-//        //    When      I click ‘Add folder’ button
-//        onView(withIndex(0, withId(com.leinardi.android.speeddial.R.id.sd_label_container))).perform(click())
-//        //    Given     that I am on ‘Create folder’ workspace
-//        //    And       And I filled out mandatory ‘Name’ field
-//        onView(withId(CoreUiR.id.input)).perform(replaceText(NEW_TEST_FOLDER_NAME))
-//        //    When      I click ‘Save’ button
-//        onView(withText(LocalizationR.string.save)).perform(click())
-//        //    Then      I see ‘New folder {folder’s name} has been created!’ in @green
-//        //    And       I am redirected to the folders workspace
-//        onView(withId(com.passbolt.mobile.android.feature.permissions.R.id.rootLayout)).check(matches(isDisplayed()))
-//        onView(withId(MaterialR.id.snackbar_text))
-//            .check(
-//                matches(
-//                    withText(
-//                        getString(
-//                            LocalizationR.string.common_message_folder_created,
-//                            NEW_TEST_FOLDER_NAME,
-//                        ),
-//                    ),
-//                ),
-//            )
-    }
-
-    //    https://passbolt.testrail.io/index.php?/cases/view/8166
-    @Test
-    fun onTheFolderWorkspaceICanOpenFolder() {
-//        createFolderForOpening()
-//
-//        //    Given     that I am on #PRO_FOLDER_CREATION_WITH_PERMISSION
-//        //    And       And I have at least the "can update" permission in the current context
-//        onView(withId(com.passbolt.mobile.android.feature.otp.R.id.searchEditText)).perform(
-//            replaceText(NEW_TEST_FOLDER_NAME),
-//            pressKey(KeyEvent.KEYCODE_ENTER),
-//        )
-//        //    When      I can click a folder which I created before
-//        onView(withIndex(0, withId(com.passbolt.mobile.android.feature.home.R.id.itemFolder))).perform(click())
-//        //    Then      I see a back arrow to go back to the previous page
-//        onView(withId(com.passbolt.mobile.android.feature.autofill.R.id.backButton)).check(matches(isDisplayed()))
-//        //    And       I see folder icon
-//        onView(withId(com.passbolt.mobile.android.feature.home.R.id.titleDrawable)).check(matches(isDisplayed()))
-//        //    And       I see folder name
-//        onView(withText(NEW_TEST_FOLDER_NAME)).check(matches(isDisplayed()))
-//        //    And       I see ‘3 dots’
-//        onView(withId(com.passbolt.mobile.android.feature.home.R.id.moreButton)).check(matches(isDisplayed()))
-//        //    And       I see filters icon
-//        onView(withId(MaterialR.id.text_input_start_icon)).check(matches(isDisplayed()))
-//        //    And       I see search bar
-//        onView(withId(com.passbolt.mobile.android.feature.otp.R.id.searchEditText)).check(matches(isDisplayed()))
-//        //    And       I see user’s current avatar
-//        onView(withId(MaterialR.id.text_input_end_icon)).check(matches(isDisplayed()))
-//        //    And       I see ‘There are no passwords’ description with picture
-//        onView(withText(LocalizationR.string.no_passwords)).check(matches(isDisplayed()))
-//        //    And       I see create button in @blue
-//        onView(withId(com.passbolt.mobile.android.feature.home.R.id.homeSpeedDialViewId))
-//            .check(matches(isDisplayed()))
-//            .check(matches(hasDrawable(id = CoreUiR.drawable.ic_plus, tint = CoreUiR.color.icon_tint)))
-    }
-
-    private fun createFolderForOpening() {
-//        onView(withId(com.passbolt.mobile.android.feature.home.R.id.homeSpeedDialViewId)).perform(click())
-//        onView(withIndex(0, withId(com.leinardi.android.speeddial.R.id.sd_label_container))).perform(click())
-//        onView(withId(CoreUiR.id.input)).perform(replaceText(NEW_TEST_FOLDER_NAME))
-//        onView(withText(LocalizationR.string.save)).perform(click())
+        composeTestRule.waitUntil(timeoutMillis = 4_000) {
+            composeTestRule.onAllNodesWithTag("home_fab").fetchSemanticsNodes().isNotEmpty()
+        }
+        composeTestRule
+            .onNodeWithTag("home_fab")
+            .performClick()
+        composeTestRule
+            .onNodeWithText(getString(create_resource_menu_create_folder))
+            .performClick()
+        // TODO: use .onNodeWithText(getString(placeholder)) when https://app.clickup.com/t/2593179/MOB-3309 will be ready
+        composeTestRule
+            .onNodeWithTag("create_folder_name_input", useUnmergedTree = true)
+            .performClick()
+            .performTextReplacement(NEW_TEST_FOLDER_NAME)
+        composeTestRule
+            .onNodeWithText(getString(save))
+            .performClick()
+        composeTestRule
+            .onNodeWithTag("home_screen")
+            .assertIsDisplayed()
     }
 
     private companion object {
-        private const val NEW_TEST_FOLDER_NAME = "Automated tests folder"
+        private const val NEW_TEST_FOLDER_NAME = "Automated Android folder"
     }
 }

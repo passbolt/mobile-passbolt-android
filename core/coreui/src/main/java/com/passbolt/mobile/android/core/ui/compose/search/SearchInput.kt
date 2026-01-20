@@ -112,8 +112,12 @@ fun SearchInput(
         modifier =
             modifier
                 .fillMaxWidth()
-                .testTag("home_search_input_field"),
+                .testTag(SearchInputTestTags.INPUT_FIELD),
     )
+}
+
+object SearchInputTestTags {
+    const val INPUT_FIELD: String = "home_search_input_field"
 }
 
 @Preview(showBackground = true)

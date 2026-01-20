@@ -97,6 +97,10 @@ fun FiltersMenuBottomSheet(
     )
 }
 
+object FiltersMenuBottomSheetTestTags {
+    const val SHEET: String = "filters_menu_sheet"
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun FiltersMenuBottomSheet(
@@ -118,7 +122,7 @@ private fun FiltersMenuBottomSheet(
             modifier =
                 Modifier
                     .fillMaxWidth()
-                    .testTag("filters_menu_sheet"),
+                    .testTag(FiltersMenuBottomSheetTestTags.SHEET),
         ) {
             BottomSheetHeader(
                 title = stringResource(LocalizationR.string.filters_menu_title),

@@ -59,6 +59,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -66,6 +67,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.passbolt.mobile.android.core.ui.compose.fab.AddFloatingActionButton
 import com.passbolt.mobile.android.core.ui.compose.snackbar.ColoredSnackbarVisuals
+import com.passbolt.mobile.android.core.ui.compose.topbar.BackNavigationIconTags
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -119,7 +121,10 @@ fun HomeScaffold(
                                         Icons.AutoMirrored.Filled.ArrowBack,
                                         contentDescription = null,
                                         tint = colorResource(CoreUiR.color.icon_tint),
-                                        modifier = Modifier.clickable { onBackClick() },
+                                        modifier =
+                                            Modifier
+                                                .clickable { onBackClick() }
+                                                .testTag(BackNavigationIconTags.ICON),
                                     )
                                 }
                                 Row(
@@ -131,7 +136,10 @@ fun HomeScaffold(
                                         Image(
                                             painter = painterResource(it),
                                             contentDescription = null,
-                                            modifier = Modifier.size(24.dp),
+                                            modifier =
+                                                Modifier
+                                                    .size(24.dp)
+                                                    .testTag(HomeScaffoldTestTags.APP_BAR_ICON),
                                         )
                                         Spacer(modifier = Modifier.width(8.dp))
                                     }

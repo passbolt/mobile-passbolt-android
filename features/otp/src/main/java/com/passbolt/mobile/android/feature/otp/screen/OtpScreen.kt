@@ -169,7 +169,7 @@ fun OtpScreen(
         snackbarHostState = snackbarHostState,
         modifier =
             modifier
-                .testTag("otp_screen"),
+                .testTag(OtpScreenTestTags.SCREEN),
         appBarTitle = stringResource(LocalizationR.string.main_menu_otp),
         appBarIconRes = CoreUiR.drawable.ic_time_lock,
         appBarSearchInput = {
@@ -275,4 +275,8 @@ fun OtpScreen(
                 ProgressDialog(state.showProgress)
             },
     )
+}
+
+object OtpScreenTestTags {
+    const val SCREEN: String = "otp_screen"
 }
