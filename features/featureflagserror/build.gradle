@@ -1,6 +1,7 @@
 plugins {
     alias libs.plugins.android.library
     alias libs.plugins.kotlin.gradle
+    alias libs.plugins.compose.compiler
 }
 
 dependencies {
@@ -10,14 +11,24 @@ dependencies {
     implementation project(':ui')
     implementation project(':architecture')
     implementation project(':coreui')
+    implementation project(':localization')
 
     implementation platform(libs.koin.bom)
     implementation libs.koin
+
+    implementation platform(libs.compose.bom)
+    implementation libs.compose.foundation
+    implementation libs.compose.ui.graphics
+    implementation libs.compose.material3
+    implementation libs.compose.ui.tooling
+    implementation libs.compose.icons
+    debugImplementation libs.compose.ui.tooling.preview
 }
 
 android {
     namespace = "com.passbolt.mobile.android.feature.flagserror"
     buildFeatures {
+        compose true
         viewBinding true
     }
 }

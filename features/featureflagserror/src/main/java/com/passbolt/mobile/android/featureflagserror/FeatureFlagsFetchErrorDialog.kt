@@ -1,13 +1,14 @@
 package com.passbolt.mobile.android.featureflagserror
 
+import PassboltTheme
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import com.passbolt.mobile.android.core.mvp.EdgeToEdgeDialogFragment
-import com.passbolt.mobile.android.feature.flagserror.databinding.DialogFeatureFlagsFetchErrorBinding
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 /**
@@ -44,11 +45,18 @@ class FeatureFlagsFetchErrorDialog : EdgeToEdgeDialogFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View {
-        val binding = DialogFeatureFlagsFetchErrorBinding.inflate(inflater)
-        setupListeners(binding)
-        return binding.root
-    }
+    ): View =
+        ComposeView(requireContext()).apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                PassboltTheme {
+                    FeatureFlagsFetchErrorUi(
+                        onRetry = { listener?.fetchFeatureFlagsErrorDialogRefreshClick() },
+                        onSignOut = { listener?.fetchFeatureFlagsErrorDialogSignOutClick() },
+                    )
+                }
+            }
+        }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -64,17 +72,6 @@ class FeatureFlagsFetchErrorDialog : EdgeToEdgeDialogFragment() {
     override fun onDetach() {
         listener = null
         super.onDetach()
-    }
-
-    private fun setupListeners(binding: DialogFeatureFlagsFetchErrorBinding) {
-        with(binding) {
-            refreshButton.setDebouncingOnClick {
-                listener?.fetchFeatureFlagsErrorDialogRefreshClick()
-            }
-            signOutButton.setDebouncingOnClick {
-                listener?.fetchFeatureFlagsErrorDialogSignOutClick()
-            }
-        }
     }
 
     interface Listener {
