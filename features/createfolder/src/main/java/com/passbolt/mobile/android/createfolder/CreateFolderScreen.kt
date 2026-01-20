@@ -184,6 +184,7 @@ private fun CreateFolderScreen(
                         onTextChange = { onIntent(FolderNameChanged(it)) },
                         isRequired = true,
                         modifier = Modifier.fillMaxWidth(),
+                        testTag = CreateFolderScreenTestTags.NAME_INPUT,
                     )
 
                     Spacer(modifier = Modifier.height(24.dp))
@@ -228,6 +229,10 @@ private fun CreateFolderScreen(
             }
         },
     )
+}
+
+object CreateFolderScreenTestTags {
+    const val NAME_INPUT: String = "create_folder_name_input"
 }
 
 @Preview(showBackground = true)

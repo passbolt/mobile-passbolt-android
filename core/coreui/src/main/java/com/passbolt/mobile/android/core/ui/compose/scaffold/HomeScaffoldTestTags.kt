@@ -1,6 +1,6 @@
-/**
+/*
  * Passbolt - Open source password manager for teams
- * Copyright (c) 2021 Passbolt SA
+ * Copyright (c) 2026 Passbolt SA
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
  * Public License (AGPL) as published by the Free Software Foundation version 3.
@@ -20,38 +20,8 @@
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-package com.passbolt.mobile.android.core.ui.compose.fab
+package com.passbolt.mobile.android.core.ui.compose.scaffold
 
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.painterResource
-import com.passbolt.mobile.android.core.ui.R
-
-@Composable
-fun AddFloatingActionButton(
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    FloatingActionButton(
-        onClick = onClick,
-        containerColor = MaterialTheme.colorScheme.primary,
-        shape = CircleShape,
-        modifier = modifier.testTag(AddFloatingActionButtonTestTags.HOME_FAB),
-    ) {
-        Icon(
-            painter = painterResource(id = R.drawable.ic_plus),
-            contentDescription = null,
-            tint = Color.Black,
-        )
-    }
-}
-
-object AddFloatingActionButtonTestTags {
-    const val HOME_FAB: String = "home_fab"
+object HomeScaffoldTestTags {
+    const val APP_BAR_ICON: String = "home_appbar_icon"
 }

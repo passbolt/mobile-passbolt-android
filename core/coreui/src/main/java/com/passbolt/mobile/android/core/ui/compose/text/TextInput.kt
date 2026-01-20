@@ -16,6 +16,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.passbolt.mobile.android.core.ui.R
+import com.passbolt.mobile.android.core.ui.compose.extensions.optionalTestTag
 import com.passbolt.mobile.android.core.ui.textinputfield.StatefulInput
 import com.passbolt.mobile.android.core.ui.textinputfield.StatefulInput.State.Default
 import com.passbolt.mobile.android.core.ui.textinputfield.StatefulInput.State.Error
@@ -52,6 +53,7 @@ fun TextInput(
     state: StatefulInput.State = Default,
     text: String = "",
     onTextChange: (String) -> Unit = {},
+    testTag: String? = null,
 ) {
     val titleColor = if (state is Error) colorResource(R.color.red) else MaterialTheme.colorScheme.onBackground
     val label =
@@ -72,7 +74,10 @@ fun TextInput(
             onValueChange = { onTextChange(it) },
             placeholder = { Text(hint) },
             isError = state is Error,
-            modifier = Modifier.fillMaxWidth(),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .optionalTestTag(testTag),
         )
         if (state is Error) {
             Text(

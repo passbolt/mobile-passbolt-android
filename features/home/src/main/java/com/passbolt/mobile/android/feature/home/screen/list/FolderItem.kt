@@ -42,6 +42,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -64,6 +65,7 @@ fun FolderItem(
             modifier
                 .fillMaxWidth()
                 .height(64.dp)
+                .testTag(FolderItemTestTags.ROW)
                 .clickable { onFolderClick(folder) }
                 .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -179,4 +181,8 @@ private fun SharedFolderItemPreview() {
             onFolderClick = {},
         )
     }
+}
+
+object FolderItemTestTags {
+    const val ROW: String = "home_folder_row"
 }

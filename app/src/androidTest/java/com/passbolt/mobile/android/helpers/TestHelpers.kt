@@ -37,15 +37,18 @@ import androidx.compose.ui.test.performTextReplacement
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.closeSoftKeyboard
+import androidx.test.espresso.action.ViewActions.replaceText
 import androidx.test.espresso.action.ViewActions.typeText
 import androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.platform.app.InstrumentationRegistry
+import com.passbolt.mobile.android.core.ui.R.id.generatePasswordLayout
+import com.passbolt.mobile.android.core.ui.R.id.input
+import com.passbolt.mobile.android.feature.authentication.R.id.authButton
 import com.passbolt.mobile.android.matchers.withHint
 import com.passbolt.mobile.android.scenarios.resourcesedition.EditableFieldInput
 import org.hamcrest.Matchers.allOf
 import org.hamcrest.Matchers.hasToString
-import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 internal fun getString(
     @StringRes stringResId: Int,
@@ -53,14 +56,13 @@ internal fun getString(
 ) = InstrumentationRegistry.getInstrumentation().targetContext.getString(stringResId, *formatArgs)
 
 internal fun createNewPasswordFromHomeScreen(name: String) {
-//    onView(withId(com.passbolt.mobile.android.feature.home.R.id.createResourceFab)).perform(click())
     onView(withId(com.passbolt.mobile.android.feature.createresourcemenu.R.id.createPassword)).perform(click())
 
-    onView(withId(CoreUiR.id.generatePasswordLayout)).perform(click())
+    onView(withId(generatePasswordLayout)).perform(click())
     onView(
         allOf(
             isDescendantOfA(withHint(hasToString(EditableFieldInput.NAME.hintName))),
-            withId(CoreUiR.id.input),
+            withId(input),
         ),
     ).perform(
         typeText(name),
@@ -68,7 +70,7 @@ internal fun createNewPasswordFromHomeScreen(name: String) {
     onView(
         allOf(
             isDescendantOfA(withHint(hasToString(EditableFieldInput.ENTER_URL.hintName))),
-            withId(CoreUiR.id.input),
+            withId(input),
         ),
     ).perform(
         typeText("TestURL"),
@@ -76,7 +78,7 @@ internal fun createNewPasswordFromHomeScreen(name: String) {
     onView(
         allOf(
             isDescendantOfA(withHint(hasToString(EditableFieldInput.ENTER_USERNAME.hintName))),
-            withId(CoreUiR.id.input),
+            withId(input),
         ),
     ).perform(
         typeText("TestUsername"),
@@ -90,8 +92,8 @@ internal fun createNewPasswordFromHomeScreen(name: String) {
  * Usage: composeTestRule.signIn(passphrase)
  */
 internal fun ComposeTestRule.signIn(passphrase: String) {
-    onView(withId(CoreUiR.id.input)).perform(typeText(passphrase), closeSoftKeyboard())
-    onView(withId(com.passbolt.mobile.android.feature.authentication.R.id.authButton)).perform(click())
+    onView(withId(input)).perform(replaceText(passphrase), closeSoftKeyboard())
+    onView(withId(authButton)).perform(click())
     onNodeWithTag("home_screen").assertIsDisplayed()
 }
 
@@ -166,6 +168,39 @@ internal fun ComposeTestRule.searchAndClickMoreOfFirstResource(name: String) {
             .isNotEmpty()
     }
     onAllNodes(hasTestTag("home_resource_more"), useUnmergedTree = true)
+        .onFirst()
+        .performClick()
+}
+
+/**
+ * Searches for a folder by name from the Home screen (Folders filter) and opens the first matching result.
+ *
+ * Behavior:
+ * - Focuses the search input (testTag: "home_search_input_field").
+ * - Types the provided name.
+ * - Waits for a folder row containing the provided name (testTag: "home_folder_row").
+ * - Clicks the first matching folder row.
+ *
+ * Notes:
+ * - Ensure the Folders filter is selected before calling this helper.
+ */
+internal fun ComposeTestRule.searchAndOpenFirstFolderByName(name: String) {
+    onNodeWithTag("home_search_input_field")
+        .performClick()
+        .performTextReplacement(name)
+
+    val folderRowMatcher =
+        hasTestTag("home_folder_row").and(
+            hasAnyDescendant(hasText(name, substring = true, ignoreCase = true)),
+        )
+
+    waitUntil(conditionDescription = "Waiting for folder $name", timeoutMillis = 5_000) {
+        onAllNodes(folderRowMatcher, useUnmergedTree = true)
+            .fetchSemanticsNodes()
+            .isNotEmpty()
+    }
+
+    onAllNodes(folderRowMatcher, useUnmergedTree = true)
         .onFirst()
         .performClick()
 }

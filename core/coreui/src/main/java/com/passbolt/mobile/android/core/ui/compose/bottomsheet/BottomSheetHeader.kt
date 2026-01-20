@@ -70,7 +70,7 @@ fun BottomSheetHeader(
                     Modifier
                         .size(24.dp)
                         .clickable(onClick = onClose)
-                        .testTag("bottom_sheet_icon_close"),
+                        .testTag(BottomSheetHeaderTestTags.ICON_CLOSE),
                 tint = colorResource(id = R.color.icon_tint),
             )
         }
@@ -84,4 +84,8 @@ fun BottomSheetHeader(
             thickness = 1.dp,
         )
     }
+}
+
+object BottomSheetHeaderTestTags {
+    const val ICON_CLOSE: String = "bottom_sheet_icon_close"
 }

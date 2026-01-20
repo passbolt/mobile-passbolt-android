@@ -1,6 +1,6 @@
 /*
  * Passbolt - Open source password manager for teams
- * Copyright (c) 2024-2026 Passbolt SA
+ * Copyright (c) 2021-2026 Passbolt SA
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
  * Public License (AGPL) as published by the Free Software Foundation version 3.
@@ -21,11 +21,13 @@
  * @since v1.0
  */
 
-package com.passbolt.mobile.android.scenarios.home.filters.folders.nopermission
+package com.passbolt.mobile.android.scenarios.home.filters.folders.list
 
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
 import androidx.test.platform.app.InstrumentationRegistry
@@ -33,12 +35,14 @@ import com.passbolt.mobile.android.core.idlingresource.CreateFolderIdlingResourc
 import com.passbolt.mobile.android.core.idlingresource.ResourcesFullRefreshIdlingResource
 import com.passbolt.mobile.android.core.idlingresource.SignInIdlingResource
 import com.passbolt.mobile.android.core.localization.R.string.filters_menu_folders
+import com.passbolt.mobile.android.core.localization.R.string.no_passwords
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.core.ui.compose.scaffold.HomeScaffoldTestTags.APP_BAR_ICON
 import com.passbolt.mobile.android.core.ui.compose.topbar.BackNavigationIcon.TestTags.ICON
 import com.passbolt.mobile.android.feature.authentication.AuthenticationMainActivity
 import com.passbolt.mobile.android.helpers.chooseFilter
+import com.passbolt.mobile.android.helpers.getString
 import com.passbolt.mobile.android.helpers.searchAndOpenFirstFolderByName
 import com.passbolt.mobile.android.helpers.signIn
 import com.passbolt.mobile.android.instrumentationTestsModule
@@ -54,7 +58,7 @@ import org.koin.test.KoinTest
 
 @RunWith(AndroidJUnit4::class)
 @MediumTest
-class FolderWithoutWritePermissionTest : KoinTest {
+class FoldersListTest : KoinTest {
     @get:Rule
     val startUpActivityRule =
         lazyActivitySetupScenarioRule<AuthenticationMainActivity>(
@@ -96,26 +100,33 @@ class FolderWithoutWritePermissionTest : KoinTest {
         composeTestRule.chooseFilter(filters_menu_folders)
     }
 
-    /**  [View folder without write permission](https://passbolt.testrail.io/index.php?/cases/view/11939)
+    /**  [On the folder workspace I can open folder](https://passbolt.testrail.io/index.php?/cases/view/8166)
      *
-     *      Given  I have some subfolders in this folder
-     *      And  I have some resources in it
-     *      When I enter this folder
-     *      Then I do not see the create button
-     *      And  I see the list of folders
-     *      And  I see the list of resources below the folders
+     *      Given I am on the folders filter view
+     *      When I click a folder
+     *      Then I see a back arrow to go back to the previous page
+     *      And I see folder icon
+     *      And I see folder name
+     *      And I see ‘3 dots’
+     *      And I see filters icon
+     *      And I see search bar
+     *      And I see user’s current avatar
+     *      And I see ‘There are no passwords’ description with picture
+     *      And I see create button in @blue
      */
     @Test
-    fun viewFolderWithoutWritePermission() {
-        composeTestRule.searchAndOpenFirstFolderByName(SHARED_TEST_FOLDER_NAME)
+    fun onTheFolderWorkspaceICanOpenFolder() {
+        composeTestRule.searchAndOpenFirstFolderByName(NEW_TEST_FOLDER_NAME)
+        composeTestRule.onNodeWithText(NEW_TEST_FOLDER_NAME).assertIsDisplayed()
         composeTestRule.onNode(hasTestTag(ICON), useUnmergedTree = true).assertExists() // Back icon
         composeTestRule.onNode(hasTestTag(APP_BAR_ICON), useUnmergedTree = true).assertExists() // Folder icon
         composeTestRule.onNodeWithTag("home_search_input_field").assertExists()
         composeTestRule.onNodeWithTag("home_search_filter").assertExists()
-        composeTestRule.onNodeWithTag("home_fab").assertDoesNotExist()
+        composeTestRule.onNodeWithText(getString(no_passwords)).assertIsDisplayed()
+        composeTestRule.onNodeWithTag("home_fab").assertExists()
     }
 
     private companion object {
-        private const val SHARED_TEST_FOLDER_NAME = "Shared without permission to add"
+        private const val NEW_TEST_FOLDER_NAME = "Automated Android folder"
     }
 }

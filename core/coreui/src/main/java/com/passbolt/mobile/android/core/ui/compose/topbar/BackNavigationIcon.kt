@@ -46,9 +46,13 @@ fun BackNavigationIcon(
     }
 }
 
+object BackNavigationIconTags {
+    const val ICON = "BackNavigationIcon"
+}
+
 @VisibleForTesting
 object BackNavigationIcon {
     object TestTags {
-        const val ICON = "BackNavigationIcon"
+        const val ICON = BackNavigationIconTags.ICON
     }
 }
