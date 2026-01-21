@@ -25,7 +25,7 @@ fun SwitchWithDescriptionItem(
     title: String,
     description: String,
     isChecked: Boolean,
-    modifier: Modifier = Modifier.Companion,
+    modifier: Modifier = Modifier,
     additionalDescription: String? = null,
     onClick: () -> Unit = {},
     isEnabled: Boolean = true,

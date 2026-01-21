@@ -25,7 +25,7 @@ import com.passbolt.mobile.android.core.ui.R
 fun ImageTextCircle(
     stepNumber: Int,
     icon: Int?,
-    modifier: Modifier = Modifier.Companion,
+    modifier: Modifier = Modifier,
 ) {
     Box(
         modifier =
