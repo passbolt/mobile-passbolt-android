@@ -33,6 +33,8 @@
     <string name="name_expired">%s (abgelaufen)</string>
     <string name="proceed">Fortfahren</string>
     <string name="edit_password">Passwort bearbeiten</string>
+    <string name="copy_label_fingerprint">Fingerabdruck</string>
+    <string name="copy_label_uid">UID</string>
     <string name="common_failure">Etwas ist schiefgelaufen!</string>
     <string name="common_startup_configuration_fetch_error">Fehler beim Abrufen der Konfiguration</string>
     <string name="common_time_is_out_of_sync">Server- und Clientzeit ist nicht synchronisiert, bitte kontaktieren Sie Ihren Administrator.</string>
@@ -48,17 +50,20 @@
     <string name="common_json_schema_resource_validation_error">Bei der Überprüfung der Ressource ist ein Fehler aufgetreten. Aktiviere Protokolle für weitere Details.</string>
     <string name="common_json_schema_secret_validation_error">Beim Überprüfen des Geheimnisses ist ein Fehler aufgetreten. Aktivieren Sie Protokolle für weitere Details.</string>
     <string name="common_maybe_later">Vielleicht später</string>
-    <string name="common_cannot_create_resource_with_current_config">Cannot update a resource with current configuration</string>
-    <string name="common_metadata_key_verification_failure">Could not verify metadata keys</string>
-    <string name="common_metadata_key_is_trusted">New metadata key is trusted</string>
-    <string name="common_metadata_key_trust_failed">Failed to trust new metadata key</string>
-    <string name="common_message_resource_edited">%s resource was successfully edited.</string>
-    <string name="common_message_resource_deleted">%s resource was deleted.</string>
+    <string name="common_cannot_create_resource_with_current_config">Ressource kann nicht mit aktueller Konfiguration aktualisiert werden</string>
+    <string name="common_metadata_key_verification_failure">Metadaten-Schlüssel konnten nicht verifiziert werden</string>
+    <string name="common_metadata_key_is_trusted">Neuer Metadaten-Schlüssel ist vertrauenswürdig</string>
+    <string name="common_metadata_key_trust_failed">Konnte neuem Metadaten-Schlüssel nicht vertrauen</string>
+    <string name="common_message_resource_edited">%s Ressource wurde erfolgreich bearbeitet.</string>
+    <string name="common_message_resource_deleted">%s Ressource wurde gelöscht.</string>
     <string name="common_message_resource_shared">Die Berechtigungen für die Ressource wurden aktualisiert.</string>
     <string name="common_message_folder_created">Neuer Ordner %s wurde erstellt!</string>
+    <string name="common_lack_shared_key_access">Sie können diese Aktion nicht ausführen, da Ihnen der Zugriff auf die freigegebenen Metadaten-Schlüssel fehlt.</string>
     <string name="validation_required_with_max_length">Die Länge sollte zwischen 1 und %d liegen.</string>
-    <string name="validation_is_required">This input is required</string>
+    <string name="validation_max_length">Die maximale Länge beträgt %d</string>
+    <string name="validation_is_required">Diese Eingabe ist erforderlich</string>
     <string name="validation_required_integer">Sollte eine Ganzzahl sein</string>
+    <string name="validation_invalid_totp_secret">Ungültiges TOTP-Geheimnis</string>
     <string name="fingerprint_biometric_error_generic">Es ist ein Fehler beim Fingerabdrucksensor aufgetreten.</string>
     <string name="fingerprint_biometric_error_too_many_attempts">Die biometrische Autorisierung wurde aufgrund von zu vielen Versuchen blockiert.</string>
     <string name="fingerprint_biometric_error_blocked">Die biometrische Autorisierung wurde für 30 Sekunden gesperrt.</string>
@@ -75,7 +80,7 @@
     <string name="more_copy_uri">URI kopieren</string>
     <string name="more_copy_password">Passwort kopieren</string>
     <string name="more_copy_username">Benutzernamen kopieren</string>
-    <string name="more_copy_metadata_desc">Copy metadata description</string>
+    <string name="more_copy_metadata_desc">Metadatenbeschreibung kopieren</string>
     <string name="more_copy_note">Notiz kopieren</string>
     <string name="more_edit">Bearbeiten</string>
     <string name="more_delete">Löschen</string>
@@ -204,8 +209,10 @@
     <string name="autofill_error">Autofill-Fehler aufgetreten</string>
     <string name="autofill_select_password">Passwort auswählen</string>
     <string name="autofill_service_channel_name">Passbolt Dienste zum automatischen Ausfüllen</string>
+    <string name="data_sync_service_channel_name">Passbolt-Datensynchronisierungsdienst</string>
     <string name="autofill_service_title">Passbolt</string>
     <string name="autofill_service_content">Dienst zum automatischen Ausfüllen durch die Barrierefreiheit aktiviert</string>
+    <string name="data_sync_service_content">Ressourcen werden aktualisiert</string>
     <string name="autofill_service_enable_overlay">Overlay-Erlaubnis einschalten</string>
     <string name="autofill_service_overlay_description"><![CDATA[Autofill-Benutzernamen & Passwörter für Android-Web-Browser. Bitte aktivieren Sie die "Über andere Apps ziehen" Berechtigung für Passbolt Autofill]]></string>
     <string name="autofill_service_enable_service">Automatischen Ausfüllen für die meisten Anwendungen aktivieren</string>
@@ -233,6 +240,7 @@
     <string name="filters_menu_shared_with_me">Mit mir geteilt</string>
     <string name="filters_menu_owned_by_me">In meinem Besitz</string>
     <string name="filters_menu_expiry">Ablauf</string>
+    <string name="filters_menu_loading">Wird geladen</string>
     <string name="filters_menu_folders">Ordner</string>
     <string name="filters_menu_tags">Tags</string>
     <string name="filters_menu_groups">Gruppen</string>
@@ -245,6 +253,7 @@
     <string name="resource_details_totp_header">Totp</string>
     <string name="resource_details_url_header">Haupt-URI</string>
     <string name="resource_details_expiry_header">Ablauf</string>
+    <string name="resource_details_additional_uris">Zusätzliche URI</string>
     <string name="resource_details_description_header">Beschreibung</string>
     <string name="resource_details_note_header">Notiz</string>
     <string name="resource_details_note_content">Inhalt</string>
@@ -253,12 +262,15 @@
     <string name="resource_details_information">Informationen</string>
     <string name="resource_details_invalid_totp_scanned">Ungültiger TOTP QR-Code gescannt</string>
     <string name="resource_details_metadata_header">Metadaten</string>
+    <string name="resource_details_custom_fields_header">Benutzerdefinierte Felder</string>
+    <string name="additional_uri_format">• %s</string>
     <string name="more_details_copy_password">Passwort kopieren</string>
     <string name="more_details_copy_description">Beschreibung kopieren</string>
     <string name="resource_form_create_success">Neues Passwort wurde erstellt!</string>
     <string name="resource_form_password">Passwort</string>
     <string name="resource_form_enter_password">Passwort eingeben</string>
-    <string name="resource_form_main_uri">Main URI</string>
+    <string name="resource_form_main_uri">Haupt-URI</string>
+    <string name="resource_form_add_uri">URI hinzufügen</string>
     <string name="resource_form_enter_uri">URI eingeben</string>
     <string name="resource_form_username">Benutzername</string>
     <string name="resource_form_enter_username">Benutzernamen eingeben</string>
@@ -269,18 +281,24 @@
     <string name="resource_form_totp_more_settings">Weitere TOTP-Einstellungen</string>
     <string name="resource_form_totp_settings">TOTP-Einstellungen</string>
     <string name="resource_form_description">Beschreibung</string>
+    <string name="resource_form_additional_uris">Zusätzliche URIs</string>
     <string name="resource_form_enter_description">Beschreibung eingeben</string>
     <string name="resource_form_metadata_description">Metadatenbeschreibung</string>
-    <string name="resource_form_create_metadata_description">Create metadata description</string>
+    <string name="resource_form_create_metadata_description">Metadatenbeschreibung erstellen</string>
+    <string name="resource_form_create_resource_appearance">Ressourcenansicht</string>
+    <string name="resource_form_create_resource_custom_fields">Benutzerdefinierte Felder</string>
+    <string name="resource_form_create_additional_uris">Erstelle zusätzliche URIs</string>
     <string name="resource_form_note">Notiz</string>
-    <string name="resource_form_create_note">Create note</string>
+    <string name="resource_form_custom_fields">Benutzerdefinierte Felder</string>
+    <string name="resource_form_create_note">Notiz erstellen</string>
     <string name="resource_form_note_content">Inhalt</string>
-    <string name="resource_form_enter_note">Enter note</string>
-    <string name="resource_form_note_info">The note is part of the secret if you want to be able to search this content, use metadata description.</string>
+    <string name="resource_form_enter_note">Notiz eingeben</string>
+    <string name="resource_form_note_info">Die Notiz ist Teil des Geheimnisses, wenn Sie diesen Inhalt durchsuchen möchten, verwenden Sie die Metadatenbeschreibung.</string>
     <string name="resource_form_metadata_description_info">Wenn Sie möchten, dass die Beschreibung Teil des Geheimnisses ist, verwenden Sie stattdessen eine Notiz.</string>
     <string name="resource_form_resource_name">Ressourcenname</string>
     <string name="resource_form_name">Name</string>
     <string name="resource_form_create_password">Ein Passwort erstellen</string>
+    <string name="resource_form_create_custom_fields">Benutzerdefinierte Felder erstellen</string>
     <string name="resource_form_edit_resource">Bearbeite %s</string>
     <string name="resource_form_create_totp">TOTP erstellen</string>
     <string name="resource_form_view_advanced_settings">Erweiterte Einstellungen anzeigen</string>
@@ -289,10 +307,19 @@
     <string name="resource_form_view_additional_uris">Zusätzliche URIs</string>
     <string name="resource_form_create">Erstellen</string>
     <string name="resource_form_save">Speichern</string>
-    <string name="resource_form_edit_init_error">Failed to initialize resource edition</string>
-    <string name="resource_form_remove_totp">Remove TOTP</string>
-    <string name="resource_form_remove_note">Remove Note</string>
-    <string name="resource_form_no_name">no name</string>
+    <string name="resource_form_edit_init_error">Fehler beim Initialisieren der Ressourcenbearbeitung</string>
+    <string name="resource_form_create_init_error">Initialisierung der Ressourcenerstellung fehlgeschlagen</string>
+    <string name="resource_form_remove_totp">TOTP entfernen</string>
+    <string name="resource_form_remove_note">Notiz entfernen</string>
+    <string name="resource_form_no_name">kein Name</string>
+    <string name="resource_form_max_additional_uris_limit">Sie können ein Maximum von %d zusätzlichen URIs hinzufügen</string>
+    <string name="resource_form_appearance">Ansicht</string>
+    <string name="resource_form_appearance_select_color">Farbe auswählen</string>
+    <string name="resource_form_appearance_select_icon">Symbol auswählen</string>
+    <string name="resource_form_appearance_default_color">Standardfarbe</string>
+    <string name="resource_form_appearance_default_icon">Standard-Symbol</string>
+    <string name="resource_form_no_custom_fields_set">Keine benutzerdefinierten Felder festgelegt</string>
+    <string name="resource_form_custom_fields_edit_not_supported">Die Bearbeitung benutzerdefinierter Felder wird derzeit nicht unterstützt</string>
     <string name="settings_app_settings">App-Einstellungen</string>
     <string name="settings_accounts">Konten</string>
     <string name="settings_terms_and_licenses">Bedingungen &amp; Lizenzen</string>
@@ -320,6 +347,7 @@
     <string name="settings_app_settings_autofill">Autofill</string>
     <string name="settings_app_settings_fingerprint">Fingerabdruck</string>
     <string name="settings_app_settings_biometry_error">Biometriefehler. %s</string>
+    <string name="settings_app_settings_biometry_authentication_error">Biometrie-Authentifizierungsfehler. %s</string>
     <string name="settings_app_settings_expert_settings">Experteneinstellungen</string>
     <string name="settings_app_settings_expert_settings_dev_mode">Entwicklermodus</string>
     <string name="settings_app_settings_expert_settings_hide_root">\"Gerät ist gerootet\"-Dialog ausblenden</string>
@@ -362,7 +390,7 @@
     <string name="scan_qr_scanning_error">Fehler beim Scannen</string>
     <string name="scan_qr_camera_error">Kamera-Fehler</string>
     <string name="scan_qr_update_transfer_error">Es ist ein Fehler bei der Aktualisierung der Übertragung aufgetreten</string>
-    <string name="scan_qr_or_create_totp_manually">Or create TOTP manually</string>
+    <string name="scan_qr_or_create_totp_manually">Oder TOTP manuell erstellen</string>
     <string name="scan_qr_summary_success_title">Ihre Daten wurden übertragen!</string>
     <string name="scan_qr_summary_already_linked_title">Konto ist bereits mit dem Gerät verknüpft</string>
     <string name="scan_qr_summary_http_not_supported_title">Unsichere HTTP-Verbindung wird nicht unterstützt</string>
@@ -400,6 +428,8 @@
     <string name="dialog_encryption_error_title">Es ist ein Verschlüsselungsfehler aufgetreten</string>
     <string name="dialog_encryption_error_message">Es gab einen Verschlüsselungsfehler (%s). Bitte versuchen Sie es erneut.</string>
     <string name="resource_tags_section">Tags</string>
+    <string name="resource_tags_title">Ressourcen-Tags</string>
+    <string name="folder_details_title">Ordnerdetails</string>
     <string name="folder_details_name_header">Ordnername</string>
     <string name="help_button_description">Hilfe</string>
     <string name="create_folder_title">Ordner anlegen</string>
@@ -501,22 +531,24 @@
     <string name="create_resource_menu_create_a_resource">Eine Ressource erstellen</string>
     <string name="create_resource_menu_create_totp">TOTP</string>
     <string name="create_resource_menu_create_password">Passwort</string>
+    <string name="create_resource_menu_create_note">Notiz</string>
     <string name="create_resource_menu_create_folder">Ordner</string>
-    <string name="dialog_new_metadata_key_trust_changed">The metadata key has changed.</string>
-    <string name="dialog_new_metadata_key_trust_modified_by_user">The encryption key used to share metadata between users has been updated by %s.</string>
-    <string name="dialog_new_metadata_key_trust_key_rotation_info">If you weren’t expecting this, you can verify with your administrator.</string>
-    <string name="dialog_new_metadata_key_trust_key_rollback_info">This is unusual, please verify with your administrator.</string>
-    <string name="dialog_new_metadata_key_trust_key_fingerprint">Key fingerprint:</string>
-    <string name="dialog_new_metadata_key_trust_key_trust_the_key">Trust the key</string>
-    <string name="dialog_trusted_metadata_key_deleted">The metadata key has been deleted.</string>
-    <string name="dialog_trusted_metadata_key_deleted_main">The trusted encryption key used to share metadata between users has been deleted.</string>
-    <string name="dialog_trusted_metadata_key_deleted_info">If you weren’t expecting this, you can verify with your administrator.</string>
-    <string name="dialog_trusted_metadata_key_deleted_trust">Trust</string>
+    <string name="dialog_new_metadata_key_trust_changed">Der Metadatenschlüssel hat sich geändert.</string>
+    <string name="dialog_new_metadata_key_trust_modified_by_user">Der Verschlüsselungsschlüssel, der benutzt wird, um Metadaten zwischen Benutzern zu teilen, wurde von %s aktualisiert.</string>
+    <string name="dialog_new_metadata_key_trust_key_rotation_info">Wenn Sie dies nicht erwarten, bitte mit Ihrem Administrator überprüfen.</string>
+    <string name="dialog_new_metadata_key_trust_key_rollback_info">Dies ist ungewöhnlich, bitte mit Ihrem Administrator überprüfen.</string>
+    <string name="dialog_new_metadata_key_trust_key_fingerprint">Fingerabdruck:</string>
+    <string name="dialog_new_metadata_key_trust_key_trust_the_key">Vertrauen Sie dem Schlüssel</string>
+    <string name="dialog_trusted_metadata_key_deleted">Der Metadaten-Schlüssel wurde gelöscht.</string>
+    <string name="dialog_trusted_metadata_key_deleted_main">Der vertrauenswürdige Verschlüsselungsschlüssel, der verwendet wird, um Metadaten zwischen Benutzern zu teilen, wurde gelöscht.</string>
+    <string name="dialog_trusted_metadata_key_deleted_info">Wenn Sie dies nicht erwarten, bitte mit Ihrem Administrator überprüfen.</string>
+    <string name="dialog_trusted_metadata_key_deleted_trust">Vertrauen</string>
     <!--
     arrays can be inconsistent when in other languages
     index / size is not used in code
     -->
-    <string-array name="username_hint_values" tools:ignore="InconsistentArrays">
+    <string-array name="username_hint_values"
+        tools:ignore="InconsistentArrays">
         <item>E-Mail</item>
         <item>Benutzername</item>
         <item>Mobil</item>
@@ -527,7 +559,8 @@
       arrays can be inconsistent when in other languages
       index / size is not used in code
     -->
-    <string-array name="password_hint_values" tools:ignore="InconsistentArrays">
+    <string-array name="password_hint_values"
+        tools:ignore="InconsistentArrays">
         <item>Passwort</item>
         <item>Geheimniss</item>
         <item>Passphrase</item>

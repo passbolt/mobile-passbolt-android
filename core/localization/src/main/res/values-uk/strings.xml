@@ -33,6 +33,8 @@
     <string name="name_expired">%s (прострочено)</string>
     <string name="proceed">Продовжити</string>
     <string name="edit_password">Редагувати пароль</string>
+    <string name="copy_label_fingerprint">Відбиток пальця</string>
+    <string name="copy_label_uid">UID</string>
     <string name="common_failure">Щось пішло не так!</string>
     <string name="common_startup_configuration_fetch_error">Помилка під час отримання конфігурації</string>
     <string name="common_time_is_out_of_sync">Час сервера та клієнта не синхронізований, зверніться до адміністратора.</string>
@@ -56,9 +58,12 @@
     <string name="common_message_resource_deleted">Ресурс %s було видалено.</string>
     <string name="common_message_resource_shared">Права доступу до ресурсу оновлено.</string>
     <string name="common_message_folder_created">Нову теку %s створено!</string>
+    <string name="common_lack_shared_key_access">Ви не можете виконати цю дію, оскільки не маєте доступу до спільного ключа метаданих.</string>
     <string name="validation_required_with_max_length">Довжина має бути від 1 до %d</string>
+    <string name="validation_max_length">Максимальна довжина — %d</string>
     <string name="validation_is_required">Це поле є обов\'язковим</string>
     <string name="validation_required_integer">Має бути цілим числом</string>
+    <string name="validation_invalid_totp_secret">Недійсний секрет TOTP</string>
     <string name="fingerprint_biometric_error_generic">Сталася помилка зі зчитувачем відбитків пальців.</string>
     <string name="fingerprint_biometric_error_too_many_attempts">Біометрична авторизація заблокована через занадто багато спроб.</string>
     <string name="fingerprint_biometric_error_blocked">Біометрична авторизація заблокована на 30 секунд.</string>
@@ -204,8 +209,10 @@
     <string name="autofill_error">Сталася помилка автозаповнення</string>
     <string name="autofill_select_password">Виберіть пароль</string>
     <string name="autofill_service_channel_name">Сервіси автозаповнення Passbolt</string>
+    <string name="data_sync_service_channel_name">Служба синхронізації даних Passbolt</string>
     <string name="autofill_service_title">Passbolt</string>
     <string name="autofill_service_content">Службу спеціальних можливостей автозаповнення увімкнено</string>
+    <string name="data_sync_service_content">Оновлення ресурсів</string>
     <string name="autofill_service_enable_overlay">Увімкнути дозвіл показу поверх інших застосунків</string>
     <string name="autofill_service_overlay_description"><![CDATA[Автоматично заповнюйте імена користувачів і паролі у браузерах Android. Увімкніть функцію "Показувати поверх інших програм" для автозаповнення Passbolt]]></string>
     <string name="autofill_service_enable_service">Увімкнути автозаповнення для більшості застосунків</string>
@@ -233,6 +240,7 @@
     <string name="filters_menu_shared_with_me">Поділилися зі мною</string>
     <string name="filters_menu_owned_by_me">Належать мені</string>
     <string name="filters_menu_expiry">Термін дії</string>
+    <string name="filters_menu_loading">Завантаження</string>
     <string name="filters_menu_folders">Теки</string>
     <string name="filters_menu_tags">Теги</string>
     <string name="filters_menu_groups">Групи</string>
@@ -245,6 +253,7 @@
     <string name="resource_details_totp_header">Totp</string>
     <string name="resource_details_url_header">Основний URI</string>
     <string name="resource_details_expiry_header">Термін дії</string>
+    <string name="resource_details_additional_uris">Додатковий URI</string>
     <string name="resource_details_description_header">Опис</string>
     <string name="resource_details_note_header">Примітка</string>
     <string name="resource_details_note_content">Вміст</string>
@@ -253,12 +262,15 @@
     <string name="resource_details_information">Інформація</string>
     <string name="resource_details_invalid_totp_scanned">Проскановано хибний TOTP QR-код</string>
     <string name="resource_details_metadata_header">Метадані</string>
+    <string name="resource_details_custom_fields_header">Користувацькі поля</string>
+    <string name="additional_uri_format">• %s</string>
     <string name="more_details_copy_password">Скопіювати пароль</string>
     <string name="more_details_copy_description">Скопіювати опис</string>
     <string name="resource_form_create_success">Новий пароль створено!</string>
     <string name="resource_form_password">Пароль</string>
     <string name="resource_form_enter_password">Введіть пароль</string>
     <string name="resource_form_main_uri">Основний URI</string>
+    <string name="resource_form_add_uri">Додати URI</string>
     <string name="resource_form_enter_uri">Введіть URI</string>
     <string name="resource_form_username">Ім\'я користувача</string>
     <string name="resource_form_enter_username">Введіть ім\'я користувача</string>
@@ -269,10 +281,15 @@
     <string name="resource_form_totp_more_settings">Більше налаштувань TOTP</string>
     <string name="resource_form_totp_settings">Налаштування TOTP</string>
     <string name="resource_form_description">Опис</string>
+    <string name="resource_form_additional_uris">Додаткові URI</string>
     <string name="resource_form_enter_description">Введіть опис</string>
     <string name="resource_form_metadata_description">Опис метаданих</string>
     <string name="resource_form_create_metadata_description">Створити опис метаданих</string>
+    <string name="resource_form_create_resource_appearance">Вигляд ресурсу</string>
+    <string name="resource_form_create_resource_custom_fields">Користувацькі поля</string>
+    <string name="resource_form_create_additional_uris">Створити додатковий URI</string>
     <string name="resource_form_note">Примітка</string>
+    <string name="resource_form_custom_fields">Користувацькі поля</string>
     <string name="resource_form_create_note">Створити примітку</string>
     <string name="resource_form_note_content">Вміст</string>
     <string name="resource_form_enter_note">Введіть примітку</string>
@@ -281,6 +298,7 @@
     <string name="resource_form_resource_name">Назва ресурсу</string>
     <string name="resource_form_name">Назва</string>
     <string name="resource_form_create_password">Створити пароль</string>
+    <string name="resource_form_create_custom_fields">Створити користувацькі поля</string>
     <string name="resource_form_edit_resource">Редагувати %s</string>
     <string name="resource_form_create_totp">Створити TOTP</string>
     <string name="resource_form_view_advanced_settings">Переглянути додаткові налаштування</string>
@@ -290,9 +308,18 @@
     <string name="resource_form_create">Створити</string>
     <string name="resource_form_save">Зберегти</string>
     <string name="resource_form_edit_init_error">Не вдалося ініціалізувати редагування ресурсу</string>
+    <string name="resource_form_create_init_error">Не вдалося ініціалізувати створення ресурсу</string>
     <string name="resource_form_remove_totp">Вилучити TOTP</string>
     <string name="resource_form_remove_note">Вилучити примітку</string>
     <string name="resource_form_no_name">немає назви</string>
+    <string name="resource_form_max_additional_uris_limit">Ви можете додати максимум %d додаткових URI</string>
+    <string name="resource_form_appearance">Вигляд</string>
+    <string name="resource_form_appearance_select_color">Виберіть колір</string>
+    <string name="resource_form_appearance_select_icon">Виберіть іконку</string>
+    <string name="resource_form_appearance_default_color">Стандартний колір</string>
+    <string name="resource_form_appearance_default_icon">Стандартна іконка</string>
+    <string name="resource_form_no_custom_fields_set">Користувацькі поля не встановлені</string>
+    <string name="resource_form_custom_fields_edit_not_supported">Редагування користувацьких полів наразі не підтримується</string>
     <string name="settings_app_settings">Налаштування застосунку</string>
     <string name="settings_accounts">Облікові записи</string>
     <string name="settings_terms_and_licenses">Умови та ліцензії</string>
@@ -320,6 +347,7 @@
     <string name="settings_app_settings_autofill">Автозаповнення</string>
     <string name="settings_app_settings_fingerprint">Відбиток пальця</string>
     <string name="settings_app_settings_biometry_error">Помилка біометрії. %s</string>
+    <string name="settings_app_settings_biometry_authentication_error">Помилка біометричної автентифікації. %s</string>
     <string name="settings_app_settings_expert_settings">Розширені налаштування</string>
     <string name="settings_app_settings_expert_settings_dev_mode">Режим розробника</string>
     <string name="settings_app_settings_expert_settings_hide_root">Приховати діалог \"пристрій має права суперкористувача\"</string>
@@ -400,6 +428,8 @@
     <string name="dialog_encryption_error_title">Сталася помилка шифрування</string>
     <string name="dialog_encryption_error_message">Сталася помилка шифрування (%s). Будь ласка, спробуйте знову.</string>
     <string name="resource_tags_section">Теги</string>
+    <string name="resource_tags_title">Теги ресурсу</string>
+    <string name="folder_details_title">Деталі теки</string>
     <string name="folder_details_name_header">Назва теки</string>
     <string name="help_button_description">Довідка</string>
     <string name="create_folder_title">Створити теку</string>
@@ -501,6 +531,7 @@
     <string name="create_resource_menu_create_a_resource">Створити ресурс</string>
     <string name="create_resource_menu_create_totp">TOTP</string>
     <string name="create_resource_menu_create_password">Пароль</string>
+    <string name="create_resource_menu_create_note">Примітка</string>
     <string name="create_resource_menu_create_folder">Тека</string>
     <string name="dialog_new_metadata_key_trust_changed">Ключ метаданих змінено.</string>
     <string name="dialog_new_metadata_key_trust_modified_by_user">Ключ шифрування, що використовується для обміну метаданими між користувачами було оновлено %s.</string>
@@ -516,7 +547,8 @@
     arrays can be inconsistent when in other languages
     index / size is not used in code
     -->
-    <string-array name="username_hint_values" tools:ignore="InconsistentArrays">
+    <string-array name="username_hint_values"
+        tools:ignore="InconsistentArrays">
         <item>пошта</item>
         <item>ім\'я користувача</item>
         <item>мобільний</item>
@@ -527,7 +559,8 @@
       arrays can be inconsistent when in other languages
       index / size is not used in code
     -->
-    <string-array name="password_hint_values" tools:ignore="InconsistentArrays">
+    <string-array name="password_hint_values"
+        tools:ignore="InconsistentArrays">
         <item>пароль</item>
         <item>секрет</item>
         <item>парольна фраза</item>

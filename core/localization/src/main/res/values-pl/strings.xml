@@ -58,9 +58,12 @@
     <string name="common_message_resource_deleted">Zasób %s został skasowany.</string>
     <string name="common_message_resource_shared">Uprawnienia zostały zaktualizowane.</string>
     <string name="common_message_folder_created">Utworzono nowy folder %s!</string>
+    <string name="common_lack_shared_key_access">Nie możesz wykonać tej czynności, ponieważ nie masz dostępu do współdzielonego klucza metadanych.</string>
     <string name="validation_required_with_max_length">Długość powinna wynosić od 1 do %d</string>
+    <string name="validation_max_length">Maksymalna długość to %d</string>
     <string name="validation_is_required">Ta wartość jest wymagana</string>
     <string name="validation_required_integer">Musi być liczbą całkowitą</string>
+    <string name="validation_invalid_totp_secret">Nieprawidłowy klucz TOTP</string>
     <string name="fingerprint_biometric_error_generic">Wystąpił błąd z czytnikiem odcisku palca.</string>
     <string name="fingerprint_biometric_error_too_many_attempts">Autoryzacja biometryczna została zablokowana ze względu na zbyt wiele prób.</string>
     <string name="fingerprint_biometric_error_blocked">Autoryzacja biometryczna została zablokowana na 30 sekund.</string>
@@ -74,7 +77,7 @@
     <string name="logout_dialog_sign_out">Wyloguj się</string>
     <string name="no_username">brak nazwy użytkownika</string>
     <string name="more_launch_website">Uruchom stronę</string>
-    <string name="more_copy_uri">Skopiuj adres URL</string>
+    <string name="more_copy_uri">Skopiuj URI</string>
     <string name="more_copy_password">Skopiuj hasło</string>
     <string name="more_copy_username">Skopiuj nazwę użytkownika</string>
     <string name="more_copy_metadata_desc">Skopiuj opis ogólny</string>
@@ -141,7 +144,7 @@
     <string name="auth_biometric_title">Potwierdź za pomocą odcisku palca</string>
     <string name="auth_reason_session_expired">Uwierzytelnij się, aby odświeżyć sesję</string>
     <string name="auth_reason_passphrase_expired">Uwierzytelnij dostęp do hasła dostępu</string>
-    <string name="auth_server_fingerprint_changed_title">Przykro nam, klucz serwera zmienił się.</string>
+    <string name="auth_server_fingerprint_changed_title">Klucz serwera został zmieniony.</string>
     <string name="auth_server_fingerprint_changed_message">Ze względów bezpieczeństwa ustal ze swoim administratorem, czy ta zmiana została wprowadzona przez niego. Nowy cyfrowy odcisk klucza:</string>
     <string name="auth_server_fingerprint_changed_button">Zaakceptuj nowy klucz</string>
     <string name="auth_server_fingerprint_changed_checkbox">Tak, wszystko jest sprawdzone i nie ma żadnych błędów.</string>
@@ -206,8 +209,10 @@
     <string name="autofill_error">Wystąpił błąd autouzupełniania</string>
     <string name="autofill_select_password">Wybierz hasło</string>
     <string name="autofill_service_channel_name">Usługi autouzupełniania Passbolt</string>
+    <string name="data_sync_service_channel_name">Usługa synchronizacji danych Passbolt</string>
     <string name="autofill_service_title">Passbolt</string>
     <string name="autofill_service_content">Włączono usługę autouzupełniania ułatwień dostępu</string>
+    <string name="data_sync_service_content">Odświeżanie zasobów</string>
     <string name="autofill_service_enable_overlay">Włącz uprawnienia nakładki</string>
     <string name="autofill_service_overlay_description"><![CDATA[Automatycznie uzupełniaj nazwy użytkownika i hasła w przeglądarkach Androida. Włącz uprawnienie "Nadpisuj inne aplikacje" dla funkcji Autouzupełnianie Passbolt]]></string>
     <string name="autofill_service_enable_service">Włącz autouzupełnianie dla większości aplikacji</string>
@@ -235,6 +240,7 @@
     <string name="filters_menu_shared_with_me">Współdzielone ze mną</string>
     <string name="filters_menu_owned_by_me">Należące do mnie</string>
     <string name="filters_menu_expiry">Data wygaśnięcia</string>
+    <string name="filters_menu_loading">Ładowanie</string>
     <string name="filters_menu_folders">Foldery</string>
     <string name="filters_menu_tags">Tagi</string>
     <string name="filters_menu_groups">Grupy</string>
@@ -256,6 +262,7 @@
     <string name="resource_details_information">Informacje</string>
     <string name="resource_details_invalid_totp_scanned">Skanowano nieprawidłowy kod QR dla TOTP</string>
     <string name="resource_details_metadata_header">Metadane</string>
+    <string name="resource_details_custom_fields_header">Pola niestandardowe</string>
     <string name="additional_uri_format">• %s</string>
     <string name="more_details_copy_password">Skopiuj hasło</string>
     <string name="more_details_copy_description">Skopiuj opis</string>
@@ -279,16 +286,19 @@
     <string name="resource_form_metadata_description">Opis metadanych</string>
     <string name="resource_form_create_metadata_description">Utwórz opis ogólny</string>
     <string name="resource_form_create_resource_appearance">Wygląd ikony</string>
+    <string name="resource_form_create_resource_custom_fields">Pola niestandardowe</string>
     <string name="resource_form_create_additional_uris">Utwórz dodatkowe adresy URI</string>
     <string name="resource_form_note">Notatka</string>
+    <string name="resource_form_custom_fields">Pola niestandardowe</string>
     <string name="resource_form_create_note">Utwórz notatkę</string>
     <string name="resource_form_note_content">Treść</string>
     <string name="resource_form_enter_note">Wpisz notatkę</string>
     <string name="resource_form_note_info">Notatka jest częścią sekretu, jeśli chcesz mieć możliwość wyszukiwania tej zawartości, użyj opisu metadanych.</string>
     <string name="resource_form_metadata_description_info">Jeśli chcesz, aby opis był częścią sekretu, użyj notatki zamiast tego.</string>
     <string name="resource_form_resource_name">Nazwa zasobu</string>
-    <string name="resource_form_name">Imię</string>
+    <string name="resource_form_name">Nazwa</string>
     <string name="resource_form_create_password">Stwórz hasło</string>
+    <string name="resource_form_create_custom_fields">Utwórz pola niestandardowe</string>
     <string name="resource_form_edit_resource">Edytuj %s</string>
     <string name="resource_form_create_totp">Utwórz TOTP</string>
     <string name="resource_form_view_advanced_settings">Pokaż ustawienia zaawansowane</string>
@@ -298,6 +308,7 @@
     <string name="resource_form_create">Stwórz</string>
     <string name="resource_form_save">Zapisz</string>
     <string name="resource_form_edit_init_error">Nie udało się uruchomić edycji zasobu</string>
+    <string name="resource_form_create_init_error">Nie udało się uruchomić edycji zasobu</string>
     <string name="resource_form_remove_totp">Usuń TOTP</string>
     <string name="resource_form_remove_note">Usuń notatkę</string>
     <string name="resource_form_no_name">brak nazwy</string>
@@ -307,6 +318,8 @@
     <string name="resource_form_appearance_select_icon">Wybierz ikonę</string>
     <string name="resource_form_appearance_default_color">Domyślny kolor</string>
     <string name="resource_form_appearance_default_icon">Domyślna ikona</string>
+    <string name="resource_form_no_custom_fields_set">Nie ustawiono pól niestandardowych</string>
+    <string name="resource_form_custom_fields_edit_not_supported">Edycja pól niestandardowych nie jest obecnie obsługiwana</string>
     <string name="settings_app_settings">Ustawienia aplikacji</string>
     <string name="settings_accounts">Konta</string>
     <string name="settings_terms_and_licenses">Warunki &amp; licencje</string>
@@ -415,6 +428,8 @@
     <string name="dialog_encryption_error_title">Wystąpił błąd szyfrowania</string>
     <string name="dialog_encryption_error_message">Wystąpił błąd szyfrowania (%s). Spróbuj ponownie.</string>
     <string name="resource_tags_section">Tagi</string>
+    <string name="resource_tags_title">Tagi zasobu</string>
+    <string name="folder_details_title">Szczegóły folderu</string>
     <string name="folder_details_name_header">Nazwa folderu</string>
     <string name="help_button_description">Pomoc</string>
     <string name="create_folder_title">Stwórz folder</string>
@@ -516,6 +531,7 @@
     <string name="create_resource_menu_create_a_resource">Utwórz zasób</string>
     <string name="create_resource_menu_create_totp">TOTP</string>
     <string name="create_resource_menu_create_password">Hasło</string>
+    <string name="create_resource_menu_create_note">Notatka</string>
     <string name="create_resource_menu_create_folder">Folder</string>
     <string name="dialog_new_metadata_key_trust_changed">Klucz metadanych uległ zmianie.</string>
     <string name="dialog_new_metadata_key_trust_modified_by_user">Klucz szyfrowania używany do udostępniania metadanych pomiędzy użytkownikami został zaktualizowany przez %s.</string>
@@ -531,7 +547,8 @@
     arrays can be inconsistent when in other languages
     index / size is not used in code
     -->
-    <string-array name="username_hint_values" tools:ignore="InconsistentArrays">
+    <string-array name="username_hint_values"
+        tools:ignore="InconsistentArrays">
         <item>poczta</item>
         <item>nazwa</item>
         <item>numer</item>
@@ -542,7 +559,8 @@
       arrays can be inconsistent when in other languages
       index / size is not used in code
     -->
-    <string-array name="password_hint_values" tools:ignore="InconsistentArrays">
+    <string-array name="password_hint_values"
+        tools:ignore="InconsistentArrays">
         <item>hasło</item>
         <item>sekret</item>
         <item>hasło dostępu</item>

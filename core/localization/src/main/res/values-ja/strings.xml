@@ -33,6 +33,8 @@
     <string name="name_expired">%s (期限切れ)</string>
     <string name="proceed">続行</string>
     <string name="edit_password">パスワードを編集</string>
+    <string name="copy_label_fingerprint">指紋</string>
+    <string name="copy_label_uid">UID</string>
     <string name="common_failure">何か問題が発生しました！</string>
     <string name="common_startup_configuration_fetch_error">構成取得中にエラーが発生しました</string>
     <string name="common_time_is_out_of_sync">サーバーとクライアントの時刻が同期されていません。管理者に連絡してください。</string>
@@ -48,17 +50,20 @@
     <string name="common_json_schema_resource_validation_error">リソース検証中にエラーが発生しました。詳細を確認するにはログを有効にしてください。</string>
     <string name="common_json_schema_secret_validation_error">秘密の検証中にエラーが発生しました。詳細を確認するにはログを有効にしてください。</string>
     <string name="common_maybe_later">後で</string>
-    <string name="common_cannot_create_resource_with_current_config">Cannot update a resource with current configuration</string>
-    <string name="common_metadata_key_verification_failure">Could not verify metadata keys</string>
-    <string name="common_metadata_key_is_trusted">New metadata key is trusted</string>
-    <string name="common_metadata_key_trust_failed">Failed to trust new metadata key</string>
-    <string name="common_message_resource_edited">%s resource was successfully edited.</string>
-    <string name="common_message_resource_deleted">%s resource was deleted.</string>
+    <string name="common_cannot_create_resource_with_current_config">現在の設定ではリソースを更新できません</string>
+    <string name="common_metadata_key_verification_failure">メタデータキーを検証できませんでした</string>
+    <string name="common_metadata_key_is_trusted">新しいメタデータキーは信頼されました</string>
+    <string name="common_metadata_key_trust_failed">新しいメタデータキーを信頼できませんでした</string>
+    <string name="common_message_resource_edited">%s リソースが正常に編集されました。</string>
+    <string name="common_message_resource_deleted">%s リソースが削除されました。</string>
     <string name="common_message_resource_shared">リソースのパーミッションが更新されました。</string>
     <string name="common_message_folder_created">新規フォルダ\"%s\"が作成されました！</string>
+    <string name="common_lack_shared_key_access">共有メタデータキーへのアクセス権がないため、この操作を実行できません。</string>
     <string name="validation_required_with_max_length">長さは <b>1</b> から %d の間である必要があります</string>
-    <string name="validation_is_required">This input is required</string>
+    <string name="validation_max_length">最大長は %d 文字です</string>
+    <string name="validation_is_required">この入力は必須です</string>
     <string name="validation_required_integer">整数値である必要があります</string>
+    <string name="validation_invalid_totp_secret">無効な TOTP シークレット</string>
     <string name="fingerprint_biometric_error_generic">指紋センサーでエラーが発生しました。</string>
     <string name="fingerprint_biometric_error_too_many_attempts">バイオメトリック認証は多くの試行によりブロックされました。</string>
     <string name="fingerprint_biometric_error_blocked">バイオメトリック認証は <b>30</b> 秒間ブロックされました。</string>
@@ -75,8 +80,8 @@
     <string name="more_copy_uri">URIをコピー</string>
     <string name="more_copy_password">パスワードをコピー</string>
     <string name="more_copy_username">ユーザー名をコピー</string>
-    <string name="more_copy_metadata_desc">Copy metadata description</string>
-    <string name="more_copy_note">Copy note</string>
+    <string name="more_copy_metadata_desc">メタデータの説明をコピー</string>
+    <string name="more_copy_note">ノートをコピー</string>
     <string name="more_edit">編集</string>
     <string name="more_delete">削除</string>
     <string name="more_share">共有</string>
@@ -200,8 +205,10 @@
     <string name="autofill_error">自動入力エラーが発生しました</string>
     <string name="autofill_select_password">パスワードを選択</string>
     <string name="autofill_service_channel_name">Passbolt自動入力サービス</string>
+    <string name="data_sync_service_channel_name">Passbolt データ同期サービス</string>
     <string name="autofill_service_title">パスボルト</string>
     <string name="autofill_service_content">アクセシビリティ自動入力サービスが有効</string>
+    <string name="data_sync_service_content">リソースを更新しています</string>
     <string name="autofill_service_enable_overlay">オーバーレイ権限を有効にする</string>
     <string name="autofill_service_overlay_description"><![CDATA[Androidウェブブラウザでユーザー名とパスワードを自動入力します。パスボルト自動入力に「他のアプリの上に重ねて表示」の権限を付与してください]]></string>
     <string name="autofill_service_enable_service">ほとんどのアプリで自動入力を有効にする</string>
@@ -229,6 +236,7 @@
     <string name="filters_menu_shared_with_me">私と共有済み</string>
     <string name="filters_menu_owned_by_me">私が所有</string>
     <string name="filters_menu_expiry">有効期限</string>
+    <string name="filters_menu_loading">読み込み中</string>
     <string name="filters_menu_folders">フォルダ</string>
     <string name="filters_menu_tags">タグ</string>
     <string name="filters_menu_groups">グループ</string>
@@ -241,43 +249,53 @@
     <string name="resource_details_totp_header">TOTP（ワンタイムパスワード）</string>
     <string name="resource_details_url_header">メインURI</string>
     <string name="resource_details_expiry_header">有効期限</string>
+    <string name="resource_details_additional_uris">追加のURI</string>
     <string name="resource_details_description_header">説明</string>
-    <string name="resource_details_note_header">Note</string>
-    <string name="resource_details_note_content">Content</string>
+    <string name="resource_details_note_header">ノート</string>
+    <string name="resource_details_note_content">内容</string>
     <string name="resource_details_tags_header">タグ</string>
     <string name="resource_details_encrypted_description">説明が暗号化されています</string>
     <string name="resource_details_information">情報</string>
     <string name="resource_details_invalid_totp_scanned">無効なTOTP QRコードがスキャンされました</string>
-    <string name="resource_details_metadata_header">Metadata</string>
+    <string name="resource_details_metadata_header">メタデータ</string>
+    <string name="resource_details_custom_fields_header">カスタムフィールド</string>
+    <string name="additional_uri_format">• %s</string>
     <string name="more_details_copy_password">パスワードをコピー</string>
     <string name="more_details_copy_description">説明をコピー</string>
-    <string name="resource_form_create_success">New password was created!</string>
+    <string name="resource_form_create_success">新しいパスワードが作成されました！</string>
     <string name="resource_form_password">パスワード</string>
     <string name="resource_form_enter_password">パスワードを入力</string>
-    <string name="resource_form_main_uri">Main URI</string>
+    <string name="resource_form_main_uri">メインURI</string>
+    <string name="resource_form_add_uri">URI を追加</string>
     <string name="resource_form_enter_uri">URIを入力</string>
     <string name="resource_form_username">ユーザー名</string>
     <string name="resource_form_enter_username">ユーザー名を入力</string>
     <string name="resource_form_totp">TOTP（ワンタイムパスワード）</string>
     <string name="resource_form_totp_secret">秘密</string>
     <string name="resource_form_totp_url">URL</string>
-    <string name="resource_form_totp_url_issuer">URL (Issuer)</string>
+    <string name="resource_form_totp_url_issuer">URL（発行者）</string>
     <string name="resource_form_totp_more_settings">詳細TOTP設定</string>
     <string name="resource_form_totp_settings">TOTP設定</string>
     <string name="resource_form_description">説明</string>
+    <string name="resource_form_additional_uris">追加のURI</string>
     <string name="resource_form_enter_description">説明を入力してください</string>
     <string name="resource_form_metadata_description">メタデータの説明</string>
-    <string name="resource_form_create_metadata_description">Create metadata description</string>
-    <string name="resource_form_note">Note</string>
-    <string name="resource_form_create_note">Create note</string>
-    <string name="resource_form_note_content">Content</string>
-    <string name="resource_form_enter_note">Enter note</string>
-    <string name="resource_form_note_info">The note is part of the secret if you want to be able to search this content, use metadata description.</string>
+    <string name="resource_form_create_metadata_description">メタデータの説明を作成</string>
+    <string name="resource_form_create_resource_appearance">リソースの外観</string>
+    <string name="resource_form_create_resource_custom_fields">カスタムフィールド</string>
+    <string name="resource_form_create_additional_uris">追加のURIを作成</string>
+    <string name="resource_form_note">ノート</string>
+    <string name="resource_form_custom_fields">カスタムフィールド</string>
+    <string name="resource_form_create_note">ノートを作成</string>
+    <string name="resource_form_note_content">内容</string>
+    <string name="resource_form_enter_note">ノートを入力</string>
+    <string name="resource_form_note_info">ノートは秘密情報の一部です。この内容を検索可能にしたい場合は、メタデータの説明を使用してください。</string>
     <string name="resource_form_metadata_description_info">この説明をシークレットに含めたい場合は、代わりにノートを使用してください。</string>
     <string name="resource_form_resource_name">リソース名</string>
     <string name="resource_form_name">名前</string>
     <string name="resource_form_create_password">パスワードを作成</string>
-    <string name="resource_form_edit_resource">Edit %s</string>
+    <string name="resource_form_create_custom_fields">カスタムフィールドを作成</string>
+    <string name="resource_form_edit_resource">%s を編集</string>
     <string name="resource_form_create_totp">TOTPを作成</string>
     <string name="resource_form_view_advanced_settings">詳細設定を表示</string>
     <string name="resource_form_view_additional_secrets">追加のシークレット</string>
@@ -285,10 +303,19 @@
     <string name="resource_form_view_additional_uris">追加のURI</string>
     <string name="resource_form_create">作成</string>
     <string name="resource_form_save">保存</string>
-    <string name="resource_form_edit_init_error">Failed to initialize resource edition</string>
-    <string name="resource_form_remove_totp">Remove TOTP</string>
-    <string name="resource_form_remove_note">Remove Note</string>
-    <string name="resource_form_no_name">no name</string>
+    <string name="resource_form_edit_init_error">リソース編集の初期化に失敗しました</string>
+    <string name="resource_form_create_init_error">リソースの作成を初期化できませんでした</string>
+    <string name="resource_form_remove_totp">TOTP を削除</string>
+    <string name="resource_form_remove_note">ノートを削除</string>
+    <string name="resource_form_no_name">名前なし</string>
+    <string name="resource_form_max_additional_uris_limit">追加のURIは最大 %d 件まで追加できます</string>
+    <string name="resource_form_appearance">外観</string>
+    <string name="resource_form_appearance_select_color">色を選択</string>
+    <string name="resource_form_appearance_select_icon">アイコンを選択</string>
+    <string name="resource_form_appearance_default_color">デフォルトの色</string>
+    <string name="resource_form_appearance_default_icon">デフォルトのアイコン</string>
+    <string name="resource_form_no_custom_fields_set">カスタムフィールドが設定されていません</string>
+    <string name="resource_form_custom_fields_edit_not_supported">カスタムフィールドの編集は現在サポートされていません</string>
     <string name="settings_app_settings">アプリの設定</string>
     <string name="settings_accounts">アカウント</string>
     <string name="settings_terms_and_licenses">利用規約&amp;ライセンス</string>
@@ -316,6 +343,7 @@
     <string name="settings_app_settings_autofill">自動入力</string>
     <string name="settings_app_settings_fingerprint">指紋</string>
     <string name="settings_app_settings_biometry_error">バイオメトリックエラー。%s</string>
+    <string name="settings_app_settings_biometry_authentication_error">生体認証エラー。%s</string>
     <string name="settings_app_settings_expert_settings">エキスパート設定</string>
     <string name="settings_app_settings_expert_settings_dev_mode">開発者モード</string>
     <string name="settings_app_settings_expert_settings_hide_root">\"端末がroot化されています\"のダイアログを非表示</string>
@@ -358,7 +386,7 @@
     <string name="scan_qr_scanning_error">スキャン中にエラーが発生しました</string>
     <string name="scan_qr_camera_error">カメラエラー</string>
     <string name="scan_qr_update_transfer_error">転送更新中にエラーが発生しました</string>
-    <string name="scan_qr_or_create_totp_manually">Or create TOTP manually</string>
+    <string name="scan_qr_or_create_totp_manually">または TOTP を手動で作成</string>
     <string name="scan_qr_summary_success_title">情報が転送されました！</string>
     <string name="scan_qr_summary_already_linked_title">アカウントはすでにこの端末にリンクされています</string>
     <string name="scan_qr_summary_http_not_supported_title">安全でないHTTP接続はサポートされていません</string>
@@ -396,6 +424,8 @@
     <string name="dialog_encryption_error_title">暗号化エラーが発生しました</string>
     <string name="dialog_encryption_error_message">暗号化エラーが発生しました(%s)。もう一度お試しください。</string>
     <string name="resource_tags_section">タグ</string>
+    <string name="resource_tags_title">リソースタグ</string>
+    <string name="folder_details_title">フォルダの詳細</string>
     <string name="folder_details_name_header">フォルダ名</string>
     <string name="help_button_description">ヘルプ</string>
     <string name="create_folder_title">フォルダを作成</string>
@@ -497,22 +527,24 @@
     <string name="create_resource_menu_create_a_resource">リソースを作成</string>
     <string name="create_resource_menu_create_totp">TOTP（ワンタイムパスワード）</string>
     <string name="create_resource_menu_create_password">パスワード</string>
+    <string name="create_resource_menu_create_note">ノート</string>
     <string name="create_resource_menu_create_folder">フォルダ</string>
-    <string name="dialog_new_metadata_key_trust_changed">The metadata key has changed.</string>
-    <string name="dialog_new_metadata_key_trust_modified_by_user">The encryption key used to share metadata between users has been updated by %s.</string>
-    <string name="dialog_new_metadata_key_trust_key_rotation_info">If you weren’t expecting this, you can verify with your administrator.</string>
-    <string name="dialog_new_metadata_key_trust_key_rollback_info">This is unusual, please verify with your administrator.</string>
-    <string name="dialog_new_metadata_key_trust_key_fingerprint">Key fingerprint:</string>
-    <string name="dialog_new_metadata_key_trust_key_trust_the_key">Trust the key</string>
-    <string name="dialog_trusted_metadata_key_deleted">The metadata key has been deleted.</string>
-    <string name="dialog_trusted_metadata_key_deleted_main">The trusted encryption key used to share metadata between users has been deleted.</string>
-    <string name="dialog_trusted_metadata_key_deleted_info">If you weren’t expecting this, you can verify with your administrator.</string>
-    <string name="dialog_trusted_metadata_key_deleted_trust">Trust</string>
+    <string name="dialog_new_metadata_key_trust_changed">メタデータキーが変更されました。</string>
+    <string name="dialog_new_metadata_key_trust_modified_by_user">ユーザー間でメタデータを共有するための暗号鍵が %s によって更新されました。</string>
+    <string name="dialog_new_metadata_key_trust_key_rotation_info">心当たりがない場合は、管理者に確認してください。</string>
+    <string name="dialog_new_metadata_key_trust_key_rollback_info">これは想定外です。管理者に確認してください。</string>
+    <string name="dialog_new_metadata_key_trust_key_fingerprint">鍵の指紋:</string>
+    <string name="dialog_new_metadata_key_trust_key_trust_the_key">鍵を信頼する</string>
+    <string name="dialog_trusted_metadata_key_deleted">メタデータキーが削除されました。</string>
+    <string name="dialog_trusted_metadata_key_deleted_main">ユーザー間でメタデータを共有するための信頼された暗号鍵が削除されました。</string>
+    <string name="dialog_trusted_metadata_key_deleted_info">心当たりがない場合は、管理者に確認してください。</string>
+    <string name="dialog_trusted_metadata_key_deleted_trust">信頼</string>
     <!--
     arrays can be inconsistent when in other languages
     index / size is not used in code
     -->
-    <string-array name="username_hint_values" tools:ignore="InconsistentArrays">
+    <string-array name="username_hint_values"
+        tools:ignore="InconsistentArrays">
         <item>メール</item>
         <item>ユーザー名</item>
         <item>モバイル</item>
@@ -523,7 +555,8 @@
       arrays can be inconsistent when in other languages
       index / size is not used in code
     -->
-    <string-array name="password_hint_values" tools:ignore="InconsistentArrays">
+    <string-array name="password_hint_values"
+        tools:ignore="InconsistentArrays">
         <item>パスワード</item>
         <item>秘密</item>
         <item>パスフレーズ</item>

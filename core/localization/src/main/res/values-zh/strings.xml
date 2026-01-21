@@ -33,6 +33,8 @@
     <string name="name_expired">%s (已过期)</string>
     <string name="proceed">继续</string>
     <string name="edit_password">修改密码</string>
+    <string name="copy_label_fingerprint">Fingerprint</string>
+    <string name="copy_label_uid">UID</string>
     <string name="common_failure">发生了错误！</string>
     <string name="common_startup_configuration_fetch_error">获取配置时出现错误</string>
     <string name="common_time_is_out_of_sync">服务器和客户端的时间不同步，请联系您的管理员。</string>
@@ -56,9 +58,12 @@
     <string name="common_message_resource_deleted">%s 资源已被删除。</string>
     <string name="common_message_resource_shared">资源权限已更新。</string>
     <string name="common_message_folder_created">新文件夹 %s 已创建！</string>
+    <string name="common_lack_shared_key_access">You cannot perform this action because you lack access to the shared metadata key.</string>
     <string name="validation_required_with_max_length">长度应介于 1 到 %d 之间</string>
+    <string name="validation_max_length">Maximum length is %d</string>
     <string name="validation_is_required">此输入项为必填项</string>
     <string name="validation_required_integer">应为整数</string>
+    <string name="validation_invalid_totp_secret">Invalid TOTP secret</string>
     <string name="fingerprint_biometric_error_generic">指纹传感器发生错误。</string>
     <string name="fingerprint_biometric_error_too_many_attempts">由于尝试次数过多，生物鉴别授权已被阻止。</string>
     <string name="fingerprint_biometric_error_blocked">生物鉴别授权已被冻结30秒。</string>
@@ -204,8 +209,10 @@
     <string name="autofill_error">自动填充错误</string>
     <string name="autofill_select_password">选择密码记录</string>
     <string name="autofill_service_channel_name">Passbolt 密码自动填充服务</string>
+    <string name="data_sync_service_channel_name">Passbolt data sync service</string>
     <string name="autofill_service_title">Passbolt</string>
     <string name="autofill_service_content">辅助功能自动填充服务已启用</string>
+    <string name="data_sync_service_content">Refreshing resources</string>
     <string name="autofill_service_enable_overlay">启用覆盖权限</string>
     <string name="autofill_service_overlay_description"><![CDATA[Android 网络浏览器的自动填充用户名和密码。请启用“在其他应用上绘制”权限以便自动填充密码]]></string>
     <string name="autofill_service_enable_service">对大多数应用启用自动填充</string>
@@ -233,6 +240,7 @@
     <string name="filters_menu_shared_with_me">与我共享</string>
     <string name="filters_menu_owned_by_me">我拥有的</string>
     <string name="filters_menu_expiry">已到期</string>
+    <string name="filters_menu_loading">Loading</string>
     <string name="filters_menu_folders">文件夹</string>
     <string name="filters_menu_tags">标签</string>
     <string name="filters_menu_groups">群组</string>
@@ -245,6 +253,7 @@
     <string name="resource_details_totp_header">Totp</string>
     <string name="resource_details_url_header">主链接</string>
     <string name="resource_details_expiry_header">已到期</string>
+    <string name="resource_details_additional_uris">Additional URI</string>
     <string name="resource_details_description_header">描述</string>
     <string name="resource_details_note_header">备注</string>
     <string name="resource_details_note_content">内容</string>
@@ -253,12 +262,15 @@
     <string name="resource_details_information">信息</string>
     <string name="resource_details_invalid_totp_scanned">扫描到的TOTP二维码无效</string>
     <string name="resource_details_metadata_header">元数据</string>
+    <string name="resource_details_custom_fields_header">Custom fields</string>
+    <string name="additional_uri_format">• %s</string>
     <string name="more_details_copy_password">复制密码</string>
     <string name="more_details_copy_description">复制描述</string>
     <string name="resource_form_create_success">新密码已创建！</string>
     <string name="resource_form_password">密码</string>
     <string name="resource_form_enter_password">输入密码</string>
     <string name="resource_form_main_uri">主链接</string>
+    <string name="resource_form_add_uri">Add URI</string>
     <string name="resource_form_enter_uri">输入链接</string>
     <string name="resource_form_username">用户名</string>
     <string name="resource_form_enter_username">输入用户名</string>
@@ -269,10 +281,15 @@
     <string name="resource_form_totp_more_settings">TOTP 更多配置</string>
     <string name="resource_form_totp_settings">TOTP 配置</string>
     <string name="resource_form_description">描述</string>
+    <string name="resource_form_additional_uris">Additional URIs</string>
     <string name="resource_form_enter_description">输入描述</string>
     <string name="resource_form_metadata_description">元数据描述</string>
     <string name="resource_form_create_metadata_description">创建元数据描述</string>
+    <string name="resource_form_create_resource_appearance">Resource appearance</string>
+    <string name="resource_form_create_resource_custom_fields">Custom fields</string>
+    <string name="resource_form_create_additional_uris">Create additional URIs</string>
     <string name="resource_form_note">备注</string>
+    <string name="resource_form_custom_fields">Custom fields</string>
     <string name="resource_form_create_note">创建备注</string>
     <string name="resource_form_note_content">内容</string>
     <string name="resource_form_enter_note">输入备注</string>
@@ -281,6 +298,7 @@
     <string name="resource_form_resource_name">资源名称</string>
     <string name="resource_form_name">名称</string>
     <string name="resource_form_create_password">创建密码</string>
+    <string name="resource_form_create_custom_fields">Create custom fields</string>
     <string name="resource_form_edit_resource">编辑 %s</string>
     <string name="resource_form_create_totp">创建一个TOTP</string>
     <string name="resource_form_view_advanced_settings">查看高级设置</string>
@@ -290,9 +308,18 @@
     <string name="resource_form_create">创建</string>
     <string name="resource_form_save">保存</string>
     <string name="resource_form_edit_init_error">资源编辑初始化失败</string>
+    <string name="resource_form_create_init_error">Failed to initialize resource creation</string>
     <string name="resource_form_remove_totp">移除TOTP</string>
     <string name="resource_form_remove_note">移除备注</string>
     <string name="resource_form_no_name">未填写名称</string>
+    <string name="resource_form_max_additional_uris_limit">You can add a maximum of %d additional URIs</string>
+    <string name="resource_form_appearance">Appearance</string>
+    <string name="resource_form_appearance_select_color">Select color</string>
+    <string name="resource_form_appearance_select_icon">Select icon</string>
+    <string name="resource_form_appearance_default_color">Default color</string>
+    <string name="resource_form_appearance_default_icon">Default icon</string>
+    <string name="resource_form_no_custom_fields_set">No custom fields set</string>
+    <string name="resource_form_custom_fields_edit_not_supported">Edition of custom fields is currently not supported</string>
     <string name="settings_app_settings">应用设置</string>
     <string name="settings_accounts">账户</string>
     <string name="settings_terms_and_licenses">条款与许可</string>
@@ -320,6 +347,7 @@
     <string name="settings_app_settings_autofill">自动填充</string>
     <string name="settings_app_settings_fingerprint">指纹</string>
     <string name="settings_app_settings_biometry_error">生物验证错误。 %s</string>
+    <string name="settings_app_settings_biometry_authentication_error">Biometry authentication error. %s</string>
     <string name="settings_app_settings_expert_settings">高级设置</string>
     <string name="settings_app_settings_expert_settings_dev_mode">开发者模式</string>
     <string name="settings_app_settings_expert_settings_hide_root">隐藏“设备已root”对话框</string>
@@ -400,6 +428,8 @@
     <string name="dialog_encryption_error_title">加密出错</string>
     <string name="dialog_encryption_error_message">加密错误 (%s)。请重试。</string>
     <string name="resource_tags_section">标签</string>
+    <string name="resource_tags_title">Resource Tags</string>
+    <string name="folder_details_title">Folder details</string>
     <string name="folder_details_name_header">文件夹名称</string>
     <string name="help_button_description">帮助</string>
     <string name="create_folder_title">创建文件夹</string>
@@ -501,6 +531,7 @@
     <string name="create_resource_menu_create_a_resource">创建资源</string>
     <string name="create_resource_menu_create_totp">动态验证码</string>
     <string name="create_resource_menu_create_password">密码</string>
+    <string name="create_resource_menu_create_note">备注</string>
     <string name="create_resource_menu_create_folder">文件夹</string>
     <string name="dialog_new_metadata_key_trust_changed">The metadata key has changed.</string>
     <string name="dialog_new_metadata_key_trust_modified_by_user">The encryption key used to share metadata between users has been updated by %s.</string>
@@ -516,7 +547,8 @@
     arrays can be inconsistent when in other languages
     index / size is not used in code
     -->
-    <string-array name="username_hint_values" tools:ignore="InconsistentArrays">
+    <string-array name="username_hint_values"
+        tools:ignore="InconsistentArrays">
         <item>邮箱</item>
         <item>用户名</item>
         <item>手机</item>
@@ -527,7 +559,8 @@
       arrays can be inconsistent when in other languages
       index / size is not used in code
     -->
-    <string-array name="password_hint_values" tools:ignore="InconsistentArrays">
+    <string-array name="password_hint_values"
+        tools:ignore="InconsistentArrays">
         <item>密码</item>
         <item>密钥</item>
         <item>密码口令</item>

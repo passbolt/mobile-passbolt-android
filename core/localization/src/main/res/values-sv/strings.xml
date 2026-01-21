@@ -33,6 +33,8 @@
     <string name="name_expired">%s (utgånget)</string>
     <string name="proceed">Fortsätt</string>
     <string name="edit_password">Redigera lösenord</string>
+    <string name="copy_label_fingerprint">Fingeravtryck</string>
+    <string name="copy_label_uid">UID</string>
     <string name="common_failure">Något gick fel!</string>
     <string name="common_startup_configuration_fetch_error">Fel vid hämtning av konfiguration</string>
     <string name="common_time_is_out_of_sync">Server- och klienttid är inte synkroniserade, kontakta din administratör.</string>
@@ -48,17 +50,20 @@
     <string name="common_json_schema_resource_validation_error">Ett fel uppstod vid validering av resurs. Aktivera loggar för mer information.</string>
     <string name="common_json_schema_secret_validation_error">Ett fel uppstod vid validering av hemlighet. Aktivera loggar för mer information.</string>
     <string name="common_maybe_later">Kanske senare</string>
-    <string name="common_cannot_create_resource_with_current_config">Cannot update a resource with current configuration</string>
-    <string name="common_metadata_key_verification_failure">Could not verify metadata keys</string>
-    <string name="common_metadata_key_is_trusted">New metadata key is trusted</string>
-    <string name="common_metadata_key_trust_failed">Failed to trust new metadata key</string>
-    <string name="common_message_resource_edited">%s resource was successfully edited.</string>
-    <string name="common_message_resource_deleted">%s resource was deleted.</string>
+    <string name="common_cannot_create_resource_with_current_config">Kan inte uppdatera en resurs med aktuell konfiguration</string>
+    <string name="common_metadata_key_verification_failure">Kunde inte verifiera metadatanycklar</string>
+    <string name="common_metadata_key_is_trusted">Ny metadatanyckel är betrodd</string>
+    <string name="common_metadata_key_trust_failed">Det gick inte att lita på den nya metadatanyckeln</string>
+    <string name="common_message_resource_edited">Resursen %s har redigerats.</string>
+    <string name="common_message_resource_deleted">Resursen %s har raderats.</string>
     <string name="common_message_resource_shared">Resursbehörigheterna uppdaterades.</string>
     <string name="common_message_folder_created">Ny mapp %s har skapats!</string>
+    <string name="common_lack_shared_key_access">Du kan inte utföra denna åtgärd eftersom du saknar åtkomst till den delade metadatanyckeln.</string>
     <string name="validation_required_with_max_length">Längden bör vara mellan 1 och %d</string>
-    <string name="validation_is_required">This input is required</string>
+    <string name="validation_max_length">Maximal längd är %d</string>
+    <string name="validation_is_required">Detta fält är obligatoriskt</string>
     <string name="validation_required_integer">Måste vara ett heltal</string>
+    <string name="validation_invalid_totp_secret">Ogiltig TOTP-hemlighet</string>
     <string name="fingerprint_biometric_error_generic">Ett fel har uppstått med fingeravtryckssensorn.</string>
     <string name="fingerprint_biometric_error_too_many_attempts">Biometrisk auktorisering har blockerats på grund av för många försök.</string>
     <string name="fingerprint_biometric_error_blocked">Biometrisk auktorisering har blockerats i 30 sekunder.</string>
@@ -75,8 +80,8 @@
     <string name="more_copy_uri">Kopiera URI</string>
     <string name="more_copy_password">Kopiera lösenord</string>
     <string name="more_copy_username">Kopiera användarnamn</string>
-    <string name="more_copy_metadata_desc">Copy metadata description</string>
-    <string name="more_copy_note">Copy note</string>
+    <string name="more_copy_metadata_desc">Kopiera metadatabeskrivning</string>
+    <string name="more_copy_note">Kopiera anteckning</string>
     <string name="more_edit">Redigera</string>
     <string name="more_delete">Radera</string>
     <string name="more_share">Dela</string>
@@ -204,8 +209,10 @@ den aktiverade autofyll-funktionen att föreslå att fylla i dina tidigare tilla
     <string name="autofill_error">Ett fel uppstod vid autofyll</string>
     <string name="autofill_select_password">Välj lösenord</string>
     <string name="autofill_service_channel_name">Passbolt autofyll-tjänster</string>
+    <string name="data_sync_service_channel_name">Passbolt datasynkroniseringstjänst</string>
     <string name="autofill_service_title">Passbolt</string>
     <string name="autofill_service_content">Autofyll via Tillgänglighetstjänst är aktiverad</string>
+    <string name="data_sync_service_content">Uppdaterar resurser</string>
     <string name="autofill_service_enable_overlay">Aktivera overlay-behörighet</string>
     <string name="autofill_service_overlay_description"><![CDATA[Autofyll användarnamn och lösenord i Androids webbläsare. Vänligen aktivera behörigheten ”Rita över andra appar” för Passbolt Autofyll]]></string>
     <string name="autofill_service_enable_service">Aktivera autofyll för de flesta appar</string>
@@ -233,6 +240,7 @@ den aktiverade autofyll-funktionen att föreslå att fylla i dina tidigare tilla
     <string name="filters_menu_shared_with_me">Delade med mig</string>
     <string name="filters_menu_owned_by_me">Ägs av mig</string>
     <string name="filters_menu_expiry">Utgång</string>
+    <string name="filters_menu_loading">Laddar</string>
     <string name="filters_menu_folders">Mappar</string>
     <string name="filters_menu_tags">Taggar</string>
     <string name="filters_menu_groups">Grupper</string>
@@ -245,43 +253,53 @@ den aktiverade autofyll-funktionen att föreslå att fylla i dina tidigare tilla
     <string name="resource_details_totp_header">TOTP</string>
     <string name="resource_details_url_header">Huvudsaklig URI</string>
     <string name="resource_details_expiry_header">Utgång</string>
+    <string name="resource_details_additional_uris">Ytterligare URI</string>
     <string name="resource_details_description_header">Beskrivning</string>
-    <string name="resource_details_note_header">Note</string>
-    <string name="resource_details_note_content">Content</string>
+    <string name="resource_details_note_header">Anteckning</string>
+    <string name="resource_details_note_content">Innehåll</string>
     <string name="resource_details_tags_header">Taggar</string>
     <string name="resource_details_encrypted_description">Beskrivning är krypterad</string>
     <string name="resource_details_information">Information</string>
     <string name="resource_details_invalid_totp_scanned">Ogiltig TOTP-QR skannades</string>
     <string name="resource_details_metadata_header">Metadata</string>
+    <string name="resource_details_custom_fields_header">Anpassade fält</string>
+    <string name="additional_uri_format">• %s</string>
     <string name="more_details_copy_password">Kopiera lösenord</string>
     <string name="more_details_copy_description">Kopiera beskrivning</string>
-    <string name="resource_form_create_success">New password was created!</string>
+    <string name="resource_form_create_success">Nytt lösenord skapades!</string>
     <string name="resource_form_password">Lösenord</string>
     <string name="resource_form_enter_password">Ange lösenord</string>
-    <string name="resource_form_main_uri">Main URI</string>
+    <string name="resource_form_main_uri">Huvud-URI</string>
+    <string name="resource_form_add_uri">Lägg till URI</string>
     <string name="resource_form_enter_uri">Ange URI</string>
     <string name="resource_form_username">Användarnamn</string>
     <string name="resource_form_enter_username">Ange användarnamn</string>
     <string name="resource_form_totp">TOTP</string>
     <string name="resource_form_totp_secret">Hemlighet</string>
     <string name="resource_form_totp_url">URL</string>
-    <string name="resource_form_totp_url_issuer">URL (Issuer)</string>
+    <string name="resource_form_totp_url_issuer">URL (utfärdare)</string>
     <string name="resource_form_totp_more_settings">Fler TOTP-inställningar</string>
     <string name="resource_form_totp_settings">TOTP-inställningar</string>
     <string name="resource_form_description">Beskrivning</string>
+    <string name="resource_form_additional_uris">Ytterligare URI:er</string>
     <string name="resource_form_enter_description">Lägg till en beskrivning</string>
     <string name="resource_form_metadata_description">Metadata-beskrivning</string>
-    <string name="resource_form_create_metadata_description">Create metadata description</string>
-    <string name="resource_form_note">Note</string>
-    <string name="resource_form_create_note">Create note</string>
-    <string name="resource_form_note_content">Content</string>
-    <string name="resource_form_enter_note">Enter note</string>
-    <string name="resource_form_note_info">The note is part of the secret if you want to be able to search this content, use metadata description.</string>
+    <string name="resource_form_create_metadata_description">Skapa metadatabeskrivning</string>
+    <string name="resource_form_create_resource_appearance">Resursens utseende</string>
+    <string name="resource_form_create_resource_custom_fields">Anpassade fält</string>
+    <string name="resource_form_create_additional_uris">Skapa ytterligare URI:er</string>
+    <string name="resource_form_note">Anteckning</string>
+    <string name="resource_form_custom_fields">Anpassade fält</string>
+    <string name="resource_form_create_note">Skapa anteckning</string>
+    <string name="resource_form_note_content">Innehåll</string>
+    <string name="resource_form_enter_note">Ange anteckning</string>
+    <string name="resource_form_note_info">Anteckningen är en del av hemligheten. Om du vill kunna söka i detta innehåll, använd metadatabeskrivningen.</string>
     <string name="resource_form_metadata_description_info">Om du vill att beskrivningen ska vara en del av hemligheten, använd istället anteckning.</string>
     <string name="resource_form_resource_name">Resursnamn</string>
     <string name="resource_form_name">Namn</string>
     <string name="resource_form_create_password">Skapa ett lösenord</string>
-    <string name="resource_form_edit_resource">Edit %s</string>
+    <string name="resource_form_create_custom_fields">Skapa anpassade fält</string>
+    <string name="resource_form_edit_resource">Redigera %s</string>
     <string name="resource_form_create_totp">Skapa en TOTP</string>
     <string name="resource_form_view_advanced_settings">Visa avancerade inställningar</string>
     <string name="resource_form_view_additional_secrets">Ytterligare hemligheter</string>
@@ -289,10 +307,19 @@ den aktiverade autofyll-funktionen att föreslå att fylla i dina tidigare tilla
     <string name="resource_form_view_additional_uris">Ytterligare URI: er</string>
     <string name="resource_form_create">Skapa</string>
     <string name="resource_form_save">Spara</string>
-    <string name="resource_form_edit_init_error">Failed to initialize resource edition</string>
-    <string name="resource_form_remove_totp">Remove TOTP</string>
-    <string name="resource_form_remove_note">Remove Note</string>
-    <string name="resource_form_no_name">no name</string>
+    <string name="resource_form_edit_init_error">Det gick inte att initiera resursredigering</string>
+    <string name="resource_form_create_init_error">Det gick inte att initiera resursskapande</string>
+    <string name="resource_form_remove_totp">Ta bort TOTP</string>
+    <string name="resource_form_remove_note">Ta bort anteckning</string>
+    <string name="resource_form_no_name">inget namn</string>
+    <string name="resource_form_max_additional_uris_limit">Du kan lägga till högst %d ytterligare URI:er</string>
+    <string name="resource_form_appearance">Utseende</string>
+    <string name="resource_form_appearance_select_color">Välj färg</string>
+    <string name="resource_form_appearance_select_icon">Välj ikon</string>
+    <string name="resource_form_appearance_default_color">Standardfärg</string>
+    <string name="resource_form_appearance_default_icon">Standardikon</string>
+    <string name="resource_form_no_custom_fields_set">Inga anpassade fält angivna</string>
+    <string name="resource_form_custom_fields_edit_not_supported">Redigering av anpassade fält stöds för närvarande inte</string>
     <string name="settings_app_settings">Appinställningar</string>
     <string name="settings_accounts">Konton</string>
     <string name="settings_terms_and_licenses">Villkor &amp; licenser</string>
@@ -320,6 +347,7 @@ den aktiverade autofyll-funktionen att föreslå att fylla i dina tidigare tilla
     <string name="settings_app_settings_autofill">Autofyll</string>
     <string name="settings_app_settings_fingerprint">Fingeravtryck</string>
     <string name="settings_app_settings_biometry_error">Biometri-fel. %s</string>
+    <string name="settings_app_settings_biometry_authentication_error">Fel vid biometri-autentisering. %s</string>
     <string name="settings_app_settings_expert_settings">Expertinställningar</string>
     <string name="settings_app_settings_expert_settings_dev_mode">Utvecklarläge</string>
     <string name="settings_app_settings_expert_settings_hide_root">Dölj dialogen ”enheten är rootad”</string>
@@ -362,7 +390,7 @@ den aktiverade autofyll-funktionen att föreslå att fylla i dina tidigare tilla
     <string name="scan_qr_scanning_error">Fel vid skanning</string>
     <string name="scan_qr_camera_error">Kamerafel</string>
     <string name="scan_qr_update_transfer_error">Ett fel uppstod under uppdatering av överföring</string>
-    <string name="scan_qr_or_create_totp_manually">Or create TOTP manually</string>
+    <string name="scan_qr_or_create_totp_manually">Eller skapa TOTP manuellt</string>
     <string name="scan_qr_summary_success_title">Din information har överförts!</string>
     <string name="scan_qr_summary_already_linked_title">Konto är redan kopplat till enheten</string>
     <string name="scan_qr_summary_http_not_supported_title">Osäker HTTP-anslutning stöds inte</string>
@@ -400,6 +428,8 @@ den aktiverade autofyll-funktionen att föreslå att fylla i dina tidigare tilla
     <string name="dialog_encryption_error_title">Ett krypteringsfel uppstod</string>
     <string name="dialog_encryption_error_message">Ett krypteringsfel uppstod (%s). Försök igen.</string>
     <string name="resource_tags_section">Taggar</string>
+    <string name="resource_tags_title">Resurstaggar</string>
+    <string name="folder_details_title">Mappdetaljer</string>
     <string name="folder_details_name_header">Mappens namn</string>
     <string name="help_button_description">Hjälp</string>
     <string name="create_folder_title">Skapa mapp</string>
@@ -501,22 +531,24 @@ den aktiverade autofyll-funktionen att föreslå att fylla i dina tidigare tilla
     <string name="create_resource_menu_create_a_resource">Skapa en resurs</string>
     <string name="create_resource_menu_create_totp">TOTP</string>
     <string name="create_resource_menu_create_password">Lösenord</string>
+    <string name="create_resource_menu_create_note">Anteckning</string>
     <string name="create_resource_menu_create_folder">Mapp</string>
-    <string name="dialog_new_metadata_key_trust_changed">The metadata key has changed.</string>
-    <string name="dialog_new_metadata_key_trust_modified_by_user">The encryption key used to share metadata between users has been updated by %s.</string>
-    <string name="dialog_new_metadata_key_trust_key_rotation_info">If you weren’t expecting this, you can verify with your administrator.</string>
-    <string name="dialog_new_metadata_key_trust_key_rollback_info">This is unusual, please verify with your administrator.</string>
-    <string name="dialog_new_metadata_key_trust_key_fingerprint">Key fingerprint:</string>
-    <string name="dialog_new_metadata_key_trust_key_trust_the_key">Trust the key</string>
-    <string name="dialog_trusted_metadata_key_deleted">The metadata key has been deleted.</string>
-    <string name="dialog_trusted_metadata_key_deleted_main">The trusted encryption key used to share metadata between users has been deleted.</string>
-    <string name="dialog_trusted_metadata_key_deleted_info">If you weren’t expecting this, you can verify with your administrator.</string>
-    <string name="dialog_trusted_metadata_key_deleted_trust">Trust</string>
+    <string name="dialog_new_metadata_key_trust_changed">Metadatanyckeln har ändrats.</string>
+    <string name="dialog_new_metadata_key_trust_modified_by_user">Krypteringsnyckeln som används för att dela metadata mellan användare har uppdaterats av %s.</string>
+    <string name="dialog_new_metadata_key_trust_key_rotation_info">Om du inte förväntade dig detta kan du verifiera med din administratör.</string>
+    <string name="dialog_new_metadata_key_trust_key_rollback_info">Detta är ovanligt, vänligen kontrollera med din administratör.</string>
+    <string name="dialog_new_metadata_key_trust_key_fingerprint">Nyckelns fingeravtryck:</string>
+    <string name="dialog_new_metadata_key_trust_key_trust_the_key">Lita på nyckeln</string>
+    <string name="dialog_trusted_metadata_key_deleted">Metadatanyckeln har tagits bort.</string>
+    <string name="dialog_trusted_metadata_key_deleted_main">Den betrodda krypteringsnyckeln som används för att dela metadata mellan användare har tagits bort.</string>
+    <string name="dialog_trusted_metadata_key_deleted_info">Om du inte förväntade dig detta kan du verifiera med din administratör.</string>
+    <string name="dialog_trusted_metadata_key_deleted_trust">Lita på</string>
     <!--
     arrays can be inconsistent when in other languages
     index / size is not used in code
     -->
-    <string-array name="username_hint_values" tools:ignore="InconsistentArrays">
+    <string-array name="username_hint_values"
+        tools:ignore="InconsistentArrays">
         <item>e-post</item>
         <item>användarnamn</item>
         <item>mobil</item>
@@ -527,7 +559,8 @@ den aktiverade autofyll-funktionen att föreslå att fylla i dina tidigare tilla
       arrays can be inconsistent when in other languages
       index / size is not used in code
     -->
-    <string-array name="password_hint_values" tools:ignore="InconsistentArrays">
+    <string-array name="password_hint_values"
+        tools:ignore="InconsistentArrays">
         <item>lösenord</item>
         <item>hemlighet</item>
         <item>lösenfras</item>

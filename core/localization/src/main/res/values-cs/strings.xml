@@ -58,9 +58,12 @@
     <string name="common_message_resource_deleted">Zdroj %s byl odstraněn.</string>
     <string name="common_message_resource_shared">Oprávnění zdroje byla aktualizována.</string>
     <string name="common_message_folder_created">Nová složka %s byla vytvořena!</string>
+    <string name="common_lack_shared_key_access">Tuto akci nelze provést, protože nemáte přístup ke sdílenému metadatovému klíči.</string>
     <string name="validation_required_with_max_length">Délka musí být mezi 1 a %d</string>
+    <string name="validation_max_length">Maximální délka je %d</string>
     <string name="validation_is_required">Tento vstup je vyžadován</string>
     <string name="validation_required_integer">Mělo by být celé číslo</string>
+    <string name="validation_invalid_totp_secret">Neplatný TOTP tajný klíč</string>
     <string name="fingerprint_biometric_error_generic">Došlo k chybě se snímačem otisků prstů.</string>
     <string name="fingerprint_biometric_error_too_many_attempts">Biometrická autorizace byla zablokována kvůli příliš mnoha pokusům.</string>
     <string name="fingerprint_biometric_error_blocked">Biometrická autorizace byla zablokována po dobu 30 sekund.</string>
@@ -206,8 +209,10 @@
     <string name="autofill_error">Došlo k chybě automatického vyplňování</string>
     <string name="autofill_select_password">Vyberte heslo</string>
     <string name="autofill_service_channel_name">Passbolt služby automatického vyplňování</string>
+    <string name="data_sync_service_channel_name">Služba synchronizace dat Passbolt</string>
     <string name="autofill_service_title">Passbolt</string>
     <string name="autofill_service_content">Služba automatického vyplňování povolena</string>
+    <string name="data_sync_service_content">Obnovování prostředků</string>
     <string name="autofill_service_enable_overlay">Povolit oprávnění pro překrytí</string>
     <string name="autofill_service_overlay_description"><![CDATA[Automatické vyplňování uživatelských jmen a hesel pro Android webové prohlížeče. Povolte oprávnění "Vykreslit přes jiné aplikace" pro Passbolt Automatické vyplňování]]></string>
     <string name="autofill_service_enable_service">Povolit automatické vyplňování pro většinu aplikací</string>
@@ -235,6 +240,7 @@
     <string name="filters_menu_shared_with_me">Sdíleno se mnou</string>
     <string name="filters_menu_owned_by_me">Vlastněna mnou</string>
     <string name="filters_menu_expiry">Expirace</string>
+    <string name="filters_menu_loading">Načítání</string>
     <string name="filters_menu_folders">Složky</string>
     <string name="filters_menu_tags">Štítky</string>
     <string name="filters_menu_groups">Skupiny</string>
@@ -256,6 +262,7 @@
     <string name="resource_details_information">Informace</string>
     <string name="resource_details_invalid_totp_scanned">Naskenován chybný TOTP QR kód</string>
     <string name="resource_details_metadata_header">Metadata</string>
+    <string name="resource_details_custom_fields_header">Vlastní pole</string>
     <string name="additional_uri_format">• %s</string>
     <string name="more_details_copy_password">Kopírovat heslo</string>
     <string name="more_details_copy_description">Kopírovat popis</string>
@@ -279,8 +286,10 @@
     <string name="resource_form_metadata_description">Popis metadat</string>
     <string name="resource_form_create_metadata_description">Vytvořit popis metadat</string>
     <string name="resource_form_create_resource_appearance">Vzhled zdroje</string>
+    <string name="resource_form_create_resource_custom_fields">Vlastní pole</string>
     <string name="resource_form_create_additional_uris">Vytvořit další URI</string>
     <string name="resource_form_note">Poznámka</string>
+    <string name="resource_form_custom_fields">Vlastní pole</string>
     <string name="resource_form_create_note">Vytvořit poznámku</string>
     <string name="resource_form_note_content">Obsah</string>
     <string name="resource_form_enter_note">Zadejte poznámku</string>
@@ -289,6 +298,7 @@
     <string name="resource_form_resource_name">Název zdroje</string>
     <string name="resource_form_name">Jméno</string>
     <string name="resource_form_create_password">Vytvořit heslo</string>
+    <string name="resource_form_create_custom_fields">Vytvořit vlastní pole</string>
     <string name="resource_form_edit_resource">Upravit %s</string>
     <string name="resource_form_create_totp">Vytvořit TOTP</string>
     <string name="resource_form_view_advanced_settings">Zobrazit pokročilá nastavení</string>
@@ -298,6 +308,7 @@
     <string name="resource_form_create">Vytvořit</string>
     <string name="resource_form_save">Uložit</string>
     <string name="resource_form_edit_init_error">Nepodařilo se spustit editaci zdroje</string>
+    <string name="resource_form_create_init_error">Nepodařilo se inicializovat vytváření prostředku</string>
     <string name="resource_form_remove_totp">Odstranit TOTP</string>
     <string name="resource_form_remove_note">Odstranit poznámku</string>
     <string name="resource_form_no_name">bez názvu</string>
@@ -307,6 +318,8 @@
     <string name="resource_form_appearance_select_icon">Vybrat ikonu</string>
     <string name="resource_form_appearance_default_color">Výchozí barva</string>
     <string name="resource_form_appearance_default_icon">Výchozí ikona</string>
+    <string name="resource_form_no_custom_fields_set">Nejsou nastavena žádná vlastní pole</string>
+    <string name="resource_form_custom_fields_edit_not_supported">Editace vlastních polí není v současné době podporována</string>
     <string name="settings_app_settings">Nastavení aplikace</string>
     <string name="settings_accounts">Účty</string>
     <string name="settings_terms_and_licenses">Podmínky &amp; licence</string>
@@ -415,6 +428,8 @@
     <string name="dialog_encryption_error_title">Došlo k chybě při šifrování</string>
     <string name="dialog_encryption_error_message">Došlo k chybě při šifrování (%s). Zkuste to prosím znovu.</string>
     <string name="resource_tags_section">Štítky</string>
+    <string name="resource_tags_title">Štítky prostředků</string>
+    <string name="folder_details_title">Podrobnosti složky</string>
     <string name="folder_details_name_header">Název složky</string>
     <string name="help_button_description">Nápověda</string>
     <string name="create_folder_title">Vytvořit složku</string>
@@ -516,6 +531,7 @@
     <string name="create_resource_menu_create_a_resource">Vytvořit zdroj</string>
     <string name="create_resource_menu_create_totp">TOTP</string>
     <string name="create_resource_menu_create_password">Heslo</string>
+    <string name="create_resource_menu_create_note">Poznámka</string>
     <string name="create_resource_menu_create_folder">Složka</string>
     <string name="dialog_new_metadata_key_trust_changed">Klíč metadat se změnil.</string>
     <string name="dialog_new_metadata_key_trust_modified_by_user">Šifrovací klíč použitý pro sdílení metadat mezi uživateli byl aktualizován %s.</string>
@@ -531,7 +547,8 @@
     arrays can be inconsistent when in other languages
     index / size is not used in code
     -->
-    <string-array name="username_hint_values" tools:ignore="InconsistentArrays">
+    <string-array name="username_hint_values"
+        tools:ignore="InconsistentArrays">
         <item>e-mail</item>
         <item>uživatelské jméno</item>
         <item>mobilní</item>
@@ -542,7 +559,8 @@
       arrays can be inconsistent when in other languages
       index / size is not used in code
     -->
-    <string-array name="password_hint_values" tools:ignore="InconsistentArrays">
+    <string-array name="password_hint_values"
+        tools:ignore="InconsistentArrays">
         <item>heslo</item>
         <item>tajný</item>
         <item>přístupová fráze</item>

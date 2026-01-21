@@ -33,6 +33,8 @@
     <string name="name_expired">%s (истёк)</string>
     <string name="proceed">Продолжить</string>
     <string name="edit_password">Изменить пароль</string>
+    <string name="copy_label_fingerprint">Отпечаток пальца</string>
+    <string name="copy_label_uid">UID</string>
     <string name="common_failure">Что-то пошло не так!</string>
     <string name="common_startup_configuration_fetch_error">Ошибка при получении конфигурации</string>
     <string name="common_time_is_out_of_sync">Время на сервере и клиенте не совпадают, пожалуйста, свяжитесь с администратором.</string>
@@ -48,17 +50,20 @@
     <string name="common_json_schema_resource_validation_error">Произошла ошибка при проверке ресурса. Включите ведение журнала для получения подробностей.</string>
     <string name="common_json_schema_secret_validation_error">Произошла ошибка при проверке секретного ключа. Включите ведение журнала для получения подробностей.</string>
     <string name="common_maybe_later">Возможно, позже</string>
-    <string name="common_cannot_create_resource_with_current_config">Cannot update a resource with current configuration</string>
-    <string name="common_metadata_key_verification_failure">Could not verify metadata keys</string>
-    <string name="common_metadata_key_is_trusted">New metadata key is trusted</string>
-    <string name="common_metadata_key_trust_failed">Failed to trust new metadata key</string>
-    <string name="common_message_resource_edited">%s resource was successfully edited.</string>
-    <string name="common_message_resource_deleted">%s resource was deleted.</string>
+    <string name="common_cannot_create_resource_with_current_config">Невозможно обновить ресурс с текущей конфигурацией</string>
+    <string name="common_metadata_key_verification_failure">Не удалось проверить ключи метаданных</string>
+    <string name="common_metadata_key_is_trusted">Новый ключ метаданных доверен</string>
+    <string name="common_metadata_key_trust_failed">Не удалось довериться новому ключу метаданных</string>
+    <string name="common_message_resource_edited">Ресурс %s был успешно отредактирован.</string>
+    <string name="common_message_resource_deleted">Ресурс %s был удалён.</string>
     <string name="common_message_resource_shared">Права доступа к ресурсу обновлены.</string>
     <string name="common_message_folder_created">Новая папка %s создана!</string>
+    <string name="common_lack_shared_key_access">Вы не можете выполнить это действие, так как у вас нет доступа к общему ключу метаданных.</string>
     <string name="validation_required_with_max_length">Длина должна быть от 1 до %d</string>
-    <string name="validation_is_required">This input is required</string>
+    <string name="validation_max_length">Максимальная длина — %d</string>
+    <string name="validation_is_required">Это поле обязательно</string>
     <string name="validation_required_integer">Должно быть целое число</string>
+    <string name="validation_invalid_totp_secret">Недействительный секрет TOTP</string>
     <string name="fingerprint_biometric_error_generic">Произошла ошибка с датчиком отпечатков пальцев.</string>
     <string name="fingerprint_biometric_error_too_many_attempts">Биометрическая авторизация была заблокирована из-за слишком большого количества попыток.</string>
     <string name="fingerprint_biometric_error_blocked">Биометрическая авторизация заблокирована на 30 секунд.</string>
@@ -75,8 +80,8 @@
     <string name="more_copy_uri">Копировать URI</string>
     <string name="more_copy_password">Скопировать пароль</string>
     <string name="more_copy_username">Скопировать имя пользователя</string>
-    <string name="more_copy_metadata_desc">Copy metadata description</string>
-    <string name="more_copy_note">Copy note</string>
+    <string name="more_copy_metadata_desc">Скопировать описание метаданных</string>
+    <string name="more_copy_note">Скопировать заметку</string>
     <string name="more_edit">Изменить</string>
     <string name="more_delete">Удалить</string>
     <string name="more_share">Поделиться</string>
@@ -203,8 +208,10 @@
     <string name="autofill_error">Произошла ошибка автозаполнения</string>
     <string name="autofill_select_password">Выберите пароль</string>
     <string name="autofill_service_channel_name">Службы автозаполнения Passbolt</string>
+    <string name="data_sync_service_channel_name">Служба синхронизации данных Passbolt</string>
     <string name="autofill_service_title">Passbolt</string>
     <string name="autofill_service_content">Служба специальных возможностей автозаполнения включена</string>
+    <string name="data_sync_service_content">Обновление ресурсов</string>
     <string name="autofill_service_enable_overlay">Включить разрешение на наложение</string>
     <string name="autofill_service_overlay_description"><![CDATA[Автозаполнение имен пользователей и паролей для браузеров Android. Пожалуйста, включите «Наложение поверх других окон» для автозаполнения Passbolt]]></string>
     <string name="autofill_service_enable_service">Включить автозаполнение для большинства приложений</string>
@@ -232,6 +239,7 @@
     <string name="filters_menu_shared_with_me">Доступные мне</string>
     <string name="filters_menu_owned_by_me">Принадлежит мне</string>
     <string name="filters_menu_expiry">Срок действия</string>
+    <string name="filters_menu_loading">Загрузка</string>
     <string name="filters_menu_folders">Разделы</string>
     <string name="filters_menu_tags">Тэги</string>
     <string name="filters_menu_groups">Группы</string>
@@ -244,20 +252,24 @@
     <string name="resource_details_totp_header">Totp</string>
     <string name="resource_details_url_header">Основной URI</string>
     <string name="resource_details_expiry_header">Срок действия</string>
+    <string name="resource_details_additional_uris">Дополнительный URI</string>
     <string name="resource_details_description_header">Описание</string>
-    <string name="resource_details_note_header">Note</string>
-    <string name="resource_details_note_content">Content</string>
+    <string name="resource_details_note_header">Заметка</string>
+    <string name="resource_details_note_content">Содержимое</string>
     <string name="resource_details_tags_header">Тэги</string>
     <string name="resource_details_encrypted_description">Описание зашифровано</string>
     <string name="resource_details_information">Сведения</string>
     <string name="resource_details_invalid_totp_scanned">Сканирован некорректный QR-код для TOTP</string>
     <string name="resource_details_metadata_header">Метадата</string>
+    <string name="resource_details_custom_fields_header">Пользовательские поля</string>
+    <string name="additional_uri_format">• %s</string>
     <string name="more_details_copy_password">Скопировать пароль</string>
     <string name="more_details_copy_description">Скопировать описание</string>
     <string name="resource_form_create_success">Новый пароль был создан!</string>
     <string name="resource_form_password">Пароль</string>
     <string name="resource_form_enter_password">Введите пароль</string>
-    <string name="resource_form_main_uri">Main URI</string>
+    <string name="resource_form_main_uri">Основной URI</string>
+    <string name="resource_form_add_uri">Добавить URI</string>
     <string name="resource_form_enter_uri">Введите URI</string>
     <string name="resource_form_username">Имя пользователя</string>
     <string name="resource_form_enter_username">Введите имя пользователя</string>
@@ -268,18 +280,24 @@
     <string name="resource_form_totp_more_settings">Дополнительные настройки TOTP</string>
     <string name="resource_form_totp_settings">Настройки TOTP</string>
     <string name="resource_form_description">Описание</string>
+    <string name="resource_form_additional_uris">Дополнительные URI</string>
     <string name="resource_form_enter_description">Введите описание</string>
     <string name="resource_form_metadata_description">Описание метаданных</string>
-    <string name="resource_form_create_metadata_description">Create metadata description</string>
-    <string name="resource_form_note">Note</string>
-    <string name="resource_form_create_note">Create note</string>
-    <string name="resource_form_note_content">Content</string>
-    <string name="resource_form_enter_note">Enter note</string>
-    <string name="resource_form_note_info">The note is part of the secret if you want to be able to search this content, use metadata description.</string>
+    <string name="resource_form_create_metadata_description">Создать описание метаданных</string>
+    <string name="resource_form_create_resource_appearance">Внешний вид ресурса</string>
+    <string name="resource_form_create_resource_custom_fields">Пользовательские поля</string>
+    <string name="resource_form_create_additional_uris">Создать дополнительные URI</string>
+    <string name="resource_form_note">Заметка</string>
+    <string name="resource_form_custom_fields">Пользовательские поля</string>
+    <string name="resource_form_create_note">Создать заметку</string>
+    <string name="resource_form_note_content">Содержимое</string>
+    <string name="resource_form_enter_note">Введите заметку</string>
+    <string name="resource_form_note_info">Заметка является частью секрета; если вы хотите иметь возможность искать по этому содержимому, используйте описание метаданных.</string>
     <string name="resource_form_metadata_description_info">Если вы хотите, чтобы описание было частью секрета, используйте вместо него заметку.</string>
     <string name="resource_form_resource_name">Имя ресурса</string>
     <string name="resource_form_name">Имя</string>
     <string name="resource_form_create_password">Создать пароль</string>
+    <string name="resource_form_create_custom_fields">Создать пользовательские поля</string>
     <string name="resource_form_edit_resource">Изменить %s</string>
     <string name="resource_form_create_totp">Создать временный одноразовый пароль</string>
     <string name="resource_form_view_advanced_settings">Просмотреть дополнительные параметры</string>
@@ -288,10 +306,19 @@
     <string name="resource_form_view_additional_uris">Дополнительные URI</string>
     <string name="resource_form_create">Создать</string>
     <string name="resource_form_save">Сохранить</string>
-    <string name="resource_form_edit_init_error">Failed to initialize resource edition</string>
-    <string name="resource_form_remove_totp">Remove TOTP</string>
-    <string name="resource_form_remove_note">Remove Note</string>
-    <string name="resource_form_no_name">no name</string>
+    <string name="resource_form_edit_init_error">Не удалось инициализировать редактирование ресурса</string>
+    <string name="resource_form_create_init_error">Не удалось инициализировать создание ресурса</string>
+    <string name="resource_form_remove_totp">Удалить TOTP</string>
+    <string name="resource_form_remove_note">Удалить заметку</string>
+    <string name="resource_form_no_name">без имени</string>
+    <string name="resource_form_max_additional_uris_limit">Вы можете добавить максимум %d дополнительных URI</string>
+    <string name="resource_form_appearance">Внешний вид</string>
+    <string name="resource_form_appearance_select_color">Выберите цвет</string>
+    <string name="resource_form_appearance_select_icon">Выберите значок</string>
+    <string name="resource_form_appearance_default_color">Цвет по умолчанию</string>
+    <string name="resource_form_appearance_default_icon">Значок по умолчанию</string>
+    <string name="resource_form_no_custom_fields_set">Пользовательские поля не заданы</string>
+    <string name="resource_form_custom_fields_edit_not_supported">Редактирование пользовательских полей в настоящее время не поддерживается</string>
     <string name="settings_app_settings">Настройки приложения</string>
     <string name="settings_accounts">Учетные записи</string>
     <string name="settings_terms_and_licenses">Условия и лицензии</string>
@@ -319,6 +346,7 @@
     <string name="settings_app_settings_autofill">Автозаполнение</string>
     <string name="settings_app_settings_fingerprint">Отпечаток пальца</string>
     <string name="settings_app_settings_biometry_error">Ошибка биометрии. %s</string>
+    <string name="settings_app_settings_biometry_authentication_error">Ошибка биометрической аутентификации. %s</string>
     <string name="settings_app_settings_expert_settings">Экспертные настройки</string>
     <string name="settings_app_settings_expert_settings_dev_mode">Режим разработчика</string>
     <string name="settings_app_settings_expert_settings_hide_root">Скрывать диалог «устройство с правами суперпользователя»</string>
@@ -361,7 +389,7 @@
     <string name="scan_qr_scanning_error">Ошибка при сканировании</string>
     <string name="scan_qr_camera_error">Ошибка камеры</string>
     <string name="scan_qr_update_transfer_error">Произошла ошибка во время обновления передачи</string>
-    <string name="scan_qr_or_create_totp_manually">Or create TOTP manually</string>
+    <string name="scan_qr_or_create_totp_manually">Или создать TOTP вручную</string>
     <string name="scan_qr_summary_success_title">Ваша информация была передана!</string>
     <string name="scan_qr_summary_already_linked_title">Учетная запись уже привязана к устройству</string>
     <string name="scan_qr_summary_http_not_supported_title">Небезопасное HTTP-соединение не поддерживается</string>
@@ -399,6 +427,8 @@
     <string name="dialog_encryption_error_title">Произошла ошибка шифрования</string>
     <string name="dialog_encryption_error_message">Произошла ошибка шифрования (%s). Пожалуйста, попробуйте еще раз.</string>
     <string name="resource_tags_section">Тэги</string>
+    <string name="resource_tags_title">Теги ресурса</string>
+    <string name="folder_details_title">Сведения о папке</string>
     <string name="folder_details_name_header">Имя раздела</string>
     <string name="help_button_description">Помощь</string>
     <string name="create_folder_title">Создать папку</string>
@@ -500,22 +530,24 @@
     <string name="create_resource_menu_create_a_resource">Создать ресурс</string>
     <string name="create_resource_menu_create_totp">TOTP</string>
     <string name="create_resource_menu_create_password">Пароль</string>
+    <string name="create_resource_menu_create_note">Заметка</string>
     <string name="create_resource_menu_create_folder">Папка</string>
-    <string name="dialog_new_metadata_key_trust_changed">The metadata key has changed.</string>
-    <string name="dialog_new_metadata_key_trust_modified_by_user">The encryption key used to share metadata between users has been updated by %s.</string>
-    <string name="dialog_new_metadata_key_trust_key_rotation_info">If you weren’t expecting this, you can verify with your administrator.</string>
-    <string name="dialog_new_metadata_key_trust_key_rollback_info">This is unusual, please verify with your administrator.</string>
-    <string name="dialog_new_metadata_key_trust_key_fingerprint">Key fingerprint:</string>
-    <string name="dialog_new_metadata_key_trust_key_trust_the_key">Trust the key</string>
-    <string name="dialog_trusted_metadata_key_deleted">The metadata key has been deleted.</string>
-    <string name="dialog_trusted_metadata_key_deleted_main">The trusted encryption key used to share metadata between users has been deleted.</string>
-    <string name="dialog_trusted_metadata_key_deleted_info">If you weren’t expecting this, you can verify with your administrator.</string>
-    <string name="dialog_trusted_metadata_key_deleted_trust">Trust</string>
+    <string name="dialog_new_metadata_key_trust_changed">Ключ метаданных был изменён.</string>
+    <string name="dialog_new_metadata_key_trust_modified_by_user">Ключ шифрования, используемый для обмена метаданными между пользователями, был обновлён пользователем %s.</string>
+    <string name="dialog_new_metadata_key_trust_key_rotation_info">Если вы этого не ожидали, проверьте у вашего администратора.</string>
+    <string name="dialog_new_metadata_key_trust_key_rollback_info">Это необычно, пожалуйста, уточните у администратора.</string>
+    <string name="dialog_new_metadata_key_trust_key_fingerprint">Отпечаток ключа:</string>
+    <string name="dialog_new_metadata_key_trust_key_trust_the_key">Доверять ключу</string>
+    <string name="dialog_trusted_metadata_key_deleted">Ключ метаданных был удалён.</string>
+    <string name="dialog_trusted_metadata_key_deleted_main">Доверенный ключ шифрования, используемый для обмена метаданными между пользователями, был удалён.</string>
+    <string name="dialog_trusted_metadata_key_deleted_info">Если вы этого не ожидали, проверьте у вашего администратора.</string>
+    <string name="dialog_trusted_metadata_key_deleted_trust">Доверять</string>
     <!--
     arrays can be inconsistent when in other languages
     index / size is not used in code
     -->
-    <string-array name="username_hint_values" tools:ignore="InconsistentArrays">
+    <string-array name="username_hint_values"
+        tools:ignore="InconsistentArrays">
         <item>почта</item>
         <item>имя пользователя</item>
         <item>мобильный</item>
@@ -526,7 +558,8 @@
       arrays can be inconsistent when in other languages
       index / size is not used in code
     -->
-    <string-array name="password_hint_values" tools:ignore="InconsistentArrays">
+    <string-array name="password_hint_values"
+        tools:ignore="InconsistentArrays">
         <item>пароль</item>
         <item>секретный ключ</item>
         <item>парольная фраза</item>
