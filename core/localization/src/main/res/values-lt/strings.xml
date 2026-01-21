@@ -33,6 +33,8 @@
     <string name="name_expired">%s (pasibaigęs)</string>
     <string name="proceed">Tęsti</string>
     <string name="edit_password">Redaguoti slaptažodį</string>
+    <string name="copy_label_fingerprint">Pirštų atspaudai</string>
+    <string name="copy_label_uid">UID</string>
     <string name="common_failure">Kažkas nepavyko!</string>
     <string name="common_startup_configuration_fetch_error">Klaida gaunant konfigūraciją</string>
     <string name="common_time_is_out_of_sync">Serverio ir kliento laikas nesutampa, susisiekite su administratoriumi.</string>
@@ -48,17 +50,20 @@
     <string name="common_json_schema_resource_validation_error">Įvyko klaida tikrinant išteklių. Įjunkite žurnalus, kad pamatytumėte daugiau detalių.</string>
     <string name="common_json_schema_secret_validation_error">Įvyko klaida tikrinant paslaptį. Įjunkite žurnalus, kad pamatytumėte daugiau detalių.</string>
     <string name="common_maybe_later">Gal vėliau</string>
-    <string name="common_cannot_create_resource_with_current_config">Cannot update a resource with current configuration</string>
-    <string name="common_metadata_key_verification_failure">Could not verify metadata keys</string>
-    <string name="common_metadata_key_is_trusted">New metadata key is trusted</string>
-    <string name="common_metadata_key_trust_failed">Failed to trust new metadata key</string>
-    <string name="common_message_resource_edited">%s resource was successfully edited.</string>
-    <string name="common_message_resource_deleted">%s resource was deleted.</string>
+    <string name="common_cannot_create_resource_with_current_config">Negalima atnaujinti ištekliaus su dabartine konfigūracija</string>
+    <string name="common_metadata_key_verification_failure">Nepavyko patikrinti metaduomenų raktų</string>
+    <string name="common_metadata_key_is_trusted">Naujas metaduomenų raktas yra patikimas</string>
+    <string name="common_metadata_key_trust_failed">Nepavyko pažymėti naujo metaduomenų rakto kaip patikimo</string>
+    <string name="common_message_resource_edited">Išteklius %s sėkmingai redaguotas.</string>
+    <string name="common_message_resource_deleted">Išteklius %s buvo ištrintas.</string>
     <string name="common_message_resource_shared">Ištekliaus leidimai buvo atnaujinti.</string>
     <string name="common_message_folder_created">Naujas aplankas %s sukurtas!</string>
+    <string name="common_lack_shared_key_access">Negalite atlikti šio veiksmo, nes neturite prieigos prie bendrinamo metaduomenų rakto.</string>
     <string name="validation_required_with_max_length">Ilgis turi būti nuo 1 iki %d</string>
-    <string name="validation_is_required">This input is required</string>
+    <string name="validation_max_length">Didžiausias ilgis yra %d</string>
+    <string name="validation_is_required">Šis įvedimo laukas privalomas</string>
     <string name="validation_required_integer">Turi būti sveikasis skaičius</string>
+    <string name="validation_invalid_totp_secret">Neteisinga TOTP paslaptis</string>
     <string name="fingerprint_biometric_error_generic">Įvyko klaida su pirštų atspaudo jutikliu.</string>
     <string name="fingerprint_biometric_error_too_many_attempts">Biometrinis autentifikavimas užblokuotas dėl per daug bandymų.</string>
     <string name="fingerprint_biometric_error_blocked">Biometrinis autentifikavimas užblokuotas 30 sekundžių.</string>
@@ -75,8 +80,8 @@
     <string name="more_copy_uri">Kopijuoti URI</string>
     <string name="more_copy_password">Kopijuoti slaptažodį</string>
     <string name="more_copy_username">Kopijuoti vartotojo vardą</string>
-    <string name="more_copy_metadata_desc">Copy metadata description</string>
-    <string name="more_copy_note">Copy note</string>
+    <string name="more_copy_metadata_desc">Kopijuoti metaduomenų aprašą</string>
+    <string name="more_copy_note">Kopijuoti pastabą</string>
     <string name="more_edit">Redaguoti</string>
     <string name="more_delete">Ištrinti</string>
     <string name="more_share">Dalintis</string>
@@ -203,8 +208,10 @@
     <string name="autofill_error">Įvyko automatinio pildymo klaida</string>
     <string name="autofill_select_password">Pasirinkti slaptažodį</string>
     <string name="autofill_service_channel_name">Passbolt automatinio pildymo paslaugos</string>
+    <string name="data_sync_service_channel_name">Passbolt duomenų sinchronizavimo paslauga</string>
     <string name="autofill_service_title">Passboltas</string>
     <string name="autofill_service_content">Prieinamumo automatinio pildymo paslauga įjungta</string>
+    <string name="data_sync_service_content">Atnaujinami ištekliai</string>
     <string name="autofill_service_enable_overlay">Įjungti persidengimo leidimą</string>
     <string name="autofill_service_overlay_description"><![CDATA[Automatiškai pildyti vartotojo vardus ir slaptažodžius Android naršyklėse. Prašome įjungti „Rodyti virš kitų programų“ leidimą Passbolt Autofill]]></string>
     <string name="autofill_service_enable_service">Įjungti automatinį pildymą daugumai programų</string>
@@ -232,6 +239,7 @@
     <string name="filters_menu_shared_with_me">Pasidalinta su manimi</string>
     <string name="filters_menu_owned_by_me">Man priklauso</string>
     <string name="filters_menu_expiry">Galiojimo pabaiga</string>
+    <string name="filters_menu_loading">Įkeliama</string>
     <string name="filters_menu_folders">Aplankai</string>
     <string name="filters_menu_tags">Žymos</string>
     <string name="filters_menu_groups">Grupės</string>
@@ -244,20 +252,24 @@
     <string name="resource_details_totp_header">Totp kodas</string>
     <string name="resource_details_url_header">Pagrindinis URI</string>
     <string name="resource_details_expiry_header">Galiojimas</string>
+    <string name="resource_details_additional_uris">Papildomas URI</string>
     <string name="resource_details_description_header">Domenas</string>
-    <string name="resource_details_note_header">Note</string>
-    <string name="resource_details_note_content">Content</string>
+    <string name="resource_details_note_header">Pastaba</string>
+    <string name="resource_details_note_content">Turinys</string>
     <string name="resource_details_tags_header">Žymos</string>
     <string name="resource_details_encrypted_description">Aprašymas užšifruotas</string>
     <string name="resource_details_information">Informacija</string>
     <string name="resource_details_invalid_totp_scanned">Nuskaitytas netinkamas TOTP QR kodas</string>
-    <string name="resource_details_metadata_header">Metadata</string>
+    <string name="resource_details_metadata_header">Metaduomenys</string>
+    <string name="resource_details_custom_fields_header">Pasirinktiniai laukai</string>
+    <string name="additional_uri_format">• %s</string>
     <string name="more_details_copy_password">Kopijuoti slaptažodį</string>
     <string name="more_details_copy_description">Kopijuoti aprašymą</string>
-    <string name="resource_form_create_success">New password was created!</string>
+    <string name="resource_form_create_success">Naujas slaptažodis sukurtas!</string>
     <string name="resource_form_password">Slaptažodis</string>
     <string name="resource_form_enter_password">Įvesti slaptažodį</string>
-    <string name="resource_form_main_uri">Main URI</string>
+    <string name="resource_form_main_uri">Pagrindinis URI</string>
+    <string name="resource_form_add_uri">Pridėti URI</string>
     <string name="resource_form_enter_uri">Įveskite URI</string>
     <string name="resource_form_username">Vartotojo vardas</string>
     <string name="resource_form_enter_username">Įveskite vartotojo vardą</string>
@@ -268,19 +280,25 @@
     <string name="resource_form_totp_more_settings">Daugiau TOTP nustatymų</string>
     <string name="resource_form_totp_settings">TOTP nustatymai</string>
     <string name="resource_form_description">Domenas</string>
+    <string name="resource_form_additional_uris">Papildomi URI</string>
     <string name="resource_form_enter_description">Įveskite aprašymą</string>
     <string name="resource_form_metadata_description">Metaduomenų aprašas</string>
-    <string name="resource_form_create_metadata_description">Create metadata description</string>
-    <string name="resource_form_note">Note</string>
-    <string name="resource_form_create_note">Create note</string>
-    <string name="resource_form_note_content">Content</string>
-    <string name="resource_form_enter_note">Enter note</string>
-    <string name="resource_form_note_info">The note is part of the secret if you want to be able to search this content, use metadata description.</string>
+    <string name="resource_form_create_metadata_description">Sukurti metaduomenų aprašą</string>
+    <string name="resource_form_create_resource_appearance">Ištekliaus išvaizda</string>
+    <string name="resource_form_create_resource_custom_fields">Pasirinktiniai laukai</string>
+    <string name="resource_form_create_additional_uris">Sukurti papildomus URI</string>
+    <string name="resource_form_note">Pastaba</string>
+    <string name="resource_form_custom_fields">Pasirinktiniai laukai</string>
+    <string name="resource_form_create_note">Sukurti pastabą</string>
+    <string name="resource_form_note_content">Turinys</string>
+    <string name="resource_form_enter_note">Įveskite pastabą</string>
+    <string name="resource_form_note_info">Pastaba yra paslapties dalis. Jei norite galėti ieškoti šio turinio, naudokite metaduomenų aprašą.</string>
     <string name="resource_form_metadata_description_info">Jei norite, kad aprašas būtų slaptos informacijos dalis, vietoj jo naudokite užrašą.</string>
     <string name="resource_form_resource_name">Ištekliaus pavadinimas</string>
     <string name="resource_form_name">Vardas</string>
     <string name="resource_form_create_password">Sukurkite slaptažodį</string>
-    <string name="resource_form_edit_resource">Edit %s</string>
+    <string name="resource_form_create_custom_fields">Sukurti pasirinktinius laukus</string>
+    <string name="resource_form_edit_resource">Redaguoti %s</string>
     <string name="resource_form_create_totp">Sukurti TOTP</string>
     <string name="resource_form_view_advanced_settings">Rodyti pažangius nustatymus</string>
     <string name="resource_form_view_additional_secrets">Papildomos paslaptys</string>
@@ -288,10 +306,19 @@
     <string name="resource_form_view_additional_uris">Papildomi URI</string>
     <string name="resource_form_create">Sukurti</string>
     <string name="resource_form_save">Išsaugoti</string>
-    <string name="resource_form_edit_init_error">Failed to initialize resource edition</string>
-    <string name="resource_form_remove_totp">Remove TOTP</string>
-    <string name="resource_form_remove_note">Remove Note</string>
-    <string name="resource_form_no_name">no name</string>
+    <string name="resource_form_edit_init_error">Nepavyko inicijuoti ištekliaus redagavimo</string>
+    <string name="resource_form_create_init_error">Nepavyko inicijuoti ištekliaus kūrimo</string>
+    <string name="resource_form_remove_totp">Pašalinti TOTP</string>
+    <string name="resource_form_remove_note">Pašalinti pastabą</string>
+    <string name="resource_form_no_name">be pavadinimo</string>
+    <string name="resource_form_max_additional_uris_limit">Galite pridėti daugiausia %d papildomų URI</string>
+    <string name="resource_form_appearance">Išvaizda</string>
+    <string name="resource_form_appearance_select_color">Pasirinkite spalvą</string>
+    <string name="resource_form_appearance_select_icon">Pasirinkite piktogramą</string>
+    <string name="resource_form_appearance_default_color">Numatytoji spalva</string>
+    <string name="resource_form_appearance_default_icon">Numatytoji piktograma</string>
+    <string name="resource_form_no_custom_fields_set">Nenustatyta pasirinktinių laukų</string>
+    <string name="resource_form_custom_fields_edit_not_supported">Pasirinktinių laukų redagavimas šiuo metu nepalaikomas</string>
     <string name="settings_app_settings">Programos nustatymai</string>
     <string name="settings_accounts">Paskyros</string>
     <string name="settings_terms_and_licenses">Sąlygos ir licencijos</string>
@@ -319,6 +346,7 @@
     <string name="settings_app_settings_autofill">Automatinis pildymas</string>
     <string name="settings_app_settings_fingerprint">Pirštų atspaudai</string>
     <string name="settings_app_settings_biometry_error">Biometrijos klaida. %s</string>
+    <string name="settings_app_settings_biometry_authentication_error">Biometrijos autentifikavimo klaida. %s</string>
     <string name="settings_app_settings_expert_settings">Eksperto nustatymai</string>
     <string name="settings_app_settings_expert_settings_dev_mode">Kūrėjo režimas</string>
     <string name="settings_app_settings_expert_settings_hide_root">Slėpti „įrenginys rootintas“ dialogą</string>
@@ -361,7 +389,7 @@
     <string name="scan_qr_scanning_error">Klaida nuskaitymo metu</string>
     <string name="scan_qr_camera_error">Kameros klaida</string>
     <string name="scan_qr_update_transfer_error">Įvyko klaida atnaujinant perkėlimą</string>
-    <string name="scan_qr_or_create_totp_manually">Or create TOTP manually</string>
+    <string name="scan_qr_or_create_totp_manually">Arba sukurkite TOTP rankiniu būdu</string>
     <string name="scan_qr_summary_success_title">Jūsų informacija perkelta!</string>
     <string name="scan_qr_summary_already_linked_title">Paskyra jau susieta su įrenginiu</string>
     <string name="scan_qr_summary_http_not_supported_title">Nesaugi HTTP jungtis nepalaikoma</string>
@@ -399,6 +427,8 @@
     <string name="dialog_encryption_error_title">Įvyko šifravimo klaida</string>
     <string name="dialog_encryption_error_message">Įvyko šifravimo klaida (%s). Pabandykite dar kartą.</string>
     <string name="resource_tags_section">Žymos</string>
+    <string name="resource_tags_title">Ištekliaus žymos</string>
+    <string name="folder_details_title">Aplanko informacija</string>
     <string name="folder_details_name_header">Aplanko pavadinimas</string>
     <string name="help_button_description">Pagalba</string>
     <string name="create_folder_title">Sukurti aplanką</string>
@@ -500,22 +530,24 @@
     <string name="create_resource_menu_create_a_resource">Sukurti išteklį</string>
     <string name="create_resource_menu_create_totp">TOTP kodas</string>
     <string name="create_resource_menu_create_password">Slaptažodis</string>
+    <string name="create_resource_menu_create_note">Pastaba</string>
     <string name="create_resource_menu_create_folder">Aplankas</string>
-    <string name="dialog_new_metadata_key_trust_changed">The metadata key has changed.</string>
-    <string name="dialog_new_metadata_key_trust_modified_by_user">The encryption key used to share metadata between users has been updated by %s.</string>
-    <string name="dialog_new_metadata_key_trust_key_rotation_info">If you weren’t expecting this, you can verify with your administrator.</string>
-    <string name="dialog_new_metadata_key_trust_key_rollback_info">This is unusual, please verify with your administrator.</string>
-    <string name="dialog_new_metadata_key_trust_key_fingerprint">Key fingerprint:</string>
-    <string name="dialog_new_metadata_key_trust_key_trust_the_key">Trust the key</string>
-    <string name="dialog_trusted_metadata_key_deleted">The metadata key has been deleted.</string>
-    <string name="dialog_trusted_metadata_key_deleted_main">The trusted encryption key used to share metadata between users has been deleted.</string>
-    <string name="dialog_trusted_metadata_key_deleted_info">If you weren’t expecting this, you can verify with your administrator.</string>
-    <string name="dialog_trusted_metadata_key_deleted_trust">Trust</string>
+    <string name="dialog_new_metadata_key_trust_changed">Metaduomenų raktas pasikeitė.</string>
+    <string name="dialog_new_metadata_key_trust_modified_by_user">Šifravimo raktą, naudojamą metaduomenims tarp vartotojų bendrinti, atnaujino %s.</string>
+    <string name="dialog_new_metadata_key_trust_key_rotation_info">Jei to nesitikėjote, pasitarkite su savo administratoriumi.</string>
+    <string name="dialog_new_metadata_key_trust_key_rollback_info">Tai neįprasta, pasitarkite su savo administratoriumi.</string>
+    <string name="dialog_new_metadata_key_trust_key_fingerprint">Rakto piršto atspaudas:</string>
+    <string name="dialog_new_metadata_key_trust_key_trust_the_key">Pasitikėti raktu</string>
+    <string name="dialog_trusted_metadata_key_deleted">Metaduomenų raktas buvo ištrintas.</string>
+    <string name="dialog_trusted_metadata_key_deleted_main">Patikimas šifravimo raktas, naudojamas metaduomenims tarp vartotojų bendrinti, buvo ištrintas.</string>
+    <string name="dialog_trusted_metadata_key_deleted_info">Jei to nesitikėjote, pasitarkite su savo administratoriumi.</string>
+    <string name="dialog_trusted_metadata_key_deleted_trust">Pasitikėti</string>
     <!--
     arrays can be inconsistent when in other languages
     index / size is not used in code
     -->
-    <string-array name="username_hint_values" tools:ignore="InconsistentArrays">
+    <string-array name="username_hint_values"
+        tools:ignore="InconsistentArrays">
         <item>paštas</item>
         <item>Vartotojo vardas</item>
         <item>mobilus</item>
@@ -526,7 +558,8 @@
       arrays can be inconsistent when in other languages
       index / size is not used in code
     -->
-    <string-array name="password_hint_values" tools:ignore="InconsistentArrays">
+    <string-array name="password_hint_values"
+        tools:ignore="InconsistentArrays">
         <item>slaptažodis</item>
         <item>slapta</item>
         <item>slaptafrazė</item>

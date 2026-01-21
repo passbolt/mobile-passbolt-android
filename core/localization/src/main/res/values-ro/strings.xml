@@ -33,6 +33,8 @@
     <string name="name_expired">%s (expirat)</string>
     <string name="proceed">Continuați</string>
     <string name="edit_password">Modifică parola</string>
+    <string name="copy_label_fingerprint">Amprentă</string>
+    <string name="copy_label_uid">UID</string>
     <string name="common_failure">Ceva nu a funcționat bine!</string>
     <string name="common_startup_configuration_fetch_error">Eroare la preluarea configurației</string>
     <string name="common_time_is_out_of_sync">Ora serverului și a clientului nu este sincronizată, vă rugăm să contactați administratorul.</string>
@@ -48,17 +50,20 @@
     <string name="common_json_schema_resource_validation_error">A apărut o eroare în timpul validării resursei. Activați jurnalele pentru mai multe detalii.</string>
     <string name="common_json_schema_secret_validation_error">A apărut o eroare în timpul validării secretului. Activați jurnalele pentru mai multe detalii.</string>
     <string name="common_maybe_later">Poate mai târziu</string>
-    <string name="common_cannot_create_resource_with_current_config">Cannot update a resource with current configuration</string>
-    <string name="common_metadata_key_verification_failure">Could not verify metadata keys</string>
-    <string name="common_metadata_key_is_trusted">New metadata key is trusted</string>
-    <string name="common_metadata_key_trust_failed">Failed to trust new metadata key</string>
-    <string name="common_message_resource_edited">%s resource was successfully edited.</string>
-    <string name="common_message_resource_deleted">%s resource was deleted.</string>
+    <string name="common_cannot_create_resource_with_current_config">Nu se poate actualiza o resursă cu configurația curentă</string>
+    <string name="common_metadata_key_verification_failure">Nu s-au putut verifica cheile de metadate</string>
+    <string name="common_metadata_key_is_trusted">Noua cheie de metadate este de încredere</string>
+    <string name="common_metadata_key_trust_failed">Nu s-a reușit acordarea încrederii noii chei de metadate</string>
+    <string name="common_message_resource_edited">Resursa %s a fost editată cu succes.</string>
+    <string name="common_message_resource_deleted">Resursa %s a fost ștearsă.</string>
     <string name="common_message_resource_shared">Permisiunile pentru resursă au fost actualizate.</string>
     <string name="common_message_folder_created">Folder-ul nou %s a fost creat!</string>
+    <string name="common_lack_shared_key_access">Nu puteți efectua această acțiune deoarece nu aveți acces la cheia de metadate partajată.</string>
     <string name="validation_required_with_max_length">Lungimea trebuie să fie între 1 și %d</string>
-    <string name="validation_is_required">This input is required</string>
+    <string name="validation_max_length">Lungimea maximă este %d</string>
+    <string name="validation_is_required">Acest câmp este obligatoriu</string>
     <string name="validation_required_integer">Trebuie să fie un număr întreg</string>
+    <string name="validation_invalid_totp_secret">Secret TOTP invalid</string>
     <string name="fingerprint_biometric_error_generic">A apărut o eroare cu senzorul de amprentă.</string>
     <string name="fingerprint_biometric_error_too_many_attempts">Autorizarea biometrică a fost blocată din cauza multiplelor încercări.</string>
     <string name="fingerprint_biometric_error_blocked">Autorizarea biometrică a fost blocată timp de 30 de secunde.</string>
@@ -75,8 +80,8 @@
     <string name="more_copy_uri">Copiază URL-ul</string>
     <string name="more_copy_password">Copiază parola</string>
     <string name="more_copy_username">Copiază nume utilizator</string>
-    <string name="more_copy_metadata_desc">Copy metadata description</string>
-    <string name="more_copy_note">Copy note</string>
+    <string name="more_copy_metadata_desc">Copiați descrierea metadatelor</string>
+    <string name="more_copy_note">Copiați nota</string>
     <string name="more_edit">Modificați</string>
     <string name="more_delete">Ştergeţi</string>
     <string name="more_share">Partajați</string>
@@ -204,8 +209,10 @@
     <string name="autofill_error">A apărut o eroare de autocompletare</string>
     <string name="autofill_select_password">Selectaţi parola</string>
     <string name="autofill_service_channel_name">Servicii de autocompletare Passbolt</string>
+    <string name="data_sync_service_channel_name">Serviciu de sincronizare date Passbolt</string>
     <string name="autofill_service_title">Passbolt</string>
     <string name="autofill_service_content">Serviciul de autocompletare de accesibilitate activat</string>
+    <string name="data_sync_service_content">Se reîmprospătează resursele</string>
     <string name="autofill_service_enable_overlay">Activați permisiunea overlay</string>
     <string name="autofill_service_overlay_description"><![CDATA[Completare automată nume de utilizator și parole pentru browserele web Android. Vă rugăm să activați permisiunea ‘Desenează peste alte aplicații’ pentru completarea automată Passbolt]]></string>
     <string name="autofill_service_enable_service">Activează autocompletarea pentru majoritatea aplicațiilor</string>
@@ -233,6 +240,7 @@
     <string name="filters_menu_shared_with_me">Partajate cu mine</string>
     <string name="filters_menu_owned_by_me">Deținute de mine</string>
     <string name="filters_menu_expiry">Expirare</string>
+    <string name="filters_menu_loading">Se încarcă</string>
     <string name="filters_menu_folders">Foldere</string>
     <string name="filters_menu_tags">Tag-uri</string>
     <string name="filters_menu_groups">Grupuri</string>
@@ -245,43 +253,53 @@
     <string name="resource_details_totp_header">Parolă unică bazată pe timp (TOTP)</string>
     <string name="resource_details_url_header">URI principal</string>
     <string name="resource_details_expiry_header">Expirare</string>
+    <string name="resource_details_additional_uris">URI suplimentar</string>
     <string name="resource_details_description_header">Descriere</string>
-    <string name="resource_details_note_header">Note</string>
-    <string name="resource_details_note_content">Content</string>
+    <string name="resource_details_note_header">Notă</string>
+    <string name="resource_details_note_content">Conținut</string>
     <string name="resource_details_tags_header">Tag-uri</string>
     <string name="resource_details_encrypted_description">Descrierea este criptată</string>
     <string name="resource_details_information">Informaţii</string>
     <string name="resource_details_invalid_totp_scanned">A fost scanat un cod QR TOTP nevalid</string>
-    <string name="resource_details_metadata_header">Metadata</string>
+    <string name="resource_details_metadata_header">Metadate</string>
+    <string name="resource_details_custom_fields_header">Câmpuri personalizate</string>
+    <string name="additional_uri_format">• %s</string>
     <string name="more_details_copy_password">Copiază parola</string>
     <string name="more_details_copy_description">Copiază descrierea</string>
     <string name="resource_form_create_success">Parola nouă a fost creată!</string>
     <string name="resource_form_password">Parolă</string>
     <string name="resource_form_enter_password">Introduceți parola</string>
-    <string name="resource_form_main_uri">Main URI</string>
+    <string name="resource_form_main_uri">URI principal</string>
+    <string name="resource_form_add_uri">Adăugați URI</string>
     <string name="resource_form_enter_uri">Introduceți URI</string>
     <string name="resource_form_username">Nume utilizator</string>
     <string name="resource_form_enter_username">Introduceți numele de utilizator</string>
     <string name="resource_form_totp">Parolă unică bazată pe timp (TOTP)</string>
     <string name="resource_form_totp_secret">Secret</string>
     <string name="resource_form_totp_url">URL</string>
-    <string name="resource_form_totp_url_issuer">URL (Issuer)</string>
+    <string name="resource_form_totp_url_issuer">URL (Emitent)</string>
     <string name="resource_form_totp_more_settings">Mai multe setări TOTP</string>
     <string name="resource_form_totp_settings">Setări TOTP</string>
     <string name="resource_form_description">Descriere</string>
+    <string name="resource_form_additional_uris">URI-uri suplimentare</string>
     <string name="resource_form_enter_description">Introduceți descrierea</string>
     <string name="resource_form_metadata_description">Descrierea metadatelor</string>
-    <string name="resource_form_create_metadata_description">Create metadata description</string>
-    <string name="resource_form_note">Note</string>
-    <string name="resource_form_create_note">Create note</string>
-    <string name="resource_form_note_content">Content</string>
-    <string name="resource_form_enter_note">Enter note</string>
-    <string name="resource_form_note_info">The note is part of the secret if you want to be able to search this content, use metadata description.</string>
+    <string name="resource_form_create_metadata_description">Creați descrierea metadatelor</string>
+    <string name="resource_form_create_resource_appearance">Aspect resursă</string>
+    <string name="resource_form_create_resource_custom_fields">Câmpuri personalizate</string>
+    <string name="resource_form_create_additional_uris">Creați URI-uri suplimentare</string>
+    <string name="resource_form_note">Notă</string>
+    <string name="resource_form_custom_fields">Câmpuri personalizate</string>
+    <string name="resource_form_create_note">Creați notă</string>
+    <string name="resource_form_note_content">Conținut</string>
+    <string name="resource_form_enter_note">Introduceți notă</string>
+    <string name="resource_form_note_info">Nota face parte din secret; dacă doriți să puteți căuta acest conținut, folosiți descrierea metadatelor.</string>
     <string name="resource_form_metadata_description_info">Dacă doriți ca descrierea să facă parte din secret, utilizați în schimb notița.</string>
     <string name="resource_form_resource_name">Nume resursă</string>
     <string name="resource_form_name">Nume</string>
     <string name="resource_form_create_password">Creați o parolă</string>
-    <string name="resource_form_edit_resource">Edit %s</string>
+    <string name="resource_form_create_custom_fields">Creați câmpuri personalizate</string>
+    <string name="resource_form_edit_resource">Editați %s</string>
     <string name="resource_form_create_totp">Creați un TOTP</string>
     <string name="resource_form_view_advanced_settings">Vizualizați setările avansate</string>
     <string name="resource_form_view_additional_secrets">Secrete adiționale</string>
@@ -289,10 +307,19 @@
     <string name="resource_form_view_additional_uris">URI suplimentare</string>
     <string name="resource_form_create">Creează</string>
     <string name="resource_form_save">Salvare</string>
-    <string name="resource_form_edit_init_error">Failed to initialize resource edition</string>
-    <string name="resource_form_remove_totp">Remove TOTP</string>
-    <string name="resource_form_remove_note">Remove Note</string>
-    <string name="resource_form_no_name">no name</string>
+    <string name="resource_form_edit_init_error">Nu s-a reușit inițializarea editării resursei</string>
+    <string name="resource_form_create_init_error">Nu s-a reușit inițializarea creării resursei</string>
+    <string name="resource_form_remove_totp">Eliminați TOTP</string>
+    <string name="resource_form_remove_note">Eliminați nota</string>
+    <string name="resource_form_no_name">fără nume</string>
+    <string name="resource_form_max_additional_uris_limit">Puteți adăuga maximum %d URI-uri suplimentare</string>
+    <string name="resource_form_appearance">Aspect</string>
+    <string name="resource_form_appearance_select_color">Selectați culoarea</string>
+    <string name="resource_form_appearance_select_icon">Selectați pictograma</string>
+    <string name="resource_form_appearance_default_color">Culoare implicită</string>
+    <string name="resource_form_appearance_default_icon">Pictogramă implicită</string>
+    <string name="resource_form_no_custom_fields_set">Nu au fost setate câmpuri personalizate</string>
+    <string name="resource_form_custom_fields_edit_not_supported">Editarea câmpurilor personalizate momentan nu este suportată</string>
     <string name="settings_app_settings">Setări aplicație</string>
     <string name="settings_accounts">Conturi</string>
     <string name="settings_terms_and_licenses">Termeni &amp; licențe</string>
@@ -320,6 +347,7 @@
     <string name="settings_app_settings_autofill">Autocompletare</string>
     <string name="settings_app_settings_fingerprint">Amprentă</string>
     <string name="settings_app_settings_biometry_error">Eroare biometrică. %s</string>
+    <string name="settings_app_settings_biometry_authentication_error">Eroare de autentificare biometrică. %s</string>
     <string name="settings_app_settings_expert_settings">Setări avansate</string>
     <string name="settings_app_settings_expert_settings_dev_mode">Mod dezvoltator</string>
     <string name="settings_app_settings_expert_settings_hide_root">Ascundeți dialogul \"dispozitivul este rootat\"</string>
@@ -362,7 +390,7 @@
     <string name="scan_qr_scanning_error">Eroare în timpul scanării</string>
     <string name="scan_qr_camera_error">Eroare cameră foto</string>
     <string name="scan_qr_update_transfer_error">A apărut o eroare în timpul transferului</string>
-    <string name="scan_qr_or_create_totp_manually">Or create TOTP manually</string>
+    <string name="scan_qr_or_create_totp_manually">Sau creați TOTP manual</string>
     <string name="scan_qr_summary_success_title">Informațiile dvs. au fost transferate!</string>
     <string name="scan_qr_summary_already_linked_title">Contul este deja asociat cu dispozitivul</string>
     <string name="scan_qr_summary_http_not_supported_title">Conexiunea nesecurizată HTTP nu este suportată</string>
@@ -400,6 +428,8 @@
     <string name="dialog_encryption_error_title">A apărut o eroare de criptare</string>
     <string name="dialog_encryption_error_message">A apărut o eroare de criptare (%s). Încercați din nou.</string>
     <string name="resource_tags_section">Tag-uri</string>
+    <string name="resource_tags_title">Etichete resursă</string>
+    <string name="folder_details_title">Detalii folder</string>
     <string name="folder_details_name_header">Nume folder</string>
     <string name="help_button_description">Ajutor</string>
     <string name="create_folder_title">Creați folder</string>
@@ -501,22 +531,24 @@
     <string name="create_resource_menu_create_a_resource">Creați o resursă</string>
     <string name="create_resource_menu_create_totp">Parolă unică bazată pe timp (TOTP)</string>
     <string name="create_resource_menu_create_password">Parolă</string>
+    <string name="create_resource_menu_create_note">Notă</string>
     <string name="create_resource_menu_create_folder">Folder</string>
-    <string name="dialog_new_metadata_key_trust_changed">The metadata key has changed.</string>
-    <string name="dialog_new_metadata_key_trust_modified_by_user">The encryption key used to share metadata between users has been updated by %s.</string>
-    <string name="dialog_new_metadata_key_trust_key_rotation_info">If you weren’t expecting this, you can verify with your administrator.</string>
-    <string name="dialog_new_metadata_key_trust_key_rollback_info">This is unusual, please verify with your administrator.</string>
-    <string name="dialog_new_metadata_key_trust_key_fingerprint">Key fingerprint:</string>
-    <string name="dialog_new_metadata_key_trust_key_trust_the_key">Trust the key</string>
-    <string name="dialog_trusted_metadata_key_deleted">The metadata key has been deleted.</string>
-    <string name="dialog_trusted_metadata_key_deleted_main">The trusted encryption key used to share metadata between users has been deleted.</string>
-    <string name="dialog_trusted_metadata_key_deleted_info">If you weren’t expecting this, you can verify with your administrator.</string>
-    <string name="dialog_trusted_metadata_key_deleted_trust">Trust</string>
+    <string name="dialog_new_metadata_key_trust_changed">Cheia de metadate a fost schimbată.</string>
+    <string name="dialog_new_metadata_key_trust_modified_by_user">Cheia de criptare folosită pentru a partaja metadate între utilizatori a fost actualizată de %s.</string>
+    <string name="dialog_new_metadata_key_trust_key_rotation_info">Dacă nu vă așteptați la asta, verificați cu administratorul.</string>
+    <string name="dialog_new_metadata_key_trust_key_rollback_info">Aceasta este neobișnuit, vă rugăm verificați cu administratorul.</string>
+    <string name="dialog_new_metadata_key_trust_key_fingerprint">Amprentă cheie:</string>
+    <string name="dialog_new_metadata_key_trust_key_trust_the_key">Acordă încredere cheii</string>
+    <string name="dialog_trusted_metadata_key_deleted">Cheia de metadate a fost ștearsă.</string>
+    <string name="dialog_trusted_metadata_key_deleted_main">Cheia de criptare de încredere folosită pentru partajarea metadatelor între utilizatori a fost ștearsă.</string>
+    <string name="dialog_trusted_metadata_key_deleted_info">Dacă nu vă așteptați la asta, verificați cu administratorul.</string>
+    <string name="dialog_trusted_metadata_key_deleted_trust">Acordă încredere</string>
     <!--
     arrays can be inconsistent when in other languages
     index / size is not used in code
     -->
-    <string-array name="username_hint_values" tools:ignore="InconsistentArrays">
+    <string-array name="username_hint_values"
+        tools:ignore="InconsistentArrays">
         <item>e-mail</item>
         <item>utilizator</item>
         <item>telefon mobil</item>
@@ -527,7 +559,8 @@
       arrays can be inconsistent when in other languages
       index / size is not used in code
     -->
-    <string-array name="password_hint_values" tools:ignore="InconsistentArrays">
+    <string-array name="password_hint_values"
+        tools:ignore="InconsistentArrays">
         <item>parolă</item>
         <item>secret</item>
         <item>parolă</item>
