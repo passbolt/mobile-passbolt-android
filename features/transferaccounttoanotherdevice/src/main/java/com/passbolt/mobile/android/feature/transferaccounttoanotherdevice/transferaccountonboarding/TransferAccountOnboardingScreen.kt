@@ -48,6 +48,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.fromHtml
@@ -133,12 +134,12 @@ private fun TransferAccountOnboardingScreen(
     onIntent: (TransferAccountOnboardingIntent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val context = LocalContext.current
+    val rawSteps = stringArrayResource(id = LocalizationR.array.transfer_account_onboarding_steps_array)
     val stepModel =
-        remember(context) {
-            context.resources
-                .getStringArray(LocalizationR.array.transfer_account_onboarding_steps_array)
-                .map { CircleStepItemModel(AnnotatedString.fromHtml(it)) }
+        remember(rawSteps) {
+            rawSteps.map {
+                CircleStepItemModel(AnnotatedString.fromHtml(it))
+            }
         }
 
     Box(

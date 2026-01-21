@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.dto.response.qrcode
 
+import android.annotation.SuppressLint
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -26,6 +27,7 @@ import kotlinx.serialization.Serializable
  * @since v1.0
  */
 
+@SuppressLint("UnsafeOptInUsageError") // false positive in K2
 @Serializable
 data class AccountKitPageDto(
     @SerialName("account_kit_url")

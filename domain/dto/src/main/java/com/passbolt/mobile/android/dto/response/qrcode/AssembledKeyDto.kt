@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.dto.response.qrcode
 
+import android.annotation.SuppressLint
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import java.util.UUID
@@ -27,6 +28,7 @@ import java.util.UUID
  * @since v1.0
  */
 
+@SuppressLint("UnsafeOptInUsageError") // false positive in K2
 @Serializable
 class AssembledKeyDto(
     @SerialName("armored_key")

@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.ui
 
+import android.annotation.SuppressLint
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
@@ -57,6 +58,7 @@ sealed class HomeDisplayViewModel : Parcelable {
     @Parcelize
     object NotLoaded : HomeDisplayViewModel(), Parcelable
 
+    @SuppressLint("UnsafeOptInUsageError") // false positive in K2
     @Serializable
     @Parcelize
     data class Folders(
@@ -66,6 +68,7 @@ sealed class HomeDisplayViewModel : Parcelable {
     ) : HomeDisplayViewModel(),
         Parcelable
 
+    @SuppressLint("UnsafeOptInUsageError") // false positive in K2
     @Serializable
     @Parcelize
     data class Tags(
@@ -75,6 +78,7 @@ sealed class HomeDisplayViewModel : Parcelable {
     ) : HomeDisplayViewModel(),
         Parcelable
 
+    @SuppressLint("UnsafeOptInUsageError") // false positive in K2
     @Serializable
     @Parcelize
     data class Groups(

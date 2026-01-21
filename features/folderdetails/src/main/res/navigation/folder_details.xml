@@ -2,15 +2,13 @@
 <navigation
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/folder_details"
     app:startDestination="@id/folderDetailsFragment">
 
     <fragment
         android:id="@+id/folderDetailsFragment"
         android:name="com.passbolt.mobile.android.folderdetails.FolderDetailsFragment"
-        android:label="FolderDetailsFragment"
-        tools:layout="@layout/fragment_folder_details">
+        android:label="FolderDetailsFragment">
         <deepLink
             android:id="@+id/folderDetailsDeeplink"
             app:uri="passbolt://folders/{folderId}" />
