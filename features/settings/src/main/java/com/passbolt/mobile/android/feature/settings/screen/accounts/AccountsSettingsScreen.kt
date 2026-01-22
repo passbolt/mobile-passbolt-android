@@ -24,16 +24,17 @@
 package com.passbolt.mobile.android.feature.settings.screen.accounts
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
 import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
 import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.AuthenticationManageAccounts
@@ -87,41 +88,48 @@ private fun AccountsSettingsScreen(
     onIntent: (AccountsSettingsIntent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(
-        modifier =
-            modifier
-                .verticalScroll(rememberScrollState())
-                .padding(vertical = 16.dp),
-    ) {
-        TitleAppBar(
-            title = stringResource(LocalizationR.string.settings_accounts),
-            navigationIcon = { BackNavigationIcon(onBackClick = { onIntent(GoBack) }) },
-        )
+    Scaffold(
+        modifier = modifier.fillMaxSize(),
+        topBar = {
+            TitleAppBar(
+                title = stringResource(LocalizationR.string.settings_accounts),
+                navigationIcon = { BackNavigationIcon(onBackClick = { onIntent(GoBack) }) },
+            )
+        },
+        content = { paddingValues ->
+            Column(
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues)
+                        .verticalScroll(rememberScrollState()),
+            ) {
+                OpenableSettingsItem(
+                    iconPainter = painterResource(R.drawable.ic_person),
+                    title = stringResource(LocalizationR.string.settings_accounts_account_details),
+                    onClick = { onIntent(GoToAccountDetails) },
+                )
 
-        OpenableSettingsItem(
-            iconPainter = painterResource(R.drawable.ic_person),
-            title = stringResource(LocalizationR.string.settings_accounts_account_details),
-            onClick = { onIntent(GoToAccountDetails) },
-        )
+                OpenableSettingsItem(
+                    iconPainter = painterResource(R.drawable.ic_key),
+                    title = stringResource(LocalizationR.string.settings_accounts_key_inspector),
+                    onClick = { onIntent(GoToKeyInspector) },
+                )
 
-        OpenableSettingsItem(
-            iconPainter = painterResource(R.drawable.ic_key),
-            title = stringResource(LocalizationR.string.settings_accounts_key_inspector),
-            onClick = { onIntent(GoToKeyInspector) },
-        )
+                OpenableSettingsItem(
+                    iconPainter = painterResource(R.drawable.ic_manage_accounts),
+                    title = stringResource(LocalizationR.string.settings_accounts_manage_accounts),
+                    onClick = { onIntent(GoToManageAccounts) },
+                )
 
-        OpenableSettingsItem(
-            iconPainter = painterResource(R.drawable.ic_manage_accounts),
-            title = stringResource(LocalizationR.string.settings_accounts_manage_accounts),
-            onClick = { onIntent(GoToManageAccounts) },
-        )
-
-        OpenableSettingsItem(
-            iconPainter = painterResource(R.drawable.ic_transfer_account),
-            title = stringResource(LocalizationR.string.settings_accounts_transfer_account),
-            onClick = { onIntent(GoToTransferAccount) },
-        )
-    }
+                OpenableSettingsItem(
+                    iconPainter = painterResource(R.drawable.ic_transfer_account),
+                    title = stringResource(LocalizationR.string.settings_accounts_transfer_account),
+                    onClick = { onIntent(GoToTransferAccount) },
+                )
+            }
+        },
+    )
 }
 
 @Preview(showBackground = true)

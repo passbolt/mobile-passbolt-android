@@ -30,11 +30,12 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.biometric.BiometricPrompt
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
@@ -42,14 +43,12 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
@@ -214,77 +213,79 @@ private fun AppSettingsScreen(
     onIntent: (AppSettingsIntent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Box(
-        modifier =
-            modifier
-                .verticalScroll(rememberScrollState())
-                .padding(vertical = 16.dp),
-    ) {
-        Column {
+    Scaffold(
+        modifier = modifier.fillMaxSize(),
+        topBar = {
             TitleAppBar(
                 title = stringResource(LocalizationR.string.settings_app_settings),
                 navigationIcon = { BackNavigationIcon(onBackClick = { onIntent(GoBack) }) },
             )
-            SwitchableSettingsItem(
-                iconPainter = painterResource(R.drawable.ic_fingerprint),
-                title = stringResource(LocalizationR.string.settings_app_settings_fingerprint),
-                isChecked = state.isFingerprintEnabled,
-                onCheckedChange = { onIntent(ToggleFingerprint) },
+        },
+        snackbarHost = {
+            SnackbarHost(
+                hostState = snackbarHostState,
+                snackbar = { data ->
+                    Snackbar(
+                        snackbarData = data,
+                        containerColor = colorResource(CoreUiR.color.red),
+                        contentColor = colorResource(CoreUiR.color.white),
+                    )
+                },
             )
-
-            OpenableSettingsItem(
-                iconPainter = painterResource(R.drawable.ic_key),
-                title = stringResource(LocalizationR.string.settings_app_settings_autofill),
-                onClick = { onIntent(GoToAutofill) },
-            )
-
-            OpenableSettingsItem(
-                iconPainter = painterResource(R.drawable.ic_filter),
-                title = stringResource(LocalizationR.string.settings_app_settings_default_filter),
-                onClick = { onIntent(GoToDefaultFilter) },
-            )
-
-            OpenableSettingsItem(
-                iconPainter = painterResource(R.drawable.ic_cog),
-                title = stringResource(LocalizationR.string.settings_app_settings_expert_settings),
-                onClick = { onIntent(GoToExpertSettings) },
-            )
-        }
-
-        DisableFingerprintAlertDialog(
-            isVisible = state.isDisableFingerprintDialogVisible,
-            onDisableConfirm = { onIntent(ConfirmDisableFingerprint) },
-            onDismiss = { onIntent(CancelDisableFingerprint) },
-        )
-
-        ConfigureFingerprintAlertDialog(
-            isVisible = state.isConfigureFingerprintDialogVisible,
-            onConfigureFingerprint = { onIntent(ConfigureFingerprint) },
-            onDismiss = { onIntent(CancelConfigureFingerprint) },
-        )
-
-        CancelAccountTransferAlertDialog(
-            isVisible = state.isKeyChangesDialogDetectedVisible,
-            onConfirm = { onIntent(ConfirmKeyChangeClick) },
-            onDismiss = { onIntent(CancelConfirmKeyChange) },
-        )
-
-        SnackbarHost(
-            hostState = snackbarHostState,
-            modifier =
-                Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(horizontal = 8.dp)
-                    .padding(bottom = 16.dp),
-            snackbar = { data ->
-                Snackbar(
-                    snackbarData = data,
-                    containerColor = colorResource(CoreUiR.color.red),
-                    contentColor = colorResource(CoreUiR.color.white),
+        },
+        content = { paddingValues ->
+            Column(
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues)
+                        .verticalScroll(rememberScrollState()),
+            ) {
+                SwitchableSettingsItem(
+                    iconPainter = painterResource(R.drawable.ic_fingerprint),
+                    title = stringResource(LocalizationR.string.settings_app_settings_fingerprint),
+                    isChecked = state.isFingerprintEnabled,
+                    onCheckedChange = { onIntent(ToggleFingerprint) },
                 )
-            },
-        )
-    }
+
+                OpenableSettingsItem(
+                    iconPainter = painterResource(R.drawable.ic_key),
+                    title = stringResource(LocalizationR.string.settings_app_settings_autofill),
+                    onClick = { onIntent(GoToAutofill) },
+                )
+
+                OpenableSettingsItem(
+                    iconPainter = painterResource(R.drawable.ic_filter),
+                    title = stringResource(LocalizationR.string.settings_app_settings_default_filter),
+                    onClick = { onIntent(GoToDefaultFilter) },
+                )
+
+                OpenableSettingsItem(
+                    iconPainter = painterResource(R.drawable.ic_cog),
+                    title = stringResource(LocalizationR.string.settings_app_settings_expert_settings),
+                    onClick = { onIntent(GoToExpertSettings) },
+                )
+            }
+
+            DisableFingerprintAlertDialog(
+                isVisible = state.isDisableFingerprintDialogVisible,
+                onDisableConfirm = { onIntent(ConfirmDisableFingerprint) },
+                onDismiss = { onIntent(CancelDisableFingerprint) },
+            )
+
+            ConfigureFingerprintAlertDialog(
+                isVisible = state.isConfigureFingerprintDialogVisible,
+                onConfigureFingerprint = { onIntent(ConfigureFingerprint) },
+                onDismiss = { onIntent(CancelConfigureFingerprint) },
+            )
+
+            CancelAccountTransferAlertDialog(
+                isVisible = state.isKeyChangesDialogDetectedVisible,
+                onConfirm = { onIntent(ConfirmKeyChangeClick) },
+                onDismiss = { onIntent(CancelConfirmKeyChange) },
+            )
+        },
+    )
 }
 
 @Preview(showBackground = true)

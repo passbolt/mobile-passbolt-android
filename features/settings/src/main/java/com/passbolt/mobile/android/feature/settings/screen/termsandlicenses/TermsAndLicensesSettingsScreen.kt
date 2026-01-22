@@ -24,16 +24,17 @@
 package com.passbolt.mobile.android.feature.settings.screen.termsandlicenses
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
 import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
@@ -82,39 +83,46 @@ private fun TermsAndLicensesScreen(
     state: TermsAndLicensesSettingsState,
     modifier: Modifier = Modifier,
 ) {
-    Column(
-        modifier =
-            modifier
-                .verticalScroll(rememberScrollState())
-                .padding(vertical = 16.dp),
-    ) {
-        TitleAppBar(
-            title = stringResource(LocalizationR.string.settings_terms_and_licenses),
-            navigationIcon = { BackNavigationIcon(onBackClick = { onIntent(GoBack) }) },
-        )
+    Scaffold(
+        modifier = modifier.fillMaxSize(),
+        topBar = {
+            TitleAppBar(
+                title = stringResource(LocalizationR.string.settings_terms_and_licenses),
+                navigationIcon = { BackNavigationIcon(onBackClick = { onIntent(GoBack) }) },
+            )
+        },
+        content = { paddingValues ->
+            Column(
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues)
+                        .verticalScroll(rememberScrollState()),
+            ) {
+                OpenableSettingsItem(
+                    iconPainter = painterResource(R.drawable.ic_terms),
+                    title = stringResource(LocalizationR.string.settings_terms_and_licenses_terms),
+                    onClick = { onIntent(TermsAndLicensesSettingsIntent.GoToTermsAndLicenses) },
+                    opensInternally = false,
+                    isEnabled = state.isTermsAndConditionsEnabled,
+                )
 
-        OpenableSettingsItem(
-            iconPainter = painterResource(R.drawable.ic_terms),
-            title = stringResource(LocalizationR.string.settings_terms_and_licenses_terms),
-            onClick = { onIntent(TermsAndLicensesSettingsIntent.GoToTermsAndLicenses) },
-            opensInternally = false,
-            isEnabled = state.isTermsAndConditionsEnabled,
-        )
+                OpenableSettingsItem(
+                    iconPainter = painterResource(R.drawable.ic_lock),
+                    title = stringResource(LocalizationR.string.settings_terms_and_licenses_privacy_policy),
+                    onClick = { onIntent(TermsAndLicensesSettingsIntent.GoToPrivacyPolicy) },
+                    opensInternally = false,
+                    isEnabled = state.isPrivacyPolicyEnabled,
+                )
 
-        OpenableSettingsItem(
-            iconPainter = painterResource(R.drawable.ic_lock),
-            title = stringResource(LocalizationR.string.settings_terms_and_licenses_privacy_policy),
-            onClick = { onIntent(TermsAndLicensesSettingsIntent.GoToPrivacyPolicy) },
-            opensInternally = false,
-            isEnabled = state.isPrivacyPolicyEnabled,
-        )
-
-        OpenableSettingsItem(
-            iconPainter = painterResource(R.drawable.ic_licenses),
-            title = stringResource(LocalizationR.string.settings_terms_and_licenses_licenses),
-            onClick = { onIntent(TermsAndLicensesSettingsIntent.GoToOpenSourceLicenses) },
-        )
-    }
+                OpenableSettingsItem(
+                    iconPainter = painterResource(R.drawable.ic_licenses),
+                    title = stringResource(LocalizationR.string.settings_terms_and_licenses_licenses),
+                    onClick = { onIntent(TermsAndLicensesSettingsIntent.GoToOpenSourceLicenses) },
+                )
+            }
+        },
+    )
 }
 
 @Preview(showBackground = true)

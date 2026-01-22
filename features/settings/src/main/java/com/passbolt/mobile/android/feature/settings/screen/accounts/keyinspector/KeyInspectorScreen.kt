@@ -24,9 +24,9 @@
 package com.passbolt.mobile.android.feature.settings.screen.accounts.keyinspector
 
 import android.content.Context
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -37,6 +37,7 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarDuration.Short
 import androidx.compose.material3.SnackbarHost
@@ -147,136 +148,135 @@ private fun KeyInspectorScreen(
     onIntent: (KeyInspectorIntent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Box(
-        modifier =
-            modifier
-                .verticalScroll(rememberScrollState()),
-    ) {
-        Column {
+    Scaffold(
+        modifier = modifier.fillMaxSize(),
+        topBar = {
             TitleAppBar(
                 title = stringResource(LocalizationR.string.settings_accounts_key_inspector),
                 navigationIcon = { BackNavigationIcon(onBackClick = { onIntent(GoBack) }) },
-                actions =
-                    {
-                        IconButton(onClick = { onIntent(OpenMoreMenu) }) {
-                            Icon(
-                                imageVector = Icons.Filled.MoreVert,
-                                contentDescription = null,
-                            )
-                        }
-                    },
+                actions = {
+                    IconButton(onClick = { onIntent(OpenMoreMenu) }) {
+                        Icon(
+                            imageVector = Icons.Filled.MoreVert,
+                            contentDescription = null,
+                        )
+                    }
+                },
             )
-
-            CircularProfileImage(
-                state.avatarUrl,
-                width = 96.dp,
-                height = 96.dp,
+        },
+        snackbarHost = {
+            SnackbarHost(
+                hostState = snackbarHostState,
+                snackbar = { data ->
+                    Snackbar(
+                        snackbarData = data,
+                        containerColor = colorResource(CoreUiR.color.red),
+                        contentColor = colorResource(CoreUiR.color.white),
+                    )
+                },
+            )
+        },
+        content = { paddingValues ->
+            Column(
                 modifier =
                     Modifier
-                        .align(Alignment.CenterHorizontally)
-                        .padding(top = 32.dp),
-            )
+                        .fillMaxSize()
+                        .padding(paddingValues)
+                        .verticalScroll(rememberScrollState()),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                CircularProfileImage(
+                    state.avatarUrl,
+                    width = 96.dp,
+                    height = 96.dp,
+                    modifier = Modifier.padding(top = 32.dp),
+                )
 
-            Text(
-                text = state.label,
-                modifier =
-                    Modifier
-                        .padding(vertical = 16.dp)
-                        .fillMaxWidth(),
-                style = MaterialTheme.typography.titleLarge,
-                textAlign = TextAlign.Center,
-            )
+                Text(
+                    text = state.label,
+                    modifier =
+                        Modifier
+                            .padding(vertical = 16.dp)
+                            .fillMaxWidth(),
+                    style = MaterialTheme.typography.titleLarge,
+                    textAlign = TextAlign.Center,
+                )
 
-            if (state.uid.isNotEmpty()) {
-                Spacer(modifier = Modifier.height(8.dp))
-                LabelledText(
-                    label = stringResource(LocalizationR.string.key_inspector_uid),
-                    text = state.uid,
-                    endAction =
-                        LabelledTextEndAction(
-                            icon = CoreUiR.drawable.ic_copy,
-                            action = { onIntent(KeyInspectorIntent.CopyUid) },
-                        ),
-                    modifier = Modifier.padding(horizontal = 16.dp),
+                if (state.uid.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    LabelledText(
+                        label = stringResource(LocalizationR.string.key_inspector_uid),
+                        text = state.uid,
+                        endAction =
+                            LabelledTextEndAction(
+                                icon = CoreUiR.drawable.ic_copy,
+                                action = { onIntent(KeyInspectorIntent.CopyUid) },
+                            ),
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                    )
+                }
+
+                if (state.fingerprint.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    LabelledText(
+                        label = stringResource(LocalizationR.string.key_inspector_fingerprint),
+                        text = state.fingerprint,
+                        useMonospaceFont = true,
+                        endAction =
+                            LabelledTextEndAction(
+                                icon = CoreUiR.drawable.ic_copy,
+                                action = { onIntent(KeyInspectorIntent.CopyFingerprint) },
+                            ),
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                    )
+                }
+
+                if (state.created.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    LabelledText(
+                        label = stringResource(LocalizationR.string.key_inspector_created),
+                        text = state.created,
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                    )
+                }
+
+                if (state.expires.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    LabelledText(
+                        label = stringResource(LocalizationR.string.key_inspector_expires),
+                        text = state.expires,
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                    )
+                }
+
+                if (state.keyLength > 0) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    LabelledText(
+                        label = stringResource(LocalizationR.string.key_inspector_key_length),
+                        text = state.keyLength.toString(),
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                    )
+                }
+
+                if (state.algorithm.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    LabelledText(
+                        label = stringResource(LocalizationR.string.key_inspector_key_algorithm),
+                        text = state.algorithm,
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                    )
+                }
+            }
+
+            if (state.showBottomSheet) {
+                KeyInspectorBottomSheet(
+                    onDismissRequest = { onIntent(CloseMoreMenu) },
                 )
             }
 
-            if (state.fingerprint.isNotEmpty()) {
-                Spacer(modifier = Modifier.height(8.dp))
-                LabelledText(
-                    label = stringResource(LocalizationR.string.key_inspector_fingerprint),
-                    text = state.fingerprint,
-                    useMonospaceFont = true,
-                    endAction =
-                        LabelledTextEndAction(
-                            icon = CoreUiR.drawable.ic_copy,
-                            action = { onIntent(KeyInspectorIntent.CopyFingerprint) },
-                        ),
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                )
-            }
-
-            if (state.created.isNotEmpty()) {
-                Spacer(modifier = Modifier.height(8.dp))
-                LabelledText(
-                    label = stringResource(LocalizationR.string.key_inspector_created),
-                    text = state.created,
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                )
-            }
-
-            if (state.expires.isNotEmpty()) {
-                Spacer(modifier = Modifier.height(8.dp))
-                LabelledText(
-                    label = stringResource(LocalizationR.string.key_inspector_expires),
-                    text = state.expires,
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                )
-            }
-
-            if (state.keyLength > 0) {
-                Spacer(modifier = Modifier.height(8.dp))
-                LabelledText(
-                    label = stringResource(LocalizationR.string.key_inspector_key_length),
-                    text = state.keyLength.toString(),
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                )
-            }
-
-            if (state.algorithm.isNotEmpty()) {
-                Spacer(modifier = Modifier.height(8.dp))
-                LabelledText(
-                    label = stringResource(LocalizationR.string.key_inspector_key_algorithm),
-                    text = state.algorithm,
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                )
-            }
-        }
-
-        if (state.showBottomSheet) {
-            KeyInspectorBottomSheet(
-                onDismissRequest = { onIntent(CloseMoreMenu) },
-            )
-        }
-
-        SnackbarHost(
-            hostState = snackbarHostState,
-            modifier =
-                Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(horizontal = 8.dp)
-                    .padding(bottom = 16.dp),
-            snackbar = { data ->
-                Snackbar(
-                    snackbarData = data,
-                    containerColor = colorResource(CoreUiR.color.red),
-                    contentColor = colorResource(CoreUiR.color.white),
-                )
-            },
-        )
-
-        ProgressDialog(isVisible = state.showProgress)
-    }
+            ProgressDialog(isVisible = state.showProgress)
+        },
+    )
 }
 
 @Preview(showBackground = true)

@@ -26,12 +26,14 @@ package com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill
 import android.content.Context
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
@@ -43,7 +45,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
@@ -145,89 +146,92 @@ private fun AutofillSettingsScreen(
     snackbarHostState: SnackbarHostState,
     onIntent: (AutofillSettingsIntent) -> Unit,
 ) {
-    Column(
-        modifier =
-            Modifier
-                .verticalScroll(rememberScrollState())
-                .padding(vertical = 16.dp),
-    ) {
-        TitleAppBar(
-            navigationIcon = { BackNavigationIcon(onBackClick = { onIntent(GoBack) }) },
-        )
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        Text(
-            text = stringResource(LocalizationR.string.settings_autofill_autofill_title),
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-            textAlign = TextAlign.Center,
-            style =
-                MaterialTheme.typography.titleLarge.copy(
-                    color = MaterialTheme.colorScheme.onBackground,
-                ),
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(
-            text = stringResource(LocalizationR.string.settings_autofill_autofill_desc),
-            textAlign = TextAlign.Center,
-            color = MaterialTheme.colorScheme.onBackground,
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-        )
-
-        Spacer(modifier = Modifier.height(32.dp))
-
-        SwitchWithDescriptionItem(
-            title = stringResource(LocalizationR.string.settings_autofill_autofill_service),
-            description = stringResource(LocalizationR.string.settings_autofill_autofill_service_description),
-            isChecked = state.isNativeAutofillChecked,
-            onClick = { onIntent(ToggleNativeAutofill) },
-        )
-
-        SwitchWithDescriptionItem(
-            title = stringResource(LocalizationR.string.settings_chrome_native_autofill_autofill_service),
-            description = stringResource(LocalizationR.string.settings_chrome_native_autofill_autofill_service_description),
-            isChecked = state.isChromeNativeAutofillChecked,
-            additionalDescription =
-                if (!state.isChromeNativeAutofillEnabled) {
-                    stringResource(LocalizationR.string.settings_chrome_native_autofill_not_supported)
-                } else {
-                    null
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        topBar = {
+            TitleAppBar(
+                navigationIcon = { BackNavigationIcon(onBackClick = { onIntent(GoBack) }) },
+            )
+        },
+        snackbarHost = {
+            SnackbarHost(
+                hostState = snackbarHostState,
+                snackbar = { data ->
+                    Snackbar(
+                        snackbarData = data,
+                        containerColor = colorResource(CoreUiR.color.red),
+                        contentColor = colorResource(CoreUiR.color.white),
+                    )
                 },
-            onClick = { onIntent(ToggleChromeNativeAutofill) },
-            isEnabled = state.isChromeNativeAutofillEnabled,
-        )
+            )
+        },
+        content = { paddingValues ->
+            Column(
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues)
+                        .verticalScroll(rememberScrollState()),
+            ) {
+                Spacer(modifier = Modifier.height(24.dp))
 
-        SwitchWithDescriptionItem(
-            title = stringResource(LocalizationR.string.settings_autofill_accessibility),
-            description = stringResource(LocalizationR.string.settings_autofill_accessibility_description),
-            isChecked = state.isAccessibilityAutofillChecked,
-            onClick = { onIntent(ToggleAccessibilityAutofill) },
-        )
-
-        SnackbarHost(
-            hostState = snackbarHostState,
-            modifier =
-                Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .padding(horizontal = 8.dp)
-                    .padding(bottom = 16.dp),
-            snackbar = { data ->
-                Snackbar(
-                    snackbarData = data,
-                    containerColor = colorResource(CoreUiR.color.red),
-                    contentColor = colorResource(CoreUiR.color.white),
+                Text(
+                    text = stringResource(LocalizationR.string.settings_autofill_autofill_title),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                    textAlign = TextAlign.Center,
+                    style =
+                        MaterialTheme.typography.titleLarge.copy(
+                            color = MaterialTheme.colorScheme.onBackground,
+                        ),
                 )
-            },
-        )
-    }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
+                    text = stringResource(LocalizationR.string.settings_autofill_autofill_desc),
+                    textAlign = TextAlign.Center,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                )
+
+                Spacer(modifier = Modifier.height(32.dp))
+
+                SwitchWithDescriptionItem(
+                    title = stringResource(LocalizationR.string.settings_autofill_autofill_service),
+                    description = stringResource(LocalizationR.string.settings_autofill_autofill_service_description),
+                    isChecked = state.isNativeAutofillChecked,
+                    onClick = { onIntent(ToggleNativeAutofill) },
+                )
+
+                SwitchWithDescriptionItem(
+                    title = stringResource(LocalizationR.string.settings_chrome_native_autofill_autofill_service),
+                    description = stringResource(LocalizationR.string.settings_chrome_native_autofill_autofill_service_description),
+                    isChecked = state.isChromeNativeAutofillChecked,
+                    additionalDescription =
+                        if (!state.isChromeNativeAutofillEnabled) {
+                            stringResource(LocalizationR.string.settings_chrome_native_autofill_not_supported)
+                        } else {
+                            null
+                        },
+                    onClick = { onIntent(ToggleChromeNativeAutofill) },
+                    isEnabled = state.isChromeNativeAutofillEnabled,
+                )
+
+                SwitchWithDescriptionItem(
+                    title = stringResource(LocalizationR.string.settings_autofill_accessibility),
+                    description = stringResource(LocalizationR.string.settings_autofill_accessibility_description),
+                    isChecked = state.isAccessibilityAutofillChecked,
+                    onClick = { onIntent(ToggleAccessibilityAutofill) },
+                )
+            }
+        },
+    )
 }
 
 @Preview(showBackground = true)
