@@ -23,29 +23,35 @@
 
 package com.passbolt.mobile.android.scenarios.setup.scanqrcode
 
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.junit4.createEmptyComposeRule
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
-import com.passbolt.mobile.android.feature.startup.StartUpActivity
+import com.passbolt.mobile.android.accountinit.AccountDataCleaner
+import com.passbolt.mobile.android.feature.setup.SetUpActivity
+import com.passbolt.mobile.android.helpers.getString
 import com.passbolt.mobile.android.instrumentationTestsModule
 import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
 import com.passbolt.mobile.android.rules.lazyActivityScenarioRule
+import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.koin.test.KoinTest
 import org.koin.test.inject
-
-// TODO fix in separate PR after compose migration
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 @RunWith(AndroidJUnit4::class)
 @MediumTest
 class SuccessFeedbackAfterQrCodeScanningTest : KoinTest {
     @get:Rule
-    val startUpActivityRule =
-        lazyActivityScenarioRule<StartUpActivity>(
+    val startActivityRule =
+        lazyActivityScenarioRule<SetUpActivity>(
             koinOverrideModules = listOf(instrumentationTestsModule),
             intentSupplier = {
                 managedAccountIntentCreator.createIntent(
@@ -57,24 +63,38 @@ class SuccessFeedbackAfterQrCodeScanningTest : KoinTest {
     @get:Rule
     val permissionRule: GrantPermissionRule = GrantPermissionRule.grant(android.Manifest.permission.CAMERA)
 
+    @get:Rule
+    val composeTestRule = createEmptyComposeRule()
+
     private val managedAccountIntentCreator: ManagedAccountIntentCreator by inject()
+    private val accountDataCleaner: AccountDataCleaner by inject()
 
     @Before
     fun setup() {
-//        onView(withId(R.id.connectToAccountButton)).perform(click())
-//        onView(withId(R.id.qrCode)).perform(swipeUp())
-//        onView(withId(R.id.scanQrCodesButton)).perform(click())
+        accountDataCleaner.clearAccountData()
+
+        composeTestRule.apply {
+            onNodeWithText(getString(LocalizationR.string.welcome_connect_to_existing_account)).performClick()
+            onNodeWithText(getString(LocalizationR.string.transfer_details_scan_button)).performClick()
+        }
+    }
+
+    @After
+    fun tearDown() {
+        accountDataCleaner.clearAccountData()
     }
 
     //    https://passbolt.testrail.io/index.php?/cases/view/2346
     @Test
     fun asAMobileUserIShouldSeeASuccessFeedbackAtTheEndOfTheQrCodeScanning() {
-//        // Given    the user is on the “Scanning QR codes” screen
-//        // When     the user scans the last QR code
-//        // Then     a successful feedback illustration and message appears
-//        onView(withId(R.id.icon)).check(matches(isDisplayed()))
-//        onView(withText(LocalizationR.string.scan_qr_summary_success_title)).check(matches(isDisplayed()))
-//        // And      a "Continue" button is available
-//        onView(withId(com.passbolt.mobile.android.feature.autofill.R.id.button)).check(matches(isDisplayed()))
+        // Given    the user is on the "Scanning QR codes" screen
+        // When     the user scans the last QR code
+        // Then     a successful feedback illustration and message appears
+        composeTestRule.apply {
+            waitForIdle()
+            onNodeWithText(getString(LocalizationR.string.scan_qr_summary_success_title)).assertIsDisplayed()
+            // And      a "Continue" button is available
+            onNodeWithText(getString(LocalizationR.string.continue_label)).assertIsDisplayed()
+        }
     }
 }

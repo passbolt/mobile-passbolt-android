@@ -40,6 +40,7 @@ import com.passbolt.mobile.android.core.navigation.compose.keys.SetupNavigationK
 import com.passbolt.mobile.android.core.navigation.compose.keys.SetupNavigationKey.ScanQrCodes
 import com.passbolt.mobile.android.core.navigation.compose.keys.SetupNavigationKey.TransferDetails
 import com.passbolt.mobile.android.core.navigation.compose.keys.SetupNavigationKey.Welcome
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import org.koin.compose.koinInject
 
@@ -48,7 +49,7 @@ class SetUpActivity :
     AppCompatActivity(),
     PartiallyAuthenticated,
     AccountSetupDataHolder {
-    private lateinit var currentBackStackItem: StateFlow<NavKey?>
+    private var currentBackStackItem: StateFlow<NavKey?> = MutableStateFlow(Welcome)
 
     override val bundledAccountSetupData: AccountSetupDataModel? by lifecycleAwareLazy {
         IntentCompat.getParcelableExtra(

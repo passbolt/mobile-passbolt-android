@@ -37,7 +37,6 @@ import androidx.compose.ui.test.performTextReplacement
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.closeSoftKeyboard
-import androidx.test.espresso.action.ViewActions.replaceText
 import androidx.test.espresso.action.ViewActions.typeText
 import androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA
 import androidx.test.espresso.matcher.ViewMatchers.withId
@@ -47,8 +46,10 @@ import com.passbolt.mobile.android.core.ui.R.id.input
 import com.passbolt.mobile.android.feature.authentication.R.id.authButton
 import com.passbolt.mobile.android.matchers.withHint
 import com.passbolt.mobile.android.scenarios.resourcesedition.EditableFieldInput
+import com.passbolt.mobile.android.testtags.composetags.Home
 import org.hamcrest.Matchers.allOf
 import org.hamcrest.Matchers.hasToString
+import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 internal fun getString(
     @StringRes stringResId: Int,
@@ -92,9 +93,9 @@ internal fun createNewPasswordFromHomeScreen(name: String) {
  * Usage: composeTestRule.signIn(passphrase)
  */
 internal fun ComposeTestRule.signIn(passphrase: String) {
-    onView(withId(input)).perform(replaceText(passphrase), closeSoftKeyboard())
-    onView(withId(authButton)).perform(click())
-    onNodeWithTag("home_screen").assertIsDisplayed()
+    onView(withId(CoreUiR.id.input)).perform(typeText(passphrase), closeSoftKeyboard())
+    onView(withId(com.passbolt.mobile.android.feature.authentication.R.id.authButton)).perform(click())
+    onNodeWithTag(Home.SCREEN).assertIsDisplayed()
 }
 
 /**

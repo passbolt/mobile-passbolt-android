@@ -51,6 +51,7 @@ import com.passbolt.mobile.android.instrumentationTestsModule
 import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
 import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
+import com.passbolt.mobile.android.testtags.composetags.Home
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -166,7 +167,7 @@ class BottomNavigationTest : KoinTest {
             .check(matches(isNotSelected()))
         onView(withId(homeNav)).perform(click())
         composeTestRule.apply {
-            onNodeWithTag("home_screen").assertIsDisplayed()
+            onNodeWithTag(Home.SCREEN).assertIsDisplayed()
         }
         onView(withId(homeNav))
             .check(matches(isSelected()))
