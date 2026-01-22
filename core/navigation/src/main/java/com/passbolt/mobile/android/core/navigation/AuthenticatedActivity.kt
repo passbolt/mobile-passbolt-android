@@ -29,6 +29,6 @@ import com.passbolt.mobile.android.core.navigation.constants.Startup
 fun Activity.isAuthenticated() =
     when {
         this.javaClass.name == Startup.START_UP_ACTIVITY -> false
-        this is PartiallyAuthenticated -> (this as PartiallyAuthenticated).isCurrentFragmentAuthenticated
+        this is PartiallyAuthenticated -> (this as PartiallyAuthenticated).isCurrentScreenAuthenticated
         else -> true
     }

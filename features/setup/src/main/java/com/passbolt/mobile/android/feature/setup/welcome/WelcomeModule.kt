@@ -1,8 +1,7 @@
 package com.passbolt.mobile.android.feature.setup.welcome
 
 import org.koin.core.module.Module
-import org.koin.core.module.dsl.scopedOf
-import org.koin.dsl.bind
+import org.koin.core.module.dsl.viewModelOf
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,7 +26,5 @@ import org.koin.dsl.bind
  * @since v1.0
  */
 fun Module.welcomeModule() {
-    scope<WelcomeFragment> {
-        scopedOf(::WelcomePresenter) bind WelcomeContract.Presenter::class
-    }
+    viewModelOf(::WelcomeViewModel)
 }

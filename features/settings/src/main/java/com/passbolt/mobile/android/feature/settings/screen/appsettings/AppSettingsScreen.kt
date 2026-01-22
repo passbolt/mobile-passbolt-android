@@ -26,7 +26,6 @@ package com.passbolt.mobile.android.feature.settings.screen.appsettings
 import android.app.Activity
 import android.content.Intent
 import android.provider.Settings
-import android.security.keystore.KeyPermanentlyInvalidatedException
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -83,7 +82,6 @@ import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettin
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsIntent.GoToExpertSettings
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsIntent.InvalidateBiometricKeyPermanently
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsIntent.RefreshedPassphrase
-import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsIntent.ShowBiometryError
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsIntent.ToggleFingerprint
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsSideEffect.NavigateToAutofill
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsSideEffect.NavigateToDefaultFilter
@@ -174,21 +172,16 @@ private fun AppSettingsSideEffectsHandler(
                 )
             NavigateToSystemSettings -> environment.context.startActivity(Intent(Settings.ACTION_SETTINGS))
             is AppSettingsSideEffect.LaunchBiometricPrompt ->
-                try {
-                    showBiometricPrompt(
-                        activity = environment.context as AppCompatActivity,
-                        executor = environment.executor,
-                        biometricPromptBuilder = environment.biometricPromptBuilder,
-                        fingerprintEncryptionCipher = it.cipher,
-                        onAuthenticationSuccess = { onIntent(FinalizedBiometricAuth(it)) },
-                        onAuthenticationCancelled = { onIntent(CanceledBiometricAuth) },
-                        onAuthenticationError = { onIntent(ErroredBiometricAuth(it)) },
-                    )
-                } catch (exception: KeyPermanentlyInvalidatedException) {
-                    onIntent(InvalidateBiometricKeyPermanently(exception))
-                } catch (exception: Exception) {
-                    onIntent(ShowBiometryError(exception))
-                }
+                showBiometricPrompt(
+                    activity = environment.context as AppCompatActivity,
+                    executor = environment.executor,
+                    biometricPromptBuilder = environment.biometricPromptBuilder,
+                    fingerprintEncryptionCipher = it.cipher,
+                    onAuthenticationSuccess = { onIntent(FinalizedBiometricAuth(it)) },
+                    onAuthenticationCancelled = { onIntent(CanceledBiometricAuth) },
+                    onAuthenticationError = { onIntent(ErroredBiometricAuth(it)) },
+                    onKeyPermanentlyInvalidated = { exception -> onIntent(InvalidateBiometricKeyPermanently(exception)) },
+                )
             is AppSettingsSideEffect.ShowErrorSnackbar ->
                 environment.coroutineScope.launch {
                     environment.snackbarHostState.showSnackbar(getSnackbarMessage(it, environment), duration = SnackbarDuration.Short)

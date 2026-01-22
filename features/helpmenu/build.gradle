@@ -1,6 +1,7 @@
 plugins {
     alias libs.plugins.android.library
     alias libs.plugins.kotlin.gradle
+    alias libs.plugins.compose.compiler
 }
 
 dependencies {
@@ -11,17 +12,26 @@ dependencies {
     implementation project(':logger')
     implementation project(':ui')
     implementation project(':preferences')
+    implementation project(':navigation')
 
     implementation platform(libs.koin.bom)
     implementation libs.koin
+    implementation libs.koin.compose
     implementation libs.material
     implementation libs.androidx.core
+    implementation platform(libs.compose.bom)
+    implementation libs.compose.foundation
+    implementation libs.compose.icons
+    implementation libs.compose.material3
+    implementation libs.compose.lifecycle.viewmodel
+    implementation libs.compose.ui.tooling
 }
 
 android {
     namespace = "com.passbolt.mobile.android.feature.helpmenu"
     buildFeatures {
         viewBinding true
+        compose true
     }
 }
 

@@ -1,7 +1,8 @@
 package com.passbolt.mobile.android.feature.setup.summary
 
 import org.koin.core.module.Module
-import org.koin.core.qualifier.named
+import org.koin.core.module.dsl.singleOf
+import org.koin.core.module.dsl.viewModelOf
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,13 +28,6 @@ import org.koin.core.qualifier.named
  */
 
 fun Module.summaryModule() {
-    scope(named<SummaryFragment>()) {
-        scoped<SummaryContract.Presenter> {
-            SummaryPresenter(
-                saveAccountUseCase = get(),
-                saveResourcesDatabasePassphraseUseCase = get(),
-                uuidProvider = get(),
-            )
-        }
-    }
+    viewModelOf(::SummaryViewModel)
+    singleOf(::ResultStatusUiFactory)
 }

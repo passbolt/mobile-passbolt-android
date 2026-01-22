@@ -56,6 +56,7 @@ import com.passbolt.mobile.android.core.ui.R.drawable.ic_copy
 import com.passbolt.mobile.android.core.ui.R.drawable.ic_eye_visible
 import com.passbolt.mobile.android.core.ui.R.drawable.ic_more
 import com.passbolt.mobile.android.core.ui.R.id.actionIcon
+import com.passbolt.mobile.android.core.ui.R.id.title
 import com.passbolt.mobile.android.feature.authentication.AuthenticationMainActivity
 import com.passbolt.mobile.android.feature.autofill.R.id.close
 import com.passbolt.mobile.android.feature.resources.R.id.backArrow
@@ -69,8 +70,6 @@ import com.passbolt.mobile.android.feature.resources.R.id.sharedWithLabel
 import com.passbolt.mobile.android.feature.resources.R.id.tagsHeader
 import com.passbolt.mobile.android.feature.resources.R.id.urlItem
 import com.passbolt.mobile.android.feature.resources.R.id.usernameItem
-import com.passbolt.mobile.android.feature.setup.R.id.icon
-import com.passbolt.mobile.android.feature.setup.R.id.title
 import com.passbolt.mobile.android.helpers.chooseFilter
 import com.passbolt.mobile.android.helpers.getClipboardText
 import com.passbolt.mobile.android.helpers.searchAndOpenFirstResourceByName
@@ -206,7 +205,6 @@ class ResourcesDetailsTest(
         onView(withId(moreIcon))
             .check(matches(isDisplayed()))
             .check(matches(hasDrawable(id = ic_more, tint = icon_tint)))
-        onView(withId(icon)).check(matches(isDisplayed()))
         onView(allOf(withId(name), withText(resourceType.displayName)))
             .check(matches(isDisplayed()))
         onView(allOf(withId(passwordSectionTitle), withText(resource_details_password_header)))
