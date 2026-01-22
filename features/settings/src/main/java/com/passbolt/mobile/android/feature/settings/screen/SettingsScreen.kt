@@ -23,19 +23,18 @@
 
 package com.passbolt.mobile.android.feature.settings.screen
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
 import com.passbolt.mobile.android.core.navigation.AppContext
@@ -94,56 +93,60 @@ private fun SettingsScreen(
     onIntent: (SettingsIntent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Box(
-        modifier =
-            modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(vertical = 16.dp),
-    ) {
-        Column {
+    Scaffold(
+        modifier = modifier.fillMaxSize(),
+        topBar = {
             TitleAppBar(title = stringResource(LocalizationR.string.settings_title))
+        },
+        content = { paddingValues ->
+            Column(
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues)
+                        .verticalScroll(rememberScrollState()),
+            ) {
+                OpenableSettingsItem(
+                    iconPainter = painterResource(R.drawable.ic_app_settings),
+                    title = stringResource(LocalizationR.string.settings_app_settings),
+                    onClick = { onIntent(SettingsIntent.GoToAppSettings) },
+                )
 
-            OpenableSettingsItem(
-                iconPainter = painterResource(R.drawable.ic_app_settings),
-                title = stringResource(LocalizationR.string.settings_app_settings),
-                onClick = { onIntent(SettingsIntent.GoToAppSettings) },
+                OpenableSettingsItem(
+                    iconPainter = painterResource(R.drawable.ic_manage_accounts),
+                    title = stringResource(LocalizationR.string.settings_accounts),
+                    onClick = { onIntent(SettingsIntent.GoToAccounts) },
+                )
+
+                OpenableSettingsItem(
+                    iconPainter = painterResource(R.drawable.ic_terms),
+                    title = stringResource(LocalizationR.string.settings_terms_and_licenses),
+                    onClick = { onIntent(SettingsIntent.GoToTermsAndLicenses) },
+                )
+
+                OpenableSettingsItem(
+                    iconPainter = painterResource(R.drawable.ic_bug),
+                    title = stringResource(LocalizationR.string.settings_debug_logs),
+                    onClick = { onIntent(SettingsIntent.GoToDebugLogs) },
+                )
+
+                OpenableSettingsItem(
+                    iconPainter = painterResource(R.drawable.ic_sign_out),
+                    title = stringResource(LocalizationR.string.settings_sign_out),
+                    onClick = { onIntent(SignOut) },
+                    opensInternally = false,
+                )
+            }
+
+            ProgressDialog(isVisible = state.isProgressDialogVisible)
+
+            SignOutAlertDialog(
+                isVisible = state.isSignOutDialogVisible,
+                onSignOutConfirm = { onIntent(ConfirmSignOut) },
+                onDismiss = { onIntent(CancelSignOut) },
             )
-
-            OpenableSettingsItem(
-                iconPainter = painterResource(R.drawable.ic_manage_accounts),
-                title = stringResource(LocalizationR.string.settings_accounts),
-                onClick = { onIntent(SettingsIntent.GoToAccounts) },
-            )
-
-            OpenableSettingsItem(
-                iconPainter = painterResource(R.drawable.ic_terms),
-                title = stringResource(LocalizationR.string.settings_terms_and_licenses),
-                onClick = { onIntent(SettingsIntent.GoToTermsAndLicenses) },
-            )
-
-            OpenableSettingsItem(
-                iconPainter = painterResource(R.drawable.ic_bug),
-                title = stringResource(LocalizationR.string.settings_debug_logs),
-                onClick = { onIntent(SettingsIntent.GoToDebugLogs) },
-            )
-
-            OpenableSettingsItem(
-                iconPainter = painterResource(R.drawable.ic_sign_out),
-                title = stringResource(LocalizationR.string.settings_sign_out),
-                onClick = { onIntent(SignOut) },
-                opensInternally = false,
-            )
-        }
-
-        ProgressDialog(isVisible = state.isProgressDialogVisible)
-
-        SignOutAlertDialog(
-            isVisible = state.isSignOutDialogVisible,
-            onSignOutConfirm = { onIntent(ConfirmSignOut) },
-            onDismiss = { onIntent(CancelSignOut) },
-        )
-    }
+        },
+    )
 }
 
 @Preview(showBackground = true)

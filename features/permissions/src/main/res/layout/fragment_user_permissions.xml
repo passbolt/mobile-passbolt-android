@@ -5,7 +5,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true">
+    android:fillViewport="true"
+    android:fitsSystemWindows="true">
 
     <com.passbolt.mobile.android.core.ui.toolbar.defaulttoolbar.TitleToolbar
         android:id="@+id/toolbar"
