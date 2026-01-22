@@ -216,11 +216,15 @@ private fun HomeScreen(
         onCloseClick = { activity?.finish() },
         appBarSearchInput = {
             SearchInput(
-                value = state.searchQuery,
                 onValueChange = { onIntent(Search(it)) },
                 placeholder = stringResource(LocalizationR.string.all_items_home_search_hint),
-                avatarUrl = state.userAvatar,
                 endIconMode = state.searchInputEndIconMode,
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(end = 16.dp),
+                avatarUrl = state.userAvatar,
+                onEndIconClick = { onIntent(SearchEndIconAction) },
                 leadingIcon = {
                     Image(
                         painter = painterResource(CoreUiR.drawable.ic_filter),
@@ -231,11 +235,6 @@ private fun HomeScreen(
                                 .testTag(HomeScreenTestTags.SEARCH_FILTER),
                     )
                 },
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(end = 16.dp),
-                onEndIconClick = { onIntent(SearchEndIconAction) },
             )
         },
         floatingActionButton = {

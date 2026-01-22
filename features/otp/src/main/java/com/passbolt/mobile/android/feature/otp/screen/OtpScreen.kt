@@ -174,17 +174,16 @@ fun OtpScreen(
         appBarIconRes = CoreUiR.drawable.ic_time_lock,
         appBarSearchInput = {
             SearchInput(
-                value = state.searchQuery,
                 onValueChange = { onIntent(Search(it)) },
                 placeholder = stringResource(LocalizationR.string.otp_search),
-                avatarUrl = state.userAvatar,
                 endIconMode = state.searchInputEndIconMode,
-                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
                 modifier =
                     Modifier
                         .fillMaxWidth()
                         .padding(end = 16.dp),
+                avatarUrl = state.userAvatar,
                 onEndIconClick = { onIntent(SearchEndIconAction) },
+                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
             )
         },
         floatingActionButton = {

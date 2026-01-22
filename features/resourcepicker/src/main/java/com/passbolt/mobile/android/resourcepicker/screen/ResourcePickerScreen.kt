@@ -136,7 +136,6 @@ private fun ResourcePickerScreen(
         onBackClick = { onIntent(GoBack) },
         appBarSearchInput = {
             SearchInput(
-                value = state.searchQuery,
                 onValueChange = { onIntent(Search(it)) },
                 placeholder = stringResource(LocalizationR.string.default_home_search_hint),
                 endIconMode = state.searchInputEndIconMode,
@@ -145,7 +144,6 @@ private fun ResourcePickerScreen(
                         .fillMaxWidth()
                         .padding(end = 16.dp),
                 onEndIconClick = { onIntent(SearchEndIconAction) },
-                avatarUrl = null,
                 leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
             )
         },

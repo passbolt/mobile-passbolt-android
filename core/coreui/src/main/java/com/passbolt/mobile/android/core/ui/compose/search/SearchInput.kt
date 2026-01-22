@@ -35,7 +35,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -55,22 +54,16 @@ import com.passbolt.mobile.android.core.ui.compose.search.SearchInputEndIconMode
 
 @Composable
 fun SearchInput(
-    value: String,
     onValueChange: (String) -> Unit,
     placeholder: String,
-    avatarUrl: String?,
     endIconMode: SearchInputEndIconMode,
     modifier: Modifier = Modifier,
+    avatarUrl: String? = null,
+    initialValue: String = "",
     onEndIconClick: (() -> Unit)? = null,
     leadingIcon: @Composable (() -> Unit)? = null,
 ) {
-    var textFieldValue by remember { mutableStateOf(TextFieldValue(value)) }
-
-    LaunchedEffect(value) {
-        if (value != textFieldValue.text) {
-            textFieldValue = textFieldValue.copy(text = value)
-        }
-    }
+    var textFieldValue by remember { mutableStateOf(TextFieldValue(initialValue)) }
 
     OutlinedTextField(
         value = textFieldValue,
@@ -93,7 +86,11 @@ fun SearchInput(
                     Icon(
                         imageVector = Icons.Default.Clear,
                         contentDescription = null,
-                        modifier = Modifier.clickable { onEndIconClick?.invoke() },
+                        modifier =
+                            Modifier.clickable {
+                                textFieldValue = TextFieldValue("")
+                                onValueChange("")
+                            },
                     )
                 NONE -> {
                     // No icon
@@ -123,22 +120,18 @@ object SearchInputTestTags {
 @Preview(showBackground = true)
 @Composable
 private fun SearchInputPreview() {
-    var searchText by remember { mutableStateOf("") }
-
     PassboltTheme {
         SearchInput(
-            value = searchText,
             onValueChange = { },
             placeholder = "Search passwords",
-            avatarUrl = null,
-            endIconMode = CLEAR,
+            endIconMode = AVATAR,
+            modifier = Modifier.padding(16.dp),
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Default.Search,
                     contentDescription = null,
                 )
             },
-            modifier = Modifier.padding(16.dp),
         )
     }
 }
@@ -146,22 +139,18 @@ private fun SearchInputPreview() {
 @Preview(showBackground = true)
 @Composable
 private fun SearchInputWithLongPlaceholderPreview() {
-    var searchText by remember { mutableStateOf("") }
-
     PassboltTheme {
         SearchInput(
-            value = searchText,
             onValueChange = { },
             placeholder = "Search for passwords, usernames, and and other items",
-            avatarUrl = null,
-            endIconMode = CLEAR,
+            endIconMode = AVATAR,
+            modifier = Modifier.padding(16.dp),
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Default.Search,
                     contentDescription = null,
                 )
             },
-            modifier = Modifier.padding(16.dp),
         )
     }
 }
@@ -169,22 +158,19 @@ private fun SearchInputWithLongPlaceholderPreview() {
 @Preview(showBackground = true)
 @Composable
 private fun SearchInputWithAvatarPreview() {
-    var searchText by remember { mutableStateOf("Searched query") }
-
     PassboltTheme {
         SearchInput(
-            value = searchText,
             onValueChange = { },
             placeholder = "Search passwords",
-            avatarUrl = null,
             endIconMode = AVATAR,
+            modifier = Modifier.padding(16.dp),
+            initialValue = "Searched query",
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Default.Search,
                     contentDescription = null,
                 )
             },
-            modifier = Modifier.padding(16.dp),
         )
     }
 }
@@ -192,22 +178,19 @@ private fun SearchInputWithAvatarPreview() {
 @Preview(showBackground = true)
 @Composable
 private fun SearchInputWithNoIconPreview() {
-    var searchText by remember { mutableStateOf("Searched query") }
-
     PassboltTheme {
         SearchInput(
-            value = searchText,
             onValueChange = { },
             placeholder = "Search passwords",
-            avatarUrl = null,
             endIconMode = NONE,
+            modifier = Modifier.padding(16.dp),
+            initialValue = "Searched query",
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Default.Search,
                     contentDescription = null,
                 )
             },
-            modifier = Modifier.padding(16.dp),
         )
     }
 }
