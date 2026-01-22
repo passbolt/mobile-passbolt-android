@@ -68,6 +68,7 @@ coreModule "authenticationcore"
 coreModule "preferences"
 coreModule "passphrasememorycache"
 coreModule "clipboard"
+coreModule "testtags"
 
 featureModule "startup"
 featureModule "setup"

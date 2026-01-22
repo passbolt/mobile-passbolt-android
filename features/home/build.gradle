@@ -51,6 +51,7 @@ dependencies {
     implementation project(':permissions')
     implementation project(':clipboard')
     implementation project(':metadata')
+    implementation project(':testtags')
 
     implementation libs.navigation.fragment
     implementation libs.navigation.ui
@@ -78,9 +79,9 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.navigation3)
     implementation(libs.paging.compose)
 
-    testImplementation project(':commontest')
     testImplementation libs.gson
     testImplementation libs.json.path
+    testImplementation project(':commontest')
 }
 
 android {

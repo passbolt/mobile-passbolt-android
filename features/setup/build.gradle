@@ -32,6 +32,7 @@ dependencies {
     implementation project(':authenticationcore')
     implementation project(':preferences')
     implementation project(':main')
+    implementation project(':testtags')
 
     implementation libs.navigation.fragment
     implementation libs.navigation.ui

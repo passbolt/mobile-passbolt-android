@@ -203,6 +203,7 @@ dependencies {
     implementation libs.json.path
 
     androidTestImplementation project(':commontest')
+    androidTestImplementation project(':testtags')
     androidTestImplementation platform(libs.koin.bom)
     androidTestImplementation libs.appcompat
     androidTestImplementation libs.material

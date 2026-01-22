@@ -1,6 +1,6 @@
 /**
  * Passbolt - Open source password manager for teams
- * Copyright (c) 2021-2023 Passbolt SA
+ * Copyright (c) 2021 Passbolt SA
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
  * Public License (AGPL) as published by the Free Software Foundation version 3.
@@ -21,19 +21,8 @@
  * @since v1.0
  */
 
-package com.passbolt.mobile.android.scenarios.setup.configurebiometric
+package com.passbolt.mobile.android.testtags.composetags
 
-import com.passbolt.mobile.android.common.Biometric
-import com.passbolt.mobile.android.common.FingerprintInformationProvider
-import org.koin.dsl.module
-
-val biometricSetupUnavailableModuleTests =
-    module {
-        single<FingerprintInformationProvider> {
-            FingerprintInformationProvider(
-                object : Biometric {
-                    override fun hasBiometricSetUp() = false
-                },
-            )
-        }
-    }
+object Home {
+    const val SCREEN = "home_screen"
+}

@@ -45,6 +45,7 @@ import com.passbolt.mobile.android.instrumentationTestsModule
 import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
 import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
+import com.passbolt.mobile.android.testtags.composetags.Home
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -128,7 +129,7 @@ class FilteringResourcesTest : KoinTest {
                     ),
                     useUnmergedTree = true,
                 ).performClick()
-            composeTestRule.onNodeWithTag("home_screen").assertIsDisplayed()
+            composeTestRule.onNodeWithTag(Home.SCREEN).assertIsDisplayed()
         }
     }
 }

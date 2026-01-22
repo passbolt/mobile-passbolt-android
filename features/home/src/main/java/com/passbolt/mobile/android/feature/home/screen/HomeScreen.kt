@@ -87,6 +87,7 @@ import com.passbolt.mobile.android.feature.home.screen.HomeSideEffect.ShowErrorS
 import com.passbolt.mobile.android.feature.home.screen.HomeSideEffect.ShowSuccessSnackbar
 import com.passbolt.mobile.android.feature.home.screen.HomeSideEffect.ShowToast
 import com.passbolt.mobile.android.feature.home.switchaccount.SwitchAccountBottomSheet
+import com.passbolt.mobile.android.testtags.composetags.Home
 import com.passbolt.mobile.android.ui.FiltersMenuModel
 import com.passbolt.mobile.android.ui.Folder.Child
 import com.passbolt.mobile.android.ui.Folder.Root
@@ -204,7 +205,7 @@ private fun HomeScreen(
         snackbarHostState = snackbarHostState,
         modifier =
             modifier
-                .testTag(HomeScreenTestTags.HOME_SCREEN),
+                .testTag(Home.SCREEN),
         appBarTitle = getAppBarTitle(context, state),
         appBarIconRes = getAppBarIconResId(state),
         shouldShowMoreIcon = homeNavigation.resourceHandlingStrategy.shouldShowFolderMoreMenu() && state.showMoreMenu,
@@ -292,7 +293,6 @@ private fun HomeScreen(
 }
 
 object HomeScreenTestTags {
-    const val HOME_SCREEN: String = "home_screen"
     const val SEARCH_FILTER: String = "home_search_filter"
 }
 

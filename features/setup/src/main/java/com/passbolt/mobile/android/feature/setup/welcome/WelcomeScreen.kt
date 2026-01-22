@@ -43,6 +43,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -79,6 +80,9 @@ import com.passbolt.mobile.android.feature.setup.welcome.WelcomeSideEffect.Navig
 import com.passbolt.mobile.android.feature.setup.welcome.WelcomeSideEffect.NavigateToSummary
 import com.passbolt.mobile.android.feature.setup.welcome.WelcomeSideEffect.NavigateToTransferDetails
 import com.passbolt.mobile.android.helpmenu.compose.HelpMenuBottomSheet
+import com.passbolt.mobile.android.testtags.composetags.Setup.APPS_IMAGE
+import com.passbolt.mobile.android.testtags.composetags.Setup.HELP_BUTTON
+import com.passbolt.mobile.android.testtags.composetags.Setup.LOGO_IMAGE
 import com.passbolt.mobile.android.ui.HelpMenuModel
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
@@ -133,7 +137,10 @@ private fun WelcomeScreen(
                         {}
                     },
                 actions = {
-                    IconButton(onClick = { onIntent(OpenHelpMenu) }) {
+                    IconButton(
+                        onClick = { onIntent(OpenHelpMenu) },
+                        modifier = Modifier.testTag(HELP_BUTTON),
+                    ) {
                         Icon(
                             painter = painterResource(CoreUiR.drawable.ic_help),
                             contentDescription = null,
@@ -159,7 +166,8 @@ private fun WelcomeScreen(
                 modifier =
                     Modifier
                         .padding(top = 48.dp)
-                        .size(116.dp, 48.dp),
+                        .size(116.dp, 48.dp)
+                        .testTag(LOGO_IMAGE),
             )
 
             Image(
@@ -168,7 +176,8 @@ private fun WelcomeScreen(
                 modifier =
                     Modifier
                         .padding(top = 64.dp)
-                        .size(width = 300.dp, height = 160.dp),
+                        .size(width = 300.dp, height = 160.dp)
+                        .testTag(APPS_IMAGE),
             )
 
             Text(
