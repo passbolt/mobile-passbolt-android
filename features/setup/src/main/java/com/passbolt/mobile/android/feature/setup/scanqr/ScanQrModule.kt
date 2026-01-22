@@ -6,8 +6,8 @@ import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.ScanQrParser
 import com.passbolt.mobile.android.feature.setup.scanqr.usecase.UpdateTransferUseCase
 import kotlinx.serialization.json.Json
 import org.koin.core.module.Module
-import org.koin.core.module.dsl.scopedOf
-import org.koin.core.qualifier.named
+import org.koin.core.module.dsl.singleOf
+import org.koin.core.module.dsl.viewModelOf
 
 /**
  * Passbolt - Open source password manager for teams
@@ -33,27 +33,10 @@ import org.koin.core.qualifier.named
  */
 
 fun Module.scanQrModule() {
-    scope(named<ScanQrFragment>()) {
-        scoped<ScanQrContract.Presenter> {
-            ScanQrPresenter(
-                coroutineLaunchContext = get(),
-                updateTransferUseCase = get(),
-                qrParser = get(),
-                uuidProvider = get(),
-                savePrivateKeyUseCase = get(),
-                updateAccountDataUseCase = get(),
-                checkAccountExistsUseCase = get(),
-                httpsVerifier = get(),
-                saveCurrentApiUrlUseCase = get(),
-                accountsInteractor = get(),
-                accountKitParser = get(),
-                fetchFileAsStringUseCase = get(),
-            )
-        }
-        scopedOf(::QrScanResultsMapper)
-        scopedOf(::KeyAssembler)
-        scopedOf(::UpdateTransferUseCase)
-        scopedOf(::ScanQrParser)
-    }
+    viewModelOf(::ScanQrViewModel)
+    singleOf(::QrScanResultsMapper)
+    singleOf(::KeyAssembler)
+    singleOf(::UpdateTransferUseCase)
+    singleOf(::ScanQrParser)
     single { Json { ignoreUnknownKeys = true } }
 }

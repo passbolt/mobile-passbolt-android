@@ -3,7 +3,9 @@ package com.passbolt.mobile.android.common
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.provider.Settings
 import android.widget.Toast
+import androidx.core.net.toUri
 import timber.log.Timber
 import com.passbolt.mobile.android.core.common.R as CommonR
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
@@ -35,7 +37,7 @@ class ExternalDeeplinkHandler {
         context: Context,
         url: String,
     ) {
-        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+        val intent = Intent(Intent.ACTION_VIEW, url.toUri())
 
         runCatching {
             context.startActivity(intent)
@@ -61,5 +63,14 @@ class ExternalDeeplinkHandler {
             Timber.e(it)
             Toast.makeText(context, LocalizationR.string.common_failure, Toast.LENGTH_SHORT).show()
         }
+    }
+
+    fun openAppOsSettings(context: Context) {
+        val intent =
+            Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                .apply {
+                    data = Uri.fromParts("package", context.packageName, null)
+                }
+        context.startActivity(intent)
     }
 }

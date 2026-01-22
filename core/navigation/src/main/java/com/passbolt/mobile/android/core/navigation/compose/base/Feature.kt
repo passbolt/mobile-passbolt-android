@@ -27,4 +27,5 @@ enum class Feature {
     LOGS,
     ACCOUNT_DETAILS,
     TRANSFER_ACCOUNT_TO_ANOTHER_DEVICE,
+    SETUP,
 }

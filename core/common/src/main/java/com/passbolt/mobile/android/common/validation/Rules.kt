@@ -1,6 +1,5 @@
 package com.passbolt.mobile.android.common.validation
 
-import android.webkit.URLUtil
 import java.net.MalformedURLException
 import java.net.URI
 import java.net.URL
@@ -25,9 +24,8 @@ object StringIsUuid :
 object StringIsHttpsWebUrl :
     Rule<String>({
         try {
-            URLUtil.isHttpsUrl(URL(it).toString())
-            true
-        } catch (e: MalformedURLException) {
+            URL(it).protocol.equals(HTTPS, ignoreCase = true)
+        } catch (_: MalformedURLException) {
             false
         }
     })
@@ -46,3 +44,5 @@ object StringIsBase32 :
 private const val UUID_PATTERN = "^[{]?[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}[}]?$"
 
 private const val BASE_32_PATTERN = "^[A-Z2-7]+=*$"
+
+private const val HTTPS = "https"

@@ -85,6 +85,106 @@ class KeyAssemblerTest : KoinTest {
             }
         }
 
+    @Test
+    fun `key assembler should fail when armored_key is missing`() =
+        runTest {
+            val keyBuffer =
+                Buffer().apply {
+                    write("{\"user_id\":\"${UUID.randomUUID()}\",\"fingerprint\":\"fingerprint\"}".toByteArray())
+                }
+
+            assertThrows(Exception::class.java) {
+                keyAssembler.assemblePrivateKey(keyBuffer)
+            }
+        }
+
+    @Test
+    fun `key assembler should fail when user_id is missing`() =
+        runTest {
+            val keyBuffer =
+                Buffer().apply {
+                    write("{\"armored_key\":\"key\",\"fingerprint\":\"fingerprint\"}".toByteArray())
+                }
+
+            assertThrows(Exception::class.java) {
+                keyAssembler.assemblePrivateKey(keyBuffer)
+            }
+        }
+
+    @Test
+    fun `key assembler should fail when fingerprint is missing`() =
+        runTest {
+            val keyBuffer =
+                Buffer().apply {
+                    write("{\"armored_key\":\"key\",\"user_id\":\"${UUID.randomUUID()}\"}".toByteArray())
+                }
+
+            assertThrows(Exception::class.java) {
+                keyAssembler.assemblePrivateKey(keyBuffer)
+            }
+        }
+
+    @Test
+    fun `key assembler should fail when input is not valid JSON`() =
+        runTest {
+            val keyBuffer =
+                Buffer().apply {
+                    write("not a valid json".toByteArray())
+                }
+
+            assertThrows(Exception::class.java) {
+                keyAssembler.assemblePrivateKey(keyBuffer)
+            }
+        }
+
+    @Test
+    fun `key assembler should fail when input is empty`() =
+        runTest {
+            val keyBuffer = Buffer()
+
+            assertThrows(Exception::class.java) {
+                keyAssembler.assemblePrivateKey(keyBuffer)
+            }
+        }
+
+    @Test
+    fun `key assembler should handle empty armored_key string`() =
+        runTest {
+            val keyBuffer =
+                Buffer().apply {
+                    write("{\"armored_key\":\"\",\"user_id\":\"${UUID.randomUUID()}\",\"fingerprint\":\"fp\"}".toByteArray())
+                }
+
+            val key = keyAssembler.assemblePrivateKey(keyBuffer)
+            assertThat(key).isEmpty()
+        }
+
+    @Test
+    fun `key assembler should handle special characters in armored_key`() =
+        runTest {
+            val specialKey = "key with spaces and special chars: @#$%^&*()"
+            val keyBuffer =
+                Buffer().apply {
+                    write("{\"armored_key\":\"$specialKey\",\"user_id\":\"${UUID.randomUUID()}\",\"fingerprint\":\"fp\"}".toByteArray())
+                }
+
+            val key = keyAssembler.assemblePrivateKey(keyBuffer)
+            assertThat(key).isEqualTo(specialKey)
+        }
+
+    @Test
+    fun `key assembler should fail with malformed JSON`() =
+        runTest {
+            val keyBuffer =
+                Buffer().apply {
+                    write("{\"armored_key\":\"key\",\"user_id\":".toByteArray())
+                }
+
+            assertThrows(Exception::class.java) {
+                keyAssembler.assemblePrivateKey(keyBuffer)
+            }
+        }
+
     private companion object {
         private const val ARMORED_KEY = "armoredKey"
         private const val FINGERPRINT = "fingerprint"

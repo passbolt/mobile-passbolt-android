@@ -1,17 +1,22 @@
 package com.passbolt.mobile.android.feature.setup
 
-import android.content.Context
 import androidx.biometric.BiometricManager
 import com.passbolt.mobile.android.common.Biometric
 import com.passbolt.mobile.android.common.BiometricImpl
 import com.passbolt.mobile.android.common.FingerprintInformationProvider
+import com.passbolt.mobile.android.core.navigation.compose.base.Feature.SETUP
+import com.passbolt.mobile.android.core.navigation.compose.base.FeatureModuleNavigation
 import com.passbolt.mobile.android.feature.setup.fingerprint.fingerprintModule
 import com.passbolt.mobile.android.feature.setup.importprofile.importProfileModule
+import com.passbolt.mobile.android.feature.setup.navigation.SetupFeatureNavigation
 import com.passbolt.mobile.android.feature.setup.scanqr.scanQrModule
 import com.passbolt.mobile.android.feature.setup.summary.summaryModule
 import com.passbolt.mobile.android.feature.setup.transferdetails.transferDetailsModule
 import com.passbolt.mobile.android.feature.setup.welcome.welcomeModule
 import org.koin.android.ext.koin.androidContext
+import org.koin.core.module.dsl.singleOf
+import org.koin.core.qualifier.named
+import org.koin.dsl.bind
 import org.koin.dsl.module
 
 /**
@@ -44,17 +49,12 @@ val setupModule =
         summaryModule()
         transferDetailsModule()
         fingerprintModule()
-        single {
-            FingerprintInformationProvider(
-                biometric = get(),
-            )
-        }
-        single<Biometric> {
-            BiometricImpl(
-                biometricManager = get(),
-            )
-        }
-        single { provideBiometricManager(androidContext()) }
-    }
 
-private fun provideBiometricManager(context: Context) = BiometricManager.from(context)
+        singleOf(::FingerprintInformationProvider)
+        singleOf(::BiometricImpl) bind Biometric::class
+        single { BiometricManager.from(androidContext()) }
+
+        single<FeatureModuleNavigation>(named(SETUP)) {
+            SetupFeatureNavigation()
+        }
+    }

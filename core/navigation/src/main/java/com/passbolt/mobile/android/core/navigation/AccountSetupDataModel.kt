@@ -40,4 +40,21 @@ data class AccountSetupDataModel(
     val avatarUrl: String?,
     val keyFingerprint: String,
     val armoredKey: String,
-) : Parcelable
+) : Parcelable {
+    companion object {
+        fun withRequiredValues(
+            serverUserId: String,
+            domain: String,
+            armoredKey: String,
+        ) = AccountSetupDataModel(
+            serverUserId = serverUserId,
+            domain = domain,
+            armoredKey = armoredKey,
+            firstName = "",
+            lastName = "",
+            avatarUrl = "",
+            userName = "",
+            keyFingerprint = "",
+        )
+    }
+}
