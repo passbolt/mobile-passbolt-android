@@ -46,6 +46,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -218,7 +219,10 @@ private fun QrCodeImage(
         Image(
             bitmap = it.asImageBitmap(),
             contentDescription = stringResource(LocalizationR.string.transfer_account_title),
-            modifier = modifier.size(qrSizePx.dp),
+            modifier =
+                modifier
+                    .size(qrSizePx.dp)
+                    .testTag("QrCode"), // TODO: move it to :testtags module once MOB-3312 gets resolved
         )
     }
 }
