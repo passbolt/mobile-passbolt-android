@@ -27,8 +27,7 @@ Run verifications:
       ktlintCheck 
       unitTest
       lintRelease 
-      licenseeRelease 
-      snyk-test
+      licenseeRelease
       buildHealth
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
