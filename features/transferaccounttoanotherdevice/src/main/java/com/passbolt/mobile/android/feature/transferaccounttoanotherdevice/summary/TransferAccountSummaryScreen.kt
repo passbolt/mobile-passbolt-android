@@ -46,6 +46,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -134,7 +135,8 @@ private fun TransferAccountSummaryScreen(
         modifier =
             modifier
                 .fillMaxSize()
-                .padding(16.dp),
+                .padding(16.dp)
+                .testTag("TransferAccountSummaryScreen"), // TODO: move it to :testtags module once MOB-3312 gets resolved
         contentAlignment = Alignment.Center,
     ) {
         Column(
@@ -146,7 +148,10 @@ private fun TransferAccountSummaryScreen(
                 Image(
                     painter = painterResource(status.icon),
                     contentDescription = null,
-                    modifier = Modifier.size(120.dp),
+                    modifier =
+                        Modifier
+                            .size(120.dp)
+                            .testTag(status.icon.toString()),
                 )
 
                 Spacer(modifier = Modifier.height(32.dp))
