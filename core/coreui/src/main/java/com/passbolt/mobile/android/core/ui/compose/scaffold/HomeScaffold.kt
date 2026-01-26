@@ -23,7 +23,6 @@
 package com.passbolt.mobile.android.core.ui.compose.scaffold
 
 import androidx.annotation.DrawableRes
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -133,9 +132,10 @@ fun HomeScaffold(
                                     modifier = Modifier.weight(1f),
                                 ) {
                                     appBarIconRes?.let {
-                                        Image(
+                                        Icon(
                                             painter = painterResource(it),
                                             contentDescription = null,
+                                            tint = colorResource(CoreUiR.color.icon_tint),
                                             modifier =
                                                 Modifier
                                                     .size(24.dp)
