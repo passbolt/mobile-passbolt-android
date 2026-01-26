@@ -52,6 +52,15 @@ class SignInVerifyInteractor(
         onSuccess: suspend (Success) -> Unit,
     ) {
         Timber.d("Preparing sign in challenge")
+
+        val configInput =
+            SignInConfigInput(
+                serverPgpPublicKey = serverPgpPublicKey,
+                passphrase = passphrase,
+                userId = userId,
+                serverRsaKey = serverRsaKey,
+            )
+
         val accountData = getAccountDataUseCase.execute(UserIdInput(userId))
         val challenge =
             challengeProvider.get(
@@ -60,19 +69,20 @@ class SignInVerifyInteractor(
                 passphrase = passphrase,
                 userId = userId,
             )
+
         when (challenge) {
             is ChallengeProvider.Output.Success -> {
                 Timber.d("Prepared sign in challenge")
                 sendSignInRequest(
-                    userId,
-                    challenge.challenge,
-                    serverPgpPublicKey,
-                    passphrase,
-                    serverRsaKey,
-                    requireNotNull(accountData.serverId),
-                    accountData,
-                    onError,
-                    onSuccess,
+                    input =
+                        SendSignInRequestInput(
+                            config = configInput,
+                            challenge = challenge.challenge,
+                            accountData = accountData,
+                            serverId = requireNotNull(accountData.serverId),
+                        ),
+                    onError = onError,
+                    onSuccess = onSuccess,
                 )
             }
             ChallengeProvider.Output.WrongPassphrase -> {
@@ -82,33 +92,35 @@ class SignInVerifyInteractor(
         }
     }
 
-    @Suppress("LongParameterList") // TODO extract member data class?
     private suspend fun sendSignInRequest(
-        userId: String,
-        challenge: String,
-        serverPublicKey: String,
-        passphrase: ByteArray,
-        rsaKey: String,
-        serverId: String,
-        accountData: GetAccountDataUseCase.Output,
+        input: SendSignInRequestInput,
         onError: (Error) -> Unit,
         onSuccess: suspend (Success) -> Unit,
     ) {
         Timber.d("Signing in")
         val currentMfaToken = getSessionUseCase.execute(Unit).mfaToken
-        when (val result = signInUseCase.execute(SignInUseCase.Input(serverId, challenge, currentMfaToken))) {
+
+        val signInInput =
+            SignInUseCase.Input(
+                userId = input.serverId,
+                challenge = input.challenge,
+                mfaToken = currentMfaToken,
+            )
+
+        when (val result = signInUseCase.execute(signInInput)) {
             is SignInUseCase.Output.Failure -> {
                 Timber.e("Failure during sign in: ${result.message}")
                 val error =
                     when (result.type) {
                         SignInFailureType.ACCOUNT_DOES_NOT_EXIST -> {
                             Error.AccountDoesNotExist(
-                                accountData.label ?: AccountModelMapper.defaultLabel(
-                                    accountData.firstName,
-                                    accountData.lastName,
-                                ),
-                                accountData.email,
-                                accountData.url,
+                                label =
+                                    input.accountData.label ?: AccountModelMapper.defaultLabel(
+                                        input.accountData.firstName,
+                                        input.accountData.lastName,
+                                    ),
+                                email = input.accountData.email,
+                                serverUrl = input.accountData.url,
                             )
                         }
                         SignInFailureType.OTHER -> {
@@ -120,48 +132,46 @@ class SignInVerifyInteractor(
             is SignInUseCase.Output.Success -> {
                 Timber.d("Sign in success")
                 decryptChallenge(
-                    currentMfaToken,
-                    serverPublicKey,
-                    passphrase,
-                    userId,
-                    result,
-                    rsaKey,
-                    onSuccess,
-                    onError,
+                    input =
+                        DecryptChallengeInput(
+                            config = input.config,
+                            currentMfaToken = currentMfaToken,
+                            signInResult = result,
+                        ),
+                    onSuccess = onSuccess,
+                    onError = onError,
                 )
             }
         }
     }
 
-    @Suppress("LongParameterList") // TODO extract member data class?
     private suspend fun decryptChallenge(
-        currentMfaToken: String?,
-        serverPublicKey: String,
-        passphrase: ByteArray,
-        userId: String,
-        result: SignInUseCase.Output.Success,
-        rsaKey: String,
+        input: DecryptChallengeInput,
         onSuccess: suspend (Success) -> Unit,
         onError: (Error) -> Unit,
     ) {
         Timber.d("Decrypting challenge.")
         val challengeDecryptResult =
             challengeDecryptor.decrypt(
-                serverPublicKey,
-                passphrase,
-                userId,
-                result.challenge,
+                serverPublicKey = input.config.serverPgpPublicKey,
+                passphrase = input.config.passphrase,
+                userId = input.config.userId,
+                challenge = input.signInResult.challenge,
             )
+
         when (challengeDecryptResult) {
             is ChallengeDecryptor.Output.DecryptedChallenge -> {
                 Timber.d("Challenge decrypted successfully")
                 verifyChallenge(
-                    challengeDecryptResult.challenge,
-                    result.mfaToken,
-                    currentMfaToken,
-                    rsaKey,
-                    onError,
-                    onSuccess,
+                    input =
+                        VerifyChallengeInput(
+                            challengeResponseDto = challengeDecryptResult.challenge,
+                            mfaToken = input.signInResult.mfaToken,
+                            currentMfaToken = input.currentMfaToken,
+                            rsaKey = input.config.serverRsaKey,
+                        ),
+                    onError = onError,
+                    onSuccess = onSuccess,
                 )
             }
             is ChallengeDecryptor.Output.DecryptionError -> {
@@ -174,15 +184,12 @@ class SignInVerifyInteractor(
     }
 
     private suspend fun verifyChallenge(
-        challengeResponseDto: ChallengeResponseDto,
-        mfaToken: String?,
-        currentMfaToken: String?,
-        rsaKey: String,
+        input: VerifyChallengeInput,
         onError: (Error) -> Unit,
         onSuccess: suspend (Success) -> Unit,
     ) {
         Timber.d("Verifying challenge")
-        when (val result = challengeVerifier.verify(challengeResponseDto, rsaKey)) {
+        when (val result = challengeVerifier.verify(input.challengeResponseDto, input.rsaKey)) {
             ChallengeVerifier.Output.Failure -> {
                 Timber.e("Challenge verification error")
                 onError(Error.ChallengeVerificationError(Error.ChallengeVerificationError.Type.FAILURE))
@@ -199,16 +206,43 @@ class SignInVerifyInteractor(
                 Timber.d("Challenge verified with success")
                 onSuccess(
                     Success(
-                        challengeResponseDto,
-                        result.accessToken,
-                        result.refreshToken,
-                        mfaToken,
-                        currentMfaToken,
+                        challengeResponseDto = input.challengeResponseDto,
+                        accessToken = result.accessToken,
+                        refreshToken = result.refreshToken,
+                        mfaToken = input.mfaToken,
+                        currentMfaToken = input.currentMfaToken,
                     ),
                 )
             }
         }
     }
+
+    private class SignInConfigInput(
+        val serverPgpPublicKey: String,
+        val passphrase: ByteArray,
+        val userId: String,
+        val serverRsaKey: String,
+    )
+
+    private data class SendSignInRequestInput(
+        val config: SignInConfigInput,
+        val challenge: String,
+        val accountData: GetAccountDataUseCase.Output,
+        val serverId: String,
+    )
+
+    private data class DecryptChallengeInput(
+        val config: SignInConfigInput,
+        val currentMfaToken: String?,
+        val signInResult: SignInUseCase.Output.Success,
+    )
+
+    private data class VerifyChallengeInput(
+        val challengeResponseDto: ChallengeResponseDto,
+        val mfaToken: String?,
+        val currentMfaToken: String?,
+        val rsaKey: String,
+    )
 
     data class Success(
         val challengeResponseDto: ChallengeResponseDto,
