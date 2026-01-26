@@ -29,12 +29,6 @@ import androidx.core.text.HtmlCompat
 
 fun String.fromHtml(): Spanned = Html.fromHtml(this, HtmlCompat.FROM_HTML_MODE_LEGACY)
 
-// TODO: This is a temporary solution to satisfy web-extension validation
-fun String.stripPGPHeaders(): String =
-    lines()
-        .filterNot { it.startsWith("Version:") || it.startsWith("Comment:") }
-        .joinToString("\n")
-
 fun String.decodeHex(): ByteArray {
     require(length % 2 == 0) { "String must have an even length" }
 

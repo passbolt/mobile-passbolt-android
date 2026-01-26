@@ -23,7 +23,6 @@
 
 package com.passbolt.mobile.android.core.resources.interactor.update
 
-import com.passbolt.mobile.android.common.extension.stripPGPHeaders
 import com.passbolt.mobile.android.common.usecase.UserIdInput
 import com.passbolt.mobile.android.core.accounts.usecase.privatekey.GetPrivateKeyUseCase
 import com.passbolt.mobile.android.core.accounts.usecase.selectedaccount.GetSelectedAccountUseCase
@@ -157,8 +156,7 @@ class UpdateResourceInteractor(
                                 secrets = secrets.map { EncryptedSecret(it.userId, it.data) },
                                 folderParentId = resourceInput.folderId,
                                 expiry = getResourceExpiry(resourceInput, secretInput),
-                                // FIXME temporary solution to satisfy web-extension validation
-                                metadata = encryptedMetadata.encryptedMetadata.stripPGPHeaders(),
+                                metadata = encryptedMetadata.encryptedMetadata,
                                 metadataKeyId = resourceInput.metadataKeyId,
                                 metadataKeyType = metadataMapper.mapToDto(resourceInput.metadataKeyType),
                             )
