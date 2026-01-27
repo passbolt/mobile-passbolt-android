@@ -12,6 +12,7 @@ private val LightColors =
         primary = Color(0xFF2A9CEB),
         background = Color(0xFFFFFFFF),
         surface = Color(0xFFFFFFFF),
+        surfaceVariant = Color(0xFFFFFFFF),
         onBackground = Color(0xFF333333),
         outline = Color(0xFFDDDDDD),
     )
@@ -22,6 +23,7 @@ private val DarkColors =
         primary = Color(0xFF2A9CEB),
         background = Color(0xFF000000),
         surface = Color(0xFF000000),
+        surfaceVariant = Color(0xFF333333),
         onBackground = Color(0xFFDDDDDD),
         outline = Color(0xFF0f0f0f),
     )
