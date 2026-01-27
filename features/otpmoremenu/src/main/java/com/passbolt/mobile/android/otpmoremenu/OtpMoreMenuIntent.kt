@@ -1,3 +1,5 @@
+package com.passbolt.mobile.android.otpmoremenu
+
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -21,16 +23,20 @@
  * @since v1.0
  */
 
-package com.passbolt.mobile.android
+sealed interface OtpMoreMenuIntent {
+    data class Initialize(
+        val resourceId: String,
+        val resourceName: String,
+        val canShowTotp: Boolean,
+    ) : OtpMoreMenuIntent
 
-import com.passbolt.mobile.android.otpmoremenu.otpMoreMenuModule
-import com.passbolt.mobile.android.otpmoremenu.usecase.CreateOtpMoreMenuModelUseCase
-import org.koin.core.module.dsl.singleOf
-import org.koin.dsl.module
+    data object Close : OtpMoreMenuIntent
 
-val otpMainMoreMenuModule =
-    module {
-        singleOf(::CreateOtpMoreMenuModelUseCase)
+    data object ShowOtp : OtpMoreMenuIntent
 
-        otpMoreMenuModule()
-    }
+    data object CopyOtp : OtpMoreMenuIntent
+
+    data object EditOtp : OtpMoreMenuIntent
+
+    data object DeleteOtp : OtpMoreMenuIntent
+}

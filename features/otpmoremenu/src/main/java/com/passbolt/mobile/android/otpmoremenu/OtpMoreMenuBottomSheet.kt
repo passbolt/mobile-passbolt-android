@@ -1,4 +1,4 @@
-package com.passbolt.mobile.android.otpmoremenu.compose
+package com.passbolt.mobile.android.otpmoremenu
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,17 +18,17 @@ import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
 import com.passbolt.mobile.android.core.ui.R
 import com.passbolt.mobile.android.core.ui.compose.bottomsheet.BottomSheetHeader
 import com.passbolt.mobile.android.core.ui.compose.menu.OpenableSettingsItem
-import com.passbolt.mobile.android.otpmoremenu.compose.OtpMoreMenuIntent.Close
-import com.passbolt.mobile.android.otpmoremenu.compose.OtpMoreMenuIntent.CopyOtp
-import com.passbolt.mobile.android.otpmoremenu.compose.OtpMoreMenuIntent.DeleteOtp
-import com.passbolt.mobile.android.otpmoremenu.compose.OtpMoreMenuIntent.EditOtp
-import com.passbolt.mobile.android.otpmoremenu.compose.OtpMoreMenuIntent.Initialize
-import com.passbolt.mobile.android.otpmoremenu.compose.OtpMoreMenuIntent.ShowOtp
-import com.passbolt.mobile.android.otpmoremenu.compose.OtpMoreMenuSideEffect.Dismiss
-import com.passbolt.mobile.android.otpmoremenu.compose.OtpMoreMenuSideEffect.InvokeCopyOtp
-import com.passbolt.mobile.android.otpmoremenu.compose.OtpMoreMenuSideEffect.InvokeDeleteOtp
-import com.passbolt.mobile.android.otpmoremenu.compose.OtpMoreMenuSideEffect.InvokeEditOtp
-import com.passbolt.mobile.android.otpmoremenu.compose.OtpMoreMenuSideEffect.InvokeShowOtp
+import com.passbolt.mobile.android.otpmoremenu.OtpMoreMenuIntent.Close
+import com.passbolt.mobile.android.otpmoremenu.OtpMoreMenuIntent.CopyOtp
+import com.passbolt.mobile.android.otpmoremenu.OtpMoreMenuIntent.DeleteOtp
+import com.passbolt.mobile.android.otpmoremenu.OtpMoreMenuIntent.EditOtp
+import com.passbolt.mobile.android.otpmoremenu.OtpMoreMenuIntent.Initialize
+import com.passbolt.mobile.android.otpmoremenu.OtpMoreMenuIntent.ShowOtp
+import com.passbolt.mobile.android.otpmoremenu.OtpMoreMenuSideEffect.Dismiss
+import com.passbolt.mobile.android.otpmoremenu.OtpMoreMenuSideEffect.InvokeCopyOtp
+import com.passbolt.mobile.android.otpmoremenu.OtpMoreMenuSideEffect.InvokeDeleteOtp
+import com.passbolt.mobile.android.otpmoremenu.OtpMoreMenuSideEffect.InvokeEditOtp
+import com.passbolt.mobile.android.otpmoremenu.OtpMoreMenuSideEffect.InvokeShowOtp
 import org.koin.androidx.compose.koinViewModel
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
