@@ -169,6 +169,7 @@ private fun CreateFolderScreen(
                 ) {
                     TextInput(
                         title = stringResource(LocalizationR.string.create_folder_name),
+                        hint = stringResource(LocalizationR.string.enter_folder_name),
                         text = state.folderName,
                         state =
                             if (state.folderNameValidationErrors.isEmpty()) {

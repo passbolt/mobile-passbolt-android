@@ -507,6 +507,7 @@
     <string name="create_folder_name">Name</string>
     <string name="create_folder_name_validation">Folder name cannot be empty</string>
     <string name="create_folder_error_format">Could not create folder. %s</string>
+    <string name="enter_folder_name">Enter folder name</string>
 
     <string name="share_folder_error_format">Could not share folder. %s</string>
 

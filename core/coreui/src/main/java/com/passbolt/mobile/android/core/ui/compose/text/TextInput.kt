@@ -6,7 +6,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldColors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
@@ -54,6 +56,14 @@ fun TextInput(
     text: String = "",
     onTextChange: (String) -> Unit = {},
     testTag: String? = null,
+    colors: TextFieldColors =
+        MaterialTheme.colorScheme.surfaceVariant.let {
+            OutlinedTextFieldDefaults.colors(
+                focusedContainerColor = it,
+                unfocusedContainerColor = it,
+                errorContainerColor = it,
+            )
+        },
 ) {
     val titleColor = if (state is Error) colorResource(R.color.red) else MaterialTheme.colorScheme.onBackground
     val label =
@@ -78,6 +88,7 @@ fun TextInput(
                 Modifier
                     .fillMaxWidth()
                     .optionalTestTag(testTag),
+            colors = colors,
         )
         if (state is Error) {
             Text(
