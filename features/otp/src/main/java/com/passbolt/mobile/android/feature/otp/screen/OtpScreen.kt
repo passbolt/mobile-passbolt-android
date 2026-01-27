@@ -87,7 +87,7 @@ import com.passbolt.mobile.android.feature.otp.screen.OtpSideEffect.NavigateToEd
 import com.passbolt.mobile.android.feature.otp.screen.OtpSideEffect.ShowErrorSnackbar
 import com.passbolt.mobile.android.feature.otp.screen.OtpSideEffect.ShowSuccessSnackbar
 import com.passbolt.mobile.android.feature.otp.screen.OtpSideEffect.ShowToast
-import com.passbolt.mobile.android.otpmoremenu.compose.OtpMoreMenuBottomSheet
+import com.passbolt.mobile.android.otpmoremenu.OtpMoreMenuBottomSheet
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject

@@ -1,4 +1,4 @@
-package com.passbolt.mobile.android.otpmoremenu.compose
+package com.passbolt.mobile.android.otpmoremenu
 
 /**
  * Passbolt - Open source password manager for teams
@@ -23,20 +23,10 @@ package com.passbolt.mobile.android.otpmoremenu.compose
  * @since v1.0
  */
 
-sealed interface OtpMoreMenuIntent {
-    data class Initialize(
-        val resourceId: String,
-        val resourceName: String,
-        val canShowTotp: Boolean,
-    ) : OtpMoreMenuIntent
-
-    data object Close : OtpMoreMenuIntent
-
-    data object ShowOtp : OtpMoreMenuIntent
-
-    data object CopyOtp : OtpMoreMenuIntent
-
-    data object EditOtp : OtpMoreMenuIntent
-
-    data object DeleteOtp : OtpMoreMenuIntent
-}
+data class OtpMoreMenuState(
+    val title: String = "",
+    val showSeparator: Boolean = false,
+    val showShowOtpButton: Boolean = false,
+    val showDeleteButton: Boolean = false,
+    val showEditButton: Boolean = false,
+)

@@ -1,3 +1,5 @@
+package com.passbolt.mobile.android.otpmoremenu
+
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -21,29 +23,14 @@
  * @since v1.0
  */
 
-package com.passbolt.mobile.android.otpmoremenu
+sealed interface OtpMoreMenuSideEffect {
+    data object Dismiss : OtpMoreMenuSideEffect
 
-import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReactiveContract
+    data object InvokeShowOtp : OtpMoreMenuSideEffect
 
-interface OtpMoreMenuContract {
-    interface View : DataRefreshViewReactiveContract.View {
-        fun showTitle(title: String)
+    data object InvokeCopyOtp : OtpMoreMenuSideEffect
 
-        fun showSeparator()
+    data object InvokeEditOtp : OtpMoreMenuSideEffect
 
-        fun showDeleteButton()
-
-        fun showEditButton()
-
-        fun showShowOtpButton()
-
-        fun showRefreshFailure()
-    }
-
-    interface Presenter : DataRefreshViewReactiveContract.Presenter<View> {
-        fun argsRetrieved(
-            resourceId: String,
-            canShowTotp: Boolean,
-        )
-    }
+    data object InvokeDeleteOtp : OtpMoreMenuSideEffect
 }

@@ -1,19 +1,19 @@
-package com.passbolt.mobile.android.otpmoremenu.compose
+package com.passbolt.mobile.android.otpmoremenu
 
 import androidx.lifecycle.viewModelScope
 import com.passbolt.mobile.android.common.datarefresh.DataRefreshTrackingFlow
 import com.passbolt.mobile.android.core.compose.SideEffectViewModel
-import com.passbolt.mobile.android.otpmoremenu.compose.OtpMoreMenuIntent.Close
-import com.passbolt.mobile.android.otpmoremenu.compose.OtpMoreMenuIntent.CopyOtp
-import com.passbolt.mobile.android.otpmoremenu.compose.OtpMoreMenuIntent.DeleteOtp
-import com.passbolt.mobile.android.otpmoremenu.compose.OtpMoreMenuIntent.EditOtp
-import com.passbolt.mobile.android.otpmoremenu.compose.OtpMoreMenuIntent.Initialize
-import com.passbolt.mobile.android.otpmoremenu.compose.OtpMoreMenuIntent.ShowOtp
-import com.passbolt.mobile.android.otpmoremenu.compose.OtpMoreMenuSideEffect.Dismiss
-import com.passbolt.mobile.android.otpmoremenu.compose.OtpMoreMenuSideEffect.InvokeCopyOtp
-import com.passbolt.mobile.android.otpmoremenu.compose.OtpMoreMenuSideEffect.InvokeDeleteOtp
-import com.passbolt.mobile.android.otpmoremenu.compose.OtpMoreMenuSideEffect.InvokeEditOtp
-import com.passbolt.mobile.android.otpmoremenu.compose.OtpMoreMenuSideEffect.InvokeShowOtp
+import com.passbolt.mobile.android.otpmoremenu.OtpMoreMenuIntent.Close
+import com.passbolt.mobile.android.otpmoremenu.OtpMoreMenuIntent.CopyOtp
+import com.passbolt.mobile.android.otpmoremenu.OtpMoreMenuIntent.DeleteOtp
+import com.passbolt.mobile.android.otpmoremenu.OtpMoreMenuIntent.EditOtp
+import com.passbolt.mobile.android.otpmoremenu.OtpMoreMenuIntent.Initialize
+import com.passbolt.mobile.android.otpmoremenu.OtpMoreMenuIntent.ShowOtp
+import com.passbolt.mobile.android.otpmoremenu.OtpMoreMenuSideEffect.Dismiss
+import com.passbolt.mobile.android.otpmoremenu.OtpMoreMenuSideEffect.InvokeCopyOtp
+import com.passbolt.mobile.android.otpmoremenu.OtpMoreMenuSideEffect.InvokeDeleteOtp
+import com.passbolt.mobile.android.otpmoremenu.OtpMoreMenuSideEffect.InvokeEditOtp
+import com.passbolt.mobile.android.otpmoremenu.OtpMoreMenuSideEffect.InvokeShowOtp
 import com.passbolt.mobile.android.otpmoremenu.usecase.CreateOtpMoreMenuModelUseCase
 import kotlinx.coroutines.launch
 
