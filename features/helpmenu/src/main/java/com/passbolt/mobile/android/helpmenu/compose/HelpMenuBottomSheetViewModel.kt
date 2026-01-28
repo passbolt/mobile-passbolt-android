@@ -74,7 +74,6 @@ class HelpMenuBottomSheetViewModel(
                 emitSideEffect(NavigateToImportProfileManually)
             }
             ImportAccountKit -> {
-                emitSideEffect(Dismiss)
                 emitSideEffect(NavigateToImportAccountKit)
             }
             VisitHelpWebsite -> {
