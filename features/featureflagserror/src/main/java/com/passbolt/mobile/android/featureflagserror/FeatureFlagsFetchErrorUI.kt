@@ -37,30 +37,39 @@ fun FeatureFlagsFetchErrorUi(
         Column(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement =
-                Arrangement.spacedBy(
-                    space = 16.dp,
-                    alignment = Alignment.CenterVertically,
-                ),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            Text(
-                text = stringResource(id = LocalizationR.string.common_startup_configuration_fetch_error),
-                style = MaterialTheme.typography.headlineSmall,
-                color = MaterialTheme.colorScheme.onBackground,
-                textAlign = TextAlign.Center,
+            Column(
                 modifier =
-                    Modifier.padding(
-                        start = 72.dp,
-                        end = 72.dp,
-                        bottom = 16.dp,
+                    Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement =
+                    Arrangement.spacedBy(
+                        space = 16.dp,
+                        alignment = Alignment.CenterVertically,
                     ),
-            )
+            ) {
+                Text(
+                    text = stringResource(id = LocalizationR.string.common_startup_configuration_fetch_error),
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    textAlign = TextAlign.Center,
+                    modifier =
+                        Modifier.padding(
+                            start = 72.dp,
+                            end = 72.dp,
+                            bottom = 16.dp,
+                        ),
+                )
 
-            Image(
-                painter = painterResource(id = CoreR.drawable.apps_list),
-                contentDescription = null,
-                modifier = Modifier.padding(bottom = 16.dp),
-            )
+                Image(
+                    painter = painterResource(id = CoreR.drawable.apps_list),
+                    contentDescription = null,
+                    modifier = Modifier.padding(bottom = 16.dp),
+                )
+            }
 
             PrimaryButton(
                 modifier =
