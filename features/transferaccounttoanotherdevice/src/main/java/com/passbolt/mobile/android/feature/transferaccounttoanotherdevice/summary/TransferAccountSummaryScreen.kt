@@ -36,6 +36,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -131,58 +132,63 @@ private fun TransferAccountSummaryScreen(
     onIntent: (TransferAccountSummaryIntent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Box(
-        modifier =
-            modifier
-                .fillMaxSize()
-                .padding(16.dp)
-                .testTag("TransferAccountSummaryScreen"), // TODO: move it to :testtags module once MOB-3312 gets resolved
-        contentAlignment = Alignment.Center,
-    ) {
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
+    Scaffold(
+        modifier = modifier,
+    ) { contentPadding ->
+        Box(
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(contentPadding)
+                    .padding(16.dp)
+                    .testTag("TransferAccountSummaryScreen"), // TODO: move it to :testtags module once MOB-3312 gets resolved
+            contentAlignment = Alignment.Center,
         ) {
-            if (status != null) {
-                Image(
-                    painter = painterResource(status.icon),
-                    contentDescription = null,
-                    modifier =
-                        Modifier
-                            .size(120.dp)
-                            .testTag(status.icon.toString()),
-                )
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+            ) {
+                if (status != null) {
+                    Image(
+                        painter = painterResource(status.icon),
+                        contentDescription = null,
+                        modifier =
+                            Modifier
+                                .size(120.dp)
+                                .testTag(status.icon.toString()),
+                    )
 
-                Spacer(modifier = Modifier.height(32.dp))
+                    Spacer(modifier = Modifier.height(32.dp))
 
-                Text(
-                    text = stringResource(status.title),
-                    style = MaterialTheme.typography.headlineMedium,
-                    color = MaterialTheme.colorScheme.onBackground,
-                    textAlign = TextAlign.Center,
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Spacer(modifier = Modifier.height(32.dp))
-
-                if (status is TransferAccountStatus.Canceled || status is TransferAccountStatus.Failure) {
-                    TextButton(
-                        onClick = { onIntent(TryAgain) },
-                        modifier = Modifier.fillMaxWidth(),
-                    ) {
-                        Text(text = stringResource(LocalizationR.string.try_again))
-                    }
+                    Text(
+                        text = stringResource(status.title),
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = MaterialTheme.colorScheme.onBackground,
+                        textAlign = TextAlign.Center,
+                    )
 
                     Spacer(modifier = Modifier.height(16.dp))
-                }
 
-                PrimaryButton(
-                    text = stringResource(status.buttonText),
-                    onClick = { onIntent(PrimaryAction) },
-                    modifier = Modifier.fillMaxWidth(),
-                )
+                    Spacer(modifier = Modifier.height(32.dp))
+
+                    if (status is TransferAccountStatus.Canceled || status is TransferAccountStatus.Failure) {
+                        TextButton(
+                            onClick = { onIntent(TryAgain) },
+                            modifier = Modifier.fillMaxWidth(),
+                        ) {
+                            Text(text = stringResource(LocalizationR.string.try_again))
+                        }
+
+                        Spacer(modifier = Modifier.height(16.dp))
+                    }
+
+                    PrimaryButton(
+                        text = stringResource(status.buttonText),
+                        onClick = { onIntent(PrimaryAction) },
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                }
             }
         }
     }

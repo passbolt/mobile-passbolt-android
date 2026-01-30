@@ -1,4 +1,4 @@
-package com.passbolt.mobile.android.feature.otp.navigation
+package com.passbolt.mobile.android.core.navigation.compose.keys
 
 import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.Serializable
@@ -25,5 +25,8 @@ import kotlinx.serialization.Serializable
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-@Serializable
-data object Otp : NavKey
+
+sealed interface OtpNavigationKey : NavKey {
+    @Serializable
+    data object Otp : NavKey
+}

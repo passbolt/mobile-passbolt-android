@@ -33,6 +33,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarDuration.Short
 import androidx.compose.material3.SnackbarHost
@@ -124,15 +125,33 @@ private fun TransferAccountScreen(
     onIntent: (TransferAccountIntent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Box(
-        modifier = modifier.fillMaxSize(),
-    ) {
-        Column {
+    Scaffold(
+        modifier = modifier,
+        topBar = {
             TitleAppBar(
                 title = stringResource(LocalizationR.string.transfer_account_title),
                 navigationIcon = { BackNavigationIcon(onBackClick = { onIntent(GoBack) }) },
             )
-
+        },
+        snackbarHost = {
+            SnackbarHost(
+                hostState = snackbarHostState,
+                snackbar = { data ->
+                    Snackbar(
+                        snackbarData = data,
+                        containerColor = colorResource(CoreUiR.color.red),
+                        contentColor = colorResource(CoreUiR.color.white),
+                    )
+                },
+            )
+        },
+    ) { contentPadding ->
+        Column(
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(contentPadding),
+        ) {
             Box(
                 modifier =
                     Modifier
@@ -170,22 +189,6 @@ private fun TransferAccountScreen(
             isVisible = state.showCancelDialog,
             onConfirm = { onIntent(ConfirmCancelTransfer) },
             onDismiss = { onIntent(DismissCancelDialog) },
-        )
-
-        SnackbarHost(
-            hostState = snackbarHostState,
-            modifier =
-                Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(horizontal = 8.dp)
-                    .padding(bottom = 16.dp),
-            snackbar = { data ->
-                Snackbar(
-                    snackbarData = data,
-                    containerColor = colorResource(CoreUiR.color.red),
-                    contentColor = colorResource(CoreUiR.color.white),
-                )
-            },
         )
 
         ProgressDialog(isVisible = state.showProgress)

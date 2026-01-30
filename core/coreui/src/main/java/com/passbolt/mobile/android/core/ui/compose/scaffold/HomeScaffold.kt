@@ -22,6 +22,7 @@
  */
 package com.passbolt.mobile.android.core.ui.compose.scaffold
 
+import PassboltTheme
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -30,7 +31,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -91,7 +91,6 @@ fun HomeScaffold(
 
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        contentWindowInsets = WindowInsets(bottom = 0.dp),
         topBar = {
             Surface(shadowElevation = 4.dp) {
                 TopAppBar(
@@ -208,29 +207,31 @@ fun HomeScaffold(
 @Preview(showBackground = true)
 @Composable
 private fun HomeScaffoldPreview() {
-    HomeScaffold(
-        snackbarHostState = SnackbarHostState(),
-        appBarTitle = "TOTP",
-        appBarIconRes = CoreUiR.drawable.ic_time_lock,
-        appBarSearchInput = {
-            Text("Search input placeholder")
-        },
-        floatingActionButton = {
-            AddFloatingActionButton(
-                onClick = { },
-            )
-        },
-        shouldShowBackIcon = true,
-        shouldShowCloseIcon = true,
-        shouldShowMoreIcon = true,
-        content = { padding ->
-            Box(
-                modifier =
-                    Modifier
-                        .fillMaxSize(),
-            ) {
-                Text("Sample content")
-            }
-        },
-    )
+    PassboltTheme {
+        HomeScaffold(
+            snackbarHostState = SnackbarHostState(),
+            appBarTitle = "TOTP",
+            appBarIconRes = CoreUiR.drawable.ic_time_lock,
+            appBarSearchInput = {
+                Text("Search input placeholder")
+            },
+            floatingActionButton = {
+                AddFloatingActionButton(
+                    onClick = { },
+                )
+            },
+            shouldShowBackIcon = true,
+            shouldShowCloseIcon = true,
+            shouldShowMoreIcon = true,
+            content = { padding ->
+                Box(
+                    modifier =
+                        Modifier
+                            .fillMaxSize(),
+                ) {
+                    Text("Sample content")
+                }
+            },
+        )
+    }
 }

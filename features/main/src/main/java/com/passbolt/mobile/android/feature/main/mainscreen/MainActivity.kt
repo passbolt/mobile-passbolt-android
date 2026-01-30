@@ -19,7 +19,9 @@ import com.passbolt.mobile.android.core.extension.showSnackbar
 import com.passbolt.mobile.android.core.fulldatarefresh.service.DataRefreshService
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedActivity
 import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
-import com.passbolt.mobile.android.core.navigation.compose.keys.AccountDetailsNavigationKey.AccountDetails
+import com.passbolt.mobile.android.core.navigation.compose.keys.HomeNavigationKey
+import com.passbolt.mobile.android.core.navigation.compose.keys.OtpNavigationKey
+import com.passbolt.mobile.android.core.navigation.compose.keys.SettingsNavigationKey
 import com.passbolt.mobile.android.core.security.runtimeauth.RuntimeAuthenticatedFlag
 import com.passbolt.mobile.android.feature.main.databinding.ActivityMainBinding
 import com.passbolt.mobile.android.feature.main.mainscreen.bottomnavigation.MainBottomNavigationModel
@@ -83,8 +85,13 @@ class MainActivity :
 
         // hide bottom navigation for composables
         coroutineScope.launch {
-            appNavigator.currentBackStackItem.collect {
-                requiredBinding.mainNavigation.isVisible = !bottomNavGoneComposableKeys.contains(it)
+            appNavigator.currentBackStackItem.collect { destinationKey ->
+                destinationKey?.let {
+                    requiredBinding.mainNavigation.isVisible =
+                        bottomNavComposableTypes.any { type ->
+                            type.isInstance(destinationKey)
+                        }
+                }
             }
         }
     }
@@ -191,9 +198,11 @@ class MainActivity :
                 SettingsR.id.settingsBottomNavigationContainerFragment,
             )
 
-        private val bottomNavGoneComposableKeys =
+        private val bottomNavComposableTypes =
             listOf(
-                AccountDetails,
+                HomeNavigationKey::class,
+                OtpNavigationKey::class,
+                SettingsNavigationKey::class,
             )
     }
 }
