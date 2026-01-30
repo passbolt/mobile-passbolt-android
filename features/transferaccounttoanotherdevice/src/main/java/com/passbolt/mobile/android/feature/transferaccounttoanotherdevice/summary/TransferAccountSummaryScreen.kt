@@ -26,7 +26,6 @@ package com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.summa
 import PassboltTheme
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -142,14 +141,15 @@ private fun TransferAccountSummaryScreen(
                     .padding(contentPadding)
                     .padding(16.dp)
                     .testTag("TransferAccountSummaryScreen"), // TODO: move it to :testtags module once MOB-3312 gets resolved
-            contentAlignment = Alignment.Center,
         ) {
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
-            ) {
-                if (status != null) {
+            if (status != null) {
+                Column(
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .align(Alignment.Center),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
                     Image(
                         painter = painterResource(status.icon),
                         contentDescription = null,
@@ -167,11 +167,15 @@ private fun TransferAccountSummaryScreen(
                         color = MaterialTheme.colorScheme.onBackground,
                         textAlign = TextAlign.Center,
                     )
+                }
 
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    Spacer(modifier = Modifier.height(32.dp))
-
+                Column(
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .align(Alignment.BottomCenter),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
                     if (status is TransferAccountStatus.Canceled || status is TransferAccountStatus.Failure) {
                         TextButton(
                             onClick = { onIntent(TryAgain) },
@@ -186,7 +190,10 @@ private fun TransferAccountSummaryScreen(
                     PrimaryButton(
                         text = stringResource(status.buttonText),
                         onClick = { onIntent(PrimaryAction) },
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 16.dp),
                     )
                 }
             }
@@ -198,7 +205,7 @@ private fun TransferAccountSummaryScreen(
 @Composable
 private fun TransferAccountSummaryScreenSuccessPreview() {
     PassboltTheme {
-        TransferAccountSummaryScreen(statusType = TransferAccountStatusType.SUCCESS)
+        TransferAccountSummaryScreen(status = TransferAccountStatus.Success(), onIntent = {})
     }
 }
 
@@ -206,7 +213,7 @@ private fun TransferAccountSummaryScreenSuccessPreview() {
 @Composable
 private fun TransferAccountSummaryScreenCanceledPreview() {
     PassboltTheme {
-        TransferAccountSummaryScreen(statusType = TransferAccountStatusType.CANCELED)
+        TransferAccountSummaryScreen(status = TransferAccountStatus.Failure(), onIntent = {})
     }
 }
 
@@ -214,6 +221,6 @@ private fun TransferAccountSummaryScreenCanceledPreview() {
 @Composable
 private fun TransferAccountSummaryScreenFailurePreview() {
     PassboltTheme {
-        TransferAccountSummaryScreen(statusType = TransferAccountStatusType.FAILURE)
+        TransferAccountSummaryScreen(status = TransferAccountStatus.Canceled(), onIntent = {})
     }
 }
