@@ -1,4 +1,4 @@
-package com.passbolt.mobile.android.feature.home.navigation
+package com.passbolt.mobile.android.core.navigation.compose.keys
 
 import android.annotation.SuppressLint
 import androidx.navigation3.runtime.NavKey
@@ -27,8 +27,11 @@ import kotlinx.serialization.Serializable
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-@SuppressLint("UnsafeOptInUsageError") // false positive in K2
-@Serializable
-data class Home(
-    val homeDisplayViewModel: HomeDisplayViewModel,
-) : NavKey
+
+sealed interface HomeNavigationKey : NavKey {
+    @SuppressLint("UnsafeOptInUsageError") // false positive in K2
+    @Serializable
+    data class Home(
+        val homeDisplayViewModel: HomeDisplayViewModel,
+    ) : HomeNavigationKey
+}

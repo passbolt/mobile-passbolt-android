@@ -41,6 +41,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -132,69 +133,73 @@ private fun TransferDetailsScreen(
                 .map { CircleStepItemModel(AnnotatedString.fromHtml(it)) }
         }
 
-    Column(
-        modifier =
-            modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 16.dp),
-    ) {
-        TitleAppBar(
-            title = stringResource(LocalizationR.string.transfer_account_title),
-            navigationIcon = { BackNavigationIcon(onBackClick = { onIntent(GoBack) }) },
-        )
-
-        Text(
-            text = stringResource(LocalizationR.string.transfer_details_header),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onBackground,
+    Scaffold(
+        modifier = modifier,
+        topBar = {
+            TitleAppBar(
+                title = stringResource(LocalizationR.string.transfer_account_title),
+                navigationIcon = { BackNavigationIcon(onBackClick = { onIntent(GoBack) }) },
+            )
+        },
+    ) { contentPadding ->
+        Column(
             modifier =
                 Modifier
-                    .fillMaxWidth()
-                    .padding(top = 24.dp),
-        )
-
-        CircleStepsView(
-            steps = stepModel,
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .padding(top = 24.dp),
-        )
-
-        Box(
-            modifier =
-                Modifier
-                    .padding(top = 80.dp)
-                    .size(200.dp)
-                    .align(Alignment.CenterHorizontally)
-                    .border(
-                        width = 1.dp,
-                        color = MaterialTheme.colorScheme.outline,
-                        shape = RoundedCornerShape(8.dp),
-                    ),
-            contentAlignment = Alignment.Center,
+                    .fillMaxSize()
+                    .padding(contentPadding)
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 16.dp),
         ) {
-            Image(
-                painter = painterResource(CoreUiR.drawable.ic_sample_qr_code),
-                contentDescription = null,
-                modifier = Modifier.size(180.dp),
+            Text(
+                text = stringResource(LocalizationR.string.transfer_details_header),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onBackground,
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(top = 24.dp),
+            )
+
+            CircleStepsView(
+                steps = stepModel,
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(top = 24.dp),
+            )
+
+            Box(
+                modifier =
+                    Modifier
+                        .padding(top = 80.dp)
+                        .size(200.dp)
+                        .align(Alignment.CenterHorizontally)
+                        .border(
+                            width = 1.dp,
+                            color = MaterialTheme.colorScheme.outline,
+                            shape = RoundedCornerShape(8.dp),
+                        ),
+                contentAlignment = Alignment.Center,
+            ) {
+                Image(
+                    painter = painterResource(CoreUiR.drawable.ic_sample_qr_code),
+                    contentDescription = null,
+                    modifier = Modifier.size(180.dp),
+                )
+            }
+
+            Spacer(modifier = Modifier.height(80.dp))
+            Spacer(modifier = Modifier.weight(1f))
+
+            PrimaryButton(
+                text = stringResource(LocalizationR.string.transfer_details_scan_button),
+                onClick = { onIntent(StartQrCodeScanning) },
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 16.dp),
             )
         }
-
-        Spacer(modifier = Modifier.height(80.dp))
-        Spacer(modifier = Modifier.weight(1f))
-
-        PrimaryButton(
-            text = stringResource(LocalizationR.string.transfer_details_scan_button),
-            onClick = { onIntent(StartQrCodeScanning) },
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 16.dp),
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
     }
 
     CameraRequiredAlertDialog(
