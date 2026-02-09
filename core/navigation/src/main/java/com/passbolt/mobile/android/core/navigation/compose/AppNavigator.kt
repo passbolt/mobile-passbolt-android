@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.core.navigation.compose
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import androidx.core.content.FileProvider.getUriForFile
@@ -69,6 +70,10 @@ class AppNavigator(
         val result = backStack.removeLastOrNull()
         _currentBackStackItem.value = backStack.lastOrNull()
         return result
+    }
+
+    fun navigateUp(activity: Activity?) {
+        activity?.finish()
     }
 
     fun startNavigationActivity(

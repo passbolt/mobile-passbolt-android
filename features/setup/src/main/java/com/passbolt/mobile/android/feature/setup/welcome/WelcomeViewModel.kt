@@ -38,17 +38,17 @@ import com.passbolt.mobile.android.feature.setup.welcome.WelcomeIntent.Acknowled
 import com.passbolt.mobile.android.feature.setup.welcome.WelcomeIntent.ConnectToExistingAccount
 import com.passbolt.mobile.android.feature.setup.welcome.WelcomeIntent.DismissHelpMenu
 import com.passbolt.mobile.android.feature.setup.welcome.WelcomeIntent.DismissNoAccountExplanation
-import com.passbolt.mobile.android.feature.setup.welcome.WelcomeIntent.GoBack
+import com.passbolt.mobile.android.feature.setup.welcome.WelcomeIntent.GoUp
 import com.passbolt.mobile.android.feature.setup.welcome.WelcomeIntent.ImportProfileManually
 import com.passbolt.mobile.android.feature.setup.welcome.WelcomeIntent.Initialize
 import com.passbolt.mobile.android.feature.setup.welcome.WelcomeIntent.OpenHelpMenu
 import com.passbolt.mobile.android.feature.setup.welcome.WelcomeIntent.SeeNoAccountExplanation
 import com.passbolt.mobile.android.feature.setup.welcome.WelcomeIntent.SelectedAccountKit
-import com.passbolt.mobile.android.feature.setup.welcome.WelcomeSideEffect.NavigateBack
 import com.passbolt.mobile.android.feature.setup.welcome.WelcomeSideEffect.NavigateToImportProfile
 import com.passbolt.mobile.android.feature.setup.welcome.WelcomeSideEffect.NavigateToLogs
 import com.passbolt.mobile.android.feature.setup.welcome.WelcomeSideEffect.NavigateToSummary
 import com.passbolt.mobile.android.feature.setup.welcome.WelcomeSideEffect.NavigateToTransferDetails
+import com.passbolt.mobile.android.feature.setup.welcome.WelcomeSideEffect.NavigateUp
 import com.passbolt.mobile.android.ui.ResultStatus
 import com.passbolt.mobile.android.ui.ResultStatus.Failure
 import com.passbolt.mobile.android.ui.ResultStatus.Success
@@ -65,7 +65,7 @@ internal class WelcomeViewModel(
     fun onIntent(intent: WelcomeIntent) {
         when (intent) {
             is Initialize -> initialize(intent)
-            GoBack -> emitSideEffect(NavigateBack)
+            GoUp -> emitSideEffect(NavigateUp)
             SeeNoAccountExplanation -> updateViewState { copy(showNoAccountExplanation = true) }
             ConnectToExistingAccount -> emitSideEffect(NavigateToTransferDetails)
             OpenHelpMenu -> updateViewState { copy(showHelpMenu = true) }

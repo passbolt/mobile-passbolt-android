@@ -26,7 +26,7 @@ package com.passbolt.mobile.android.feature.setup.welcome
 import com.passbolt.mobile.android.ui.ResultStatus
 
 internal sealed interface WelcomeSideEffect {
-    data object NavigateBack : WelcomeSideEffect
+    data object NavigateUp : WelcomeSideEffect
 
     data object NavigateToTransferDetails : WelcomeSideEffect
 
