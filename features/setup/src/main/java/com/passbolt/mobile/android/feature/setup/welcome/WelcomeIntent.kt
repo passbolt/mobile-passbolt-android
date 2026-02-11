@@ -28,7 +28,7 @@ sealed interface WelcomeIntent {
         val isTaskRoot: Boolean,
     ) : WelcomeIntent
 
-    data object GoBack : WelcomeIntent
+    data object GoUp : WelcomeIntent
 
     data object SeeNoAccountExplanation : WelcomeIntent
 

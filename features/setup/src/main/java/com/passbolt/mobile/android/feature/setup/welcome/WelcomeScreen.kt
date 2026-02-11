@@ -68,17 +68,17 @@ import com.passbolt.mobile.android.feature.setup.welcome.WelcomeIntent.Acknowled
 import com.passbolt.mobile.android.feature.setup.welcome.WelcomeIntent.ConnectToExistingAccount
 import com.passbolt.mobile.android.feature.setup.welcome.WelcomeIntent.DismissHelpMenu
 import com.passbolt.mobile.android.feature.setup.welcome.WelcomeIntent.DismissNoAccountExplanation
-import com.passbolt.mobile.android.feature.setup.welcome.WelcomeIntent.GoBack
+import com.passbolt.mobile.android.feature.setup.welcome.WelcomeIntent.GoUp
 import com.passbolt.mobile.android.feature.setup.welcome.WelcomeIntent.ImportProfileManually
 import com.passbolt.mobile.android.feature.setup.welcome.WelcomeIntent.Initialize
 import com.passbolt.mobile.android.feature.setup.welcome.WelcomeIntent.OpenHelpMenu
 import com.passbolt.mobile.android.feature.setup.welcome.WelcomeIntent.SeeNoAccountExplanation
 import com.passbolt.mobile.android.feature.setup.welcome.WelcomeIntent.SelectedAccountKit
-import com.passbolt.mobile.android.feature.setup.welcome.WelcomeSideEffect.NavigateBack
 import com.passbolt.mobile.android.feature.setup.welcome.WelcomeSideEffect.NavigateToImportProfile
 import com.passbolt.mobile.android.feature.setup.welcome.WelcomeSideEffect.NavigateToLogs
 import com.passbolt.mobile.android.feature.setup.welcome.WelcomeSideEffect.NavigateToSummary
 import com.passbolt.mobile.android.feature.setup.welcome.WelcomeSideEffect.NavigateToTransferDetails
+import com.passbolt.mobile.android.feature.setup.welcome.WelcomeSideEffect.NavigateUp
 import com.passbolt.mobile.android.helpmenu.compose.HelpMenuBottomSheet
 import com.passbolt.mobile.android.testtags.composetags.Setup.APPS_IMAGE
 import com.passbolt.mobile.android.testtags.composetags.Setup.HELP_BUTTON
@@ -110,7 +110,7 @@ internal fun WelcomeScreen(
 
     SideEffectDispatcher(viewModel.sideEffect) {
         when (it) {
-            NavigateBack -> navigation.navigateBack()
+            NavigateUp -> navigation.navigateUp(activity)
             NavigateToImportProfile -> navigation.navigateToKey(ImportProfile)
             NavigateToLogs -> navigation.navigateToKey(Logs)
             is NavigateToSummary -> navigation.navigateToKey(Summary(it.status))
@@ -132,7 +132,7 @@ private fun WelcomeScreen(
                 title = "",
                 navigationIcon =
                     if (state.showBackNavigation) {
-                        { BackNavigationIcon(onBackClick = { onIntent(GoBack) }) }
+                        { BackNavigationIcon(onBackClick = { onIntent(GoUp) }) }
                     } else {
                         {}
                     },
