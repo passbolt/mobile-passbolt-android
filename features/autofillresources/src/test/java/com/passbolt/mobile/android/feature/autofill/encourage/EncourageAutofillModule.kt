@@ -1,8 +1,8 @@
 package com.passbolt.mobile.android.feature.autofill.encourage
 
+import com.passbolt.mobile.android.core.autofill.AutofillInformationProvider
 import com.passbolt.mobile.android.feature.autofill.encourage.autofill.EncourageAutofillContract
 import com.passbolt.mobile.android.feature.autofill.encourage.autofill.EncourageAutofillPresenter
-import com.passbolt.mobile.android.feature.autofill.informationprovider.AutofillInformationProvider
 import org.koin.dsl.module
 import org.mockito.kotlin.mock
 

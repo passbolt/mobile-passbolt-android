@@ -28,6 +28,8 @@ import com.passbolt.mobile.android.ui.BiometricAuthError
 import javax.crypto.Cipher
 
 internal sealed interface AppSettingsIntent {
+    object Initialize : AppSettingsIntent
+
     object GoBack : AppSettingsIntent
 
     object GoToAutofill : AppSettingsIntent

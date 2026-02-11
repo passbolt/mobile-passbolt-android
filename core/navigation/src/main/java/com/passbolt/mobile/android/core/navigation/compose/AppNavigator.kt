@@ -15,9 +15,13 @@ import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.Au
 import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.Home
 import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.Start
 import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.TransferAccount
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import org.koin.core.component.KoinComponent
 import java.io.File
 
@@ -50,6 +54,24 @@ class AppNavigator(
 
     private val _currentBackStackItem = MutableStateFlow<NavKey?>(null)
     val currentBackStackItem: StateFlow<NavKey?> = _currentBackStackItem.asStateFlow()
+
+    private val pendingNavigationKey = MutableStateFlow<NavKey?>(null)
+
+    private val _tabSwitchRequest = MutableSharedFlow<BottomTab>(extraBufferCapacity = 1)
+    val tabSwitchRequest: SharedFlow<BottomTab> = _tabSwitchRequest.asSharedFlow()
+
+    fun setPendingNavigation(key: NavKey) {
+        pendingNavigationKey.update { key }
+    }
+
+    fun consumePendingNavigation() =
+        pendingNavigationKey.value.also {
+            pendingNavigationKey.update { null }
+        }
+
+    fun requestTabSwitch(tab: BottomTab) {
+        _tabSwitchRequest.tryEmit(tab)
+    }
 
     fun navigateToKey(key: NavKey) {
         backStack.add(key)

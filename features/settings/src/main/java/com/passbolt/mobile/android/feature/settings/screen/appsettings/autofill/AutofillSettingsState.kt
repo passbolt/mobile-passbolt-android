@@ -28,4 +28,7 @@ data class AutofillSettingsState(
     val isAccessibilityAutofillChecked: Boolean = false,
     val isChromeNativeAutofillChecked: Boolean = false,
     val isChromeNativeAutofillEnabled: Boolean = false,
-)
+) {
+    val isAutofillConflictDetected: Boolean
+        get() = isNativeAutofillChecked && isAccessibilityAutofillChecked
+}

@@ -37,6 +37,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -86,6 +87,7 @@ import com.passbolt.mobile.android.feature.home.screen.HomeSideEffect.OpenResour
 import com.passbolt.mobile.android.feature.home.screen.HomeSideEffect.ShowErrorSnackbar
 import com.passbolt.mobile.android.feature.home.screen.HomeSideEffect.ShowSuccessSnackbar
 import com.passbolt.mobile.android.feature.home.screen.HomeSideEffect.ShowToast
+import com.passbolt.mobile.android.feature.home.screen.snackbar.AutofillConflictSnackbarEffect
 import com.passbolt.mobile.android.feature.home.switchaccount.SwitchAccountBottomSheet
 import com.passbolt.mobile.android.testtags.composetags.Home
 import com.passbolt.mobile.android.ui.FiltersMenuModel
@@ -119,9 +121,17 @@ internal fun HomeScreen(
     viewModel: HomeViewModel = koinViewModel(),
 ) {
     val context = LocalContext.current
-    val state = viewModel.viewState.collectAsStateWithLifecycle()
+    val state by viewModel.viewState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
+
+    AutofillConflictSnackbarEffect(
+        snackbarHostState = snackbarHostState,
+        isAutofillConflictDetected = state.isAutofillConflictDetected,
+        onActionClick = {
+            navigation.navigateToAutofillSettings()
+        },
+    )
 
     LaunchedEffect(homeView, showSuggestedModel) {
         viewModel.onIntent(
@@ -133,7 +143,7 @@ internal fun HomeScreen(
     }
 
     HomeScreen(
-        state = state.value,
+        state = state,
         onIntent = viewModel::onIntent,
         snackbarHostState = snackbarHostState,
         homeNavigation = navigation,

@@ -18,7 +18,10 @@ import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.navigation.AppContext
+import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
+import com.passbolt.mobile.android.core.navigation.compose.BottomTab
 import com.passbolt.mobile.android.core.navigation.compose.keys.HomeNavigationKey.Home
+import com.passbolt.mobile.android.core.navigation.compose.keys.SettingsNavigationKey
 import com.passbolt.mobile.android.core.navigation.constants.Autofillresources
 import com.passbolt.mobile.android.core.navigation.deeplinks.NavDeepLinkProvider
 import com.passbolt.mobile.android.core.preferences.usecase.GetHomeDisplayViewPrefsUseCase
@@ -148,6 +151,7 @@ class HomeBottomNavigationContainerFragment :
 
     private val filterPreferencesUseCase: GetHomeDisplayViewPrefsUseCase by inject()
     private val homeDisplayMapper: HomeDisplayViewMapper by inject()
+    private val appNavigator: AppNavigator by inject()
 
     override val resourceHandlingStrategy: ResourceHandlingStrategy by lifecycleAwareLazy {
         if (requireActivity().javaClass.name == Autofillresources.AUTOFILL_RESOURCES_ACTIVITY) {
@@ -397,5 +401,12 @@ class HomeBottomNavigationContainerFragment :
         findNavController().navigate(
             NavDeepLinkProvider.createFolderDeepLinkRequest(folderId),
         )
+    }
+
+    override fun navigateToAutofillSettings() {
+        with(appNavigator) {
+            setPendingNavigation(SettingsNavigationKey.Autofill)
+            requestTabSwitch(BottomTab.SETTINGS)
+        }
     }
 }

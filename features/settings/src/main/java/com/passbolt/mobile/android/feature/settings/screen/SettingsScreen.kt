@@ -30,6 +30,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -51,6 +52,7 @@ import com.passbolt.mobile.android.core.ui.compose.progressdialog.ProgressDialog
 import com.passbolt.mobile.android.core.ui.compose.topbar.TitleAppBar
 import com.passbolt.mobile.android.feature.settings.screen.SettingsIntent.CancelSignOut
 import com.passbolt.mobile.android.feature.settings.screen.SettingsIntent.ConfirmSignOut
+import com.passbolt.mobile.android.feature.settings.screen.SettingsIntent.Initialize
 import com.passbolt.mobile.android.feature.settings.screen.SettingsIntent.SignOut
 import com.passbolt.mobile.android.feature.settings.screen.SettingsSideEffect.NavigateToAccounts
 import com.passbolt.mobile.android.feature.settings.screen.SettingsSideEffect.NavigateToAppSettings
@@ -69,6 +71,10 @@ internal fun SettingsScreen(
 ) {
     val state = viewModel.viewState.collectAsStateWithLifecycle()
     val context = LocalContext.current
+
+    LaunchedEffect(Unit) {
+        viewModel.onIntent(Initialize)
+    }
 
     SettingsScreen(
         state = state.value,
@@ -110,6 +116,7 @@ private fun SettingsScreen(
                     iconPainter = painterResource(R.drawable.ic_app_settings),
                     title = stringResource(LocalizationR.string.settings_app_settings),
                     onClick = { onIntent(SettingsIntent.GoToAppSettings) },
+                    hasWarningBadge = state.isAutofillConflictDetected,
                 )
 
                 OpenableSettingsItem(

@@ -19,6 +19,7 @@ import com.passbolt.mobile.android.core.extension.showSnackbar
 import com.passbolt.mobile.android.core.fulldatarefresh.service.DataRefreshService
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedActivity
 import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
+import com.passbolt.mobile.android.core.navigation.compose.BottomTab
 import com.passbolt.mobile.android.core.navigation.compose.keys.HomeNavigationKey
 import com.passbolt.mobile.android.core.navigation.compose.keys.OtpNavigationKey
 import com.passbolt.mobile.android.core.navigation.compose.keys.SettingsNavigationKey
@@ -78,12 +79,18 @@ class MainActivity :
             menu.findItem(OtpR.id.otpNav).isVisible = navigationModel.isOtpTabVisible
         }
 
-        // hide bottom navigation for fragments
+        hideBottomNavigationForFragments()
+        hideBottomNavigationForComposables()
+        handleTabSwitchRequests()
+    }
+
+    private fun hideBottomNavigationForFragments() {
         bottomNavController.addOnDestinationChangedListener { _, destination, _ ->
             requiredBinding.mainNavigation.isVisible = bottomNavFragmentIds.contains(destination.id)
         }
+    }
 
-        // hide bottom navigation for composables
+    private fun hideBottomNavigationForComposables() {
         coroutineScope.launch {
             appNavigator.currentBackStackItem.collect { destinationKey ->
                 destinationKey?.let {
@@ -92,6 +99,19 @@ class MainActivity :
                             type.isInstance(destinationKey)
                         }
                 }
+            }
+        }
+    }
+
+    private fun handleTabSwitchRequests() {
+        coroutineScope.launch {
+            appNavigator.tabSwitchRequest.collect { tab ->
+                requiredBinding.mainNavigation.selectedItemId =
+                    when (tab) {
+                        BottomTab.HOME -> HomeR.id.homeNav
+                        BottomTab.OTP -> OtpR.id.otpNav
+                        BottomTab.SETTINGS -> SettingsR.id.settingsNavCompose
+                    }
             }
         }
     }

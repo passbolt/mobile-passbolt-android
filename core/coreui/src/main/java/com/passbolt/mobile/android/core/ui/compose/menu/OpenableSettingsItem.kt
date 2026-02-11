@@ -28,6 +28,7 @@ import com.passbolt.mobile.android.core.compose.AppTypography
 import com.passbolt.mobile.android.core.ui.R
 import com.passbolt.mobile.android.core.ui.compose.menu.OpenableSettingsItem.TestTags.ARROW
 import com.passbolt.mobile.android.core.ui.compose.menu.OpenableSettingsItem.TestTags.ITEM
+import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 @Composable
 fun OpenableSettingsItem(
@@ -38,6 +39,7 @@ fun OpenableSettingsItem(
     iconTint: Color = colorResource(R.color.icon_tint),
     isEnabled: Boolean = true,
     opensInternally: Boolean = true,
+    hasWarningBadge: Boolean = false,
 ) {
     @Suppress("MagicNumber")
     val alpha = if (isEnabled) 1f else 0.5f
@@ -62,12 +64,29 @@ fun OpenableSettingsItem(
             )
         }
         Spacer(modifier = Modifier.width(16.dp))
-        Text(
-            text = title,
-            style = AppTypography.displayMedium,
-            color = MaterialTheme.colorScheme.onBackground,
+
+        Row(
             modifier = Modifier.weight(1f),
-        )
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = title,
+                style = AppTypography.displayMedium,
+                color = MaterialTheme.colorScheme.onBackground,
+            )
+
+            if (hasWarningBadge) {
+                Image(
+                    modifier =
+                        Modifier
+                            .padding(start = 16.dp)
+                            .size(20.dp),
+                    painter = painterResource(CoreUiR.drawable.ic_excl_indicator),
+                    contentDescription = null,
+                )
+            }
+        }
+
         if (opensInternally) {
             Image(
                 painter = painterResource(R.drawable.ic_arrow_right),
@@ -90,6 +109,17 @@ private fun OpenableSettingsItemPreview() {
         iconPainter = painterResource(R.drawable.ic_app_settings),
         title = "App settings",
         onClick = { },
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun OpenableSettingsItemWithWarningPreview() {
+    OpenableSettingsItem(
+        iconPainter = painterResource(R.drawable.ic_app_settings),
+        title = "App settings",
+        onClick = { },
+        hasWarningBadge = true,
     )
 }
 
