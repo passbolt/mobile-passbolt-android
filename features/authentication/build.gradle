@@ -53,17 +53,18 @@ dependencies {
     implementation libs.fastadapter.diff
     implementation platform(libs.koin.bom)
     implementation libs.koin
+    implementation libs.koin.compose
     implementation libs.coil.views
     implementation libs.gson
     implementation libs.fusionauth.jwt
     implementation libs.yubikit.android
-    implementation(libs.pinentry) {
-        exclude group: 'androidx.appcompat', module: 'appcompat'
-    }
     implementation libs.espresso.idling.resource
     implementation platform(libs.compose.bom)
     implementation libs.compose.foundation
     implementation libs.compose.activity
+    implementation libs.compose.material3
+    implementation libs.compose.ui.tooling
+    debugImplementation libs.compose.ui.tooling.preview
 
     testImplementation project(":commontest")
     testImplementation platform(libs.koin.bom)
