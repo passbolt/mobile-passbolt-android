@@ -2,9 +2,11 @@ package com.passbolt.mobile.android.feature.settings
 
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
+import com.passbolt.mobile.android.common.autofill.DetectAutofillConflict
 import com.passbolt.mobile.android.common.datarefresh.DataRefreshTrackingFlow
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
 import com.passbolt.mobile.android.feature.settings.screen.SettingsIntent.ConfirmSignOut
+import com.passbolt.mobile.android.feature.settings.screen.SettingsIntent.Initialize
 import com.passbolt.mobile.android.feature.settings.screen.SettingsIntent.SignOut
 import com.passbolt.mobile.android.feature.settings.screen.SettingsViewModel
 import kotlinx.coroutines.Dispatchers
@@ -63,6 +65,7 @@ class SettingsViewModelTest : KoinTest {
                 listOf(
                     module {
                         single { mock<SignOutUseCase>() }
+                        single { mock<DetectAutofillConflict>() }
                         factoryOf(::SettingsViewModel)
                         singleOf(::DataRefreshTrackingFlow)
                     },
@@ -103,5 +106,37 @@ class SettingsViewModelTest : KoinTest {
                 }
                 assertThat(awaitItem().isProgressDialogVisible).isFalse()
             }
+        }
+
+    @Test
+    fun `should detect autofill conflict when detector returns true`() =
+        runTest {
+            val detectAutofillConflict: DetectAutofillConflict = get()
+            whenever(detectAutofillConflict.invoke()) doReturn true
+
+            viewModel = get()
+            viewModel.onIntent(Initialize)
+
+            assertThat(viewModel.viewState.value.isAutofillConflictDetected).isTrue()
+        }
+
+    @Test
+    fun `should not detect autofill conflict when detector returns false`() =
+        runTest {
+            val detectAutofillConflict: DetectAutofillConflict = get()
+            whenever(detectAutofillConflict.invoke()) doReturn false
+
+            viewModel = get()
+            viewModel.onIntent(Initialize)
+
+            assertThat(viewModel.viewState.value.isAutofillConflictDetected).isFalse()
+        }
+
+    @Test
+    fun `initial state should have autofill conflict as false`() =
+        runTest {
+            viewModel = get()
+
+            assertThat(viewModel.viewState.value.isAutofillConflictDetected).isFalse()
         }
 }

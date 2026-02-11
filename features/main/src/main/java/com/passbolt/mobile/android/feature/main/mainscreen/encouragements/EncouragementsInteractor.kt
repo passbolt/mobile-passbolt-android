@@ -23,10 +23,10 @@
 
 package com.passbolt.mobile.android.feature.main.mainscreen.encouragements
 
+import com.passbolt.mobile.android.core.autofill.AutofillInformationProvider
+import com.passbolt.mobile.android.core.autofill.AutofillInformationProvider.ChromeNativeAutofillStatus.DISABLED
 import com.passbolt.mobile.android.core.preferences.usecase.GetAccountFlagsPrefsUseCase
 import com.passbolt.mobile.android.core.preferences.usecase.UpdateAccountFlagsPrefsUseCase
-import com.passbolt.mobile.android.feature.autofill.informationprovider.AutofillInformationProvider
-import com.passbolt.mobile.android.feature.autofill.informationprovider.AutofillInformationProvider.ChromeNativeAutofillStatus.DISABLED
 
 class EncouragementsInteractor(
     private val getAccountFlagsPrefsUseCase: GetAccountFlagsPrefsUseCase,

@@ -30,6 +30,7 @@ import com.jayway.jsonpath.Configuration
 import com.jayway.jsonpath.Option
 import com.jayway.jsonpath.spi.json.GsonJsonProvider
 import com.jayway.jsonpath.spi.mapper.GsonMappingProvider
+import com.passbolt.mobile.android.common.autofill.DetectAutofillConflict
 import com.passbolt.mobile.android.common.datarefresh.DataRefreshTrackingFlow
 import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.core.accounts.usecase.accountdata.GetSelectedAccountDataUseCase
@@ -49,6 +50,7 @@ import com.passbolt.mobile.android.feature.home.screen.HomeIntent.CopyPassword
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.CopyResourceMetadataDescription
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.CopyResourceUri
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.CopyResourceUsername
+import com.passbolt.mobile.android.feature.home.screen.HomeIntent.Initialize
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.LaunchResourceWebsite
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.OpenResourceMenu
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.ToggleResourceFavourite
@@ -56,6 +58,7 @@ import com.passbolt.mobile.android.feature.home.screen.HomeSideEffect.CopyToClip
 import com.passbolt.mobile.android.feature.home.screen.HomeSideEffect.NavigateToResourceUri
 import com.passbolt.mobile.android.feature.home.screen.HomeSideEffect.OpenResourceMoreMenu
 import com.passbolt.mobile.android.feature.home.screen.HomeSideEffect.ShowErrorSnackbar
+import com.passbolt.mobile.android.feature.home.screen.ShowSuggestedModel.DoNotShow
 import com.passbolt.mobile.android.feature.home.screen.SnackbarErrorType.TOGGLE_FAVOURITE_FAILURE
 import com.passbolt.mobile.android.feature.home.screen.data.HomeData
 import com.passbolt.mobile.android.feature.home.screen.data.HomeDataProvider
@@ -67,6 +70,7 @@ import com.passbolt.mobile.android.metadata.usecase.CanCreateResourceUseCase
 import com.passbolt.mobile.android.metadata.usecase.CanShareResourceUseCase
 import com.passbolt.mobile.android.ui.DefaultFilterModel
 import com.passbolt.mobile.android.ui.HomeDisplayViewModel.AllItems
+import com.passbolt.mobile.android.ui.HomeDisplayViewModel.NotLoaded
 import com.passbolt.mobile.android.ui.MetadataJsonModel
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.FavouriteOption.ADD_TO_FAVOURITES
@@ -98,6 +102,7 @@ import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.stub
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.time.ZonedDateTime
 import java.util.EnumSet
@@ -122,6 +127,7 @@ class HomeViewModelMenuTest : KoinTest {
                     single { mock<GetLocalFolderDetailsUseCase>() }
                     single { mock<CanCreateResourceUseCase>() }
                     single { mock<CanShareResourceUseCase>() }
+                    single { mock<DetectAutofillConflict>() }
                     single(named(JSON_MODEL_GSON)) { GsonBuilder().serializeNulls().create() }
                     single {
                         Configuration
@@ -440,6 +446,42 @@ class HomeViewModelMenuTest : KoinTest {
                 assertIs<ShowErrorSnackbar>(effect)
                 assertThat(effect.type).isEqualTo(TOGGLE_FAVOURITE_FAILURE)
             }
+        }
+
+    @Test
+    fun `should detect autofill conflict when detector returns true on initialize`() =
+        runTest {
+            val detectAutofillConflict: DetectAutofillConflict = get()
+            whenever(detectAutofillConflict.invoke()).thenReturn(true)
+
+            viewModel = get()
+            viewModel.onIntent(Initialize(DoNotShow, NotLoaded))
+
+            viewModel.viewState.test {
+                skipItems(1)
+
+                val state = awaitItem()
+                assertThat(state.isAutofillConflictDetected).isTrue()
+            }
+            verify(detectAutofillConflict).invoke()
+        }
+
+    @Test
+    fun `should not detect autofill conflict when detector returns false on initialize`() =
+        runTest {
+            val detectAutofillConflict: DetectAutofillConflict = get()
+            whenever(detectAutofillConflict.invoke()).thenReturn(false)
+
+            viewModel = get()
+            viewModel.onIntent(Initialize(DoNotShow, NotLoaded))
+
+            viewModel.viewState.test {
+                skipItems(1)
+
+                val state = awaitItem()
+                assertThat(state.isAutofillConflictDetected).isFalse()
+            }
+            verify(detectAutofillConflict).invoke()
         }
 
     private fun mockResourceModel(name: String) =

@@ -41,6 +41,7 @@ import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -79,6 +80,7 @@ import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettin
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsIntent.GoToAutofill
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsIntent.GoToDefaultFilter
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsIntent.GoToExpertSettings
+import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsIntent.Initialize
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsIntent.InvalidateBiometricKeyPermanently
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsIntent.RefreshedPassphrase
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsIntent.ToggleFingerprint
@@ -105,6 +107,10 @@ internal fun AppSettingsScreen(
 ) {
     val state = viewModel.viewState.collectAsStateWithLifecycle()
     val environment = rememberAppSettingsEnvironment(viewModel::onIntent)
+
+    LaunchedEffect(Unit) {
+        viewModel.onIntent(Initialize)
+    }
 
     AppSettingsSideEffectsHandler(
         sideEffectFlow = viewModel.sideEffect,
@@ -252,6 +258,7 @@ private fun AppSettingsScreen(
                     iconPainter = painterResource(R.drawable.ic_key),
                     title = stringResource(LocalizationR.string.settings_app_settings_autofill),
                     onClick = { onIntent(GoToAutofill) },
+                    hasWarningBadge = state.isAutofillConflictDetected,
                 )
 
                 OpenableSettingsItem(

@@ -24,9 +24,9 @@ package com.passbolt.mobile.android.feature.settings.appsettings.autofill
  */
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
-import com.passbolt.mobile.android.feature.autofill.informationprovider.AutofillInformationProvider
-import com.passbolt.mobile.android.feature.autofill.informationprovider.AutofillInformationProvider.ChromeNativeAutofillStatus.DISABLED
-import com.passbolt.mobile.android.feature.autofill.informationprovider.AutofillInformationProvider.ChromeNativeAutofillStatus.NOT_SUPPORTED
+import com.passbolt.mobile.android.core.autofill.AutofillInformationProvider
+import com.passbolt.mobile.android.core.autofill.AutofillInformationProvider.ChromeNativeAutofillStatus.DISABLED
+import com.passbolt.mobile.android.core.autofill.AutofillInformationProvider.ChromeNativeAutofillStatus.NOT_SUPPORTED
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.AutofillScreenSideEffect.NavigateToChromeNativeAutofill
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.AutofillScreenSideEffect.NavigateToEncourageAccessibilityAutofill
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.AutofillScreenSideEffect.NavigateToEncourageNativeAutofill
@@ -224,5 +224,97 @@ class AutofillSettingsViewModelTest : KoinTest {
                 whenever(autofillInformationProvider.isAccessibilityAutofillSetup()) doReturn true
                 assertThat(viewModel.viewState.value.isAccessibilityAutofillChecked).isFalse()
             }
+        }
+
+    @Test
+    fun `autofill conflict should be detected when both native and accessibility autofill are enabled`() =
+        runTest {
+            val autofillInformationProvider: AutofillInformationProvider = get()
+            whenever(autofillInformationProvider.isAutofillServiceSupported()) doReturn true
+            whenever(autofillInformationProvider.isPassboltAutofillServiceSet()) doReturn true
+            whenever(autofillInformationProvider.isAccessibilityAutofillSetup()) doReturn true
+            whenever(autofillInformationProvider.getChromeNativeAutofillStatus()) doReturn NOT_SUPPORTED
+
+            viewModel = get()
+
+            val state = viewModel.viewState.value
+
+            assertThat(state.isNativeAutofillChecked).isTrue()
+            assertThat(state.isAccessibilityAutofillChecked).isTrue()
+            assertThat(state.isAutofillConflictDetected).isTrue()
+        }
+
+    @Test
+    fun `autofill conflict should not be detected when only native autofill is enabled`() =
+        runTest {
+            val autofillInformationProvider: AutofillInformationProvider = get()
+            whenever(autofillInformationProvider.isAutofillServiceSupported()) doReturn true
+            whenever(autofillInformationProvider.isPassboltAutofillServiceSet()) doReturn true
+            whenever(autofillInformationProvider.isAccessibilityAutofillSetup()) doReturn false
+            whenever(autofillInformationProvider.getChromeNativeAutofillStatus()) doReturn NOT_SUPPORTED
+
+            viewModel = get()
+
+            val state = viewModel.viewState.value
+
+            assertThat(state.isNativeAutofillChecked).isTrue()
+            assertThat(state.isAccessibilityAutofillChecked).isFalse()
+            assertThat(state.isAutofillConflictDetected).isFalse()
+        }
+
+    @Test
+    fun `autofill conflict should not be detected when only accessibility autofill is enabled`() =
+        runTest {
+            val autofillInformationProvider: AutofillInformationProvider = get()
+            whenever(autofillInformationProvider.isAutofillServiceSupported()) doReturn true
+            whenever(autofillInformationProvider.isPassboltAutofillServiceSet()) doReturn false
+            whenever(autofillInformationProvider.isAccessibilityAutofillSetup()) doReturn true
+            whenever(autofillInformationProvider.getChromeNativeAutofillStatus()) doReturn NOT_SUPPORTED
+
+            viewModel = get()
+
+            val state = viewModel.viewState.value
+
+            assertThat(state.isNativeAutofillChecked).isFalse()
+            assertThat(state.isAccessibilityAutofillChecked).isTrue()
+            assertThat(state.isAutofillConflictDetected).isFalse()
+        }
+
+    @Test
+    fun `autofill conflict should not be detected when no autofill is enabled`() =
+        runTest {
+            val autofillInformationProvider: AutofillInformationProvider = get()
+            whenever(autofillInformationProvider.isAutofillServiceSupported()) doReturn true
+            whenever(autofillInformationProvider.isPassboltAutofillServiceSet()) doReturn false
+            whenever(autofillInformationProvider.isAccessibilityAutofillSetup()) doReturn false
+            whenever(autofillInformationProvider.getChromeNativeAutofillStatus()) doReturn NOT_SUPPORTED
+
+            viewModel = get()
+
+            val state = viewModel.viewState.value
+
+            assertThat(state.isNativeAutofillChecked).isFalse()
+            assertThat(state.isAccessibilityAutofillChecked).isFalse()
+            assertThat(state.isAutofillConflictDetected).isFalse()
+        }
+
+    @OptIn(ExperimentalTime::class)
+    @Test
+    fun `autofill conflict state should update after enabling accessibility autofill`() =
+        runTest {
+            val autofillInformationProvider: AutofillInformationProvider = get()
+            whenever(autofillInformationProvider.isAutofillServiceSupported()) doReturn true
+            whenever(autofillInformationProvider.isPassboltAutofillServiceSet()) doReturn true
+            whenever(autofillInformationProvider.isAccessibilityAutofillSetup()) doReturn false
+            whenever(autofillInformationProvider.getChromeNativeAutofillStatus()) doReturn NOT_SUPPORTED
+
+            viewModel = get()
+
+            assertThat(viewModel.viewState.value.isAutofillConflictDetected).isFalse()
+
+            whenever(autofillInformationProvider.isAccessibilityAutofillSetup()) doReturn true
+            viewModel.onIntent(UpdateAutofillState)
+
+            assertThat(viewModel.viewState.value.isAutofillConflictDetected).isTrue()
         }
 }

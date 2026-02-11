@@ -28,4 +28,5 @@ data class AppSettingsState(
     val isDisableFingerprintDialogVisible: Boolean = false,
     val isConfigureFingerprintDialogVisible: Boolean = false,
     val isKeyChangesDialogDetectedVisible: Boolean = false,
+    val isAutofillConflictDetected: Boolean = false,
 )

@@ -23,6 +23,7 @@
 package com.passbolt.mobile.android.feature.home.screen
 
 import androidx.lifecycle.viewModelScope
+import com.passbolt.mobile.android.common.autofill.DetectAutofillConflict
 import com.passbolt.mobile.android.common.datarefresh.DataRefreshStatus.Idle.FinishedWithFailure
 import com.passbolt.mobile.android.common.datarefresh.DataRefreshStatus.Idle.FinishedWithSuccess
 import com.passbolt.mobile.android.common.datarefresh.DataRefreshStatus.Idle.NotCompleted
@@ -128,6 +129,7 @@ internal class HomeViewModel(
     private val getLocalFolderUseCase: GetLocalFolderDetailsUseCase,
     private val canCreateResourceUse: CanCreateResourceUseCase,
     private val canShareResourceUse: CanShareResourceUseCase,
+    private val detectAutofillConflict: DetectAutofillConflict,
 ) : AuthenticatedViewModel<HomeState, HomeSideEffect>(HomeState()),
     KoinComponent {
     private val resourcePropertiesActionsInteractor: ResourcePropertiesActionsInteractor
@@ -426,11 +428,14 @@ internal class HomeViewModel(
                     filterPreferences.lastUsedHomeView,
                 )
             val homeData = getHomeData(homeView, viewState.value.searchQuery, intent.showSuggestedModel)
+            val isAutofillConflictDetected = detectAutofillConflict()
+
             updateViewState {
                 copy(
                     showSuggestedModel = intent.showSuggestedModel,
                     homeView = homeView,
                     homeData = homeData,
+                    isAutofillConflictDetected = isAutofillConflictDetected,
                 )
             }
             viewModelScope.launch(coroutineLaunchContext.io) {

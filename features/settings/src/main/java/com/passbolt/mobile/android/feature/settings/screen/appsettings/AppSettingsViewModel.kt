@@ -25,6 +25,7 @@ package com.passbolt.mobile.android.feature.settings.screen.appsettings
 
 import android.security.keystore.KeyPermanentlyInvalidatedException
 import com.passbolt.mobile.android.common.FingerprintInformationProvider
+import com.passbolt.mobile.android.common.autofill.DetectAutofillConflict
 import com.passbolt.mobile.android.common.usecase.UserIdInput
 import com.passbolt.mobile.android.core.accounts.usecase.biometrickey.SaveBiometricKeyIvUseCase
 import com.passbolt.mobile.android.core.accounts.usecase.selectedaccount.GetSelectedAccountUseCase
@@ -49,6 +50,7 @@ import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettin
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsIntent.GoToAutofill
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsIntent.GoToDefaultFilter
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsIntent.GoToExpertSettings
+import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsIntent.Initialize
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsIntent.InvalidateBiometricKeyPermanently
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsIntent.RefreshedPassphrase
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsIntent.ShowBiometryError
@@ -76,6 +78,7 @@ internal class AppSettingsViewModel(
     private val biometryInteractor: BiometryInteractor,
     private val savePassphraseUseCase: SavePassphraseUseCase,
     private val saveBiometricKeyIvUseCase: SaveBiometricKeyIvUseCase,
+    private val detectAutofillConflict: DetectAutofillConflict,
 ) : SideEffectViewModel<AppSettingsState, AppSettingsSideEffect>(AppSettingsState()) {
     init {
         loadInitialValues()
@@ -84,6 +87,7 @@ internal class AppSettingsViewModel(
     @Suppress("CyclomaticComplexMethod")
     fun onIntent(intent: AppSettingsIntent) {
         when (intent) {
+            Initialize -> initialize()
             GoBack -> emitSideEffect(NavigateUp)
             GoToAutofill -> emitSideEffect(NavigateToAutofill)
             GoToDefaultFilter -> emitSideEffect(NavigateToDefaultFilter)
@@ -107,6 +111,16 @@ internal class AppSettingsViewModel(
                 updateViewState { copy(isKeyChangesDialogDetectedVisible = false) }
                 emitSideEffect(NavigateToGetPassphrase)
             }
+        }
+    }
+
+    private fun initialize() {
+        val isAutofillConflictDetected = detectAutofillConflict()
+
+        updateViewState {
+            copy(
+                isAutofillConflictDetected = isAutofillConflictDetected,
+            )
         }
     }
 
@@ -162,8 +176,11 @@ internal class AppSettingsViewModel(
                 .execute(
                     UserIdInput(requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)),
                 ).passphraseFileExists
+
         updateViewState {
-            copy(isFingerprintEnabled = passphraseFileExists)
+            copy(
+                isFingerprintEnabled = passphraseFileExists,
+            )
         }
     }
 

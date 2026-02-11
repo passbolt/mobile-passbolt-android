@@ -1,3 +1,5 @@
+package com.passbolt.mobile.android.core.autofill
+
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -20,42 +22,23 @@
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-package com.passbolt.mobile.android.feature.home.screen
 
-import com.passbolt.mobile.android.ui.HomeDisplayViewModel
-import com.passbolt.mobile.android.ui.LeadingContentType
+interface AutofillInformationProvider {
+    fun isAutofillServiceSupported(): Boolean
 
-interface HomeNavigation {
-    val resourceHandlingStrategy: ResourceHandlingStrategy
+    fun isPassboltAutofillServiceSet(): Boolean
 
-    fun navigateToScanOtpCodeForResult(folderId: String?)
+    fun isAccessibilityOverlayEnabled(): Boolean
 
-    fun navigateToCreateResourceForm(
-        leadingContentType: LeadingContentType,
-        folderId: String?,
-    )
+    fun isAccessibilityServiceEnabled(): Boolean
 
-    fun navigateToEditResourceForm(
-        resourceId: String,
-        resourceName: String,
-    )
+    fun isAccessibilityAutofillSetup(): Boolean
 
-    fun navigateToChild(homeView: HomeDisplayViewModel)
+    fun getChromeNativeAutofillStatus(): ChromeNativeAutofillStatus
 
-    fun navigateBack()
-
-    fun openFolderMoreMenu(homeView: HomeDisplayViewModel)
-
-    fun openResourceMoreMenu(
-        resourceId: String,
-        resourceName: String,
-    )
-
-    fun navigateToShare(resourceId: String)
-
-    fun navigateToCreateFolder(folderId: String?)
-
-    fun navigateToRoot(homeView: HomeDisplayViewModel)
-
-    fun navigateToAutofillSettings()
+    enum class ChromeNativeAutofillStatus {
+        NOT_SUPPORTED,
+        ENABLED,
+        DISABLED,
+    }
 }
