@@ -172,9 +172,8 @@
     <include app:graph="@navigation/scan_otp" />
     <fragment
         android:id="@+id/additionalUrisFormFragment"
-        android:name="com.passbolt.mobile.android.feature.resourceform.metadata.additionaluris.AdditionalUrisFormFragment"
-        android:label="AdditionalUrisFormFragment"
-        tools:layout="@layout/fragment_additional_uris_form">
+        android:name="com.passbolt.mobile.android.feature.resourceform.metadata.additionaluris.AdditionalUrisFormComposeFragment"
+        android:label="AdditionalUrisFormComposeFragment">
         <argument
             android:name="mode"
             app:argType="com.passbolt.mobile.android.ui.ResourceFormMode" />
