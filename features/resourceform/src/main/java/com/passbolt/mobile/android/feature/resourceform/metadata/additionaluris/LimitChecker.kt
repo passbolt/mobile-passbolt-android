@@ -1,12 +1,6 @@
-package com.passbolt.mobile.android.feature.resourceform.metadata.additionaluris
-
-import org.koin.core.module.dsl.factoryOf
-import org.koin.dsl.bind
-import org.koin.dsl.module
-
 /**
  * Passbolt - Open source password manager for teams
- * Copyright (c) 2021 Passbolt SA
+ * Copyright (c) 2026 Passbolt SA
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
  * Public License (AGPL) as published by the Free Software Foundation version 3.
@@ -27,9 +21,33 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-internal val additionalUrisFormModule =
-    module {
-        factoryOf(::AdditionalUrisLimitChecker) bind LimitChecker::class
-        factoryOf(::AdditionalUrisFormValidator) bind FormValidator::class
-        factoryOf(::AdditionalUrisFormViewModel)
+package com.passbolt.mobile.android.feature.resourceform.metadata.additionaluris
+
+import com.passbolt.mobile.android.feature.resourceform.metadata.additionaluris.LimitChecker.LimitCheckResult
+import com.passbolt.mobile.android.feature.resourceform.metadata.additionaluris.LimitChecker.LimitCheckResult.CanAdd
+import com.passbolt.mobile.android.feature.resourceform.metadata.additionaluris.LimitChecker.LimitCheckResult.LimitReached
+
+internal interface LimitChecker {
+    fun checkLimit(currentCount: Int): LimitCheckResult
+
+    sealed interface LimitCheckResult {
+        data object CanAdd : LimitCheckResult
+
+        data class LimitReached(
+            val maxLimit: Int,
+        ) : LimitCheckResult
     }
+}
+
+internal class AdditionalUrisLimitChecker : LimitChecker {
+    override fun checkLimit(currentCount: Int): LimitCheckResult =
+        if (currentCount >= MAX_ADDITIONAL_URIS) {
+            LimitReached(MAX_ADDITIONAL_URIS)
+        } else {
+            CanAdd
+        }
+
+    private companion object {
+        private const val MAX_ADDITIONAL_URIS = 19
+    }
+}

@@ -1,7 +1,8 @@
 package com.passbolt.mobile.android.feature.resourceform.metadata.additionaluris
 
 import org.koin.core.module.Module
-import org.koin.core.module.dsl.scopedOf
+import org.koin.core.module.dsl.factoryOf
+import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.bind
 
 /**
@@ -27,8 +28,8 @@ import org.koin.dsl.bind
  * @since v1.0
  */
 
-fun Module.additionalUrisFormModule() {
-    scope<AdditionalUrisFormFragment> {
-        scopedOf(::AdditionalUrisFormPresenter) bind AdditionalUrisFormContract.Presenter::class
-    }
+internal fun Module.additionalUrisFormModule() {
+    factoryOf(::AdditionalUrisLimitChecker) bind LimitChecker::class
+    factoryOf(::AdditionalUrisFormValidator) bind FormValidator::class
+    viewModelOf(::AdditionalUrisFormViewModel)
 }

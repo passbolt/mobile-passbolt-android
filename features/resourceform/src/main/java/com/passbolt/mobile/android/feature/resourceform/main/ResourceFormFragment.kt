@@ -32,7 +32,7 @@ import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.passwo
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.TotpFormFragment
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.advanced.TotpAdvancedSettingsFormFragment
 import com.passbolt.mobile.android.feature.resourceform.databinding.FragmentResourceFormBinding
-import com.passbolt.mobile.android.feature.resourceform.metadata.additionaluris.AdditionalUrisFormFragment
+import com.passbolt.mobile.android.feature.resourceform.metadata.additionaluris.AdditionalUrisFormComposeFragment
 import com.passbolt.mobile.android.feature.resourceform.metadata.appearance.AppearanceFormComposeFragment
 import com.passbolt.mobile.android.feature.resourceform.metadata.description.DescriptionFormFragment
 import com.passbolt.mobile.android.feature.resourceform.subform.note.NoteSubformView
@@ -110,11 +110,11 @@ class ResourceFormFragment :
     }
 
     private val additionalUrisResult = { _: String, result: Bundle ->
-        if (result.containsKey(AdditionalUrisFormFragment.EXTRA_ADDITIONAL_URIS)) {
+        if (result.containsKey(AdditionalUrisFormComposeFragment.EXTRA_ADDITIONAL_URIS)) {
             presenter.additionalUrisChanged(
                 BundleCompat.getParcelable(
                     result,
-                    AdditionalUrisFormFragment.EXTRA_ADDITIONAL_URIS,
+                    AdditionalUrisFormComposeFragment.EXTRA_ADDITIONAL_URIS,
                     AdditionalUrisUiModel::class.java,
                 ),
             )
@@ -248,7 +248,7 @@ class ResourceFormFragment :
     }
 
     override fun navigateToAdditionalUris(model: AdditionalUrisUiModel) {
-        setFragmentResultListener(AdditionalUrisFormFragment.REQUEST_ADDITIONAL_URIS, additionalUrisResult)
+        setFragmentResultListener(AdditionalUrisFormComposeFragment.REQUEST_ADDITIONAL_URIS, additionalUrisResult)
         findNavController().navigate(
             ResourceFormFragmentDirections.actionResourceFormFragmentToAdditionalUrisFormFragment(
                 navArgs.mode,
