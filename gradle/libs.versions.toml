@@ -53,7 +53,6 @@ room = "2.8.3"
 sqliteCipher = "4.11.0"
 sqlite = "2.6.1"
 yubikitAndroid = "2.9.0"
-pinentry = "2.0.6"
 rootbeer = "0.1.1"
 playStorePublisher = "3.12.2"
 inAppUpdate = "2.1.0"
@@ -111,7 +110,6 @@ fastadapter-diff = { module = "com.mikepenz:fastadapter-extensions-diff", versio
 fastadapter-expandable = { module = "com.mikepenz:fastadapter-extensions-expandable", version.ref = "fastAdapterCore" }
 fastadapter-ui = { module = "com.mikepenz:fastadapter-extensions-ui", version.ref = "fastAdapterCore" }
 fastadapter-animators = { module = "com.mikepenz:itemanimators", version.ref = "fastAdapterCoreAnimators" }
-pinentry = { module = "com.alimuzaffar.lib:pinentryedittext", version.ref = "pinentry" }
 compose-bom = { module = "androidx.compose:compose-bom", version.ref = "androidxComposeBom" }
 compose-foundation = { module = "androidx.compose.foundation:foundation" }
 compose-material3 = { module = "androidx.compose.material3:material3" }

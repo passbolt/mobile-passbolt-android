@@ -1,6 +1,8 @@
 package com.passbolt.mobile.android.feature.authentication.mfa.totp
 
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.VerifyTotpUseCase
+import com.passbolt.mobile.android.feature.authentication.mfa.totp.compose.DigitsOnlySanitizer
+import com.passbolt.mobile.android.feature.authentication.mfa.totp.compose.PinInputSanitizer
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.scopedOf
 import org.koin.core.qualifier.named
@@ -33,5 +35,9 @@ fun Module.enterTotpModuleModule() {
     scope(named<EnterTotpDialog>()) {
         scopedOf(::EnterTotpPresenter) bind EnterTotpContract.Presenter::class
         scopedOf(::VerifyTotpUseCase)
+    }
+
+    factory<PinInputSanitizer> { params ->
+        DigitsOnlySanitizer(maxLength = params.get())
     }
 }
