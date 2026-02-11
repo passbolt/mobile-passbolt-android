@@ -1,0 +1,28 @@
+# Passbolt 2.7.0-47 Android app release notes
+
+## Added
+- MOB-3293: Update to latest translations
+
+## Improved
+- MOB-3295: Fix code inspection errors
+- MOB-2494: Improve dark mode icons visibility on home
+- MOB-3302: Remove stripPGPHeaders for web ext compat
+- MOB-3306: Update licenses.json to reflect latest open source licenses
+- MOB-3303: Refactor SignInVerifyInteractor param list
+- MOB-3309: Improve TextInput colors in dark mode
+
+## Fixed
+- MOB-3245: Fix bidirectional data flow for search input causing cursor jump on search
+- MOB-3346: Fix a possible race condition after process death that could cause endless loading UI
+
+## Maintenance
+- MOB-3243: Create folder MVI
+- MOB-3246: Transfer account MVI
+- MOB-3252: Resource picker MVI
+- MOB-3294: Migrate FeatureFlagsFetchErrorDialog to Compose
+- MOB-2516: UI test: delete resource
+- MOB-3310: UI test folder creation
+- MOB-3262: Account setup MVI
+- MOB-3297: Migrate TransferTest to compose
+- MOB-3300: Remove snyk integration
+- MOB-3307: Clean up old otpmoremenu MVP code
