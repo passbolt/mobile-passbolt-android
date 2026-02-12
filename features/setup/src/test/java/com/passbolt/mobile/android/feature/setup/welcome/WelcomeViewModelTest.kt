@@ -115,6 +115,7 @@ class WelcomeViewModelTest : KoinTest {
                 debugLogFileCreationDateTime = null,
                 isDeveloperModeEnabled = false,
                 isHideRootDialogEnabled = false,
+                debugLogLastAppVersion = null,
             )
     }
 
@@ -191,6 +192,7 @@ class WelcomeViewModelTest : KoinTest {
                     debugLogFileCreationDateTime = null,
                     isDeveloperModeEnabled = false,
                     isHideRootDialogEnabled = true,
+                    debugLogLastAppVersion = null,
                 )
 
             viewModel = get()
