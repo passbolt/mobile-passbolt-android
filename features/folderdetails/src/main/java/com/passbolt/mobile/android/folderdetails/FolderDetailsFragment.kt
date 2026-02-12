@@ -53,7 +53,6 @@ class FolderDetailsFragment :
                 PassboltTheme {
                     FolderDetailsScreen(
                         folderId = args.folderId,
-                        // Default width, will be updated when available
                         navigation = this@FolderDetailsFragment,
                     )
                 }

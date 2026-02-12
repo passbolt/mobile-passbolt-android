@@ -225,7 +225,7 @@ class HomeViewModelMenuTest : KoinTest {
     fun `should copy metadata description to clipboard`() =
         runTest {
             val resourcePropertiesInteractor = mock<ResourcePropertiesActionsInteractor>()
-            whenever(resourcePropertiesInteractor.provideDescription()).thenReturn(
+            whenever(resourcePropertiesInteractor.provideMetadataDescription()).thenReturn(
                 flowOf(
                     ResourcePropertyActionResult(
                         label = "Description",

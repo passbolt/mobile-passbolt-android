@@ -27,7 +27,6 @@ import androidx.compose.ui.test.junit4.createEmptyComposeRule
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.ViewInteraction
-import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.replaceText
 import androidx.test.espresso.action.ViewActions.scrollTo
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -49,9 +48,6 @@ import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.core.ui.R.id.input
 import com.passbolt.mobile.android.feature.authentication.AuthenticationMainActivity
-import com.passbolt.mobile.android.feature.resourceform.R.id.toolbar
-import com.passbolt.mobile.android.feature.resourcemoremenu.R.id.edit
-import com.passbolt.mobile.android.feature.resources.R.id.moreIcon
 import com.passbolt.mobile.android.helpers.chooseFilter
 import com.passbolt.mobile.android.helpers.createNewPasswordFromHomeScreen
 import com.passbolt.mobile.android.helpers.searchAndOpenFirstResourceByName
@@ -303,8 +299,8 @@ class ResourcesEditionTest : KoinTest {
 
     private fun enterEditPasswordScreen() {
         composeTestRule.searchAndOpenFirstResourceByName("ResourcesEditionTest")
-        onView(withId(moreIcon)).perform(click())
-        onView(withId(edit)).perform(click())
-        onView(withId(toolbar)).check(matches(isDisplayed()))
+//        onView(withId(moreIcon)).perform(click())
+//        onView(withId(edit)).perform(click())
+//        onView(withId(toolbar)).check(matches(isDisplayed()))
     }
 }

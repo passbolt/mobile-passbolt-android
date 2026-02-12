@@ -85,7 +85,7 @@ class ResourcePropertiesActionsInteractor(
 
     // provides description from resource model (for description from secret model see
     // ResourceAuthenticatedActionsInteractor
-    fun provideDescription(): Flow<ResourcePropertyActionResult<String>> =
+    fun provideMetadataDescription(): Flow<ResourcePropertyActionResult<String>> =
         flowOf(
             ResourcePropertyActionResult(
                 DESCRIPTION_LABEL,

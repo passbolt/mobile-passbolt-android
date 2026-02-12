@@ -1,8 +1,3 @@
-package com.passbolt.mobile.android.feature.resourcedetails.details
-
-import org.koin.androidx.viewmodel.dsl.viewModelOf
-import org.koin.core.module.Module
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -26,6 +21,11 @@ import org.koin.core.module.Module
  * @since v1.0
  */
 
-fun Module.detailsModule() {
-    viewModelOf(::ResourceDetailsViewModel)
+package com.passbolt.mobile.android.core.ui.compose.header
+
+enum class ActionIcon {
+    NONE,
+    VIEW,
+    COPY,
+    HIDE,
 }

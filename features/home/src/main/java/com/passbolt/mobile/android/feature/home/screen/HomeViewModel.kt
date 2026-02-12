@@ -299,7 +299,7 @@ internal class HomeViewModel(
     private fun copyMetadataDescription() {
         viewModelScope.launch(coroutineLaunchContext.io) {
             performResourcePropertyAction(
-                action = { resourcePropertiesActionsInteractor.provideDescription() },
+                action = { resourcePropertiesActionsInteractor.provideMetadataDescription() },
                 doOnResult = { emitSideEffect(CopyToClipboard(it.label, it.result, it.isSecret)) },
             )
         }

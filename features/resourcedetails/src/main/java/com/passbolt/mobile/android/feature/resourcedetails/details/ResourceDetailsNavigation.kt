@@ -1,8 +1,3 @@
-package com.passbolt.mobile.android.feature.resourcedetails.details
-
-import org.koin.androidx.viewmodel.dsl.viewModelOf
-import org.koin.core.module.Module
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -26,6 +21,31 @@ import org.koin.core.module.Module
  * @since v1.0
  */
 
-fun Module.detailsModule() {
-    viewModelOf(::ResourceDetailsViewModel)
+package com.passbolt.mobile.android.feature.resourcedetails.details
+
+import com.passbolt.mobile.android.permissions.permissions.PermissionsMode
+import com.passbolt.mobile.android.ui.ResourceModel
+
+interface ResourceDetailsNavigation {
+    fun navigateBack()
+
+    fun navigateToMore(
+        resourceId: String,
+        resourceName: String,
+    )
+
+    fun navigateToEditResource(resourceModel: ResourceModel)
+
+    fun navigateToResourcePermissions(
+        resourceId: String,
+        mode: PermissionsMode,
+    )
+
+    fun navigateToResourceTags(resourceId: String)
+
+    fun navigateToResourceLocation(resourceId: String)
+
+    fun closeWithDeleteSuccessResult(resourceName: String)
+
+    fun setResourceEditedResult(resourceName: String)
 }

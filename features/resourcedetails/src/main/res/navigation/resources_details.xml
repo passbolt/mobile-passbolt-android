@@ -2,15 +2,13 @@
 <navigation
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/resourcesDetails"
     app:startDestination="@id/resourceDetails">
 
     <fragment
         android:id="@+id/resourceDetails"
         android:name="com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsFragment"
-        android:label="ResourceDetailsFragment"
-        tools:layout="@layout/fragment_resource_details">
+        android:label="ResourceDetailsFragment">
 
         <argument
             android:name="resourceModel"
