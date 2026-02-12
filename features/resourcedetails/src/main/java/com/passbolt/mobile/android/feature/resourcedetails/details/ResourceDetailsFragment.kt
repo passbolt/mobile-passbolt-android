@@ -1,83 +1,42 @@
 package com.passbolt.mobile.android.feature.resourcedetails.details
 
-import android.annotation.SuppressLint
+import PassboltTheme
 import android.os.Bundle
-import android.text.Spannable
-import android.text.SpannableStringBuilder
-import android.text.format.DateUtils
+import android.view.LayoutInflater
 import android.view.View
-import android.widget.LinearLayout
-import android.widget.Toast
-import androidx.core.content.ContextCompat
+import android.view.ViewGroup
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.os.bundleOf
-import androidx.core.view.doOnLayout
-import androidx.core.view.isNotEmpty
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import androidx.recyclerview.widget.LinearLayoutManager
-import com.mikepenz.fastadapter.FastAdapter
-import com.mikepenz.fastadapter.GenericItem
-import com.mikepenz.fastadapter.adapters.ItemAdapter
-import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
-import com.passbolt.mobile.android.common.ExternalDeeplinkHandler
-import com.passbolt.mobile.android.common.dialogs.confirmResourceDeletionAlertDialog
-import com.passbolt.mobile.android.core.clipboard.ClipboardAccess
-import com.passbolt.mobile.android.core.extension.gone
-import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
-import com.passbolt.mobile.android.core.extension.showSnackbar
-import com.passbolt.mobile.android.core.extension.visible
-import com.passbolt.mobile.android.core.fulldatarefresh.service.DataRefreshService
-import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.navigation.deeplinks.NavDeepLinkProvider
-import com.passbolt.mobile.android.core.resources.resourceicon.ResourceIconProvider
-import com.passbolt.mobile.android.core.ui.controller.TotpViewController
-import com.passbolt.mobile.android.core.ui.controller.TotpViewController.StateParameters
-import com.passbolt.mobile.android.core.ui.controller.TotpViewController.TimeParameters
-import com.passbolt.mobile.android.core.ui.controller.TotpViewController.ViewParameters
-import com.passbolt.mobile.android.core.ui.itemwithheaderandaction.ActionIcon
-import com.passbolt.mobile.android.core.ui.itemwithheaderandaction.ActionIcon.HIDE
-import com.passbolt.mobile.android.core.ui.itemwithheaderandaction.ActionIcon.VIEW
-import com.passbolt.mobile.android.core.ui.itemwithheaderandaction.ItemWithHeaderAndActionView
-import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
-import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
-import com.passbolt.mobile.android.core.ui.recyclerview.OverlappingItemDecorator
-import com.passbolt.mobile.android.core.ui.recyclerview.OverlappingItemDecorator.Overlap
-import com.passbolt.mobile.android.core.ui.span.RoundedBackgroundSpan
-import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
+import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent.CopyMetadataDescription
+import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent.CopyNote
+import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent.CopyPassword
+import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent.CopyUrl
+import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent.CopyUsername
+import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent.DeleteClick
+import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent.Edit
+import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent.EditPermissions
+import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent.LaunchWebsite
+import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent.ResourceEdited
+import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent.ResourceShared
+import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent.ToggleFavourite
 import com.passbolt.mobile.android.feature.resourceform.main.ResourceFormFragment
 import com.passbolt.mobile.android.feature.resources.ResourcesDetailsDirections
-import com.passbolt.mobile.android.feature.resources.databinding.FragmentResourceDetailsBinding
 import com.passbolt.mobile.android.locationdetails.ui.LocationItem
 import com.passbolt.mobile.android.permissions.permissions.PermissionsFragment
 import com.passbolt.mobile.android.permissions.permissions.PermissionsItem
 import com.passbolt.mobile.android.permissions.permissions.PermissionsMode
-import com.passbolt.mobile.android.permissions.recycler.CounterItem
-import com.passbolt.mobile.android.permissions.recycler.GroupItem
-import com.passbolt.mobile.android.permissions.recycler.UserItem
 import com.passbolt.mobile.android.resourcemoremenu.ResourceMoreMenuFragment
-import com.passbolt.mobile.android.ui.CustomFieldModel
-import com.passbolt.mobile.android.ui.CustomFieldModel.BooleanCustomField
-import com.passbolt.mobile.android.ui.CustomFieldModel.NumberCustomField
-import com.passbolt.mobile.android.ui.CustomFieldModel.PasswordCustomField
-import com.passbolt.mobile.android.ui.CustomFieldModel.TextCustomField
-import com.passbolt.mobile.android.ui.CustomFieldModel.UriCustomField
-import com.passbolt.mobile.android.ui.OtpItemWrapper
-import com.passbolt.mobile.android.ui.PermissionModelUi
 import com.passbolt.mobile.android.ui.ResourceFormMode
 import com.passbolt.mobile.android.ui.ResourceModel
-import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancelChildren
-import kotlinx.coroutines.launch
-import org.koin.android.ext.android.inject
-import org.koin.core.qualifier.named
-import java.time.ZonedDateTime
-import java.util.UUID
-import com.passbolt.mobile.android.core.localization.R as LocalizationR
-import com.passbolt.mobile.android.core.ui.R as CoreUiR
+import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.FavouriteOption
+import org.koin.androidx.compose.koinViewModel
 
 /**
  * Passbolt - Open source password manager for teams
@@ -101,218 +60,46 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-@Suppress("TooManyFunctions")
+
 class ResourceDetailsFragment :
-    BindingScopedAuthenticatedFragment<FragmentResourceDetailsBinding, ResourceDetailsContract.View>(
-        FragmentResourceDetailsBinding::inflate,
-    ),
-    ResourceDetailsContract.View,
+    Fragment(),
+    ResourceDetailsNavigation,
     ResourceMoreMenuFragment.Listener {
-    override val presenter: ResourceDetailsContract.Presenter by inject()
-    private val clipboardAccess: ClipboardAccess by inject()
     private val navArgs: ResourceDetailsFragmentArgs by navArgs()
-
-    private val sharedWithFields
-        get() =
-            listOf(
-                requiredBinding.sharedWithLabel,
-                requiredBinding.sharedWithRecycler,
-                requiredBinding.sharedWithRecyclerClickableArea,
-                requiredBinding.sharedWithNavIcon,
-            )
-    private val sharedWithDecorator: OverlappingItemDecorator by inject()
-
-    private val totpFields
-        get() = listOf(requiredBinding.totpSectionTitle, requiredBinding.totpContainer)
-
-    private val tagsFields
-        get() =
-            listOf(
-                requiredBinding.tagsHeader,
-                requiredBinding.tagsValue,
-                requiredBinding.tagsClickableArea,
-                requiredBinding.tagsNavIcon,
-            )
-
-    private val locationFields
-        get() = listOf(requiredBinding.locationHeader, requiredBinding.locationValue, requiredBinding.locationNavIcon)
-
-    private val customFieldsFields
-        get() = listOf(requiredBinding.customFieldsSectionTitle, requiredBinding.customFieldsContainer)
-
-    private val externalDeeplinkHandler: ExternalDeeplinkHandler by inject()
-    private val groupPermissionsItemAdapter: ItemAdapter<GroupItem> by inject(named(GROUP_ITEM_ADAPTER))
-    private val userPermissionsItemAdapter: ItemAdapter<UserItem> by inject(named(USER_ITEM_ADAPTER))
-    private val permissionsCounterItemAdapter: ItemAdapter<CounterItem> by inject(named(COUNTER_ITEM_ADAPTER))
-
-    private val fastAdapter: FastAdapter<GenericItem> by inject()
+    private lateinit var viewModel: ResourceDetailsViewModel
 
     private val resourceEditResult = { _: String, result: Bundle ->
         if (result.containsKey(ResourceFormFragment.EXTRA_RESOURCE_EDITED)) {
-            presenter.resourceEdited(result.getString(ResourceFormFragment.EXTRA_RESOURCE_NAME))
+            viewModel.onIntent(
+                ResourceEdited(
+                    resourceName = result.getString(ResourceFormFragment.EXTRA_RESOURCE_NAME),
+                ),
+            )
         }
     }
 
     private val resourceShareResult = { _: String, _: Bundle ->
-        presenter.resourceShared()
+        viewModel.onIntent(ResourceShared)
     }
 
-    private val totpViewController: TotpViewController by inject()
-    private val coroutineLaunchContext: CoroutineLaunchContext by inject()
-    private val job = SupervisorJob()
-    private val coroutineUiScope = CoroutineScope(job + coroutineLaunchContext.ui)
-    private val resourceIconProvider: ResourceIconProvider by inject()
-
-    override fun onViewCreated(
-        view: View,
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ) {
-        super.onViewCreated(view, savedInstanceState)
-        requiredBinding.swipeRefresh.isEnabled = false
-        setListeners()
-        setUpPermissionsRecycler()
-        presenter.attach(this)
-        requiredBinding.sharedWithRecycler.doOnLayout {
-            requiredBinding.sharedWithRecycler.addItemDecoration(sharedWithDecorator)
-            presenter.argsReceived(
-                navArgs.resourceModel,
-                it.width,
-                resources.getDimension(CoreUiR.dimen.dp_40),
-            )
-        }
-        requiredBinding.noteItem.conceal()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        // has to be invoked using post to make sure binding.sharedWithRecycler.doOnLayout has finished
-        requiredBinding.sharedWithRecycler.post {
-            presenter.resume(this)
-        }
-    }
-
-    override fun onPause() {
-        presenter.pause()
-        super.onPause()
-    }
-
-    override fun onStop() {
-        presenter.viewStopped()
-        super.onStop()
-    }
-
-    override fun onDestroyView() {
-        coroutineUiScope.coroutineContext.cancelChildren()
-        requiredBinding.sharedWithRecycler.adapter = null
-        presenter.detach()
-        super.onDestroyView()
-    }
-
-    @SuppressLint("ClickableViewAccessibility")
-    private fun setListeners() {
-        with(requiredBinding) {
-            with(usernameItem) {
-                val usernameCopyAction = presenter::usernameCopyClick
-                setDebouncingOnClick(action = usernameCopyAction)
-                actionClickListener = usernameCopyAction
-            }
-            with(passwordItem) {
-                setDebouncingOnClick { presenter.copyPasswordClick() }
-                actionClickListener = { presenter.passwordActionClick() }
-            }
-            with(urlItem) {
-                val urlCopyAction = presenter::urlCopyClick
-                setDebouncingOnClick(action = urlCopyAction)
-                actionClickListener = urlCopyAction
-            }
-            with(metadataDescriptionItem) {
-                setDebouncingOnClick { presenter.copyMetadataDescriptionClick() }
-                actionClickListener = { presenter.metadataDescriptionActionClick() }
-            }
-            with(noteItem) {
-                setDebouncingOnClick { presenter.copyNoteClick() }
-                actionClickListener = { presenter.noteActionClick() }
-            }
-            backArrow.setDebouncingOnClick { presenter.backArrowClick() }
-            moreIcon.setDebouncingOnClick { presenter.moreClick() }
-            sharedWithFields.forEach { it.setDebouncingOnClick { presenter.sharedWithClick() } }
-            tagsFields.forEach { it.setDebouncingOnClick { presenter.tagsClick() } }
-            locationFields.forEach { it.setDebouncingOnClick { presenter.locationClick() } }
-            totpIcon.setDebouncingOnClick { presenter.totpIconClick() }
-            totpFields.forEach { it.setDebouncingOnClick { presenter.copyTotpClick() } }
-            fastAdapter.onClickListener = { _, _, _, _ ->
-                presenter.sharedWithClick()
-                true
-            }
-        }
-    }
-
-    private fun setUpPermissionsRecycler() {
-        requiredBinding.sharedWithRecycler.apply {
-            layoutManager =
-                object : LinearLayoutManager(context, HORIZONTAL, false) {
-                    override fun canScrollHorizontally() = false
+    ): View =
+        ComposeView(requireContext()).apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                viewModel = koinViewModel()
+                PassboltTheme {
+                    ResourceDetailsScreen(
+                        resourceModel = navArgs.resourceModel,
+                        navigation = this@ResourceDetailsFragment,
+                        viewModel = viewModel,
+                    )
                 }
-            adapter = fastAdapter
+            }
         }
-    }
-
-    override fun displayTitle(title: String) {
-        requiredBinding.name.text = title
-    }
-
-    override fun displayExpiryTitle(name: String) {
-        requiredBinding.name.text = getString(LocalizationR.string.name_expired, name)
-    }
-
-    override fun showExpiryIndicator() {
-        requiredBinding.indicatorIcon.setImageResource(CoreUiR.drawable.ic_excl_indicator)
-    }
-
-    override fun displayExpirySection(expiry: ZonedDateTime) {
-        with(requiredBinding) {
-            expiryItem.visible()
-            expiryItem.setVisibleTextValue(
-                DateUtils
-                    .getRelativeTimeSpanString(
-                        expiry.toInstant().toEpochMilli(),
-                        ZonedDateTime.now().toInstant().toEpochMilli(),
-                        DateUtils.MINUTE_IN_MILLIS,
-                        DateUtils.FORMAT_ABBREV_RELATIVE,
-                    ).toString(),
-            )
-        }
-    }
-
-    override fun hideExpirySection() {
-        requiredBinding.expiryItem.gone()
-    }
-
-    override fun displayUsername(username: String) {
-        requiredBinding.usernameItem.setVisibleTextValue(username)
-    }
-
-    override fun showTotpSection() {
-        totpFields.forEach { it.visible() }
-    }
-
-    override fun hideTotpSection() {
-        totpFields.forEach { it.gone() }
-    }
-
-    override fun hidePasswordSection() {
-        with(requiredBinding) {
-            passwordSectionTitle.gone()
-            passwordContainer.gone()
-        }
-    }
-
-    override fun showPasswordSection() {
-        with(requiredBinding) {
-            passwordSectionTitle.visible()
-            passwordContainer.visible()
-        }
-    }
 
     override fun navigateBack() {
         findNavController().popBackStack()
@@ -322,237 +109,9 @@ class ResourceDetailsFragment :
         resourceId: String,
         resourceName: String,
     ) {
-        presenter.pause()
         ResourceMoreMenuFragment
             .newInstance(resourceId, resourceName)
             .show(childFragmentManager, ResourceMoreMenuFragment::class.java.name)
-    }
-
-    override fun displayUrl(url: String) {
-        with(requiredBinding) {
-            urlItem.setVisibleTextValue(url)
-        }
-    }
-
-    override fun displayInitialsIcon(resource: ResourceModel) {
-        coroutineUiScope.launch {
-            requiredBinding.icon.setImageDrawable(
-                resourceIconProvider.getResourceIcon(requireContext(), resource),
-            )
-        }
-    }
-
-    override fun displayAdditionalUrls(uris: List<String>) {
-        requiredBinding.additionalUrisItem.apply {
-            setVisibleTextValue(
-                uris
-                    .map { getString(LocalizationR.string.additional_uri_format, it) }
-                    .joinToString(separator = "\n") { it },
-            )
-            visible()
-        }
-    }
-
-    override fun addToClipboard(
-        label: String,
-        value: String,
-        isSecret: Boolean,
-    ) {
-        clipboardAccess.setPrimaryClip(requireContext(), label, value, isSecret)
-    }
-
-    override fun showProgress() {
-        showProgressDialog(childFragmentManager)
-    }
-
-    override fun hideProgress() {
-        hideProgressDialog(childFragmentManager)
-    }
-
-    override fun showDecryptionFailure() {
-        Toast
-            .makeText(requireContext(), LocalizationR.string.common_decryption_failure, Toast.LENGTH_SHORT)
-            .show()
-    }
-
-    override fun showFetchFailure() {
-        Toast
-            .makeText(requireContext(), LocalizationR.string.common_fetch_failure, Toast.LENGTH_SHORT)
-            .show()
-    }
-
-    override fun showPassword(decryptedSecret: String) {
-        with(requiredBinding.passwordItem) {
-            actionIcon = HIDE
-            setVisibleTextValue(decryptedSecret)
-        }
-    }
-
-    override fun hidePassword() {
-        with(requiredBinding.passwordItem) {
-            actionIcon = VIEW
-            setHiddenSecretValue()
-        }
-    }
-
-    override fun clearPasswordInput() {
-        requiredBinding.passwordItem.setVisibleTextValue("")
-    }
-
-    override fun clearNoteInput() {
-        requiredBinding.noteItem.setVisibleTextValue("")
-    }
-
-    override fun showNote(note: String) {
-        with(requiredBinding) {
-            noteItem.show()
-            noteItem.isValueSecret = true
-            noteItem.setVisibleTextValue(note)
-            noteItem.actionIcon = HIDE
-            noteItem.setTextIsSelectable(true)
-            noteSectionTitle.visible()
-            noteContainer.visible()
-        }
-    }
-
-    override fun hideNote() {
-        with(requiredBinding.noteItem) {
-            conceal()
-            actionIcon = VIEW
-        }
-    }
-
-    override fun disableNote() {
-        with(requiredBinding) {
-            noteSectionTitle.gone()
-            noteContainer.gone()
-        }
-    }
-
-    override fun showMetadataDescription(description: String) {
-        with(requiredBinding.metadataDescriptionItem) {
-            visible()
-            setVisibleTextValue(description)
-            setTextIsSelectable(true)
-        }
-    }
-
-    override fun disableMetadataDescription() {
-        requiredBinding.metadataDescriptionItem.gone()
-    }
-
-    override fun menuCopyPasswordClick() {
-        presenter.copyPasswordClick()
-    }
-
-    override fun menuCopyMetadataDescriptionClick() {
-        presenter.copyMetadataDescriptionClick()
-    }
-
-    override fun menuCopyNoteClick() {
-        presenter.copyNoteClick()
-    }
-
-    override fun menuCopyUrlClick() {
-        presenter.urlCopyClick()
-    }
-
-    override fun menuCopyUsernameClick() {
-        presenter.usernameCopyClick()
-    }
-
-    override fun menuLaunchWebsiteClick() {
-        presenter.launchWebsiteClick()
-    }
-
-    override fun menuDeleteClick() {
-        presenter.deleteClick()
-    }
-
-    override fun menuEditClick() {
-        presenter.editClick()
-    }
-
-    override fun menuFavouriteClick(option: ResourceMoreMenuModel.FavouriteOption) {
-        presenter.favouriteClick(option)
-    }
-
-    override fun showToggleFavouriteFailure() {
-        showSnackbar(
-            LocalizationR.string.favourites_failure,
-            backgroundColor = CoreUiR.color.red,
-        )
-    }
-
-    override fun showTotpDeleted() {
-        showSnackbar(LocalizationR.string.otp_deleted)
-    }
-
-    override fun showFavouriteStar() {
-        requiredBinding.favouriteIcon.visible()
-    }
-
-    override fun hideFavouriteStar() {
-        requiredBinding.favouriteIcon.gone()
-    }
-
-    override fun menuShareClick() {
-        presenter.shareClick()
-    }
-
-    override fun openWebsite(url: String) {
-        externalDeeplinkHandler.openWebsite(requireContext(), url)
-    }
-
-    override fun showPasswordEyeIcon() {
-        requiredBinding.passwordItem.actionIcon = VIEW
-    }
-
-    override fun hidePasswordEyeIcon() {
-        requiredBinding.passwordItem.actionIcon = ActionIcon.NONE
-    }
-
-    override fun closeWithDeleteSuccessResult(name: String) {
-        setFragmentResult(
-            REQUEST_RESOURCE_DETAILS,
-            bundleOf(
-                EXTRA_RESOURCE_DELETED to true,
-                EXTRA_RESOURCE_NAME to name,
-            ),
-        )
-        findNavController().popBackStack()
-    }
-
-    override fun setResourceEditedResult(resourceName: String) {
-        setFragmentResult(
-            REQUEST_RESOURCE_DETAILS,
-            bundleOf(
-                EXTRA_RESOURCE_EDITED to true,
-                EXTRA_RESOURCE_NAME to resourceName,
-            ),
-        )
-    }
-
-    override fun showGeneralError(errorMessage: String?) {
-        showSnackbar(
-            LocalizationR.string.common_failure_format,
-            backgroundColor = CoreUiR.color.red,
-            messageArgs = arrayOf(errorMessage.orEmpty()),
-        )
-    }
-
-    override fun showEncryptionError(message: String) {
-        showSnackbar(
-            LocalizationR.string.common_encryption_failure,
-            backgroundColor = CoreUiR.color.red,
-        )
-    }
-
-    override fun showInvalidTotpScanned() {
-        showSnackbar(
-            LocalizationR.string.resource_details_invalid_totp_scanned,
-            backgroundColor = CoreUiR.color.red,
-        )
     }
 
     override fun navigateToEditResource(resourceModel: ResourceModel) {
@@ -565,47 +124,6 @@ class ResourceDetailsFragment :
                 ),
             ),
         )
-    }
-
-    override fun navigateToResourceTags(resourceId: String) {
-        findNavController().navigate(
-            NavDeepLinkProvider.resourceTagsDeepLinkRequest(resourceId),
-        )
-    }
-
-    override fun showResourceEditedSnackbar(resourceName: String) {
-        showSnackbar(
-            messageResId = LocalizationR.string.common_message_resource_edited,
-            messageArgs = arrayOf(resourceName),
-            backgroundColor = CoreUiR.color.green,
-        )
-    }
-
-    override fun showCannotPerformThisActionMessage() {
-        showSnackbar(
-            LocalizationR.string.common_lack_shared_key_access,
-            backgroundColor = CoreUiR.color.red,
-        )
-    }
-
-    override fun showDeleteConfirmationDialog() {
-        confirmResourceDeletionAlertDialog(requireContext()) {
-            presenter.deleteResourceConfirmed()
-        }.show()
-    }
-
-    override fun showPermissions(
-        groupPermissions: List<PermissionModelUi.GroupPermissionModel>,
-        userPermissions: List<PermissionModelUi.UserPermissionModel>,
-        counterValue: List<String>,
-        overlapOffset: Int,
-    ) {
-        sharedWithFields.forEach { it.visible() }
-        sharedWithDecorator.overlap = Overlap(left = overlapOffset)
-        FastAdapterDiffUtil.calculateDiff(groupPermissionsItemAdapter, groupPermissions.map { GroupItem(it) })
-        FastAdapterDiffUtil.calculateDiff(userPermissionsItemAdapter, userPermissions.map { UserItem(it) })
-        FastAdapterDiffUtil.calculateDiff(permissionsCounterItemAdapter, counterValue.map { CounterItem(it) })
-        fastAdapter.notifyAdapterDataSetChanged()
     }
 
     override fun navigateToResourcePermissions(
@@ -626,41 +144,10 @@ class ResourceDetailsFragment :
         )
     }
 
-    override fun showResourceSharedSnackbar() {
-        showSnackbar(
-            LocalizationR.string.common_message_resource_shared,
-            backgroundColor = CoreUiR.color.green,
+    override fun navigateToResourceTags(resourceId: String) {
+        findNavController().navigate(
+            NavDeepLinkProvider.resourceTagsDeepLinkRequest(resourceId),
         )
-    }
-
-    override fun showTags(tags: List<String>) {
-        val builder = SpannableStringBuilder()
-        tags.forEach {
-            builder.append(it)
-            builder.setSpan(
-                RoundedBackgroundSpan(
-                    ContextCompat.getColor(requireContext(), CoreUiR.color.divider),
-                    ContextCompat.getColor(requireContext(), CoreUiR.color.text_primary),
-                ),
-                builder.length - it.length,
-                builder.length,
-                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE,
-            )
-        }
-        requiredBinding.tagsValue.text = builder
-        tagsFields.forEach { it.visible() }
-    }
-
-    override fun showFolderLocation(locationPathSegments: List<String>) {
-        locationFields.forEach { it.visible() }
-        requiredBinding.locationValue.text =
-            locationPathSegments.let {
-                val mutable = it.toMutableList()
-                mutable.add(0, getString(LocalizationR.string.folder_root))
-                mutable.joinToString(
-                    separator = " %s ".format(getString(LocalizationR.string.folder_details_location_separator)),
-                )
-            }
     }
 
     override fun navigateToResourceLocation(resourceId: String) {
@@ -672,125 +159,69 @@ class ResourceDetailsFragment :
         findNavController().navigate(request)
     }
 
-    override fun hideRefreshProgress() {
-        requiredBinding.swipeRefresh.isRefreshing = false
+    override fun closeWithDeleteSuccessResult(resourceName: String) {
+        setFragmentResult(
+            REQUEST_RESOURCE_DETAILS,
+            bundleOf(
+                EXTRA_RESOURCE_DELETED to true,
+                EXTRA_RESOURCE_NAME to resourceName,
+            ),
+        )
+        findNavController().popBackStack()
     }
 
-    override fun showRefreshProgress() {
-        requiredBinding.swipeRefresh.isRefreshing = true
-    }
-
-    override fun showDataRefreshError() {
-        showSnackbar(
-            LocalizationR.string.common_data_refresh_error,
-            backgroundColor = CoreUiR.color.red,
+    override fun setResourceEditedResult(resourceName: String) {
+        setFragmentResult(
+            REQUEST_RESOURCE_DETAILS,
+            bundleOf(
+                EXTRA_RESOURCE_EDITED to true,
+                EXTRA_RESOURCE_NAME to resourceName,
+            ),
         )
     }
 
-    override fun showContentNotAvailable() {
-        Toast.makeText(requireContext(), LocalizationR.string.content_not_available, Toast.LENGTH_SHORT).show()
+    override fun menuCopyPasswordClick() {
+        viewModel.onIntent(CopyPassword)
     }
 
-    override fun showTotp(otpWrapper: OtpItemWrapper?) {
-        otpWrapper?.let { otpModel ->
-            totpViewController.updateView(
-                ViewParameters(requiredBinding.totpProgress, requiredBinding.totpValue, requiredBinding.generationInProgress),
-                StateParameters(otpModel.isRefreshing, otpModel.isVisible, otpModel.otpValue),
-                TimeParameters(otpModel.otpExpirySeconds, otpModel.remainingSecondsCounter),
-            )
-
-            requiredBinding.totpIcon.setImageResource(
-                if (otpModel.isVisible) CoreUiR.drawable.ic_eye_invisible else CoreUiR.drawable.ic_eye_visible,
-            )
-        }
+    override fun menuCopyMetadataDescriptionClick() {
+        viewModel.onIntent(CopyMetadataDescription)
     }
 
-    override fun hideSharedWith() {
-        sharedWithFields.forEach { it.gone() }
+    override fun menuCopyNoteClick() {
+        viewModel.onIntent(CopyNote)
     }
 
-    override fun hideTags() {
-        tagsFields.forEach { it.gone() }
+    override fun menuCopyUrlClick() {
+        viewModel.onIntent(CopyUrl)
     }
 
-    override fun hideLocation() {
-        locationFields.forEach { it.gone() }
+    override fun menuCopyUsernameClick() {
+        viewModel.onIntent(CopyUsername)
+    }
+
+    override fun menuLaunchWebsiteClick() {
+        viewModel.onIntent(LaunchWebsite)
+    }
+
+    override fun menuDeleteClick() {
+        viewModel.onIntent(DeleteClick)
+    }
+
+    override fun menuEditClick() {
+        viewModel.onIntent(Edit)
+    }
+
+    override fun menuShareClick() {
+        viewModel.onIntent(EditPermissions)
+    }
+
+    override fun menuFavouriteClick(option: FavouriteOption) {
+        viewModel.onIntent(ToggleFavourite(option))
     }
 
     override fun resourceMoreMenuDismissed() {
-        presenter.resume(this)
-    }
-
-    override fun performFullDataRefresh() {
-        DataRefreshService.start(requireContext())
-    }
-
-    override fun showCustomFieldsSection() {
-        customFieldsFields.forEach { it.visible() }
-    }
-
-    override fun hideCustomFieldsSection() {
-        customFieldsFields.forEach { it.gone() }
-    }
-
-    override fun showCustomFields(customFields: Map<UUID, String>) {
-        requiredBinding.customFieldsListContainer.let { container ->
-            container.removeAllViews()
-
-            customFields.forEach { (key, label) ->
-                val customFieldItem =
-                    ItemWithHeaderAndActionView(requireContext()).apply {
-                        title = label
-                        actionIcon = VIEW
-                        isValueSecret = true
-                        setHiddenSecretValue()
-
-                        setDebouncingOnClick { presenter.copyCustomFieldClick(key) }
-                        actionClickListener = { presenter.customFieldActionClick(key) }
-
-                        tag = key
-                    }
-
-                val layoutParams =
-                    LinearLayout
-                        .LayoutParams(
-                            LinearLayout.LayoutParams.MATCH_PARENT,
-                            LinearLayout.LayoutParams.WRAP_CONTENT,
-                        ).apply {
-                            if (container.isNotEmpty()) {
-                                topMargin = resources.getDimensionPixelSize(CoreUiR.dimen.dp_16)
-                            }
-                        }
-
-                container.addView(customFieldItem, layoutParams)
-            }
-        }
-    }
-
-    override fun showCustomFieldValue(
-        key: UUID,
-        model: CustomFieldModel?,
-    ) {
-        (requiredBinding.customFieldsListContainer.findViewWithTag(key) as? ItemWithHeaderAndActionView)?.apply {
-            actionIcon = HIDE
-            val textValue =
-                when (model) {
-                    is BooleanCustomField -> model.secretValue?.toString() ?: ""
-                    is NumberCustomField -> model.secretValue?.toString() ?: ""
-                    is PasswordCustomField -> model.secretValue ?: ""
-                    is UriCustomField -> model.secretValue ?: ""
-                    is TextCustomField -> model.secretValue ?: ""
-                    null -> ""
-                }
-            setVisibleTextValue(textValue)
-        }
-    }
-
-    override fun hideCustomFieldValue(key: UUID) {
-        (requiredBinding.customFieldsListContainer.findViewWithTag(key) as? ItemWithHeaderAndActionView)?.apply {
-            actionIcon = VIEW
-            setHiddenSecretValue()
-        }
+        // No action needed
     }
 
     companion object {

@@ -3,6 +3,7 @@ plugins {
     alias libs.plugins.kotlin.gradle
     alias libs.plugins.kotlin.parcelize
     alias libs.plugins.navigation.safeargs
+    alias libs.plugins.compose.compiler
 }
 
 dependencies {
@@ -52,6 +53,7 @@ dependencies {
     implementation libs.swiperefresh
     implementation platform(libs.koin.bom)
     implementation libs.koin
+    implementation libs.koin.compose
     implementation libs.fastadapter.binding
     implementation libs.fastadapter.core
     implementation libs.fastadapter.diff
@@ -59,8 +61,19 @@ dependencies {
     implementation libs.room.core
     implementation libs.espresso.idling.resource
     implementation libs.jsonschema.friend
+    implementation platform(libs.compose.bom)
+    implementation libs.compose.foundation
+    implementation libs.compose.material3
+    implementation libs.compose.ui.tooling.preview
+    implementation libs.compose.lifecycle.viewmodel
+    implementation libs.coil.compose
+    implementation libs.accompanist.drawablepainter
+
+    debugImplementation libs.compose.ui.tooling
+    debugImplementation libs.compose.ui.test.manifest
 
     testImplementation project(':commontest')
+    testImplementation project(':passphrasememorycache')
     testImplementation libs.gson
     testImplementation libs.json.path
 }
@@ -69,6 +82,7 @@ android {
     namespace = "com.passbolt.mobile.android.feature.resources"
     buildFeatures {
         viewBinding true
+        compose true
     }
 }
 
