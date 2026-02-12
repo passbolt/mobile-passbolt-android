@@ -101,6 +101,7 @@ class SignInPresenterTest : KoinTest {
                     debugLogFileCreationDateTime = null,
                     isDeveloperModeEnabled = false,
                     isHideRootDialogEnabled = false,
+                    debugLogLastAppVersion = null,
                 ),
             )
         whenever(mockGopenPgpTimeUpdater.updateTimeIfNeeded(any(), any()))
