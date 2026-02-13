@@ -23,6 +23,7 @@
 
 package com.passbolt.mobile.android.feature.resourceform.metadata.additionaluris
 
+import androidx.annotation.VisibleForTesting
 import com.passbolt.mobile.android.common.validation.StringMaxLength
 import java.util.UUID
 
@@ -74,7 +75,8 @@ internal class AdditionalUrisFormValidator : FormValidator<AdditionalUrisValidat
         return validated
     }
 
-    private companion object {
-        private const val URI_MAX_LENGTH = 1024
+    companion object {
+        @VisibleForTesting
+        const val URI_MAX_LENGTH = 1024
     }
 }

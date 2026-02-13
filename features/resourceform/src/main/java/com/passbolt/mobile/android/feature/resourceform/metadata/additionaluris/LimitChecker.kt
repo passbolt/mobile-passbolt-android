@@ -23,6 +23,7 @@
 
 package com.passbolt.mobile.android.feature.resourceform.metadata.additionaluris
 
+import androidx.annotation.VisibleForTesting
 import com.passbolt.mobile.android.feature.resourceform.metadata.additionaluris.LimitChecker.LimitCheckResult
 import com.passbolt.mobile.android.feature.resourceform.metadata.additionaluris.LimitChecker.LimitCheckResult.CanAdd
 import com.passbolt.mobile.android.feature.resourceform.metadata.additionaluris.LimitChecker.LimitCheckResult.LimitReached
@@ -47,7 +48,8 @@ internal class AdditionalUrisLimitChecker : LimitChecker {
             CanAdd
         }
 
-    private companion object {
-        private const val MAX_ADDITIONAL_URIS = 19
+    companion object {
+        @VisibleForTesting
+        const val MAX_ADDITIONAL_URIS = 19
     }
 }
