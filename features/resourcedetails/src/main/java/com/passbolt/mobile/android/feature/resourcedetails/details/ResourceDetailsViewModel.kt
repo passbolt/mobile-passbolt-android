@@ -55,6 +55,7 @@ import com.passbolt.mobile.android.feature.resourcedetails.details.ErrorSnackbar
 import com.passbolt.mobile.android.feature.resourcedetails.details.ErrorSnackbarType.GENERAL_ERROR
 import com.passbolt.mobile.android.feature.resourcedetails.details.ErrorSnackbarType.TOGGLE_FAVOURITE_FAILURE
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent.CloseDeleteConfirmationDialog
+import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent.CloseMoreMenu
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent.ConfirmDeleteResource
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent.CopyCustomField
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent.CopyMetadataDescription
@@ -85,7 +86,6 @@ import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetai
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsSideEffect.CloseWithDeleteSuccess
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsSideEffect.NavigateBack
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsSideEffect.NavigateToEditResource
-import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsSideEffect.NavigateToMore
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsSideEffect.NavigateToResourceLocation
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsSideEffect.NavigateToResourcePermissions
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsSideEffect.NavigateToResourceTags
@@ -164,6 +164,7 @@ class ResourceDetailsViewModel(
         when (intent) {
             GoBack -> emitSideEffect(NavigateBack)
             OpenMoreMenu -> openMoreMenu()
+            CloseMoreMenu -> closeMoreMenu()
             CopyUsername -> copyUsername()
             CopyUrl -> copyMainUri()
             CopyPassword -> copyPassword()
@@ -414,8 +415,16 @@ class ResourceDetailsViewModel(
     }
 
     private fun openMoreMenu() {
-        updateViewState { copy(totpData = totpData.copy(totpModel = otpModelMapper.map(resource))) }
-        emitSideEffect(NavigateToMore(resource.resourceId, resource.metadataJsonModel.name))
+        updateViewState {
+            copy(
+                totpData = totpData.copy(totpModel = otpModelMapper.map(resource)),
+                showMoreMenu = true,
+            )
+        }
+    }
+
+    private fun closeMoreMenu() {
+        updateViewState { copy(showMoreMenu = false) }
     }
 
     private fun copyUsername() {

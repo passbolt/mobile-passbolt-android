@@ -29,11 +29,6 @@ import com.passbolt.mobile.android.ui.ResourceModel
 interface ResourceDetailsNavigation {
     fun navigateBack()
 
-    fun navigateToMore(
-        resourceId: String,
-        resourceName: String,
-    )
-
     fun navigateToEditResource(resourceModel: ResourceModel)
 
     fun navigateToResourcePermissions(

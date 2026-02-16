@@ -83,7 +83,6 @@ import com.passbolt.mobile.android.feature.home.screen.HomeSideEffect.NavigateTo
 import com.passbolt.mobile.android.feature.home.screen.HomeSideEffect.NavigateToEditResourceForm
 import com.passbolt.mobile.android.feature.home.screen.HomeSideEffect.NavigateToResourceUri
 import com.passbolt.mobile.android.feature.home.screen.HomeSideEffect.NavigateToShare
-import com.passbolt.mobile.android.feature.home.screen.HomeSideEffect.OpenResourceMoreMenu
 import com.passbolt.mobile.android.feature.home.screen.HomeSideEffect.ShowErrorSnackbar
 import com.passbolt.mobile.android.feature.home.screen.HomeSideEffect.ShowSuccessSnackbar
 import com.passbolt.mobile.android.feature.home.screen.HomeSideEffect.ShowToast
@@ -164,7 +163,7 @@ internal class HomeViewModel(
             DeleteResource -> updateViewState { copy(showDeleteResourceConfirmationDialog = true) }
             OpenFiltersBottomSheet -> updateViewState { copy(showFiltersBottomSheet = true) }
             CloseFiltersBottomSheet -> updateViewState { copy(showFiltersBottomSheet = false) }
-            CloseResourceMoreMenu -> updateViewState { copy(showResourceMoreBottomSheet = false, moreMenuResource = null) }
+            CloseResourceMoreMenu -> updateViewState { copy(showResourceMoreBottomSheet = false) }
             ConfirmDeleteResource -> deleteResource()
             CreateNote -> createNote()
             CreatePassword -> createPassword()
@@ -198,13 +197,12 @@ internal class HomeViewModel(
     }
 
     private fun openResourceMoreMenu(intent: OpenResourceMenu) {
-        updateViewState { copy(moreMenuResource = intent.resourceModel) }
-        emitSideEffect(
-            OpenResourceMoreMenu(
-                intent.resourceModel.resourceId,
-                intent.resourceModel.metadataJsonModel.name,
-            ),
-        )
+        updateViewState {
+            copy(
+                moreMenuResource = intent.resourceModel,
+                showResourceMoreBottomSheet = true,
+            )
+        }
     }
 
     private fun createFolder() {

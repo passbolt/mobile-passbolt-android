@@ -20,37 +20,20 @@
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-package com.passbolt.mobile.android.feature.home.screen
 
-import com.passbolt.mobile.android.ui.HomeDisplayViewModel
-import com.passbolt.mobile.android.ui.LeadingContentType
+package com.passbolt.mobile.android.resourcemoremenu
 
-interface HomeNavigation {
-    val resourceHandlingStrategy: ResourceHandlingStrategy
+import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.FavouriteOption
 
-    fun navigateToScanOtpCodeForResult(folderId: String?)
-
-    fun navigateToCreateResourceForm(
-        leadingContentType: LeadingContentType,
-        folderId: String?,
-    )
-
-    fun navigateToEditResourceForm(
-        resourceId: String,
-        resourceName: String,
-    )
-
-    fun navigateToChild(homeView: HomeDisplayViewModel)
-
-    fun navigateBack()
-
-    fun openFolderMoreMenu(homeView: HomeDisplayViewModel)
-
-    fun navigateToShare(resourceId: String)
-
-    fun navigateToCreateFolder(folderId: String?)
-
-    fun navigateToRoot(homeView: HomeDisplayViewModel)
-
-    fun navigateToAutofillSettings()
-}
+data class ResourceMoreMenuBottomSheetState(
+    val title: String = "",
+    val isLoading: Boolean = true,
+    val showCopyPassword: Boolean = false,
+    val showCopyNote: Boolean = false,
+    val showCopyMetadataDescription: Boolean = false,
+    val showSeparator: Boolean = false,
+    val showDelete: Boolean = false,
+    val showEdit: Boolean = false,
+    val showShare: Boolean = false,
+    val favouriteOption: FavouriteOption? = null,
+)

@@ -23,27 +23,30 @@
 
 package com.passbolt.mobile.android.resourcemoremenu
 
-import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
-import com.passbolt.mobile.android.core.idlingresource.CreateMenuModelIdlingResource
-import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
-import com.passbolt.mobile.android.resourcemoremenu.usecase.CreateResourceMoreMenuModelUseCase
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import org.koin.core.module.dsl.factoryOf
-import org.koin.dsl.bind
-import org.koin.dsl.module
-import org.mockito.kotlin.mock
+import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
 
-internal val mockCreateResourceMoreMenuModelUseCase = mock<CreateResourceMoreMenuModelUseCase>()
+sealed interface ResourceMoreMenuBottomSheetSideEffect {
+    data object Dismiss : ResourceMoreMenuBottomSheetSideEffect
 
-@ExperimentalCoroutinesApi
-val testModule =
-    module {
-        factoryOf(::TestCoroutineLaunchContext) bind CoroutineLaunchContext::class
-        factory<ResourceMoreMenuContract.Presenter> {
-            ResourceMoreMenuPresenter(
-                createResourceMoreMenuModelUseCase = mockCreateResourceMoreMenuModelUseCase,
-                coroutineLaunchContext = get(),
-                menuModelIdlingResource = CreateMenuModelIdlingResource(),
-            )
-        }
-    }
+    data object CopyPassword : ResourceMoreMenuBottomSheetSideEffect
+
+    data object CopyMetadataDescription : ResourceMoreMenuBottomSheetSideEffect
+
+    data object CopyNote : ResourceMoreMenuBottomSheetSideEffect
+
+    data object CopyUrl : ResourceMoreMenuBottomSheetSideEffect
+
+    data object CopyUsername : ResourceMoreMenuBottomSheetSideEffect
+
+    data object LaunchWebsite : ResourceMoreMenuBottomSheetSideEffect
+
+    data object Delete : ResourceMoreMenuBottomSheetSideEffect
+
+    data object Edit : ResourceMoreMenuBottomSheetSideEffect
+
+    data object Share : ResourceMoreMenuBottomSheetSideEffect
+
+    data class ToggleFavourite(
+        val option: ResourceMoreMenuModel.FavouriteOption,
+    ) : ResourceMoreMenuBottomSheetSideEffect
+}

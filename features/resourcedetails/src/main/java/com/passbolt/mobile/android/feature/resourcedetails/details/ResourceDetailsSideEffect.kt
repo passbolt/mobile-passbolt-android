@@ -29,11 +29,6 @@ import com.passbolt.mobile.android.ui.ResourceModel
 sealed class ResourceDetailsSideEffect {
     data object NavigateBack : ResourceDetailsSideEffect()
 
-    data class NavigateToMore(
-        val resourceId: String,
-        val resourceName: String,
-    ) : ResourceDetailsSideEffect()
-
     data class NavigateToEditResource(
         val resourceModel: ResourceModel,
     ) : ResourceDetailsSideEffect()

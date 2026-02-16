@@ -1,8 +1,3 @@
-package com.passbolt.mobile.android.resourcemoremenu
-
-import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReactiveContract
-import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -26,38 +21,32 @@ import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
  * @since v1.0
  */
 
-interface ResourceMoreMenuContract {
-    interface View : DataRefreshViewReactiveContract.View {
-        fun showTitle(title: String)
+package com.passbolt.mobile.android.resourcemoremenu
 
-        fun showSeparator()
+sealed interface ResourceMoreMenuBottomSheetIntent {
+    data class Initialize(
+        val resourceId: String,
+    ) : ResourceMoreMenuBottomSheetIntent
 
-        fun showDeleteButton()
+    data object Close : ResourceMoreMenuBottomSheetIntent
 
-        fun showEditButton()
+    data object CopyPassword : ResourceMoreMenuBottomSheetIntent
 
-        fun showShareButton()
+    data object CopyMetadataDescription : ResourceMoreMenuBottomSheetIntent
 
-        fun showAddToFavouritesButton()
+    data object CopyNote : ResourceMoreMenuBottomSheetIntent
 
-        fun showRemoveFromFavouritesButton()
+    data object CopyUrl : ResourceMoreMenuBottomSheetIntent
 
-        fun showRefreshFailure()
+    data object CopyUsername : ResourceMoreMenuBottomSheetIntent
 
-        fun notifyFavouriteClick(favouriteOption: ResourceMoreMenuModel.FavouriteOption)
+    data object LaunchWebsite : ResourceMoreMenuBottomSheetIntent
 
-        fun hideMenu()
+    data object Delete : ResourceMoreMenuBottomSheetIntent
 
-        fun showCopyButton()
+    data object Edit : ResourceMoreMenuBottomSheetIntent
 
-        fun showCopyNoteButton()
+    data object Share : ResourceMoreMenuBottomSheetIntent
 
-        fun showCopyMetadataDescriptionButton()
-    }
-
-    interface Presenter : DataRefreshViewReactiveContract.Presenter<View> {
-        fun argsRetrieved(resourceId: String)
-
-        fun menuFavouriteClick()
-    }
+    data object ToggleFavourite : ResourceMoreMenuBottomSheetIntent
 }

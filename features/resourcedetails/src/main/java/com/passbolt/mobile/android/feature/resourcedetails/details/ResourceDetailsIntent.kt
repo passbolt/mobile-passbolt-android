@@ -36,6 +36,8 @@ sealed class ResourceDetailsIntent {
 
     data object OpenMoreMenu : ResourceDetailsIntent()
 
+    data object CloseMoreMenu : ResourceDetailsIntent()
+
     // Copy actions
     data object CopyUsername : ResourceDetailsIntent()
 
