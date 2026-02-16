@@ -72,11 +72,6 @@ internal sealed interface HomeSideEffect {
     data class ShowToast(
         val type: ToastType,
     ) : HomeSideEffect
-
-    data class OpenResourceMoreMenu(
-        val resourceId: String,
-        val resourceName: String,
-    ) : HomeSideEffect
 }
 
 internal enum class SnackbarErrorType {

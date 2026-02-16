@@ -32,6 +32,7 @@ import com.passbolt.mobile.android.core.resources.actions.ResourcePropertiesActi
 import com.passbolt.mobile.android.core.resources.actions.ResourcePropertyActionResult
 import com.passbolt.mobile.android.feature.resourcedetails.details.ErrorSnackbarType
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent.CloseDeleteConfirmationDialog
+import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent.CloseMoreMenu
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent.ConfirmDeleteResource
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent.CopyUsername
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent.DeleteClick
@@ -42,7 +43,6 @@ import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetai
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsSideEffect.AddToClipboard
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsSideEffect.CloseWithDeleteSuccess
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsSideEffect.NavigateBack
-import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsSideEffect.NavigateToMore
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsSideEffect.OpenWebsite
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsSideEffect.ShowErrorSnackbar
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsViewModel
@@ -100,6 +100,7 @@ class ResourceDetailsMainViewModelTest : KoinTest {
                 assertThat(state.isRefreshing).isFalse()
                 assertThat(state.isLoading).isFalse()
                 assertThat(state.showDeleteResourceConfirmationDialog).isFalse()
+                assertThat(state.showMoreMenu).isFalse()
             }
         }
 
@@ -115,18 +116,31 @@ class ResourceDetailsMainViewModelTest : KoinTest {
         }
 
     @Test
-    fun `open more menu should emit navigate to more side effect`() =
+    fun `open more menu should update state to show more menu`() =
         runTest {
             viewModel = get()
-
             viewModel.onIntent(Initialize(DEFAULT_RESOURCE_MODEL))
 
-            viewModel.sideEffect.test {
+            viewModel.viewState.drop(1).test {
                 viewModel.onIntent(OpenMoreMenu)
 
-                val effect = awaitItem()
-                assertIs<NavigateToMore>(effect)
-                assertThat(effect.resourceId).isEqualTo(DEFAULT_RESOURCE_MODEL.resourceId)
+                val state = awaitItem()
+                assertThat(state.showMoreMenu).isTrue()
+            }
+        }
+
+    @Test
+    fun `close more menu should update state to hide more menu`() =
+        runTest {
+            viewModel = get()
+            viewModel.onIntent(Initialize(DEFAULT_RESOURCE_MODEL))
+            viewModel.onIntent(OpenMoreMenu)
+
+            viewModel.viewState.drop(1).test {
+                viewModel.onIntent(CloseMoreMenu)
+
+                val state = awaitItem()
+                assertThat(state.showMoreMenu).isFalse()
             }
         }
 

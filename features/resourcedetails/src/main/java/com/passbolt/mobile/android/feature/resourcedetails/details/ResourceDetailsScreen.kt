@@ -66,17 +66,27 @@ import com.passbolt.mobile.android.core.ui.compose.topbar.BackNavigationIcon
 import com.passbolt.mobile.android.core.ui.compose.topbar.TitleAppBar
 import com.passbolt.mobile.android.feature.authentication.compose.AuthenticationHandler
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent.CloseDeleteConfirmationDialog
+import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent.CloseMoreMenu
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent.ConfirmDeleteResource
+import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent.CopyMetadataDescription
+import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent.CopyNote
+import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent.CopyPassword
+import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent.CopyUrl
+import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent.CopyUsername
+import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent.DeleteClick
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent.Dispose
+import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent.Edit
+import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent.EditPermissions
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent.GoBack
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent.Initialize
+import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent.LaunchWebsite
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent.OpenMoreMenu
+import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent.ToggleFavourite
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent.ViewPermissions
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsSideEffect.AddToClipboard
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsSideEffect.CloseWithDeleteSuccess
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsSideEffect.NavigateBack
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsSideEffect.NavigateToEditResource
-import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsSideEffect.NavigateToMore
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsSideEffect.NavigateToResourceLocation
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsSideEffect.NavigateToResourcePermissions
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsSideEffect.NavigateToResourceTags
@@ -92,6 +102,7 @@ import com.passbolt.mobile.android.feature.resourcedetails.details.ui.PasswordSe
 import com.passbolt.mobile.android.feature.resourcedetails.details.ui.ResourceHeader
 import com.passbolt.mobile.android.feature.resourcedetails.details.ui.SharedWithSection
 import com.passbolt.mobile.android.feature.resourcedetails.details.ui.TotpSection
+import com.passbolt.mobile.android.resourcemoremenu.ResourceMoreMenuBottomSheet
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.isExpired
 import com.passbolt.mobile.android.ui.isFavourite
@@ -146,7 +157,6 @@ fun ResourceDetailsScreen(
     SideEffectDispatcher(viewModel.sideEffect) { sideEffect ->
         when (sideEffect) {
             NavigateBack -> navigation.navigateBack()
-            is NavigateToMore -> navigation.navigateToMore(sideEffect.resourceId, sideEffect.resourceName)
             is NavigateToEditResource -> navigation.navigateToEditResource(sideEffect.resourceModel)
             is NavigateToResourcePermissions ->
                 navigation.navigateToResourcePermissions(
@@ -258,6 +268,25 @@ private fun ResourceDetailsScreen(
                 )
 
                 ProgressDialog(state.isLoading)
+
+                if (state.showMoreMenu && state.resourceData.resourceModel != null) {
+                    val resource = state.resourceData.resourceModel!!
+                    ResourceMoreMenuBottomSheet(
+                        resourceId = resource.resourceId,
+                        resourceName = resource.metadataJsonModel.name,
+                        onDismissRequest = { onIntent(CloseMoreMenu) },
+                        onCopyPassword = { onIntent(CopyPassword) },
+                        onCopyMetadataDescription = { onIntent(CopyMetadataDescription) },
+                        onCopyNote = { onIntent(CopyNote) },
+                        onCopyUrl = { onIntent(CopyUrl) },
+                        onCopyUsername = { onIntent(CopyUsername) },
+                        onLaunchWebsite = { onIntent(LaunchWebsite) },
+                        onDelete = { onIntent(DeleteClick) },
+                        onEdit = { onIntent(Edit) },
+                        onShare = { onIntent(EditPermissions) },
+                        onToggleFavourite = { onIntent(ToggleFavourite(it)) },
+                    )
+                }
             }
         },
     )

@@ -64,17 +64,28 @@ import com.passbolt.mobile.android.feature.authentication.compose.Authentication
 import com.passbolt.mobile.android.feature.home.filtersmenu.FiltersMenuBottomSheet
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.CloseCreateResourceMenu
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.CloseDeleteConfirmationDialog
+import com.passbolt.mobile.android.feature.home.screen.HomeIntent.CloseResourceMoreMenu
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.CloseSwitchAccount
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.ConfirmDeleteResource
+import com.passbolt.mobile.android.feature.home.screen.HomeIntent.CopyNote
+import com.passbolt.mobile.android.feature.home.screen.HomeIntent.CopyPassword
+import com.passbolt.mobile.android.feature.home.screen.HomeIntent.CopyResourceMetadataDescription
+import com.passbolt.mobile.android.feature.home.screen.HomeIntent.CopyResourceUri
+import com.passbolt.mobile.android.feature.home.screen.HomeIntent.CopyResourceUsername
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.CreateFolder
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.CreateNote
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.CreatePassword
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.CreateTotp
+import com.passbolt.mobile.android.feature.home.screen.HomeIntent.DeleteResource
+import com.passbolt.mobile.android.feature.home.screen.HomeIntent.EditResource
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.Initialize
+import com.passbolt.mobile.android.feature.home.screen.HomeIntent.LaunchResourceWebsite
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.OpenCreateResourceMenu
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.OpenFiltersBottomSheet
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.Search
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.SearchEndIconAction
+import com.passbolt.mobile.android.feature.home.screen.HomeIntent.ShareResource
+import com.passbolt.mobile.android.feature.home.screen.HomeIntent.ToggleResourceFavourite
 import com.passbolt.mobile.android.feature.home.screen.HomeSideEffect.CopyToClipboard
 import com.passbolt.mobile.android.feature.home.screen.HomeSideEffect.InitiateDataRefresh
 import com.passbolt.mobile.android.feature.home.screen.HomeSideEffect.NavigateToCreateFolder
@@ -83,12 +94,12 @@ import com.passbolt.mobile.android.feature.home.screen.HomeSideEffect.NavigateTo
 import com.passbolt.mobile.android.feature.home.screen.HomeSideEffect.NavigateToEditResourceForm
 import com.passbolt.mobile.android.feature.home.screen.HomeSideEffect.NavigateToResourceUri
 import com.passbolt.mobile.android.feature.home.screen.HomeSideEffect.NavigateToShare
-import com.passbolt.mobile.android.feature.home.screen.HomeSideEffect.OpenResourceMoreMenu
 import com.passbolt.mobile.android.feature.home.screen.HomeSideEffect.ShowErrorSnackbar
 import com.passbolt.mobile.android.feature.home.screen.HomeSideEffect.ShowSuccessSnackbar
 import com.passbolt.mobile.android.feature.home.screen.HomeSideEffect.ShowToast
 import com.passbolt.mobile.android.feature.home.screen.snackbar.AutofillConflictSnackbarEffect
 import com.passbolt.mobile.android.feature.home.switchaccount.SwitchAccountBottomSheet
+import com.passbolt.mobile.android.resourcemoremenu.ResourceMoreMenuBottomSheet
 import com.passbolt.mobile.android.testtags.composetags.Home
 import com.passbolt.mobile.android.ui.FiltersMenuModel
 import com.passbolt.mobile.android.ui.Folder.Child
@@ -190,7 +201,6 @@ internal fun HomeScreen(
                     it.resourceModel.metadataJsonModel.name,
                 )
             InitiateDataRefresh -> DataRefreshService.start(context)
-            is OpenResourceMoreMenu -> navigation.openResourceMoreMenu(it.resourceId, it.resourceName)
             is NavigateToResourceUri -> navigator.openExternalWebsite(context, it.url)
             is NavigateToShare -> navigation.navigateToShare(it.resourceModel.resourceId)
             is NavigateToCreateFolder -> navigation.navigateToCreateFolder(it.folderId)
@@ -293,6 +303,24 @@ private fun HomeScreen(
                     onDismissRequest = { onIntent(HomeIntent.CloseFiltersBottomSheet) },
                     onHomeViewChange = { homeNavigation.navigateToRoot(it) },
                     filtersMenuModel = FiltersMenuModel(state.homeView),
+                )
+            }
+
+            if (state.showResourceMoreBottomSheet && state.moreMenuResource != null) {
+                ResourceMoreMenuBottomSheet(
+                    resourceId = state.moreMenuResource.resourceId,
+                    resourceName = state.moreMenuResource.metadataJsonModel.name,
+                    onDismissRequest = { onIntent(CloseResourceMoreMenu) },
+                    onCopyPassword = { onIntent(CopyPassword) },
+                    onCopyMetadataDescription = { onIntent(CopyResourceMetadataDescription) },
+                    onCopyNote = { onIntent(CopyNote) },
+                    onCopyUrl = { onIntent(CopyResourceUri) },
+                    onCopyUsername = { onIntent(CopyResourceUsername) },
+                    onLaunchWebsite = { onIntent(LaunchResourceWebsite) },
+                    onDelete = { onIntent(DeleteResource) },
+                    onEdit = { onIntent(EditResource) },
+                    onShare = { onIntent(ShareResource) },
+                    onToggleFavourite = { onIntent(ToggleResourceFavourite(it)) },
                 )
             }
 

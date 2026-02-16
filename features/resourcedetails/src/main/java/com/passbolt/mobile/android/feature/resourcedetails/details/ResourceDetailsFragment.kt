@@ -14,28 +14,16 @@ import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.passbolt.mobile.android.core.navigation.deeplinks.NavDeepLinkProvider
-import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent.CopyMetadataDescription
-import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent.CopyNote
-import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent.CopyPassword
-import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent.CopyUrl
-import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent.CopyUsername
-import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent.DeleteClick
-import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent.Edit
-import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent.EditPermissions
-import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent.LaunchWebsite
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent.ResourceEdited
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent.ResourceShared
-import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent.ToggleFavourite
 import com.passbolt.mobile.android.feature.resourceform.main.ResourceFormFragment
 import com.passbolt.mobile.android.feature.resources.ResourcesDetailsDirections
 import com.passbolt.mobile.android.locationdetails.ui.LocationItem
 import com.passbolt.mobile.android.permissions.permissions.PermissionsFragment
 import com.passbolt.mobile.android.permissions.permissions.PermissionsItem
 import com.passbolt.mobile.android.permissions.permissions.PermissionsMode
-import com.passbolt.mobile.android.resourcemoremenu.ResourceMoreMenuFragment
 import com.passbolt.mobile.android.ui.ResourceFormMode
 import com.passbolt.mobile.android.ui.ResourceModel
-import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.FavouriteOption
 import org.koin.androidx.compose.koinViewModel
 
 /**
@@ -63,8 +51,7 @@ import org.koin.androidx.compose.koinViewModel
 
 class ResourceDetailsFragment :
     Fragment(),
-    ResourceDetailsNavigation,
-    ResourceMoreMenuFragment.Listener {
+    ResourceDetailsNavigation {
     private val navArgs: ResourceDetailsFragmentArgs by navArgs()
     private lateinit var viewModel: ResourceDetailsViewModel
 
@@ -103,15 +90,6 @@ class ResourceDetailsFragment :
 
     override fun navigateBack() {
         findNavController().popBackStack()
-    }
-
-    override fun navigateToMore(
-        resourceId: String,
-        resourceName: String,
-    ) {
-        ResourceMoreMenuFragment
-            .newInstance(resourceId, resourceName)
-            .show(childFragmentManager, ResourceMoreMenuFragment::class.java.name)
     }
 
     override fun navigateToEditResource(resourceModel: ResourceModel) {
@@ -178,50 +156,6 @@ class ResourceDetailsFragment :
                 EXTRA_RESOURCE_NAME to resourceName,
             ),
         )
-    }
-
-    override fun menuCopyPasswordClick() {
-        viewModel.onIntent(CopyPassword)
-    }
-
-    override fun menuCopyMetadataDescriptionClick() {
-        viewModel.onIntent(CopyMetadataDescription)
-    }
-
-    override fun menuCopyNoteClick() {
-        viewModel.onIntent(CopyNote)
-    }
-
-    override fun menuCopyUrlClick() {
-        viewModel.onIntent(CopyUrl)
-    }
-
-    override fun menuCopyUsernameClick() {
-        viewModel.onIntent(CopyUsername)
-    }
-
-    override fun menuLaunchWebsiteClick() {
-        viewModel.onIntent(LaunchWebsite)
-    }
-
-    override fun menuDeleteClick() {
-        viewModel.onIntent(DeleteClick)
-    }
-
-    override fun menuEditClick() {
-        viewModel.onIntent(Edit)
-    }
-
-    override fun menuShareClick() {
-        viewModel.onIntent(EditPermissions)
-    }
-
-    override fun menuFavouriteClick(option: FavouriteOption) {
-        viewModel.onIntent(ToggleFavourite(option))
-    }
-
-    override fun resourceMoreMenuDismissed() {
-        // No action needed
     }
 
     companion object {

@@ -40,6 +40,7 @@ data class ResourceDetailsState(
     val sharedWithData: SharedWithData = SharedWithData(),
     val customFieldsData: CustomFieldsData = CustomFieldsData(),
     val showDeleteResourceConfirmationDialog: Boolean = false,
+    val showMoreMenu: Boolean = false,
 ) {
     val requiredResourceModel: ResourceModel
         get() = requireNotNull(resourceData.resourceModel)

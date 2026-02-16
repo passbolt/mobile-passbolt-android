@@ -56,7 +56,6 @@ import com.passbolt.mobile.android.feature.home.screen.HomeIntent.OpenResourceMe
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.ToggleResourceFavourite
 import com.passbolt.mobile.android.feature.home.screen.HomeSideEffect.CopyToClipboard
 import com.passbolt.mobile.android.feature.home.screen.HomeSideEffect.NavigateToResourceUri
-import com.passbolt.mobile.android.feature.home.screen.HomeSideEffect.OpenResourceMoreMenu
 import com.passbolt.mobile.android.feature.home.screen.HomeSideEffect.ShowErrorSnackbar
 import com.passbolt.mobile.android.feature.home.screen.ShowSuggestedModel.DoNotShow
 import com.passbolt.mobile.android.feature.home.screen.SnackbarErrorType.TOGGLE_FAVOURITE_FAILURE
@@ -197,6 +196,23 @@ class HomeViewModelMenuTest : KoinTest {
     }
 
     @Test
+    fun `should show resource more menu when opening resource menu`() =
+        runTest {
+            viewModel = get()
+            val resource = mockResourceModel("Test Resource")
+
+            viewModel.viewState.test {
+                skipItems(1)
+
+                viewModel.onIntent(OpenResourceMenu(resource))
+
+                val state = awaitItem()
+                assertThat(state.showResourceMoreBottomSheet).isTrue()
+                assertThat(state.moreMenuResource).isEqualTo(resource)
+            }
+        }
+
+    @Test
     fun `should copy username to clipboard`() =
         runTest {
             val resourcePropertiesInteractor = mock<ResourcePropertiesActionsInteractor>()
@@ -215,8 +231,6 @@ class HomeViewModelMenuTest : KoinTest {
             viewModel.onIntent(OpenResourceMenu(mockResourceModel("Resource 1")))
 
             viewModel.sideEffect.test {
-                assertIs<OpenResourceMoreMenu>(awaitItem())
-
                 viewModel.onIntent(CopyResourceUsername)
 
                 val effect = awaitItem()
@@ -246,8 +260,6 @@ class HomeViewModelMenuTest : KoinTest {
             viewModel.onIntent(OpenResourceMenu(mockResourceModel("Resource 1")))
 
             viewModel.sideEffect.test {
-                assertIs<OpenResourceMoreMenu>(awaitItem())
-
                 viewModel.onIntent(CopyResourceMetadataDescription)
 
                 val effect = awaitItem()
@@ -277,8 +289,6 @@ class HomeViewModelMenuTest : KoinTest {
             viewModel.onIntent(OpenResourceMenu(mockResourceModel("Resource 1")))
 
             viewModel.sideEffect.test {
-                assertIs<OpenResourceMoreMenu>(awaitItem())
-
                 viewModel.onIntent(CopyResourceUri)
 
                 val effect = awaitItem()
@@ -308,8 +318,6 @@ class HomeViewModelMenuTest : KoinTest {
             viewModel.onIntent(OpenResourceMenu(mockResourceModel("Resource 1")))
 
             viewModel.sideEffect.test {
-                assertIs<OpenResourceMoreMenu>(awaitItem())
-
                 viewModel.onIntent(CopyPassword)
 
                 val effect = awaitItem()
@@ -339,8 +347,6 @@ class HomeViewModelMenuTest : KoinTest {
             viewModel.onIntent(OpenResourceMenu(mockResourceModel("Resource 1")))
 
             viewModel.sideEffect.test {
-                assertIs<OpenResourceMoreMenu>(awaitItem())
-
                 viewModel.onIntent(CopyNote)
 
                 val effect = awaitItem()
@@ -370,8 +376,6 @@ class HomeViewModelMenuTest : KoinTest {
             viewModel.onIntent(OpenResourceMenu(mockResourceModel("Resource 1")))
 
             viewModel.sideEffect.test {
-                assertIs<OpenResourceMoreMenu>(awaitItem())
-
                 viewModel.onIntent(LaunchResourceWebsite)
 
                 val effect = awaitItem()
@@ -394,12 +398,9 @@ class HomeViewModelMenuTest : KoinTest {
 
             viewModel = get()
             viewModel.onIntent(OpenResourceMenu(mockResourceModel("Test Resource")))
+            viewModel.onIntent(ToggleResourceFavourite(ADD_TO_FAVOURITES))
 
-            viewModel.sideEffect.test {
-                assertIs<OpenResourceMoreMenu>(awaitItem())
-
-                viewModel.onIntent(ToggleResourceFavourite(ADD_TO_FAVOURITES))
-            }
+            verify(resourceCommonActionsInteractor).toggleFavourite(ADD_TO_FAVOURITES)
         }
 
     @Test
@@ -416,12 +417,9 @@ class HomeViewModelMenuTest : KoinTest {
 
             viewModel = get()
             viewModel.onIntent(OpenResourceMenu(mockResourceModel("Test Resource")))
+            viewModel.onIntent(ToggleResourceFavourite(REMOVE_FROM_FAVOURITES))
 
-            viewModel.sideEffect.test {
-                assertIs<OpenResourceMoreMenu>(awaitItem())
-
-                viewModel.onIntent(ToggleResourceFavourite(REMOVE_FROM_FAVOURITES))
-            }
+            verify(resourceCommonActionsInteractor).toggleFavourite(REMOVE_FROM_FAVOURITES)
         }
 
     @Test
@@ -438,8 +436,6 @@ class HomeViewModelMenuTest : KoinTest {
             viewModel.onIntent(OpenResourceMenu(mockResourceModel("Test Resource")))
 
             viewModel.sideEffect.test {
-                assertIs<OpenResourceMoreMenu>(awaitItem())
-
                 viewModel.onIntent(ToggleResourceFavourite(ADD_TO_FAVOURITES))
 
                 val effect = awaitItem()
