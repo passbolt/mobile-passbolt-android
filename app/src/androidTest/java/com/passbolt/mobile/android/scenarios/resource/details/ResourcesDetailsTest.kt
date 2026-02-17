@@ -106,10 +106,10 @@ class ResourcesDetailsTest(
         // List of expected clipboard values for each copy item
         val EXPECTED_CLIPBOARD_VALUES =
             mapOf(
-                ResourcesDetailsItemModel.COPY_URI to "https://cloud.passbolt.com/automate",
+                ResourcesDetailsItemModel.COPY_URI to "https://www.passbolt.com",
                 ResourcesDetailsItemModel.COPY_USERNAME to "BettyAutomate",
-                ResourcesDetailsItemModel.COPY_PASSWORD to "BettyPassword",
-                ResourcesDetailsItemModel.COPY_METADATA_DESCRIPTION to "Betty Description is unencrypted this time",
+                ResourcesDetailsItemModel.COPY_PASSWORD to "TestPassword123!",
+                ResourcesDetailsItemModel.COPY_METADATA_DESCRIPTION to "This test description is unencrypted this time",
                 ResourcesDetailsItemModel.COPY_NOTE to "This is a Note which is secret",
             )
 
