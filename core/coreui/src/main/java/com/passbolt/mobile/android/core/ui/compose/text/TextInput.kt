@@ -55,6 +55,7 @@ fun TextInput(
     state: StatefulInput.State = Default,
     text: String = "",
     onTextChange: (String) -> Unit = {},
+    minLines: Int = 1,
     testTag: String? = null,
     colors: TextFieldColors =
         MaterialTheme.colorScheme.surfaceVariant.let {
@@ -84,6 +85,7 @@ fun TextInput(
             onValueChange = { onTextChange(it) },
             placeholder = { Text(hint) },
             isError = state is Error,
+            minLines = minLines,
             modifier =
                 Modifier
                     .fillMaxWidth()

@@ -1,11 +1,6 @@
-package com.passbolt.mobile.android.feature.resourceform.additionalsecrets.note
-
-import org.koin.core.module.Module
-import org.koin.core.module.dsl.viewModel
-
 /**
  * Passbolt - Open source password manager for teams
- * Copyright (c) 2021 Passbolt SA
+ * Copyright (c) 2026 Passbolt SA
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
  * Public License (AGPL) as published by the Free Software Foundation version 3.
@@ -26,11 +21,10 @@ import org.koin.core.module.dsl.viewModel
  * @since v1.0
  */
 
-internal fun Module.noteFormModule() {
-    viewModel { params ->
-        NoteFormViewModel(
-            mode = params.get(),
-            note = params.get(),
-        )
-    }
+package com.passbolt.mobile.android.feature.resourceform.additionalsecrets.note
+
+internal interface NoteFormNavigation {
+    fun navigateBack()
+
+    fun navigateBackWithResult(note: String?)
 }

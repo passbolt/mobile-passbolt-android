@@ -27,7 +27,7 @@ import com.passbolt.mobile.android.feature.metadatakeytrust.ui.NewTrustedMetadat
 import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpFragment
 import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpMode
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.customfields.CustomFieldsComposeFragment
-import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.note.NoteFormFragment
+import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.note.NoteFormComposeFragment
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.password.PasswordFormFragment
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.TotpFormFragment
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.advanced.TotpAdvancedSettingsFormFragment
@@ -86,8 +86,8 @@ class ResourceFormFragment :
     private val navArgs: ResourceFormFragmentArgs by navArgs()
 
     private val noteResult = { _: String, result: Bundle ->
-        if (result.containsKey(NoteFormFragment.EXTRA_NOTE)) {
-            presenter.noteChanged(result.getString(NoteFormFragment.EXTRA_NOTE))
+        if (result.containsKey(NoteFormComposeFragment.EXTRA_NOTE)) {
+            presenter.noteChanged(result.getString(NoteFormComposeFragment.EXTRA_NOTE))
         }
     }
 
@@ -258,7 +258,7 @@ class ResourceFormFragment :
     }
 
     override fun navigateToNote(note: String) {
-        setFragmentResultListener(NoteFormFragment.REQUEST_NOTE, noteResult)
+        setFragmentResultListener(NoteFormComposeFragment.REQUEST_NOTE, noteResult)
         findNavController().navigate(
             ResourceFormFragmentDirections.actionResourceFormFragmentToNoteFormFragment(navArgs.mode, note),
         )

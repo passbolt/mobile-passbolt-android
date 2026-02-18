@@ -115,9 +115,8 @@
 
     <fragment
         android:id="@+id/noteFormFragment"
-        android:name="com.passbolt.mobile.android.feature.resourceform.additionalsecrets.note.NoteFormFragment"
-        android:label="NoteFormFragment"
-        tools:layout="@layout/fragment_note_form">
+        android:name="com.passbolt.mobile.android.feature.resourceform.additionalsecrets.note.NoteFormComposeFragment"
+        android:label="NoteFormComposeFragment">
         <argument
             android:name="mode"
             app:argType="com.passbolt.mobile.android.ui.ResourceFormMode" />
