@@ -36,7 +36,6 @@ import com.passbolt.mobile.android.feature.home.screen.ResourceHandlingStrategy
 import com.passbolt.mobile.android.feature.home.screen.ShowSuggestedModel
 import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpFragment
 import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpMode
-import com.passbolt.mobile.android.feature.otp.scanotp.scanotpsuccess.ScanOtpSuccessFragment
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsFragment
 import com.passbolt.mobile.android.feature.resourceform.main.ResourceFormFragment
 import com.passbolt.mobile.android.mappers.HomeDisplayViewMapper
@@ -80,7 +79,7 @@ class HomeBottomNavigationContainerFragment :
     HomeNavigation,
     ResourceHandlingStrategy {
     private val otpScanQrReturned = { _: String, result: Bundle ->
-        val otpCreated = result.getBoolean(ScanOtpSuccessFragment.EXTRA_OTP_CREATED, false)
+        val otpCreated = result.getBoolean(ScanOtpFragment.EXTRA_OTP_CREATED, false)
         viewModel.onIntent(
             OtpQRScanReturned(
                 otpCreated = otpCreated,
@@ -88,7 +87,7 @@ class HomeBottomNavigationContainerFragment :
             ),
         )
         if (otpCreated) {
-            result.getString(ScanOtpSuccessFragment.EXTRA_CREATED_OTP_ID)?.let {
+            result.getString(ScanOtpFragment.EXTRA_CREATED_OTP_ID)?.let {
                 resourceHandlingStrategy.resourcePostCreateAction(it)
             }
         }

@@ -19,7 +19,6 @@ import androidx.navigation3.ui.NavDisplay
 import com.passbolt.mobile.android.core.navigation.compose.keys.OtpNavigationKey.Otp
 import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpFragment
 import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpMode
-import com.passbolt.mobile.android.feature.otp.scanotp.scanotpsuccess.ScanOtpSuccessFragment
 import com.passbolt.mobile.android.feature.otp.screen.OtpIntent
 import com.passbolt.mobile.android.feature.otp.screen.OtpNavigation
 import com.passbolt.mobile.android.feature.otp.screen.OtpScreen
@@ -57,7 +56,7 @@ class OtpBottomNavigationContainerFragment :
     private val otpScanQrReturned = { _: String, result: Bundle ->
         viewModel.onIntent(
             OtpIntent.OtpQRScanReturned(
-                otpCreated = result.getBoolean(ScanOtpSuccessFragment.EXTRA_OTP_CREATED, false),
+                otpCreated = result.getBoolean(ScanOtpFragment.EXTRA_OTP_CREATED, false),
                 otpManualCreationChosen = result.getBoolean(ScanOtpFragment.EXTRA_MANUAL_CREATION_CHOSEN),
             ),
         )
