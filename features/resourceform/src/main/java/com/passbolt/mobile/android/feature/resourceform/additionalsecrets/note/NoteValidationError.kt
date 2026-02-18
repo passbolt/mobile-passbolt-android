@@ -1,11 +1,6 @@
-package com.passbolt.mobile.android.feature.resourceform.additionalsecrets.note
-
-import com.passbolt.mobile.android.core.mvp.BaseContract
-import com.passbolt.mobile.android.ui.ResourceFormMode
-
 /**
  * Passbolt - Open source password manager for teams
- * Copyright (c) 2021 Passbolt SA
+ * Copyright (c) 2026 Passbolt SA
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
  * Public License (AGPL) as published by the Free Software Foundation version 3.
@@ -25,31 +20,11 @@ import com.passbolt.mobile.android.ui.ResourceFormMode
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-interface NoteFormContract {
-    interface View : BaseContract.View {
-        fun showNote(note: String)
 
-        fun goBackWithResult(note: String?)
+package com.passbolt.mobile.android.feature.resourceform.additionalsecrets.note
 
-        fun showCreateTitle()
-
-        fun showEditTitle(resourceName: String)
-
-        fun showNoteMaxLengthError(noteMaxLength: Int)
-
-        fun clearValidationErrors()
-    }
-
-    interface Presenter : BaseContract.Presenter<View> {
-        fun argsRetrieved(
-            mode: ResourceFormMode,
-            note: String,
-        )
-
-        fun noteTextChanged(note: String)
-
-        fun applyClick()
-
-        fun removeNoteClick()
-    }
+internal sealed class NoteValidationError {
+    data class MaxLengthExceeded(
+        val maxLength: Int,
+    ) : NoteValidationError()
 }

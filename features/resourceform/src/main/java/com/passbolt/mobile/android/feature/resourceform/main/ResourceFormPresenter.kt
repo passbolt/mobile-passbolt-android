@@ -28,7 +28,7 @@ import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAct
 import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction.REMOVE_TOTP
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.SecretJsonModel
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
-import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.note.NoteFormPresenter
+import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.note.NoteFormViewModel
 import com.passbolt.mobile.android.jsonmodel.delegates.TotpSecret
 import com.passbolt.mobile.android.mappers.EntropyViewMapper
 import com.passbolt.mobile.android.mappers.ResourceFormMapper
@@ -556,8 +556,8 @@ class ResourceFormPresenter(
                 action()
             }
             STANDALONE_NOTE -> {
-                if (!StringMaxLength(NoteFormPresenter.NOTE_MAX_LENGTH).condition(resourceSecret.description.orEmpty())) {
-                    view?.showNoteMaxLenghtExceeded(NoteFormPresenter.NOTE_MAX_LENGTH)
+                if (!StringMaxLength(NoteFormViewModel.NOTE_MAX_LENGTH).condition(resourceSecret.description.orEmpty())) {
+                    view?.showNoteMaxLenghtExceeded(NoteFormViewModel.NOTE_MAX_LENGTH)
                     return
                 }
                 action()
