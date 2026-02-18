@@ -1,13 +1,3 @@
-package com.passbolt.mobile.android.feature.resourceform.subform.description
-
-import android.content.Context
-import android.util.AttributeSet
-import android.view.LayoutInflater
-import android.widget.LinearLayout
-import com.passbolt.mobile.android.core.ui.textinputfield.TextInputView
-import com.passbolt.mobile.android.feature.resourceform.R
-import com.passbolt.mobile.android.feature.resourceform.databinding.ViewMetadataDescriptionSubformBinding
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -31,24 +21,11 @@ import com.passbolt.mobile.android.feature.resourceform.databinding.ViewMetadata
  * @since v1.0
  */
 
-class MetadataDescriptionSubformView
-    @JvmOverloads
-    constructor(
-        context: Context,
-        attrs: AttributeSet? = null,
-        defStyle: Int = 0,
-    ) : LinearLayout(context, attrs, defStyle) {
-        private val binding = ViewMetadataDescriptionSubformBinding.inflate(LayoutInflater.from(context), this)
+package com.passbolt.mobile.android.feature.resourceform.metadata.description
 
-        val descriptionInput: TextInputView
-            get() = binding.descriptionSectionView.backgroundContainer.findViewById(R.id.descriptionInput)
+import com.passbolt.mobile.android.ui.ResourceFormMode
 
-        init {
-            orientation = VERTICAL
-            LayoutInflater.from(context).inflate(
-                R.layout.view_metadata_description_subform_fields,
-                binding.descriptionSectionView.backgroundContainer,
-                true,
-            )
-        }
-    }
+internal data class DescriptionFormState(
+    val resourceFormMode: ResourceFormMode,
+    val metadataDescription: String,
+)

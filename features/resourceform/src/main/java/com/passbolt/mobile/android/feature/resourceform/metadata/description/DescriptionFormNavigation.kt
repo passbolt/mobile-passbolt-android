@@ -1,8 +1,3 @@
-package com.passbolt.mobile.android.feature.resourceform.metadata.description
-
-import com.passbolt.mobile.android.core.mvp.BaseContract
-import com.passbolt.mobile.android.ui.ResourceFormMode
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -25,25 +20,11 @@ import com.passbolt.mobile.android.ui.ResourceFormMode
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-interface DescriptionFormContract {
-    interface View : BaseContract.View {
-        fun showDescription(metadataDescription: String)
 
-        fun goBackWithResult(metadataDescription: String)
+package com.passbolt.mobile.android.feature.resourceform.metadata.description
 
-        fun showCreateTitle()
+internal interface DescriptionFormNavigation {
+    fun navigateBack()
 
-        fun showEditTitle(resourceName: String)
-    }
-
-    interface Presenter : BaseContract.Presenter<View> {
-        fun argsRetrieved(
-            mode: ResourceFormMode,
-            metadataDescription: String,
-        )
-
-        fun onDescriptionChanged(description: String)
-
-        fun applyClick()
-    }
+    fun navigateBackWithResult(metadataDescription: String)
 }

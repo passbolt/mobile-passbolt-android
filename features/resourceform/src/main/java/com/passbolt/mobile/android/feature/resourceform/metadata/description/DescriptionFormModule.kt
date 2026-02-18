@@ -1,8 +1,7 @@
 package com.passbolt.mobile.android.feature.resourceform.metadata.description
 
 import org.koin.core.module.Module
-import org.koin.core.module.dsl.scopedOf
-import org.koin.dsl.bind
+import org.koin.core.module.dsl.viewModel
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,8 +26,11 @@ import org.koin.dsl.bind
  * @since v1.0
  */
 
-fun Module.descriptionFormModule() {
-    scope<DescriptionFormFragment> {
-        scopedOf(::DescriptionFormPresenter) bind DescriptionFormContract.Presenter::class
+internal fun Module.descriptionFormModule() {
+    viewModel { params ->
+        DescriptionFormViewModel(
+            mode = params.get(),
+            metadataDescription = params.get(),
+        )
     }
 }

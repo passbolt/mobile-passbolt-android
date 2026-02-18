@@ -34,7 +34,7 @@ import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.a
 import com.passbolt.mobile.android.feature.resourceform.databinding.FragmentResourceFormBinding
 import com.passbolt.mobile.android.feature.resourceform.metadata.additionaluris.AdditionalUrisFormComposeFragment
 import com.passbolt.mobile.android.feature.resourceform.metadata.appearance.AppearanceFormComposeFragment
-import com.passbolt.mobile.android.feature.resourceform.metadata.description.DescriptionFormFragment
+import com.passbolt.mobile.android.feature.resourceform.metadata.description.DescriptionFormComposeFragment
 import com.passbolt.mobile.android.feature.resourceform.subform.note.NoteSubformView
 import com.passbolt.mobile.android.feature.resourceform.subform.password.PasswordSubformView
 import com.passbolt.mobile.android.feature.resourceform.subform.totp.TotpSubformView
@@ -92,8 +92,8 @@ class ResourceFormFragment :
     }
 
     private val metadataDescriptionResult = { _: String, result: Bundle ->
-        if (result.containsKey(DescriptionFormFragment.EXTRA_METADATA_DESCRIPTION)) {
-            presenter.metadataDescriptionChanged(result.getString(DescriptionFormFragment.EXTRA_METADATA_DESCRIPTION))
+        if (result.containsKey(DescriptionFormComposeFragment.EXTRA_METADATA_DESCRIPTION)) {
+            presenter.metadataDescriptionChanged(result.getString(DescriptionFormComposeFragment.EXTRA_METADATA_DESCRIPTION))
         }
     }
 
@@ -228,7 +228,7 @@ class ResourceFormFragment :
     }
 
     override fun navigateToMetadataDescription(metadataDescription: String) {
-        setFragmentResultListener(DescriptionFormFragment.REQUEST_METADATA_DESCRIPTION, metadataDescriptionResult)
+        setFragmentResultListener(DescriptionFormComposeFragment.REQUEST_METADATA_DESCRIPTION, metadataDescriptionResult)
         findNavController().navigate(
             ResourceFormFragmentDirections.actionResourceFormFragmentToDescriptionFormFragment(
                 navArgs.mode,

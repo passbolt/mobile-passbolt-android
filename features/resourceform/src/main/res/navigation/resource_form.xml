@@ -82,9 +82,8 @@
 
     <fragment
         android:id="@+id/descriptionFormFragment"
-        android:name="com.passbolt.mobile.android.feature.resourceform.metadata.description.DescriptionFormFragment"
-        android:label="DescriptionFormFragment"
-        tools:layout="@layout/fragment_description_form">
+        android:name="com.passbolt.mobile.android.feature.resourceform.metadata.description.DescriptionFormComposeFragment"
+        android:label="DescriptionFormComposeFragment">
         <argument
             android:name="mode"
             app:argType="com.passbolt.mobile.android.ui.ResourceFormMode" />
