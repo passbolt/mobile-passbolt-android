@@ -1,9 +1,3 @@
-package com.passbolt.mobile.android.feature.resourceform.metadata.description
-
-import org.koin.core.module.dsl.factoryOf
-import org.koin.dsl.bind
-import org.koin.dsl.module
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -27,7 +21,12 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-internal val descriptionFormModule =
-    module {
-        factoryOf(::DescriptionFormPresenter) bind DescriptionFormContract.Presenter::class
-    }
+package com.passbolt.mobile.android.feature.resourceform.metadata.description
+
+internal sealed interface DescriptionFormSideEffect {
+    data object NavigateBack : DescriptionFormSideEffect
+
+    data class ApplyAndGoBack(
+        val metadataDescription: String,
+    ) : DescriptionFormSideEffect
+}
