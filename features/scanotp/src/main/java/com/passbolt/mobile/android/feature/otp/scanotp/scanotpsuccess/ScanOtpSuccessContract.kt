@@ -46,7 +46,7 @@ interface ScanOtpSuccessContract {
 
         fun hideProgress()
 
-        fun navigateToResourcePicker()
+        fun navigateToResourcePicker(suggestedUri: String?)
 
         fun showError(message: String)
 

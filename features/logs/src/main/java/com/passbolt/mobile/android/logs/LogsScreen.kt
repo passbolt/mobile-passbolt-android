@@ -23,18 +23,16 @@
 
 package com.passbolt.mobile.android.logs
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.snapshotFlow
@@ -109,39 +107,39 @@ private fun LogsScreen(
     onIntent: (LogsIntent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(
-        modifier =
-            modifier
-                .verticalScroll(rememberScrollState())
-                .padding(vertical = 16.dp),
-    ) {
-        TitleAppBar(
-            title = stringResource(LocalizationR.string.settings_logs_title),
-            actions = {
-                IconButton(onClick = { onIntent(ShareLogs) }) {
-                    Icon(
-                        painter = painterResource(CoreUiR.drawable.ic_share),
-                        contentDescription = null,
-                    )
+    Scaffold(
+        modifier = modifier.fillMaxSize(),
+        topBar = {
+            TitleAppBar(
+                title = stringResource(LocalizationR.string.settings_logs_title),
+                actions = {
+                    IconButton(onClick = { onIntent(ShareLogs) }) {
+                        Icon(
+                            painter = painterResource(CoreUiR.drawable.ic_share),
+                            contentDescription = null,
+                        )
+                    }
+                },
+                navigationIcon = {
+                    BackNavigationIcon(onBackClick = { onIntent(GoBack) })
+                },
+            )
+        },
+        content = { paddingValues ->
+            LazyColumn(
+                state = logListState,
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues)
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+            ) {
+                items(state.logLines) { logLine ->
+                    Text(logLine, color = MaterialTheme.colorScheme.onBackground)
                 }
-            },
-            navigationIcon = {
-                BackNavigationIcon(onBackClick = { onIntent(GoBack) })
-            },
-        )
-        LazyColumn(
-            state = logListState,
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
-        ) {
-            items(state.logLines) { logLine ->
-                Text(logLine, color = MaterialTheme.colorScheme.onBackground)
             }
-        }
-    }
+        },
+    )
 }
 
 @Preview(showBackground = true)

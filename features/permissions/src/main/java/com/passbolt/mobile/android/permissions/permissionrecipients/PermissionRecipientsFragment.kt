@@ -22,6 +22,9 @@ import com.passbolt.mobile.android.core.extension.initDefaultToolbar
 import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.extension.setSearchEndIconWithListener
 import com.passbolt.mobile.android.core.extension.visible
+import com.passbolt.mobile.android.core.mvp.EdgeToEdge
+import com.passbolt.mobile.android.core.mvp.EdgeToEdge.Inset.BOTTOM
+import com.passbolt.mobile.android.core.mvp.EdgeToEdge.Inset.TOP
 import com.passbolt.mobile.android.core.ui.recyclerview.OverlappingItemDecorator
 import com.passbolt.mobile.android.core.ui.recyclerview.OverlappingItemDecorator.Overlap
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
@@ -113,6 +116,11 @@ class PermissionRecipientsFragment :
         savedInstanceState: Bundle?,
     ) {
         super.onViewCreated(view, savedInstanceState)
+        EdgeToEdge.addEdgeToEdgeBottomPadding(
+            requireActivity().window,
+            requiredBinding.rootLayout,
+            listOf(BOTTOM, TOP),
+        )
         initDefaultToolbar(requiredBinding.toolbar)
         setListeners()
         initRecipientsRecycler(savedInstanceState)

@@ -23,35 +23,33 @@
 
 package com.passbolt.mobile.android.feature.setup
 
+import android.os.Bundle
+import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.IntentCompat
-import androidx.navigation.findNavController
+import androidx.navigation3.runtime.NavKey
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
-import com.passbolt.mobile.android.core.mvp.viewbinding.BindingActivity
 import com.passbolt.mobile.android.core.navigation.AccountSetupDataModel
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.PartiallyAuthenticated
-import com.passbolt.mobile.android.feature.setup.databinding.ActivitySetupBinding
+import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
+import com.passbolt.mobile.android.core.navigation.compose.SetupNavigation
+import com.passbolt.mobile.android.core.navigation.compose.keys.LogsNavigationKey.Logs
+import com.passbolt.mobile.android.core.navigation.compose.keys.SetupNavigationKey.ImportProfile
+import com.passbolt.mobile.android.core.navigation.compose.keys.SetupNavigationKey.ScanQrCodes
+import com.passbolt.mobile.android.core.navigation.compose.keys.SetupNavigationKey.TransferDetails
+import com.passbolt.mobile.android.core.navigation.compose.keys.SetupNavigationKey.Welcome
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import org.koin.compose.koinInject
 
 // NOTE: When changing name or package read core/navigation/README.md
 class SetUpActivity :
-    BindingActivity<ActivitySetupBinding>(ActivitySetupBinding::inflate),
+    AppCompatActivity(),
     PartiallyAuthenticated,
     AccountSetupDataHolder {
-    override val isCurrentFragmentAuthenticated: Boolean
-        get() =
-            !unauthenticatedFragmentIds.contains(
-                findNavController(requiredBinding.fragmentContainer.id).currentDestination?.id,
-            )
-
-    override val unauthenticatedFragmentIds: List<Int>
-        get() =
-            listOf(
-                R.id.welcomeFragment,
-                R.id.transferDetailsFragment,
-                R.id.scanQrFragment,
-                R.id.importProfileFragment,
-                com.passbolt.mobile.android.feature.logs.R.id.logsComposeFragment,
-            )
+    private var currentBackStackItem: StateFlow<NavKey?> = MutableStateFlow(Welcome)
 
     override val bundledAccountSetupData: AccountSetupDataModel? by lifecycleAwareLazy {
         IntentCompat.getParcelableExtra(
@@ -60,4 +58,28 @@ class SetUpActivity :
             AccountSetupDataModel::class.java,
         )
     }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+
+        setContent {
+            val navigator = koinInject<AppNavigator>()
+            this.currentBackStackItem = navigator.currentBackStackItem
+            SetupNavigation(navigator = navigator)
+        }
+    }
+
+    override val isCurrentScreenAuthenticated: Boolean
+        get() = !unauthenticatedComposableKeys.contains(currentBackStackItem.value)
+
+    override val unauthenticatedComposableKeys: List<NavKey>
+        get() =
+            listOf(
+                Welcome,
+                TransferDetails,
+                ScanQrCodes,
+                ImportProfile,
+                Logs,
+            )
 }

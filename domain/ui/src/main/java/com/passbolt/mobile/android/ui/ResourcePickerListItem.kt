@@ -15,3 +15,8 @@ data class ResourcePickerListItem(
         NOT_SELECTABLE_UNSUPPORTED_RESOURCE_TYPE,
     }
 }
+
+fun List<ResourcePickerListItem>.selectedOnly(resourceId: String?) =
+    map { item ->
+        item.copy(isSelected = item.resourceModel.resourceId == resourceId)
+    }

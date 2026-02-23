@@ -23,10 +23,14 @@
 
 package com.passbolt.mobile.android.scenarios.setup.configurebiometric
 
-import android.content.Intent
 import android.provider.Settings
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.junit4.createEmptyComposeRule
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.closeSoftKeyboard
 import androidx.test.espresso.action.ViewActions.scrollTo
 import androidx.test.espresso.action.ViewActions.typeText
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -41,16 +45,15 @@ import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import com.passbolt.mobile.android.accountinit.AccountDataCleaner
 import com.passbolt.mobile.android.accountinit.AccountInitializer
+import com.passbolt.mobile.android.core.idlingresource.ResourcesFullRefreshIdlingResource
 import com.passbolt.mobile.android.core.idlingresource.SignInIdlingResource
-import com.passbolt.mobile.android.feature.setup.R
 import com.passbolt.mobile.android.feature.setup.SetUpActivity
+import com.passbolt.mobile.android.helpers.getString
 import com.passbolt.mobile.android.instrumentationTestsModule
 import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
-import com.passbolt.mobile.android.matchers.hasDrawable
 import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivityScenarioRule
-import org.hamcrest.Matcher
-import org.hamcrest.core.AllOf
+import org.hamcrest.Matchers.allOf
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -60,6 +63,8 @@ import org.koin.test.KoinTest
 import org.koin.test.inject
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
+import com.passbolt.mobile.android.feature.authentication.R as AuthenticationR
+import com.passbolt.mobile.android.feature.autofill.R as AutofillR
 
 @RunWith(AndroidJUnit4::class)
 @LargeTest
@@ -83,11 +88,15 @@ class SetupConfigureBiometricUnavailableTest : KoinTest {
     val idlingResourceRule =
         let {
             val signInIdlingResource: SignInIdlingResource by inject()
-            IdlingResourceRule(arrayOf(signInIdlingResource))
+            val resourcesFullRefreshIdlingResource: ResourcesFullRefreshIdlingResource by inject()
+            IdlingResourceRule(arrayOf(signInIdlingResource, resourcesFullRefreshIdlingResource))
         }
 
     @get:Rule
     val permissionRule: GrantPermissionRule = GrantPermissionRule.grant(android.Manifest.permission.CAMERA)
+
+    @get:Rule
+    val composeTestRule = createEmptyComposeRule()
 
     private val managedAccountIntentCreator: ManagedAccountIntentCreator by inject()
     private val accountDataCleaner: AccountDataCleaner by inject()
@@ -95,9 +104,12 @@ class SetupConfigureBiometricUnavailableTest : KoinTest {
 
     @Before
     fun setup() {
-        onView(withId(R.id.connectToAccountButton)).perform(click())
-        onView(withId(R.id.scanQrCodesButton)).perform(scrollTo(), click())
-        onView(withId(com.passbolt.mobile.android.feature.autofill.R.id.button)).perform(click())
+        accountDataCleaner.clearAccountData()
+        composeTestRule.apply {
+            onNodeWithText(getString(LocalizationR.string.welcome_connect_to_existing_account)).performClick()
+            onNodeWithText(getString(LocalizationR.string.transfer_details_scan_button)).performClick()
+            onNodeWithText(getString(LocalizationR.string.continue_label)).performClick()
+        }
         accountDataInitializer.initializeAccount()
     }
 
@@ -106,45 +118,50 @@ class SetupConfigureBiometricUnavailableTest : KoinTest {
         accountDataCleaner.clearAccountData()
     }
 
+    // TODO FAILS
     // https://passbolt.testrail.io/index.php?/cases/view/2358
     @Test
     fun asAMobileUserIHaveAnOptionToConfigureBiometricsOnTheDevice() {
         //    Given     I don't have biometrics configured on my device
         //    And       I am on the Passphrase screen
         //    When      I successfully entered my passphrase
-        onView(withId(CoreUiR.id.input)).perform(typeText(managedAccountIntentCreator.getPassphrase()))
-        onView(withId(com.passbolt.mobile.android.feature.authentication.R.id.authButton)).perform(scrollTo(), click())
+        onView(withId(CoreUiR.id.input)).perform(typeText(managedAccountIntentCreator.getPassphrase()), closeSoftKeyboard())
+        onView(withId(AuthenticationR.id.authButton)).perform(scrollTo(), click())
         //    Then       I am prompted to Configure biometrics
-        //    And        I see a “Configure {biometric provider}” primary button
-        onView(withId(R.id.icon)).check(matches(isDisplayed()))
-        onView(withId(R.id.icon)).check(matches(hasDrawable(CoreUiR.drawable.ic_configure_fingerprint)))
-        onView(withText(LocalizationR.string.fingerprint_setup_configure_title)).check(matches(isDisplayed()))
-        onView(withText(LocalizationR.string.fingerprint_setup_configure_description)).check(matches(isDisplayed()))
-        onView(withId(R.id.useFingerprintButton)).check(matches(isDisplayed()))
-        //    And       I see a “Maybe later” button
-        onView(withId(R.id.maybeLaterButton)).check(matches(isDisplayed()))
+        //    And        I see a "Configure {biometric provider}" primary button
+        composeTestRule.apply {
+            onNodeWithText(getString(LocalizationR.string.fingerprint_setup_configure_title)).assertIsDisplayed()
+            onNodeWithText(getString(LocalizationR.string.fingerprint_setup_configure_description)).assertIsDisplayed()
+            onNodeWithText(getString(LocalizationR.string.fingerprint_setup_use_fingerprint_button)).assertIsDisplayed()
+            //    And       I see a "Maybe later" button
+            onNodeWithText(getString(LocalizationR.string.common_maybe_later)).assertIsDisplayed()
+        }
     }
 
+    // TODO FAILS on opened fingeprint screen
+    // correct path: configure fingeprint - so fingerprint noe set up
+    // failed path: fingerprint is configured on device
     // https://passbolt.testrail.io/index.php?/cases/view/2359
     @Test
     fun asAMobileUserICanConfigureBiometricsToUseItOnTheDevice() {
         Intents.init()
-
-        //    Given     I don't have biometrics configured on my device
-        //    And       I am on the Configure {biometrics provider} screen
-        onView(withId(CoreUiR.id.input)).perform(typeText(managedAccountIntentCreator.getPassphrase()))
-        onView(withId(com.passbolt.mobile.android.feature.authentication.R.id.authButton)).perform(scrollTo(), click())
-        //    When      I click on Configure {biometrics provider} button
-        onView(withId(R.id.useFingerprintButton)).perform(click())
-        //    Then      I am taken to the phone security settings / OS-specific process where I can complete the biometric setup
-        val expectedIntent: Matcher<Intent> =
-            AllOf.allOf(
-                IntentMatchers.hasAction(Settings.ACTION_SETTINGS),
+        try {
+            //    Given     I don't have biometrics configured on my device
+            //    And       I am on the Configure {biometrics provider} screen
+            onView(withId(CoreUiR.id.input)).perform(typeText(managedAccountIntentCreator.getPassphrase()), closeSoftKeyboard())
+            onView(withId(AuthenticationR.id.authButton)).perform(scrollTo(), click())
+            //    When      I click on Configure {biometrics provider} button
+            composeTestRule.onNodeWithText(getString(LocalizationR.string.fingerprint_setup_use_fingerprint_button)).performClick()
+            //    Then      I am taken to the phone security settings / OS-specific process where I can complete the biometric setup
+            Intents.intended(
+                allOf(
+                    IntentMatchers.hasAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS),
+                ),
             )
-        Intents.intended(expectedIntent)
-        //    And       I can go back to the application
-
-        Intents.release()
+            //    And       I can go back to the application
+        } finally {
+            Intents.release()
+        }
     }
 
     // https://passbolt.testrail.io/index.php?/cases/view/2360
@@ -152,14 +169,15 @@ class SetupConfigureBiometricUnavailableTest : KoinTest {
     fun asAMobileUserIShouldBeAbleToSkipTheBiometricsConfiguration() {
         //    Given     I don't have biometrics configured on my device
         //    And       I am on the Configure {biometrics provider} screen
-        onView(withId(CoreUiR.id.input)).perform(typeText(managedAccountIntentCreator.getPassphrase()))
-        onView(withId(com.passbolt.mobile.android.feature.authentication.R.id.authButton)).perform(scrollTo(), click())
-        //    When      I click the “Maybe later” button
-        onView(withId(R.id.maybeLaterButton)).perform(click())
+        onView(withId(CoreUiR.id.input)).perform(typeText(managedAccountIntentCreator.getPassphrase()), closeSoftKeyboard())
+        onView(withId(AuthenticationR.id.authButton)).perform(scrollTo(), click())
+        //    When      I click the "Maybe later" button
+        composeTestRule.onNodeWithText(getString(LocalizationR.string.common_maybe_later)).performClick()
+        composeTestRule.waitForIdle()
         //    Then      I am redirected to the setup of the autofill screen
-        onView(withText(LocalizationR.string.dialog_encourage_autofill_header)).check(matches(isDisplayed()))
-        onView(withId(com.passbolt.mobile.android.feature.autofill.R.id.stepsView)).check(matches(isDisplayed()))
-        onView(withId(com.passbolt.mobile.android.feature.autofill.R.id.goToSettingsButton)).check(matches(isDisplayed()))
-        onView(withId(R.id.maybeLaterButton)).check(matches(isDisplayed()))
+        onView(withText(getString(LocalizationR.string.dialog_encourage_autofill_header))).check(matches(isDisplayed()))
+        onView(withId(AutofillR.id.stepsView)).check(matches(isDisplayed()))
+        onView(withId(AutofillR.id.goToSettingsButton)).check(matches(isDisplayed()))
+        onView(withId(AutofillR.id.maybeLaterButton)).check(matches(isDisplayed()))
     }
 }

@@ -1,6 +1,8 @@
 package com.passbolt.mobile.android.helpmenu
 
+import com.passbolt.mobile.android.helpmenu.compose.HelpMenuBottomSheetViewModel
 import org.koin.core.module.Module
+import org.koin.core.module.dsl.viewModelOf
 
 /**
  * Passbolt - Open source password manager for teams
@@ -35,4 +37,6 @@ fun Module.helpMenuModule() {
             )
         }
     }
+
+    viewModelOf(::HelpMenuBottomSheetViewModel)
 }

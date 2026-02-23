@@ -24,13 +24,16 @@
 package com.passbolt.mobile.android.scenarios.setup.configurebiometric
 
 import com.passbolt.mobile.android.common.Biometric
+import com.passbolt.mobile.android.common.FingerprintInformationProvider
 import org.koin.dsl.module
 
 val biometricSetupUnavailableModuleTests =
     module {
-        single<Biometric> {
-            object : Biometric {
-                override fun hasBiometricSetUp() = false
-            }
+        single<FingerprintInformationProvider> {
+            FingerprintInformationProvider(
+                object : Biometric {
+                    override fun hasBiometricSetUp() = false
+                },
+            )
         }
     }

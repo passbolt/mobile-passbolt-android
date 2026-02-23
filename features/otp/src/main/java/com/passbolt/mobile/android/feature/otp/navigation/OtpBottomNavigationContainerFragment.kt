@@ -16,6 +16,7 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
+import com.passbolt.mobile.android.core.navigation.compose.keys.OtpNavigationKey.Otp
 import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpFragment
 import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpMode
 import com.passbolt.mobile.android.feature.otp.scanotp.scanotpsuccess.ScanOtpSuccessFragment

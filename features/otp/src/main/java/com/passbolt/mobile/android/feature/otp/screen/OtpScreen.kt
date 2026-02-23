@@ -87,7 +87,7 @@ import com.passbolt.mobile.android.feature.otp.screen.OtpSideEffect.NavigateToEd
 import com.passbolt.mobile.android.feature.otp.screen.OtpSideEffect.ShowErrorSnackbar
 import com.passbolt.mobile.android.feature.otp.screen.OtpSideEffect.ShowSuccessSnackbar
 import com.passbolt.mobile.android.feature.otp.screen.OtpSideEffect.ShowToast
-import com.passbolt.mobile.android.otpmoremenu.compose.OtpMoreMenuBottomSheet
+import com.passbolt.mobile.android.otpmoremenu.OtpMoreMenuBottomSheet
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
@@ -169,22 +169,21 @@ fun OtpScreen(
         snackbarHostState = snackbarHostState,
         modifier =
             modifier
-                .testTag("otp_screen"),
+                .testTag(OtpScreenTestTags.SCREEN),
         appBarTitle = stringResource(LocalizationR.string.main_menu_otp),
         appBarIconRes = CoreUiR.drawable.ic_time_lock,
         appBarSearchInput = {
             SearchInput(
-                value = state.searchQuery,
                 onValueChange = { onIntent(Search(it)) },
                 placeholder = stringResource(LocalizationR.string.otp_search),
-                avatarUrl = state.userAvatar,
                 endIconMode = state.searchInputEndIconMode,
-                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
                 modifier =
                     Modifier
                         .fillMaxWidth()
                         .padding(end = 16.dp),
+                avatarUrl = state.userAvatar,
                 onEndIconClick = { onIntent(SearchEndIconAction) },
+                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
             )
         },
         floatingActionButton = {
@@ -275,4 +274,8 @@ fun OtpScreen(
                 ProgressDialog(state.showProgress)
             },
     )
+}
+
+object OtpScreenTestTags {
+    const val SCREEN: String = "otp_screen"
 }

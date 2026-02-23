@@ -26,16 +26,16 @@ package com.passbolt.mobile.android.feature.settings.screen.appsettings
 import android.app.Activity
 import android.content.Intent
 import android.provider.Settings
-import android.security.keystore.KeyPermanentlyInvalidatedException
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.biometric.BiometricPrompt
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
@@ -43,14 +43,12 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
@@ -60,9 +58,9 @@ import com.passbolt.mobile.android.core.navigation.compose.keys.SettingsNavigati
 import com.passbolt.mobile.android.core.navigation.compose.keys.SettingsNavigationKey.DefaultFilter
 import com.passbolt.mobile.android.core.navigation.compose.keys.SettingsNavigationKey.ExpertSettings
 import com.passbolt.mobile.android.core.ui.R
+import com.passbolt.mobile.android.core.ui.compose.dialogs.CancelAccountTransferAlertDialog
 import com.passbolt.mobile.android.core.ui.compose.dialogs.ConfigureFingerprintAlertDialog
 import com.passbolt.mobile.android.core.ui.compose.dialogs.DisableFingerprintAlertDialog
-import com.passbolt.mobile.android.core.ui.compose.dialogs.KeyChangesDetectedAlertDialog
 import com.passbolt.mobile.android.core.ui.compose.menu.OpenableSettingsItem
 import com.passbolt.mobile.android.core.ui.compose.menu.SwitchableSettingsItem
 import com.passbolt.mobile.android.core.ui.compose.topbar.BackNavigationIcon
@@ -83,7 +81,6 @@ import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettin
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsIntent.GoToExpertSettings
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsIntent.InvalidateBiometricKeyPermanently
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsIntent.RefreshedPassphrase
-import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsIntent.ShowBiometryError
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsIntent.ToggleFingerprint
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsSideEffect.NavigateToAutofill
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsSideEffect.NavigateToDefaultFilter
@@ -174,21 +171,16 @@ private fun AppSettingsSideEffectsHandler(
                 )
             NavigateToSystemSettings -> environment.context.startActivity(Intent(Settings.ACTION_SETTINGS))
             is AppSettingsSideEffect.LaunchBiometricPrompt ->
-                try {
-                    showBiometricPrompt(
-                        activity = environment.context as AppCompatActivity,
-                        executor = environment.executor,
-                        biometricPromptBuilder = environment.biometricPromptBuilder,
-                        fingerprintEncryptionCipher = it.cipher,
-                        onAuthenticationSuccess = { onIntent(FinalizedBiometricAuth(it)) },
-                        onAuthenticationCancelled = { onIntent(CanceledBiometricAuth) },
-                        onAuthenticationError = { onIntent(ErroredBiometricAuth(it)) },
-                    )
-                } catch (exception: KeyPermanentlyInvalidatedException) {
-                    onIntent(InvalidateBiometricKeyPermanently(exception))
-                } catch (exception: Exception) {
-                    onIntent(ShowBiometryError(exception))
-                }
+                showBiometricPrompt(
+                    activity = environment.context as AppCompatActivity,
+                    executor = environment.executor,
+                    biometricPromptBuilder = environment.biometricPromptBuilder,
+                    fingerprintEncryptionCipher = it.cipher,
+                    onAuthenticationSuccess = { onIntent(FinalizedBiometricAuth(it)) },
+                    onAuthenticationCancelled = { onIntent(CanceledBiometricAuth) },
+                    onAuthenticationError = { onIntent(ErroredBiometricAuth(it)) },
+                    onKeyPermanentlyInvalidated = { exception -> onIntent(InvalidateBiometricKeyPermanently(exception)) },
+                )
             is AppSettingsSideEffect.ShowErrorSnackbar ->
                 environment.coroutineScope.launch {
                     environment.snackbarHostState.showSnackbar(getSnackbarMessage(it, environment), duration = SnackbarDuration.Short)
@@ -221,77 +213,79 @@ private fun AppSettingsScreen(
     onIntent: (AppSettingsIntent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Box(
-        modifier =
-            modifier
-                .verticalScroll(rememberScrollState())
-                .padding(vertical = 16.dp),
-    ) {
-        Column {
+    Scaffold(
+        modifier = modifier.fillMaxSize(),
+        topBar = {
             TitleAppBar(
                 title = stringResource(LocalizationR.string.settings_app_settings),
                 navigationIcon = { BackNavigationIcon(onBackClick = { onIntent(GoBack) }) },
             )
-            SwitchableSettingsItem(
-                iconPainter = painterResource(R.drawable.ic_fingerprint),
-                title = stringResource(LocalizationR.string.settings_app_settings_fingerprint),
-                isChecked = state.isFingerprintEnabled,
-                onCheckedChange = { onIntent(ToggleFingerprint) },
+        },
+        snackbarHost = {
+            SnackbarHost(
+                hostState = snackbarHostState,
+                snackbar = { data ->
+                    Snackbar(
+                        snackbarData = data,
+                        containerColor = colorResource(CoreUiR.color.red),
+                        contentColor = colorResource(CoreUiR.color.white),
+                    )
+                },
             )
-
-            OpenableSettingsItem(
-                iconPainter = painterResource(R.drawable.ic_key),
-                title = stringResource(LocalizationR.string.settings_app_settings_autofill),
-                onClick = { onIntent(GoToAutofill) },
-            )
-
-            OpenableSettingsItem(
-                iconPainter = painterResource(R.drawable.ic_filter),
-                title = stringResource(LocalizationR.string.settings_app_settings_default_filter),
-                onClick = { onIntent(GoToDefaultFilter) },
-            )
-
-            OpenableSettingsItem(
-                iconPainter = painterResource(R.drawable.ic_cog),
-                title = stringResource(LocalizationR.string.settings_app_settings_expert_settings),
-                onClick = { onIntent(GoToExpertSettings) },
-            )
-        }
-
-        DisableFingerprintAlertDialog(
-            isVisible = state.isDisableFingerprintDialogVisible,
-            onDisableConfirm = { onIntent(ConfirmDisableFingerprint) },
-            onDismiss = { onIntent(CancelDisableFingerprint) },
-        )
-
-        ConfigureFingerprintAlertDialog(
-            isVisible = state.isConfigureFingerprintDialogVisible,
-            onConfigureFingerprint = { onIntent(ConfigureFingerprint) },
-            onDismiss = { onIntent(CancelConfigureFingerprint) },
-        )
-
-        KeyChangesDetectedAlertDialog(
-            isVisible = state.isKeyChangesDialogDetectedVisible,
-            onConfirm = { onIntent(ConfirmKeyChangeClick) },
-            onDismiss = { onIntent(CancelConfirmKeyChange) },
-        )
-
-        SnackbarHost(
-            hostState = snackbarHostState,
-            modifier =
-                Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(horizontal = 8.dp)
-                    .padding(bottom = 16.dp),
-            snackbar = { data ->
-                Snackbar(
-                    snackbarData = data,
-                    containerColor = colorResource(CoreUiR.color.red),
-                    contentColor = colorResource(CoreUiR.color.white),
+        },
+        content = { paddingValues ->
+            Column(
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues)
+                        .verticalScroll(rememberScrollState()),
+            ) {
+                SwitchableSettingsItem(
+                    iconPainter = painterResource(R.drawable.ic_fingerprint),
+                    title = stringResource(LocalizationR.string.settings_app_settings_fingerprint),
+                    isChecked = state.isFingerprintEnabled,
+                    onCheckedChange = { onIntent(ToggleFingerprint) },
                 )
-            },
-        )
-    }
+
+                OpenableSettingsItem(
+                    iconPainter = painterResource(R.drawable.ic_key),
+                    title = stringResource(LocalizationR.string.settings_app_settings_autofill),
+                    onClick = { onIntent(GoToAutofill) },
+                )
+
+                OpenableSettingsItem(
+                    iconPainter = painterResource(R.drawable.ic_filter),
+                    title = stringResource(LocalizationR.string.settings_app_settings_default_filter),
+                    onClick = { onIntent(GoToDefaultFilter) },
+                )
+
+                OpenableSettingsItem(
+                    iconPainter = painterResource(R.drawable.ic_cog),
+                    title = stringResource(LocalizationR.string.settings_app_settings_expert_settings),
+                    onClick = { onIntent(GoToExpertSettings) },
+                )
+            }
+
+            DisableFingerprintAlertDialog(
+                isVisible = state.isDisableFingerprintDialogVisible,
+                onDisableConfirm = { onIntent(ConfirmDisableFingerprint) },
+                onDismiss = { onIntent(CancelDisableFingerprint) },
+            )
+
+            ConfigureFingerprintAlertDialog(
+                isVisible = state.isConfigureFingerprintDialogVisible,
+                onConfigureFingerprint = { onIntent(ConfigureFingerprint) },
+                onDismiss = { onIntent(CancelConfigureFingerprint) },
+            )
+
+            CancelAccountTransferAlertDialog(
+                isVisible = state.isKeyChangesDialogDetectedVisible,
+                onConfirm = { onIntent(ConfirmKeyChangeClick) },
+                onDismiss = { onIntent(CancelConfirmKeyChange) },
+            )
+        },
+    )
 }
 
 @Preview(showBackground = true)

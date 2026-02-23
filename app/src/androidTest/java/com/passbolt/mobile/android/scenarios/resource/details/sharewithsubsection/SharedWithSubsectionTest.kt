@@ -42,13 +42,13 @@ import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.feature.authentication.AuthenticationMainActivity
 import com.passbolt.mobile.android.helpers.chooseFilter
-import com.passbolt.mobile.android.helpers.pickFirstResourceWithName
+import com.passbolt.mobile.android.helpers.searchAndOpenFirstResourceByName
 import com.passbolt.mobile.android.helpers.signIn
 import com.passbolt.mobile.android.instrumentationTestsModule
 import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
 import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
-import com.passbolt.mobile.android.scenarios.resource.details.TestResourceType
+import com.passbolt.mobile.android.scenarios.resource.TestResourceType
 import org.hamcrest.Matchers.allOf
 import org.junit.Before
 import org.junit.Ignore
@@ -128,7 +128,7 @@ class SharedWithSubsectionTest(
     @Test
     fun onTheResourceScreenICanSeeSharedWithSubsection() {
         composeTestRule.chooseFilter(filters_menu_all_items)
-        composeTestRule.pickFirstResourceWithName(resourceType.displayName)
+        composeTestRule.searchAndOpenFirstResourceByName(resourceType.displayName)
         onView(withText(localizationString.shared_with))
             .perform(scrollTo())
             .check(matches(isDisplayed()))

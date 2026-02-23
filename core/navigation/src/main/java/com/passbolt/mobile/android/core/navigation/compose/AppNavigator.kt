@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.core.navigation.compose
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import androidx.core.content.FileProvider.getUriForFile
@@ -10,8 +11,10 @@ import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.ActivityIntents.AuthConfig.ManageAccount
 import com.passbolt.mobile.android.core.navigation.ActivityIntents.AuthConfig.Startup
 import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.AccountDetails
-import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.ManageAccounts
-import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.StartUp
+import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.AuthenticationManageAccounts
+import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.AuthenticationStartUp
+import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.Home
+import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.Start
 import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.TransferAccount
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -54,6 +57,13 @@ class AppNavigator(
         _currentBackStackItem.value = key
     }
 
+    fun popToKey(key: NavKey) {
+        while (backStack.size > 1 && backStack.last() != key) {
+            backStack.removeAt(backStack.lastIndex)
+        }
+        _currentBackStackItem.value = key
+    }
+
     fun navigateBack(): Any? {
         if (backStack.size <= 1) return null
 
@@ -62,17 +72,26 @@ class AppNavigator(
         return result
     }
 
+    fun navigateUp(activity: Activity?) {
+        activity?.finish()
+    }
+
     fun startNavigationActivity(
         context: Context,
         activity: NavigationActivity,
+        vararg flags: Int,
     ) {
         val intent =
             when (activity) {
-                is StartUp -> ActivityIntents.authentication(context, Startup, appContext = activity.appContext)
-                ManageAccounts -> ActivityIntents.authentication(context, ManageAccount)
+                is AuthenticationStartUp -> ActivityIntents.authentication(context, Startup, appContext = activity.appContext)
+                AuthenticationManageAccounts -> ActivityIntents.authentication(context, ManageAccount)
                 TransferAccount -> ActivityIntents.transferAccountToAnotherDevice(context)
                 AccountDetails -> ActivityIntents.accountDetails(context)
+                Home -> ActivityIntents.home(context)
+                Start -> ActivityIntents.start(context)
             }
+
+        flags.forEach { intent.addFlags(it) }
 
         context.startActivity(intent)
     }
@@ -130,5 +149,9 @@ class AppNavigator(
                 shareSheetTitle,
             )
         context.startActivity(shareIntent)
+    }
+
+    fun openAppOsSettings(context: Context) {
+        externalDeeplinkHandler.openAppOsSettings(context)
     }
 }

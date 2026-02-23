@@ -25,9 +25,9 @@ package com.passbolt.mobile.android.feature.settings.screen.appsettings.defaultf
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -36,6 +36,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -86,17 +87,23 @@ private fun DefaultFilterScreen(
     onIntent: (DefaultFilterIntent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(modifier = modifier) {
-        TitleAppBar(
-            title = stringResource(LocalizationR.string.settings_app_settings_default_filter),
-            navigationIcon = { BackNavigationIcon(onBackClick = { onIntent(GoBack) }) },
-        )
-        FilterSelectionList(
-            allFilters = state.allFilters,
-            selectedFilter = state.selectedFilter,
-            { onIntent(DefaultFilterIntent.SelectDefaultFilter(it)) },
-        )
-    }
+    Scaffold(
+        modifier = modifier.fillMaxSize(),
+        topBar = {
+            TitleAppBar(
+                title = stringResource(LocalizationR.string.settings_app_settings_default_filter),
+                navigationIcon = { BackNavigationIcon(onBackClick = { onIntent(GoBack) }) },
+            )
+        },
+        content = { paddingValues ->
+            FilterSelectionList(
+                allFilters = state.allFilters,
+                selectedFilter = state.selectedFilter,
+                onFilterSelect = { onIntent(DefaultFilterIntent.SelectDefaultFilter(it)) },
+                modifier = Modifier.padding(paddingValues),
+            )
+        },
+    )
 }
 
 @Composable

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <string name="app_name">패스볼트</string>
+    <string name="app_name">Passbolt</string>
     <string name="ok">확인</string>
     <string name="cancel">취소</string>
     <string name="settings">설정</string>
@@ -33,6 +33,8 @@
     <string name="name_expired">%s (만료됨)</string>
     <string name="proceed">진행</string>
     <string name="edit_password">비밀번호 수정</string>
+    <string name="copy_label_fingerprint">지문</string>
+    <string name="copy_label_uid">UID</string>
     <string name="common_failure">무엇인가 잘못되었습니다!</string>
     <string name="common_startup_configuration_fetch_error">구성을 가져오는 중 오류 발생</string>
     <string name="common_time_is_out_of_sync">서버와 클라이언트 동기화되지 않았습니다. 관리자에게 문의하세요.</string>
@@ -56,9 +58,12 @@
     <string name="common_message_resource_deleted">%s 리소스를 삭제하였습니다.</string>
     <string name="common_message_resource_shared">리소스 권한이 업데이트 되었습니다.</string>
     <string name="common_message_folder_created">새 폴더 %s 이(가) 생성되었습니다!</string>
+    <string name="common_lack_shared_key_access">공유 메타데이터 키에 대한 액세스 권한이 없으므로 이 작업을 수행할 수 없습니다.</string>
     <string name="validation_required_with_max_length">길이는 1과 %d 사이여야 합니다.</string>
+    <string name="validation_max_length">최대 길이는 %d</string>
     <string name="validation_is_required">이 입력은 필수입니다</string>
     <string name="validation_required_integer">정수여야 합니다</string>
+    <string name="validation_invalid_totp_secret">잘못된 TOTP 암호</string>
     <string name="fingerprint_biometric_error_generic">지문인식 센서에 오류가 발생하였습니다.</string>
     <string name="fingerprint_biometric_error_too_many_attempts">너무 많은 시도로 인해서 생체인증이 차단되었습니다.</string>
     <string name="fingerprint_biometric_error_blocked">30초동안 생체인증이 차단되었습니다.</string>
@@ -102,7 +107,7 @@
     <string name="help_menu_import_profile_manually">수동으로 계정 가져오기</string>
     <string name="help_menu_import_account_kit">계정 키트 가져오기</string>
     <string name="logs_share_title">로그 공유</string>
-    <string name="logs_share_email_title">패스볼트 로그공유</string>
+    <string name="logs_share_email_title">Passbolt 로그</string>
     <string name="logs_share_email">contact@passbolt.com</string>
     <string name="root_warning_title">기기가 루팅되었을 수 있습니다.</string>
     <string name="root_warning_message">기기가 루팅이 되었을 수 있습니다. 기기 전체 보안을 약화하고 비밀번호 획득에 악용될 수 있습니다.</string>
@@ -174,7 +179,7 @@
 자세한 내용은 관리자에게 문의하십시오.</string>
     <string name="dialog_unable_to_generate_password_title">강력한 비밀번호를 생성할 수 없습니다</string>
     <string name="dialog_unable_to_generate_password_message">비밀번호 생성기에서 강력한 비밀번호 생성되지 않습니다. 최소 %d 비트가 필요합니다</string>
-    <string name="autofill_service_name">패스볼트 자동채우기</string>
+    <string name="autofill_service_name">Passbolt 자동채우기</string>
     <string name="dialog_encourage_autofill_header">3초만에 즐겨찾는 앱으로 로그인하세요!</string>
     <string name="dialog_autofill_header">자동 채우기</string>
     <string name="dialog_encourage_autofill_accessibility_description">자동 채우기를 활성화하려면 기기 설정으로 가야 합니다. 이러한 설정의 위치는 장치 제조업체 및 안드로이드 버전에 따라 다를 수 있습니다.</string>
@@ -185,10 +190,10 @@
     <string name="dialog_encourage_autofill_accessibility_title">로그인 정보를 입력하려면 사용자의 권한이 필요합니다.</string>
     <string name="dialog_encourage_autofill_go_to_settings">설정으로 이동</string>
     <string name="dialog_encourage_autofill_service_header">대부분의 앱에 대해 자동 채우기 사용</string>
-    <string name="dialog_encourage_autofill_service_description">안드로이드 설정 화면에서 패스볼트를 선택하고 토글을 켠 다음 확인을 누릅니다.
+    <string name="dialog_encourage_autofill_service_description">안드로이드 설정 화면에서 Passbolt를 선택하고 토글을 켠 다음 확인을 누릅니다.
      또는 기기의 특정 가이드를 확인하세요:</string>
     <string name="dialog_encourage_autofill_overlay_header">오버레이 사용 권한 사용</string>
-    <string name="dialog_encourage_autofill_overlay_description">Android 설정 화면에서 패스볼트 자동 채우기에 대한 \'다른 앱 위로 그리기\' 권한을 활성화하거나
+    <string name="dialog_encourage_autofill_overlay_description">Android 설정 화면에서 Passbolt 자동 채우기에 대한 \'다른 앱 위로 그리기\' 권한을 활성화하거나
  기기의 특정 가이드를 확인하세요:</string>
     <string name="dialog_encourage_autofill_autofill_not_supported_title">자동 채우기가 지원되지 않음</string>
     <string name="dialog_encourage_autofill_autofill_not_supported_message">자동 채우기가 이 기기를 지원하지 않습니다.</string>
@@ -196,22 +201,24 @@
     <string name="dialog_encourage_chrome_autofill_go_to_settings">크롬 설정으로 이동</string>
     <string name="dialog_autofill_enabled_go_to_app">앱으로 이동</string>
     <string name="dialog_autofill_enabled_got_it">예!</string>
-    <string name="dialog_autofill_enabled_title">패스볼트 자동 채우기 활성화됨!</string>
-    <string name="dialog_autofill_accessibility_service_description">접근성 서비스를 기반으로 한 패스볼트 자동 채우기.</string>
+    <string name="dialog_autofill_enabled_title">Passbolt 자동 채우기 활성화됨!</string>
+    <string name="dialog_autofill_accessibility_service_description">접근성 서비스를 기반으로 한 Passbolt 자동 채우기.</string>
     <string name="dialog_autofill_enabled_message">양식을 작성한 후 입력 필드를 탭하기만 하면 활성화한
-        자동 채우기가 패스볼트 앱에 이미 추가한 로그인 자격 증명에서 양식을 작성하도록 제안합니다.</string>
+        자동 채우기가 Passbolt 앱에 이미 추가한 로그인 자격 증명에서 양식을 작성하도록 제안합니다.</string>
     <string name="autofill_title">비밀번호 선택</string>
     <string name="autofill_error">자동 채우기 오류 발생</string>
     <string name="autofill_select_password">비밀번호 선택</string>
-    <string name="autofill_service_channel_name">패스볼트 자동 채우기서비스</string>
-    <string name="autofill_service_title">패스볼트</string>
+    <string name="autofill_service_channel_name">Passbolt 자동 채우기서비스</string>
+    <string name="data_sync_service_channel_name">Passbolt 데이터 동기화 서비스</string>
+    <string name="autofill_service_title">Passbolt</string>
     <string name="autofill_service_content">접근성 자동 채우기 서비스가 활성화됨</string>
+    <string name="data_sync_service_content">리소스를 새로 고침</string>
     <string name="autofill_service_enable_overlay">오버레이 사용 권한 사용</string>
-    <string name="autofill_service_overlay_description"><![CDATA[Android 웹 브라우저의 사용자 이름 및 비밀번호 자동 채우기. 패스볼트 자동 채우기에 대한 \'다른 앱 위로 그리기\' 권한을 활성화하세요]]></string>
+    <string name="autofill_service_overlay_description"><![CDATA[Android 웹 브라우저의 사용자 이름 및 비밀번호 자동 채우기. Passbolt 자동 채우기에 대한 \'다른 앱 위로 그리기\' 권한을 활성화하세요]]></string>
     <string name="autofill_service_enable_service">대부분의 앱에 대해 자동 채우기 사용</string>
     <string name="autofill_service_enable_service_description"><![CDATA[Android 앱을 위한 사용자 이름과 비밀번호 자동 채우기]]></string>
-    <string name="autofill_dropdown_select">패브볼트에서 선택</string>
-    <string name="autofill_dropdown_fill">패스볼트로 채우기</string>
+    <string name="autofill_dropdown_select">Passbolt에서 선택</string>
+    <string name="autofill_dropdown_fill">Passbolt로 채우기</string>
     <string name="autofill_resources_create">생성 &amp; 채우기</string>
     <string name="home_empty_list">목록 비우기</string>
     <string name="home_create">생성</string>
@@ -233,6 +240,7 @@
     <string name="filters_menu_shared_with_me">나와 공유됨</string>
     <string name="filters_menu_owned_by_me">내가 소유함</string>
     <string name="filters_menu_expiry">만료</string>
+    <string name="filters_menu_loading">로딩 중</string>
     <string name="filters_menu_folders">폴더</string>
     <string name="filters_menu_tags">태그</string>
     <string name="filters_menu_groups">그룹</string>
@@ -245,6 +253,7 @@
     <string name="resource_details_totp_header">Totp</string>
     <string name="resource_details_url_header">메인 URI</string>
     <string name="resource_details_expiry_header">만료</string>
+    <string name="resource_details_additional_uris">추가 URI</string>
     <string name="resource_details_description_header">설명</string>
     <string name="resource_details_note_header">노트</string>
     <string name="resource_details_note_content">컨텐츠</string>
@@ -253,12 +262,15 @@
     <string name="resource_details_information">정보</string>
     <string name="resource_details_invalid_totp_scanned">잘못된 TOTP QR 코드가 스캔되었습니다.</string>
     <string name="resource_details_metadata_header">메타데이터</string>
+    <string name="resource_details_custom_fields_header">사용자 정의 필드</string>
+    <string name="additional_uri_format">• %s</string>
     <string name="more_details_copy_password">비밀번호 복사</string>
     <string name="more_details_copy_description">설명 복사</string>
     <string name="resource_form_create_success">새 비밀번호가 생성되었습니다!</string>
     <string name="resource_form_password">비밀번호</string>
     <string name="resource_form_enter_password">비밀번호 입력</string>
     <string name="resource_form_main_uri">메인 URI</string>
+    <string name="resource_form_add_uri">URI 추가</string>
     <string name="resource_form_enter_uri">URI 입력</string>
     <string name="resource_form_username">사용자 이름</string>
     <string name="resource_form_enter_username">사용자이름 입력</string>
@@ -269,10 +281,15 @@
     <string name="resource_form_totp_more_settings">추가 TOTP 설정</string>
     <string name="resource_form_totp_settings">TOTP 설정</string>
     <string name="resource_form_description">설명</string>
+    <string name="resource_form_additional_uris">추가 URI</string>
     <string name="resource_form_enter_description">설명 입력</string>
     <string name="resource_form_metadata_description">메타데이터 설명</string>
     <string name="resource_form_create_metadata_description">메타데이터 설명 생성</string>
+    <string name="resource_form_create_resource_appearance">리소스 모양새</string>
+    <string name="resource_form_create_resource_custom_fields">사용자 정의 필드</string>
+    <string name="resource_form_create_additional_uris">추가 URI 생성</string>
     <string name="resource_form_note">노트</string>
+    <string name="resource_form_custom_fields">사용자 정의 필드</string>
     <string name="resource_form_create_note">노트 생성</string>
     <string name="resource_form_note_content">컨텐츠</string>
     <string name="resource_form_enter_note">노트 입력</string>
@@ -281,6 +298,7 @@
     <string name="resource_form_resource_name">리소스 이름</string>
     <string name="resource_form_name">이름</string>
     <string name="resource_form_create_password">비밀번호 생성</string>
+    <string name="resource_form_create_custom_fields">사용자 정의 필드 생성</string>
     <string name="resource_form_edit_resource">%s 수정</string>
     <string name="resource_form_create_totp">TOTP 생성</string>
     <string name="resource_form_view_advanced_settings">고급 설정 보기</string>
@@ -290,9 +308,18 @@
     <string name="resource_form_create">생성</string>
     <string name="resource_form_save">저장</string>
     <string name="resource_form_edit_init_error">리소스 편집 초기화에 실패함</string>
+    <string name="resource_form_create_init_error">리소스 생성 초기화에 실패함</string>
     <string name="resource_form_remove_totp">TOTP 삭제</string>
     <string name="resource_form_remove_note">노트 삭제</string>
     <string name="resource_form_no_name">이름 없음</string>
+    <string name="resource_form_max_additional_uris_limit">최대 %d개의 추가 URI를 추가할 수 있습니다.</string>
+    <string name="resource_form_appearance">모양새</string>
+    <string name="resource_form_appearance_select_color">색상 선택</string>
+    <string name="resource_form_appearance_select_icon">아이콘 선택</string>
+    <string name="resource_form_appearance_default_color">기본 색상</string>
+    <string name="resource_form_appearance_default_icon">기본 아이콘</string>
+    <string name="resource_form_no_custom_fields_set">사용자 정의 필드가 설정되지 않음</string>
+    <string name="resource_form_custom_fields_edit_not_supported">현재 사용자 정의 필드의 에디션은 지원되지 않음</string>
     <string name="settings_app_settings">앱 설정</string>
     <string name="settings_accounts">계정</string>
     <string name="settings_terms_and_licenses">약관 &amp; 라이선스</string>
@@ -320,6 +347,7 @@
     <string name="settings_app_settings_autofill">자동 채우기</string>
     <string name="settings_app_settings_fingerprint">지문</string>
     <string name="settings_app_settings_biometry_error">생체 측정 오류. %s</string>
+    <string name="settings_app_settings_biometry_authentication_error">생체 인식 인증 오류입니다. %s</string>
     <string name="settings_app_settings_expert_settings">전문가 설정</string>
     <string name="settings_app_settings_expert_settings_dev_mode">개발자 모드</string>
     <string name="settings_app_settings_expert_settings_hide_root">\"장치가 루팅됨\" 대화 상자 숨기기</string>
@@ -351,13 +379,13 @@
     <string name="transfer_details_camera_access_dialog_title">카메라 접근 필요</string>
     <string name="transfer_details_camera_required_dialog_title">카메라 필요</string>
     <string name="transfer_details_camera_required_dialog_message">죄송합니다, QR 코드를 사용하여 키를 전송하므로 계속 진행하려면 카메라가 있는 기기가 필요합니다.</string>
-    <string name="transfer_details_camera_access_dialog_message">설정에서 패스볼트 앱에 카메라 접근에 대한 권한을 부여하세요.</string>
+    <string name="transfer_details_camera_access_dialog_message">설정에서 Passbolt 앱에 카메라 접근에 대한 권한을 부여하세요.</string>
     <string name="scan_qr_exit_confirmation_dialog_message">나가게 되면 QR코드를 다시 스캔해야 합니다.</string>
     <string name="scan_qr_exit_information_dialog_message">일련의 QR 코드가 표시됩니다. 진행률 표시줄이 가득 찰 때까지 이 코드를 스캔합니다. 그러면 로그인할 수 있습니다!</string>
     <string name="scan_qr_exit_information_dialog_title">QR 코드 스캔</string>
     <string name="scan_qr_keep_going">QR 코드 스캔 중</string>
     <string name="scan_qr_aim_at_qr_code">카메라를 QR 코드에 맞추세요.</string>
-    <string name="scan_qr_not_a_passbolt_qr">패스볼트 QR코드가 아닙니다. 다시 시도하세요!</string>
+    <string name="scan_qr_not_a_passbolt_qr">Passbolt QR코드가 아닙니다. 다시 시도하세요!</string>
     <string name="scan_qr_multiple_codes_in_range">범위 내에 여러 개의 QR 코드가 있습니다. 한 개에 맞추세요.</string>
     <string name="scan_qr_scanning_error">스캔 중 오류</string>
     <string name="scan_qr_camera_error">카메라 오류</string>
@@ -394,12 +422,14 @@
     <string name="permission_recipients_already_added">이미 추가됨</string>
     <string name="permission_recipients_user_or_group_not_found">사용자 또는 그룹을 찾을 수 없음</string>
     <string name="permission_deletion_dialog_message">비밀번호가 더 이상 이 사용자와 공유되지 않습니다.</string>
-    <string name="main_update_downloaded">패스볼트 업데이트가 방금 다운로드되었습니다.</string>
+    <string name="main_update_downloaded">Passbolt 업데이트가 방금 다운로드됨</string>
     <string name="main_update_download_in_progress">백그라운드에서 다운로드 중입니다. 다운로드가 완료되면 알려드리겠습니다.</string>
     <string name="main_update_downloaded_install">설치</string>
     <string name="dialog_encryption_error_title">암호화 오류가 발생했습니다.</string>
     <string name="dialog_encryption_error_message">(%s) 암호화 에러가 발생하였습니다. 다시 시도해주세요.</string>
     <string name="resource_tags_section">태그</string>
+    <string name="resource_tags_title">리소스 태그</string>
+    <string name="folder_details_title">폴더 세부사항</string>
     <string name="folder_details_name_header">폴더 이름</string>
     <string name="help_button_description">도움</string>
     <string name="create_folder_title">폴더 생성</string>
@@ -501,6 +531,7 @@
     <string name="create_resource_menu_create_a_resource">리소스 생성</string>
     <string name="create_resource_menu_create_totp">TOTP</string>
     <string name="create_resource_menu_create_password">비밀번호</string>
+    <string name="create_resource_menu_create_note">노트</string>
     <string name="create_resource_menu_create_folder">폴더</string>
     <string name="dialog_new_metadata_key_trust_changed">메타데이터 키가 변경되었습니다.</string>
     <string name="dialog_new_metadata_key_trust_modified_by_user">사용자 간에 메타데이터를 공유하는 데 사용되는 암호화 키가 %s에 의해 업데이트되었습니다.</string>
@@ -516,7 +547,8 @@
     arrays can be inconsistent when in other languages
     index / size is not used in code
     -->
-    <string-array name="username_hint_values" tools:ignore="InconsistentArrays">
+    <string-array name="username_hint_values"
+        tools:ignore="InconsistentArrays">
         <item>메일</item>
         <item>사용자이름</item>
         <item>모바일</item>
@@ -527,17 +559,18 @@
       arrays can be inconsistent when in other languages
       index / size is not used in code
     -->
-    <string-array name="password_hint_values" tools:ignore="InconsistentArrays">
+    <string-array name="password_hint_values"
+        tools:ignore="InconsistentArrays">
         <item>비밀번호</item>
         <item>비밀</item>
         <item>비밀문구</item>
     </string-array>
     <string-array name="dialog_encourage_autofill_setup_steps">
         <item>자동완설 설정 켜기</item>
-        <item>&lt;b&gt;패스볼트!&lt;/b&gt;를 선택</item>
+        <item>&lt;b&gt;Passbolt!&lt;/b&gt;를 선택</item>
     </string-array>
     <string-array name="dialog_encourage_chrome_native_autofill_setup_steps">
-        <item>Android OS 설정에서 패스볼트 기본 자동 채우기가 켜져 있는지 확인하세요</item>
+        <item>Android OS 설정에서 Passbolt 기본 자동 채우기가 켜져 있는지 확인하세요</item>
         <item>&lt;b&gt;크롬 설정&lt;/b&gt;으로 이동하여 &lt;b&gt;자동 채우기 서비스&lt;/b&gt;를 선택하세요</item>
         <item>&lt;b&gt;다른 서비스를 사용하여 자동 채우기&lt;/b&gt;를 선택하세요</item>
     </string-array>

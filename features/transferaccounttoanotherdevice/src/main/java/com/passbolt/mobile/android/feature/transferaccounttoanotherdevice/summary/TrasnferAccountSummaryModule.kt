@@ -1,8 +1,8 @@
 package com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.summary
 
 import org.koin.core.module.Module
-import org.koin.core.module.dsl.scopedOf
-import org.koin.dsl.bind
+import org.koin.core.module.dsl.singleOf
+import org.koin.core.module.dsl.viewModelOf
 
 /**
  * Passbolt - Open source password manager for teams
@@ -28,7 +28,6 @@ import org.koin.dsl.bind
  */
 
 fun Module.transferAccountSummaryModule() {
-    scope<TransferAccountSummaryFragment> {
-        scopedOf(::TransferAccountSummaryPresenter) bind TransferAccountSummaryContract.Presenter::class
-    }
+    viewModelOf(::TransferAccountSummaryViewModel)
+    singleOf(::TransferAccountStatusFactory)
 }

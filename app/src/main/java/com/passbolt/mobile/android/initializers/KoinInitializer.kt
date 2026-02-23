@@ -85,7 +85,7 @@ import com.passbolt.mobile.android.locationDetailsModule
 import com.passbolt.mobile.android.logsModule
 import com.passbolt.mobile.android.mappersModule
 import com.passbolt.mobile.android.metadata.metadataModule
-import com.passbolt.mobile.android.otpMainMoreMenuModule
+import com.passbolt.mobile.android.otpMoreMenuModule
 import com.passbolt.mobile.android.passboltapi.passboltApiModule
 import com.passbolt.mobile.android.permissions.permissionsModule
 import com.passbolt.mobile.android.pwnedpasswordsapi.pwnedPasswordsApiModule
@@ -164,7 +164,7 @@ class KoinInitializer : Initializer<Unit> {
                 resourcePickerModule,
                 tagsModule,
                 scanOtpMainModule,
-                otpMainMoreMenuModule,
+                otpMoreMenuModule,
                 rbacModule,
                 accountsCoreModule,
                 policiesModule,

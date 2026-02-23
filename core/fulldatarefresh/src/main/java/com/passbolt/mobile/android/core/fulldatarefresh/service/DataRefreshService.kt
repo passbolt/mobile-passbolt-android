@@ -30,6 +30,7 @@ import androidx.lifecycle.lifecycleScope
 import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
 import com.passbolt.mobile.android.core.notifications.accessibilityautofill.AccessibilityServiceNotificationFactory
 import com.passbolt.mobile.android.core.notifications.accessibilityautofill.AccessibilityServiceNotificationFactory.Companion.DATA_SYNC_SERVICE_NOTIFICATION_ID
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
@@ -37,6 +38,8 @@ import org.koin.android.ext.android.inject
 class DataRefreshService : LifecycleService() {
     private val accessibilityServiceNotificationFactory: AccessibilityServiceNotificationFactory by inject()
     private val fullDataRefreshExecutor: FullDataRefreshExecutor by inject()
+
+    private var refreshJob: Job? = null
 
     override fun onStartCommand(
         intent: Intent?,
@@ -50,13 +53,16 @@ class DataRefreshService : LifecycleService() {
             accessibilityServiceNotificationFactory.getDataServiceNotification(this),
         )
 
-        lifecycleScope.launch {
-            try {
-                fullDataRefreshExecutor.susPerformFullDataRefresh()
-            } finally {
-                stopForeground(ServiceCompat.STOP_FOREGROUND_REMOVE)
-                stopSelf(startId)
-            }
+        if (refreshJob?.isActive != true) {
+            refreshJob =
+                lifecycleScope.launch {
+                    try {
+                        fullDataRefreshExecutor.susPerformFullDataRefresh()
+                    } finally {
+                        stopForeground(ServiceCompat.STOP_FOREGROUND_REMOVE)
+                        stopSelf()
+                    }
+                }
         }
 
         return START_NOT_STICKY

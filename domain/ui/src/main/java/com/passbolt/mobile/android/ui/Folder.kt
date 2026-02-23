@@ -23,6 +23,7 @@
 
 package com.passbolt.mobile.android.ui
 
+import android.annotation.SuppressLint
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
@@ -48,6 +49,7 @@ sealed class Folder : Parcelable {
      * A non-root nested folder is chosen.
      * @param folderId id of the chosen folder
      */
+    @SuppressLint("UnsafeOptInUsageError") // false positive in K2
     @Serializable
     @Parcelize
     data class Child(

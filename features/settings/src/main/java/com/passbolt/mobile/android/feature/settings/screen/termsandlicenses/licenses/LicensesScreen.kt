@@ -25,15 +25,15 @@ package com.passbolt.mobile.android.feature.settings.screen.termsandlicenses.lic
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -96,31 +96,31 @@ private fun LicensesScreen(
     onIntent: (LicensesIntent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(
-        modifier =
-            modifier
-                .verticalScroll(rememberScrollState())
-                .padding(vertical = 16.dp),
-    ) {
-        TitleAppBar(
-            title = stringResource(LocalizationR.string.settings_licenses_title),
-            navigationIcon = { BackNavigationIcon(onBackClick = { onIntent(GoBack) }) },
-        )
-        LazyColumn(
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
-        ) {
-            itemsIndexed(state.openSourceLicensesModel) { index, license ->
-                LicenseItem(license = license, onIntent = onIntent)
-                if (index < state.openSourceLicensesModel.lastIndex) {
-                    HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+    Scaffold(
+        modifier = modifier.fillMaxSize(),
+        topBar = {
+            TitleAppBar(
+                title = stringResource(LocalizationR.string.settings_licenses_title),
+                navigationIcon = { BackNavigationIcon(onBackClick = { onIntent(GoBack) }) },
+            )
+        },
+        content = { paddingValues ->
+            LazyColumn(
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues)
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+            ) {
+                itemsIndexed(state.openSourceLicensesModel) { index, license ->
+                    LicenseItem(license = license, onIntent = onIntent)
+                    if (index < state.openSourceLicensesModel.lastIndex) {
+                        HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+                    }
                 }
             }
-        }
-    }
+        },
+    )
 }
 
 @Composable

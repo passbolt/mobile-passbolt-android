@@ -112,6 +112,12 @@ private fun AppearanceFormScreen(
 
     Scaffold(
         modifier = modifier,
+        topBar = {
+            TitleAppBar(
+                title = getScreenTitle(context, state.resourceFormMode),
+                navigationIcon = { BackNavigationIcon(onBackClick = { onIntent(GoBack) }) },
+            )
+        },
         bottomBar = {
             Surface(
                 shadowElevation = 8.dp,
@@ -126,7 +132,7 @@ private fun AppearanceFormScreen(
                 ) {
                     PrimaryButton(
                         text = stringResource(LocalizationR.string.apply),
-                        onClick = { onIntent(ApplyChanges) },
+                        { onIntent(ApplyChanges) },
                     )
                 }
             }
@@ -139,12 +145,6 @@ private fun AppearanceFormScreen(
                     .verticalScroll(rememberScrollState())
                     .padding(16.dp),
         ) {
-            TitleAppBar(
-                title = getScreenTitle(context, state.resourceFormMode),
-                navigationIcon = { BackNavigationIcon(onBackClick = { onIntent(GoBack) }) },
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
             Text(stringResource(LocalizationR.string.resource_form_appearance), style = MaterialTheme.typography.titleMedium)
 
             SelectColorSection(state, onIntent)

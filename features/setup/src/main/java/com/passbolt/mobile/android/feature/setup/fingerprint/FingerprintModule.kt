@@ -1,7 +1,7 @@
 package com.passbolt.mobile.android.feature.setup.fingerprint
 
 import org.koin.core.module.Module
-import org.koin.core.qualifier.named
+import org.koin.core.module.dsl.viewModelOf
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,18 +26,5 @@ import org.koin.core.qualifier.named
  * @since v1.0
  */
 fun Module.fingerprintModule() {
-    scope(named<FingerprintFragment>()) {
-        scoped<FingerprintContract.Presenter> {
-            FingerprintPresenter(
-                fingerprintInformationProvider = get(),
-                autofillInformationProvider = get(),
-                passphraseMemoryCache = get(),
-                savePassphraseUseCase = get(),
-                biometricCipher = get(),
-                saveBiometricKeyIvUseCase = get(),
-                biometryInteractor = get(),
-                encouragementsInteractor = get(),
-            )
-        }
-    }
+    viewModelOf(::FingerprintSetupViewModel)
 }

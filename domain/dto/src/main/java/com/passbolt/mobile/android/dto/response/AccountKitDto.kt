@@ -23,11 +23,13 @@
 
 package com.passbolt.mobile.android.dto.response
 
+import android.annotation.SuppressLint
 import com.passbolt.mobile.android.dto.response.qrcode.UUIDSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import java.util.UUID
 
+@SuppressLint("UnsafeOptInUsageError") // false positive in K2
 @Serializable
 data class AccountKitDto(
     @SerialName("user_private_armored_key")

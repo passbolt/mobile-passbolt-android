@@ -46,7 +46,7 @@ import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.feature.authentication.AuthenticationMainActivity
 import com.passbolt.mobile.android.helpers.chooseFilter
 import com.passbolt.mobile.android.helpers.createNewPasswordFromHomeScreen
-import com.passbolt.mobile.android.helpers.pickFirstResourceWithName
+import com.passbolt.mobile.android.helpers.searchAndOpenFirstResourceByName
 import com.passbolt.mobile.android.helpers.signIn
 import com.passbolt.mobile.android.instrumentationTestsModule
 import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
@@ -118,7 +118,7 @@ class ResourcesDeletionTest : KoinTest {
     @Test
     fun onTheActionMenuDrawerICanClickDeletePasswordElement() {
         //    Given that I am on the resource’s action menu drawer
-        composeTestRule.pickFirstResourceWithName("ResourcesDeletionTest")
+        composeTestRule.searchAndOpenFirstResourceByName("ResourcesDeletionTest")
         //        onView(withId(searchEditText)).perform(typeText("ResourcesDeletionTest"))
 //        onView(first(withId(more))).perform(click())
         //    And I see ‘Delete password’ element enabled
@@ -143,7 +143,7 @@ class ResourcesDeletionTest : KoinTest {
     @Test
     fun onThePasswordRemovalPopupICanClickTheCancelButton() {
         //    Given that I am on removal popup
-        composeTestRule.pickFirstResourceWithName("ResourcesDeletionTest")
+        composeTestRule.searchAndOpenFirstResourceByName("ResourcesDeletionTest")
         onView(withId(com.passbolt.mobile.android.feature.resourcemoremenu.R.id.passwordBottomSheetRoot))
             .perform(swipeUp())
         onView(withId(com.passbolt.mobile.android.feature.resourcemoremenu.R.id.delete)).perform(click())
@@ -161,7 +161,7 @@ class ResourcesDeletionTest : KoinTest {
         IdlingRegistry.getInstance().unregister(resourcesFullRefreshIdlingResource)
 
         //    Given that I am on removal popup
-        composeTestRule.pickFirstResourceWithName("ResourcesDeletionTest")
+        composeTestRule.searchAndOpenFirstResourceByName("ResourcesDeletionTest")
         onView(withId(com.passbolt.mobile.android.feature.resourcemoremenu.R.id.passwordBottomSheetRoot))
             .perform(swipeUp())
         onView(withId(com.passbolt.mobile.android.feature.resourcemoremenu.R.id.delete)).perform(click())

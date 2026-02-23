@@ -1,6 +1,6 @@
 /*
  * Passbolt - Open source password manager for teams
- * Copyright (c) 2024-2025 Passbolt SA
+ * Copyright (c) 2024-2026 Passbolt SA
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
  * Public License (AGPL) as published by the Free Software Foundation version 3.
@@ -23,7 +23,9 @@
 
 package com.passbolt.mobile.android.scenarios.home.filters.folders.nopermission
 
+import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
 import androidx.test.platform.app.InstrumentationRegistry
@@ -33,16 +35,17 @@ import com.passbolt.mobile.android.core.idlingresource.SignInIdlingResource
 import com.passbolt.mobile.android.core.localization.R.string.filters_menu_folders
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppContext
+import com.passbolt.mobile.android.core.ui.compose.scaffold.HomeScaffoldTestTags.APP_BAR_ICON
+import com.passbolt.mobile.android.core.ui.compose.topbar.BackNavigationIcon.TestTags.ICON
 import com.passbolt.mobile.android.feature.authentication.AuthenticationMainActivity
 import com.passbolt.mobile.android.helpers.chooseFilter
-import com.passbolt.mobile.android.helpers.pickFirstResourceWithName
+import com.passbolt.mobile.android.helpers.searchAndOpenFirstFolderByName
 import com.passbolt.mobile.android.helpers.signIn
 import com.passbolt.mobile.android.instrumentationTestsModule
 import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
 import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -51,7 +54,6 @@ import org.koin.test.KoinTest
 
 @RunWith(AndroidJUnit4::class)
 @MediumTest
-@Ignore("Deprecated: refactor needed - entire test class disabled")
 class FolderWithoutWritePermissionTest : KoinTest {
     @get:Rule
     val startUpActivityRule =
@@ -90,31 +92,30 @@ class FolderWithoutWritePermissionTest : KoinTest {
 
     @Before
     fun setup() {
-        //  Background:
-        //  Given I am using Passbolt PRO/Cloud/CE //Cloud
-        //  And I am logged in as a mobile app user
         composeTestRule.signIn(managedAccountIntentCreator.getPassphrase())
-        //  And I am on the folders filter view
-        //    Given     that I am on the folders workspace
         composeTestRule.chooseFilter(filters_menu_folders)
-        //  And I have a folder which is shared with me
-        //  And I do not have permission to create an item in this folder
-        composeTestRule.pickFirstResourceWithName("Shared without permission to add")
     }
 
-    //  https://passbolt.testrail.io/index.php?/cases/view/11939
-    @Ignore("Update according to compose")
+    /**  [View folder without write permission](https://passbolt.testrail.io/index.php?/cases/view/11939)
+     *
+     *      Given  I have some subfolders in this folder
+     *      And  I have some resources in it
+     *      When I enter this folder
+     *      Then I do not see the create button
+     *      And  I see the list of folders
+     *      And  I see the list of resources below the folders
+     */
     @Test
     fun viewFolderWithoutWritePermission() {
-        //  Given  I have some subfolders in this folder
-        //  And  I have some resources in it
-        //  When I enter this folder
-//        onView(first(withId(homeId.itemFolder))).perform(click())
-//        //  Then I do not see the create button
-//        onView(withId(homeId.createResourceFab)).check(matches(not(isDisplayed())))
-//        //  And  I see the list of folders
-//        onView(first(withId(homeId.itemFolder))).check((matches(isDisplayed())))
-//        //  And  I see the list of resources below the folders
-//        onView(first(withId(homeId.itemPassword))).check((matches(isDisplayed())))
+        composeTestRule.searchAndOpenFirstFolderByName(SHARED_TEST_FOLDER_NAME)
+        composeTestRule.onNode(hasTestTag(ICON), useUnmergedTree = true).assertExists() // Back icon
+        composeTestRule.onNode(hasTestTag(APP_BAR_ICON), useUnmergedTree = true).assertExists() // Folder icon
+        composeTestRule.onNodeWithTag("home_search_input_field").assertExists()
+        composeTestRule.onNodeWithTag("home_search_filter").assertExists()
+        composeTestRule.onNodeWithTag("home_fab").assertDoesNotExist()
+    }
+
+    private companion object {
+        private const val SHARED_TEST_FOLDER_NAME = "Shared without permission to add"
     }
 }

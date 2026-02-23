@@ -5,7 +5,6 @@ import com.passbolt.mobile.android.dto.response.qrcode.QrFirstPageDto
 import com.passbolt.mobile.android.dto.response.qrcode.ReservedBytesDto
 import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccount.data.QrGenerationConstants.MAX_QR_DATA_BYTES_EXCLUDING_RESERVED_BYTES
 import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccount.data.QrGenerationConstants.PROTOCOL_VERSION
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import timber.log.Timber
 import java.util.UUID
@@ -46,7 +45,7 @@ class TransferQrCodesDataGenerator(
             appendSubsequentPages(input, pages)
             Output.QrPages(pages)
         } catch (exception: Exception) {
-            Timber.e("Error during qr data pages generation", exception)
+            Timber.e(exception, "Error during qr data pages generation")
             return Output.Error
         }
     }

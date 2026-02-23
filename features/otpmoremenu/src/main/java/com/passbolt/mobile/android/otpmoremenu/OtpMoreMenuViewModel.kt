@@ -1,0 +1,77 @@
+package com.passbolt.mobile.android.otpmoremenu
+
+import androidx.lifecycle.viewModelScope
+import com.passbolt.mobile.android.common.datarefresh.DataRefreshTrackingFlow
+import com.passbolt.mobile.android.core.compose.SideEffectViewModel
+import com.passbolt.mobile.android.otpmoremenu.OtpMoreMenuIntent.Close
+import com.passbolt.mobile.android.otpmoremenu.OtpMoreMenuIntent.CopyOtp
+import com.passbolt.mobile.android.otpmoremenu.OtpMoreMenuIntent.DeleteOtp
+import com.passbolt.mobile.android.otpmoremenu.OtpMoreMenuIntent.EditOtp
+import com.passbolt.mobile.android.otpmoremenu.OtpMoreMenuIntent.Initialize
+import com.passbolt.mobile.android.otpmoremenu.OtpMoreMenuIntent.ShowOtp
+import com.passbolt.mobile.android.otpmoremenu.OtpMoreMenuSideEffect.Dismiss
+import com.passbolt.mobile.android.otpmoremenu.OtpMoreMenuSideEffect.InvokeCopyOtp
+import com.passbolt.mobile.android.otpmoremenu.OtpMoreMenuSideEffect.InvokeDeleteOtp
+import com.passbolt.mobile.android.otpmoremenu.OtpMoreMenuSideEffect.InvokeEditOtp
+import com.passbolt.mobile.android.otpmoremenu.OtpMoreMenuSideEffect.InvokeShowOtp
+import com.passbolt.mobile.android.otpmoremenu.usecase.CreateOtpMoreMenuModelUseCase
+import kotlinx.coroutines.launch
+
+/**
+ * Passbolt - Open source password manager for teams
+ * Copyright (c) 2021 Passbolt SA
+ *
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
+ * Public License (AGPL) as published by the Free Software Foundation version 3.
+ *
+ * The name "Passbolt" is a registered trademark of Passbolt SA, and Passbolt SA hereby declines to grant a trademark
+ * license to "Passbolt" pursuant to the GNU Affero General Public License version 3 Section 7(e), without a separate
+ * agreement with Passbolt SA.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License along with this program. If not,
+ * see GNU Affero General Public License v3 (http://www.gnu.org/licenses/agpl-3.0.html).
+ *
+ * @copyright Copyright (c) Passbolt SA (https://www.passbolt.com)
+ * @license https://opensource.org/licenses/AGPL-3.0 AGPL License
+ * @link https://www.passbolt.com Passbolt (tm)
+ * @since v1.0
+ */
+
+class OtpMoreMenuViewModel(
+    private val createOtpMoreMenuModelUseCase: CreateOtpMoreMenuModelUseCase,
+    private val dataRefreshTrackingFlow: DataRefreshTrackingFlow,
+) : SideEffectViewModel<OtpMoreMenuState, OtpMoreMenuSideEffect>(OtpMoreMenuState()) {
+    fun onIntent(intent: OtpMoreMenuIntent) {
+        when (intent) {
+            Close -> emitSideEffect(Dismiss)
+            CopyOtp -> emitSideEffect(InvokeCopyOtp)
+            DeleteOtp -> emitSideEffect(InvokeDeleteOtp)
+            EditOtp -> emitSideEffect(InvokeEditOtp)
+            ShowOtp -> emitSideEffect(InvokeShowOtp)
+            is Initialize -> initialize(intent)
+        }
+    }
+
+    private fun initialize(initialize: Initialize) {
+        updateViewState { copy(title = initialize.resourceName, showShowOtpButton = initialize.canShowTotp) }
+        viewModelScope.launch {
+            dataRefreshTrackingFlow.awaitIdle()
+            val menuModel =
+                createOtpMoreMenuModelUseCase
+                    .execute(
+                        CreateOtpMoreMenuModelUseCase.Input(initialize.resourceId),
+                    ).otpMoreMenuModel
+
+            updateViewState {
+                copy(
+                    showDeleteButton = menuModel.canDelete,
+                    showEditButton = menuModel.canEdit,
+                    showSeparator = menuModel.canEdit || menuModel.canDelete,
+                )
+            }
+        }
+    }
+}

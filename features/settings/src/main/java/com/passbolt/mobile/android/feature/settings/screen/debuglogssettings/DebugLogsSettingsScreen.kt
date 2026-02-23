@@ -24,16 +24,17 @@
 package com.passbolt.mobile.android.feature.settings.screen.debuglogssettings
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
 import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
@@ -85,37 +86,45 @@ private fun DebugLogsSettingsScreen(
     onIntent: (DebugLogsSettingsIntent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(
-        modifier =
-            modifier
-                .verticalScroll(rememberScrollState())
-                .padding(vertical = 16.dp),
-    ) {
-        TitleAppBar(
-            title = stringResource(LocalizationR.string.settings_debug_logs),
-            navigationIcon = { BackNavigationIcon(onBackClick = { onIntent(GoBack) }) },
-        )
-        SwitchableSettingsItem(
-            iconPainter = painterResource(R.drawable.ic_bug),
-            title = stringResource(LocalizationR.string.settings_debug_logs_enable_logs),
-            isChecked = state.areDebugLogsEnabled,
-            onCheckedChange = { onIntent(ToggleDebugLogs) },
-        )
+    Scaffold(
+        modifier = modifier.fillMaxSize(),
+        topBar = {
+            TitleAppBar(
+                title = stringResource(LocalizationR.string.settings_debug_logs),
+                navigationIcon = { BackNavigationIcon(onBackClick = { onIntent(GoBack) }) },
+            )
+        },
+        content = { paddingValues ->
+            Column(
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues)
+                        .verticalScroll(rememberScrollState()),
+            ) {
+                SwitchableSettingsItem(
+                    iconPainter = painterResource(R.drawable.ic_bug),
+                    title = stringResource(LocalizationR.string.settings_debug_logs_enable_logs),
+                    isChecked = state.areDebugLogsEnabled,
+                    onCheckedChange = { onIntent(ToggleDebugLogs) },
+                )
 
-        OpenableSettingsItem(
-            iconPainter = painterResource(R.drawable.ic_access_logs),
-            title = stringResource(LocalizationR.string.settings_debug_logs_settings_logs),
-            onClick = { onIntent(AccessLogs) },
-            isEnabled = state.isAccessLogsEnabled,
-        )
+                OpenableSettingsItem(
+                    iconPainter = painterResource(R.drawable.ic_access_logs),
+                    title = stringResource(LocalizationR.string.settings_debug_logs_settings_logs),
+                    onClick = { onIntent(AccessLogs) },
+                    isEnabled = state.isAccessLogsEnabled,
+                )
 
-        OpenableSettingsItem(
-            iconPainter = painterResource(R.drawable.ic_link),
-            title = stringResource(LocalizationR.string.settings_debug_logs_visit_help_website),
-            onClick = { onIntent(DebugLogsSettingsIntent.OpenHelpWebsite) },
-            opensInternally = false,
-        )
-    }
+                OpenableSettingsItem(
+                    iconPainter = painterResource(R.drawable.ic_link),
+                    title = stringResource(LocalizationR.string.settings_debug_logs_visit_help_website),
+                    onClick = { onIntent(DebugLogsSettingsIntent.OpenHelpWebsite) },
+                    opensInternally = false,
+                )
+            }
+        },
+    )
 }
 
 @Preview(showBackground = true)

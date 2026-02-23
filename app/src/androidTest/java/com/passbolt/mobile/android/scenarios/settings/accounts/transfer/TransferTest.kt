@@ -23,17 +23,16 @@
 
 package com.passbolt.mobile.android.scenarios.settings.accounts.transfer
 
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.scrollTo
 import androidx.test.espresso.action.ViewActions.typeText
-import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
-import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
@@ -41,31 +40,30 @@ import com.passbolt.mobile.android.core.idlingresource.SignInIdlingResource
 import com.passbolt.mobile.android.core.idlingresource.TransferAccountIdlingResource
 import com.passbolt.mobile.android.core.localization.R.string.settings_accounts
 import com.passbolt.mobile.android.core.localization.R.string.settings_accounts_transfer_account
-import com.passbolt.mobile.android.core.localization.R.string.transfer_account_title
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.feature.authentication.AuthenticationMainActivity
 import com.passbolt.mobile.android.feature.settings.R.id.settingsNavCompose
-import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.R.id.startTransferButton
 import com.passbolt.mobile.android.helpers.getString
 import com.passbolt.mobile.android.helpers.signIn
 import com.passbolt.mobile.android.instrumentationTestsModule
 import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
+import com.passbolt.mobile.android.matchers.assertHasBitmapContent
 import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
 import com.passbolt.mobile.android.scenarios.setup.configurebiometric.biometricSetupUnavailableModuleTests
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.koin.core.component.inject
 import org.koin.test.KoinTest
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
+import com.passbolt.mobile.android.feature.authentication.R as AuthenticationR
 
 @RunWith(AndroidJUnit4::class)
 @LargeTest
-@Ignore("Deprecated: refactor needed - entire test class disabled")
 class TransferTest : KoinTest {
     @get:Rule
     val startUpActivityRule =
@@ -104,12 +102,14 @@ class TransferTest : KoinTest {
             )
         }
 
+    /**
+     * **#MOBILE_USER_ON_SETTINGS_PAGE:**
+     * Given    I am a mobile user with the application installed
+     * And      I am logged in
+     * And      I am on Passbolt PRO/CE/Cloud
+     */
     @Before
     fun setup() {
-        //    #MOBILE_USER_ON_SETTINGS_PAGE:
-        //    Given	I am a mobile user with the application installed
-        //    And	I am logged in
-        //    And 	I am on Passbolt PRO/CE/Cloud
         composeTestRule.signIn(managedAccountIntentCreator.getPassphrase())
         onView(withId(settingsNavCompose)).perform(click())
         composeTestRule.apply {
@@ -121,17 +121,30 @@ class TransferTest : KoinTest {
         }
     }
 
-    // https://passbolt.testrail.io/index.php?/cases/view/8147
+    /**
+     * **I can see an explanation on how to transfer an existing account**
+     *
+     * TestRail: {@link https://passbolt.testrail.io/index.php?/cases/view/8147}
+     *
+     * Given    I’m logged in user on <page> screen (handled in setup)
+     * Then     the “Transfer account details” explanation screen is presented with a corresponding title
+     * And      a "Start transfer" primary action button is visible
+     */
     @Test
     fun asAUserICanSeeAnExplanationOnHowToTransferAnExistingAccount() {
-        //      Given   I’m logged in user on <page> screen (handled in setup)
-        //      Then    the “Transfer account details” explanation screen is presented with a corresponding title
-        onView(withText(transfer_account_title)).check(matches(isDisplayed()))
-        //      And     a "Start transfer" primary action button is visible
-        onView(
-            withId(startTransferButton),
-        ).check(matches(isDisplayed()))
+        composeTestRule.apply {
+            waitForIdle()
+
+            onNodeWithText(getString(LocalizationR.string.transfer_account_title))
+                .assertExists()
+                .assertIsDisplayed()
+
+            onNodeWithTag("StartTransferButton")
+                .assertExists()
+                .assertIsDisplayed()
+        }
     }
+
 //    // https://passbolt.testrail.io/index.php?/cases/view/8150
 //    @Test
 //    @FlakyTest(detail = "On Huawei Mate 30 Pro it is not working when iterated in a group")
@@ -167,110 +180,189 @@ class TransferTest : KoinTest {
 //        onView(withId(com.passbolt.mobile.android.feature.authentication.R.id.authButton)).check(matches(isDisplayed()))
 //    }
 //
-//    // https://passbolt.testrail.io/index.php?/cases/view/8151
-//    @Test
-//    fun asAUserIShouldSeeTransferringYourAccountDetailsScreen() {
-//        //      Given    I’m on “Transfer account details” process
-//        //      And      I am on the "Enter your passphrase" page
-//        onView(withId(com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.R.id.startTransferButton)).perform(click())
-//        //      When     I click “Confirm passphrase” or provide valid biometric authentication
-//        onView(withId(CoreUiR.id.input)).perform(typeText(managedAccountIntentCreator.getPassphrase()))
-//        onView(withId(com.passbolt.mobile.android.feature.authentication.R.id.authButton)).perform(scrollTo(), click())
-//        //      Then     I see a “Transferring your account details” page with corresponding title
-//        onView(withText(LocalizationR.string.transfer_account_title)).check(matches(isDisplayed()))
-//        //      And      I see a first QR code
-//        // check if any image is loaded into the QR code image view
-//        onView(withId(com.passbolt.mobile.android.feature.setup.R.id.qrCode)).check(
-//            matches(
-//                withImageViewContainingAnyImage(),
-//            ),
-//        )
-//        //      And      I see a “Cancel transfer” primary action button
-//        onView(
-//            withId(com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.R.id.cancelTransferButton),
-//        ).check(matches(isDisplayed()))
-//    }
-//
-//    // https://passbolt.testrail.io/index.php?/cases/view/8153
-//    @Test
-//    fun asAUserINeedToConfirmToStopTheQrCodePresentation() {
-//        //      Given   I’m on a “Transferring your account details” page
-//        onView(withId(com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.R.id.startTransferButton)).perform(click())
-//        onView(withId(CoreUiR.id.input)).perform(typeText(managedAccountIntentCreator.getPassphrase()))
-//        onView(withId(com.passbolt.mobile.android.feature.authentication.R.id.authButton)).perform(scrollTo(), click())
-//        //      When    I click “Cancel Transfer” button
-//        onView(withId(com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.R.id.cancelTransferButton)).perform(click())
-//        //      Then    I see a confirmation dialog
-//        onView(withText(LocalizationR.string.scan_qr_exit_confirmation_dialog_message)).check(matches(isDisplayed()))
-//        //      And     I see a message titled “Are you sure?”
-//        onView(withId(androidx.appcompat.R.id.alertTitle)).check(matches(isDisplayed()))
-//        //      And     I see some explanation
-//        onView(withId(android.R.id.message)).check(matches(isDisplayed()))
-//        //      And     I see a “Cancel” and “Stop transfer” options
-//        onView(withText(LocalizationR.string.cancel))
-//            .check(matches(isDisplayed()))
-//            .check(matches(ViewMatchers.isClickable()))
-//        onView(withText(LocalizationR.string.transfer_account_stop_button))
-//            .check(matches(isDisplayed()))
-//            .check(matches(ViewMatchers.isClickable()))
-//    }
-//
-//    // https://passbolt.testrail.io/index.php?/cases/view/8154
-//    @Test
-//    fun asAUserICanStopTheQrCodePresentation() {
-//        //       Given   I’m on a “Transferring your account details” page
-//        //       And     I see a prompt with “Cancel”                   // ** tested before
-//        //       And     I see action buttons                           // ** tested before
-//        openStopTransferPrompt()
-//        //       When    I click on the “Stop transfer” button
-//        onView(withText(LocalizationR.string.transfer_account_stop_button)).perform(click())
-//        //       Then    the prompt is dismissed
-//        onView(withId(android.R.id.message)).check(doesNotExist())
-//        //       And     the process is stopped
-//        onView(withId(com.passbolt.mobile.android.feature.setup.R.id.qrCode)).check(doesNotExist())
-//        //       And     I see “Failed feedback” screen
-//        onView(withId(com.passbolt.mobile.android.feature.setup.R.id.resultView)).check(matches(isDisplayed()))
-//        //       And     I see “Transfer cancelled” explanation
-//        onView(withText(LocalizationR.string.transfer_account_summary_cancelled)).check(matches(isDisplayed()))
-//    }
-//
-//    // https://passbolt.testrail.io/index.php?/cases/view/8156
-//    @Test
-//    fun asAUserIShouldSeeAFailedFeedbackInCaseOfErrorDuringQrCodesSequence() {
-//        //      Given   I’m on a “Transferring your account details” page
-//        //      When    there is an error during the transfer process
-//        openStopTransferPrompt()
-//        onView(withText(LocalizationR.string.transfer_account_stop_button)).perform(click())
-//        //      Then    I see an unsuccessful “Something went wrong!” screen with a corresponding title
-//        onView(withText(LocalizationR.string.transfer_account_summary_cancelled)).check(matches(isDisplayed()))
-//        //      And     I see an unsuccessful illustration
-//        onView(withId(com.passbolt.mobile.android.feature.setup.R.id.icon))
-//            .check(matches(isDisplayed()))
-//            .check(matches(hasDrawable(id = CoreUiR.drawable.ic_failed)))
-//        //      And     I see an error message // ** there is cancel process tested here now so there is no msg
-//        //      And     I see a “Go back to my account”
-//        onView(withId(com.passbolt.mobile.android.feature.autofill.R.id.button)).check(matches(isDisplayed()))
-//    }
-//
-//    // https://passbolt.testrail.io/index.php?/cases/view/C8157
-//    @Test
-//    fun asAUserICouldGoBackFromAFailedFeedbackInCaseOfErrorDuringQrCodesSequence() {
-//        //      Given   I’m on a “Transferring your account details” page
-//        //      And     there was an error during the transfer process
-//        openStopTransferPrompt()
-//        onView(withText(LocalizationR.string.transfer_account_stop_button)).perform(click())
-//        //      And     I see an unsuccessful “Something went wrong!” screen
-//        onView(withText(LocalizationR.string.transfer_account_summary_cancelled)).check(matches(isDisplayed()))
-//        //      When    I click a “Go back to my account”
-//        onView(withId(com.passbolt.mobile.android.feature.autofill.R.id.button)).perform(click())
-//        //      Then    I see the Account details page
-//        onView(withText(LocalizationR.string.settings_accounts)).check(matches(isDisplayed()))
-//    }
+
+    /**
+     * **I should see "Transferring your account details" screen**
+     *
+     * TestRail: {@link https://passbolt.testrail.io/index.php?/cases/view/8151}
+     *
+     * Given    I’m on “Transfer account details” process
+     * And      I am on the "Enter your passphrase" page
+     * When     I click “Confirm passphrase” or provide valid biometric authentication
+     * Then     I see a “Transferring your account details” page with corresponding title
+     * And      I see a first QR code
+     * And      I see a “Cancel transfer” primary action button
+     */
+    @Test
+    fun asAUserIShouldSeeTransferringYourAccountDetailsScreen() {
+        composeTestRule.onNodeWithTag("StartTransferButton").performClick()
+
+        onView(withId(CoreUiR.id.input)).perform(typeText(managedAccountIntentCreator.getPassphrase()))
+        onView(withId(AuthenticationR.id.authButton)).perform(scrollTo(), click())
+
+        composeTestRule.apply {
+            waitForIdle()
+
+            onNodeWithText(getString(LocalizationR.string.transfer_account_title))
+                .assertIsDisplayed()
+
+            onNodeWithTag("QrCode")
+                .assertHasBitmapContent()
+
+            onNodeWithText(getString(LocalizationR.string.transfer_account_cancel_button))
+                .assertIsDisplayed()
+        }
+    }
+
+    /**
+     * **I need to confirm to stop the QR code presentation**
+     *
+     * TestRail: {@link https://passbolt.testrail.io/index.php?/cases/view/8153}
+     *
+     * Given    I’m on a “Transferring your account details” page
+     * When     I click “Cancel Transfer” button
+     * Then     I see a confirmation dialog
+     * And      I see some explanation
+     * And      I see a “Cancel” and “Stop transfer” options
+     */
+    @Test
+    fun asAUserINeedToConfirmToStopTheQrCodePresentation() {
+        composeTestRule.onNodeWithTag("StartTransferButton").performClick()
+        onView(withId(CoreUiR.id.input)).perform(typeText(managedAccountIntentCreator.getPassphrase()))
+        onView(withId(AuthenticationR.id.authButton)).perform(scrollTo(), click())
+
+        composeTestRule.apply {
+            waitForIdle()
+
+            onNodeWithText(getString(LocalizationR.string.transfer_account_cancel_button))
+                .performClick()
+
+            onNodeWithText(getString(LocalizationR.string.are_you_sure))
+                .assertIsDisplayed()
+
+            onNodeWithText(getString(LocalizationR.string.transfer_account_stop_confirmation_dialog_message))
+                .assertIsDisplayed()
+
+            onNodeWithText(getString(LocalizationR.string.cancel))
+                .assertIsDisplayed()
+
+            onNodeWithText(getString(LocalizationR.string.transfer_account_stop_button))
+                .assertIsDisplayed()
+        }
+    }
+
+    /**
+     * **I can stop the QR code presentation**
+     *
+     * TestRail: {@link https://passbolt.testrail.io/index.php?/cases/view/8154}
+     *
+     * Given    I’m on a “Transferring your account details” page
+     * And      I see a prompt with “Cancel”
+     * And      I see action buttons
+     * When     I click on the “Stop transfer” button
+     * Then     the prompt is dismissed
+     * And      the process is stopped
+     * And      I see “Failed feedback” screen
+     * And      I see “Transfer cancelled” explanation
+     */
+    @Test
+    fun asAUserICanStopTheQrCodePresentation() {
+        openStopTransferPrompt()
+
+        composeTestRule.apply {
+            waitForIdle()
+
+            onNodeWithText(getString(LocalizationR.string.transfer_account_stop_button))
+                .performClick()
+
+            onNodeWithText(getString(LocalizationR.string.transfer_account_stop_confirmation_dialog_message))
+                .assertDoesNotExist()
+
+            onNodeWithTag("QrCode")
+                .assertDoesNotExist()
+
+            onNodeWithTag("TransferAccountSummaryScreen")
+                .assertIsDisplayed()
+
+            onNodeWithText(getString(LocalizationR.string.transfer_account_summary_cancelled))
+                .assertIsDisplayed()
+        }
+    }
+
+    /**
+     * **I should see a failed feedback in case of error during QR codes sequence**
+     *
+     * TestRail: {@link https://passbolt.testrail.io/index.php?/cases/view/8156}
+     *
+     * Given    I’m on a “Transferring your account details” page
+     * When     there is an error during the transfer process
+     * Then     I see an unsuccessful “Something went wrong!” screen with a corresponding title
+     * And      I see an unsuccessful illustration
+     * And      I see an error message
+     * And      I see a “Go back to my account”
+     */
+    @Test
+    fun asAUserIShouldSeeAFailedFeedbackInCaseOfErrorDuringQrCodesSequence() {
+        openStopTransferPrompt()
+
+        composeTestRule.apply {
+            waitForIdle()
+
+            onNodeWithText(getString(LocalizationR.string.transfer_account_stop_button))
+                .performClick()
+
+            onNodeWithText(getString(LocalizationR.string.transfer_account_summary_cancelled))
+                .assertIsDisplayed()
+
+            onNodeWithTag(CoreUiR.drawable.ic_failed.toString())
+                .assertIsDisplayed()
+
+            // there is cancel process tested here now so there is no msg
+
+            onNodeWithText(getString(LocalizationR.string.transfer_account_summary_cancelled))
+                .assertIsDisplayed()
+
+            onNodeWithText(getString(LocalizationR.string.transfer_account_summary_go_back))
+                .assertIsDisplayed()
+        }
+    }
+
+    /**
+     * **I could go back from a failed feedback in case of error during QR codes sequence**
+     *
+     * TestRail: {@link https://passbolt.testrail.io/index.php?/cases/view/C8157}
+     *
+     * Given    I’m on a “Transferring your account details” page
+     * And      there was an error during the transfer process
+     * And      I see an unsuccessful “Something went wrong!” screen
+     * When     I click a “Go back to my account”
+     * Then     I see the Account details page
+     */
+    @Test
+    fun asAUserICouldGoBackFromAFailedFeedbackInCaseOfErrorDuringQrCodesSequence() {
+        openStopTransferPrompt()
+
+        composeTestRule.apply {
+            waitForIdle()
+
+            onNodeWithText(getString(LocalizationR.string.transfer_account_stop_button))
+                .performClick()
+
+            onNodeWithText(getString(LocalizationR.string.transfer_account_summary_cancelled))
+                .assertIsDisplayed()
+
+            onNodeWithText(getString(LocalizationR.string.transfer_account_summary_go_back))
+                .performClick()
+
+            onNodeWithText(getString(settings_accounts))
+                .assertIsDisplayed()
+        }
+    }
 
     private fun openStopTransferPrompt() {
-        onView(withId(com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.R.id.startTransferButton)).perform(click())
+        composeTestRule.onNodeWithTag("StartTransferButton").performClick()
         onView(withId(CoreUiR.id.input)).perform(typeText(managedAccountIntentCreator.getPassphrase()))
-        onView(withId(com.passbolt.mobile.android.feature.authentication.R.id.authButton)).perform(scrollTo(), click())
-        onView(withId(com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.R.id.cancelTransferButton)).perform(click())
+        onView(withId(AuthenticationR.id.authButton)).perform(scrollTo(), click())
+        composeTestRule.onNodeWithText(getString(LocalizationR.string.transfer_account_cancel_button)).performClick()
     }
 }

@@ -1,7 +1,7 @@
 package com.passbolt.mobile.android.feature.setup.transferdetails
 
 import org.koin.core.module.Module
-import org.koin.core.qualifier.named
+import org.koin.core.module.dsl.viewModelOf
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,11 +26,5 @@ import org.koin.core.qualifier.named
  * @since v1.0
  */
 fun Module.transferDetailsModule() {
-    scope(named<TransferDetailsFragment>()) {
-        scoped<TransferDetailsContract.Presenter> {
-            TransferDetailsPresenter(
-                cameraInformationProvider = get(),
-            )
-        }
-    }
+    viewModelOf(::TransferDetailsViewModel)
 }

@@ -22,8 +22,8 @@
  */
 package com.passbolt.mobile.android.core.ui.compose.scaffold
 
+import PassboltTheme
 import androidx.annotation.DrawableRes
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -31,7 +31,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -59,6 +58,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -66,6 +66,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.passbolt.mobile.android.core.ui.compose.fab.AddFloatingActionButton
 import com.passbolt.mobile.android.core.ui.compose.snackbar.ColoredSnackbarVisuals
+import com.passbolt.mobile.android.core.ui.compose.topbar.BackNavigationIconTags
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -83,13 +84,13 @@ fun HomeScaffold(
     shouldShowCloseIcon: Boolean = false,
     onMoreClick: () -> Unit = {},
     shouldShowMoreIcon: Boolean = false,
+    bottomBar: @Composable () -> Unit = {},
     content: @Composable (PaddingValues) -> Unit,
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        contentWindowInsets = WindowInsets(0.dp),
         topBar = {
             Surface(shadowElevation = 4.dp) {
                 TopAppBar(
@@ -101,7 +102,6 @@ fun HomeScaffold(
                             titleContentColor = MaterialTheme.colorScheme.onSurface,
                             actionIconContentColor = MaterialTheme.colorScheme.onSurface,
                         ),
-                    windowInsets = WindowInsets(0.dp),
                     scrollBehavior = scrollBehavior,
                     expandedHeight = 124.dp,
                     title = {
@@ -119,7 +119,10 @@ fun HomeScaffold(
                                         Icons.AutoMirrored.Filled.ArrowBack,
                                         contentDescription = null,
                                         tint = colorResource(CoreUiR.color.icon_tint),
-                                        modifier = Modifier.clickable { onBackClick() },
+                                        modifier =
+                                            Modifier
+                                                .clickable { onBackClick() }
+                                                .testTag(BackNavigationIconTags.ICON),
                                     )
                                 }
                                 Row(
@@ -128,10 +131,14 @@ fun HomeScaffold(
                                     modifier = Modifier.weight(1f),
                                 ) {
                                     appBarIconRes?.let {
-                                        Image(
+                                        Icon(
                                             painter = painterResource(it),
                                             contentDescription = null,
-                                            modifier = Modifier.size(24.dp),
+                                            tint = colorResource(CoreUiR.color.icon_tint),
+                                            modifier =
+                                                Modifier
+                                                    .size(24.dp)
+                                                    .testTag(HomeScaffoldTestTags.APP_BAR_ICON),
                                         )
                                         Spacer(modifier = Modifier.width(8.dp))
                                     }
@@ -193,35 +200,38 @@ fun HomeScaffold(
             )
         },
         content = content,
+        bottomBar = bottomBar,
     )
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun HomeScaffoldPreview() {
-    HomeScaffold(
-        snackbarHostState = SnackbarHostState(),
-        appBarTitle = "TOTP",
-        appBarIconRes = CoreUiR.drawable.ic_time_lock,
-        appBarSearchInput = {
-            Text("Search input placeholder")
-        },
-        floatingActionButton = {
-            AddFloatingActionButton(
-                onClick = { },
-            )
-        },
-        shouldShowBackIcon = true,
-        shouldShowCloseIcon = true,
-        shouldShowMoreIcon = true,
-        content = { padding ->
-            Box(
-                modifier =
-                    Modifier
-                        .fillMaxSize(),
-            ) {
-                Text("Sample content")
-            }
-        },
-    )
+    PassboltTheme {
+        HomeScaffold(
+            snackbarHostState = SnackbarHostState(),
+            appBarTitle = "TOTP",
+            appBarIconRes = CoreUiR.drawable.ic_time_lock,
+            appBarSearchInput = {
+                Text("Search input placeholder")
+            },
+            floatingActionButton = {
+                AddFloatingActionButton(
+                    onClick = { },
+                )
+            },
+            shouldShowBackIcon = true,
+            shouldShowCloseIcon = true,
+            shouldShowMoreIcon = true,
+            content = { padding ->
+                Box(
+                    modifier =
+                        Modifier
+                            .fillMaxSize(),
+                ) {
+                    Text("Sample content")
+                }
+            },
+        )
+    }
 }

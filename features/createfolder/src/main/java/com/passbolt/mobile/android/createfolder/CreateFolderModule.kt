@@ -1,12 +1,7 @@
 package com.passbolt.mobile.android.createfolder
 
-import com.mikepenz.fastadapter.FastAdapter
-import com.mikepenz.fastadapter.adapters.ItemAdapter
-import com.passbolt.mobile.android.permissions.recycler.CounterItem
-import com.passbolt.mobile.android.permissions.recycler.GroupItem
-import com.passbolt.mobile.android.permissions.recycler.UserItem
 import org.koin.core.module.Module
-import org.koin.core.qualifier.named
+import org.koin.core.module.dsl.viewModelOf
 
 /**
  * Passbolt - Open source password manager for teams
@@ -31,45 +26,6 @@ import org.koin.core.qualifier.named
  * @since v1.0
  */
 
-internal const val GROUP_ITEM_ADAPTER = "GROUP_ITEM_ADAPTER"
-internal const val USER_ITEM_ADAPTER = "USER_ITEM_ADAPTER"
-internal const val COUNTER_ITEM_ADAPTER = "COUNTER_ITEM_ADAPTER"
-
 fun Module.createFolderModule() {
-    scope<CreateFolderFragment> {
-        scoped<CreateFolderContract.Presenter> {
-            CreateFolderPresenter(
-                getLocalFolderLocation = get(),
-                getLocalFolderPermissionsUseCase = get(),
-                createFolderUseCase = get(),
-                getLocalFolderDetailsUseCase = get(),
-                getLocalFolderPermissionsToCopyAsNew = get(),
-                folderShareInteractor = get(),
-                addLocalFolderUseCase = get(),
-                addLocalFolderPermissionsUseCase = get(),
-                getLocalCurrentUserUseCase = get(),
-                usersModelMapper = get(),
-                coroutineLaunchContext = get(),
-                createFolderIdlingResource = get(),
-            )
-        }
-        scoped<ItemAdapter<GroupItem>>(named(GROUP_ITEM_ADAPTER)) {
-            ItemAdapter.items()
-        }
-        scoped<ItemAdapter<UserItem>>(named(USER_ITEM_ADAPTER)) {
-            ItemAdapter.items()
-        }
-        scoped<ItemAdapter<CounterItem>>(named(COUNTER_ITEM_ADAPTER)) {
-            ItemAdapter.items()
-        }
-        scoped {
-            FastAdapter.with(
-                listOf(
-                    get<ItemAdapter<GroupItem>>(named(GROUP_ITEM_ADAPTER)),
-                    get<ItemAdapter<UserItem>>(named(USER_ITEM_ADAPTER)),
-                    get<ItemAdapter<CounterItem>>(named(COUNTER_ITEM_ADAPTER)),
-                ),
-            )
-        }
-    }
+    viewModelOf(::CreateFolderViewModel)
 }

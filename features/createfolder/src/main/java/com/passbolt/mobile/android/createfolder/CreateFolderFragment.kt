@@ -1,37 +1,3 @@
-package com.passbolt.mobile.android.createfolder
-
-import android.os.Bundle
-import android.view.View
-import androidx.core.os.bundleOf
-import androidx.core.view.doOnLayout
-import androidx.fragment.app.setFragmentResult
-import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
-import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.material.snackbar.Snackbar
-import com.mikepenz.fastadapter.FastAdapter
-import com.mikepenz.fastadapter.GenericItem
-import com.mikepenz.fastadapter.adapters.ItemAdapter
-import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
-import com.passbolt.mobile.android.core.extension.initDefaultToolbar
-import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
-import com.passbolt.mobile.android.core.extension.showSnackbar
-import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
-import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
-import com.passbolt.mobile.android.core.ui.recyclerview.OverlappingItemDecorator
-import com.passbolt.mobile.android.core.ui.recyclerview.OverlappingItemDecorator.Overlap
-import com.passbolt.mobile.android.core.ui.textinputfield.StatefulInput
-import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
-import com.passbolt.mobile.android.feature.createfolder.databinding.FragmentCreateFolderBinding
-import com.passbolt.mobile.android.permissions.recycler.CounterItem
-import com.passbolt.mobile.android.permissions.recycler.GroupItem
-import com.passbolt.mobile.android.permissions.recycler.UserItem
-import com.passbolt.mobile.android.ui.PermissionModelUi
-import org.koin.android.ext.android.inject
-import org.koin.core.qualifier.named
-import com.passbolt.mobile.android.core.localization.R as LocalizationR
-import com.passbolt.mobile.android.core.ui.R as CoreUiR
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -55,123 +21,48 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
  * @since v1.0
  */
 
+package com.passbolt.mobile.android.createfolder
+
+import PassboltTheme
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.core.os.bundleOf
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResult
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
+
 class CreateFolderFragment :
-    BindingScopedAuthenticatedFragment<FragmentCreateFolderBinding, CreateFolderContract.View>(
-        FragmentCreateFolderBinding::inflate,
-    ),
-    CreateFolderContract.View {
-    override val presenter: CreateFolderContract.Presenter by inject()
+    Fragment(),
+    CreateFolderNavigation {
     private val args: CreateFolderFragmentArgs by navArgs()
-    private val groupPermissionsItemAdapter: ItemAdapter<GroupItem> by inject(named(GROUP_ITEM_ADAPTER))
-    private val userPermissionsItemAdapter: ItemAdapter<UserItem> by inject(named(USER_ITEM_ADAPTER))
-    private val permissionsCounterItemAdapter: ItemAdapter<CounterItem> by inject(named(COUNTER_ITEM_ADAPTER))
-    private val fastAdapter: FastAdapter<GenericItem> by inject()
-    private val sharedWithDecorator: OverlappingItemDecorator by inject()
 
-    override fun onViewCreated(
-        view: View,
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ) {
-        super.onViewCreated(view, savedInstanceState)
-        initDefaultToolbar(requiredBinding.toolbar)
-        initSharedWithRecycler()
-        setListeners()
-        presenter.attach(this)
-        requiredBinding.sharedWithRecycler.doOnLayout {
-            requiredBinding.sharedWithRecycler.addItemDecoration(sharedWithDecorator)
-            presenter.argsRetrieved(
-                args.parentFolderId,
-                it.width,
-                resources.getDimension(CoreUiR.dimen.dp_40),
-            )
-        }
-    }
-
-    override fun onDestroyView() {
-        presenter.detach()
-        super.onDestroyView()
-    }
-
-    private fun setListeners() {
-        with(requiredBinding) {
-            folderNameInput.setTextChangeListener { presenter.folderNameChanged(it) }
-            saveButton.setDebouncingOnClick { presenter.saveClick() }
-        }
-    }
-
-    private fun initSharedWithRecycler() {
-        with(requiredBinding.sharedWithRecycler) {
-            layoutManager =
-                object : LinearLayoutManager(context, HORIZONTAL, false) {
-                    override fun canScrollHorizontally() = false
+    ): View =
+        ComposeView(requireContext()).apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                PassboltTheme {
+                    CreateFolderScreen(
+                        parentFolderId = args.parentFolderId,
+                        navigation = this@CreateFolderFragment,
+                    )
                 }
-            adapter = fastAdapter
-        }
-    }
-
-    override fun showFolderLocation(parentFolders: List<String>) {
-        requiredBinding.locationValue.text =
-            parentFolders.let {
-                val mutable = it.toMutableList()
-                mutable.add(0, getString(LocalizationR.string.folder_root))
-                mutable.joinToString(
-                    separator = " %s ".format(getString(LocalizationR.string.folder_details_location_separator)),
-                )
             }
+        }
+
+    override fun navigateUp() {
+        findNavController().popBackStack()
     }
 
-    override fun showPermissions(
-        groupPermissions: List<PermissionModelUi.GroupPermissionModel>,
-        userPermissions: List<PermissionModelUi.UserPermissionModel>,
-        counterValue: List<String>,
-        overlap: Int,
-    ) {
-        sharedWithDecorator.overlap = Overlap(left = overlap)
-        FastAdapterDiffUtil.calculateDiff(groupPermissionsItemAdapter, groupPermissions.map { GroupItem(it) })
-        FastAdapterDiffUtil.calculateDiff(userPermissionsItemAdapter, userPermissions.map { UserItem(it) })
-        FastAdapterDiffUtil.calculateDiff(permissionsCounterItemAdapter, counterValue.map { CounterItem(it) })
-        fastAdapter.notifyAdapterDataSetChanged()
-    }
-
-    override fun showFolderNameLenghtValidationError(folderNameMaxLength: Int) {
-        requiredBinding.folderNameInput.setState(
-            StatefulInput.State.Error(
-                getString(LocalizationR.string.validation_required_with_max_length, folderNameMaxLength),
-            ),
-        )
-    }
-
-    override fun clearValidationErrors() {
-        requiredBinding.folderNameInput.setState(StatefulInput.State.Default)
-    }
-
-    override fun showProgress() {
-        showProgressDialog(childFragmentManager)
-    }
-
-    override fun hideProgress() {
-        hideProgressDialog(childFragmentManager)
-    }
-
-    override fun showCreateFolderError(errorMessage: String) {
-        showSnackbar(
-            messageResId = LocalizationR.string.create_folder_error_format,
-            messageArgs = arrayOf(errorMessage),
-            backgroundColor = CoreUiR.color.red,
-            length = Snackbar.LENGTH_LONG,
-        )
-    }
-
-    override fun showShareFailure(errorMessage: String) {
-        showSnackbar(
-            messageResId = LocalizationR.string.share_folder_error_format,
-            messageArgs = arrayOf(errorMessage),
-            backgroundColor = CoreUiR.color.red,
-            length = Snackbar.LENGTH_LONG,
-        )
-    }
-
-    override fun setFolderCreatedResultAndClose(folderName: String) {
+    override fun folderCreated(folderName: String) {
         setFragmentResult(
             REQUEST_CREATE_FOLDER,
             bundleOf(EXTRA_CREATED_FOLDER_NAME to folderName),

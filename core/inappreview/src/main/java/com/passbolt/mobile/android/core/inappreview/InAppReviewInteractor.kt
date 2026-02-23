@@ -51,16 +51,19 @@ class InAppReviewInteractor(
                         ).days > showMode.daysCount
             val minimumSignInsPassed = it.signInCount > showMode.signInCount
 
-            Timber.d(
+            val logTemplate =
                 "Checking in app review show parameters. " +
                     "Show mode is: %s. " +
                     "Show interval start date: %s. " +
                     "Sign in count is: %d. " +
-                    "Should show review: %s",
+                    "Should show review: %s"
+
+            Timber.d(
+                logTemplate,
                 showMode.javaClass.simpleName,
                 it.inAppReviewShowIntervalStartDate,
                 it.signInCount,
-                (minimumSignInsPassed && minimumIntervalPassed).toString(),
+                minimumSignInsPassed && minimumIntervalPassed,
             )
 
             return minimumSignInsPassed && minimumIntervalPassed

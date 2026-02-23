@@ -24,15 +24,16 @@
 package com.passbolt.mobile.android.feature.settings.screen.appsettings.expertsettings
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
 import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
@@ -75,32 +76,39 @@ private fun ExpertSettingsScreen(
     onIntent: (ExpertSettingsIntent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(
-        modifier =
-            modifier
-                .verticalScroll(rememberScrollState())
-                .padding(vertical = 16.dp),
-    ) {
-        TitleAppBar(
-            title = stringResource(LocalizationR.string.settings_app_settings_expert_settings),
-            navigationIcon = { BackNavigationIcon(onBackClick = { onIntent(GoBack) }) },
-        )
+    Scaffold(
+        modifier = modifier.fillMaxSize(),
+        topBar = {
+            TitleAppBar(
+                title = stringResource(LocalizationR.string.settings_app_settings_expert_settings),
+                navigationIcon = { BackNavigationIcon(onBackClick = { onIntent(GoBack) }) },
+            )
+        },
+        content = { paddingValues ->
+            Column(
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues)
+                        .verticalScroll(rememberScrollState()),
+            ) {
+                SwitchableSettingsItem(
+                    iconPainter = painterResource(R.drawable.ic_dev_mode),
+                    title = stringResource(LocalizationR.string.settings_app_settings_expert_settings_dev_mode),
+                    isChecked = state.isDeveloperModeChecked,
+                    onCheckedChange = { onIntent(ToggleDeveloperMode) },
+                )
 
-        SwitchableSettingsItem(
-            iconPainter = painterResource(R.drawable.ic_dev_mode),
-            title = stringResource(LocalizationR.string.settings_app_settings_expert_settings_dev_mode),
-            isChecked = state.isDeveloperModeChecked,
-            onCheckedChange = { onIntent(ToggleDeveloperMode) },
-        )
-
-        SwitchableSettingsItem(
-            iconPainter = painterResource(R.drawable.ic_hash),
-            title = stringResource(LocalizationR.string.settings_app_settings_expert_settings_hide_root),
-            isChecked = state.isHideRootWarningChecked,
-            isEnabled = state.isHideRootWarningEnabled,
-            onCheckedChange = { onIntent(ToggleHideRootWarning) },
-        )
-    }
+                SwitchableSettingsItem(
+                    iconPainter = painterResource(R.drawable.ic_hash),
+                    title = stringResource(LocalizationR.string.settings_app_settings_expert_settings_hide_root),
+                    isChecked = state.isHideRootWarningChecked,
+                    isEnabled = state.isHideRootWarningEnabled,
+                    onCheckedChange = { onIntent(ToggleHideRootWarning) },
+                )
+            }
+        },
+    )
 }
 
 @Preview(showBackground = true)

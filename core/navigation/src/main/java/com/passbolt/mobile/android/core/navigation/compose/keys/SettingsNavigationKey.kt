@@ -27,32 +27,32 @@ import kotlinx.serialization.Serializable
 
 sealed interface SettingsNavigationKey : NavKey {
     @Serializable
-    object SettingsMain : SettingsNavigationKey
+    data object SettingsMain : SettingsNavigationKey
 
     @Serializable
-    object AppSettings : SettingsNavigationKey
+    data object AppSettings : SettingsNavigationKey
 
     @Serializable
-    object Accounts : SettingsNavigationKey
+    data object Accounts : SettingsNavigationKey
 
     @Serializable
-    object TermsAndLicenses : SettingsNavigationKey
+    data object TermsAndLicenses : SettingsNavigationKey
 
     @Serializable
-    object DebugLogs : SettingsNavigationKey
+    data object DebugLogs : SettingsNavigationKey
 
     @Serializable
-    object KeyInspector : SettingsNavigationKey
+    data object KeyInspector : SettingsNavigationKey
 
     @Serializable
-    object OpenSourceLicences : SettingsNavigationKey
+    data object OpenSourceLicences : SettingsNavigationKey
 
     @Serializable
-    object Autofill : SettingsNavigationKey
+    data object Autofill : SettingsNavigationKey
 
     @Serializable
-    object DefaultFilter : SettingsNavigationKey
+    data object DefaultFilter : SettingsNavigationKey
 
     @Serializable
-    object ExpertSettings : SettingsNavigationKey
+    data object ExpertSettings : SettingsNavigationKey
 }

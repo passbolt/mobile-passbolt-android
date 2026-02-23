@@ -6,9 +6,9 @@ import com.journeyapps.barcodescanner.BarcodeEncoder
 import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccount.data.CreateTransferInputParametersGenerator
 import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccount.data.TransferQrCodesDataGenerator
 import org.koin.core.module.Module
-import org.koin.core.module.dsl.scopedOf
+import org.koin.core.module.dsl.singleOf
+import org.koin.core.module.dsl.viewModelOf
 import org.koin.core.qualifier.named
-import org.koin.dsl.bind
 
 /**
  * Passbolt - Open source password manager for teams
@@ -40,17 +40,15 @@ private const val QR_CODE_GEN_QR_VERSION = 27
 private const val QR_CODE_GEN_MARGIN_PX = 4
 
 fun Module.transferAccountModule() {
-    scope<TransferAccountFragment> {
-        scopedOf(::TransferAccountPresenter) bind TransferAccountContract.Presenter::class
-        scopedOf(::BarcodeEncoder)
-        scopedOf(::CreateTransferInputParametersGenerator)
-        scopedOf(::TransferQrCodesDataGenerator)
-        scoped(named(QR_CODE_GEN_HINTS)) {
-            hashMapOf<EncodeHintType, Any>().apply {
-                put(EncodeHintType.ERROR_CORRECTION, QR_CODE_GEN_ERROR_CORRECTION)
-                put(EncodeHintType.QR_VERSION, QR_CODE_GEN_QR_VERSION)
-                put(EncodeHintType.MARGIN, QR_CODE_GEN_MARGIN_PX)
-            }
-        }
+    singleOf(::BarcodeEncoder)
+    singleOf(::CreateTransferInputParametersGenerator)
+    singleOf(::TransferQrCodesDataGenerator)
+    single(named(QR_CODE_GEN_HINTS)) {
+        mapOf<EncodeHintType, Any>(
+            EncodeHintType.ERROR_CORRECTION to QR_CODE_GEN_ERROR_CORRECTION,
+            EncodeHintType.QR_VERSION to QR_CODE_GEN_QR_VERSION,
+            EncodeHintType.MARGIN to QR_CODE_GEN_MARGIN_PX,
+        )
     }
+    viewModelOf(::TransferAccountViewModel)
 }

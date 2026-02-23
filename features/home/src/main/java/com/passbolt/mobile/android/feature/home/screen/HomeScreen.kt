@@ -87,6 +87,7 @@ import com.passbolt.mobile.android.feature.home.screen.HomeSideEffect.ShowErrorS
 import com.passbolt.mobile.android.feature.home.screen.HomeSideEffect.ShowSuccessSnackbar
 import com.passbolt.mobile.android.feature.home.screen.HomeSideEffect.ShowToast
 import com.passbolt.mobile.android.feature.home.switchaccount.SwitchAccountBottomSheet
+import com.passbolt.mobile.android.testtags.composetags.Home
 import com.passbolt.mobile.android.ui.FiltersMenuModel
 import com.passbolt.mobile.android.ui.Folder.Child
 import com.passbolt.mobile.android.ui.Folder.Root
@@ -204,7 +205,7 @@ private fun HomeScreen(
         snackbarHostState = snackbarHostState,
         modifier =
             modifier
-                .testTag("home_screen"),
+                .testTag(Home.SCREEN),
         appBarTitle = getAppBarTitle(context, state),
         appBarIconRes = getAppBarIconResId(state),
         shouldShowMoreIcon = homeNavigation.resourceHandlingStrategy.shouldShowFolderMoreMenu() && state.showMoreMenu,
@@ -215,11 +216,16 @@ private fun HomeScreen(
         onCloseClick = { activity?.finish() },
         appBarSearchInput = {
             SearchInput(
-                value = state.searchQuery,
                 onValueChange = { onIntent(Search(it)) },
                 placeholder = stringResource(LocalizationR.string.all_items_home_search_hint),
-                avatarUrl = state.userAvatar,
                 endIconMode = state.searchInputEndIconMode,
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(end = 16.dp),
+                avatarUrl = state.userAvatar,
+                initialValue = state.searchQuery,
+                onEndIconClick = { onIntent(SearchEndIconAction) },
                 leadingIcon = {
                     Image(
                         painter = painterResource(CoreUiR.drawable.ic_filter),
@@ -227,15 +233,9 @@ private fun HomeScreen(
                         modifier =
                             Modifier
                                 .clickable { onIntent(OpenFiltersBottomSheet) }
-                                .testTag("home_search_filter"),
+                                .testTag(HomeScreenTestTags.SEARCH_FILTER),
                     )
                 },
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(end = 16.dp)
-                        .testTag("home_search_input"),
-                onEndIconClick = { onIntent(SearchEndIconAction) },
             )
         },
         floatingActionButton = {
@@ -290,6 +290,10 @@ private fun HomeScreen(
             ProgressDialog(state.showProgress)
         },
     )
+}
+
+object HomeScreenTestTags {
+    const val SEARCH_FILTER: String = "home_search_filter"
 }
 
 @Suppress("CyclomaticComplexMethod")

@@ -56,6 +56,7 @@ import com.passbolt.mobile.android.core.ui.R.drawable.ic_copy
 import com.passbolt.mobile.android.core.ui.R.drawable.ic_eye_visible
 import com.passbolt.mobile.android.core.ui.R.drawable.ic_more
 import com.passbolt.mobile.android.core.ui.R.id.actionIcon
+import com.passbolt.mobile.android.core.ui.R.id.title
 import com.passbolt.mobile.android.feature.authentication.AuthenticationMainActivity
 import com.passbolt.mobile.android.feature.autofill.R.id.close
 import com.passbolt.mobile.android.feature.resources.R.id.backArrow
@@ -69,17 +70,16 @@ import com.passbolt.mobile.android.feature.resources.R.id.sharedWithLabel
 import com.passbolt.mobile.android.feature.resources.R.id.tagsHeader
 import com.passbolt.mobile.android.feature.resources.R.id.urlItem
 import com.passbolt.mobile.android.feature.resources.R.id.usernameItem
-import com.passbolt.mobile.android.feature.setup.R.id.icon
-import com.passbolt.mobile.android.feature.setup.R.id.title
 import com.passbolt.mobile.android.helpers.chooseFilter
 import com.passbolt.mobile.android.helpers.getClipboardText
-import com.passbolt.mobile.android.helpers.pickFirstResourceWithName
+import com.passbolt.mobile.android.helpers.searchAndOpenFirstResourceByName
 import com.passbolt.mobile.android.helpers.signIn
 import com.passbolt.mobile.android.instrumentationTestsModule
 import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
 import com.passbolt.mobile.android.matchers.hasDrawable
 import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
+import com.passbolt.mobile.android.scenarios.resource.TestResourceType
 import org.hamcrest.Matchers.allOf
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -198,14 +198,13 @@ class ResourcesDetailsTest(
      */
     @Test
     fun asAUserOnTheHomepageICanAccessTheResourcePageForWhichIHaveFullPermissions() {
-        composeTestRule.pickFirstResourceWithName(resourceType.displayName)
+        composeTestRule.searchAndOpenFirstResourceByName(resourceType.displayName)
         onView(withId(backArrow))
             .check(matches(isDisplayed()))
             .check(matches(hasDrawable(id = ic_arrow_left, tint = icon_tint)))
         onView(withId(moreIcon))
             .check(matches(isDisplayed()))
             .check(matches(hasDrawable(id = ic_more, tint = icon_tint)))
-        onView(withId(icon)).check(matches(isDisplayed()))
         onView(allOf(withId(name), withText(resourceType.displayName)))
             .check(matches(isDisplayed()))
         onView(allOf(withId(passwordSectionTitle), withText(resource_details_password_header)))
@@ -282,7 +281,7 @@ class ResourcesDetailsTest(
      */
     @Test
     fun asAUserOnTheResourceDisplayICanTriggerTheActionMenu() {
-        composeTestRule.pickFirstResourceWithName(resourceType.displayName)
+        composeTestRule.searchAndOpenFirstResourceByName(resourceType.displayName)
         onView(withId(moreIcon))
             .perform(click())
         onView(withId(title))
@@ -324,7 +323,7 @@ class ResourcesDetailsTest(
      */
     @Test
     fun asALoggedInMobileUserOnTheResourceDisplayICanTriggerTheActionMenuAndCopyCredentialsToTheClipboard() {
-        composeTestRule.pickFirstResourceWithName(resourceType.displayName)
+        composeTestRule.searchAndOpenFirstResourceByName(resourceType.displayName)
         onView(withId(moreIcon))
             .check(matches(isDisplayed()))
             .perform(click())

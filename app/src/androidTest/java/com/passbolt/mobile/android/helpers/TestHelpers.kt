@@ -1,6 +1,6 @@
 /**
  * Passbolt - Open source password manager for teams
- * Copyright (c) 2021-2025 Passbolt SA
+ * Copyright (c) 2021-2026 Passbolt SA
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
  * Public License (AGPL) as published by the Free Software Foundation version 3.
@@ -27,13 +27,13 @@ import androidx.annotation.StringRes
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasAnyDescendant
 import androidx.compose.ui.test.hasClickAction
+import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.ComposeTestRule
-import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.performTextInput
+import androidx.compose.ui.test.performTextReplacement
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.closeSoftKeyboard
@@ -41,8 +41,12 @@ import androidx.test.espresso.action.ViewActions.typeText
 import androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.platform.app.InstrumentationRegistry
+import com.passbolt.mobile.android.core.ui.R.id.generatePasswordLayout
+import com.passbolt.mobile.android.core.ui.R.id.input
+import com.passbolt.mobile.android.feature.authentication.R.id.authButton
 import com.passbolt.mobile.android.matchers.withHint
 import com.passbolt.mobile.android.scenarios.resourcesedition.EditableFieldInput
+import com.passbolt.mobile.android.testtags.composetags.Home
 import org.hamcrest.Matchers.allOf
 import org.hamcrest.Matchers.hasToString
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
@@ -53,14 +57,13 @@ internal fun getString(
 ) = InstrumentationRegistry.getInstrumentation().targetContext.getString(stringResId, *formatArgs)
 
 internal fun createNewPasswordFromHomeScreen(name: String) {
-//    onView(withId(com.passbolt.mobile.android.feature.home.R.id.createResourceFab)).perform(click())
     onView(withId(com.passbolt.mobile.android.feature.createresourcemenu.R.id.createPassword)).perform(click())
 
-    onView(withId(CoreUiR.id.generatePasswordLayout)).perform(click())
+    onView(withId(generatePasswordLayout)).perform(click())
     onView(
         allOf(
             isDescendantOfA(withHint(hasToString(EditableFieldInput.NAME.hintName))),
-            withId(CoreUiR.id.input),
+            withId(input),
         ),
     ).perform(
         typeText(name),
@@ -68,7 +71,7 @@ internal fun createNewPasswordFromHomeScreen(name: String) {
     onView(
         allOf(
             isDescendantOfA(withHint(hasToString(EditableFieldInput.ENTER_URL.hintName))),
-            withId(CoreUiR.id.input),
+            withId(input),
         ),
     ).perform(
         typeText("TestURL"),
@@ -76,7 +79,7 @@ internal fun createNewPasswordFromHomeScreen(name: String) {
     onView(
         allOf(
             isDescendantOfA(withHint(hasToString(EditableFieldInput.ENTER_USERNAME.hintName))),
-            withId(CoreUiR.id.input),
+            withId(input),
         ),
     ).perform(
         typeText("TestUsername"),
@@ -92,15 +95,17 @@ internal fun createNewPasswordFromHomeScreen(name: String) {
 internal fun ComposeTestRule.signIn(passphrase: String) {
     onView(withId(CoreUiR.id.input)).perform(typeText(passphrase), closeSoftKeyboard())
     onView(withId(com.passbolt.mobile.android.feature.authentication.R.id.authButton)).perform(click())
-    this.onNodeWithTag("home_screen").assertIsDisplayed()
+    onNodeWithTag(Home.SCREEN).assertIsDisplayed()
 }
 
 /**
  * Searches for a resource by name from the Home screen and opens the first matching result.
  *
  * Behavior:
- * - Focuses the search input (testTag: "home_search_input").
+ * - Focuses the search input (testTag: "home_search_input_field").
  * - Types the provided name.
+ * - Creates matcher with any "Home" rows
+ * - Waits for matched rows avoiding async operations
  * - Taps the first resource row in the results list (testTag: "home_resource_row").
  *
  * Assumptions:
@@ -109,13 +114,94 @@ internal fun ComposeTestRule.signIn(passphrase: String) {
  *
  * @param name The resource name to search for.
  */
-internal fun ComposeTestRule.pickFirstResourceWithName(name: String) {
-    this
-        .onNodeWithTag("home_search_input")
+internal fun ComposeTestRule.searchAndOpenFirstResourceByName(name: String) {
+    onNodeWithTag("home_search_input_field")
         .performClick()
-        .performTextInput(name)
-    this
-        .onAllNodesWithTag("home_resource_row")
+        .performTextReplacement(name)
+
+    val rowMatcher =
+        hasTestTag("home_resource_row").and(
+            hasAnyDescendant(hasText(name, substring = true, ignoreCase = true)),
+        )
+
+    waitUntil(conditionDescription = "Waiting for resource $name", timeoutMillis = 3_000) {
+        onAllNodes(rowMatcher, useUnmergedTree = true)
+            .fetchSemanticsNodes()
+            .isNotEmpty()
+    }
+    onAllNodes(rowMatcher, useUnmergedTree = true)
+        .onFirst()
+        .performClick()
+}
+
+/**
+ * Searches for a resource by name from the Home screen and opens the first matching result's More menu.
+ *
+ * This is a copy of `searchAndOpenFirstResourceByName` with the only difference
+ * that at the end we click the row's More button instead of the whole row.
+ *
+ * Behavior:
+ * - Focuses the search input (testTag: "home_search_input_field").
+ * - Types the provided name.
+ * - Creates matcher with any "Home" rows
+ * - Waits for matched rows avoiding async operations
+ * - Taps the first resource More button in the results list.
+ *
+ * Assumptions:
+ * - The Home screen is visible.
+ * - Any desired filtering has been applied beforehand.
+ *
+ * @param name The resource name to search for.
+ */
+internal fun ComposeTestRule.searchAndClickMoreOfFirstResource(name: String) {
+    onNodeWithTag("home_search_input_field")
+        .performClick()
+        .performTextReplacement(name)
+
+    val rowMatcher =
+        hasTestTag("home_resource_row").and(
+            hasAnyDescendant(hasText(name, substring = true, ignoreCase = true)),
+        )
+
+    waitUntil(conditionDescription = "Waiting for resource $name", timeoutMillis = 3_000) {
+        onAllNodes(rowMatcher, useUnmergedTree = true)
+            .fetchSemanticsNodes()
+            .isNotEmpty()
+    }
+    onAllNodes(hasTestTag("home_resource_more"), useUnmergedTree = true)
+        .onFirst()
+        .performClick()
+}
+
+/**
+ * Searches for a folder by name from the Home screen (Folders filter) and opens the first matching result.
+ *
+ * Behavior:
+ * - Focuses the search input (testTag: "home_search_input_field").
+ * - Types the provided name.
+ * - Waits for a folder row containing the provided name (testTag: "home_folder_row").
+ * - Clicks the first matching folder row.
+ *
+ * Notes:
+ * - Ensure the Folders filter is selected before calling this helper.
+ */
+internal fun ComposeTestRule.searchAndOpenFirstFolderByName(name: String) {
+    onNodeWithTag("home_search_input_field")
+        .performClick()
+        .performTextReplacement(name)
+
+    val folderRowMatcher =
+        hasTestTag("home_folder_row").and(
+            hasAnyDescendant(hasText(name, substring = true, ignoreCase = true)),
+        )
+
+    waitUntil(conditionDescription = "Waiting for folder $name", timeoutMillis = 5_000) {
+        onAllNodes(folderRowMatcher, useUnmergedTree = true)
+            .fetchSemanticsNodes()
+            .isNotEmpty()
+    }
+
+    onAllNodes(folderRowMatcher, useUnmergedTree = true)
         .onFirst()
         .performClick()
 }
@@ -132,14 +218,13 @@ internal fun ComposeTestRule.pickFirstResourceWithName(name: String) {
  * @param filter The resource ID of the filter to select.
  */
 internal fun ComposeTestRule.chooseFilter(filter: Int) {
-    this.onNodeWithTag("home_search_filter").performClick()
-    this
-        .onNode(
-            hasClickAction().and(
-                hasAnyDescendant(hasText(getString(filter))),
-            ),
-            useUnmergedTree = true,
-        ).performClick()
+    onNodeWithTag("home_search_filter").performClick()
+    onNode(
+        hasClickAction().and(
+            hasAnyDescendant(hasText(getString(filter))),
+        ),
+        useUnmergedTree = true,
+    ).performClick()
 }
 
 /**

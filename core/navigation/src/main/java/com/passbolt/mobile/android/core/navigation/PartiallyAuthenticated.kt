@@ -1,5 +1,7 @@
 package com.passbolt.mobile.android.core.navigation
 
+import androidx.navigation3.runtime.NavKey
+
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -23,7 +25,7 @@ package com.passbolt.mobile.android.core.navigation
  * @since v1.0
  */
 interface PartiallyAuthenticated {
-    val unauthenticatedFragmentIds: List<Int>
+    val unauthenticatedComposableKeys: List<NavKey>
 
-    val isCurrentFragmentAuthenticated: Boolean
+    val isCurrentScreenAuthenticated: Boolean
 }

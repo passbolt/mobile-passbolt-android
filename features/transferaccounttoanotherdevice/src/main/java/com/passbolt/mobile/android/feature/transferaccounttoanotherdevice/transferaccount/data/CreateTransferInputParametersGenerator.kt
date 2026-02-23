@@ -7,7 +7,6 @@ import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transf
 import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccount.data.QrGenerationConstants.RESERVED_BYTES_COUNT
 import com.passbolt.mobile.android.gopenpgp.OpenPgp
 import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpResult
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import okio.Buffer
 import timber.log.Timber
@@ -63,7 +62,7 @@ class CreateTransferInputParametersGenerator(
                 )
             Output.Parameters(keyJson, calculateTotalPageCount(keyJson), calculateHash(keyJson))
         } catch (exception: Exception) {
-            Timber.e("Could not initialize transfer parameters", exception)
+            Timber.e(exception, "Could not initialize transfer parameters")
             Output.Error
         }
 

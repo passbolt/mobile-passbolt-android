@@ -40,6 +40,7 @@ import com.passbolt.mobile.android.core.resources.actions.performResourcePropert
 import com.passbolt.mobile.android.core.resources.actions.performSecretPropertyAction
 import com.passbolt.mobile.android.core.ui.compose.search.SearchInputEndIconMode.AVATAR
 import com.passbolt.mobile.android.core.ui.compose.search.SearchInputEndIconMode.CLEAR
+import com.passbolt.mobile.android.core.ui.compose.search.SearchInputEndIconMode.NONE
 import com.passbolt.mobile.android.feature.authentication.compose.AuthenticatedViewModel
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.CloseCreateResourceMenu
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.CloseDeleteConfirmationDialog
@@ -381,6 +382,9 @@ internal class HomeViewModel(
                 updateViewState {
                     copy(searchInputEndIconMode = AVATAR)
                 }
+            }
+            NONE -> {
+                // no-op
             }
         }
     }

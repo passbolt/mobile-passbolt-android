@@ -87,7 +87,7 @@ fun ResourceItem(
                 .height(64.dp)
                 .clickable { onItemClick(resource) }
                 .padding(horizontal = 16.dp)
-                .testTag("home_resource_row"),
+                .testTag(ResourceItemTestTags.ROW),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Box(modifier = Modifier.size(46.dp, 52.dp)) {
@@ -155,10 +155,18 @@ fun ResourceItem(
         if (showMoreMenu) {
             IconButton(
                 onClick = { onMoreClick(resource) },
-                modifier = Modifier.size(40.dp),
+                modifier =
+                    Modifier
+                        .size(40.dp)
+                        .testTag(ResourceItemTestTags.MORE),
             ) {
                 Icon(Icons.Default.MoreVert, contentDescription = null)
             }
         }
     }
+}
+
+object ResourceItemTestTags {
+    const val ROW: String = "home_resource_row"
+    const val MORE: String = "home_resource_more"
 }

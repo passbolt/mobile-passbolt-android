@@ -23,15 +23,18 @@
 
 package com.passbolt.mobile.android.feature.accountdetails.screen
 
+import PassboltTheme
 import android.content.Context
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -44,6 +47,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
 import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
 import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.TransferAccount
+import com.passbolt.mobile.android.core.navigation.compose.keys.TransferAccountToAnotherDeviceKey.Onboarding
 import com.passbolt.mobile.android.core.ui.compose.button.PrimaryButton
 import com.passbolt.mobile.android.core.ui.compose.circularimage.CircularProfileImage
 import com.passbolt.mobile.android.core.ui.compose.labelledtext.LabelledText
@@ -87,7 +91,13 @@ internal fun AccountDetailsScreen(
                 } else {
                     navigator.navigateBack()
                 }
-            NavigateToTransferAccount -> navigator.startNavigationActivity(context, TransferAccount)
+            NavigateToTransferAccount ->
+                if (context is AccountDetailsActivity) {
+                    // TODO handle after migration switch account flow to compose
+                    navigator.startNavigationActivity(context, TransferAccount)
+                } else {
+                    navigator.navigateToKey(Onboarding)
+                }
         }
     }
 }
@@ -100,124 +110,131 @@ private fun AccountDetailsScreen(
 ) {
     val context = LocalContext.current
 
-    Column(
-        modifier =
-            modifier
-                .verticalScroll(rememberScrollState()),
-    ) {
-        TitleAppBar(
-            title = stringResource(LocalizationR.string.settings_accounts_account_details),
-            navigationIcon = { BackNavigationIcon(onBackClick = { onIntent(GoBack) }) },
-        )
-
-        CircularProfileImage(
-            state.avatarUrl,
-            width = 96.dp,
-            height = 96.dp,
+    Scaffold(
+        modifier = modifier,
+        topBar = {
+            TitleAppBar(
+                title = stringResource(LocalizationR.string.settings_accounts_account_details),
+                navigationIcon = { BackNavigationIcon(onBackClick = { onIntent(GoBack) }) },
+            )
+        },
+    ) { contentPadding ->
+        Column(
             modifier =
                 Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .padding(top = 32.dp),
-        )
+                    .fillMaxSize()
+                    .padding(contentPadding)
+                    .verticalScroll(rememberScrollState()),
+        ) {
+            CircularProfileImage(
+                state.avatarUrl,
+                width = 96.dp,
+                height = 96.dp,
+                modifier =
+                    Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .padding(top = 32.dp),
+            )
 
-        TextInput(
-            title = stringResource(LocalizationR.string.account_details_hint_label),
-            hint = stringResource(LocalizationR.string.account_details_hint_label),
-            isRequired = true,
-            text = state.label,
-            state =
-                if (state.labelValidationErrors.isEmpty()) {
-                    Default
-                } else {
-                    Error(
-                        getLabelErrorMessage(
-                            context,
-                            state.labelValidationErrors,
-                        ),
-                    )
-                },
-            onTextChange = { onIntent(UpdateLabel(it)) },
-            modifier = Modifier.padding(horizontal = 16.dp),
-        )
+            TextInput(
+                title = stringResource(LocalizationR.string.account_details_hint_label),
+                hint = stringResource(LocalizationR.string.account_details_hint_label),
+                isRequired = true,
+                text = state.label,
+                state =
+                    if (state.labelValidationErrors.isEmpty()) {
+                        Default
+                    } else {
+                        Error(
+                            getLabelErrorMessage(
+                                context,
+                                state.labelValidationErrors,
+                            ),
+                        )
+                    },
+                onTextChange = { onIntent(UpdateLabel(it)) },
+                modifier = Modifier.padding(horizontal = 16.dp),
+            )
 
-        Text(
-            text = stringResource(LocalizationR.string.account_details_label_desc),
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onBackground,
-        )
+            Text(
+                text = stringResource(LocalizationR.string.account_details_label_desc),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onBackground,
+            )
 
-        LabelledText(
-            label = stringResource(LocalizationR.string.account_details_label_name),
-            text = state.name,
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-                    .padding(top = 16.dp),
-        )
-
-        LabelledText(
-            label = stringResource(LocalizationR.string.account_details_label_email),
-            text = state.email,
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-                    .padding(top = 16.dp),
-        )
-
-        state.role?.let {
             LabelledText(
-                label = stringResource(LocalizationR.string.account_details_label_role),
-                text = it,
+                label = stringResource(LocalizationR.string.account_details_label_name),
+                text = state.name,
                 modifier =
                     Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp)
                         .padding(top = 16.dp),
             )
+
+            LabelledText(
+                label = stringResource(LocalizationR.string.account_details_label_email),
+                text = state.email,
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                        .padding(top = 16.dp),
+            )
+
+            state.role?.let {
+                LabelledText(
+                    label = stringResource(LocalizationR.string.account_details_label_role),
+                    text = it,
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp)
+                            .padding(top = 16.dp),
+                )
+            }
+
+            LabelledText(
+                label = stringResource(LocalizationR.string.account_details_label_org),
+                text = state.organizationUrl,
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                        .padding(top = 16.dp),
+            )
+
+            Spacer(
+                modifier =
+                    Modifier
+                        .weight(1f, fill = true)
+                        .padding(top = 16.dp),
+            )
+
+            PrimaryButton(
+                text = stringResource(LocalizationR.string.save),
+                { onIntent(AccountDetailsIntent.SaveChanges) },
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                        .padding(top = 16.dp),
+            )
+
+            Text(
+                text = stringResource(LocalizationR.string.settings_accounts_transfer_account),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 64.dp, vertical = 24.dp)
+                        .clickable { onIntent(StartTransferAccount) },
+                color = MaterialTheme.colorScheme.onBackground,
+            )
         }
-
-        LabelledText(
-            label = stringResource(LocalizationR.string.account_details_label_org),
-            text = state.organizationUrl,
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-                    .padding(top = 16.dp),
-        )
-
-        Spacer(
-            modifier =
-                Modifier
-                    .weight(1f, fill = true)
-                    .padding(top = 16.dp),
-        )
-
-        PrimaryButton(
-            text = stringResource(LocalizationR.string.save),
-            onClick = { onIntent(AccountDetailsIntent.SaveChanges) },
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-                    .padding(top = 16.dp),
-        )
-
-        Text(
-            text = stringResource(LocalizationR.string.settings_accounts_transfer_account),
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 64.dp, vertical = 24.dp)
-                    .clickable { onIntent(StartTransferAccount) },
-            color = MaterialTheme.colorScheme.onBackground,
-        )
     }
 }
 
@@ -236,15 +253,17 @@ private fun getLabelErrorMessage(
 @Preview(showBackground = true)
 @Composable
 private fun AccountDetailsPreview() {
-    AccountDetailsScreen(
-        state =
-            AccountDetailsState(
-                label = "Grace Hopper",
-                name = "Grace Hopper",
-                email = "grace@passbolt.com",
-                role = "user",
-                organizationUrl = "https://www.passbolt.com",
-            ),
-        onIntent = {},
-    )
+    PassboltTheme {
+        AccountDetailsScreen(
+            state =
+                AccountDetailsState(
+                    label = "Grace Hopper",
+                    name = "Grace Hopper",
+                    email = "grace@passbolt.com",
+                    role = "user",
+                    organizationUrl = "https://www.passbolt.com",
+                ),
+            onIntent = {},
+        )
+    }
 }

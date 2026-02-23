@@ -29,6 +29,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import com.passbolt.mobile.android.core.ui.R
 
@@ -41,7 +42,7 @@ fun AddFloatingActionButton(
         onClick = onClick,
         containerColor = MaterialTheme.colorScheme.primary,
         shape = CircleShape,
-        modifier = modifier,
+        modifier = modifier.testTag(AddFloatingActionButtonTestTags.HOME_FAB),
     ) {
         Icon(
             painter = painterResource(id = R.drawable.ic_plus),
@@ -49,4 +50,8 @@ fun AddFloatingActionButton(
             tint = Color.Black,
         )
     }
+}
+
+object AddFloatingActionButtonTestTags {
+    const val HOME_FAB: String = "home_fab"
 }

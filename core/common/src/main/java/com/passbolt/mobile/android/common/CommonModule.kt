@@ -6,6 +6,7 @@ import com.passbolt.mobile.android.common.datarefresh.DataRefreshTrackingFlow
 import com.passbolt.mobile.android.common.hash.MessageDigestHash
 import com.passbolt.mobile.android.common.time.AndroidTimeProvider
 import com.passbolt.mobile.android.common.time.TimeProvider
+import com.passbolt.mobile.android.common.urimatcher.AutofillUriMatcher
 import com.passbolt.mobile.android.common.usecase.FetchFileAsStringUseCase
 import org.koin.android.ext.koin.androidApplication
 import org.koin.core.module.dsl.singleOf
@@ -47,4 +48,5 @@ val commonModule =
         singleOf(::MessageDigestHash)
         singleOf(::CoroutineTimerFactory) bind TimerFactory::class
         singleOf(::DataRefreshTrackingFlow)
+        singleOf(::AutofillUriMatcher)
     }
