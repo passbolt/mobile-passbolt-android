@@ -1,12 +1,6 @@
-package com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp
-
-import org.koin.core.module.dsl.factoryOf
-import org.koin.dsl.bind
-import org.koin.dsl.module
-
 /**
  * Passbolt - Open source password manager for teams
- * Copyright (c) 2021 Passbolt SA
+ * Copyright (c) 2026 Passbolt SA
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
  * Public License (AGPL) as published by the Free Software Foundation version 3.
@@ -27,7 +21,22 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-internal val totpFormModule =
-    module {
-        factoryOf(::TotpFormPresenter) bind TotpFormContract.Presenter::class
-    }
+package com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.advanced
+
+internal sealed interface TotpAdvancedSettingsFormIntent {
+    data class PeriodChanged(
+        val period: String,
+    ) : TotpAdvancedSettingsFormIntent
+
+    data class DigitChanged(
+        val digits: String,
+    ) : TotpAdvancedSettingsFormIntent
+
+    data class AlgorithmChanged(
+        val algorithm: String,
+    ) : TotpAdvancedSettingsFormIntent
+
+    data object ApplyChanges : TotpAdvancedSettingsFormIntent
+
+    data object GoBack : TotpAdvancedSettingsFormIntent
+}

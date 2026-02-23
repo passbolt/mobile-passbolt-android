@@ -1,8 +1,7 @@
 package com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp
 
 import org.koin.core.module.Module
-import org.koin.core.module.dsl.scopedOf
-import org.koin.dsl.bind
+import org.koin.core.module.dsl.viewModel
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,8 +26,11 @@ import org.koin.dsl.bind
  * @since v1.0
  */
 
-fun Module.totpFormModule() {
-    scope<TotpFormFragment> {
-        scopedOf(::TotpFormPresenter) bind TotpFormContract.Presenter::class
+internal fun Module.totpFormModule() {
+    viewModel { params ->
+        TotpFormViewModel(
+            mode = params.get(),
+            totpUiModel = params.get(),
+        )
     }
 }

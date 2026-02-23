@@ -1,12 +1,6 @@
-package com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.advanced
-
-import com.passbolt.mobile.android.core.mvp.BaseContract
-import com.passbolt.mobile.android.ui.ResourceFormMode
-import com.passbolt.mobile.android.ui.TotpUiModel
-
 /**
  * Passbolt - Open source password manager for teams
- * Copyright (c) 2021 Passbolt SA
+ * Copyright (c) 2026 Passbolt SA
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
  * Public License (AGPL) as published by the Free Software Foundation version 3.
@@ -26,35 +20,37 @@ import com.passbolt.mobile.android.ui.TotpUiModel
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-interface TotpAdvancedSettingsFormContract {
-    interface View : BaseContract.View {
-        fun goBackWithResult(totpModel: TotpUiModel)
 
-        fun showCreateTitle()
+package com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp
 
-        fun showExpiry(expiry: String)
+import com.passbolt.mobile.android.ui.OtpParseResult.OtpQr.TotpQr
+import com.passbolt.mobile.android.ui.TotpUiModel
 
-        fun showLength(length: String)
+internal sealed interface TotpFormIntent {
+    data class SecretChanged(
+        val secret: String,
+    ) : TotpFormIntent
 
-        fun showAlgorithm(algorithm: String)
+    data class IssuerChanged(
+        val issuer: String,
+    ) : TotpFormIntent
 
-        fun showTotpPeriodError()
+    data class TotpScanned(
+        val isManualCreationChosen: Boolean,
+        val totpQr: TotpQr?,
+    ) : TotpFormIntent
 
-        fun showEditTitle(resourceName: String)
-    }
+    data class AdvancedSettingsChanged(
+        val totpModel: TotpUiModel?,
+    ) : TotpFormIntent
 
-    interface Presenter : BaseContract.Presenter<View> {
-        fun applyClick()
+    data object MoreSettingsClick : TotpFormIntent
 
-        fun argsRetrieved(
-            mode: ResourceFormMode,
-            totpUiModel: TotpUiModel,
-        )
+    data object ScanTotpClick : TotpFormIntent
 
-        fun totpPeriodChanged(period: String)
+    data object RemoveTotp : TotpFormIntent
 
-        fun totpDigitsChanged(digits: String)
+    data object ApplyChanges : TotpFormIntent
 
-        fun totpAlgorithmChanged(algorithm: String)
-    }
+    data object GoBack : TotpFormIntent
 }
