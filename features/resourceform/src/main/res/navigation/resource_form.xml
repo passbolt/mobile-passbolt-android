@@ -140,8 +140,7 @@
     <fragment
         android:id="@+id/passwordFormFragment"
         android:name="com.passbolt.mobile.android.feature.resourceform.additionalsecrets.password.PasswordFormFragment"
-        android:label="PasswordFormFragment"
-        tools:layout="@layout/fragment_password_form">
+        android:label="PasswordFormFragment">
         <argument
             android:name="mode"
             app:argType="com.passbolt.mobile.android.ui.ResourceFormMode" />

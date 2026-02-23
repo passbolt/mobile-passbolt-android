@@ -25,7 +25,6 @@ package com.passbolt.mobile.android.feature.resourceform.metadata.additionaluris
 
 import PassboltTheme
 import android.content.Context
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -42,10 +41,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BottomAppBar
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
@@ -69,6 +65,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
 import com.passbolt.mobile.android.core.ui.compose.button.PrimaryButton
 import com.passbolt.mobile.android.core.ui.compose.button.SecondaryButton
+import com.passbolt.mobile.android.core.ui.compose.button.SecondaryIconButton
 import com.passbolt.mobile.android.core.ui.compose.snackbar.ColoredSnackbarVisuals
 import com.passbolt.mobile.android.core.ui.compose.text.TextInput
 import com.passbolt.mobile.android.core.ui.compose.topbar.BackNavigationIcon
@@ -290,7 +287,7 @@ private fun AdditionalUriRow(
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
+        verticalAlignment = Alignment.Bottom,
     ) {
         TextInput(
             title = "",
@@ -306,26 +303,12 @@ private fun AdditionalUriRow(
 
         Spacer(modifier = Modifier.width(8.dp))
 
-        OutlinedIconButton(
+        SecondaryIconButton(
             onClick = onRemoveClick,
-            colors =
-                IconButtonDefaults.outlinedIconButtonColors(
-                    containerColor = colorResource(CoreUiR.color.secondary_button_background),
-                    contentColor = colorResource(CoreUiR.color.icon_tint),
-                ),
-            border = BorderStroke(width = 1.dp, Color.LightGray),
-            modifier =
-                Modifier
-                    .padding(top = 22.dp)
-                    .size(54.dp),
-            shape = RoundedCornerShape(4.dp),
-        ) {
-            Icon(
-                painter = painterResource(CoreUiR.drawable.ic_trash),
-                contentDescription = null,
-                modifier = Modifier.size(22.dp),
-            )
-        }
+            icon = painterResource(CoreUiR.drawable.ic_trash),
+            modifier = Modifier.size(56.dp),
+            iconModifier = Modifier.size(22.dp),
+        )
     }
 }
 
