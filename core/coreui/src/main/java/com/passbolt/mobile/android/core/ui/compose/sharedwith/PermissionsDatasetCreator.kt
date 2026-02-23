@@ -26,13 +26,13 @@ class PermissionsDatasetCreator(
                 overlapCalculationResult.overlap,
             )
         } else {
-            val visibleItems = permissions.subList(0, overlapCalculationResult.visibleItems - 2)
+            val visibleItems = permissions.take((overlapCalculationResult.visibleItems - 2).coerceAtLeast(0))
             val moreItemsCount = permissions.size - visibleItems.size
             val counterValue =
                 if (moreItemsCount < MAX_DISPLAYABLE_COUNT) {
                     moreItemsCount.toString()
                 } else {
-                    "99+"
+                    "${MAX_DISPLAYABLE_COUNT}+"
                 }
             Output(
                 visibleItems.filterIsInstance<PermissionModelUi.GroupPermissionModel>(),

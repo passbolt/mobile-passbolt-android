@@ -20,8 +20,8 @@ import com.passbolt.mobile.android.feature.resourceform.main.ResourceFormFragmen
 import com.passbolt.mobile.android.feature.resources.ResourcesDetailsDirections
 import com.passbolt.mobile.android.locationdetails.ui.LocationItem
 import com.passbolt.mobile.android.permissions.permissions.PermissionsFragment
-import com.passbolt.mobile.android.permissions.permissions.PermissionsItem
-import com.passbolt.mobile.android.permissions.permissions.PermissionsMode
+import com.passbolt.mobile.android.ui.PermissionsItem
+import com.passbolt.mobile.android.ui.PermissionsMode
 import com.passbolt.mobile.android.ui.ResourceFormMode
 import com.passbolt.mobile.android.ui.ResourceModel
 import org.koin.androidx.compose.koinViewModel

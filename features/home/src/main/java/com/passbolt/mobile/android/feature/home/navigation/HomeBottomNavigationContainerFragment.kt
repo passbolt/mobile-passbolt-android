@@ -41,12 +41,12 @@ import com.passbolt.mobile.android.feature.resourceform.main.ResourceFormFragmen
 import com.passbolt.mobile.android.mappers.HomeDisplayViewMapper
 import com.passbolt.mobile.android.moremenu.FolderMoreMenuFragment
 import com.passbolt.mobile.android.permissions.permissions.PermissionsFragment
-import com.passbolt.mobile.android.permissions.permissions.PermissionsItem
-import com.passbolt.mobile.android.permissions.permissions.PermissionsMode
 import com.passbolt.mobile.android.ui.Folder
 import com.passbolt.mobile.android.ui.FolderMoreMenuModel
 import com.passbolt.mobile.android.ui.HomeDisplayViewModel
 import com.passbolt.mobile.android.ui.LeadingContentType
+import com.passbolt.mobile.android.ui.PermissionsItem
+import com.passbolt.mobile.android.ui.PermissionsMode
 import com.passbolt.mobile.android.ui.ResourceFormMode
 import com.passbolt.mobile.android.ui.ResourceModel
 import org.koin.android.ext.android.inject
