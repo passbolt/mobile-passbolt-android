@@ -23,7 +23,7 @@
 
 package com.passbolt.mobile.android.feature.resourcedetails.details
 
-import com.passbolt.mobile.android.permissions.permissions.PermissionsMode
+import com.passbolt.mobile.android.ui.PermissionsMode
 import com.passbolt.mobile.android.ui.ResourceModel
 
 sealed class ResourceDetailsSideEffect {
