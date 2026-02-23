@@ -244,6 +244,7 @@ private fun HomeScreen(
                         .fillMaxWidth()
                         .padding(end = 16.dp),
                 avatarUrl = state.userAvatar,
+                initialValue = state.searchQuery,
                 onEndIconClick = { onIntent(SearchEndIconAction) },
                 leadingIcon = {
                     Image(
