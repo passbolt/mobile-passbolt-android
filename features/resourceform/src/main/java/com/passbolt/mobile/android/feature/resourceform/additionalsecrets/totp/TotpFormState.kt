@@ -1,11 +1,6 @@
-package com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.advanced
-
-import org.koin.core.module.Module
-import org.koin.core.module.dsl.viewModel
-
 /**
  * Passbolt - Open source password manager for teams
- * Copyright (c) 2021 Passbolt SA
+ * Copyright (c) 2026 Passbolt SA
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
  * Public License (AGPL) as published by the Free Software Foundation version 3.
@@ -26,11 +21,22 @@ import org.koin.core.module.dsl.viewModel
  * @since v1.0
  */
 
-internal fun Module.totpAdvancedSettingsFormModule() {
-    viewModel { params ->
-        TotpAdvancedSettingsFormViewModel(
-            mode = params.get(),
-            totpUiModel = params.get(),
-        )
-    }
+package com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp
+
+import com.passbolt.mobile.android.ui.ResourceFormMode
+
+internal data class TotpFormState(
+    val resourceFormMode: ResourceFormMode? = null,
+    val secret: String = "",
+    val issuer: String = "",
+    val expiry: String = "",
+    val length: String = "",
+    val algorithm: String = "",
+    val secretValidationErrors: List<TotpSecretValidationError> = emptyList(),
+)
+
+internal sealed interface TotpSecretValidationError {
+    data object MustNotBeEmpty : TotpSecretValidationError
+
+    data object MustBeBase32 : TotpSecretValidationError
 }

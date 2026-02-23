@@ -29,8 +29,8 @@ import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpMode
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.customfields.CustomFieldsComposeFragment
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.note.NoteFormComposeFragment
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.password.PasswordFormFragment
-import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.TotpFormFragment
-import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.advanced.TotpAdvancedSettingsFormFragment
+import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.TotpFormComposeFragment
+import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.advanced.TotpAdvancedSettingsFormComposeFragment
 import com.passbolt.mobile.android.feature.resourceform.databinding.FragmentResourceFormBinding
 import com.passbolt.mobile.android.feature.resourceform.metadata.additionaluris.AdditionalUrisFormComposeFragment
 import com.passbolt.mobile.android.feature.resourceform.metadata.appearance.AppearanceFormComposeFragment
@@ -122,19 +122,19 @@ class ResourceFormFragment :
     }
 
     private val totpResult = { _: String, result: Bundle ->
-        if (result.containsKey(TotpFormFragment.EXTRA_TOTP)) {
+        if (result.containsKey(TotpFormComposeFragment.EXTRA_TOTP)) {
             presenter.totpChanged(
-                BundleCompat.getParcelable(result, TotpFormFragment.EXTRA_TOTP, TotpUiModel::class.java),
+                BundleCompat.getParcelable(result, TotpFormComposeFragment.EXTRA_TOTP, TotpUiModel::class.java),
             )
         }
     }
 
     private val totpAdvancedResult = { _: String, result: Bundle ->
-        if (result.containsKey(TotpAdvancedSettingsFormFragment.EXTRA_TOTP_ADVANCED)) {
+        if (result.containsKey(TotpAdvancedSettingsFormComposeFragment.EXTRA_TOTP_ADVANCED)) {
             presenter.totpAdvancedSettingsChanged(
                 BundleCompat.getParcelable(
                     result,
-                    TotpAdvancedSettingsFormFragment.EXTRA_TOTP_ADVANCED,
+                    TotpAdvancedSettingsFormComposeFragment.EXTRA_TOTP_ADVANCED,
                     TotpUiModel::class.java,
                 ),
             )
@@ -265,7 +265,7 @@ class ResourceFormFragment :
     }
 
     override fun navigateToTotp(totpUiModel: TotpUiModel) {
-        setFragmentResultListener(TotpFormFragment.REQUEST_TOTP, totpResult)
+        setFragmentResultListener(TotpFormComposeFragment.REQUEST_TOTP, totpResult)
         findNavController().navigate(
             ResourceFormFragmentDirections.actionResourceFormFragmentToTotpFormFragment(navArgs.mode, totpUiModel),
         )
@@ -333,7 +333,7 @@ class ResourceFormFragment :
                 }
                 scanTotpClickListener = { navigateToScanTotp(ScanOtpMode.SCAN_FOR_RESULT) }
                 moreSettingsClickListener = {
-                    setFragmentResultListener(TotpAdvancedSettingsFormFragment.REQUEST_TOTP_ADVANCED, totpAdvancedResult)
+                    setFragmentResultListener(TotpAdvancedSettingsFormComposeFragment.REQUEST_TOTP_ADVANCED, totpAdvancedResult)
                     findNavController().navigate(
                         ResourceFormFragmentDirections.actionResourceFormFragmentToTotpAdvancedSettingsFormFragment(
                             navArgs.mode,
