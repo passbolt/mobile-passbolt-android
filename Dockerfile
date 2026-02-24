@@ -25,6 +25,11 @@ RUN wget --quiet --output-document=$ANDROID_HOME/cmdline-tools.zip https://dl.go
     && sdkmanager --sdk_root=${ANDROID_HOME} "build-tools;${ANDROID_BUILD_TOOLS_VERSION}" \
     && sdkmanager --sdk_root=${ANDROID_HOME} "platforms;android-${ANDROID_VERSION}"
 
-RUN mkdir /application
+# switch to non-root and lock root
+RUN adduser -D -h /application ci-build \
+    && chown -R ci-build:ci-build $ANDROID_HOME \
+    && passwd -l root
 
 WORKDIR /application
+
+USER ci-build
