@@ -1,0 +1,4 @@
+# Passbolt 2.7.1-48 Android app release notes
+
+## Fixed
+- Incorrect translation file applied for Italian language
