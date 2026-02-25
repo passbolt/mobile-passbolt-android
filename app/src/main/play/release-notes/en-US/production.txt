@@ -1,1 +1,1 @@
-This release adds updated translations and improves dark mode visibility for icons and base text input. Several bug fixes address a search input cursor jump issue and a possible race condition after process death that could cause endless loading to show. Under the hood, multiple modules were migrated to the MVI architecture and Compose, new UI tests were added, and some code cleanup was done.
+This hotfix release contains a translation fix for users with Italian language.
