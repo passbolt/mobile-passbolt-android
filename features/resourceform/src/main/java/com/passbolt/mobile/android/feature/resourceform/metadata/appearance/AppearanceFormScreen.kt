@@ -45,6 +45,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -58,6 +59,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
 import com.passbolt.mobile.android.core.localization.R
+import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
+import com.passbolt.mobile.android.core.navigation.compose.results.NavigationResultEventBus
 import com.passbolt.mobile.android.core.resources.resourceicon.BackgroundColorIconProvider
 import com.passbolt.mobile.android.core.resources.resourceicon.ResourceIconProvider
 import com.passbolt.mobile.android.core.ui.compose.button.PrimaryButton
@@ -66,11 +69,14 @@ import com.passbolt.mobile.android.core.ui.compose.topbar.BackNavigationIcon
 import com.passbolt.mobile.android.core.ui.compose.topbar.TitleAppBar
 import com.passbolt.mobile.android.feature.resourceform.metadata.appearance.AppearanceFormIntent.ApplyChanges
 import com.passbolt.mobile.android.feature.resourceform.metadata.appearance.AppearanceFormIntent.GoBack
+import com.passbolt.mobile.android.feature.resourceform.metadata.appearance.AppearanceFormIntent.Initialize
 import com.passbolt.mobile.android.feature.resourceform.metadata.appearance.AppearanceFormIntent.SetCustomIconBackgroundColor
 import com.passbolt.mobile.android.feature.resourceform.metadata.appearance.AppearanceFormIntent.SetKeepassIcon
 import com.passbolt.mobile.android.feature.resourceform.metadata.appearance.AppearanceFormSideEffect.ApplyAndGoBack
 import com.passbolt.mobile.android.feature.resourceform.metadata.appearance.AppearanceFormSideEffect.NavigateUp
+import com.passbolt.mobile.android.feature.resourceform.navigation.AppearanceFormResult
 import com.passbolt.mobile.android.ui.LeadingContentType
+import com.passbolt.mobile.android.ui.ResourceAppearanceModel
 import com.passbolt.mobile.android.ui.ResourceAppearanceModel.Companion.DEFAULT_BACKGROUND_COLOR_HEX_STRING
 import com.passbolt.mobile.android.ui.ResourceFormMode
 import com.passbolt.mobile.android.ui.ResourceFormMode.Create
@@ -81,11 +87,18 @@ import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 @Composable
 internal fun AppearanceFormScreen(
-    navigation: AppearanceFormNavigation,
+    mode: ResourceFormMode,
+    appearanceModel: ResourceAppearanceModel,
     modifier: Modifier = Modifier,
+    navigator: AppNavigator = koinInject(),
     viewModel: AppearanceFormViewModel = koinViewModel(),
 ) {
+    LaunchedEffect(Unit) {
+        viewModel.onIntent(Initialize(mode, appearanceModel))
+    }
+
     val state = viewModel.viewState.collectAsStateWithLifecycle()
+    val resultBus = NavigationResultEventBus.current
 
     AppearanceFormScreen(
         modifier = modifier,
@@ -95,8 +108,11 @@ internal fun AppearanceFormScreen(
 
     SideEffectDispatcher(viewModel.sideEffect) {
         when (it) {
-            is ApplyAndGoBack -> navigation.navigateBackWithResult(it.model)
-            NavigateUp -> navigation.navigateUp()
+            is ApplyAndGoBack -> {
+                resultBus.sendResult(result = AppearanceFormResult(it.model))
+                navigator.navigateBack()
+            }
+            NavigateUp -> navigator.navigateBack()
         }
     }
 }

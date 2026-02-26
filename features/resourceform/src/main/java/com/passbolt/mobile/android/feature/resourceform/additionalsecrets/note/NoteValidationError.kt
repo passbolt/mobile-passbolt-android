@@ -23,7 +23,7 @@
 
 package com.passbolt.mobile.android.feature.resourceform.additionalsecrets.note
 
-internal sealed class NoteValidationError {
+sealed class NoteValidationError {
     data class MaxLengthExceeded(
         val maxLength: Int,
     ) : NoteValidationError()

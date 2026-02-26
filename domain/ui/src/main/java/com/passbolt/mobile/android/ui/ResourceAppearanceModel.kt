@@ -1,7 +1,6 @@
 package com.passbolt.mobile.android.ui
 
-import android.os.Parcelable
-import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.Serializable
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,12 +25,12 @@ import kotlinx.parcelize.Parcelize
  * @since v1.0
  */
 
-@Parcelize
+@Serializable
 data class ResourceAppearanceModel(
     val iconType: String? = ICON_TYPE_PASSBOLT,
     val iconBackgroundHexColor: String? = DEFAULT_BACKGROUND_COLOR_HEX_STRING,
     val iconValue: Int? = null,
-) : Parcelable {
+) {
     val isDefaultBackgroundColorSet: Boolean
         get() = iconBackgroundHexColor == DEFAULT_BACKGROUND_COLOR_HEX_STRING
 

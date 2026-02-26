@@ -26,7 +26,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.passbolt.mobile.android.common.dialogs.unableToGeneratePasswordAlertDialog
 import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
+import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
+import com.passbolt.mobile.android.core.navigation.compose.results.NavigationResultEventBus
 import com.passbolt.mobile.android.core.ui.compose.button.PrimaryButton
 import com.passbolt.mobile.android.core.ui.compose.text.TextInput
 import com.passbolt.mobile.android.core.ui.compose.topbar.BackNavigationIcon
@@ -41,6 +44,7 @@ import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.passwo
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.password.PasswordFormSideEffect.NavigateBack
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.password.PasswordFormSideEffect.ShowUnableToGeneratePassword
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.password.ui.PasswordGenerationInput
+import com.passbolt.mobile.android.feature.resourceform.navigation.PasswordFormResult
 import com.passbolt.mobile.android.ui.LeadingContentType
 import com.passbolt.mobile.android.ui.PasswordStrength
 import com.passbolt.mobile.android.ui.PasswordUiModel
@@ -48,6 +52,7 @@ import com.passbolt.mobile.android.ui.ResourceFormMode
 import com.passbolt.mobile.android.ui.ResourceFormMode.Create
 import com.passbolt.mobile.android.ui.ResourceFormMode.Edit
 import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.koinInject
 import org.koin.core.parameter.parametersOf
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
@@ -56,8 +61,8 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
 internal fun PasswordFormScreen(
     mode: ResourceFormMode,
     passwordModel: PasswordUiModel,
-    navigation: PasswordFormNavigation,
     modifier: Modifier = Modifier,
+    navigator: AppNavigator = koinInject(),
     viewModel: PasswordFormViewModel =
         koinViewModel(
             parameters = {
@@ -66,6 +71,8 @@ internal fun PasswordFormScreen(
         ),
 ) {
     val state by viewModel.viewState.collectAsStateWithLifecycle()
+    val resultBus = NavigationResultEventBus.current
+    val context = LocalContext.current
 
     PasswordFormScreen(
         modifier = modifier,
@@ -75,9 +82,13 @@ internal fun PasswordFormScreen(
 
     SideEffectDispatcher(viewModel.sideEffect) {
         when (it) {
-            is ApplyAndGoBack -> navigation.navigateBackWithResult(it.model)
-            NavigateBack -> navigation.navigateBack()
-            is ShowUnableToGeneratePassword -> navigation.showUnableToGeneratePassword(it.minimumEntropyBits)
+            is ApplyAndGoBack -> {
+                resultBus.sendResult(result = PasswordFormResult(it.model))
+                navigator.navigateBack()
+            }
+            NavigateBack -> navigator.navigateBack()
+            is ShowUnableToGeneratePassword ->
+                unableToGeneratePasswordAlertDialog(context, it.minimumEntropyBits).show()
         }
     }
 }

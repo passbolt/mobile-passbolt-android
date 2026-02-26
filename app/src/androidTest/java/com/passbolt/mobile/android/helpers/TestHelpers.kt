@@ -38,16 +38,9 @@ import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.closeSoftKeyboard
 import androidx.test.espresso.action.ViewActions.typeText
-import androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.platform.app.InstrumentationRegistry
-import com.passbolt.mobile.android.core.ui.R.id.generatePasswordLayout
-import com.passbolt.mobile.android.core.ui.R.id.input
-import com.passbolt.mobile.android.matchers.withHint
-import com.passbolt.mobile.android.scenarios.resourcesedition.EditableFieldInput
 import com.passbolt.mobile.android.testtags.composetags.Home
-import org.hamcrest.Matchers.allOf
-import org.hamcrest.Matchers.hasToString
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 internal fun getString(
@@ -55,36 +48,38 @@ internal fun getString(
     vararg formatArgs: String? = emptyArray(),
 ) = InstrumentationRegistry.getInstrumentation().targetContext.getString(stringResId, *formatArgs)
 
+// TODO: Migrate to Compose test - resource form is now in Compose after MVI migration.
+//  This function used Espresso to fill in the resource form fields and click the create button.
+//  Rewrite using ComposeTestRule with appropriate test tags.
 internal fun createNewPasswordFromHomeScreen(name: String) {
-    // TODO needs update after MVI migration
 //    onView(withId(com.passbolt.mobile.android.feature.createresourcemenu.R.id.createPassword)).perform(click())
-
-    onView(withId(generatePasswordLayout)).perform(click())
-    onView(
-        allOf(
-            isDescendantOfA(withHint(hasToString(EditableFieldInput.NAME.hintName))),
-            withId(input),
-        ),
-    ).perform(
-        typeText(name),
-    )
-    onView(
-        allOf(
-            isDescendantOfA(withHint(hasToString(EditableFieldInput.ENTER_URL.hintName))),
-            withId(input),
-        ),
-    ).perform(
-        typeText("TestURL"),
-    )
-    onView(
-        allOf(
-            isDescendantOfA(withHint(hasToString(EditableFieldInput.ENTER_USERNAME.hintName))),
-            withId(input),
-        ),
-    ).perform(
-        typeText("TestUsername"),
-    )
-    onView(withId(com.passbolt.mobile.android.feature.resourceform.R.id.primaryButton)).perform(click())
+//
+//    onView(withId(generatePasswordLayout)).perform(click())
+//    onView(
+//        allOf(
+//            isDescendantOfA(withHint(hasToString(EditableFieldInput.NAME.hintName))),
+//            withId(input),
+//        ),
+//    ).perform(
+//        typeText(name),
+//    )
+//    onView(
+//        allOf(
+//            isDescendantOfA(withHint(hasToString(EditableFieldInput.ENTER_URL.hintName))),
+//            withId(input),
+//        ),
+//    ).perform(
+//        typeText("TestURL"),
+//    )
+//    onView(
+//        allOf(
+//            isDescendantOfA(withHint(hasToString(EditableFieldInput.ENTER_USERNAME.hintName))),
+//            withId(input),
+//        ),
+//    ).perform(
+//        typeText("TestUsername"),
+//    )
+//    onView(withId(com.passbolt.mobile.android.feature.resourceform.R.id.primaryButton)).perform(click())
 }
 
 /**

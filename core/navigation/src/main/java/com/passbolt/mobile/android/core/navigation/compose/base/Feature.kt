@@ -30,4 +30,5 @@ enum class Feature {
     SETUP,
     PERMISSIONS,
     GROUP_DETAILS,
+    RESOURCE_FORM,
 }

@@ -56,6 +56,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
+import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
+import com.passbolt.mobile.android.core.navigation.compose.results.NavigationResultEventBus
 import com.passbolt.mobile.android.core.ui.compose.button.PrimaryButton
 import com.passbolt.mobile.android.core.ui.compose.dropdown.DropdownInput
 import com.passbolt.mobile.android.core.ui.compose.text.TextInput
@@ -71,21 +73,28 @@ import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.a
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.advanced.TotpAdvancedSettingsFormSideEffect.ApplyAndGoBack
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.advanced.TotpAdvancedSettingsFormSideEffect.NavigateBack
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.advanced.TotpPeriodValidationError.MustBePositiveInteger
+import com.passbolt.mobile.android.feature.resourceform.navigation.TotpAdvancedSettingsFormResult
 import com.passbolt.mobile.android.ui.LeadingContentType
 import com.passbolt.mobile.android.ui.ResourceFormMode
 import com.passbolt.mobile.android.ui.ResourceFormMode.Create
 import com.passbolt.mobile.android.ui.ResourceFormMode.Edit
+import com.passbolt.mobile.android.ui.TotpUiModel
 import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.koinInject
+import org.koin.core.parameter.parametersOf
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 @Composable
 internal fun TotpAdvancedSettingsFormScreen(
-    navigation: TotpAdvancedSettingsFormNavigation,
+    mode: ResourceFormMode,
+    totpUiModel: TotpUiModel,
     modifier: Modifier = Modifier,
-    viewModel: TotpAdvancedSettingsFormViewModel = koinViewModel(),
+    navigator: AppNavigator = koinInject(),
+    viewModel: TotpAdvancedSettingsFormViewModel = koinViewModel(parameters = { parametersOf(mode, totpUiModel) }),
 ) {
     val state = viewModel.viewState.collectAsStateWithLifecycle()
+    val resultBus = NavigationResultEventBus.current
 
     TotpAdvancedSettingsFormScreen(
         modifier = modifier,
@@ -95,8 +104,11 @@ internal fun TotpAdvancedSettingsFormScreen(
 
     SideEffectDispatcher(viewModel.sideEffect) {
         when (it) {
-            is ApplyAndGoBack -> navigation.navigateBackWithResult(it.totpModel)
-            NavigateBack -> navigation.navigateBack()
+            is ApplyAndGoBack -> {
+                resultBus.sendResult(result = TotpAdvancedSettingsFormResult(it.totpModel))
+                navigator.navigateBack()
+            }
+            NavigateBack -> navigator.navigateBack()
         }
     }
 }

@@ -43,6 +43,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
+import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
+import com.passbolt.mobile.android.core.navigation.compose.results.NavigationResultEventBus
 import com.passbolt.mobile.android.core.ui.compose.button.PrimaryButton
 import com.passbolt.mobile.android.core.ui.compose.section.Section
 import com.passbolt.mobile.android.core.ui.compose.text.TextInput
@@ -53,20 +55,26 @@ import com.passbolt.mobile.android.feature.resourceform.metadata.description.Des
 import com.passbolt.mobile.android.feature.resourceform.metadata.description.DescriptionFormIntent.GoBack
 import com.passbolt.mobile.android.feature.resourceform.metadata.description.DescriptionFormSideEffect.ApplyAndGoBack
 import com.passbolt.mobile.android.feature.resourceform.metadata.description.DescriptionFormSideEffect.NavigateBack
+import com.passbolt.mobile.android.feature.resourceform.navigation.DescriptionFormResult
 import com.passbolt.mobile.android.ui.LeadingContentType
 import com.passbolt.mobile.android.ui.ResourceFormMode
 import com.passbolt.mobile.android.ui.ResourceFormMode.Create
 import com.passbolt.mobile.android.ui.ResourceFormMode.Edit
 import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.koinInject
+import org.koin.core.parameter.parametersOf
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 @Composable
 internal fun DescriptionFormScreen(
-    navigation: DescriptionFormNavigation,
+    mode: ResourceFormMode,
+    metadataDescription: String,
     modifier: Modifier = Modifier,
-    viewModel: DescriptionFormViewModel = koinViewModel(),
+    navigator: AppNavigator = koinInject(),
+    viewModel: DescriptionFormViewModel = koinViewModel(parameters = { parametersOf(mode, metadataDescription) }),
 ) {
     val state = viewModel.viewState.collectAsStateWithLifecycle()
+    val resultBus = NavigationResultEventBus.current
 
     DescriptionFormScreen(
         modifier = modifier,
@@ -76,8 +84,11 @@ internal fun DescriptionFormScreen(
 
     SideEffectDispatcher(viewModel.sideEffect) {
         when (it) {
-            is ApplyAndGoBack -> navigation.navigateBackWithResult(it.metadataDescription)
-            NavigateBack -> navigation.navigateBack()
+            is ApplyAndGoBack -> {
+                resultBus.sendResult(result = DescriptionFormResult(it.metadataDescription))
+                navigator.navigateBack()
+            }
+            NavigateBack -> navigator.navigateBack()
         }
     }
 }
