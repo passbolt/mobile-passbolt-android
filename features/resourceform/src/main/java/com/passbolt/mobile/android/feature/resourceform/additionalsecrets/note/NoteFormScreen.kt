@@ -54,6 +54,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
+import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
+import com.passbolt.mobile.android.core.navigation.compose.results.NavigationResultEventBus
 import com.passbolt.mobile.android.core.ui.compose.button.PrimaryButton
 import com.passbolt.mobile.android.core.ui.compose.text.TextInput
 import com.passbolt.mobile.android.core.ui.compose.topbar.BackNavigationIcon
@@ -66,21 +68,27 @@ import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.note.N
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.note.NoteFormIntent.RemoveNote
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.note.NoteFormSideEffect.ApplyAndGoBack
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.note.NoteFormSideEffect.NavigateBack
+import com.passbolt.mobile.android.feature.resourceform.navigation.NoteFormResult
 import com.passbolt.mobile.android.ui.LeadingContentType
 import com.passbolt.mobile.android.ui.ResourceFormMode
 import com.passbolt.mobile.android.ui.ResourceFormMode.Create
 import com.passbolt.mobile.android.ui.ResourceFormMode.Edit
 import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.koinInject
+import org.koin.core.parameter.parametersOf
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 @Composable
 internal fun NoteFormScreen(
-    navigation: NoteFormNavigation,
+    mode: ResourceFormMode,
+    note: String,
     modifier: Modifier = Modifier,
-    viewModel: NoteFormViewModel = koinViewModel(),
+    navigator: AppNavigator = koinInject(),
+    viewModel: NoteFormViewModel = koinViewModel(parameters = { parametersOf(mode, note) }),
 ) {
     val state = viewModel.viewState.collectAsStateWithLifecycle()
+    val resultBus = NavigationResultEventBus.current
 
     NoteFormScreen(
         modifier = modifier,
@@ -90,8 +98,11 @@ internal fun NoteFormScreen(
 
     SideEffectDispatcher(viewModel.sideEffect) {
         when (it) {
-            is ApplyAndGoBack -> navigation.navigateBackWithResult(it.note)
-            NavigateBack -> navigation.navigateBack()
+            is ApplyAndGoBack -> {
+                resultBus.sendResult(result = NoteFormResult(it.note))
+                navigator.navigateBack()
+            }
+            NavigateBack -> navigator.navigateBack()
         }
     }
 }

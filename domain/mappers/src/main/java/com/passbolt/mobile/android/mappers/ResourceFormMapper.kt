@@ -8,7 +8,10 @@ import com.passbolt.mobile.android.jsonmodel.delegates.SecretCustomFieldType.URI
 import com.passbolt.mobile.android.jsonmodel.delegates.SecretCustomFieldsModel
 import com.passbolt.mobile.android.jsonmodel.delegates.TotpSecret
 import com.passbolt.mobile.android.ui.CustomFieldModel
+import com.passbolt.mobile.android.ui.CustomFieldType
+import com.passbolt.mobile.android.ui.CustomFieldUiModel
 import com.passbolt.mobile.android.ui.CustomFieldsModel
+import com.passbolt.mobile.android.ui.CustomFieldsUiModel
 import com.passbolt.mobile.android.ui.MetadataCustomFieldsModel
 import com.passbolt.mobile.android.ui.MetadataIconModel
 import com.passbolt.mobile.android.ui.PasswordUiModel
@@ -149,4 +152,34 @@ class ResourceFormMapper {
 
         return result
     }
+
+    fun mapToCustomFieldsUiModel(model: CustomFieldsModel): CustomFieldsUiModel =
+        CustomFieldsUiModel(
+            customFields =
+                model.map { field ->
+                    CustomFieldUiModel(
+                        name = field.metadataKey.orEmpty(),
+                        value = getDisplayValue(field),
+                        type = getCustomFieldType(field),
+                    )
+                },
+        )
+
+    private fun getDisplayValue(field: CustomFieldModel): String =
+        when (field) {
+            is CustomFieldModel.TextCustomField -> field.secretValue.orEmpty()
+            is CustomFieldModel.PasswordCustomField -> field.secretValue.orEmpty()
+            is CustomFieldModel.BooleanCustomField -> field.secretValue?.toString().orEmpty()
+            is CustomFieldModel.NumberCustomField -> field.secretValue?.toString().orEmpty()
+            is CustomFieldModel.UriCustomField -> field.secretValue.orEmpty()
+        }
+
+    private fun getCustomFieldType(field: CustomFieldModel): CustomFieldType =
+        when (field) {
+            is CustomFieldModel.TextCustomField -> CustomFieldType.TEXT
+            is CustomFieldModel.PasswordCustomField -> CustomFieldType.PASSWORD
+            is CustomFieldModel.BooleanCustomField -> CustomFieldType.BOOLEAN
+            is CustomFieldModel.NumberCustomField -> CustomFieldType.NUMBER
+            is CustomFieldModel.UriCustomField -> CustomFieldType.URI
+        }
 }

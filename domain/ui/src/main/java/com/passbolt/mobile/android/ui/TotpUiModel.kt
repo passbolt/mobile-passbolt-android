@@ -1,7 +1,6 @@
 package com.passbolt.mobile.android.ui
 
-import android.os.Parcelable
-import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.Serializable
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,14 +25,14 @@ import kotlinx.parcelize.Parcelize
  * @since v1.0
  */
 
-@Parcelize
+@Serializable
 data class TotpUiModel(
     val secret: String,
     val issuer: String,
     val expiry: String,
     val length: String,
     val algorithm: String,
-) : Parcelable {
+) {
     companion object {
         fun emptyWithDefaults(issuer: String) =
             TotpUiModel(

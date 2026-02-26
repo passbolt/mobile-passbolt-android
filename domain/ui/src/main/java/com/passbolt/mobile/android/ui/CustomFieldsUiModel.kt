@@ -1,3 +1,7 @@
+package com.passbolt.mobile.android.ui
+
+import kotlinx.serialization.Serializable
+
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2026 Passbolt SA
@@ -21,22 +25,17 @@
  * @since v1.0
  */
 
-package com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp
+@Serializable
+enum class CustomFieldType { TEXT, PASSWORD, BOOLEAN, NUMBER, URI }
 
-import com.passbolt.mobile.android.ui.ResourceFormMode
-
-internal data class TotpFormState(
-    val resourceFormMode: ResourceFormMode? = null,
-    val secret: String = "",
-    val issuer: String = "",
-    val expiry: String = "",
-    val length: String = "",
-    val algorithm: String = "",
-    val secretValidationErrors: List<TotpSecretValidationError> = emptyList(),
+@Serializable
+data class CustomFieldUiModel(
+    val name: String,
+    val value: String,
+    val type: CustomFieldType,
 )
 
-sealed interface TotpSecretValidationError {
-    data object MustNotBeEmpty : TotpSecretValidationError
-
-    data object MustBeBase32 : TotpSecretValidationError
-}
+@Serializable
+data class CustomFieldsUiModel(
+    val customFields: List<CustomFieldUiModel>,
+)

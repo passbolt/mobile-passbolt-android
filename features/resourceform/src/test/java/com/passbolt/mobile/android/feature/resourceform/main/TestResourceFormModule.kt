@@ -26,6 +26,7 @@ import com.passbolt.mobile.android.metadata.interactor.MetadataPrivateKeysHelper
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
+import org.koin.core.module.dsl.viewModel
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -82,8 +83,9 @@ internal val testResourceFormModule =
             )
         }
 
-        factory<ResourceFormContract.Presenter> {
-            ResourceFormPresenter(
+        viewModel { params ->
+            ResourceFormViewModel(
+                mode = params.get(),
                 getPasswordPoliciesUseCase = mockGetPasswordPoliciesUseCase,
                 secretGenerator = mockSecretGenerator,
                 entropyCalculator = mockEntropyCalculator,
@@ -91,7 +93,6 @@ internal val testResourceFormModule =
                 getLocalResourceUseCase = get(),
                 entropyViewMapper = get(),
                 resourceFormMapper = get(),
-                coroutineLaunchContext = get(),
                 resourceModelHandler = get(),
                 dataRefreshTrackingFlow = get(),
                 createResourceIdlingResource = get(),

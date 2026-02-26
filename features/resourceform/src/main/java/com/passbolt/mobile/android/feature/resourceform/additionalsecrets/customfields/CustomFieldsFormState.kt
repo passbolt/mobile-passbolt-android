@@ -23,8 +23,8 @@
 
 package com.passbolt.mobile.android.feature.resourceform.additionalsecrets.customfields
 
-import com.passbolt.mobile.android.ui.CustomFieldsModel
+import com.passbolt.mobile.android.ui.CustomFieldUiModel
 
 internal data class CustomFieldsFormState(
-    val customFieldsModel: CustomFieldsModel = CustomFieldsModel(),
+    val customFields: List<CustomFieldUiModel> = emptyList(),
 )

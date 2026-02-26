@@ -78,7 +78,7 @@ class ResourceModelHandler(
     private val getEditContentTypeUseCase: GetEditContentTypeUseCase,
     private val resourceActionsGraph: ResourceTypesUpdatesAdjacencyGraph,
     private val getLocalResourceUseCase: GetLocalResourceUseCase,
-    private val defaultValues: Map<DefaultValue, String>,
+    private val defaultValues: DefaultValues,
 ) : KoinComponent {
     lateinit var resourceMetadata: MetadataJsonModel
     lateinit var resourceSecret: SecretJsonModel

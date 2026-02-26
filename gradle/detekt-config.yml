@@ -803,7 +803,7 @@ Compose:
   CompositionLocalAllowlist:
     active: true
     # -- You can optionally define a list of CompositionLocals that are allowed here
-    allowedCompositionLocals: LocalPermissionsHostNavigation, LocalResultEventBus
+    allowedCompositionLocals: LocalPermissionsHostNavigation, LocalResourceFormHostNavigation, LocalResultEventBus
   CompositionLocalNaming:
     active: true
   ContentEmitterReturningValues:

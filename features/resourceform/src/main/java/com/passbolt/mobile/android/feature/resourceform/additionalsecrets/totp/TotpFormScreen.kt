@@ -56,6 +56,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
+import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
+import com.passbolt.mobile.android.core.navigation.compose.LocalResourceFormHostNavigation
+import com.passbolt.mobile.android.core.navigation.compose.keys.ResourceFormNavigationKey.TotpAdvancedSettingsForm
+import com.passbolt.mobile.android.core.navigation.compose.results.NavigationResultEventBus
+import com.passbolt.mobile.android.core.navigation.compose.results.ResultEffect
 import com.passbolt.mobile.android.core.ui.compose.button.PrimaryButton
 import com.passbolt.mobile.android.core.ui.compose.button.SecondaryIconButton
 import com.passbolt.mobile.android.core.ui.compose.text.TextInput
@@ -63,6 +68,7 @@ import com.passbolt.mobile.android.core.ui.compose.topbar.BackNavigationIcon
 import com.passbolt.mobile.android.core.ui.compose.topbar.TitleAppBar
 import com.passbolt.mobile.android.core.ui.textinputfield.StatefulInput.State.Default
 import com.passbolt.mobile.android.core.ui.textinputfield.StatefulInput.State.Error
+import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.TotpFormIntent.AdvancedSettingsChanged
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.TotpFormIntent.ApplyChanges
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.TotpFormIntent.GoBack
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.TotpFormIntent.IssuerChanged
@@ -70,25 +76,36 @@ import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.T
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.TotpFormIntent.RemoveTotp
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.TotpFormIntent.ScanTotpClick
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.TotpFormIntent.SecretChanged
+import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.TotpFormIntent.TotpScanned
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.TotpFormSideEffect.ApplyAndGoBack
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.TotpFormSideEffect.NavigateBack
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.TotpFormSideEffect.NavigateToAdvancedSettings
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.TotpFormSideEffect.NavigateToScanTotp
+import com.passbolt.mobile.android.feature.resourceform.navigation.ScanOtpResultEvent
+import com.passbolt.mobile.android.feature.resourceform.navigation.TotpAdvancedSettingsFormResult
+import com.passbolt.mobile.android.feature.resourceform.navigation.TotpFormResult
 import com.passbolt.mobile.android.ui.LeadingContentType
 import com.passbolt.mobile.android.ui.ResourceFormMode
 import com.passbolt.mobile.android.ui.ResourceFormMode.Create
 import com.passbolt.mobile.android.ui.ResourceFormMode.Edit
+import com.passbolt.mobile.android.ui.TotpUiModel
 import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.koinInject
+import org.koin.core.parameter.parametersOf
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 @Composable
 internal fun TotpFormScreen(
-    navigation: TotpFormNavigation,
+    mode: ResourceFormMode,
+    totpUiModel: TotpUiModel,
     modifier: Modifier = Modifier,
-    viewModel: TotpFormViewModel = koinViewModel(),
+    navigator: AppNavigator = koinInject(),
+    viewModel: TotpFormViewModel = koinViewModel(parameters = { parametersOf(mode, totpUiModel) }),
 ) {
     val state = viewModel.viewState.collectAsStateWithLifecycle()
+    val resultBus = NavigationResultEventBus.current
+    val hostNavigation = LocalResourceFormHostNavigation.current
 
     TotpFormScreen(
         modifier = modifier,
@@ -98,11 +115,29 @@ internal fun TotpFormScreen(
 
     SideEffectDispatcher(viewModel.sideEffect) {
         when (it) {
-            is ApplyAndGoBack -> navigation.navigateBackWithResult(it.totpUiModel)
-            NavigateBack -> navigation.navigateBack()
-            is NavigateToAdvancedSettings -> navigation.navigateToAdvancedSettings(it.mode, it.totpUiModel)
-            NavigateToScanTotp -> navigation.navigateToScanTotp()
+            is ApplyAndGoBack -> {
+                resultBus.sendResult(result = TotpFormResult(it.totpUiModel))
+                navigator.navigateBack()
+            }
+            NavigateBack -> navigator.navigateBack()
+            is NavigateToAdvancedSettings ->
+                navigator.navigateToKey(
+                    TotpAdvancedSettingsForm(it.mode, it.totpUiModel),
+                )
+            NavigateToScanTotp ->
+                hostNavigation.navigateToScanOtp { isManual, totp ->
+                    resultBus.sendResult(
+                        result = ScanOtpResultEvent(isManual, totp),
+                    )
+                }
         }
+    }
+
+    ResultEffect<TotpAdvancedSettingsFormResult> { result ->
+        viewModel.onIntent(AdvancedSettingsChanged(result.totpModel))
+    }
+    ResultEffect<ScanOtpResultEvent> { result ->
+        viewModel.onIntent(TotpScanned(result.isManualCreationChosen, result.scannedTotp))
     }
 }
 
