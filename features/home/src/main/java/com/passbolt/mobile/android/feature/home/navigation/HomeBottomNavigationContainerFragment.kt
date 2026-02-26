@@ -39,10 +39,7 @@ import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpMode
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsFragment
 import com.passbolt.mobile.android.feature.resourceform.main.ResourceFormFragment
 import com.passbolt.mobile.android.mappers.HomeDisplayViewMapper
-import com.passbolt.mobile.android.moremenu.FolderMoreMenuFragment
 import com.passbolt.mobile.android.permissions.permissions.PermissionsFragment
-import com.passbolt.mobile.android.ui.Folder
-import com.passbolt.mobile.android.ui.FolderMoreMenuModel
 import com.passbolt.mobile.android.ui.HomeDisplayViewModel
 import com.passbolt.mobile.android.ui.LeadingContentType
 import com.passbolt.mobile.android.ui.PermissionsItem
@@ -305,15 +302,10 @@ class HomeBottomNavigationContainerFragment :
 
     override fun shouldShowCloseButton() = false
 
-    override fun openFolderMoreMenu(homeView: HomeDisplayViewModel) {
-        (homeView as? HomeDisplayViewModel.Folders)?.let { folder ->
-            if (folder.activeFolder is Folder.Child) {
-                val childFolder = folder.activeFolder as Folder.Child
-                FolderMoreMenuFragment
-                    .newInstance(FolderMoreMenuModel(folder.activeFolderName, childFolder.folderId))
-                    .show(childFragmentManager, FolderMoreMenuModel::class.java.name)
-            }
-        }
+    override fun navigateToFolderDetails(folderId: String) {
+        findNavController().navigate(
+            NavDeepLinkProvider.folderDetailsDeepLinkRequest(folderId),
+        )
     }
 
     override fun resourcePostCreateAction(resourceId: String) {

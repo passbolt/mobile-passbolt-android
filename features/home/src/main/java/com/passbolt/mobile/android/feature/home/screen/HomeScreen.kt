@@ -62,6 +62,7 @@ import com.passbolt.mobile.android.core.ui.compose.snackbar.ColoredSnackbarVisua
 import com.passbolt.mobile.android.createresourcemenu.CreateResourceMenuBottomSheet
 import com.passbolt.mobile.android.feature.authentication.compose.AuthenticationHandler
 import com.passbolt.mobile.android.feature.home.filtersmenu.FiltersMenuBottomSheet
+import com.passbolt.mobile.android.feature.home.foldermoremenu.FolderMoreMenuBottomSheet
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.CloseCreateResourceMenu
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.CloseDeleteConfirmationDialog
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.CloseResourceMoreMenu
@@ -92,6 +93,7 @@ import com.passbolt.mobile.android.feature.home.screen.HomeSideEffect.NavigateTo
 import com.passbolt.mobile.android.feature.home.screen.HomeSideEffect.NavigateToCreateResourceForm
 import com.passbolt.mobile.android.feature.home.screen.HomeSideEffect.NavigateToCreateTotp
 import com.passbolt.mobile.android.feature.home.screen.HomeSideEffect.NavigateToEditResourceForm
+import com.passbolt.mobile.android.feature.home.screen.HomeSideEffect.NavigateToFolderDetails
 import com.passbolt.mobile.android.feature.home.screen.HomeSideEffect.NavigateToResourceUri
 import com.passbolt.mobile.android.feature.home.screen.HomeSideEffect.NavigateToShare
 import com.passbolt.mobile.android.feature.home.screen.HomeSideEffect.ShowErrorSnackbar
@@ -204,6 +206,7 @@ internal fun HomeScreen(
             is NavigateToResourceUri -> navigator.openExternalWebsite(context, it.url)
             is NavigateToShare -> navigation.navigateToShare(it.resourceModel.resourceId)
             is NavigateToCreateFolder -> navigation.navigateToCreateFolder(it.folderId)
+            is NavigateToFolderDetails -> navigation.navigateToFolderDetails(it.folderId)
             is ShowToast -> Toast.makeText(context, getToastMessage(context, it.type), Toast.LENGTH_SHORT).show()
         }
     }
@@ -229,7 +232,7 @@ private fun HomeScreen(
         appBarTitle = getAppBarTitle(context, state),
         appBarIconRes = getAppBarIconResId(state),
         shouldShowMoreIcon = homeNavigation.resourceHandlingStrategy.shouldShowFolderMoreMenu() && state.showMoreMenu,
-        onMoreClick = { homeNavigation.openFolderMoreMenu(state.homeView) },
+        onMoreClick = { onIntent(HomeIntent.OpenFolderMoreMenu) },
         shouldShowBackIcon = state.showBackIcon,
         onBackClick = { homeNavigation.navigateBack() },
         shouldShowCloseIcon = homeNavigation.resourceHandlingStrategy.shouldShowCloseButton(),
@@ -274,60 +277,68 @@ private fun HomeScreen(
             ) {
                 HomeResourceList(state, homeNavigation, onIntent)
             }
-
-            if (state.showCreateResourceBottomSheet) {
-                CreateResourceMenuBottomSheet(
-                    homeDisplayViewModel = state.homeView,
-                    onCreatePassword = { onIntent(CreatePassword) },
-                    onCreateTotp = { onIntent(CreateTotp) },
-                    onCreateNote = { onIntent(CreateNote) },
-                    onCreateFolder = { onIntent(CreateFolder) },
-                    onDismissRequest = { onIntent(CloseCreateResourceMenu) },
-                )
-            }
-
-            ConfirmResourceDeleteAlertDialog(
-                isVisible = state.showDeleteResourceConfirmationDialog,
-                onConfirm = { onIntent(ConfirmDeleteResource) },
-                onDismiss = { onIntent(CloseDeleteConfirmationDialog) },
-            )
-
-            if (state.showAccountSwitchBottomSheet) {
-                SwitchAccountBottomSheet(
-                    appContext = AppContext.APP,
-                    onDismissRequest = { onIntent(CloseSwitchAccount) },
-                )
-            }
-
-            if (state.showFiltersBottomSheet) {
-                FiltersMenuBottomSheet(
-                    onDismissRequest = { onIntent(HomeIntent.CloseFiltersBottomSheet) },
-                    onHomeViewChange = { homeNavigation.navigateToRoot(it) },
-                    filtersMenuModel = FiltersMenuModel(state.homeView),
-                )
-            }
-
-            if (state.showResourceMoreBottomSheet && state.moreMenuResource != null) {
-                ResourceMoreMenuBottomSheet(
-                    resourceId = state.moreMenuResource.resourceId,
-                    resourceName = state.moreMenuResource.metadataJsonModel.name,
-                    onDismissRequest = { onIntent(CloseResourceMoreMenu) },
-                    onCopyPassword = { onIntent(CopyPassword) },
-                    onCopyMetadataDescription = { onIntent(CopyResourceMetadataDescription) },
-                    onCopyNote = { onIntent(CopyNote) },
-                    onCopyUrl = { onIntent(CopyResourceUri) },
-                    onCopyUsername = { onIntent(CopyResourceUsername) },
-                    onLaunchWebsite = { onIntent(LaunchResourceWebsite) },
-                    onDelete = { onIntent(DeleteResource) },
-                    onEdit = { onIntent(EditResource) },
-                    onShare = { onIntent(ShareResource) },
-                    onToggleFavourite = { onIntent(ToggleResourceFavourite(it)) },
-                )
-            }
-
-            ProgressDialog(state.showProgress)
         },
     )
+
+    if (state.showCreateResourceBottomSheet) {
+        CreateResourceMenuBottomSheet(
+            homeDisplayViewModel = state.homeView,
+            onCreatePassword = { onIntent(CreatePassword) },
+            onCreateTotp = { onIntent(CreateTotp) },
+            onCreateNote = { onIntent(CreateNote) },
+            onCreateFolder = { onIntent(CreateFolder) },
+            onDismissRequest = { onIntent(CloseCreateResourceMenu) },
+        )
+    }
+
+    ConfirmResourceDeleteAlertDialog(
+        isVisible = state.showDeleteResourceConfirmationDialog,
+        onConfirm = { onIntent(ConfirmDeleteResource) },
+        onDismiss = { onIntent(CloseDeleteConfirmationDialog) },
+    )
+
+    if (state.showAccountSwitchBottomSheet) {
+        SwitchAccountBottomSheet(
+            appContext = AppContext.APP,
+            onDismissRequest = { onIntent(CloseSwitchAccount) },
+        )
+    }
+
+    if (state.showFiltersBottomSheet) {
+        FiltersMenuBottomSheet(
+            onDismissRequest = { onIntent(HomeIntent.CloseFiltersBottomSheet) },
+            onHomeViewChange = { homeNavigation.navigateToRoot(it) },
+            filtersMenuModel = FiltersMenuModel(state.homeView),
+        )
+    }
+
+    if (state.showResourceMoreBottomSheet && state.moreMenuResource != null) {
+        ResourceMoreMenuBottomSheet(
+            resourceId = state.moreMenuResource.resourceId,
+            resourceName = state.moreMenuResource.metadataJsonModel.name,
+            onDismissRequest = { onIntent(CloseResourceMoreMenu) },
+            onCopyPassword = { onIntent(CopyPassword) },
+            onCopyMetadataDescription = { onIntent(CopyResourceMetadataDescription) },
+            onCopyNote = { onIntent(CopyNote) },
+            onCopyUrl = { onIntent(CopyResourceUri) },
+            onCopyUsername = { onIntent(CopyResourceUsername) },
+            onLaunchWebsite = { onIntent(LaunchResourceWebsite) },
+            onDelete = { onIntent(DeleteResource) },
+            onEdit = { onIntent(EditResource) },
+            onShare = { onIntent(ShareResource) },
+            onToggleFavourite = { onIntent(ToggleResourceFavourite(it)) },
+        )
+    }
+
+    if (state.showFolderMoreMenuBottomSheet) {
+        FolderMoreMenuBottomSheet(
+            folderName = (state.homeView as? Folders)?.activeFolderName,
+            onDismissRequest = { onIntent(HomeIntent.CloseFolderMoreMenu) },
+            onSeeDetails = { onIntent(HomeIntent.ViewFolderDetails) },
+        )
+    }
+
+    ProgressDialog(state.showProgress)
 }
 
 object HomeScreenTestTags {
