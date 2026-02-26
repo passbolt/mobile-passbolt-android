@@ -36,6 +36,10 @@ internal sealed interface HomeSideEffect {
         val folderId: String?,
     ) : HomeSideEffect
 
+    data class NavigateToFolderDetails(
+        val folderId: String,
+    ) : HomeSideEffect
+
     data class NavigateToCreateResourceForm(
         val leadingContentType: LeadingContentType,
         val folderId: String?,

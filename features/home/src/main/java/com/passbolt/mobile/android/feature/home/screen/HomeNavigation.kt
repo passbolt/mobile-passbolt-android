@@ -44,7 +44,7 @@ interface HomeNavigation {
 
     fun navigateBack()
 
-    fun openFolderMoreMenu(homeView: HomeDisplayViewModel)
+    fun navigateToFolderDetails(folderId: String)
 
     fun navigateToShare(resourceId: String)
 

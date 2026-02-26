@@ -43,7 +43,6 @@ import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.platform.app.InstrumentationRegistry
 import com.passbolt.mobile.android.core.ui.R.id.generatePasswordLayout
 import com.passbolt.mobile.android.core.ui.R.id.input
-import com.passbolt.mobile.android.feature.authentication.R.id.authButton
 import com.passbolt.mobile.android.matchers.withHint
 import com.passbolt.mobile.android.scenarios.resourcesedition.EditableFieldInput
 import com.passbolt.mobile.android.testtags.composetags.Home
@@ -57,7 +56,8 @@ internal fun getString(
 ) = InstrumentationRegistry.getInstrumentation().targetContext.getString(stringResId, *formatArgs)
 
 internal fun createNewPasswordFromHomeScreen(name: String) {
-    onView(withId(com.passbolt.mobile.android.feature.createresourcemenu.R.id.createPassword)).perform(click())
+    // TODO needs update after MVI migration
+//    onView(withId(com.passbolt.mobile.android.feature.createresourcemenu.R.id.createPassword)).perform(click())
 
     onView(withId(generatePasswordLayout)).perform(click())
     onView(

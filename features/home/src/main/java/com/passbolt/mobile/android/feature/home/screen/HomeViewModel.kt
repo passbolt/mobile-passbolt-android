@@ -46,6 +46,7 @@ import com.passbolt.mobile.android.feature.authentication.compose.AuthenticatedV
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.CloseCreateResourceMenu
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.CloseDeleteConfirmationDialog
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.CloseFiltersBottomSheet
+import com.passbolt.mobile.android.feature.home.screen.HomeIntent.CloseFolderMoreMenu
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.CloseResourceMoreMenu
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.CloseSwitchAccount
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.ConfirmDeleteResource
@@ -65,6 +66,7 @@ import com.passbolt.mobile.android.feature.home.screen.HomeIntent.Initialize
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.LaunchResourceWebsite
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.OpenCreateResourceMenu
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.OpenFiltersBottomSheet
+import com.passbolt.mobile.android.feature.home.screen.HomeIntent.OpenFolderMoreMenu
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.OpenResourceMenu
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.OtpQRScanReturned
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.ResourceDetailsReturned
@@ -75,12 +77,14 @@ import com.passbolt.mobile.android.feature.home.screen.HomeIntent.SearchEndIconA
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.ShareResource
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.ShowHomeView
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.ToggleResourceFavourite
+import com.passbolt.mobile.android.feature.home.screen.HomeIntent.ViewFolderDetails
 import com.passbolt.mobile.android.feature.home.screen.HomeSideEffect.CopyToClipboard
 import com.passbolt.mobile.android.feature.home.screen.HomeSideEffect.InitiateDataRefresh
 import com.passbolt.mobile.android.feature.home.screen.HomeSideEffect.NavigateToCreateFolder
 import com.passbolt.mobile.android.feature.home.screen.HomeSideEffect.NavigateToCreateResourceForm
 import com.passbolt.mobile.android.feature.home.screen.HomeSideEffect.NavigateToCreateTotp
 import com.passbolt.mobile.android.feature.home.screen.HomeSideEffect.NavigateToEditResourceForm
+import com.passbolt.mobile.android.feature.home.screen.HomeSideEffect.NavigateToFolderDetails
 import com.passbolt.mobile.android.feature.home.screen.HomeSideEffect.NavigateToResourceUri
 import com.passbolt.mobile.android.feature.home.screen.HomeSideEffect.NavigateToShare
 import com.passbolt.mobile.android.feature.home.screen.HomeSideEffect.ShowErrorSnackbar
@@ -164,6 +168,9 @@ internal class HomeViewModel(
             OpenFiltersBottomSheet -> updateViewState { copy(showFiltersBottomSheet = true) }
             CloseFiltersBottomSheet -> updateViewState { copy(showFiltersBottomSheet = false) }
             CloseResourceMoreMenu -> updateViewState { copy(showResourceMoreBottomSheet = false) }
+            OpenFolderMoreMenu -> updateViewState { copy(showFolderMoreMenuBottomSheet = true) }
+            CloseFolderMoreMenu -> updateViewState { copy(showFolderMoreMenuBottomSheet = false) }
+            ViewFolderDetails -> viewFolderDetails()
             ConfirmDeleteResource -> deleteResource()
             CreateNote -> createNote()
             CreatePassword -> createPassword()
@@ -194,6 +201,13 @@ internal class HomeViewModel(
     private fun folderCreationReturned(intent: FolderCreateReturned) {
         emitSideEffect(ShowSuccessSnackbar(SnackbarSuccessType.FOLDER_CREATED, intent.folderName))
         emitSideEffect(InitiateDataRefresh)
+    }
+
+    private fun viewFolderDetails() {
+        updateViewState { copy(showFolderMoreMenuBottomSheet = false) }
+        viewState.value.currentFolderId?.let { folderId ->
+            emitSideEffect(NavigateToFolderDetails(folderId))
+        }
     }
 
     private fun openResourceMoreMenu(intent: OpenResourceMenu) {
