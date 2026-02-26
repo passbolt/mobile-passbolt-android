@@ -31,7 +31,9 @@ Build docker image:
       --destination $CI_REGISTRY_IMAGE/android-app-alpine:latest
   rules:
     - changes:
-        - Dockerfile
+        compare_to: refs/heads/develop
+        paths:
+          - Dockerfile
       when: always
 
 # run all static analysis and reporting tools
