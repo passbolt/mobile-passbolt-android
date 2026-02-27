@@ -1,1 +1,1 @@
-This hotfix release contains a translation fix for users with Italian language.
+This release adds autofill conflict resolution UI and a custom PIN input component. It fixes bottom insets being applied twice on the Home screen. The update also includes log header versioning improvements, backend resource documentation, and extensive MVI refactoring across resource details, permissions, resource form, and more menu screens.
