@@ -13,6 +13,7 @@ import com.passbolt.mobile.android.core.navigation.compose.keys.ResourceFormNavi
 import com.passbolt.mobile.android.core.navigation.compose.keys.ResourceFormNavigationKey.TotpAdvancedSettingsForm
 import com.passbolt.mobile.android.core.navigation.compose.keys.ResourceFormNavigationKey.TotpForm
 import com.passbolt.mobile.android.core.navigation.compose.results.ResultEffect
+import com.passbolt.mobile.android.core.navigation.compose.results.ScanOtpResultEvent
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.customfields.CustomFieldsFormScreen
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.note.NoteFormScreen
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.password.PasswordFormScreen

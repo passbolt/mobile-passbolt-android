@@ -18,6 +18,7 @@ import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpFragment
 import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpMode
 import com.passbolt.mobile.android.ui.OtpParseResult
 
+// TODO MOB-3690: Remove fragment wrapper - use pure Compose navigation, eliminate findNavController/setFragmentResult
 class ResourceFormFragment :
     Fragment(),
     ResourceFormHostNavigation {

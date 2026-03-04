@@ -23,10 +23,15 @@
 
 package com.passbolt.mobile.android
 
+import com.passbolt.mobile.android.core.navigation.compose.base.Feature
+import com.passbolt.mobile.android.core.navigation.compose.base.FeatureModuleNavigation
+import com.passbolt.mobile.android.resourcepicker.navigation.ResourcePickerFeatureNavigation
 import com.passbolt.mobile.android.resourcepicker.resourcePickerScreenModule
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 val resourcePickerModule =
     module {
         resourcePickerScreenModule()
+        single<FeatureModuleNavigation>(named(Feature.RESOURCE_PICKER)) { ResourcePickerFeatureNavigation() }
     }

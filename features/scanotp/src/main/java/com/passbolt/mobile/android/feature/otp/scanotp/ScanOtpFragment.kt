@@ -20,23 +20,28 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
+import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
 import com.passbolt.mobile.android.core.navigation.deeplinks.NavDeepLinkProvider
 import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpNavigationKey.Scanning
 import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpNavigationKey.Success
 import com.passbolt.mobile.android.feature.otp.scanotp.compose.ScanOtpNavigation
 import com.passbolt.mobile.android.feature.otp.scanotp.compose.ScanOtpScreen
 import com.passbolt.mobile.android.feature.otp.scanotp.scanotpsuccess.ScanOtpSuccessIntent.LinkedResourceReceived
+import com.passbolt.mobile.android.feature.otp.scanotp.scanotpsuccess.ScanOtpSuccessNavigation
 import com.passbolt.mobile.android.feature.otp.scanotp.scanotpsuccess.ScanOtpSuccessScreen
 import com.passbolt.mobile.android.feature.otp.scanotp.scanotpsuccess.ScanOtpSuccessViewModel
 import com.passbolt.mobile.android.resourcepicker.ResourcePickerFragment
 import com.passbolt.mobile.android.ui.OtpParseResult
 import com.passbolt.mobile.android.ui.ResourceModel
 import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.koinInject
 import org.koin.core.parameter.parametersOf
 
+// TODO MOB-3691: Remove fragment wrapper - use pure Compose navigation, eliminate findNavController/setFragmentResult
 class ScanOtpFragment :
     Fragment(),
-    ScanOtpNavigation {
+    ScanOtpNavigation,
+    ScanOtpSuccessNavigation {
     private val navArgs: ScanOtpFragmentArgs by navArgs()
     private lateinit var backstackList: NavBackStack<NavKey>
     private var scannedTotpQr: OtpParseResult.OtpQr.TotpQr? = null
@@ -65,6 +70,7 @@ class ScanOtpFragment :
     ): View =
         ComposeView(requireContext()).apply {
             setContent {
+                val navigator: AppNavigator = koinInject()
                 val backStack =
                     rememberNavBackStack(Scanning).apply {
                         backstackList = this
@@ -92,6 +98,7 @@ class ScanOtpFragment :
                                         ScanOtpScreen(
                                             mode = navArgs.scanOtpMode,
                                             navigation = this@ScanOtpFragment,
+                                            navigator = navigator,
                                         )
                                     }
                                 }

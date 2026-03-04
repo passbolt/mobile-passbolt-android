@@ -28,5 +28,33 @@ import kotlinx.serialization.Serializable
 
 sealed interface OtpNavigationKey : NavKey {
     @Serializable
-    data object Otp : NavKey
+    data object Otp : OtpNavigationKey
+
+    @Serializable
+    data class ScanOtp(
+        val mode: ScanOtpMode,
+        val parentFolderId: String? = null,
+    ) : OtpNavigationKey
+
+    @Serializable
+    data class ScanOtpSuccess(
+        val totpLabel: String,
+        val totpSecret: String,
+        val totpIssuer: String?,
+        val totpAlgorithm: String,
+        val totpDigits: Int,
+        val totpPeriod: Long,
+        val parentFolderId: String? = null,
+    ) : OtpNavigationKey
+
+    @Serializable
+    data class ResourcePicker(
+        val suggestionUri: String? = null,
+    ) : OtpNavigationKey
+
+    @Serializable
+    enum class ScanOtpMode {
+        SCAN_FOR_RESULT,
+        SCAN_WITH_SUCCESS_SCREEN,
+    }
 }

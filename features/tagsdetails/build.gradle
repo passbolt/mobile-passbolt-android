@@ -44,6 +44,7 @@ dependencies {
     implementation libs.compose.lifecycle.viewmodel
     implementation libs.compose.activity
     implementation libs.accompanist.drawablepainter
+    implementation(libs.androidx.navigation3.runtime)
 
     debugImplementation libs.compose.ui.tooling
 

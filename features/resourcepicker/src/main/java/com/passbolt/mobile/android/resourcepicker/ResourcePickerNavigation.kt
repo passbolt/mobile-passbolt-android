@@ -26,7 +26,8 @@ package com.passbolt.mobile.android.resourcepicker
 import com.passbolt.mobile.android.resourcepicker.model.PickResourceAction
 import com.passbolt.mobile.android.ui.ResourceModel
 
-internal interface ResourcePickerNavigation {
+// TODO MOB-3691: Remove interface - replace with Compose navigation actions
+interface ResourcePickerNavigation {
     fun navigateUp()
 
     fun navigateBackWithResult(

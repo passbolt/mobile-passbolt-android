@@ -22,6 +22,7 @@ dependencies {
     implementation project(':users')
     implementation project(':localization')
     implementation project(':accounts')
+    implementation project(':navigation')
 
     implementation platform(libs.koin.bom)
     implementation libs.koin
@@ -47,6 +48,7 @@ dependencies {
     implementation libs.compose.activity
     implementation libs.compose.lifecycle.viewmodel
     implementation libs.coil.compose
+    implementation(libs.androidx.navigation3.runtime)
     debugImplementation libs.compose.ui.tooling
 
     testImplementation project(':commontest')

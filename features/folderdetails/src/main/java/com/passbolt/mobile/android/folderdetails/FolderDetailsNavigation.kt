@@ -25,6 +25,7 @@ package com.passbolt.mobile.android.folderdetails
 
 import com.passbolt.mobile.android.ui.PermissionsMode
 
+// TODO MOB-3699: Remove interface - replace with Compose navigation actions
 interface FolderDetailsNavigation {
     fun navigateUp()
 

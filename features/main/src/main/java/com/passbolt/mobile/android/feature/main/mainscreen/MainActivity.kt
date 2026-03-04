@@ -20,9 +20,9 @@ import com.passbolt.mobile.android.core.fulldatarefresh.service.DataRefreshServi
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedActivity
 import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
 import com.passbolt.mobile.android.core.navigation.compose.BottomTab
-import com.passbolt.mobile.android.core.navigation.compose.keys.HomeNavigationKey
-import com.passbolt.mobile.android.core.navigation.compose.keys.OtpNavigationKey
-import com.passbolt.mobile.android.core.navigation.compose.keys.SettingsNavigationKey
+import com.passbolt.mobile.android.core.navigation.compose.keys.HomeNavigationKey.Home
+import com.passbolt.mobile.android.core.navigation.compose.keys.OtpNavigationKey.Otp
+import com.passbolt.mobile.android.core.navigation.compose.keys.SettingsNavigationKey.SettingsMain
 import com.passbolt.mobile.android.core.security.runtimeauth.RuntimeAuthenticatedFlag
 import com.passbolt.mobile.android.feature.main.databinding.ActivityMainBinding
 import com.passbolt.mobile.android.feature.main.mainscreen.bottomnavigation.MainBottomNavigationModel
@@ -79,15 +79,8 @@ class MainActivity :
             menu.findItem(OtpR.id.otpNav).isVisible = navigationModel.isOtpTabVisible
         }
 
-        hideBottomNavigationForFragments()
         hideBottomNavigationForComposables()
         handleTabSwitchRequests()
-    }
-
-    private fun hideBottomNavigationForFragments() {
-        bottomNavController.addOnDestinationChangedListener { _, destination, _ ->
-            requiredBinding.mainNavigation.isVisible = bottomNavFragmentIds.contains(destination.id)
-        }
     }
 
     private fun hideBottomNavigationForComposables() {
@@ -211,18 +204,12 @@ class MainActivity :
 
     private companion object {
         private const val REQUEST_APP_UPDATE = 8000
-        private val bottomNavFragmentIds =
-            listOf(
-                HomeR.id.homeBottomNavigationContainerFragment,
-                OtpR.id.otpBottomNavigationContainerFragment,
-                SettingsR.id.settingsBottomNavigationContainerFragment,
-            )
 
         private val bottomNavComposableTypes =
             listOf(
-                HomeNavigationKey::class,
-                OtpNavigationKey::class,
-                SettingsNavigationKey::class,
+                Home::class,
+                Otp::class,
+                SettingsMain::class,
             )
     }
 }

@@ -10,6 +10,7 @@ import com.passbolt.mobile.android.jsonmodel.delegates.RootRelativeJsonPathStrin
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.Serializable
 import java.time.ZonedDateTime
 
 /**
@@ -35,14 +36,17 @@ import java.time.ZonedDateTime
  * @since v1.0
  */
 
-@Parcelize
+@Serializable
+@Parcelize // TODO remove @Parcelize after full Compose navigation migration
 data class ResourceModel(
     val resourceId: String,
     val resourceTypeId: String,
     val folderId: String?,
     val permission: ResourcePermission,
     val favouriteId: String?,
+    @Serializable(with = ZonedDateTimeKSerializer::class)
     val modified: ZonedDateTime,
+    @Serializable(with = ZonedDateTimeKSerializer::class)
     val expiry: ZonedDateTime?,
     val metadataKeyId: String?,
     val metadataKeyType: MetadataKeyTypeModel?,
@@ -92,7 +96,8 @@ class UpdateResourceModel(
         metadataJsonModel = metadataJsonModel,
     )
 
-@Parcelize
+@Serializable
+@Parcelize // TODO remove @Parcelize after full Compose navigation migration
 data class MetadataJsonModel(
     override var json: String?,
 ) : JsonModel,

@@ -38,7 +38,7 @@ import com.passbolt.mobile.android.ui.PermissionsMode
  * @since v1.0
  */
 
-class FolderDetailsFragment :
+class FolderDetailsFragment : // TODO MOB-3699: Use pure Compose navigation
     Fragment(),
     FolderDetailsNavigation {
     private val args: FolderDetailsFragmentArgs by navArgs()

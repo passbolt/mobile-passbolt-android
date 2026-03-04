@@ -92,6 +92,7 @@ class ResourceDetailsFragment :
         findNavController().popBackStack()
     }
 
+    // TODO MOB-3690: Replace XML navigation to ResourceForm with Compose navigation
     override fun navigateToEditResource(resourceModel: ResourceModel) {
         setFragmentResultListener(ResourceFormFragment.REQUEST_RESOURCE_FORM, resourceEditResult)
         findNavController().navigate(
@@ -104,6 +105,7 @@ class ResourceDetailsFragment :
         )
     }
 
+    // TODO MOB-3696: Replace XML navigation to Permissions with Compose navigation
     override fun navigateToResourcePermissions(
         resourceId: String,
         mode: PermissionsMode,

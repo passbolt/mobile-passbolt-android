@@ -22,6 +22,7 @@
  */
 package com.passbolt.mobile.android.locationdetails
 
+// TODO MOB-3699: Remove interface - replace with Compose navigation actions
 interface LocationDetailsNavigation {
     fun navigateUp()
 

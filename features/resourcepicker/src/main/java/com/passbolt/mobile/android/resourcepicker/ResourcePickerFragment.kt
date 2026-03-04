@@ -38,6 +38,7 @@ import com.passbolt.mobile.android.resourcepicker.model.PickResourceAction
 import com.passbolt.mobile.android.resourcepicker.screen.ResourcePickerScreen
 import com.passbolt.mobile.android.ui.ResourceModel
 
+// TODO MOB-3691: Remove fragment wrapper - use pure Compose navigation, eliminate findNavController/setFragmentResult
 class ResourcePickerFragment :
     Fragment(),
     ResourcePickerNavigation {

@@ -34,7 +34,7 @@ import com.passbolt.mobile.android.core.navigation.ActivityIntents
  * @since v1.0
  */
 
-class LocationDetailsFragment :
+class LocationDetailsFragment : // TODO MOB-3699: Use pure Compose navigation
     Fragment(),
     LocationDetailsNavigation {
     private val args: LocationDetailsFragmentArgs by navArgs()
