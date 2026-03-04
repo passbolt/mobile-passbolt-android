@@ -29,6 +29,7 @@ import com.passbolt.mobile.android.feature.resourceform.metadata.additionaluris.
 import com.passbolt.mobile.android.feature.resourceform.metadata.additionaluris.LimitChecker.LimitCheckResult.LimitReached
 import org.junit.Before
 import org.junit.Test
+import kotlin.test.assertIs
 
 class AdditionalUrisLimitCheckerTest {
     private lateinit var limitChecker: AdditionalUrisLimitChecker
@@ -63,15 +64,15 @@ class AdditionalUrisLimitCheckerTest {
     fun `checkLimit should return LimitReached when count equals max limit`() {
         val result = limitChecker.checkLimit(MAX_ADDITIONAL_URIS)
 
-        assertThat(result).isInstanceOf(LimitReached::class.java)
-        assertThat((result as LimitReached).maxLimit).isEqualTo(MAX_ADDITIONAL_URIS)
+        val reached = assertIs<LimitReached>(result)
+        assertThat(reached.maxLimit).isEqualTo(MAX_ADDITIONAL_URIS)
     }
 
     @Test
     fun `checkLimit should return LimitReached when count exceeds max limit`() {
         val result = limitChecker.checkLimit(MAX_ADDITIONAL_URIS + 5)
 
-        assertThat(result).isInstanceOf(LimitReached::class.java)
-        assertThat((result as LimitReached).maxLimit).isEqualTo(MAX_ADDITIONAL_URIS)
+        val reached = assertIs<LimitReached>(result)
+        assertThat(reached.maxLimit).isEqualTo(MAX_ADDITIONAL_URIS)
     }
 }

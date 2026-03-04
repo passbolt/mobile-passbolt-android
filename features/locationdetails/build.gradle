@@ -34,6 +34,8 @@ dependencies {
     implementation libs.compose.foundation
     implementation libs.compose.material3
     implementation libs.compose.ui.tooling
+    implementation libs.compose.lifecycle.viewmodel
+    implementation(libs.androidx.navigation3.runtime)
     debugImplementation libs.compose.ui.tooling.preview
 
     testImplementation project(':commontest')

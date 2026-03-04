@@ -8,40 +8,6 @@
     <fragment
         android:id="@+id/otpBottomNavigationContainerFragment"
         android:name="com.passbolt.mobile.android.feature.otp.navigation.OtpBottomNavigationContainerFragment"
-        android:label="OtpComposeFragment">
-
-        <action
-            android:id="@+id/action_otpComposeFragment_to_scanOtpFragment"
-            app:destination="@id/scanOtpNav"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left"
-            app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right">
-            <argument
-                android:name="parentFolderId"
-                android:defaultValue="@null"
-                app:argType="string"
-                app:nullable="true" />
-            <argument
-                android:name="scanOtpMode"
-                app:argType="com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpMode" />
-        </action>
-
-        <action
-            android:id="@+id/action_otp_to_resourceForm"
-            app:destination="@id/resourceFormNav"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left"
-            app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right">
-            <argument
-                android:name="mode"
-                app:argType="com.passbolt.mobile.android.ui.ResourceFormMode" />
-        </action>
-    </fragment>
-
-    <include app:graph="@navigation/scan_otp" />
-
-    <include app:graph="@navigation/resource_form" />
+        android:label="OtpComposeFragment" />
 
 </navigation>

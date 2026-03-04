@@ -67,9 +67,9 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
 internal fun ScanOtpScreen(
     mode: ScanOtpMode,
     navigation: ScanOtpNavigation,
+    navigator: AppNavigator,
     modifier: Modifier = Modifier,
     viewModel: ScanOtpViewModel = koinViewModel(),
-    navigator: AppNavigator = koinInject(),
 ) {
     val state by viewModel.viewState.collectAsStateWithLifecycle()
     val context = LocalContext.current

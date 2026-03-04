@@ -23,12 +23,17 @@
 
 package com.passbolt.mobile.android.feature.otp
 
+import com.passbolt.mobile.android.core.navigation.compose.base.Feature
+import com.passbolt.mobile.android.core.navigation.compose.base.FeatureModuleNavigation
+import com.passbolt.mobile.android.feature.otp.scanotp.navigation.ScanOtpFeatureNavigation
 import com.passbolt.mobile.android.feature.otp.scanotp.scanOtpModule
 import com.passbolt.mobile.android.feature.otp.scanotp.scanotpsuccess.scanOtpSuccessModule
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 val scanOtpMainModule =
     module {
         scanOtpModule()
         scanOtpSuccessModule()
+        single<FeatureModuleNavigation>(named(Feature.SCAN_OTP)) { ScanOtpFeatureNavigation() }
     }

@@ -86,6 +86,11 @@ class AppNavigator(
         _currentBackStackItem.value = key
     }
 
+    fun replaceAll(key: NavKey) {
+        backStack.clear()
+        navigateToKey(key)
+    }
+
     fun navigateBack(): Any? {
         if (backStack.size <= 1) return null
 

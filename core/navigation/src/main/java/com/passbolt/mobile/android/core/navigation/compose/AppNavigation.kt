@@ -1,8 +1,5 @@
 package com.passbolt.mobile.android.core.navigation.compose
 
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
@@ -50,17 +47,8 @@ fun AppNavigation(navigator: AppNavigator = koinInject()) {
                     installer.provideEntryProviderInstaller().invoke(this)
                 }
             },
-        transitionSpec = {
-            slideInHorizontally(initialOffsetX = { it }) togetherWith
-                slideOutHorizontally(targetOffsetX = { -it })
-        },
-        popTransitionSpec = {
-            slideInHorizontally(initialOffsetX = { -it }) togetherWith
-                slideOutHorizontally(targetOffsetX = { it })
-        },
-        predictivePopTransitionSpec = {
-            slideInHorizontally(initialOffsetX = { -it }) togetherWith
-                slideOutHorizontally(targetOffsetX = { it })
-        },
+        transitionSpec = { horizontalSlideTransition },
+        popTransitionSpec = { horizontalSlidePopTransition },
+        predictivePopTransitionSpec = { horizontalSlidePopTransition },
     )
 }

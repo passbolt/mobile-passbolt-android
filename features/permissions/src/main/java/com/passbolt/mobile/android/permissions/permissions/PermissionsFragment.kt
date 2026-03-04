@@ -38,6 +38,7 @@ import com.passbolt.mobile.android.core.navigation.compose.PermissionsHostNaviga
 import com.passbolt.mobile.android.core.navigation.compose.PermissionsNavigation
 import com.passbolt.mobile.android.ui.PermissionsMode
 
+// TODO MOB-3696: Remove fragment wrapper - use pure Compose navigation, eliminate findNavController/setFragmentResult/startActivity
 class PermissionsFragment :
     Fragment(),
     PermissionsHostNavigation {

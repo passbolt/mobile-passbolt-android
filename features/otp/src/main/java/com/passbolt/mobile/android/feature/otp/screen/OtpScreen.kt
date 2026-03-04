@@ -50,6 +50,10 @@ import com.passbolt.mobile.android.core.clipboard.ClipboardAccess
 import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
 import com.passbolt.mobile.android.core.fulldatarefresh.service.DataRefreshService
 import com.passbolt.mobile.android.core.navigation.AppContext
+import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
+import com.passbolt.mobile.android.core.navigation.compose.keys.OtpNavigationKey.ScanOtp
+import com.passbolt.mobile.android.core.navigation.compose.keys.OtpNavigationKey.ScanOtpMode
+import com.passbolt.mobile.android.core.navigation.compose.keys.ResourceFormNavigationKey.MainResourceForm
 import com.passbolt.mobile.android.core.resources.resourceicon.ResourceIconProvider
 import com.passbolt.mobile.android.core.ui.compose.dialogs.ConfirmResourceDeleteAlertDialog
 import com.passbolt.mobile.android.core.ui.compose.empty.EmptyResourceListState
@@ -65,6 +69,9 @@ import com.passbolt.mobile.android.feature.metadatakeytrust.ui.compose.NewMetada
 import com.passbolt.mobile.android.feature.metadatakeytrust.ui.compose.TrustedMetadataKeyDeletedDialog
 import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.CloseCreateResourceMenu
 import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.CloseDeleteConfirmationDialog
+import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.CloseOtpMoreMenu
+import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.CloseSwitchAccount
+import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.CloseTrustNewKeyDialog
 import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.CloseTrustedKeyDeletedDialog
 import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.ConfirmDeleteTotp
 import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.CopyOtp
@@ -79,6 +86,7 @@ import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.RevealOtp
 import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.Search
 import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.SearchEndIconAction
 import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.TrustMetadataKeyDeletion
+import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.TrustNewMetadataKey
 import com.passbolt.mobile.android.feature.otp.screen.OtpSideEffect.CopyToClipboard
 import com.passbolt.mobile.android.feature.otp.screen.OtpSideEffect.InitiateDataRefresh
 import com.passbolt.mobile.android.feature.otp.screen.OtpSideEffect.NavigateToCreateResourceForm
@@ -88,6 +96,7 @@ import com.passbolt.mobile.android.feature.otp.screen.OtpSideEffect.ShowErrorSna
 import com.passbolt.mobile.android.feature.otp.screen.OtpSideEffect.ShowSuccessSnackbar
 import com.passbolt.mobile.android.feature.otp.screen.OtpSideEffect.ShowToast
 import com.passbolt.mobile.android.otpmoremenu.OtpMoreMenuBottomSheet
+import com.passbolt.mobile.android.ui.ResourceFormMode
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
@@ -96,7 +105,7 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 @Composable
 internal fun OtpScreen(
-    navigation: OtpNavigation,
+    navigator: AppNavigator,
     modifier: Modifier = Modifier,
     viewModel: OtpViewModel = koinViewModel(),
     resourceIconProvider: ResourceIconProvider = koinInject(),
@@ -147,9 +156,14 @@ internal fun OtpScreen(
                         ),
                     )
                 }
-            NavigateToCreateTotp -> navigation.navigateToScanOtpCodeForResult()
-            is NavigateToCreateResourceForm -> navigation.navigateToCreateResourceForm(it.leadingContentType)
-            is NavigateToEditResourceForm -> navigation.navigateToEditResourceForm(it.resourceId, it.resourceName)
+            NavigateToCreateTotp ->
+                navigator.navigateToKey(
+                    ScanOtp(ScanOtpMode.SCAN_WITH_SUCCESS_SCREEN),
+                )
+            is NavigateToCreateResourceForm ->
+                navigator.navigateToKey(MainResourceForm(ResourceFormMode.Create(it.leadingContentType, null)))
+            is NavigateToEditResourceForm ->
+                navigator.navigateToKey(MainResourceForm(ResourceFormMode.Edit(it.resourceId, it.resourceName)))
             InitiateDataRefresh -> DataRefreshService.start(context)
             is ShowToast -> Toast.makeText(context, getToastMessage(context, it.type), Toast.LENGTH_SHORT).show()
         }
@@ -234,7 +248,7 @@ fun OtpScreen(
                     OtpMoreMenuBottomSheet(
                         resourceId = moreMenuResource.resource.resourceId,
                         resourceName = moreMenuResource.resource.metadataJsonModel.name,
-                        onDismissRequest = { onIntent(OtpIntent.CloseOtpMoreMenu) },
+                        onDismissRequest = { onIntent(CloseOtpMoreMenu) },
                         onShowOtp = { onIntent(RevealOtp(moreMenuResource)) },
                         onCopyOtp = { onIntent(CopyOtp(moreMenuResource)) },
                         onEditOtp = { onIntent(EditOtp(moreMenuResource)) },
@@ -259,14 +273,14 @@ fun OtpScreen(
                 if (state.showNewMetadataTrustDialog && state.newMetadataKeyTrustModel != null) {
                     NewMetadataKeyTrustDialog(
                         newKeyToTrustModel = state.newMetadataKeyTrustModel,
-                        onTrustClick = { onIntent(OtpIntent.TrustNewMetadataKey(state.newMetadataKeyTrustModel)) },
-                        onDismiss = { onIntent(OtpIntent.CloseTrustNewKeyDialog) },
+                        onTrustClick = { onIntent(TrustNewMetadataKey(state.newMetadataKeyTrustModel)) },
+                        onDismiss = { onIntent(CloseTrustNewKeyDialog) },
                     )
                 }
 
                 if (state.showAccountSwitchBottomSheet) {
                     SwitchAccountBottomSheet(
-                        onDismissRequest = { onIntent(OtpIntent.CloseSwitchAccount) },
+                        onDismissRequest = { onIntent(CloseSwitchAccount) },
                         appContext = AppContext.APP,
                     )
                 }

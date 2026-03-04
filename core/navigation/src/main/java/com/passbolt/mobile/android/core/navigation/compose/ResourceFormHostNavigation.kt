@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.core.navigation.compose
 import androidx.compose.runtime.compositionLocalOf
 import com.passbolt.mobile.android.ui.OtpParseResult
 
+// TODO MOB-3690: Remove bridge interface after ResourceForm Compose navigation migration
 interface ResourceFormHostNavigation {
     fun navigateBack()
 

@@ -1,33 +1,3 @@
-package com.passbolt.mobile.android.feature.otp.navigation
-
-import PassboltTheme
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import androidx.compose.ui.platform.ComposeView
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.setFragmentResultListener
-import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
-import androidx.navigation.fragment.findNavController
-import androidx.navigation3.runtime.NavBackStack
-import androidx.navigation3.runtime.NavEntry
-import androidx.navigation3.runtime.NavKey
-import androidx.navigation3.runtime.rememberNavBackStack
-import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
-import androidx.navigation3.ui.NavDisplay
-import com.passbolt.mobile.android.core.navigation.compose.keys.OtpNavigationKey.Otp
-import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpFragment
-import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpMode
-import com.passbolt.mobile.android.feature.otp.screen.OtpIntent
-import com.passbolt.mobile.android.feature.otp.screen.OtpNavigation
-import com.passbolt.mobile.android.feature.otp.screen.OtpScreen
-import com.passbolt.mobile.android.feature.otp.screen.OtpViewModel
-import com.passbolt.mobile.android.feature.resourceform.main.ResourceFormFragment
-import com.passbolt.mobile.android.ui.LeadingContentType
-import com.passbolt.mobile.android.ui.ResourceFormMode
-import org.koin.androidx.compose.koinViewModel
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -50,31 +20,18 @@ import org.koin.androidx.compose.koinViewModel
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class OtpBottomNavigationContainerFragment :
-    Fragment(),
-    OtpNavigation {
-    private val otpScanQrReturned = { _: String, result: Bundle ->
-        viewModel.onIntent(
-            OtpIntent.OtpQRScanReturned(
-                otpCreated = result.getBoolean(ScanOtpFragment.EXTRA_OTP_CREATED, false),
-                otpManualCreationChosen = result.getBoolean(ScanOtpFragment.EXTRA_MANUAL_CREATION_CHOSEN),
-            ),
-        )
-    }
 
-    private val resourceFormReturned = { _: String, result: Bundle ->
-        viewModel.onIntent(
-            OtpIntent.ResourceFormReturned(
-                result.getBoolean(ResourceFormFragment.EXTRA_RESOURCE_CREATED, false),
-                result.getBoolean(ResourceFormFragment.EXTRA_RESOURCE_EDITED, false),
-                result.getString(ResourceFormFragment.EXTRA_RESOURCE_NAME),
-            ),
-        )
-    }
+package com.passbolt.mobile.android.feature.otp.navigation
 
-    private lateinit var viewModel: OtpViewModel
-    private lateinit var backstackList: NavBackStack<NavKey>
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.compose.ui.platform.ComposeView
+import androidx.fragment.app.Fragment
+import com.passbolt.mobile.android.core.navigation.compose.OtpNavigation
 
+class OtpBottomNavigationContainerFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -82,91 +39,7 @@ class OtpBottomNavigationContainerFragment :
     ): View =
         ComposeView(requireContext()).apply {
             setContent {
-                val backStack =
-                    rememberNavBackStack(Otp).apply {
-                        backstackList = this
-                    }
-
-                NavDisplay(
-                    backStack = backStack,
-                    onBack = {
-                        if (backStack.size > 1) {
-                            backStack.removeLastOrNull()
-                        }
-                    },
-                    entryDecorators =
-                        listOf(
-                            rememberSaveableStateHolderNavEntryDecorator(),
-                            rememberViewModelStoreNavEntryDecorator(),
-                        ),
-                    entryProvider = { key ->
-                        when (key) {
-                            is Otp ->
-                                NavEntry(key) {
-                                    viewModel = koinViewModel()
-                                    PassboltTheme {
-                                        PassboltTheme {
-                                            OtpScreen(
-                                                navigation = this@OtpBottomNavigationContainerFragment,
-                                                viewModel = viewModel,
-                                            )
-                                        }
-                                    }
-                                }
-                            else -> error("Unsupported home key: $key")
-                        }
-                    },
-                )
+                OtpNavigation()
             }
         }
-
-    override fun onViewCreated(
-        view: View,
-        savedInstanceState: Bundle?,
-    ) {
-        super.onViewCreated(view, savedInstanceState)
-        setFragmentResultListeners()
-    }
-
-    private fun setFragmentResultListeners() {
-        setFragmentResultListener(
-            ScanOtpFragment.REQUEST_SCAN_OTP_FOR_RESULT,
-            otpScanQrReturned,
-        )
-        setFragmentResultListener(
-            ResourceFormFragment.REQUEST_RESOURCE_FORM,
-            resourceFormReturned,
-        )
-    }
-
-    override fun navigateToCreateResourceForm(leadingContentType: LeadingContentType) {
-        findNavController().navigate(
-            OtpBottomNavigationContainerFragmentDirections.actionOtpToResourceForm(
-                ResourceFormMode.Create(
-                    leadingContentType,
-                    parentFolderId = null,
-                ),
-            ),
-        )
-    }
-
-    override fun navigateToEditResourceForm(
-        resourceId: String,
-        resourceName: String,
-    ) {
-        findNavController().navigate(
-            OtpBottomNavigationContainerFragmentDirections.actionOtpToResourceForm(
-                ResourceFormMode.Edit(
-                    resourceId = resourceId,
-                    resourceName = resourceName,
-                ),
-            ),
-        )
-    }
-
-    override fun navigateToScanOtpCodeForResult() {
-        findNavController().navigate(
-            OtpBottomNavigationContainerFragmentDirections.actionOtpComposeFragmentToScanOtpFragment(ScanOtpMode.SCAN_WITH_SUCCESS_SCREEN),
-        )
-    }
 }

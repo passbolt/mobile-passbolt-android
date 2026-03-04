@@ -61,6 +61,7 @@ import com.passbolt.mobile.android.core.navigation.compose.LocalResourceFormHost
 import com.passbolt.mobile.android.core.navigation.compose.keys.ResourceFormNavigationKey.TotpAdvancedSettingsForm
 import com.passbolt.mobile.android.core.navigation.compose.results.NavigationResultEventBus
 import com.passbolt.mobile.android.core.navigation.compose.results.ResultEffect
+import com.passbolt.mobile.android.core.navigation.compose.results.ScanOtpResultEvent
 import com.passbolt.mobile.android.core.ui.compose.button.PrimaryButton
 import com.passbolt.mobile.android.core.ui.compose.button.SecondaryIconButton
 import com.passbolt.mobile.android.core.ui.compose.text.TextInput
@@ -81,7 +82,6 @@ import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.T
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.TotpFormSideEffect.NavigateBack
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.TotpFormSideEffect.NavigateToAdvancedSettings
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.TotpFormSideEffect.NavigateToScanTotp
-import com.passbolt.mobile.android.feature.resourceform.navigation.ScanOtpResultEvent
 import com.passbolt.mobile.android.feature.resourceform.navigation.TotpAdvancedSettingsFormResult
 import com.passbolt.mobile.android.feature.resourceform.navigation.TotpFormResult
 import com.passbolt.mobile.android.ui.LeadingContentType

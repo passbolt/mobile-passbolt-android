@@ -35,7 +35,6 @@ import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
 import com.passbolt.mobile.android.core.ui.compose.button.PrimaryButton
 import com.passbolt.mobile.android.core.ui.compose.progressdialog.ProgressDialog
 import com.passbolt.mobile.android.feature.authentication.compose.AuthenticationHandler
-import com.passbolt.mobile.android.feature.otp.scanotp.compose.ScanOtpNavigation
 import com.passbolt.mobile.android.feature.otp.scanotp.scanotpsuccess.ScanOtpSuccessIntent.CreateStandaloneOtpClick
 import com.passbolt.mobile.android.feature.otp.scanotp.scanotpsuccess.ScanOtpSuccessIntent.LinkToResourceClick
 import com.passbolt.mobile.android.feature.otp.scanotp.scanotpsuccess.ScanOtpSuccessSideEffect.NavigateToOtpList
@@ -53,7 +52,7 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
 internal fun ScanOtpSuccessScreen(
     scannedTotp: OtpParseResult.OtpQr.TotpQr,
     parentFolderId: String?,
-    navigation: ScanOtpNavigation,
+    navigation: ScanOtpSuccessNavigation,
     modifier: Modifier = Modifier,
     viewModel: ScanOtpSuccessViewModel = koinViewModel { parametersOf(scannedTotp, parentFolderId) },
 ) {

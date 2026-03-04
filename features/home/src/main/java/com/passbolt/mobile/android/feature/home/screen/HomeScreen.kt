@@ -23,10 +23,8 @@
 
 package com.passbolt.mobile.android.feature.home.screen
 
-import android.content.Context
 import android.widget.Toast
 import androidx.activity.compose.LocalActivity
-import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxSize
@@ -53,6 +51,15 @@ import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
 import com.passbolt.mobile.android.core.fulldatarefresh.service.DataRefreshService
 import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
+import com.passbolt.mobile.android.core.navigation.compose.BottomTab
+import com.passbolt.mobile.android.core.navigation.compose.keys.CreateFolderNavigationKey
+import com.passbolt.mobile.android.core.navigation.compose.keys.FolderDetailsNavigationKey.FolderDetails
+import com.passbolt.mobile.android.core.navigation.compose.keys.HomeNavigationKey
+import com.passbolt.mobile.android.core.navigation.compose.keys.OtpNavigationKey.ScanOtp
+import com.passbolt.mobile.android.core.navigation.compose.keys.OtpNavigationKey.ScanOtpMode
+import com.passbolt.mobile.android.core.navigation.compose.keys.PermissionsNavigationKey.Permissions
+import com.passbolt.mobile.android.core.navigation.compose.keys.ResourceFormNavigationKey.MainResourceForm
+import com.passbolt.mobile.android.core.navigation.compose.keys.SettingsNavigationKey.Autofill
 import com.passbolt.mobile.android.core.ui.compose.dialogs.ConfirmResourceDeleteAlertDialog
 import com.passbolt.mobile.android.core.ui.compose.fab.AddFloatingActionButton
 import com.passbolt.mobile.android.core.ui.compose.progressdialog.ProgressDialog
@@ -65,6 +72,8 @@ import com.passbolt.mobile.android.feature.home.filtersmenu.FiltersMenuBottomShe
 import com.passbolt.mobile.android.feature.home.foldermoremenu.FolderMoreMenuBottomSheet
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.CloseCreateResourceMenu
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.CloseDeleteConfirmationDialog
+import com.passbolt.mobile.android.feature.home.screen.HomeIntent.CloseFiltersBottomSheet
+import com.passbolt.mobile.android.feature.home.screen.HomeIntent.CloseFolderMoreMenu
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.CloseResourceMoreMenu
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.CloseSwitchAccount
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.ConfirmDeleteResource
@@ -83,10 +92,12 @@ import com.passbolt.mobile.android.feature.home.screen.HomeIntent.Initialize
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.LaunchResourceWebsite
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.OpenCreateResourceMenu
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.OpenFiltersBottomSheet
+import com.passbolt.mobile.android.feature.home.screen.HomeIntent.OpenFolderMoreMenu
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.Search
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.SearchEndIconAction
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.ShareResource
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.ToggleResourceFavourite
+import com.passbolt.mobile.android.feature.home.screen.HomeIntent.ViewFolderDetails
 import com.passbolt.mobile.android.feature.home.screen.HomeSideEffect.CopyToClipboard
 import com.passbolt.mobile.android.feature.home.screen.HomeSideEffect.InitiateDataRefresh
 import com.passbolt.mobile.android.feature.home.screen.HomeSideEffect.NavigateToCreateFolder
@@ -104,18 +115,11 @@ import com.passbolt.mobile.android.feature.home.switchaccount.SwitchAccountBotto
 import com.passbolt.mobile.android.resourcemoremenu.ResourceMoreMenuBottomSheet
 import com.passbolt.mobile.android.testtags.composetags.Home
 import com.passbolt.mobile.android.ui.FiltersMenuModel
-import com.passbolt.mobile.android.ui.Folder.Child
-import com.passbolt.mobile.android.ui.Folder.Root
 import com.passbolt.mobile.android.ui.HomeDisplayViewModel
-import com.passbolt.mobile.android.ui.HomeDisplayViewModel.AllItems
-import com.passbolt.mobile.android.ui.HomeDisplayViewModel.Expiry
-import com.passbolt.mobile.android.ui.HomeDisplayViewModel.Favourites
 import com.passbolt.mobile.android.ui.HomeDisplayViewModel.Folders
-import com.passbolt.mobile.android.ui.HomeDisplayViewModel.Groups
-import com.passbolt.mobile.android.ui.HomeDisplayViewModel.OwnedByMe
-import com.passbolt.mobile.android.ui.HomeDisplayViewModel.RecentlyModified
-import com.passbolt.mobile.android.ui.HomeDisplayViewModel.SharedWithMe
-import com.passbolt.mobile.android.ui.HomeDisplayViewModel.Tags
+import com.passbolt.mobile.android.ui.PermissionsItem
+import com.passbolt.mobile.android.ui.PermissionsMode
+import com.passbolt.mobile.android.ui.ResourceFormMode
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
@@ -125,12 +129,12 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
 @Composable
 @Suppress("ktlint:compose:vm-forwarding-check", "ViewModelForwarding")
 internal fun HomeScreen(
-    navigation: HomeNavigation,
+    resourceHandlingStrategy: ResourceHandlingStrategy,
     showSuggestedModel: ShowSuggestedModel,
     homeView: HomeDisplayViewModel,
+    navigator: AppNavigator,
     modifier: Modifier = Modifier,
     clipboardAccess: ClipboardAccess = koinInject(),
-    navigator: AppNavigator = koinInject(),
     viewModel: HomeViewModel = koinViewModel(),
 ) {
     val context = LocalContext.current
@@ -138,11 +142,19 @@ internal fun HomeScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
 
+    val homeNavigation =
+        remember(navigator, resourceHandlingStrategy) {
+            HomeNavigator(navigator, resourceHandlingStrategy)
+        }
+
     AutofillConflictSnackbarEffect(
         snackbarHostState = snackbarHostState,
         isAutofillConflictDetected = state.isAutofillConflictDetected,
         onActionClick = {
-            navigation.navigateToAutofillSettings()
+            with(navigator) {
+                setPendingNavigation(Autofill)
+                requestTabSwitch(BottomTab.SETTINGS)
+            }
         },
     )
 
@@ -159,7 +171,7 @@ internal fun HomeScreen(
         state = state,
         onIntent = viewModel::onIntent,
         snackbarHostState = snackbarHostState,
-        homeNavigation = navigation,
+        homeNavigation = homeNavigation,
         modifier = modifier,
     )
 
@@ -195,18 +207,37 @@ internal fun HomeScreen(
                         ),
                     )
                 }
-            is NavigateToCreateTotp -> navigation.navigateToScanOtpCodeForResult(it.folderId)
-            is NavigateToCreateResourceForm -> navigation.navigateToCreateResourceForm(it.leadingContentType, it.folderId)
+            is NavigateToCreateTotp ->
+                navigator.navigateToKey(
+                    ScanOtp(ScanOtpMode.SCAN_WITH_SUCCESS_SCREEN, it.folderId),
+                )
+            is NavigateToCreateResourceForm ->
+                navigator.navigateToKey(
+                    MainResourceForm(ResourceFormMode.Create(it.leadingContentType, it.folderId)),
+                )
             is NavigateToEditResourceForm ->
-                navigation.navigateToEditResourceForm(
-                    it.resourceModel.resourceId,
-                    it.resourceModel.metadataJsonModel.name,
+                navigator.navigateToKey(
+                    MainResourceForm(
+                        ResourceFormMode.Edit(
+                            resourceId = it.resourceModel.resourceId,
+                            resourceName = it.resourceModel.metadataJsonModel.name,
+                        ),
+                    ),
                 )
             InitiateDataRefresh -> DataRefreshService.start(context)
             is NavigateToResourceUri -> navigator.openExternalWebsite(context, it.url)
-            is NavigateToShare -> navigation.navigateToShare(it.resourceModel.resourceId)
-            is NavigateToCreateFolder -> navigation.navigateToCreateFolder(it.folderId)
-            is NavigateToFolderDetails -> navigation.navigateToFolderDetails(it.folderId)
+            is NavigateToShare ->
+                navigator.navigateToKey(
+                    Permissions(it.resourceModel.resourceId, PermissionsMode.EDIT, PermissionsItem.RESOURCE),
+                )
+            is NavigateToCreateFolder ->
+                navigator.navigateToKey(
+                    CreateFolderNavigationKey.CreateFolder(it.folderId),
+                )
+            is NavigateToFolderDetails ->
+                navigator.navigateToKey(
+                    FolderDetails(it.folderId),
+                )
             is ShowToast -> Toast.makeText(context, getToastMessage(context, it.type), Toast.LENGTH_SHORT).show()
         }
     }
@@ -232,7 +263,7 @@ private fun HomeScreen(
         appBarTitle = getAppBarTitle(context, state),
         appBarIconRes = getAppBarIconResId(state),
         shouldShowMoreIcon = homeNavigation.resourceHandlingStrategy.shouldShowFolderMoreMenu() && state.showMoreMenu,
-        onMoreClick = { onIntent(HomeIntent.OpenFolderMoreMenu) },
+        onMoreClick = { onIntent(OpenFolderMoreMenu) },
         shouldShowBackIcon = state.showBackIcon,
         onBackClick = { homeNavigation.navigateBack() },
         shouldShowCloseIcon = homeNavigation.resourceHandlingStrategy.shouldShowCloseButton(),
@@ -306,7 +337,7 @@ private fun HomeScreen(
 
     if (state.showFiltersBottomSheet) {
         FiltersMenuBottomSheet(
-            onDismissRequest = { onIntent(HomeIntent.CloseFiltersBottomSheet) },
+            onDismissRequest = { onIntent(CloseFiltersBottomSheet) },
             onHomeViewChange = { homeNavigation.navigateToRoot(it) },
             filtersMenuModel = FiltersMenuModel(state.homeView),
         )
@@ -333,61 +364,31 @@ private fun HomeScreen(
     if (state.showFolderMoreMenuBottomSheet) {
         FolderMoreMenuBottomSheet(
             folderName = (state.homeView as? Folders)?.activeFolderName,
-            onDismissRequest = { onIntent(HomeIntent.CloseFolderMoreMenu) },
-            onSeeDetails = { onIntent(HomeIntent.ViewFolderDetails) },
+            onDismissRequest = { onIntent(CloseFolderMoreMenu) },
+            onSeeDetails = { onIntent(ViewFolderDetails) },
         )
     }
 
     ProgressDialog(state.showProgress)
 }
 
+private class HomeNavigator(
+    private val navigator: AppNavigator,
+    override val resourceHandlingStrategy: ResourceHandlingStrategy,
+) : HomeNavigation {
+    override fun navigateToChild(homeView: HomeDisplayViewModel) {
+        navigator.navigateToKey(HomeNavigationKey.Home(homeView))
+    }
+
+    override fun navigateBack() {
+        navigator.navigateBack()
+    }
+
+    override fun navigateToRoot(homeView: HomeDisplayViewModel) {
+        navigator.replaceAll(HomeNavigationKey.Home(homeView))
+    }
+}
+
 object HomeScreenTestTags {
     const val SEARCH_FILTER: String = "home_search_filter"
 }
-
-@Suppress("CyclomaticComplexMethod")
-private fun getAppBarTitle(
-    context: Context,
-    state: HomeState,
-): String =
-    when (state.homeView) {
-        is Folders ->
-            when (state.homeView.activeFolder) {
-                is Child -> state.homeView.activeFolderName.orEmpty()
-                is Root -> context.getString(LocalizationR.string.filters_menu_folders)
-            }
-        is Groups ->
-            if (state.homeView.activeGroupId == null) {
-                context.getString(LocalizationR.string.filters_menu_groups)
-            } else {
-                state.homeView.activeGroupName.orEmpty()
-            }
-        is Tags ->
-            if (state.homeView.activeTagId == null) {
-                context.getString(LocalizationR.string.filters_menu_tags)
-            } else {
-                state.homeView.activeTagName.orEmpty()
-            }
-        AllItems -> context.getString(LocalizationR.string.filters_menu_all_items)
-        Expiry -> context.getString(LocalizationR.string.filters_menu_expiry)
-        Favourites -> context.getString(LocalizationR.string.filters_menu_favourites)
-        OwnedByMe -> context.getString(LocalizationR.string.filters_menu_owned_by_me)
-        RecentlyModified -> context.getString(LocalizationR.string.filters_menu_recently_modified)
-        SharedWithMe -> context.getString(LocalizationR.string.filters_menu_shared_with_me)
-        HomeDisplayViewModel.NotLoaded -> context.getString(LocalizationR.string.filters_menu_loading)
-    }
-
-@DrawableRes
-private fun getAppBarIconResId(state: HomeState): Int =
-    when (state.homeView) {
-        AllItems -> CoreUiR.drawable.ic_list
-        Expiry -> CoreUiR.drawable.ic_calendar_clock
-        Favourites -> CoreUiR.drawable.ic_star
-        is Folders -> if (state.homeView.isActiveFolderShared == true) CoreUiR.drawable.ic_shared_folder else CoreUiR.drawable.ic_folder
-        is Groups -> CoreUiR.drawable.ic_group
-        OwnedByMe -> CoreUiR.drawable.ic_person
-        RecentlyModified -> CoreUiR.drawable.ic_clock
-        SharedWithMe -> CoreUiR.drawable.ic_share
-        is Tags -> if (state.homeView.isActiveTagShared == true) CoreUiR.drawable.ic_shared_tag else CoreUiR.drawable.ic_tag
-        HomeDisplayViewModel.NotLoaded -> CoreUiR.drawable.ic_password_generate
-    }
