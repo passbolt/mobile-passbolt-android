@@ -57,6 +57,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.passbolt.mobile.android.core.clipboard.ClipboardAccess
 import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
 import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
+import com.passbolt.mobile.android.core.navigation.compose.keys.LocationDetailsNavigationKey.LocationDetails
+import com.passbolt.mobile.android.core.navigation.compose.keys.LocationDetailsNavigationKey.LocationItem
+import com.passbolt.mobile.android.core.navigation.compose.keys.PermissionsNavigationKey.Permissions
+import com.passbolt.mobile.android.core.navigation.compose.keys.ResourceFormNavigationKey.MainResourceForm
+import com.passbolt.mobile.android.core.navigation.compose.keys.TagsDetailsNavigationKey.ResourceTags
+import com.passbolt.mobile.android.core.navigation.compose.results.NavigationResultEventBus
+import com.passbolt.mobile.android.core.navigation.compose.results.ResourceDetailsCompleteResult
 import com.passbolt.mobile.android.core.resources.resourceicon.ResourceIconProvider
 import com.passbolt.mobile.android.core.ui.compose.dialogs.ConfirmResourceDeleteAlertDialog
 import com.passbolt.mobile.android.core.ui.compose.progressdialog.ProgressDialog
@@ -103,6 +110,8 @@ import com.passbolt.mobile.android.feature.resourcedetails.details.ui.ResourceHe
 import com.passbolt.mobile.android.feature.resourcedetails.details.ui.SharedWithSection
 import com.passbolt.mobile.android.feature.resourcedetails.details.ui.TotpSection
 import com.passbolt.mobile.android.resourcemoremenu.ResourceMoreMenuBottomSheet
+import com.passbolt.mobile.android.ui.PermissionsItem
+import com.passbolt.mobile.android.ui.ResourceFormMode
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.isExpired
 import com.passbolt.mobile.android.ui.isFavourite
@@ -114,17 +123,17 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
 @Composable
 fun ResourceDetailsScreen(
     resourceModel: ResourceModel,
-    navigation: ResourceDetailsNavigation,
     modifier: Modifier = Modifier,
     viewModel: ResourceDetailsViewModel = koinViewModel(),
     clipboardAccess: ClipboardAccess = koinInject(),
-    appNavigator: AppNavigator = koinInject(),
+    navigator: AppNavigator = koinInject(),
     resourceIconProvider: ResourceIconProvider = koinInject(),
 ) {
     val context = LocalContext.current
     val state = viewModel.viewState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
+    val resultBus = NavigationResultEventBus.current
 
     var resourceIcon by remember { mutableStateOf<Drawable?>(null) }
     LaunchedEffect(resourceModel) {
@@ -156,16 +165,26 @@ fun ResourceDetailsScreen(
 
     SideEffectDispatcher(viewModel.sideEffect) { sideEffect ->
         when (sideEffect) {
-            NavigateBack -> navigation.navigateBack()
-            is NavigateToEditResource -> navigation.navigateToEditResource(sideEffect.resourceModel)
-            is NavigateToResourcePermissions ->
-                navigation.navigateToResourcePermissions(
-                    sideEffect.resourceId,
-                    sideEffect.mode,
+            NavigateBack -> navigator.navigateBack()
+            is NavigateToEditResource ->
+                navigator.navigateToKey(
+                    MainResourceForm(
+                        ResourceFormMode.Edit(
+                            resourceId = sideEffect.resourceModel.resourceId,
+                            resourceName = sideEffect.resourceModel.metadataJsonModel.name,
+                        ),
+                    ),
                 )
-            is NavigateToResourceTags -> navigation.navigateToResourceTags(sideEffect.resourceId)
-            is NavigateToResourceLocation -> navigation.navigateToResourceLocation(sideEffect.resourceId)
-            is OpenWebsite -> appNavigator.openExternalWebsite(context, sideEffect.url)
+            is NavigateToResourcePermissions ->
+                navigator.navigateToKey(
+                    Permissions(sideEffect.resourceId, sideEffect.mode, PermissionsItem.RESOURCE),
+                )
+            is NavigateToResourceTags -> navigator.navigateToKey(ResourceTags(sideEffect.resourceId))
+            is NavigateToResourceLocation ->
+                navigator.navigateToKey(
+                    LocationDetails(LocationItem.RESOURCE, sideEffect.resourceId),
+                )
+            is OpenWebsite -> navigator.openExternalWebsite(context, sideEffect.url)
             is AddToClipboard ->
                 clipboardAccess.setPrimaryClip(
                     context = context,
@@ -173,8 +192,27 @@ fun ResourceDetailsScreen(
                     value = sideEffect.value,
                     isSensitive = sideEffect.isSecret,
                 )
-            is CloseWithDeleteSuccess -> navigation.closeWithDeleteSuccessResult(sideEffect.resourceName)
-            is SetResourceEditedResult -> navigation.setResourceEditedResult(sideEffect.resourceName)
+            is CloseWithDeleteSuccess -> {
+                resultBus.sendResult(
+                    result =
+                        ResourceDetailsCompleteResult(
+                            resourceEdited = false,
+                            resourceDeleted = true,
+                            resourceName = sideEffect.resourceName,
+                        ),
+                )
+                navigator.navigateBack()
+            }
+            is SetResourceEditedResult -> {
+                resultBus.sendResult(
+                    result =
+                        ResourceDetailsCompleteResult(
+                            resourceEdited = true,
+                            resourceDeleted = false,
+                            resourceName = sideEffect.resourceName,
+                        ),
+                )
+            }
             is ShowSuccessSnackbar -> {
                 coroutineScope.launch {
                     snackbarHostState.showSnackbar(
