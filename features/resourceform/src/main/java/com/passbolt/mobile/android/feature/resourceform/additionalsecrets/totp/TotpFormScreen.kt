@@ -57,7 +57,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
 import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
-import com.passbolt.mobile.android.core.navigation.compose.LocalResourceFormHostNavigation
+import com.passbolt.mobile.android.core.navigation.compose.keys.OtpNavigationKey.ScanOtp
+import com.passbolt.mobile.android.core.navigation.compose.keys.OtpNavigationKey.ScanOtpMode
 import com.passbolt.mobile.android.core.navigation.compose.keys.ResourceFormNavigationKey.TotpAdvancedSettingsForm
 import com.passbolt.mobile.android.core.navigation.compose.results.NavigationResultEventBus
 import com.passbolt.mobile.android.core.navigation.compose.results.ResultEffect
@@ -105,7 +106,6 @@ internal fun TotpFormScreen(
 ) {
     val state = viewModel.viewState.collectAsStateWithLifecycle()
     val resultBus = NavigationResultEventBus.current
-    val hostNavigation = LocalResourceFormHostNavigation.current
 
     TotpFormScreen(
         modifier = modifier,
@@ -125,11 +125,7 @@ internal fun TotpFormScreen(
                     TotpAdvancedSettingsForm(it.mode, it.totpUiModel),
                 )
             NavigateToScanTotp ->
-                hostNavigation.navigateToScanOtp { isManual, totp ->
-                    resultBus.sendResult(
-                        result = ScanOtpResultEvent(isManual, totp),
-                    )
-                }
+                navigator.navigateToKey(ScanOtp(ScanOtpMode.SCAN_FOR_RESULT))
         }
     }
 

@@ -32,7 +32,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
 import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
-import com.passbolt.mobile.android.core.navigation.compose.LocalResourceFormHostNavigation
+import com.passbolt.mobile.android.core.navigation.compose.keys.OtpNavigationKey.ScanOtp
+import com.passbolt.mobile.android.core.navigation.compose.keys.OtpNavigationKey.ScanOtpMode
 import com.passbolt.mobile.android.core.navigation.compose.keys.ResourceFormNavigationKey.AdditionalUrisForm
 import com.passbolt.mobile.android.core.navigation.compose.keys.ResourceFormNavigationKey.AppearanceForm
 import com.passbolt.mobile.android.core.navigation.compose.keys.ResourceFormNavigationKey.CustomFieldsForm
@@ -42,7 +43,7 @@ import com.passbolt.mobile.android.core.navigation.compose.keys.ResourceFormNavi
 import com.passbolt.mobile.android.core.navigation.compose.keys.ResourceFormNavigationKey.TotpAdvancedSettingsForm
 import com.passbolt.mobile.android.core.navigation.compose.keys.ResourceFormNavigationKey.TotpForm
 import com.passbolt.mobile.android.core.navigation.compose.results.NavigationResultEventBus
-import com.passbolt.mobile.android.core.navigation.compose.results.ScanOtpResultEvent
+import com.passbolt.mobile.android.core.navigation.compose.results.ResourceFormCompleteResult
 import com.passbolt.mobile.android.core.ui.compose.button.PrimaryButton
 import com.passbolt.mobile.android.core.ui.compose.progressdialog.ProgressDialog
 import com.passbolt.mobile.android.core.ui.compose.text.TextInput
@@ -94,7 +95,6 @@ internal fun ResourceFormScreen(
 ) {
     val state = viewModel.viewState.collectAsStateWithLifecycle()
     val context = LocalContext.current
-    val hostNavigation = LocalResourceFormHostNavigation.current
     val resultBus = NavigationResultEventBus.current
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
@@ -131,14 +131,30 @@ internal fun ResourceFormScreen(
                     CustomFieldsForm(mode = sideEffect.mode, customFieldsUiModel = sideEffect.model),
                 )
             NavigateToScanOtp ->
-                hostNavigation.navigateToScanOtp { isManual, totp ->
-                    resultBus.sendResult(result = ScanOtpResultEvent(isManual, totp))
-                }
-            is NavigateBackWithCreateSuccess ->
-                hostNavigation.navigateBackWithCreateSuccess(sideEffect.name, sideEffect.resourceId)
-            is NavigateBackWithEditSuccess ->
-                hostNavigation.navigateBackWithEditSuccess(sideEffect.name)
-            NavigateBack -> hostNavigation.navigateBack()
+                navigator.navigateToKey(ScanOtp(ScanOtpMode.SCAN_FOR_RESULT))
+            is NavigateBackWithCreateSuccess -> {
+                resultBus.sendResult(
+                    result =
+                        ResourceFormCompleteResult(
+                            resourceCreated = true,
+                            resourceEdited = false,
+                            resourceName = sideEffect.name,
+                        ),
+                )
+                navigator.navigateBack()
+            }
+            is NavigateBackWithEditSuccess -> {
+                resultBus.sendResult(
+                    result =
+                        ResourceFormCompleteResult(
+                            resourceCreated = false,
+                            resourceEdited = true,
+                            resourceName = sideEffect.name,
+                        ),
+                )
+                navigator.navigateBack()
+            }
+            NavigateBack -> navigator.navigateBack()
             is ShowSnackbar ->
                 coroutineScope.launch {
                     snackbarHostState.showSnackbar(getSnackbarMessage(context, sideEffect.type))

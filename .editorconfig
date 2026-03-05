@@ -4,7 +4,7 @@ continuation_indent_size = 4
 insert_final_newline = true
 max_line_length = 140
 ktlint_function_naming_ignore_when_annotated_with = Composable
-compose_allowed_composition_locals = LocalPermissionsHostNavigation, LocalResourceFormHostNavigation, LocalResultEventBus
+compose_allowed_composition_locals = LocalPermissionsHostNavigation, LocalResultEventBus
 
 [core/navigation/build/generated/**]
 ktlint = disabled
