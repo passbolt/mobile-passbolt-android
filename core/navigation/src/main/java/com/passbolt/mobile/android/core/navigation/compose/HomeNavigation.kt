@@ -14,14 +14,10 @@ import com.passbolt.mobile.android.core.navigation.compose.base.Feature.SCAN_OTP
 import com.passbolt.mobile.android.core.navigation.compose.base.Feature.TAGS_DETAILS
 import com.passbolt.mobile.android.core.navigation.compose.base.FeatureModuleNavigation
 import com.passbolt.mobile.android.core.navigation.compose.keys.HomeNavigationKey.Home
-import com.passbolt.mobile.android.core.navigation.compose.keys.OtpNavigationKey.ScanOtp
-import com.passbolt.mobile.android.core.navigation.compose.keys.OtpNavigationKey.ScanOtpMode
 import com.passbolt.mobile.android.core.navigation.compose.keys.PermissionsNavigationKey.Permissions
 import com.passbolt.mobile.android.core.navigation.compose.results.PermissionsShareCompleteResult
-import com.passbolt.mobile.android.core.navigation.compose.results.ResourceFormCompleteResult
 import com.passbolt.mobile.android.core.navigation.compose.results.ResultEventBus
 import com.passbolt.mobile.android.ui.HomeDisplayViewModel
-import com.passbolt.mobile.android.ui.OtpParseResult
 import com.passbolt.mobile.android.ui.PermissionsItem
 import com.passbolt.mobile.android.ui.PermissionsMode
 import org.koin.compose.koinInject
@@ -36,10 +32,6 @@ fun HomeNavigation(
 ) {
     val resultBus = remember { ResultEventBus() }
 
-    val hostNavigation =
-        remember(navigator, resultBus) {
-            HomeResourceFormHostNavigation(navigator, resultBus)
-        }
     val permissionsHostNavigation =
         remember(navigator, resultBus) {
             HomePermissionsHostNavigation(navigator, resultBus)
@@ -64,53 +56,10 @@ fun HomeNavigation(
         resultBus = resultBus,
         additionalProviders =
             arrayOf(
-                LocalResourceFormHostNavigation provides hostNavigation,
                 LocalPermissionsHostNavigation provides permissionsHostNavigation,
             ),
         navigator = navigator,
     )
-}
-
-private class HomeResourceFormHostNavigation(
-    private val navigator: AppNavigator,
-    private val resultBus: ResultEventBus,
-) : ResourceFormHostNavigation {
-    override fun navigateBack() {
-        navigator.navigateBack()
-    }
-
-    override fun navigateBackWithCreateSuccess(
-        name: String,
-        resourceId: String,
-    ) {
-        resultBus.sendResult(
-            result =
-                ResourceFormCompleteResult(
-                    resourceCreated = true,
-                    resourceEdited = false,
-                    resourceName = name,
-                ),
-        )
-        navigator.navigateBack()
-    }
-
-    override fun navigateBackWithEditSuccess(name: String) {
-        resultBus.sendResult(
-            result =
-                ResourceFormCompleteResult(
-                    resourceCreated = false,
-                    resourceEdited = true,
-                    resourceName = name,
-                ),
-        )
-        navigator.navigateBack()
-    }
-
-    override fun navigateToScanOtp(resultCallback: (Boolean, OtpParseResult.OtpQr.TotpQr?) -> Unit) {
-        navigator.navigateToKey(
-            ScanOtp(ScanOtpMode.SCAN_FOR_RESULT),
-        )
-    }
 }
 
 private class HomePermissionsHostNavigation(
