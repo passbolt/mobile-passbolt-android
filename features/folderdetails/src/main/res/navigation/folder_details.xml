@@ -18,8 +18,6 @@
             app:argType="string" />
     </fragment>
 
-    <include app:graph="@navigation/permissions" />
-
     <include app:graph="@navigation/locationdetails" />
 
 </navigation>

@@ -7,10 +7,10 @@ import com.passbolt.mobile.android.core.navigation.compose.base.FeatureModuleNav
 import com.passbolt.mobile.android.core.navigation.compose.keys.HomeNavigationKey.Home
 import com.passbolt.mobile.android.core.navigation.compose.results.CreateFolderCompleteResult
 import com.passbolt.mobile.android.core.navigation.compose.results.OtpScanCompleteResult
-import com.passbolt.mobile.android.core.navigation.compose.results.PermissionsShareCompleteResult
 import com.passbolt.mobile.android.core.navigation.compose.results.ResourceDetailsCompleteResult
 import com.passbolt.mobile.android.core.navigation.compose.results.ResourceFormCompleteResult
 import com.passbolt.mobile.android.core.navigation.compose.results.ResultEffect
+import com.passbolt.mobile.android.core.navigation.compose.results.ShareCompleteResult
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.FolderCreateReturned
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.OtpQRScanReturned
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.ResourceDetailsReturned
@@ -42,7 +42,7 @@ class HomeFeatureNavigation(
                 ResultEffect<ResourceDetailsCompleteResult> { result ->
                     viewModel.onIntent(ResourceDetailsReturned(result.resourceEdited, result.resourceDeleted, result.resourceName))
                 }
-                ResultEffect<PermissionsShareCompleteResult> { result ->
+                ResultEffect<ShareCompleteResult> { result ->
                     viewModel.onIntent(ResourceShareReturned(result.shared))
                 }
                 ResultEffect<CreateFolderCompleteResult> { result ->

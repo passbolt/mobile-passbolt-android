@@ -10,6 +10,6 @@ data class CreateFolderCompleteResult(
     val folderName: String,
 )
 
-data class PermissionsShareCompleteResult(
+data class ShareCompleteResult(
     val shared: Boolean,
 )
