@@ -32,6 +32,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
+import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
+import com.passbolt.mobile.android.core.navigation.compose.keys.OtpNavigationKey.Otp
+import com.passbolt.mobile.android.core.navigation.compose.keys.OtpNavigationKey.ResourcePicker
+import com.passbolt.mobile.android.core.navigation.compose.results.NavigationResultEventBus
+import com.passbolt.mobile.android.core.navigation.compose.results.OtpScanCompleteResult
 import com.passbolt.mobile.android.core.ui.compose.button.PrimaryButton
 import com.passbolt.mobile.android.core.ui.compose.progressdialog.ProgressDialog
 import com.passbolt.mobile.android.feature.authentication.compose.AuthenticationHandler
@@ -44,6 +49,7 @@ import com.passbolt.mobile.android.feature.otp.scanotp.scanotpsuccess.ScanOtpSuc
 import com.passbolt.mobile.android.ui.OtpParseResult
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.koinInject
 import org.koin.core.parameter.parametersOf
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
@@ -52,14 +58,15 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
 internal fun ScanOtpSuccessScreen(
     scannedTotp: OtpParseResult.OtpQr.TotpQr,
     parentFolderId: String?,
-    navigation: ScanOtpSuccessNavigation,
     modifier: Modifier = Modifier,
     viewModel: ScanOtpSuccessViewModel = koinViewModel { parametersOf(scannedTotp, parentFolderId) },
+    navigator: AppNavigator = koinInject(),
 ) {
     val state by viewModel.viewState.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
+    val resultBus = NavigationResultEventBus.current
 
     ScanOtpSuccessScreen(
         state = state,
@@ -80,10 +87,14 @@ internal fun ScanOtpSuccessScreen(
 
     SideEffectDispatcher(viewModel.sideEffect) { sideEffect ->
         when (sideEffect) {
-            is NavigateToOtpList ->
-                navigation.navigateToOtpList(sideEffect.totp, sideEffect.otpCreated, sideEffect.resourceId)
+            is NavigateToOtpList -> {
+                resultBus.sendResult(
+                    result = OtpScanCompleteResult(otpCreated = sideEffect.otpCreated, otpManualCreationChosen = false),
+                )
+                navigator.popToKey(Otp)
+            }
             is NavigateToResourcePicker ->
-                navigation.navigateToResourcePicker(sideEffect.suggestedUri)
+                navigator.navigateToKey(ResourcePicker(sideEffect.suggestedUri))
             is ShowErrorSnackbar ->
                 coroutineScope.launch {
                     snackbarHostState.showSnackbar(getErrorSnackbarMessage(context, sideEffect))

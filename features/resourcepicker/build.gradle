@@ -1,7 +1,6 @@
 plugins {
     alias libs.plugins.android.library
     alias libs.plugins.kotlin.gradle
-    alias libs.plugins.navigation.safeargs
     alias libs.plugins.compose.compiler
 }
 
@@ -30,8 +29,6 @@ dependencies {
     implementation libs.koin
     implementation libs.koin.compose
     implementation libs.room.core
-    implementation libs.navigation.fragment
-    implementation libs.navigation.ui
     implementation libs.swiperefresh
     implementation platform(libs.compose.bom)
     implementation libs.compose.foundation
@@ -54,7 +51,6 @@ dependencies {
 android {
     namespace = "com.passbolt.mobile.android.feature.resourcepicker"
     buildFeatures {
-        viewBinding true
         compose true
     }
 }
