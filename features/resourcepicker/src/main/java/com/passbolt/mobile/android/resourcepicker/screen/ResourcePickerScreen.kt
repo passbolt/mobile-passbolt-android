@@ -48,13 +48,15 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
 import com.passbolt.mobile.android.core.fulldatarefresh.service.DataRefreshService
+import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
+import com.passbolt.mobile.android.core.navigation.compose.results.NavigationResultEventBus
+import com.passbolt.mobile.android.core.navigation.compose.results.ResourcePickerResultEvent
 import com.passbolt.mobile.android.core.ui.compose.button.PrimaryButton
 import com.passbolt.mobile.android.core.ui.compose.dialogs.ConfirmAlertDialog
 import com.passbolt.mobile.android.core.ui.compose.scaffold.HomeScaffold
 import com.passbolt.mobile.android.core.ui.compose.search.SearchInput
 import com.passbolt.mobile.android.core.ui.compose.snackbar.ColoredSnackbarVisuals
 import com.passbolt.mobile.android.feature.authentication.compose.AuthenticationHandler
-import com.passbolt.mobile.android.resourcepicker.ResourcePickerNavigation
 import com.passbolt.mobile.android.resourcepicker.model.ConfirmationModelFactory
 import com.passbolt.mobile.android.resourcepicker.screen.ResourcePickerIntent.CloseConfirmationDialog
 import com.passbolt.mobile.android.resourcepicker.screen.ResourcePickerIntent.ConfirmOtpLink
@@ -75,14 +77,15 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
 @Composable
 internal fun ResourcePickerScreen(
     suggestionUri: String?,
-    navigation: ResourcePickerNavigation,
     modifier: Modifier = Modifier,
     viewModel: ResourcePickerViewModel = koinViewModel(),
+    navigator: AppNavigator = koinInject(),
 ) {
     val context = LocalContext.current
     val state = viewModel.viewState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
+    val resultBus = NavigationResultEventBus.current
 
     LaunchedEffect(suggestionUri) {
         viewModel.onIntent(Initialize(suggestionUri))
@@ -111,8 +114,13 @@ internal fun ResourcePickerScreen(
                         ),
                     )
                 }
-            is NavigateBackWithResult -> navigation.navigateBackWithResult(it.pickAction, it.resourceModel)
-            NavigateUp -> navigation.navigateUp()
+            is NavigateBackWithResult -> {
+                resultBus.sendResult(
+                    result = ResourcePickerResultEvent(pickAction = it.pickAction.name, resource = it.resourceModel),
+                )
+                navigator.navigateBack()
+            }
+            NavigateUp -> navigator.navigateBack()
         }
     }
 }

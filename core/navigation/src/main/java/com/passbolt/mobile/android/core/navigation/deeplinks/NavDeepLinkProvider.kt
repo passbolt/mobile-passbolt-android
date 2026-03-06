@@ -56,63 +56,10 @@ object NavDeepLinkProvider {
                 .build(),
         ).build()
 
-    fun folderDetailsDeepLinkRequest(childFolderId: String) =
-        NavDeepLinkRequest.Builder
-            .fromUri(
-                Uri
-                    .Builder()
-                    .scheme(NAV_DEEP_LINK_SCHEME)
-                    .authority(AUTHORITY_FOLDERS)
-                    .path(childFolderId)
-                    .build(),
-            ).build()
-
-    fun createFolderDeepLinkRequest(parentFolderId: String?) =
-        NavDeepLinkRequest.Builder
-            .fromUri(
-                Uri
-                    .Builder()
-                    .scheme(NAV_DEEP_LINK_SCHEME)
-                    .authority(AUTHORITY_CREATE_FOLDER)
-                    .apply { parentFolderId?.let { appendQueryParameter(QUERY_PARENT_FOLDER_ID, it) } }
-                    .build(),
-            ).build()
-
-    fun resourceTagsDeepLinkRequest(resourceId: String) =
-        NavDeepLinkRequest.Builder
-            .fromUri(
-                Uri
-                    .Builder()
-                    .scheme(NAV_DEEP_LINK_SCHEME)
-                    .authority(AUTHORITY_TAGS_DETAILS)
-                    .appendPath(resourceId)
-                    .build(),
-            ).build()
-
-    fun resourceResourcePickerDeepLinkRequest(suggestionUri: String?) =
-        NavDeepLinkRequest.Builder
-            .fromUri(
-                Uri
-                    .Builder()
-                    .scheme(NAV_DEEP_LINK_SCHEME)
-                    .authority(AUTHORITY_RESOURCE_PICKER)
-                    .apply {
-                        suggestionUri?.let {
-                            appendQueryParameter(QUERY_SUGGESTION_URI, suggestionUri)
-                        }
-                    }.build(),
-            ).build()
-
     private const val NAV_DEEP_LINK_SCHEME = "passbolt"
 
     private const val AUTHORITY_PERMISSIONS = "permissions"
     private const val AUTHORITY_LOCATION_DETAILS = "locationDetails"
-    private const val AUTHORITY_FOLDERS = "folders"
-    private const val AUTHORITY_CREATE_FOLDER = "createFolder"
-    private const val AUTHORITY_TAGS_DETAILS = "tagsDetails"
-    private const val AUTHORITY_RESOURCE_PICKER = "resourcePicker"
 
     private const val QUERY_PERMISSIONS_MODE = "mode"
-    private const val QUERY_PARENT_FOLDER_ID = "parentFolderId"
-    private const val QUERY_SUGGESTION_URI = "suggestionUri"
 }
