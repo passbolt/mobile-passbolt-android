@@ -51,7 +51,13 @@ import java.io.File
 class AppNavigator(
     private val externalDeeplinkHandler: ExternalDeeplinkHandler,
 ) : KoinComponent {
-    lateinit var backStack: NavBackStack<NavKey>
+    private var _backStack: NavBackStack<NavKey>? = null
+    var backStack: NavBackStack<NavKey>
+        get() = requireNotNull(_backStack) { "backStack has not been initialized" }
+        set(value) {
+            _backStack = value
+            _currentBackStackItem.value = value.lastOrNull()
+        }
 
     private val _currentBackStackItem = MutableStateFlow<NavKey?>(null)
     val currentBackStackItem: StateFlow<NavKey?> = _currentBackStackItem.asStateFlow()
