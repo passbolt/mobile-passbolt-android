@@ -44,10 +44,12 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
 import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
-import com.passbolt.mobile.android.core.navigation.compose.LocalPermissionsHostNavigation
 import com.passbolt.mobile.android.core.navigation.compose.keys.PermissionsNavigationKey.GroupPermissionDetails
 import com.passbolt.mobile.android.core.navigation.compose.keys.PermissionsNavigationKey.PermissionRecipients
+import com.passbolt.mobile.android.core.navigation.compose.keys.PermissionsNavigationKey.Permissions
 import com.passbolt.mobile.android.core.navigation.compose.keys.PermissionsNavigationKey.UserPermissionDetails
+import com.passbolt.mobile.android.core.navigation.compose.results.NavigationResultEventBus
+import com.passbolt.mobile.android.core.navigation.compose.results.ShareCompleteResult
 import com.passbolt.mobile.android.core.ui.compose.button.PrimaryButton
 import com.passbolt.mobile.android.core.ui.compose.fab.AddFloatingActionButton
 import com.passbolt.mobile.android.core.ui.compose.progressdialog.ProgressDialog
@@ -89,7 +91,7 @@ fun PermissionsScreen(
     navigator: AppNavigator = koinInject(),
 ) {
     val context = LocalContext.current
-    val hostNavigation = LocalPermissionsHostNavigation.current
+    val resultBus = NavigationResultEventBus.current
     val state = viewModel.viewState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
@@ -108,7 +110,7 @@ fun PermissionsScreen(
 
     SideEffectDispatcher(viewModel.sideEffect) { effect ->
         when (effect) {
-            NavigateBack -> hostNavigation.navigateBack()
+            NavigateBack -> navigator.navigateBack()
             is NavigateToGroupPermissionDetails ->
                 navigator.navigateToKey(
                     GroupPermissionDetails(
@@ -130,9 +132,13 @@ fun PermissionsScreen(
                         groupPermissions = effect.groups,
                     ),
                 )
-            is NavigateToSelfWithMode -> hostNavigation.navigateToSelfWithMode(effect.id, effect.mode)
-            CloseWithShareSuccess -> hostNavigation.closeWithShareSuccessResult()
-            NavigateToHome -> hostNavigation.navigateToHome()
+            is NavigateToSelfWithMode ->
+                navigator.navigateToKey(Permissions(effect.id, effect.mode, effect.permissionsItem))
+            CloseWithShareSuccess -> {
+                resultBus.sendResult(result = ShareCompleteResult(shared = true))
+                navigator.navigateBack()
+            }
+            NavigateToHome -> navigator.popToKey(navigator.backStack.first())
             ShowContentNotAvailable ->
                 Toast
                     .makeText(context, LocalizationR.string.content_not_available, Toast.LENGTH_SHORT)

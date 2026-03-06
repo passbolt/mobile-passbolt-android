@@ -253,7 +253,7 @@ class PermissionsViewModel(
         when (viewState.value.mode) {
             VIEW ->
                 onCanShareResource {
-                    emitSideEffect(NavigateToSelfWithMode(viewState.value.permissionItemId, EDIT))
+                    emitSideEffect(NavigateToSelfWithMode(viewState.value.permissionItemId, EDIT, viewState.value.permissionsItem))
                 }
             EDIT -> validatePermissions()
         }
