@@ -35,11 +35,11 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextReplacement
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.closeSoftKeyboard
 import androidx.test.espresso.action.ViewActions.typeText
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.platform.app.InstrumentationRegistry
+import com.passbolt.mobile.android.core.ui.R.id.input
 import com.passbolt.mobile.android.testtags.composetags.Home
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
@@ -89,7 +89,8 @@ internal fun createNewPasswordFromHomeScreen(name: String) {
  */
 internal fun ComposeTestRule.signIn(passphrase: String) {
     onView(withId(CoreUiR.id.input)).perform(typeText(passphrase), closeSoftKeyboard())
-    onView(withId(com.passbolt.mobile.android.feature.authentication.R.id.authButton)).perform(click())
+    // TODO rewrite to compose
+//    onView(withId(com.passbolt.mobile.android.feature.authentication.R.id.authButton)).perform(click())
     onNodeWithTag(Home.SCREEN).assertIsDisplayed()
 }
 

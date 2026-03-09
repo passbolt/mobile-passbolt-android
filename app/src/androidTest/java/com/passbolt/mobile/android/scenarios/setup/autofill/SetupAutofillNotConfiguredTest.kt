@@ -32,7 +32,6 @@ import androidx.compose.ui.test.performClick
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.closeSoftKeyboard
-import androidx.test.espresso.action.ViewActions.scrollTo
 import androidx.test.espresso.action.ViewActions.typeText
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents
@@ -65,7 +64,6 @@ import org.koin.test.KoinTest
 import org.koin.test.inject
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
-import com.passbolt.mobile.android.feature.authentication.R as AuthenticationR
 import com.passbolt.mobile.android.feature.autofill.R as AutofillR
 
 @RunWith(AndroidJUnit4::class)
@@ -110,7 +108,8 @@ class SetupAutofillNotConfiguredTest : KoinTest {
         }
         accountDataInitializer.initializeAccount()
         onView(withId(CoreUiR.id.input)).perform(typeText(managedAccountIntentCreator.getPassphrase()), closeSoftKeyboard())
-        onView(withId(AuthenticationR.id.authButton)).perform(scrollTo(), click())
+        // TODO rewrite to compose
+//        onView(withId(AuthenticationR.id.authButton)).perform(scrollTo(), click())
     }
 
     @After

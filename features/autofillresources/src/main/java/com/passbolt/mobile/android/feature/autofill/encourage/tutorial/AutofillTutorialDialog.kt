@@ -10,7 +10,6 @@ import com.passbolt.mobile.android.common.ExternalDeeplinkHandler
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.mvp.EdgeToEdgeDialogFragment
-import com.passbolt.mobile.android.feature.authentication.auth.accountdoesnotexist.AccountDoesNotExistDialog
 import com.passbolt.mobile.android.feature.autofill.databinding.DialogAutofillTutorialBinding
 import org.koin.android.ext.android.inject
 import org.koin.android.scope.AndroidScopeComponent
@@ -77,7 +76,7 @@ class AutofillTutorialDialog :
             when {
                 parentFragment is Listener -> parentFragment as Listener
                 activity is Listener -> activity as Listener
-                else -> error("Parent must implement ${AccountDoesNotExistDialog.Listener::class.java.name}")
+                else -> error("Parent must implement ${Listener::class.java.name}")
             }
         presenter.attach(this)
     }

@@ -23,6 +23,7 @@
 package com.passbolt.mobile.android.core.navigation.compose.base
 
 enum class Feature {
+    AUTHENTICATION,
     SETTINGS,
     LOGS,
     ACCOUNT_DETAILS,

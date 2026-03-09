@@ -2,8 +2,7 @@ package com.passbolt.mobile.android.feature.autofill.resources
 
 import android.app.assist.AssistStructure
 import android.content.Intent
-import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
-import com.passbolt.mobile.android.feature.home.screen.ResourceHandlingStrategy
+import com.passbolt.mobile.android.core.mvp.BaseContract
 import com.passbolt.mobile.android.ui.ResourceModel
 
 /**
@@ -30,9 +29,7 @@ import com.passbolt.mobile.android.ui.ResourceModel
  */
 
 interface AutofillResourcesContract {
-    interface View :
-        BaseAuthenticatedContract.View,
-        ResourceHandlingStrategy {
+    interface View : BaseContract.View {
         fun navigateToAuth()
 
         fun navigateToSetup()
@@ -65,7 +62,7 @@ interface AutofillResourcesContract {
         fun performFullDataRefresh()
     }
 
-    interface Presenter : BaseAuthenticatedContract.Presenter<View> {
+    interface Presenter : BaseContract.Presenter<View> {
         fun argsReceived(
             uri: String?,
             isRecreated: Boolean,

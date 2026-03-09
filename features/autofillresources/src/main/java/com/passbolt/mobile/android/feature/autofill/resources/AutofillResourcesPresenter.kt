@@ -1,7 +1,6 @@
 package com.passbolt.mobile.android.feature.autofill.resources
 
 import com.passbolt.mobile.android.core.accounts.usecase.accounts.GetAccountsUseCase
-import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.resources.actions.SecretPropertiesActionsInteractor
 import com.passbolt.mobile.android.core.resources.actions.performSecretPropertyAction
@@ -11,6 +10,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
+import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import org.koin.core.parameter.parametersOf
 
@@ -40,8 +40,8 @@ class AutofillResourcesPresenter(
     private val getAccountsUseCase: GetAccountsUseCase,
     private val getLocalResourceUseCase: GetLocalResourceUseCase,
     coroutineLaunchContext: CoroutineLaunchContext,
-) : BaseAuthenticatedPresenter<AutofillResourcesContract.View>(coroutineLaunchContext),
-    AutofillResourcesContract.Presenter {
+) : AutofillResourcesContract.Presenter,
+    KoinComponent {
     override var view: AutofillResourcesContract.View? = null
 
     private var uri: String? = null
@@ -51,7 +51,7 @@ class AutofillResourcesPresenter(
 
     override fun detach() {
         scope.coroutineContext.cancelChildren()
-        super<BaseAuthenticatedPresenter>.detach()
+        super.detach()
     }
 
     override fun argsReceived(

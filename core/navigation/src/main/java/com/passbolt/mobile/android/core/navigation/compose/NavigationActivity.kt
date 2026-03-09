@@ -7,6 +7,8 @@ sealed interface NavigationActivity {
         val appContext: AppContext,
     ) : NavigationActivity
 
+    object AuthenticationSignIn : NavigationActivity
+
     object AuthenticationManageAccounts : NavigationActivity
 
     object TransferAccount : NavigationActivity
@@ -16,4 +18,8 @@ sealed interface NavigationActivity {
     object Home : NavigationActivity
 
     object Start : NavigationActivity
+
+    object Setup : NavigationActivity
+
+    object AutofillReorderToFront : NavigationActivity
 }

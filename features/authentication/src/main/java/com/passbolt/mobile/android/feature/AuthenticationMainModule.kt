@@ -1,48 +1,34 @@
 package com.passbolt.mobile.android.feature
 
 import androidx.biometric.BiometricPrompt
+import com.passbolt.mobile.android.core.navigation.compose.base.Feature
+import com.passbolt.mobile.android.core.navigation.compose.base.FeatureModuleNavigation
+import com.passbolt.mobile.android.feature.authentication.AuthenticationStartUpResolver
 import com.passbolt.mobile.android.feature.authentication.accountslist.accountsListModule
 import com.passbolt.mobile.android.feature.authentication.auth.authModule
-import com.passbolt.mobile.android.feature.authentication.authenticationMainModule
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.RefreshSessionUseCase
 import com.passbolt.mobile.android.feature.authentication.mfa.duo.authWithDuoModule
-import com.passbolt.mobile.android.feature.authentication.mfa.duo.duowebviewsheet.duoWebViewModule
-import com.passbolt.mobile.android.feature.authentication.mfa.totp.enterTotpModuleModule
+import com.passbolt.mobile.android.feature.authentication.mfa.totp.enterTotpModule
 import com.passbolt.mobile.android.feature.authentication.mfa.unknown.unknownProviderModule
-import com.passbolt.mobile.android.feature.authentication.mfa.youbikey.scanYubikeyModule
+import com.passbolt.mobile.android.feature.authentication.mfa.yubikey.scanYubikeyModule
+import com.passbolt.mobile.android.feature.authentication.navigation.AuthenticationFeatureNavigation
+import org.koin.core.module.dsl.factoryOf
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
-/**
- * Passbolt - Open source password manager for teams
- * Copyright (c) 2021 Passbolt SA
- *
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
- * Public License (AGPL) as published by the Free Software Foundation version 3.
- *
- * The name "Passbolt" is a registered trademark of Passbolt SA, and Passbolt SA hereby declines to grant a trademark
- * license to "Passbolt" pursuant to the GNU Affero General Public License version 3 Section 7(e), without a separate
- * agreement with Passbolt SA.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License along with this program. If not,
- * see GNU Affero General Public License v3 (http://www.gnu.org/licenses/agpl-3.0.html).
- *
- * @copyright Copyright (c) Passbolt SA (https://www.passbolt.com)
- * @license https://opensource.org/licenses/AGPL-3.0 AGPL License
- * @link https://www.passbolt.com Passbolt (tm)
- * @since v1.0
- */
 val authenticationModule =
     module {
+        single<FeatureModuleNavigation>(named(Feature.AUTHENTICATION)) {
+            AuthenticationFeatureNavigation()
+        }
+        single { BiometricPrompt.PromptInfo.Builder() }
+        factoryOf(::RefreshSessionUseCase)
+        factoryOf(::AuthenticationStartUpResolver)
+
         accountsListModule()
-        authenticationMainModule()
         authModule()
         scanYubikeyModule()
-        enterTotpModuleModule()
+        enterTotpModule()
         unknownProviderModule()
         authWithDuoModule()
-        duoWebViewModule()
-
-        single { BiometricPrompt.PromptInfo.Builder() }
     }

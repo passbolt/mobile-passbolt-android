@@ -1,22 +1,3 @@
-package com.passbolt.mobile.android.feature.authentication.accountslist
-
-import androidx.core.content.ContextCompat
-import com.mikepenz.fastadapter.FastAdapter
-import com.mikepenz.fastadapter.GenericItem
-import com.mikepenz.fastadapter.adapters.ModelAdapter
-import com.passbolt.mobile.android.core.navigation.ActivityIntents
-import com.passbolt.mobile.android.core.ui.recyclerview.DrawableListDivider
-import com.passbolt.mobile.android.feature.authentication.accountslist.item.AccountUiItemsMapper
-import com.passbolt.mobile.android.feature.authentication.accountslist.uistrategy.AccountListStrategyFactory
-import com.passbolt.mobile.android.ui.AccountModelUi
-import org.koin.android.ext.koin.androidContext
-import org.koin.core.module.Module
-import org.koin.core.module.dsl.scopedOf
-import org.koin.core.parameter.parametersOf
-import org.koin.core.qualifier.named
-import org.koin.dsl.bind
-import com.passbolt.mobile.android.core.ui.R as CoreUiR
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -39,29 +20,24 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-fun Module.accountsListModule() {
-    scope(named<AccountsListFragment>()) {
-        scopedOf(::AccountsListPresenter) bind AccountsListContract.Presenter::class
-        scopedOf(::AccountUiItemsMapper)
-        scopedOf(::AccountListStrategyFactory)
 
-        scoped { (accountUiItemsMapper: AccountUiItemsMapper) ->
-            ModelAdapter(accountUiItemsMapper::mapModelToItem)
-        }
-        scoped {
-            FastAdapter.with(
-                get<ModelAdapter<AccountModelUi, GenericItem>> {
-                    parametersOf(get<AccountUiItemsMapper>())
-                },
-            )
-        }
-        scoped {
-            DrawableListDivider(
-                ContextCompat.getDrawable(androidContext(), CoreUiR.drawable.grey_divider),
-            )
-        }
-        scoped { (accountListFragment: AccountsListFragment, type: ActivityIntents.AuthConfig) ->
-            get<AccountListStrategyFactory>().get(accountListFragment, type)
-        }
+package com.passbolt.mobile.android.feature.authentication.accountslist
+
+import org.koin.core.module.Module
+import org.koin.core.module.dsl.viewModel
+
+fun Module.accountsListModule() {
+    viewModel { params ->
+        AccountsListViewModel(
+            authConfig = params.get(),
+            getAllAccountsDataUseCase = get(),
+            getSelectedAccountUseCase = get(),
+            saveSelectedAccountUseCase = get(),
+            accountModelMapper = get(),
+            removeAllAccountDataUseCase = get(),
+            signOutUseCase = get(),
+            saveCurrentApiUrlUseCase = get(),
+            databaseProvider = get(),
+        )
     }
 }

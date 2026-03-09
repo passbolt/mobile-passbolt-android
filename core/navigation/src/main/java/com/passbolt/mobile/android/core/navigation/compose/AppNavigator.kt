@@ -9,11 +9,15 @@ import androidx.navigation3.runtime.NavKey
 import com.passbolt.mobile.android.common.ExternalDeeplinkHandler
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.ActivityIntents.AuthConfig.ManageAccount
+import com.passbolt.mobile.android.core.navigation.ActivityIntents.AuthConfig.SignIn
 import com.passbolt.mobile.android.core.navigation.ActivityIntents.AuthConfig.Startup
 import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.AccountDetails
 import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.AuthenticationManageAccounts
+import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.AuthenticationSignIn
 import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.AuthenticationStartUp
+import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.AutofillReorderToFront
 import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.Home
+import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.Setup
 import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.Start
 import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.TransferAccount
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -103,6 +107,14 @@ class AppNavigator(
         activity?.finish()
     }
 
+    fun finishActivity(activity: Activity?) {
+        activity?.finish()
+    }
+
+    fun finishAffinity(activity: Activity?) {
+        activity?.finishAffinity()
+    }
+
     fun startNavigationActivity(
         context: Context,
         activity: NavigationActivity,
@@ -111,11 +123,14 @@ class AppNavigator(
         val intent =
             when (activity) {
                 is AuthenticationStartUp -> ActivityIntents.authentication(context, Startup, appContext = activity.appContext)
+                AuthenticationSignIn -> ActivityIntents.authentication(context, SignIn)
                 AuthenticationManageAccounts -> ActivityIntents.authentication(context, ManageAccount)
                 TransferAccount -> ActivityIntents.transferAccountToAnotherDevice(context)
                 AccountDetails -> ActivityIntents.accountDetails(context)
                 Home -> ActivityIntents.home(context)
                 Start -> ActivityIntents.start(context)
+                Setup -> ActivityIntents.setup(context)
+                AutofillReorderToFront -> ActivityIntents.autofillReorderToFront(context)
             }
 
         flags.forEach { intent.addFlags(it) }

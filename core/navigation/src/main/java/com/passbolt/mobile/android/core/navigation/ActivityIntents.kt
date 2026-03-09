@@ -110,6 +110,7 @@ object ActivityIntents {
             setClassName(context, Transferaccounttoanotherdevice.TRANSFER_ACCOUNT_TO_ANOTHER_DEVICE_ACTIVITY)
         }
 
+    @kotlinx.serialization.Serializable
     sealed class AuthConfig : Serializable {
         data object Startup : AuthConfig()
 

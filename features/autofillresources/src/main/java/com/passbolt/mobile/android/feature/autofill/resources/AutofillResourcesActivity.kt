@@ -34,16 +34,16 @@ import androidx.core.content.IntentCompat
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.extension.findNavHostFragment
 import com.passbolt.mobile.android.core.fulldatarefresh.service.DataRefreshService
+import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedActivity
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.core.navigation.AutofillMode
 import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
 import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
-import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedActivity
 import com.passbolt.mobile.android.feature.autofill.databinding.ActivityAutofillResourcesBinding
 import com.passbolt.mobile.android.feature.autofill.resources.datasetstrategy.ReturnAutofillDatasetStrategy
-import com.passbolt.mobile.android.feature.home.screen.ShowSuggestedModel
-import com.passbolt.mobile.android.ui.ResourceModel
+import com.passbolt.mobile.android.feature.home.screen.ResourceHandlingStrategy
+import com.passbolt.mobile.android.feature.home.screen.ResourceHandlingStrategyProvider
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.koin.core.qualifier.named
@@ -51,12 +51,12 @@ import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 // NOTE: When changing name or package read core/navigation/README.md
 class AutofillResourcesActivity :
-    BindingScopedAuthenticatedActivity<ActivityAutofillResourcesBinding, AutofillResourcesContract.View>(
+    BindingScopedActivity<ActivityAutofillResourcesBinding>(
         ActivityAutofillResourcesBinding::inflate,
     ),
-    AutofillResourcesContract.View {
-    override val presenter: AutofillResourcesContract.Presenter by inject()
-    override val appContext = AppContext.AUTOFILL
+    AutofillResourcesContract.View,
+    ResourceHandlingStrategyProvider {
+    private val presenter: AutofillResourcesContract.Presenter by inject()
 
     private val bundledAutofillUri by lifecycleAwareLazy {
         intent.getStringExtra(ActivityIntents.EXTRA_AUTOFILL_URI)
@@ -66,6 +66,8 @@ class AutofillResourcesActivity :
             AutofillMode.valueOf(requireNotNull(it))
         }
     }
+    override lateinit var resourceHandlingStrategy: ResourceHandlingStrategy
+        private set
     private lateinit var returnAutofillDatasetStrategy: ReturnAutofillDatasetStrategy
 
     private val initialAuthenticationResult =
@@ -79,6 +81,7 @@ class AutofillResourcesActivity :
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        resourceHandlingStrategy = AutofillResourceHandlingStrategy(presenter, bundledAutofillUri)
         returnAutofillDatasetStrategy = scope.get(named(bundledAutofillMode)) { parametersOf(this) }
         presenter.attach(this)
         presenter.argsReceived(bundledAutofillUri, isRecreated = savedInstanceState != null)
@@ -134,25 +137,6 @@ class AutofillResourcesActivity :
     ) {
         setResult(result, resultIntent)
         finish()
-    }
-
-    override fun resourceItemClick(resourceModel: ResourceModel) {
-        presenter.itemClick(resourceModel)
-    }
-
-    override fun shouldShowResourceMoreMenu() = false
-
-    override fun shouldShowFolderMoreMenu() = false
-
-    override fun shouldShowCloseButton() = true
-
-    override fun showSuggestedModel() =
-        bundledAutofillUri?.let {
-            ShowSuggestedModel.Show(it)
-        } ?: ShowSuggestedModel.DoNotShow
-
-    override fun resourcePostCreateAction(resourceId: String) {
-        presenter.newResourceCreated(resourceId)
     }
 
     override fun showProgress() {

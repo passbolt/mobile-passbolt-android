@@ -1,13 +1,3 @@
-package com.passbolt.mobile.android.feature.authentication.mfa.totp
-
-import com.passbolt.mobile.android.feature.authentication.auth.usecase.VerifyTotpUseCase
-import com.passbolt.mobile.android.feature.authentication.mfa.totp.compose.DigitsOnlySanitizer
-import com.passbolt.mobile.android.feature.authentication.mfa.totp.compose.PinInputSanitizer
-import org.koin.core.module.Module
-import org.koin.core.module.dsl.scopedOf
-import org.koin.core.qualifier.named
-import org.koin.dsl.bind
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -31,10 +21,25 @@ import org.koin.dsl.bind
  * @since v1.0
  */
 
-fun Module.enterTotpModuleModule() {
-    scope(named<EnterTotpDialog>()) {
-        scopedOf(::EnterTotpPresenter) bind EnterTotpContract.Presenter::class
-        scopedOf(::VerifyTotpUseCase)
+package com.passbolt.mobile.android.feature.authentication.mfa.totp
+
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.VerifyTotpUseCase
+import com.passbolt.mobile.android.feature.authentication.mfa.totp.compose.DigitsOnlySanitizer
+import com.passbolt.mobile.android.feature.authentication.mfa.totp.compose.PinInputSanitizer
+import org.koin.core.module.Module
+import org.koin.core.module.dsl.factoryOf
+import org.koin.core.module.dsl.viewModel
+
+fun Module.enterTotpModule() {
+    factoryOf(::VerifyTotpUseCase)
+    viewModel { params ->
+        EnterTotpViewModel(
+            authToken = params[0],
+            hasOtherProvider = params[1],
+            signOutUseCase = get(),
+            verifyTotpUseCase = get(),
+            refreshSessionUseCase = get(),
+        )
     }
 
     factory<PinInputSanitizer> { params ->

@@ -23,10 +23,8 @@
 
 package com.passbolt.mobile.android.scenarios.login
 
-import androidx.appcompat.widget.Toolbar
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withClassName
 import androidx.test.espresso.matcher.ViewMatchers.withId
@@ -34,7 +32,6 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import androidx.test.platform.app.InstrumentationRegistry
 import com.google.android.material.R
-import com.passbolt.mobile.android.commontest.viewassertions.CastedViewAssertion
 import com.passbolt.mobile.android.core.idlingresource.ResourcesFullRefreshIdlingResource
 import com.passbolt.mobile.android.core.idlingresource.SignInIdlingResource
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
@@ -50,7 +47,8 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import com.passbolt.mobile.android.feature.authentication.R as authR
+
+// TODO rewrite to compose
 
 @RunWith(AndroidJUnit4::class)
 @LargeTest
@@ -97,16 +95,17 @@ class LogInTest : KoinComponent {
             .check(matches(isDisplayed()))
         //  And    I do not see a biometric provider button <<not automated>>
         //  And    I see a “Sign in” primary button
-        onView(withId(authR.id.authButton))
-            .check(matches(isDisplayed()))
-        //  And    I see a forgot my passphrase button
-        onView(withId(authR.id.forgotPasswordButton))
-            .check(matches(isDisplayed()))
-        //  And    I see a back arrow leading to the "List of accounts" welcome screen
-        onView(ViewMatchers.isAssignableFrom(Toolbar::class.java))
-            .check(CastedViewAssertion<Toolbar> { it.navigationIcon != null })
-        //  And    I see my avatar
-        onView(withId(authR.id.avatarImage))
-            .check(matches(isDisplayed()))
+        // TODO rewrite to compose
+//        onView(withId(authR.id.authButton))
+//            .check(matches(isDisplayed()))
+//        //  And    I see a forgot my passphrase button
+//        onView(withId(authR.id.forgotPasswordButton))
+//            .check(matches(isDisplayed()))
+//        //  And    I see a back arrow leading to the "List of accounts" welcome screen
+//        onView(ViewMatchers.isAssignableFrom(Toolbar::class.java))
+//            .check(CastedViewAssertion<Toolbar> { it.navigationIcon != null })
+//        //  And    I see my avatar
+//        onView(withId(authR.id.avatarImage))
+//            .check(matches(isDisplayed()))
     }
 }

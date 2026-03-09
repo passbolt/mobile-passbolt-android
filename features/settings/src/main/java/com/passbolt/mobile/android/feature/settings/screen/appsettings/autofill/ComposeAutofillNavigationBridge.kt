@@ -9,8 +9,8 @@ import com.passbolt.mobile.android.feature.autofill.encourage.accessibility.Enco
 import com.passbolt.mobile.android.feature.autofill.encourage.autofill.EncourageAutofillServiceDialog
 
 /**
- * Compose implementation of AuthenticationNavigation that works with FragmentManager
- * This allows displaying authentication dialogs from a Composable context
+ * Compose implementation of AutofillSettingsNavigation that works with FragmentManager
+ * This allows displaying autofill dialogs from a Composable context
  */
 class ComposeAutofillNavigationBridge(
     private val activity: FragmentActivity,
