@@ -5,6 +5,7 @@ import androidx.compose.runtime.remember
 import com.passbolt.mobile.android.core.navigation.compose.base.Feature.CREATE_FOLDER
 import com.passbolt.mobile.android.core.navigation.compose.base.Feature.FOLDER_DETAILS
 import com.passbolt.mobile.android.core.navigation.compose.base.Feature.GROUP_DETAILS
+import com.passbolt.mobile.android.core.navigation.compose.base.Feature.HOME
 import com.passbolt.mobile.android.core.navigation.compose.base.Feature.LOCATION_DETAILS
 import com.passbolt.mobile.android.core.navigation.compose.base.Feature.PERMISSIONS
 import com.passbolt.mobile.android.core.navigation.compose.base.Feature.RESOURCE_DETAILS
@@ -23,7 +24,6 @@ import org.koin.core.qualifier.named
 @Suppress("ktlint:compose:vm-forwarding-check", "ViewModelForwarding")
 fun HomeNavigation(
     initialHomeDisplay: HomeDisplayViewModel,
-    homeFeatureNavigation: FeatureModuleNavigation,
     navigator: AppNavigator = koinInject(),
 ) {
     val resultBus = remember { ResultEventBus() }
@@ -32,7 +32,7 @@ fun HomeNavigation(
         initialKey = Home(initialHomeDisplay),
         featureModulesNavigation =
             setOf(
-                homeFeatureNavigation,
+                koinInject<FeatureModuleNavigation>(named(HOME)),
                 koinInject<FeatureModuleNavigation>(named(RESOURCE_FORM)),
                 koinInject<FeatureModuleNavigation>(named(SCAN_OTP)),
                 koinInject<FeatureModuleNavigation>(named(RESOURCE_PICKER)),

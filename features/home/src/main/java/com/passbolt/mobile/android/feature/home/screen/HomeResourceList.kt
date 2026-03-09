@@ -17,6 +17,8 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import com.passbolt.mobile.android.core.compose.rememberDebouncedBoolean
 import com.passbolt.mobile.android.core.localization.R
+import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
+import com.passbolt.mobile.android.core.navigation.compose.keys.HomeNavigationKey
 import com.passbolt.mobile.android.core.resources.resourceicon.ResourceIconProvider
 import com.passbolt.mobile.android.core.ui.compose.empty.EmptyResourceListState
 import com.passbolt.mobile.android.core.ui.lists.HeaderItem
@@ -41,7 +43,8 @@ import com.passbolt.mobile.android.core.localization.R as LocalizationR
 @Composable
 fun HomeResourceList(
     state: HomeState,
-    homeNavigation: HomeNavigation,
+    navigator: AppNavigator,
+    resourceHandlingStrategy: ResourceHandlingStrategy,
     onIntent: (HomeIntent) -> Unit,
     modifier: Modifier = Modifier,
     resourceIconProvider: ResourceIconProvider = koinInject(),
@@ -80,9 +83,9 @@ fun HomeResourceList(
                         ResourceItem(
                             resource = resource,
                             resourceIconProvider = resourceIconProvider,
-                            onItemClick = { homeNavigation.resourceHandlingStrategy.resourceItemClick(resource) },
+                            onItemClick = { resourceHandlingStrategy.resourceItemClick(resource) },
                             onMoreClick = { onIntent(OpenResourceMenu(resource)) },
-                            showMoreMenu = homeNavigation.resourceHandlingStrategy.shouldShowResourceMoreMenu(),
+                            showMoreMenu = resourceHandlingStrategy.shouldShowResourceMoreMenu(),
                         )
                     }
                 }
@@ -120,7 +123,7 @@ fun HomeResourceList(
                                 activeFolderName = folder.name,
                                 isActiveFolderShared = folder.isShared,
                             ).let {
-                                homeNavigation.navigateToChild(it)
+                                navigator.navigateToKey(HomeNavigationKey.Home(it))
                             }
                         },
                     )
@@ -141,7 +144,7 @@ fun HomeResourceList(
                                 activeTagName = tag.slug,
                                 isActiveTagShared = tag.isShared,
                             ).let {
-                                homeNavigation.navigateToChild(it)
+                                navigator.navigateToKey(HomeNavigationKey.Home(it))
                             }
                         },
                     )
@@ -161,7 +164,7 @@ fun HomeResourceList(
                                 activeGroupId = group.groupId,
                                 activeGroupName = group.groupName,
                             ).let {
-                                homeNavigation.navigateToChild(it)
+                                navigator.navigateToKey(HomeNavigationKey.Home(it))
                             }
                         },
                     )
@@ -177,9 +180,9 @@ fun HomeResourceList(
                     ResourceItem(
                         resource = resource,
                         resourceIconProvider = resourceIconProvider,
-                        onItemClick = { homeNavigation.resourceHandlingStrategy.resourceItemClick(resource) },
+                        onItemClick = { resourceHandlingStrategy.resourceItemClick(resource) },
                         onMoreClick = { onIntent(OpenResourceMenu(resource)) },
-                        showMoreMenu = homeNavigation.resourceHandlingStrategy.shouldShowResourceMoreMenu(),
+                        showMoreMenu = resourceHandlingStrategy.shouldShowResourceMoreMenu(),
                     )
                 }
             }
@@ -200,7 +203,7 @@ fun HomeResourceList(
                                     activeFolderName = folder.name,
                                     isActiveFolderShared = folder.isShared,
                                 ).let {
-                                    homeNavigation.navigateToChild(it)
+                                    navigator.navigateToKey(HomeNavigationKey.Home(it))
                                 }
                             },
                         )
@@ -214,9 +217,9 @@ fun HomeResourceList(
                         ResourceItem(
                             resource = resource,
                             resourceIconProvider = resourceIconProvider,
-                            onItemClick = { homeNavigation.resourceHandlingStrategy.resourceItemClick(resource) },
+                            onItemClick = { resourceHandlingStrategy.resourceItemClick(resource) },
                             onMoreClick = { onIntent(OpenResourceMenu(resource)) },
-                            showMoreMenu = homeNavigation.resourceHandlingStrategy.shouldShowResourceMoreMenu(),
+                            showMoreMenu = resourceHandlingStrategy.shouldShowResourceMoreMenu(),
                         )
                     }
                 }
