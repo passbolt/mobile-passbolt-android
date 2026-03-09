@@ -69,25 +69,20 @@ class AccountModelMapperTest : KoinTest {
                     label = "label",
                 ),
             )
-        val result = mapper.map(accountsList, currentAccount = "id1")
+        val result = mapper.map(accountsList)
         val expected =
             listOf(
                 AccountModelUi.AccountModel(
                     userId = "id1",
                     email = "email1",
                     title = "label",
-                    isFirstItem = true,
-                    isTrashIconVisible = false,
                     avatar = "avatarUrl1",
                     url = "url1",
-                    isCurrentUser = true,
                 ),
                 AccountModelUi.AccountModel(
                     userId = "id2",
                     email = "email2",
                     title = "label",
-                    isFirstItem = false,
-                    isTrashIconVisible = false,
                     avatar = "avatarUrl2",
                     url = "url2",
                 ),

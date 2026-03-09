@@ -29,9 +29,7 @@ import androidx.compose.ui.test.junit4.createEmptyComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.closeSoftKeyboard
-import androidx.test.espresso.action.ViewActions.scrollTo
 import androidx.test.espresso.action.ViewActions.typeText
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents
@@ -63,7 +61,6 @@ import org.koin.test.KoinTest
 import org.koin.test.inject
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
-import com.passbolt.mobile.android.feature.authentication.R as AuthenticationR
 import com.passbolt.mobile.android.feature.autofill.R as AutofillR
 
 @RunWith(AndroidJUnit4::class)
@@ -126,7 +123,8 @@ class SetupConfigureBiometricUnavailableTest : KoinTest {
         //    And       I am on the Passphrase screen
         //    When      I successfully entered my passphrase
         onView(withId(CoreUiR.id.input)).perform(typeText(managedAccountIntentCreator.getPassphrase()), closeSoftKeyboard())
-        onView(withId(AuthenticationR.id.authButton)).perform(scrollTo(), click())
+        // TODO rewrite to compose
+//        onView(withId(AuthenticationR.id.authButton)).perform(scrollTo(), click())
         //    Then       I am prompted to Configure biometrics
         //    And        I see a "Configure {biometric provider}" primary button
         composeTestRule.apply {
@@ -149,7 +147,8 @@ class SetupConfigureBiometricUnavailableTest : KoinTest {
             //    Given     I don't have biometrics configured on my device
             //    And       I am on the Configure {biometrics provider} screen
             onView(withId(CoreUiR.id.input)).perform(typeText(managedAccountIntentCreator.getPassphrase()), closeSoftKeyboard())
-            onView(withId(AuthenticationR.id.authButton)).perform(scrollTo(), click())
+            // TODO rewrite to compose
+//            onView(withId(AuthenticationR.id.authButton)).perform(scrollTo(), click())
             //    When      I click on Configure {biometrics provider} button
             composeTestRule.onNodeWithText(getString(LocalizationR.string.fingerprint_setup_use_fingerprint_button)).performClick()
             //    Then      I am taken to the phone security settings / OS-specific process where I can complete the biometric setup
@@ -170,7 +169,8 @@ class SetupConfigureBiometricUnavailableTest : KoinTest {
         //    Given     I don't have biometrics configured on my device
         //    And       I am on the Configure {biometrics provider} screen
         onView(withId(CoreUiR.id.input)).perform(typeText(managedAccountIntentCreator.getPassphrase()), closeSoftKeyboard())
-        onView(withId(AuthenticationR.id.authButton)).perform(scrollTo(), click())
+        // TODO rewrite to compose
+//        onView(withId(AuthenticationR.id.authButton)).perform(scrollTo(), click())
         //    When      I click the "Maybe later" button
         composeTestRule.onNodeWithText(getString(LocalizationR.string.common_maybe_later)).performClick()
         composeTestRule.waitForIdle()

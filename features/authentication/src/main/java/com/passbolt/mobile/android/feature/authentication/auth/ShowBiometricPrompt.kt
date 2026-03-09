@@ -16,6 +16,8 @@ fun showBiometricPrompt(
     executor: Executor,
     biometricPromptBuilder: BiometricPrompt.PromptInfo.Builder,
     fingerprintEncryptionCipher: Cipher,
+    title: String = activity.getString(LocalizationR.string.settings_turn_on_biometric_title),
+    subtitle: String = activity.getString(LocalizationR.string.settings_turn_on_biometric_subtitle),
     onAuthenticationSuccess: (Cipher?) -> Unit,
     onAuthenticationError: (BiometricAuthError) -> Unit,
     onAuthenticationCancelled: () -> Unit,
@@ -50,8 +52,8 @@ fun showBiometricPrompt(
 
         val promptInfo =
             biometricPromptBuilder
-                .setTitle(activity.getString(LocalizationR.string.settings_turn_on_biometric_title))
-                .setSubtitle(activity.getString(LocalizationR.string.settings_turn_on_biometric_subtitle))
+                .setTitle(title)
+                .setSubtitle(subtitle)
                 .setNegativeButtonText(activity.getString(LocalizationR.string.cancel))
                 .setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_STRONG)
                 .build()

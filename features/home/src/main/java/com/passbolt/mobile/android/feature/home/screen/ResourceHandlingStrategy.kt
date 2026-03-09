@@ -25,6 +25,10 @@ import com.passbolt.mobile.android.ui.ResourceModel
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+interface ResourceHandlingStrategyProvider {
+    val resourceHandlingStrategy: ResourceHandlingStrategy
+}
+
 interface ResourceHandlingStrategy {
     val appContext: AppContext
 

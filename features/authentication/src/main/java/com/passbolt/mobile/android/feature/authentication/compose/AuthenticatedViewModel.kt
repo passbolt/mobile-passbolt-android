@@ -5,9 +5,6 @@ import com.passbolt.mobile.android.core.authenticationcore.session.GetSessionUse
 import com.passbolt.mobile.android.core.compose.SideEffectViewModel
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated.Reason.Mfa
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated.Reason.Mfa.MfaProvider
-import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated.Reason.Mfa.MfaProvider.DUO
-import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated.Reason.Mfa.MfaProvider.TOTP
-import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated.Reason.Mfa.MfaProvider.YUBIKEY
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated.Reason.Passphrase
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated.Reason.Session
 import com.passbolt.mobile.android.core.mvp.authentication.MfaProvidersHandler
@@ -17,10 +14,7 @@ import com.passbolt.mobile.android.feature.authentication.compose.AuthenticatedI
 import com.passbolt.mobile.android.feature.authentication.compose.AuthenticatedIntent.Disposed
 import com.passbolt.mobile.android.feature.authentication.compose.AuthenticatedIntent.Launched
 import com.passbolt.mobile.android.feature.authentication.compose.AuthenticatedIntent.OtherProviderClick
-import com.passbolt.mobile.android.feature.authentication.compose.AuthenticationSideEffect.ShowDuoDialog
-import com.passbolt.mobile.android.feature.authentication.compose.AuthenticationSideEffect.ShowTotpDialog
-import com.passbolt.mobile.android.feature.authentication.compose.AuthenticationSideEffect.ShowUnknownProvider
-import com.passbolt.mobile.android.feature.authentication.compose.AuthenticationSideEffect.ShowYubikeyDialog
+import com.passbolt.mobile.android.feature.authentication.compose.AuthenticationSideEffect.ShowMfaAuth
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -115,34 +109,13 @@ open class AuthenticatedViewModel<ViewState, SideEffect>(
     }
 
     private fun otherProviderClick(currentProvider: MfaProvider) {
-        val sessionAccessToken = getSessionUseCase.execute(Unit).accessToken
-        when (mfaProvidersHandler.nextMfaProvider(currentProvider)) {
-            YUBIKEY ->
-                emitSideAuthenticationEffect(
-                    ShowYubikeyDialog(
-                        hasOtherProviders = mfaProvidersHandler.hasMultipleProviders(),
-                        sessionAccessToken = sessionAccessToken,
-                    ),
-                )
-            TOTP ->
-                emitSideAuthenticationEffect(
-                    ShowTotpDialog(
-                        hasOtherProviders = mfaProvidersHandler.hasMultipleProviders(),
-                        sessionAccessToken = sessionAccessToken,
-                    ),
-                )
-            DUO ->
-                emitSideAuthenticationEffect(
-                    ShowDuoDialog(
-                        hasOtherProviders = mfaProvidersHandler.hasMultipleProviders(),
-                        sessionAccessToken = sessionAccessToken,
-                    ),
-                )
-            null ->
-                emitSideAuthenticationEffect(
-                    ShowUnknownProvider(hasOtherProviders = mfaProvidersHandler.hasMultipleProviders()),
-                )
-        }
+        emitSideAuthenticationEffect(
+            ShowMfaAuth(
+                mfaReason = mfaProvidersHandler.nextMfaProvider(currentProvider),
+                hasMultipleProviders = mfaProvidersHandler.hasMultipleProviders(),
+                sessionAccessToken = getSessionUseCase.execute(Unit).accessToken,
+            ),
+        )
     }
 
     private fun authenticationRefreshed() {

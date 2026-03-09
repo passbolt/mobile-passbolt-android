@@ -9,10 +9,10 @@ import androidx.fragment.app.Fragment
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
 import com.passbolt.mobile.android.core.navigation.compose.HomeNavigation
-import com.passbolt.mobile.android.core.navigation.constants.Autofillresources
 import com.passbolt.mobile.android.core.preferences.usecase.GetHomeDisplayViewPrefsUseCase
 import com.passbolt.mobile.android.feature.home.screen.DefaultResourceHandlingStrategy
 import com.passbolt.mobile.android.feature.home.screen.ResourceHandlingStrategy
+import com.passbolt.mobile.android.feature.home.screen.ResourceHandlingStrategyProvider
 import com.passbolt.mobile.android.mappers.HomeDisplayViewMapper
 import org.koin.android.ext.android.inject
 
@@ -22,8 +22,9 @@ class HomeBottomNavigationContainerFragment : Fragment() {
     private val appNavigator: AppNavigator by inject()
 
     private val resourceHandlingStrategy: ResourceHandlingStrategy by lifecycleAwareLazy {
-        if (requireActivity().javaClass.name == Autofillresources.AUTOFILL_RESOURCES_ACTIVITY) {
-            requireActivity() as ResourceHandlingStrategy
+        val activity = requireActivity()
+        if (activity is ResourceHandlingStrategyProvider) {
+            activity.resourceHandlingStrategy
         } else {
             DefaultResourceHandlingStrategy(appNavigator)
         }

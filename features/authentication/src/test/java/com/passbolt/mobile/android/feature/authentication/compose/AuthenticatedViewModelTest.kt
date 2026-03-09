@@ -39,11 +39,7 @@ import com.passbolt.mobile.android.feature.authentication.compose.AuthenticatedI
 import com.passbolt.mobile.android.feature.authentication.compose.AuthenticatedIntent.Launched
 import com.passbolt.mobile.android.feature.authentication.compose.AuthenticatedIntent.OtherProviderClick
 import com.passbolt.mobile.android.feature.authentication.compose.AuthenticationSideEffect.ShowAuth
-import com.passbolt.mobile.android.feature.authentication.compose.AuthenticationSideEffect.ShowDuoDialog
 import com.passbolt.mobile.android.feature.authentication.compose.AuthenticationSideEffect.ShowMfaAuth
-import com.passbolt.mobile.android.feature.authentication.compose.AuthenticationSideEffect.ShowTotpDialog
-import com.passbolt.mobile.android.feature.authentication.compose.AuthenticationSideEffect.ShowUnknownProvider
-import com.passbolt.mobile.android.feature.authentication.compose.AuthenticationSideEffect.ShowYubikeyDialog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -177,7 +173,7 @@ class AuthenticatedViewModelTest : KoinTest {
         }
 
     @Test
-    fun `should emit TOTP dialog side effect when other provider click intent with YUBIKEY current provider`() =
+    fun `should emit TOTP MFA side effect when other provider click with YUBIKEY current provider`() =
         runTest {
             val mfaProvidersHandler: MfaProvidersHandler = get()
             whenever(mfaProvidersHandler.nextMfaProvider(YUBIKEY)) doReturn TOTP
@@ -189,15 +185,16 @@ class AuthenticatedViewModelTest : KoinTest {
                 viewModel.onAuthenticationIntent(OtherProviderClick(YUBIKEY))
 
                 val sideEffect = awaitItem()
-                assertThat(sideEffect).isInstanceOf(ShowTotpDialog::class.java)
-                val showTotpEffect = sideEffect as ShowTotpDialog
-                assertThat(showTotpEffect.hasOtherProviders).isTrue()
-                assertThat(showTotpEffect.sessionAccessToken).isEqualTo(TEST_ACCESS_TOKEN)
+                assertThat(sideEffect).isInstanceOf(ShowMfaAuth::class.java)
+                val showMfaEffect = sideEffect as ShowMfaAuth
+                assertThat(showMfaEffect.mfaReason).isEqualTo(TOTP)
+                assertThat(showMfaEffect.hasMultipleProviders).isTrue()
+                assertThat(showMfaEffect.sessionAccessToken).isEqualTo(TEST_ACCESS_TOKEN)
             }
         }
 
     @Test
-    fun `should emit YUBIKEY dialog side effect when other provider click intent with TOTP current provider`() =
+    fun `should emit YUBIKEY MFA side effect when other provider click with TOTP current provider`() =
         runTest {
             val mfaProvidersHandler: MfaProvidersHandler = get()
             whenever(mfaProvidersHandler.nextMfaProvider(TOTP)) doReturn YUBIKEY
@@ -209,15 +206,16 @@ class AuthenticatedViewModelTest : KoinTest {
                 viewModel.onAuthenticationIntent(OtherProviderClick(TOTP))
 
                 val sideEffect = awaitItem()
-                assertThat(sideEffect).isInstanceOf(ShowYubikeyDialog::class.java)
-                val showYubikeyEffect = sideEffect as ShowYubikeyDialog
-                assertThat(showYubikeyEffect.hasOtherProviders).isTrue()
-                assertThat(showYubikeyEffect.sessionAccessToken).isEqualTo(TEST_ACCESS_TOKEN)
+                assertThat(sideEffect).isInstanceOf(ShowMfaAuth::class.java)
+                val showMfaEffect = sideEffect as ShowMfaAuth
+                assertThat(showMfaEffect.mfaReason).isEqualTo(YUBIKEY)
+                assertThat(showMfaEffect.hasMultipleProviders).isTrue()
+                assertThat(showMfaEffect.sessionAccessToken).isEqualTo(TEST_ACCESS_TOKEN)
             }
         }
 
     @Test
-    fun `should emit DUO dialog side effect when other provider click intent with TOTP current provider`() =
+    fun `should emit DUO MFA side effect when other provider click with TOTP current provider`() =
         runTest {
             val mfaProvidersHandler: MfaProvidersHandler = get()
             whenever(mfaProvidersHandler.nextMfaProvider(TOTP)) doReturn DUO
@@ -229,15 +227,16 @@ class AuthenticatedViewModelTest : KoinTest {
                 viewModel.onAuthenticationIntent(OtherProviderClick(TOTP))
 
                 val sideEffect = awaitItem()
-                assertThat(sideEffect).isInstanceOf(ShowDuoDialog::class.java)
-                val showDuoEffect = sideEffect as ShowDuoDialog
-                assertThat(showDuoEffect.hasOtherProviders).isTrue()
-                assertThat(showDuoEffect.sessionAccessToken).isEqualTo(TEST_ACCESS_TOKEN)
+                assertThat(sideEffect).isInstanceOf(ShowMfaAuth::class.java)
+                val showMfaEffect = sideEffect as ShowMfaAuth
+                assertThat(showMfaEffect.mfaReason).isEqualTo(DUO)
+                assertThat(showMfaEffect.hasMultipleProviders).isTrue()
+                assertThat(showMfaEffect.sessionAccessToken).isEqualTo(TEST_ACCESS_TOKEN)
             }
         }
 
     @Test
-    fun `should emit unknown provider side effect when other provider click intent with null next provider`() =
+    fun `should emit unknown provider MFA side effect when other provider click with null next provider`() =
         runTest {
             val mfaProvidersHandler: MfaProvidersHandler = get()
             whenever(mfaProvidersHandler.nextMfaProvider(TOTP)) doReturn null
@@ -249,9 +248,11 @@ class AuthenticatedViewModelTest : KoinTest {
                 viewModel.onAuthenticationIntent(OtherProviderClick(TOTP))
 
                 val sideEffect = awaitItem()
-                assertThat(sideEffect).isInstanceOf(ShowUnknownProvider::class.java)
-                val showUnknownEffect = sideEffect as ShowUnknownProvider
-                assertThat(showUnknownEffect.hasOtherProviders).isFalse()
+                assertThat(sideEffect).isInstanceOf(ShowMfaAuth::class.java)
+                val showMfaEffect = sideEffect as ShowMfaAuth
+                assertThat(showMfaEffect.mfaReason).isNull()
+                assertThat(showMfaEffect.hasMultipleProviders).isFalse()
+                assertThat(showMfaEffect.sessionAccessToken).isEqualTo(TEST_ACCESS_TOKEN)
             }
         }
 
