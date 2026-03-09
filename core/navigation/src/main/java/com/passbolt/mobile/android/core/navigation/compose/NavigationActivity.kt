@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.core.navigation.compose
 
+import com.passbolt.mobile.android.core.navigation.AccountSetupDataModel
 import com.passbolt.mobile.android.core.navigation.AppContext
 
 sealed interface NavigationActivity {
@@ -20,6 +21,10 @@ sealed interface NavigationActivity {
     object Start : NavigationActivity
 
     object Setup : NavigationActivity
+
+    data class SetupWithPredefinedAccountData(
+        val accountSetupDataModel: AccountSetupDataModel?,
+    ) : NavigationActivity
 
     object AutofillReorderToFront : NavigationActivity
 }

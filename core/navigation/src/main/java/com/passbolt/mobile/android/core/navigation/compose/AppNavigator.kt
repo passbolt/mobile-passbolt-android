@@ -18,6 +18,7 @@ import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.Au
 import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.AutofillReorderToFront
 import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.Home
 import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.Setup
+import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.SetupWithPredefinedAccountData
 import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.Start
 import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.TransferAccount
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -126,7 +127,12 @@ class AppNavigator(
     ) {
         val intent =
             when (activity) {
-                is AuthenticationStartUp -> ActivityIntents.authentication(context, Startup, appContext = activity.appContext)
+                is AuthenticationStartUp ->
+                    ActivityIntents.authentication(
+                        context,
+                        Startup,
+                        appContext = activity.appContext,
+                    )
                 AuthenticationSignIn -> ActivityIntents.authentication(context, SignIn)
                 AuthenticationManageAccounts -> ActivityIntents.authentication(context, ManageAccount)
                 TransferAccount -> ActivityIntents.transferAccountToAnotherDevice(context)
@@ -135,6 +141,7 @@ class AppNavigator(
                 Start -> ActivityIntents.start(context)
                 Setup -> ActivityIntents.setup(context)
                 AutofillReorderToFront -> ActivityIntents.autofillReorderToFront(context)
+                is SetupWithPredefinedAccountData -> ActivityIntents.setup(context, activity.accountSetupDataModel)
             }
 
         flags.forEach { intent.addFlags(it) }
