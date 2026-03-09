@@ -2,7 +2,6 @@ plugins {
     alias libs.plugins.android.library
     alias libs.plugins.kotlin.gradle
     alias libs.plugins.compose.compiler
-    alias libs.plugins.navigation.safeargs
 }
 
 dependencies {
@@ -27,8 +26,6 @@ dependencies {
     implementation libs.sqlite
     implementation libs.constraintlayout
     implementation libs.material
-    implementation libs.navigation.fragment
-    implementation libs.navigation.ui
     implementation libs.swiperefresh
     implementation platform(libs.compose.bom)
     implementation libs.compose.foundation
@@ -46,7 +43,6 @@ dependencies {
 android {
     namespace = "com.passbolt.mobile.android.feature.locationdetails"
     buildFeatures {
-        viewBinding true
         compose true
     }
 }

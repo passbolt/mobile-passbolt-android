@@ -1,7 +1,6 @@
 plugins {
     alias libs.plugins.android.library
     alias libs.plugins.kotlin.gradle
-    alias libs.plugins.navigation.safeargs
     alias libs.plugins.compose.compiler
 }
 
@@ -31,8 +30,6 @@ dependencies {
     implementation libs.koin
     implementation libs.koin.compose
     implementation libs.material
-    implementation libs.navigation.fragment
-    implementation libs.navigation.ui
     implementation libs.fastadapter.binding
     implementation libs.fastadapter.core
     implementation libs.fastadapter.diff
@@ -57,7 +54,6 @@ dependencies {
 android {
     namespace = "com.passbolt.mobile.android.feature.folderdetails"
     buildFeatures {
-        viewBinding true
         compose true
     }
 }

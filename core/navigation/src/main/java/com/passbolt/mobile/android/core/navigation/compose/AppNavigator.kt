@@ -90,6 +90,10 @@ class AppNavigator(
         _currentBackStackItem.value = key
     }
 
+    fun popToRoot() {
+        popToKey(backStack.first())
+    }
+
     fun replaceAll(key: NavKey) {
         backStack.clear()
         navigateToKey(key)
