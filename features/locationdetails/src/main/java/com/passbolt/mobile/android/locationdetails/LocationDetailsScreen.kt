@@ -61,6 +61,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
+import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
 import com.passbolt.mobile.android.core.resources.resourceicon.ResourceIconProvider
 import com.passbolt.mobile.android.core.ui.compose.pulltorefresh.PullToRefreshIndicatorBox
 import com.passbolt.mobile.android.core.ui.compose.snackbar.ColoredSnackbarVisuals
@@ -90,9 +91,9 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
 internal fun LocationDetailsScreen(
     locationItem: LocationItem,
     itemId: String,
-    navigation: LocationDetailsNavigation,
     modifier: Modifier = Modifier,
     viewModel: LocationDetailsViewModel = koinViewModel(),
+    navigator: AppNavigator = koinInject(),
 ) {
     val context = LocalContext.current
     val state = viewModel.viewState.collectAsStateWithLifecycle()
@@ -117,8 +118,8 @@ internal fun LocationDetailsScreen(
 
     SideEffectDispatcher(viewModel.sideEffect) { sideEffect ->
         when (sideEffect) {
-            NavigateUp -> navigation.navigateUp()
-            NavigateToHome -> navigation.navigateToHome()
+            NavigateUp -> navigator.navigateBack()
+            NavigateToHome -> navigator.popToRoot()
             is ShowErrorSnackbar -> {
                 coroutineScope.launch {
                     snackbarHostState.showSnackbar(

@@ -31,6 +31,6 @@ private class ResourceTagsNavigator(
     }
 
     override fun navigateToHome() {
-        navigator.popToKey(navigator.backStack.first())
+        navigator.popToRoot()
     }
 }

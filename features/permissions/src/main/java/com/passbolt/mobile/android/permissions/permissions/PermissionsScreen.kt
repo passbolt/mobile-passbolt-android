@@ -138,7 +138,7 @@ fun PermissionsScreen(
                 resultBus.sendResult(result = ShareCompleteResult(shared = true))
                 navigator.navigateBack()
             }
-            NavigateToHome -> navigator.popToKey(navigator.backStack.first())
+            NavigateToHome -> navigator.popToRoot()
             ShowContentNotAvailable ->
                 Toast
                     .makeText(context, LocalizationR.string.content_not_available, Toast.LENGTH_SHORT)
