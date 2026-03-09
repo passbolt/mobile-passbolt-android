@@ -1,9 +1,13 @@
 package com.passbolt.mobile.android.feature.home.screen
 
+import com.passbolt.mobile.android.core.navigation.compose.base.Feature
+import com.passbolt.mobile.android.core.navigation.compose.base.FeatureModuleNavigation
+import com.passbolt.mobile.android.feature.home.navigation.HomeFeatureNavigation
 import com.passbolt.mobile.android.feature.home.screen.data.HomeDataProvider
 import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.singleOf
+import org.koin.core.qualifier.named
 
 /**
  * Passbolt - Open source password manager for teams
@@ -31,4 +35,5 @@ import org.koin.core.module.dsl.singleOf
 fun Module.homeModule() {
     singleOf(::HomeDataProvider)
     viewModelOf(::HomeViewModel)
+    single<FeatureModuleNavigation>(named(Feature.HOME)) { HomeFeatureNavigation() }
 }

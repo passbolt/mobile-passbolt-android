@@ -142,11 +142,6 @@ internal fun HomeScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
 
-    val homeNavigation =
-        remember(navigator, resourceHandlingStrategy) {
-            HomeNavigator(navigator, resourceHandlingStrategy)
-        }
-
     AutofillConflictSnackbarEffect(
         snackbarHostState = snackbarHostState,
         isAutofillConflictDetected = state.isAutofillConflictDetected,
@@ -171,7 +166,8 @@ internal fun HomeScreen(
         state = state,
         onIntent = viewModel::onIntent,
         snackbarHostState = snackbarHostState,
-        homeNavigation = homeNavigation,
+        navigator = navigator,
+        resourceHandlingStrategy = resourceHandlingStrategy,
         modifier = modifier,
     )
 
@@ -249,7 +245,8 @@ private fun HomeScreen(
     state: HomeState,
     onIntent: (HomeIntent) -> Unit,
     snackbarHostState: SnackbarHostState,
-    homeNavigation: HomeNavigation,
+    navigator: AppNavigator,
+    resourceHandlingStrategy: ResourceHandlingStrategy,
     modifier: Modifier = Modifier,
 ) {
     val activity = LocalActivity.current
@@ -262,11 +259,11 @@ private fun HomeScreen(
                 .testTag(Home.SCREEN),
         appBarTitle = getAppBarTitle(context, state),
         appBarIconRes = getAppBarIconResId(state),
-        shouldShowMoreIcon = homeNavigation.resourceHandlingStrategy.shouldShowFolderMoreMenu() && state.showMoreMenu,
+        shouldShowMoreIcon = resourceHandlingStrategy.shouldShowFolderMoreMenu() && state.showMoreMenu,
         onMoreClick = { onIntent(OpenFolderMoreMenu) },
         shouldShowBackIcon = state.showBackIcon,
-        onBackClick = { homeNavigation.navigateBack() },
-        shouldShowCloseIcon = homeNavigation.resourceHandlingStrategy.shouldShowCloseButton(),
+        onBackClick = { navigator.navigateBack() },
+        shouldShowCloseIcon = resourceHandlingStrategy.shouldShowCloseButton(),
         onCloseClick = { activity?.finish() },
         appBarSearchInput = {
             SearchInput(
@@ -306,7 +303,7 @@ private fun HomeScreen(
                         .fillMaxSize()
                         .padding(paddingValues),
             ) {
-                HomeResourceList(state, homeNavigation, onIntent)
+                HomeResourceList(state, navigator, resourceHandlingStrategy, onIntent)
             }
         },
     )
@@ -338,7 +335,7 @@ private fun HomeScreen(
     if (state.showFiltersBottomSheet) {
         FiltersMenuBottomSheet(
             onDismissRequest = { onIntent(CloseFiltersBottomSheet) },
-            onHomeViewChange = { homeNavigation.navigateToRoot(it) },
+            onHomeViewChange = { navigator.replaceAll(HomeNavigationKey.Home(it)) },
             filtersMenuModel = FiltersMenuModel(state.homeView),
         )
     }
@@ -370,23 +367,6 @@ private fun HomeScreen(
     }
 
     ProgressDialog(state.showProgress)
-}
-
-private class HomeNavigator(
-    private val navigator: AppNavigator,
-    override val resourceHandlingStrategy: ResourceHandlingStrategy,
-) : HomeNavigation {
-    override fun navigateToChild(homeView: HomeDisplayViewModel) {
-        navigator.navigateToKey(HomeNavigationKey.Home(homeView))
-    }
-
-    override fun navigateBack() {
-        navigator.navigateBack()
-    }
-
-    override fun navigateToRoot(homeView: HomeDisplayViewModel) {
-        navigator.replaceAll(HomeNavigationKey.Home(homeView))
-    }
 }
 
 object HomeScreenTestTags {

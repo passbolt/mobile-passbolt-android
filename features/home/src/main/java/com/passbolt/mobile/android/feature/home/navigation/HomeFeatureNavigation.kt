@@ -1,6 +1,8 @@
 package com.passbolt.mobile.android.feature.home.navigation
 
 import PassboltTheme
+import androidx.activity.compose.LocalActivity
+import androidx.compose.runtime.remember
 import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
 import com.passbolt.mobile.android.core.navigation.compose.base.EntryProviderInstaller
 import com.passbolt.mobile.android.core.navigation.compose.base.FeatureModuleNavigation
@@ -11,6 +13,7 @@ import com.passbolt.mobile.android.core.navigation.compose.results.ResourceDetai
 import com.passbolt.mobile.android.core.navigation.compose.results.ResourceFormCompleteResult
 import com.passbolt.mobile.android.core.navigation.compose.results.ResultEffect
 import com.passbolt.mobile.android.core.navigation.compose.results.ShareCompleteResult
+import com.passbolt.mobile.android.feature.home.screen.DefaultResourceHandlingStrategy
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.FolderCreateReturned
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.OtpQRScanReturned
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.ResourceDetailsReturned
@@ -19,19 +22,24 @@ import com.passbolt.mobile.android.feature.home.screen.HomeIntent.ResourceShareR
 import com.passbolt.mobile.android.feature.home.screen.HomeScreen
 import com.passbolt.mobile.android.feature.home.screen.HomeViewModel
 import com.passbolt.mobile.android.feature.home.screen.ResourceHandlingStrategy
-import com.passbolt.mobile.android.feature.home.screen.ShowSuggestedModel
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 
-class HomeFeatureNavigation(
-    private val resourceHandlingStrategy: ResourceHandlingStrategy,
-    private val showSuggestedModel: ShowSuggestedModel,
-) : FeatureModuleNavigation {
+class HomeFeatureNavigation : FeatureModuleNavigation {
     override fun provideEntryProviderInstaller(): EntryProviderInstaller =
         {
             entry<Home> { key ->
                 val navigator: AppNavigator = koinInject()
                 val viewModel: HomeViewModel = koinViewModel()
+                val activity = LocalActivity.current
+                val resourceHandlingStrategy =
+                    remember(activity, navigator) {
+                        if (activity is ResourceHandlingStrategy) activity else DefaultResourceHandlingStrategy(navigator)
+                    }
+                val showSuggestedModel =
+                    remember(resourceHandlingStrategy) {
+                        resourceHandlingStrategy.showSuggestedModel()
+                    }
 
                 ResultEffect<ResourceFormCompleteResult> { result ->
                     viewModel.onIntent(ResourceFormReturned(result.resourceCreated, result.resourceEdited, result.resourceName))
