@@ -24,7 +24,7 @@
 package com.passbolt.mobile.android.tagsdetails
 
 internal sealed interface ResourceTagsSideEffect {
-    data object NavigateUp : ResourceTagsSideEffect
+    data object NavigateBack : ResourceTagsSideEffect
 
     data object NavigateToHome : ResourceTagsSideEffect
 
