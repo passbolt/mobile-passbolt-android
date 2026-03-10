@@ -24,10 +24,9 @@ import org.koin.core.qualifier.named
 fun ResourceFormNavigation(
     mode: ResourceFormMode,
     hostNavigation: ResourceFormHostNavigation,
+    resultEventBus: ResultEventBus = remember { ResultEventBus() },
     navigator: AppNavigator = koinInject(),
 ) {
-    val resultBus = remember { ResultEventBus() }
-
     rememberNavBackStack(MainResourceForm(mode)).let { backstack ->
         navigator.backStack = backstack
     }
@@ -38,7 +37,7 @@ fun ResourceFormNavigation(
         )
 
     CompositionLocalProvider(
-        NavigationResultEventBus provides resultBus,
+        NavigationResultEventBus provides resultEventBus,
         LocalResourceFormHostNavigation provides hostNavigation,
     ) {
         NavDisplay(

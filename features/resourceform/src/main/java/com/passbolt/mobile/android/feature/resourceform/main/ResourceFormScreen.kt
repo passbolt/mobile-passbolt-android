@@ -41,7 +41,6 @@ import com.passbolt.mobile.android.core.navigation.compose.keys.ResourceFormNavi
 import com.passbolt.mobile.android.core.navigation.compose.keys.ResourceFormNavigationKey.PasswordForm
 import com.passbolt.mobile.android.core.navigation.compose.keys.ResourceFormNavigationKey.TotpAdvancedSettingsForm
 import com.passbolt.mobile.android.core.navigation.compose.keys.ResourceFormNavigationKey.TotpForm
-import com.passbolt.mobile.android.core.navigation.compose.results.NavigationResultEventBus
 import com.passbolt.mobile.android.core.ui.compose.button.PrimaryButton
 import com.passbolt.mobile.android.core.ui.compose.progressdialog.ProgressDialog
 import com.passbolt.mobile.android.core.ui.compose.text.TextInput
@@ -75,7 +74,6 @@ import com.passbolt.mobile.android.feature.resourceform.main.ResourceFormSideEff
 import com.passbolt.mobile.android.feature.resourceform.main.ui.AdditionalSecretsSection
 import com.passbolt.mobile.android.feature.resourceform.main.ui.LeadingContent
 import com.passbolt.mobile.android.feature.resourceform.main.ui.MetadataSection
-import com.passbolt.mobile.android.feature.resourceform.navigation.ScanOtpResultEvent
 import com.passbolt.mobile.android.ui.LeadingContentType
 import com.passbolt.mobile.android.ui.PasswordStrength
 import com.passbolt.mobile.android.ui.ResourceFormMode.Create
@@ -95,7 +93,6 @@ internal fun ResourceFormScreen(
     val state = viewModel.viewState.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val hostNavigation = LocalResourceFormHostNavigation.current
-    val resultBus = NavigationResultEventBus.current
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
 
@@ -131,9 +128,7 @@ internal fun ResourceFormScreen(
                     CustomFieldsForm(mode = sideEffect.mode, customFieldsUiModel = sideEffect.model),
                 )
             NavigateToScanOtp ->
-                hostNavigation.navigateToScanOtp { isManual, totp ->
-                    resultBus.sendResult(result = ScanOtpResultEvent(isManual, totp))
-                }
+                hostNavigation.navigateToScanOtp()
             is NavigateBackWithCreateSuccess ->
                 hostNavigation.navigateBackWithCreateSuccess(sideEffect.name, sideEffect.resourceId)
             is NavigateBackWithEditSuccess ->

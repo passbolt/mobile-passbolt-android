@@ -14,8 +14,10 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.passbolt.mobile.android.core.navigation.compose.ResourceFormHostNavigation
 import com.passbolt.mobile.android.core.navigation.compose.ResourceFormNavigation
+import com.passbolt.mobile.android.core.navigation.compose.results.ResultEventBus
 import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpFragment
 import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpMode
+import com.passbolt.mobile.android.feature.resourceform.navigation.ScanOtpResultEvent
 import com.passbolt.mobile.android.ui.OtpParseResult
 
 class ResourceFormFragment :
@@ -23,7 +25,7 @@ class ResourceFormFragment :
     ResourceFormHostNavigation {
     private val navArgs: ResourceFormFragmentArgs by navArgs()
 
-    private var scanOtpResultCallback: ((Boolean, OtpParseResult.OtpQr.TotpQr?) -> Unit)? = null
+    private val resultEventBus = ResultEventBus()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -35,14 +37,10 @@ class ResourceFormFragment :
                 ResourceFormNavigation(
                     mode = navArgs.mode,
                     hostNavigation = this@ResourceFormFragment,
+                    resultEventBus = resultEventBus,
                 )
             }
         }
-
-    override fun onDestroyView() {
-        scanOtpResultCallback = null
-        super.onDestroyView()
-    }
 
     override fun navigateBack() {
         findNavController().popBackStack()
@@ -74,18 +72,20 @@ class ResourceFormFragment :
         findNavController().popBackStack()
     }
 
-    override fun navigateToScanOtp(resultCallback: (Boolean, OtpParseResult.OtpQr.TotpQr?) -> Unit) {
-        scanOtpResultCallback = resultCallback
+    override fun navigateToScanOtp() {
         setFragmentResultListener(ScanOtpFragment.REQUEST_SCAN_OTP_FOR_RESULT) { _, result ->
-            scanOtpResultCallback?.invoke(
-                result.getBoolean(ScanOtpFragment.EXTRA_MANUAL_CREATION_CHOSEN),
-                BundleCompat.getParcelable(
-                    result,
-                    ScanOtpFragment.EXTRA_SCANNED_OTP,
-                    OtpParseResult.OtpQr.TotpQr::class.java,
-                ),
+            resultEventBus.sendResult(
+                result =
+                    ScanOtpResultEvent(
+                        isManualCreationChosen = result.getBoolean(ScanOtpFragment.EXTRA_MANUAL_CREATION_CHOSEN),
+                        scannedTotp =
+                            BundleCompat.getParcelable(
+                                result,
+                                ScanOtpFragment.EXTRA_SCANNED_OTP,
+                                OtpParseResult.OtpQr.TotpQr::class.java,
+                            ),
+                    ),
             )
-            scanOtpResultCallback = null
         }
         findNavController().navigate(
             ResourceFormFragmentDirections.actionResourceFormFragmentToScanOtp(ScanOtpMode.SCAN_FOR_RESULT),
