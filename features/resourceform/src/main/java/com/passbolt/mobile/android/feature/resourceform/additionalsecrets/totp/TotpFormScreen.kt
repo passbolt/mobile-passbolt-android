@@ -125,11 +125,7 @@ internal fun TotpFormScreen(
                     TotpAdvancedSettingsForm(it.mode, it.totpUiModel),
                 )
             NavigateToScanTotp ->
-                hostNavigation.navigateToScanOtp { isManual, totp ->
-                    resultBus.sendResult(
-                        result = ScanOtpResultEvent(isManual, totp),
-                    )
-                }
+                hostNavigation.navigateToScanOtp()
         }
     }
 
