@@ -41,8 +41,8 @@ import com.passbolt.mobile.android.jsonmodel.jsonpathops.JsonPathJsonPathOps
 import com.passbolt.mobile.android.jsonmodel.jsonpathops.JsonPathsOps
 import com.passbolt.mobile.android.tagsdetails.ResourceTagsIntent.GoBack
 import com.passbolt.mobile.android.tagsdetails.ResourceTagsIntent.Initialize
+import com.passbolt.mobile.android.tagsdetails.ResourceTagsSideEffect.NavigateBack
 import com.passbolt.mobile.android.tagsdetails.ResourceTagsSideEffect.NavigateToHome
-import com.passbolt.mobile.android.tagsdetails.ResourceTagsSideEffect.NavigateUp
 import com.passbolt.mobile.android.tagsdetails.ResourceTagsSideEffect.ShowContentNotAvailable
 import com.passbolt.mobile.android.tagsdetails.ResourceTagsSideEffect.ShowErrorSnackbar
 import com.passbolt.mobile.android.tagsdetails.SnackbarErrorType.FAILED_TO_REFRESH_DATA
@@ -157,7 +157,7 @@ class ResourceTagsViewModelTest : KoinTest {
 
             viewModel.sideEffect.test {
                 viewModel.onIntent(GoBack)
-                assertThat(awaitItem()).isEqualTo(NavigateUp)
+                assertThat(awaitItem()).isEqualTo(NavigateBack)
             }
         }
 

@@ -62,6 +62,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
+import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
 import com.passbolt.mobile.android.core.resources.resourceicon.ResourceIconProvider
 import com.passbolt.mobile.android.core.ui.compose.pulltorefresh.PullToRefreshIndicatorBox
 import com.passbolt.mobile.android.core.ui.compose.snackbar.ColoredSnackbarVisuals
@@ -70,8 +71,8 @@ import com.passbolt.mobile.android.core.ui.compose.topbar.TitleAppBar
 import com.passbolt.mobile.android.feature.authentication.compose.AuthenticationHandler
 import com.passbolt.mobile.android.tagsdetails.ResourceTagsIntent.GoBack
 import com.passbolt.mobile.android.tagsdetails.ResourceTagsIntent.Initialize
+import com.passbolt.mobile.android.tagsdetails.ResourceTagsSideEffect.NavigateBack
 import com.passbolt.mobile.android.tagsdetails.ResourceTagsSideEffect.NavigateToHome
-import com.passbolt.mobile.android.tagsdetails.ResourceTagsSideEffect.NavigateUp
 import com.passbolt.mobile.android.tagsdetails.ResourceTagsSideEffect.ShowContentNotAvailable
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.isFavourite
@@ -84,8 +85,8 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
 @Composable
 internal fun ResourceTagsScreen(
     resourceId: String,
-    navigation: ResourceTagsNavigation,
     modifier: Modifier = Modifier,
+    navigator: AppNavigator = koinInject(),
     viewModel: ResourceTagsViewModel = koinViewModel(),
 ) {
     val context = LocalContext.current
@@ -111,8 +112,8 @@ internal fun ResourceTagsScreen(
 
     SideEffectDispatcher(viewModel.sideEffect) { sideEffect ->
         when (sideEffect) {
-            NavigateUp -> navigation.navigateUp()
-            NavigateToHome -> navigation.navigateToHome()
+            NavigateBack -> navigator.navigateBack()
+            NavigateToHome -> navigator.popToRoot()
             ShowContentNotAvailable -> {
                 Toast
                     .makeText(

@@ -35,8 +35,8 @@ import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUse
 import com.passbolt.mobile.android.feature.authentication.compose.AuthenticatedViewModel
 import com.passbolt.mobile.android.tagsdetails.ResourceTagsIntent.GoBack
 import com.passbolt.mobile.android.tagsdetails.ResourceTagsIntent.Initialize
+import com.passbolt.mobile.android.tagsdetails.ResourceTagsSideEffect.NavigateBack
 import com.passbolt.mobile.android.tagsdetails.ResourceTagsSideEffect.NavigateToHome
-import com.passbolt.mobile.android.tagsdetails.ResourceTagsSideEffect.NavigateUp
 import com.passbolt.mobile.android.tagsdetails.ResourceTagsSideEffect.ShowContentNotAvailable
 import com.passbolt.mobile.android.tagsdetails.ResourceTagsSideEffect.ShowErrorSnackbar
 import com.passbolt.mobile.android.tagsdetails.SnackbarErrorType.FAILED_TO_REFRESH_DATA
@@ -51,7 +51,7 @@ internal class ResourceTagsViewModel(
 ) : AuthenticatedViewModel<ResourceTagsState, ResourceTagsSideEffect>(ResourceTagsState()) {
     fun onIntent(intent: ResourceTagsIntent) {
         when (intent) {
-            GoBack -> emitSideEffect(NavigateUp)
+            GoBack -> emitSideEffect(NavigateBack)
             is Initialize -> {
                 viewModelScope.launch(coroutineLaunchContext.io) {
                     synchronizeWithDataRefresh(intent.resourceId)
