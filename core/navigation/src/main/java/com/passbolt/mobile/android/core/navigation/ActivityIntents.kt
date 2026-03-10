@@ -2,13 +2,11 @@ package com.passbolt.mobile.android.core.navigation
 
 import android.content.Context
 import android.content.Intent
-import com.passbolt.mobile.android.core.navigation.constants.Accountdetails
 import com.passbolt.mobile.android.core.navigation.constants.Authentication
 import com.passbolt.mobile.android.core.navigation.constants.Autofillresources
 import com.passbolt.mobile.android.core.navigation.constants.Main
 import com.passbolt.mobile.android.core.navigation.constants.Setup
 import com.passbolt.mobile.android.core.navigation.constants.Startup
-import com.passbolt.mobile.android.core.navigation.constants.Transferaccounttoanotherdevice
 import java.io.Serializable
 
 /**
@@ -98,16 +96,6 @@ object ActivityIntents {
             flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT or
                 Intent.FLAG_ACTIVITY_SINGLE_TOP or
                 Intent.FLAG_ACTIVITY_CLEAR_TOP
-        }
-
-    fun accountDetails(context: Context) =
-        Intent().apply {
-            setClassName(context, Accountdetails.ACCOUNT_DETAILS_ACTIVITY)
-        }
-
-    fun transferAccountToAnotherDevice(context: Context) =
-        Intent().apply {
-            setClassName(context, Transferaccounttoanotherdevice.TRANSFER_ACCOUNT_TO_ANOTHER_DEVICE_ACTIVITY)
         }
 
     @kotlinx.serialization.Serializable

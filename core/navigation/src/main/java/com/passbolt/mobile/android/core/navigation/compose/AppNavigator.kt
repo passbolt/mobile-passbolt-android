@@ -11,7 +11,6 @@ import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.ActivityIntents.AuthConfig.ManageAccount
 import com.passbolt.mobile.android.core.navigation.ActivityIntents.AuthConfig.SignIn
 import com.passbolt.mobile.android.core.navigation.ActivityIntents.AuthConfig.Startup
-import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.AccountDetails
 import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.AuthenticationManageAccounts
 import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.AuthenticationSignIn
 import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.AuthenticationStartUp
@@ -20,7 +19,6 @@ import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.Ho
 import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.Setup
 import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.SetupWithPredefinedAccountData
 import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.Start
-import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.TransferAccount
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -84,11 +82,17 @@ class AppNavigator(
         _currentBackStackItem.value = key
     }
 
-    fun popToKey(key: NavKey) {
+    fun popToKey(
+        key: NavKey,
+        inclusive: Boolean = false,
+    ) {
         while (backStack.size > 1 && backStack.last() != key) {
             backStack.removeAt(backStack.lastIndex)
         }
-        _currentBackStackItem.value = key
+        if (inclusive && backStack.size > 1 && backStack.last() == key) {
+            backStack.removeAt(backStack.lastIndex)
+        }
+        _currentBackStackItem.value = backStack.lastOrNull()
     }
 
     fun popToRoot() {
@@ -135,8 +139,6 @@ class AppNavigator(
                     )
                 AuthenticationSignIn -> ActivityIntents.authentication(context, SignIn)
                 AuthenticationManageAccounts -> ActivityIntents.authentication(context, ManageAccount)
-                TransferAccount -> ActivityIntents.transferAccountToAnotherDevice(context)
-                AccountDetails -> ActivityIntents.accountDetails(context)
                 Home -> ActivityIntents.home(context)
                 Start -> ActivityIntents.start(context)
                 Setup -> ActivityIntents.setup(context)

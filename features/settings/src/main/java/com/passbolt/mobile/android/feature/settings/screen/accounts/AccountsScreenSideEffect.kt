@@ -23,7 +23,7 @@ package com.passbolt.mobile.android.feature.settings.screen.accounts
  * @since v1.0
  */
 internal sealed interface AccountsScreenSideEffect {
-    data object NavigateUp : AccountsScreenSideEffect
+    data object NavigateBack : AccountsScreenSideEffect
 
     data object NavigateToAccountDetails : AccountsScreenSideEffect
 

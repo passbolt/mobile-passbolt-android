@@ -23,8 +23,18 @@
 package com.passbolt.mobile.android.core.navigation.compose
 
 import org.koin.core.module.Module
+import org.koin.core.module.dsl.scopedOf
 import org.koin.core.module.dsl.singleOf
+import org.koin.core.qualifier.named
+
+val APP_NAVIGATOR_SCOPE = named<AppNavigator>()
 
 fun Module.composeNavigationModule() {
+    // Singleton fallback for MainActivity fragments that resolve via koinInject() without a KoinScope.
+    // Remove after MainActivity is migrated to Compose — then wrap its setContent with KoinScope instead.
     singleOf(::AppNavigator)
+
+    scope(APP_NAVIGATOR_SCOPE) {
+        scopedOf(::AppNavigator)
+    }
 }

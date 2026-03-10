@@ -12,10 +12,6 @@ sealed interface NavigationActivity {
 
     object AuthenticationManageAccounts : NavigationActivity
 
-    object TransferAccount : NavigationActivity
-
-    object AccountDetails : NavigationActivity
-
     object Home : NavigationActivity
 
     object Start : NavigationActivity
