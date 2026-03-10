@@ -7,9 +7,14 @@ import androidx.core.content.IntentCompat
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.ActivityIntents.AuthConfig
 import com.passbolt.mobile.android.core.navigation.AppContext
+import com.passbolt.mobile.android.core.navigation.compose.APP_NAVIGATOR_SCOPE
 import com.passbolt.mobile.android.core.navigation.compose.AuthenticationNavigation
 import com.passbolt.mobile.android.core.security.flagsecure.FlagSecureSetter
 import org.koin.android.ext.android.inject
+import org.koin.compose.scope.KoinScope
+import org.koin.core.annotation.KoinExperimentalAPI
+
+private const val AUTH_NAVIGATOR_SCOPE_ID = "auth_navigator"
 
 // NOTE: When changing name or package read core/navigation/README.md
 class AuthenticationMainActivity : AppCompatActivity() {
@@ -49,12 +54,18 @@ class AuthenticationMainActivity : AppCompatActivity() {
         val startUp = startUpResolver.resolve(authConfig, userId)
 
         setContent {
-            AuthenticationNavigation(
-                authConfig = authConfig,
-                appContext = appContext,
-                skipAccountsList = startUp.skipAccountsList,
-                initialUserId = startUp.initialUserId,
-            )
+            @OptIn(KoinExperimentalAPI::class)
+            KoinScope(
+                scopeID = AUTH_NAVIGATOR_SCOPE_ID,
+                scopeQualifier = APP_NAVIGATOR_SCOPE,
+            ) {
+                AuthenticationNavigation(
+                    authConfig = authConfig,
+                    appContext = appContext,
+                    skipAccountsList = startUp.skipAccountsList,
+                    initialUserId = startUp.initialUserId,
+                )
+            }
         }
     }
 }

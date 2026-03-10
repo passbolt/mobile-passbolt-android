@@ -46,7 +46,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
 import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
-import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.TransferAccount
 import com.passbolt.mobile.android.core.navigation.compose.keys.TransferAccountToAnotherDeviceKey.Onboarding
 import com.passbolt.mobile.android.core.ui.compose.button.PrimaryButton
 import com.passbolt.mobile.android.core.ui.compose.circularimage.CircularProfileImage
@@ -56,7 +55,6 @@ import com.passbolt.mobile.android.core.ui.compose.topbar.BackNavigationIcon
 import com.passbolt.mobile.android.core.ui.compose.topbar.TitleAppBar
 import com.passbolt.mobile.android.core.ui.textinputfield.StatefulInput.State.Default
 import com.passbolt.mobile.android.core.ui.textinputfield.StatefulInput.State.Error
-import com.passbolt.mobile.android.feature.accountdetails.AccountDetailsActivity
 import com.passbolt.mobile.android.feature.accountdetails.screen.AccountDetailsIntent.GoBack
 import com.passbolt.mobile.android.feature.accountdetails.screen.AccountDetailsIntent.StartTransferAccount
 import com.passbolt.mobile.android.feature.accountdetails.screen.AccountDetailsIntent.UpdateLabel
@@ -74,7 +72,6 @@ internal fun AccountDetailsScreen(
     viewModel: AccountDetailsViewModel = koinViewModel(),
 ) {
     val state = viewModel.viewState.collectAsStateWithLifecycle()
-    val context = LocalContext.current
 
     AccountDetailsScreen(
         state = state.value,
@@ -84,20 +81,8 @@ internal fun AccountDetailsScreen(
 
     SideEffectDispatcher(viewModel.sideEffect) {
         when (it) {
-            NavigateUp ->
-                if (context is AccountDetailsActivity) {
-                    // TODO handle after migration switch account flow to compose
-                    context.finish()
-                } else {
-                    navigator.navigateBack()
-                }
-            NavigateToTransferAccount ->
-                if (context is AccountDetailsActivity) {
-                    // TODO handle after migration switch account flow to compose
-                    navigator.startNavigationActivity(context, TransferAccount)
-                } else {
-                    navigator.navigateToKey(Onboarding)
-                }
+            NavigateUp -> navigator.navigateBack()
+            NavigateToTransferAccount -> navigator.navigateToKey(Onboarding)
         }
     }
 }

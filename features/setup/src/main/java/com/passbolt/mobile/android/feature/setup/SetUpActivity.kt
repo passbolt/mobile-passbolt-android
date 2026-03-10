@@ -33,6 +33,7 @@ import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.navigation.AccountSetupDataModel
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.PartiallyAuthenticated
+import com.passbolt.mobile.android.core.navigation.compose.APP_NAVIGATOR_SCOPE
 import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
 import com.passbolt.mobile.android.core.navigation.compose.SetupNavigation
 import com.passbolt.mobile.android.core.navigation.compose.keys.LogsNavigationKey.Logs
@@ -43,6 +44,10 @@ import com.passbolt.mobile.android.core.navigation.compose.keys.SetupNavigationK
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import org.koin.compose.koinInject
+import org.koin.compose.scope.KoinScope
+import org.koin.core.annotation.KoinExperimentalAPI
+
+private const val SETUP_NAVIGATOR_SCOPE_ID = "setup_navigator"
 
 // NOTE: When changing name or package read core/navigation/README.md
 class SetUpActivity :
@@ -64,9 +69,15 @@ class SetUpActivity :
         enableEdgeToEdge()
 
         setContent {
-            val navigator = koinInject<AppNavigator>()
-            this.currentBackStackItem = navigator.currentBackStackItem
-            SetupNavigation(navigator = navigator)
+            @OptIn(KoinExperimentalAPI::class)
+            KoinScope(
+                scopeID = SETUP_NAVIGATOR_SCOPE_ID,
+                scopeQualifier = APP_NAVIGATOR_SCOPE,
+            ) {
+                val navigator = koinInject<AppNavigator>()
+                this@SetUpActivity.currentBackStackItem = navigator.currentBackStackItem
+                SetupNavigation(navigator = navigator)
+            }
         }
     }
 

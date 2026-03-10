@@ -67,7 +67,6 @@ import com.passbolt.mobile.android.core.ui.compose.circlestepsview.CircleStepsVi
 import com.passbolt.mobile.android.core.ui.compose.topbar.BackNavigationIcon
 import com.passbolt.mobile.android.core.ui.compose.topbar.TitleAppBar
 import com.passbolt.mobile.android.feature.authentication.compose.AuthenticationHandler
-import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.TransferAccountNavigation
 import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccountonboarding.TransferAccountOnboardingIntent.GoBack
 import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccountonboarding.TransferAccountOnboardingIntent.RefreshedPassphrase
 import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccountonboarding.TransferAccountOnboardingIntent.StartTransferClick
@@ -107,13 +106,7 @@ internal fun TransferAccountOnboardingScreen(
 
     SideEffectDispatcher(viewModel.sideEffect) {
         when (it) {
-            NavigateUp -> {
-                if (context is TransferAccountNavigation) {
-                    context.navigateBack()
-                } else {
-                    navigator.navigateBack()
-                }
-            }
+            NavigateUp -> navigator.navigateBack()
             NavigateToRefreshPassphrase ->
                 authenticationLauncher.launch(
                     ActivityIntents.authentication(
@@ -121,12 +114,7 @@ internal fun TransferAccountOnboardingScreen(
                         RefreshPassphrase,
                     ),
                 )
-            NavigateToTransferAccount ->
-                if (context is TransferAccountNavigation) {
-                    context.navigateToKey(Transfer)
-                } else {
-                    navigator.navigateToKey(Transfer)
-                }
+            NavigateToTransferAccount -> navigator.navigateToKey(Transfer)
         }
     }
 }

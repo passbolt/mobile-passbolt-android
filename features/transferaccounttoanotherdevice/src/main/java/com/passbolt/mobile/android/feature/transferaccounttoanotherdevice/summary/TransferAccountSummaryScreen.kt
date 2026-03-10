@@ -45,7 +45,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -54,11 +53,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
 import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
-import com.passbolt.mobile.android.core.navigation.compose.keys.SettingsNavigationKey.Accounts
 import com.passbolt.mobile.android.core.navigation.compose.keys.TransferAccountToAnotherDeviceKey.Onboarding
 import com.passbolt.mobile.android.core.ui.compose.button.PrimaryButton
 import com.passbolt.mobile.android.feature.authentication.compose.AuthenticationHandler
-import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.TransferAccountNavigation
 import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.summary.TransferAccountSummaryIntent.GoBack
 import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.summary.TransferAccountSummaryIntent.Initialize
 import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.summary.TransferAccountSummaryIntent.PrimaryAction
@@ -79,7 +76,6 @@ internal fun TransferAccountSummaryScreen(
     navigator: AppNavigator = koinInject(),
 ) {
     val state by viewModel.viewState.collectAsState()
-    val context = LocalContext.current
 
     BackHandler {
         viewModel.onIntent(GoBack)
@@ -109,18 +105,8 @@ internal fun TransferAccountSummaryScreen(
 
     SideEffectDispatcher(viewModel.sideEffect) {
         when (it) {
-            NavigateToMyAccount ->
-                if (context is TransferAccountNavigation) {
-                    context.close()
-                } else {
-                    navigator.popToKey(Accounts)
-                }
-            NavigateToTransferAccountStart ->
-                if (context is TransferAccountNavigation) {
-                    context.popToKey(Onboarding)
-                } else {
-                    navigator.popToKey(Onboarding)
-                }
+            NavigateToMyAccount -> navigator.popToKey(Onboarding, inclusive = true)
+            NavigateToTransferAccountStart -> navigator.popToKey(Onboarding)
         }
     }
 }

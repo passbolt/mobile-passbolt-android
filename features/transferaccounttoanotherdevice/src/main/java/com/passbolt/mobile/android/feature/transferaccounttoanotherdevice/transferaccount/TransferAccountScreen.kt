@@ -65,7 +65,6 @@ import com.passbolt.mobile.android.core.ui.compose.progressdialog.ProgressDialog
 import com.passbolt.mobile.android.core.ui.compose.topbar.BackNavigationIcon
 import com.passbolt.mobile.android.core.ui.compose.topbar.TitleAppBar
 import com.passbolt.mobile.android.feature.authentication.compose.AuthenticationHandler
-import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.TransferAccountNavigation
 import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccount.TransferAccountIntent.CancelTransfer
 import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccount.TransferAccountIntent.ConfirmCancelTransfer
 import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccount.TransferAccountIntent.DismissCancelDialog
@@ -104,12 +103,7 @@ internal fun TransferAccountScreen(
 
     SideEffectDispatcher(viewModel.sideEffect) {
         when (it) {
-            is NavigateToResult ->
-                if (context is TransferAccountNavigation) {
-                    context.navigateToKey(TransferStatus(it.statusType))
-                } else {
-                    navigator.navigateToKey(TransferStatus(it.statusType))
-                }
+            is NavigateToResult -> navigator.navigateToKey(TransferStatus(it.statusType))
             is ShowErrorSnackbar ->
                 coroutineScope.launch {
                     snackbarHostState.showSnackbar(getSnackbarMessage(context, it), duration = Short)
