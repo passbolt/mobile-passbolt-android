@@ -1,62 +1,44 @@
-/**
- * Passbolt - Open source password manager for teams
- * Copyright (c) 2021 Passbolt SA
- *
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
- * Public License (AGPL) as published by the Free Software Foundation version 3.
- *
- * The name "Passbolt" is a registered trademark of Passbolt SA, and Passbolt SA hereby declines to grant a trademark
- * license to "Passbolt" pursuant to the GNU Affero General Public License version 3 Section 7(e), without a separate
- * agreement with Passbolt SA.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License along with this program. If not,
- * see GNU Affero General Public License v3 (http://www.gnu.org/licenses/agpl-3.0.html).
- *
- * @copyright Copyright (c) Passbolt SA (https://www.passbolt.com)
- * @license https://opensource.org/licenses/AGPL-3.0 AGPL License
- * @link https://www.passbolt.com Passbolt (tm)
- * @since v1.0
- */
-
 package com.passbolt.mobile.android.feature.autofill.resources
 
-import android.app.Activity
 import android.app.assist.AssistStructure
 import android.content.Intent
 import android.os.Bundle
 import android.view.autofill.AutofillManager.EXTRA_ASSIST_STRUCTURE
-import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.compose.setContent
+import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.runtime.remember
 import androidx.core.content.IntentCompat
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
-import com.passbolt.mobile.android.core.extension.findNavHostFragment
-import com.passbolt.mobile.android.core.fulldatarefresh.service.DataRefreshService
-import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedActivity
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
-import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.core.navigation.AutofillMode
-import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
-import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
-import com.passbolt.mobile.android.feature.autofill.databinding.ActivityAutofillResourcesBinding
+import com.passbolt.mobile.android.core.navigation.compose.APP_NAVIGATOR_SCOPE
+import com.passbolt.mobile.android.feature.autofill.resources.AutofillResourcesIntent.NewResourceCreated
+import com.passbolt.mobile.android.feature.autofill.resources.AutofillResourcesIntent.SelectAutofillItem
+import com.passbolt.mobile.android.feature.autofill.resources.datasetstrategy.AutofillCallback
 import com.passbolt.mobile.android.feature.autofill.resources.datasetstrategy.ReturnAutofillDatasetStrategy
-import com.passbolt.mobile.android.feature.home.screen.ResourceHandlingStrategy
 import com.passbolt.mobile.android.feature.home.screen.ResourceHandlingStrategyProvider
-import org.koin.android.ext.android.inject
+import org.koin.android.scope.AndroidScopeComponent
+import org.koin.androidx.compose.koinViewModel
+import org.koin.androidx.scope.activityScope
+import org.koin.compose.scope.KoinScope
+import org.koin.core.annotation.KoinExperimentalAPI
 import org.koin.core.parameter.parametersOf
 import org.koin.core.qualifier.named
-import com.passbolt.mobile.android.core.localization.R as LocalizationR
+import org.koin.core.scope.Scope
+
+private const val AUTOFILL_NAVIGATOR_SCOPE_ID = "autofill_navigator"
 
 // NOTE: When changing name or package read core/navigation/README.md
 class AutofillResourcesActivity :
-    BindingScopedActivity<ActivityAutofillResourcesBinding>(
-        ActivityAutofillResourcesBinding::inflate,
-    ),
-    AutofillResourcesContract.View,
+    AppCompatActivity(),
+    AndroidScopeComponent,
+    AutofillCallback,
     ResourceHandlingStrategyProvider {
-    private val presenter: AutofillResourcesContract.Presenter by inject()
+    override val scope: Scope by activityScope()
+
+    private lateinit var viewModel: AutofillResourcesViewModel
+
+    override lateinit var resourceHandlingStrategy: AutofillResourceHandlingStrategy
 
     private val bundledAutofillUri by lifecycleAwareLazy {
         intent.getStringExtra(ActivityIntents.EXTRA_AUTOFILL_URI)
@@ -66,70 +48,46 @@ class AutofillResourcesActivity :
             AutofillMode.valueOf(requireNotNull(it))
         }
     }
-    override lateinit var resourceHandlingStrategy: ResourceHandlingStrategy
-        private set
+
     private lateinit var returnAutofillDatasetStrategy: ReturnAutofillDatasetStrategy
 
-    private val initialAuthenticationResult =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            if (it.resultCode == Activity.RESULT_OK) {
-                presenter.userAuthenticated()
-            } else {
-                finish()
-            }
-        }
-
+    @OptIn(KoinExperimentalAPI::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        resourceHandlingStrategy = AutofillResourceHandlingStrategy(presenter, bundledAutofillUri)
-        returnAutofillDatasetStrategy = scope.get(named(bundledAutofillMode)) { parametersOf(this) }
-        presenter.attach(this)
-        presenter.argsReceived(bundledAutofillUri, isRecreated = savedInstanceState != null)
+        returnAutofillDatasetStrategy =
+            scope.get(named(bundledAutofillMode)) { parametersOf(this as AutofillCallback) }
+
+        setContent {
+            viewModel =
+                koinViewModel(
+                    parameters = { parametersOf(bundledAutofillUri) },
+                )
+            resourceHandlingStrategy =
+                remember {
+                    AutofillResourceHandlingStrategy(
+                        autofillUri = bundledAutofillUri,
+                        onItemClick = { viewModel.onIntent(SelectAutofillItem(it)) },
+                        onResourceCreated = { viewModel.onIntent(NewResourceCreated(it)) },
+                    )
+                }
+
+            KoinScope(
+                scopeID = AUTOFILL_NAVIGATOR_SCOPE_ID,
+                scopeQualifier = APP_NAVIGATOR_SCOPE,
+            ) {
+                AutofillResourcesScreen(
+                    autofillUri = bundledAutofillUri,
+                    returnAutofillDatasetStrategy = returnAutofillDatasetStrategy,
+                    viewModel = viewModel,
+                )
+            }
+        }
     }
 
-    override fun onDestroy() {
-        returnAutofillDatasetStrategy.detach()
-        presenter.detach()
-        super.onDestroy()
-    }
-
-    override fun navigateToAutofillHome() {
-        findNavHostFragment(requiredBinding.fragmentContainer.id)
-            .navController
-            .setGraph(com.passbolt.mobile.android.feature.home.R.navigation.home)
-    }
-
-    override fun navigateToAuth() {
-        initialAuthenticationResult.launch(
-            ActivityIntents.authentication(
-                this,
-                ActivityIntents.AuthConfig.RefreshSession,
-                appContext = AppContext.AUTOFILL,
-            ),
-        )
-    }
-
-    override fun finishAutofill() {
-        finishAffinity()
-    }
-
-    override fun navigateToSetup() {
-        startActivity(ActivityIntents.start(this))
-        finish()
-    }
-
-    override fun getAutofillStructure() =
+    override fun getAutofillStructure(): AssistStructure =
         requireNotNull(
             IntentCompat.getParcelableExtra(intent, EXTRA_ASSIST_STRUCTURE, AssistStructure::class.java),
         )
-
-    override fun autofillReturn(
-        username: String,
-        password: String,
-        uri: String?,
-    ) {
-        returnAutofillDatasetStrategy.returnDataset(username, password, uri)
-    }
 
     override fun setResultAndFinish(
         result: Int,
@@ -139,27 +97,7 @@ class AutofillResourcesActivity :
         finish()
     }
 
-    override fun showProgress() {
-        showProgressDialog(supportFragmentManager)
-    }
-
-    override fun hideProgress() {
-        hideProgressDialog(supportFragmentManager)
-    }
-
-    override fun showDecryptionFailure() {
-        Toast
-            .makeText(this, LocalizationR.string.common_decryption_failure, Toast.LENGTH_SHORT)
-            .show()
-    }
-
-    override fun showFetchFailure() {
-        Toast
-            .makeText(this, LocalizationR.string.common_fetch_failure, Toast.LENGTH_SHORT)
-            .show()
-    }
-
-    override fun performFullDataRefresh() {
-        DataRefreshService.start(this)
+    override fun finishAutofill() {
+        finishAffinity()
     }
 }

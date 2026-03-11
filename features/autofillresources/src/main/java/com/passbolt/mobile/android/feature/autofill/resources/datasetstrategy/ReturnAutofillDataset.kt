@@ -1,7 +1,6 @@
 package com.passbolt.mobile.android.feature.autofill.resources.datasetstrategy
 
 import android.app.Activity
-import android.app.assist.AssistStructure
 import android.content.Context
 import android.content.Intent
 import android.service.autofill.Dataset
@@ -9,14 +8,15 @@ import android.service.autofill.FillResponse
 import android.view.autofill.AutofillId
 import android.view.autofill.AutofillManager
 import android.view.autofill.AutofillValue
+import com.passbolt.mobile.android.core.autofill.system.AssistStructureParser
+import com.passbolt.mobile.android.core.autofill.system.FillableInputsFinder
 import com.passbolt.mobile.android.feature.autofill.autofill.RemoteViewsFactory
-import com.passbolt.mobile.android.feature.autofill.resources.AutofillResourcesContract
 
 class ReturnAutofillDataset(
-    override var view: AutofillResourcesContract.View?,
+    private val autofillCallback: AutofillCallback,
     private val appContext: Context,
-    private val assistStructureParser: com.passbolt.mobile.android.core.autofill.system.AssistStructureParser,
-    private val fillableInputsFinder: com.passbolt.mobile.android.core.autofill.system.FillableInputsFinder,
+    private val assistStructureParser: AssistStructureParser,
+    private val fillableInputsFinder: FillableInputsFinder,
     private val remoteViewsFactory: RemoteViewsFactory,
 ) : ReturnAutofillDatasetStrategy {
     override fun returnDataset(
@@ -24,7 +24,7 @@ class ReturnAutofillDataset(
         password: String,
         uri: String?,
     ) {
-        val structure: AssistStructure = activeView.getAutofillStructure()
+        val structure = autofillCallback.getAutofillStructure()
         val parsedStructures = assistStructureParser.parse(structure)
 
         val usernameParsedAssistStructure =
@@ -55,7 +55,7 @@ class ReturnAutofillDataset(
                 putExtra(AutofillManager.EXTRA_AUTHENTICATION_RESULT, fillResponse)
             }
 
-        view?.setResultAndFinish(Activity.RESULT_OK, replyIntent)
+        autofillCallback.setResultAndFinish(Activity.RESULT_OK, replyIntent)
     }
 
     private fun Dataset.Builder.addDatasetValue(

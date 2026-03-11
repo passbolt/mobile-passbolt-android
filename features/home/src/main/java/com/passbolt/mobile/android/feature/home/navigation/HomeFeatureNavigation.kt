@@ -22,6 +22,7 @@ import com.passbolt.mobile.android.feature.home.screen.HomeIntent.ResourceShareR
 import com.passbolt.mobile.android.feature.home.screen.HomeScreen
 import com.passbolt.mobile.android.feature.home.screen.HomeViewModel
 import com.passbolt.mobile.android.feature.home.screen.ResourceHandlingStrategy
+import com.passbolt.mobile.android.feature.home.screen.ResourceHandlingStrategyProvider
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 
@@ -34,7 +35,11 @@ class HomeFeatureNavigation : FeatureModuleNavigation {
                 val activity = LocalActivity.current
                 val resourceHandlingStrategy =
                     remember(activity, navigator) {
-                        if (activity is ResourceHandlingStrategy) activity else DefaultResourceHandlingStrategy(navigator)
+                        when (activity) {
+                            is ResourceHandlingStrategyProvider -> activity.resourceHandlingStrategy
+                            is ResourceHandlingStrategy -> activity
+                            else -> DefaultResourceHandlingStrategy(navigator)
+                        }
                     }
                 val showSuggestedModel =
                     remember(resourceHandlingStrategy) {
