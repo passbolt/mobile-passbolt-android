@@ -41,4 +41,5 @@ enum class Feature {
     CREATE_FOLDER,
     TAGS_DETAILS,
     LOCATION_DETAILS,
+    AUTOFILL_ENCOURAGEMENTS,
 }

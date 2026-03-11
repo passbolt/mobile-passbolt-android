@@ -24,9 +24,9 @@
 package com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill
 
 sealed interface AutofillSettingsIntent {
-    object GoBack : AutofillSettingsIntent
+    data object GoBack : AutofillSettingsIntent
 
-    object ToggleNativeAutofill : AutofillSettingsIntent
+    data object ToggleNativeAutofill : AutofillSettingsIntent
 
     data object ToggleChromeNativeAutofill : AutofillSettingsIntent
 

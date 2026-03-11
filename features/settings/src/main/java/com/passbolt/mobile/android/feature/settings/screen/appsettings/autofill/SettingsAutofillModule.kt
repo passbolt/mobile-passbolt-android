@@ -1,5 +1,7 @@
 package com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill
 
+import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.encourageaccessibility.EncourageAccessibilityViewModel
+import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.encouragenativeautofill.EncourageNativeAutofillViewModel
 import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.core.module.Module
 
@@ -28,4 +30,6 @@ import org.koin.core.module.Module
 
 fun Module.settingsAutofillModule() {
     viewModelOf(::AutofillSettingsViewModel)
+    viewModelOf(::EncourageNativeAutofillViewModel)
+    viewModelOf(::EncourageAccessibilityViewModel)
 }

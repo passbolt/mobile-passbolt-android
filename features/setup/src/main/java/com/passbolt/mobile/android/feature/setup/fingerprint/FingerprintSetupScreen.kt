@@ -63,12 +63,12 @@ import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.ActivityIntents.AuthConfig.Setup
 import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
 import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.Home
+import com.passbolt.mobile.android.core.navigation.compose.keys.SettingsNavigationKey.DismissBehavior.FINISH_TO_HOME
+import com.passbolt.mobile.android.core.navigation.compose.keys.SettingsNavigationKey.EncourageNativeAutofill
 import com.passbolt.mobile.android.core.ui.compose.button.PrimaryButton
 import com.passbolt.mobile.android.core.ui.compose.dialogs.KeyChangesDetectedAlertDialog
 import com.passbolt.mobile.android.feature.authentication.auth.showBiometricPrompt
-import com.passbolt.mobile.android.feature.setup.fingerprint.ComposeFingerprintNavigationBridge.Companion.rememberFingerprintNavigation
 import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupIntent.AuthenticationSuccess
-import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupIntent.AutofillSetupSuccess
 import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupIntent.BiometricAuthenticationCancel
 import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupIntent.BiometricAuthenticationError
 import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupIntent.BiometricAuthenticationSuccess
@@ -77,12 +77,11 @@ import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupInt
 import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupIntent.KeyPermanentlyInvalidated
 import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupIntent.MaybeLater
 import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupIntent.ResumeView
-import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupIntent.SetupAutofillLater
 import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupIntent.UseFingerprint
 import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupSideEffect.NavigateToAppSystemSettings
+import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupSideEffect.NavigateToEncourageAutofill
 import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupSideEffect.NavigateToHome
 import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupSideEffect.ShowBiometricPrompt
-import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupSideEffect.ShowEncourageAutofillDialog
 import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupSideEffect.ShowErrorSnackbar
 import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupSideEffect.StartAuthActivity
 import kotlinx.coroutines.launch
@@ -102,11 +101,6 @@ fun FingerprintSetupScreen(
     val activity = LocalActivity.current
     val state = viewModel.viewState.collectAsStateWithLifecycle()
     val environment = rememberFingerprintSetupEnvironment(viewModel::onIntent)
-    val navigationBridge =
-        rememberFingerprintNavigation(
-            onAutofillSetupClose = { viewModel.onIntent(SetupAutofillLater) },
-            onAutofillSetupSuccessfully = { viewModel.onIntent(AutofillSetupSuccess) },
-        )
 
     LaunchedEffect(Unit) {
         viewModel.onIntent(ResumeView)
@@ -141,15 +135,12 @@ fun FingerprintSetupScreen(
                         Setup,
                     ),
                 )
-
-            ShowEncourageAutofillDialog ->
-                navigationBridge.showEncourageAutofillDialog()
-
+            NavigateToEncourageAutofill ->
+                navigator.navigateToKey(EncourageNativeAutofill(dismissBehavior = FINISH_TO_HOME))
             NavigateToHome -> {
                 navigator.startNavigationActivity(context, Home)
                 activity?.finish()
             }
-
             is ShowErrorSnackbar ->
                 environment.coroutineScope.launch {
                     environment.snackbarHostState.showSnackbar(

@@ -1,6 +1,5 @@
 package com.passbolt.mobile.android.helpmenu
 
-import com.passbolt.mobile.android.helpmenu.compose.HelpMenuBottomSheetViewModel
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModelOf
 
@@ -28,15 +27,5 @@ import org.koin.core.module.dsl.viewModelOf
  */
 
 fun Module.helpMenuModule() {
-    scope<HelpMenuFragment> {
-        scoped<HelpMenuContract.Presenter> {
-            HelpMenuPresenter(
-                getGlobalPreferencesUseCase = get(),
-                updateGlobalPreferencesUseCase = get(),
-                fileLoggingTree = get(),
-            )
-        }
-    }
-
     viewModelOf(::HelpMenuBottomSheetViewModel)
 }

@@ -21,19 +21,34 @@
  * @since v1.0
  */
 
-package com.passbolt.mobile.android.core.mvp.scoped
+package com.passbolt.mobile.android.helpmenu
 
-import android.view.LayoutInflater
-import androidx.viewbinding.ViewBinding
-import com.passbolt.mobile.android.core.mvp.viewbinding.BindingActivity
-import org.koin.android.scope.AndroidScopeComponent
-import org.koin.androidx.scope.activityScope
-import org.koin.core.scope.Scope
+import com.passbolt.mobile.android.ui.HelpMenuModel
 
-// TODO remove after MainActivity migration
-abstract class BindingScopedActivity<T : ViewBinding>(
-    viewInflater: (LayoutInflater) -> T,
-) : BindingActivity<T>(viewInflater),
-    AndroidScopeComponent {
-    override val scope: Scope by activityScope()
+sealed class HelpMenuBottomSheetIntent {
+    data class Initialize(
+        val helpMenuModel: HelpMenuModel,
+    ) : HelpMenuBottomSheetIntent()
+
+    data class AccountKitRead(
+        val accountKit: String,
+    ) : HelpMenuBottomSheetIntent()
+
+    data object Close : HelpMenuBottomSheetIntent()
+
+    data object SeeWhyQrCodesExplanation : HelpMenuBottomSheetIntent()
+
+    data object AccessLogs : HelpMenuBottomSheetIntent()
+
+    data object ImportProfileManually : HelpMenuBottomSheetIntent()
+
+    data object ImportAccountKit : HelpMenuBottomSheetIntent()
+
+    data object VisitHelpWebsite : HelpMenuBottomSheetIntent()
+
+    data class ToggleEnableLogs(
+        val enabled: Boolean,
+    ) : HelpMenuBottomSheetIntent()
+
+    data object DismissQrCodesDialog : HelpMenuBottomSheetIntent()
 }

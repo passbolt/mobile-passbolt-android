@@ -21,19 +21,20 @@
  * @since v1.0
  */
 
-package com.passbolt.mobile.android.core.mvp.scoped
+package com.passbolt.mobile.android.helpmenu
 
-import android.view.LayoutInflater
-import androidx.viewbinding.ViewBinding
-import com.passbolt.mobile.android.core.mvp.viewbinding.BindingActivity
-import org.koin.android.scope.AndroidScopeComponent
-import org.koin.androidx.scope.activityScope
-import org.koin.core.scope.Scope
+sealed class HelpMenuBottomSheetSideEffect {
+    data object Dismiss : HelpMenuBottomSheetSideEffect()
 
-// TODO remove after MainActivity migration
-abstract class BindingScopedActivity<T : ViewBinding>(
-    viewInflater: (LayoutInflater) -> T,
-) : BindingActivity<T>(viewInflater),
-    AndroidScopeComponent {
-    override val scope: Scope by activityScope()
+    data object OpenHelpWebsite : HelpMenuBottomSheetSideEffect()
+
+    data object NavigateToImportProfileManually : HelpMenuBottomSheetSideEffect()
+
+    data object NavigateToImportAccountKit : HelpMenuBottomSheetSideEffect()
+
+    data object NavigateToAccessLogs : HelpMenuBottomSheetSideEffect()
+
+    data class NotifyAccountKitRead(
+        val accountKit: String,
+    ) : HelpMenuBottomSheetSideEffect()
 }

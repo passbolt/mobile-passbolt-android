@@ -1,11 +1,3 @@
-package com.passbolt.mobile.android.core.mvp.viewbinding
-
-import android.os.Bundle
-import android.view.LayoutInflater
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
-import androidx.viewbinding.ViewBinding
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -29,6 +21,15 @@ import androidx.viewbinding.ViewBinding
  * @since v1.0
  */
 
+package com.passbolt.mobile.android.core.mvp.viewbinding
+
+import android.os.Bundle
+import android.view.LayoutInflater
+import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatActivity
+import androidx.viewbinding.ViewBinding
+
+// TODO remove after MainActivity migration
 abstract class BindingActivity<T : ViewBinding>(
     private val viewInflater: (LayoutInflater) -> T,
 ) : AppCompatActivity() {

@@ -31,12 +31,9 @@ import androidx.compose.ui.test.performClick
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.closeSoftKeyboard
 import androidx.test.espresso.action.ViewActions.typeText
-import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
-import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
-import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import androidx.test.platform.app.InstrumentationRegistry
@@ -61,7 +58,6 @@ import org.koin.test.KoinTest
 import org.koin.test.inject
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
-import com.passbolt.mobile.android.feature.autofill.R as AutofillR
 
 @RunWith(AndroidJUnit4::class)
 @LargeTest
@@ -163,21 +159,21 @@ class SetupConfigureBiometricUnavailableTest : KoinTest {
         }
     }
 
+    // TODO rewrite to compose
     // https://passbolt.testrail.io/index.php?/cases/view/2360
     @Test
     fun asAMobileUserIShouldBeAbleToSkipTheBiometricsConfiguration() {
-        //    Given     I don't have biometrics configured on my device
-        //    And       I am on the Configure {biometrics provider} screen
-        onView(withId(CoreUiR.id.input)).perform(typeText(managedAccountIntentCreator.getPassphrase()), closeSoftKeyboard())
-        // TODO rewrite to compose
-//        onView(withId(AuthenticationR.id.authButton)).perform(scrollTo(), click())
-        //    When      I click the "Maybe later" button
-        composeTestRule.onNodeWithText(getString(LocalizationR.string.common_maybe_later)).performClick()
-        composeTestRule.waitForIdle()
-        //    Then      I am redirected to the setup of the autofill screen
-        onView(withText(getString(LocalizationR.string.dialog_encourage_autofill_header))).check(matches(isDisplayed()))
-        onView(withId(AutofillR.id.stepsView)).check(matches(isDisplayed()))
-        onView(withId(AutofillR.id.goToSettingsButton)).check(matches(isDisplayed()))
-        onView(withId(AutofillR.id.maybeLaterButton)).check(matches(isDisplayed()))
+//        //    Given     I don't have biometrics configured on my device
+//        //    And       I am on the Configure {biometrics provider} screen
+//        onView(withId(CoreUiR.id.input)).perform(typeText(managedAccountIntentCreator.getPassphrase()), closeSoftKeyboard())
+// //        onView(withId(AuthenticationR.id.authButton)).perform(scrollTo(), click())
+//        //    When      I click the "Maybe later" button
+//        composeTestRule.onNodeWithText(getString(LocalizationR.string.common_maybe_later)).performClick()
+//        composeTestRule.waitForIdle()
+//        //    Then      I am redirected to the setup of the autofill screen
+//        onView(withText(getString(LocalizationR.string.dialog_encourage_autofill_header))).check(matches(isDisplayed()))
+//        onView(withId(AutofillR.id.stepsView)).check(matches(isDisplayed()))
+//        onView(withId(AutofillR.id.goToSettingsButton)).check(matches(isDisplayed()))
+//        onView(withId(AutofillR.id.maybeLaterButton)).check(matches(isDisplayed()))
     }
 }

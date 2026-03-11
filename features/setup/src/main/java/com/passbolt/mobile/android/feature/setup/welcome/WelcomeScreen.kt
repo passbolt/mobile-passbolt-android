@@ -79,7 +79,7 @@ import com.passbolt.mobile.android.feature.setup.welcome.WelcomeSideEffect.Navig
 import com.passbolt.mobile.android.feature.setup.welcome.WelcomeSideEffect.NavigateToSummary
 import com.passbolt.mobile.android.feature.setup.welcome.WelcomeSideEffect.NavigateToTransferDetails
 import com.passbolt.mobile.android.feature.setup.welcome.WelcomeSideEffect.NavigateUp
-import com.passbolt.mobile.android.helpmenu.compose.HelpMenuBottomSheet
+import com.passbolt.mobile.android.helpmenu.HelpMenuBottomSheet
 import com.passbolt.mobile.android.testtags.composetags.Setup.APPS_IMAGE
 import com.passbolt.mobile.android.testtags.composetags.Setup.HELP_BUTTON
 import com.passbolt.mobile.android.testtags.composetags.Setup.LOGO_IMAGE

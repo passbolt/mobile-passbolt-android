@@ -206,6 +206,10 @@ class AppNavigator(
         context.startActivity(shareIntent)
     }
 
+    fun openAccessibilitySettings(context: Context) {
+        externalDeeplinkHandler.openAccessibilitySettings(context)
+    }
+
     fun openAppOsSettings(context: Context) {
         externalDeeplinkHandler.openAppOsSettings(context)
     }

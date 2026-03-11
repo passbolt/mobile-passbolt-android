@@ -83,7 +83,7 @@ import com.passbolt.mobile.android.feature.setup.summary.SummarySideEffect.Navig
 import com.passbolt.mobile.android.feature.setup.summary.SummarySideEffect.NavigateToManageAccounts
 import com.passbolt.mobile.android.feature.setup.summary.SummarySideEffect.NavigateToSignIn
 import com.passbolt.mobile.android.feature.setup.summary.SummarySideEffect.NavigateToWelcome
-import com.passbolt.mobile.android.helpmenu.compose.HelpMenuBottomSheet
+import com.passbolt.mobile.android.helpmenu.HelpMenuBottomSheet
 import com.passbolt.mobile.android.ui.HelpMenuModel
 import com.passbolt.mobile.android.ui.ResultStatus
 import org.koin.androidx.compose.koinViewModel

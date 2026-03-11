@@ -44,7 +44,7 @@ private const val SESSION_DURATION_BEFORE_SKEW_SECONDS = 30L
 
 /**
  * Runs operation which requires authentication (backed or local passphrase). If operation has unauthenticated status
- * it is communicated to the caller (@see BaseAuthenticatedContract) and awaiting on authentication refresh starts. After receiving authentication
+ * it is communicated to the caller (@see AuthenticatedViewModel) and awaiting on authentication refresh starts. After receiving authentication
  * refreshed event the initial operation is automatically restarted.
  *
  */

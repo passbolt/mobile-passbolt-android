@@ -21,19 +21,13 @@
  * @since v1.0
  */
 
-package com.passbolt.mobile.android.core.mvp.scoped
+package com.passbolt.mobile.android.helpmenu
 
-import android.view.LayoutInflater
-import androidx.viewbinding.ViewBinding
-import com.passbolt.mobile.android.core.mvp.viewbinding.BindingActivity
-import org.koin.android.scope.AndroidScopeComponent
-import org.koin.androidx.scope.activityScope
-import org.koin.core.scope.Scope
-
-// TODO remove after MainActivity migration
-abstract class BindingScopedActivity<T : ViewBinding>(
-    viewInflater: (LayoutInflater) -> T,
-) : BindingActivity<T>(viewInflater),
-    AndroidScopeComponent {
-    override val scope: Scope by activityScope()
-}
+data class HelpMenuBottomSheetState(
+    val showScanQrCodesHelp: Boolean = false,
+    val showImportProfileHelp: Boolean = false,
+    val showImportAccountKitHelp: Boolean = false,
+    val enableLogsSwitch: Boolean = false,
+    val accessLogsEnabled: Boolean = false,
+    val showWhyQrCodesExplanationDialog: Boolean = false,
+)

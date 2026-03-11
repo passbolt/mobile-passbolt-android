@@ -65,6 +65,11 @@ class ExternalDeeplinkHandler {
         }
     }
 
+    fun openAccessibilitySettings(context: Context) {
+        val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
+        context.startActivity(intent)
+    }
+
     fun openAppOsSettings(context: Context) {
         val intent =
             Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)

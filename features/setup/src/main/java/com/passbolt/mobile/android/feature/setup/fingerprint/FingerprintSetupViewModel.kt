@@ -10,7 +10,6 @@ import com.passbolt.mobile.android.core.passphrasememorycache.PotentialPassphras
 import com.passbolt.mobile.android.encryptedstorage.biometric.BiometricCipher
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.BiometryInteractor
 import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupIntent.AuthenticationSuccess
-import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupIntent.AutofillSetupSuccess
 import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupIntent.BiometricAuthenticationCancel
 import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupIntent.BiometricAuthenticationError
 import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupIntent.BiometricAuthenticationSuccess
@@ -20,12 +19,11 @@ import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupInt
 import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupIntent.KeyPermanentlyInvalidated
 import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupIntent.MaybeLater
 import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupIntent.ResumeView
-import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupIntent.SetupAutofillLater
 import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupIntent.UseFingerprint
 import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupSideEffect.NavigateToAppSystemSettings
+import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupSideEffect.NavigateToEncourageAutofill
 import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupSideEffect.NavigateToHome
 import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupSideEffect.ShowBiometricPrompt
-import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupSideEffect.ShowEncourageAutofillDialog
 import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupSideEffect.ShowErrorSnackbar
 import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupSideEffect.StartAuthActivity
 import com.passbolt.mobile.android.ui.BiometricAuthError
@@ -82,13 +80,11 @@ class FingerprintSetupViewModel(
             }
             DismissKeyPermanentlyInvalidated -> updateViewState { copy(showKeyChangesDetected = false) }
             ConfirmKeyPermanentlyInvalidated -> emitSideEffect(StartAuthActivity)
-            SetupAutofillLater -> emitSideEffect(NavigateToHome)
             GoToApp -> emitSideEffect(NavigateToHome)
             AuthenticationSuccess -> showBiometricPrompt()
             is BiometricAuthenticationSuccess -> saveAccountData(intent.cipher)
             BiometricAuthenticationCancel -> {}
             is BiometricAuthenticationError -> biometricAuthenticationError(intent.error)
-            AutofillSetupSuccess -> emitSideEffect(NavigateToHome)
         }
     }
 
@@ -119,7 +115,7 @@ class FingerprintSetupViewModel(
                 if (autofillInformationProvider.isAutofillServiceSupported() &&
                     !autofillInformationProvider.isPassboltAutofillServiceSet()
                 ) {
-                    emitSideEffect(ShowEncourageAutofillDialog)
+                    emitSideEffect(NavigateToEncourageAutofill)
                 } else {
                     emitSideEffect(NavigateToHome)
                 }

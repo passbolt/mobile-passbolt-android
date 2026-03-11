@@ -35,7 +35,6 @@ import com.passbolt.mobile.android.core.passphrasememorycache.PotentialPassphras
 import com.passbolt.mobile.android.encryptedstorage.biometric.BiometricCipher
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.BiometryInteractor
 import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupIntent.AuthenticationSuccess
-import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupIntent.AutofillSetupSuccess
 import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupIntent.BiometricAuthenticationCancel
 import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupIntent.BiometricAuthenticationError
 import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupIntent.BiometricAuthenticationSuccess
@@ -45,12 +44,11 @@ import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupInt
 import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupIntent.KeyPermanentlyInvalidated
 import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupIntent.MaybeLater
 import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupIntent.ResumeView
-import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupIntent.SetupAutofillLater
 import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupIntent.UseFingerprint
 import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupSideEffect.NavigateToAppSystemSettings
+import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupSideEffect.NavigateToEncourageAutofill
 import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupSideEffect.NavigateToHome
 import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupSideEffect.ShowBiometricPrompt
-import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupSideEffect.ShowEncourageAutofillDialog
 import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupSideEffect.ShowErrorSnackbar
 import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupSideEffect.StartAuthActivity
 import com.passbolt.mobile.android.ui.BiometricAuthError
@@ -200,7 +198,7 @@ class FingerprintSetupViewModelTest : KoinTest {
 
     @OptIn(ExperimentalTime::class)
     @Test
-    fun `maybe later with passphrase and autofill not set should show autofill dialog`() =
+    fun `maybe later with passphrase and autofill not set should navigate to encourage autofill`() =
         runTest {
             val passphraseMemoryCache: PassphraseMemoryCache = get()
             val autofillInformationProvider: AutofillInformationProvider = get()
@@ -214,7 +212,7 @@ class FingerprintSetupViewModelTest : KoinTest {
                 viewModel.onIntent(MaybeLater)
 
                 val effect = awaitItem()
-                assertIs<ShowEncourageAutofillDialog>(effect)
+                assertIs<NavigateToEncourageAutofill>(effect)
             }
         }
 
@@ -331,20 +329,6 @@ class FingerprintSetupViewModelTest : KoinTest {
 
     @OptIn(ExperimentalTime::class)
     @Test
-    fun `setup autofill later should navigate to home`() =
-        runTest {
-            viewModel = get()
-
-            viewModel.sideEffect.test {
-                viewModel.onIntent(SetupAutofillLater)
-
-                val effect = awaitItem()
-                assertIs<NavigateToHome>(effect)
-            }
-        }
-
-    @OptIn(ExperimentalTime::class)
-    @Test
     fun `go to app should navigate to home`() =
         runTest {
             viewModel = get()
@@ -378,7 +362,7 @@ class FingerprintSetupViewModelTest : KoinTest {
 
     @OptIn(ExperimentalTime::class)
     @Test
-    fun `biometric authentication success with cipher should save passphrase and show autofill dialog`() =
+    fun `biometric authentication success with cipher should save passphrase and navigate to encourage autofill`() =
         runTest {
             val passphraseMemoryCache: PassphraseMemoryCache = get()
             val autofillInformationProvider: AutofillInformationProvider = get()
@@ -398,7 +382,7 @@ class FingerprintSetupViewModelTest : KoinTest {
                 viewModel.onIntent(BiometricAuthenticationSuccess(mockAuthenticatedCipher))
 
                 val effect = awaitItem()
-                assertIs<ShowEncourageAutofillDialog>(effect)
+                assertIs<NavigateToEncourageAutofill>(effect)
             }
 
             verify(savePassphraseUseCase).execute(any())
@@ -436,7 +420,7 @@ class FingerprintSetupViewModelTest : KoinTest {
 
     @OptIn(ExperimentalTime::class)
     @Test
-    fun `biometric authentication success without cipher should show autofill dialog`() =
+    fun `biometric authentication success without cipher should navigate to encourage autofill`() =
         runTest {
             val passphraseMemoryCache: PassphraseMemoryCache = get()
             val autofillInformationProvider: AutofillInformationProvider = get()
@@ -450,7 +434,7 @@ class FingerprintSetupViewModelTest : KoinTest {
                 viewModel.onIntent(BiometricAuthenticationSuccess(null))
 
                 val effect = awaitItem()
-                assertIs<ShowEncourageAutofillDialog>(effect)
+                assertIs<NavigateToEncourageAutofill>(effect)
             }
         }
 
@@ -528,20 +512,6 @@ class FingerprintSetupViewModelTest : KoinTest {
                 val effect = awaitItem()
                 assertIs<ShowErrorSnackbar>(effect)
                 assertThat(effect.errorType).isEqualTo(SnackbarErrorType.AUTHENTICATION_GENERIC)
-            }
-        }
-
-    @OptIn(ExperimentalTime::class)
-    @Test
-    fun `autofill setup success should navigate to home`() =
-        runTest {
-            viewModel = get()
-
-            viewModel.sideEffect.test {
-                viewModel.onIntent(AutofillSetupSuccess)
-
-                val effect = awaitItem()
-                assertIs<NavigateToHome>(effect)
             }
         }
 
