@@ -6,13 +6,14 @@ import com.passbolt.mobile.android.feature.home.screen.ShowSuggestedModel
 import com.passbolt.mobile.android.ui.ResourceModel
 
 class AutofillResourceHandlingStrategy(
-    private val presenter: AutofillResourcesContract.Presenter,
     private val autofillUri: String?,
+    private val onItemClick: (ResourceModel) -> Unit,
+    private val onResourceCreated: (String) -> Unit,
 ) : ResourceHandlingStrategy {
-    override val appContext = AppContext.AUTOFILL
+    override val appContext: AppContext = AppContext.AUTOFILL
 
     override fun resourceItemClick(resourceModel: ResourceModel) {
-        presenter.itemClick(resourceModel)
+        onItemClick(resourceModel)
     }
 
     override fun shouldShowResourceMoreMenu() = false
@@ -21,12 +22,9 @@ class AutofillResourceHandlingStrategy(
 
     override fun shouldShowCloseButton() = true
 
-    override fun showSuggestedModel() =
-        autofillUri?.let {
-            ShowSuggestedModel.Show(it)
-        } ?: ShowSuggestedModel.DoNotShow
+    override fun showSuggestedModel() = autofillUri?.let { ShowSuggestedModel.Show(it) } ?: ShowSuggestedModel.DoNotShow
 
     override fun resourcePostCreateAction(resourceId: String) {
-        presenter.newResourceCreated(resourceId)
+        onResourceCreated(resourceId)
     }
 }
