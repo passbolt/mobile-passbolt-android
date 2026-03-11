@@ -34,7 +34,7 @@ sealed interface FingerprintSetupSideEffect {
 
     data object StartAuthActivity : FingerprintSetupSideEffect
 
-    data object ShowEncourageAutofillDialog : FingerprintSetupSideEffect
+    data object NavigateToEncourageAutofill : FingerprintSetupSideEffect
 
     data object NavigateToHome : FingerprintSetupSideEffect
 

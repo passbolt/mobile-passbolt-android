@@ -94,7 +94,7 @@ import com.passbolt.mobile.android.feature.authentication.auth.accountdoesnotexi
 import com.passbolt.mobile.android.feature.authentication.mfa.MfaDialogState
 import com.passbolt.mobile.android.feature.authentication.mfa.MfaResult
 import com.passbolt.mobile.android.featureflagserror.FeatureFlagsFetchErrorDialog
-import com.passbolt.mobile.android.helpmenu.compose.HelpMenuBottomSheet
+import com.passbolt.mobile.android.helpmenu.HelpMenuBottomSheet
 import com.passbolt.mobile.android.ui.HelpMenuModel
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel

@@ -56,6 +56,8 @@ class AutofillResourcesActivity :
         super.onCreate(savedInstanceState)
         returnAutofillDatasetStrategy =
             scope.get(named(bundledAutofillMode)) { parametersOf(this as AutofillCallback) }
+        returnAutofillDatasetStrategy =
+            scope.get(named(bundledAutofillMode)) { parametersOf(this as AutofillCallback) }
 
         setContent {
             viewModel =
@@ -71,6 +73,29 @@ class AutofillResourcesActivity :
                     )
                 }
 
+            setContent {
+                viewModel =
+                    koinViewModel(
+                        parameters = { parametersOf(bundledAutofillUri) },
+                    )
+                resourceHandlingStrategy =
+                    AutofillResourceHandlingStrategy(
+                        autofillUri = bundledAutofillUri,
+                        onItemClick = { viewModel.onIntent(SelectAutofillItem(it)) },
+                        onResourceCreated = { viewModel.onIntent(NewResourceCreated(it)) },
+                    )
+
+                KoinScope(
+                    scopeID = AUTOFILL_NAVIGATOR_SCOPE_ID,
+                    scopeQualifier = APP_NAVIGATOR_SCOPE,
+                ) {
+                    AutofillResourcesScreen(
+                        autofillUri = bundledAutofillUri,
+                        returnAutofillDatasetStrategy = returnAutofillDatasetStrategy,
+                        viewModel = viewModel,
+                    )
+                }
+            }
             KoinScope(
                 scopeID = AUTOFILL_NAVIGATOR_SCOPE_ID,
                 scopeQualifier = APP_NAVIGATOR_SCOPE,

@@ -58,15 +58,19 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
 import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
+import com.passbolt.mobile.android.core.navigation.compose.keys.SettingsNavigationKey.AutofillEnabled
+import com.passbolt.mobile.android.core.navigation.compose.keys.SettingsNavigationKey.DismissBehavior
+import com.passbolt.mobile.android.core.navigation.compose.keys.SettingsNavigationKey.EncourageAccessibilityAutofill
+import com.passbolt.mobile.android.core.navigation.compose.keys.SettingsNavigationKey.EncourageNativeAutofill
 import com.passbolt.mobile.android.core.ui.R
 import com.passbolt.mobile.android.core.ui.compose.switch.SwitchWithDescriptionItem
 import com.passbolt.mobile.android.core.ui.compose.topbar.BackNavigationIcon
 import com.passbolt.mobile.android.core.ui.compose.topbar.TitleAppBar
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.AutofillScreenSideEffect.ErrorSnackbarType.NATIVE_AUTOFILL_NOT_SUPPORTED
+import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.AutofillScreenSideEffect.NavigateToAutofillEnabled
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.AutofillScreenSideEffect.NavigateToChromeNativeAutofill
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.AutofillScreenSideEffect.NavigateToEncourageAccessibilityAutofill
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.AutofillScreenSideEffect.NavigateToEncourageNativeAutofill
-import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.AutofillScreenSideEffect.NavigateToNativeAutofillEnabled
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.AutofillScreenSideEffect.NavigateUp
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.AutofillScreenSideEffect.ShowErrorSnackBar
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.AutofillSettingsIntent.GoBack
@@ -74,7 +78,6 @@ import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.AutofillSettingsIntent.ToggleChromeNativeAutofill
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.AutofillSettingsIntent.ToggleNativeAutofill
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.AutofillSettingsIntent.UpdateAutofillState
-import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.ComposeAutofillNavigationBridge.Companion.rememberAutofillNavigation
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.conflict.AutofillConflictBanner
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
@@ -91,7 +94,6 @@ internal fun AutofillSettingsScreen(
     val state = viewModel.viewState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
-    val navigationBridge = rememberAutofillNavigation()
 
     AutofillSettingsScreen(
         state = state.value,
@@ -104,10 +106,10 @@ internal fun AutofillSettingsScreen(
     SideEffectDispatcher(viewModel.sideEffect) {
         when (it) {
             NavigateUp -> navigator.navigateBack()
-            NavigateToEncourageNativeAutofill -> navigationBridge.showEncourageNativeAutofillDialog()
-            NavigateToNativeAutofillEnabled -> navigationBridge.showNativeAutofillEnabledDialog()
+            NavigateToEncourageNativeAutofill -> navigator.navigateToKey(EncourageNativeAutofill(DismissBehavior.NAVIGATE_BACK))
+            NavigateToAutofillEnabled -> navigator.navigateToKey(AutofillEnabled)
+            NavigateToEncourageAccessibilityAutofill -> navigator.navigateToKey(EncourageAccessibilityAutofill)
             NavigateToChromeNativeAutofill -> navigator.openChromeNativeAutofillSettings(context)
-            NavigateToEncourageAccessibilityAutofill -> navigationBridge.showEncourageAccessibilityAutofillDialog()
             is ShowErrorSnackBar ->
                 coroutineScope.launch {
                     snackbarHostState.showSnackbar(getSnackbarMessage(context, it.type), duration = SnackbarDuration.Short)

@@ -42,8 +42,6 @@ sealed interface FingerprintSetupIntent {
 
     data object DismissKeyPermanentlyInvalidated : FingerprintSetupIntent
 
-    data object SetupAutofillLater : FingerprintSetupIntent
-
     data object GoToApp : FingerprintSetupIntent
 
     data object AuthenticationSuccess : FingerprintSetupIntent
@@ -57,6 +55,4 @@ sealed interface FingerprintSetupIntent {
     data class BiometricAuthenticationError(
         val error: BiometricAuthError,
     ) : FingerprintSetupIntent
-
-    data object AutofillSetupSuccess : FingerprintSetupIntent
 }

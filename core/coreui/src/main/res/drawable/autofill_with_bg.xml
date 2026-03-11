@@ -1,21 +1,38 @@
-<?xml version="1.0" encoding="utf-8"?>
-<layer-list
-    xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <item>
-        <shape android:shape="oval">
-            <solid android:color="@color/primary" />
-            <size
-                android:width="@dimen/dp_24"
-                android:height="@dimen/dp_24" />
-        </shape>
-    </item>
-
-    <item
-        android:bottom="@dimen/dp_4"
-        android:drawable="@drawable/ic_key"
-        android:left="@dimen/dp_4"
-        android:right="@dimen/dp_4"
-        android:top="@dimen/dp_4" />
-
-</layer-list>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+  <!-- Primary circle background -->
+  <path
+      android:pathData="M12,0C18.627,0 24,5.373 24,12C24,18.627 18.627,24 12,24C5.373,24 0,18.627 0,12C0,5.373 5.373,0 12,0Z"
+      android:fillColor="#2A9CEB"/>
+  <!-- Key icon scaled 2/3 and translated +4,+4 -->
+  <group
+      android:scaleX="0.6667"
+      android:scaleY="0.6667"
+      android:translateX="4"
+      android:translateY="4">
+    <path
+        android:pathData="M6.371,21.898C9.242,21.898 11.57,19.57 11.57,16.699C11.57,13.828 9.242,11.5 6.371,11.5C3.5,11.5 1.172,13.828 1.172,16.699C1.172,19.57 3.5,21.898 6.371,21.898Z"
+        android:strokeLineJoin="round"
+        android:strokeWidth="2.286"
+        android:fillColor="#00000000"
+        android:strokeColor="#333333"
+        android:strokeLineCap="round"/>
+    <path
+        android:pathData="M21.746,1.324L10.047,13.023"
+        android:strokeLineJoin="round"
+        android:strokeWidth="2.286"
+        android:fillColor="#00000000"
+        android:strokeColor="#333333"
+        android:strokeLineCap="round"/>
+    <path
+        android:pathData="M19.805,8.016L22.805,5.031"
+        android:strokeLineJoin="round"
+        android:strokeWidth="2.286"
+        android:fillColor="#00000000"
+        android:strokeColor="#333333"
+        android:strokeLineCap="round"/>
+  </group>
+</vector>

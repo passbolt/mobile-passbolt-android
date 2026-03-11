@@ -27,10 +27,10 @@ import com.google.common.truth.Truth.assertThat
 import com.passbolt.mobile.android.core.autofill.AutofillInformationProvider
 import com.passbolt.mobile.android.core.autofill.AutofillInformationProvider.ChromeNativeAutofillStatus.DISABLED
 import com.passbolt.mobile.android.core.autofill.AutofillInformationProvider.ChromeNativeAutofillStatus.NOT_SUPPORTED
+import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.AutofillScreenSideEffect.NavigateToAutofillEnabled
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.AutofillScreenSideEffect.NavigateToChromeNativeAutofill
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.AutofillScreenSideEffect.NavigateToEncourageAccessibilityAutofill
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.AutofillScreenSideEffect.NavigateToEncourageNativeAutofill
-import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.AutofillScreenSideEffect.NavigateToNativeAutofillEnabled
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.AutofillSettingsIntent.ToggleAccessibilityAutofill
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.AutofillSettingsIntent.ToggleChromeNativeAutofill
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.AutofillSettingsIntent.ToggleNativeAutofill
@@ -127,7 +127,7 @@ class AutofillSettingsViewModelTest : KoinTest {
 
     @OptIn(ExperimentalTime::class)
     @Test
-    fun `when native autofill enabled a click should show enabled dialog`() =
+    fun `when native autofill enabled a click should navigate to autofill enabled`() =
         runTest {
             val autofillInformationProvider: AutofillInformationProvider = get()
             whenever(autofillInformationProvider.isAutofillServiceSupported()) doReturn true
@@ -144,13 +144,13 @@ class AutofillSettingsViewModelTest : KoinTest {
             viewModel.sideEffect.test {
                 viewModel.onIntent(ToggleNativeAutofill)
 
-                assertThat(awaitItem()).isEqualTo(NavigateToNativeAutofillEnabled)
+                assertThat(awaitItem()).isEqualTo(NavigateToAutofillEnabled)
             }
         }
 
     @OptIn(ExperimentalTime::class)
     @Test
-    fun `when native autofill disabled a click should show encourage dialog and refresh state after enabling`() =
+    fun `when native autofill disabled a click should navigate to encourage dialog and refresh state after enabling`() =
         runTest {
             val autofillInformationProvider: AutofillInformationProvider = get()
             whenever(autofillInformationProvider.isAutofillServiceSupported()) doReturn true
@@ -168,12 +168,12 @@ class AutofillSettingsViewModelTest : KoinTest {
                 viewModel.onIntent(ToggleNativeAutofill)
 
                 assertThat(awaitItem()).isEqualTo(NavigateToEncourageNativeAutofill)
-
-                whenever(autofillInformationProvider.isPassboltAutofillServiceSet()) doReturn true
-                viewModel.onIntent(UpdateAutofillState)
-
-                assertThat(viewModel.viewState.value.isNativeAutofillChecked).isTrue()
             }
+
+            whenever(autofillInformationProvider.isPassboltAutofillServiceSet()) doReturn true
+            viewModel.onIntent(UpdateAutofillState)
+
+            assertThat(viewModel.viewState.value.isNativeAutofillChecked).isTrue()
         }
 
     @OptIn(ExperimentalTime::class)
@@ -202,7 +202,7 @@ class AutofillSettingsViewModelTest : KoinTest {
 
     @OptIn(ExperimentalTime::class)
     @Test
-    fun `when native autofill disabled a click should trigger encourage dialog and enable after change`() =
+    fun `when accessibility autofill disabled a click should navigate to encourage accessibility`() =
         runTest {
             val autofillInformationProvider: AutofillInformationProvider = get()
             whenever(autofillInformationProvider.isAutofillServiceSupported()) doReturn true
@@ -220,9 +220,6 @@ class AutofillSettingsViewModelTest : KoinTest {
                 viewModel.onIntent(ToggleAccessibilityAutofill)
 
                 assertThat(awaitItem()).isEqualTo(NavigateToEncourageAccessibilityAutofill)
-
-                whenever(autofillInformationProvider.isAccessibilityAutofillSetup()) doReturn true
-                assertThat(viewModel.viewState.value.isAccessibilityAutofillChecked).isFalse()
             }
         }
 

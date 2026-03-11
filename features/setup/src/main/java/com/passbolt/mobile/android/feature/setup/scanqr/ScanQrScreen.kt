@@ -76,7 +76,7 @@ import com.passbolt.mobile.android.feature.setup.scanqr.ScanQrSideEffect.Navigat
 import com.passbolt.mobile.android.feature.setup.scanqr.ScanQrSideEffect.NavigateToLogs
 import com.passbolt.mobile.android.feature.setup.scanqr.ScanQrSideEffect.NavigateToSummary
 import com.passbolt.mobile.android.feature.setup.scanqr.ScanQrSideEffect.ShowToast
-import com.passbolt.mobile.android.helpmenu.compose.HelpMenuBottomSheet
+import com.passbolt.mobile.android.helpmenu.HelpMenuBottomSheet
 import com.passbolt.mobile.android.ui.HelpMenuModel
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject

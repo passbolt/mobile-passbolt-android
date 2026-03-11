@@ -6,6 +6,7 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
+import com.passbolt.mobile.android.core.navigation.compose.base.Feature.AUTOFILL_ENCOURAGEMENTS
 import com.passbolt.mobile.android.core.navigation.compose.base.Feature.LOGS
 import com.passbolt.mobile.android.core.navigation.compose.base.Feature.SETUP
 import com.passbolt.mobile.android.core.navigation.compose.base.FeatureModuleNavigation
@@ -23,6 +24,7 @@ fun SetupNavigation(navigator: AppNavigator = koinInject()) {
         setOf(
             koinInject<FeatureModuleNavigation>(named(SETUP)),
             koinInject<FeatureModuleNavigation>(named(LOGS)),
+            koinInject<FeatureModuleNavigation>(named(AUTOFILL_ENCOURAGEMENTS)),
         )
 
     NavDisplay(
