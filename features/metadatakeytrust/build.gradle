@@ -15,7 +15,6 @@ dependencies {
     implementation platform(libs.koin.bom)
     implementation libs.koin
     implementation libs.koin.compose
-    implementation libs.constraintlayout
     implementation platform(libs.compose.bom)
     implementation libs.compose.foundation
     implementation libs.compose.material3
@@ -27,7 +26,6 @@ dependencies {
 android {
     namespace = "com.passbolt.mobile.android.feature.metadatakeytrust"
     buildFeatures {
-        viewBinding true
         compose true
     }
 }

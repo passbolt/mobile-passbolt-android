@@ -13,8 +13,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
 import com.passbolt.mobile.android.core.ui.R
-import com.passbolt.mobile.android.core.ui.compose.bottomsheet.BottomSheetHeader
-import com.passbolt.mobile.android.core.ui.compose.menu.OpenableSettingsItem
+import com.passbolt.mobile.android.core.ui.bottomsheet.BottomSheetHeader
+import com.passbolt.mobile.android.core.ui.menu.OpenableSettingsItem
 import com.passbolt.mobile.android.createresourcemenu.CreateResourceMenuIntent.Close
 import com.passbolt.mobile.android.createresourcemenu.CreateResourceMenuIntent.CreateFolder
 import com.passbolt.mobile.android.createresourcemenu.CreateResourceMenuIntent.CreateNote

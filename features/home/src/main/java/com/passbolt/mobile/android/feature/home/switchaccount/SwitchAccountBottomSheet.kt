@@ -19,9 +19,9 @@ import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.Au
 import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.AuthenticationStartUp
 import com.passbolt.mobile.android.core.navigation.compose.keys.AccountDetailsNavigationKey.AccountDetails
 import com.passbolt.mobile.android.core.ui.R
-import com.passbolt.mobile.android.core.ui.compose.bottomsheet.BottomSheetHeader
-import com.passbolt.mobile.android.core.ui.compose.dialogs.SignOutAlertDialog
-import com.passbolt.mobile.android.core.ui.compose.progressdialog.ProgressDialog
+import com.passbolt.mobile.android.core.ui.bottomsheet.BottomSheetHeader
+import com.passbolt.mobile.android.core.ui.dialogs.SignOutAlertDialog
+import com.passbolt.mobile.android.core.ui.progressdialog.ProgressDialog
 import com.passbolt.mobile.android.feature.home.switchaccount.SwitchAccountIntent.CloseSignOutDialog
 import com.passbolt.mobile.android.feature.home.switchaccount.SwitchAccountIntent.Initialize
 import com.passbolt.mobile.android.feature.home.switchaccount.SwitchAccountIntent.SeeCurrentAccountDetails

@@ -1,12 +1,8 @@
 package com.passbolt.mobile.android.core
 
-import com.passbolt.mobile.android.core.font.fontModule
-import com.passbolt.mobile.android.core.ui.controller.TotpViewController
-import com.passbolt.mobile.android.core.ui.formatter.DateFormatter
-import com.passbolt.mobile.android.core.ui.formatter.FingerprintFormatter
-import com.passbolt.mobile.android.core.ui.formatter.OtpFormatter
-import com.passbolt.mobile.android.core.ui.recyclerview.OverlappingItemDecorator
-import org.koin.core.module.dsl.factoryOf
+import com.passbolt.mobile.android.core.formatter.DateFormatter
+import com.passbolt.mobile.android.core.formatter.FingerprintFormatter
+import com.passbolt.mobile.android.core.formatter.OtpFormatter
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 import java.time.format.DateTimeFormatter
@@ -36,13 +32,9 @@ import java.time.format.DateTimeFormatter
 
 val coreUiModule =
     module {
-        fontModule()
-
-        singleOf(::TotpViewController)
         singleOf(::OtpFormatter)
         singleOf(::FingerprintFormatter)
         singleOf(::DateFormatter)
-        factoryOf(::OverlappingItemDecorator)
 
         single {
             DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm O")

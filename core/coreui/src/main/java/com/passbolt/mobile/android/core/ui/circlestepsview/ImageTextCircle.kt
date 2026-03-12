@@ -1,64 +1,72 @@
 package com.passbolt.mobile.android.core.ui.circlestepsview
 
-import android.content.Context
-import android.util.AttributeSet
-import android.view.LayoutInflater
-import android.widget.FrameLayout
-import androidx.annotation.DrawableRes
-import androidx.core.content.ContextCompat
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.passbolt.mobile.android.core.ui.R
-import com.passbolt.mobile.android.core.ui.databinding.ViewTextCircleBinding
 
-/**
- * Passbolt - Open source password manager for teams
- * Copyright (c) 2021 Passbolt SA
- *
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
- * Public License (AGPL) as published by the Free Software Foundation version 3.
- *
- * The name "Passbolt" is a registered trademark of Passbolt SA, and Passbolt SA hereby declines to grant a trademark
- * license to "Passbolt" pursuant to the GNU Affero General Public License version 3 Section 7(e), without a separate
- * agreement with Passbolt SA.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License along with this program. If not,
- * see GNU Affero General Public License v3 (http://www.gnu.org/licenses/agpl-3.0.html).
- *
- * @copyright Copyright (c) Passbolt SA (https://www.passbolt.com)
- * @license https://opensource.org/licenses/AGPL-3.0 AGPL License
- * @link https://www.passbolt.com Passbolt (tm)
- * @since v1.0
- */
-
-class ImageTextCircle
-    @JvmOverloads
-    constructor(
-        context: Context,
-        attrs: AttributeSet? = null,
-        defStyle: Int = 0,
-    ) : FrameLayout(context, attrs, defStyle) {
-        private val binding = ViewTextCircleBinding.inflate(LayoutInflater.from(context), this)
-
-        init {
-            background = ContextCompat.getDrawable(context, R.drawable.circle_gray)
-        }
-
-        override fun onMeasure(
-            widthMeasureSpec: Int,
-            heightMeasureSpec: Int,
-        ) {
-            super.onMeasure(widthMeasureSpec, widthMeasureSpec)
-        }
-
-        fun setText(text: String) {
-            binding.textLabel.text = text
-        }
-
-        fun setImageResource(
-            @DrawableRes drawableRes: Int,
-        ) {
-            binding.iconImage.setImageResource(drawableRes)
+@Composable
+fun ImageTextCircle(
+    stepNumber: Int,
+    icon: CircleStepIcon?,
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        modifier =
+            modifier
+                .size(24.dp)
+                .border(width = 1.dp, color = colorResource(R.color.divider), shape = CircleShape),
+        contentAlignment = Alignment.Center,
+    ) {
+        when (icon) {
+            is CircleStepIcon.Content -> icon.content()
+            is CircleStepIcon.Drawable ->
+                Image(
+                    painter = painterResource(id = icon.drawableRes),
+                    contentDescription = null,
+                    modifier = Modifier.size(24.dp),
+                )
+            null ->
+                Text(
+                    text = stepNumber.toString(),
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onBackground,
+                )
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun ImageTextCirclePreview() {
+    MaterialTheme {
+        Box(
+            modifier =
+                Modifier
+                    .background(Color.White)
+                    .padding(16.dp),
+        ) {
+            ImageTextCircle(
+                stepNumber = 1,
+                icon = null,
+            )
+        }
+    }
+}

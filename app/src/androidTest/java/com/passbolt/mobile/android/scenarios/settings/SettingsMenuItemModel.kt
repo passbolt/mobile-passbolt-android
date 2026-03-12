@@ -1,8 +1,8 @@
 package com.passbolt.mobile.android.scenarios.settings
 
 import androidx.annotation.StringRes
-import com.passbolt.mobile.android.core.ui.compose.menu.OpenableSettingsItem
-import com.passbolt.mobile.android.core.ui.compose.menu.SwitchableSettingsItem
+import com.passbolt.mobile.android.core.ui.menu.OpenableSettingsItem
+import com.passbolt.mobile.android.core.ui.menu.SwitchableSettingsItem
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 /**

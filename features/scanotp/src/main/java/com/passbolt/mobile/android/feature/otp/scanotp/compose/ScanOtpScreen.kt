@@ -39,11 +39,11 @@ import com.passbolt.mobile.android.core.navigation.compose.results.ScanOtpResult
 import com.passbolt.mobile.android.core.qrscan.SCAN_MANAGER_SCOPE
 import com.passbolt.mobile.android.core.qrscan.manager.ScanManager
 import com.passbolt.mobile.android.core.security.flagsecure.FlagSecureEffect
-import com.passbolt.mobile.android.core.ui.compose.button.PrimaryButton
-import com.passbolt.mobile.android.core.ui.compose.dialogs.CameraPermissionRequiredAlertDialog
-import com.passbolt.mobile.android.core.ui.compose.dialogs.CameraRequiredAlertDialog
-import com.passbolt.mobile.android.core.ui.compose.topbar.BackNavigationIcon
-import com.passbolt.mobile.android.core.ui.compose.topbar.TitleAppBar
+import com.passbolt.mobile.android.core.ui.button.PrimaryButton
+import com.passbolt.mobile.android.core.ui.dialogs.CameraPermissionRequiredAlertDialog
+import com.passbolt.mobile.android.core.ui.dialogs.CameraRequiredAlertDialog
+import com.passbolt.mobile.android.core.ui.topbar.BackNavigationIcon
+import com.passbolt.mobile.android.core.ui.topbar.TitleAppBar
 import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpMode
 import com.passbolt.mobile.android.feature.otp.scanotp.compose.ScanOtpIntent.CreateTotpManually
 import com.passbolt.mobile.android.feature.otp.scanotp.compose.ScanOtpIntent.DismissCameraPermissionRequiredDialog

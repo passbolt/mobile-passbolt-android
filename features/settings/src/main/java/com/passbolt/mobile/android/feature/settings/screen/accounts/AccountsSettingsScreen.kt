@@ -42,9 +42,9 @@ import com.passbolt.mobile.android.core.navigation.compose.keys.AccountDetailsNa
 import com.passbolt.mobile.android.core.navigation.compose.keys.SettingsNavigationKey.KeyInspector
 import com.passbolt.mobile.android.core.navigation.compose.keys.TransferAccountToAnotherDeviceKey.Onboarding
 import com.passbolt.mobile.android.core.ui.R
-import com.passbolt.mobile.android.core.ui.compose.menu.OpenableSettingsItem
-import com.passbolt.mobile.android.core.ui.compose.topbar.BackNavigationIcon
-import com.passbolt.mobile.android.core.ui.compose.topbar.TitleAppBar
+import com.passbolt.mobile.android.core.ui.menu.OpenableSettingsItem
+import com.passbolt.mobile.android.core.ui.topbar.BackNavigationIcon
+import com.passbolt.mobile.android.core.ui.topbar.TitleAppBar
 import com.passbolt.mobile.android.feature.settings.screen.accounts.AccountsScreenSideEffect.NavigateBack
 import com.passbolt.mobile.android.feature.settings.screen.accounts.AccountsScreenSideEffect.NavigateToAccountDetails
 import com.passbolt.mobile.android.feature.settings.screen.accounts.AccountsScreenSideEffect.NavigateToKeyInspector

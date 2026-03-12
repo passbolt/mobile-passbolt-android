@@ -28,12 +28,8 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions.closeSoftKeyboard
-import androidx.test.espresso.action.ViewActions.typeText
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
-import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import androidx.test.platform.app.InstrumentationRegistry
@@ -57,7 +53,6 @@ import org.junit.runner.RunWith
 import org.koin.test.KoinTest
 import org.koin.test.inject
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
-import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 @RunWith(AndroidJUnit4::class)
 @LargeTest
@@ -118,7 +113,7 @@ class SetupConfigureBiometricUnavailableTest : KoinTest {
         //    Given     I don't have biometrics configured on my device
         //    And       I am on the Passphrase screen
         //    When      I successfully entered my passphrase
-        onView(withId(CoreUiR.id.input)).perform(typeText(managedAccountIntentCreator.getPassphrase()), closeSoftKeyboard())
+//        onView(withId(CoreUiR.id.input)).perform(typeText(managedAccountIntentCreator.getPassphrase()), closeSoftKeyboard())
         // TODO rewrite to compose
 //        onView(withId(AuthenticationR.id.authButton)).perform(scrollTo(), click())
         //    Then       I am prompted to Configure biometrics
@@ -142,7 +137,7 @@ class SetupConfigureBiometricUnavailableTest : KoinTest {
         try {
             //    Given     I don't have biometrics configured on my device
             //    And       I am on the Configure {biometrics provider} screen
-            onView(withId(CoreUiR.id.input)).perform(typeText(managedAccountIntentCreator.getPassphrase()), closeSoftKeyboard())
+//            onView(withId(CoreUiR.id.input)).perform(typeText(managedAccountIntentCreator.getPassphrase()), closeSoftKeyboard())
             // TODO rewrite to compose
 //            onView(withId(AuthenticationR.id.authButton)).perform(scrollTo(), click())
             //    When      I click on Configure {biometrics provider} button

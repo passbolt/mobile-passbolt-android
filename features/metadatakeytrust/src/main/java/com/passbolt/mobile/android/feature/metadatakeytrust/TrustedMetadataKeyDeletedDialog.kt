@@ -24,7 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import com.passbolt.mobile.android.core.ui.compose.topbar.BackNavigationIcon
+import com.passbolt.mobile.android.core.ui.topbar.BackNavigationIcon
 import com.passbolt.mobile.android.ui.MetadataKeyModification
 import com.passbolt.mobile.android.ui.TrustedKeyDeletedModel
 import com.passbolt.mobile.android.core.localization.R as LocalizationR

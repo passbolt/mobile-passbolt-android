@@ -35,7 +35,7 @@ import androidx.test.espresso.intent.matcher.IntentMatchers.hasAction
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasData
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
-import com.passbolt.mobile.android.core.ui.compose.topbar.BackNavigationIcon
+import com.passbolt.mobile.android.core.ui.topbar.BackNavigationIcon
 import com.passbolt.mobile.android.feature.setup.SetUpActivity
 import com.passbolt.mobile.android.helpers.getString
 import com.passbolt.mobile.android.instrumentationTestsModule

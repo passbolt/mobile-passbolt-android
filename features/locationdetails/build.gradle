@@ -24,7 +24,6 @@ dependencies {
     implementation libs.koin
     implementation libs.koin.compose
     implementation libs.sqlite
-    implementation libs.constraintlayout
     implementation libs.material
     implementation libs.swiperefresh
     implementation platform(libs.compose.bom)

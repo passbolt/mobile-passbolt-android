@@ -33,8 +33,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import com.passbolt.mobile.android.core.ui.compose.button.PrimaryButton
-import com.passbolt.mobile.android.core.ui.formatter.FingerprintFormatter
+import com.passbolt.mobile.android.core.formatter.FingerprintFormatter
+import com.passbolt.mobile.android.core.ui.button.PrimaryButton
 import org.koin.compose.koinInject
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR

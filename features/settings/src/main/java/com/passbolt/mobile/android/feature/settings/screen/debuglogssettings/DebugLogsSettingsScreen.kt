@@ -40,10 +40,10 @@ import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
 import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
 import com.passbolt.mobile.android.core.navigation.compose.keys.LogsNavigationKey
 import com.passbolt.mobile.android.core.ui.R
-import com.passbolt.mobile.android.core.ui.compose.menu.OpenableSettingsItem
-import com.passbolt.mobile.android.core.ui.compose.menu.SwitchableSettingsItem
-import com.passbolt.mobile.android.core.ui.compose.topbar.BackNavigationIcon
-import com.passbolt.mobile.android.core.ui.compose.topbar.TitleAppBar
+import com.passbolt.mobile.android.core.ui.menu.OpenableSettingsItem
+import com.passbolt.mobile.android.core.ui.menu.SwitchableSettingsItem
+import com.passbolt.mobile.android.core.ui.topbar.BackNavigationIcon
+import com.passbolt.mobile.android.core.ui.topbar.TitleAppBar
 import com.passbolt.mobile.android.feature.settings.screen.debuglogssettings.DebugLogsScreenSideEffect.NavigateToLogs
 import com.passbolt.mobile.android.feature.settings.screen.debuglogssettings.DebugLogsScreenSideEffect.NavigateUp
 import com.passbolt.mobile.android.feature.settings.screen.debuglogssettings.DebugLogsScreenSideEffect.OpenHelpWebsite

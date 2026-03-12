@@ -23,8 +23,8 @@
 
 package com.passbolt.mobile.android.permissions.permissionrecipients
 
-import com.passbolt.mobile.android.core.ui.compose.search.SearchInputEndIconMode
-import com.passbolt.mobile.android.core.ui.compose.search.SearchInputEndIconMode.NONE
+import com.passbolt.mobile.android.core.ui.search.SearchInputEndIconMode
+import com.passbolt.mobile.android.core.ui.search.SearchInputEndIconMode.NONE
 import com.passbolt.mobile.android.ui.GroupModel
 import com.passbolt.mobile.android.ui.PermissionModelUi
 import com.passbolt.mobile.android.ui.UserModel

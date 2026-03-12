@@ -40,8 +40,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
-import com.passbolt.mobile.android.core.ui.compose.bottomsheet.BottomSheetHeader
-import com.passbolt.mobile.android.core.ui.compose.menu.OpenableSettingsItem
+import com.passbolt.mobile.android.core.ui.bottomsheet.BottomSheetHeader
+import com.passbolt.mobile.android.core.ui.menu.OpenableSettingsItem
 import com.passbolt.mobile.android.resourcemoremenu.ResourceMoreMenuBottomSheetIntent.Close
 import com.passbolt.mobile.android.resourcemoremenu.ResourceMoreMenuBottomSheetIntent.CopyMetadataDescription
 import com.passbolt.mobile.android.resourcemoremenu.ResourceMoreMenuBottomSheetIntent.CopyNote

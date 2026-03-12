@@ -63,9 +63,9 @@ import com.passbolt.mobile.android.core.navigation.compose.keys.SettingsNavigati
 import com.passbolt.mobile.android.core.navigation.compose.keys.SettingsNavigationKey.EncourageAccessibilityAutofill
 import com.passbolt.mobile.android.core.navigation.compose.keys.SettingsNavigationKey.EncourageNativeAutofill
 import com.passbolt.mobile.android.core.ui.R
-import com.passbolt.mobile.android.core.ui.compose.switch.SwitchWithDescriptionItem
-import com.passbolt.mobile.android.core.ui.compose.topbar.BackNavigationIcon
-import com.passbolt.mobile.android.core.ui.compose.topbar.TitleAppBar
+import com.passbolt.mobile.android.core.ui.switch.SwitchWithDescriptionItem
+import com.passbolt.mobile.android.core.ui.topbar.BackNavigationIcon
+import com.passbolt.mobile.android.core.ui.topbar.TitleAppBar
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.AutofillScreenSideEffect.ErrorSnackbarType.NATIVE_AUTOFILL_NOT_SUPPORTED
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.AutofillScreenSideEffect.NavigateToAutofillEnabled
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.AutofillScreenSideEffect.NavigateToChromeNativeAutofill

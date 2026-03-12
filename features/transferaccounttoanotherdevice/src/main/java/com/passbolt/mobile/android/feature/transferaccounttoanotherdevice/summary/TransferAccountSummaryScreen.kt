@@ -54,7 +54,7 @@ import androidx.compose.ui.unit.dp
 import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
 import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
 import com.passbolt.mobile.android.core.navigation.compose.keys.TransferAccountToAnotherDeviceKey.Onboarding
-import com.passbolt.mobile.android.core.ui.compose.button.PrimaryButton
+import com.passbolt.mobile.android.core.ui.button.PrimaryButton
 import com.passbolt.mobile.android.feature.authentication.compose.AuthenticationHandler
 import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.summary.TransferAccountSummaryIntent.GoBack
 import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.summary.TransferAccountSummaryIntent.Initialize

@@ -24,6 +24,7 @@
 package com.passbolt.mobile.android.core.ui.formatter
 
 import com.google.common.truth.Truth.assertThat
+import com.passbolt.mobile.android.core.formatter.FingerprintFormatter
 import org.junit.Test
 
 class FingerprintFormatterTest {

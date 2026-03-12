@@ -28,7 +28,6 @@ dependencies {
     implementation libs.koin.compose
     implementation libs.fragment
     implementation libs.activity
-    implementation libs.constraintlayout
     implementation libs.material
     implementation libs.navigation.fragment
     implementation libs.navigation.ui

@@ -58,11 +58,11 @@ import com.passbolt.mobile.android.core.navigation.compose.keys.LogsNavigationKe
 import com.passbolt.mobile.android.core.navigation.compose.keys.SetupNavigationKey.ImportProfile
 import com.passbolt.mobile.android.core.navigation.compose.keys.SetupNavigationKey.Summary
 import com.passbolt.mobile.android.core.navigation.compose.keys.SetupNavigationKey.TransferDetails
-import com.passbolt.mobile.android.core.ui.compose.button.PrimaryButton
-import com.passbolt.mobile.android.core.ui.compose.dialogs.HowToCreateAccountDialog
-import com.passbolt.mobile.android.core.ui.compose.dialogs.RootWarningAlertDialog
-import com.passbolt.mobile.android.core.ui.compose.topbar.BackNavigationIcon
-import com.passbolt.mobile.android.core.ui.compose.topbar.TitleAppBar
+import com.passbolt.mobile.android.core.ui.button.PrimaryButton
+import com.passbolt.mobile.android.core.ui.dialogs.HowToCreateAccountDialog
+import com.passbolt.mobile.android.core.ui.dialogs.RootWarningAlertDialog
+import com.passbolt.mobile.android.core.ui.topbar.BackNavigationIcon
+import com.passbolt.mobile.android.core.ui.topbar.TitleAppBar
 import com.passbolt.mobile.android.feature.setup.welcome.WelcomeIntent.AccessLogs
 import com.passbolt.mobile.android.feature.setup.welcome.WelcomeIntent.AcknowledgeDeviceRooted
 import com.passbolt.mobile.android.feature.setup.welcome.WelcomeIntent.ConnectToExistingAccount

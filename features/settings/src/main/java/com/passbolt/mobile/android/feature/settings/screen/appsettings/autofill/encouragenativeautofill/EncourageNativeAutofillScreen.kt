@@ -50,10 +50,10 @@ import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.Ho
 import com.passbolt.mobile.android.core.navigation.compose.keys.SettingsNavigationKey.DismissBehavior
 import com.passbolt.mobile.android.core.navigation.compose.keys.SettingsNavigationKey.DismissBehavior.FINISH_TO_HOME
 import com.passbolt.mobile.android.core.navigation.compose.keys.SettingsNavigationKey.DismissBehavior.NAVIGATE_BACK
-import com.passbolt.mobile.android.core.ui.compose.button.PrimaryButton
-import com.passbolt.mobile.android.core.ui.compose.circlestepsview.CircleStepIcon
-import com.passbolt.mobile.android.core.ui.compose.circlestepsview.CircleStepItemModel
-import com.passbolt.mobile.android.core.ui.compose.circlestepsview.CircleStepsView
+import com.passbolt.mobile.android.core.ui.button.PrimaryButton
+import com.passbolt.mobile.android.core.ui.circlestepsview.CircleStepIcon
+import com.passbolt.mobile.android.core.ui.circlestepsview.CircleStepItemModel
+import com.passbolt.mobile.android.core.ui.circlestepsview.CircleStepsView
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.encouragenativeautofill.EncourageNativeAutofillIntent.Close
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.encouragenativeautofill.EncourageNativeAutofillIntent.DismissAutofillNotSupported
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.encouragenativeautofill.EncourageNativeAutofillIntent.EnableAutofillService

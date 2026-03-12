@@ -36,7 +36,6 @@ dependencies {
     implementation libs.fastadapter.diff
     implementation libs.coil.views
     implementation libs.coil.compose
-    implementation libs.constraintlayout
     implementation libs.material
     implementation libs.koin.compose
     implementation libs.kotlin.serializationjson

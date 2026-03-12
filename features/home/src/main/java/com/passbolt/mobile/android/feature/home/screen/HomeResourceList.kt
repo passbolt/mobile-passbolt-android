@@ -20,7 +20,7 @@ import com.passbolt.mobile.android.core.localization.R
 import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
 import com.passbolt.mobile.android.core.navigation.compose.keys.HomeNavigationKey
 import com.passbolt.mobile.android.core.resources.resourceicon.ResourceIconProvider
-import com.passbolt.mobile.android.core.ui.compose.empty.EmptyResourceListState
+import com.passbolt.mobile.android.core.ui.empty.EmptyResourceListState
 import com.passbolt.mobile.android.core.ui.lists.HeaderItem
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.OpenResourceMenu
 import com.passbolt.mobile.android.feature.home.screen.data.HeaderSectionConfiguration

@@ -45,9 +45,9 @@ import com.passbolt.mobile.android.core.resources.actions.performSecretPropertyA
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesUseCase
 import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
-import com.passbolt.mobile.android.core.ui.compose.search.SearchInputEndIconMode.AVATAR
-import com.passbolt.mobile.android.core.ui.compose.search.SearchInputEndIconMode.CLEAR
-import com.passbolt.mobile.android.core.ui.compose.search.SearchInputEndIconMode.NONE
+import com.passbolt.mobile.android.core.ui.search.SearchInputEndIconMode.AVATAR
+import com.passbolt.mobile.android.core.ui.search.SearchInputEndIconMode.CLEAR
+import com.passbolt.mobile.android.core.ui.search.SearchInputEndIconMode.NONE
 import com.passbolt.mobile.android.feature.authentication.compose.AuthenticatedViewModel
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
 import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.CloseCreateResourceMenu
