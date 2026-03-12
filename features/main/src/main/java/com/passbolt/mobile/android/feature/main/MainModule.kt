@@ -1,6 +1,5 @@
 package com.passbolt.mobile.android.feature.main
 
-import com.passbolt.mobile.android.feature.main.mainscreen.encouragements.chromenativeautofill.encourageChromeNativeAutofillModule
 import com.passbolt.mobile.android.feature.main.mainscreen.encouragements.encouragementsModule
 import com.passbolt.mobile.android.feature.main.mainscreen.mainModule
 import org.koin.dsl.module
@@ -32,5 +31,4 @@ val mainModule =
     module {
         mainModule()
         encouragementsModule()
-        encourageChromeNativeAutofillModule()
     }

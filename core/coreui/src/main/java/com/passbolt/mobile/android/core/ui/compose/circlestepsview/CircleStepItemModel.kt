@@ -24,9 +24,20 @@
 package com.passbolt.mobile.android.core.ui.compose.circlestepsview
 
 import androidx.annotation.DrawableRes
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.AnnotatedString
+
+sealed interface CircleStepIcon {
+    data class Drawable(
+        @param:DrawableRes val drawableRes: Int,
+    ) : CircleStepIcon
+
+    data class Content(
+        val content: @Composable () -> Unit,
+    ) : CircleStepIcon
+}
 
 data class CircleStepItemModel(
     val text: AnnotatedString,
-    @DrawableRes val icon: Int? = null,
+    val icon: CircleStepIcon? = null,
 )

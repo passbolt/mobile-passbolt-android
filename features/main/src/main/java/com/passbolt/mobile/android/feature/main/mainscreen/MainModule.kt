@@ -4,8 +4,7 @@ import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import com.google.android.play.core.review.ReviewManagerFactory
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.Module
-import org.koin.core.module.dsl.scopedOf
-import org.koin.dsl.bind
+import org.koin.core.module.dsl.viewModelOf
 
 /**
  * Passbolt - Open source password manager for teams
@@ -31,8 +30,8 @@ import org.koin.dsl.bind
  */
 
 fun Module.mainModule() {
+    viewModelOf(::MainViewModel)
     scope<MainActivity> {
-        scopedOf(::MainPresenter) bind MainContract.Presenter::class
         scoped { AppUpdateManagerFactory.create(androidContext()) }
         scoped { ReviewManagerFactory.create(androidContext()) }
     }

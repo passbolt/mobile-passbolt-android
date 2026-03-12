@@ -24,7 +24,7 @@ import com.passbolt.mobile.android.core.ui.R
 @Composable
 fun ImageTextCircle(
     stepNumber: Int,
-    icon: Int?,
+    icon: CircleStepIcon?,
     modifier: Modifier = Modifier,
 ) {
     Box(
@@ -34,19 +34,21 @@ fun ImageTextCircle(
                 .border(width = 1.dp, color = colorResource(R.color.divider), shape = CircleShape),
         contentAlignment = Alignment.Center,
     ) {
-        if (icon != null) {
-            Image(
-                painter = painterResource(id = icon),
-                contentDescription = null,
-                modifier = Modifier.size(24.dp),
-            )
-        } else {
-            Text(
-                text = stepNumber.toString(),
-                fontSize = 14.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.onBackground,
-            )
+        when (icon) {
+            is CircleStepIcon.Content -> icon.content()
+            is CircleStepIcon.Drawable ->
+                Image(
+                    painter = painterResource(id = icon.drawableRes),
+                    contentDescription = null,
+                    modifier = Modifier.size(24.dp),
+                )
+            null ->
+                Text(
+                    text = stepNumber.toString(),
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onBackground,
+                )
         }
     }
 }
