@@ -24,15 +24,10 @@
 package com.passbolt.mobile.android.scenarios.resourcesedition
 
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
-import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.IdlingRegistry
-import androidx.test.espresso.ViewInteraction
-import androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom
-import androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
 import androidx.test.platform.app.InstrumentationRegistry
-import com.google.android.material.textfield.TextInputLayout
 import com.passbolt.mobile.android.core.idlingresource.CreateResourceIdlingResource
 import com.passbolt.mobile.android.core.idlingresource.ResourcesFullRefreshIdlingResource
 import com.passbolt.mobile.android.core.idlingresource.SignInIdlingResource
@@ -47,11 +42,8 @@ import com.passbolt.mobile.android.helpers.searchAndOpenFirstResourceByName
 import com.passbolt.mobile.android.helpers.signIn
 import com.passbolt.mobile.android.instrumentationTestsModule
 import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
-import com.passbolt.mobile.android.matchers.withHint
 import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
-import org.hamcrest.Matchers.allOf
-import org.hamcrest.Matchers.hasToString
 import org.junit.Before
 import org.junit.Ignore
 import org.junit.Rule
@@ -284,13 +276,13 @@ class ResourcesEditionTest : KoinTest {
 //    private fun onViewInputWithHintName(hintName: String): ViewInteraction =
 //        onView(allOf(isDescendantOfA(withHint(hasToString(hintName))), withId(input)))
 
-    private fun onViewTextInputLayoutWithHintName(hintName: String): ViewInteraction =
-        onView(
-            allOf(
-                isDescendantOfA(withHint(hasToString(hintName))),
-                isAssignableFrom(TextInputLayout::class.java),
-            ),
-        )
+//    private fun onViewTextInputLayoutWithHintName(hintName: String): ViewInteraction =
+//        onView(
+//            allOf(
+//                isDescendantOfA(withHint(hasToString(hintName))),
+//                isAssignableFrom(TextInputLayout::class.java),
+//            ),
+//        )
 
     private fun enterEditPasswordScreen() {
         composeTestRule.searchAndOpenFirstResourceByName("ResourcesEditionTest")

@@ -31,12 +31,7 @@ dependencies {
 
     implementation platform(libs.koin.bom)
     implementation libs.koin
-    implementation libs.fastadapter.core
-    implementation libs.fastadapter.binding
-    implementation libs.fastadapter.diff
-    implementation libs.coil.views
     implementation libs.coil.compose
-    implementation libs.material
     implementation libs.koin.compose
     implementation libs.kotlin.serializationjson
     implementation platform(libs.compose.bom)

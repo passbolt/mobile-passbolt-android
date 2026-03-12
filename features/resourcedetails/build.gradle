@@ -47,14 +47,9 @@ dependencies {
     implementation project(':clipboard')
     implementation project(':metadata')
 
-    implementation libs.swiperefresh
     implementation platform(libs.koin.bom)
     implementation libs.koin
     implementation libs.koin.compose
-    implementation libs.fastadapter.binding
-    implementation libs.fastadapter.core
-    implementation libs.fastadapter.diff
-    implementation libs.coil.views
     implementation libs.room.core
     implementation libs.espresso.idling.resource
     implementation libs.jsonschema.friend

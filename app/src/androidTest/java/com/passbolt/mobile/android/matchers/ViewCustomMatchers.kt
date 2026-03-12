@@ -41,10 +41,8 @@ import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
-import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Root
 import androidx.test.espresso.matcher.BoundedMatcher
-import com.google.android.material.textfield.TextInputLayout
 import org.hamcrest.BaseMatcher
 import org.hamcrest.Description
 import org.hamcrest.Matcher
@@ -152,31 +150,6 @@ fun hasToast() =
         }
     }
 
-/**
- * Matches a view at any position within a RecyclerView that satisfies the given itemMatcher.
- *
- * @param itemMatcher The matcher to apply to items in the RecyclerView.
- */
-fun atAnyPosition(itemMatcher: Matcher<View?>): Matcher<View?> =
-    object : BoundedMatcher<View?, RecyclerView>(RecyclerView::class.java) {
-        override fun describeTo(description: Description) {
-            description.appendText("has item at any position: ")
-            itemMatcher.describeTo(description)
-        }
-
-        override fun matchesSafely(recyclerView: RecyclerView?): Boolean {
-            if (recyclerView == null) return false
-
-            for (position in 0 until recyclerView.childCount) {
-                val viewHolder = recyclerView.getChildViewHolder(recyclerView.getChildAt(position))
-                if (itemMatcher.matches(viewHolder.itemView)) {
-                    return true
-                }
-            }
-            return false // No matching item found
-        }
-    }
-
 fun withHint(stringMatcher: Matcher<String?>): Matcher<View?> {
     return object : BaseMatcher<View?>() {
         override fun describeTo(description: Description) {
@@ -206,20 +179,6 @@ fun withProgressBarOfMinimumProgress(progress: Int): Matcher<View?> =
         override fun matchesSafely(progressBar: ProgressBar?): Boolean =
             progressBar?.let {
                 it.progress >= progress
-            } ?: false
-    }
-
-fun withTextInputStrokeColorOf(
-    @ColorRes colorResId: Int,
-): Matcher<View?> =
-    object : BoundedMatcher<View, TextInputLayout>(TextInputLayout::class.java) {
-        override fun describeTo(description: Description) {
-            description.appendText("TextInputLayout with stroke color of res id: $colorResId")
-        }
-
-        override fun matchesSafely(textInputLayout: TextInputLayout?): Boolean =
-            textInputLayout?.let {
-                textInputLayout.boxStrokeErrorColor?.defaultColor == textInputLayout.context.getColor(colorResId)
             } ?: false
     }
 

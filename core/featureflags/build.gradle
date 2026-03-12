@@ -18,9 +18,6 @@ dependencies {
 
 android {
     namespace = "com.passbolt.mobile.android.core.featureflags"
-    buildFeatures {
-        viewBinding true
-    }
 }
 
 kotlin {

@@ -44,15 +44,10 @@ dependencies {
     implementation(libs.androidx.navigation3.runtime)
     implementation libs.androidx.core
     implementation libs.appcompat
-    implementation libs.material
     implementation libs.biometric
-    implementation libs.fastadapter.core
-    implementation libs.fastadapter.binding
-    implementation libs.fastadapter.diff
     implementation platform(libs.koin.bom)
     implementation libs.koin
     implementation libs.koin.compose
-    implementation libs.coil.views
     implementation libs.gson
     implementation libs.fusionauth.jwt
     implementation libs.yubikit.android

@@ -23,6 +23,7 @@
 
 package com.passbolt.mobile.android.logs
 
+import android.content.Context
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -47,7 +48,6 @@ import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
 import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
 import com.passbolt.mobile.android.core.ui.topbar.BackNavigationIcon
 import com.passbolt.mobile.android.core.ui.topbar.TitleAppBar
-import com.passbolt.mobile.android.logs.LogsComposeFragment.Companion.LOGS_MIME_TYPE
 import com.passbolt.mobile.android.logs.LogsIntent.GoBack
 import com.passbolt.mobile.android.logs.LogsIntent.ShareLogs
 import com.passbolt.mobile.android.logs.LogsSideEffect.NavigateToLogsShareSheet
@@ -59,6 +59,10 @@ import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
+
+private const val LOGS_MIME_TYPE = "text/plain"
+
+private fun getLogsFileProviderAuthority(context: Context): String = "${context.packageName}.core.logger.logsfileprovider"
 
 @Composable
 internal fun LogsScreen(
@@ -91,7 +95,7 @@ internal fun LogsScreen(
                 navigator.startFileShareSheet(
                     context = context,
                     shareSheetTitle = context.getString(LocalizationR.string.logs_share_title),
-                    authority = LogsComposeFragment.getLogsFileProviderAuthority(context),
+                    authority = getLogsFileProviderAuthority(context),
                     fileMimeType = LOGS_MIME_TYPE,
                     filePath = it.logsFilePath,
                 )

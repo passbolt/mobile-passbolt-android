@@ -83,7 +83,6 @@ android {
     }
 
     buildFeatures {
-        viewBinding true
         buildConfig true
     }
 }
@@ -194,7 +193,7 @@ dependencies {
 
     implementation platform(libs.koin.bom)
     implementation libs.lifecycle.process
-    implementation libs.coil.views
+    implementation libs.coil
     implementation libs.coil.networking
     implementation libs.koin
     implementation libs.gson
@@ -206,7 +205,6 @@ dependencies {
     androidTestImplementation project(':testtags')
     androidTestImplementation platform(libs.koin.bom)
     androidTestImplementation libs.appcompat
-    androidTestImplementation libs.material
     androidTestImplementation libs.android.tests.runner
     androidTestImplementation libs.android.test.rules
     androidTestImplementation libs.espresso.core

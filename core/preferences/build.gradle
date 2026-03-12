@@ -18,9 +18,6 @@ dependencies {
 
 android {
     namespace = "com.passbolt.mobile.android.core.preferences"
-    buildFeatures {
-        viewBinding true
-    }
 
     kotlin {
         jvmToolchain(17)
