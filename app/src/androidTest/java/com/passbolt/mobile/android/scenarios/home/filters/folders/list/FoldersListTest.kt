@@ -59,7 +59,7 @@ import org.koin.test.KoinTest
 @RunWith(AndroidJUnit4::class)
 @MediumTest
 class FoldersListTest : KoinTest {
-    @get:Rule
+    @get:Rule(order = 0)
     val startUpActivityRule =
         lazyActivitySetupScenarioRule<AuthenticationMainActivity>(
             koinOverrideModules = listOf(instrumentationTestsModule),

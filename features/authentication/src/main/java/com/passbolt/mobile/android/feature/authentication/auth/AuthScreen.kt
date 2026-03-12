@@ -95,6 +95,7 @@ import com.passbolt.mobile.android.feature.authentication.mfa.MfaDialogState
 import com.passbolt.mobile.android.feature.authentication.mfa.MfaResult
 import com.passbolt.mobile.android.featureflagserror.FeatureFlagsFetchErrorDialog
 import com.passbolt.mobile.android.helpmenu.HelpMenuBottomSheet
+import com.passbolt.mobile.android.testtags.composetags.Auth
 import com.passbolt.mobile.android.ui.HelpMenuModel
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
@@ -322,6 +323,7 @@ private fun AuthScreen(
                 title = stringResource(LocalizationR.string.auth_password_title),
                 text = String(state.passphrase, Charsets.UTF_8),
                 onTextChange = { onIntent(PassphraseInputChanged(it.toByteArray(Charsets.UTF_8))) },
+                testTag = Auth.PASSPHRASE_INPUT,
                 modifier =
                     Modifier
                         .fillMaxWidth()

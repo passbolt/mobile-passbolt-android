@@ -53,7 +53,7 @@ import org.koin.core.component.inject
 @RunWith(AndroidJUnit4::class)
 @LargeTest
 class LogInTest : KoinComponent {
-    @get:Rule
+    @get:Rule(order = 0)
     val startUpActivityRule =
         lazyActivitySetupScenarioRule<AuthenticationMainActivity>(
             koinOverrideModules = listOf(instrumentationTestsModule),

@@ -58,7 +58,7 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
 @MediumTest
 @Ignore("Deprecated: refactor needed - entire test class disabled")
 class ResourcesCreationTest : KoinTest {
-    @get:Rule
+    @get:Rule(order = 0)
     val startUpActivityRule =
         lazyActivitySetupScenarioRule<AuthenticationMainActivity>(
             koinOverrideModules = listOf(instrumentationTestsModule),

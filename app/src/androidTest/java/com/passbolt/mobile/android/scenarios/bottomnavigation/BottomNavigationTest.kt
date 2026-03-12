@@ -63,7 +63,20 @@ import com.passbolt.mobile.android.core.localization.R as LocalizationR
 @RunWith(AndroidJUnit4::class)
 @LargeTest
 class BottomNavigationTest : KoinTest {
-    @get:Rule
+    @get:Rule(order = 0)
+    val composeTestRule = createEmptyComposeRule()
+
+    @get:Rule(order = 1)
+    val idlingResourceRule =
+        let {
+            val signInIdlingResource: SignInIdlingResource by inject()
+            val resourcesFullRefreshIdlingResource: ResourcesFullRefreshIdlingResource by inject()
+            IdlingResourceRule(arrayOf(signInIdlingResource, resourcesFullRefreshIdlingResource))
+        }
+
+    private val managedAccountIntentCreator: ManagedAccountIntentCreator by inject()
+
+    @get:Rule(order = 2)
     val startUpActivityRule =
         lazyActivitySetupScenarioRule<AuthenticationMainActivity>(
             koinOverrideModules =
@@ -79,19 +92,6 @@ class BottomNavigationTest : KoinTest {
                 )
             },
         )
-
-    @get:Rule
-    val composeTestRule = createEmptyComposeRule()
-
-    private val managedAccountIntentCreator: ManagedAccountIntentCreator by inject()
-
-    @get:Rule
-    val idlingResourceRule =
-        let {
-            val signInIdlingResource: SignInIdlingResource by inject()
-            val resourcesFullRefreshIdlingResource: ResourcesFullRefreshIdlingResource by inject()
-            IdlingResourceRule(arrayOf(signInIdlingResource, resourcesFullRefreshIdlingResource))
-        }
 
     @Before
     fun setup() {

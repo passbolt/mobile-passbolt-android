@@ -32,16 +32,13 @@ import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextReplacement
-import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions.closeSoftKeyboard
-import androidx.test.espresso.action.ViewActions.typeText
-import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.platform.app.InstrumentationRegistry
-import com.passbolt.mobile.android.core.ui.R.id.input
+import com.passbolt.mobile.android.testtags.composetags.Auth
 import com.passbolt.mobile.android.testtags.composetags.Home
-import com.passbolt.mobile.android.core.ui.R as CoreUiR
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 internal fun getString(
     @StringRes stringResId: Int,
@@ -88,9 +85,8 @@ internal fun createNewPasswordFromHomeScreen(name: String) {
  * Usage: composeTestRule.signIn(passphrase)
  */
 internal fun ComposeTestRule.signIn(passphrase: String) {
-    onView(withId(CoreUiR.id.input)).perform(typeText(passphrase), closeSoftKeyboard())
-    // TODO rewrite to compose
-//    onView(withId(com.passbolt.mobile.android.feature.authentication.R.id.authButton)).perform(click())
+    onNodeWithTag(Auth.PASSPHRASE_INPUT).performTextReplacement(passphrase)
+    onNodeWithText(getString(LocalizationR.string.auth_sign_in)).performClick()
     onNodeWithTag(Home.SCREEN).assertIsDisplayed()
 }
 

@@ -54,7 +54,7 @@ class ResourcesNoteTest(
     private val testedResource: String,
     private val expectedNote: String,
 ) : KoinTest {
-    @get:Rule
+    @get:Rule(order = 0)
     val startUpActivityRule =
         lazyActivitySetupScenarioRule<AuthenticationMainActivity>(
             koinOverrideModules = listOf(instrumentationTestsModule),

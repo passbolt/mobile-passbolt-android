@@ -56,7 +56,7 @@ import org.koin.test.KoinTest
 class ResourcesDetailsTest(
     private val resourceType: TestResourceType,
 ) : KoinTest {
-    @get:Rule
+    @get:Rule(order = 0)
     val startUpActivityRule =
         lazyActivitySetupScenarioRule<AuthenticationMainActivity>(
             koinOverrideModules = listOf(instrumentationTestsModule),
