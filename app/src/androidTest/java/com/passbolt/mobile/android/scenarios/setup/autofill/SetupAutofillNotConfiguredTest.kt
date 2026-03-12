@@ -58,7 +58,7 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
 @RunWith(AndroidJUnit4::class)
 @MediumTest
 class SetupAutofillNotConfiguredTest : KoinTest {
-    @get:Rule
+    @get:Rule(order = 0)
     val startActivityRule =
         lazyActivityScenarioRule<StartUpActivity>(
             koinOverrideModules = listOf(instrumentationTestsModule, autofillNotConfiguredModuleTests),

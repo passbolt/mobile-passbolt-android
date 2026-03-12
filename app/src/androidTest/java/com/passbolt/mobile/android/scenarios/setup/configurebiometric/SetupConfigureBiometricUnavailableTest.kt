@@ -62,7 +62,7 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
 @RunWith(AndroidJUnit4::class)
 @LargeTest
 class SetupConfigureBiometricUnavailableTest : KoinTest {
-    @get:Rule
+    @get:Rule(order = 0)
     val startActivityRule =
         lazyActivityScenarioRule<SetUpActivity>(
             koinOverrideModules =

@@ -63,7 +63,7 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
 @RunWith(AndroidJUnit4::class)
 @LargeTest
 class TransferTest : KoinTest {
-    @get:Rule
+    @get:Rule(order = 0)
     val startUpActivityRule =
         lazyActivitySetupScenarioRule<AuthenticationMainActivity>(
             koinOverrideModules =

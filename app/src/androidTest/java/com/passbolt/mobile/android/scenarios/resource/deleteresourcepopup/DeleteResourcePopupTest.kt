@@ -39,6 +39,7 @@ import com.passbolt.mobile.android.core.localization.R.string.are_you_sure
 import com.passbolt.mobile.android.core.localization.R.string.cancel
 import com.passbolt.mobile.android.core.localization.R.string.delete
 import com.passbolt.mobile.android.core.localization.R.string.filters_menu_all_items
+import com.passbolt.mobile.android.core.localization.R.string.more_delete
 import com.passbolt.mobile.android.core.localization.R.string.resource_will_be_deleted
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppContext
@@ -60,13 +61,12 @@ import org.junit.runners.Parameterized
 import org.koin.test.KoinTest
 import org.koin.test.inject
 
-// TODO rewrite to compose
 @RunWith(Parameterized::class)
 @MediumTest
 class DeleteResourcePopupTest(
     private val testedResource: String,
 ) : KoinTest {
-    @get:Rule
+    @get:Rule(order = 0)
     val startUpActivityRule =
         lazyActivitySetupScenarioRule<AuthenticationMainActivity>(
             koinOverrideModules = listOf(instrumentationTestsModule),
@@ -116,11 +116,10 @@ class DeleteResourcePopupTest(
         composeTestRule.chooseFilter(filters_menu_all_items)
         composeTestRule.searchAndClickMoreOfFirstResource(testedResource)
 
-//        onView(withId(resourcemoremenuId.delete))
-//            .check(matches(isDisplayed()))
-//            .check(matches(hasDrawable(id = ic_trash)))
-//
-//        onView(withId(resourcemoremenuId.delete)).perform(click())
+        composeTestRule
+            .onNodeWithText(getString(more_delete))
+            .assertIsDisplayed()
+            .performClick()
     }
 
     /**  [On the action menu drawer, I can click delete password element when V5 resources are enabled](https://passbolt.testrail.io/index.php?/cases/view/13119)

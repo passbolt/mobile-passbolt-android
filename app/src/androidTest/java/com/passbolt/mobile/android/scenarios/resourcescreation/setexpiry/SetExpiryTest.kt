@@ -54,7 +54,7 @@ import org.koin.test.inject
 @MediumTest
 @Ignore("Deprecated: refactor needed - entire test class disabled")
 class SetExpiryTest : KoinTest {
-    @get:Rule
+    @get:Rule(order = 0)
     val startUpActivityRule =
         lazyActivitySetupScenarioRule<AuthenticationMainActivity>(
             koinOverrideModules = listOf(instrumentationTestsModule),

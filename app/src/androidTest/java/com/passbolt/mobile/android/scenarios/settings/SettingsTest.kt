@@ -84,7 +84,7 @@ import com.passbolt.mobile.android.core.localization.R as LocalizationR
 @RunWith(AndroidJUnit4::class)
 @LargeTest
 class SettingsTest : KoinTest {
-    @get:Rule
+    @get:Rule(order = 0)
     val startUpActivityRule =
         lazyActivitySetupScenarioRule<AuthenticationMainActivity>(
             koinOverrideModules =
