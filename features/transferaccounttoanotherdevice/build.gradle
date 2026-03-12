@@ -3,7 +3,6 @@ plugins {
     alias libs.plugins.kotlin.gradle
     alias libs.plugins.compose.compiler
     alias libs.plugins.kotlin.serialization
-    alias libs.plugins.navigation.safeargs
 }
 
 dependencies {
@@ -28,9 +27,6 @@ dependencies {
     implementation libs.koin.compose
     implementation libs.fragment
     implementation libs.activity
-    implementation libs.material
-    implementation libs.navigation.fragment
-    implementation libs.navigation.ui
     implementation libs.gson
     implementation libs.kotlin.serializationjson
     implementation libs.qr.generation

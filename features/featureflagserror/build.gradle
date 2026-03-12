@@ -29,7 +29,6 @@ android {
     namespace = "com.passbolt.mobile.android.feature.flagserror"
     buildFeatures {
         compose true
-        viewBinding true
     }
 }
 

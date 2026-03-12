@@ -2,7 +2,6 @@ plugins {
     alias libs.plugins.android.library
     alias libs.plugins.kotlin.gradle
     alias libs.plugins.compose.compiler
-    alias libs.plugins.navigation.safeargs
 }
 
 dependencies {

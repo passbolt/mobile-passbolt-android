@@ -31,7 +31,6 @@ dependencies {
     implementation libs.koin
     implementation libs.koin.compose
     implementation libs.room.core
-    implementation libs.swiperefresh
     implementation platform(libs.compose.bom)
     implementation libs.compose.foundation
     implementation libs.compose.ui.graphics

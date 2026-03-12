@@ -51,6 +51,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
+import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
+import com.passbolt.mobile.android.core.navigation.compose.results.CreateFolderCompleteResult
+import com.passbolt.mobile.android.core.navigation.compose.results.NavigationResultEventBus
 import com.passbolt.mobile.android.core.ui.button.PrimaryButton
 import com.passbolt.mobile.android.core.ui.header.ItemWithHeader
 import com.passbolt.mobile.android.core.ui.progressdialog.ProgressDialog
@@ -72,20 +75,22 @@ import com.passbolt.mobile.android.createfolder.CreateFolderSideEffect.ShowError
 import com.passbolt.mobile.android.feature.authentication.compose.AuthenticationHandler
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.koinInject
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 @Composable
 internal fun CreateFolderScreen(
     parentFolderId: String?,
-    navigation: CreateFolderNavigation,
     modifier: Modifier = Modifier,
+    navigator: AppNavigator = koinInject(),
     viewModel: CreateFolderViewModel = koinViewModel(),
 ) {
     val context = LocalContext.current
     val state = viewModel.viewState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
+    val resultBus = NavigationResultEventBus.current
 
     LaunchedEffect(parentFolderId) {
         viewModel.onIntent(Initialize(parentFolderId))
@@ -105,8 +110,11 @@ internal fun CreateFolderScreen(
 
     SideEffectDispatcher(viewModel.sideEffect) { sideEffect ->
         when (sideEffect) {
-            NavigateUp -> navigation.navigateUp()
-            is FolderCreated -> navigation.folderCreated(sideEffect.folderName)
+            NavigateUp -> navigator.navigateBack()
+            is FolderCreated -> {
+                resultBus.sendResult(result = CreateFolderCompleteResult(sideEffect.folderName))
+                navigator.navigateBack()
+            }
             is ShowErrorSnackbar -> {
                 coroutineScope.launch {
                     snackbarHostState.showSnackbar(

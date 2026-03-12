@@ -17,7 +17,6 @@ dependencies {
     implementation platform(libs.koin.bom)
     implementation libs.koin
     implementation libs.koin.compose
-    implementation libs.material
     implementation libs.androidx.core
     implementation platform(libs.compose.bom)
     implementation libs.compose.foundation
@@ -30,7 +29,6 @@ dependencies {
 android {
     namespace = "com.passbolt.mobile.android.feature.helpmenu"
     buildFeatures {
-        viewBinding true
         compose true
     }
 }

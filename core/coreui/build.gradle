@@ -12,13 +12,9 @@ dependencies {
 
     implementation libs.androidx.core
     implementation libs.appcompat
-    implementation libs.material
     implementation libs.navigation.fragment
     implementation libs.navigation.ui
     implementation libs.koin
-    implementation libs.fastadapter.binding
-    implementation libs.fastadapter.core
-    implementation libs.coil.views
     implementation libs.coil.compose
 
     implementation platform(libs.compose.bom)
