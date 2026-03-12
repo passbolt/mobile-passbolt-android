@@ -1,4 +1,4 @@
-package com.passbolt.mobile.android.feature.metadatakeytrust.ui.compose
+package com.passbolt.mobile.android.feature.metadatakeytrust
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -25,8 +25,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.passbolt.mobile.android.core.ui.compose.topbar.BackNavigationIcon
+import com.passbolt.mobile.android.core.ui.formatter.FingerprintFormatter
 import com.passbolt.mobile.android.ui.MetadataKeyModification
-import com.passbolt.mobile.android.ui.TrustedKeyDeletedModel
+import com.passbolt.mobile.android.ui.MetadataKeyModification.ROLLBACK
+import com.passbolt.mobile.android.ui.MetadataKeyModification.ROTATION
+import com.passbolt.mobile.android.ui.NewMetadataKeyToTrustModel
+import com.passbolt.mobile.android.ui.ParsedMetadataPrivateKeyModel
+import org.koin.compose.koinInject
+import java.time.ZonedDateTime
+import java.util.UUID
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
@@ -54,10 +61,11 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
  */
 
 @Composable
-fun TrustedMetadataKeyDeletedDialog(
-    trustedKeyDeletedModel: TrustedKeyDeletedModel,
-    onTrustClick: (TrustedKeyDeletedModel) -> Unit,
+fun NewMetadataKeyTrustDialog(
+    newKeyToTrustModel: NewMetadataKeyToTrustModel,
+    onTrustClick: (NewMetadataKeyToTrustModel) -> Unit,
     onDismiss: () -> Unit,
+    fingerprintFormatter: FingerprintFormatter = koinInject(),
 ) {
     Dialog(
         onDismissRequest = {},
@@ -89,9 +97,23 @@ fun TrustedMetadataKeyDeletedDialog(
                     Spacer(modifier = Modifier.height(40.dp))
 
                     Text(
-                        text = stringResource(LocalizationR.string.dialog_trusted_metadata_key_deleted),
+                        text = stringResource(LocalizationR.string.dialog_new_metadata_key_trust_changed),
                         style = MaterialTheme.typography.titleLarge,
                         color = colorResource(CoreUiR.color.text_primary),
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+
+                    Spacer(modifier = Modifier.height(32.dp))
+
+                    Text(
+                        text =
+                            stringResource(
+                                LocalizationR.string.dialog_new_metadata_key_trust_modified_by_user,
+                                newKeyToTrustModel.signedName,
+                            ),
+                        style = MaterialTheme.typography.displayMedium,
+                        color = colorResource(CoreUiR.color.text_secondary),
                         textAlign = TextAlign.Center,
                         modifier = Modifier.fillMaxWidth(),
                     )
@@ -99,22 +121,35 @@ fun TrustedMetadataKeyDeletedDialog(
                     Spacer(modifier = Modifier.height(16.dp))
 
                     Text(
-                        text = stringResource(LocalizationR.string.dialog_trusted_metadata_key_deleted_main),
+                        text = stringResource(getMessageResId(newKeyToTrustModel.modificationKind)),
                         style = MaterialTheme.typography.displayMedium,
                         color = colorResource(CoreUiR.color.text_secondary),
                         textAlign = TextAlign.Center,
-                        modifier =
-                            Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 40.dp),
+                        modifier = Modifier.fillMaxWidth(),
                     )
 
-                    Spacer(modifier = Modifier.height(32.dp))
+                    Spacer(modifier = Modifier.height(24.dp))
 
                     Text(
-                        text = stringResource(LocalizationR.string.dialog_trusted_metadata_key_deleted_info),
+                        text = stringResource(LocalizationR.string.dialog_new_metadata_key_trust_key_fingerprint),
                         style = MaterialTheme.typography.displayMedium,
                         color = colorResource(CoreUiR.color.text_secondary),
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+
+                    Spacer(modifier = Modifier.height(60.dp))
+
+                    Text(
+                        text =
+                            fingerprintFormatter
+                                .format(
+                                    newKeyToTrustModel.metadataPrivateKey.fingerprint,
+                                    appendMiddleSpacing = true,
+                                )?.uppercase()
+                                .orEmpty(),
+                        style = MaterialTheme.typography.displayMedium,
+                        color = colorResource(CoreUiR.color.text_primary),
                         textAlign = TextAlign.Center,
                         modifier = Modifier.fillMaxWidth(),
                     )
@@ -130,11 +165,11 @@ fun TrustedMetadataKeyDeletedDialog(
                     Button(
                         shape = RoundedCornerShape(4.dp),
                         onClick = {
-                            onTrustClick(trustedKeyDeletedModel)
+                            onTrustClick(newKeyToTrustModel)
                         },
                         colors =
                             ButtonDefaults.buttonColors(
-                                containerColor = colorResource(CoreUiR.color.red),
+                                containerColor = colorResource(getButtonColor(newKeyToTrustModel.modificationKind)),
                             ),
                         modifier =
                             Modifier
@@ -144,7 +179,7 @@ fun TrustedMetadataKeyDeletedDialog(
                                 .padding(top = 16.dp),
                     ) {
                         Text(
-                            text = stringResource(LocalizationR.string.dialog_trusted_metadata_key_deleted_trust),
+                            text = stringResource(LocalizationR.string.dialog_new_metadata_key_trust_key_trust_the_key),
                         )
                     }
 
@@ -162,23 +197,55 @@ fun TrustedMetadataKeyDeletedDialog(
     }
 }
 
+private fun getMessageResId(modificationKind: MetadataKeyModification): Int =
+    when (modificationKind) {
+        ROTATION ->
+            LocalizationR.string.dialog_new_metadata_key_trust_key_rotation_info
+        ROLLBACK ->
+            LocalizationR.string.dialog_new_metadata_key_trust_key_rollback_info
+        else -> error("Dialog should not be shown for key modification: $modificationKind")
+    }
+
+private fun getButtonColor(modificationKind: MetadataKeyModification): Int =
+    when (modificationKind) {
+        ROTATION -> CoreUiR.color.primary
+        ROLLBACK -> CoreUiR.color.red
+        else -> error("Dialog should not be shown for key modification: $modificationKind")
+    }
+
 @Preview(showBackground = true)
 @Composable
-private fun TrustedMetadataKeyDeletedDialogPreview() {
+private fun NewMetadataKeyTrustDialogPreview() {
     val sampleModel =
-        TrustedKeyDeletedModel(
-            keyFingerprint = "1234 5678 9ABC DEF0",
+        NewMetadataKeyToTrustModel(
+            id = UUID.randomUUID(),
+            metadataPrivateKey =
+                ParsedMetadataPrivateKeyModel(
+                    id = UUID.randomUUID(),
+                    userId = UUID.randomUUID(),
+                    keyData = "",
+                    passphrase = "",
+                    created = ZonedDateTime.now(),
+                    createdBy = UUID.randomUUID(),
+                    modified = ZonedDateTime.now(),
+                    modifiedBy = UUID.randomUUID(),
+                    pgpMessage = "--- PGP MESSAGE ---",
+                    fingerprint = "AAABBBCCCDDD",
+                    domain = "",
+                ),
             signedUsername = "john.doe@passbolt.com",
             signedName = "John Doe",
-            modificationKind = MetadataKeyModification.DELETION,
+            modificationKind = ROLLBACK,
+            signatureCreationTimestampSeconds = ZonedDateTime.now().toEpochSecond(),
+            signatureKeyFingerprint = "AAABBBCCCDDD",
         )
 
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = colorResource(CoreUiR.color.background),
     ) {
-        TrustedMetadataKeyDeletedDialog(
-            trustedKeyDeletedModel = sampleModel,
+        NewMetadataKeyTrustDialog(
+            newKeyToTrustModel = sampleModel,
             onTrustClick = { },
             onDismiss = { },
         )
