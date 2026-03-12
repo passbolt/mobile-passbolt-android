@@ -1,8 +1,14 @@
 package com.passbolt.mobile.android.feature.main.mainscreen
 
+import PassboltTheme
 import android.content.Intent
 import android.os.Bundle
+import android.view.ViewGroup.LayoutParams
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.platform.ComposeView
 import androidx.core.view.isVisible
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.play.core.appupdate.AppUpdateInfo
@@ -12,6 +18,7 @@ import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.install.model.InstallStatus
 import com.google.android.play.core.install.model.UpdateAvailability
 import com.google.android.play.core.review.ReviewManager
+import com.passbolt.mobile.android.common.ExternalDeeplinkHandler
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.extension.findNavHostFragment
 import com.passbolt.mobile.android.core.extension.getRootView
@@ -25,14 +32,19 @@ import com.passbolt.mobile.android.core.navigation.compose.keys.OtpNavigationKey
 import com.passbolt.mobile.android.core.navigation.compose.keys.SettingsNavigationKey.SettingsMain
 import com.passbolt.mobile.android.core.security.runtimeauth.RuntimeAuthenticatedFlag
 import com.passbolt.mobile.android.feature.main.databinding.ActivityMainBinding
-import com.passbolt.mobile.android.feature.main.mainscreen.bottomnavigation.MainBottomNavigationModel
-import com.passbolt.mobile.android.feature.main.mainscreen.encouragements.chromenativeautofill.EncourageChromeNativeAutofillServiceDialog
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancelChildren
+import com.passbolt.mobile.android.feature.main.mainscreen.MainIntent.AppUpdateDownloaded
+import com.passbolt.mobile.android.feature.main.mainscreen.MainIntent.CloseChromeNativeAutofill
+import com.passbolt.mobile.android.feature.main.mainscreen.MainIntent.GoToSettings
+import com.passbolt.mobile.android.feature.main.mainscreen.MainIntent.Resumed
+import com.passbolt.mobile.android.feature.main.mainscreen.MainSideEffect.CheckForAppUpdates
+import com.passbolt.mobile.android.feature.main.mainscreen.MainSideEffect.LaunchChromeNativeAutofillDeeplink
+import com.passbolt.mobile.android.feature.main.mainscreen.MainSideEffect.PerformFullDataRefresh
+import com.passbolt.mobile.android.feature.main.mainscreen.MainSideEffect.ShowSnackbar
+import com.passbolt.mobile.android.feature.main.mainscreen.MainSideEffect.TryLaunchReviewFlow
+import com.passbolt.mobile.android.feature.main.mainscreen.encouragements.chromenativeautofill.EncourageChromeNativeAutofillDialog
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
@@ -41,13 +53,8 @@ import com.passbolt.mobile.android.feature.otp.R as OtpR
 import com.passbolt.mobile.android.feature.settings.R as SettingsR
 
 // NOTE: When changing name or package read core/navigation/README.md
-class MainActivity :
-    BindingScopedActivity<ActivityMainBinding>(ActivityMainBinding::inflate),
-    MainContract.View,
-    EncourageChromeNativeAutofillServiceDialog.Listener {
-    private val presenter: MainContract.Presenter by inject()
-    private val job = SupervisorJob()
-    private val coroutineScope = CoroutineScope(job + Dispatchers.Main)
+class MainActivity : BindingScopedActivity<ActivityMainBinding>(ActivityMainBinding::inflate) {
+    private val mainViewModel: MainViewModel by viewModel()
 
     private val bottomNavController by lifecycleAwareLazy {
         findNavHostFragment(requiredBinding.fragmentContainer.id).navController
@@ -60,31 +67,96 @@ class MainActivity :
             Timber.d("App update install status: $installStatus")
             when (installStatus) {
                 InstallStatus.DOWNLOADED -> {
-                    presenter.appUpdateDownloaded()
+                    mainViewModel.onIntent(AppUpdateDownloaded)
                 }
             }
         }
     private val appReviewManager: ReviewManager by inject()
     private val appNavigator: AppNavigator by inject()
+    private val externalDeeplinkHandler: ExternalDeeplinkHandler by inject()
+
+    private var bottomNavInitialized = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         runtimeAuthenticatedFlag.require(this)
-        presenter.attach(this)
+        setupComposeDialogs()
+        observeViewState()
+        observeSideEffects()
     }
 
-    override fun setupBottomNavigation(navigationModel: MainBottomNavigationModel) {
-        with(requiredBinding.mainNavigation) {
-            setupWithNavController(bottomNavController)
-            menu.findItem(OtpR.id.otpNav).isVisible = navigationModel.isOtpTabVisible
+    private fun setupComposeDialogs() {
+        val composeView = ComposeView(this)
+        addContentView(
+            composeView,
+            LayoutParams(
+                LayoutParams.MATCH_PARENT,
+                LayoutParams.MATCH_PARENT,
+            ),
+        )
+        composeView.setContent {
+            PassboltTheme {
+                val state by mainViewModel.viewState.collectAsStateWithLifecycle()
+                if (state.showChromeNativeAutofillDialog) {
+                    EncourageChromeNativeAutofillDialog(
+                        onGoToChromeSettings = {
+                            mainViewModel.onIntent(GoToSettings)
+                        },
+                        onClose = {
+                            mainViewModel.onIntent(CloseChromeNativeAutofill)
+                        },
+                    )
+                }
+            }
         }
+    }
 
-        hideBottomNavigationForComposables()
-        handleTabSwitchRequests()
+    private fun observeViewState() {
+        lifecycleScope.launch {
+            mainViewModel.viewState.collect { state ->
+                state.bottomNavigationModel?.let { navigationModel ->
+                    if (!bottomNavInitialized) {
+                        bottomNavInitialized = true
+                        requiredBinding.mainNavigation.setupWithNavController(bottomNavController)
+                        hideBottomNavigationForComposables()
+                        handleTabSwitchRequests()
+                    }
+                    requiredBinding.mainNavigation.menu
+                        .findItem(OtpR.id.otpNav)
+                        .isVisible = navigationModel.isOtpTabVisible
+                }
+            }
+        }
+    }
+
+    private fun observeSideEffects() {
+        lifecycleScope.launch {
+            mainViewModel.sideEffect.collect { effect ->
+                when (effect) {
+                    CheckForAppUpdates -> checkForAppUpdates()
+                    is ShowSnackbar -> handleSnackbar(effect.message)
+                    TryLaunchReviewFlow -> tryLaunchReviewFlow()
+                    PerformFullDataRefresh -> DataRefreshService.start(this@MainActivity)
+                    LaunchChromeNativeAutofillDeeplink ->
+                        externalDeeplinkHandler.openChromeNativeAutofillSettings(this@MainActivity)
+                }
+            }
+        }
+    }
+
+    private fun handleSnackbar(message: SnackbarType) {
+        when (message) {
+            SnackbarType.APP_UPDATE_DOWNLOADED -> showAppUpdateDownloadedSnackbar()
+            SnackbarType.CHROME_NATIVE_AUTOFILL_SETUP_SUCCESS ->
+                showSnackbar(
+                    getString(LocalizationR.string.main_chrome_native_autofill_setup_success),
+                    backgroundColor = CoreUiR.color.green,
+                )
+        }
     }
 
     private fun hideBottomNavigationForComposables() {
-        coroutineScope.launch {
+        lifecycleScope.launch {
             appNavigator.currentBackStackItem.collect { destinationKey ->
                 destinationKey?.let {
                     requiredBinding.mainNavigation.isVisible =
@@ -97,7 +169,7 @@ class MainActivity :
     }
 
     private fun handleTabSwitchRequests() {
-        coroutineScope.launch {
+        lifecycleScope.launch {
             appNavigator.tabSwitchRequest.collect { tab ->
                 requiredBinding.mainNavigation.selectedItemId =
                     when (tab) {
@@ -107,6 +179,11 @@ class MainActivity :
                     }
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        mainViewModel.onIntent(Resumed)
     }
 
     @Deprecated("Deprecated in Java")
@@ -124,13 +201,11 @@ class MainActivity :
     }
 
     override fun onDestroy() {
-        coroutineScope.coroutineContext.cancelChildren()
         appUpdateManager.unregisterListener(appUpdateStatusListener)
-        presenter.detach()
         super.onDestroy()
     }
 
-    override fun checkForAppUpdates() {
+    private fun checkForAppUpdates() {
         appUpdateManager.registerListener(appUpdateStatusListener)
         appUpdateManager.appUpdateInfo
             .addOnFailureListener { Timber.e(it, "Application update failed.") }
@@ -154,7 +229,7 @@ class MainActivity :
         )
     }
 
-    override fun showAppUpdateDownloadedSnackbar() {
+    private fun showAppUpdateDownloadedSnackbar() {
         Snackbar
             .make(
                 getRootView(),
@@ -171,7 +246,7 @@ class MainActivity :
             }
     }
 
-    override fun tryLaunchReviewFlow() {
+    private fun tryLaunchReviewFlow() {
         // review flow launch success depends on app review API quota
         appReviewManager
             .requestReviewFlow()
@@ -182,24 +257,6 @@ class MainActivity :
                     Timber.e("In app review request to start flow failed: ${it.exception?.message}")
                 }
             }
-    }
-
-    override fun showChromeNativeAutofillEncouragement() {
-        EncourageChromeNativeAutofillServiceDialog().show(
-            supportFragmentManager,
-            EncourageChromeNativeAutofillServiceDialog::class.java.name,
-        )
-    }
-
-    override fun chromeNativeAutofillSetupSuccessfully() {
-        showSnackbar(
-            getString(LocalizationR.string.main_chrome_native_autofill_setup_success),
-            backgroundColor = CoreUiR.color.green,
-        )
-    }
-
-    override fun performFullDataRefresh() {
-        DataRefreshService.start(this)
     }
 
     private companion object {

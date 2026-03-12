@@ -66,7 +66,7 @@ fun CircleStepsView(
 private fun CircleStepRow(
     stepNumber: Int,
     text: androidx.compose.ui.text.AnnotatedString,
-    icon: Int?,
+    icon: CircleStepIcon?,
     showLine: Boolean,
     modifier: Modifier = Modifier,
 ) {
@@ -117,15 +117,13 @@ private fun CircleStepsViewPreview() {
                 listOf(
                     CircleStepItemModel(
                         text = buildAnnotatedString { append("First step") },
-                        icon = null,
                     ),
                     CircleStepItemModel(
                         text = buildAnnotatedString { append("Second step") },
-                        icon = null,
                     ),
                     CircleStepItemModel(
                         text = buildAnnotatedString { append("Third step") },
-                        icon = R.drawable.view_green_dot,
+                        icon = CircleStepIcon.Drawable(R.drawable.view_green_dot),
                     ),
                 ),
             modifier = Modifier.padding(16.dp),
