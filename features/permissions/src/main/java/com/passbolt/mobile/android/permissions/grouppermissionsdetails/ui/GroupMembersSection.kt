@@ -21,8 +21,8 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import com.passbolt.mobile.android.core.ui.compose.circularimage.CircularProfileImage
-import com.passbolt.mobile.android.core.ui.compose.sharedwith.xFor
+import com.passbolt.mobile.android.core.ui.circularimage.CircularProfileImage
+import com.passbolt.mobile.android.core.ui.sharedwith.xFor
 import com.passbolt.mobile.android.ui.UserModel
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
 

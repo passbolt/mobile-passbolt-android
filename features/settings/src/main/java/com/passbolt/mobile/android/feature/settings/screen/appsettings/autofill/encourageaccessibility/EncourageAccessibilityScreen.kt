@@ -26,9 +26,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.passbolt.mobile.android.core.compose.OnResumeEffect
 import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
 import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
-import com.passbolt.mobile.android.core.ui.compose.switch.SwitchWithDescriptionItem
-import com.passbolt.mobile.android.core.ui.compose.topbar.BackNavigationIcon
-import com.passbolt.mobile.android.core.ui.compose.topbar.TitleAppBar
+import com.passbolt.mobile.android.core.ui.switch.SwitchWithDescriptionItem
+import com.passbolt.mobile.android.core.ui.topbar.BackNavigationIcon
+import com.passbolt.mobile.android.core.ui.topbar.TitleAppBar
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.encourageaccessibility.EncourageAccessibilityIntent.Close
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.encourageaccessibility.EncourageAccessibilityIntent.ConsentToEnableAccessibility
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.encourageaccessibility.EncourageAccessibilityIntent.DismissEnableAccessibilityConsent

@@ -37,8 +37,8 @@ import com.passbolt.mobile.android.core.navigation.compose.keys.OtpNavigationKey
 import com.passbolt.mobile.android.core.navigation.compose.keys.OtpNavigationKey.ResourcePicker
 import com.passbolt.mobile.android.core.navigation.compose.results.NavigationResultEventBus
 import com.passbolt.mobile.android.core.navigation.compose.results.OtpScanCompleteResult
-import com.passbolt.mobile.android.core.ui.compose.button.PrimaryButton
-import com.passbolt.mobile.android.core.ui.compose.progressdialog.ProgressDialog
+import com.passbolt.mobile.android.core.ui.button.PrimaryButton
+import com.passbolt.mobile.android.core.ui.progressdialog.ProgressDialog
 import com.passbolt.mobile.android.feature.authentication.compose.AuthenticationHandler
 import com.passbolt.mobile.android.feature.otp.scanotp.scanotpsuccess.ScanOtpSuccessIntent.CreateStandaloneOtpClick
 import com.passbolt.mobile.android.feature.otp.scanotp.scanotpsuccess.ScanOtpSuccessIntent.LinkToResourceClick

@@ -59,11 +59,11 @@ import com.journeyapps.barcodescanner.BarcodeEncoder
 import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
 import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
 import com.passbolt.mobile.android.core.navigation.compose.keys.TransferAccountToAnotherDeviceKey.TransferStatus
-import com.passbolt.mobile.android.core.ui.compose.button.PrimaryButton
-import com.passbolt.mobile.android.core.ui.compose.dialogs.CancelAccountTransferAlertDialog
-import com.passbolt.mobile.android.core.ui.compose.progressdialog.ProgressDialog
-import com.passbolt.mobile.android.core.ui.compose.topbar.BackNavigationIcon
-import com.passbolt.mobile.android.core.ui.compose.topbar.TitleAppBar
+import com.passbolt.mobile.android.core.ui.button.PrimaryButton
+import com.passbolt.mobile.android.core.ui.dialogs.CancelAccountTransferAlertDialog
+import com.passbolt.mobile.android.core.ui.progressdialog.ProgressDialog
+import com.passbolt.mobile.android.core.ui.topbar.BackNavigationIcon
+import com.passbolt.mobile.android.core.ui.topbar.TitleAppBar
 import com.passbolt.mobile.android.feature.authentication.compose.AuthenticationHandler
 import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccount.TransferAccountIntent.CancelTransfer
 import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccount.TransferAccountIntent.ConfirmCancelTransfer

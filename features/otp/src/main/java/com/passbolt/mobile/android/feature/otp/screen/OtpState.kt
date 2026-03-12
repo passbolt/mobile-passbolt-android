@@ -23,7 +23,7 @@
 
 package com.passbolt.mobile.android.feature.otp.screen
 
-import com.passbolt.mobile.android.core.ui.compose.search.SearchInputEndIconMode
+import com.passbolt.mobile.android.core.ui.search.SearchInputEndIconMode
 import com.passbolt.mobile.android.ui.NewMetadataKeyToTrustModel
 import com.passbolt.mobile.android.ui.OtpItemWrapper
 import com.passbolt.mobile.android.ui.TrustedKeyDeletedModel

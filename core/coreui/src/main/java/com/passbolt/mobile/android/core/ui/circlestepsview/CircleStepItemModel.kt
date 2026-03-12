@@ -1,8 +1,3 @@
-package com.passbolt.mobile.android.core.ui.circlestepsview
-
-import android.text.Spanned
-import androidx.annotation.DrawableRes
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -25,7 +20,24 @@ import androidx.annotation.DrawableRes
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+
+package com.passbolt.mobile.android.core.ui.circlestepsview
+
+import androidx.annotation.DrawableRes
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.text.AnnotatedString
+
+sealed interface CircleStepIcon {
+    data class Drawable(
+        @param:DrawableRes val drawableRes: Int,
+    ) : CircleStepIcon
+
+    data class Content(
+        val content: @Composable () -> Unit,
+    ) : CircleStepIcon
+}
+
 data class CircleStepItemModel(
-    val text: Spanned,
-    @DrawableRes val icon: Int? = null,
+    val text: AnnotatedString,
+    val icon: CircleStepIcon? = null,
 )

@@ -26,12 +26,12 @@ import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
 import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.core.accounts.usecase.accountdata.GetSelectedAccountDataUseCase
+import com.passbolt.mobile.android.core.formatter.DateFormatter
+import com.passbolt.mobile.android.core.formatter.FingerprintFormatter
 import com.passbolt.mobile.android.core.mvp.authentication.SessionRefreshTrackingFlow
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.networking.NetworkResult
 import com.passbolt.mobile.android.core.passphrasememorycache.PassphraseMemoryCache
-import com.passbolt.mobile.android.core.ui.formatter.DateFormatter
-import com.passbolt.mobile.android.core.ui.formatter.FingerprintFormatter
 import com.passbolt.mobile.android.core.users.user.FetchCurrentUserUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetSessionExpiryUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetSessionExpiryUseCase.Output.JwtWillExpire

@@ -20,7 +20,7 @@ import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
 import com.passbolt.mobile.android.core.navigation.compose.HomeNavigation
 import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.Start
 import com.passbolt.mobile.android.core.preferences.usecase.GetHomeDisplayViewPrefsUseCase
-import com.passbolt.mobile.android.core.ui.compose.progressdialog.ProgressDialog
+import com.passbolt.mobile.android.core.ui.progressdialog.ProgressDialog
 import com.passbolt.mobile.android.feature.autofill.resources.AutofillResourcesIntent.UserAuthenticated
 import com.passbolt.mobile.android.feature.autofill.resources.AutofillResourcesSideEffect.AutofillReturn
 import com.passbolt.mobile.android.feature.autofill.resources.AutofillResourcesSideEffect.NavigateToAuth

@@ -26,8 +26,6 @@ package com.passbolt.mobile.android.scenarios.resourcescreation
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
-import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
 import androidx.test.platform.app.InstrumentationRegistry
@@ -44,7 +42,6 @@ import com.passbolt.mobile.android.instrumentationTestsModule
 import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
 import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
-import org.hamcrest.Matchers.allOf
 import org.junit.Before
 import org.junit.Ignore
 import org.junit.Rule
@@ -52,7 +49,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.koin.core.component.inject
 import org.koin.test.KoinTest
-import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 @RunWith(AndroidJUnit4::class)
 @MediumTest
@@ -301,11 +297,11 @@ class ResourcesCreationTest : KoinTest {
 //        //    | Hidden        | obfuscated      |
     }
 
-    private fun onPasswordInputView() =
-        onView(
-            allOf(
-//                isDescendantOfA(withHint(equalTo(getString(LocalizationR.string.resource_update_password_hint)))),
-                withId(CoreUiR.id.input),
-            ),
-        )
+//    private fun onPasswordInputView() =
+//        onView(
+//            allOf(
+// //                isDescendantOfA(withHint(equalTo(getString(LocalizationR.string.resource_update_password_hint)))),
+//                withId(CoreUiR.id.input),
+//            ),
+//        )
 }

@@ -24,10 +24,6 @@
 package com.passbolt.mobile.android.scenarios.resourcesedition.updateexpiry
 
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
-import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.ViewInteraction
-import androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA
-import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
 import androidx.test.platform.app.InstrumentationRegistry
@@ -44,11 +40,8 @@ import com.passbolt.mobile.android.helpers.createNewPasswordFromHomeScreen
 import com.passbolt.mobile.android.helpers.signIn
 import com.passbolt.mobile.android.instrumentationTestsModule
 import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
-import com.passbolt.mobile.android.matchers.withHint
 import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
-import org.hamcrest.CoreMatchers.equalTo
-import org.hamcrest.Matchers.allOf
 import org.junit.Before
 import org.junit.Ignore
 import org.junit.Rule
@@ -56,7 +49,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.koin.core.component.inject
 import org.koin.test.KoinTest
-import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 @RunWith(AndroidJUnit4::class)
 @MediumTest
@@ -167,6 +159,6 @@ class UpdateExpiryTest : KoinTest {
 //        onView(withText(containsString("January 1"))).check(matches(isDisplayed()))
     }
 
-    private fun onViewInputWithHintName(hintName: String): ViewInteraction =
-        onView(allOf(isDescendantOfA(withHint(equalTo(hintName))), withId(CoreUiR.id.input)))
+//    private fun onViewInputWithHintName(hintName: String): ViewInteraction =
+//        onView(allOf(isDescendantOfA(withHint(equalTo(hintName))), withId(CoreUiR.id.input)))
 }

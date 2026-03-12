@@ -26,10 +26,6 @@ package com.passbolt.mobile.android.scenarios.setup.autofill
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions.closeSoftKeyboard
-import androidx.test.espresso.action.ViewActions.typeText
-import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
 import androidx.test.platform.app.InstrumentationRegistry
@@ -52,7 +48,6 @@ import org.junit.runner.RunWith
 import org.koin.test.KoinTest
 import org.koin.test.inject
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
-import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 // TODO update tests to adjust to compose
 @RunWith(AndroidJUnit4::class)
@@ -96,7 +91,7 @@ class SetupAutofillNotConfiguredTest : KoinTest {
             onNodeWithText(getString(LocalizationR.string.continue_label)).performClick()
         }
         accountDataInitializer.initializeAccount()
-        onView(withId(CoreUiR.id.input)).perform(typeText(managedAccountIntentCreator.getPassphrase()), closeSoftKeyboard())
+//        onView(withId(CoreUiR.id.input)).perform(typeText(managedAccountIntentCreator.getPassphrase()), closeSoftKeyboard())
         // TODO rewrite to compose
 //        onView(withId(AuthenticationR.id.authButton)).perform(scrollTo(), click())
     }

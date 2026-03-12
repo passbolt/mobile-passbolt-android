@@ -51,11 +51,11 @@ import com.passbolt.mobile.android.core.fulldatarefresh.service.DataRefreshServi
 import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
 import com.passbolt.mobile.android.core.navigation.compose.results.NavigationResultEventBus
 import com.passbolt.mobile.android.core.navigation.compose.results.ResourcePickerResultEvent
-import com.passbolt.mobile.android.core.ui.compose.button.PrimaryButton
-import com.passbolt.mobile.android.core.ui.compose.dialogs.ConfirmAlertDialog
-import com.passbolt.mobile.android.core.ui.compose.scaffold.HomeScaffold
-import com.passbolt.mobile.android.core.ui.compose.search.SearchInput
-import com.passbolt.mobile.android.core.ui.compose.snackbar.ColoredSnackbarVisuals
+import com.passbolt.mobile.android.core.ui.button.PrimaryButton
+import com.passbolt.mobile.android.core.ui.dialogs.ConfirmAlertDialog
+import com.passbolt.mobile.android.core.ui.scaffold.HomeScaffold
+import com.passbolt.mobile.android.core.ui.search.SearchInput
+import com.passbolt.mobile.android.core.ui.snackbar.ColoredSnackbarVisuals
 import com.passbolt.mobile.android.feature.authentication.compose.AuthenticationHandler
 import com.passbolt.mobile.android.resourcepicker.model.ConfirmationModelFactory
 import com.passbolt.mobile.android.resourcepicker.screen.ResourcePickerIntent.CloseConfirmationDialog

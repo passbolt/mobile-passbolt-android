@@ -15,9 +15,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.passbolt.mobile.android.core.ui.compose.button.SecondaryIconButton
-import com.passbolt.mobile.android.core.ui.compose.section.Section
-import com.passbolt.mobile.android.core.ui.compose.text.TextInput
+import com.passbolt.mobile.android.core.ui.button.SecondaryIconButton
+import com.passbolt.mobile.android.core.ui.section.Section
+import com.passbolt.mobile.android.core.ui.text.TextInput
 import com.passbolt.mobile.android.core.ui.textinputfield.StatefulInput.State.Default
 import com.passbolt.mobile.android.core.ui.textinputfield.StatefulInput.State.Error
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.note.NoteValidationError

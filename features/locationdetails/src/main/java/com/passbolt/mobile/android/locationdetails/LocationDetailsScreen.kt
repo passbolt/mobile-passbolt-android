@@ -63,10 +63,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
 import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
 import com.passbolt.mobile.android.core.resources.resourceicon.ResourceIconProvider
-import com.passbolt.mobile.android.core.ui.compose.pulltorefresh.PullToRefreshIndicatorBox
-import com.passbolt.mobile.android.core.ui.compose.snackbar.ColoredSnackbarVisuals
-import com.passbolt.mobile.android.core.ui.compose.topbar.BackNavigationIcon
-import com.passbolt.mobile.android.core.ui.compose.topbar.TitleAppBar
+import com.passbolt.mobile.android.core.ui.pulltorefresh.PullToRefreshIndicatorBox
+import com.passbolt.mobile.android.core.ui.snackbar.ColoredSnackbarVisuals
+import com.passbolt.mobile.android.core.ui.topbar.BackNavigationIcon
+import com.passbolt.mobile.android.core.ui.topbar.TitleAppBar
 import com.passbolt.mobile.android.feature.authentication.compose.AuthenticationHandler
 import com.passbolt.mobile.android.locationdetails.LocationDetailsIntent.GoBack
 import com.passbolt.mobile.android.locationdetails.LocationDetailsIntent.Initialize

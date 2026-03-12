@@ -65,8 +65,8 @@ import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
 import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.Home
 import com.passbolt.mobile.android.core.navigation.compose.keys.SettingsNavigationKey.DismissBehavior.FINISH_TO_HOME
 import com.passbolt.mobile.android.core.navigation.compose.keys.SettingsNavigationKey.EncourageNativeAutofill
-import com.passbolt.mobile.android.core.ui.compose.button.PrimaryButton
-import com.passbolt.mobile.android.core.ui.compose.dialogs.KeyChangesDetectedAlertDialog
+import com.passbolt.mobile.android.core.ui.button.PrimaryButton
+import com.passbolt.mobile.android.core.ui.dialogs.KeyChangesDetectedAlertDialog
 import com.passbolt.mobile.android.feature.authentication.auth.showBiometricPrompt
 import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupIntent.AuthenticationSuccess
 import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupIntent.BiometricAuthenticationCancel

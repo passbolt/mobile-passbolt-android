@@ -25,9 +25,9 @@ package com.passbolt.mobile.android.feature.settings.screen.accounts.keyinspecto
 
 import androidx.lifecycle.viewModelScope
 import com.passbolt.mobile.android.core.accounts.usecase.accountdata.GetSelectedAccountDataUseCase
+import com.passbolt.mobile.android.core.formatter.DateFormatter
+import com.passbolt.mobile.android.core.formatter.FingerprintFormatter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
-import com.passbolt.mobile.android.core.ui.formatter.DateFormatter
-import com.passbolt.mobile.android.core.ui.formatter.FingerprintFormatter
 import com.passbolt.mobile.android.core.users.user.FetchCurrentUserUseCase
 import com.passbolt.mobile.android.feature.authentication.compose.AuthenticatedViewModel
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation

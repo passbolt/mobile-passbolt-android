@@ -28,7 +28,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
 import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
 import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.Start
-import com.passbolt.mobile.android.core.ui.compose.progressdialog.ProgressDialog
+import com.passbolt.mobile.android.core.ui.progressdialog.ProgressDialog
 import com.passbolt.mobile.android.feature.authentication.mfa.unknown.UnknownProviderIntent.Close
 import com.passbolt.mobile.android.feature.authentication.mfa.unknown.UnknownProviderSideEffect.CloseAndNavigateToStartup
 import org.koin.androidx.compose.koinViewModel

@@ -1,103 +1,70 @@
-/**
- * Passbolt - Open source password manager for teams
- * Copyright (c) 2021 Passbolt SA
- *
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
- * Public License (AGPL) as published by the Free Software Foundation version 3.
- *
- * The name "Passbolt" is a registered trademark of Passbolt SA, and Passbolt SA hereby declines to grant a trademark
- * license to "Passbolt" pursuant to the GNU Affero General Public License version 3 Section 7(e), without a separate
- * agreement with Passbolt SA.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License along with this program. If not,
- * see GNU Affero General Public License v3 (http://www.gnu.org/licenses/agpl-3.0.html).
- *
- * @copyright Copyright (c) Passbolt SA (https://www.passbolt.com)
- * @license https://opensource.org/licenses/AGPL-3.0 AGPL License
- * @link https://www.passbolt.com Passbolt (tm)
- * @since v1.0
- */
-
 package com.passbolt.mobile.android.core.ui.labelledtext
 
-import android.content.Context
-import android.graphics.Typeface
-import android.util.AttributeSet
-import android.view.LayoutInflater
-import android.widget.ImageView
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.content.res.ResourcesCompat
-import androidx.core.content.res.use
-import com.passbolt.mobile.android.core.extension.selectableBackgroundBorderlessResourceId
-import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
-import com.passbolt.mobile.android.core.ui.R
-import com.passbolt.mobile.android.core.ui.compose.labelledtext.LabelledTextEndAction
-import com.passbolt.mobile.android.core.ui.databinding.ViewLabelledTextBinding
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.passbolt.mobile.android.core.compose.Inconsolata
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
-class LabelledText
-    @JvmOverloads
-    constructor(
-        context: Context,
-        attrs: AttributeSet? = null,
-        defStyle: Int = 0,
-    ) : ConstraintLayout(context, attrs, defStyle) {
-        var label = ""
-            set(value) {
-                field = value
-                binding.label.text = value
-            }
-        var text = ""
-            set(value) {
-                field = value
-                binding.text.text = value
-            }
-        var endActionButton: LabelledTextEndAction? = null
-            set(value) {
-                field = value
-                setEndAction(value)
-            }
-
-        private val binding = ViewLabelledTextBinding.inflate(LayoutInflater.from(context), this)
-
-        init {
-            parseAttributes(attrs)
+@Composable
+fun LabelledText(
+    label: String,
+    text: String,
+    modifier: Modifier = Modifier,
+    useMonospaceFont: Boolean = false,
+    endAction: LabelledTextEndAction? = null,
+) {
+    val textStyle =
+        if (useMonospaceFont) {
+            TextStyle(
+                fontFamily = Inconsolata,
+                fontWeight = FontWeight.Normal,
+                fontSize = 16.sp,
+            )
+        } else {
+            LocalTextStyle.current
         }
 
-        private fun parseAttributes(attrs: AttributeSet?) {
-            attrs?.let {
-                context.obtainStyledAttributes(attrs, R.styleable.LabelledText, 0, 0).use {
-                    label = it.getString(R.styleable.LabelledText_labelledText_label).orEmpty()
-                    text = it.getString(R.styleable.LabelledText_labelledText_text).orEmpty()
-                    if (it.getBoolean(R.styleable.LabelledText_labelledText_use_monospace_font, false)) {
-                        val fontFamily = ResourcesCompat.getFont(binding.root.context, R.font.inconsolata)
-                        binding.text.typeface = Typeface.create(fontFamily, MONOSPACED_FONT_WEIGHT, false)
-                        binding.text.textSize = MONOSPACED_FONT_TEXT_SIZE_SP
-                    }
-                }
-            }
+    Row(
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(
+            modifier = Modifier.weight(1f),
+        ) {
+            Text(text = label, color = MaterialTheme.colorScheme.onBackground, style = MaterialTheme.typography.labelMedium)
+            Spacer(Modifier.height(8.dp))
+            Text(text = text, style = textStyle, color = colorResource(CoreUiR.color.text_secondary))
         }
 
-        private fun setEndAction(model: LabelledTextEndAction?) {
-            model?.let {
-                ImageView(context)
-                    .apply {
-                        setImageResource(model.icon)
-                        setBackgroundResource(context.selectableBackgroundBorderlessResourceId())
-                        setColorFilter(context.getColor(CoreUiR.color.icon_tint), android.graphics.PorterDuff.Mode.SRC_IN)
-                        setDebouncingOnClick { model.action.invoke() }
-                        binding.actionsContainer.addView(this)
-                    }
-            } ?: kotlin.run {
-                binding.actionsContainer.removeAllViews()
+        endAction?.let {
+            IconButton(onClick = it.action) {
+                Icon(
+                    painter = painterResource(id = it.icon),
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurface,
+                )
             }
-        }
-
-        private companion object {
-            private const val MONOSPACED_FONT_WEIGHT = 500
-            private const val MONOSPACED_FONT_TEXT_SIZE_SP = 16f
         }
     }
+}

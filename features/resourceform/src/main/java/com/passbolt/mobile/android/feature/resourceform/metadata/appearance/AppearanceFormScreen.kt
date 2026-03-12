@@ -63,10 +63,10 @@ import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
 import com.passbolt.mobile.android.core.navigation.compose.results.NavigationResultEventBus
 import com.passbolt.mobile.android.core.resources.resourceicon.BackgroundColorIconProvider
 import com.passbolt.mobile.android.core.resources.resourceicon.ResourceIconProvider
-import com.passbolt.mobile.android.core.ui.compose.button.PrimaryButton
-import com.passbolt.mobile.android.core.ui.compose.switch.TextSwitch
-import com.passbolt.mobile.android.core.ui.compose.topbar.BackNavigationIcon
-import com.passbolt.mobile.android.core.ui.compose.topbar.TitleAppBar
+import com.passbolt.mobile.android.core.ui.button.PrimaryButton
+import com.passbolt.mobile.android.core.ui.switch.TextSwitch
+import com.passbolt.mobile.android.core.ui.topbar.BackNavigationIcon
+import com.passbolt.mobile.android.core.ui.topbar.TitleAppBar
 import com.passbolt.mobile.android.feature.resourceform.metadata.appearance.AppearanceFormIntent.ApplyChanges
 import com.passbolt.mobile.android.feature.resourceform.metadata.appearance.AppearanceFormIntent.GoBack
 import com.passbolt.mobile.android.feature.resourceform.metadata.appearance.AppearanceFormIntent.Initialize

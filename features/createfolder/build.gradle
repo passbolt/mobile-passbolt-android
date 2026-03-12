@@ -35,7 +35,6 @@ dependencies {
     implementation libs.fastadapter.expandable
     implementation libs.fastadapter.ui
     implementation libs.fastadapter.animators
-    implementation libs.constraintlayout
     implementation libs.material
     implementation libs.navigation.fragment
     implementation libs.navigation.ui

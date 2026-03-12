@@ -23,7 +23,7 @@
 
 package com.passbolt.mobile.android.resourcepicker.screen
 
-import com.passbolt.mobile.android.core.ui.compose.search.SearchInputEndIconMode
+import com.passbolt.mobile.android.core.ui.search.SearchInputEndIconMode
 import com.passbolt.mobile.android.resourcepicker.model.ConfirmationType
 import com.passbolt.mobile.android.resourcepicker.model.PickResourceAction
 import com.passbolt.mobile.android.resourcepicker.screen.data.ResourcePickerData

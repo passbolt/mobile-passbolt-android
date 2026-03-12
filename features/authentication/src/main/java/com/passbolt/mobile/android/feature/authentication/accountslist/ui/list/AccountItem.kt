@@ -48,7 +48,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.passbolt.mobile.android.core.ui.R
-import com.passbolt.mobile.android.core.ui.compose.circularimage.CircularProfileImage
+import com.passbolt.mobile.android.core.ui.circularimage.CircularProfileImage
 import com.passbolt.mobile.android.ui.AccountModelUi.AccountModel
 
 @Composable

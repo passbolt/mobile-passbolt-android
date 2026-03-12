@@ -26,9 +26,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.passbolt.mobile.android.core.localization.R
-import com.passbolt.mobile.android.core.ui.compose.button.SecondaryButton
-import com.passbolt.mobile.android.core.ui.compose.circularimage.CircularProfileImage
-import com.passbolt.mobile.android.core.ui.compose.menu.OpenableSettingsItem
+import com.passbolt.mobile.android.core.ui.button.SecondaryButton
+import com.passbolt.mobile.android.core.ui.circularimage.CircularProfileImage
+import com.passbolt.mobile.android.core.ui.menu.OpenableSettingsItem
 import com.passbolt.mobile.android.ui.SwitchAccountUiModel
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR

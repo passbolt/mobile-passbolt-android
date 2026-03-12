@@ -58,10 +58,10 @@ import com.passbolt.mobile.android.core.idlingresource.SignInIdlingResource
 import com.passbolt.mobile.android.core.idlingresource.SignOutIdlingResource
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppContext
-import com.passbolt.mobile.android.core.ui.compose.menu.OpenableSettingsItem
-import com.passbolt.mobile.android.core.ui.compose.menu.SwitchableSettingsItem
-import com.passbolt.mobile.android.core.ui.compose.switch.SwitchWithDescriptionItem
-import com.passbolt.mobile.android.core.ui.compose.topbar.BackNavigationIcon
+import com.passbolt.mobile.android.core.ui.menu.OpenableSettingsItem
+import com.passbolt.mobile.android.core.ui.menu.SwitchableSettingsItem
+import com.passbolt.mobile.android.core.ui.switch.SwitchWithDescriptionItem
+import com.passbolt.mobile.android.core.ui.topbar.BackNavigationIcon
 import com.passbolt.mobile.android.feature.authentication.AuthenticationMainActivity
 import com.passbolt.mobile.android.helpers.getString
 import com.passbolt.mobile.android.helpers.signIn

@@ -37,10 +37,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import com.passbolt.mobile.android.core.compose.Inconsolata
+import com.passbolt.mobile.android.core.formatter.OtpFormatter
 import com.passbolt.mobile.android.core.resources.resourceicon.ResourceIconProvider
 import com.passbolt.mobile.android.core.ui.R
 import com.passbolt.mobile.android.core.ui.controller.TotpComposeController
-import com.passbolt.mobile.android.core.ui.formatter.OtpFormatter
 import com.passbolt.mobile.android.ui.OtpItemWrapper
 import com.passbolt.mobile.android.ui.isExpired
 import org.koin.compose.koinInject

@@ -66,8 +66,8 @@ import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.St
 import com.passbolt.mobile.android.core.navigation.compose.keys.LogsNavigationKey.Logs
 import com.passbolt.mobile.android.core.navigation.compose.keys.SetupNavigationKey.FingerprintSetup
 import com.passbolt.mobile.android.core.navigation.compose.keys.SetupNavigationKey.Welcome
-import com.passbolt.mobile.android.core.ui.compose.button.PrimaryButton
-import com.passbolt.mobile.android.core.ui.compose.dialogs.LeaveSetupAlertDialog
+import com.passbolt.mobile.android.core.ui.button.PrimaryButton
+import com.passbolt.mobile.android.core.ui.dialogs.LeaveSetupAlertDialog
 import com.passbolt.mobile.android.feature.setup.summary.SummaryIntent.AccessLogs
 import com.passbolt.mobile.android.feature.setup.summary.SummaryIntent.AuthenticationSuccess
 import com.passbolt.mobile.android.feature.setup.summary.SummaryIntent.ConfirmSetupLeave

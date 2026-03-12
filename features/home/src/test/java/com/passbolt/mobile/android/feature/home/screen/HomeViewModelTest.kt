@@ -42,8 +42,8 @@ import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalFolderD
 import com.passbolt.mobile.android.core.mvp.authentication.SessionRefreshTrackingFlow
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.preferences.usecase.GetHomeDisplayViewPrefsUseCase
-import com.passbolt.mobile.android.core.ui.compose.search.SearchInputEndIconMode.AVATAR
-import com.passbolt.mobile.android.core.ui.compose.search.SearchInputEndIconMode.CLEAR
+import com.passbolt.mobile.android.core.ui.search.SearchInputEndIconMode.AVATAR
+import com.passbolt.mobile.android.core.ui.search.SearchInputEndIconMode.CLEAR
 import com.passbolt.mobile.android.entity.home.HomeDisplayView
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.CloseCreateResourceMenu
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.CloseSwitchAccount

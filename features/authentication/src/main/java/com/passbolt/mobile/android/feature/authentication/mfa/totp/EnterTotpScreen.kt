@@ -43,8 +43,8 @@ import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.U
 import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
 import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.AuthenticationSignIn
 import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.Start
-import com.passbolt.mobile.android.core.ui.compose.progressdialog.ProgressDialog
-import com.passbolt.mobile.android.core.ui.compose.snackbar.ColoredSnackbarVisuals
+import com.passbolt.mobile.android.core.ui.progressdialog.ProgressDialog
+import com.passbolt.mobile.android.core.ui.snackbar.ColoredSnackbarVisuals
 import com.passbolt.mobile.android.feature.authentication.mfa.MfaDialogState
 import com.passbolt.mobile.android.feature.authentication.mfa.MfaResult
 import com.passbolt.mobile.android.feature.authentication.mfa.MfaResult.OtherProvider

@@ -29,7 +29,6 @@ import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.ViewInteraction
 import androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom
 import androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA
-import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
 import androidx.test.platform.app.InstrumentationRegistry
@@ -41,7 +40,6 @@ import com.passbolt.mobile.android.core.idlingresource.UpdateResourceIdlingResou
 import com.passbolt.mobile.android.core.localization.R.string.filters_menu_all_items
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppContext
-import com.passbolt.mobile.android.core.ui.R.id.input
 import com.passbolt.mobile.android.feature.authentication.AuthenticationMainActivity
 import com.passbolt.mobile.android.helpers.chooseFilter
 import com.passbolt.mobile.android.helpers.createNewPasswordFromHomeScreen
@@ -283,8 +281,8 @@ class ResourcesEditionTest : KoinTest {
 //        //    | Enter description |
     }
 
-    private fun onViewInputWithHintName(hintName: String): ViewInteraction =
-        onView(allOf(isDescendantOfA(withHint(hasToString(hintName))), withId(input)))
+//    private fun onViewInputWithHintName(hintName: String): ViewInteraction =
+//        onView(allOf(isDescendantOfA(withHint(hasToString(hintName))), withId(input)))
 
     private fun onViewTextInputLayoutWithHintName(hintName: String): ViewInteraction =
         onView(

@@ -35,8 +35,8 @@ import com.passbolt.mobile.android.core.idlingresource.SignInIdlingResource
 import com.passbolt.mobile.android.core.localization.R.string.filters_menu_folders
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppContext
-import com.passbolt.mobile.android.core.ui.compose.scaffold.HomeScaffoldTestTags.APP_BAR_ICON
-import com.passbolt.mobile.android.core.ui.compose.topbar.BackNavigationIcon.TestTags.ICON
+import com.passbolt.mobile.android.core.ui.scaffold.HomeScaffoldTestTags.APP_BAR_ICON
+import com.passbolt.mobile.android.core.ui.topbar.BackNavigationIcon.TestTags.ICON
 import com.passbolt.mobile.android.feature.authentication.AuthenticationMainActivity
 import com.passbolt.mobile.android.helpers.chooseFilter
 import com.passbolt.mobile.android.helpers.searchAndOpenFirstFolderByName

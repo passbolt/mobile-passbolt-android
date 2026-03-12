@@ -42,8 +42,8 @@ import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchCont
 import com.passbolt.mobile.android.core.otpcore.TotpParametersProvider
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesUseCase
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
-import com.passbolt.mobile.android.core.ui.compose.search.SearchInputEndIconMode.AVATAR
-import com.passbolt.mobile.android.core.ui.compose.search.SearchInputEndIconMode.CLEAR
+import com.passbolt.mobile.android.core.ui.search.SearchInputEndIconMode.AVATAR
+import com.passbolt.mobile.android.core.ui.search.SearchInputEndIconMode.CLEAR
 import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.CloseCreateResourceMenu
 import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.CloseOtpMoreMenu
 import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.CloseSwitchAccount

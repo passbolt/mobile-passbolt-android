@@ -27,7 +27,7 @@ import androidx.lifecycle.viewModelScope
 import com.passbolt.mobile.android.common.search.SearchableMatcher
 import com.passbolt.mobile.android.core.commongroups.usecase.db.GetLocalGroupsUseCase
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
-import com.passbolt.mobile.android.core.ui.compose.search.SearchInputEndIconMode
+import com.passbolt.mobile.android.core.ui.search.SearchInputEndIconMode
 import com.passbolt.mobile.android.core.users.usecase.db.GetLocalUsersUseCase
 import com.passbolt.mobile.android.feature.authentication.compose.AuthenticatedViewModel
 import com.passbolt.mobile.android.mappers.PermissionsModelMapper

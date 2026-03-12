@@ -25,8 +25,8 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.passbolt.mobile.android.core.ui.compose.button.SecondaryIconButton
-import com.passbolt.mobile.android.core.ui.compose.text.PasswordInput
+import com.passbolt.mobile.android.core.ui.button.SecondaryIconButton
+import com.passbolt.mobile.android.core.ui.text.PasswordInput
 import com.passbolt.mobile.android.ui.PasswordStrength
 import com.passbolt.mobile.android.ui.PasswordStrength.Empty
 import com.passbolt.mobile.android.ui.PasswordStrength.Fair

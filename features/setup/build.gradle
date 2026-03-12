@@ -40,7 +40,6 @@ dependencies {
     implementation libs.activity
     implementation libs.biometric
     implementation libs.material
-    implementation libs.constraintlayout
     implementation libs.camerax.view
     implementation libs.camerax
     implementation libs.camerax.lifecycle

@@ -31,8 +31,8 @@ import com.passbolt.mobile.android.common.datarefresh.DataRefreshStatus.InProgre
 import com.passbolt.mobile.android.common.datarefresh.DataRefreshTrackingFlow
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.GetResourceTypeIdToSlugMappingUseCase
-import com.passbolt.mobile.android.core.ui.compose.search.SearchInputEndIconMode.CLEAR
-import com.passbolt.mobile.android.core.ui.compose.search.SearchInputEndIconMode.NONE
+import com.passbolt.mobile.android.core.ui.search.SearchInputEndIconMode.CLEAR
+import com.passbolt.mobile.android.core.ui.search.SearchInputEndIconMode.NONE
 import com.passbolt.mobile.android.feature.authentication.compose.AuthenticatedViewModel
 import com.passbolt.mobile.android.resourcepicker.model.ConfirmationType
 import com.passbolt.mobile.android.resourcepicker.model.PickResourceAction

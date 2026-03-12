@@ -1,11 +1,3 @@
-package com.passbolt.mobile.android.core.extension
-
-import android.app.Activity
-import android.view.View
-import androidx.annotation.IdRes
-import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.fragment.NavHostFragment
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -29,8 +21,44 @@ import androidx.navigation.fragment.NavHostFragment
  * @since v1.0
  */
 
+package com.passbolt.mobile.android.core.extension
+
+import android.app.Activity
+import android.view.View
+import androidx.annotation.ColorRes
+import androidx.annotation.IdRes
+import androidx.appcompat.app.AppCompatActivity
+import androidx.navigation.fragment.NavHostFragment
+import com.google.android.material.snackbar.Snackbar
+import com.passbolt.mobile.android.core.ui.R
+
+// TODO remove after main activity migration
 fun AppCompatActivity.findNavHostFragment(
     @IdRes id: Int,
 ) = (supportFragmentManager.findFragmentById(id) as NavHostFragment)
 
 fun Activity.getRootView(): View = findViewById(android.R.id.content)
+
+// TODO remove after main activity migration
+fun Activity.showSnackbar(
+    message: String,
+    length: Int = Snackbar.LENGTH_SHORT,
+    @ColorRes backgroundColor: Int = R.color.background_gray_dark,
+    vararg messageArgs: String,
+) {
+    snackbar(message, length, backgroundColor, *messageArgs)
+        .show()
+}
+
+// TODO remove after main activity migration
+fun Activity.snackbar(
+    message: String,
+    length: Int = Snackbar.LENGTH_SHORT,
+    @ColorRes backgroundColor: Int = R.color.background_gray_dark,
+    vararg messageArgs: String,
+) = Snackbar
+    .make(getRootView(), message.format(messageArgs), length)
+    .apply {
+        view.setBackgroundColor(context.getColor(backgroundColor))
+        anchorView?.let { setAnchorView(it) }
+    }

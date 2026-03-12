@@ -16,8 +16,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
 import com.passbolt.mobile.android.core.ui.R
-import com.passbolt.mobile.android.core.ui.compose.bottomsheet.BottomSheetHeader
-import com.passbolt.mobile.android.core.ui.compose.menu.OpenableSettingsItem
+import com.passbolt.mobile.android.core.ui.bottomsheet.BottomSheetHeader
+import com.passbolt.mobile.android.core.ui.menu.OpenableSettingsItem
 import com.passbolt.mobile.android.otpmoremenu.OtpMoreMenuIntent.Close
 import com.passbolt.mobile.android.otpmoremenu.OtpMoreMenuIntent.CopyOtp
 import com.passbolt.mobile.android.otpmoremenu.OtpMoreMenuIntent.DeleteOtp

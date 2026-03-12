@@ -9,10 +9,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.passbolt.mobile.android.core.localization.R
-import com.passbolt.mobile.android.core.ui.compose.header.ActionIcon
-import com.passbolt.mobile.android.core.ui.compose.header.ItemWithHeader
-import com.passbolt.mobile.android.core.ui.compose.header.ValueStyle
-import com.passbolt.mobile.android.core.ui.compose.section.Section
+import com.passbolt.mobile.android.core.ui.header.ActionIcon
+import com.passbolt.mobile.android.core.ui.header.ItemWithHeader
+import com.passbolt.mobile.android.core.ui.header.ValueStyle
+import com.passbolt.mobile.android.core.ui.section.Section
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent.CopyNote
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent.ToggleNoteVisibility
