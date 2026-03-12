@@ -65,8 +65,8 @@ import com.passbolt.mobile.android.core.ui.compose.snackbar.ColoredSnackbarVisua
 import com.passbolt.mobile.android.createresourcemenu.CreateResourceMenuBottomSheet
 import com.passbolt.mobile.android.feature.authentication.compose.AuthenticationHandler
 import com.passbolt.mobile.android.feature.home.switchaccount.SwitchAccountBottomSheet
-import com.passbolt.mobile.android.feature.metadatakeytrust.ui.compose.NewMetadataKeyTrustDialog
-import com.passbolt.mobile.android.feature.metadatakeytrust.ui.compose.TrustedMetadataKeyDeletedDialog
+import com.passbolt.mobile.android.feature.metadatakeytrust.NewMetadataKeyTrustDialog
+import com.passbolt.mobile.android.feature.metadatakeytrust.TrustedMetadataKeyDeletedDialog
 import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.CloseCreateResourceMenu
 import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.CloseDeleteConfirmationDialog
 import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.CloseOtpMoreMenu

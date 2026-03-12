@@ -51,6 +51,7 @@ import com.passbolt.mobile.android.core.navigation.compose.keys.SettingsNavigati
 import com.passbolt.mobile.android.core.navigation.compose.keys.SettingsNavigationKey.DismissBehavior.FINISH_TO_HOME
 import com.passbolt.mobile.android.core.navigation.compose.keys.SettingsNavigationKey.DismissBehavior.NAVIGATE_BACK
 import com.passbolt.mobile.android.core.ui.compose.button.PrimaryButton
+import com.passbolt.mobile.android.core.ui.compose.circlestepsview.CircleStepIcon
 import com.passbolt.mobile.android.core.ui.compose.circlestepsview.CircleStepItemModel
 import com.passbolt.mobile.android.core.ui.compose.circlestepsview.CircleStepsView
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.encouragenativeautofill.EncourageNativeAutofillIntent.Close
@@ -154,7 +155,7 @@ private fun EncourageNativeAutofillScreen(
             rawSteps.mapIndexed { index, text ->
                 CircleStepItemModel(
                     text = AnnotatedString.fromHtml(text),
-                    icon = AUTOFILL_SETUP_STEPS_ICONS.getOrNull(index),
+                    icon = AUTOFILL_SETUP_STEPS_ICONS.getOrNull(index)?.let { CircleStepIcon.Drawable(it) },
                 )
             }
         }
