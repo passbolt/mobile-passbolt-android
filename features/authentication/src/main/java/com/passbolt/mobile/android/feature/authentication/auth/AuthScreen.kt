@@ -321,6 +321,7 @@ private fun AuthScreen(
 
             PasswordInput(
                 title = stringResource(LocalizationR.string.auth_password_title),
+                hint = stringResource(LocalizationR.string.auth_enter_passphrase),
                 text = String(state.passphrase, Charsets.UTF_8),
                 onTextChange = { onIntent(PassphraseInputChanged(it.toByteArray(Charsets.UTF_8))) },
                 testTag = Auth.PASSPHRASE_INPUT,
