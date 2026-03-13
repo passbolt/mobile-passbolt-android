@@ -37,6 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -280,6 +281,7 @@ private fun AuthScreen(
                 width = 56.dp,
                 height = 56.dp,
                 placeholderRes = CoreUiR.drawable.ic_avatar_placeholder,
+                testTag = Auth.AVATAR,
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -372,7 +374,10 @@ private fun AuthScreen(
                 text = stringResource(LocalizationR.string.auth_sign_in),
                 onClick = { onIntent(SignIn) },
                 isEnabled = state.isAuthButtonEnabled,
-                modifier = Modifier.padding(horizontal = 16.dp),
+                modifier =
+                    Modifier
+                        .padding(horizontal = 16.dp)
+                        .testTag(Auth.SIGN_IN_BUTTON),
             )
 
             TextButton(
