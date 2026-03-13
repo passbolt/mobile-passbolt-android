@@ -19,6 +19,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
@@ -83,7 +84,10 @@ fun PasswordInput(
                 },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             trailingIcon = {
-                IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                IconButton(
+                    onClick = { passwordVisible = !passwordVisible },
+                    modifier = Modifier.testTag(PasswordInputTestTags.VISIBILITY_TOGGLE),
+                ) {
                     Icon(
                         painter =
                             painterResource(
@@ -112,6 +116,10 @@ fun PasswordInput(
             )
         }
     }
+}
+
+object PasswordInputTestTags {
+    const val VISIBILITY_TOGGLE = "password_input_visibility_toggle"
 }
 
 @Preview(showBackground = true)

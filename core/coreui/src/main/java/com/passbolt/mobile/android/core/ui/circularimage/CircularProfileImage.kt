@@ -18,6 +18,7 @@ import coil3.request.crossfade
 import coil3.request.error
 import coil3.request.placeholder
 import com.passbolt.mobile.android.core.ui.R
+import com.passbolt.mobile.android.core.ui.extensions.optionalTestTag
 
 @Composable
 fun CircularProfileImage(
@@ -26,6 +27,7 @@ fun CircularProfileImage(
     height: Dp,
     modifier: Modifier = Modifier,
     @DrawableRes placeholderRes: Int = R.drawable.ic_user_avatar,
+    testTag: String? = null,
 ) {
     val painter =
         rememberAsyncImagePainter(
@@ -46,7 +48,8 @@ fun CircularProfileImage(
             modifier
                 .size(width, height)
                 .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.surface),
+                .background(MaterialTheme.colorScheme.surface)
+                .optionalTestTag(testTag),
         contentScale = ContentScale.Crop,
     )
 }

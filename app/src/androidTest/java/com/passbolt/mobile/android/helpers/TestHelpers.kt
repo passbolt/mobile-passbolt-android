@@ -32,13 +32,11 @@ import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextReplacement
 import androidx.test.platform.app.InstrumentationRegistry
 import com.passbolt.mobile.android.testtags.composetags.Auth
 import com.passbolt.mobile.android.testtags.composetags.Home
-import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 internal fun getString(
     @StringRes stringResId: Int,
@@ -86,7 +84,7 @@ internal fun createNewPasswordFromHomeScreen(name: String) {
  */
 internal fun ComposeTestRule.signIn(passphrase: String) {
     onNodeWithTag(Auth.PASSPHRASE_INPUT).performTextReplacement(passphrase)
-    onNodeWithText(getString(LocalizationR.string.auth_sign_in)).performClick()
+    onNodeWithTag(Auth.SIGN_IN_BUTTON).performClick()
     onNodeWithTag(Home.SCREEN).assertIsDisplayed()
 }
 
