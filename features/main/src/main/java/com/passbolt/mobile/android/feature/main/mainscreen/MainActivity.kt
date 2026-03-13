@@ -70,6 +70,9 @@ class MainActivity :
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         runtimeAuthenticatedFlag.require(this)
+        // TODO remove after merging with develop (scoped AppNavigator per activity makes this unnecessary)
+        // Clears stale nav key (e.g. FingerprintSetup) left by setup flow in the singleton AppNavigator
+        appNavigator.resetCurrentBackStackItem()
         presenter.attach(this)
     }
 

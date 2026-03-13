@@ -62,6 +62,11 @@ class AppNavigator(
     private val _currentBackStackItem = MutableStateFlow<NavKey?>(null)
     val currentBackStackItem: StateFlow<NavKey?> = _currentBackStackItem.asStateFlow()
 
+    // TODO remove after merging with develop (scoped AppNavigator per activity makes this unnecessary)
+    fun resetCurrentBackStackItem() {
+        _currentBackStackItem.value = null
+    }
+
     private val pendingNavigationKey = MutableStateFlow<NavKey?>(null)
 
     private val _tabSwitchRequest = MutableSharedFlow<BottomTab>(extraBufferCapacity = 1)
