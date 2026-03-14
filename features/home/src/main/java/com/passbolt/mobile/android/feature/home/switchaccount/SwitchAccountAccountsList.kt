@@ -143,6 +143,7 @@ private fun AccountHeaderItem(
                 Text(
                     text = item.label,
                     style = MaterialTheme.typography.titleMedium,
+                    color = colorResource(CoreUiR.color.text_primary),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
@@ -150,6 +151,7 @@ private fun AccountHeaderItem(
                 Text(
                     text = item.email,
                     style = MaterialTheme.typography.bodyMedium,
+                    color = colorResource(CoreUiR.color.text_primary),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
@@ -207,6 +209,7 @@ private fun AccountItem(
             Text(
                 text = item.label,
                 style = MaterialTheme.typography.titleMedium,
+                color = colorResource(CoreUiR.color.text_primary),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
@@ -214,6 +217,7 @@ private fun AccountItem(
             Text(
                 text = item.email,
                 style = MaterialTheme.typography.bodyMedium,
+                color = colorResource(CoreUiR.color.text_primary),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
