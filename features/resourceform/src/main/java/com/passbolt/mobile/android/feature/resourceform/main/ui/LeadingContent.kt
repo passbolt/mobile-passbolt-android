@@ -173,7 +173,8 @@ private fun StandaloneNoteSection(
 ) {
     Section(title = stringResource(LocalizationR.string.resource_form_note)) {
         TextInput(
-            title = stringResource(LocalizationR.string.resource_form_note),
+            title = stringResource(LocalizationR.string.resource_form_note_content),
+            hint = stringResource(LocalizationR.string.resource_form_enter_note),
             text = note,
             onTextChange = { onIntent(NoteChanged(it)) },
             minLines = 3,
