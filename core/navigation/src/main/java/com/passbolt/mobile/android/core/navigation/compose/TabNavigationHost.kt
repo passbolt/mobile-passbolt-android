@@ -25,7 +25,7 @@ fun TabNavigationHost(
     navigator: AppNavigator = koinInject(),
 ) {
     rememberNavBackStack(initialKey).let { backstack ->
-        navigator.backStack = backstack
+        navigator.setActiveBackStack(backstack)
     }
 
     LaunchedEffect(Unit) {

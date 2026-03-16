@@ -30,8 +30,6 @@ import org.koin.core.qualifier.named
 val APP_NAVIGATOR_SCOPE = named<AppNavigator>()
 
 fun Module.composeNavigationModule() {
-    // Singleton fallback for MainActivity fragments that resolve via koinInject() without a KoinScope.
-    // Remove after MainActivity is migrated to Compose — then wrap its setContent with KoinScope instead.
     singleOf(::AppNavigator)
 
     scope(APP_NAVIGATOR_SCOPE) {

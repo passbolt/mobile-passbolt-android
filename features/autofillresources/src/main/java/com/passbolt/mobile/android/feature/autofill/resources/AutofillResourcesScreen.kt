@@ -8,7 +8,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -17,9 +16,7 @@ import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.ActivityIntents.AuthConfig.SignIn
 import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
-import com.passbolt.mobile.android.core.navigation.compose.HomeNavigation
 import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.Start
-import com.passbolt.mobile.android.core.preferences.usecase.GetHomeDisplayViewPrefsUseCase
 import com.passbolt.mobile.android.core.ui.progressdialog.ProgressDialog
 import com.passbolt.mobile.android.feature.autofill.resources.AutofillResourcesIntent.UserAuthenticated
 import com.passbolt.mobile.android.feature.autofill.resources.AutofillResourcesSideEffect.AutofillReturn
@@ -27,7 +24,7 @@ import com.passbolt.mobile.android.feature.autofill.resources.AutofillResourcesS
 import com.passbolt.mobile.android.feature.autofill.resources.AutofillResourcesSideEffect.NavigateToSetup
 import com.passbolt.mobile.android.feature.autofill.resources.AutofillResourcesSideEffect.ShowToast
 import com.passbolt.mobile.android.feature.autofill.resources.datasetstrategy.ReturnAutofillDatasetStrategy
-import com.passbolt.mobile.android.mappers.HomeDisplayViewMapper
+import com.passbolt.mobile.android.feature.home.navigation.HomeTabContent
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 import org.koin.core.parameter.parametersOf
@@ -96,19 +93,7 @@ private fun AutofillResourcesScreen(
 ) {
     Box(modifier = modifier) {
         if (showHome) {
-            val filterPreferencesUseCase: GetHomeDisplayViewPrefsUseCase = koinInject()
-            val homeDisplayMapper: HomeDisplayViewMapper = koinInject()
-
-            val filterPreferences = remember { filterPreferencesUseCase.execute(Unit) }
-            val initialHomeDisplay =
-                remember {
-                    homeDisplayMapper.map(
-                        filterPreferences.userSetHomeView,
-                        filterPreferences.lastUsedHomeView,
-                    )
-                }
-
-            HomeNavigation(initialHomeDisplay = initialHomeDisplay)
+            HomeTabContent()
         }
 
         ProgressDialog(showProgress)
