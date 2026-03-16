@@ -64,6 +64,11 @@ class AppNavigator(
     private val _tabSwitchRequest = MutableSharedFlow<BottomTab>(extraBufferCapacity = 1)
     val tabSwitchRequest: SharedFlow<BottomTab> = _tabSwitchRequest.asSharedFlow()
 
+    fun setActiveBackStack(backStack: NavBackStack<NavKey>) {
+        this.backStack = backStack
+        _currentBackStackItem.value = backStack.lastOrNull()
+    }
+
     fun setPendingNavigation(key: NavKey) {
         pendingNavigationKey.update { key }
     }

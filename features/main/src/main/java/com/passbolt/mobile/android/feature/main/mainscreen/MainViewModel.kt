@@ -5,10 +5,12 @@ import com.passbolt.mobile.android.core.autofill.AutofillInformationProvider
 import com.passbolt.mobile.android.core.autofill.AutofillInformationProvider.ChromeNativeAutofillStatus.ENABLED
 import com.passbolt.mobile.android.core.compose.SideEffectViewModel
 import com.passbolt.mobile.android.core.inappreview.InAppReviewInteractor
+import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
 import com.passbolt.mobile.android.feature.main.mainscreen.MainIntent.AppUpdateDownloaded
 import com.passbolt.mobile.android.feature.main.mainscreen.MainIntent.CloseChromeNativeAutofill
 import com.passbolt.mobile.android.feature.main.mainscreen.MainIntent.GoToSettings
 import com.passbolt.mobile.android.feature.main.mainscreen.MainIntent.Resumed
+import com.passbolt.mobile.android.feature.main.mainscreen.MainIntent.TabSelected
 import com.passbolt.mobile.android.feature.main.mainscreen.MainSideEffect.CheckForAppUpdates
 import com.passbolt.mobile.android.feature.main.mainscreen.MainSideEffect.LaunchChromeNativeAutofillDeeplink
 import com.passbolt.mobile.android.feature.main.mainscreen.MainSideEffect.PerformFullDataRefresh
@@ -24,6 +26,7 @@ class MainViewModel(
     private val getFeatureFlagsUseCase: GetFeatureFlagsUseCase,
     private val encouragementsInteractor: EncouragementsInteractor,
     private val autofillInformationProvider: AutofillInformationProvider,
+    private val appNavigator: AppNavigator,
 ) : SideEffectViewModel<MainState, MainSideEffect>(MainState()) {
     init {
         setupBottomNavigation()
@@ -31,15 +34,16 @@ class MainViewModel(
         checkEncouragements()
         emitSideEffect(CheckForAppUpdates)
         checkReviewFlow()
+        collectTabSwitchRequests()
     }
 
     fun onIntent(intent: MainIntent) {
         when (intent) {
             AppUpdateDownloaded -> emitSideEffect(ShowSnackbar(SnackbarType.APP_UPDATE_DOWNLOADED))
-            MainIntent.PerformFullDataRefresh -> performFullDataRefresh()
             GoToSettings -> emitSideEffect(LaunchChromeNativeAutofillDeeplink)
             CloseChromeNativeAutofill -> updateViewState { copy(showChromeNativeAutofillDialog = false) }
             Resumed -> checkChromeNativeAutofillStatus()
+            is TabSelected -> updateViewState { copy(selectedTab = intent.tab) }
         }
     }
 
@@ -80,6 +84,14 @@ class MainViewModel(
         ) {
             updateViewState { copy(showChromeNativeAutofillDialog = false) }
             emitSideEffect(ShowSnackbar(SnackbarType.CHROME_NATIVE_AUTOFILL_SETUP_SUCCESS))
+        }
+    }
+
+    private fun collectTabSwitchRequests() {
+        launch {
+            appNavigator.tabSwitchRequest.collect { tab ->
+                updateViewState { copy(selectedTab = tab) }
+            }
         }
     }
 }

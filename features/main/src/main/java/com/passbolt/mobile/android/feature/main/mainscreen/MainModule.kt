@@ -31,8 +31,6 @@ import org.koin.core.module.dsl.viewModelOf
 
 fun Module.mainModule() {
     viewModelOf(::MainViewModel)
-    scope<MainActivity> {
-        scoped { AppUpdateManagerFactory.create(androidContext()) }
-        scoped { ReviewManagerFactory.create(androidContext()) }
-    }
+    single { AppUpdateManagerFactory.create(androidContext()) }
+    single { ReviewManagerFactory.create(androidContext()) }
 }

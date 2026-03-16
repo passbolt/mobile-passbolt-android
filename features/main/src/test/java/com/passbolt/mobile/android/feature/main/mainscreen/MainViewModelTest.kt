@@ -6,6 +6,7 @@ import com.passbolt.mobile.android.common.datarefresh.DataRefreshStatus
 import com.passbolt.mobile.android.common.datarefresh.DataRefreshTrackingFlow
 import com.passbolt.mobile.android.core.autofill.AutofillInformationProvider
 import com.passbolt.mobile.android.core.inappreview.InAppReviewInteractor
+import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
 import com.passbolt.mobile.android.entity.featureflags.FeatureFlagsModel
 import com.passbolt.mobile.android.feature.main.mainscreen.MainSideEffect.CheckForAppUpdates
 import com.passbolt.mobile.android.feature.main.mainscreen.MainSideEffect.PerformFullDataRefresh
@@ -14,6 +15,7 @@ import com.passbolt.mobile.android.feature.main.mainscreen.encouragements.Encour
 import com.passbolt.mobile.android.featureflags.usecase.GetFeatureFlagsUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
@@ -60,6 +62,10 @@ import org.mockito.kotlin.whenever
 private val mockInAppReviewInteractor = mock<InAppReviewInteractor>()
 private val mockEncouragementsInteractor = mock<EncouragementsInteractor>()
 private val mockAutofillInformationProvider = mock<AutofillInformationProvider>()
+private val mockAppNavigator =
+    mock<AppNavigator> {
+        on { tabSwitchRequest } doReturn MutableSharedFlow()
+    }
 
 private val defaultFeatureFlags =
     FeatureFlagsModel(
@@ -90,6 +96,7 @@ private val testMainModule =
                 getFeatureFlagsUseCase = mockGetFeatureFlagsUseCase,
                 encouragementsInteractor = mockEncouragementsInteractor,
                 autofillInformationProvider = mockAutofillInformationProvider,
+                appNavigator = mockAppNavigator,
             )
         }
         singleOf(::DataRefreshTrackingFlow)

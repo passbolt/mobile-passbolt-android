@@ -155,7 +155,7 @@ private fun EncourageNativeAutofillScreen(
             rawSteps.mapIndexed { index, text ->
                 CircleStepItemModel(
                     text = AnnotatedString.fromHtml(text),
-                    icon = AUTOFILL_SETUP_STEPS_ICONS.getOrNull(index)?.let { CircleStepIcon.Drawable(it) },
+                    icon = AUTOFILL_SETUP_STEPS_ICONS.getOrNull(index),
                 )
             }
         }
@@ -248,8 +248,8 @@ private fun EncourageNativeAutofillScreen(
 
 private val AUTOFILL_SETUP_STEPS_ICONS =
     listOf(
-        CoreUiR.drawable.autofill_with_bg,
-        CoreUiR.drawable.passbolt_with_bg,
+        CircleStepIcon.Drawable(CoreUiR.drawable.autofill_with_bg),
+        CircleStepIcon.Drawable(CoreUiR.drawable.passbolt_with_bg),
     )
 
 @Preview(showBackground = true)

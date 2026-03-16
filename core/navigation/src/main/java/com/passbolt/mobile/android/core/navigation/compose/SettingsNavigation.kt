@@ -14,9 +14,9 @@ import org.koin.compose.koinInject
 import org.koin.core.qualifier.named
 
 @Composable
-fun AppNavigation(navigator: AppNavigator = koinInject()) {
+fun SettingsNavigation(navigator: AppNavigator = koinInject()) {
     rememberNavBackStack(SettingsNavigationKey.SettingsMain).let { backstack ->
-        navigator.backStack = backstack
+        navigator.setActiveBackStack(backstack)
     }
 
     LaunchedEffect(Unit) {
