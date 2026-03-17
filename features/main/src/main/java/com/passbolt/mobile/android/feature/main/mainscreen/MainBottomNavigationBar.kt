@@ -16,6 +16,7 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -25,6 +26,7 @@ import androidx.compose.ui.unit.sp
 import com.passbolt.mobile.android.core.compose.Inter
 import com.passbolt.mobile.android.core.navigation.compose.BottomTab
 import com.passbolt.mobile.android.feature.main.R
+import com.passbolt.mobile.android.testtags.composetags.BottomNav
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 @Composable
@@ -65,6 +67,7 @@ internal fun MainBottomNavigationBar(
             windowInsets = WindowInsets(0, 0, 0, 0),
         ) {
             NavigationBarItem(
+                modifier = Modifier.testTag(BottomNav.HOME_TAB),
                 selected = selectedTab == BottomTab.HOME,
                 onClick = { onTabSelect(BottomTab.HOME) },
                 icon = {
@@ -84,6 +87,7 @@ internal fun MainBottomNavigationBar(
             )
             if (isOtpTabVisible) {
                 NavigationBarItem(
+                    modifier = Modifier.testTag(BottomNav.OTP_TAB),
                     selected = selectedTab == BottomTab.OTP,
                     onClick = { onTabSelect(BottomTab.OTP) },
                     icon = {
@@ -103,6 +107,7 @@ internal fun MainBottomNavigationBar(
                 )
             }
             NavigationBarItem(
+                modifier = Modifier.testTag(BottomNav.SETTINGS_TAB),
                 selected = selectedTab == BottomTab.SETTINGS,
                 onClick = { onTabSelect(BottomTab.SETTINGS) },
                 icon = {
