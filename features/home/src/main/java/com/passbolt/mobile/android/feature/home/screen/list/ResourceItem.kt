@@ -58,6 +58,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import com.passbolt.mobile.android.common.extension.isInFuture
+import com.passbolt.mobile.android.common.extension.toSingleLine
 import com.passbolt.mobile.android.core.resources.resourceicon.ResourceIconProvider
 import com.passbolt.mobile.android.core.ui.R
 import com.passbolt.mobile.android.ui.ResourceModel
@@ -117,7 +118,7 @@ fun ResourceItem(
         Spacer(modifier = Modifier.width(12.dp))
 
         Column(modifier = Modifier.weight(1f)) {
-            val resourceName = resource.metadataJsonModel.name
+            val resourceName = resource.metadataJsonModel.name.toSingleLine()
             val titleText =
                 resource.expiry?.let { expiry ->
                     if (!expiry.isInFuture()) {

@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.feature.home.screen
 
 import android.content.Context
 import androidx.annotation.DrawableRes
+import com.passbolt.mobile.android.common.extension.toSingleLine
 import com.passbolt.mobile.android.ui.Folder.Child
 import com.passbolt.mobile.android.ui.Folder.Root
 import com.passbolt.mobile.android.ui.HomeDisplayViewModel
@@ -25,20 +26,27 @@ internal fun getAppBarTitle(
     when (state.homeView) {
         is Folders ->
             when (state.homeView.activeFolder) {
-                is Child -> state.homeView.activeFolderName.orEmpty()
+                is Child ->
+                    state.homeView.activeFolderName
+                        .orEmpty()
+                        .toSingleLine()
                 is Root -> context.getString(LocalizationR.string.filters_menu_folders)
             }
         is Groups ->
             if (state.homeView.activeGroupId == null) {
                 context.getString(LocalizationR.string.filters_menu_groups)
             } else {
-                state.homeView.activeGroupName.orEmpty()
+                state.homeView.activeGroupName
+                    .orEmpty()
+                    .toSingleLine()
             }
         is Tags ->
             if (state.homeView.activeTagId == null) {
                 context.getString(LocalizationR.string.filters_menu_tags)
             } else {
-                state.homeView.activeTagName.orEmpty()
+                state.homeView.activeTagName
+                    .orEmpty()
+                    .toSingleLine()
             }
         AllItems -> context.getString(LocalizationR.string.filters_menu_all_items)
         Expiry -> context.getString(LocalizationR.string.filters_menu_expiry)

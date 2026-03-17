@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.feature.home.screen
 
 import android.content.Context
+import com.passbolt.mobile.android.common.extension.toSingleLine
 import com.passbolt.mobile.android.feature.home.screen.SnackbarErrorType.CANNOT_UPDATE_WITH_CURRENT_CONFIGURATION
 import com.passbolt.mobile.android.feature.home.screen.SnackbarErrorType.DECRYPTION_FAILURE
 import com.passbolt.mobile.android.feature.home.screen.SnackbarErrorType.ENCRYPTION_FAILURE
@@ -40,7 +41,7 @@ internal fun getSuccessMessage(
         RESOURCE_EDITED ->
             context.getString(
                 LocalizationR.string.common_message_resource_edited,
-                additionalSuccessMessage.orEmpty(),
+                additionalSuccessMessage.orEmpty().toSingleLine(),
             )
         RESOURCE_CREATED -> context.getString(LocalizationR.string.resource_form_create_success)
         RESOURCE_DELETED -> context.getString(LocalizationR.string.otp_deleted)
@@ -49,7 +50,7 @@ internal fun getSuccessMessage(
         FOLDER_CREATED ->
             context.getString(
                 LocalizationR.string.common_message_folder_created,
-                additionalSuccessMessage.orEmpty(),
+                additionalSuccessMessage.orEmpty().toSingleLine(),
             )
     }
 

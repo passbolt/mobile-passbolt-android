@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.feature.resourceform.main
 
 import android.content.Context
+import com.passbolt.mobile.android.common.extension.toSingleLine
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.note.NoteValidationError
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.note.NoteValidationError.MaxLengthExceeded
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.TotpSecretValidationError
@@ -28,7 +29,7 @@ internal fun getScreenTitle(
                 STANDALONE_NOTE -> context.getString(LocalizationR.string.resource_form_create_note)
                 null -> ""
             }
-        is Edit -> context.getString(LocalizationR.string.resource_form_edit_resource, mode.resourceName)
+        is Edit -> context.getString(LocalizationR.string.resource_form_edit_resource, mode.resourceName.toSingleLine())
         null -> ""
     }
 
