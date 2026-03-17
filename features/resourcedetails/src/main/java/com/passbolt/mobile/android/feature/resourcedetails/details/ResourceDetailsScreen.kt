@@ -136,8 +136,9 @@ fun ResourceDetailsScreen(
     val resultBus = NavigationResultEventBus.current
 
     var resourceIcon by remember { mutableStateOf<Drawable?>(null) }
-    LaunchedEffect(resourceModel) {
-        resourceIcon = resourceIconProvider.getResourceIcon(context, resourceModel)
+    val currentResourceModel = state.value.resourceData.resourceModel ?: resourceModel
+    LaunchedEffect(currentResourceModel) {
+        resourceIcon = resourceIconProvider.getResourceIcon(context, currentResourceModel)
     }
 
     LaunchedEffect(resourceModel.resourceId) {

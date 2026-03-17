@@ -367,7 +367,16 @@ class ResourceDetailsViewModel(
                     updateViewState { copy(isRefreshing = false) }
                 }
                 FinishedWithSuccess -> {
-                    updateViewState { copy(isRefreshing = false) }
+                    val refreshedResource =
+                        getLocalResourceUseCase
+                            .execute(GetLocalResourceUseCase.Input(resource.resourceId))
+                            .resource
+                    updateViewState {
+                        copy(
+                            isRefreshing = false,
+                            resourceData = resourceData.copy(resourceModel = refreshedResource),
+                        )
+                    }
                     viewModelScope.launch { loadResourceDetails() }
                 }
                 NotCompleted -> {
