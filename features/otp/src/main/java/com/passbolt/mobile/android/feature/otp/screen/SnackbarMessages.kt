@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.feature.otp.screen
 
 import android.content.Context
+import com.passbolt.mobile.android.common.extension.toSingleLine
 import com.passbolt.mobile.android.core.localization.R
 import com.passbolt.mobile.android.feature.otp.screen.SnackbarErrorType.CANNOT_UPDATE_WITH_CURRENT_CONFIGURATION
 import com.passbolt.mobile.android.feature.otp.screen.SnackbarErrorType.DECRYPTION_FAILURE
@@ -38,7 +39,7 @@ internal fun getSuccessMessage(
         RESOURCE_EDITED ->
             context.getString(
                 R.string.common_message_resource_edited,
-                additionalSuccessMessage.orEmpty(),
+                additionalSuccessMessage.orEmpty().toSingleLine(),
             )
         RESOURCE_CREATED -> context.getString(R.string.resource_form_create_success)
         RESOURCE_DELETED -> context.getString(R.string.otp_deleted)

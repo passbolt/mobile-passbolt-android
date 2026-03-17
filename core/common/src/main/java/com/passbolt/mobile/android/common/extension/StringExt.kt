@@ -29,6 +29,8 @@ import androidx.core.text.HtmlCompat
 
 fun String.fromHtml(): Spanned = Html.fromHtml(this, HtmlCompat.FROM_HTML_MODE_LEGACY)
 
+fun String.toSingleLine(): String = replace(Regex("[\\r\\n]+"), " ").trim()
+
 fun String.decodeHex(): ByteArray {
     require(length % 2 == 0) { "String must have an even length" }
 
