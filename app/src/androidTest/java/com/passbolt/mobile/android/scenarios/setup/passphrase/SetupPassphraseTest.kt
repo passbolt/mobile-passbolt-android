@@ -111,8 +111,7 @@ class SetupPassphraseTest : KoinTest {
         composeTestRule.onNodeWithText(managedAccountIntentCreator.getDomain()).assertIsDisplayed()
         composeTestRule.onNodeWithTag(Auth.AVATAR).assertIsDisplayed()
         composeTestRule.onNodeWithTag(Auth.PASSPHRASE_INPUT).assertIsDisplayed()
-        //        TODO: check after MOB-3817 fix
-//        composeTestRule.onNodeWithText(getString(LocalizationR.string.auth_enter_passphrase)).assertIsDisplayed()
+        composeTestRule.onNodeWithText(getString(LocalizationR.string.auth_enter_passphrase)).assertIsDisplayed()
         composeTestRule.onNodeWithTag(Auth.SIGN_IN_BUTTON).assertIsDisplayed()
         composeTestRule.onNodeWithText(getString(LocalizationR.string.auth_forgot_password_button)).assertIsDisplayed()
     }

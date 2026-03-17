@@ -17,7 +17,7 @@ import org.koin.core.qualifier.named
 @Composable
 fun SetupNavigation(navigator: AppNavigator = koinInject()) {
     rememberNavBackStack(Welcome).let { backstack ->
-        navigator.backStack = backstack
+        navigator.setActiveBackStack(backstack)
     }
 
     val featureModulesNavigation: Set<FeatureModuleNavigation> =

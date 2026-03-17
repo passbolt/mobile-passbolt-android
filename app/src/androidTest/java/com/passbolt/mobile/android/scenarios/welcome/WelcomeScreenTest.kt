@@ -53,14 +53,14 @@ import com.passbolt.mobile.android.core.localization.R as LocalizationR
 @RunWith(AndroidJUnit4::class)
 @MediumTest
 class WelcomeScreenTest : KoinTest {
-    @get:Rule
+    @get:Rule(order = 0)
+    val composeTestRule = createEmptyComposeRule()
+
+    @get:Rule(order = 1)
     val activityRule =
         lazyActivityScenarioRule<SetUpActivity>(
             koinOverrideModules = listOf(instrumentationTestsModule),
         )
-
-    @get:Rule
-    val composeTestRule = createEmptyComposeRule()
 
     //    https://passbolt.testrail.io/index.php?/cases/view/2332
     @Test
