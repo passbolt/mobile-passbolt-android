@@ -303,6 +303,9 @@
     <string name="hidden_secret"
         translatable="false">••••••••••••••••••</string>
     <string name="resource_details_encrypted_description">Description is encrypted</string>
+    <string name="action_show">Show</string>
+    <string name="action_hide">Hide</string>
+    <string name="action_copy">Copy</string>
     <string name="resource_details_information">Information</string>
     <string name="resource_details_invalid_totp_scanned">Invalid TOTP QR code scanned</string>
     <string name="resource_details_metadata_header">Metadata</string>

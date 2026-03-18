@@ -112,14 +112,12 @@ class DeleteResourcePopupTest(
 
     @Before
     fun setup() {
-        composeTestRule.signIn(managedAccountIntentCreator.getPassphrase())
-        composeTestRule.chooseFilter(filters_menu_all_items)
-        composeTestRule.searchAndClickMoreOfFirstResource(testedResource)
-
-        composeTestRule
-            .onNodeWithText(getString(more_delete))
-            .assertIsDisplayed()
-            .performClick()
+        composeTestRule.apply {
+            signIn(managedAccountIntentCreator.getPassphrase())
+            chooseFilter(filters_menu_all_items)
+            searchAndClickMoreOfFirstResource(testedResource)
+            onNodeWithText(getString(more_delete)).assertIsDisplayed().performClick()
+        }
     }
 
     /**  [On the action menu drawer, I can click delete password element when V5 resources are enabled](https://passbolt.testrail.io/index.php?/cases/view/13119)
@@ -145,10 +143,12 @@ class DeleteResourcePopupTest(
      */
     @Test
     fun onTheActionMenuDrawerICanClickDeletePasswordElementWhenV5ResourcesAreEnabled() {
-        composeTestRule.onNodeWithText(getString(are_you_sure)).assertIsDisplayed()
-        composeTestRule.onNodeWithText(getString(resource_will_be_deleted)).assertIsDisplayed()
-        composeTestRule.onNodeWithText(getString(cancel)).assertIsDisplayed()
-        composeTestRule.onNodeWithText(getString(delete)).assertIsDisplayed()
+        composeTestRule.apply {
+            onNodeWithText(getString(are_you_sure)).assertIsDisplayed()
+            onNodeWithText(getString(resource_will_be_deleted)).assertIsDisplayed()
+            onNodeWithText(getString(cancel)).assertIsDisplayed()
+            onNodeWithText(getString(delete)).assertIsDisplayed()
+        }
     }
 
     /**
@@ -170,7 +170,9 @@ class DeleteResourcePopupTest(
      */
     @Test
     fun testOnThePasswordRemovalPopupICanClickCancelWhenV5ResourcesAreEnabled() {
-        composeTestRule.onNodeWithText(getString(cancel)).performClick()
-        composeTestRule.onNodeWithTag("home_screen").assertIsDisplayed()
+        composeTestRule.apply {
+            onNodeWithText(getString(cancel)).performClick()
+            onNodeWithTag("home_screen").assertIsDisplayed()
+        }
     }
 }
