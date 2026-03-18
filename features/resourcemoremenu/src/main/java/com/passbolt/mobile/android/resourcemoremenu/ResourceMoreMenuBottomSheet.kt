@@ -122,139 +122,141 @@ private fun ResourceMoreMenuBottomSheet(
             skipPartiallyExpanded = true,
         )
 
-    ModalBottomSheet(
-        onDismissRequest = onDismissRequest,
-        containerColor = colorResource(CoreUiR.color.elevated_background),
-        sheetState = sheetState,
-        modifier = modifier.statusBarsPadding(),
-    ) {
-        BottomSheetHeader(
-            title = state.title.ifEmpty { resourceName },
-            onClose = { onIntent(Close) },
-        )
+    if (!state.isLoading) {
+        ModalBottomSheet(
+            onDismissRequest = onDismissRequest,
+            containerColor = colorResource(CoreUiR.color.elevated_background),
+            sheetState = sheetState,
+            modifier = modifier.statusBarsPadding(),
+        ) {
+            BottomSheetHeader(
+                title = state.title.ifEmpty { resourceName },
+                onClose = { onIntent(Close) },
+            )
 
-        LazyColumn(modifier = Modifier.weight(1f)) {
-            item {
-                OpenableSettingsItem(
-                    title = stringResource(LocalizationR.string.more_launch_website),
-                    iconPainter = painterResource(CoreUiR.drawable.ic_open_link),
-                    onClick = { onIntent(LaunchWebsite) },
-                    opensInternally = false,
-                )
-            }
-
-            item {
-                OpenableSettingsItem(
-                    title = stringResource(LocalizationR.string.more_copy_uri),
-                    iconPainter = painterResource(CoreUiR.drawable.ic_list),
-                    onClick = { onIntent(CopyUrl) },
-                    opensInternally = false,
-                )
-            }
-
-            if (state.showCopyPassword) {
+            LazyColumn(modifier = Modifier.weight(weight = 1f, fill = false)) {
                 item {
                     OpenableSettingsItem(
-                        title = stringResource(LocalizationR.string.more_copy_password),
-                        iconPainter = painterResource(CoreUiR.drawable.ic_key),
-                        onClick = { onIntent(CopyPassword) },
+                        title = stringResource(LocalizationR.string.more_launch_website),
+                        iconPainter = painterResource(CoreUiR.drawable.ic_open_link),
+                        onClick = { onIntent(LaunchWebsite) },
                         opensInternally = false,
                     )
                 }
-            }
 
-            if (state.showCopyMetadataDescription) {
                 item {
                     OpenableSettingsItem(
-                        title = stringResource(LocalizationR.string.more_copy_metadata_desc),
-                        iconPainter = painterResource(CoreUiR.drawable.ic_description),
-                        onClick = { onIntent(CopyMetadataDescription) },
+                        title = stringResource(LocalizationR.string.more_copy_uri),
+                        iconPainter = painterResource(CoreUiR.drawable.ic_link),
+                        onClick = { onIntent(CopyUrl) },
                         opensInternally = false,
                     )
                 }
-            }
 
-            if (state.showCopyNote) {
+                if (state.showCopyPassword) {
+                    item {
+                        OpenableSettingsItem(
+                            title = stringResource(LocalizationR.string.more_copy_password),
+                            iconPainter = painterResource(CoreUiR.drawable.ic_key),
+                            onClick = { onIntent(CopyPassword) },
+                            opensInternally = false,
+                        )
+                    }
+                }
+
+                if (state.showCopyMetadataDescription) {
+                    item {
+                        OpenableSettingsItem(
+                            title = stringResource(LocalizationR.string.more_copy_metadata_desc),
+                            iconPainter = painterResource(CoreUiR.drawable.ic_description),
+                            onClick = { onIntent(CopyMetadataDescription) },
+                            opensInternally = false,
+                        )
+                    }
+                }
+
+                if (state.showCopyNote) {
+                    item {
+                        OpenableSettingsItem(
+                            title = stringResource(LocalizationR.string.more_copy_note),
+                            iconPainter = painterResource(CoreUiR.drawable.ic_notes),
+                            onClick = { onIntent(CopyNote) },
+                            opensInternally = false,
+                        )
+                    }
+                }
+
                 item {
                     OpenableSettingsItem(
-                        title = stringResource(LocalizationR.string.more_copy_note),
-                        iconPainter = painterResource(CoreUiR.drawable.ic_notes),
-                        onClick = { onIntent(CopyNote) },
+                        title = stringResource(LocalizationR.string.more_copy_username),
+                        iconPainter = painterResource(CoreUiR.drawable.ic_user),
+                        onClick = { onIntent(CopyUsername) },
                         opensInternally = false,
                     )
                 }
-            }
 
-            item {
-                OpenableSettingsItem(
-                    title = stringResource(LocalizationR.string.more_copy_username),
-                    iconPainter = painterResource(CoreUiR.drawable.ic_user),
-                    onClick = { onIntent(CopyUsername) },
-                    opensInternally = false,
-                )
-            }
-
-            state.favouriteOption?.let { option ->
-                item {
-                    val titleRes =
-                        when (option) {
-                            ADD_TO_FAVOURITES -> LocalizationR.string.more_add_to_favourite
-                            REMOVE_FROM_FAVOURITES -> LocalizationR.string.more_remove_from_favourite
-                        }
-                    val iconRes =
-                        when (option) {
-                            ADD_TO_FAVOURITES -> CoreUiR.drawable.ic_add_to_favourite
-                            REMOVE_FROM_FAVOURITES -> CoreUiR.drawable.ic_remove_favourite
-                        }
-                    OpenableSettingsItem(
-                        title = stringResource(titleRes),
-                        iconPainter = painterResource(iconRes),
-                        onClick = { onIntent(ToggleFavourite) },
-                        opensInternally = false,
-                    )
+                state.favouriteOption?.let { option ->
+                    item {
+                        val titleRes =
+                            when (option) {
+                                ADD_TO_FAVOURITES -> LocalizationR.string.more_add_to_favourite
+                                REMOVE_FROM_FAVOURITES -> LocalizationR.string.more_remove_from_favourite
+                            }
+                        val iconRes =
+                            when (option) {
+                                ADD_TO_FAVOURITES -> CoreUiR.drawable.ic_add_to_favourite
+                                REMOVE_FROM_FAVOURITES -> CoreUiR.drawable.ic_remove_favourite
+                            }
+                        OpenableSettingsItem(
+                            title = stringResource(titleRes),
+                            iconPainter = painterResource(iconRes),
+                            onClick = { onIntent(ToggleFavourite) },
+                            opensInternally = false,
+                        )
+                    }
                 }
-            }
 
-            if (state.showSeparator) {
-                item {
-                    HorizontalDivider(
-                        color = colorResource(CoreUiR.color.divider),
-                        thickness = 1.dp,
-                    )
+                if (state.showSeparator) {
+                    item {
+                        HorizontalDivider(
+                            color = colorResource(CoreUiR.color.divider),
+                            thickness = 1.dp,
+                        )
+                    }
                 }
-            }
 
-            if (state.showShare) {
-                item {
-                    OpenableSettingsItem(
-                        title = stringResource(LocalizationR.string.more_share),
-                        iconPainter = painterResource(CoreUiR.drawable.ic_share),
-                        onClick = { onIntent(Share) },
-                        opensInternally = false,
-                    )
+                if (state.showShare) {
+                    item {
+                        OpenableSettingsItem(
+                            title = stringResource(LocalizationR.string.more_share),
+                            iconPainter = painterResource(CoreUiR.drawable.ic_share),
+                            onClick = { onIntent(Share) },
+                            opensInternally = false,
+                        )
+                    }
                 }
-            }
 
-            if (state.showEdit) {
-                item {
-                    OpenableSettingsItem(
-                        title = stringResource(LocalizationR.string.more_edit),
-                        iconPainter = painterResource(CoreUiR.drawable.ic_edit),
-                        onClick = { onIntent(Edit) },
-                        opensInternally = false,
-                    )
+                if (state.showEdit) {
+                    item {
+                        OpenableSettingsItem(
+                            title = stringResource(LocalizationR.string.more_edit),
+                            iconPainter = painterResource(CoreUiR.drawable.ic_edit),
+                            onClick = { onIntent(Edit) },
+                            opensInternally = false,
+                        )
+                    }
                 }
-            }
 
-            if (state.showDelete) {
-                item {
-                    OpenableSettingsItem(
-                        title = stringResource(LocalizationR.string.more_delete),
-                        iconPainter = painterResource(CoreUiR.drawable.ic_trash),
-                        onClick = { onIntent(Delete) },
-                        opensInternally = false,
-                        iconTint = colorResource(CoreUiR.color.red),
-                    )
+                if (state.showDelete) {
+                    item {
+                        OpenableSettingsItem(
+                            title = stringResource(LocalizationR.string.more_delete),
+                            iconPainter = painterResource(CoreUiR.drawable.ic_trash),
+                            onClick = { onIntent(Delete) },
+                            opensInternally = false,
+                            iconTint = colorResource(CoreUiR.color.red),
+                        )
+                    }
                 }
             }
         }
