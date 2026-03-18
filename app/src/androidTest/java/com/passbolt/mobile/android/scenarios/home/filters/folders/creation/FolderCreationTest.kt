@@ -41,7 +41,6 @@ import com.passbolt.mobile.android.core.idlingresource.ResourcesFullRefreshIdlin
 import com.passbolt.mobile.android.core.idlingresource.SignInIdlingResource
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppContext
-import com.passbolt.mobile.android.core.ui.topbar.BackNavigationIcon.TestTags.ICON
 import com.passbolt.mobile.android.feature.authentication.AuthenticationMainActivity
 import com.passbolt.mobile.android.helpers.chooseFilter
 import com.passbolt.mobile.android.helpers.getString
@@ -50,6 +49,10 @@ import com.passbolt.mobile.android.instrumentationTestsModule
 import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
 import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
+import com.passbolt.mobile.android.testtags.composetags.BackNavigation.ICON
+import com.passbolt.mobile.android.testtags.composetags.BottomSheet
+import com.passbolt.mobile.android.testtags.composetags.CreateFolder
+import com.passbolt.mobile.android.testtags.composetags.Home
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -122,10 +125,10 @@ class FolderCreationTest : KoinTest {
     @Test
     fun onTheFoldersWorkspaceICanClickCreateButtonWhenV5ResourcesAreEnabledAndDefault() {
         composeTestRule.apply {
-            onNodeWithTag("home_fab").performClick()
+            onNodeWithTag(Home.FAB).performClick()
             onNodeWithText(getString(LocalisationR.string.create_resource_menu_create_a_resource))
                 .assertIsDisplayed()
-            onNodeWithTag("bottom_sheet_icon_close").assertIsDisplayed()
+            onNodeWithTag(BottomSheet.CLOSE_ICON).assertIsDisplayed()
             onNodeWithText(getString(LocalisationR.string.create_resource_menu_create_password))
                 .assertIsDisplayed()
             // "TOTP" text appears both in the bottom nav and in the create menu
@@ -147,9 +150,9 @@ class FolderCreationTest : KoinTest {
     @Test
     fun onTheFolderWorkspaceICanCancelCreationProcess() {
         composeTestRule.apply {
-            onNodeWithTag("home_fab").performClick()
-            onNodeWithTag("bottom_sheet_icon_close").performClick()
-            onNodeWithTag("home_screen").assertIsDisplayed()
+            onNodeWithTag(Home.FAB).performClick()
+            onNodeWithTag(BottomSheet.CLOSE_ICON).performClick()
+            onNodeWithTag(Home.SCREEN).assertIsDisplayed()
         }
     }
 
@@ -167,7 +170,7 @@ class FolderCreationTest : KoinTest {
     @Test
     fun iCanEnterCreateFolderScreen() {
         composeTestRule.apply {
-            onNodeWithTag("home_fab").performClick()
+            onNodeWithTag(Home.FAB).performClick()
             onNodeWithText(getString(LocalisationR.string.create_resource_menu_create_folder)).performClick()
             onNodeWithText(getString(LocalisationR.string.create_folder_title)).assertIsDisplayed()
             onNode(hasTestTag(ICON), useUnmergedTree = true).assertExists()
@@ -209,7 +212,7 @@ class FolderCreationTest : KoinTest {
                 .targetContext
                 .getString(LocalisationR.string.validation_required_with_max_length, 256)
         composeTestRule.apply {
-            onNodeWithTag("home_fab").performClick()
+            onNodeWithTag(Home.FAB).performClick()
             onNodeWithText(getString(LocalisationR.string.create_resource_menu_create_folder)).performClick()
             onNodeWithText(getString(LocalisationR.string.save)).performClick()
             onNodeWithText(expectedError).assertIsDisplayed()
@@ -229,15 +232,15 @@ class FolderCreationTest : KoinTest {
     fun onTheRootFolderWorkspaceICanSaveNewFolder() {
         composeTestRule.apply {
             waitUntil(timeoutMillis = 4_000) {
-                onAllNodesWithTag("home_fab").fetchSemanticsNodes().isNotEmpty()
+                onAllNodesWithTag(Home.FAB).fetchSemanticsNodes().isNotEmpty()
             }
-            onNodeWithTag("home_fab").performClick()
+            onNodeWithTag(Home.FAB).performClick()
             onNodeWithText(getString(LocalisationR.string.create_resource_menu_create_folder)).performClick()
-            onNodeWithTag("create_folder_name_input", useUnmergedTree = true)
+            onNodeWithTag(CreateFolder.NAME_INPUT, useUnmergedTree = true)
                 .performClick()
                 .performTextReplacement(NEW_TEST_FOLDER_NAME)
             onNodeWithText(getString(LocalisationR.string.save)).performClick()
-            onNodeWithTag("home_screen").assertIsDisplayed()
+            onNodeWithTag(Home.SCREEN).assertIsDisplayed()
         }
     }
 

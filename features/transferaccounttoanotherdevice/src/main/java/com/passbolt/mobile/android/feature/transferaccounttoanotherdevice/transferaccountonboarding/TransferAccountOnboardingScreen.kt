@@ -73,6 +73,7 @@ import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transf
 import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccountonboarding.TransferAccountOnboardingScreenSideEffect.NavigateToRefreshPassphrase
 import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccountonboarding.TransferAccountOnboardingScreenSideEffect.NavigateToTransferAccount
 import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccountonboarding.TransferAccountOnboardingScreenSideEffect.NavigateUp
+import com.passbolt.mobile.android.testtags.composetags.TransferAccount
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
@@ -200,7 +201,7 @@ private fun TransferAccountOnboardingScreen(
                     Modifier
                         .fillMaxWidth()
                         .padding(16.dp)
-                        .testTag("StartTransferButton"), // TODO: move it to :testtags module once MOB-3312 gets resolved
+                        .testTag(TransferAccount.START_TRANSFER_BUTTON),
             )
 
             Spacer(modifier = Modifier.height(16.dp))

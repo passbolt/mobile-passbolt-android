@@ -46,6 +46,9 @@ import com.passbolt.mobile.android.instrumentationTestsModule
 import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
 import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
+import com.passbolt.mobile.android.testtags.composetags.BottomSheet
+import com.passbolt.mobile.android.testtags.composetags.FiltersMenu
+import com.passbolt.mobile.android.testtags.composetags.Home
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -96,7 +99,7 @@ class FilterDrawerTest : KoinTest {
         //    And       the search bar is not focused
         //    Then      I see an icon filter in the left side of the search bar
         composeTestRule.apply {
-            onNodeWithTag("home_search_filter").assertExists()
+            onNodeWithTag(Home.SEARCH_FILTER).assertExists()
         }
     }
 
@@ -106,17 +109,17 @@ class FilterDrawerTest : KoinTest {
         composeTestRule.apply {
             //    Given     that I am a logged in mobile user on the homepage
             //    When      I click on the filter icon
-            onNodeWithTag("home_search_filter").performClick()
+            onNodeWithTag(Home.SEARCH_FILTER).performClick()
             //    Then      I see the "filter" drawer
-            onNodeWithTag("filters_menu_sheet").assertIsDisplayed()
+            onNodeWithTag(FiltersMenu.SHEET).assertIsDisplayed()
             //    And       I see the homepage is greyed out in the background
             //    And       I see a "Filter view by" title
             onNodeWithText(getString(filters_menu_title)).assertIsDisplayed()
-            onNodeWithTag("bottom_sheet_icon_close").assertIsDisplayed()
+            onNodeWithTag(BottomSheet.CLOSE_ICON).assertIsDisplayed()
             //    And       I see <filter> list item with their corresponding icon
             ResourceFilterModel.entries.forEach { model ->
                 onNode(
-                    hasTestTag("filters_menu_sheet").and(
+                    hasTestTag(FiltersMenu.SHEET).and(
                         hasAnyDescendant(hasText(getString(model.filterNameId))),
                     ),
                 ).assertExists()

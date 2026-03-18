@@ -62,6 +62,7 @@ import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.summar
 import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.summary.TransferAccountSummaryIntent.TryAgain
 import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.summary.TransferAccountSummarySideEffect.NavigateToMyAccount
 import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.summary.TransferAccountSummarySideEffect.NavigateToTransferAccountStart
+import com.passbolt.mobile.android.testtags.composetags.TransferAccount
 import com.passbolt.mobile.android.ui.TransferAccountStatusType
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
@@ -126,7 +127,7 @@ private fun TransferAccountSummaryScreen(
                     .fillMaxSize()
                     .padding(contentPadding)
                     .padding(16.dp)
-                    .testTag("TransferAccountSummaryScreen"), // TODO: move it to :testtags module once MOB-3312 gets resolved
+                    .testTag(TransferAccount.SUMMARY_SCREEN),
         ) {
             if (status != null) {
                 Column(

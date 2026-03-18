@@ -284,7 +284,7 @@ private fun HomeScreen(
                         modifier =
                             Modifier
                                 .clickable { onIntent(OpenFiltersBottomSheet) }
-                                .testTag(HomeScreenTestTags.SEARCH_FILTER),
+                                .testTag(Home.SEARCH_FILTER),
                     )
                 },
             )
@@ -367,8 +367,4 @@ private fun HomeScreen(
     }
 
     ProgressDialog(state.showProgress)
-}
-
-object HomeScreenTestTags {
-    const val SEARCH_FILTER: String = "home_search_filter"
 }

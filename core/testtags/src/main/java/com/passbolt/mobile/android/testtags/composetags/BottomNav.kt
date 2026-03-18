@@ -24,7 +24,7 @@
 package com.passbolt.mobile.android.testtags.composetags
 
 object BottomNav {
-    const val HOME_TAB = "bottom_nav_home_tab"
-    const val OTP_TAB = "bottom_nav_otp_tab"
-    const val SETTINGS_TAB = "bottom_nav_settings_tab"
+    const val HOME_TAB = "BottomNavHomeTab"
+    const val OTP_TAB = "BottomNavOtpTab"
+    const val SETTINGS_TAB = "BottomNavSettingsTab"
 }

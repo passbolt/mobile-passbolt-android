@@ -68,7 +68,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.passbolt.mobile.android.core.ui.fab.AddFloatingActionButton
 import com.passbolt.mobile.android.core.ui.snackbar.ColoredSnackbarVisuals
-import com.passbolt.mobile.android.core.ui.topbar.BackNavigationIconTags
+import com.passbolt.mobile.android.testtags.composetags.BackNavigation
+import com.passbolt.mobile.android.testtags.composetags.HomeAppBar
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -125,7 +126,7 @@ fun HomeScaffold(
                                         modifier =
                                             Modifier
                                                 .clickable { onBackClick() }
-                                                .testTag(BackNavigationIconTags.ICON),
+                                                .testTag(BackNavigation.ICON),
                                     )
                                 }
                                 Row(
@@ -141,7 +142,7 @@ fun HomeScaffold(
                                             modifier =
                                                 Modifier
                                                     .size(24.dp)
-                                                    .testTag(HomeScaffoldTestTags.APP_BAR_ICON),
+                                                    .testTag(HomeAppBar.ICON),
                                         )
                                         Spacer(modifier = Modifier.width(8.dp))
                                     }

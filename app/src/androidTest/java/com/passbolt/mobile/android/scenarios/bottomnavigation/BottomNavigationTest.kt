@@ -44,6 +44,7 @@ import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
 import com.passbolt.mobile.android.testtags.composetags.BottomNav
 import com.passbolt.mobile.android.testtags.composetags.Home
+import com.passbolt.mobile.android.testtags.composetags.Otp
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -129,7 +130,7 @@ class BottomNavigationTest : KoinTest {
                 .assertIsDisplayed()
                 .assertIsNotSelected()
             onNodeWithTag(BottomNav.OTP_TAB).performClick()
-            onNodeWithTag("otp_screen")
+            onNodeWithTag(Otp.SCREEN)
                 .assertIsDisplayed()
             onNodeWithTag(BottomNav.OTP_TAB)
                 .assertIsSelected()

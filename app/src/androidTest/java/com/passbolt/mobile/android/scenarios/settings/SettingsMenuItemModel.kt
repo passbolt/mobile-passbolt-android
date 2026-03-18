@@ -1,8 +1,8 @@
 package com.passbolt.mobile.android.scenarios.settings
 
 import androidx.annotation.StringRes
-import com.passbolt.mobile.android.core.ui.menu.OpenableSettingsItem
-import com.passbolt.mobile.android.core.ui.menu.SwitchableSettingsItem
+import com.passbolt.mobile.android.testtags.composetags.OpenableSetting
+import com.passbolt.mobile.android.testtags.composetags.SwitchableSetting
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 /**
@@ -29,9 +29,9 @@ import com.passbolt.mobile.android.core.localization.R as LocalizationR
  */
 
 enum class SettingsMenuItemModel(
-    @StringRes val settingsItemTextId: Int,
+    @param:StringRes val settingsItemTextId: Int,
     val hasOpenableIcon: Boolean = true,
-    val testTag: String = OpenableSettingsItem.TestTags.ITEM,
+    val testTag: String = OpenableSetting.ITEM,
 ) {
     APP_SETTINGS(
         settingsItemTextId = LocalizationR.string.settings_app_settings,
@@ -54,12 +54,12 @@ enum class SettingsMenuItemModel(
 enum class AppSettingsItemModel(
     @StringRes val settingsItemTextId: Int,
     val hasOpenableIcon: Boolean = true,
-    val testTag: String = OpenableSettingsItem.TestTags.ITEM,
+    val testTag: String = OpenableSetting.ITEM,
 ) {
     FINGERPRINT(
         settingsItemTextId = LocalizationR.string.settings_app_settings_fingerprint,
         hasOpenableIcon = false,
-        testTag = SwitchableSettingsItem.TestTags.ITEM,
+        testTag = SwitchableSetting.ITEM,
     ),
     AUTOFILL(
         settingsItemTextId = LocalizationR.string.settings_app_settings_autofill,
@@ -73,8 +73,8 @@ enum class AppSettingsItemModel(
 }
 
 enum class ExpertSettingsItemModel(
-    @StringRes val settingsItemTextId: Int,
-    val testTag: String = SwitchableSettingsItem.TestTags.ITEM,
+    @param:StringRes val settingsItemTextId: Int,
+    val testTag: String = SwitchableSetting.ITEM,
 ) {
     DEVELOPER_MODE(
         settingsItemTextId = LocalizationR.string.settings_app_settings_expert_settings_dev_mode,
@@ -91,17 +91,17 @@ enum class DebugLogsItemModel(
 ) {
     ENABLE_DEBUG_LOGS(
         settingsItemTextId = LocalizationR.string.settings_debug_logs_enable_logs,
-        testTag = SwitchableSettingsItem.TestTags.ITEM,
+        testTag = SwitchableSetting.ITEM,
         hasOpenableIcon = false,
     ),
     ACCESS_THE_LOGS(
         settingsItemTextId = LocalizationR.string.settings_debug_logs_settings_logs,
-        testTag = OpenableSettingsItem.TestTags.ITEM,
+        testTag = OpenableSetting.ITEM,
         hasOpenableIcon = true,
     ),
     VISIT_HELP_WEBSITE(
         settingsItemTextId = LocalizationR.string.settings_debug_logs_visit_help_website,
-        testTag = OpenableSettingsItem.TestTags.ITEM,
+        testTag = OpenableSetting.ITEM,
         hasOpenableIcon = false,
     ),
 }

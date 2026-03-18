@@ -42,6 +42,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.passbolt.mobile.android.common.extension.toSingleLine
 import com.passbolt.mobile.android.core.ui.R
+import com.passbolt.mobile.android.testtags.composetags.BottomSheet
 
 @Composable
 fun BottomSheetHeader(
@@ -74,7 +75,7 @@ fun BottomSheetHeader(
                     Modifier
                         .size(24.dp)
                         .clickable(onClick = onClose)
-                        .testTag(BottomSheetHeaderTestTags.ICON_CLOSE),
+                        .testTag(BottomSheet.CLOSE_ICON),
                 tint = colorResource(id = R.color.icon_tint),
             )
         }
@@ -88,8 +89,4 @@ fun BottomSheetHeader(
             thickness = 1.dp,
         )
     }
-}
-
-object BottomSheetHeaderTestTags {
-    const val ICON_CLOSE: String = "bottom_sheet_icon_close"
 }

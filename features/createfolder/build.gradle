@@ -22,6 +22,7 @@ dependencies {
     implementation project(':localization')
     implementation project(':accounts')
     implementation project(':navigation')
+    implementation project(':testtags')
 
     implementation platform(libs.koin.bom)
     implementation libs.koin

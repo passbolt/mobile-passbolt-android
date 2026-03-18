@@ -39,8 +39,6 @@ import com.passbolt.mobile.android.core.idlingresource.ResourcesFullRefreshIdlin
 import com.passbolt.mobile.android.core.idlingresource.SignInIdlingResource
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppContext
-import com.passbolt.mobile.android.core.ui.text.PasswordInputTestTags
-import com.passbolt.mobile.android.core.ui.topbar.BackNavigationIcon.TestTags.ICON
 import com.passbolt.mobile.android.feature.authentication.AuthenticationMainActivity
 import com.passbolt.mobile.android.helpers.getString
 import com.passbolt.mobile.android.instrumentationTestsModule
@@ -49,6 +47,8 @@ import com.passbolt.mobile.android.mappers.AccountModelMapper
 import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
 import com.passbolt.mobile.android.testtags.composetags.Auth
+import com.passbolt.mobile.android.testtags.composetags.BackNavigation.ICON
+import com.passbolt.mobile.android.testtags.composetags.PasswordField
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -133,7 +133,7 @@ class SetupPassphraseTest : KoinTest {
     fun asAMobileUserICanPreviewMyPassphrase() {
         composeTestRule.onNodeWithTag(Auth.PASSPHRASE_INPUT).performTextReplacement(PREVIEW_PASSPHRASE)
         composeTestRule
-            .onNodeWithTag(PasswordInputTestTags.VISIBILITY_TOGGLE, useUnmergedTree = true)
+            .onNodeWithTag(PasswordField.VISIBILITY_TOGGLE, useUnmergedTree = true)
             .performClick()
         composeTestRule.onNodeWithTag(Auth.PASSPHRASE_INPUT).assertTextEquals(PREVIEW_PASSPHRASE)
     }

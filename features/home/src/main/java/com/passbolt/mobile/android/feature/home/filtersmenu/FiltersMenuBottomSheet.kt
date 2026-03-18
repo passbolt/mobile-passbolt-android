@@ -33,6 +33,7 @@ import com.passbolt.mobile.android.feature.home.filtersmenu.FiltersMenuIntent.Sh
 import com.passbolt.mobile.android.feature.home.filtersmenu.FiltersMenuIntent.TagsClick
 import com.passbolt.mobile.android.feature.home.filtersmenu.FiltersMenuSideEffect.Dismiss
 import com.passbolt.mobile.android.feature.home.filtersmenu.FiltersMenuSideEffect.HomeViewChanged
+import com.passbolt.mobile.android.testtags.composetags.FiltersMenu
 import com.passbolt.mobile.android.ui.FiltersMenuModel
 import com.passbolt.mobile.android.ui.HomeDisplayViewModel
 import com.passbolt.mobile.android.ui.HomeDisplayViewModel.AllItems
@@ -97,10 +98,6 @@ fun FiltersMenuBottomSheet(
     )
 }
 
-object FiltersMenuBottomSheetTestTags {
-    const val SHEET: String = "filters_menu_sheet"
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun FiltersMenuBottomSheet(
@@ -122,7 +119,7 @@ private fun FiltersMenuBottomSheet(
             modifier =
                 Modifier
                     .fillMaxWidth()
-                    .testTag(FiltersMenuBottomSheetTestTags.SHEET),
+                    .testTag(FiltersMenu.SHEET),
         ) {
             BottomSheetHeader(
                 title = stringResource(LocalizationR.string.filters_menu_title),

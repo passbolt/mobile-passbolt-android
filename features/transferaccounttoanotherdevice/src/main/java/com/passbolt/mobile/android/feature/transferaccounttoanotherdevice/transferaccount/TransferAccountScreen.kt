@@ -71,6 +71,7 @@ import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transf
 import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccount.TransferAccountIntent.GoBack
 import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccount.TransferAccountScreenSideEffect.NavigateToResult
 import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccount.TransferAccountScreenSideEffect.ShowErrorSnackbar
+import com.passbolt.mobile.android.testtags.composetags.TransferAccount
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
@@ -219,7 +220,7 @@ private fun QrCodeImage(
             modifier =
                 modifier
                     .size(qrSizePx.dp)
-                    .testTag("QrCode"), // TODO: move it to :testtags module once MOB-3312 gets resolved
+                    .testTag(TransferAccount.QR_CODE),
         )
     }
 }

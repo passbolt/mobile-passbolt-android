@@ -35,11 +35,11 @@ import androidx.test.espresso.intent.matcher.IntentMatchers.hasAction
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasData
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
-import com.passbolt.mobile.android.core.ui.topbar.BackNavigationIcon
 import com.passbolt.mobile.android.feature.setup.SetUpActivity
 import com.passbolt.mobile.android.helpers.getString
 import com.passbolt.mobile.android.instrumentationTestsModule
 import com.passbolt.mobile.android.rules.lazyActivityScenarioRule
+import com.passbolt.mobile.android.testtags.composetags.BackNavigation
 import com.passbolt.mobile.android.testtags.composetags.Setup.APPS_IMAGE
 import com.passbolt.mobile.android.testtags.composetags.Setup.HELP_BUTTON
 import com.passbolt.mobile.android.testtags.composetags.Setup.LOGO_IMAGE
@@ -155,7 +155,7 @@ class WelcomeScreenTest : KoinTest {
             //        Then    the "Transfer account details" explanation screen is presented
             onNodeWithText(getString(LocalizationR.string.transfer_account_title)).assertIsDisplayed()
             //        And     the screen has an arrow button on the top left to go back to the welcome screen
-            onNodeWithTag(BackNavigationIcon.TestTags.ICON, useUnmergedTree = true).assertIsDisplayed()
+            onNodeWithTag(BackNavigation.ICON, useUnmergedTree = true).assertIsDisplayed()
             //        And     it has an explanation of the different steps of the setup process
             onNodeWithText(getString(LocalizationR.string.transfer_details_header)).assertIsDisplayed()
             //        And     it has a "Scan QR codes" primary action button

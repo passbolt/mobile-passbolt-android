@@ -52,10 +52,6 @@ import com.passbolt.mobile.android.core.idlingresource.SignInIdlingResource
 import com.passbolt.mobile.android.core.idlingresource.SignOutIdlingResource
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppContext
-import com.passbolt.mobile.android.core.ui.menu.OpenableSettingsItem
-import com.passbolt.mobile.android.core.ui.menu.SwitchableSettingsItem
-import com.passbolt.mobile.android.core.ui.switch.SwitchWithDescriptionItem
-import com.passbolt.mobile.android.core.ui.topbar.BackNavigationIcon
 import com.passbolt.mobile.android.feature.authentication.AuthenticationMainActivity
 import com.passbolt.mobile.android.helpers.getString
 import com.passbolt.mobile.android.helpers.signIn
@@ -65,7 +61,11 @@ import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
 import com.passbolt.mobile.android.scenarios.setup.autofill.autofillConfiguredModuleTests
 import com.passbolt.mobile.android.scenarios.setup.configurebiometric.biometricSetupUnavailableModuleTests
+import com.passbolt.mobile.android.testtags.composetags.BackNavigation
 import com.passbolt.mobile.android.testtags.composetags.BottomNav
+import com.passbolt.mobile.android.testtags.composetags.OpenableSetting
+import com.passbolt.mobile.android.testtags.composetags.SwitchWithDescription
+import com.passbolt.mobile.android.testtags.composetags.SwitchableSetting
 import org.hamcrest.Matcher
 import org.hamcrest.Matchers.allOf
 import org.junit.Before
@@ -146,7 +146,7 @@ class SettingsTest : KoinTest {
                         .and(hasAnyDescendant(hasContentDescription(getString(item.settingsItemTextId))))
 
                 if (item.hasOpenableIcon) {
-                    matcher = matcher.and(hasAnyDescendant(hasTestTag(OpenableSettingsItem.TestTags.ARROW)))
+                    matcher = matcher.and(hasAnyDescendant(hasTestTag(OpenableSetting.ARROW)))
                 }
 
                 composeTestRule
@@ -168,7 +168,7 @@ class SettingsTest : KoinTest {
 
             //    And	    I see a back button to go to the main settings page
             onNode(
-                hasTestTag(BackNavigationIcon.TestTags.ICON),
+                hasTestTag(BackNavigation.ICON),
                 useUnmergedTree = true,
             ).assertIsDisplayed()
 
@@ -183,7 +183,7 @@ class SettingsTest : KoinTest {
                         .and(hasAnyDescendant(hasContentDescription(getString(item.settingsItemTextId))))
 
                 if (item.hasOpenableIcon) {
-                    matcher = matcher.and(hasAnyDescendant(hasTestTag(OpenableSettingsItem.TestTags.ARROW)))
+                    matcher = matcher.and(hasAnyDescendant(hasTestTag(OpenableSetting.ARROW)))
                 }
 
                 composeTestRule
@@ -206,7 +206,7 @@ class SettingsTest : KoinTest {
                 .assertIsDisplayed()
             //    And 	    I see the back button to go to the main settings page
             onNode(
-                hasTestTag(BackNavigationIcon.TestTags.ICON),
+                hasTestTag(BackNavigation.ICON),
                 useUnmergedTree = true,
             ).assertIsDisplayed()
             //    And 	    I see a Developer mode with an nodes icon and a switch on the right
@@ -233,11 +233,11 @@ class SettingsTest : KoinTest {
             onNodeWithText(getString(LocalizationR.string.settings_app_settings)).performClick()
             onNodeWithText(getString(LocalizationR.string.settings_app_settings_expert_settings)).performClick()
             //    When 	    I enable the "Developer mode" switch
-            onAllNodesWithTag(SwitchableSettingsItem.TestTags.SWITCH)[0].performClick()
+            onAllNodesWithTag(SwitchableSetting.SWITCH)[0].performClick()
             //    Then      I see that switch is enabled
-            onAllNodesWithTag(SwitchableSettingsItem.TestTags.SWITCH)[0].assertIsOn()
+            onAllNodesWithTag(SwitchableSetting.SWITCH)[0].assertIsOn()
             //    And 	    I see that "Hide "device is rooted" dialog" switch is available
-            onAllNodesWithTag(SwitchableSettingsItem.TestTags.SWITCH)[1].assertIsEnabled()
+            onAllNodesWithTag(SwitchableSetting.SWITCH)[1].assertIsEnabled()
         }
     }
 
@@ -249,11 +249,11 @@ class SettingsTest : KoinTest {
             onNodeWithText(getString(LocalizationR.string.settings_app_settings)).performClick()
             onNodeWithText(getString(LocalizationR.string.settings_app_settings_expert_settings)).performClick()
             //    When 	    I disable the "Developer mode" switch
-            onAllNodesWithTag(SwitchableSettingsItem.TestTags.SWITCH)[0].performClick()
-            onAllNodesWithTag(SwitchableSettingsItem.TestTags.SWITCH)[0].performClick()
+            onAllNodesWithTag(SwitchableSetting.SWITCH)[0].performClick()
+            onAllNodesWithTag(SwitchableSetting.SWITCH)[0].performClick()
             //    And 	    I see that every subsequent position is unavailable
-            onAllNodesWithTag(SwitchableSettingsItem.TestTags.SWITCH)[0].assertIsOff()
-            onAllNodesWithTag(SwitchableSettingsItem.TestTags.SWITCH)[1].assertIsNotEnabled()
+            onAllNodesWithTag(SwitchableSetting.SWITCH)[0].assertIsOff()
+            onAllNodesWithTag(SwitchableSetting.SWITCH)[1].assertIsNotEnabled()
         }
     }
 
@@ -265,10 +265,10 @@ class SettingsTest : KoinTest {
             onNodeWithText(getString(LocalizationR.string.settings_app_settings)).performClick()
             onNodeWithText(getString(LocalizationR.string.settings_app_settings_expert_settings)).performClick()
             //    When 	    I enable the "Hide "device is rooted" dialog" switch
-            onAllNodesWithTag(SwitchableSettingsItem.TestTags.SWITCH)[0].performClick()
-            onAllNodesWithTag(SwitchableSettingsItem.TestTags.SWITCH)[1].performClick()
-            onAllNodesWithTag(SwitchableSettingsItem.TestTags.SWITCH)[1].assertIsOn()
-            onAllNodesWithTag(SwitchableSettingsItem.TestTags.SWITCH)[1].assertIsOn()
+            onAllNodesWithTag(SwitchableSetting.SWITCH)[0].performClick()
+            onAllNodesWithTag(SwitchableSetting.SWITCH)[1].performClick()
+            onAllNodesWithTag(SwitchableSetting.SWITCH)[1].assertIsOn()
+            onAllNodesWithTag(SwitchableSetting.SWITCH)[1].assertIsOn()
         }
     }
 
@@ -282,20 +282,20 @@ class SettingsTest : KoinTest {
             onNodeWithText(getString(LocalizationR.string.settings_accounts)).performClick()
             //    And 	    I see a Manage accounts with a person icon and a caret on the right
             val manageAccountMatcher =
-                hasTestTag(OpenableSettingsItem.TestTags.ITEM)
+                hasTestTag(OpenableSetting.ITEM)
                     .and(hasAnyDescendant(hasText(getString(LocalizationR.string.settings_accounts_transfer_account))))
                     .and(hasAnyDescendant(hasContentDescription(getString(LocalizationR.string.settings_accounts_transfer_account))))
-                    .and(hasAnyDescendant(hasTestTag(OpenableSettingsItem.TestTags.ARROW)))
+                    .and(hasAnyDescendant(hasTestTag(OpenableSetting.ARROW)))
 
             composeTestRule
                 .onNode(manageAccountMatcher, useUnmergedTree = true)
                 .assertExists()
             //    And 	    I see a Transfer account to another device with an lorry icon and a caret on the right
             val transferAccountMatcher =
-                hasTestTag(OpenableSettingsItem.TestTags.ITEM)
+                hasTestTag(OpenableSetting.ITEM)
                     .and(hasAnyDescendant(hasText(getString(LocalizationR.string.settings_accounts_transfer_account))))
                     .and(hasAnyDescendant(hasContentDescription(getString(LocalizationR.string.settings_accounts_transfer_account))))
-                    .and(hasAnyDescendant(hasTestTag(OpenableSettingsItem.TestTags.ARROW)))
+                    .and(hasAnyDescendant(hasTestTag(OpenableSetting.ARROW)))
 
             composeTestRule
                 .onNode(transferAccountMatcher, useUnmergedTree = true)
@@ -312,7 +312,7 @@ class SettingsTest : KoinTest {
         composeTestRule.apply {
             onNodeWithText(getString(LocalizationR.string.settings_app_settings)).performClick()
             //    When      I switch on the biometrics toggle button
-            onAllNodesWithTag(SwitchableSettingsItem.TestTags.SWITCH)[0].performClick()
+            onAllNodesWithTag(SwitchableSetting.SWITCH)[0].performClick()
             //    Then      I am prompted to configure biometrics in the device settings
             onNodeWithText(getString(LocalizationR.string.settings_add_first_fingerprint_title)).assertIsDisplayed()
             //    And       I see a "Cancel" button to go back to the previous state
@@ -334,7 +334,7 @@ class SettingsTest : KoinTest {
             //    When      I click on the "Autofill" list item
             onNodeWithText(getString(LocalizationR.string.settings_app_settings_autofill)).performClick()
             waitForIdle()
-            onAllNodesWithTag(SwitchWithDescriptionItem.TestTags.SWITCH, useUnmergedTree = true)[0].performClick()
+            onAllNodesWithTag(SwitchWithDescription.SWITCH, useUnmergedTree = true)[0].performClick()
             waitForIdle()
             //    Then      I see the "Passbolt Autofill enabled!" screen
             onNodeWithText(getString(LocalizationR.string.dialog_autofill_enabled_title)).assertIsDisplayed()
@@ -393,7 +393,7 @@ class SettingsTest : KoinTest {
                 .assertIsDisplayed()
             //    And 	    I see the back button to go to the main settings page
             onNode(
-                hasTestTag(BackNavigationIcon.TestTags.ICON),
+                hasTestTag(BackNavigation.ICON),
                 useUnmergedTree = true,
             ).assertIsDisplayed()
             //    And 	    I see a Enable debug logs with an bug icon and a switch on the right
@@ -406,7 +406,7 @@ class SettingsTest : KoinTest {
                         .and(hasAnyDescendant(hasContentDescription(getString(item.settingsItemTextId))))
 
                 if (item.hasOpenableIcon) {
-                    matcher = matcher.and(hasAnyDescendant(hasTestTag(OpenableSettingsItem.TestTags.ARROW)))
+                    matcher = matcher.and(hasAnyDescendant(hasTestTag(OpenableSetting.ARROW)))
                 }
 
                 composeTestRule

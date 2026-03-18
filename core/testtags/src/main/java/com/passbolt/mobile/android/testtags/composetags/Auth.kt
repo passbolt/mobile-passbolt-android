@@ -24,7 +24,7 @@
 package com.passbolt.mobile.android.testtags.composetags
 
 object Auth {
-    const val AVATAR = "auth_avatar"
-    const val PASSPHRASE_INPUT = "auth_passphrase_input"
-    const val SIGN_IN_BUTTON = "auth_sign_in_button"
+    const val AVATAR = "AuthAvatar"
+    const val PASSPHRASE_INPUT = "AuthPassphraseInput"
+    const val SIGN_IN_BUTTON = "AuthSignInButton"
 }

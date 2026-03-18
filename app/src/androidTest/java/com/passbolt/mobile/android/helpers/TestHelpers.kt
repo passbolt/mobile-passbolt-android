@@ -39,6 +39,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.passbolt.mobile.android.testtags.composetags.Auth
 import com.passbolt.mobile.android.testtags.composetags.Home
 import com.passbolt.mobile.android.testtags.composetags.ResourceForm
+import com.passbolt.mobile.android.testtags.composetags.SearchField
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 internal fun getString(
@@ -63,7 +64,7 @@ internal fun getString(
  * @param name The name for the new password resource.
  */
 internal fun ComposeTestRule.createNewPasswordFromHomeScreen(name: String) {
-    onNodeWithTag("home_fab").performClick()
+    onNodeWithTag(Home.FAB).performClick()
     onNodeWithText(getString(LocalizationR.string.create_resource_menu_create_password)).performClick()
     waitForResourceForm()
     onNodeWithTag(ResourceForm.NAME_INPUT).performTextReplacement(name)
@@ -102,12 +103,12 @@ internal fun ComposeTestRule.signIn(passphrase: String) {
  * @param name The resource name to search for.
  */
 internal fun ComposeTestRule.searchAndOpenFirstResourceByName(name: String) {
-    onNodeWithTag("home_search_input_field")
+    onNodeWithTag(SearchField.INPUT)
         .performClick()
         .performTextReplacement(name)
 
     val rowMatcher =
-        hasTestTag("home_resource_row").and(
+        hasTestTag(Home.RESOURCE_ROW).and(
             hasAnyDescendant(hasText(name, substring = true, ignoreCase = true)),
         )
 
@@ -141,12 +142,12 @@ internal fun ComposeTestRule.searchAndOpenFirstResourceByName(name: String) {
  * @param name The resource name to search for.
  */
 internal fun ComposeTestRule.searchAndClickMoreOfFirstResource(name: String) {
-    onNodeWithTag("home_search_input_field")
+    onNodeWithTag(SearchField.INPUT)
         .performClick()
         .performTextReplacement(name)
 
     val rowMatcher =
-        hasTestTag("home_resource_row").and(
+        hasTestTag(Home.RESOURCE_ROW).and(
             hasAnyDescendant(hasText(name, substring = true, ignoreCase = true)),
         )
 
@@ -155,7 +156,7 @@ internal fun ComposeTestRule.searchAndClickMoreOfFirstResource(name: String) {
             .fetchSemanticsNodes()
             .isNotEmpty()
     }
-    onAllNodes(hasTestTag("home_resource_more"), useUnmergedTree = true)
+    onAllNodes(hasTestTag(Home.RESOURCE_MORE), useUnmergedTree = true)
         .onFirst()
         .performClick()
 }
@@ -173,12 +174,12 @@ internal fun ComposeTestRule.searchAndClickMoreOfFirstResource(name: String) {
  * - Ensure the Folders filter is selected before calling this helper.
  */
 internal fun ComposeTestRule.searchAndOpenFirstFolderByName(name: String) {
-    onNodeWithTag("home_search_input_field")
+    onNodeWithTag(SearchField.INPUT)
         .performClick()
         .performTextReplacement(name)
 
     val folderRowMatcher =
-        hasTestTag("home_folder_row").and(
+        hasTestTag(Home.FOLDER_ROW).and(
             hasAnyDescendant(hasText(name, substring = true, ignoreCase = true)),
         )
 
@@ -205,7 +206,7 @@ internal fun ComposeTestRule.searchAndOpenFirstFolderByName(name: String) {
  * @param filter The resource ID of the filter to select.
  */
 internal fun ComposeTestRule.chooseFilter(filter: Int) {
-    onNodeWithTag("home_search_filter").performClick()
+    onNodeWithTag(Home.SEARCH_FILTER).performClick()
     onNode(
         hasClickAction().and(
             hasAnyDescendant(hasText(getString(filter))),

@@ -96,6 +96,7 @@ import com.passbolt.mobile.android.feature.otp.screen.OtpSideEffect.ShowErrorSna
 import com.passbolt.mobile.android.feature.otp.screen.OtpSideEffect.ShowSuccessSnackbar
 import com.passbolt.mobile.android.feature.otp.screen.OtpSideEffect.ShowToast
 import com.passbolt.mobile.android.otpmoremenu.OtpMoreMenuBottomSheet
+import com.passbolt.mobile.android.testtags.composetags.Otp
 import com.passbolt.mobile.android.ui.ResourceFormMode
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
@@ -183,7 +184,7 @@ fun OtpScreen(
         snackbarHostState = snackbarHostState,
         modifier =
             modifier
-                .testTag(OtpScreenTestTags.SCREEN),
+                .testTag(Otp.SCREEN),
         appBarTitle = stringResource(LocalizationR.string.main_menu_otp),
         appBarIconRes = CoreUiR.drawable.ic_time_lock,
         appBarSearchInput = {
@@ -288,8 +289,4 @@ fun OtpScreen(
                 ProgressDialog(state.showProgress)
             },
     )
-}
-
-object OtpScreenTestTags {
-    const val SCREEN: String = "otp_screen"
 }
