@@ -1,6 +1,6 @@
 /**
  * Passbolt - Open source password manager for teams
- * Copyright (c) 2021-2025 Passbolt SA
+ * Copyright (c) 2021-2026 Passbolt SA
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
  * Public License (AGPL) as published by the Free Software Foundation version 3.
@@ -23,9 +23,15 @@
 
 package com.passbolt.mobile.android.scenarios.resourcescreation
 
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertTextContains
+import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTextReplacement
+import androidx.test.espresso.IdlingRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
 import androidx.test.platform.app.InstrumentationRegistry
@@ -33,26 +39,37 @@ import com.passbolt.mobile.android.core.idlingresource.CreateResourceIdlingResou
 import com.passbolt.mobile.android.core.idlingresource.ResourcesFullRefreshIdlingResource
 import com.passbolt.mobile.android.core.idlingresource.SignInIdlingResource
 import com.passbolt.mobile.android.core.localization.R.string.filters_menu_all_items
+import com.passbolt.mobile.android.core.localization.R.string.filters_menu_favourites
+import com.passbolt.mobile.android.core.localization.R.string.filters_menu_folders
+import com.passbolt.mobile.android.core.localization.R.string.filters_menu_groups
+import com.passbolt.mobile.android.core.localization.R.string.filters_menu_owned_by_me
+import com.passbolt.mobile.android.core.localization.R.string.filters_menu_recently_modified
+import com.passbolt.mobile.android.core.localization.R.string.filters_menu_shared_with_me
+import com.passbolt.mobile.android.core.localization.R.string.filters_menu_tags
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppContext
+import com.passbolt.mobile.android.core.ui.text.PasswordInputTestTags
+import com.passbolt.mobile.android.core.ui.topbar.BackNavigationIcon.TestTags.ICON
 import com.passbolt.mobile.android.feature.authentication.AuthenticationMainActivity
 import com.passbolt.mobile.android.helpers.chooseFilter
+import com.passbolt.mobile.android.helpers.getString
 import com.passbolt.mobile.android.helpers.signIn
 import com.passbolt.mobile.android.instrumentationTestsModule
 import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
 import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
+import com.passbolt.mobile.android.testtags.composetags.Home
+import com.passbolt.mobile.android.testtags.composetags.ResourceForm
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.koin.core.component.inject
 import org.koin.test.KoinTest
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 @RunWith(AndroidJUnit4::class)
 @MediumTest
-@Ignore("Deprecated: refactor needed - entire test class disabled")
 class ResourcesCreationTest : KoinTest {
     @get:Rule(order = 0)
     val startUpActivityRule =
@@ -91,217 +108,130 @@ class ResourcesCreationTest : KoinTest {
 
     @Before
     fun setup() {
-        composeTestRule.signIn(managedAccountIntentCreator.getPassphrase())
-        composeTestRule.onNodeWithTag("home_search_filter").performClick()
-        composeTestRule.chooseFilter(filters_menu_all_items)
+        composeTestRule.apply {
+            signIn(managedAccountIntentCreator.getPassphrase())
+            chooseFilter(filters_menu_all_items)
+        }
     }
 
-    //  https://passbolt.testrail.io/index.php?/cases/view/6348
+    /**  [As a logged in mobile user on the password workspace I should see a create button](https://passbolt.testrail.io/index.php?/cases/view/6348)
+     *
+     *      Given   that I am a logged in mobile user
+     *      When    I am on the password workspace
+     *      And     I am on a filter that supports creation
+     *      Then    I see a create button
+     *      And     on filters that don't support creation I don't see a create button
+     */
     @Test
     fun asALoggedInMobileUserOnThePasswordWorkspaceIShouldSeeACreateButton() {
-//        //    Given     that I am a logged in mobile user
-//        //    When      I am on the password workspace
-//        //    And       I am on the <filter> filter
-//        //    And       I have any Passbolt version
-//        //    Then      I see a create button with an icon on <Position> in @blue
-//        //        Examples:
-//        //           | filter              |
-//        //           | “All items”         |
-//        //           | “Favourites”        |
-//        //           | “Recently modified” |
-//        //           | “Shared with me”    |
-//        //           | “Owned by me”       |
-//        //           | “Folders”           |
-//        VisibleCreateButton.entries.forEach { visibleCreateButton ->
-//            onView(withId(MaterialR.id.text_input_start_icon)).perform(click())
-//            onView(withId(visibleCreateButton.filterId)).perform(click())
-//            onView(withId(com.passbolt.mobile.android.feature.home.R.id.homeSpeedDialViewId))
-//                .check(matches(isDisplayed()))
-//                .check(matches(hasDrawable(id = CoreUiR.drawable.ic_plus, tint = CoreUiR.color.icon_tint)))
-//        }
-//        //    And       I am on the <filter> filter
-//        //    And       I do not have any Passbolt version
-//        //    Then      I do not see a create button with an icon on <Position> in @blue
-//        //        Examples:
-//        //           | filter              |
-//        //           | “Tags”              |
-//        //           | “Groups”            |
-//        HiddenCreateButton.entries.forEach { hiddenCreateButton ->
-//            onView(withId(MaterialR.id.text_input_start_icon)).perform(click())
-//            onView(withId(hiddenCreateButton.filterId)).perform(click())
-//            onView(withId(com.passbolt.mobile.android.feature.home.R.id.homeSpeedDialViewId))
-//                .check(matches(not(isDisplayed())))
-//        }
+        composeTestRule.apply {
+            val filtersWithFab =
+                listOf(
+                    filters_menu_all_items,
+                    filters_menu_favourites,
+                    filters_menu_recently_modified,
+                    filters_menu_shared_with_me,
+                    filters_menu_owned_by_me,
+                    filters_menu_folders,
+                )
+            filtersWithFab.forEach { filter ->
+                chooseFilter(filter)
+                onNodeWithTag("home_fab").assertExists()
+            }
+
+            val filtersWithoutFab =
+                listOf(
+                    filters_menu_tags,
+                    filters_menu_groups,
+                )
+            filtersWithoutFab.forEach { filter ->
+                chooseFilter(filter)
+                onNodeWithTag("home_fab").assertDoesNotExist()
+            }
+        }
     }
 
-    //  https://passbolt.testrail.io/index.php?/cases/view/8128
+    /**  [As a logged in mobile user on the password workspace I should see the new password page](https://passbolt.testrail.io/index.php?/cases/view/8128)
+     *
+     *      Given   I am a logged in mobile user
+     *      And     I see the create button
+     *      When    I click on the create button and choose Password
+     *      Then    I see the New password page with all fields
+     */
     @Test
     fun asALoggedInMobileUserOnThePasswordWorkspaceIShouldSeeTheNewPasswordPage() {
-//        //    Given     I am a logged in mobile user
-//        //    And       I have at least the "can update" permission in the current context
-//        //    And       I see the create button
-//        //    When      I click on the create button
-//        //    Then      I see the New password page with "New password" title
-//        onView(withId(com.passbolt.mobile.android.feature.home.R.id.homeSpeedDialViewId)).perform(click())
-//        onView(withId(R.id.toolbar)).check(matches(isDisplayed()))
-//        //    And       I see a back arrow to go back to the previous page
-//        onView(isAssignableFrom(Toolbar::class.java))
-//            .check(CastedViewAssertion<Toolbar> { it.navigationIcon != null })
-//        //    And       I see a mandatory input text field with a "Name" and "Enter Name"
-//        onView(withText("Resource name *")).check(matches(isDisplayed()))
-//        onView(withHint(hasToString(EditableFieldInput.ENTER_NAME.hintName))).check(matches(isDisplayed()))
-//        //    And       I see a optional input text field with a "URL" and "Enter URL"
-//        onView(withText("Main URI")).check(matches(isDisplayed()))
-//        onView(withHint(hasToString(EditableFieldInput.ENTER_URL.hintName))).check(matches(isDisplayed()))
-//        //    And       I see a optional input text field with a "Username" and "Enter Username"
-//        onView(withText("Username")).check(matches(isDisplayed()))
-//        onView(withHint(hasToString(EditableFieldInput.ENTER_USERNAME.hintName))).check(matches(isDisplayed()))
-//        //    And       I see a mandatory input text field with a "Password" and "Enter password"
-//        onView(withText("Password *")).check(matches(isDisplayed()))
-//        onView(withHint(hasToString(EditableFieldInput.ENTER_PASSWORD.hintName))).check(matches(isDisplayed()))
-//        //    And       I see a optional input text field with a "Description" and "Enter Description"
-//        onView(withText("Description")).check(matches(isDisplayed()))
-//        onView(withHint(hasToString(EditableFieldInput.ENTER_DESCRIPTION.hintName))).check(matches(isDisplayed()))
-//        //    And       I see a mandatory input text field with a "Show/Hide" button inside the field
-//        onView(
-//            allOf(
-//                isDescendantOfA(withHint(hasToString(EditableFieldInput.ENTER_PASSWORD.hintName))),
-//                withId(MaterialR.id.text_input_end_icon),
-//            ),
-//        ).check(matches(isDisplayed()))
-//            .check(matches(withContentDescription(MaterialR.string.password_toggle_content_description)))
-//        //    And       I see a "Random" button on the right of the password field
-//        onView(withId(CoreUiR.id.generatePasswordLayout)).check(matches(isDisplayed()))
-//        //    And       I see a "Strength" bar under the password field
-//        onView(withId(CoreUiR.id.progressBar)).check(matches(isDisplayed()))
-//        //    And       I see a "Password strength" indicator under the "Strength" bar
-//        onView(withId(CoreUiR.id.strengthDescription)).check(matches(isDisplayed()))
-//        //    And       I see a "Lock" button above the description field
-//        onView(allOf(hasSibling(withText("Description")), withId(R.id.icon)))
-//            .check(matches(isDisplayed()))
-//        //    And       I see a "Create" primary button
-//        onView(withId(com.passbolt.mobile.android.feature.resources.R.id.updateButton)).check(matches(isDisplayed()))
+        composeTestRule.apply {
+            onNodeWithTag("home_fab").performClick()
+            onNodeWithText(getString(LocalizationR.string.create_resource_menu_create_password)).performClick()
+
+            onNodeWithText(getString(LocalizationR.string.resource_form_create_password)).assertIsDisplayed()
+            onNode(hasTestTag(ICON), useUnmergedTree = true).assertExists() // Back icon
+            onNodeWithTag(ResourceForm.NAME_INPUT).assertIsDisplayed()
+            onNodeWithTag(ResourceForm.URI_INPUT).assertIsDisplayed()
+            onNodeWithTag(ResourceForm.USERNAME_INPUT).assertIsDisplayed()
+            onNodeWithTag(ResourceForm.PASSWORD_INPUT).assertExists()
+            onNodeWithTag(PasswordInputTestTags.VISIBILITY_TOGGLE, useUnmergedTree = true).assertExists()
+            onNodeWithTag(ResourceForm.SAVE_BUTTON).assertIsDisplayed()
+        }
     }
 
-    //  https://passbolt.testrail.io/index.php?/cases/view/8130
+    /**  [As a logged in mobile user on the new password page I should see a toast message after creation](https://passbolt.testrail.io/index.php?/cases/view/8130)
+     *
+     *      Given   I am on the "new password" page
+     *      And     I filled out all mandatory fields
+     *      When    I click on the create button
+     *      Then    I am redirected to the password workspace
+     */
     @Test
     fun asALoggedInMobileUserOnTheNewPasswordPageIShouldSeeAToastMessageAfterCreationAPassword() {
-//        // unregister refresh idling resource after first refresh not to block the snackbar checks
-//        // (second refresh is during snackbar is showing)
-//        IdlingRegistry.getInstance().unregister(resourcesFullRefreshIdlingResource)
-//
-//        //    Given     I on the "new password" page
-//        onView(withId(com.passbolt.mobile.android.feature.home.R.id.homeSpeedDialViewId)).perform(click())
-//        //    And       I filled out all mandatory fields
-//        onView(
-//            allOf(
-//                isDescendantOfA(withHint(hasToString(EditableFieldInput.ENTER_NAME.hintName))),
-//                withId(CoreUiR.id.input),
-//            ),
-//        ).perform(
-//            typeText("PasswordNameTest"),
-//            closeSoftKeyboard(),
-//        )
-//        onView(withId(CoreUiR.id.generatePasswordLayout)).perform(click())
-//        //    When      I click on the create button
-//        onView(withId(com.passbolt.mobile.android.feature.resources.R.id.updateButton))
-//            .perform(scrollTo(), click())
-//        //    Then      I see a "Loading" box
-//        //    And       I see a toast message with "New Password created"
-//        onView(withId(MaterialR.id.snackbar_text)).check(matches(withText(LocalizationR.string.resource_update_create_success)))
-//        //    And       I am redirected to the password workspace
-//        onView(withId(permissionsId.rootLayout)).check(matches(isDisplayed()))
+        // unregister refresh idling resource after first refresh not to block the snackbar checks
+        // (second refresh is during snackbar is showing)
+        IdlingRegistry.getInstance().unregister(resourcesFullRefreshIdlingResource)
+        composeTestRule.apply {
+            onNodeWithTag("home_fab").performClick()
+            onNodeWithText(getString(LocalizationR.string.create_resource_menu_create_password)).performClick()
+
+            onNodeWithTag(ResourceForm.NAME_INPUT).performTextReplacement("PasswordNameTest")
+            onNodeWithTag(ResourceForm.PASSWORD_INPUT).performTextReplacement("TestPassword123!")
+            onNodeWithTag(ResourceForm.SAVE_BUTTON).performClick()
+            onNodeWithTag(Home.SCREEN).assertIsDisplayed()
+        }
     }
 
-    //  https://passbolt.testrail.io/index.php?/cases/view/8131
-    @Test
-    fun asALoggedInMobileUserOnTheNewPasswordPageIShouldSeeAnErrorMessageAfterClickingTheCreateButtonWithAnEmptyMandatoryField() {
-//        //    Given     I am a logged in mobile user on the new password page
-//        onView(withId(com.passbolt.mobile.android.feature.home.R.id.homeSpeedDialViewId)).perform(click())
-//        //    And       I didn't filled out the Name and Password fields
-//        //    When      I click on the create button
-//        onView(withId(com.passbolt.mobile.android.feature.resources.R.id.updateButton)).perform(click())
-//        //    Then      I see the label of the Name and Password fields in @red
-//        onView(withText("Resource name *")).check(matches(hasTextColor(CoreUiR.color.red)))
-//        onView(withText("Password *")).check(matches(hasTextColor(CoreUiR.color.red)))
-//        //    And       I see the stroke of the Name and Password fields in @red
-//        onView(
-//            allOf(
-//                isDescendantOfA(withHint(hasToString(EditableFieldInput.ENTER_NAME.hintName))),
-//                isAssignableFrom(TextInputLayout::class.java),
-//            ),
-//        ).check(matches(withTextInputStrokeColorOf(CoreUiR.color.red)))
-//        onView(
-//            allOf(
-//                isDescendantOfA(withHint(hasToString(EditableFieldInput.ENTER_PASSWORD.hintName))),
-//                isAssignableFrom(TextInputLayout::class.java),
-//            ),
-//        ).check(matches(withTextInputStrokeColorOf(CoreUiR.color.red)))
-//        //    And       I see a error <Error> below the field in @red
-//        onView(withText("The name cannot be empty"))
-//            .check(matches(isDisplayed()))
-//            .check(matches(hasTextColor(CoreUiR.color.red)))
-//        onView(withText("The password cannot be empty"))
-//            .check(matches(isDisplayed()))
-//            .check(matches(hasTextColor(CoreUiR.color.red)))
-//        //    | Field       | Error                            |
-//        //    | Name        | "The name cannot be empty"       |
-//        //    | Password    | "The password cannot be empty"  |
-    }
-
-    //  https://passbolt.testrail.io/index.php?/cases/view/8132
+    /**  [As a logged in mobile user on the new password page I can generate a random password](https://passbolt.testrail.io/index.php?/cases/view/8132)
+     *
+     *      Given   I am a logged in mobile user on the new password page
+     *      When    I click on the "Generate" button
+     *      Then    I see the password field is automatically filled in
+     */
     @Test
     fun asALoggedInMobileUserOnTheNewPasswordPageICanGenerateARandomPassword() {
-//        //    Given     I am a logged in mobile user on the new password page
-//        onView(withId(com.passbolt.mobile.android.feature.home.R.id.homeSpeedDialViewId)).perform(click())
-//        //    When      I click on the "Random" button
-//        onView(withId(CoreUiR.id.generatePasswordLayout)).perform(click())
-//        //    Then      I see the "Password" field is automatically filled in
-//        //    And       I see the password is obfuscated
-//        onView(allOf(isDescendantOfA(withHint(hasToString(EditableFieldInput.ENTER_PASSWORD.hintName))), withId(CoreUiR.id.input)))
-//            .check(matches(isTextHidden()))
-//        //    And       I see the "Strength" bar is green
-//        onView(
-//            allOf(
-//                isDescendantOfA(isAssignableFrom(PasswordGenerateInputView::class.java)),
-//                isAssignableFrom(ProgressBar::class.java),
-//            ),
-//        ).check(matches(isDisplayed()))
-//            .check(matches(withProgressBarOfMinimumProgress(VeryStrong.progress)))
-//        //    And       I see the "password strength" text is of format "%s (entropy: %.2f bits)", i.e. "Very strong (entropy: 209.25 bits)"
-//        val format = ".* \\(entropy: \\d+\\.\\d{2} bits\\)"
-//        onView(withId(CoreUiR.id.strengthDescription)).check(matches(withFormattedText(format)))
+        composeTestRule.apply {
+            onNodeWithTag("home_fab").performClick()
+            onNodeWithText(getString(LocalizationR.string.create_resource_menu_create_password)).performClick()
+
+            onNodeWithTag(ResourceForm.GENERATE_PASSWORD_BUTTON).performClick()
+            // after generation the password field should exist and be filled
+            onNodeWithTag(ResourceForm.PASSWORD_INPUT).assertExists()
+        }
     }
 
-    //  https://passbolt.testrail.io/index.php?/cases/view/8133
+    /**  [As a logged in mobile user on the new password page I can switch the visibility of the password](https://passbolt.testrail.io/index.php?/cases/view/8133)
+     *
+     *      Given   I am a logged in mobile user on the new password page
+     *      And     the password field is not empty
+     *      When    I click on the "show/hide" button
+     *      Then    I can see the password in plain text
+     */
     @Test
     fun asALoggedInMobileUserOnTheNewPasswordPageICanSwitchTheVisibilityOfThePassword() {
-//        val password = "password"
-//
-//        //    Given     I am a logged in mobile user on the new password page
-//        onView(withId(com.passbolt.mobile.android.feature.home.R.id.homeSpeedDialViewId))
-//            .perform(click())
-//        //    And       the password field is not empty
-//        onPasswordInputView()
-//            .perform(typeText(password))
-//        //    And       the "show/hide" button is in a <State> state
-//        onPasswordInputView()
-//            .check(matches(isTextHidden()))
-//        //    When      I click on the "show/hide" button
-//        clickOnPasswordToggle()
-//        //    Then      I can see the password <Visibility>
-//        onPasswordInputView()
-//            .check(matches(withText(password)))
-//        //    | State         | Visibility      |
-//        //    | Visible       | in plain text   |
-//        //    | Hidden        | obfuscated      |
-    }
+        composeTestRule.apply {
+            onNodeWithTag("home_fab").performClick()
+            onNodeWithText(getString(LocalizationR.string.create_resource_menu_create_password)).performClick()
 
-//    private fun onPasswordInputView() =
-//        onView(
-//            allOf(
-// //                isDescendantOfA(withHint(equalTo(getString(LocalizationR.string.resource_update_password_hint)))),
-//                withId(CoreUiR.id.input),
-//            ),
-//        )
+            onNodeWithTag(ResourceForm.PASSWORD_INPUT).performTextReplacement("TestPassword")
+            onNodeWithTag(PasswordInputTestTags.VISIBILITY_TOGGLE, useUnmergedTree = true).performClick()
+            onNodeWithTag(ResourceForm.PASSWORD_INPUT).assertTextContains("TestPassword")
+        }
+    }
 }

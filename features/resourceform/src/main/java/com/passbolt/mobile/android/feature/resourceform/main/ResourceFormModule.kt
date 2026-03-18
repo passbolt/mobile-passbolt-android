@@ -43,6 +43,7 @@ fun Module.resourceFormModule() {
             dataRefreshTrackingFlow = get(),
             metadataPrivateKeysHelperInteractor = get(),
             createResourceIdlingResource = get(),
+            updateResourceIdlingResource = get(),
         )
     }
     factoryOf(::ResourceModelHandler)

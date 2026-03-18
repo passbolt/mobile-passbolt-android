@@ -9,7 +9,7 @@ All resources must be accessible by the test user with **owner permissions**.
 
 ## Quick Setup Checklist
 
-Create the following 8 resources on the backend for the test user.
+Create the following resources on the backend for the test user.
 Unless noted otherwise, every resource uses these field values:
 
 | Field | Value |
@@ -145,6 +145,23 @@ Used by: ResourcesNoteTest (currently disabled)
 
 ---
 
+### 9. `Expired`
+
+| Field | Value |
+|---|---|
+| Name | `Expired` |
+| URI | `https://www.passbolt.com` |
+| Username | `BettyAutomate` |
+| Password | `TestPassword123!` |
+| Expiry date | A date in the past (e.g. yesterday) |
+
+> **Note:** This resource must have an expiry date set to a past date so it shows as expired.
+> The server must have automatic expiry enabled (7 days).
+
+Used by: UpdateExpiryTest
+
+---
+
 ## Folders
 
 ### 1. `Shared without permission to add`
@@ -206,6 +223,18 @@ Opens the action menu for each resource and verifies the delete confirmation
 dialog appears and that cancel returns to the home screen.
 
 Uses all 6 main resources (#1–#6).
+
+### UpdateExpiryTest (`resourcesedition/updateexpiry/`) — Active
+
+| Test method | Required resources |
+|---|---|
+| `updateExpiryOfAResourceWhenSecretHasChanged` | Creates resource at runtime; server must have automatic expiry (7 days) |
+| `doNotUpdateExpiryOfAResourceWhenAllItemsExceptPasswordHasChanged` | `Expired` (#9) — must have past expiry date |
+
+### SetExpiryTest (`resourcescreation/setexpiry/`) — Active
+
+Creates a resource at runtime and verifies expiry is set to 7 days.
+Server must have automatic expiry enabled (7 days).
 
 ### DeleteResourcesTest (`deleteresource/`) — Partially active
 

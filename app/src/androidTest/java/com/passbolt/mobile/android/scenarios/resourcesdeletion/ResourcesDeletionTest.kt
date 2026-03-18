@@ -1,6 +1,6 @@
 /**
  * Passbolt - Open source password manager for teams
- * Copyright (c) 2023-2024 Passbolt SA
+ * Copyright (c) 2023-2026 Passbolt SA
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
  * Public License (AGPL) as published by the Free Software Foundation version 3.
@@ -23,7 +23,12 @@
 
 package com.passbolt.mobile.android.scenarios.resourcesdeletion
 
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
+import androidx.test.espresso.IdlingRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
 import androidx.test.platform.app.InstrumentationRegistry
@@ -32,29 +37,35 @@ import com.passbolt.mobile.android.core.idlingresource.CreateResourceIdlingResou
 import com.passbolt.mobile.android.core.idlingresource.DeleteResourceIdlingResource
 import com.passbolt.mobile.android.core.idlingresource.ResourcesFullRefreshIdlingResource
 import com.passbolt.mobile.android.core.idlingresource.SignInIdlingResource
+import com.passbolt.mobile.android.core.localization.R.string.are_you_sure
+import com.passbolt.mobile.android.core.localization.R.string.cancel
+import com.passbolt.mobile.android.core.localization.R.string.delete
 import com.passbolt.mobile.android.core.localization.R.string.filters_menu_all_items
+import com.passbolt.mobile.android.core.localization.R.string.more_delete
+import com.passbolt.mobile.android.core.localization.R.string.resource_will_be_deleted
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.feature.authentication.AuthenticationMainActivity
 import com.passbolt.mobile.android.helpers.chooseFilter
 import com.passbolt.mobile.android.helpers.createNewPasswordFromHomeScreen
+import com.passbolt.mobile.android.helpers.getString
+import com.passbolt.mobile.android.helpers.searchAndClickMoreOfFirstResource
 import com.passbolt.mobile.android.helpers.signIn
+import com.passbolt.mobile.android.helpers.waitForHomeScreen
 import com.passbolt.mobile.android.instrumentationTestsModule
 import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
 import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
+import com.passbolt.mobile.android.testtags.composetags.Home
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.koin.test.KoinTest
 import org.koin.test.inject
 
-// TODO rewrite to compose
 @RunWith(AndroidJUnit4::class)
 @MediumTest
-@Ignore("Deprecated: refactor needed - entire test class disabled")
 class ResourcesDeletionTest : KoinTest {
     @get:Rule(order = 0)
     val startUpActivityRule =
@@ -96,70 +107,75 @@ class ResourcesDeletionTest : KoinTest {
 
     @Before
     fun setup() {
-        composeTestRule.signIn(managedAccountIntentCreator.getPassphrase())
-        createNewPasswordFromHomeScreen("ResourcesDeletionTest")
-        composeTestRule.chooseFilter(filters_menu_all_items)
+        composeTestRule.apply {
+            signIn(managedAccountIntentCreator.getPassphrase())
+            createNewPasswordFromHomeScreen(RESOURCE_NAME)
+            chooseFilter(filters_menu_all_items)
+        }
     }
 
-    //    https://passbolt.testrail.io/index.php?/cases/view/8140
+    /**  [On the action menu drawer I can click delete password element](https://passbolt.testrail.io/index.php?/cases/view/8140)
+     *
+     *      Given   that I am on the resource's action menu drawer
+     *      And     I see 'Delete password' element enabled
+     *      When    I click 'Delete password'
+     *      Then    I see a popup with 'Are you sure?' information
+     *      And     I see description of this popup
+     *      And     I see 'Cancel' button
+     *      And     I see 'Delete' button
+     */
     @Test
     fun onTheActionMenuDrawerICanClickDeletePasswordElement() {
-//        //    Given that I am on the resource’s action menu drawer
-//        composeTestRule.searchAndOpenFirstResourceByName("ResourcesDeletionTest")
-//        //        onView(withId(searchEditText)).perform(typeText("ResourcesDeletionTest"))
-// //        onView(first(withId(more))).perform(click())
-//        //    And I see ‘Delete password’ element enabled
-//        onView(withId(com.passbolt.mobile.android.feature.resourcemoremenu.R.id.delete))
-//            .check(matches(isDisplayed()))
-//            .check(matches(hasDrawable(id = CoreUiR.drawable.ic_trash)))
-//        onView(withId(com.passbolt.mobile.android.feature.resourcemoremenu.R.id.passwordBottomSheetRoot))
-//            .perform(swipeUp())
-//        //    When I click ‘Delete password’
-//        onView(withId(com.passbolt.mobile.android.feature.resourcemoremenu.R.id.delete)).perform(click())
-//        //    Then I see a popup with ‘Are you sure?’ information
-//        onView(withText(LocalizationR.string.are_you_sure)).check(matches(isDisplayed()))
-//        //    And I see description of this popup
-//        onView(withText(LocalizationR.string.resource_will_be_deleted)).check(matches(isDisplayed()))
-//        //    And I see ‘Cancel’ button in @blue
-//        onView(withText(LocalizationR.string.cancel)).check(matches(isDisplayed()))
-//        //    And I see ‘Delete’ button in @blue
-//        onView(withText(LocalizationR.string.delete)).check(matches(isDisplayed()))
+        composeTestRule.apply {
+            searchAndClickMoreOfFirstResource(RESOURCE_NAME)
+            onNodeWithText(getString(more_delete)).assertIsDisplayed().performClick()
+
+            onNodeWithText(getString(are_you_sure)).assertIsDisplayed()
+            onNodeWithText(getString(resource_will_be_deleted)).assertIsDisplayed()
+            onNodeWithText(getString(cancel)).assertIsDisplayed()
+            onNodeWithText(getString(delete)).assertIsDisplayed()
+        }
     }
 
-    //    https://passbolt.testrail.io/index.php?/cases/view/8141
+    /**  [On the password removal popup I can click the cancel button](https://passbolt.testrail.io/index.php?/cases/view/8141)
+     *
+     *      Given   that I am on removal popup
+     *      When    I click 'Cancel' button
+     *      Then    I am back on the home screen
+     */
     @Test
     fun onThePasswordRemovalPopupICanClickTheCancelButton() {
-//        //    Given that I am on removal popup
-//        composeTestRule.searchAndOpenFirstResourceByName("ResourcesDeletionTest")
-//        onView(withId(com.passbolt.mobile.android.feature.resourcemoremenu.R.id.passwordBottomSheetRoot))
-//            .perform(swipeUp())
-//        onView(withId(com.passbolt.mobile.android.feature.resourcemoremenu.R.id.delete)).perform(click())
-//        //    When I click ‘Cancel’ button in @blue
-//        onView(withText(LocalizationR.string.cancel)).perform(click())
-//        //    Then I am back on the resource view page
-//        // TODO investigate as this should be home which now is in compose
-// //        onView(withId(com.passbolt.mobile.android.feature.permissions.R.id.rootLayout)).check(matches(isDisplayed()))
+        composeTestRule.apply {
+            searchAndClickMoreOfFirstResource(RESOURCE_NAME)
+            onNodeWithText(getString(more_delete)).assertIsDisplayed().performClick()
+
+            onNodeWithText(getString(cancel)).performClick()
+            onNodeWithTag(Home.SCREEN).assertIsDisplayed()
+        }
     }
 
-    //    https://passbolt.testrail.io/index.php?/cases/view/8142
+    /**  [On the password removal popup I can click the delete button](https://passbolt.testrail.io/index.php?/cases/view/8142)
+     *
+     *      Given   that I am on removal popup
+     *      When    I click 'Delete' button
+     *      Then    I am back on the home screen
+     */
     @Test
     fun onThePasswordRemovalPopupICanClickTheDeleteButton() {
-//        // unregister refresh idling resource after first refresh not to block the snackbar checks
-//        // (second refresh is during snackbar is showing)
-//        IdlingRegistry.getInstance().unregister(resourcesFullRefreshIdlingResource)
-//
-//        //    Given that I am on removal popup
-//        composeTestRule.searchAndOpenFirstResourceByName("ResourcesDeletionTest")
-//        onView(withId(com.passbolt.mobile.android.feature.resourcemoremenu.R.id.passwordBottomSheetRoot))
-//            .perform(swipeUp())
-//        onView(withId(com.passbolt.mobile.android.feature.resourcemoremenu.R.id.delete)).perform(click())
-//        //    When I click ‘Delete’ button in @blue
-//        onView(withText(LocalizationR.string.delete)).perform(click())
-//        //    Then I am back on the homepage
-//        // TODO investigate as this should be home which now is in compose
-// //        onView(withId(com.passbolt.mobile.android.feature.permissions.R.id.rootLayout)).check(matches(isDisplayed()))
-//        //    And I see a popup "<password name> resource was deleted." in @green
-//        onView(withId(MaterialR.id.snackbar_text))
-//            .check(matches(withText(endsWith(" resource was deleted."))))
+        // unregister refresh idling resource after first refresh not to block the snackbar checks
+        // (second refresh is during snackbar is showing)
+        IdlingRegistry.getInstance().unregister(resourcesFullRefreshIdlingResource)
+        composeTestRule.apply {
+            searchAndClickMoreOfFirstResource(RESOURCE_NAME)
+            onNodeWithText(getString(more_delete)).assertIsDisplayed().performClick()
+
+            onNodeWithText(getString(delete)).performClick()
+            waitForHomeScreen()
+            onNodeWithTag(Home.SCREEN).assertIsDisplayed()
+        }
+    }
+
+    private companion object {
+        private const val RESOURCE_NAME = "ResourcesDeletionTest"
     }
 }

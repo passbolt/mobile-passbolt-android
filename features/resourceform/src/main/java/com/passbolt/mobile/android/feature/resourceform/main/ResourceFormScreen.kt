@@ -25,6 +25,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -77,6 +78,7 @@ import com.passbolt.mobile.android.feature.resourceform.main.ResourceFormSideEff
 import com.passbolt.mobile.android.feature.resourceform.main.ui.AdditionalSecretsSection
 import com.passbolt.mobile.android.feature.resourceform.main.ui.LeadingContent
 import com.passbolt.mobile.android.feature.resourceform.main.ui.MetadataSection
+import com.passbolt.mobile.android.testtags.composetags.ResourceForm
 import com.passbolt.mobile.android.ui.LeadingContentType
 import com.passbolt.mobile.android.ui.PasswordStrength
 import com.passbolt.mobile.android.ui.ResourceFormMode.Create
@@ -192,7 +194,7 @@ private fun ResourceFormScreen(
                     containerColor = MaterialTheme.colorScheme.background,
                 ) {
                     PrimaryButton(
-                        modifier = Modifier.padding(horizontal = 16.dp),
+                        modifier = Modifier.padding(horizontal = 16.dp).testTag(ResourceForm.SAVE_BUTTON),
                         text = getPrimaryButtonText(context, state.mode),
                         onClick = {
                             when (state.mode) {
@@ -229,6 +231,7 @@ private fun ResourceFormScreen(
                     hint = stringResource(LocalizationR.string.resource_form_name),
                     text = state.name,
                     onTextChange = { onIntent(NameTextChanged(it)) },
+                    testTag = ResourceForm.NAME_INPUT,
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
