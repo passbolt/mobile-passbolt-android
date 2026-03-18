@@ -1,0 +1,8 @@
+# Passbolt 2.8.1-50 Android app release notes
+
+## Added
+- MOB-2705: Add recompiled 16kb-compatible gopenpgp library
+- Add full 16kb memory page support
+
+## Maintenance
+- MOB-3668: Add crowdin export languages config
