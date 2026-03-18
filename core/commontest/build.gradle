@@ -12,7 +12,6 @@ dependencies {
     implementation platform(libs.koin.bom)
     implementation libs.koin
     implementation libs.kotlin.coroutines.test
-    implementation libs.espresso.core
     implementation libs.android.test.ktx
     implementation libs.mockito.kotlin
 }

@@ -50,6 +50,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -110,6 +111,7 @@ import com.passbolt.mobile.android.feature.resourcedetails.details.ui.ResourceHe
 import com.passbolt.mobile.android.feature.resourcedetails.details.ui.SharedWithSection
 import com.passbolt.mobile.android.feature.resourcedetails.details.ui.TotpSection
 import com.passbolt.mobile.android.resourcemoremenu.ResourceMoreMenuBottomSheet
+import com.passbolt.mobile.android.testtags.composetags.ResourceDetails
 import com.passbolt.mobile.android.ui.PermissionsItem
 import com.passbolt.mobile.android.ui.ResourceFormMode
 import com.passbolt.mobile.android.ui.ResourceModel
@@ -260,7 +262,10 @@ private fun ResourceDetailsScreen(
             TitleAppBar(
                 navigationIcon = { BackNavigationIcon(onBackClick = { onIntent(GoBack) }) },
                 actions = {
-                    IconButton(onClick = { onIntent(OpenMoreMenu) }) {
+                    IconButton(
+                        onClick = { onIntent(OpenMoreMenu) },
+                        modifier = Modifier.testTag(ResourceDetails.MORE_ICON),
+                    ) {
                         Icon(
                             painter = painterResource(CoreUiR.drawable.ic_more),
                             contentDescription = null,
@@ -309,7 +314,7 @@ private fun ResourceDetailsScreen(
                 ProgressDialog(state.isLoading)
 
                 if (state.showMoreMenu && state.resourceData.resourceModel != null) {
-                    val resource = state.resourceData.resourceModel!!
+                    val resource = state.resourceData.resourceModel
                     ResourceMoreMenuBottomSheet(
                         resourceId = resource.resourceId,
                         resourceName = resource.metadataJsonModel.name,

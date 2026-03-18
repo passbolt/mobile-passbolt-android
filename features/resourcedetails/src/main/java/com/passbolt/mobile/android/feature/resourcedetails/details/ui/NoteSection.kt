@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.passbolt.mobile.android.core.localization.R
@@ -16,6 +17,7 @@ import com.passbolt.mobile.android.core.ui.section.Section
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent.CopyNote
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent.ToggleNoteVisibility
+import com.passbolt.mobile.android.testtags.composetags.ResourceDetails
 
 @Composable
 internal fun NoteSection(
@@ -24,7 +26,10 @@ internal fun NoteSection(
     onIntent: (ResourceDetailsIntent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Section(title = stringResource(R.string.resource_details_note_header), modifier = modifier) {
+    Section(
+        title = stringResource(R.string.resource_details_note_header),
+        modifier = modifier.testTag(ResourceDetails.NOTE_SECTION),
+    ) {
         ItemWithHeader(
             headerText = stringResource(R.string.resource_details_note_content),
             value = if (isNoteVisible) note else "",

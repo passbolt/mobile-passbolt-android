@@ -207,7 +207,6 @@ dependencies {
     androidTestImplementation libs.appcompat
     androidTestImplementation libs.android.tests.runner
     androidTestImplementation libs.android.test.rules
-    androidTestImplementation libs.espresso.core
     androidTestImplementation libs.android.test.ktx
     androidTestImplementation libs.koin.test
     androidTestImplementation libs.koin.test.junit

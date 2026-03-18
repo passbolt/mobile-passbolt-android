@@ -46,6 +46,7 @@ dependencies {
     implementation project(':resourceform')
     implementation project(':clipboard')
     implementation project(':metadata')
+    implementation project(':testtags')
 
     implementation platform(libs.koin.bom)
     implementation libs.koin
