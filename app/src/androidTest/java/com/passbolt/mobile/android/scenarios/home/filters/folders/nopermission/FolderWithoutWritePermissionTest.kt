@@ -92,8 +92,10 @@ class FolderWithoutWritePermissionTest : KoinTest {
 
     @Before
     fun setup() {
-        composeTestRule.signIn(managedAccountIntentCreator.getPassphrase())
-        composeTestRule.chooseFilter(filters_menu_folders)
+        composeTestRule.apply {
+            signIn(managedAccountIntentCreator.getPassphrase())
+            chooseFilter(filters_menu_folders)
+        }
     }
 
     /**  [View folder without write permission](https://passbolt.testrail.io/index.php?/cases/view/11939)
@@ -107,12 +109,14 @@ class FolderWithoutWritePermissionTest : KoinTest {
      */
     @Test
     fun viewFolderWithoutWritePermission() {
-        composeTestRule.searchAndOpenFirstFolderByName(SHARED_TEST_FOLDER_NAME)
-        composeTestRule.onNode(hasTestTag(ICON), useUnmergedTree = true).assertExists() // Back icon
-        composeTestRule.onNode(hasTestTag(APP_BAR_ICON), useUnmergedTree = true).assertExists() // Folder icon
-        composeTestRule.onNodeWithTag("home_search_input_field").assertExists()
-        composeTestRule.onNodeWithTag("home_search_filter").assertExists()
-        composeTestRule.onNodeWithTag("home_fab").assertDoesNotExist()
+        composeTestRule.apply {
+            searchAndOpenFirstFolderByName(SHARED_TEST_FOLDER_NAME)
+            onNode(hasTestTag(ICON), useUnmergedTree = true).assertExists() // Back icon
+            onNode(hasTestTag(APP_BAR_ICON), useUnmergedTree = true).assertExists() // Folder icon
+            onNodeWithTag("home_search_input_field").assertExists()
+            onNodeWithTag("home_search_filter").assertExists()
+            onNodeWithTag("home_fab").assertDoesNotExist()
+        }
     }
 
     private companion object {

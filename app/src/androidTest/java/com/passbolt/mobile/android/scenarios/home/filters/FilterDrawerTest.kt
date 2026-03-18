@@ -95,29 +95,32 @@ class FilterDrawerTest : KoinTest {
         //    When      I am on the homepage
         //    And       the search bar is not focused
         //    Then      I see an icon filter in the left side of the search bar
-        composeTestRule.onNodeWithTag("home_search_filter").assertExists()
+        composeTestRule.apply {
+            onNodeWithTag("home_search_filter").assertExists()
+        }
     }
 
     // https://passbolt.testrail.io/index.php?/cases/view/2617
     @Test
     fun asALoggedInMobileUserOnTheHomepageICanSeeTheFilterDrawer() {
-        //    Given     that I am a logged in mobile user on the homepage
-        //    When      I click on the filter icon
-        composeTestRule.onNodeWithTag("home_search_filter").performClick()
-        //    Then      I see the “filter” drawer
-        composeTestRule.onNodeWithTag("filters_menu_sheet").assertIsDisplayed()
-        //    And       I see the homepage is greyed out in the background
-        //    And       I see a “Filter view by” title
-        composeTestRule.onNodeWithText(getString(filters_menu_title)).assertIsDisplayed()
-        composeTestRule.onNodeWithTag("bottom_sheet_icon_close").assertIsDisplayed()
-        //    And       I see <filter> list item with their corresponding icon
-        ResourceFilterModel.entries.forEach { model ->
-            composeTestRule
-                .onNode(
+        composeTestRule.apply {
+            //    Given     that I am a logged in mobile user on the homepage
+            //    When      I click on the filter icon
+            onNodeWithTag("home_search_filter").performClick()
+            //    Then      I see the "filter" drawer
+            onNodeWithTag("filters_menu_sheet").assertIsDisplayed()
+            //    And       I see the homepage is greyed out in the background
+            //    And       I see a "Filter view by" title
+            onNodeWithText(getString(filters_menu_title)).assertIsDisplayed()
+            onNodeWithTag("bottom_sheet_icon_close").assertIsDisplayed()
+            //    And       I see <filter> list item with their corresponding icon
+            ResourceFilterModel.entries.forEach { model ->
+                onNode(
                     hasTestTag("filters_menu_sheet").and(
                         hasAnyDescendant(hasText(getString(model.filterNameId))),
                     ),
                 ).assertExists()
+            }
         }
     }
 }

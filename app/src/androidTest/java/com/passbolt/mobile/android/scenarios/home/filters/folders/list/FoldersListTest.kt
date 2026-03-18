@@ -116,14 +116,16 @@ class FoldersListTest : KoinTest {
      */
     @Test
     fun onTheFolderWorkspaceICanOpenFolder() {
-        composeTestRule.searchAndOpenFirstFolderByName(NEW_TEST_FOLDER_NAME)
-        composeTestRule.onNodeWithText(NEW_TEST_FOLDER_NAME).assertIsDisplayed()
-        composeTestRule.onNode(hasTestTag(ICON), useUnmergedTree = true).assertExists() // Back icon
-        composeTestRule.onNode(hasTestTag(APP_BAR_ICON), useUnmergedTree = true).assertExists() // Folder icon
-        composeTestRule.onNodeWithTag("home_search_input_field").assertExists()
-        composeTestRule.onNodeWithTag("home_search_filter").assertExists()
-        composeTestRule.onNodeWithText(getString(no_passwords)).assertIsDisplayed()
-        composeTestRule.onNodeWithTag("home_fab").assertExists()
+        composeTestRule.apply {
+            searchAndOpenFirstFolderByName(NEW_TEST_FOLDER_NAME)
+            onNodeWithText(NEW_TEST_FOLDER_NAME).assertIsDisplayed()
+            onNode(hasTestTag(ICON), useUnmergedTree = true).assertExists() // Back icon
+            onNode(hasTestTag(APP_BAR_ICON), useUnmergedTree = true).assertExists() // Folder icon
+            onNodeWithTag("home_search_input_field").assertExists()
+            onNodeWithTag("home_search_filter").assertExists()
+            onNodeWithText(getString(no_passwords)).assertIsDisplayed()
+            onNodeWithTag("home_fab").assertExists()
+        }
     }
 
     private companion object {

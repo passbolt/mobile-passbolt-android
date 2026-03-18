@@ -145,6 +145,21 @@ Used by: ResourcesNoteTest (currently disabled)
 
 ---
 
+## Folders
+
+### 1. `Shared without permission to add`
+
+| Property | Value |
+|---|---|
+| Name | `Shared without permission to add` |
+| Test user permission | **Read only** (no write/create) |
+| Contents | At least 1 subfolder and 1 resource |
+
+> **Note:** The test user must NOT have write permission on this folder.
+> Another user should own the folder and share it with the test user as read-only.
+
+Used by: FolderWithoutWritePermissionTest
+
 ## Long Note Content
 
 Resources #7 and #8 must have the following text as their secret note:
