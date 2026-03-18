@@ -48,8 +48,6 @@ import com.passbolt.mobile.android.core.localization.R.string.filters_menu_share
 import com.passbolt.mobile.android.core.localization.R.string.filters_menu_tags
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppContext
-import com.passbolt.mobile.android.core.ui.text.PasswordInputTestTags
-import com.passbolt.mobile.android.core.ui.topbar.BackNavigationIcon.TestTags.ICON
 import com.passbolt.mobile.android.feature.authentication.AuthenticationMainActivity
 import com.passbolt.mobile.android.helpers.chooseFilter
 import com.passbolt.mobile.android.helpers.getString
@@ -58,7 +56,9 @@ import com.passbolt.mobile.android.instrumentationTestsModule
 import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
 import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
+import com.passbolt.mobile.android.testtags.composetags.BackNavigation.ICON
 import com.passbolt.mobile.android.testtags.composetags.Home
+import com.passbolt.mobile.android.testtags.composetags.PasswordField
 import com.passbolt.mobile.android.testtags.composetags.ResourceForm
 import org.junit.Before
 import org.junit.Rule
@@ -136,7 +136,7 @@ class ResourcesCreationTest : KoinTest {
                 )
             filtersWithFab.forEach { filter ->
                 chooseFilter(filter)
-                onNodeWithTag("home_fab").assertExists()
+                onNodeWithTag(Home.FAB).assertExists()
             }
 
             val filtersWithoutFab =
@@ -146,7 +146,7 @@ class ResourcesCreationTest : KoinTest {
                 )
             filtersWithoutFab.forEach { filter ->
                 chooseFilter(filter)
-                onNodeWithTag("home_fab").assertDoesNotExist()
+                onNodeWithTag(Home.FAB).assertDoesNotExist()
             }
         }
     }
@@ -161,7 +161,7 @@ class ResourcesCreationTest : KoinTest {
     @Test
     fun asALoggedInMobileUserOnThePasswordWorkspaceIShouldSeeTheNewPasswordPage() {
         composeTestRule.apply {
-            onNodeWithTag("home_fab").performClick()
+            onNodeWithTag(Home.FAB).performClick()
             onNodeWithText(getString(LocalizationR.string.create_resource_menu_create_password)).performClick()
 
             onNodeWithText(getString(LocalizationR.string.resource_form_create_password)).assertIsDisplayed()
@@ -170,7 +170,7 @@ class ResourcesCreationTest : KoinTest {
             onNodeWithTag(ResourceForm.URI_INPUT).assertIsDisplayed()
             onNodeWithTag(ResourceForm.USERNAME_INPUT).assertIsDisplayed()
             onNodeWithTag(ResourceForm.PASSWORD_INPUT).assertExists()
-            onNodeWithTag(PasswordInputTestTags.VISIBILITY_TOGGLE, useUnmergedTree = true).assertExists()
+            onNodeWithTag(PasswordField.VISIBILITY_TOGGLE, useUnmergedTree = true).assertExists()
             onNodeWithTag(ResourceForm.SAVE_BUTTON).assertIsDisplayed()
         }
     }
@@ -188,7 +188,7 @@ class ResourcesCreationTest : KoinTest {
         // (second refresh is during snackbar is showing)
         IdlingRegistry.getInstance().unregister(resourcesFullRefreshIdlingResource)
         composeTestRule.apply {
-            onNodeWithTag("home_fab").performClick()
+            onNodeWithTag(Home.FAB).performClick()
             onNodeWithText(getString(LocalizationR.string.create_resource_menu_create_password)).performClick()
 
             onNodeWithTag(ResourceForm.NAME_INPUT).performTextReplacement("PasswordNameTest")
@@ -207,7 +207,7 @@ class ResourcesCreationTest : KoinTest {
     @Test
     fun asALoggedInMobileUserOnTheNewPasswordPageICanGenerateARandomPassword() {
         composeTestRule.apply {
-            onNodeWithTag("home_fab").performClick()
+            onNodeWithTag(Home.FAB).performClick()
             onNodeWithText(getString(LocalizationR.string.create_resource_menu_create_password)).performClick()
 
             onNodeWithTag(ResourceForm.GENERATE_PASSWORD_BUTTON).performClick()
@@ -226,11 +226,11 @@ class ResourcesCreationTest : KoinTest {
     @Test
     fun asALoggedInMobileUserOnTheNewPasswordPageICanSwitchTheVisibilityOfThePassword() {
         composeTestRule.apply {
-            onNodeWithTag("home_fab").performClick()
+            onNodeWithTag(Home.FAB).performClick()
             onNodeWithText(getString(LocalizationR.string.create_resource_menu_create_password)).performClick()
 
             onNodeWithTag(ResourceForm.PASSWORD_INPUT).performTextReplacement("TestPassword")
-            onNodeWithTag(PasswordInputTestTags.VISIBILITY_TOGGLE, useUnmergedTree = true).performClick()
+            onNodeWithTag(PasswordField.VISIBILITY_TOGGLE, useUnmergedTree = true).performClick()
             onNodeWithTag(ResourceForm.PASSWORD_INPUT).assertTextContains("TestPassword")
         }
     }

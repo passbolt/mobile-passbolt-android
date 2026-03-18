@@ -35,6 +35,7 @@ import com.passbolt.mobile.android.core.ui.extensions.optionalTestTag
 import com.passbolt.mobile.android.core.ui.textinputfield.StatefulInput
 import com.passbolt.mobile.android.core.ui.textinputfield.StatefulInput.State.Default
 import com.passbolt.mobile.android.core.ui.textinputfield.StatefulInput.State.Error
+import com.passbolt.mobile.android.testtags.composetags.PasswordField
 
 @Composable
 fun PasswordInput(
@@ -86,7 +87,7 @@ fun PasswordInput(
             trailingIcon = {
                 IconButton(
                     onClick = { passwordVisible = !passwordVisible },
-                    modifier = Modifier.testTag(PasswordInputTestTags.VISIBILITY_TOGGLE),
+                    modifier = Modifier.testTag(PasswordField.VISIBILITY_TOGGLE),
                 ) {
                     Icon(
                         painter =
@@ -116,10 +117,6 @@ fun PasswordInput(
             )
         }
     }
-}
-
-object PasswordInputTestTags {
-    const val VISIBILITY_TOGGLE = "password_input_visibility_toggle"
 }
 
 @Preview(showBackground = true)

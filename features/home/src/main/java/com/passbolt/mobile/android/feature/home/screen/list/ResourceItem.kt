@@ -61,6 +61,7 @@ import com.passbolt.mobile.android.common.extension.isInFuture
 import com.passbolt.mobile.android.common.extension.toSingleLine
 import com.passbolt.mobile.android.core.resources.resourceicon.ResourceIconProvider
 import com.passbolt.mobile.android.core.ui.R
+import com.passbolt.mobile.android.testtags.composetags.Home
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.isExpired
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
@@ -88,7 +89,7 @@ fun ResourceItem(
                 .height(64.dp)
                 .clickable { onItemClick(resource) }
                 .padding(horizontal = 16.dp)
-                .testTag(ResourceItemTestTags.ROW),
+                .testTag(Home.RESOURCE_ROW),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Box(modifier = Modifier.size(46.dp, 52.dp)) {
@@ -159,15 +160,10 @@ fun ResourceItem(
                 modifier =
                     Modifier
                         .size(40.dp)
-                        .testTag(ResourceItemTestTags.MORE),
+                        .testTag(Home.RESOURCE_MORE),
             ) {
                 Icon(Icons.Default.MoreVert, contentDescription = null)
             }
         }
     }
-}
-
-object ResourceItemTestTags {
-    const val ROW: String = "home_resource_row"
-    const val MORE: String = "home_resource_more"
 }

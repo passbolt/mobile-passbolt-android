@@ -41,6 +41,8 @@ import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
 import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
 import com.passbolt.mobile.android.testtags.composetags.Auth
+import com.passbolt.mobile.android.testtags.composetags.BackNavigation
+import com.passbolt.mobile.android.testtags.composetags.PasswordField
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -93,7 +95,7 @@ class LogInTest : KoinComponent {
             onNodeWithTag(Auth.PASSPHRASE_INPUT)
                 .assertIsDisplayed()
             //  And    I see an eye button to show my passphrase
-            onNodeWithTag("password_input_visibility_toggle")
+            onNodeWithTag(PasswordField.VISIBILITY_TOGGLE)
                 .assertIsDisplayed()
             //  And    I do not see a biometric provider button <<not automated>>
             //  And    I see a "Sign in" primary button
@@ -103,7 +105,7 @@ class LogInTest : KoinComponent {
             onNodeWithText(getString(LocalizationR.string.auth_forgot_password_button))
                 .assertIsDisplayed()
             //  And    I see a back arrow leading to the "List of accounts" welcome screen
-            onNodeWithTag("BackNavigationIcon", useUnmergedTree = true)
+            onNodeWithTag(BackNavigation.ICON, useUnmergedTree = true)
                 .assertIsDisplayed()
             //  And    I see my avatar
             onNodeWithTag(Auth.AVATAR)

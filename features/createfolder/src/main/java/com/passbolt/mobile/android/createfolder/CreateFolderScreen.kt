@@ -73,6 +73,7 @@ import com.passbolt.mobile.android.createfolder.CreateFolderSideEffect.FolderCre
 import com.passbolt.mobile.android.createfolder.CreateFolderSideEffect.NavigateUp
 import com.passbolt.mobile.android.createfolder.CreateFolderSideEffect.ShowErrorSnackbar
 import com.passbolt.mobile.android.feature.authentication.compose.AuthenticationHandler
+import com.passbolt.mobile.android.testtags.composetags.CreateFolder
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
@@ -193,7 +194,7 @@ private fun CreateFolderScreen(
                         onTextChange = { onIntent(FolderNameChanged(it)) },
                         isRequired = true,
                         modifier = Modifier.fillMaxWidth(),
-                        testTag = CreateFolderScreenTestTags.NAME_INPUT,
+                        testTag = CreateFolder.NAME_INPUT,
                     )
 
                     Spacer(modifier = Modifier.height(24.dp))
@@ -238,10 +239,6 @@ private fun CreateFolderScreen(
             }
         },
     )
-}
-
-object CreateFolderScreenTestTags {
-    const val NAME_INPUT: String = "create_folder_name_input"
 }
 
 @Preview(showBackground = true)

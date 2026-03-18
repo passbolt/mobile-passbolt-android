@@ -1,6 +1,5 @@
 package com.passbolt.mobile.android.core.ui.menu
 
-import androidx.annotation.VisibleForTesting
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -26,6 +25,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.passbolt.mobile.android.core.compose.AppTypography
 import com.passbolt.mobile.android.core.ui.R
+import com.passbolt.mobile.android.testtags.composetags.SwitchableSetting
 
 @Composable
 fun SwitchableSettingsItem(
@@ -47,7 +47,7 @@ fun SwitchableSettingsItem(
                 .alpha(alpha)
                 .height(64.dp)
                 .padding(horizontal = 16.dp)
-                .testTag(SwitchableSettingsItem.TestTags.ITEM),
+                .testTag(SwitchableSetting.ITEM),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         if (iconPainter != null) {
@@ -69,7 +69,7 @@ fun SwitchableSettingsItem(
             checked = isChecked,
             onCheckedChange = { if (isEnabled) onCheckedChange(it) },
             enabled = isEnabled,
-            modifier = Modifier.testTag(SwitchableSettingsItem.TestTags.SWITCH),
+            modifier = Modifier.testTag(SwitchableSetting.SWITCH),
         )
     }
 }
@@ -83,12 +83,4 @@ private fun SwitchableSettingsItemPreview() {
         isChecked = true,
         onCheckedChange = {},
     )
-}
-
-@VisibleForTesting
-object SwitchableSettingsItem {
-    object TestTags {
-        const val ITEM = "SwitchableSettingsItem"
-        const val SWITCH = "SwitchableSettingsItemSwitch"
-    }
 }

@@ -9,6 +9,7 @@ dependencies {
     implementation project(':localization')
     implementation project(':ui')
     implementation project(':common')
+    implementation project(':testtags')
 
     implementation libs.androidx.core
     implementation libs.appcompat

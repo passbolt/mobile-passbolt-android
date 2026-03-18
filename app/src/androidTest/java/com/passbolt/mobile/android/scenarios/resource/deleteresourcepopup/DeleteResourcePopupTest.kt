@@ -53,6 +53,7 @@ import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
 import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
 import com.passbolt.mobile.android.scenarios.resource.TestResourceType
+import com.passbolt.mobile.android.testtags.composetags.Home
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -172,7 +173,7 @@ class DeleteResourcePopupTest(
     fun testOnThePasswordRemovalPopupICanClickCancelWhenV5ResourcesAreEnabled() {
         composeTestRule.apply {
             onNodeWithText(getString(cancel)).performClick()
-            onNodeWithTag("home_screen").assertIsDisplayed()
+            onNodeWithTag(Home.SCREEN).assertIsDisplayed()
         }
     }
 }

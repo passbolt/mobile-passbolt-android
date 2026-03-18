@@ -48,6 +48,7 @@ import com.passbolt.mobile.android.scenarios.setup.autofill.autofillConfiguredMo
 import com.passbolt.mobile.android.scenarios.setup.configurebiometric.biometricSetupUnavailableModuleTests
 import com.passbolt.mobile.android.testtags.composetags.Auth
 import com.passbolt.mobile.android.testtags.composetags.BottomNav
+import com.passbolt.mobile.android.testtags.composetags.TransferAccount
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -131,7 +132,7 @@ class TransferTest : KoinTest {
             onNodeWithText(getString(LocalizationR.string.transfer_account_title))
                 .assertIsDisplayed()
 
-            onNodeWithTag("StartTransferButton")
+            onNodeWithTag(TransferAccount.START_TRANSFER_BUTTON)
                 .assertIsDisplayed()
         }
     }
@@ -154,7 +155,7 @@ class TransferTest : KoinTest {
             onNodeWithText(getString(LocalizationR.string.transfer_account_title))
                 .assertIsDisplayed()
 
-            onNodeWithTag("QrCode")
+            onNodeWithTag(TransferAccount.QR_CODE)
                 .assertIsDisplayed()
 
             onNodeWithText(getString(LocalizationR.string.transfer_account_cancel_button))
@@ -217,10 +218,10 @@ class TransferTest : KoinTest {
             onNodeWithText(getString(LocalizationR.string.transfer_account_stop_confirmation_dialog_message))
                 .assertDoesNotExist()
 
-            onNodeWithTag("QrCode")
+            onNodeWithTag(TransferAccount.QR_CODE)
                 .assertDoesNotExist()
 
-            onNodeWithTag("TransferAccountSummaryScreen")
+            onNodeWithTag(TransferAccount.SUMMARY_SCREEN)
                 .assertIsDisplayed()
 
             onNodeWithText(getString(LocalizationR.string.transfer_account_summary_cancelled))
@@ -290,7 +291,7 @@ class TransferTest : KoinTest {
 
     private fun startTransfer() {
         composeTestRule.apply {
-            onNodeWithTag("StartTransferButton").performClick()
+            onNodeWithTag(TransferAccount.START_TRANSFER_BUTTON).performClick()
             // re-authentication before start transfer
             onNodeWithTag(Auth.PASSPHRASE_INPUT).performTextReplacement(managedAccountIntentCreator.getPassphrase())
             onNodeWithTag(Auth.SIGN_IN_BUTTON).performClick()

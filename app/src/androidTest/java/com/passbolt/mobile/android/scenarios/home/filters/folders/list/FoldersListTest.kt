@@ -38,8 +38,6 @@ import com.passbolt.mobile.android.core.localization.R.string.filters_menu_folde
 import com.passbolt.mobile.android.core.localization.R.string.no_passwords
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppContext
-import com.passbolt.mobile.android.core.ui.scaffold.HomeScaffoldTestTags.APP_BAR_ICON
-import com.passbolt.mobile.android.core.ui.topbar.BackNavigationIcon.TestTags.ICON
 import com.passbolt.mobile.android.feature.authentication.AuthenticationMainActivity
 import com.passbolt.mobile.android.helpers.chooseFilter
 import com.passbolt.mobile.android.helpers.getString
@@ -49,6 +47,10 @@ import com.passbolt.mobile.android.instrumentationTestsModule
 import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
 import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
+import com.passbolt.mobile.android.testtags.composetags.BackNavigation.ICON
+import com.passbolt.mobile.android.testtags.composetags.Home
+import com.passbolt.mobile.android.testtags.composetags.HomeAppBar
+import com.passbolt.mobile.android.testtags.composetags.SearchField
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -120,11 +122,11 @@ class FoldersListTest : KoinTest {
             searchAndOpenFirstFolderByName(NEW_TEST_FOLDER_NAME)
             onNodeWithText(NEW_TEST_FOLDER_NAME).assertIsDisplayed()
             onNode(hasTestTag(ICON), useUnmergedTree = true).assertExists() // Back icon
-            onNode(hasTestTag(APP_BAR_ICON), useUnmergedTree = true).assertExists() // Folder icon
-            onNodeWithTag("home_search_input_field").assertExists()
-            onNodeWithTag("home_search_filter").assertExists()
+            onNode(hasTestTag(HomeAppBar.ICON), useUnmergedTree = true).assertExists() // Folder icon
+            onNodeWithTag(SearchField.INPUT).assertExists()
+            onNodeWithTag(Home.SEARCH_FILTER).assertExists()
             onNodeWithText(getString(no_passwords)).assertIsDisplayed()
-            onNodeWithTag("home_fab").assertExists()
+            onNodeWithTag(Home.FAB).assertExists()
         }
     }
 

@@ -121,7 +121,7 @@ class FilteringResourcesTest : KoinTest {
     @FlakyTest(detail = "It is currently failing nondeterministic on Android 12 - reason unknown")
     fun asALoggedInMobileUserOnTheHomepageICanChangeTheCurrentActiveFilter() {
         ResourceFilterModel.entries.forEach { model ->
-            composeTestRule.onNodeWithTag("home_search_filter").performClick()
+            composeTestRule.onNodeWithTag(Home.SEARCH_FILTER).performClick()
             composeTestRule
                 .onNode(
                     hasClickAction().and(

@@ -1,6 +1,5 @@
 package com.passbolt.mobile.android.core.ui.menu
 
-import androidx.annotation.VisibleForTesting
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
@@ -26,6 +25,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.passbolt.mobile.android.core.compose.AppTypography
 import com.passbolt.mobile.android.core.ui.R
+import com.passbolt.mobile.android.testtags.composetags.OpenableSetting
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 @Composable
@@ -50,7 +50,7 @@ fun OpenableSettingsItem(
                 .height(64.dp)
                 .clickable(enabled = isEnabled) { onClick() }
                 .padding(horizontal = 16.dp)
-                .testTag(OpenableSettingsItem.TestTags.ITEM),
+                .testTag(OpenableSetting.ITEM),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         if (iconPainter != null) {
@@ -94,7 +94,7 @@ fun OpenableSettingsItem(
                     Modifier
                         .size(16.dp)
                         .padding(start = 8.dp)
-                        .testTag(OpenableSettingsItem.TestTags.ARROW),
+                        .testTag(OpenableSetting.ARROW),
             )
         }
     }
@@ -119,12 +119,4 @@ private fun OpenableSettingsItemWithWarningPreview() {
         onClick = { },
         hasWarningBadge = true,
     )
-}
-
-@VisibleForTesting
-object OpenableSettingsItem {
-    object TestTags {
-        const val ITEM = "OpenableSettingsItem"
-        const val ARROW = "OpenableSettingsItemArrow"
-    }
 }

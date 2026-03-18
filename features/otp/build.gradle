@@ -39,6 +39,7 @@ dependencies {
     implementation project(':metadatakeytrust')
     implementation project(':metadata')
     implementation project(':clipboard')
+    implementation project(':testtags')
 
     implementation platform(libs.koin.bom)
     implementation libs.koin

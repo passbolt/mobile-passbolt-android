@@ -35,8 +35,6 @@ import com.passbolt.mobile.android.core.idlingresource.SignInIdlingResource
 import com.passbolt.mobile.android.core.localization.R.string.filters_menu_folders
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppContext
-import com.passbolt.mobile.android.core.ui.scaffold.HomeScaffoldTestTags.APP_BAR_ICON
-import com.passbolt.mobile.android.core.ui.topbar.BackNavigationIcon.TestTags.ICON
 import com.passbolt.mobile.android.feature.authentication.AuthenticationMainActivity
 import com.passbolt.mobile.android.helpers.chooseFilter
 import com.passbolt.mobile.android.helpers.searchAndOpenFirstFolderByName
@@ -45,6 +43,10 @@ import com.passbolt.mobile.android.instrumentationTestsModule
 import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
 import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
+import com.passbolt.mobile.android.testtags.composetags.BackNavigation.ICON
+import com.passbolt.mobile.android.testtags.composetags.Home
+import com.passbolt.mobile.android.testtags.composetags.HomeAppBar
+import com.passbolt.mobile.android.testtags.composetags.SearchField
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -112,10 +114,10 @@ class FolderWithoutWritePermissionTest : KoinTest {
         composeTestRule.apply {
             searchAndOpenFirstFolderByName(SHARED_TEST_FOLDER_NAME)
             onNode(hasTestTag(ICON), useUnmergedTree = true).assertExists() // Back icon
-            onNode(hasTestTag(APP_BAR_ICON), useUnmergedTree = true).assertExists() // Folder icon
-            onNodeWithTag("home_search_input_field").assertExists()
-            onNodeWithTag("home_search_filter").assertExists()
-            onNodeWithTag("home_fab").assertDoesNotExist()
+            onNode(hasTestTag(HomeAppBar.ICON), useUnmergedTree = true).assertExists() // Folder icon
+            onNodeWithTag(SearchField.INPUT).assertExists()
+            onNodeWithTag(Home.SEARCH_FILTER).assertExists()
+            onNodeWithTag(Home.FAB).assertDoesNotExist()
         }
     }
 

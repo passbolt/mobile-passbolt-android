@@ -48,6 +48,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.passbolt.mobile.android.core.ui.R
 import com.passbolt.mobile.android.core.ui.circularimage.CircularProfileImage
+import com.passbolt.mobile.android.testtags.composetags.SearchField
 
 @Composable
 fun SearchInput(
@@ -106,12 +107,8 @@ fun SearchInput(
         modifier =
             modifier
                 .fillMaxWidth()
-                .testTag(SearchInputTestTags.INPUT_FIELD),
+                .testTag(SearchField.INPUT),
     )
-}
-
-object SearchInputTestTags {
-    const val INPUT_FIELD: String = "home_search_input_field"
 }
 
 @Preview(showBackground = true)
