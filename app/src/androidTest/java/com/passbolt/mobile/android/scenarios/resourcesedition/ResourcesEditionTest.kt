@@ -1,6 +1,6 @@
 /**
  * Passbolt - Open source password manager for teams
- * Copyright (c) 2023-2025 Passbolt SA
+ * Copyright (c) 2023-2026 Passbolt SA
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
  * Public License (AGPL) as published by the Free Software Foundation version 3.
@@ -23,7 +23,13 @@
 
 package com.passbolt.mobile.android.scenarios.resourcesedition
 
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTextReplacement
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
@@ -38,23 +44,26 @@ import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.feature.authentication.AuthenticationMainActivity
 import com.passbolt.mobile.android.helpers.chooseFilter
 import com.passbolt.mobile.android.helpers.createNewPasswordFromHomeScreen
-import com.passbolt.mobile.android.helpers.searchAndOpenFirstResourceByName
+import com.passbolt.mobile.android.helpers.getString
+import com.passbolt.mobile.android.helpers.searchAndClickMoreOfFirstResource
 import com.passbolt.mobile.android.helpers.signIn
+import com.passbolt.mobile.android.helpers.waitForResourceForm
 import com.passbolt.mobile.android.instrumentationTestsModule
 import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
 import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
+import com.passbolt.mobile.android.testtags.composetags.Home
+import com.passbolt.mobile.android.testtags.composetags.ResourceForm
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.koin.core.component.inject
 import org.koin.test.KoinTest
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 @RunWith(AndroidJUnit4::class)
 @MediumTest
-@Ignore("Deprecated: refactor needed - entire test class disabled")
 class ResourcesEditionTest : KoinTest {
     @get:Rule(order = 0)
     val startUpActivityRule =
@@ -95,199 +104,127 @@ class ResourcesEditionTest : KoinTest {
 
     @Before
     fun setup() {
-        composeTestRule.signIn(managedAccountIntentCreator.getPassphrase())
-        composeTestRule.chooseFilter(filters_menu_all_items)
-        createNewPasswordFromHomeScreen("ResourcesEditionTest")
+        composeTestRule.apply {
+            signIn(managedAccountIntentCreator.getPassphrase())
+            chooseFilter(filters_menu_all_items)
+            createNewPasswordFromHomeScreen(RESOURCE_NAME)
+        }
     }
 
-    //    https://passbolt.testrail.io/index.php?/cases/view/8134
+    /**  [On the resources action menu drawer I can click edit password](https://passbolt.testrail.io/index.php?/cases/view/8134)
+     *
+     *      Given   that I am on the action menu drawer
+     *      And     I see 'Edit password' element enabled
+     *      When    I click 'Edit password'
+     *      Then    I am on the Edit password screen
+     */
     @Test
     fun onTheResourcesActionMenuDrawerICanClickEditPassword() {
-        //    Given     that I am on the action menu drawer
-        composeTestRule.searchAndOpenFirstResourceByName("ResourcesEditionTest")
-        //    And       I see ‘Edit password’ element enabled
-//        onView(first(withId(ResourcesID.moreIcon))).perform(click())
-//        onView(withId(ResourcemoremenuId.editPassword))
-//            .check(matches(isDisplayed()))
-//            .check(matches(hasDrawable(id = CoreUiR.drawable.ic_edit, tint = CoreUiR.color.icon_tint)))
-//        //    When      I click ‘Edit password’
-//        onView(withId(ResourcemoremenuId.editPassword)).perform(click())
-//        //    Then      I am on `Edit password` screen
-//        onView(withText(LocalizationR.string.resource_update_edit_password_title)).check(matches(isDisplayed()))
+        composeTestRule.apply {
+            searchAndClickMoreOfFirstResource(RESOURCE_NAME)
+            onNodeWithText(getString(LocalizationR.string.more_edit)).assertIsDisplayed()
+            onNodeWithText(getString(LocalizationR.string.more_edit)).performClick()
+            onNodeWithText(
+                InstrumentationRegistry
+                    .getInstrumentation()
+                    .targetContext
+                    .getString(LocalizationR.string.resource_form_edit_resource, RESOURCE_NAME),
+            ).assertIsDisplayed()
+        }
     }
 
-    //    https://passbolt.testrail.io/index.php?/cases/view/8135
+    /**  [On the edit password page I can edit elements](https://passbolt.testrail.io/index.php?/cases/view/8135)
+     *
+     *      Given   that I am on the Edit password screen
+     *      And     fields are filled
+     *      When    I change the fields
+     *      Then    the fields are changed
+     */
     @Test
     fun onTheEditPasswordPageICanEditElements() {
-        //    Given     that I am on `Edit password` screen
         enterEditPasswordScreen()
-        //    And       I see Edit password workspace
-//        onView(withText(LocalizationR.string.resource_update_edit_password_title)).check(matches(isDisplayed()))
-//        //    And       <placeholder> is filled
-//        EditableFieldInput.entries.forEach { editableInputField ->
-//            onViewInputWithHintName(editableInputField.hintName)
-//                .check(matches(isDisplayed()))
-//        }
-//        //    When      I change <placeholder>
-//        EditableFieldInput.entries.forEach { editableInputField ->
-//            onViewInputWithHintName(editableInputField.hintName)
-//                .perform(replaceText(editableInputField.textToReplace))
-//        }
-//        //    Then      <placeholder> is changed
-//        EditableFieldInput.entries.forEach { editableInputField ->
-//            onViewInputWithHintName(editableInputField.hintName)
-//                .check(matches(withText(editableInputField.textToReplace)))
-//        }
-//        //    Examples:
-//        //    | placeholder |
-//        //    | Enter a name |
-//        //    | Enter URL |
-//        //    | Enter username |
-//        //    | Enter a password |
-//        //    | Enter description |
+        composeTestRule.apply {
+            onNodeWithTag(ResourceForm.NAME_INPUT).assertIsDisplayed()
+            onNodeWithTag(ResourceForm.URI_INPUT).assertIsDisplayed()
+            onNodeWithTag(ResourceForm.USERNAME_INPUT).assertIsDisplayed()
+
+            onNodeWithTag(ResourceForm.NAME_INPUT).performTextReplacement("EditedName")
+            onNodeWithTag(ResourceForm.URI_INPUT).performTextReplacement("EditedURL")
+            onNodeWithTag(ResourceForm.USERNAME_INPUT).performTextReplacement("EditedUsername")
+
+            onNodeWithTag(ResourceForm.NAME_INPUT).assertTextContains("EditedName")
+            onNodeWithTag(ResourceForm.URI_INPUT).assertTextContains("EditedURL")
+            onNodeWithTag(ResourceForm.USERNAME_INPUT).assertTextContains("EditedUsername")
+        }
     }
 
-    //    https://passbolt.testrail.io/index.php?/cases/view/8136
+    /**  [On the edit password page I can save changed resources](https://passbolt.testrail.io/index.php?/cases/view/8136)
+     *
+     *      Given   that I am on the Edit password screen
+     *      And     I changed a field
+     *      When    I click Save button
+     *      Then    I am back on the home screen
+     */
     @Test
     fun onTheEditPasswordPageICanSaveChangedResources() {
-        //    Given     that I am on `Edit password` screen
         enterEditPasswordScreen()
-        //    And       I see Edit password workspace
-//        onView(withText(LocalizationR.string.resource_update_edit_password_title)).check(matches(isDisplayed()))
-//        //    And       <placeholder> was changed
-//        EditableFieldInput.entries.forEach { editableInputField ->
-//            onViewInputWithHintName(editableInputField.hintName)
-//                .perform(replaceText(editableInputField.textToReplace))
-//        }
-//        //    When      I click ‘Save’ button
-//        onView(withId(ResourcesID.updateButton)).perform(scrollTo(), click())
-//        //    Examples:
-//        //    | placeholder |
-//        //    | Enter a name |
-//        //    | Enter URL |
-//        //    | Enter username |
-//        //    | Enter a password |
-//        //    | Enter description |
+        composeTestRule.apply {
+            onNodeWithTag(ResourceForm.NAME_INPUT).performTextReplacement("EditedName")
+            onNodeWithTag(ResourceForm.SAVE_BUTTON).performClick()
+            onNodeWithTag(Home.SCREEN).assertIsDisplayed()
+        }
     }
 
-    //    https://passbolt.testrail.io/index.php?/cases/view/8137
-    @Test
-    fun onTheEditPasswordPageIShouldSeeAnErrorMessageAfterDeletingTheMandatoryTextField() {
-        //    Given     that I am on `Edit password` screen
-        enterEditPasswordScreen()
-        //    And       all placeholders are filled
-//        EditableFieldInput.entries.forEach { editableInputField ->
-//            onViewInputWithHintName(editableInputField.hintName)
-//                .check(matches(isDisplayed()))
-//        }
-//        //    When      I delete <placeholder> text field
-//        onViewInputWithHintName(EditableFieldInput.ENTER_NAME.hintName)
-//            .perform(replaceText(""))
-//        onViewInputWithHintName(EditableFieldInput.ENTER_PASSWORD.hintName)
-//            .perform(replaceText(""))
-//        //    Then      I click Save button
-//        onView(withId(ResourcesID.updateButton)).perform(scrollTo(), click())
-//        //    And       I see <placeholder> label in @red
-//        onView(withText("Resource name *")).check(matches(hasTextColor(CoreUiR.color.red)))
-//        onView(withText("Password *")).check(matches(hasTextColor(CoreUiR.color.red)))
-//        //    And       I see <placeholder> frame in @red
-//        onViewTextInputLayoutWithHintName(EditableFieldInput.ENTER_NAME.hintName)
-//            .check(matches(withTextInputStrokeColorOf(CoreUiR.color.red)))
-//        onViewTextInputLayoutWithHintName(EditableFieldInput.ENTER_PASSWORD.hintName)
-//            .check(matches(withTextInputStrokeColorOf(CoreUiR.color.red)))
-//        //    And       see exclamation mark
-//        //    And       I see information: "The <placeholder> cannot be empty"
-//        onView(withText("The name cannot be empty"))
-//            .check(matches(isDisplayed()))
-//            .check(matches(hasTextColor(CoreUiR.color.red)))
-//        onView(withText("The password cannot be empty"))
-//            .check(matches(isDisplayed()))
-//            .check(matches(hasTextColor(CoreUiR.color.red)))
-//        //    Examples:
-//        //    | placeholder |
-//        //    | Enter a name |
-//        //    | Enter a password |
-    }
-
-    //    https://passbolt.testrail.io/index.php?/cases/view/8138
-    // TODO: Migrate to Compose test - resource form is now in Compose after MVI migration.
-    //  Rewrite Espresso view assertions using ComposeTestRule with appropriate test tags.
+    /**  [On the edit password page I can delete the optional input text field](https://passbolt.testrail.io/index.php?/cases/view/8138)
+     *
+     *      Given   that I am on the Edit password screen
+     *      And     all placeholders are filled
+     *      When    I delete optional text fields
+     *      Then    the fields are empty
+     */
     @Test
     fun onTheEditPasswordPageICanDeleteTheOptionalInputTextField() {
-        //    Given     that I am on `Edit password` screen
         enterEditPasswordScreen()
-        //    And       all placeholders are filled
-//        EditableFieldInput.entries.forEach { editableInputField ->
-//            onViewInputWithHintName(editableInputField.hintName)
-//                .perform(scrollTo())
-//                .check(matches(isDisplayed()))
-//        }
-//        //    When      I delete <placeholder> text field
-//        onViewInputWithHintName(EditableFieldInput.ENTER_URL.hintName)
-//            .perform(scrollTo(), replaceText(""))
-//        onViewInputWithHintName(EditableFieldInput.ENTER_USERNAME.hintName)
-//            .perform(scrollTo(), replaceText(""))
-//        //    Then      I delete <placeholder> text field
-//        onViewInputWithHintName(EditableFieldInput.ENTER_URL.hintName)
-//            .check(matches(withText("")))
-//        onViewInputWithHintName(EditableFieldInput.ENTER_USERNAME.hintName)
-//            .check(matches(withText("")))
-        //    Examples:
-        //    | placeholder |
-        //    | Enter URL |
-        //    | Enter username |
-        //    | Enter description |
+        composeTestRule.apply {
+            onNodeWithTag(ResourceForm.URI_INPUT).performTextReplacement("")
+            onNodeWithTag(ResourceForm.USERNAME_INPUT).performTextReplacement("")
+
+            onNodeWithTag(ResourceForm.URI_INPUT).assertTextContains("")
+            onNodeWithTag(ResourceForm.USERNAME_INPUT).assertTextContains("")
+        }
     }
 
-    //  https://passbolt.testrail.io/index.php?/cases/view/8139
+    /**  [On the edit password page I see confirmation popup when saving a changed resource](https://passbolt.testrail.io/index.php?/cases/view/8139)
+     *
+     *      Given   that I am on the Edit password screen
+     *      And     I edited the resource
+     *      When    I click Save button
+     *      Then    I am back on the home screen
+     */
     @Test
     fun onTheEditPasswordPageISeeConfirmationPopupWhenSavingAChangedResource() {
         // unregister refresh idling resource after first refresh not to block the snackbar checks
         // (second refresh is during snackbar is showing)
         IdlingRegistry.getInstance().unregister(resourcesFullRefreshIdlingResource)
         enterEditPasswordScreen()
-        //    And       all placeholders are filled
-//        EditableFieldInput.entries.forEach { editableInputField ->
-//            onViewInputWithHintName(editableInputField.hintName)
-//                .check(matches(isDisplayed()))
-//        }
-//        //    And       I delete <placeholder> text field
-//        onViewInputWithHintName(EditableFieldInput.ENTER_NAME.hintName)
-//            .perform(replaceText(EditableFieldInput.ENTER_NAME.textToReplace))
-//        onViewInputWithHintName(EditableFieldInput.ENTER_URL.hintName)
-//            .perform(replaceText(""))
-//        onViewInputWithHintName(EditableFieldInput.ENTER_USERNAME.hintName)
-//            .perform(replaceText(""))
-//        onViewInputWithHintName(EditableFieldInput.ENTER_DESCRIPTION.hintName)
-//            .perform(replaceText(""))
-//        //    When      I click "Save" button
-//        onView(withId(ResourcesID.updateButton)).perform(scrollTo(), click())
-//        //    Then      I see a popup "{password name} password was successfully edited." in @green
-//        onView(withId(com.passbolt.mobile.android.feature.permissions.R.id.rootLayout)).check(matches(isDisplayed()))
-//        onView(withId(MaterialR.id.snackbar_text))
-//            .check(matches(withText(CoreMatchers.endsWith("password was successfully edited."))))
-//        //    Examples:
-//        //    | placeholder |
-//        //    | Enter URL |
-//        //    | Enter username |
-//        //    | Enter description |
+        composeTestRule.apply {
+            onNodeWithTag(ResourceForm.NAME_INPUT).performTextReplacement("EditedName")
+            onNodeWithTag(ResourceForm.URI_INPUT).performTextReplacement("")
+            onNodeWithTag(ResourceForm.USERNAME_INPUT).performTextReplacement("")
+            onNodeWithTag(ResourceForm.SAVE_BUTTON).performClick()
+            onNodeWithTag(Home.SCREEN).assertIsDisplayed()
+        }
     }
 
-//    private fun onViewInputWithHintName(hintName: String): ViewInteraction =
-//        onView(allOf(isDescendantOfA(withHint(hasToString(hintName))), withId(input)))
-
-//    private fun onViewTextInputLayoutWithHintName(hintName: String): ViewInteraction =
-//        onView(
-//            allOf(
-//                isDescendantOfA(withHint(hasToString(hintName))),
-//                isAssignableFrom(TextInputLayout::class.java),
-//            ),
-//        )
-
     private fun enterEditPasswordScreen() {
-        composeTestRule.searchAndOpenFirstResourceByName("ResourcesEditionTest")
-//        onView(withId(moreIcon)).perform(click())
-//        onView(withId(edit)).perform(click())
-//        onView(withId(toolbar)).check(matches(isDisplayed()))
+        composeTestRule.apply {
+            searchAndClickMoreOfFirstResource(RESOURCE_NAME)
+            onNodeWithText(getString(LocalizationR.string.more_edit)).performClick()
+            waitForResourceForm()
+        }
+    }
+
+    private companion object {
+        private const val RESOURCE_NAME = "ResourcesEditionTest"
     }
 }

@@ -4,6 +4,7 @@ import com.passbolt.mobile.android.common.datarefresh.DataRefreshTrackingFlow
 import com.passbolt.mobile.android.common.validation.StringIsBase32
 import com.passbolt.mobile.android.common.validation.StringMaxLength
 import com.passbolt.mobile.android.core.idlingresource.CreateResourceIdlingResource
+import com.passbolt.mobile.android.core.idlingresource.UpdateResourceIdlingResource
 import com.passbolt.mobile.android.core.passwordgenerator.SecretGenerator
 import com.passbolt.mobile.android.core.passwordgenerator.codepoints.toCodepoints
 import com.passbolt.mobile.android.core.passwordgenerator.entropy.EntropyCalculator
@@ -114,6 +115,7 @@ class ResourceFormViewModel(
     private val dataRefreshTrackingFlow: DataRefreshTrackingFlow,
     private val metadataPrivateKeysHelperInteractor: MetadataPrivateKeysHelperInteractor,
     private val createResourceIdlingResource: CreateResourceIdlingResource,
+    private val updateResourceIdlingResource: UpdateResourceIdlingResource,
 ) : AuthenticatedViewModel<ResourceFormState, ResourceFormSideEffect>(ResourceFormState(mode = mode)) {
     private val uiModel: ResourceFormUiModel by lazy {
         resourceModelHandler.getUiModel(mode)
@@ -654,6 +656,7 @@ class ResourceFormViewModel(
     private fun updateResource() {
         onValid {
             launch {
+                updateResourceIdlingResource.setIdle(false)
                 updateViewState { copy(shouldShowDialogProgress = true) }
                 val editedResource =
                     getLocalResourceUseCase
@@ -694,6 +697,7 @@ class ResourceFormViewModel(
                     },
                 )
                 updateViewState { copy(shouldShowDialogProgress = false) }
+                updateResourceIdlingResource.setIdle(true)
             }
         }
     }

@@ -8,6 +8,7 @@ import com.jayway.jsonpath.spi.mapper.GsonMappingProvider
 import com.passbolt.mobile.android.common.datarefresh.DataRefreshTrackingFlow
 import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.core.idlingresource.CreateResourceIdlingResource
+import com.passbolt.mobile.android.core.idlingresource.UpdateResourceIdlingResource
 import com.passbolt.mobile.android.core.mvp.authentication.SessionRefreshTrackingFlow
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.passwordgenerator.SecretGenerator
@@ -73,6 +74,7 @@ internal val testResourceFormModule =
         singleOf(::ResourceModelHandler)
         factoryOf(::ResourceTypesUpdatesAdjacencyGraph)
         factoryOf(::CreateResourceIdlingResource)
+        factoryOf(::UpdateResourceIdlingResource)
 
         single { mockGetDefaultCreateContentTypeUseCase }
         single { mockGetEditContentTypeUseCase }
@@ -96,6 +98,7 @@ internal val testResourceFormModule =
                 resourceModelHandler = get(),
                 dataRefreshTrackingFlow = get(),
                 createResourceIdlingResource = get(),
+                updateResourceIdlingResource = get(),
             )
         }
 

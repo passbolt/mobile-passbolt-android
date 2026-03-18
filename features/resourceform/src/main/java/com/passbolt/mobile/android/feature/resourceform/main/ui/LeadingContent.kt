@@ -38,6 +38,7 @@ import com.passbolt.mobile.android.feature.resourceform.main.ResourceFormIntent.
 import com.passbolt.mobile.android.feature.resourceform.main.TotpData
 import com.passbolt.mobile.android.feature.resourceform.main.getNoteErrorMessage
 import com.passbolt.mobile.android.feature.resourceform.main.getTotpSecretErrorMessage
+import com.passbolt.mobile.android.testtags.composetags.ResourceForm
 import com.passbolt.mobile.android.ui.LeadingContentType
 import com.passbolt.mobile.android.ui.LeadingContentType.CUSTOM_FIELDS
 import com.passbolt.mobile.android.ui.LeadingContentType.PASSWORD
@@ -99,12 +100,14 @@ private fun PasswordSection(
                 title = stringResource(LocalizationR.string.resource_form_main_uri),
                 text = mainUri,
                 onTextChange = { onIntent(PasswordMainUriTextChanged(it)) },
+                testTag = ResourceForm.URI_INPUT,
             )
             Spacer(modifier = Modifier.height(16.dp))
             TextInput(
                 title = stringResource(LocalizationR.string.resource_form_username),
                 text = username,
                 onTextChange = { onIntent(PasswordUsernameTextChanged(it)) },
+                testTag = ResourceForm.USERNAME_INPUT,
             )
             Spacer(modifier = Modifier.height(16.dp))
             PasswordGenerationInput(
