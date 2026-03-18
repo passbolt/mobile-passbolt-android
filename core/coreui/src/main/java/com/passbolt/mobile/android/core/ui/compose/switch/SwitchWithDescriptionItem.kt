@@ -12,6 +12,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -29,6 +30,7 @@ fun SwitchWithDescriptionItem(
     additionalDescription: String? = null,
     onClick: () -> Unit = {},
     isEnabled: Boolean = true,
+    titleColor: Color = colorResource(R.color.primary),
 ) {
     @Suppress("MagicNumber")
     val alpha = if (isEnabled) 1f else 0.5f
@@ -51,7 +53,7 @@ fun SwitchWithDescriptionItem(
             Text(
                 text = title,
                 style = MaterialTheme.typography.titleMedium,
-                color = colorResource(R.color.primary),
+                color = titleColor,
             )
 
             Text(

@@ -24,6 +24,8 @@
 package com.passbolt.mobile.android.feature.settings.screen
 
 sealed interface SettingsIntent {
+    object Initialize : SettingsIntent
+
     object GoToAppSettings : SettingsIntent
 
     object GoToAccounts : SettingsIntent

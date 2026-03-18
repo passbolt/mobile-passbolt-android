@@ -2799,22 +2799,6 @@
     }
   },
   {
-    "groupId": "com.alimuzaffar.lib",
-    "artifactId": "pinentryedittext",
-    "version": "2.0.6",
-    "name": "PinEntryEditText",
-    "spdxLicenses": [
-      {
-        "identifier": "Apache-2.0",
-        "name": "Apache License 2.0",
-        "url": "https://www.apache.org/licenses/LICENSE-2.0"
-      }
-    ],
-    "scm": {
-      "url": "https://github.com/alphamu/PinEntryEditText"
-    }
-  },
-  {
     "groupId": "com.damnhandy",
     "artifactId": "handy-uri-templates",
     "version": "2.1.8",

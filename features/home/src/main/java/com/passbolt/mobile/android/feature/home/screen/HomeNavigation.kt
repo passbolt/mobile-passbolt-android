@@ -44,16 +44,13 @@ interface HomeNavigation {
 
     fun navigateBack()
 
-    fun openFolderMoreMenu(homeView: HomeDisplayViewModel)
-
-    fun openResourceMoreMenu(
-        resourceId: String,
-        resourceName: String,
-    )
+    fun navigateToFolderDetails(folderId: String)
 
     fun navigateToShare(resourceId: String)
 
     fun navigateToCreateFolder(folderId: String?)
 
     fun navigateToRoot(homeView: HomeDisplayViewModel)
+
+    fun navigateToAutofillSettings()
 }

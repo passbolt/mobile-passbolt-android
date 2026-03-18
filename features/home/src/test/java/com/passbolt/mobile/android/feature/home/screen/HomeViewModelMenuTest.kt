@@ -30,6 +30,7 @@ import com.jayway.jsonpath.Configuration
 import com.jayway.jsonpath.Option
 import com.jayway.jsonpath.spi.json.GsonJsonProvider
 import com.jayway.jsonpath.spi.mapper.GsonMappingProvider
+import com.passbolt.mobile.android.common.autofill.DetectAutofillConflict
 import com.passbolt.mobile.android.common.datarefresh.DataRefreshTrackingFlow
 import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.core.accounts.usecase.accountdata.GetSelectedAccountDataUseCase
@@ -49,13 +50,14 @@ import com.passbolt.mobile.android.feature.home.screen.HomeIntent.CopyPassword
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.CopyResourceMetadataDescription
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.CopyResourceUri
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.CopyResourceUsername
+import com.passbolt.mobile.android.feature.home.screen.HomeIntent.Initialize
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.LaunchResourceWebsite
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.OpenResourceMenu
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.ToggleResourceFavourite
 import com.passbolt.mobile.android.feature.home.screen.HomeSideEffect.CopyToClipboard
 import com.passbolt.mobile.android.feature.home.screen.HomeSideEffect.NavigateToResourceUri
-import com.passbolt.mobile.android.feature.home.screen.HomeSideEffect.OpenResourceMoreMenu
 import com.passbolt.mobile.android.feature.home.screen.HomeSideEffect.ShowErrorSnackbar
+import com.passbolt.mobile.android.feature.home.screen.ShowSuggestedModel.DoNotShow
 import com.passbolt.mobile.android.feature.home.screen.SnackbarErrorType.TOGGLE_FAVOURITE_FAILURE
 import com.passbolt.mobile.android.feature.home.screen.data.HomeData
 import com.passbolt.mobile.android.feature.home.screen.data.HomeDataProvider
@@ -67,6 +69,7 @@ import com.passbolt.mobile.android.metadata.usecase.CanCreateResourceUseCase
 import com.passbolt.mobile.android.metadata.usecase.CanShareResourceUseCase
 import com.passbolt.mobile.android.ui.DefaultFilterModel
 import com.passbolt.mobile.android.ui.HomeDisplayViewModel.AllItems
+import com.passbolt.mobile.android.ui.HomeDisplayViewModel.NotLoaded
 import com.passbolt.mobile.android.ui.MetadataJsonModel
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.FavouriteOption.ADD_TO_FAVOURITES
@@ -98,6 +101,7 @@ import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.stub
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.time.ZonedDateTime
 import java.util.EnumSet
@@ -122,6 +126,7 @@ class HomeViewModelMenuTest : KoinTest {
                     single { mock<GetLocalFolderDetailsUseCase>() }
                     single { mock<CanCreateResourceUseCase>() }
                     single { mock<CanShareResourceUseCase>() }
+                    single { mock<DetectAutofillConflict>() }
                     single(named(JSON_MODEL_GSON)) { GsonBuilder().serializeNulls().create() }
                     single {
                         Configuration
@@ -191,6 +196,23 @@ class HomeViewModelMenuTest : KoinTest {
     }
 
     @Test
+    fun `should show resource more menu when opening resource menu`() =
+        runTest {
+            viewModel = get()
+            val resource = mockResourceModel("Test Resource")
+
+            viewModel.viewState.test {
+                skipItems(1)
+
+                viewModel.onIntent(OpenResourceMenu(resource))
+
+                val state = awaitItem()
+                assertThat(state.showResourceMoreBottomSheet).isTrue()
+                assertThat(state.moreMenuResource).isEqualTo(resource)
+            }
+        }
+
+    @Test
     fun `should copy username to clipboard`() =
         runTest {
             val resourcePropertiesInteractor = mock<ResourcePropertiesActionsInteractor>()
@@ -209,8 +231,6 @@ class HomeViewModelMenuTest : KoinTest {
             viewModel.onIntent(OpenResourceMenu(mockResourceModel("Resource 1")))
 
             viewModel.sideEffect.test {
-                assertIs<OpenResourceMoreMenu>(awaitItem())
-
                 viewModel.onIntent(CopyResourceUsername)
 
                 val effect = awaitItem()
@@ -225,7 +245,7 @@ class HomeViewModelMenuTest : KoinTest {
     fun `should copy metadata description to clipboard`() =
         runTest {
             val resourcePropertiesInteractor = mock<ResourcePropertiesActionsInteractor>()
-            whenever(resourcePropertiesInteractor.provideDescription()).thenReturn(
+            whenever(resourcePropertiesInteractor.provideMetadataDescription()).thenReturn(
                 flowOf(
                     ResourcePropertyActionResult(
                         label = "Description",
@@ -240,8 +260,6 @@ class HomeViewModelMenuTest : KoinTest {
             viewModel.onIntent(OpenResourceMenu(mockResourceModel("Resource 1")))
 
             viewModel.sideEffect.test {
-                assertIs<OpenResourceMoreMenu>(awaitItem())
-
                 viewModel.onIntent(CopyResourceMetadataDescription)
 
                 val effect = awaitItem()
@@ -271,8 +289,6 @@ class HomeViewModelMenuTest : KoinTest {
             viewModel.onIntent(OpenResourceMenu(mockResourceModel("Resource 1")))
 
             viewModel.sideEffect.test {
-                assertIs<OpenResourceMoreMenu>(awaitItem())
-
                 viewModel.onIntent(CopyResourceUri)
 
                 val effect = awaitItem()
@@ -302,8 +318,6 @@ class HomeViewModelMenuTest : KoinTest {
             viewModel.onIntent(OpenResourceMenu(mockResourceModel("Resource 1")))
 
             viewModel.sideEffect.test {
-                assertIs<OpenResourceMoreMenu>(awaitItem())
-
                 viewModel.onIntent(CopyPassword)
 
                 val effect = awaitItem()
@@ -333,8 +347,6 @@ class HomeViewModelMenuTest : KoinTest {
             viewModel.onIntent(OpenResourceMenu(mockResourceModel("Resource 1")))
 
             viewModel.sideEffect.test {
-                assertIs<OpenResourceMoreMenu>(awaitItem())
-
                 viewModel.onIntent(CopyNote)
 
                 val effect = awaitItem()
@@ -364,8 +376,6 @@ class HomeViewModelMenuTest : KoinTest {
             viewModel.onIntent(OpenResourceMenu(mockResourceModel("Resource 1")))
 
             viewModel.sideEffect.test {
-                assertIs<OpenResourceMoreMenu>(awaitItem())
-
                 viewModel.onIntent(LaunchResourceWebsite)
 
                 val effect = awaitItem()
@@ -388,12 +398,9 @@ class HomeViewModelMenuTest : KoinTest {
 
             viewModel = get()
             viewModel.onIntent(OpenResourceMenu(mockResourceModel("Test Resource")))
+            viewModel.onIntent(ToggleResourceFavourite(ADD_TO_FAVOURITES))
 
-            viewModel.sideEffect.test {
-                assertIs<OpenResourceMoreMenu>(awaitItem())
-
-                viewModel.onIntent(ToggleResourceFavourite(ADD_TO_FAVOURITES))
-            }
+            verify(resourceCommonActionsInteractor).toggleFavourite(ADD_TO_FAVOURITES)
         }
 
     @Test
@@ -410,12 +417,9 @@ class HomeViewModelMenuTest : KoinTest {
 
             viewModel = get()
             viewModel.onIntent(OpenResourceMenu(mockResourceModel("Test Resource")))
+            viewModel.onIntent(ToggleResourceFavourite(REMOVE_FROM_FAVOURITES))
 
-            viewModel.sideEffect.test {
-                assertIs<OpenResourceMoreMenu>(awaitItem())
-
-                viewModel.onIntent(ToggleResourceFavourite(REMOVE_FROM_FAVOURITES))
-            }
+            verify(resourceCommonActionsInteractor).toggleFavourite(REMOVE_FROM_FAVOURITES)
         }
 
     @Test
@@ -432,14 +436,48 @@ class HomeViewModelMenuTest : KoinTest {
             viewModel.onIntent(OpenResourceMenu(mockResourceModel("Test Resource")))
 
             viewModel.sideEffect.test {
-                assertIs<OpenResourceMoreMenu>(awaitItem())
-
                 viewModel.onIntent(ToggleResourceFavourite(ADD_TO_FAVOURITES))
 
                 val effect = awaitItem()
                 assertIs<ShowErrorSnackbar>(effect)
                 assertThat(effect.type).isEqualTo(TOGGLE_FAVOURITE_FAILURE)
             }
+        }
+
+    @Test
+    fun `should detect autofill conflict when detector returns true on initialize`() =
+        runTest {
+            val detectAutofillConflict: DetectAutofillConflict = get()
+            whenever(detectAutofillConflict.invoke()).thenReturn(true)
+
+            viewModel = get()
+            viewModel.onIntent(Initialize(DoNotShow, NotLoaded))
+
+            viewModel.viewState.test {
+                skipItems(1)
+
+                val state = awaitItem()
+                assertThat(state.isAutofillConflictDetected).isTrue()
+            }
+            verify(detectAutofillConflict).invoke()
+        }
+
+    @Test
+    fun `should not detect autofill conflict when detector returns false on initialize`() =
+        runTest {
+            val detectAutofillConflict: DetectAutofillConflict = get()
+            whenever(detectAutofillConflict.invoke()).thenReturn(false)
+
+            viewModel = get()
+            viewModel.onIntent(Initialize(DoNotShow, NotLoaded))
+
+            viewModel.viewState.test {
+                skipItems(1)
+
+                val state = awaitItem()
+                assertThat(state.isAutofillConflictDetected).isFalse()
+            }
+            verify(detectAutofillConflict).invoke()
         }
 
     private fun mockResourceModel(name: String) =

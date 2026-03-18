@@ -23,12 +23,6 @@
 
 package com.passbolt.mobile.android.feature.resourceform.additionalsecrets.customfields
 
-import com.passbolt.mobile.android.ui.CustomFieldsModel
-
 internal sealed interface CustomFieldsFormIntent {
     object GoBack : CustomFieldsFormIntent
-
-    data class Initialize(
-        val model: CustomFieldsModel,
-    ) : CustomFieldsFormIntent
 }

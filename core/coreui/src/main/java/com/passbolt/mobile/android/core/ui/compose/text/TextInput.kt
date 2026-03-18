@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -55,7 +56,9 @@ fun TextInput(
     state: StatefulInput.State = Default,
     text: String = "",
     onTextChange: (String) -> Unit = {},
+    minLines: Int = 1,
     testTag: String? = null,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     colors: TextFieldColors =
         MaterialTheme.colorScheme.surfaceVariant.let {
             OutlinedTextFieldDefaults.colors(
@@ -84,6 +87,8 @@ fun TextInput(
             onValueChange = { onTextChange(it) },
             placeholder = { Text(hint) },
             isError = state is Error,
+            minLines = minLines,
+            keyboardOptions = keyboardOptions,
             modifier =
                 Modifier
                     .fillMaxWidth()

@@ -25,4 +25,5 @@ package com.passbolt.mobile.android.feature.settings.screen
 data class SettingsState(
     val isProgressDialogVisible: Boolean = false,
     val isSignOutDialogVisible: Boolean = false,
+    val isAutofillConflictDetected: Boolean = false,
 )

@@ -1,6 +1,6 @@
 package com.passbolt.mobile.android.feature.autofill.encourage.accessibility
 
-import com.passbolt.mobile.android.feature.autofill.informationprovider.AutofillInformationProvider
+import com.passbolt.mobile.android.core.autofill.AutofillInformationProvider
 
 class EncourageAccessibilityAutofillPresenter(
     private val autofillInformationProvider: AutofillInformationProvider,

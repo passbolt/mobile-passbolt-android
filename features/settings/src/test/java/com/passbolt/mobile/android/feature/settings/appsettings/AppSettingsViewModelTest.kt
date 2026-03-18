@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.feature.settings.appsettings
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
 import com.passbolt.mobile.android.common.FingerprintInformationProvider
+import com.passbolt.mobile.android.common.autofill.DetectAutofillConflict
 import com.passbolt.mobile.android.common.usecase.UserIdInput
 import com.passbolt.mobile.android.core.accounts.usecase.biometrickey.SaveBiometricKeyIvUseCase
 import com.passbolt.mobile.android.core.accounts.usecase.selectedaccount.GetSelectedAccountUseCase
@@ -90,6 +91,7 @@ class AppSettingsViewModelTest : KoinTest {
                         single { mock<BiometryInteractor>() }
                         single { mock<SavePassphraseUseCase>() }
                         single { mock<SaveBiometricKeyIvUseCase>() }
+                        single { mock<DetectAutofillConflict>() }
                         factoryOf(::AppSettingsViewModel)
                     },
                 ),
@@ -275,6 +277,54 @@ class AppSettingsViewModelTest : KoinTest {
 
                 assertThat(awaitItem().isFingerprintEnabled).isTrue()
             }
+        }
+
+    @Test
+    fun `should detect autofill conflict when detector returns true on initialize`() =
+        runTest {
+            val checkIfPassphraseFileExistsUseCase: CheckIfPassphraseFileExistsUseCase = get()
+            whenever(checkIfPassphraseFileExistsUseCase.execute(any())) doReturn
+                CheckIfPassphraseFileExistsUseCase.Output(
+                    passphraseFileExists = false,
+                )
+            val detectAutofillConflict: DetectAutofillConflict = get()
+            whenever(detectAutofillConflict.invoke()) doReturn true
+
+            viewModel = get()
+            viewModel.onIntent(AppSettingsIntent.Initialize)
+
+            assertThat(viewModel.viewState.value.isAutofillConflictDetected).isTrue()
+        }
+
+    @Test
+    fun `should not detect autofill conflict when detector returns false on initialize`() =
+        runTest {
+            val checkIfPassphraseFileExistsUseCase: CheckIfPassphraseFileExistsUseCase = get()
+            whenever(checkIfPassphraseFileExistsUseCase.execute(any())) doReturn
+                CheckIfPassphraseFileExistsUseCase.Output(
+                    passphraseFileExists = false,
+                )
+            val detectAutofillConflict: DetectAutofillConflict = get()
+            whenever(detectAutofillConflict.invoke()) doReturn false
+
+            viewModel = get()
+            viewModel.onIntent(AppSettingsIntent.Initialize)
+
+            assertThat(viewModel.viewState.value.isAutofillConflictDetected).isFalse()
+        }
+
+    @Test
+    fun `initial state should have autofill conflict as false before initialize`() =
+        runTest {
+            val checkIfPassphraseFileExistsUseCase: CheckIfPassphraseFileExistsUseCase = get()
+            whenever(checkIfPassphraseFileExistsUseCase.execute(any())) doReturn
+                CheckIfPassphraseFileExistsUseCase.Output(
+                    passphraseFileExists = false,
+                )
+
+            viewModel = get()
+
+            assertThat(viewModel.viewState.value.isAutofillConflictDetected).isFalse()
         }
 
     private companion object {

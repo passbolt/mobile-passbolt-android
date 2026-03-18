@@ -31,6 +31,7 @@ import com.jayway.jsonpath.Configuration
 import com.jayway.jsonpath.Option
 import com.jayway.jsonpath.spi.json.GsonJsonProvider
 import com.jayway.jsonpath.spi.mapper.GsonMappingProvider
+import com.passbolt.mobile.android.common.autofill.DetectAutofillConflict
 import com.passbolt.mobile.android.common.datarefresh.DataRefreshStatus.Idle.FinishedWithFailure
 import com.passbolt.mobile.android.common.datarefresh.DataRefreshStatus.Idle.FinishedWithSuccess
 import com.passbolt.mobile.android.common.datarefresh.DataRefreshStatus.InProgress
@@ -113,6 +114,7 @@ import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.stub
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.time.ZonedDateTime
 import java.util.EnumSet
@@ -138,6 +140,7 @@ class HomeViewModelTest : KoinTest {
                     single { mock<GetLocalFolderDetailsUseCase>() }
                     single { mock<CanCreateResourceUseCase>() }
                     single { mock<CanShareResourceUseCase>() }
+                    single { mock<DetectAutofillConflict>() }
                     single(named(JSON_MODEL_GSON)) { GsonBuilder().serializeNulls().create() }
                     single {
                         Configuration
@@ -547,6 +550,44 @@ class HomeViewModelTest : KoinTest {
                 assertEquals(RESOURCE_SHARED, shareSnackbarEffect.type)
                 assertIs<InitiateDataRefresh>(awaitItem())
             }
+        }
+
+    @Test
+    fun `should detect autofill conflict when detector returns true on initialize`() =
+        runTest {
+            mockHomeData()
+            val detectAutofillConflict: DetectAutofillConflict = get()
+            whenever(detectAutofillConflict.invoke()).thenReturn(true)
+
+            viewModel = get()
+            viewModel.onIntent(Initialize(DoNotShow, NotLoaded))
+            advanceUntilIdle()
+
+            assertThat(viewModel.viewState.value.isAutofillConflictDetected).isTrue()
+            verify(detectAutofillConflict).invoke()
+        }
+
+    @Test
+    fun `should not detect autofill conflict when detector returns false on initialize`() =
+        runTest {
+            mockHomeData()
+            val detectAutofillConflict: DetectAutofillConflict = get()
+            whenever(detectAutofillConflict.invoke()).thenReturn(false)
+
+            viewModel = get()
+            viewModel.onIntent(Initialize(DoNotShow, NotLoaded))
+            advanceUntilIdle()
+
+            assertThat(viewModel.viewState.value.isAutofillConflictDetected).isFalse()
+            verify(detectAutofillConflict).invoke()
+        }
+
+    @Test
+    fun `initial state should have autofill conflict as false before initialize`() =
+        runTest {
+            viewModel = get()
+
+            assertThat(viewModel.viewState.value.isAutofillConflictDetected).isFalse()
         }
 
     private fun mockCanCreateResource(canCreate: Boolean) {

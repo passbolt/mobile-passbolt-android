@@ -38,14 +38,22 @@ class GetGlobalPreferencesUseCase(
             sharedPreferences.getLong(KEY_DEBUG_LOGS_FILE_CREATION_DATE_TIME, -1L).let {
                 if (it == -1L) null else LocalDateTime.ofEpochSecond(it, 0, ZoneOffset.UTC)
             }
+        val debugLogLastAppVersion = sharedPreferences.getString(KEY_DEBUG_LOGS_LAST_APP_VERSION, null)
         val isDeveloperModeEnabled = sharedPreferences.getBoolean(KEY_IS_DEVELOPER_MODE_ENABLED, false)
         val isHideRootDialogEnabled = sharedPreferences.getBoolean(KEY_IS_HIDE_ROOT_DIALOG_ENABLED, false)
-        return Output(areDebugLogsEnabled, debugLogsCreationDateTime, isDeveloperModeEnabled, isHideRootDialogEnabled)
+        return Output(
+            areDebugLogsEnabled,
+            debugLogsCreationDateTime,
+            debugLogLastAppVersion,
+            isDeveloperModeEnabled,
+            isHideRootDialogEnabled,
+        )
     }
 
     data class Output(
         val areDebugLogsEnabled: Boolean,
         val debugLogFileCreationDateTime: LocalDateTime?,
+        val debugLogLastAppVersion: String?,
         val isDeveloperModeEnabled: Boolean,
         val isHideRootDialogEnabled: Boolean,
     )

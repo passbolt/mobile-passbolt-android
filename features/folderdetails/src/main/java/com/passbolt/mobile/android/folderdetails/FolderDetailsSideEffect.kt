@@ -23,7 +23,7 @@
 
 package com.passbolt.mobile.android.folderdetails
 
-import com.passbolt.mobile.android.permissions.permissions.PermissionsMode
+import com.passbolt.mobile.android.ui.PermissionsMode
 
 sealed class FolderDetailsSideEffect {
     data object NavigateUp : FolderDetailsSideEffect()

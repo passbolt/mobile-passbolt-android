@@ -1,0 +1,28 @@
+# Passbolt 2.8.0-49 Android app release notes
+
+## Added
+- MOB-3242: UI for autofill conflicts
+- MOB-3296: Create custom PassboltPinInput
+
+## Improved
+- MOB-3304: Append log header on version update
+- MOB-3349: Unify and document resources used by backend
+
+## Fixed
+- MOB-3587: Fix bottom insets applied twice in Home
+
+## Maintenance
+- MOB-3298: Migrate additional-uris to MVI
+- MOB-3313: Resource details MVI
+- MOB-3328: Permissions MVI
+- MOB-3379: Resource more menu MVI
+- MOB-3380: Migrate scanotp to MVI
+- MOB-3415: Migrate metadata description to MVI
+- MOB-3416: Migrate metadata notes to MVI
+- MOB-3515: Migrate resourceform password to MVI
+- MOB-3518: Migrate resourceform totp to MVI
+- MOB-3521: Migrate ResourceForm main to MVI
+- MOB-3580: Folder more menu MVI
+- MOB-3299: Unit tests for additional-uris
+- MOB-3329: Add image build to local registry and switch to non-root user in Dockerfile
+- [CI/CD] Rebuild image only if dockerfile changed compared to develop

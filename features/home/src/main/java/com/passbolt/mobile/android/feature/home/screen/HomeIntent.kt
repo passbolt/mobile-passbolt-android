@@ -90,6 +90,13 @@ sealed interface HomeIntent {
         val resourceName: String?,
     ) : HomeIntent
 
+    // folder more menu
+    data object OpenFolderMoreMenu : HomeIntent
+
+    data object CloseFolderMoreMenu : HomeIntent
+
+    data object ViewFolderDetails : HomeIntent
+
     // resource more menu
     data class OpenResourceMenu(
         val resourceModel: ResourceModel,

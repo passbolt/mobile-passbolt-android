@@ -25,3 +25,5 @@ package com.passbolt.mobile.android.feature.resourceform.main
 enum class DefaultValue {
     NAME,
 }
+
+typealias DefaultValues = Map<DefaultValue, String>

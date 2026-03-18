@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.ui
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.Serializable
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,13 +27,16 @@ import kotlinx.parcelize.Parcelize
  * @since v1.0
  */
 
+@Serializable
 @Parcelize
 sealed class ResourceFormMode : Parcelable {
+    @Serializable
     data class Edit(
         val resourceId: String,
         val resourceName: String,
     ) : ResourceFormMode()
 
+    @Serializable
     data class Create(
         val leadingContentType: LeadingContentType,
         val parentFolderId: String?,

@@ -256,6 +256,9 @@
 
     <string name="autofill_resources_create">Create&amp;fill</string>
 
+    <string name="autofill_conflict_message">Multiple autofill methods are active.\nThis may cause issues.</string>
+    <string name="autofill_conflict_message_detailed">Multiple autofill methods are active.\nPlease disable one to ensure a smooth autofill experience.</string>
+
     <string name="home_empty_list">Empty list</string>
     <string name="home_create">Create</string>
     <string name="home_in_sub_folders">in subfolders:</string>

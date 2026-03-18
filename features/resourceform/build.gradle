@@ -3,6 +3,7 @@ plugins {
     alias libs.plugins.kotlin.gradle
     alias libs.plugins.compose.compiler
     alias libs.plugins.navigation.safeargs
+    alias libs.plugins.kotlin.serialization
 }
 
 dependencies {
@@ -40,8 +41,11 @@ dependencies {
     implementation libs.compose.material3
     implementation libs.compose.lifecycle.viewmodel
     implementation libs.compose.ui.tooling
-    debugImplementation libs.compose.ui.tooling.preview
     implementation libs.accompanist.drawablepainter
+    implementation libs.kotlin.serializationjson
+    implementation(libs.androidx.navigation3.runtime)
+
+    debugImplementation libs.compose.ui.tooling.preview
 
     testImplementation project(':commontest')
     testImplementation libs.gson

@@ -2,6 +2,7 @@ plugins {
     alias libs.plugins.android.library
     alias libs.plugins.kotlin.gradle
     alias libs.plugins.kotlin.parcelize
+    alias libs.plugins.compose.compiler
 }
 
 dependencies {
@@ -33,8 +34,15 @@ dependencies {
     implementation libs.material
     implementation platform(libs.koin.bom)
     implementation libs.koin
+    implementation libs.koin.compose
     implementation libs.room.core
     implementation libs.espresso.idling.resource
+    implementation platform(libs.compose.bom)
+    implementation libs.compose.material3
+    implementation libs.compose.lifecycle.viewmodel
+    implementation libs.compose.ui.tooling
+    debugImplementation libs.compose.ui.tooling.preview
+    implementation libs.compose.foundation
 
     testImplementation project(":commontest")
 }
@@ -43,6 +51,7 @@ android {
     namespace = "com.passbolt.mobile.android.feature.resourcemoremenu"
     buildFeatures {
         viewBinding true
+        compose true
     }
 }
 

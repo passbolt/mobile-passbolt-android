@@ -12,8 +12,8 @@ import androidx.navigation.fragment.navArgs
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.deeplinks.NavDeepLinkProvider
 import com.passbolt.mobile.android.locationdetails.ui.LocationItem
-import com.passbolt.mobile.android.permissions.permissions.PermissionsItem
-import com.passbolt.mobile.android.permissions.permissions.PermissionsMode
+import com.passbolt.mobile.android.ui.PermissionsItem
+import com.passbolt.mobile.android.ui.PermissionsMode
 
 /**
  * Passbolt - Open source password manager for teams
@@ -53,7 +53,6 @@ class FolderDetailsFragment :
                 PassboltTheme {
                     FolderDetailsScreen(
                         folderId = args.folderId,
-                        // Default width, will be updated when available
                         navigation = this@FolderDetailsFragment,
                     )
                 }

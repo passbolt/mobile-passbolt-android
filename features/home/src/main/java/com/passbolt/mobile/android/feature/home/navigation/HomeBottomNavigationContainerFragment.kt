@@ -18,23 +18,17 @@ import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.navigation.AppContext
+import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
+import com.passbolt.mobile.android.core.navigation.compose.BottomTab
 import com.passbolt.mobile.android.core.navigation.compose.keys.HomeNavigationKey.Home
+import com.passbolt.mobile.android.core.navigation.compose.keys.SettingsNavigationKey
 import com.passbolt.mobile.android.core.navigation.constants.Autofillresources
 import com.passbolt.mobile.android.core.navigation.deeplinks.NavDeepLinkProvider
 import com.passbolt.mobile.android.core.preferences.usecase.GetHomeDisplayViewPrefsUseCase
 import com.passbolt.mobile.android.createfolder.CreateFolderFragment
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent
-import com.passbolt.mobile.android.feature.home.screen.HomeIntent.CopyNote
-import com.passbolt.mobile.android.feature.home.screen.HomeIntent.CopyPassword
-import com.passbolt.mobile.android.feature.home.screen.HomeIntent.CopyResourceMetadataDescription
-import com.passbolt.mobile.android.feature.home.screen.HomeIntent.CopyResourceUri
-import com.passbolt.mobile.android.feature.home.screen.HomeIntent.CopyResourceUsername
-import com.passbolt.mobile.android.feature.home.screen.HomeIntent.DeleteResource
-import com.passbolt.mobile.android.feature.home.screen.HomeIntent.EditResource
-import com.passbolt.mobile.android.feature.home.screen.HomeIntent.LaunchResourceWebsite
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.OtpQRScanReturned
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.ResourceFormReturned
-import com.passbolt.mobile.android.feature.home.screen.HomeIntent.ShareResource
 import com.passbolt.mobile.android.feature.home.screen.HomeNavigation
 import com.passbolt.mobile.android.feature.home.screen.HomeScreen
 import com.passbolt.mobile.android.feature.home.screen.HomeViewModel
@@ -42,22 +36,16 @@ import com.passbolt.mobile.android.feature.home.screen.ResourceHandlingStrategy
 import com.passbolt.mobile.android.feature.home.screen.ShowSuggestedModel
 import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpFragment
 import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpMode
-import com.passbolt.mobile.android.feature.otp.scanotp.scanotpsuccess.ScanOtpSuccessFragment
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsFragment
 import com.passbolt.mobile.android.feature.resourceform.main.ResourceFormFragment
 import com.passbolt.mobile.android.mappers.HomeDisplayViewMapper
-import com.passbolt.mobile.android.moremenu.FolderMoreMenuFragment
 import com.passbolt.mobile.android.permissions.permissions.PermissionsFragment
-import com.passbolt.mobile.android.permissions.permissions.PermissionsItem
-import com.passbolt.mobile.android.permissions.permissions.PermissionsMode
-import com.passbolt.mobile.android.resourcemoremenu.ResourceMoreMenuFragment
-import com.passbolt.mobile.android.ui.Folder
-import com.passbolt.mobile.android.ui.FolderMoreMenuModel
 import com.passbolt.mobile.android.ui.HomeDisplayViewModel
 import com.passbolt.mobile.android.ui.LeadingContentType
+import com.passbolt.mobile.android.ui.PermissionsItem
+import com.passbolt.mobile.android.ui.PermissionsMode
 import com.passbolt.mobile.android.ui.ResourceFormMode
 import com.passbolt.mobile.android.ui.ResourceModel
-import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
 import org.koin.android.ext.android.inject
 import org.koin.androidx.compose.koinViewModel
 
@@ -86,10 +74,9 @@ import org.koin.androidx.compose.koinViewModel
 class HomeBottomNavigationContainerFragment :
     Fragment(),
     HomeNavigation,
-    ResourceHandlingStrategy,
-    ResourceMoreMenuFragment.Listener {
+    ResourceHandlingStrategy {
     private val otpScanQrReturned = { _: String, result: Bundle ->
-        val otpCreated = result.getBoolean(ScanOtpSuccessFragment.EXTRA_OTP_CREATED, false)
+        val otpCreated = result.getBoolean(ScanOtpFragment.EXTRA_OTP_CREATED, false)
         viewModel.onIntent(
             OtpQRScanReturned(
                 otpCreated = otpCreated,
@@ -97,7 +84,7 @@ class HomeBottomNavigationContainerFragment :
             ),
         )
         if (otpCreated) {
-            result.getString(ScanOtpSuccessFragment.EXTRA_CREATED_OTP_ID)?.let {
+            result.getString(ScanOtpFragment.EXTRA_CREATED_OTP_ID)?.let {
                 resourceHandlingStrategy.resourcePostCreateAction(it)
             }
         }
@@ -148,6 +135,7 @@ class HomeBottomNavigationContainerFragment :
 
     private val filterPreferencesUseCase: GetHomeDisplayViewPrefsUseCase by inject()
     private val homeDisplayMapper: HomeDisplayViewMapper by inject()
+    private val appNavigator: AppNavigator by inject()
 
     override val resourceHandlingStrategy: ResourceHandlingStrategy by lifecycleAwareLazy {
         if (requireActivity().javaClass.name == Autofillresources.AUTOFILL_RESOURCES_ACTIVITY) {
@@ -314,72 +302,13 @@ class HomeBottomNavigationContainerFragment :
 
     override fun shouldShowCloseButton() = false
 
-    override fun openFolderMoreMenu(homeView: HomeDisplayViewModel) {
-        (homeView as? HomeDisplayViewModel.Folders)?.let { folder ->
-            if (folder.activeFolder is Folder.Child) {
-                val childFolder = folder.activeFolder as Folder.Child
-                FolderMoreMenuFragment
-                    .newInstance(FolderMoreMenuModel(folder.activeFolderName, childFolder.folderId))
-                    .show(childFragmentManager, FolderMoreMenuModel::class.java.name)
-            }
-        }
+    override fun navigateToFolderDetails(folderId: String) {
+        findNavController().navigate(
+            NavDeepLinkProvider.folderDetailsDeepLinkRequest(folderId),
+        )
     }
 
     override fun resourcePostCreateAction(resourceId: String) {
-        // no-op
-    }
-
-    // more menu
-    override fun openResourceMoreMenu(
-        resourceId: String,
-        resourceName: String,
-    ) {
-        ResourceMoreMenuFragment
-            .newInstance(resourceId, resourceName)
-            .show(childFragmentManager, ResourceMoreMenuFragment::class.java.name)
-    }
-
-    override fun menuCopyPasswordClick() {
-        viewModel.onIntent(CopyPassword)
-    }
-
-    override fun menuCopyMetadataDescriptionClick() {
-        viewModel.onIntent(CopyResourceMetadataDescription)
-    }
-
-    override fun menuCopyNoteClick() {
-        viewModel.onIntent(CopyNote)
-    }
-
-    override fun menuCopyUrlClick() {
-        viewModel.onIntent(CopyResourceUri)
-    }
-
-    override fun menuCopyUsernameClick() {
-        viewModel.onIntent(CopyResourceUsername)
-    }
-
-    override fun menuLaunchWebsiteClick() {
-        viewModel.onIntent(LaunchResourceWebsite)
-    }
-
-    override fun menuDeleteClick() {
-        viewModel.onIntent(DeleteResource)
-    }
-
-    override fun menuEditClick() {
-        viewModel.onIntent(EditResource)
-    }
-
-    override fun menuShareClick() {
-        viewModel.onIntent(ShareResource)
-    }
-
-    override fun menuFavouriteClick(option: ResourceMoreMenuModel.FavouriteOption) {
-        viewModel.onIntent(HomeIntent.ToggleResourceFavourite(option))
-    }
-
-    override fun resourceMoreMenuDismissed() {
         // no-op
     }
 
@@ -397,5 +326,12 @@ class HomeBottomNavigationContainerFragment :
         findNavController().navigate(
             NavDeepLinkProvider.createFolderDeepLinkRequest(folderId),
         )
+    }
+
+    override fun navigateToAutofillSettings() {
+        with(appNavigator) {
+            setPendingNavigation(SettingsNavigationKey.Autofill)
+            requestTabSwitch(BottomTab.SETTINGS)
+        }
     }
 }

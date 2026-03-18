@@ -1,5 +1,7 @@
 package com.passbolt.mobile.android.feature.resourceform
 
+import com.passbolt.mobile.android.core.navigation.compose.base.Feature
+import com.passbolt.mobile.android.core.navigation.compose.base.FeatureModuleNavigation
 import com.passbolt.mobile.android.core.resources.usecase.GetDefaultCreateContentTypeUseCase
 import com.passbolt.mobile.android.core.resources.usecase.GetEditContentTypeUseCase
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.customfields.customFieldsFormModule
@@ -11,7 +13,9 @@ import com.passbolt.mobile.android.feature.resourceform.main.resourceFormModule
 import com.passbolt.mobile.android.feature.resourceform.metadata.additionaluris.additionalUrisFormModule
 import com.passbolt.mobile.android.feature.resourceform.metadata.appearance.appearanceFormModule
 import com.passbolt.mobile.android.feature.resourceform.metadata.description.descriptionFormModule
+import com.passbolt.mobile.android.feature.resourceform.navigation.ResourceFormFeatureNavigation
 import org.koin.core.module.dsl.factoryOf
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 /**
@@ -51,4 +55,6 @@ val resourceFormModule =
 
         factoryOf(::GetDefaultCreateContentTypeUseCase)
         factoryOf(::GetEditContentTypeUseCase)
+
+        single<FeatureModuleNavigation>(named(Feature.RESOURCE_FORM)) { ResourceFormFeatureNavigation() }
     }

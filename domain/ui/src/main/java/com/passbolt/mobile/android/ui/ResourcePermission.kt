@@ -1,5 +1,7 @@
 package com.passbolt.mobile.android.ui
 
+import kotlinx.serialization.Serializable
+
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -22,6 +24,7 @@ package com.passbolt.mobile.android.ui
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+@Serializable
 enum class ResourcePermission {
     READ,
     UPDATE,

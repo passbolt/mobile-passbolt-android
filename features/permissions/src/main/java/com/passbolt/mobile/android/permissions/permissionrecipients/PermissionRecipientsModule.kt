@@ -1,18 +1,3 @@
-package com.passbolt.mobile.android.permissions.permissionrecipients
-
-import com.mikepenz.fastadapter.FastAdapter
-import com.mikepenz.fastadapter.adapters.ItemAdapter
-import com.passbolt.mobile.android.permissions.permissionrecipients.recipientsrecycler.ExistingUsersAndGroupsHeaderItem
-import com.passbolt.mobile.android.permissions.permissionrecipients.recipientsrecycler.GroupRecipientItem
-import com.passbolt.mobile.android.permissions.permissionrecipients.recipientsrecycler.UserRecipientItem
-import com.passbolt.mobile.android.permissions.permissions.recycler.PermissionItem
-import com.passbolt.mobile.android.permissions.recycler.CounterItem
-import com.passbolt.mobile.android.permissions.recycler.GroupItem
-import com.passbolt.mobile.android.permissions.recycler.UserItem
-import org.koin.core.module.Module
-import org.koin.core.qualifier.named
-import org.koin.dsl.ScopeDSL
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -36,83 +21,21 @@ import org.koin.dsl.ScopeDSL
  * @since v1.0
  */
 
-internal const val GROUP_ITEM_ADAPTER = "GROUP_ITEM_ADAPTER"
-internal const val USER_ITEM_ADAPTER = "USER_ITEM_ADAPTER"
-internal const val USERS_AND_GROUPS_ADAPTER = "USERS_AND_GROUPS_ADAPTER"
+package com.passbolt.mobile.android.permissions.permissionrecipients
 
-internal const val ALREADY_ADDED_GROUP_ITEM_ADAPTER = "ALREADY_ADDED_GROUP_ITEM_ADAPTER"
-internal const val ALREADY_ADDED_USER_ITEM_ADAPTER = "ALREADY_ADDED_USER_ITEM_ADAPTER"
-internal const val ALREADY_ADDED_COUNTER_ITEM_ADAPTER = "ALREADY_ADDED_COUNTER_ITEM_ADAPTER"
-internal const val EXISTING_USERS_AND_GROUPS_ITEM_ADAPTER = "EXISTING_USERS_AND_GROUPS_ITEM_ADAPTER"
-internal const val EXISTING_USERS_AND_GROUPS_HEADER_ITEM_ADAPTER = "EXISTING_USERS_AND_GROUPS_HEADER_ITEM_ADAPTER"
-internal const val ALREADY_ADDED_ADAPTER = "ALREADY_ADDED_ADAPTER"
+import org.koin.core.module.Module
+import org.koin.core.module.dsl.viewModel
 
 fun Module.permissionRecipientsModule() {
-    scope<PermissionRecipientsFragment> {
-        scoped<PermissionRecipientsContract.Presenter> {
-            PermissionRecipientsPresenter(
-                getLocalGroupsUseCase = get(),
-                getLocalUsersUseCase = get(),
-                permissionsModelMapper = get(),
-                searchableMatcher = get(),
-                coroutineLaunchContext = get(),
-            )
-        }
-        usersAndGroupsRecyclerDependencies()
-        alreadyAddedRecyclerDependencies()
-    }
-}
-
-private fun ScopeDSL.alreadyAddedRecyclerDependencies() {
-    scoped<ItemAdapter<GroupItem>>(named(ALREADY_ADDED_GROUP_ITEM_ADAPTER)) {
-        ItemAdapter.items()
-    }
-    scoped<ItemAdapter<UserItem>>(named(ALREADY_ADDED_USER_ITEM_ADAPTER)) {
-        ItemAdapter.items()
-    }
-    scoped<ItemAdapter<CounterItem>>(named(ALREADY_ADDED_COUNTER_ITEM_ADAPTER)) {
-        ItemAdapter.items()
-    }
-    scoped(named(ALREADY_ADDED_ADAPTER)) {
-        FastAdapter.with(
-            listOf(
-                get<ItemAdapter<GroupItem>>(named(ALREADY_ADDED_GROUP_ITEM_ADAPTER)),
-                get<ItemAdapter<UserItem>>(named(ALREADY_ADDED_USER_ITEM_ADAPTER)),
-                get<ItemAdapter<CounterItem>>(named(ALREADY_ADDED_COUNTER_ITEM_ADAPTER)),
-            ),
-        )
-    }
-}
-
-private fun ScopeDSL.usersAndGroupsRecyclerDependencies() {
-    scoped<ItemAdapter<GroupRecipientItem>>(named(GROUP_ITEM_ADAPTER)) {
-        ItemAdapter.items()
-    }
-    scoped<ItemAdapter<UserRecipientItem>>(named(USER_ITEM_ADAPTER)) {
-        ItemAdapter.items()
-    }
-    scoped<ItemAdapter<PermissionItem>>(named(EXISTING_USERS_AND_GROUPS_ITEM_ADAPTER)) {
-        ItemAdapter.items()
-    }
-    scoped<ItemAdapter<ExistingUsersAndGroupsHeaderItem>>(named(EXISTING_USERS_AND_GROUPS_HEADER_ITEM_ADAPTER)) {
-        ItemAdapter.items()
-    }
-    scoped(named(USERS_AND_GROUPS_ADAPTER)) {
-        FastAdapter.with(
-            listOf(
-                get<ItemAdapter<GroupRecipientItem>>(
-                    named(GROUP_ITEM_ADAPTER),
-                ),
-                get<ItemAdapter<UserRecipientItem>>(
-                    named(USER_ITEM_ADAPTER),
-                ),
-                get<ItemAdapter<ExistingUsersAndGroupsHeaderItem>>(
-                    named(EXISTING_USERS_AND_GROUPS_HEADER_ITEM_ADAPTER),
-                ),
-                get<ItemAdapter<PermissionItem>>(
-                    named(EXISTING_USERS_AND_GROUPS_ITEM_ADAPTER),
-                ),
-            ),
+    viewModel { params ->
+        PermissionRecipientsViewModel(
+            alreadyAddedGroupPermissions = params.get(),
+            alreadyAddedUserPermissions = params.get(),
+            getLocalGroupsUseCase = get(),
+            getLocalUsersUseCase = get(),
+            permissionsModelMapper = get(),
+            searchableMatcher = get(),
+            coroutineLaunchContext = get(),
         )
     }
 }

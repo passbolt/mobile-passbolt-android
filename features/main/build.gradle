@@ -28,6 +28,7 @@ dependencies {
     implementation project(':autofillresources')
     implementation project(':preferences')
     implementation project(':navigation')
+    implementation project(':autofill')
 
     implementation libs.navigation.fragment
     implementation libs.navigation.ui

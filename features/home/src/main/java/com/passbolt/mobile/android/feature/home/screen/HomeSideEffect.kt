@@ -36,6 +36,10 @@ internal sealed interface HomeSideEffect {
         val folderId: String?,
     ) : HomeSideEffect
 
+    data class NavigateToFolderDetails(
+        val folderId: String,
+    ) : HomeSideEffect
+
     data class NavigateToCreateResourceForm(
         val leadingContentType: LeadingContentType,
         val folderId: String?,
@@ -71,11 +75,6 @@ internal sealed interface HomeSideEffect {
 
     data class ShowToast(
         val type: ToastType,
-    ) : HomeSideEffect
-
-    data class OpenResourceMoreMenu(
-        val resourceId: String,
-        val resourceName: String,
     ) : HomeSideEffect
 }
 

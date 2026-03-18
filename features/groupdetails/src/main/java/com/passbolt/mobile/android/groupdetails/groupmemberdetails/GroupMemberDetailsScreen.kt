@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
+import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
 import com.passbolt.mobile.android.core.ui.compose.circularimage.CircularProfileImage
 import com.passbolt.mobile.android.core.ui.compose.topbar.BackNavigationIcon
 import com.passbolt.mobile.android.core.ui.compose.topbar.TitleAppBar
@@ -58,9 +59,9 @@ import com.passbolt.mobile.android.core.localization.R as LocalizationR
 @Composable
 internal fun GroupMemberDetailsScreen(
     userId: String,
-    navigation: GroupMemberDetailsNavigation,
     modifier: Modifier = Modifier,
     viewModel: GroupMemberDetailsViewModel = koinViewModel(),
+    navigator: AppNavigator = koinInject(),
 ) {
     val state = viewModel.viewState.collectAsStateWithLifecycle()
 
@@ -81,7 +82,7 @@ internal fun GroupMemberDetailsScreen(
 
     SideEffectDispatcher(viewModel.sideEffect) {
         when (it) {
-            NavigateUp -> navigation.navigateUp()
+            NavigateUp -> navigator.navigateBack()
         }
     }
 }
