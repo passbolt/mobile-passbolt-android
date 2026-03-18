@@ -27,7 +27,7 @@ import com.passbolt.mobile.android.core.localization.R as LocalizationR
  */
 
 enum class ResourceFilterModel(
-    @StringRes val filterNameId: Int,
+    @param:StringRes val filterNameId: Int,
 ) {
     ALL_ITEMS(
         filterNameId = LocalizationR.string.filters_menu_all_items,

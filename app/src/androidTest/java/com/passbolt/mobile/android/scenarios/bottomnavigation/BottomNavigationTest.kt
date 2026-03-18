@@ -23,7 +23,12 @@
 
 package com.passbolt.mobile.android.scenarios.bottomnavigation
 
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotSelected
+import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
@@ -37,8 +42,11 @@ import com.passbolt.mobile.android.instrumentationTestsModule
 import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
 import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
+import com.passbolt.mobile.android.testtags.composetags.BottomNav
+import com.passbolt.mobile.android.testtags.composetags.Home
 import org.junit.Before
 import org.junit.Rule
+import org.junit.Test
 import org.junit.runner.RunWith
 import org.koin.core.component.inject
 import org.koin.test.KoinTest
@@ -47,19 +55,6 @@ import org.koin.test.KoinTest
 @LargeTest
 class BottomNavigationTest : KoinTest {
     @get:Rule(order = 0)
-    val composeTestRule = createEmptyComposeRule()
-
-    @get:Rule(order = 1)
-    val idlingResourceRule =
-        let {
-            val signInIdlingResource: SignInIdlingResource by inject()
-            val resourcesFullRefreshIdlingResource: ResourcesFullRefreshIdlingResource by inject()
-            IdlingResourceRule(arrayOf(signInIdlingResource, resourcesFullRefreshIdlingResource))
-        }
-
-    private val managedAccountIntentCreator: ManagedAccountIntentCreator by inject()
-
-    @get:Rule(order = 2)
     val startUpActivityRule =
         lazyActivitySetupScenarioRule<AuthenticationMainActivity>(
             koinOverrideModules =
@@ -76,89 +71,98 @@ class BottomNavigationTest : KoinTest {
             },
         )
 
+    @get:Rule
+    val idlingResourceRule =
+        let {
+            val signInIdlingResource: SignInIdlingResource by inject()
+            val resourcesFullRefreshIdlingResource: ResourcesFullRefreshIdlingResource by inject()
+            IdlingResourceRule(arrayOf(signInIdlingResource, resourcesFullRefreshIdlingResource))
+        }
+
+    private val managedAccountIntentCreator: ManagedAccountIntentCreator by inject()
+
+    @get:Rule
+    val composeTestRule = createEmptyComposeRule()
+
     @Before
     fun setup() {
-        composeTestRule
-            .signIn(managedAccountIntentCreator.getPassphrase())
+        composeTestRule.signIn(managedAccountIntentCreator.getPassphrase())
     }
 
-    // TODO rewrite tests to use Compose test
+    /**
+     * **I can go to the settings workspace using the bottom navigation**
+     *
+     * TestRail: {@link https://passbolt.testrail.io/index.php?/cases/view/2388}
+     *
+     * Given    that I am a logged in mobile user on the homepage
+     * When     I click on settings in the navigation
+     * Then     I see the settings page for this account
+     * And      I see Settings button highlighted
+     */
+    @Test
+    fun iCanGoToTheSettingsWorkspaceUsingTheBottomNavigation() {
+        composeTestRule.apply {
+            onNodeWithTag(BottomNav.SETTINGS_TAB)
+                .assertIsDisplayed()
+                .assertIsNotSelected()
+            onNodeWithTag(BottomNav.SETTINGS_TAB).performClick()
+            onNodeWithTag(BottomNav.SETTINGS_TAB)
+                .assertIsSelected()
+        }
+    }
 
-//    /**
-//     * **I can go to the settings workspace using the bottom navigation**
-//     *
-//     * TestRail: {@link https://passbolt.testrail.io/index.php?/cases/view/2388}
-//     *
-//     * Given    that I am a logged in mobile user on the homepage
-//     * When     I click on settings in the navigation
-//     * Then     I see the settings page for this account
-//     * And      I see Settings button highlighted
-//     */
-//    @Test
-//    fun iCanGoToTheSettingsWorkspaceUsingTheBottomNavigation() {
-//        onView(withId(settingsNavCompose))
-//            .check(matches(isDisplayed()))
-//            .check(matches(isNotSelected()))
-//        onView(withId(settingsNavCompose)).perform(click())
-//        composeTestRule.apply {
-//            waitForIdle()
-//            onNodeWithText(getString(LocalizationR.string.settings_title))
-//                .assertIsDisplayed()
-//        }
-//        onView(withId(settingsNavCompose))
-//            .check(matches(isSelected()))
-//    }
-//
-//    /**
-//     * **I can go to TOTP list using bottom navigation**
-//     *
-//     * TestRail: {@link https://passbolt.testrail.io/index.php?/cases/view/16001}
-//     *
-//     * Given    that I am a logged in user
-//     * And      I have enabled at least one TOTP resource type on my server instance
-//     * When     I click on the TOTP button in the navigation
-//     * Then     I am on the TOTP page
-//     * And      TOTP button is highlighted
-//     */
-//    @Test
-//    fun iCanGoToTotpListUsingBottomNavigation() {
-//        onView(withId(otpNav))
-//            .check(matches(isDisplayed()))
-//            .check(matches(isNotSelected()))
-//        onView(withId(otpNav)).perform(click())
-//        composeTestRule.apply {
-//            onNodeWithTag("otp_screen")
-//                .assertIsDisplayed()
-//        }
-//        onView(withId(otpNav))
-//            .check(matches(isSelected()))
-//    }
-//
-//    /**
-//     * **I can go to the home using bottom navigation**
-//     *
-//     * TestRail: {@link https://passbolt.testrail.io/index.php?/cases/view/2389}
-//     *
-//     * Given    that I am a logged in mobile user on the settings
-//     * When     I click on home button in the navigation
-//     * Then     I see the home page
-//     * And      The Home button is highlighted
-//     */
-//    @Test
-//    fun iCanGoToTheHomeUsingBottomNavigation() {
-//        onView(withId(settingsNavCompose)).perform(click())
-//        onView(withId(homeNav))
-//            .check(matches(isDisplayed()))
-//            .check(matches(isNotSelected()))
-//        onView(withId(homeNav)).perform(click())
-//        composeTestRule.apply {
-//            onNodeWithTag(Home.SCREEN).assertIsDisplayed()
-//        }
-//        onView(withId(homeNav))
-//            .check(matches(isSelected()))
-//        onView(withId(otpNav))
-//            .check(matches(isNotSelected()))
-//        onView(withId(settingsNavCompose))
-//            .check(matches(isNotSelected()))
-//    }
+    /**
+     * **I can go to TOTP list using bottom navigation**
+     *
+     * TestRail: {@link https://passbolt.testrail.io/index.php?/cases/view/16001}
+     *
+     * Given    that I am a logged in user
+     * And      I have enabled at least one TOTP resource type on my server instance
+     * When     I click on the TOTP button in the navigation
+     * Then     I am on the TOTP page
+     * And      TOTP button is highlighted
+     */
+    @Test
+    fun iCanGoToTotpListUsingBottomNavigation() {
+        composeTestRule.apply {
+            onNodeWithTag(BottomNav.OTP_TAB)
+                .assertIsDisplayed()
+                .assertIsNotSelected()
+            onNodeWithTag(BottomNav.OTP_TAB).performClick()
+            onNodeWithTag("otp_screen")
+                .assertIsDisplayed()
+            onNodeWithTag(BottomNav.OTP_TAB)
+                .assertIsSelected()
+        }
+    }
+
+    /**
+     * **I can go to the home using bottom navigation**
+     *
+     * TestRail: {@link https://passbolt.testrail.io/index.php?/cases/view/2389}
+     *
+     * Given    that I am a logged in mobile user on the settings
+     * When     I click on home button in the navigation
+     * Then     I see the home page
+     * And      The Home button is highlighted
+     */
+    @Test
+    fun iCanGoToTheHomeUsingBottomNavigation() {
+        composeTestRule.apply {
+            // navigate to settings first
+            onNodeWithTag(BottomNav.SETTINGS_TAB).performClick()
+            // navigate back to home
+            onNodeWithTag(BottomNav.HOME_TAB)
+                .assertIsDisplayed()
+                .assertIsNotSelected()
+            onNodeWithTag(BottomNav.HOME_TAB).performClick()
+            onNodeWithTag(Home.SCREEN).assertIsDisplayed()
+            onNodeWithTag(BottomNav.HOME_TAB)
+                .assertIsSelected()
+            onNodeWithTag(BottomNav.OTP_TAB)
+                .assertIsNotSelected()
+            onNodeWithTag(BottomNav.SETTINGS_TAB)
+                .assertIsNotSelected()
+        }
+    }
 }
