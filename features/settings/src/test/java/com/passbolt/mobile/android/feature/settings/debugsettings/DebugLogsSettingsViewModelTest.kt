@@ -93,6 +93,7 @@ class DebugLogsSettingsViewModelTest : KoinTest {
                     debugLogFileCreationDateTime = null,
                     isDeveloperModeEnabled = false,
                     isHideRootDialogEnabled = false,
+                    debugLogLastAppVersion = null,
                 )
 
             viewModel = get()
@@ -113,6 +114,7 @@ class DebugLogsSettingsViewModelTest : KoinTest {
                     debugLogFileCreationDateTime = null,
                     isDeveloperModeEnabled = false,
                     isHideRootDialogEnabled = false,
+                    debugLogLastAppVersion = null,
                 )
 
             viewModel = get()
@@ -134,6 +136,7 @@ class DebugLogsSettingsViewModelTest : KoinTest {
                     debugLogFileCreationDateTime = null,
                     isDeveloperModeEnabled = false,
                     isHideRootDialogEnabled = false,
+                    debugLogLastAppVersion = null,
                 )
             val updateGlobalPreferencesUseCase: UpdateGlobalPreferencesUseCase = get()
 
@@ -161,6 +164,7 @@ class DebugLogsSettingsViewModelTest : KoinTest {
                     debugLogFileCreationDateTime = null,
                     isDeveloperModeEnabled = false,
                     isHideRootDialogEnabled = false,
+                    debugLogLastAppVersion = null,
                 )
             val updateGlobalPreferencesUseCase: UpdateGlobalPreferencesUseCase = get()
 

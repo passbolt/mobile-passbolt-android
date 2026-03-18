@@ -58,6 +58,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
 import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
+import com.passbolt.mobile.android.core.ui.R
 import com.passbolt.mobile.android.core.ui.compose.switch.SwitchWithDescriptionItem
 import com.passbolt.mobile.android.core.ui.compose.topbar.BackNavigationIcon
 import com.passbolt.mobile.android.core.ui.compose.topbar.TitleAppBar
@@ -74,6 +75,7 @@ import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.AutofillSettingsIntent.ToggleNativeAutofill
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.AutofillSettingsIntent.UpdateAutofillState
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.ComposeAutofillNavigationBridge.Companion.rememberAutofillNavigation
+import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.conflict.AutofillConflictBanner
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
@@ -146,6 +148,13 @@ private fun AutofillSettingsScreen(
     snackbarHostState: SnackbarHostState,
     onIntent: (AutofillSettingsIntent) -> Unit,
 ) {
+    val titleColor =
+        if (state.isAutofillConflictDetected) {
+            colorResource(R.color.warning)
+        } else {
+            MaterialTheme.colorScheme.primary
+        }
+
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
@@ -170,8 +179,8 @@ private fun AutofillSettingsScreen(
                 modifier =
                     Modifier
                         .fillMaxSize()
-                        .padding(paddingValues)
-                        .verticalScroll(rememberScrollState()),
+                        .verticalScroll(rememberScrollState())
+                        .padding(paddingValues),
             ) {
                 Spacer(modifier = Modifier.height(24.dp))
 
@@ -200,6 +209,16 @@ private fun AutofillSettingsScreen(
                             .padding(horizontal = 16.dp),
                 )
 
+                if (state.isAutofillConflictDetected) {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    AutofillConflictBanner(
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp),
+                    )
+                }
+
                 Spacer(modifier = Modifier.height(32.dp))
 
                 SwitchWithDescriptionItem(
@@ -207,6 +226,7 @@ private fun AutofillSettingsScreen(
                     description = stringResource(LocalizationR.string.settings_autofill_autofill_service_description),
                     isChecked = state.isNativeAutofillChecked,
                     onClick = { onIntent(ToggleNativeAutofill) },
+                    titleColor = titleColor,
                 )
 
                 SwitchWithDescriptionItem(
@@ -228,6 +248,7 @@ private fun AutofillSettingsScreen(
                     description = stringResource(LocalizationR.string.settings_autofill_accessibility_description),
                     isChecked = state.isAccessibilityAutofillChecked,
                     onClick = { onIntent(ToggleAccessibilityAutofill) },
+                    titleColor = titleColor,
                 )
             }
         },

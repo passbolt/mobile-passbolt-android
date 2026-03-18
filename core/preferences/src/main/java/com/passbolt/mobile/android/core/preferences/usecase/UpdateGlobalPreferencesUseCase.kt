@@ -40,6 +40,9 @@ class UpdateGlobalPreferencesUseCase(
             input.debugLogFileCreationDateTime?.let {
                 putLong(KEY_DEBUG_LOGS_FILE_CREATION_DATE_TIME, it.toEpochSecond(ZoneOffset.UTC))
             }
+            input.debugLogLastAppVersion?.let {
+                putString(KEY_DEBUG_LOGS_LAST_APP_VERSION, it)
+            }
             input.isDeveloperModeEnabled?.let {
                 putBoolean(KEY_IS_DEVELOPER_MODE_ENABLED, it)
             }
@@ -53,6 +56,7 @@ class UpdateGlobalPreferencesUseCase(
     data class Input(
         val areDebugLogsEnabled: Boolean? = null,
         val debugLogFileCreationDateTime: LocalDateTime? = null,
+        val debugLogLastAppVersion: String? = null,
         val isDeveloperModeEnabled: Boolean? = null,
         val isHideRootDialogEnabled: Boolean? = null,
     )

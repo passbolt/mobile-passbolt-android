@@ -1,7 +1,7 @@
 package com.passbolt.mobile.android.feature.main.mainscreen.encouragements.chromenativeautofill
 
-import com.passbolt.mobile.android.feature.autofill.informationprovider.AutofillInformationProvider
-import com.passbolt.mobile.android.feature.autofill.informationprovider.AutofillInformationProvider.ChromeNativeAutofillStatus.ENABLED
+import com.passbolt.mobile.android.core.autofill.AutofillInformationProvider
+import com.passbolt.mobile.android.core.autofill.AutofillInformationProvider.ChromeNativeAutofillStatus.ENABLED
 import com.passbolt.mobile.android.feature.main.mainscreen.encouragements.EncouragementsInteractor
 
 class EncourageChromeNativeAutofillPresenter(

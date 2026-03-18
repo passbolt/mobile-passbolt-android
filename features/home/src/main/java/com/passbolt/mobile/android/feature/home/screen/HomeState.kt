@@ -49,6 +49,8 @@ data class HomeState(
     val showAccountSwitchBottomSheet: Boolean = false,
     val showDeleteResourceConfirmationDialog: Boolean = false,
     val showFiltersBottomSheet: Boolean = false,
+    val showFolderMoreMenuBottomSheet: Boolean = false,
+    val isAutofillConflictDetected: Boolean = false,
 ) {
     val showBackIcon: Boolean
         get() =

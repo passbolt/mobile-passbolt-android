@@ -3,11 +3,11 @@ package com.passbolt.mobile.android.feature.autofill
 import android.content.Context
 import android.os.PowerManager
 import android.view.WindowManager
+import com.passbolt.mobile.android.core.autofill.AutofillInformationProvider
 import com.passbolt.mobile.android.feature.autofill.autofill.RemoteViewsFactory
 import com.passbolt.mobile.android.feature.autofill.encourage.accessibility.accessibilityAutofillModule
 import com.passbolt.mobile.android.feature.autofill.encourage.autofill.encourageAutofillModule
 import com.passbolt.mobile.android.feature.autofill.encourage.tutorial.SettingsNavigator
-import com.passbolt.mobile.android.feature.autofill.informationprovider.AutofillInformationProvider
 import com.passbolt.mobile.android.feature.autofill.informationprovider.AutofillInformationProviderImpl
 import com.passbolt.mobile.android.feature.autofill.resources.autofillResourcesModule
 import org.koin.android.ext.koin.androidApplication

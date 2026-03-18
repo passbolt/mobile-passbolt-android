@@ -4,17 +4,6 @@ import android.content.Context
 import androidx.appcompat.app.AlertDialog
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
-fun permissionDeletionConfirmationAlertDialog(
-    context: Context,
-    confirmAction: () -> Unit,
-) = AlertDialog
-    .Builder(context)
-    .setTitle(LocalizationR.string.are_you_sure)
-    .setMessage(LocalizationR.string.permission_deletion_dialog_message)
-    .setPositiveButton(LocalizationR.string.confirm) { _, _ -> confirmAction() }
-    .setNegativeButton(LocalizationR.string.cancel) { _, _ -> }
-    .create()
-
 fun accessibilityServiceConsentDialog(
     context: Context,
     confirmAction: () -> Unit,
@@ -24,17 +13,6 @@ fun accessibilityServiceConsentDialog(
     .setMessage(LocalizationR.string.dialog_accessibility_consent_message)
     .setPositiveButton(LocalizationR.string.consent) { _, _ -> confirmAction() }
     .setNegativeButton(LocalizationR.string.cancel) { _, _ -> }
-    .create()
-
-fun confirmResourceDeletionAlertDialog(
-    context: Context,
-    confirmAction: () -> Unit,
-) = AlertDialog
-    .Builder(context)
-    .setTitle(LocalizationR.string.are_you_sure)
-    .setMessage(LocalizationR.string.resource_will_be_deleted)
-    .setPositiveButton(LocalizationR.string.cancel) { _, _ -> }
-    .setNegativeButton(LocalizationR.string.delete) { _, _ -> confirmAction() }
     .create()
 
 fun serverNotReachableAlertDialog(
@@ -128,31 +106,4 @@ fun cameraRequiredDialog(context: Context) =
         .setTitle(LocalizationR.string.transfer_details_camera_required_dialog_title)
         .setMessage(LocalizationR.string.transfer_details_camera_required_dialog_message)
         .setPositiveButton(LocalizationR.string.ok) { _, _ -> }
-        .create()
-
-fun setupExitConfirmationDialog(
-    context: Context,
-    onExit: () -> Unit,
-) = AlertDialog
-    .Builder(context)
-    .setTitle(LocalizationR.string.are_you_sure)
-    .setMessage(LocalizationR.string.scan_qr_exit_confirmation_dialog_message)
-    .setPositiveButton(LocalizationR.string.cancel) { _, _ -> }
-    .setNegativeButton(LocalizationR.string.stop_scanning) { _, _ -> onExit() }
-    .create()
-
-fun qrCodesInformationDialog(context: Context) =
-    AlertDialog
-        .Builder(context)
-        .setTitle(LocalizationR.string.scan_qr_exit_information_dialog_title)
-        .setMessage(LocalizationR.string.scan_qr_exit_information_dialog_message)
-        .setPositiveButton(LocalizationR.string.got_it) { _, _ -> }
-        .create()
-
-fun howToCreateAccountDialog(context: Context) =
-    AlertDialog
-        .Builder(context)
-        .setTitle(LocalizationR.string.welcome_create_account_dialog_title)
-        .setMessage(LocalizationR.string.welcome_create_account_dialog_message)
-        .setPositiveButton(LocalizationR.string.got_it) { _, _ -> }
         .create()

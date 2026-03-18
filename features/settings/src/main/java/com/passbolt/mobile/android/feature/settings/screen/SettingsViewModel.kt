@@ -24,6 +24,7 @@
 package com.passbolt.mobile.android.feature.settings.screen
 
 import androidx.lifecycle.viewModelScope
+import com.passbolt.mobile.android.common.autofill.DetectAutofillConflict
 import com.passbolt.mobile.android.common.datarefresh.DataRefreshTrackingFlow
 import com.passbolt.mobile.android.core.compose.SideEffectViewModel
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
@@ -33,6 +34,7 @@ import com.passbolt.mobile.android.feature.settings.screen.SettingsIntent.GoToAp
 import com.passbolt.mobile.android.feature.settings.screen.SettingsIntent.GoToDebugLogs
 import com.passbolt.mobile.android.feature.settings.screen.SettingsIntent.GoToStartUp
 import com.passbolt.mobile.android.feature.settings.screen.SettingsIntent.GoToTermsAndLicenses
+import com.passbolt.mobile.android.feature.settings.screen.SettingsIntent.Initialize
 import com.passbolt.mobile.android.feature.settings.screen.SettingsIntent.SignOut
 import com.passbolt.mobile.android.feature.settings.screen.SettingsSideEffect.NavigateToAccounts
 import com.passbolt.mobile.android.feature.settings.screen.SettingsSideEffect.NavigateToAppSettings
@@ -44,9 +46,11 @@ import kotlinx.coroutines.launch
 internal class SettingsViewModel(
     private val signOutUseCase: SignOutUseCase,
     private val dataRefreshTrackingFlow: DataRefreshTrackingFlow,
+    private val detectAutofillConflict: DetectAutofillConflict,
 ) : SideEffectViewModel<SettingsState, SettingsSideEffect>(SettingsState()) {
     fun onIntent(intent: SettingsIntent) {
         when (intent) {
+            Initialize -> initialize()
             ConfirmSignOut -> signOut()
             GoToAccounts -> emitSideEffect(NavigateToAccounts)
             GoToAppSettings -> emitSideEffect(NavigateToAppSettings)
@@ -55,6 +59,15 @@ internal class SettingsViewModel(
             GoToStartUp -> emitSideEffect(NavigateToStartUp)
             SignOut -> updateViewState { copy(isSignOutDialogVisible = true) }
             SettingsIntent.CancelSignOut -> updateViewState { copy(isSignOutDialogVisible = false) }
+        }
+    }
+
+    private fun initialize() {
+        val isAutofillConflictDetected = detectAutofillConflict()
+        updateViewState {
+            copy(
+                isAutofillConflictDetected = isAutofillConflictDetected,
+            )
         }
     }
 

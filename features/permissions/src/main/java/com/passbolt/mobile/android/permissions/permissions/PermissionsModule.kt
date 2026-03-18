@@ -1,12 +1,3 @@
-package com.passbolt.mobile.android.permissions.permissions
-
-import com.mikepenz.fastadapter.FastAdapter
-import com.mikepenz.fastadapter.adapters.ItemAdapter
-import com.passbolt.mobile.android.permissions.permissions.recycler.PermissionItem
-import org.koin.core.module.Module
-import org.koin.core.module.dsl.scopedOf
-import org.koin.core.qualifier.named
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -30,35 +21,30 @@ import org.koin.core.qualifier.named
  * @since v1.0
  */
 
-internal const val PERMISSIONS_ITEM_ADAPTER = "PERMISSIONS_ITEM_ADAPTER"
+package com.passbolt.mobile.android.permissions.permissions
+
+import org.koin.core.module.Module
+import org.koin.core.module.dsl.viewModel
 
 fun Module.permissionsModule() {
-    scope<PermissionsFragment> {
-        scopedOf(::PermissionModelUiComparator)
-        scoped<PermissionsContract.Presenter> {
-            PermissionsPresenter(
-                getLocalResourcePermissionsUseCase = get(),
-                getLocalResourceUseCase = get(),
-                getLocalFolderPermissionsUseCase = get(),
-                getLocalFolderUseCase = get(),
-                permissionModelUiComparator = get(),
-                resourceShareInteractor = get(),
-                homeDataInteractor = get(),
-                resourceTypeIdToSlugMappingProvider = get(),
-                metadataPrivateKeysHelperInteractor = get(),
-                canShareResourceUseCase = get(),
-                coroutineLaunchContext = get(),
-            )
-        }
-        scoped<ItemAdapter<PermissionItem>>(named(PERMISSIONS_ITEM_ADAPTER)) {
-            ItemAdapter.items()
-        }
-        scoped {
-            FastAdapter.with(
-                listOf(
-                    get<ItemAdapter<PermissionItem>>(named(PERMISSIONS_ITEM_ADAPTER)),
-                ),
-            )
-        }
+    single { PermissionModelUiComparator() }
+    viewModel { params ->
+        PermissionsViewModel(
+            permissionsItem = params.get(),
+            id = params.get(),
+            mode = params.get(),
+            getLocalResourcePermissionsUseCase = get(),
+            getLocalResourceUseCase = get(),
+            getLocalFolderPermissionsUseCase = get(),
+            getLocalFolderUseCase = get(),
+            permissionModelUiComparator = get(),
+            resourceShareInteractor = get(),
+            homeDataInteractor = get(),
+            resourceTypeIdToSlugMappingProvider = get(),
+            metadataPrivateKeysHelperInteractor = get(),
+            canShareResourceUseCase = get(),
+            dataRefreshTrackingFlow = get(),
+            coroutineLaunchContext = get(),
+        )
     }
 }

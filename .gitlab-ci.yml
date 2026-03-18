@@ -1,4 +1,4 @@
-image: registry.gitlab.com/passbolt/passbolt-ci-docker-images/android-app-alpine:latest
+image: $CI_REGISTRY_IMAGE/android-app-alpine:latest
 
 variables:
   ANDROID_HOME: "/usr/local/android-sdk"
@@ -13,9 +13,28 @@ default:
       - stale_schedule
 
 stages:
+  - Build image
   - Build
   - Instrumented tests
   - Deploy
+
+Build docker image:
+  stage: Build image
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
+  script:
+    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
+    - >
+      /kaniko/executor --context $CI_PROJECT_DIR
+      --dockerfile $CI_PROJECT_DIR/Dockerfile
+      --destination $CI_REGISTRY_IMAGE/android-app-alpine:latest
+  rules:
+    - changes:
+        compare_to: refs/heads/develop
+        paths:
+          - Dockerfile
+      when: always
 
 # run all static analysis and reporting tools
 Run verifications:

@@ -4,6 +4,7 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
@@ -19,6 +20,12 @@ import org.koin.core.qualifier.named
 fun AppNavigation(navigator: AppNavigator = koinInject()) {
     rememberNavBackStack(SettingsNavigationKey.SettingsMain).let { backstack ->
         navigator.backStack = backstack
+    }
+
+    LaunchedEffect(Unit) {
+        navigator.consumePendingNavigation()?.let { pendingKey ->
+            navigator.navigateToKey(pendingKey)
+        }
     }
 
     val featureModulesNavigation: Set<FeatureModuleNavigation> =

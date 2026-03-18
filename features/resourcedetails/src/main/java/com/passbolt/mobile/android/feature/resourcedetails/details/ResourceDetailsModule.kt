@@ -1,12 +1,7 @@
 package com.passbolt.mobile.android.feature.resourcedetails.details
 
-import com.mikepenz.fastadapter.FastAdapter
-import com.mikepenz.fastadapter.adapters.ItemAdapter
-import com.passbolt.mobile.android.permissions.recycler.CounterItem
-import com.passbolt.mobile.android.permissions.recycler.GroupItem
-import com.passbolt.mobile.android.permissions.recycler.UserItem
+import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.core.module.Module
-import org.koin.core.qualifier.named
 
 /**
  * Passbolt - Open source password manager for teams
@@ -31,46 +26,6 @@ import org.koin.core.qualifier.named
  * @since v1.0
  */
 
-internal const val GROUP_ITEM_ADAPTER = "GROUP_ITEM_ADAPTER"
-internal const val USER_ITEM_ADAPTER = "USER_ITEM_ADAPTER"
-internal const val COUNTER_ITEM_ADAPTER = "COUNTER_ITEM_ADAPTER"
-
 fun Module.detailsModule() {
-    scope<ResourceDetailsFragment> {
-        scoped<ResourceDetailsContract.Presenter> {
-            ResourceDetailsPresenter(
-                getFeatureFlagsUseCase = get(),
-                getLocalResourceUseCase = get(),
-                getLocalResourcePermissionsUseCase = get(),
-                getLocalResourceTagsUseCase = get(),
-                getLocalFolderLocation = get(),
-                totpParametersProvider = get(),
-                otpModelMapper = get(),
-                idToSlugMappingProvider = get(),
-                getRbacRulesUseCase = get(),
-                resourceDetailActionIdlingResource = get(),
-                resourceFormMapper = get(),
-                coroutineLaunchContext = get(),
-                canShareResourceUse = get(),
-            )
-        }
-        scoped<ItemAdapter<GroupItem>>(named(GROUP_ITEM_ADAPTER)) {
-            ItemAdapter.items()
-        }
-        scoped<ItemAdapter<UserItem>>(named(USER_ITEM_ADAPTER)) {
-            ItemAdapter.items()
-        }
-        scoped<ItemAdapter<CounterItem>>(named(COUNTER_ITEM_ADAPTER)) {
-            ItemAdapter.items()
-        }
-        scoped {
-            FastAdapter.with(
-                listOf(
-                    get<ItemAdapter<GroupItem>>(named(GROUP_ITEM_ADAPTER)),
-                    get<ItemAdapter<UserItem>>(named(USER_ITEM_ADAPTER)),
-                    get<ItemAdapter<CounterItem>>(named(COUNTER_ITEM_ADAPTER)),
-                ),
-            )
-        }
-    }
+    viewModelOf(::ResourceDetailsViewModel)
 }

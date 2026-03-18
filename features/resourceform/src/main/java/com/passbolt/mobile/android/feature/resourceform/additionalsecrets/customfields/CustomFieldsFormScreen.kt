@@ -45,24 +45,24 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
+import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
 import com.passbolt.mobile.android.core.ui.compose.topbar.BackNavigationIcon
 import com.passbolt.mobile.android.core.ui.compose.topbar.TitleAppBar
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.customfields.CustomFieldsFormIntent.GoBack
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.customfields.CustomFieldsFormSideEffect.NavigateUp
-import com.passbolt.mobile.android.ui.CustomFieldModel.BooleanCustomField
-import com.passbolt.mobile.android.ui.CustomFieldModel.NumberCustomField
-import com.passbolt.mobile.android.ui.CustomFieldModel.PasswordCustomField
-import com.passbolt.mobile.android.ui.CustomFieldModel.TextCustomField
-import com.passbolt.mobile.android.ui.CustomFieldModel.UriCustomField
+import com.passbolt.mobile.android.ui.CustomFieldsUiModel
 import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.koinInject
+import org.koin.core.parameter.parametersOf
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 @Composable
 internal fun CustomFieldsFormScreen(
-    navigation: CustomFieldsNavigation,
+    customFieldsUiModel: CustomFieldsUiModel,
     modifier: Modifier = Modifier,
-    viewModel: CustomFieldsFormViewModel = koinViewModel(),
+    navigator: AppNavigator = koinInject(),
+    viewModel: CustomFieldsFormViewModel = koinViewModel(parameters = { parametersOf(customFieldsUiModel) }),
 ) {
     val state = viewModel.viewState.collectAsStateWithLifecycle()
 
@@ -74,7 +74,7 @@ internal fun CustomFieldsFormScreen(
 
     SideEffectDispatcher(viewModel.sideEffect) {
         when (it) {
-            NavigateUp -> navigation.navigateUp()
+            NavigateUp -> navigator.navigateBack()
         }
     }
 }
@@ -102,7 +102,7 @@ private fun CustomFieldsFormScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        if (state.customFieldsModel.isNotEmpty()) {
+        if (state.customFields.isNotEmpty()) {
             Box(
                 modifier =
                     Modifier
@@ -112,24 +112,16 @@ private fun CustomFieldsFormScreen(
                         ).padding(16.dp),
             ) {
                 Column {
-                    state.customFieldsModel.forEach { customField ->
+                    state.customFields.forEach { customField ->
                         Text(
-                            text = customField.metadataKey.orEmpty(),
+                            text = customField.name,
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.onBackground,
                         )
 
                         Spacer(modifier = Modifier.height(4.dp))
 
-                        val fieldValue =
-                            when (customField) {
-                                is BooleanCustomField -> customField.secretValue?.toString().orEmpty()
-                                is NumberCustomField -> customField.secretValue?.toString().orEmpty()
-                                is PasswordCustomField -> customField.secretValue.orEmpty()
-                                is TextCustomField -> customField.secretValue.orEmpty()
-                                is UriCustomField -> customField.secretValue.orEmpty()
-                            }
-                        Text(text = fieldValue, color = MaterialTheme.colorScheme.onBackground)
+                        Text(text = customField.value, color = MaterialTheme.colorScheme.onBackground)
 
                         Spacer(modifier = Modifier.height(16.dp))
                     }

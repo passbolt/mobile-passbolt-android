@@ -1,8 +1,3 @@
-package com.passbolt.mobile.android.folderdetails
-
-import org.koin.androidx.viewmodel.dsl.viewModelOf
-import org.koin.core.module.Module
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -26,9 +21,10 @@ import org.koin.core.module.Module
  * @since v1.0
  */
 
-internal const val GROUP_ITEM_ADAPTER = "GROUP_ITEM_ADAPTER"
-internal const val USER_ITEM_ADAPTER = "USER_ITEM_ADAPTER"
-internal const val COUNTER_ITEM_ADAPTER = "COUNTER_ITEM_ADAPTER"
+package com.passbolt.mobile.android.folderdetails
+
+import org.koin.core.module.Module
+import org.koin.core.module.dsl.viewModelOf
 
 fun Module.folderDetailsModule() {
     viewModelOf(::FolderDetailsViewModel)

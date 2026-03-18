@@ -45,6 +45,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
+import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
+import com.passbolt.mobile.android.core.navigation.compose.keys.GroupDetailsNavigationKey.GroupMemberDetails
 import com.passbolt.mobile.android.core.ui.compose.topbar.BackNavigationIcon
 import com.passbolt.mobile.android.core.ui.compose.topbar.TitleAppBar
 import com.passbolt.mobile.android.feature.authentication.compose.AuthenticationHandler
@@ -57,6 +59,7 @@ import com.passbolt.mobile.android.ui.GpgKeyModel
 import com.passbolt.mobile.android.ui.UserModel
 import com.passbolt.mobile.android.ui.UserProfileModel
 import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.koinInject
 import java.time.ZonedDateTime
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
@@ -64,9 +67,9 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
 @Composable
 internal fun GroupMembersScreen(
     groupId: String,
-    navigation: GroupMembersNavigation,
     modifier: Modifier = Modifier,
     viewModel: GroupMembersViewModel = koinViewModel(),
+    navigator: AppNavigator = koinInject(),
 ) {
     val state = viewModel.viewState.collectAsStateWithLifecycle()
 
@@ -87,8 +90,8 @@ internal fun GroupMembersScreen(
 
     SideEffectDispatcher(viewModel.sideEffect) {
         when (it) {
-            NavigateUp -> navigation.navigateUp()
-            is NavigateToMemberDetails -> navigation.navigateToMemberDetails(it.userId)
+            NavigateUp -> navigator.navigateBack()
+            is NavigateToMemberDetails -> navigator.navigateToKey(GroupMemberDetails(it.userId))
         }
     }
 }

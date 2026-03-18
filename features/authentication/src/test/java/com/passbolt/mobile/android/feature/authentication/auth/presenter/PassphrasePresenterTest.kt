@@ -74,6 +74,7 @@ class PassphrasePresenterTest : KoinTest {
                     debugLogFileCreationDateTime = null,
                     isDeveloperModeEnabled = false,
                     isHideRootDialogEnabled = false,
+                    debugLogLastAppVersion = null,
                 ),
             )
     }
@@ -211,6 +212,7 @@ class PassphrasePresenterTest : KoinTest {
                     debugLogFileCreationDateTime = null,
                     isDeveloperModeEnabled = true,
                     isHideRootDialogEnabled = false,
+                    debugLogLastAppVersion = null,
                 ),
             )
 
@@ -233,6 +235,7 @@ class PassphrasePresenterTest : KoinTest {
                     debugLogFileCreationDateTime = null,
                     isDeveloperModeEnabled = true,
                     isHideRootDialogEnabled = true,
+                    debugLogLastAppVersion = null,
                 ),
             )
 

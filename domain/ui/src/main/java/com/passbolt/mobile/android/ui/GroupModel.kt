@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.ui
 import android.os.Parcelable
 import com.passbolt.mobile.android.common.search.Searchable
 import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.Serializable
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,6 +28,7 @@ import kotlinx.parcelize.Parcelize
  * @since v1.0
  */
 
+@Serializable
 @Parcelize
 data class GroupModel(
     val groupId: String,

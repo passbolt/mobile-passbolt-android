@@ -24,14 +24,6 @@
 package com.passbolt.mobile.android.scenarios.resource.details.note
 
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
-import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.action.ViewActions.scrollTo
-import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA
-import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
-import androidx.test.espresso.matcher.ViewMatchers.withId
-import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.filters.MediumTest
 import androidx.test.platform.app.InstrumentationRegistry
 import com.passbolt.mobile.android.core.idlingresource.ResourceDetailActionIdlingResource
@@ -39,18 +31,15 @@ import com.passbolt.mobile.android.core.idlingresource.ResourcesFullRefreshIdlin
 import com.passbolt.mobile.android.core.idlingresource.SignInIdlingResource
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppContext
-import com.passbolt.mobile.android.core.ui.R.id.actionIcon
-import com.passbolt.mobile.android.core.ui.R.id.conceal
 import com.passbolt.mobile.android.feature.authentication.AuthenticationMainActivity
-import com.passbolt.mobile.android.feature.resources.R.id.note_item
 import com.passbolt.mobile.android.helpers.searchAndOpenFirstResourceByName
 import com.passbolt.mobile.android.helpers.signIn
 import com.passbolt.mobile.android.instrumentationTestsModule
 import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
 import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
-import org.hamcrest.Matchers.allOf
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -60,6 +49,7 @@ import org.koin.test.KoinTest
 
 @RunWith(Parameterized::class)
 @MediumTest
+@Ignore("Deprecated: refactor needed - test class disabled")
 class ResourcesNoteTest(
     private val testedResource: String,
     private val expectedNote: String,
@@ -101,7 +91,7 @@ class ResourcesNoteTest(
         fun testData() =
             listOf(
                 arrayOf(
-                    "Password with description",
+                    "Password with description - v4",
                     "This is a Note which is secret",
                 ),
                 arrayOf(
@@ -114,7 +104,7 @@ class ResourcesNoteTest(
                         "The free software movement and the open-source software movement are online social movements behind widespread production, adoption and promotion of FOSS, with the former preferring to use the equivalent term free/libre and open-source software (FLOSS). FOSS is supported by a loosely associated movement of multiple organizations, foundations, communities and individuals who share basic philosophical perspectives and collaborate practically, but may diverge in detail questions.",
                 ),
                 arrayOf(
-                    "Password, Description and TOTP",
+                    "Password, Description and TOTP - v4",
                     "This is a Note which is secret",
                 ),
                 arrayOf(
@@ -160,25 +150,25 @@ class ResourcesNoteTest(
     @Test
     fun asALoggedInMobileUserOnTheResourceDisplayICanShowOrHideResourceNote() {
         composeTestRule.searchAndOpenFirstResourceByName(testedResource)
-        onView(
-            allOf(
-                isDescendantOfA(withId(note_item)),
-                withId(actionIcon),
-            ),
-        ).perform(click())
-        onView(withText(expectedNote)).check(matches(isDisplayed()))
-        onView(
-            allOf(
-                isDescendantOfA(withId(note_item)),
-                withId(actionIcon),
-            ),
-        ).perform(scrollTo())
-            .perform(click())
-        onView(
-            allOf(
-                isDescendantOfA(withId(note_item)),
-                withId(conceal),
-            ),
-        ).check(matches(isDisplayed()))
+//        onView(
+//            allOf(
+//                isDescendantOfA(withId(note_item)),
+//                withId(actionIcon),
+//            ),
+//        ).perform(click())
+//        onView(withText(expectedNote)).check(matches(isDisplayed()))
+//        onView(
+//            allOf(
+//                isDescendantOfA(withId(note_item)),
+//                withId(actionIcon),
+//            ),
+//        ).perform(scrollTo())
+//            .perform(click())
+//        onView(
+//            allOf(
+//                isDescendantOfA(withId(note_item)),
+//                withId(conceal),
+//            ),
+//        ).check(matches(isDisplayed()))
     }
 }

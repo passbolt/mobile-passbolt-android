@@ -1,9 +1,13 @@
 package com.passbolt.mobile.android.permissions
 
+import com.passbolt.mobile.android.core.navigation.compose.base.Feature
+import com.passbolt.mobile.android.core.navigation.compose.base.FeatureModuleNavigation
 import com.passbolt.mobile.android.permissions.grouppermissionsdetails.groupPermissionsModule
+import com.passbolt.mobile.android.permissions.navigation.PermissionsFeatureNavigation
 import com.passbolt.mobile.android.permissions.permissionrecipients.permissionRecipientsModule
 import com.passbolt.mobile.android.permissions.permissions.permissionsModule
 import com.passbolt.mobile.android.permissions.userpermissionsdetails.userPermissionsModule
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 /**
@@ -31,6 +35,10 @@ import org.koin.dsl.module
 
 val permissionsModule =
     module {
+        single<FeatureModuleNavigation>(named(Feature.PERMISSIONS)) {
+            PermissionsFeatureNavigation()
+        }
+
         permissionsModule()
         groupPermissionsModule()
         userPermissionsModule()

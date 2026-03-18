@@ -1,7 +1,6 @@
 package com.passbolt.mobile.android
 
 import com.passbolt.mobile.android.folderdetails.folderDetailsModule
-import com.passbolt.mobile.android.moremenu.folderMoreMenuModule
 import org.koin.dsl.module
 
 /**
@@ -29,6 +28,5 @@ import org.koin.dsl.module
 
 val folderDetailsModule =
     module {
-        folderMoreMenuModule()
         folderDetailsModule()
     }

@@ -16,9 +16,13 @@ import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.Au
 import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.Home
 import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.Start
 import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.TransferAccount
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import org.koin.core.component.KoinComponent
 import java.io.File
 
@@ -47,10 +51,39 @@ import java.io.File
 class AppNavigator(
     private val externalDeeplinkHandler: ExternalDeeplinkHandler,
 ) : KoinComponent {
-    lateinit var backStack: NavBackStack<NavKey>
+    private var _backStack: NavBackStack<NavKey>? = null
+    var backStack: NavBackStack<NavKey>
+        get() = requireNotNull(_backStack) { "backStack has not been initialized" }
+        set(value) {
+            _backStack = value
+            _currentBackStackItem.value = value.lastOrNull()
+        }
 
     private val _currentBackStackItem = MutableStateFlow<NavKey?>(null)
     val currentBackStackItem: StateFlow<NavKey?> = _currentBackStackItem.asStateFlow()
+
+    // TODO remove after merging with develop (scoped AppNavigator per activity makes this unnecessary)
+    fun resetCurrentBackStackItem() {
+        _currentBackStackItem.value = null
+    }
+
+    private val pendingNavigationKey = MutableStateFlow<NavKey?>(null)
+
+    private val _tabSwitchRequest = MutableSharedFlow<BottomTab>(extraBufferCapacity = 1)
+    val tabSwitchRequest: SharedFlow<BottomTab> = _tabSwitchRequest.asSharedFlow()
+
+    fun setPendingNavigation(key: NavKey) {
+        pendingNavigationKey.update { key }
+    }
+
+    fun consumePendingNavigation() =
+        pendingNavigationKey.value.also {
+            pendingNavigationKey.update { null }
+        }
+
+    fun requestTabSwitch(tab: BottomTab) {
+        _tabSwitchRequest.tryEmit(tab)
+    }
 
     fun navigateToKey(key: NavKey) {
         backStack.add(key)

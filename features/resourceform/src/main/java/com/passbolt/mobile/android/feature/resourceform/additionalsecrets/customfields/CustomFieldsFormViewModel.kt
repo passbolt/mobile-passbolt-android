@@ -25,18 +25,17 @@ package com.passbolt.mobile.android.feature.resourceform.additionalsecrets.custo
 
 import com.passbolt.mobile.android.core.compose.SideEffectViewModel
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.customfields.CustomFieldsFormIntent.GoBack
-import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.customfields.CustomFieldsFormIntent.Initialize
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.customfields.CustomFieldsFormSideEffect.NavigateUp
+import com.passbolt.mobile.android.ui.CustomFieldsUiModel
 
-internal class CustomFieldsFormViewModel : SideEffectViewModel<CustomFieldsFormState, CustomFieldsFormSideEffect>(CustomFieldsFormState()) {
+internal class CustomFieldsFormViewModel(
+    model: CustomFieldsUiModel,
+) : SideEffectViewModel<CustomFieldsFormState, CustomFieldsFormSideEffect>(
+        initialState = CustomFieldsFormState(customFields = model.customFields),
+    ) {
     fun onIntent(intent: CustomFieldsFormIntent) {
         when (intent) {
             GoBack -> emitSideEffect(NavigateUp)
-            is Initialize -> initialize(intent)
         }
-    }
-
-    private fun initialize(initialization: Initialize) {
-        updateViewState { copy(customFieldsModel = initialization.model) }
     }
 }

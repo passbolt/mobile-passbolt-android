@@ -26,6 +26,7 @@ package com.passbolt.mobile.android.core.preferences.usecase
 internal const val GLOBAL_PREFERENCES_FILE_NAME = "preferences"
 internal const val KEY_DEBUG_LOGS_ENABLED = "KEY_DEBUG_LOGS_ENABLED"
 internal const val KEY_DEBUG_LOGS_FILE_CREATION_DATE_TIME = "KEY_DEBUG_LOGS_FILE_CREATION_DATE_TIME"
+internal const val KEY_DEBUG_LOGS_LAST_APP_VERSION = "KEY_DEBUG_LOGS_LAST_APP_VERSION"
 internal const val KEY_LAST_USED_HOME_VIEW = "LAST_USED_HOME_VIEW"
 internal const val KEY_USER_SET_HOME_VIEW = "USER_SET_HOME_VIEW"
 internal const val KEY_IS_DEVELOPER_MODE_ENABLED = "IS_DEVELOPER_MODE_ENABLED"

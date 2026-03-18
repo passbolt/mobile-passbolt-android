@@ -1,9 +1,3 @@
-package com.passbolt.mobile.android
-
-import com.passbolt.mobile.android.groupdetails.groupmemberdetails.groupMemberDetailsModule
-import com.passbolt.mobile.android.groupdetails.groupmembers.groupMembersModule
-import org.koin.dsl.module
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -26,8 +20,23 @@ import org.koin.dsl.module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+
+package com.passbolt.mobile.android
+
+import com.passbolt.mobile.android.core.navigation.compose.base.Feature
+import com.passbolt.mobile.android.core.navigation.compose.base.FeatureModuleNavigation
+import com.passbolt.mobile.android.groupdetails.groupmemberdetails.groupMemberDetailsModule
+import com.passbolt.mobile.android.groupdetails.groupmembers.groupMembersModule
+import com.passbolt.mobile.android.groupdetails.navigation.GroupDetailsFeatureNavigation
+import org.koin.core.qualifier.named
+import org.koin.dsl.module
+
 val groupDetailsModule =
     module {
+        single<FeatureModuleNavigation>(named(Feature.GROUP_DETAILS)) {
+            GroupDetailsFeatureNavigation()
+        }
+
         groupMembersModule()
         groupMemberDetailsModule()
     }

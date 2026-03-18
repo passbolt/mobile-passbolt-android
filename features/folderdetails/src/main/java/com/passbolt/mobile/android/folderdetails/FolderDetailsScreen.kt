@@ -194,39 +194,37 @@ private fun FolderDetailsScreen(
                         headerText = stringResource(LocalizationR.string.location),
                         modifier = Modifier.padding(top = 16.dp),
                         onItemClick = { onIntent(GoToLocationDetails) },
-                        {
-                            SeparatedText(
-                                segments = listOf(stringResource(LocalizationR.string.folder_root)) + state.locationPath,
-                                modifier = Modifier.fillMaxWidth(),
-                            )
-                        },
-                    )
+                    ) {
+                        SeparatedText(
+                            segments = listOf(stringResource(LocalizationR.string.folder_root)) + state.locationPath,
+                            modifier = Modifier.fillMaxWidth(),
+                        )
+                    }
                     if (state.canViewPermissions) {
                         ItemWithHeader(
                             headerText = stringResource(LocalizationR.string.shared_with),
                             modifier = Modifier.padding(top = 16.dp),
                             onItemClick = { onIntent(SharedWithClick) },
-                            {
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    verticalAlignment = Alignment.CenterVertically,
-                                ) {
-                                    SharedWithSection(
-                                        permissions = state.permissions,
-                                        modifier = Modifier.weight(1f),
-                                    )
+                        ) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                SharedWithSection(
+                                    permissions = state.permissions,
+                                    modifier = Modifier.weight(1f),
+                                )
 
-                                    Image(
-                                        painter = painterResource(CoreUiR.drawable.ic_chevron_right),
-                                        contentDescription = null,
-                                        modifier =
-                                            Modifier
-                                                .size(24.dp)
-                                                .padding(start = 8.dp),
-                                    )
-                                }
-                            },
-                        )
+                                Image(
+                                    painter = painterResource(CoreUiR.drawable.ic_chevron_right),
+                                    contentDescription = null,
+                                    modifier =
+                                        Modifier
+                                            .size(24.dp)
+                                            .padding(start = 8.dp),
+                                )
+                            }
+                        }
                     }
                 }
             }

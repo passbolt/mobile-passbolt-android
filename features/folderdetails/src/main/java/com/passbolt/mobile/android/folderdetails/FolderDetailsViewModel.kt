@@ -48,7 +48,7 @@ import com.passbolt.mobile.android.folderdetails.FolderDetailsSideEffect.ShowErr
 import com.passbolt.mobile.android.folderdetails.FolderDetailsSideEffect.ShowToast
 import com.passbolt.mobile.android.folderdetails.SnackbarErrorType.FAILED_TO_REFRESH_DATA
 import com.passbolt.mobile.android.folderdetails.ToastType.CONTENT_NOT_AVAILABLE
-import com.passbolt.mobile.android.permissions.permissions.PermissionsMode
+import com.passbolt.mobile.android.ui.PermissionsMode
 import com.passbolt.mobile.android.ui.RbacRuleModel.ALLOW
 import kotlinx.coroutines.launch
 import timber.log.Timber

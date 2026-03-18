@@ -19,8 +19,6 @@ dependencies {
     implementation project(':navigation')
     implementation project(':accounts')
 
-    implementation libs.navigation.fragment
-    implementation libs.navigation.ui
     implementation(libs.androidx.navigation3.ui)
     implementation(libs.androidx.navigation3.runtime)
     implementation platform(libs.koin.bom)

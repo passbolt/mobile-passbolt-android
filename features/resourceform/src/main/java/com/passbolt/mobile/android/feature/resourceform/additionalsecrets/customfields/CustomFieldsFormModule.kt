@@ -1,7 +1,7 @@
 package com.passbolt.mobile.android.feature.resourceform.additionalsecrets.customfields
 
-import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.core.module.Module
+import org.koin.core.module.dsl.viewModel
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,5 +27,9 @@ import org.koin.core.module.Module
  */
 
 internal fun Module.customFieldsFormModule() {
-    viewModelOf(::CustomFieldsFormViewModel)
+    viewModel { params ->
+        CustomFieldsFormViewModel(
+            model = params.get(),
+        )
+    }
 }

@@ -7,6 +7,7 @@ plugins {
 
 dependencies {
     implementation project(':common')
+    implementation project(':navigation')
     implementation project(':architecture')
     implementation project(':mappers')
     implementation project(':ui')
@@ -34,6 +35,7 @@ dependencies {
     implementation libs.compose.foundation
     implementation libs.compose.material3
     implementation libs.compose.ui.tooling
+    implementation(libs.androidx.navigation3.runtime)
     debugImplementation libs.compose.ui.tooling.preview
 
     testImplementation project(':commontest')

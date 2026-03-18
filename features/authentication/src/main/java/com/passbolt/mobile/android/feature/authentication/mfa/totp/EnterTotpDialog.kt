@@ -135,7 +135,7 @@ class EnterTotpDialog :
                 presenter.pasteButtonClick(clipboardAccess.getPrimaryClipTextOrNull())
             }
             otpInput.setOnPinEnteredListener {
-                presenter.otpEntered(it.toString(), bundledAuthToken, rememberMeCheckBox.isChecked)
+                presenter.otpEntered(it, bundledAuthToken, rememberMeCheckBox.isChecked)
             }
         }
     }
