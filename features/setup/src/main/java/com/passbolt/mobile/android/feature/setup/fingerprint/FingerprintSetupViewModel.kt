@@ -26,10 +26,16 @@ import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupSid
 import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupSideEffect.ShowBiometricPrompt
 import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupSideEffect.ShowErrorSnackbar
 import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupSideEffect.StartAuthActivity
+import com.passbolt.mobile.android.feature.setup.fingerprint.SnackbarErrorType.AUTHENTICATION_GENERIC
+import com.passbolt.mobile.android.feature.setup.fingerprint.SnackbarErrorType.AUTHENTICATION_LOCKOUT
+import com.passbolt.mobile.android.feature.setup.fingerprint.SnackbarErrorType.AUTHENTICATION_LOCKOUT_PERMANENT
+import com.passbolt.mobile.android.feature.setup.fingerprint.SnackbarErrorType.BIOMETRIC_ENCRYPT_ERROR
+import com.passbolt.mobile.android.feature.setup.fingerprint.SnackbarErrorType.BIOMETRIC_NO_CRYPTO_CIPHER
 import com.passbolt.mobile.android.ui.BiometricAuthError
 import com.passbolt.mobile.android.ui.BiometricAuthError.ERROR_LOCKOUT
 import com.passbolt.mobile.android.ui.BiometricAuthError.ERROR_LOCKOUT_PERMANENT
 import com.passbolt.mobile.android.ui.BiometricAuthError.GENERIC
+import com.passbolt.mobile.android.ui.BiometricAuthError.NO_CRYPTO_CIPHER
 import timber.log.Timber
 import javax.crypto.Cipher
 
@@ -105,12 +111,10 @@ class FingerprintSetupViewModel(
         when (val cachedPassphrase = passphraseMemoryCache.get()) {
             is PotentialPassphrase.Passphrase -> {
                 authenticatedCipher?.let {
-                    savePassphraseUseCase.execute(
-                        SavePassphraseUseCase.Input(cachedPassphrase.passphrase, it),
-                    )
-                    saveBiometricKeyIvUseCase.execute(
-                        SaveBiometricKeyIvUseCase.Input(authenticatedCipher.iv),
-                    )
+                    if (!encryptPassphraseWithBiometricCipher(cachedPassphrase.passphrase, it)) {
+                        emitSideEffect(ShowErrorSnackbar(BIOMETRIC_ENCRYPT_ERROR))
+                        return
+                    }
                 }
                 if (autofillInformationProvider.isAutofillServiceSupported() &&
                     !autofillInformationProvider.isPassboltAutofillServiceSet()
@@ -126,12 +130,30 @@ class FingerprintSetupViewModel(
         }
     }
 
+    private fun encryptPassphraseWithBiometricCipher(
+        passphrase: ByteArray,
+        cipher: Cipher,
+    ): Boolean =
+        try {
+            savePassphraseUseCase.execute(
+                SavePassphraseUseCase.Input(passphrase, cipher),
+            )
+            saveBiometricKeyIvUseCase.execute(
+                SaveBiometricKeyIvUseCase.Input(cipher.iv),
+            )
+            true
+        } catch (e: Exception) {
+            Timber.e(e, "Error encrypting passphrase with biometric cipher")
+            false
+        }
+
     private fun biometricAuthenticationError(error: BiometricAuthError) {
         val errorType =
             when (error) {
-                ERROR_LOCKOUT -> SnackbarErrorType.AUTHENTICATION_LOCKOUT
-                ERROR_LOCKOUT_PERMANENT -> SnackbarErrorType.AUTHENTICATION_LOCKOUT_PERMANENT
-                GENERIC -> SnackbarErrorType.AUTHENTICATION_GENERIC
+                ERROR_LOCKOUT -> AUTHENTICATION_LOCKOUT
+                ERROR_LOCKOUT_PERMANENT -> AUTHENTICATION_LOCKOUT_PERMANENT
+                NO_CRYPTO_CIPHER -> BIOMETRIC_NO_CRYPTO_CIPHER
+                GENERIC -> AUTHENTICATION_GENERIC
             }
         emitSideEffect(ShowErrorSnackbar(errorType))
     }
