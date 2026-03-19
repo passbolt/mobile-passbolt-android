@@ -39,6 +39,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -181,62 +182,59 @@ private fun SummaryScreen(
                 }
             }
         },
+        bottomBar = {
+            if (statusUi != null) {
+                BottomAppBar(
+                    containerColor = MaterialTheme.colorScheme.background,
+                ) {
+                    PrimaryButton(
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        text = stringResource(statusUi.buttonText),
+                        onClick = { onIntent(PrimaryButtonAction) },
+                    )
+                }
+            }
+        },
     ) { paddingValues ->
-        Column(
+        Box(
             modifier =
                 Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
                     .padding(16.dp),
+            contentAlignment = Alignment.Center,
         ) {
-            Box(
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .weight(1f),
-                contentAlignment = Alignment.Center,
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
             ) {
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center,
-                ) {
-                    if (statusUi != null) {
-                        Image(
-                            painter = painterResource(statusUi.icon),
-                            contentDescription = null,
-                            modifier = Modifier.size(120.dp),
-                        )
+                if (statusUi != null) {
+                    Image(
+                        painter = painterResource(statusUi.icon),
+                        contentDescription = null,
+                        modifier = Modifier.size(120.dp),
+                    )
 
-                        Spacer(modifier = Modifier.height(32.dp))
+                    Spacer(modifier = Modifier.height(32.dp))
 
+                    Text(
+                        text = stringResource(statusUi.title),
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = MaterialTheme.colorScheme.onBackground,
+                        textAlign = TextAlign.Center,
+                    )
+
+                    if (state.status is ResultStatus.Failure) {
+                        Spacer(modifier = Modifier.height(16.dp))
                         Text(
-                            text = stringResource(statusUi.title),
-                            style = MaterialTheme.typography.headlineMedium,
-                            color = MaterialTheme.colorScheme.onBackground,
+                            text = state.status.message,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             textAlign = TextAlign.Center,
                         )
-
-                        if (state.status is ResultStatus.Failure) {
-                            Spacer(modifier = Modifier.height(16.dp))
-                            Text(
-                                text = state.status.message,
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                textAlign = TextAlign.Center,
-                            )
-                        }
                     }
                 }
-            }
-
-            if (statusUi != null) {
-                PrimaryButton(
-                    text = stringResource(statusUi.buttonText),
-                    onClick = { onIntent(PrimaryButtonAction) },
-                    modifier = Modifier.fillMaxWidth(),
-                )
-                Spacer(modifier = Modifier.height(32.dp))
             }
         }
 

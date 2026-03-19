@@ -40,9 +40,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -135,22 +135,14 @@ private fun AppearanceFormScreen(
             )
         },
         bottomBar = {
-            Surface(
-                shadowElevation = 8.dp,
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .height(96.dp),
+            BottomAppBar(
+                containerColor = MaterialTheme.colorScheme.background,
             ) {
-                Box(
-                    contentAlignment = Alignment.Center,
+                PrimaryButton(
                     modifier = Modifier.padding(horizontal = 16.dp),
-                ) {
-                    PrimaryButton(
-                        text = stringResource(LocalizationR.string.apply),
-                        { onIntent(ApplyChanges) },
-                    )
-                }
+                    text = stringResource(LocalizationR.string.apply),
+                    onClick = { onIntent(ApplyChanges) },
+                )
             }
         },
     ) { paddingValues ->
