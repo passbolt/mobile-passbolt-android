@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -160,7 +161,8 @@ fun NewMetadataKeyTrustDialog(
                     modifier =
                         Modifier
                             .fillMaxWidth()
-                            .background(colorResource(CoreUiR.color.background)),
+                            .background(colorResource(CoreUiR.color.background))
+                            .navigationBarsPadding(),
                 ) {
                     Button(
                         shape = RoundedCornerShape(4.dp),
@@ -248,6 +250,7 @@ private fun NewMetadataKeyTrustDialogPreview() {
             newKeyToTrustModel = sampleModel,
             onTrustClick = { },
             onDismiss = { },
+            fingerprintFormatter = FingerprintFormatter(),
         )
     }
 }
