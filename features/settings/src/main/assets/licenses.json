@@ -1064,8 +1064,8 @@
   {
     "groupId": "androidx.constraintlayout",
     "artifactId": "constraintlayout",
-    "version": "2.2.1",
-    "name": "ConstraintLayout",
+    "version": "2.1.0",
+    "name": "Android ConstraintLayout",
     "spdxLicenses": [
       {
         "identifier": "Apache-2.0",
@@ -1074,14 +1074,14 @@
       }
     ],
     "scm": {
-      "url": "https://cs.android.com/androidx/platform/frameworks/support"
+      "url": "https://github.com/androidx/constraintlayout"
     }
   },
   {
     "groupId": "androidx.constraintlayout",
     "artifactId": "constraintlayout-core",
-    "version": "1.1.1",
-    "name": "ConstraintLayout Core",
+    "version": "1.0.0",
+    "name": "Android ConstraintLayout Core",
     "spdxLicenses": [
       {
         "identifier": "Apache-2.0",
@@ -1090,7 +1090,7 @@
       }
     ],
     "scm": {
-      "url": "https://cs.android.com/androidx/platform/frameworks/support"
+      "url": "https://github.com/androidx/constraintlayout"
     }
   },
   {
@@ -2530,22 +2530,6 @@
     }
   },
   {
-    "groupId": "androidx.swiperefreshlayout",
-    "artifactId": "swiperefreshlayout",
-    "version": "1.1.0",
-    "name": "Android Support Library Custom View",
-    "spdxLicenses": [
-      {
-        "identifier": "Apache-2.0",
-        "name": "Apache License 2.0",
-        "url": "https://www.apache.org/licenses/LICENSE-2.0"
-      }
-    ],
-    "scm": {
-      "url": "http://source.android.com"
-    }
-  },
-  {
     "groupId": "androidx.test.espresso",
     "artifactId": "espresso-idling-resource",
     "version": "3.7.0",
@@ -3352,150 +3336,6 @@
     ],
     "scm": {
       "url": "https://github.com/journeyapps/zxing-android-embedded"
-    }
-  },
-  {
-    "groupId": "com.mikepenz",
-    "artifactId": "fastadapter",
-    "version": "5.7.0",
-    "name": "FastAdapter Library",
-    "spdxLicenses": [
-      {
-        "identifier": "Apache-2.0",
-        "name": "Apache License 2.0",
-        "url": "https://www.apache.org/licenses/LICENSE-2.0"
-      }
-    ],
-    "scm": {
-      "url": "https://github.com/mikepenz/FastAdapter"
-    }
-  },
-  {
-    "groupId": "com.mikepenz",
-    "artifactId": "fastadapter-extensions-binding",
-    "version": "5.7.0",
-    "name": "FastAdapter Library-Extensions-Binding",
-    "spdxLicenses": [
-      {
-        "identifier": "Apache-2.0",
-        "name": "Apache License 2.0",
-        "url": "https://www.apache.org/licenses/LICENSE-2.0"
-      }
-    ],
-    "scm": {
-      "url": "https://github.com/mikepenz/FastAdapter"
-    }
-  },
-  {
-    "groupId": "com.mikepenz",
-    "artifactId": "fastadapter-extensions-diff",
-    "version": "5.7.0",
-    "name": "FastAdapter Library-Extensions-Diff",
-    "spdxLicenses": [
-      {
-        "identifier": "Apache-2.0",
-        "name": "Apache License 2.0",
-        "url": "https://www.apache.org/licenses/LICENSE-2.0"
-      }
-    ],
-    "scm": {
-      "url": "https://github.com/mikepenz/FastAdapter"
-    }
-  },
-  {
-    "groupId": "com.mikepenz",
-    "artifactId": "fastadapter-extensions-drag",
-    "version": "5.7.0",
-    "name": "FastAdapter Library-Extensions-Drag",
-    "spdxLicenses": [
-      {
-        "identifier": "Apache-2.0",
-        "name": "Apache License 2.0",
-        "url": "https://www.apache.org/licenses/LICENSE-2.0"
-      }
-    ],
-    "scm": {
-      "url": "https://github.com/mikepenz/FastAdapter"
-    }
-  },
-  {
-    "groupId": "com.mikepenz",
-    "artifactId": "fastadapter-extensions-expandable",
-    "version": "5.7.0",
-    "name": "FastAdapter Library-Extensions-Expandable",
-    "spdxLicenses": [
-      {
-        "identifier": "Apache-2.0",
-        "name": "Apache License 2.0",
-        "url": "https://www.apache.org/licenses/LICENSE-2.0"
-      }
-    ],
-    "scm": {
-      "url": "https://github.com/mikepenz/FastAdapter"
-    }
-  },
-  {
-    "groupId": "com.mikepenz",
-    "artifactId": "fastadapter-extensions-swipe",
-    "version": "5.7.0",
-    "name": "FastAdapter Library-Extensions-Swipe",
-    "spdxLicenses": [
-      {
-        "identifier": "Apache-2.0",
-        "name": "Apache License 2.0",
-        "url": "https://www.apache.org/licenses/LICENSE-2.0"
-      }
-    ],
-    "scm": {
-      "url": "https://github.com/mikepenz/FastAdapter"
-    }
-  },
-  {
-    "groupId": "com.mikepenz",
-    "artifactId": "fastadapter-extensions-ui",
-    "version": "5.7.0",
-    "name": "FastAdapter Library-Extensions-UI",
-    "spdxLicenses": [
-      {
-        "identifier": "Apache-2.0",
-        "name": "Apache License 2.0",
-        "url": "https://www.apache.org/licenses/LICENSE-2.0"
-      }
-    ],
-    "scm": {
-      "url": "https://github.com/mikepenz/FastAdapter"
-    }
-  },
-  {
-    "groupId": "com.mikepenz",
-    "artifactId": "fastadapter-extensions-utils",
-    "version": "5.7.0",
-    "name": "FastAdapter Library-Extensions-Utils",
-    "spdxLicenses": [
-      {
-        "identifier": "Apache-2.0",
-        "name": "Apache License 2.0",
-        "url": "https://www.apache.org/licenses/LICENSE-2.0"
-      }
-    ],
-    "scm": {
-      "url": "https://github.com/mikepenz/FastAdapter"
-    }
-  },
-  {
-    "groupId": "com.mikepenz",
-    "artifactId": "itemanimators",
-    "version": "1.1.0",
-    "name": "itemanimators Library",
-    "spdxLicenses": [
-      {
-        "identifier": "Apache-2.0",
-        "name": "Apache License 2.0",
-        "url": "https://www.apache.org/licenses/LICENSE-2.0"
-      }
-    ],
-    "scm": {
-      "url": "https://github.com/mikepenz/itemanimators"
     }
   },
   {
@@ -4638,22 +4478,6 @@
     "artifactId": "kotlin-stdlib-jdk7",
     "version": "1.8.22",
     "name": "Kotlin Stdlib Jdk7",
-    "spdxLicenses": [
-      {
-        "identifier": "Apache-2.0",
-        "name": "Apache License 2.0",
-        "url": "https://www.apache.org/licenses/LICENSE-2.0"
-      }
-    ],
-    "scm": {
-      "url": "https://github.com/JetBrains/kotlin"
-    }
-  },
-  {
-    "groupId": "org.jetbrains.kotlin",
-    "artifactId": "kotlin-stdlib-jdk8",
-    "version": "1.8.22",
-    "name": "Kotlin Stdlib Jdk8",
     "spdxLicenses": [
       {
         "identifier": "Apache-2.0",
