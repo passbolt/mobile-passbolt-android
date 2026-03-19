@@ -2,6 +2,8 @@ package com.passbolt.mobile.android.feature.authentication.auth
 
 import android.content.Context
 import com.passbolt.mobile.android.feature.authentication.auth.AuthSideEffect.SnackbarErrorType.AUTHENTICATION_ERROR
+import com.passbolt.mobile.android.feature.authentication.auth.AuthSideEffect.SnackbarErrorType.BIOMETRIC_DECRYPT_ERROR
+import com.passbolt.mobile.android.feature.authentication.auth.AuthSideEffect.SnackbarErrorType.BIOMETRIC_NO_CRYPTO_CIPHER
 import com.passbolt.mobile.android.feature.authentication.auth.AuthSideEffect.SnackbarErrorType.CHALLENGE_INVALID_SIGNATURE
 import com.passbolt.mobile.android.feature.authentication.auth.AuthSideEffect.SnackbarErrorType.CHALLENGE_TOKEN_EXPIRED
 import com.passbolt.mobile.android.feature.authentication.auth.AuthSideEffect.SnackbarErrorType.CHALLENGE_VERIFICATION_FAILURE
@@ -22,6 +24,7 @@ internal fun getTitleText(
         else -> context.getString(LocalizationR.string.auth_enter_passphrase)
     }
 
+@Suppress("CyclomaticComplexMethod")
 internal fun getSnackBarMessage(
     context: Context,
     kind: AuthSideEffect.SnackbarErrorType,
@@ -52,4 +55,6 @@ internal fun getSnackBarMessage(
                 base
             }
         }
+        BIOMETRIC_DECRYPT_ERROR -> context.getString(LocalizationR.string.biometric_decrypt_error_message)
+        BIOMETRIC_NO_CRYPTO_CIPHER -> context.getString(LocalizationR.string.biometric_no_crypto_cipher)
     }

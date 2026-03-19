@@ -46,5 +46,7 @@ sealed interface AuthSideEffect {
         CHALLENGE_VERIFICATION_FAILURE,
         TIME_OUT_OF_SYNC,
         PROFILE_FETCH_FAILURE,
+        BIOMETRIC_DECRYPT_ERROR,
+        BIOMETRIC_NO_CRYPTO_CIPHER,
     }
 }

@@ -23,6 +23,7 @@ import com.passbolt.mobile.android.core.navigation.ActivityIntents.AuthConfig.Se
 import com.passbolt.mobile.android.core.navigation.ActivityIntents.AuthConfig.Startup
 import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.core.passphrasememorycache.PassphraseMemoryCache
+import com.passbolt.mobile.android.core.passphrasememorycache.PotentialPassphrase
 import com.passbolt.mobile.android.core.passphrasememorycache.PotentialPassphrase.Passphrase
 import com.passbolt.mobile.android.core.preferences.usecase.GetGlobalPreferencesUseCase
 import com.passbolt.mobile.android.core.security.rootdetection.RootDetector
@@ -61,6 +62,7 @@ import com.passbolt.mobile.android.feature.authentication.auth.AuthSideEffect.Na
 import com.passbolt.mobile.android.feature.authentication.auth.AuthSideEffect.NavigateToMfa
 import com.passbolt.mobile.android.feature.authentication.auth.AuthSideEffect.ShowErrorSnackbar
 import com.passbolt.mobile.android.feature.authentication.auth.AuthSideEffect.SnackbarErrorType.AUTHENTICATION_ERROR
+import com.passbolt.mobile.android.feature.authentication.auth.AuthSideEffect.SnackbarErrorType.BIOMETRIC_DECRYPT_ERROR
 import com.passbolt.mobile.android.feature.authentication.auth.AuthSideEffect.SnackbarErrorType.CHALLENGE_INVALID_SIGNATURE
 import com.passbolt.mobile.android.feature.authentication.auth.AuthSideEffect.SnackbarErrorType.CHALLENGE_TOKEN_EXPIRED
 import com.passbolt.mobile.android.feature.authentication.auth.AuthSideEffect.SnackbarErrorType.CHALLENGE_VERIFICATION_FAILURE
@@ -98,6 +100,7 @@ import com.passbolt.mobile.android.feature.authentication.mfa.MfaDialogState.Tot
 import com.passbolt.mobile.android.feature.authentication.mfa.MfaDialogState.UnknownProvider
 import com.passbolt.mobile.android.feature.authentication.mfa.MfaDialogState.Yubikey
 import com.passbolt.mobile.android.mappers.AccountModelMapper
+import com.passbolt.mobile.android.ui.BiometricAuthError
 import timber.log.Timber
 import javax.crypto.Cipher
 
@@ -148,7 +151,7 @@ class AuthViewModel(
             is PassphraseInputChanged -> passphraseInputChanged(intent.passphrase)
             is AuthenticateUsingBiometry -> authenticateUsingBiometry()
             is BiometricAuthenticationSuccess -> biometricAuthenticationSuccess(intent.cipher)
-            is BiometricAuthenticationError -> biometricAuthenticationError()
+            is BiometricAuthenticationError -> biometricAuthenticationError(intent.error)
             is BiometricKeyInvalidated -> {
                 biometryInteractor.disableBiometry()
                 updateViewState { copy(showBiometricButton = false) }
@@ -472,9 +475,11 @@ class AuthViewModel(
     private fun biometricAuthenticationSuccess(authenticatedCipher: Cipher?) {
         authenticatedCipher?.let {
             val potentialPassphrase =
-                getPassphraseUseCase
-                    .execute(GetPassphraseUseCase.Input(userId, authenticatedCipher))
-                    .potentialPassphrase
+                decryptPassphraseWithBiometricCipher(authenticatedCipher)
+                    ?: run {
+                        emitSideEffect(ShowErrorSnackbar(BIOMETRIC_DECRYPT_ERROR))
+                        return
+                    }
             if (potentialPassphrase is Passphrase) {
                 passphraseMemoryCache.set(potentialPassphrase.passphrase)
                 when (authConfig) {
@@ -502,8 +507,23 @@ class AuthViewModel(
         }
     }
 
-    private fun biometricAuthenticationError() {
-        emitSideEffect(ShowErrorSnackbar(AUTHENTICATION_ERROR))
+    private fun decryptPassphraseWithBiometricCipher(authenticatedCipher: Cipher): PotentialPassphrase? =
+        try {
+            getPassphraseUseCase
+                .execute(GetPassphraseUseCase.Input(userId, authenticatedCipher))
+                .potentialPassphrase
+        } catch (e: Exception) {
+            Timber.e(e, "Error decrypting passphrase with biometric cipher")
+            null
+        }
+
+    private fun biometricAuthenticationError(error: BiometricAuthError) {
+        val errorType =
+            when (error) {
+                BiometricAuthError.NO_CRYPTO_CIPHER -> AuthSideEffect.SnackbarErrorType.BIOMETRIC_NO_CRYPTO_CIPHER
+                else -> AUTHENTICATION_ERROR
+            }
+        emitSideEffect(ShowErrorSnackbar(errorType))
     }
 
     private fun goBack() {

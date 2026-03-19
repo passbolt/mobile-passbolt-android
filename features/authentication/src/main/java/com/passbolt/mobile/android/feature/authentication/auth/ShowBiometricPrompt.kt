@@ -45,7 +45,16 @@ fun showBiometricPrompt(
                     }
 
                     override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
-                        onAuthenticationSuccess(result.cryptoObject?.cipher)
+                        val cipher = result.cryptoObject?.cipher
+                        if (result.authenticationType == BiometricPrompt.AUTHENTICATION_RESULT_TYPE_DEVICE_CREDENTIAL || cipher == null) {
+                            Timber.w(
+                                "Biometric auth succeeded without crypto cipher (authenticationType=%d)",
+                                result.authenticationType,
+                            )
+                            onAuthenticationError(BiometricAuthError.NO_CRYPTO_CIPHER)
+                            return
+                        }
+                        onAuthenticationSuccess(cipher)
                     }
                 },
             )

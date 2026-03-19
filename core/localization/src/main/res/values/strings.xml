@@ -81,6 +81,9 @@
     <string name="fingerprint_biometric_changed_title">Fingerprint changes detected</string>
     <string name="fingerprint_biometric_changed_message">You have to sign in with passphrase this time and enable fingerprint in Settings again.</string>
     <string name="fingerprint_authenticate_again">Please sign in with passphrase again</string>
+    <string name="biometric_decrypt_error_message">Biometric sign-in is temporarily unavailable. Please enter your passphrase to continue.</string>
+    <string name="biometric_encrypt_error_message">Biometric setup couldn\'t be completed. Try again or continue without it.</string>
+    <string name="biometric_no_crypto_cipher">Your device used PIN or pattern instead of biometrics. Please use fingerprint or face unlock, or enter your passphrase.</string>
 
     <string name="settings_licenses_title">Licenses</string>
     <string name="settings_logs_title">Logs</string>
