@@ -37,7 +37,8 @@ class ExternalDeeplinkHandler {
         context: Context,
         url: String,
     ) {
-        val intent = Intent(Intent.ACTION_VIEW, url.toUri())
+        val urlWithScheme = if (SCHEME_REGEX.containsMatchIn(url)) url else "$DEFAULT_SCHEME$url"
+        val intent = Intent(Intent.ACTION_VIEW, urlWithScheme.toUri())
 
         runCatching {
             context.startActivity(intent)
@@ -77,5 +78,10 @@ class ExternalDeeplinkHandler {
                     data = Uri.fromParts("package", context.packageName, null)
                 }
         context.startActivity(intent)
+    }
+
+    private companion object {
+        private val SCHEME_REGEX = Regex("^[a-zA-Z][a-zA-Z0-9+.-]*://")
+        private const val DEFAULT_SCHEME = "https://"
     }
 }
