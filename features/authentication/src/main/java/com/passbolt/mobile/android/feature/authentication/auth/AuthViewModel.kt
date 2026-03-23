@@ -425,6 +425,7 @@ class AuthViewModel(
     private fun signInSuccess(updateSession: Boolean = true) {
         Timber.d("Authentication success")
         runtimeAuthenticatedFlag.isAuthenticated = true
+        passphraseMemoryCache.set(viewState.value.passphrase)
         val currentLoginState = requireNotNull(loginState)
         if (updateSession) {
             saveSessionUseCase.execute(
@@ -443,6 +444,7 @@ class AuthViewModel(
         Timber.d("Increasing sign in count")
         inAppReviewInteractor.processSuccessfulSignIn()
         loginState = null
+        updateViewState { copy(showProgress = true) }
         launchPostSignInActions()
     }
 

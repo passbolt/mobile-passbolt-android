@@ -66,7 +66,6 @@ import com.passbolt.mobile.android.core.ui.circlestepsview.CircleStepItemModel
 import com.passbolt.mobile.android.core.ui.circlestepsview.CircleStepsView
 import com.passbolt.mobile.android.core.ui.topbar.BackNavigationIcon
 import com.passbolt.mobile.android.core.ui.topbar.TitleAppBar
-import com.passbolt.mobile.android.feature.authentication.compose.AuthenticationHandler
 import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccountonboarding.TransferAccountOnboardingIntent.GoBack
 import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccountonboarding.TransferAccountOnboardingIntent.RefreshedPassphrase
 import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccountonboarding.TransferAccountOnboardingIntent.StartTransferClick
@@ -98,11 +97,6 @@ internal fun TransferAccountOnboardingScreen(
     TransferAccountOnboardingScreen(
         modifier = modifier,
         onIntent = viewModel::onIntent,
-    )
-
-    AuthenticationHandler(
-        onAuthenticatedIntent = viewModel::onAuthenticationIntent,
-        authenticationSideEffect = viewModel.authenticationSideEffect,
     )
 
     SideEffectDispatcher(viewModel.sideEffect) {

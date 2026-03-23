@@ -42,7 +42,6 @@ import com.passbolt.mobile.android.core.ui.permissions.PermissionLabel
 import com.passbolt.mobile.android.core.ui.permissions.PermissionSelector
 import com.passbolt.mobile.android.core.ui.topbar.BackNavigationIcon
 import com.passbolt.mobile.android.core.ui.topbar.TitleAppBar
-import com.passbolt.mobile.android.feature.authentication.compose.AuthenticationHandler
 import com.passbolt.mobile.android.permissions.grouppermissionsdetails.GroupPermissionsIntent.CancelPermissionDelete
 import com.passbolt.mobile.android.permissions.grouppermissionsdetails.GroupPermissionsIntent.ConfirmPermissionDelete
 import com.passbolt.mobile.android.permissions.grouppermissionsdetails.GroupPermissionsIntent.DeletePermission
@@ -74,11 +73,6 @@ fun GroupPermissionsScreen(
 ) {
     val state = viewModel.viewState.collectAsStateWithLifecycle()
     val resultBus = NavigationResultEventBus.current
-
-    AuthenticationHandler(
-        onAuthenticatedIntent = viewModel::onAuthenticationIntent,
-        authenticationSideEffect = viewModel.authenticationSideEffect,
-    )
 
     GroupPermissionsScreen(
         state = state.value,

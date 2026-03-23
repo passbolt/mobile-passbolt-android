@@ -72,7 +72,6 @@ import com.passbolt.mobile.android.createfolder.CreateFolderIntent.Save
 import com.passbolt.mobile.android.createfolder.CreateFolderSideEffect.FolderCreated
 import com.passbolt.mobile.android.createfolder.CreateFolderSideEffect.NavigateUp
 import com.passbolt.mobile.android.createfolder.CreateFolderSideEffect.ShowErrorSnackbar
-import com.passbolt.mobile.android.feature.authentication.compose.AuthenticationHandler
 import com.passbolt.mobile.android.testtags.composetags.CreateFolder
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
@@ -96,11 +95,6 @@ internal fun CreateFolderScreen(
     LaunchedEffect(parentFolderId) {
         viewModel.onIntent(Initialize(parentFolderId))
     }
-
-    AuthenticationHandler(
-        onAuthenticatedIntent = viewModel::onAuthenticationIntent,
-        authenticationSideEffect = viewModel.authenticationSideEffect,
-    )
 
     CreateFolderScreen(
         state = state.value,

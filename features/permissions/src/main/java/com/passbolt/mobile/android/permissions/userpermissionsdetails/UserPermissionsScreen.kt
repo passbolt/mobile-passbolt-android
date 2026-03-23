@@ -42,7 +42,6 @@ import com.passbolt.mobile.android.core.ui.permissions.PermissionLabel
 import com.passbolt.mobile.android.core.ui.permissions.PermissionSelector
 import com.passbolt.mobile.android.core.ui.topbar.BackNavigationIcon
 import com.passbolt.mobile.android.core.ui.topbar.TitleAppBar
-import com.passbolt.mobile.android.feature.authentication.compose.AuthenticationHandler
 import com.passbolt.mobile.android.permissions.navigation.UserPermissionDeletedResult
 import com.passbolt.mobile.android.permissions.navigation.UserPermissionModifiedResult
 import com.passbolt.mobile.android.permissions.userpermissionsdetails.UserPermissionsIntent.CancelPermissionDelete
@@ -73,11 +72,6 @@ fun UserPermissionsScreen(
 ) {
     val state = viewModel.viewState.collectAsStateWithLifecycle()
     val resultBus = NavigationResultEventBus.current
-
-    AuthenticationHandler(
-        onAuthenticatedIntent = viewModel::onAuthenticationIntent,
-        authenticationSideEffect = viewModel.authenticationSideEffect,
-    )
 
     UserPermissionsScreen(
         state = state.value,

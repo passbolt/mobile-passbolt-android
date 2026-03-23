@@ -1,75 +1,103 @@
+/**
+ * Passbolt - Open source password manager for teams
+ * Copyright (c) 2021 Passbolt SA
+ *
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
+ * Public License (AGPL) as published by the Free Software Foundation version 3.
+ *
+ * The name "Passbolt" is a registered trademark of Passbolt SA, and Passbolt SA hereby declines to grant a trademark
+ * license to "Passbolt" pursuant to the GNU Affero General Public License version 3 Section 7(e), without a separate
+ * agreement with Passbolt SA.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License along with this program. If not,
+ * see GNU Affero General Public License v3 (http://www.gnu.org/licenses/agpl-3.0.html).
+ *
+ * @copyright Copyright (c) Passbolt SA (https://www.passbolt.com)
+ * @license https://opensource.org/licenses/AGPL-3.0 AGPL License
+ * @link https://www.passbolt.com Passbolt (tm)
+ * @since v1.0
+ */
+
 package com.passbolt.mobile.android.feature.authentication.compose
 
 import android.app.Activity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import com.passbolt.mobile.android.core.authenticationcore.session.GetSessionUseCase
+import com.passbolt.mobile.android.core.compose.RepeatOnStartedEffect
+import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated.Reason.Mfa
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated.Reason.Mfa.MfaProvider
+import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated.Reason.Passphrase
+import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated.Reason.Session
+import com.passbolt.mobile.android.core.mvp.authentication.MfaProvidersHandler
+import com.passbolt.mobile.android.core.mvp.authentication.SessionRefreshTrackingFlow
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
-import com.passbolt.mobile.android.feature.authentication.compose.AuthenticatedIntent.AuthenticationRefreshed
-import com.passbolt.mobile.android.feature.authentication.compose.AuthenticatedIntent.Disposed
-import com.passbolt.mobile.android.feature.authentication.compose.AuthenticatedIntent.Launched
-import com.passbolt.mobile.android.feature.authentication.compose.AuthenticationSideEffect.ShowAuth
-import com.passbolt.mobile.android.feature.authentication.compose.AuthenticationSideEffect.ShowMfaAuth
+import com.passbolt.mobile.android.core.navigation.ActivityIntents.AuthConfig.RefreshPassphrase
+import com.passbolt.mobile.android.core.navigation.ActivityIntents.AuthConfig.RefreshSession
 import com.passbolt.mobile.android.feature.authentication.mfa.MfaDialogState
 import com.passbolt.mobile.android.feature.authentication.mfa.MfaResult
 import com.passbolt.mobile.android.feature.authentication.mfa.duo.AuthWithDuoScreen
 import com.passbolt.mobile.android.feature.authentication.mfa.totp.EnterTotpScreen
 import com.passbolt.mobile.android.feature.authentication.mfa.unknown.UnknownProviderScreen
 import com.passbolt.mobile.android.feature.authentication.mfa.yubikey.ScanYubikeyScreen
-import kotlinx.coroutines.flow.Flow
+import org.koin.compose.koinInject
 
 /**
- * Composable that handles authentication side effects from AuthenticatedViewModel.
- * This should be used in screens that need to handle authentication flows.
+ * Activity-level composable that handles authentication refresh for all screens within an activity.
+ * Replaces the per-screen AuthenticationHandler pattern by collecting SessionRefreshTrackingFlow
+ * directly and launching authentication UI when needed.
+ *
+ * Place this once in each activity's root composable (MainScreen, AutofillResourcesScreen).
  */
 @Composable
 fun AuthenticationHandler(
-    onAuthenticatedIntent: (AuthenticatedIntent) -> Unit,
-    authenticationSideEffect: Flow<AuthenticationSideEffect>,
+    sessionRefreshTrackingFlow: SessionRefreshTrackingFlow = koinInject(),
+    mfaProvidersHandler: MfaProvidersHandler = koinInject(),
+    getSessionUseCase: GetSessionUseCase = koinInject(),
 ) {
     val context = LocalContext.current
 
-    val currentOnAuthenticatedIntent by rememberUpdatedState(onAuthenticatedIntent)
-
     var mfaDialogState by remember { mutableStateOf<MfaDialogState?>(null) }
-
-    // Needed as long as all navigation child screens are not migrated to compose
-    // Then authentication can be handled once in MainActivity and these can be removed
-    DisposableEffect(Unit) {
-        currentOnAuthenticatedIntent(Launched)
-        onDispose {
-            currentOnAuthenticatedIntent(Disposed)
-        }
-    }
 
     val authenticationResult =
         rememberLauncherForActivityResult(
             contract = ActivityResultContracts.StartActivityForResult(),
         ) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
-                onAuthenticatedIntent(AuthenticationRefreshed)
+                sessionRefreshTrackingFlow.notifySessionRefreshed()
             }
         }
 
-    LaunchedEffect(Unit) {
-        authenticationSideEffect.collect { sideEffect ->
-            when (sideEffect) {
-                is ShowAuth -> {
+    RepeatOnStartedEffect {
+        sessionRefreshTrackingFlow.needSessionRefreshFlow().collect { sessionState ->
+            when (val reason = sessionState.reason) {
+                is Mfa -> {
+                    mfaProvidersHandler.setProviders(reason.providers.orEmpty())
+                    mfaDialogState =
+                        toMfaDialogState(
+                            mfaReason = mfaProvidersHandler.firstMfaProvider(),
+                            hasMultipleProviders = mfaProvidersHandler.hasMultipleProviders(),
+                            sessionAccessToken = getSessionUseCase.execute(Unit).accessToken,
+                        )
+                }
+                is Passphrase -> {
                     authenticationResult.launch(
-                        ActivityIntents.authentication(context, sideEffect.type),
+                        ActivityIntents.authentication(context, RefreshPassphrase),
                     )
                 }
-                is ShowMfaAuth -> {
-                    mfaDialogState = sideEffect.toMfaDialogState()
+                is Session -> {
+                    authenticationResult.launch(
+                        ActivityIntents.authentication(context, RefreshSession),
+                    )
                 }
             }
         }
@@ -81,9 +109,15 @@ fun AuthenticationHandler(
             onMfaResult = { result ->
                 mfaDialogState = null
                 when (result) {
-                    is MfaResult.Succeeded -> onAuthenticatedIntent(AuthenticationRefreshed)
-                    is MfaResult.OtherProvider ->
-                        onAuthenticatedIntent(AuthenticatedIntent.OtherProviderClick(result.currentProvider))
+                    is MfaResult.Succeeded -> sessionRefreshTrackingFlow.notifySessionRefreshed()
+                    is MfaResult.OtherProvider -> {
+                        mfaDialogState =
+                            toMfaDialogState(
+                                mfaReason = mfaProvidersHandler.nextMfaProvider(result.currentProvider),
+                                hasMultipleProviders = mfaProvidersHandler.hasMultipleProviders(),
+                                sessionAccessToken = getSessionUseCase.execute(Unit).accessToken,
+                            )
+                    }
                 }
             },
         )
@@ -103,7 +137,11 @@ private fun MfaDialog(
     }
 }
 
-private fun ShowMfaAuth.toMfaDialogState(): MfaDialogState =
+private fun toMfaDialogState(
+    mfaReason: MfaProvider?,
+    hasMultipleProviders: Boolean,
+    sessionAccessToken: String?,
+): MfaDialogState =
     when (mfaReason) {
         MfaProvider.TOTP -> MfaDialogState.Totp(authToken = sessionAccessToken, hasOtherProviders = hasMultipleProviders)
         MfaProvider.YUBIKEY -> MfaDialogState.Yubikey(authToken = sessionAccessToken, hasOtherProviders = hasMultipleProviders)

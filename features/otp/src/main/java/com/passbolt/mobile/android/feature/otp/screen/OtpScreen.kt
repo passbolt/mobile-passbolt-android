@@ -63,7 +63,6 @@ import com.passbolt.mobile.android.core.ui.scaffold.HomeScaffold
 import com.passbolt.mobile.android.core.ui.search.SearchInput
 import com.passbolt.mobile.android.core.ui.snackbar.ColoredSnackbarVisuals
 import com.passbolt.mobile.android.createresourcemenu.CreateResourceMenuBottomSheet
-import com.passbolt.mobile.android.feature.authentication.compose.AuthenticationHandler
 import com.passbolt.mobile.android.feature.home.switchaccount.SwitchAccountBottomSheet
 import com.passbolt.mobile.android.feature.metadatakeytrust.NewMetadataKeyTrustDialog
 import com.passbolt.mobile.android.feature.metadatakeytrust.TrustedMetadataKeyDeletedDialog
@@ -123,11 +122,6 @@ internal fun OtpScreen(
         resourceIconProvider = resourceIconProvider,
         snackbarHostState = snackbarHostState,
         modifier = modifier,
-    )
-
-    AuthenticationHandler(
-        onAuthenticatedIntent = viewModel::onAuthenticationIntent,
-        authenticationSideEffect = viewModel.authenticationSideEffect,
     )
 
     SideEffectDispatcher(viewModel.sideEffect) {

@@ -68,7 +68,6 @@ import com.passbolt.mobile.android.core.ui.pulltorefresh.PullToRefreshIndicatorB
 import com.passbolt.mobile.android.core.ui.snackbar.ColoredSnackbarVisuals
 import com.passbolt.mobile.android.core.ui.topbar.BackNavigationIcon
 import com.passbolt.mobile.android.core.ui.topbar.TitleAppBar
-import com.passbolt.mobile.android.feature.authentication.compose.AuthenticationHandler
 import com.passbolt.mobile.android.locationdetails.LocationDetailsIntent.GoBack
 import com.passbolt.mobile.android.locationdetails.LocationDetailsIntent.Initialize
 import com.passbolt.mobile.android.locationdetails.LocationDetailsIntent.ToggleExpanded
@@ -104,11 +103,6 @@ internal fun LocationDetailsScreen(
     LaunchedEffect(locationItem, itemId) {
         viewModel.onIntent(Initialize(locationItem, itemId))
     }
-
-    AuthenticationHandler(
-        onAuthenticatedIntent = viewModel::onAuthenticationIntent,
-        authenticationSideEffect = viewModel.authenticationSideEffect,
-    )
 
     LocationDetailsContent(
         state = state.value,

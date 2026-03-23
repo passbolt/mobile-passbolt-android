@@ -32,9 +32,9 @@ import com.passbolt.mobile.android.common.datarefresh.DataRefreshTrackingFlow
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalFolderDetailsUseCase
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalFolderLocationUseCase
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalFolderPermissionsUseCase
+import com.passbolt.mobile.android.core.compose.SideEffectViewModel
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.rbac.usecase.GetRbacRulesUseCase
-import com.passbolt.mobile.android.feature.authentication.compose.AuthenticatedViewModel
 import com.passbolt.mobile.android.folderdetails.FolderDetailsIntent.GoBack
 import com.passbolt.mobile.android.folderdetails.FolderDetailsIntent.GoToLocationDetails
 import com.passbolt.mobile.android.folderdetails.FolderDetailsIntent.GoToPermissionDetails
@@ -60,7 +60,7 @@ internal class FolderDetailsViewModel(
     private val getRbacRulesUseCase: GetRbacRulesUseCase,
     private val coroutineLaunchContext: CoroutineLaunchContext,
     private val dataRefreshTrackingFlow: DataRefreshTrackingFlow,
-) : AuthenticatedViewModel<FolderDetailsState, FolderDetailsSideEffect>(FolderDetailsState()) {
+) : SideEffectViewModel<FolderDetailsState, FolderDetailsSideEffect>(FolderDetailsState()) {
     val folderId: String
         get() = requireNotNull(viewState.value.folderId)
 

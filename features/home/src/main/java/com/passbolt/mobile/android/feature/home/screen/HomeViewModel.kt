@@ -31,6 +31,7 @@ import com.passbolt.mobile.android.common.datarefresh.DataRefreshStatus.InProgre
 import com.passbolt.mobile.android.common.datarefresh.DataRefreshTrackingFlow
 import com.passbolt.mobile.android.core.accounts.usecase.accountdata.GetSelectedAccountDataUseCase
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalFolderDetailsUseCase
+import com.passbolt.mobile.android.core.compose.SideEffectViewModel
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.preferences.usecase.GetHomeDisplayViewPrefsUseCase
 import com.passbolt.mobile.android.core.resources.actions.ResourceCommonActionsInteractor
@@ -42,7 +43,6 @@ import com.passbolt.mobile.android.core.resources.actions.performSecretPropertyA
 import com.passbolt.mobile.android.core.ui.search.SearchInputEndIconMode.AVATAR
 import com.passbolt.mobile.android.core.ui.search.SearchInputEndIconMode.CLEAR
 import com.passbolt.mobile.android.core.ui.search.SearchInputEndIconMode.NONE
-import com.passbolt.mobile.android.feature.authentication.compose.AuthenticatedViewModel
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.CloseCreateResourceMenu
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.CloseDeleteConfirmationDialog
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.CloseFiltersBottomSheet
@@ -133,7 +133,7 @@ internal class HomeViewModel(
     private val canCreateResourceUse: CanCreateResourceUseCase,
     private val canShareResourceUse: CanShareResourceUseCase,
     private val detectAutofillConflict: DetectAutofillConflict,
-) : AuthenticatedViewModel<HomeState, HomeSideEffect>(HomeState()),
+) : SideEffectViewModel<HomeState, HomeSideEffect>(HomeState()),
     KoinComponent {
     private val resourcePropertiesActionsInteractor: ResourcePropertiesActionsInteractor
         get() = get { parametersOf(requireNotNull(viewState.value.moreMenuResource)) }

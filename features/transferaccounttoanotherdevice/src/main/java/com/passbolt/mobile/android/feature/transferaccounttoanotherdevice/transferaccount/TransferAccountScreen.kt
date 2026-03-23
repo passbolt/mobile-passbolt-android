@@ -64,7 +64,6 @@ import com.passbolt.mobile.android.core.ui.dialogs.CancelAccountTransferAlertDia
 import com.passbolt.mobile.android.core.ui.progressdialog.ProgressDialog
 import com.passbolt.mobile.android.core.ui.topbar.BackNavigationIcon
 import com.passbolt.mobile.android.core.ui.topbar.TitleAppBar
-import com.passbolt.mobile.android.feature.authentication.compose.AuthenticationHandler
 import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccount.TransferAccountIntent.CancelTransfer
 import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccount.TransferAccountIntent.ConfirmCancelTransfer
 import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccount.TransferAccountIntent.DismissCancelDialog
@@ -95,11 +94,6 @@ internal fun TransferAccountScreen(
         state = state.value,
         snackbarHostState = snackbarHostState,
         onIntent = viewModel::onIntent,
-    )
-
-    AuthenticationHandler(
-        onAuthenticatedIntent = viewModel::onAuthenticationIntent,
-        authenticationSideEffect = viewModel.authenticationSideEffect,
     )
 
     SideEffectDispatcher(viewModel.sideEffect) {

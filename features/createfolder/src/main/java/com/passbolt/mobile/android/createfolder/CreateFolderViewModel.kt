@@ -39,6 +39,7 @@ import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalFolderL
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalFolderPermissionsUseCase
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalParentFolderPermissionsToApplyToNewItemUseCase
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.ItemIdFolderId
+import com.passbolt.mobile.android.core.compose.SideEffectViewModel
 import com.passbolt.mobile.android.core.idlingresource.CreateFolderIdlingResource
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.users.usecase.db.GetLocalCurrentUserUseCase
@@ -52,7 +53,6 @@ import com.passbolt.mobile.android.createfolder.CreateFolderSideEffect.ShowError
 import com.passbolt.mobile.android.createfolder.CreateFolderValidationError.MaxLengthExceeded
 import com.passbolt.mobile.android.createfolder.SnackbarErrorType.CREATE_FOLDER_ERROR
 import com.passbolt.mobile.android.createfolder.SnackbarErrorType.SHARE_FOLDER_ERROR
-import com.passbolt.mobile.android.feature.authentication.compose.AuthenticatedViewModel
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
 import com.passbolt.mobile.android.mappers.SharePermissionsModelMapper
 import com.passbolt.mobile.android.mappers.UsersModelMapper
@@ -74,7 +74,7 @@ internal class CreateFolderViewModel(
     private val usersModelMapper: UsersModelMapper,
     private val createFolderIdlingResource: CreateFolderIdlingResource,
     private val coroutineLaunchContext: CoroutineLaunchContext,
-) : AuthenticatedViewModel<CreateFolderState, CreateFolderSideEffect>(CreateFolderState()) {
+) : SideEffectViewModel<CreateFolderState, CreateFolderSideEffect>(CreateFolderState()) {
     fun onIntent(intent: CreateFolderIntent) {
         when (intent) {
             GoBack -> emitSideEffect(NavigateUp)

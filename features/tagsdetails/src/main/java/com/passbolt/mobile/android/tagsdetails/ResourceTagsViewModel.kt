@@ -29,10 +29,10 @@ import com.passbolt.mobile.android.common.datarefresh.DataRefreshStatus.Idle.Fin
 import com.passbolt.mobile.android.common.datarefresh.DataRefreshStatus.Idle.NotCompleted
 import com.passbolt.mobile.android.common.datarefresh.DataRefreshStatus.InProgress
 import com.passbolt.mobile.android.common.datarefresh.DataRefreshTrackingFlow
+import com.passbolt.mobile.android.core.compose.SideEffectViewModel
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceTagsUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUseCase
-import com.passbolt.mobile.android.feature.authentication.compose.AuthenticatedViewModel
 import com.passbolt.mobile.android.tagsdetails.ResourceTagsIntent.GoBack
 import com.passbolt.mobile.android.tagsdetails.ResourceTagsIntent.Initialize
 import com.passbolt.mobile.android.tagsdetails.ResourceTagsSideEffect.NavigateBack
@@ -48,7 +48,7 @@ internal class ResourceTagsViewModel(
     private val getLocalResourceTagsUseCase: GetLocalResourceTagsUseCase,
     private val coroutineLaunchContext: CoroutineLaunchContext,
     private val dataRefreshTrackingFlow: DataRefreshTrackingFlow,
-) : AuthenticatedViewModel<ResourceTagsState, ResourceTagsSideEffect>(ResourceTagsState()) {
+) : SideEffectViewModel<ResourceTagsState, ResourceTagsSideEffect>(ResourceTagsState()) {
     fun onIntent(intent: ResourceTagsIntent) {
         when (intent) {
             GoBack -> emitSideEffect(NavigateBack)

@@ -50,7 +50,6 @@ import com.passbolt.mobile.android.core.ui.progressdialog.ProgressDialog
 import com.passbolt.mobile.android.core.ui.text.TextInput
 import com.passbolt.mobile.android.core.ui.topbar.BackNavigationIcon
 import com.passbolt.mobile.android.core.ui.topbar.TitleAppBar
-import com.passbolt.mobile.android.feature.authentication.compose.AuthenticationHandler
 import com.passbolt.mobile.android.feature.metadatakeytrust.NewMetadataKeyTrustDialog
 import com.passbolt.mobile.android.feature.metadatakeytrust.TrustedMetadataKeyDeletedDialog
 import com.passbolt.mobile.android.feature.resourceform.main.ResourceFormIntent.CreateResource
@@ -100,11 +99,6 @@ internal fun ResourceFormScreen(
     val resultBus = NavigationResultEventBus.current
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
-
-    AuthenticationHandler(
-        onAuthenticatedIntent = viewModel::onAuthenticationIntent,
-        authenticationSideEffect = viewModel.authenticationSideEffect,
-    )
 
     ResourceFormScreen(
         modifier = modifier,

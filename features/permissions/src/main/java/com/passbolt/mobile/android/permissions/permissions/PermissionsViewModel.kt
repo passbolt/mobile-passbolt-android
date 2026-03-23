@@ -29,6 +29,7 @@ import com.passbolt.mobile.android.common.datarefresh.DataRefreshTrackingFlow
 import com.passbolt.mobile.android.common.validation.validation
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalFolderDetailsUseCase
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalFolderPermissionsUseCase
+import com.passbolt.mobile.android.core.compose.SideEffectViewModel
 import com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.resources.actions.ResourceUpdateActionsInteractor
@@ -38,7 +39,6 @@ import com.passbolt.mobile.android.core.resources.usecase.ResourceShareInteracto
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcePermissionsUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUseCase
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
-import com.passbolt.mobile.android.feature.authentication.compose.AuthenticatedViewModel
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
 import com.passbolt.mobile.android.metadata.interactor.MetadataPrivateKeysHelperInteractor
 import com.passbolt.mobile.android.metadata.usecase.CanShareResourceUseCase
@@ -94,6 +94,7 @@ import com.passbolt.mobile.android.ui.PermissionsMode.VIEW
 import com.passbolt.mobile.android.ui.ResourcePermission
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.launch
+import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import org.koin.core.parameter.parametersOf
 import timber.log.Timber
@@ -115,14 +116,15 @@ class PermissionsViewModel(
     private val canShareResourceUseCase: CanShareResourceUseCase,
     private val dataRefreshTrackingFlow: DataRefreshTrackingFlow,
     private val coroutineLaunchContext: CoroutineLaunchContext,
-) : AuthenticatedViewModel<PermissionsState, PermissionsSideEffect>(
+) : SideEffectViewModel<PermissionsState, PermissionsSideEffect>(
         initialState =
             PermissionsState(
                 permissionsItem = permissionsItem,
                 permissionItemId = id,
                 mode = mode,
             ),
-    ) {
+    ),
+    KoinComponent {
     private val missingItemHandler =
         CoroutineExceptionHandler { _, throwable ->
             if (throwable is NullPointerException) {

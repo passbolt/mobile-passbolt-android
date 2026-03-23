@@ -32,6 +32,7 @@ import com.passbolt.mobile.android.common.datarefresh.DataRefreshStatus.InProgre
 import com.passbolt.mobile.android.common.datarefresh.DataRefreshTrackingFlow
 import com.passbolt.mobile.android.common.types.ClipboardLabel
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalFolderLocationUseCase
+import com.passbolt.mobile.android.core.compose.SideEffectViewModel
 import com.passbolt.mobile.android.core.idlingresource.ResourceDetailActionIdlingResource
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.otpcore.TotpParametersProvider
@@ -48,7 +49,6 @@ import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceTag
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUseCase
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
 import com.passbolt.mobile.android.entity.featureflags.FeatureFlagsModel
-import com.passbolt.mobile.android.feature.authentication.compose.AuthenticatedViewModel
 import com.passbolt.mobile.android.feature.resourcedetails.details.ErrorSnackbarType.CANNOT_PERFORM_ACTION
 import com.passbolt.mobile.android.feature.resourcedetails.details.ErrorSnackbarType.DECRYPTION_FAILURE
 import com.passbolt.mobile.android.feature.resourcedetails.details.ErrorSnackbarType.FETCH_FAILURE
@@ -139,7 +139,7 @@ class ResourceDetailsViewModel(
     private val coroutineLaunchContext: CoroutineLaunchContext,
     private val dataRefreshTrackingFlow: DataRefreshTrackingFlow,
     private val timerFactory: TimerFactory,
-) : AuthenticatedViewModel<ResourceDetailsState, ResourceDetailsSideEffect>(ResourceDetailsState()),
+) : SideEffectViewModel<ResourceDetailsState, ResourceDetailsSideEffect>(ResourceDetailsState()),
     KoinComponent {
     private val resourcePropertiesActionsInteractor: ResourcePropertiesActionsInteractor
         get() = get { parametersOf(viewState.value.requiredResourceModel) }

@@ -31,6 +31,7 @@ import com.passbolt.mobile.android.common.datarefresh.DataRefreshStatus.Idle.Not
 import com.passbolt.mobile.android.common.datarefresh.DataRefreshStatus.InProgress
 import com.passbolt.mobile.android.common.datarefresh.DataRefreshTrackingFlow
 import com.passbolt.mobile.android.core.accounts.usecase.accountdata.GetSelectedAccountDataUseCase
+import com.passbolt.mobile.android.core.compose.SideEffectViewModel
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.otpcore.TotpParametersProvider
 import com.passbolt.mobile.android.core.otpcore.TotpParametersProvider.OtpParametersResult.InvalidTotpInput
@@ -48,7 +49,6 @@ import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdT
 import com.passbolt.mobile.android.core.ui.search.SearchInputEndIconMode.AVATAR
 import com.passbolt.mobile.android.core.ui.search.SearchInputEndIconMode.CLEAR
 import com.passbolt.mobile.android.core.ui.search.SearchInputEndIconMode.NONE
-import com.passbolt.mobile.android.feature.authentication.compose.AuthenticatedViewModel
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
 import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.CloseCreateResourceMenu
 import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.CloseDeleteConfirmationDialog
@@ -141,7 +141,7 @@ internal class OtpViewModel(
     private val metadataPrivateKeysHelperInteractor: MetadataPrivateKeysHelperInteractor,
     private val timerFactory: TimerFactory,
     private val canCreateResourceUse: CanCreateResourceUseCase,
-) : AuthenticatedViewModel<OtpState, OtpSideEffect>(OtpState()),
+) : SideEffectViewModel<OtpState, OtpSideEffect>(OtpState()),
     KoinComponent {
     init {
         loadUserAvatar()

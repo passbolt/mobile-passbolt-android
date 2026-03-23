@@ -67,7 +67,6 @@ import com.passbolt.mobile.android.core.ui.scaffold.HomeScaffold
 import com.passbolt.mobile.android.core.ui.search.SearchInput
 import com.passbolt.mobile.android.core.ui.snackbar.ColoredSnackbarVisuals
 import com.passbolt.mobile.android.createresourcemenu.CreateResourceMenuBottomSheet
-import com.passbolt.mobile.android.feature.authentication.compose.AuthenticationHandler
 import com.passbolt.mobile.android.feature.home.filtersmenu.FiltersMenuBottomSheet
 import com.passbolt.mobile.android.feature.home.foldermoremenu.FolderMoreMenuBottomSheet
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.CloseCreateResourceMenu
@@ -169,11 +168,6 @@ internal fun HomeScreen(
         navigator = navigator,
         resourceHandlingStrategy = resourceHandlingStrategy,
         modifier = modifier,
-    )
-
-    AuthenticationHandler(
-        onAuthenticatedIntent = viewModel::onAuthenticationIntent,
-        authenticationSideEffect = viewModel.authenticationSideEffect,
     )
 
     SideEffectDispatcher(viewModel.sideEffect) {

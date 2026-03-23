@@ -23,7 +23,7 @@
 
 package com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccountonboarding
 
-import com.passbolt.mobile.android.feature.authentication.compose.AuthenticatedViewModel
+import com.passbolt.mobile.android.core.compose.SideEffectViewModel
 import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccountonboarding.TransferAccountOnboardingIntent.GoBack
 import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccountonboarding.TransferAccountOnboardingIntent.RefreshedPassphrase
 import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccountonboarding.TransferAccountOnboardingIntent.StartTransferClick
@@ -32,7 +32,7 @@ import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transf
 import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccountonboarding.TransferAccountOnboardingScreenSideEffect.NavigateUp
 
 internal class TransferAccountOnboardingViewModel :
-    AuthenticatedViewModel<TransferAccountOnboardingState, TransferAccountOnboardingScreenSideEffect>(
+    SideEffectViewModel<TransferAccountOnboardingState, TransferAccountOnboardingScreenSideEffect>(
         TransferAccountOnboardingState,
     ) {
     fun onIntent(intent: TransferAccountOnboardingIntent) {

@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.feature.resourceform.main
 import com.passbolt.mobile.android.common.datarefresh.DataRefreshTrackingFlow
 import com.passbolt.mobile.android.common.validation.StringIsBase32
 import com.passbolt.mobile.android.common.validation.StringMaxLength
+import com.passbolt.mobile.android.core.compose.SideEffectViewModel
 import com.passbolt.mobile.android.core.idlingresource.CreateResourceIdlingResource
 import com.passbolt.mobile.android.core.idlingresource.UpdateResourceIdlingResource
 import com.passbolt.mobile.android.core.passwordgenerator.SecretGenerator
@@ -25,7 +26,6 @@ import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAct
 import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction.REMOVE_NOTE
 import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction.REMOVE_PASSWORD
 import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction.REMOVE_TOTP
-import com.passbolt.mobile.android.feature.authentication.compose.AuthenticatedViewModel
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.note.NoteFormViewModel
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.note.NoteValidationError.MaxLengthExceeded
@@ -98,6 +98,7 @@ import com.passbolt.mobile.android.ui.ResourceFormMode.Create
 import com.passbolt.mobile.android.ui.ResourceFormMode.Edit
 import com.passbolt.mobile.android.ui.ResourceFormUiModel
 import com.passbolt.mobile.android.ui.TotpUiModel
+import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import org.koin.core.parameter.parametersOf
 import timber.log.Timber
@@ -116,7 +117,8 @@ class ResourceFormViewModel(
     private val metadataPrivateKeysHelperInteractor: MetadataPrivateKeysHelperInteractor,
     private val createResourceIdlingResource: CreateResourceIdlingResource,
     private val updateResourceIdlingResource: UpdateResourceIdlingResource,
-) : AuthenticatedViewModel<ResourceFormState, ResourceFormSideEffect>(ResourceFormState(mode = mode)) {
+) : SideEffectViewModel<ResourceFormState, ResourceFormSideEffect>(ResourceFormState(mode = mode)),
+    KoinComponent {
     private val uiModel: ResourceFormUiModel by lazy {
         resourceModelHandler.getUiModel(mode)
     }

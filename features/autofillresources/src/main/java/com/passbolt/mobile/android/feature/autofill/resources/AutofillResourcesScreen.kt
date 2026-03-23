@@ -18,6 +18,7 @@ import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
 import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.Start
 import com.passbolt.mobile.android.core.ui.progressdialog.ProgressDialog
+import com.passbolt.mobile.android.feature.authentication.compose.AuthenticationHandler
 import com.passbolt.mobile.android.feature.autofill.resources.AutofillResourcesIntent.UserAuthenticated
 import com.passbolt.mobile.android.feature.autofill.resources.AutofillResourcesSideEffect.AutofillReturn
 import com.passbolt.mobile.android.feature.autofill.resources.AutofillResourcesSideEffect.NavigateToAuth
@@ -54,6 +55,8 @@ fun AutofillResourcesScreen(
                 activity?.finish()
             }
         }
+
+    AuthenticationHandler()
 
     SideEffectDispatcher(viewModel.sideEffect) {
         when (it) {

@@ -46,7 +46,6 @@ import com.passbolt.mobile.android.core.ui.button.PrimaryButton
 import com.passbolt.mobile.android.core.ui.scaffold.HomeScaffold
 import com.passbolt.mobile.android.core.ui.search.SearchInput
 import com.passbolt.mobile.android.core.ui.sharedwith.SharedWithSection
-import com.passbolt.mobile.android.feature.authentication.compose.AuthenticationHandler
 import com.passbolt.mobile.android.permissions.navigation.ShareRecipientsAddedResult
 import com.passbolt.mobile.android.permissions.permissionrecipients.PermissionRecipientsIntent.GoBack
 import com.passbolt.mobile.android.permissions.permissionrecipients.PermissionRecipientsIntent.Save
@@ -76,11 +75,6 @@ fun PermissionRecipientsScreen(
     val state = viewModel.viewState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
     val resultBus = NavigationResultEventBus.current
-
-    AuthenticationHandler(
-        onAuthenticatedIntent = viewModel::onAuthenticationIntent,
-        authenticationSideEffect = viewModel.authenticationSideEffect,
-    )
 
     PermissionRecipientsScreen(
         state = state.value,
