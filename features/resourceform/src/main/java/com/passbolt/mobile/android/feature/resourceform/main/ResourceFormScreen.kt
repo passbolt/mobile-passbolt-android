@@ -194,7 +194,10 @@ private fun ResourceFormScreen(
                     containerColor = MaterialTheme.colorScheme.background,
                 ) {
                     PrimaryButton(
-                        modifier = Modifier.padding(horizontal = 16.dp).testTag(ResourceForm.SAVE_BUTTON),
+                        modifier =
+                            Modifier
+                                .padding(horizontal = 16.dp)
+                                .testTag(ResourceForm.SAVE_BUTTON),
                         text = getPrimaryButtonText(context, state.mode),
                         onClick = {
                             when (state.mode) {
