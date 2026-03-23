@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -234,6 +235,7 @@ private fun AuthScreen(
     snackbarHostState: SnackbarHostState,
 ) {
     Scaffold(
+        modifier = Modifier.imePadding(),
         topBar = {
             TitleAppBar(
                 title = getTitleText(LocalContext.current, state.authReason),
@@ -264,6 +266,35 @@ private fun AuthScreen(
                     }
                 },
             )
+        },
+        bottomBar = {
+            Column(
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 8.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                PrimaryButton(
+                    text = stringResource(LocalizationR.string.auth_sign_in),
+                    onClick = { onIntent(SignIn) },
+                    isEnabled = state.isAuthButtonEnabled,
+                    modifier =
+                        Modifier
+                            .padding(horizontal = 16.dp)
+                            .testTag(Auth.SIGN_IN_BUTTON),
+                )
+
+                TextButton(
+                    onClick = { onIntent(ForgotPassword) },
+                    modifier = Modifier.padding(vertical = 8.dp),
+                ) {
+                    Text(
+                        text = stringResource(LocalizationR.string.auth_forgot_password_button),
+                        color = MaterialTheme.colorScheme.onBackground,
+                    )
+                }
+            }
         },
     ) { paddingValues ->
         Column(
@@ -333,13 +364,15 @@ private fun AuthScreen(
                         .padding(horizontal = 16.dp),
             )
 
+            Spacer(modifier = Modifier.weight(1f))
+
             if (state.showBiometricButton) {
                 Spacer(modifier = Modifier.height(8.dp))
                 IconButton(
                     onClick = { onIntent(AuthenticateUsingBiometry) },
                     modifier =
                         Modifier
-                            .size(56.dp)
+                            .size(64.dp)
                             .border(
                                 width = 1.dp,
                                 color = colorResource(CoreUiR.color.divider),
@@ -350,12 +383,14 @@ private fun AuthScreen(
                         painter = painterResource(CoreUiR.drawable.ic_fingerprint_primary),
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(40.dp),
                     )
                 }
                 Spacer(modifier = Modifier.height(8.dp))
             }
 
             state.authReason?.let { reason ->
+                Spacer(modifier = Modifier.height(8.dp))
                 val reasonText =
                     when (reason) {
                         SESSION -> stringResource(LocalizationR.string.auth_reason_session_expired)
@@ -367,29 +402,10 @@ private fun AuthScreen(
                     textAlign = TextAlign.Center,
                     modifier = Modifier.fillMaxWidth(),
                 )
+                Spacer(modifier = Modifier.height(8.dp))
             }
 
             Spacer(modifier = Modifier.weight(1f))
-
-            PrimaryButton(
-                text = stringResource(LocalizationR.string.auth_sign_in),
-                onClick = { onIntent(SignIn) },
-                isEnabled = state.isAuthButtonEnabled,
-                modifier =
-                    Modifier
-                        .padding(horizontal = 16.dp)
-                        .testTag(Auth.SIGN_IN_BUTTON),
-            )
-
-            TextButton(
-                onClick = { onIntent(ForgotPassword) },
-                modifier = Modifier.padding(vertical = 8.dp),
-            ) {
-                Text(
-                    text = stringResource(LocalizationR.string.auth_forgot_password_button),
-                    color = MaterialTheme.colorScheme.onBackground,
-                )
-            }
         }
     }
 
@@ -488,6 +504,7 @@ private fun AuthScreenPreview() {
                             domain = "https://passbolt.local",
                         ),
                     showBiometricButton = true,
+                    authReason = SESSION,
                 ),
             onIntent = {},
             snackbarHostState = SnackbarHostState(),
