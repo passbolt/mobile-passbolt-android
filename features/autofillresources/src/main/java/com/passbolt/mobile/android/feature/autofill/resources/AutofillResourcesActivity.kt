@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.autofill.AutofillManager.EXTRA_ASSIST_STRUCTURE
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.remember
 import androidx.core.content.IntentCompat
@@ -54,6 +55,8 @@ class AutofillResourcesActivity :
     @OptIn(KoinExperimentalAPI::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+
         returnAutofillDatasetStrategy =
             scope.get(named(bundledAutofillMode)) { parametersOf(this as AutofillCallback) }
         returnAutofillDatasetStrategy =

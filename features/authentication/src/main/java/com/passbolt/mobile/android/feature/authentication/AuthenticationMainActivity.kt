@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.feature.authentication
 
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.IntentCompat
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
@@ -48,6 +49,7 @@ class AuthenticationMainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        enableEdgeToEdge()
         flagSecureSetter.set(this)
         setResult(RESULT_CANCELED)
 
