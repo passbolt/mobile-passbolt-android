@@ -24,6 +24,7 @@ import com.passbolt.mobile.android.core.navigation.compose.SettingsNavigation
 import com.passbolt.mobile.android.core.navigation.compose.keys.HomeNavigationKey.Home
 import com.passbolt.mobile.android.core.navigation.compose.keys.OtpNavigationKey.Otp
 import com.passbolt.mobile.android.core.navigation.compose.keys.SettingsNavigationKey.SettingsMain
+import com.passbolt.mobile.android.feature.authentication.compose.AuthenticationHandler
 import com.passbolt.mobile.android.feature.home.navigation.HomeTabContent
 import com.passbolt.mobile.android.feature.main.mainscreen.MainIntent.CloseChromeNativeAutofill
 import com.passbolt.mobile.android.feature.main.mainscreen.MainIntent.GoToSettings
@@ -40,6 +41,8 @@ fun MainScreen(
 ) {
     val state by mainViewModel.viewState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
+
+    AuthenticationHandler()
 
     MainScreenEffects(
         sideEffect = mainViewModel.sideEffect,

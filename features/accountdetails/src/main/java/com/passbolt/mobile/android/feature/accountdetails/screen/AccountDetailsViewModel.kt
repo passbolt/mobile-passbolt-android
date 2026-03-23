@@ -31,6 +31,7 @@ import com.passbolt.mobile.android.common.validation.validation
 import com.passbolt.mobile.android.core.accounts.usecase.accountdata.GetSelectedAccountDataUseCase
 import com.passbolt.mobile.android.core.accounts.usecase.accountdata.UpdateAccountDataUseCase
 import com.passbolt.mobile.android.core.accounts.usecase.selectedaccount.GetSelectedAccountUseCase
+import com.passbolt.mobile.android.core.compose.SideEffectViewModel
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.feature.accountdetails.screen.AccountDetailsIntent.GoBack
 import com.passbolt.mobile.android.feature.accountdetails.screen.AccountDetailsIntent.SaveChanges
@@ -39,7 +40,6 @@ import com.passbolt.mobile.android.feature.accountdetails.screen.AccountDetailsI
 import com.passbolt.mobile.android.feature.accountdetails.screen.AccountDetailsScreenSideEffect.NavigateToTransferAccount
 import com.passbolt.mobile.android.feature.accountdetails.screen.AccountDetailsScreenSideEffect.NavigateUp
 import com.passbolt.mobile.android.feature.accountdetails.screen.AccountDetailsValidationError.MaxLengthExceeded
-import com.passbolt.mobile.android.feature.authentication.compose.AuthenticatedViewModel
 import com.passbolt.mobile.android.mappers.AccountModelMapper
 import kotlinx.coroutines.launch
 
@@ -48,7 +48,7 @@ internal class AccountDetailsViewModel(
     private val updateAccountDataUseCase: UpdateAccountDataUseCase,
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
     private val coroutineLaunchContext: CoroutineLaunchContext,
-) : AuthenticatedViewModel<AccountDetailsState, AccountDetailsScreenSideEffect>(AccountDetailsState()) {
+) : SideEffectViewModel<AccountDetailsState, AccountDetailsScreenSideEffect>(AccountDetailsState()) {
     init {
         loadInitialValues()
     }

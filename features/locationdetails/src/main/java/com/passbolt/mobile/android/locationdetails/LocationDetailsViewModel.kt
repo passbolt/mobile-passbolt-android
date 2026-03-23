@@ -31,9 +31,9 @@ import com.passbolt.mobile.android.common.datarefresh.DataRefreshStatus.InProgre
 import com.passbolt.mobile.android.common.datarefresh.DataRefreshTrackingFlow
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalFolderDetailsUseCase
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalFolderLocationUseCase
+import com.passbolt.mobile.android.core.compose.SideEffectViewModel
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUseCase
-import com.passbolt.mobile.android.feature.authentication.compose.AuthenticatedViewModel
 import com.passbolt.mobile.android.locationdetails.LocationDetailsIntent.GoBack
 import com.passbolt.mobile.android.locationdetails.LocationDetailsIntent.Initialize
 import com.passbolt.mobile.android.locationdetails.LocationDetailsIntent.ToggleExpanded
@@ -58,7 +58,7 @@ internal class LocationDetailsViewModel(
     private val coroutineLaunchContext: CoroutineLaunchContext,
     private val expandableFolderTreeCreator: ExpandableFolderTreeCreator,
     private val dataRefreshTrackingFlow: DataRefreshTrackingFlow,
-) : AuthenticatedViewModel<LocationDetailsState, LocationDetailsSideEffect>(LocationDetailsState()) {
+) : SideEffectViewModel<LocationDetailsState, LocationDetailsSideEffect>(LocationDetailsState()) {
     fun onIntent(intent: LocationDetailsIntent) {
         when (intent) {
             GoBack -> emitSideEffect(NavigateUp)

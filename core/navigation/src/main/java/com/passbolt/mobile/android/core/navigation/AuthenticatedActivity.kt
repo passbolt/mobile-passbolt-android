@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.core.navigation
 
 import android.app.Activity
+import com.passbolt.mobile.android.core.navigation.constants.Authentication
 import com.passbolt.mobile.android.core.navigation.constants.Autofillresources
 import com.passbolt.mobile.android.core.navigation.constants.Startup
 
@@ -31,6 +32,7 @@ fun Activity.isAuthenticated() =
     when {
         this.javaClass.name == Startup.START_UP_ACTIVITY -> false
         this.javaClass.name == Autofillresources.AUTOFILL_RESOURCES_ACTIVITY -> false
+        this.javaClass.name == Authentication.AUTHENTICATION_MAIN_ACTIVITY -> false
         this is PartiallyAuthenticated -> (this as PartiallyAuthenticated).isCurrentScreenAuthenticated
         else -> true
     }

@@ -1,6 +1,6 @@
 package com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.summary
 
-import com.passbolt.mobile.android.feature.authentication.compose.AuthenticatedViewModel
+import com.passbolt.mobile.android.core.compose.SideEffectViewModel
 import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.summary.TransferAccountSummaryIntent.GoBack
 import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.summary.TransferAccountSummaryIntent.Initialize
 import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.summary.TransferAccountSummaryIntent.PrimaryAction
@@ -32,7 +32,7 @@ import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.summar
  */
 
 internal class TransferAccountSummaryViewModel :
-    AuthenticatedViewModel<TransferAccountSummaryState, TransferAccountSummarySideEffect>(
+    SideEffectViewModel<TransferAccountSummaryState, TransferAccountSummarySideEffect>(
         TransferAccountSummaryState(),
     ) {
     fun onIntent(intent: TransferAccountSummaryIntent) {
