@@ -83,6 +83,7 @@ internal fun ComposeTestRule.createNewPasswordFromHomeScreen(name: String) {
 internal fun ComposeTestRule.signIn(passphrase: String) {
     onNodeWithTag(Auth.PASSPHRASE_INPUT).performTextReplacement(passphrase)
     onNodeWithTag(Auth.SIGN_IN_BUTTON).performClick()
+    waitForHomeScreen()
     onNodeWithTag(Home.SCREEN).assertIsDisplayed()
 }
 

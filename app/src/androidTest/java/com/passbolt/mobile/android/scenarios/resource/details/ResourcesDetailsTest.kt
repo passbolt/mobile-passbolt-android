@@ -34,6 +34,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.filters.MediumTest
 import androidx.test.platform.app.InstrumentationRegistry
+import com.passbolt.mobile.android.core.idlingresource.CreateMenuModelIdlingResource
 import com.passbolt.mobile.android.core.idlingresource.ResourceDetailActionIdlingResource
 import com.passbolt.mobile.android.core.idlingresource.ResourcesFullRefreshIdlingResource
 import com.passbolt.mobile.android.core.idlingresource.SignInIdlingResource
@@ -90,19 +91,31 @@ class ResourcesDetailsTest(
             val signInIdlingResource: SignInIdlingResource by inject()
             val resourcesFullRefreshIdlingResource: ResourcesFullRefreshIdlingResource by inject()
             val resourceDetailActionIdlingResource: ResourceDetailActionIdlingResource by inject()
+            val createMenuModelIdlingResource: CreateMenuModelIdlingResource by inject()
             IdlingResourceRule(
                 arrayOf(
                     signInIdlingResource,
                     resourcesFullRefreshIdlingResource,
                     resourceDetailActionIdlingResource,
+                    createMenuModelIdlingResource,
                 ),
             )
         }
 
     companion object {
+        private val SUPPORTED_RESOURCE_TYPES =
+            listOf(
+                TestResourceType.SIMPLE_PASSWORD,
+                TestResourceType.PASSWORD_WITH_DESCRIPTION,
+                TestResourceType.PASSWORD_DESCRIPTION_TOTP,
+                TestResourceType.SIMPLE_PASSWORD_DEPRECATED,
+                TestResourceType.DEFAULT_RESOURCE_TYPE,
+                TestResourceType.DEFAULT_RESOURCE_TYPE_WITH_TOTP,
+            )
+
         @JvmStatic
         @Parameterized.Parameters(name = "Resource type: {0}")
-        fun resourceTypes() = TestResourceType.entries
+        fun resourceTypes() = SUPPORTED_RESOURCE_TYPES
 
         private val EXCLUDED_ITEMS_MAP =
             mapOf(
