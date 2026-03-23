@@ -137,9 +137,13 @@ class DeleteResourcePopupTest(
      *     | Simple password                |
      *     | Password with description      |
      *     | Password description totp      |
+     *     | TOTP - v4   |
      *     | Simple Password (Deprecated)   |
      *     | Default resource type          |
      *     | Default resource type with TOTP|
+     *     | Standalone TOTP      |
+     *     | Standalone note      |
+     *     | Standalone Custom Fields      |
      *
      */
     @Test
@@ -164,9 +168,13 @@ class DeleteResourcePopupTest(
      *     | Simple password                |
      *     | Password with description      |
      *     | Password description totp      |
+     *     | TOTP - v4                      |
      *     | Simple Password (Deprecated)   |
      *     | Default resource type          |
      *     | Default resource type with TOTP|
+     *     | Standalone TOTP                |
+     *     | Standalone note                |
+     *     | Standalone Custom Fields       |
      *
      */
     @Test

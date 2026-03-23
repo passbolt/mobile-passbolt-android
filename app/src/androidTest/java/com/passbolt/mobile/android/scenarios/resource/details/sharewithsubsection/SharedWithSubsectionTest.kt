@@ -111,11 +111,18 @@ class SharedWithSubsectionTest(
      * And   At least one icon is presented
      * And   Shared with subsection contains caret
      *
-     * Examples:
-     *     | resource |
-     *     | Simple password             |
-     *     | Password with description   |
-     *     | Password description totp   |
+     *     Examples:
+     *     | resource                       |
+     *     | Simple password                |
+     *     | Password with description      |
+     *     | Password description totp      |
+     *     | TOTP - v4                      |
+     *     | Simple Password (Deprecated)   |
+     *     | Default resource type          |
+     *     | Default resource type with TOTP|
+     *     | Standalone TOTP                |
+     *     | Standalone note                |
+     *     | Standalone Custom Fields       |
      */
     @Test
     fun onTheResourceScreenICanSeeSharedWithSubsection() {
