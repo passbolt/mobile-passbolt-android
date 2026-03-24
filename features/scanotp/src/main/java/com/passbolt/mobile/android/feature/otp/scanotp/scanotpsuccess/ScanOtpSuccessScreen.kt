@@ -138,6 +138,7 @@ private fun ScanOtpSuccessScreen(
                         .padding(top = 32.dp),
                 textAlign = TextAlign.Center,
                 fontSize = 28.sp,
+                lineHeight = 36.sp,
                 fontWeight = FontWeight.W600,
                 color = colorResource(CoreUiR.color.text_primary),
                 maxLines = 2,
@@ -162,7 +163,7 @@ private fun ScanOtpSuccessScreen(
                     Modifier
                         .clickable { onIntent(LinkToResourceClick) }
                         .padding(16.dp),
-                color = MaterialTheme.colorScheme.primary,
+                color = MaterialTheme.colorScheme.onBackground,
                 style = MaterialTheme.typography.labelLarge,
             )
 
@@ -189,6 +190,30 @@ private fun ScanOtpSuccessScreenPreview() {
 @Composable
 private fun ScanOtpSuccessScreenProgressPreview() {
     PassboltTheme {
+        ScanOtpSuccessScreen(
+            state = ScanOtpSuccessState(showProgress = true),
+            onIntent = {},
+            snackbarHostState = SnackbarHostState(),
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun ScanOtpSuccessScreenDarkPreview() {
+    PassboltTheme(darkTheme = true) {
+        ScanOtpSuccessScreen(
+            state = ScanOtpSuccessState(),
+            onIntent = {},
+            snackbarHostState = SnackbarHostState(),
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun ScanOtpSuccessScreenProgressDarkPreview() {
+    PassboltTheme(darkTheme = true) {
         ScanOtpSuccessScreen(
             state = ScanOtpSuccessState(showProgress = true),
             onIntent = {},
