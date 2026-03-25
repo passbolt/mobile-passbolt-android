@@ -262,7 +262,6 @@ internal class HomeViewModel(
 
     private fun resourceDetailsReturned(intent: ResourceDetailsReturned) {
         if (intent.resourceEdited) {
-            emitSideEffect(ShowSuccessSnackbar(RESOURCE_EDITED, intent.resourceName))
             emitSideEffect(InitiateDataRefresh)
         }
         if (intent.resourceDeleted) {

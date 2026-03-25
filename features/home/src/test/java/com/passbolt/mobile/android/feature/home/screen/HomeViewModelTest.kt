@@ -476,12 +476,11 @@ class HomeViewModelTest : KoinTest {
         }
 
     @Test
-    fun `should show success snackbar after resource details return`() =
+    fun `should refresh data after resource details return with edit`() =
         runTest {
             viewModel = get()
 
             viewModel.sideEffect.test {
-                // edit
                 viewModel.onIntent(
                     HomeIntent.ResourceDetailsReturned(
                         resourceEdited = true,
@@ -490,13 +489,16 @@ class HomeViewModelTest : KoinTest {
                     ),
                 )
 
-                val editSnackbarEffect = awaitItem()
-                assertIs<ShowSuccessSnackbar>(editSnackbarEffect)
-                assertEquals(RESOURCE_EDITED, editSnackbarEffect.type)
-                assertEquals("Test Resource", editSnackbarEffect.message)
                 assertIs<InitiateDataRefresh>(awaitItem())
+            }
+        }
 
-                // delete
+    @Test
+    fun `should show success snackbar after resource details return with delete`() =
+        runTest {
+            viewModel = get()
+
+            viewModel.sideEffect.test {
                 viewModel.onIntent(
                     HomeIntent.ResourceDetailsReturned(
                         resourceEdited = false,
