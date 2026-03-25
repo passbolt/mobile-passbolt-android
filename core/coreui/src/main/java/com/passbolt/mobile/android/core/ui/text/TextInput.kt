@@ -99,7 +99,7 @@ fun TextInput(
             Text(
                 text = state.message,
                 color = colorResource(R.color.red),
-                style = MaterialTheme.typography.labelSmall,
+                style = MaterialTheme.typography.labelMedium,
             )
         }
     }
