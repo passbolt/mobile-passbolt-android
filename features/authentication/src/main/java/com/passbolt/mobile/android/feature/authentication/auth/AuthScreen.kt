@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -272,6 +273,7 @@ private fun AuthScreen(
                 modifier =
                     Modifier
                         .fillMaxWidth()
+                        .navigationBarsPadding()
                         .padding(bottom = 8.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
@@ -287,7 +289,6 @@ private fun AuthScreen(
 
                 TextButton(
                     onClick = { onIntent(ForgotPassword) },
-                    modifier = Modifier.padding(vertical = 8.dp),
                 ) {
                     Text(
                         text = stringResource(LocalizationR.string.auth_forgot_password_button),
@@ -490,7 +491,7 @@ private fun AuthScreen(
     ProgressDialog(isVisible = state.showProgress)
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, name = "Auth - Default")
 @Composable
 private fun AuthScreenPreview() {
     PassboltTheme {
@@ -503,8 +504,71 @@ private fun AuthScreenPreview() {
                             email = "john@passbolt.com",
                             domain = "https://passbolt.local",
                         ),
+                ),
+            onIntent = {},
+            snackbarHostState = SnackbarHostState(),
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "Auth - Biometric + Session Expired")
+@Composable
+private fun AuthScreenBiometricSessionExpiredPreview() {
+    PassboltTheme {
+        AuthScreen(
+            state =
+                AuthState(
+                    accountData =
+                        AuthState.AccountData(
+                            label = "John Doe",
+                            email = "john@passbolt.com",
+                            domain = "https://passbolt.local",
+                        ),
                     showBiometricButton = true,
                     authReason = SESSION,
+                ),
+            onIntent = {},
+            snackbarHostState = SnackbarHostState(),
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "Auth - Passphrase Expired")
+@Composable
+private fun AuthScreenPassphraseExpiredPreview() {
+    PassboltTheme {
+        AuthScreen(
+            state =
+                AuthState(
+                    accountData =
+                        AuthState.AccountData(
+                            label = "John Doe",
+                            email = "john@passbolt.com",
+                            domain = "https://cloud.passbolt.com",
+                        ),
+                    authReason = PASSPHRASE,
+                ),
+            onIntent = {},
+            snackbarHostState = SnackbarHostState(),
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "Auth - Button Enabled")
+@Composable
+private fun AuthScreenButtonEnabledPreview() {
+    PassboltTheme {
+        AuthScreen(
+            state =
+                AuthState(
+                    accountData =
+                        AuthState.AccountData(
+                            label = "John Doe",
+                            email = "john@passbolt.com",
+                            domain = "https://passbolt.local",
+                        ),
+                    isAuthButtonEnabled = true,
+                    passphrase = "mypassphrase".toByteArray(),
                 ),
             onIntent = {},
             snackbarHostState = SnackbarHostState(),
