@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.common.search
 
 import org.junit.Test
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 /**
@@ -43,14 +44,43 @@ class ResourceSearchTest {
         assertTrue { matcher.matches(searchable, "$SEARCH_1 $SEARCH_2 ") }
     }
 
+    @Test
+    fun `test if unicode lowercase query matches uppercase criteria`() {
+        assertTrue { matcher.matches(unicodeSearchable, UNICODE_SEARCH_LOWER) }
+    }
+
+    @Test
+    fun `test if unicode uppercase query matches lowercase criteria`() {
+        assertTrue { matcher.matches(unicodeSearchable, UNICODE_SEARCH_UPPER) }
+    }
+
+    @Test
+    fun `test if unicode mixed case query matches`() {
+        assertTrue { matcher.matches(unicodeSearchable, UNICODE_SEARCH_MIXED) }
+    }
+
+    @Test
+    fun `test if non matching query does not match`() {
+        assertFalse { matcher.matches(searchable, "nonexistent") }
+    }
+
     private companion object {
         private const val SEARCH_1 = "name"
         private const val SEARCH_2 = "username"
+        private const val UNICODE_SEARCH_LOWER = "ügyfélkapu"
+        private const val UNICODE_SEARCH_UPPER = "ÜGYFÉLKAPU"
+        private const val UNICODE_SEARCH_MIXED = "Ügyfélkapu"
 
         private val searchable =
             object : Searchable {
                 override val searchCriteria: String
                     get() = "$SEARCH_1$SEARCH_2"
+            }
+
+        private val unicodeSearchable =
+            object : Searchable {
+                override val searchCriteria: String
+                    get() = "Ügyfélkapu"
             }
     }
 }

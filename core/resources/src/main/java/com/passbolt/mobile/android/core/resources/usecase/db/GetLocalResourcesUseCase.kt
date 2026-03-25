@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.core.resources.usecase.db
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
 import com.passbolt.mobile.android.core.accounts.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.database.DatabaseProvider
+import com.passbolt.mobile.android.database.QuerySanitizer
 import com.passbolt.mobile.android.entity.resource.ResourceDatabaseView
 import com.passbolt.mobile.android.mappers.HomeDisplayViewMapper
 import com.passbolt.mobile.android.mappers.ResourceModelMapper
@@ -37,25 +38,27 @@ class GetLocalResourcesUseCase(
     private val resourceModelMapper: ResourceModelMapper,
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
     private val homeDisplayViewMapper: HomeDisplayViewMapper,
+    private val querySanitizer: QuerySanitizer,
 ) : AsyncUseCase<GetLocalResourcesUseCase.Input, GetLocalResourcesUseCase.Output> {
     override suspend fun execute(input: Input): Output {
         val userId = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
+        val ftsQuery = querySanitizer.sanitize(input.searchQuery)
         val resources =
             databaseProvider
                 .get(userId)
                 .resourcesDao()
                 .let {
                     when (val viewType = homeDisplayViewMapper.map(input.homeDisplayView)) {
-                        is ResourceDatabaseView.ByModifiedDateDescending -> it.getAllOrderedByModifiedDate(input.slugs, input.searchQuery)
-                        is ResourceDatabaseView.ByNameAscending -> it.getAllOrderedByName(input.slugs, input.searchQuery)
-                        is ResourceDatabaseView.IsFavourite -> it.getFavourites(input.slugs, input.searchQuery)
+                        is ResourceDatabaseView.ByModifiedDateDescending -> it.getAllOrderedByModifiedDate(input.slugs, ftsQuery)
+                        is ResourceDatabaseView.ByNameAscending -> it.getAllOrderedByName(input.slugs, ftsQuery)
+                        is ResourceDatabaseView.IsFavourite -> it.getFavourites(input.slugs, ftsQuery)
                         is ResourceDatabaseView.HasPermissions ->
                             it.getWithPermissions(
                                 viewType.permissions,
                                 input.slugs,
-                                input.searchQuery,
+                                ftsQuery,
                             )
-                        is ResourceDatabaseView.HasExpiry -> it.getExpiredResources(input.slugs, input.searchQuery)
+                        is ResourceDatabaseView.HasExpiry -> it.getExpiredResources(input.slugs, ftsQuery = ftsQuery)
                     }
                 }
 

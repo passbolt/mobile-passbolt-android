@@ -7,6 +7,7 @@ import androidx.paging.map
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
 import com.passbolt.mobile.android.core.accounts.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.database.DatabaseProvider
+import com.passbolt.mobile.android.database.QuerySanitizer
 import com.passbolt.mobile.android.entity.resource.ResourceDatabaseView.ByModifiedDateDescending
 import com.passbolt.mobile.android.entity.resource.ResourceDatabaseView.ByNameAscending
 import com.passbolt.mobile.android.entity.resource.ResourceDatabaseView.HasExpiry
@@ -47,6 +48,7 @@ class GetLocalResourcesPaginatedUseCase(
     private val resourceModelMapper: ResourceModelMapper,
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
     private val homeDisplayViewMapper: HomeDisplayViewMapper,
+    private val querySanitizer: QuerySanitizer,
 ) : AsyncUseCase<GetLocalResourcesPaginatedUseCase.Input, GetLocalResourcesPaginatedUseCase.Output> {
     override suspend fun execute(input: Input): Output =
         Output(
@@ -55,18 +57,19 @@ class GetLocalResourcesPaginatedUseCase(
                 pagingSourceFactory = {
                     val selectedAccount = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
                     val resourceDao = databaseProvider.get(selectedAccount).paginatedResourcesDao()
+                    val ftsQuery = querySanitizer.sanitize(input.searchQuery)
 
                     when (val viewType = homeDisplayViewMapper.map(input.homeDisplayView)) {
-                        is ByModifiedDateDescending -> resourceDao.getAllOrderedByModifiedDatePaginated(input.slugs, input.searchQuery)
-                        is ByNameAscending -> resourceDao.getAllOrderedByNamePaginated(homeSlugs, input.searchQuery)
-                        is IsFavourite -> resourceDao.getFavouritesPaginated(input.slugs, input.searchQuery)
+                        is ByModifiedDateDescending -> resourceDao.getAllOrderedByModifiedDatePaginated(input.slugs, ftsQuery)
+                        is ByNameAscending -> resourceDao.getAllOrderedByNamePaginated(homeSlugs, ftsQuery)
+                        is IsFavourite -> resourceDao.getFavouritesPaginated(input.slugs, ftsQuery)
                         is HasPermissions ->
                             resourceDao.getWithPermissionsPaginated(
                                 viewType.permissions,
                                 input.slugs,
-                                input.searchQuery,
+                                ftsQuery,
                             )
-                        is HasExpiry -> resourceDao.getExpiredResourcesPaginated(input.slugs, input.searchQuery)
+                        is HasExpiry -> resourceDao.getExpiredResourcesPaginated(input.slugs, ftsQuery = ftsQuery)
                     }
                 },
             ).flow.map { pagingData ->

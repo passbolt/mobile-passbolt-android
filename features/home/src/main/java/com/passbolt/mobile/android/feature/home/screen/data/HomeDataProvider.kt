@@ -168,7 +168,7 @@ class HomeDataProvider(
                         ),
                     ).resources
 
-            return HomeData(
+            HomeData(
                 resourceList = groupResources,
                 suggestedResourceList = getSuggestedList(groupResources, searchQuery, groupsView, showSuggestedModel),
             )
@@ -246,19 +246,19 @@ class HomeDataProvider(
         homeView: HomeDisplayViewModel,
         searchQuery: String?,
     ) = if (searchQuery.isNullOrBlank()) {
-        when (val activeHomeView = homeView) {
+        when (homeView) {
             is AllItems -> true
             is Favourites -> true
             is Folders ->
-                when (activeHomeView.activeFolder) {
+                when (homeView.activeFolder) {
                     is Folder.Child -> false
                     is Folder.Root -> true
                 }
-            is Groups -> activeHomeView.activeGroupId == null // groups root
+            is Groups -> homeView.activeGroupId == null // groups root
             is OwnedByMe -> true
             is RecentlyModified -> true
             is SharedWithMe -> true
-            is Tags -> activeHomeView.activeTagId == null // tags root
+            is Tags -> homeView.activeTagId == null // tags root
             is Expiry -> true
             NotLoaded -> false
         }

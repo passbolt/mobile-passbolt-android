@@ -1,16 +1,8 @@
-package com.passbolt.mobile.android.database.impl.tags
-
-import androidx.paging.PagingSource
-import androidx.room.Dao
-import androidx.room.Query
-import androidx.room.Transaction
-import com.passbolt.mobile.android.database.impl.base.BaseDao
-import com.passbolt.mobile.android.entity.resource.Tag
-import com.passbolt.mobile.android.entity.resource.TagWithTaggedItemsCount
+package com.passbolt.mobile.android.database
 
 /**
  * Passbolt - Open source password manager for teams
- * Copyright (c) 2021 Passbolt SA
+ * Copyright (c) 2026 Passbolt SA
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
  * Public License (AGPL) as published by the Free Software Foundation version 3.
@@ -30,22 +22,15 @@ import com.passbolt.mobile.android.entity.resource.TagWithTaggedItemsCount
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-@Dao
-interface PaginatedTagsDao : BaseDao<Tag> {
-    @Transaction
-    @Query(
-        "SELECT id, slug, isShared, " +
-            "(SELECT" +
-            "(" +
-            "(select distinct count(resourceId) from resourceandtagscrossref rTCR where rTCR.tagId is t.id) " +
-            ")" +
-            ") AS taggedItemsCount " +
-            "FROM Tag t " +
-            "WHERE :ftsQuery IS NULL OR " +
-            "   EXISTS (" +
-            "       SELECT 1 FROM TagFts WHERE TagFts MATCH :ftsQuery AND TagFts.docid = t.rowid" +
-            "   ) " +
-            "ORDER BY slug COLLATE NOCASE ASC",
-    )
-    fun getAllWithTaggedItemsCount(ftsQuery: String?): PagingSource<Int, TagWithTaggedItemsCount>
+
+class FtsQuerySanitizer : QuerySanitizer {
+    override fun sanitize(query: String?): String? {
+        if (query == null) return null
+        val sanitized = query.replace(FTS_SPECIAL_CHARS, "").trim()
+        return if (sanitized.isNotEmpty()) "$sanitized*" else null
+    }
+
+    private companion object {
+        private val FTS_SPECIAL_CHARS = Regex("[\"*():]")
+    }
 }

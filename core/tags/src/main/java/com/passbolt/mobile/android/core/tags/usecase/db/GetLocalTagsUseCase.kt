@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.core.tags.usecase.db
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
 import com.passbolt.mobile.android.core.accounts.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.database.DatabaseProvider
+import com.passbolt.mobile.android.database.QuerySanitizer
 import com.passbolt.mobile.android.mappers.TagsModelMapper
 import com.passbolt.mobile.android.ui.TagWithCount
 
@@ -32,12 +33,13 @@ class GetLocalTagsUseCase(
     private val databaseProvider: DatabaseProvider,
     private val tagModelMapper: TagsModelMapper,
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
+    private val querySanitizer: QuerySanitizer,
 ) : AsyncUseCase<GetLocalTagsUseCase.Input, List<TagWithCount>> {
     override suspend fun execute(input: Input) =
         databaseProvider
             .get(requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount))
             .tagsDao()
-            .getAllWithTaggedItemsCount(input.searchQuery)
+            .getAllWithTaggedItemsCount(querySanitizer.sanitize(input.searchQuery))
             .map { tagModelMapper.map(it) }
 
     data class Input(
