@@ -27,6 +27,7 @@ import androidx.room.Room
 import androidx.room.testing.MigrationTestHelper
 import androidx.sqlite.db.framework.FrameworkSQLiteOpenHelperFactory
 import androidx.test.platform.app.InstrumentationRegistry
+import com.google.common.truth.Truth.assertThat
 import com.passbolt.mobile.android.database.migrations.Migration10to11
 import com.passbolt.mobile.android.database.migrations.Migration11to12
 import com.passbolt.mobile.android.database.migrations.Migration12to13
@@ -39,6 +40,7 @@ import com.passbolt.mobile.android.database.migrations.Migration18to19
 import com.passbolt.mobile.android.database.migrations.Migration19to20
 import com.passbolt.mobile.android.database.migrations.Migration1to2
 import com.passbolt.mobile.android.database.migrations.Migration20to21
+import com.passbolt.mobile.android.database.migrations.Migration21to22
 import com.passbolt.mobile.android.database.migrations.Migration2to3
 import com.passbolt.mobile.android.database.migrations.Migration3to4
 import com.passbolt.mobile.android.database.migrations.Migration4to5
@@ -550,6 +552,53 @@ class DatabaseMigrationsTest {
     }
 
     @Test
+    fun migrate21To22() {
+        helper
+            .createDatabase(TEST_DB, 21)
+            .apply {
+                execSQL(
+                    "INSERT INTO ResourceMetadata VALUES('resId', 'metadataJson', 'name', 'username', 'desc', 'customFieldsKeys')",
+                )
+                execSQL("INSERT INTO ResourceUri VALUES(1, 'resId', 'https://example.com')")
+                execSQL("INSERT INTO Tag VALUES('tagId', 'tagSlug', 0)")
+                execSQL("INSERT INTO Folder VALUES('folderId', 'folderName', 'READ', null, 0)")
+                execSQL("INSERT INTO UsersGroup VALUES('groupId', 'groupName')")
+                close()
+            }
+
+        helper
+            .runMigrationsAndValidate(TEST_DB, 22, true, Migration21to22)
+            .apply {
+                val resourceMetadataCursor = query("SELECT count(*) FROM ResourceMetadataFts WHERE ResourceMetadataFts MATCH 'name*'")
+                resourceMetadataCursor.moveToFirst()
+                assertThat(resourceMetadataCursor.getInt(0)).isEqualTo(1)
+                resourceMetadataCursor.close()
+
+                val resourceUriCursor = query("SELECT count(*) FROM ResourceUriFts WHERE ResourceUriFts MATCH 'example*'")
+                resourceUriCursor.moveToFirst()
+                assertThat(resourceUriCursor.getInt(0)).isEqualTo(1)
+                resourceUriCursor.close()
+
+                val tagCursor = query("SELECT count(*) FROM TagFts WHERE TagFts MATCH 'tagSlug*'")
+                tagCursor.moveToFirst()
+                assertThat(tagCursor.getInt(0)).isEqualTo(1)
+                tagCursor.close()
+
+                val folderCursor = query("SELECT count(*) FROM FolderFts WHERE FolderFts MATCH 'folderName*'")
+                folderCursor.moveToFirst()
+                assertThat(folderCursor.getInt(0)).isEqualTo(1)
+                folderCursor.close()
+
+                val usersGroupCursor = query("SELECT count(*) FROM UsersGroupFts WHERE UsersGroupFts MATCH 'groupName*'")
+                usersGroupCursor.moveToFirst()
+                assertThat(usersGroupCursor.getInt(0)).isEqualTo(1)
+                usersGroupCursor.close()
+
+                close()
+            }
+    }
+
+    @Test
     fun migrateAll() {
         helper.createDatabase(TEST_DB, 1).apply {
             close()
@@ -581,6 +630,7 @@ class DatabaseMigrationsTest {
                 Migration18to19,
                 Migration19to20,
                 Migration20to21,
+                Migration21to22,
             ).build()
             .apply {
                 openHelper.writableDatabase

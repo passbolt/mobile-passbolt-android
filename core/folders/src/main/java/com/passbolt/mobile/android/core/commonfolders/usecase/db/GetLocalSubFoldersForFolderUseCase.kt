@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.core.commonfolders.usecase.db
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
 import com.passbolt.mobile.android.core.accounts.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.database.DatabaseProvider
+import com.passbolt.mobile.android.database.QuerySanitizer
 import com.passbolt.mobile.android.mappers.FolderModelMapper
 import com.passbolt.mobile.android.ui.Folder
 import com.passbolt.mobile.android.ui.FolderWithCountAndPath
@@ -33,6 +34,7 @@ class GetLocalSubFoldersForFolderUseCase(
     private val databaseProvider: DatabaseProvider,
     private val folderModelMapper: FolderModelMapper,
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
+    private val querySanitizer: QuerySanitizer,
 ) : AsyncUseCase<GetLocalSubFoldersForFolderUseCase.Input, GetLocalSubFoldersForFolderUseCase.Output> {
     override suspend fun execute(input: Input): Output {
         val userId = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
@@ -40,15 +42,13 @@ class GetLocalSubFoldersForFolderUseCase(
             databaseProvider
                 .get(userId)
                 .foldersDao()
+        val ftsQuery = querySanitizer.sanitize(input.searchQuery)
 
         val folders =
             foldersDao.let {
                 when (input.folder) {
-                    // get all children recursively
-                    is Folder.Child -> it.getFolderAllChildFoldersRecursively(input.folder.folderId, input.searchQuery)
-                    // getting all children recursively for root == getting all possible children
-                    // could also use it.getFolderAllChildFoldersRecursively(null), but UNION does not work with nulls
-                    is Folder.Root -> it.getAllFolders(input.searchQuery)
+                    is Folder.Child -> it.getFolderAllChildFoldersRecursively(input.folder.folderId, ftsQuery)
+                    is Folder.Root -> it.getAllFolders(ftsQuery)
                 }
             }
 

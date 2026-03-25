@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.core.commongroups.usecase.db
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
 import com.passbolt.mobile.android.core.accounts.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.database.DatabaseProvider
+import com.passbolt.mobile.android.database.QuerySanitizer
 import com.passbolt.mobile.android.mappers.GroupsModelMapper
 import com.passbolt.mobile.android.ui.GroupWithCount
 
@@ -32,12 +33,13 @@ class GetLocalGroupsWithShareItemsCountUseCase(
     private val databaseProvider: DatabaseProvider,
     private val groupModelMapper: GroupsModelMapper,
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
+    private val querySanitizer: QuerySanitizer,
 ) : AsyncUseCase<GetLocalGroupsWithShareItemsCountUseCase.Input, List<GroupWithCount>> {
     override suspend fun execute(input: Input) =
         databaseProvider
             .get(requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount))
             .groupsDao()
-            .getAllWithSharedItemsCount(input.searchQuery)
+            .getAllWithSharedItemsCount(querySanitizer.sanitize(input.searchQuery))
             .map { groupModelMapper.map(it) }
 
     data class Input(
