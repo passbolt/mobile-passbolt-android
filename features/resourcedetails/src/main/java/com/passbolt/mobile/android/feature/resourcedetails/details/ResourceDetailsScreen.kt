@@ -65,6 +65,8 @@ import com.passbolt.mobile.android.core.navigation.compose.keys.ResourceFormNavi
 import com.passbolt.mobile.android.core.navigation.compose.keys.TagsDetailsNavigationKey.ResourceTags
 import com.passbolt.mobile.android.core.navigation.compose.results.NavigationResultEventBus
 import com.passbolt.mobile.android.core.navigation.compose.results.ResourceDetailsCompleteResult
+import com.passbolt.mobile.android.core.navigation.compose.results.ResourceFormCompleteResult
+import com.passbolt.mobile.android.core.navigation.compose.results.ResultEffect
 import com.passbolt.mobile.android.core.resources.resourceicon.ResourceIconProvider
 import com.passbolt.mobile.android.core.ui.dialogs.ConfirmResourceDeleteAlertDialog
 import com.passbolt.mobile.android.core.ui.progressdialog.ProgressDialog
@@ -88,6 +90,7 @@ import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetai
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent.Initialize
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent.LaunchWebsite
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent.OpenMoreMenu
+import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent.ResourceEdited
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent.ToggleFavourite
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent.ViewPermissions
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsSideEffect.AddToClipboard
@@ -122,6 +125,7 @@ import org.koin.compose.koinInject
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 @Composable
+@Suppress("CyclomaticComplexMethod")
 fun ResourceDetailsScreen(
     resourceModel: ResourceModel,
     modifier: Modifier = Modifier,
@@ -138,6 +142,7 @@ fun ResourceDetailsScreen(
 
     var resourceIcon by remember { mutableStateOf<Drawable?>(null) }
     val currentResourceModel = state.value.resourceData.resourceModel ?: resourceModel
+
     LaunchedEffect(currentResourceModel) {
         resourceIcon = resourceIconProvider.getResourceIcon(context, currentResourceModel)
     }
@@ -153,6 +158,12 @@ fun ResourceDetailsScreen(
         resourceIcon = resourceIcon,
         modifier = modifier,
     )
+
+    ResultEffect<ResourceFormCompleteResult> { result ->
+        if (result.resourceEdited) {
+            viewModel.onIntent(ResourceEdited(result.resourceName))
+        }
+    }
 
     DisposableEffect(Unit) {
         onDispose {
