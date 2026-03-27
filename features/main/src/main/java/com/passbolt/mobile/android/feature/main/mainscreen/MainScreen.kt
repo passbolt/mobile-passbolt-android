@@ -31,12 +31,13 @@ import com.passbolt.mobile.android.feature.main.mainscreen.MainIntent.GoToSettin
 import com.passbolt.mobile.android.feature.main.mainscreen.MainIntent.TabSelected
 import com.passbolt.mobile.android.feature.main.mainscreen.encouragements.chromenativeautofill.EncourageChromeNativeAutofillDialog
 import kotlinx.coroutines.flow.map
+import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 
 @Composable
 fun MainScreen(
     modifier: Modifier = Modifier,
-    mainViewModel: MainViewModel = koinInject(),
+    mainViewModel: MainViewModel = koinViewModel(),
     appNavigator: AppNavigator = koinInject(),
 ) {
     val state by mainViewModel.viewState.collectAsStateWithLifecycle()
