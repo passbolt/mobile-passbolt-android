@@ -11,7 +11,7 @@ import com.passbolt.mobile.android.core.passwordgenerator.codepoints.toCodepoint
 import com.passbolt.mobile.android.core.passwordgenerator.entropy.EntropyCalculator
 import com.passbolt.mobile.android.core.policies.usecase.GetPasswordPoliciesUseCase
 import com.passbolt.mobile.android.core.resources.actions.ResourceCreateActionsInteractor
-import com.passbolt.mobile.android.core.resources.actions.ResourceUpdateActionsInteractor
+import com.passbolt.mobile.android.core.resources.actions.ResourceUpdateActionsInteractorFactory
 import com.passbolt.mobile.android.core.resources.actions.performResourceCreateAction
 import com.passbolt.mobile.android.core.resources.actions.performResourceUpdateAction
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUseCase
@@ -100,7 +100,6 @@ import com.passbolt.mobile.android.ui.ResourceFormUiModel
 import com.passbolt.mobile.android.ui.TotpUiModel
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
-import org.koin.core.parameter.parametersOf
 import timber.log.Timber
 
 @Suppress("TooManyFunctions", "LargeClass")
@@ -117,6 +116,7 @@ class ResourceFormViewModel(
     private val metadataPrivateKeysHelperInteractor: MetadataPrivateKeysHelperInteractor,
     private val createResourceIdlingResource: CreateResourceIdlingResource,
     private val updateResourceIdlingResource: UpdateResourceIdlingResource,
+    private val resourceUpdateActionsInteractorFactory: ResourceUpdateActionsInteractorFactory,
 ) : SideEffectViewModel<ResourceFormState, ResourceFormSideEffect>(ResourceFormState(mode = mode)),
     KoinComponent {
     private val uiModel: ResourceFormUiModel by lazy {
@@ -665,8 +665,7 @@ class ResourceFormViewModel(
                         .execute(
                             GetLocalResourceUseCase.Input((mode as Edit).resourceId),
                         ).resource
-                val resourceUpdateActionsInteractor =
-                    get<ResourceUpdateActionsInteractor> { parametersOf(editedResource) }
+                val resourceUpdateActionsInteractor = resourceUpdateActionsInteractorFactory.create(editedResource)
                 performResourceUpdateAction(
                     action = {
                         resourceUpdateActionsInteractor.updateGenericResource(

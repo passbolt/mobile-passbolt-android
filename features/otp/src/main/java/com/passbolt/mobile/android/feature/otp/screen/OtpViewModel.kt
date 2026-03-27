@@ -37,8 +37,8 @@ import com.passbolt.mobile.android.core.otpcore.TotpParametersProvider
 import com.passbolt.mobile.android.core.otpcore.TotpParametersProvider.OtpParametersResult.InvalidTotpInput
 import com.passbolt.mobile.android.core.otpcore.TotpParametersProvider.OtpParametersResult.OtpParameters
 import com.passbolt.mobile.android.core.resources.actions.ResourceCommonActionsInteractor
-import com.passbolt.mobile.android.core.resources.actions.ResourceUpdateActionsInteractor
-import com.passbolt.mobile.android.core.resources.actions.SecretPropertiesActionsInteractor
+import com.passbolt.mobile.android.core.resources.actions.ResourceUpdateActionsInteractorFactory
+import com.passbolt.mobile.android.core.resources.actions.SecretPropertiesActionsInteractorFactory
 import com.passbolt.mobile.android.core.resources.actions.SecretPropertyActionResult
 import com.passbolt.mobile.android.core.resources.actions.performCommonResourceAction
 import com.passbolt.mobile.android.core.resources.actions.performResourceUpdateAction
@@ -141,6 +141,8 @@ internal class OtpViewModel(
     private val metadataPrivateKeysHelperInteractor: MetadataPrivateKeysHelperInteractor,
     private val timerFactory: TimerFactory,
     private val canCreateResourceUse: CanCreateResourceUseCase,
+    private val resourceUpdateActionsInteractorFactory: ResourceUpdateActionsInteractorFactory,
+    private val secretPropertiesActionsInteractorFactory: SecretPropertiesActionsInteractorFactory,
 ) : SideEffectViewModel<OtpState, OtpSideEffect>(OtpState()),
     KoinComponent {
     init {
@@ -325,7 +327,7 @@ internal class OtpViewModel(
     }
 
     private suspend fun downgradeToPasswordAndDescriptionResource(otpResource: ResourceModel) {
-        val resourceUpdateActionInteractor = get<ResourceUpdateActionsInteractor> { parametersOf(otpResource) }
+        val resourceUpdateActionInteractor = resourceUpdateActionsInteractorFactory.create(otpResource)
         performResourceUpdateAction(
             action = {
                 resourceUpdateActionInteractor.updateGenericResource(
@@ -438,7 +440,7 @@ internal class OtpViewModel(
                 copy(otps = otps.refreshingOnly(otpItemWrapper.resource.resourceId))
             }
 
-            val secretPropertiesActionsInteractor = get<SecretPropertiesActionsInteractor> { parametersOf(otpItemWrapper.resource) }
+            val secretPropertiesActionsInteractor = secretPropertiesActionsInteractorFactory.create(otpItemWrapper.resource)
 
             performSecretPropertyAction(
                 action = { secretPropertiesActionsInteractor.provideOtp() },

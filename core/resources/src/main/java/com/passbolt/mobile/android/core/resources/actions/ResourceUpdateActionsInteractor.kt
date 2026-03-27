@@ -53,7 +53,6 @@ import com.passbolt.mobile.android.ui.UpdateResourceModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.single
-import org.koin.core.component.KoinComponent
 import timber.log.Timber
 import java.util.UUID
 
@@ -71,7 +70,7 @@ class ResourceUpdateActionsInteractor(
     private val getMetadataKeysSettingsUseCase: GetMetadataKeysSettingsUseCase,
     private val getMetadataKeysUseCase: GetLocalMetadataKeysUseCase,
     private val resourceTypeIdToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider,
-) : KoinComponent {
+) {
     suspend fun updateGenericResource(
         newContentType: ContentType,
         metadataModification: (MetadataJsonModel) -> MetadataJsonModel = { it },

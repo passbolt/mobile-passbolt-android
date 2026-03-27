@@ -44,6 +44,7 @@ fun Module.resourceFormModule() {
             metadataPrivateKeysHelperInteractor = get(),
             createResourceIdlingResource = get(),
             updateResourceIdlingResource = get(),
+            resourceUpdateActionsInteractorFactory = get(),
         )
     }
     factoryOf(::ResourceModelHandler)

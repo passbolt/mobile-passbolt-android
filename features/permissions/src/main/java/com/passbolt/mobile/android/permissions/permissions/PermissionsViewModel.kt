@@ -32,7 +32,7 @@ import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalFolderP
 import com.passbolt.mobile.android.core.compose.SideEffectViewModel
 import com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
-import com.passbolt.mobile.android.core.resources.actions.ResourceUpdateActionsInteractor
+import com.passbolt.mobile.android.core.resources.actions.ResourceUpdateActionsInteractorFactory
 import com.passbolt.mobile.android.core.resources.actions.performResourceUpdateAction
 import com.passbolt.mobile.android.core.resources.usecase.ResourceShareInteractor
 import com.passbolt.mobile.android.core.resources.usecase.ResourceShareInteractor.Output
@@ -94,9 +94,6 @@ import com.passbolt.mobile.android.ui.PermissionsMode.VIEW
 import com.passbolt.mobile.android.ui.ResourcePermission
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.launch
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.get
-import org.koin.core.parameter.parametersOf
 import timber.log.Timber
 import java.util.UUID
 
@@ -116,6 +113,7 @@ class PermissionsViewModel(
     private val canShareResourceUseCase: CanShareResourceUseCase,
     private val dataRefreshTrackingFlow: DataRefreshTrackingFlow,
     private val coroutineLaunchContext: CoroutineLaunchContext,
+    private val resourceUpdateActionsInteractorFactory: ResourceUpdateActionsInteractorFactory,
 ) : SideEffectViewModel<PermissionsState, PermissionsSideEffect>(
         initialState =
             PermissionsState(
@@ -123,8 +121,7 @@ class PermissionsViewModel(
                 permissionItemId = id,
                 mode = mode,
             ),
-    ),
-    KoinComponent {
+    ) {
     private val missingItemHandler =
         CoroutineExceptionHandler { _, throwable ->
             if (throwable is NullPointerException) {
@@ -294,10 +291,7 @@ class PermissionsViewModel(
                         UUID.fromString(resource.resourceTypeId),
                     ]!!,
                 )
-            val resourceUpdateActionsInteractor =
-                get<ResourceUpdateActionsInteractor> {
-                    parametersOf(resource)
-                }
+            val resourceUpdateActionsInteractor = resourceUpdateActionsInteractorFactory.create(resource)
 
             if (contentType.isV5()) {
                 performResourceUpdateAction(
