@@ -40,6 +40,8 @@ import com.passbolt.mobile.android.core.accounts.usecase.accountdata.GetSelected
 import com.passbolt.mobile.android.core.mvp.authentication.SessionRefreshTrackingFlow
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.otpcore.TotpParametersProvider
+import com.passbolt.mobile.android.core.resources.actions.ResourceUpdateActionsInteractorFactory
+import com.passbolt.mobile.android.core.resources.actions.SecretPropertiesActionsInteractorFactory
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesUseCase
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
 import com.passbolt.mobile.android.core.ui.search.SearchInputEndIconMode.AVATAR
@@ -117,6 +119,8 @@ class OtpViewModelTest : KoinTest {
                         single { mock<ResourceTypeIdToSlugMappingProvider>() }
                         single { mock<MetadataPrivateKeysHelperInteractor>() }
                         single { mock<CanCreateResourceUseCase>() }
+                        single { mock<ResourceUpdateActionsInteractorFactory>() }
+                        single { mock<SecretPropertiesActionsInteractorFactory>() }
                         singleOf(::TestCoroutineTimerFactory) bind TimerFactory::class
                         singleOf(::TestCoroutineLaunchContext) bind CoroutineLaunchContext::class
                         factoryOf(::OtpViewModel)

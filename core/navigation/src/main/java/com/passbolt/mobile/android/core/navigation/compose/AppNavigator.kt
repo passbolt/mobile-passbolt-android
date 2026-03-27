@@ -26,7 +26,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import org.koin.core.component.KoinComponent
 import java.io.File
 
 /**
@@ -53,7 +52,7 @@ import java.io.File
  */
 class AppNavigator(
     private val externalDeeplinkHandler: ExternalDeeplinkHandler,
-) : KoinComponent {
+) {
     private var _backStack: NavBackStack<NavKey>? = null
     var backStack: NavBackStack<NavKey>
         get() = requireNotNull(_backStack) { "backStack has not been initialized" }

@@ -15,7 +15,7 @@ import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalFolderP
 import com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor
 import com.passbolt.mobile.android.core.mvp.authentication.SessionRefreshTrackingFlow
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
-import com.passbolt.mobile.android.core.resources.actions.ResourceUpdateActionsInteractor
+import com.passbolt.mobile.android.core.resources.actions.ResourceUpdateActionsInteractorFactory
 import com.passbolt.mobile.android.core.resources.usecase.ResourceShareInteractor
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcePermissionsUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUseCase
@@ -83,7 +83,7 @@ class PermissionsViewModelTest : KoinTest {
                     single { mock<HomeDataInteractor>() }
                     single { mock<ResourceTypeIdToSlugMappingProvider>() }
                     single { mock<MetadataPrivateKeysHelperInteractor>() }
-                    single { mock<ResourceUpdateActionsInteractor>() }
+                    single { mock<ResourceUpdateActionsInteractorFactory>() }
                     single { mock<CanShareResourceUseCase>() }
                     singleOf(::TestCoroutineLaunchContext) bind CoroutineLaunchContext::class
                     singleOf(::SessionRefreshTrackingFlow)
@@ -116,6 +116,7 @@ class PermissionsViewModelTest : KoinTest {
                             canShareResourceUseCase = get(),
                             dataRefreshTrackingFlow = get(),
                             coroutineLaunchContext = get(),
+                            resourceUpdateActionsInteractorFactory = get(),
                         )
                     }
                 },

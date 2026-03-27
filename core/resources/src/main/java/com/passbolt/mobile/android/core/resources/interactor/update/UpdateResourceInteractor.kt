@@ -56,7 +56,6 @@ import com.passbolt.mobile.android.ui.EncryptedSecretOrError
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.UpdateResourceModel
 import com.passbolt.mobile.android.ui.UserModel
-import org.koin.core.component.KoinComponent
 import java.time.ZonedDateTime
 
 class UpdateResourceInteractor(
@@ -72,7 +71,7 @@ class UpdateResourceInteractor(
     private val passwordExpirySettingsUseCase: GetPasswordExpirySettingsUseCase,
     private val metadataMapper: MetadataMapper,
     private val metadataEncryptor: MetadataEncryptor,
-) : KoinComponent {
+) {
     suspend fun execute(
         resourceInput: UpdateResourceModel,
         secretInput: SecretInput,
