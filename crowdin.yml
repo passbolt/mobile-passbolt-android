@@ -1,4 +1,23 @@
 files:
   - source: /core/localization/src/main/res/values/strings.xml
     translation: /core/localization/src/main/res/values-%two_letters_code%/%original_file_name%
+export_languages:
+  - cs
+  - de
+  - en
+  - es
+  - fr
+  - it
+  - ja
+  - ko
+  - lt
+  - nl
+  - pl
+  - pt-BR
+  - ro
+  - ru
+  - sl
+  - sv
+  - uk
+  - zh-CN
 commit_message: '[skip-ci]'

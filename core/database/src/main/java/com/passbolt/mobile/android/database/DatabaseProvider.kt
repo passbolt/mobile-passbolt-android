@@ -15,6 +15,7 @@ import com.passbolt.mobile.android.database.migrations.Migration18to19
 import com.passbolt.mobile.android.database.migrations.Migration19to20
 import com.passbolt.mobile.android.database.migrations.Migration1to2
 import com.passbolt.mobile.android.database.migrations.Migration20to21
+import com.passbolt.mobile.android.database.migrations.Migration21to22
 import com.passbolt.mobile.android.database.migrations.Migration2to3
 import com.passbolt.mobile.android.database.migrations.Migration3to4
 import com.passbolt.mobile.android.database.migrations.Migration4to5
@@ -94,6 +95,7 @@ class DatabaseProvider(
                     Migration18to19,
                     Migration19to20,
                     Migration20to21,
+                    Migration21to22,
                 ).openHelperFactory(factory)
                 .build()
 

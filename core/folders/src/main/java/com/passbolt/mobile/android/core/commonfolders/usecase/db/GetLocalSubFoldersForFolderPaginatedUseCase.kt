@@ -7,6 +7,7 @@ import androidx.paging.map
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
 import com.passbolt.mobile.android.core.accounts.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.database.DatabaseProvider
+import com.passbolt.mobile.android.database.QuerySanitizer
 import com.passbolt.mobile.android.mappers.FolderModelMapper
 import com.passbolt.mobile.android.ui.Folder
 import com.passbolt.mobile.android.ui.FolderWithCountAndPath
@@ -39,6 +40,7 @@ class GetLocalSubFoldersForFolderPaginatedUseCase(
     private val databaseProvider: DatabaseProvider,
     private val folderModelMapper: FolderModelMapper,
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
+    private val querySanitizer: QuerySanitizer,
 ) : AsyncUseCase<GetLocalSubFoldersForFolderPaginatedUseCase.Input, GetLocalSubFoldersForFolderPaginatedUseCase.Output> {
     override suspend fun execute(input: Input): Output =
         Output(
@@ -49,12 +51,11 @@ class GetLocalSubFoldersForFolderPaginatedUseCase(
                         databaseProvider
                             .get(requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount))
                             .paginatedFoldersDao()
+                    val ftsQuery = querySanitizer.sanitize(input.searchQuery)
 
                     when (input.folder) {
-                        // get all children recursively
-                        is Folder.Child -> foldersDao.getFolderAllChildFoldersRecursively(input.folder.folderId, input.searchQuery)
-                        // getting all children recursively for root == getting all possible children
-                        is Folder.Root -> foldersDao.getAllFolders(input.searchQuery)
+                        is Folder.Child -> foldersDao.getFolderAllChildFoldersRecursively(input.folder.folderId, ftsQuery)
+                        is Folder.Root -> foldersDao.getAllFolders(ftsQuery)
                     }
                 },
             ).flow.map { pagingData ->
