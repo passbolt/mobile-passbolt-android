@@ -2,11 +2,9 @@ package com.passbolt.mobile.android.core.commonfolders
 
 import com.passbolt.mobile.android.core.commonfolders.usecase.AddLocalFolderPermissionsUseCase
 import com.passbolt.mobile.android.core.commonfolders.usecase.CreateFolderUseCase
-import com.passbolt.mobile.android.core.commonfolders.usecase.FetchUserFoldersUseCase
 import com.passbolt.mobile.android.core.commonfolders.usecase.FolderShareInteractor
 import com.passbolt.mobile.android.core.commonfolders.usecase.FoldersInteractor
-import com.passbolt.mobile.android.core.commonfolders.usecase.RebuildFolderPermissionsTablesUseCase
-import com.passbolt.mobile.android.core.commonfolders.usecase.RebuildFoldersTablesUseCase
+import com.passbolt.mobile.android.core.commonfolders.usecase.GetFoldersPaginatedUseCase
 import com.passbolt.mobile.android.core.commonfolders.usecase.RemoveLocalFolderPermissionsUseCase
 import com.passbolt.mobile.android.core.commonfolders.usecase.ShareFolderUseCase
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.foldersDbModule
@@ -42,12 +40,10 @@ val foldersModule =
         foldersDbModule()
 
         factoryOf(::CreateFolderUseCase)
-        singleOf(::FetchUserFoldersUseCase)
+        singleOf(::GetFoldersPaginatedUseCase)
         singleOf(::FoldersInteractor)
-        singleOf(::RebuildFoldersTablesUseCase)
         singleOf(::RemoveLocalFolderPermissionsUseCase)
         singleOf(::AddLocalFolderPermissionsUseCase)
-        singleOf(::RebuildFolderPermissionsTablesUseCase)
         singleOf(::ShareFolderUseCase)
         singleOf(::FolderShareInteractor)
     }

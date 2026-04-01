@@ -41,6 +41,7 @@ import com.passbolt.mobile.android.database.migrations.Migration19to20
 import com.passbolt.mobile.android.database.migrations.Migration1to2
 import com.passbolt.mobile.android.database.migrations.Migration20to21
 import com.passbolt.mobile.android.database.migrations.Migration21to22
+import com.passbolt.mobile.android.database.migrations.Migration22to23
 import com.passbolt.mobile.android.database.migrations.Migration2to3
 import com.passbolt.mobile.android.database.migrations.Migration3to4
 import com.passbolt.mobile.android.database.migrations.Migration4to5
@@ -599,6 +600,31 @@ class DatabaseMigrationsTest {
     }
 
     @Test
+    fun migrate22To23() {
+        helper
+            .createDatabase(TEST_DB, 22)
+            .apply {
+                execSQL("INSERT INTO Folder VALUES('folderId', 'folderName', 'READ', null, 0)")
+                close()
+            }
+
+        helper
+            .runMigrationsAndValidate(TEST_DB, 23, true, Migration22to23)
+            .apply {
+                val cursor = query("SELECT updateState FROM Folder WHERE folderId = 'folderId'")
+                cursor.moveToFirst()
+                assertThat(cursor.getString(0)).isEqualTo("UPDATED")
+                cursor.close()
+
+                execSQL(
+                    "INSERT INTO Folder VALUES('folderId2', 'folderName2', 'READ', null, 0, 'PENDING')",
+                )
+
+                close()
+            }
+    }
+
+    @Test
     fun migrateAll() {
         helper.createDatabase(TEST_DB, 1).apply {
             close()
@@ -631,6 +657,7 @@ class DatabaseMigrationsTest {
                 Migration19to20,
                 Migration20to21,
                 Migration21to22,
+                Migration22to23,
             ).build()
             .apply {
                 openHelper.writableDatabase

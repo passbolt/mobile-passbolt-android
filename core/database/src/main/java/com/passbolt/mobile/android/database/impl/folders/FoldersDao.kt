@@ -5,6 +5,7 @@ import androidx.room.Query
 import androidx.room.Transaction
 import com.passbolt.mobile.android.database.impl.base.BaseDao
 import com.passbolt.mobile.android.entity.folder.Folder
+import com.passbolt.mobile.android.entity.folder.FolderUpdateState
 import com.passbolt.mobile.android.entity.folder.FolderWithChildItemsCountAndPath
 import com.passbolt.mobile.android.entity.permission.GroupPermission
 import com.passbolt.mobile.android.entity.permission.UserPermission
@@ -161,18 +162,18 @@ interface FoldersDao : BaseDao<Folder> {
 
     @Transaction
     @Query(
-        "WITH RECURSIVE ancestor(folderId, name, permission, parentId, isShared, level) as (" +
-            "SELECT folderId, name, permission, parentId, isShared, 0 " +
+        "WITH RECURSIVE ancestor(folderId, name, permission, parentId, isShared, updateState, level) as (" +
+            "SELECT folderId, name, permission, parentId, isShared, updateState, 0 " +
             "from Folder " +
             "WHERE folderId = :folderId " +
             "" +
             "UNION ALL " +
             "" +
-            "SELECT f.folderId, f.name, f.permission, f.parentId, f.isShared, a.level - 1 " +
+            "SELECT f.folderId, f.name, f.permission, f.parentId, f.isShared, f.updateState, a.level - 1 " +
             "FROM Folder f " +
             "JOIN ancestor a on f.folderId = a.parentId " +
             ") " +
-            "SELECT folderId, name, permission, parentId, isShared " +
+            "SELECT folderId, name, permission, parentId, isShared, updateState " +
             "FROM ancestor a " +
             "ORDER BY level",
     )
@@ -201,4 +202,12 @@ interface FoldersDao : BaseDao<Folder> {
             "where f.folderId = :folderId",
     )
     suspend fun getFolderGroupsPermissions(folderId: String): List<GroupPermission>
+
+    @Transaction
+    @Query("UPDATE Folder SET updateState = :updateState")
+    suspend fun setAllUpdateState(updateState: FolderUpdateState)
+
+    @Transaction
+    @Query("DELETE FROM Folder WHERE updateState = :updateState")
+    suspend fun removeWithUpdateState(updateState: FolderUpdateState)
 }

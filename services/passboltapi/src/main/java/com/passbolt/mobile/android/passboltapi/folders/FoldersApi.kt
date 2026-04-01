@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.passboltapi.folders
 
 import com.passbolt.mobile.android.dto.request.CreateFolderRequestDto
+import com.passbolt.mobile.android.dto.response.BasePaginatedResponse
 import com.passbolt.mobile.android.dto.response.BaseResponse
 import com.passbolt.mobile.android.dto.response.CreateFolderResponseDto
 import com.passbolt.mobile.android.dto.response.FolderResponseDto
@@ -41,6 +42,16 @@ internal interface FoldersApi {
         @Query(QUERY_CONTAIN_PERMISSIONS) containingPermissions: Int? = 1,
     ): BaseResponse<List<FolderResponseDto>>
 
+    @GET(FOLDERS)
+    suspend fun getFoldersPaginated(
+        @Query(QUERY_CONTAIN_PERMISSION) containingPermission: Int? = 1,
+        @Query(QUERY_CONTAIN_PERMISSIONS) containingPermissions: Int? = 1,
+        @Query(QUERY_LIMIT) limit: Int,
+        @Query(QUERY_PAGE) page: Int,
+        @Query(QUERY_SORT) sort: String = "Folders.modified",
+        @Query(QUERY_DIRECTION) direction: String = "desc",
+    ): BasePaginatedResponse<List<FolderResponseDto>>
+
     @POST(FOLDERS)
     suspend fun createFolder(
         @Body createFolderRequestDto: CreateFolderRequestDto,
@@ -53,5 +64,9 @@ internal interface FoldersApi {
 
         private const val QUERY_CONTAIN_PERMISSION = "contain[permission]"
         private const val QUERY_CONTAIN_PERMISSIONS = "contain[permissions.group]"
+        private const val QUERY_LIMIT = "limit"
+        private const val QUERY_PAGE = "page"
+        private const val QUERY_SORT = "sort"
+        private const val QUERY_DIRECTION = "direction"
     }
 }

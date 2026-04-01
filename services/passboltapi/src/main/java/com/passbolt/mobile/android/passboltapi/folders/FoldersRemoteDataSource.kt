@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.passboltapi.folders
 
 import com.passbolt.mobile.android.dto.request.CreateFolderRequestDto
+import com.passbolt.mobile.android.dto.response.BasePaginatedResponse
 import com.passbolt.mobile.android.dto.response.FolderResponseDto
 
 /**
@@ -29,6 +30,15 @@ internal class FoldersRemoteDataSource(
     private val foldersApi: FoldersApi,
 ) : FoldersDataSource {
     override suspend fun getFolders(): List<FolderResponseDto> = foldersApi.getFolders().body
+
+    override suspend fun getFoldersPaginated(
+        limit: Int,
+        page: Int,
+    ): BasePaginatedResponse<List<FolderResponseDto>> =
+        foldersApi.getFoldersPaginated(
+            limit = limit,
+            page = page,
+        )
 
     override suspend fun createFolder(createFolderRequestDto: CreateFolderRequestDto) = foldersApi.createFolder(createFolderRequestDto).body
 }

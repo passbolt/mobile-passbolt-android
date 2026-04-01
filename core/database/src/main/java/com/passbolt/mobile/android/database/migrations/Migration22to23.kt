@@ -1,11 +1,11 @@
-package com.passbolt.mobile.android.core.commonfolders.usecase.db
+package com.passbolt.mobile.android.database.migrations
 
-import org.koin.core.module.Module
-import org.koin.core.module.dsl.singleOf
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 
 /**
  * Passbolt - Open source password manager for teams
- * Copyright (c) 2021 Passbolt SA
+ * Copyright (c) 2026 Passbolt SA
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
  * Public License (AGPL) as published by the Free Software Foundation version 3.
@@ -26,19 +26,12 @@ import org.koin.core.module.dsl.singleOf
  * @since v1.0
  */
 
-internal fun Module.foldersDbModule() {
-    singleOf(::SetLocalFoldersUpdateStateUseCase)
-    singleOf(::UpsertLocalFoldersUseCase)
-    singleOf(::RemoveLocalFoldersWithUpdateStateUseCase)
-    singleOf(::GetLocalResourcesAndFoldersUseCase)
-    singleOf(::GetLocalResourcesAndFoldersPaginatedUseCase)
-    singleOf(::GetLocalSubFoldersForFolderUseCase)
-    singleOf(::GetLocalSubFoldersForFolderPaginatedUseCase)
-    singleOf(::GetLocalSubFolderResourcesFilteredUseCase)
-    singleOf(::GetLocalSubFolderResourcesFilteredPaginatedUseCase)
-    singleOf(::GetLocalFolderDetailsUseCase)
-    singleOf(::GetLocalFolderLocationUseCase)
-    singleOf(::GetLocalFolderPermissionsUseCase)
-    singleOf(::GetLocalParentFolderPermissionsToApplyToNewItemUseCase)
-    singleOf(::AddLocalFolderUseCase)
+@Suppress("MagicNumber")
+object Migration22to23 : Migration(22, 23) {
+    private const val ADD_FOLDER_UPDATE_STATE_COLUMN =
+        "ALTER TABLE Folder ADD COLUMN updateState TEXT NOT NULL DEFAULT 'UPDATED'"
+
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL(ADD_FOLDER_UPDATE_STATE_COLUMN)
+    }
 }
