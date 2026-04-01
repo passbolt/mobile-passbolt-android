@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.core.resources.usecase.db
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
 import com.passbolt.mobile.android.core.accounts.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.database.DatabaseProvider
+import com.passbolt.mobile.android.database.QuerySanitizer
 import com.passbolt.mobile.android.mappers.ResourceModelMapper
 import com.passbolt.mobile.android.ui.HomeDisplayViewModel
 import com.passbolt.mobile.android.ui.ResourceModel
@@ -33,6 +34,7 @@ class GetLocalResourcesWithGroupUseCase(
     private val databaseProvider: DatabaseProvider,
     private val resourceModelMapper: ResourceModelMapper,
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
+    private val querySanitizer: QuerySanitizer,
 ) : AsyncUseCase<GetLocalResourcesWithGroupUseCase.Input, GetLocalResourcesWithGroupUseCase.Output> {
     override suspend fun execute(input: Input): Output {
         val userId = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
@@ -40,7 +42,7 @@ class GetLocalResourcesWithGroupUseCase(
             databaseProvider
                 .get(userId)
                 .resourcesDao()
-                .getResourcesWithGroup(requireNotNull(input.group.activeGroupId), input.slugs, input.searchQuery)
+                .getResourcesWithGroup(requireNotNull(input.group.activeGroupId), input.slugs, querySanitizer.sanitize(input.searchQuery))
 
         return Output(resources.map { resourceModelMapper.map(it) })
     }

@@ -30,6 +30,7 @@ import androidx.paging.map
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
 import com.passbolt.mobile.android.core.accounts.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.database.DatabaseProvider
+import com.passbolt.mobile.android.database.QuerySanitizer
 import com.passbolt.mobile.android.mappers.FolderModelMapper
 import com.passbolt.mobile.android.mappers.ResourceModelMapper
 import com.passbolt.mobile.android.ui.Folder
@@ -43,9 +44,11 @@ class GetLocalResourcesAndFoldersPaginatedUseCase(
     private val folderModelMapper: FolderModelMapper,
     private val resourceModelMapper: ResourceModelMapper,
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
+    private val querySanitizer: QuerySanitizer,
 ) : AsyncUseCase<GetLocalResourcesAndFoldersPaginatedUseCase.Input, GetLocalResourcesAndFoldersPaginatedUseCase.Output> {
     override suspend fun execute(input: Input): Output =
         runCatching {
+            val ftsQuery = querySanitizer.sanitize(input.searchQuery)
             Output.Success(
                 folders =
                     Pager(
@@ -54,7 +57,7 @@ class GetLocalResourcesAndFoldersPaginatedUseCase(
                             databaseProvider
                                 .get(requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount))
                                 .paginatedFoldersDao()
-                                .getFolderDirectChildFolders(input.folder.folderId, input.searchQuery)
+                                .getFolderDirectChildFolders(input.folder.folderId, ftsQuery)
                         },
                     ).flow.map { pagingData ->
                         pagingData.map {
@@ -68,7 +71,7 @@ class GetLocalResourcesAndFoldersPaginatedUseCase(
                             databaseProvider
                                 .get(requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount))
                                 .paginatedResourcesDao()
-                                .getResourcesForFolderWithId(input.folder.folderId, input.slugs, input.searchQuery)
+                                .getResourcesForFolderWithId(input.folder.folderId, input.slugs, ftsQuery)
                         },
                     ).flow.map { pagingData ->
                         pagingData.map {

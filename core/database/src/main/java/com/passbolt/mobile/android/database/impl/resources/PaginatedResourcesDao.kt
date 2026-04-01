@@ -45,28 +45,25 @@ interface PaginatedResourcesDao : BaseDao<Resource> {
             "   SELECT resourceTypeId FROM ResourceType WHERE slug IN (:slugs)" +
             ") " +
             "AND (" +
-            "   :searchQuery IS NULL OR " +
-            "   rm.name LIKE '%' || :searchQuery || '%' OR " +
-            "   rm.username LIKE '%' || :searchQuery || '%' OR " +
-            "   rm.customFieldsKeys LIKE '%' || :searchQuery || '%' OR " +
-            "   EXISTS ( " +
-            "       SELECT 1 FROM ResourceUri ru " +
-            "       WHERE ru.resourceId = r.resourceId " +
-            "       AND ru.uri LIKE '%' || :searchQuery || '%' " +
+            "   :ftsQuery IS NULL OR (" +
+            "   EXISTS (SELECT 1 FROM ResourceMetadataFts WHERE ResourceMetadataFts MATCH :ftsQuery AND docid = rm.rowid) OR " +
+            "   EXISTS (" +
+            "       SELECT 1 FROM ResourceUriFts, ResourceUri " +
+            "       WHERE ResourceUriFts.docid = ResourceUri.rowid AND ResourceUriFts MATCH :ftsQuery " +
+            "       AND ResourceUri.resourceId = r.resourceId" +
             "   ) OR " +
-            "   EXISTS ( " +
-            "       SELECT 1 FROM ResourceAndTagsCrossRef rTCR " +
-            "       INNER JOIN Tag t ON t.id = rTCR.tagId " +
-            "       WHERE rTCR.resourceId = r.resourceId " +
-            "       AND t.slug LIKE '%' || :searchQuery || '%' " +
+            "   EXISTS (" +
+            "       SELECT 1 FROM TagFts, Tag, ResourceAndTagsCrossRef rTCR " +
+            "       WHERE TagFts.docid = Tag.rowid AND TagFts MATCH :ftsQuery " +
+            "       AND Tag.id = rTCR.tagId AND rTCR.resourceId = r.resourceId" +
             "   )" +
-            ") " +
+            ")) " +
             "ORDER BY rm.name " +
             "COLLATE NOCASE ASC",
     )
     fun getAllOrderedByNamePaginated(
         slugs: Set<String>,
-        searchQuery: String?,
+        ftsQuery: String?,
     ): PagingSource<Int, ResourceWithMetadata>
 
     @Transaction
@@ -80,27 +77,24 @@ interface PaginatedResourcesDao : BaseDao<Resource> {
             "   SELECT resourceTypeId FROM ResourceType WHERE slug IN (:slugs)" +
             ") " +
             "AND (" +
-            "   :searchQuery IS NULL OR " +
-            "   rm.name LIKE '%' || :searchQuery || '%' OR " +
-            "   rm.username LIKE '%' || :searchQuery || '%' OR " +
-            "   rm.customFieldsKeys LIKE '%' || :searchQuery || '%' OR " +
-            "   EXISTS ( " +
-            "       SELECT 1 FROM ResourceUri ru " +
-            "       WHERE ru.resourceId = r.resourceId " +
-            "       AND ru.uri LIKE '%' || :searchQuery || '%' " +
+            "   :ftsQuery IS NULL OR (" +
+            "   EXISTS (SELECT 1 FROM ResourceMetadataFts WHERE ResourceMetadataFts MATCH :ftsQuery AND docid = rm.rowid) OR " +
+            "   EXISTS (" +
+            "       SELECT 1 FROM ResourceUriFts, ResourceUri " +
+            "       WHERE ResourceUriFts.docid = ResourceUri.rowid AND ResourceUriFts MATCH :ftsQuery " +
+            "       AND ResourceUri.resourceId = r.resourceId" +
             "   ) OR " +
-            "   EXISTS ( " +
-            "       SELECT 1 FROM ResourceAndTagsCrossRef rTCR " +
-            "       INNER JOIN Tag t ON t.id = rTCR.tagId " +
-            "       WHERE rTCR.resourceId = r.resourceId " +
-            "       AND t.slug LIKE '%' || :searchQuery || '%' " +
+            "   EXISTS (" +
+            "       SELECT 1 FROM TagFts, Tag, ResourceAndTagsCrossRef rTCR " +
+            "       WHERE TagFts.docid = Tag.rowid AND TagFts MATCH :ftsQuery " +
+            "       AND Tag.id = rTCR.tagId AND rTCR.resourceId = r.resourceId" +
             "   )" +
-            ") " +
+            ")) " +
             "ORDER BY r.modified DESC",
     )
     fun getAllOrderedByModifiedDatePaginated(
         slugs: Set<String>,
-        searchQuery: String?,
+        ftsQuery: String?,
     ): PagingSource<Int, ResourceWithMetadata>
 
     @Transaction
@@ -114,27 +108,24 @@ interface PaginatedResourcesDao : BaseDao<Resource> {
             "   SELECT resourceTypeId FROM ResourceType WHERE slug IN (:slugs)" +
             ") " +
             "AND (" +
-            "   :searchQuery IS NULL OR " +
-            "   rm.name LIKE '%' || :searchQuery || '%' OR " +
-            "   rm.username LIKE '%' || :searchQuery || '%' OR " +
-            "   rm.customFieldsKeys LIKE '%' || :searchQuery || '%' OR " +
-            "   EXISTS ( " +
-            "       SELECT 1 FROM ResourceUri ru " +
-            "       WHERE ru.resourceId = r.resourceId " +
-            "       AND ru.uri LIKE '%' || :searchQuery || '%' " +
+            "   :ftsQuery IS NULL OR (" +
+            "   EXISTS (SELECT 1 FROM ResourceMetadataFts WHERE ResourceMetadataFts MATCH :ftsQuery AND docid = rm.rowid) OR " +
+            "   EXISTS (" +
+            "       SELECT 1 FROM ResourceUriFts, ResourceUri " +
+            "       WHERE ResourceUriFts.docid = ResourceUri.rowid AND ResourceUriFts MATCH :ftsQuery " +
+            "       AND ResourceUri.resourceId = r.resourceId" +
             "   ) OR " +
-            "   EXISTS ( " +
-            "       SELECT 1 FROM ResourceAndTagsCrossRef rTCR " +
-            "       INNER JOIN Tag t ON t.id = rTCR.tagId " +
-            "       WHERE rTCR.resourceId = r.resourceId " +
-            "       AND t.slug LIKE '%' || :searchQuery || '%' " +
+            "   EXISTS (" +
+            "       SELECT 1 FROM TagFts, Tag, ResourceAndTagsCrossRef rTCR " +
+            "       WHERE TagFts.docid = Tag.rowid AND TagFts MATCH :ftsQuery " +
+            "       AND Tag.id = rTCR.tagId AND rTCR.resourceId = r.resourceId" +
             "   )" +
-            ") " +
+            ")) " +
             "ORDER BY modified DESC",
     )
     fun getFavouritesPaginated(
         slugs: Set<String>,
-        searchQuery: String?,
+        ftsQuery: String?,
     ): PagingSource<Int, ResourceWithMetadata>
 
     @Transaction
@@ -148,28 +139,25 @@ interface PaginatedResourcesDao : BaseDao<Resource> {
             "   SELECT resourceTypeId FROM ResourceType WHERE slug IN (:slugs)" +
             ")" +
             "AND (" +
-            "   :searchQuery IS NULL OR " +
-            "   rm.name LIKE '%' || :searchQuery || '%' OR " +
-            "   rm.username LIKE '%' || :searchQuery || '%' OR " +
-            "   rm.customFieldsKeys LIKE '%' || :searchQuery || '%' OR " +
-            "   EXISTS ( " +
-            "       SELECT 1 FROM ResourceUri ru " +
-            "       WHERE ru.resourceId = r.resourceId " +
-            "       AND ru.uri LIKE '%' || :searchQuery || '%' " +
+            "   :ftsQuery IS NULL OR (" +
+            "   EXISTS (SELECT 1 FROM ResourceMetadataFts WHERE ResourceMetadataFts MATCH :ftsQuery AND docid = rm.rowid) OR " +
+            "   EXISTS (" +
+            "       SELECT 1 FROM ResourceUriFts, ResourceUri " +
+            "       WHERE ResourceUriFts.docid = ResourceUri.rowid AND ResourceUriFts MATCH :ftsQuery " +
+            "       AND ResourceUri.resourceId = r.resourceId" +
             "   ) OR " +
-            "   EXISTS ( " +
-            "       SELECT 1 FROM ResourceAndTagsCrossRef rTCR " +
-            "       INNER JOIN Tag t ON t.id = rTCR.tagId " +
-            "       WHERE rTCR.resourceId = r.resourceId " +
-            "       AND t.slug LIKE '%' || :searchQuery || '%' " +
+            "   EXISTS (" +
+            "       SELECT 1 FROM TagFts, Tag, ResourceAndTagsCrossRef rTCR " +
+            "       WHERE TagFts.docid = Tag.rowid AND TagFts MATCH :ftsQuery " +
+            "       AND Tag.id = rTCR.tagId AND rTCR.resourceId = r.resourceId" +
             "   )" +
-            ") " +
+            ")) " +
             "ORDER BY modified DESC",
     )
     fun getWithPermissionsPaginated(
         permissions: Set<Permission>,
         slugs: Set<String>,
-        searchQuery: String?,
+        ftsQuery: String?,
     ): PagingSource<Int, ResourceWithMetadata>
 
     @Transaction
@@ -183,28 +171,25 @@ interface PaginatedResourcesDao : BaseDao<Resource> {
             "   SELECT resourceTypeId FROM ResourceType WHERE slug IN (:slugs)" +
             ") " +
             "AND (" +
-            "   :searchQuery IS NULL OR " +
-            "   rm.name LIKE '%' || :searchQuery || '%' OR " +
-            "   rm.username LIKE '%' || :searchQuery || '%' OR " +
-            "   rm.customFieldsKeys LIKE '%' || :searchQuery || '%' OR " +
-            "   EXISTS ( " +
-            "       SELECT 1 FROM ResourceUri ru " +
-            "       WHERE ru.resourceId = r.resourceId " +
-            "       AND ru.uri LIKE '%' || :searchQuery || '%' " +
+            "   :ftsQuery IS NULL OR (" +
+            "   EXISTS (SELECT 1 FROM ResourceMetadataFts WHERE ResourceMetadataFts MATCH :ftsQuery AND docid = rm.rowid) OR " +
+            "   EXISTS (" +
+            "       SELECT 1 FROM ResourceUriFts, ResourceUri " +
+            "       WHERE ResourceUriFts.docid = ResourceUri.rowid AND ResourceUriFts MATCH :ftsQuery " +
+            "       AND ResourceUri.resourceId = r.resourceId" +
             "   ) OR " +
-            "   EXISTS ( " +
-            "       SELECT 1 FROM ResourceAndTagsCrossRef rTCR " +
-            "       INNER JOIN Tag t ON t.id = rTCR.tagId " +
-            "       WHERE rTCR.resourceId = r.resourceId " +
-            "       AND t.slug LIKE '%' || :searchQuery || '%' " +
+            "   EXISTS (" +
+            "       SELECT 1 FROM TagFts, Tag, ResourceAndTagsCrossRef rTCR " +
+            "       WHERE TagFts.docid = Tag.rowid AND TagFts MATCH :ftsQuery " +
+            "       AND Tag.id = rTCR.tagId AND rTCR.resourceId = r.resourceId" +
             "   )" +
-            ") " +
+            ")) " +
             "ORDER BY expiry ASC",
     )
     fun getExpiredResourcesPaginated(
         slugs: Set<String>,
-        searchQuery: String?,
         expiryTimestampMillis: Long = ZonedDateTime.now().toInstant().toEpochMilli(),
+        ftsQuery: String?,
     ): PagingSource<Int, ResourceWithMetadata>
 
     @Transaction
@@ -220,21 +205,19 @@ interface PaginatedResourcesDao : BaseDao<Resource> {
             "   SELECT resourceTypeId FROM ResourceType WHERE slug IN (:slugs)" +
             ") " +
             "AND (" +
-            "   :searchQuery IS NULL OR " +
-            "   rm.name LIKE '%' || :searchQuery || '%' OR " +
-            "   rm.username LIKE '%' || :searchQuery || '%' OR " +
-            "   rm.customFieldsKeys LIKE '%' || :searchQuery || '%' OR " +
-            "   EXISTS ( " +
-            "       SELECT 1 FROM ResourceUri ru " +
-            "       WHERE ru.resourceId = r.resourceId " +
-            "       AND ru.uri LIKE '%' || :searchQuery || '%' " +
+            "   :ftsQuery IS NULL OR (" +
+            "   EXISTS (SELECT 1 FROM ResourceMetadataFts WHERE ResourceMetadataFts MATCH :ftsQuery AND docid = rm.rowid) OR " +
+            "   EXISTS (" +
+            "       SELECT 1 FROM ResourceUriFts, ResourceUri " +
+            "       WHERE ResourceUriFts.docid = ResourceUri.rowid AND ResourceUriFts MATCH :ftsQuery " +
+            "       AND ResourceUri.resourceId = r.resourceId" +
             "   )" +
-            ") ",
+            ")) ",
     )
     fun getResourcesWithTag(
         tagId: String,
         slugs: Set<String>,
-        searchQuery: String?,
+        ftsQuery: String?,
     ): PagingSource<Int, ResourceWithMetadata>
 
     @Transaction
@@ -250,21 +233,19 @@ interface PaginatedResourcesDao : BaseDao<Resource> {
             "   SELECT resourceTypeId FROM ResourceType WHERE slug IN (:slugs)" +
             ") " +
             "AND (" +
-            "   :searchQuery IS NULL OR " +
-            "   rm.name LIKE '%' || :searchQuery || '%' OR " +
-            "   rm.username LIKE '%' || :searchQuery || '%' OR " +
-            "   rm.customFieldsKeys LIKE '%' || :searchQuery || '%' OR " +
-            "   EXISTS ( " +
-            "       SELECT 1 FROM ResourceUri ru " +
-            "       WHERE ru.resourceId = r.resourceId " +
-            "       AND ru.uri LIKE '%' || :searchQuery || '%' " +
+            "   :ftsQuery IS NULL OR (" +
+            "   EXISTS (SELECT 1 FROM ResourceMetadataFts WHERE ResourceMetadataFts MATCH :ftsQuery AND docid = rm.rowid) OR " +
+            "   EXISTS (" +
+            "       SELECT 1 FROM ResourceUriFts, ResourceUri " +
+            "       WHERE ResourceUriFts.docid = ResourceUri.rowid AND ResourceUriFts MATCH :ftsQuery " +
+            "       AND ResourceUri.resourceId = r.resourceId" +
             "   )" +
-            ") ",
+            ")) ",
     )
     fun getResourcesWithGroup(
         groupId: String,
         slugs: Set<String>,
-        searchQuery: String?,
+        ftsQuery: String?,
     ): PagingSource<Int, ResourceWithMetadata>
 
     @Transaction
@@ -278,27 +259,24 @@ interface PaginatedResourcesDao : BaseDao<Resource> {
             "   SELECT resourceTypeId FROM ResourceType WHERE slug IN (:slugs)" +
             ") " +
             "AND ( " +
-            "   :searchQuery IS NULL OR " +
-            "   rm.name LIKE '%' || :searchQuery || '%' OR " +
-            "   rm.username LIKE '%' || :searchQuery || '%' OR " +
-            "   rm.customFieldsKeys LIKE '%' || :searchQuery || '%' OR " +
-            "   EXISTS ( " +
-            "       SELECT 1 FROM ResourceUri ru " +
-            "       WHERE ru.resourceId = r.resourceId " +
-            "       AND ru.uri LIKE '%' || :searchQuery || '%' " +
+            "   :ftsQuery IS NULL OR (" +
+            "   EXISTS (SELECT 1 FROM ResourceMetadataFts WHERE ResourceMetadataFts MATCH :ftsQuery AND docid = rm.rowid) OR " +
+            "   EXISTS (" +
+            "       SELECT 1 FROM ResourceUriFts, ResourceUri " +
+            "       WHERE ResourceUriFts.docid = ResourceUri.rowid AND ResourceUriFts MATCH :ftsQuery " +
+            "       AND ResourceUri.resourceId = r.resourceId" +
             "   ) OR " +
-            "   EXISTS ( " +
-            "       SELECT 1 FROM ResourceAndTagsCrossRef rTCR " +
-            "       INNER JOIN Tag t ON t.id = rTCR.tagId " +
-            "       WHERE rTCR.resourceId = r.resourceId " +
-            "       AND t.slug LIKE '%' || :searchQuery || '%' " +
+            "   EXISTS (" +
+            "       SELECT 1 FROM TagFts, Tag, ResourceAndTagsCrossRef rTCR " +
+            "       WHERE TagFts.docid = Tag.rowid AND TagFts MATCH :ftsQuery " +
+            "       AND Tag.id = rTCR.tagId AND rTCR.resourceId = r.resourceId" +
             "   )" +
-            ")",
+            "))",
     )
     fun getResourcesForFolderWithId(
         folderId: String?,
         slugs: Set<String>,
-        searchQuery: String?,
+        ftsQuery: String?,
     ): PagingSource<Int, ResourceWithMetadata>
 
     @Transaction
@@ -313,27 +291,24 @@ interface PaginatedResourcesDao : BaseDao<Resource> {
             "   SELECT resourceTypeId FROM ResourceType WHERE slug IN (:slugs)" +
             ") " +
             "AND (" +
-            "   :searchQuery IS NULL OR " +
-            "   rm.name LIKE '%' || :searchQuery || '%' OR " +
-            "   rm.username LIKE '%' || :searchQuery || '%' OR " +
-            "   rm.customFieldsKeys LIKE '%' || :searchQuery || '%' OR " +
-            "   EXISTS ( " +
-            "       SELECT 1 FROM ResourceUri ru " +
-            "       WHERE ru.resourceId = r.resourceId " +
-            "       AND ru.uri LIKE '%' || :searchQuery || '%' " +
+            "   :ftsQuery IS NULL OR (" +
+            "   EXISTS (SELECT 1 FROM ResourceMetadataFts WHERE ResourceMetadataFts MATCH :ftsQuery AND docid = rm.rowid) OR " +
+            "   EXISTS (" +
+            "       SELECT 1 FROM ResourceUriFts, ResourceUri " +
+            "       WHERE ResourceUriFts.docid = ResourceUri.rowid AND ResourceUriFts MATCH :ftsQuery " +
+            "       AND ResourceUri.resourceId = r.resourceId" +
             "   ) OR " +
-            "   EXISTS ( " +
-            "       SELECT 1 FROM ResourceAndTagsCrossRef rTCR " +
-            "       INNER JOIN Tag t ON t.id = rTCR.tagId " +
-            "       WHERE rTCR.resourceId = r.resourceId " +
-            "       AND t.slug LIKE '%' || :searchQuery || '%' " +
+            "   EXISTS (" +
+            "       SELECT 1 FROM TagFts, Tag, ResourceAndTagsCrossRef rTCR " +
+            "       WHERE TagFts.docid = Tag.rowid AND TagFts MATCH :ftsQuery " +
+            "       AND Tag.id = rTCR.tagId AND rTCR.resourceId = r.resourceId" +
             "   )" +
-            ") " +
+            ")) " +
             "ORDER BY modified DESC",
     )
     fun getFilteredForChildFolders(
-        searchQuery: String,
         inOneOfFolders: List<String>,
         slugs: Set<String>,
+        ftsQuery: String?,
     ): PagingSource<Int, ResourceWithMetadata>
 }

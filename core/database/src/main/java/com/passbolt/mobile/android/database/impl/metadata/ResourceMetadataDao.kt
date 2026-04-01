@@ -29,6 +29,7 @@ import com.passbolt.mobile.android.entity.resource.ResourceMetadata
  * @since v1.0
  */
 @Dao
+@Suppress("LongParameterList")
 interface ResourceMetadataDao : BaseDao<ResourceMetadata> {
     @Transaction
     @Query(
