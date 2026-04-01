@@ -44,8 +44,11 @@ interface PaginatedGroupsDao : BaseDao<UsersGroup> {
             ")" +
             ") AS childItemsCount " +
             "FROM UsersGroup g " +
-            "WHERE (:searchQuery IS NULL OR name LIKE '%' || :searchQuery || '%') " +
+            "WHERE :ftsQuery IS NULL OR " +
+            "   EXISTS (" +
+            "       SELECT 1 FROM UsersGroupFts WHERE UsersGroupFts MATCH :ftsQuery AND UsersGroupFts.docid = g.rowid" +
+            "   ) " +
             "ORDER BY name ASC",
     )
-    fun getAllWithSharedItemsCount(searchQuery: String?): PagingSource<Int, UsersGroupWithChildItemsCount>
+    fun getAllWithSharedItemsCount(ftsQuery: String?): PagingSource<Int, UsersGroupWithChildItemsCount>
 }

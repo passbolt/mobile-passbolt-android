@@ -8,6 +8,7 @@ import com.passbolt.mobile.android.common.usecase.AsyncUseCase
 import com.passbolt.mobile.android.core.accounts.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.core.tags.usecase.db.GetLocalTagsPaginatedUseCase.Output
 import com.passbolt.mobile.android.database.DatabaseProvider
+import com.passbolt.mobile.android.database.QuerySanitizer
 import com.passbolt.mobile.android.mappers.TagsModelMapper
 import com.passbolt.mobile.android.ui.TagWithCount
 import kotlinx.coroutines.flow.Flow
@@ -39,6 +40,7 @@ class GetLocalTagsPaginatedUseCase(
     private val databaseProvider: DatabaseProvider,
     private val tagModelMapper: TagsModelMapper,
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
+    private val querySanitizer: QuerySanitizer,
 ) : AsyncUseCase<GetLocalTagsPaginatedUseCase.Input, Output> {
     override suspend fun execute(input: Input): Output =
         Output(
@@ -48,7 +50,7 @@ class GetLocalTagsPaginatedUseCase(
                     databaseProvider
                         .get(requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount))
                         .paginatedTagsDao()
-                        .getAllWithTaggedItemsCount(input.searchQuery)
+                        .getAllWithTaggedItemsCount(querySanitizer.sanitize(input.searchQuery))
                 },
             ).flow.map { pagingData ->
                 pagingData.map {

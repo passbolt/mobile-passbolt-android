@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.core.commonfolders.usecase.db
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
 import com.passbolt.mobile.android.core.accounts.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.database.DatabaseProvider
+import com.passbolt.mobile.android.database.QuerySanitizer
 import com.passbolt.mobile.android.mappers.ResourceModelMapper
 import com.passbolt.mobile.android.ui.ResourceModel
 
@@ -32,6 +33,7 @@ class GetLocalSubFolderResourcesFilteredUseCase(
     private val databaseProvider: DatabaseProvider,
     private val resourceModelMapper: ResourceModelMapper,
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
+    private val querySanitizer: QuerySanitizer,
 ) : AsyncUseCase<GetLocalSubFolderResourcesFilteredUseCase.Input, GetLocalSubFolderResourcesFilteredUseCase.Output> {
     override suspend fun execute(input: Input): Output {
         val userId = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
@@ -39,7 +41,7 @@ class GetLocalSubFolderResourcesFilteredUseCase(
             databaseProvider
                 .get(userId)
                 .resourcesDao()
-                .getFilteredForChildFolders(input.containingQuery, input.containingFolders, input.slugs)
+                .getFilteredForChildFolders(input.containingFolders, input.slugs, querySanitizer.sanitize(input.containingQuery))
 
         return Output(resources.map { resourceModelMapper.map(it) })
     }

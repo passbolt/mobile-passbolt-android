@@ -7,6 +7,7 @@ import androidx.paging.map
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
 import com.passbolt.mobile.android.core.accounts.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.database.DatabaseProvider
+import com.passbolt.mobile.android.database.QuerySanitizer
 import com.passbolt.mobile.android.mappers.ResourceModelMapper
 import com.passbolt.mobile.android.ui.HomeDisplayViewModel
 import com.passbolt.mobile.android.ui.ResourceModel
@@ -39,6 +40,7 @@ class GetLocalResourcesWithGroupPaginatedUseCase(
     private val databaseProvider: DatabaseProvider,
     private val resourceModelMapper: ResourceModelMapper,
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
+    private val querySanitizer: QuerySanitizer,
 ) : AsyncUseCase<GetLocalResourcesWithGroupPaginatedUseCase.Input, GetLocalResourcesWithGroupPaginatedUseCase.Output> {
     override suspend fun execute(input: Input): Output =
         Output(
@@ -48,7 +50,11 @@ class GetLocalResourcesWithGroupPaginatedUseCase(
                     databaseProvider
                         .get(requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount))
                         .paginatedResourcesDao()
-                        .getResourcesWithGroup(requireNotNull(input.group.activeGroupId), input.slugs, input.searchQuery)
+                        .getResourcesWithGroup(
+                            requireNotNull(input.group.activeGroupId),
+                            input.slugs,
+                            querySanitizer.sanitize(input.searchQuery),
+                        )
                 },
             ).flow.map { pagingData ->
                 pagingData.map {

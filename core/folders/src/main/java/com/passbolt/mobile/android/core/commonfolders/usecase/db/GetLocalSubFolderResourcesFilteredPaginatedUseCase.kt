@@ -7,6 +7,7 @@ import androidx.paging.map
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
 import com.passbolt.mobile.android.core.accounts.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.database.DatabaseProvider
+import com.passbolt.mobile.android.database.QuerySanitizer
 import com.passbolt.mobile.android.mappers.ResourceModelMapper
 import com.passbolt.mobile.android.ui.ResourceModel
 import kotlinx.coroutines.flow.Flow
@@ -38,6 +39,7 @@ class GetLocalSubFolderResourcesFilteredPaginatedUseCase(
     private val databaseProvider: DatabaseProvider,
     private val resourceModelMapper: ResourceModelMapper,
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
+    private val querySanitizer: QuerySanitizer,
 ) : AsyncUseCase<GetLocalSubFolderResourcesFilteredPaginatedUseCase.Input, GetLocalSubFolderResourcesFilteredPaginatedUseCase.Output> {
     override suspend fun execute(input: Input): Output =
         Output(
@@ -47,7 +49,7 @@ class GetLocalSubFolderResourcesFilteredPaginatedUseCase(
                     databaseProvider
                         .get(requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount))
                         .paginatedResourcesDao()
-                        .getFilteredForChildFolders(input.containingQuery, input.containingFolders, input.slugs)
+                        .getFilteredForChildFolders(input.containingFolders, input.slugs, querySanitizer.sanitize(input.containingQuery))
                 },
             ).flow.map { pagingData ->
                 pagingData.map {

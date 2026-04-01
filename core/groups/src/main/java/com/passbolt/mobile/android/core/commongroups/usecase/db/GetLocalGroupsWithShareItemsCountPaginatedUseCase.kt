@@ -7,6 +7,7 @@ import androidx.paging.map
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
 import com.passbolt.mobile.android.core.accounts.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.database.DatabaseProvider
+import com.passbolt.mobile.android.database.QuerySanitizer
 import com.passbolt.mobile.android.mappers.GroupsModelMapper
 import com.passbolt.mobile.android.ui.GroupWithCount
 import kotlinx.coroutines.flow.Flow
@@ -38,6 +39,7 @@ class GetLocalGroupsWithShareItemsCountPaginatedUseCase(
     private val databaseProvider: DatabaseProvider,
     private val groupModelMapper: GroupsModelMapper,
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
+    private val querySanitizer: QuerySanitizer,
 ) : AsyncUseCase<GetLocalGroupsWithShareItemsCountPaginatedUseCase.Input, GetLocalGroupsWithShareItemsCountPaginatedUseCase.Output> {
     override suspend fun execute(input: Input): Output =
         Output(
@@ -47,7 +49,7 @@ class GetLocalGroupsWithShareItemsCountPaginatedUseCase(
                     databaseProvider
                         .get(requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount))
                         .paginatedGroupsDao()
-                        .getAllWithSharedItemsCount(input.searchQuery)
+                        .getAllWithSharedItemsCount(querySanitizer.sanitize(input.searchQuery))
                 },
             ).flow.map { pagingData ->
                 pagingData.map {

@@ -26,18 +26,23 @@ import com.passbolt.mobile.android.database.impl.usersandgroupscrossref.UsersAnd
 import com.passbolt.mobile.android.database.typeconverters.Converters
 import com.passbolt.mobile.android.entity.folder.Folder
 import com.passbolt.mobile.android.entity.folder.FolderAndUsersCrossRef
+import com.passbolt.mobile.android.entity.folder.FolderFts
 import com.passbolt.mobile.android.entity.group.FolderAndGroupsCrossRef
 import com.passbolt.mobile.android.entity.group.ResourceAndGroupsCrossRef
 import com.passbolt.mobile.android.entity.group.UsersAndGroupCrossRef
 import com.passbolt.mobile.android.entity.group.UsersGroup
+import com.passbolt.mobile.android.entity.group.UsersGroupFts
 import com.passbolt.mobile.android.entity.metadata.MetadataKey
 import com.passbolt.mobile.android.entity.metadata.MetadataPrivateKey
 import com.passbolt.mobile.android.entity.resource.Resource
 import com.passbolt.mobile.android.entity.resource.ResourceAndTagsCrossRef
 import com.passbolt.mobile.android.entity.resource.ResourceMetadata
+import com.passbolt.mobile.android.entity.resource.ResourceMetadataFts
 import com.passbolt.mobile.android.entity.resource.ResourceType
 import com.passbolt.mobile.android.entity.resource.ResourceUri
+import com.passbolt.mobile.android.entity.resource.ResourceUriFts
 import com.passbolt.mobile.android.entity.resource.Tag
+import com.passbolt.mobile.android.entity.resource.TagFts
 import com.passbolt.mobile.android.entity.user.ResourceAndUsersCrossRef
 import com.passbolt.mobile.android.entity.user.User
 
@@ -79,11 +84,16 @@ import com.passbolt.mobile.android.entity.user.User
         FolderAndUsersCrossRef::class,
         FolderAndGroupsCrossRef::class,
         ResourceMetadata::class,
+        ResourceMetadataFts::class,
         ResourceUri::class,
+        ResourceUriFts::class,
+        TagFts::class,
+        FolderFts::class,
+        UsersGroupFts::class,
         MetadataKey::class,
         MetadataPrivateKey::class,
     ],
-    version = 21,
+    version = 22,
 )
 @TypeConverters(Converters::class)
 abstract class ResourceDatabase : RoomDatabase() {

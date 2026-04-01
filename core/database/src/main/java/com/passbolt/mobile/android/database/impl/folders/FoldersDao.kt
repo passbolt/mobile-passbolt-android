@@ -60,10 +60,12 @@ interface FoldersDao : BaseDao<Folder> {
             "   (SELECT name FROM ancestor a order by a.level)" +
             ") as path " +
             "FROM Folder f " +
-            "WHERE :searchQuery IS NULL OR " +
-            "f.name LIKE '%' || :searchQuery || '%'",
+            "WHERE :ftsQuery IS NULL OR " +
+            "   EXISTS (" +
+            "       SELECT 1 FROM FolderFts WHERE FolderFts MATCH :ftsQuery AND FolderFts.docid = f.rowid" +
+            "   )",
     )
-    suspend fun getAllFolders(searchQuery: String?): List<FolderWithChildItemsCountAndPath>
+    suspend fun getAllFolders(ftsQuery: String?): List<FolderWithChildItemsCountAndPath>
 
     @Transaction
     @Query(
@@ -136,13 +138,17 @@ interface FoldersDao : BaseDao<Folder> {
             "" +
             "FROM ancestor a " +
             "WHERE level > 0 " +
-            "AND (:searchQuery IS NULL OR " +
-            "a.name LIKE '%' || :searchQuery || '%') " +
+            "AND (:ftsQuery IS NULL OR " +
+            "   a.folderId IN (" +
+            "       SELECT Folder.folderId FROM FolderFts, Folder " +
+            "       WHERE FolderFts.docid = Folder.rowid AND FolderFts MATCH :ftsQuery" +
+            "   )" +
+            ") " +
             "ORDER BY level",
     )
     suspend fun getFolderAllChildFoldersRecursively(
         folderId: String,
-        searchQuery: String?,
+        ftsQuery: String?,
     ): List<FolderWithChildItemsCountAndPath>
 
     @Transaction

@@ -61,13 +61,15 @@ interface PaginatedFoldersDao : BaseDao<Folder> {
             "FROM folder k  " +
             "WHERE k.parentId IS :folderId " +
             "AND ( " +
-            "   :searchQuery IS NULL OR " +
-            "   k.name LIKE '%' || :searchQuery || '%' " +
+            "   :ftsQuery IS NULL OR " +
+            "       EXISTS (" +
+            "           SELECT 1 FROM FolderFts WHERE FolderFts MATCH :ftsQuery AND FolderFts.docid = k.rowid" +
+            "       )" +
             ")",
     )
     fun getFolderDirectChildFolders(
         folderId: String?,
-        searchQuery: String?,
+        ftsQuery: String?,
     ): PagingSource<Int, FolderWithChildItemsCountAndPath>
 
     @Transaction
@@ -97,10 +99,12 @@ interface PaginatedFoldersDao : BaseDao<Folder> {
             "   (SELECT name FROM ancestor a order by a.level)" +
             ") as path " +
             "FROM Folder f " +
-            "WHERE :searchQuery IS NULL OR " +
-            "f.name LIKE '%' || :searchQuery || '%'",
+            "WHERE :ftsQuery IS NULL OR " +
+            "   EXISTS (" +
+            "       SELECT 1 FROM FolderFts WHERE FolderFts MATCH :ftsQuery AND FolderFts.docid = f.rowid" +
+            "   )",
     )
-    fun getAllFolders(searchQuery: String?): PagingSource<Int, FolderWithChildItemsCountAndPath>
+    fun getAllFolders(ftsQuery: String?): PagingSource<Int, FolderWithChildItemsCountAndPath>
 
     @Transaction
     @Query(
@@ -142,12 +146,16 @@ interface PaginatedFoldersDao : BaseDao<Folder> {
             "" +
             "FROM ancestor a " +
             "WHERE level > 0 " +
-            "AND (:searchQuery IS NULL OR " +
-            "a.name LIKE '%' || :searchQuery || '%') " +
+            "AND (:ftsQuery IS NULL OR " +
+            "   a.folderId IN (" +
+            "       SELECT Folder.folderId FROM FolderFts, Folder " +
+            "       WHERE FolderFts.docid = Folder.rowid AND FolderFts MATCH :ftsQuery" +
+            "   )" +
+            ") " +
             "ORDER BY level",
     )
     fun getFolderAllChildFoldersRecursively(
         folderId: String,
-        searchQuery: String?,
+        ftsQuery: String?,
     ): PagingSource<Int, FolderWithChildItemsCountAndPath>
 }
