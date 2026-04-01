@@ -484,6 +484,7 @@ class AuthViewModel(
                     }
             if (potentialPassphrase is Passphrase) {
                 passphraseMemoryCache.set(potentialPassphrase.passphrase)
+                updateViewState { copy(passphrase = potentialPassphrase.passphrase) }
                 when (authConfig) {
                     is AuthConfig.RefreshPassphrase,
                     is AuthConfig.Mfa,
