@@ -3,8 +3,7 @@ package com.passbolt.mobile.android.core.commonfolders.usecase.db
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
 import com.passbolt.mobile.android.core.accounts.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.database.DatabaseProvider
-import com.passbolt.mobile.android.mappers.FolderModelMapper
-import com.passbolt.mobile.android.ui.FolderModel
+import com.passbolt.mobile.android.entity.folder.FolderUpdateState
 
 /**
  * Passbolt - Open source password manager for teams
@@ -28,22 +27,19 @@ import com.passbolt.mobile.android.ui.FolderModel
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class AddLocalFoldersUseCase(
+class RemoveLocalFoldersWithUpdateStateUseCase(
     private val databaseProvider: DatabaseProvider,
-    private val folderModelMapper: FolderModelMapper,
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
-) : AsyncUseCase<AddLocalFoldersUseCase.Input, Unit> {
+) : AsyncUseCase<RemoveLocalFoldersWithUpdateStateUseCase.Input, Unit> {
     override suspend fun execute(input: Input) {
-        val currentAccount = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
+        val userId = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
         databaseProvider
-            .get(currentAccount)
+            .get(userId)
             .foldersDao()
-            .insertAll(
-                input.folders.map { folderModelMapper.map(it) },
-            )
+            .removeWithUpdateState(input.updateState)
     }
 
     data class Input(
-        val folders: List<FolderModel>,
+        val updateState: FolderUpdateState,
     )
 }

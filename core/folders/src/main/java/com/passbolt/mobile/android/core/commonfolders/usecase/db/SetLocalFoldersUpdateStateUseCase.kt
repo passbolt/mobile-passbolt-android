@@ -1,9 +1,9 @@
-package com.passbolt.mobile.android.core.commonfolders.usecase
+package com.passbolt.mobile.android.core.commonfolders.usecase.db
 
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
-import com.passbolt.mobile.android.common.usecase.UserIdInput
-import com.passbolt.mobile.android.core.accounts.usecase.SelectedAccountUseCase
-import com.passbolt.mobile.android.ui.FolderModelWithAttributes
+import com.passbolt.mobile.android.core.accounts.usecase.selectedaccount.GetSelectedAccountUseCase
+import com.passbolt.mobile.android.database.DatabaseProvider
+import com.passbolt.mobile.android.entity.folder.FolderUpdateState
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,19 +27,19 @@ import com.passbolt.mobile.android.ui.FolderModelWithAttributes
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class RebuildFolderPermissionsTablesUseCase(
-    private val removeLocalFolderPermissionsUseCase: RemoveLocalFolderPermissionsUseCase,
-    private val addLocalFolderPermissionsUseCase: AddLocalFolderPermissionsUseCase,
-) : AsyncUseCase<RebuildFolderPermissionsTablesUseCase.Input, Unit>,
-    SelectedAccountUseCase {
+class SetLocalFoldersUpdateStateUseCase(
+    private val databaseProvider: DatabaseProvider,
+    private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
+) : AsyncUseCase<SetLocalFoldersUpdateStateUseCase.Input, Unit> {
     override suspend fun execute(input: Input) {
-        removeLocalFolderPermissionsUseCase.execute(UserIdInput(selectedAccountId))
-        addLocalFolderPermissionsUseCase.execute(
-            AddLocalFolderPermissionsUseCase.Input(input.foldersWithAttributes),
-        )
+        val userId = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
+        databaseProvider
+            .get(userId)
+            .foldersDao()
+            .setAllUpdateState(input.updateState)
     }
 
     data class Input(
-        val foldersWithAttributes: List<FolderModelWithAttributes>,
+        val updateState: FolderUpdateState,
     )
 }

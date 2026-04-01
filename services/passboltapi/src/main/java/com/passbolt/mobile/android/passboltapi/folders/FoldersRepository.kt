@@ -35,6 +35,13 @@ class FoldersRepository(
             foldersDataSource.getFolders()
         }
 
+    suspend fun getFoldersPaginated(
+        limit: Int,
+        page: Int,
+    ) = callWithHandler(responseHandler) {
+        foldersDataSource.getFoldersPaginated(limit, page)
+    }
+
     suspend fun createFolder(createFolderRequestDto: CreateFolderRequestDto) =
         callWithHandler(responseHandler) {
             foldersDataSource.createFolder(createFolderRequestDto)
