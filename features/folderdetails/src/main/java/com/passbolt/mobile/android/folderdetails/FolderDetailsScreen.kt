@@ -39,7 +39,6 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -68,7 +67,6 @@ import com.passbolt.mobile.android.core.ui.topbar.BackNavigationIcon
 import com.passbolt.mobile.android.core.ui.topbar.TitleAppBar
 import com.passbolt.mobile.android.folderdetails.FolderDetailsIntent.GoBack
 import com.passbolt.mobile.android.folderdetails.FolderDetailsIntent.GoToLocationDetails
-import com.passbolt.mobile.android.folderdetails.FolderDetailsIntent.Initialize
 import com.passbolt.mobile.android.folderdetails.FolderDetailsIntent.SharedWithClick
 import com.passbolt.mobile.android.folderdetails.FolderDetailsSideEffect.NavigateToFolderLocation
 import com.passbolt.mobile.android.folderdetails.FolderDetailsSideEffect.NavigateToFolderPermissions
@@ -80,6 +78,7 @@ import com.passbolt.mobile.android.ui.PermissionsItem
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
+import org.koin.core.parameter.parametersOf
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
@@ -87,17 +86,13 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
 internal fun FolderDetailsScreen(
     folderId: String,
     modifier: Modifier = Modifier,
-    viewModel: FolderDetailsViewModel = koinViewModel(),
+    viewModel: FolderDetailsViewModel = koinViewModel(parameters = { parametersOf(folderId) }),
     navigator: AppNavigator = koinInject(),
 ) {
     val context = LocalContext.current
     val state = viewModel.viewState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
-
-    LaunchedEffect(folderId) {
-        viewModel.onIntent(Initialize(folderId))
-    }
 
     FolderDetailsScreen(
         state = state.value,

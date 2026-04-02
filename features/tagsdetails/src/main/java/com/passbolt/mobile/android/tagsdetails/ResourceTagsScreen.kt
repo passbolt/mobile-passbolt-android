@@ -69,7 +69,6 @@ import com.passbolt.mobile.android.core.ui.snackbar.ColoredSnackbarVisuals
 import com.passbolt.mobile.android.core.ui.topbar.BackNavigationIcon
 import com.passbolt.mobile.android.core.ui.topbar.TitleAppBar
 import com.passbolt.mobile.android.tagsdetails.ResourceTagsIntent.GoBack
-import com.passbolt.mobile.android.tagsdetails.ResourceTagsIntent.Initialize
 import com.passbolt.mobile.android.tagsdetails.ResourceTagsSideEffect.NavigateBack
 import com.passbolt.mobile.android.tagsdetails.ResourceTagsSideEffect.NavigateToHome
 import com.passbolt.mobile.android.tagsdetails.ResourceTagsSideEffect.ShowContentNotAvailable
@@ -78,6 +77,7 @@ import com.passbolt.mobile.android.ui.isFavourite
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
+import org.koin.core.parameter.parametersOf
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
@@ -86,16 +86,12 @@ internal fun ResourceTagsScreen(
     resourceId: String,
     modifier: Modifier = Modifier,
     navigator: AppNavigator = koinInject(),
-    viewModel: ResourceTagsViewModel = koinViewModel(),
+    viewModel: ResourceTagsViewModel = koinViewModel(parameters = { parametersOf(resourceId) }),
 ) {
     val context = LocalContext.current
     val state by viewModel.viewState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
-
-    LaunchedEffect(resourceId) {
-        viewModel.onIntent(Initialize(resourceId))
-    }
 
     ResourceTagsContent(
         state = state,

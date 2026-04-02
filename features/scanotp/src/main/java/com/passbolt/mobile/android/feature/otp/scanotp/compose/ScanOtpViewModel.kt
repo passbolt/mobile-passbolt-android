@@ -21,6 +21,7 @@ import com.passbolt.mobile.android.feature.otp.scanotp.compose.ScanOtpSideEffect
 import com.passbolt.mobile.android.feature.otp.scanotp.compose.ScanOtpState.TooltipMessage
 import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpQrParser
 import com.passbolt.mobile.android.ui.OtpParseResult
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -28,6 +29,8 @@ internal class ScanOtpViewModel(
     private val otpQrParser: OtpQrParser,
     private val cameraInformationProvider: CameraInformationProvider,
 ) : SideEffectViewModel<ScanOtpState, ScanOtpSideEffect>(ScanOtpState()) {
+    private var qrScanningJob: Job? = null
+
     fun onIntent(intent: ScanOtpIntent) {
         when (intent) {
             is Initialize -> initialize(intent)
@@ -58,10 +61,12 @@ internal class ScanOtpViewModel(
     }
 
     private fun initQrScanning(intent: Initialize) {
-        viewModelScope.launch {
-            launch { otpQrParser.startParsing(intent.barcodeScanFlow) }
-            launch { otpQrParser.parseResultFlow.collect { processParseResult(it) } }
-        }
+        qrScanningJob?.cancel()
+        qrScanningJob =
+            viewModelScope.launch {
+                launch { otpQrParser.startParsing(intent.barcodeScanFlow) }
+                launch { otpQrParser.parseResultFlow.collect { processParseResult(it) } }
+            }
     }
 
     private fun processParseResult(parserResult: OtpParseResult) {

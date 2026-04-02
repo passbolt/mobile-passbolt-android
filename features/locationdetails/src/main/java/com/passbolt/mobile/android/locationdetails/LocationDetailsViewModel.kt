@@ -35,7 +35,6 @@ import com.passbolt.mobile.android.core.compose.SideEffectViewModel
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUseCase
 import com.passbolt.mobile.android.locationdetails.LocationDetailsIntent.GoBack
-import com.passbolt.mobile.android.locationdetails.LocationDetailsIntent.Initialize
 import com.passbolt.mobile.android.locationdetails.LocationDetailsIntent.ToggleExpanded
 import com.passbolt.mobile.android.locationdetails.LocationDetailsSideEffect.NavigateToHome
 import com.passbolt.mobile.android.locationdetails.LocationDetailsSideEffect.NavigateUp
@@ -52,17 +51,27 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 internal class LocationDetailsViewModel(
+    coroutineLaunchContext: CoroutineLaunchContext,
+    private val locationItem: LocationItem,
+    private val itemId: String,
     private val getLocalFolderDetailsUseCase: GetLocalFolderDetailsUseCase,
     private val getLocalFolderLocationUseCase: GetLocalFolderLocationUseCase,
     private val getLocalResourceUseCase: GetLocalResourceUseCase,
-    private val coroutineLaunchContext: CoroutineLaunchContext,
     private val expandableFolderTreeCreator: ExpandableFolderTreeCreator,
     private val dataRefreshTrackingFlow: DataRefreshTrackingFlow,
 ) : SideEffectViewModel<LocationDetailsState, LocationDetailsSideEffect>(LocationDetailsState()) {
+    init {
+        viewModelScope.launch(coroutineLaunchContext.io) {
+            loadItem(locationItem, itemId)
+        }
+        viewModelScope.launch(coroutineLaunchContext.io) {
+            synchronizeWithDataRefresh(locationItem, itemId)
+        }
+    }
+
     fun onIntent(intent: LocationDetailsIntent) {
         when (intent) {
             GoBack -> emitSideEffect(NavigateUp)
-            is Initialize -> initialize(intent.locationItem, intent.itemId)
             is ToggleExpanded -> {
                 if (viewState.value.expandedItemIds.contains(intent.itemId)) {
                     collapseFolderItem(intent.itemId)
@@ -70,18 +79,6 @@ internal class LocationDetailsViewModel(
                     expandFolderItem(intent.itemId)
                 }
             }
-        }
-    }
-
-    private fun initialize(
-        locationItem: LocationItem,
-        itemId: String,
-    ) {
-        viewModelScope.launch(coroutineLaunchContext.io) {
-            loadItem(locationItem, itemId)
-        }
-        viewModelScope.launch(coroutineLaunchContext.io) {
-            synchronizeWithDataRefresh(locationItem, itemId)
         }
     }
 

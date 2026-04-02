@@ -24,10 +24,6 @@
 package com.passbolt.mobile.android.folderdetails
 
 sealed class FolderDetailsIntent {
-    data class Initialize(
-        val folderId: String,
-    ) : FolderDetailsIntent()
-
     data object GoBack : FolderDetailsIntent()
 
     data object GoToPermissionDetails : FolderDetailsIntent()

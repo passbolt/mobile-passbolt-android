@@ -113,6 +113,7 @@ import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
 import com.passbolt.mobile.android.ui.isExpired
 import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
@@ -155,6 +156,9 @@ class ResourceDetailsViewModel(
                 emitSideEffect(NavigateBack)
             }
         }
+
+    private var dataRefreshJob: Job? = null
+    private var otpTimerJob: Job? = null
 
     private val resource: ResourceModel
         get() = viewState.value.requiredResourceModel
@@ -200,13 +204,17 @@ class ResourceDetailsViewModel(
             loadResourceDetails()
         }
 
-        viewModelScope.launch(coroutineLaunchContext.io) {
-            synchronizeWithDataRefresh()
-        }
+        dataRefreshJob?.cancel()
+        dataRefreshJob =
+            viewModelScope.launch(coroutineLaunchContext.io) {
+                synchronizeWithDataRefresh()
+            }
 
-        viewModelScope.launch(coroutineLaunchContext.io) {
-            updateOtpCounterTime()
-        }
+        otpTimerJob?.cancel()
+        otpTimerJob =
+            viewModelScope.launch(coroutineLaunchContext.io) {
+                updateOtpCounterTime()
+            }
     }
 
     private suspend fun loadResourceDetails() {

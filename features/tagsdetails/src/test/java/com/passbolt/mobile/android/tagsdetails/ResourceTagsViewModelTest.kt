@@ -40,7 +40,6 @@ import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUse
 import com.passbolt.mobile.android.jsonmodel.jsonpathops.JsonPathJsonPathOps
 import com.passbolt.mobile.android.jsonmodel.jsonpathops.JsonPathsOps
 import com.passbolt.mobile.android.tagsdetails.ResourceTagsIntent.GoBack
-import com.passbolt.mobile.android.tagsdetails.ResourceTagsIntent.Initialize
 import com.passbolt.mobile.android.tagsdetails.ResourceTagsSideEffect.NavigateBack
 import com.passbolt.mobile.android.tagsdetails.ResourceTagsSideEffect.NavigateToHome
 import com.passbolt.mobile.android.tagsdetails.ResourceTagsSideEffect.ShowContentNotAvailable
@@ -61,8 +60,8 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.koin.core.logger.Level
-import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
+import org.koin.core.parameter.parametersOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.koin.test.KoinTest
@@ -100,7 +99,15 @@ class ResourceTagsViewModelTest : KoinTest {
                                 .options(EnumSet.noneOf(Option::class.java))
                                 .build()
                         }
-                        factoryOf(::ResourceTagsViewModel)
+                        factory { params ->
+                            ResourceTagsViewModel(
+                                coroutineLaunchContext = get(),
+                                resourceId = params.get(),
+                                getLocalResourceUseCase = get(),
+                                getLocalResourceTagsUseCase = get(),
+                                dataRefreshTrackingFlow = get(),
+                            )
+                        }
                     },
                 ),
             )
@@ -134,14 +141,9 @@ class ResourceTagsViewModelTest : KoinTest {
     @Test
     fun `resource and tags data should be loaded and displayed when initialized`() =
         runTest {
-            viewModel = get()
+            viewModel = get { parametersOf(testResource.resourceId) }
 
             viewModel.viewState.test {
-                val initialState = awaitItem()
-                assertThat(initialState).isEqualTo(ResourceTagsState())
-
-                viewModel.onIntent(Initialize(testResource.resourceId))
-
                 val updatedState = awaitItem()
                 assertThat(updatedState.resourceModel).isEqualTo(testResource)
                 assertThat(updatedState.tags).isEqualTo(testTags)
@@ -153,7 +155,7 @@ class ResourceTagsViewModelTest : KoinTest {
     @Test
     fun `go back intent should emit navigate up side effect`() =
         runTest {
-            viewModel = get()
+            viewModel = get { parametersOf(testResource.resourceId) }
 
             viewModel.sideEffect.test {
                 viewModel.onIntent(GoBack)
@@ -165,13 +167,9 @@ class ResourceTagsViewModelTest : KoinTest {
     @Test
     fun `should show refreshing state during data refresh`() =
         runTest {
-            viewModel = get()
+            viewModel = get { parametersOf(testResource.resourceId) }
 
             viewModel.viewState.test {
-                val initialState = awaitItem()
-                assertThat(initialState.isRefreshing).isFalse()
-
-                viewModel.onIntent(Initialize(testResource.resourceId))
                 awaitItem()
 
                 val dataRefreshTrackingFlow = get<DataRefreshTrackingFlow>()
@@ -186,12 +184,9 @@ class ResourceTagsViewModelTest : KoinTest {
     @Test
     fun `should handle data refresh failure and show error`() =
         runTest {
-            viewModel = get()
+            viewModel = get { parametersOf(testResource.resourceId) }
 
             viewModel.viewState.test {
-                awaitItem()
-
-                viewModel.onIntent(Initialize(testResource.resourceId))
                 awaitItem()
 
                 viewModel.sideEffect.test {
@@ -212,11 +207,9 @@ class ResourceTagsViewModelTest : KoinTest {
                 onBlocking { execute(any()) } doThrow NullPointerException("Resource not found")
             }
 
-            viewModel = get()
+            viewModel = get { parametersOf(testResource.resourceId) }
 
             viewModel.sideEffect.test {
-                viewModel.onIntent(Initialize(testResource.resourceId))
-
                 assertThat(awaitItem()).isEqualTo(ShowContentNotAvailable)
                 assertThat(awaitItem()).isEqualTo(NavigateToHome)
             }
@@ -231,14 +224,9 @@ class ResourceTagsViewModelTest : KoinTest {
                 onBlocking { execute(any()) } doReturn GetLocalResourceTagsUseCase.Output(emptyList())
             }
 
-            viewModel = get()
+            viewModel = get { parametersOf(testResource.resourceId) }
 
             viewModel.viewState.test {
-                val initialState = awaitItem()
-                assertThat(initialState.tags).isEmpty()
-
-                viewModel.onIntent(Initialize(testResource.resourceId))
-
                 val updatedState = awaitItem()
                 assertThat(updatedState.resourceModel).isEqualTo(testResource)
                 assertThat(updatedState.tags).isEmpty()
@@ -249,12 +237,9 @@ class ResourceTagsViewModelTest : KoinTest {
     @Test
     fun `should not change state when data refresh status is not completed`() =
         runTest {
-            viewModel = get()
+            viewModel = get { parametersOf(testResource.resourceId) }
 
             viewModel.viewState.test {
-                awaitItem()
-
-                viewModel.onIntent(Initialize(testResource.resourceId))
                 awaitItem()
 
                 val dataRefreshTrackingFlow = get<DataRefreshTrackingFlow>()
