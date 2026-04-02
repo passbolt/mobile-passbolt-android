@@ -1,3 +1,8 @@
+package com.passbolt.mobile.android.feature.setup.biometric
+
+import org.koin.core.module.Module
+import org.koin.core.module.dsl.viewModelOf
+
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -20,22 +25,6 @@
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-
-package com.passbolt.mobile.android.feature.setup.fingerprint
-
-import android.content.Context
-import android.content.Intent
-import androidx.activity.result.ActivityResultLauncher
-import androidx.biometric.BiometricPrompt
-import androidx.compose.material3.SnackbarHostState
-import kotlinx.coroutines.CoroutineScope
-import java.util.concurrent.Executor
-
-internal data class FingerprintSetupEnvironment(
-    val context: Context,
-    val authenticationLauncher: ActivityResultLauncher<Intent>,
-    val biometricPromptBuilder: BiometricPrompt.PromptInfo.Builder,
-    val executor: Executor,
-    val snackbarHostState: SnackbarHostState,
-    val coroutineScope: CoroutineScope,
-)
+fun Module.biometricModule() {
+    viewModelOf(::BiometricSetupViewModel)
+}

@@ -62,12 +62,12 @@ import com.passbolt.mobile.android.feature.authentication.auth.AuthSideEffect.Na
 import com.passbolt.mobile.android.feature.authentication.auth.AuthSideEffect.NavigateToMfa
 import com.passbolt.mobile.android.feature.authentication.auth.AuthSideEffect.ShowErrorSnackbar
 import com.passbolt.mobile.android.feature.authentication.auth.AuthSideEffect.SnackbarErrorType.AUTHENTICATION_ERROR
+import com.passbolt.mobile.android.feature.authentication.auth.AuthSideEffect.SnackbarErrorType.BIOMETRIC_CHANGED
 import com.passbolt.mobile.android.feature.authentication.auth.AuthSideEffect.SnackbarErrorType.BIOMETRIC_DECRYPT_ERROR
 import com.passbolt.mobile.android.feature.authentication.auth.AuthSideEffect.SnackbarErrorType.CHALLENGE_INVALID_SIGNATURE
 import com.passbolt.mobile.android.feature.authentication.auth.AuthSideEffect.SnackbarErrorType.CHALLENGE_TOKEN_EXPIRED
 import com.passbolt.mobile.android.feature.authentication.auth.AuthSideEffect.SnackbarErrorType.CHALLENGE_VERIFICATION_FAILURE
 import com.passbolt.mobile.android.feature.authentication.auth.AuthSideEffect.SnackbarErrorType.DECRYPTION_ERROR
-import com.passbolt.mobile.android.feature.authentication.auth.AuthSideEffect.SnackbarErrorType.FINGERPRINT_CHANGED
 import com.passbolt.mobile.android.feature.authentication.auth.AuthSideEffect.SnackbarErrorType.GENERIC
 import com.passbolt.mobile.android.feature.authentication.auth.AuthSideEffect.SnackbarErrorType.TIME_OUT_OF_SYNC
 import com.passbolt.mobile.android.feature.authentication.auth.AuthSideEffect.SnackbarErrorType.WRONG_PASSPHRASE
@@ -155,7 +155,7 @@ class AuthViewModel(
             is BiometricKeyInvalidated -> {
                 biometryInteractor.disableBiometry()
                 updateViewState { copy(showBiometricButton = false) }
-                emitSideEffect(ShowErrorSnackbar(FINGERPRINT_CHANGED))
+                emitSideEffect(ShowErrorSnackbar(BIOMETRIC_CHANGED))
             }
             is ForgotPassword -> updateViewState { copy(showForgotPasswordDialog = true) }
             is GoBack -> goBack()
@@ -237,7 +237,7 @@ class AuthViewModel(
             Timber.e(exception, "Biometric key has been invalidated")
             biometryInteractor.disableBiometry()
             updateViewState { copy(showBiometricButton = false) }
-            emitSideEffect(ShowErrorSnackbar(FINGERPRINT_CHANGED))
+            emitSideEffect(ShowErrorSnackbar(BIOMETRIC_CHANGED))
         } catch (exception: Exception) {
             Timber.e(exception, "Exception during getting biometric cipher")
             emitSideEffect(ShowErrorSnackbar(GENERIC))

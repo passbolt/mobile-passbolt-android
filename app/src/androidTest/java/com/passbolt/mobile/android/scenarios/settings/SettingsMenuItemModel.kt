@@ -56,8 +56,8 @@ enum class AppSettingsItemModel(
     val hasOpenableIcon: Boolean = true,
     val testTag: String = OpenableSetting.ITEM,
 ) {
-    FINGERPRINT(
-        settingsItemTextId = LocalizationR.string.settings_app_settings_fingerprint,
+    BIOMETRIC(
+        settingsItemTextId = LocalizationR.string.settings_app_settings_biometric,
         hasOpenableIcon = false,
         testTag = SwitchableSetting.ITEM,
     ),

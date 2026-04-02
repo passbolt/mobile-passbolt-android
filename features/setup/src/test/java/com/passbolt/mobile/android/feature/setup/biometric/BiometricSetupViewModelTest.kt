@@ -21,12 +21,12 @@
  * @since v1.0
  */
 
-package com.passbolt.mobile.android.feature.setup.fingerprint
+package com.passbolt.mobile.android.feature.setup.biometric
 
 import android.security.keystore.KeyPermanentlyInvalidatedException
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
-import com.passbolt.mobile.android.common.FingerprintInformationProvider
+import com.passbolt.mobile.android.common.BiometricInformationProvider
 import com.passbolt.mobile.android.core.accounts.usecase.biometrickey.SaveBiometricKeyIvUseCase
 import com.passbolt.mobile.android.core.authenticationcore.passphrase.SavePassphraseUseCase
 import com.passbolt.mobile.android.core.autofill.AutofillInformationProvider
@@ -34,23 +34,23 @@ import com.passbolt.mobile.android.core.passphrasememorycache.PassphraseMemoryCa
 import com.passbolt.mobile.android.core.passphrasememorycache.PotentialPassphrase
 import com.passbolt.mobile.android.encryptedstorage.biometric.BiometricCipher
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.BiometryInteractor
-import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupIntent.AuthenticationSuccess
-import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupIntent.BiometricAuthenticationCancel
-import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupIntent.BiometricAuthenticationError
-import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupIntent.BiometricAuthenticationSuccess
-import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupIntent.ConfirmKeyPermanentlyInvalidated
-import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupIntent.DismissKeyPermanentlyInvalidated
-import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupIntent.GoToApp
-import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupIntent.KeyPermanentlyInvalidated
-import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupIntent.MaybeLater
-import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupIntent.ResumeView
-import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupIntent.UseFingerprint
-import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupSideEffect.NavigateToAppSystemSettings
-import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupSideEffect.NavigateToEncourageAutofill
-import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupSideEffect.NavigateToHome
-import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupSideEffect.ShowBiometricPrompt
-import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupSideEffect.ShowErrorSnackbar
-import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupSideEffect.StartAuthActivity
+import com.passbolt.mobile.android.feature.setup.biometric.BiometricSetupIntent.AuthenticationSuccess
+import com.passbolt.mobile.android.feature.setup.biometric.BiometricSetupIntent.BiometricAuthenticationCancel
+import com.passbolt.mobile.android.feature.setup.biometric.BiometricSetupIntent.BiometricAuthenticationError
+import com.passbolt.mobile.android.feature.setup.biometric.BiometricSetupIntent.BiometricAuthenticationSuccess
+import com.passbolt.mobile.android.feature.setup.biometric.BiometricSetupIntent.ConfirmKeyPermanentlyInvalidated
+import com.passbolt.mobile.android.feature.setup.biometric.BiometricSetupIntent.DismissKeyPermanentlyInvalidated
+import com.passbolt.mobile.android.feature.setup.biometric.BiometricSetupIntent.GoToApp
+import com.passbolt.mobile.android.feature.setup.biometric.BiometricSetupIntent.KeyPermanentlyInvalidated
+import com.passbolt.mobile.android.feature.setup.biometric.BiometricSetupIntent.MaybeLater
+import com.passbolt.mobile.android.feature.setup.biometric.BiometricSetupIntent.ResumeView
+import com.passbolt.mobile.android.feature.setup.biometric.BiometricSetupIntent.UseBiometric
+import com.passbolt.mobile.android.feature.setup.biometric.BiometricSetupSideEffect.NavigateToAppSystemSettings
+import com.passbolt.mobile.android.feature.setup.biometric.BiometricSetupSideEffect.NavigateToEncourageAutofill
+import com.passbolt.mobile.android.feature.setup.biometric.BiometricSetupSideEffect.NavigateToHome
+import com.passbolt.mobile.android.feature.setup.biometric.BiometricSetupSideEffect.ShowBiometricPrompt
+import com.passbolt.mobile.android.feature.setup.biometric.BiometricSetupSideEffect.ShowErrorSnackbar
+import com.passbolt.mobile.android.feature.setup.biometric.BiometricSetupSideEffect.StartAuthActivity
 import com.passbolt.mobile.android.ui.BiometricAuthError
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -78,7 +78,7 @@ import kotlin.test.assertIs
 import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class FingerprintSetupViewModelTest : KoinTest {
+class BiometricSetupViewModelTest : KoinTest {
     @get:Rule
     val koinTestRule =
         KoinTestRule.create {
@@ -86,14 +86,14 @@ class FingerprintSetupViewModelTest : KoinTest {
             modules(
                 listOf(
                     module {
-                        single { mock<FingerprintInformationProvider>() }
+                        single { mock<BiometricInformationProvider>() }
                         single { mock<AutofillInformationProvider>() }
                         single { mock<PassphraseMemoryCache>() }
                         single { mock<SavePassphraseUseCase>() }
                         single { mock<BiometricCipher>() }
                         single { mock<SaveBiometricKeyIvUseCase>() }
                         single { mock<BiometryInteractor>() }
-                        factoryOf(::FingerprintSetupViewModel)
+                        factoryOf(::BiometricSetupViewModel)
                     },
                 ),
             )
@@ -101,7 +101,7 @@ class FingerprintSetupViewModelTest : KoinTest {
 
     private val testDispatcher = StandardTestDispatcher()
 
-    private lateinit var viewModel: FingerprintSetupViewModel
+    private lateinit var viewModel: BiometricSetupViewModel
 
     @Before
     fun setUp() {
@@ -130,8 +130,8 @@ class FingerprintSetupViewModelTest : KoinTest {
     @Test
     fun `resume view with biometric setup should update state`() =
         runTest {
-            val fingerprintInformationProvider: FingerprintInformationProvider = get()
-            whenever(fingerprintInformationProvider.hasBiometricSetUp()) doReturn true
+            val biometricInformationProvider: BiometricInformationProvider = get()
+            whenever(biometricInformationProvider.hasBiometricSetUp()) doReturn true
 
             viewModel = get()
             viewModel.onIntent(ResumeView)
@@ -146,8 +146,8 @@ class FingerprintSetupViewModelTest : KoinTest {
     @Test
     fun `resume view without biometric setup should update state`() =
         runTest {
-            val fingerprintInformationProvider: FingerprintInformationProvider = get()
-            whenever(fingerprintInformationProvider.hasBiometricSetUp()) doReturn false
+            val biometricInformationProvider: BiometricInformationProvider = get()
+            whenever(biometricInformationProvider.hasBiometricSetUp()) doReturn false
 
             viewModel = get()
             viewModel.onIntent(ResumeView)
@@ -160,18 +160,18 @@ class FingerprintSetupViewModelTest : KoinTest {
 
     @OptIn(ExperimentalTime::class)
     @Test
-    fun `use fingerprint when biometric is set up should show biometric prompt`() =
+    fun `use biometric when biometric is set up should show biometric prompt`() =
         runTest {
-            val fingerprintInformationProvider: FingerprintInformationProvider = get()
+            val biometricInformationProvider: BiometricInformationProvider = get()
             val biometricCipher: BiometricCipher = get()
             val mockCipher = mock<Cipher>()
-            whenever(fingerprintInformationProvider.hasBiometricSetUp()) doReturn true
+            whenever(biometricInformationProvider.hasBiometricSetUp()) doReturn true
             whenever(biometricCipher.getBiometricEncryptCipher()) doReturn mockCipher
 
             viewModel = get()
 
             viewModel.sideEffect.test {
-                viewModel.onIntent(UseFingerprint)
+                viewModel.onIntent(UseBiometric)
 
                 val effect = awaitItem()
                 assertIs<ShowBiometricPrompt>(effect)
@@ -181,15 +181,15 @@ class FingerprintSetupViewModelTest : KoinTest {
 
     @OptIn(ExperimentalTime::class)
     @Test
-    fun `use fingerprint when biometric is not set up should navigate to system settings`() =
+    fun `use biometric when biometric is not set up should navigate to system settings`() =
         runTest {
-            val fingerprintInformationProvider: FingerprintInformationProvider = get()
-            whenever(fingerprintInformationProvider.hasBiometricSetUp()) doReturn false
+            val biometricInformationProvider: BiometricInformationProvider = get()
+            whenever(biometricInformationProvider.hasBiometricSetUp()) doReturn false
 
             viewModel = get()
 
             viewModel.sideEffect.test {
-                viewModel.onIntent(UseFingerprint)
+                viewModel.onIntent(UseBiometric)
 
                 val effect = awaitItem()
                 assertIs<NavigateToAppSystemSettings>(effect)

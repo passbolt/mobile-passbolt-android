@@ -178,7 +178,7 @@ internal fun AuthScreen(
                     activity = context as AppCompatActivity,
                     executor = executor,
                     biometricPromptBuilder = biometricPromptBuilder,
-                    fingerprintEncryptionCipher = sideEffect.cipher,
+                    biometricEncryptionCipher = sideEffect.cipher,
                     title = context.getString(LocalizationR.string.auth_biometric_title),
                     subtitle = subtitle,
                     onAuthenticationSuccess = { resultCipher ->

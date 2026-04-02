@@ -1,5 +1,3 @@
-package com.passbolt.mobile.android.common
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -23,8 +21,21 @@ package com.passbolt.mobile.android.common
  * @since v1.0
  */
 
-class FingerprintInformationProvider(
-    private val biometric: Biometric,
-) {
-    fun hasBiometricSetUp(): Boolean = biometric.hasBiometricSetUp()
-}
+package com.passbolt.mobile.android.feature.setup.biometric
+
+import android.content.Context
+import android.content.Intent
+import androidx.activity.result.ActivityResultLauncher
+import androidx.biometric.BiometricPrompt
+import androidx.compose.material3.SnackbarHostState
+import kotlinx.coroutines.CoroutineScope
+import java.util.concurrent.Executor
+
+internal data class BiometricSetupEnvironment(
+    val context: Context,
+    val authenticationLauncher: ActivityResultLauncher<Intent>,
+    val biometricPromptBuilder: BiometricPrompt.PromptInfo.Builder,
+    val executor: Executor,
+    val snackbarHostState: SnackbarHostState,
+    val coroutineScope: CoroutineScope,
+)

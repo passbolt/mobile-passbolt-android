@@ -3,13 +3,13 @@ package com.passbolt.mobile.android.feature.setup.navigation
 import PassboltTheme
 import com.passbolt.mobile.android.core.navigation.compose.base.EntryProviderInstaller
 import com.passbolt.mobile.android.core.navigation.compose.base.FeatureModuleNavigation
-import com.passbolt.mobile.android.core.navigation.compose.keys.SetupNavigationKey.FingerprintSetup
+import com.passbolt.mobile.android.core.navigation.compose.keys.SetupNavigationKey.BiometricSetup
 import com.passbolt.mobile.android.core.navigation.compose.keys.SetupNavigationKey.ImportProfile
 import com.passbolt.mobile.android.core.navigation.compose.keys.SetupNavigationKey.ScanQrCodes
 import com.passbolt.mobile.android.core.navigation.compose.keys.SetupNavigationKey.Summary
 import com.passbolt.mobile.android.core.navigation.compose.keys.SetupNavigationKey.TransferDetails
 import com.passbolt.mobile.android.core.navigation.compose.keys.SetupNavigationKey.Welcome
-import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupScreen
+import com.passbolt.mobile.android.feature.setup.biometric.BiometricSetupScreen
 import com.passbolt.mobile.android.feature.setup.importprofile.ImportProfileScreen
 import com.passbolt.mobile.android.feature.setup.scanqr.ScanQrScreen
 import com.passbolt.mobile.android.feature.setup.summary.SummaryScreen
@@ -50,8 +50,8 @@ class SetupFeatureNavigation : FeatureModuleNavigation {
             entry<ScanQrCodes> {
                 PassboltTheme { ScanQrScreen() }
             }
-            entry<FingerprintSetup> {
-                PassboltTheme { FingerprintSetupScreen() }
+            entry<BiometricSetup> {
+                PassboltTheme { BiometricSetupScreen() }
             }
             entry<ImportProfile> {
                 PassboltTheme { ImportProfileScreen() }

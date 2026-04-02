@@ -1,4 +1,4 @@
-package com.passbolt.mobile.android.feature.setup.fingerprint
+package com.passbolt.mobile.android.feature.setup.biometric
 
 import androidx.biometric.BiometricPrompt
 import androidx.biometric.BiometricPrompt.ERROR_LOCKOUT
@@ -52,16 +52,16 @@ class SetupBiometricCallback(
     private fun handleError(errorCode: Int) {
         when (errorCode) {
             ERROR_LOCKOUT -> {
-                authError.invoke(LocalizationR.string.fingerprint_biometric_error_blocked)
+                authError.invoke(LocalizationR.string.biometric_error_blocked)
             }
             ERROR_LOCKOUT_PERMANENT -> {
-                authError.invoke(LocalizationR.string.fingerprint_biometric_error_too_many_attempts)
+                authError.invoke(LocalizationR.string.biometric_error_too_many_attempts)
             }
             ERROR_NEGATIVE_BUTTON, ERROR_USER_CANCELED, ERROR_TIMEOUT -> {
                 // ignoring
             }
             else -> {
-                authError.invoke(LocalizationR.string.fingerprint_biometric_error_generic)
+                authError.invoke(LocalizationR.string.biometric_error_generic)
             }
         }
     }

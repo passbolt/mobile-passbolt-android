@@ -39,8 +39,8 @@ fun KeyChangesDetectedAlertDialog(
     if (isVisible) {
         AlertDialog(
             onDismissRequest = onDismiss,
-            title = { Text(stringResource(LocalizationR.string.fingerprint_biometric_changed_title)) },
-            text = { Text(stringResource(LocalizationR.string.fingerprint_authenticate_again)) },
+            title = { Text(stringResource(LocalizationR.string.biometric_changed_title)) },
+            text = { Text(stringResource(LocalizationR.string.biometric_authenticate_again)) },
             confirmButton = {
                 TextButton(onClick = onConfirm) {
                     Text(stringResource(LocalizationR.string.got_it))

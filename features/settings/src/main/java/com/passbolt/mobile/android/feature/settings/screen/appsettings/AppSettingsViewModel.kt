@@ -24,7 +24,7 @@
 package com.passbolt.mobile.android.feature.settings.screen.appsettings
 
 import android.security.keystore.KeyPermanentlyInvalidatedException
-import com.passbolt.mobile.android.common.FingerprintInformationProvider
+import com.passbolt.mobile.android.common.BiometricInformationProvider
 import com.passbolt.mobile.android.common.autofill.DetectAutofillConflict
 import com.passbolt.mobile.android.common.usecase.UserIdInput
 import com.passbolt.mobile.android.core.accounts.usecase.biometrickey.SaveBiometricKeyIvUseCase
@@ -37,12 +37,12 @@ import com.passbolt.mobile.android.core.passphrasememorycache.PassphraseMemoryCa
 import com.passbolt.mobile.android.core.passphrasememorycache.PotentialPassphrase
 import com.passbolt.mobile.android.encryptedstorage.biometric.BiometricCipher
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.BiometryInteractor
-import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsIntent.CancelConfigureFingerprint
+import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsIntent.CancelConfigureBiometric
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsIntent.CancelConfirmKeyChange
-import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsIntent.CancelDisableFingerprint
+import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsIntent.CancelDisableBiometric
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsIntent.CanceledBiometricAuth
-import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsIntent.ConfigureFingerprint
-import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsIntent.ConfirmDisableFingerprint
+import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsIntent.ConfigureBiometric
+import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsIntent.ConfirmDisableBiometric
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsIntent.ConfirmKeyChangeClick
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsIntent.ErroredBiometricAuth
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsIntent.FinalizedBiometricAuth
@@ -54,7 +54,7 @@ import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettin
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsIntent.InvalidateBiometricKeyPermanently
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsIntent.RefreshedPassphrase
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsIntent.ShowBiometryError
-import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsIntent.ToggleFingerprint
+import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsIntent.ToggleBiometric
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsSideEffect.LaunchBiometricPrompt
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsSideEffect.NavigateToAutofill
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsSideEffect.NavigateToDefaultFilter
@@ -71,7 +71,7 @@ import javax.crypto.Cipher
 internal class AppSettingsViewModel(
     private val checkIfPassphraseExistsUseCase: CheckIfPassphraseFileExistsUseCase,
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
-    private val fingerprintInformationProvider: FingerprintInformationProvider,
+    private val biometricInformationProvider: BiometricInformationProvider,
     private val passphraseMemoryCache: PassphraseMemoryCache,
     private val removePassphraseUseCase: RemovePassphraseUseCase,
     private val biometricCipher: BiometricCipher,
@@ -92,12 +92,12 @@ internal class AppSettingsViewModel(
             GoToAutofill -> emitSideEffect(NavigateToAutofill)
             GoToDefaultFilter -> emitSideEffect(NavigateToDefaultFilter)
             GoToExpertSettings -> emitSideEffect(NavigateToExpertSettings)
-            ToggleFingerprint -> toggleFingerprint()
-            CancelDisableFingerprint -> updateViewState { copy(isDisableFingerprintDialogVisible = false) }
-            ConfirmDisableFingerprint -> disableFingerprint()
-            CancelConfigureFingerprint -> updateViewState { copy(isConfigureFingerprintDialogVisible = false) }
-            ConfigureFingerprint -> {
-                updateViewState { copy(isConfigureFingerprintDialogVisible = false) }
+            ToggleBiometric -> toggleBiometric()
+            CancelDisableBiometric -> updateViewState { copy(isDisableBiometricDialogVisible = false) }
+            ConfirmDisableBiometric -> disableBiometric()
+            CancelConfigureBiometric -> updateViewState { copy(isConfigureBiometricDialogVisible = false) }
+            ConfigureBiometric -> {
+                updateViewState { copy(isConfigureBiometricDialogVisible = false) }
                 emitSideEffect(NavigateToSystemSettings)
             }
             RefreshedPassphrase -> authenticateUsingBiometryPrompt()
@@ -164,7 +164,7 @@ internal class AppSettingsViewModel(
                     authenticatedCipher.iv,
                 ),
             )
-            updateViewState { copy(isFingerprintEnabled = true) }
+            updateViewState { copy(isBiometricEnabled = true) }
         } else {
             Timber.e("Error during turing biometrics on. Passphrase not in cache after auth.")
         }
@@ -179,24 +179,24 @@ internal class AppSettingsViewModel(
 
         updateViewState {
             copy(
-                isFingerprintEnabled = passphraseFileExists,
+                isBiometricEnabled = passphraseFileExists,
             )
         }
     }
 
-    private fun toggleFingerprint() {
-        val isEnabled = viewState.value.isFingerprintEnabled
+    private fun toggleBiometric() {
+        val isEnabled = viewState.value.isBiometricEnabled
         if (isEnabled) {
-            updateViewState { copy(isDisableFingerprintDialogVisible = true) }
+            updateViewState { copy(isDisableBiometricDialogVisible = true) }
         } else {
-            if (fingerprintInformationProvider.hasBiometricSetUp()) {
+            if (biometricInformationProvider.hasBiometricSetUp()) {
                 if (passphraseMemoryCache.hasPassphrase()) {
                     authenticateUsingBiometryPrompt()
                 } else {
                     emitSideEffect(NavigateToGetPassphrase)
                 }
             } else {
-                updateViewState { copy(isFingerprintEnabled = false, isConfigureFingerprintDialogVisible = true) }
+                updateViewState { copy(isBiometricEnabled = false, isConfigureBiometricDialogVisible = true) }
             }
         }
     }
@@ -205,9 +205,9 @@ internal class AppSettingsViewModel(
         emitSideEffect(LaunchBiometricPrompt(biometricCipher.getBiometricEncryptCipher()))
     }
 
-    fun disableFingerprint() {
+    fun disableBiometric() {
         val selectedAccount = getSelectedAccountUseCase.execute(Unit).selectedAccount
         removePassphraseUseCase.execute(UserIdInput(requireNotNull(selectedAccount)))
-        updateViewState { copy(isDisableFingerprintDialogVisible = false, isFingerprintEnabled = false) }
+        updateViewState { copy(isDisableBiometricDialogVisible = false, isBiometricEnabled = false) }
     }
 }

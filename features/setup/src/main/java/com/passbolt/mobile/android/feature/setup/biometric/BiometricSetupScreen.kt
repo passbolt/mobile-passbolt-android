@@ -21,7 +21,7 @@
  * @since v1.0
  */
 
-package com.passbolt.mobile.android.feature.setup.fingerprint
+package com.passbolt.mobile.android.feature.setup.biometric
 
 import PassboltTheme
 import android.app.Activity
@@ -68,22 +68,22 @@ import com.passbolt.mobile.android.core.navigation.compose.keys.SettingsNavigati
 import com.passbolt.mobile.android.core.ui.button.PrimaryButton
 import com.passbolt.mobile.android.core.ui.dialogs.KeyChangesDetectedAlertDialog
 import com.passbolt.mobile.android.feature.authentication.auth.showBiometricPrompt
-import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupIntent.AuthenticationSuccess
-import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupIntent.BiometricAuthenticationCancel
-import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupIntent.BiometricAuthenticationError
-import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupIntent.BiometricAuthenticationSuccess
-import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupIntent.ConfirmKeyPermanentlyInvalidated
-import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupIntent.DismissKeyPermanentlyInvalidated
-import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupIntent.KeyPermanentlyInvalidated
-import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupIntent.MaybeLater
-import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupIntent.ResumeView
-import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupIntent.UseFingerprint
-import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupSideEffect.NavigateToAppSystemSettings
-import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupSideEffect.NavigateToEncourageAutofill
-import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupSideEffect.NavigateToHome
-import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupSideEffect.ShowBiometricPrompt
-import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupSideEffect.ShowErrorSnackbar
-import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupSideEffect.StartAuthActivity
+import com.passbolt.mobile.android.feature.setup.biometric.BiometricSetupIntent.AuthenticationSuccess
+import com.passbolt.mobile.android.feature.setup.biometric.BiometricSetupIntent.BiometricAuthenticationCancel
+import com.passbolt.mobile.android.feature.setup.biometric.BiometricSetupIntent.BiometricAuthenticationError
+import com.passbolt.mobile.android.feature.setup.biometric.BiometricSetupIntent.BiometricAuthenticationSuccess
+import com.passbolt.mobile.android.feature.setup.biometric.BiometricSetupIntent.ConfirmKeyPermanentlyInvalidated
+import com.passbolt.mobile.android.feature.setup.biometric.BiometricSetupIntent.DismissKeyPermanentlyInvalidated
+import com.passbolt.mobile.android.feature.setup.biometric.BiometricSetupIntent.KeyPermanentlyInvalidated
+import com.passbolt.mobile.android.feature.setup.biometric.BiometricSetupIntent.MaybeLater
+import com.passbolt.mobile.android.feature.setup.biometric.BiometricSetupIntent.ResumeView
+import com.passbolt.mobile.android.feature.setup.biometric.BiometricSetupIntent.UseBiometric
+import com.passbolt.mobile.android.feature.setup.biometric.BiometricSetupSideEffect.NavigateToAppSystemSettings
+import com.passbolt.mobile.android.feature.setup.biometric.BiometricSetupSideEffect.NavigateToEncourageAutofill
+import com.passbolt.mobile.android.feature.setup.biometric.BiometricSetupSideEffect.NavigateToHome
+import com.passbolt.mobile.android.feature.setup.biometric.BiometricSetupSideEffect.ShowBiometricPrompt
+import com.passbolt.mobile.android.feature.setup.biometric.BiometricSetupSideEffect.ShowErrorSnackbar
+import com.passbolt.mobile.android.feature.setup.biometric.BiometricSetupSideEffect.StartAuthActivity
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
@@ -92,15 +92,15 @@ import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 @Composable
-fun FingerprintSetupScreen(
+fun BiometricSetupScreen(
     modifier: Modifier = Modifier,
-    viewModel: FingerprintSetupViewModel = koinViewModel(),
+    viewModel: BiometricSetupViewModel = koinViewModel(),
     navigator: AppNavigator = koinInject(),
 ) {
     val context = LocalContext.current
     val activity = LocalActivity.current
     val state = viewModel.viewState.collectAsStateWithLifecycle()
-    val environment = rememberFingerprintSetupEnvironment(viewModel::onIntent)
+    val environment = rememberBiometricSetupEnvironment(viewModel::onIntent)
 
     LaunchedEffect(Unit) {
         viewModel.onIntent(ResumeView)
@@ -113,7 +113,7 @@ fun FingerprintSetupScreen(
                     activity = environment.context as AppCompatActivity,
                     executor = environment.executor,
                     biometricPromptBuilder = environment.biometricPromptBuilder,
-                    fingerprintEncryptionCipher = sideEffect.cipher,
+                    biometricEncryptionCipher = sideEffect.cipher,
                     onAuthenticationSuccess = { cipher ->
                         viewModel.onIntent(BiometricAuthenticationSuccess(cipher))
                     },
@@ -150,7 +150,7 @@ fun FingerprintSetupScreen(
         }
     }
 
-    FingerprintSetupScreen(
+    BiometricSetupScreen(
         modifier = modifier,
         state = state.value,
         snackbarHostState = environment.snackbarHostState,
@@ -159,11 +159,11 @@ fun FingerprintSetupScreen(
 }
 
 @Composable
-private fun rememberFingerprintSetupEnvironment(
-    onIntent: (FingerprintSetupIntent) -> Unit,
+private fun rememberBiometricSetupEnvironment(
+    onIntent: (BiometricSetupIntent) -> Unit,
     executor: Executor = koinInject(),
     biometricPromptBuilder: BiometricPrompt.PromptInfo.Builder = koinInject(),
-): FingerprintSetupEnvironment {
+): BiometricSetupEnvironment {
     val context = LocalContext.current
     val authenticationLauncher =
         rememberLauncherForActivityResult(
@@ -178,7 +178,7 @@ private fun rememberFingerprintSetupEnvironment(
     val coroutineScope = rememberCoroutineScope()
 
     return remember {
-        FingerprintSetupEnvironment(
+        BiometricSetupEnvironment(
             context = context,
             authenticationLauncher = authenticationLauncher,
             biometricPromptBuilder = biometricPromptBuilder,
@@ -190,10 +190,10 @@ private fun rememberFingerprintSetupEnvironment(
 }
 
 @Composable
-private fun FingerprintSetupScreen(
-    state: FingerprintSetupState,
+private fun BiometricSetupScreen(
+    state: BiometricSetupState,
     snackbarHostState: SnackbarHostState,
-    onIntent: (FingerprintSetupIntent) -> Unit,
+    onIntent: (BiometricSetupIntent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(modifier = modifier.fillMaxSize()) {
@@ -225,9 +225,9 @@ private fun FingerprintSetupScreen(
                 text =
                     stringResource(
                         if (state.hasBiometricSetup) {
-                            LocalizationR.string.fingerprint_setup_use_title
+                            LocalizationR.string.biometric_setup_use_title
                         } else {
-                            LocalizationR.string.fingerprint_setup_configure_title
+                            LocalizationR.string.biometric_setup_configure_title
                         },
                     ),
                 style = MaterialTheme.typography.headlineSmall,
@@ -241,9 +241,9 @@ private fun FingerprintSetupScreen(
                 text =
                     stringResource(
                         if (state.hasBiometricSetup) {
-                            LocalizationR.string.fingerprint_setup_use_description
+                            LocalizationR.string.biometric_setup_use_description
                         } else {
-                            LocalizationR.string.fingerprint_setup_configure_description
+                            LocalizationR.string.biometric_setup_configure_description
                         },
                     ),
                 style = MaterialTheme.typography.bodyMedium,
@@ -254,8 +254,8 @@ private fun FingerprintSetupScreen(
             Spacer(modifier = Modifier.weight(1f))
 
             PrimaryButton(
-                onClick = { onIntent(UseFingerprint) },
-                text = stringResource(LocalizationR.string.fingerprint_setup_use_fingerprint_button),
+                onClick = { onIntent(UseBiometric) },
+                text = stringResource(LocalizationR.string.biometric_setup_use_biometric_button),
             )
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -295,11 +295,11 @@ private fun FingerprintSetupScreen(
 
 @Preview(showBackground = true)
 @Composable
-private fun FingerprintSetupScreenWithBiometricPreview() {
+private fun BiometricSetupScreenWithBiometricPreview() {
     PassboltTheme {
-        FingerprintSetupScreen(
+        BiometricSetupScreen(
             state =
-                FingerprintSetupState(
+                BiometricSetupState(
                     hasBiometricSetup = true,
                     showKeyChangesDetected = false,
                 ),
@@ -311,11 +311,11 @@ private fun FingerprintSetupScreenWithBiometricPreview() {
 
 @Preview(showBackground = true)
 @Composable
-private fun FingerprintSetupScreenWithoutBiometricPreview() {
+private fun BiometricSetupScreenWithoutBiometricPreview() {
     PassboltTheme {
-        FingerprintSetupScreen(
+        BiometricSetupScreen(
             state =
-                FingerprintSetupState(
+                BiometricSetupState(
                     hasBiometricSetup = false,
                     showKeyChangesDetected = false,
                 ),
@@ -327,11 +327,11 @@ private fun FingerprintSetupScreenWithoutBiometricPreview() {
 
 @Preview(showBackground = true)
 @Composable
-private fun FingerprintSetupScreenWithKeyChangesDialogPreview() {
+private fun BiometricSetupScreenWithKeyChangesDialogPreview() {
     PassboltTheme {
-        FingerprintSetupScreen(
+        BiometricSetupScreen(
             state =
-                FingerprintSetupState(
+                BiometricSetupState(
                     hasBiometricSetup = true,
                     showKeyChangesDetected = true,
                 ),
