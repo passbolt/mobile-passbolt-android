@@ -46,14 +46,14 @@ import kotlinx.coroutines.flow.StateFlow
 import org.koin.compose.koinInject
 import org.koin.compose.scope.KoinScope
 import org.koin.core.annotation.KoinExperimentalAPI
-
-private const val SETUP_NAVIGATOR_SCOPE_ID = "setup_navigator"
+import java.util.UUID
 
 // NOTE: When changing name or package read core/navigation/README.md
 class SetUpActivity :
     AppCompatActivity(),
     PartiallyAuthenticated,
     AccountSetupDataHolder {
+    private val setupNavigatorScopeId = "setup_navigator_${UUID.randomUUID()}"
     private var currentBackStackItem: StateFlow<NavKey?> = MutableStateFlow(Welcome)
 
     override val bundledAccountSetupData: AccountSetupDataModel? by lifecycleAwareLazy {
@@ -71,7 +71,7 @@ class SetUpActivity :
         setContent {
             @OptIn(KoinExperimentalAPI::class)
             KoinScope(
-                scopeID = SETUP_NAVIGATOR_SCOPE_ID,
+                scopeID = setupNavigatorScopeId,
                 scopeQualifier = APP_NAVIGATOR_SCOPE,
             ) {
                 val navigator = koinInject<AppNavigator>()

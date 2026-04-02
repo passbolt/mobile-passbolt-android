@@ -39,6 +39,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -99,8 +100,9 @@ internal fun ScanQrScreen(
 
     FlagSecureEffect()
 
+    val scanScopeId = remember { "${SCAN_MANAGER_SCOPE}_${java.util.UUID.randomUUID()}" }
     KoinScope(
-        scopeID = SCAN_MANAGER_SCOPE,
+        scopeID = scanScopeId,
         scopeQualifier = named(SCAN_MANAGER_SCOPE),
     ) {
         val scanManager: ScanManager = koinInject()
