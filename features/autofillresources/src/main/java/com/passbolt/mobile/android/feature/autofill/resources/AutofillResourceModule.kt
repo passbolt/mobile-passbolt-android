@@ -7,11 +7,18 @@ import com.passbolt.mobile.android.feature.autofill.resources.datasetstrategy.Re
 import com.passbolt.mobile.android.feature.autofill.resources.datasetstrategy.ReturnAutofillDatasetStrategy
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.Module
-import org.koin.core.module.dsl.viewModelOf
+import org.koin.core.module.dsl.viewModel
 import org.koin.core.qualifier.named
 
 fun Module.autofillResourcesModule() {
-    viewModelOf(::AutofillResourcesViewModel)
+    viewModel { params ->
+        AutofillResourcesViewModel(
+            getAccountsUseCase = get(),
+            uri = params.getOrNull(),
+            getLocalResourceUseCase = get(),
+            coroutineLaunchContext = get(),
+        )
+    }
 
     scope<AutofillResourcesActivity> {
         scoped<ReturnAutofillDatasetStrategy>(
