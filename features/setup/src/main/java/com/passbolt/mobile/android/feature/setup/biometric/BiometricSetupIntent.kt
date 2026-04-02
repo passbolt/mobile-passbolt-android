@@ -1,11 +1,8 @@
-package com.passbolt.mobile.android.core.ui.dialogs
+package com.passbolt.mobile.android.feature.setup.biometric
 
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.res.stringResource
-import com.passbolt.mobile.android.core.localization.R as LocalizationR
+import android.security.keystore.KeyPermanentlyInvalidatedException
+import com.passbolt.mobile.android.ui.BiometricAuthError
+import javax.crypto.Cipher
 
 /**
  * Passbolt - Open source password manager for teams
@@ -30,27 +27,32 @@ import com.passbolt.mobile.android.core.localization.R as LocalizationR
  * @since v1.0
  */
 
-@Composable
-fun DisableFingerprintAlertDialog(
-    isVisible: Boolean,
-    onDisableConfirm: () -> Unit,
-    onDismiss: () -> Unit,
-) {
-    if (isVisible) {
-        AlertDialog(
-            onDismissRequest = onDismiss,
-            title = { Text(stringResource(LocalizationR.string.are_you_sure)) },
-            text = { Text(stringResource(LocalizationR.string.settings_disable_fingerprint_confirmation_message)) },
-            confirmButton = {
-                TextButton(onClick = onDisableConfirm) {
-                    Text(stringResource(LocalizationR.string.settings_disable))
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = onDismiss) {
-                    Text(stringResource(LocalizationR.string.cancel))
-                }
-            },
-        )
-    }
+sealed interface BiometricSetupIntent {
+    data object ResumeView : BiometricSetupIntent
+
+    data object UseBiometric : BiometricSetupIntent
+
+    data object MaybeLater : BiometricSetupIntent
+
+    data class KeyPermanentlyInvalidated(
+        val exception: KeyPermanentlyInvalidatedException,
+    ) : BiometricSetupIntent
+
+    data object ConfirmKeyPermanentlyInvalidated : BiometricSetupIntent
+
+    data object DismissKeyPermanentlyInvalidated : BiometricSetupIntent
+
+    data object GoToApp : BiometricSetupIntent
+
+    data object AuthenticationSuccess : BiometricSetupIntent
+
+    data class BiometricAuthenticationSuccess(
+        val cipher: Cipher?,
+    ) : BiometricSetupIntent
+
+    data object BiometricAuthenticationCancel : BiometricSetupIntent
+
+    data class BiometricAuthenticationError(
+        val error: BiometricAuthError,
+    ) : BiometricSetupIntent
 }

@@ -1,4 +1,4 @@
-package com.passbolt.mobile.android.feature.setup.fingerprint
+package com.passbolt.mobile.android.common
 
 /**
  * Passbolt - Open source password manager for teams
@@ -23,7 +23,8 @@ package com.passbolt.mobile.android.feature.setup.fingerprint
  * @since v1.0
  */
 
-data class FingerprintSetupState(
-    val hasBiometricSetup: Boolean = false,
-    val showKeyChangesDetected: Boolean = false,
-)
+class BiometricInformationProvider(
+    private val biometric: Biometric,
+) {
+    fun hasBiometricSetUp(): Boolean = biometric.hasBiometricSetUp()
+}

@@ -38,15 +38,15 @@ internal sealed interface AppSettingsIntent {
 
     object GoToExpertSettings : AppSettingsIntent
 
-    object ToggleFingerprint : AppSettingsIntent
+    object ToggleBiometric : AppSettingsIntent
 
-    object ConfirmDisableFingerprint : AppSettingsIntent
+    object ConfirmDisableBiometric : AppSettingsIntent
 
-    object CancelDisableFingerprint : AppSettingsIntent
+    object CancelDisableBiometric : AppSettingsIntent
 
-    object ConfigureFingerprint : AppSettingsIntent
+    object ConfigureBiometric : AppSettingsIntent
 
-    object CancelConfigureFingerprint : AppSettingsIntent
+    object CancelConfigureBiometric : AppSettingsIntent
 
     object RefreshedPassphrase : AppSettingsIntent
 

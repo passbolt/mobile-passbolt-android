@@ -15,7 +15,7 @@ fun showBiometricPrompt(
     activity: AppCompatActivity,
     executor: Executor,
     biometricPromptBuilder: BiometricPrompt.PromptInfo.Builder,
-    fingerprintEncryptionCipher: Cipher,
+    biometricEncryptionCipher: Cipher,
     title: String = activity.getString(LocalizationR.string.settings_turn_on_biometric_title),
     subtitle: String = activity.getString(LocalizationR.string.settings_turn_on_biometric_subtitle),
     onAuthenticationSuccess: (Cipher?) -> Unit,
@@ -66,7 +66,7 @@ fun showBiometricPrompt(
                 .setNegativeButtonText(activity.getString(LocalizationR.string.cancel))
                 .setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_STRONG)
                 .build()
-        biometricPrompt.authenticate(promptInfo, BiometricPrompt.CryptoObject(fingerprintEncryptionCipher))
+        biometricPrompt.authenticate(promptInfo, BiometricPrompt.CryptoObject(biometricEncryptionCipher))
     } catch (e: KeyPermanentlyInvalidatedException) {
         onKeyPermanentlyInvalidated(e)
     } catch (e: Exception) {

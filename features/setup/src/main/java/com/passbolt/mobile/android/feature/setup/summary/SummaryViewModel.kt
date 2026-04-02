@@ -15,7 +15,7 @@ import com.passbolt.mobile.android.feature.setup.summary.SummaryIntent.Initializ
 import com.passbolt.mobile.android.feature.setup.summary.SummaryIntent.OpenHelpMenu
 import com.passbolt.mobile.android.feature.setup.summary.SummaryIntent.PrimaryButtonAction
 import com.passbolt.mobile.android.feature.setup.summary.SummarySideEffect.NavigateToAppStart
-import com.passbolt.mobile.android.feature.setup.summary.SummarySideEffect.NavigateToFingerprintSetup
+import com.passbolt.mobile.android.feature.setup.summary.SummarySideEffect.NavigateToBiometricSetup
 import com.passbolt.mobile.android.feature.setup.summary.SummarySideEffect.NavigateToLogs
 import com.passbolt.mobile.android.feature.setup.summary.SummarySideEffect.NavigateToManageAccounts
 import com.passbolt.mobile.android.feature.setup.summary.SummarySideEffect.NavigateToSignIn
@@ -99,6 +99,6 @@ class SummaryViewModel(
         saveResourcesDatabasePassphraseUseCase.execute(
             SaveResourcesDatabasePassphraseUseCase.Input(pass),
         )
-        emitSideEffect(NavigateToFingerprintSetup)
+        emitSideEffect(NavigateToBiometricSetup)
     }
 }

@@ -1,8 +1,4 @@
-package com.passbolt.mobile.android.feature.setup.fingerprint
-
-import android.security.keystore.KeyPermanentlyInvalidatedException
-import com.passbolt.mobile.android.ui.BiometricAuthError
-import javax.crypto.Cipher
+package com.passbolt.mobile.android.feature.setup.biometric
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,32 +23,7 @@ import javax.crypto.Cipher
  * @since v1.0
  */
 
-sealed interface FingerprintSetupIntent {
-    data object ResumeView : FingerprintSetupIntent
-
-    data object UseFingerprint : FingerprintSetupIntent
-
-    data object MaybeLater : FingerprintSetupIntent
-
-    data class KeyPermanentlyInvalidated(
-        val exception: KeyPermanentlyInvalidatedException,
-    ) : FingerprintSetupIntent
-
-    data object ConfirmKeyPermanentlyInvalidated : FingerprintSetupIntent
-
-    data object DismissKeyPermanentlyInvalidated : FingerprintSetupIntent
-
-    data object GoToApp : FingerprintSetupIntent
-
-    data object AuthenticationSuccess : FingerprintSetupIntent
-
-    data class BiometricAuthenticationSuccess(
-        val cipher: Cipher?,
-    ) : FingerprintSetupIntent
-
-    data object BiometricAuthenticationCancel : FingerprintSetupIntent
-
-    data class BiometricAuthenticationError(
-        val error: BiometricAuthError,
-    ) : FingerprintSetupIntent
-}
+data class BiometricSetupState(
+    val hasBiometricSetup: Boolean = false,
+    val showKeyChangesDetected: Boolean = false,
+)

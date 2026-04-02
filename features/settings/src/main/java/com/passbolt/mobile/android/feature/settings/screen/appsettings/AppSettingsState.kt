@@ -24,9 +24,9 @@ package com.passbolt.mobile.android.feature.settings.screen.appsettings
  */
 
 data class AppSettingsState(
-    val isFingerprintEnabled: Boolean = false,
-    val isDisableFingerprintDialogVisible: Boolean = false,
-    val isConfigureFingerprintDialogVisible: Boolean = false,
+    val isBiometricEnabled: Boolean = false,
+    val isDisableBiometricDialogVisible: Boolean = false,
+    val isConfigureBiometricDialogVisible: Boolean = false,
     val isKeyChangesDialogDetectedVisible: Boolean = false,
     val isAutofillConflictDetected: Boolean = false,
 )

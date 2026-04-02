@@ -1,11 +1,6 @@
-package com.passbolt.mobile.android.core.ui.dialogs
+package com.passbolt.mobile.android.feature.setup.biometric
 
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.res.stringResource
-import com.passbolt.mobile.android.core.localization.R as LocalizationR
+import javax.crypto.Cipher
 
 /**
  * Passbolt - Open source password manager for teams
@@ -30,27 +25,29 @@ import com.passbolt.mobile.android.core.localization.R as LocalizationR
  * @since v1.0
  */
 
-@Composable
-fun ConfigureFingerprintAlertDialog(
-    isVisible: Boolean,
-    onConfigureFingerprint: () -> Unit,
-    onDismiss: () -> Unit,
-) {
-    if (isVisible) {
-        AlertDialog(
-            onDismissRequest = onDismiss,
-            title = { Text(stringResource(LocalizationR.string.settings_add_first_fingerprint_title)) },
-            text = { Text(stringResource(LocalizationR.string.settings_add_first_fingerprint)) },
-            confirmButton = {
-                TextButton(onClick = onConfigureFingerprint) {
-                    Text(stringResource(LocalizationR.string.settings_add_first_fingerprint_settings))
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = onDismiss) {
-                    Text(stringResource(LocalizationR.string.cancel))
-                }
-            },
-        )
-    }
+sealed interface BiometricSetupSideEffect {
+    data class ShowBiometricPrompt(
+        val cipher: Cipher,
+    ) : BiometricSetupSideEffect
+
+    data object NavigateToAppSystemSettings : BiometricSetupSideEffect
+
+    data object StartAuthActivity : BiometricSetupSideEffect
+
+    data object NavigateToEncourageAutofill : BiometricSetupSideEffect
+
+    data object NavigateToHome : BiometricSetupSideEffect
+
+    data class ShowErrorSnackbar(
+        val errorType: SnackbarErrorType,
+    ) : BiometricSetupSideEffect
+}
+
+enum class SnackbarErrorType {
+    GENERIC_ERROR,
+    AUTHENTICATION_LOCKOUT,
+    AUTHENTICATION_LOCKOUT_PERMANENT,
+    AUTHENTICATION_GENERIC,
+    BIOMETRIC_ENCRYPT_ERROR,
+    BIOMETRIC_NO_CRYPTO_CIPHER,
 }

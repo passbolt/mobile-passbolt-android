@@ -65,7 +65,7 @@ import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
 import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.AuthenticationManageAccounts
 import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.Start
 import com.passbolt.mobile.android.core.navigation.compose.keys.LogsNavigationKey.Logs
-import com.passbolt.mobile.android.core.navigation.compose.keys.SetupNavigationKey.FingerprintSetup
+import com.passbolt.mobile.android.core.navigation.compose.keys.SetupNavigationKey.BiometricSetup
 import com.passbolt.mobile.android.core.navigation.compose.keys.SetupNavigationKey.Welcome
 import com.passbolt.mobile.android.core.ui.button.PrimaryButton
 import com.passbolt.mobile.android.core.ui.dialogs.LeaveSetupAlertDialog
@@ -79,7 +79,7 @@ import com.passbolt.mobile.android.feature.setup.summary.SummaryIntent.Initializ
 import com.passbolt.mobile.android.feature.setup.summary.SummaryIntent.OpenHelpMenu
 import com.passbolt.mobile.android.feature.setup.summary.SummaryIntent.PrimaryButtonAction
 import com.passbolt.mobile.android.feature.setup.summary.SummarySideEffect.NavigateToAppStart
-import com.passbolt.mobile.android.feature.setup.summary.SummarySideEffect.NavigateToFingerprintSetup
+import com.passbolt.mobile.android.feature.setup.summary.SummarySideEffect.NavigateToBiometricSetup
 import com.passbolt.mobile.android.feature.setup.summary.SummarySideEffect.NavigateToLogs
 import com.passbolt.mobile.android.feature.setup.summary.SummarySideEffect.NavigateToManageAccounts
 import com.passbolt.mobile.android.feature.setup.summary.SummarySideEffect.NavigateToSignIn
@@ -127,7 +127,7 @@ fun SummaryScreen(
     SideEffectDispatcher(viewModel.sideEffect) { sideEffect ->
         when (sideEffect) {
             NavigateToWelcome -> navigator.popToKey(Welcome)
-            NavigateToFingerprintSetup -> navigator.navigateToKey(FingerprintSetup)
+            NavigateToBiometricSetup -> navigator.navigateToKey(BiometricSetup)
             is NavigateToSignIn ->
                 authenticationResult.launch(
                     ActivityIntents.authentication(

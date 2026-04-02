@@ -314,7 +314,7 @@ class SettingsTest : KoinTest {
             //    When      I switch on the biometrics toggle button
             onAllNodesWithTag(SwitchableSetting.SWITCH)[0].performClick()
             //    Then      I am prompted to configure biometrics in the device settings
-            onNodeWithText(getString(LocalizationR.string.settings_add_first_fingerprint_title)).assertIsDisplayed()
+            onNodeWithText(getString(LocalizationR.string.settings_add_first_biometric_title)).assertIsDisplayed()
             //    And       I see a "Cancel" button to go back to the previous state
             onNodeWithText(getString(LocalizationR.string.cancel)).assertIsDisplayed()
             //    And       I see a "Go to settings" button to configure biometrics

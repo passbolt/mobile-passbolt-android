@@ -3,10 +3,10 @@ package com.passbolt.mobile.android.feature.setup
 import androidx.biometric.BiometricManager
 import com.passbolt.mobile.android.common.Biometric
 import com.passbolt.mobile.android.common.BiometricImpl
-import com.passbolt.mobile.android.common.FingerprintInformationProvider
+import com.passbolt.mobile.android.common.BiometricInformationProvider
 import com.passbolt.mobile.android.core.navigation.compose.base.Feature.SETUP
 import com.passbolt.mobile.android.core.navigation.compose.base.FeatureModuleNavigation
-import com.passbolt.mobile.android.feature.setup.fingerprint.fingerprintModule
+import com.passbolt.mobile.android.feature.setup.biometric.biometricModule
 import com.passbolt.mobile.android.feature.setup.importprofile.importProfileModule
 import com.passbolt.mobile.android.feature.setup.navigation.SetupFeatureNavigation
 import com.passbolt.mobile.android.feature.setup.scanqr.scanQrModule
@@ -48,9 +48,9 @@ val setupModule =
         importProfileModule()
         summaryModule()
         transferDetailsModule()
-        fingerprintModule()
+        biometricModule()
 
-        singleOf(::FingerprintInformationProvider)
+        singleOf(::BiometricInformationProvider)
         singleOf(::BiometricImpl) bind Biometric::class
         single { BiometricManager.from(androidContext()) }
 

@@ -18,7 +18,7 @@ sealed interface SetupNavigationKey : NavKey {
     object ImportProfile : SetupNavigationKey
 
     @Serializable
-    object FingerprintSetup : SetupNavigationKey
+    object BiometricSetup : SetupNavigationKey
 
     @Serializable
     data class Summary(

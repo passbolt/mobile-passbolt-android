@@ -1,6 +1,11 @@
-package com.passbolt.mobile.android.feature.setup.fingerprint
+package com.passbolt.mobile.android.core.ui.dialogs
 
-import javax.crypto.Cipher
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,29 +30,27 @@ import javax.crypto.Cipher
  * @since v1.0
  */
 
-sealed interface FingerprintSetupSideEffect {
-    data class ShowBiometricPrompt(
-        val cipher: Cipher,
-    ) : FingerprintSetupSideEffect
-
-    data object NavigateToAppSystemSettings : FingerprintSetupSideEffect
-
-    data object StartAuthActivity : FingerprintSetupSideEffect
-
-    data object NavigateToEncourageAutofill : FingerprintSetupSideEffect
-
-    data object NavigateToHome : FingerprintSetupSideEffect
-
-    data class ShowErrorSnackbar(
-        val errorType: SnackbarErrorType,
-    ) : FingerprintSetupSideEffect
-}
-
-enum class SnackbarErrorType {
-    GENERIC_ERROR,
-    AUTHENTICATION_LOCKOUT,
-    AUTHENTICATION_LOCKOUT_PERMANENT,
-    AUTHENTICATION_GENERIC,
-    BIOMETRIC_ENCRYPT_ERROR,
-    BIOMETRIC_NO_CRYPTO_CIPHER,
+@Composable
+fun DisableBiometricAlertDialog(
+    isVisible: Boolean,
+    onDisableConfirm: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    if (isVisible) {
+        AlertDialog(
+            onDismissRequest = onDismiss,
+            title = { Text(stringResource(LocalizationR.string.are_you_sure)) },
+            text = { Text(stringResource(LocalizationR.string.settings_disable_biometric_confirmation_message)) },
+            confirmButton = {
+                TextButton(onClick = onDisableConfirm) {
+                    Text(stringResource(LocalizationR.string.settings_disable))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = onDismiss) {
+                    Text(stringResource(LocalizationR.string.cancel))
+                }
+            },
+        )
+    }
 }

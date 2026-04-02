@@ -1,6 +1,6 @@
-package com.passbolt.mobile.android.feature.setup.fingerprint
+package com.passbolt.mobile.android.feature.setup.biometric
 
-import com.passbolt.mobile.android.common.FingerprintInformationProvider
+import com.passbolt.mobile.android.common.BiometricInformationProvider
 import com.passbolt.mobile.android.core.accounts.usecase.biometrickey.SaveBiometricKeyIvUseCase
 import com.passbolt.mobile.android.core.authenticationcore.passphrase.SavePassphraseUseCase
 import com.passbolt.mobile.android.core.autofill.AutofillInformationProvider
@@ -9,28 +9,28 @@ import com.passbolt.mobile.android.core.passphrasememorycache.PassphraseMemoryCa
 import com.passbolt.mobile.android.core.passphrasememorycache.PotentialPassphrase
 import com.passbolt.mobile.android.encryptedstorage.biometric.BiometricCipher
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.BiometryInteractor
-import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupIntent.AuthenticationSuccess
-import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupIntent.BiometricAuthenticationCancel
-import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupIntent.BiometricAuthenticationError
-import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupIntent.BiometricAuthenticationSuccess
-import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupIntent.ConfirmKeyPermanentlyInvalidated
-import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupIntent.DismissKeyPermanentlyInvalidated
-import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupIntent.GoToApp
-import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupIntent.KeyPermanentlyInvalidated
-import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupIntent.MaybeLater
-import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupIntent.ResumeView
-import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupIntent.UseFingerprint
-import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupSideEffect.NavigateToAppSystemSettings
-import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupSideEffect.NavigateToEncourageAutofill
-import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupSideEffect.NavigateToHome
-import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupSideEffect.ShowBiometricPrompt
-import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupSideEffect.ShowErrorSnackbar
-import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintSetupSideEffect.StartAuthActivity
-import com.passbolt.mobile.android.feature.setup.fingerprint.SnackbarErrorType.AUTHENTICATION_GENERIC
-import com.passbolt.mobile.android.feature.setup.fingerprint.SnackbarErrorType.AUTHENTICATION_LOCKOUT
-import com.passbolt.mobile.android.feature.setup.fingerprint.SnackbarErrorType.AUTHENTICATION_LOCKOUT_PERMANENT
-import com.passbolt.mobile.android.feature.setup.fingerprint.SnackbarErrorType.BIOMETRIC_ENCRYPT_ERROR
-import com.passbolt.mobile.android.feature.setup.fingerprint.SnackbarErrorType.BIOMETRIC_NO_CRYPTO_CIPHER
+import com.passbolt.mobile.android.feature.setup.biometric.BiometricSetupIntent.AuthenticationSuccess
+import com.passbolt.mobile.android.feature.setup.biometric.BiometricSetupIntent.BiometricAuthenticationCancel
+import com.passbolt.mobile.android.feature.setup.biometric.BiometricSetupIntent.BiometricAuthenticationError
+import com.passbolt.mobile.android.feature.setup.biometric.BiometricSetupIntent.BiometricAuthenticationSuccess
+import com.passbolt.mobile.android.feature.setup.biometric.BiometricSetupIntent.ConfirmKeyPermanentlyInvalidated
+import com.passbolt.mobile.android.feature.setup.biometric.BiometricSetupIntent.DismissKeyPermanentlyInvalidated
+import com.passbolt.mobile.android.feature.setup.biometric.BiometricSetupIntent.GoToApp
+import com.passbolt.mobile.android.feature.setup.biometric.BiometricSetupIntent.KeyPermanentlyInvalidated
+import com.passbolt.mobile.android.feature.setup.biometric.BiometricSetupIntent.MaybeLater
+import com.passbolt.mobile.android.feature.setup.biometric.BiometricSetupIntent.ResumeView
+import com.passbolt.mobile.android.feature.setup.biometric.BiometricSetupIntent.UseBiometric
+import com.passbolt.mobile.android.feature.setup.biometric.BiometricSetupSideEffect.NavigateToAppSystemSettings
+import com.passbolt.mobile.android.feature.setup.biometric.BiometricSetupSideEffect.NavigateToEncourageAutofill
+import com.passbolt.mobile.android.feature.setup.biometric.BiometricSetupSideEffect.NavigateToHome
+import com.passbolt.mobile.android.feature.setup.biometric.BiometricSetupSideEffect.ShowBiometricPrompt
+import com.passbolt.mobile.android.feature.setup.biometric.BiometricSetupSideEffect.ShowErrorSnackbar
+import com.passbolt.mobile.android.feature.setup.biometric.BiometricSetupSideEffect.StartAuthActivity
+import com.passbolt.mobile.android.feature.setup.biometric.SnackbarErrorType.AUTHENTICATION_GENERIC
+import com.passbolt.mobile.android.feature.setup.biometric.SnackbarErrorType.AUTHENTICATION_LOCKOUT
+import com.passbolt.mobile.android.feature.setup.biometric.SnackbarErrorType.AUTHENTICATION_LOCKOUT_PERMANENT
+import com.passbolt.mobile.android.feature.setup.biometric.SnackbarErrorType.BIOMETRIC_ENCRYPT_ERROR
+import com.passbolt.mobile.android.feature.setup.biometric.SnackbarErrorType.BIOMETRIC_NO_CRYPTO_CIPHER
 import com.passbolt.mobile.android.ui.BiometricAuthError
 import com.passbolt.mobile.android.ui.BiometricAuthError.ERROR_LOCKOUT
 import com.passbolt.mobile.android.ui.BiometricAuthError.ERROR_LOCKOUT_PERMANENT
@@ -62,22 +62,22 @@ import javax.crypto.Cipher
  * @since v1.0
  */
 
-class FingerprintSetupViewModel(
-    private val fingerprintInformationProvider: FingerprintInformationProvider,
+class BiometricSetupViewModel(
+    private val biometricInformationProvider: BiometricInformationProvider,
     private val autofillInformationProvider: AutofillInformationProvider,
     private val passphraseMemoryCache: PassphraseMemoryCache,
     private val savePassphraseUseCase: SavePassphraseUseCase,
     private val biometricCipher: BiometricCipher,
     private val saveBiometricKeyIvUseCase: SaveBiometricKeyIvUseCase,
     private val biometryInteractor: BiometryInteractor,
-) : SideEffectViewModel<FingerprintSetupState, FingerprintSetupSideEffect>(FingerprintSetupState()) {
-    fun onIntent(intent: FingerprintSetupIntent) {
+) : SideEffectViewModel<BiometricSetupState, BiometricSetupSideEffect>(BiometricSetupState()) {
+    fun onIntent(intent: BiometricSetupIntent) {
         when (intent) {
             ResumeView ->
                 updateViewState {
-                    copy(hasBiometricSetup = fingerprintInformationProvider.hasBiometricSetUp())
+                    copy(hasBiometricSetup = biometricInformationProvider.hasBiometricSetUp())
                 }
-            UseFingerprint -> useFingerprint()
+            UseBiometric -> useBiometric()
             MaybeLater -> saveAccountData()
             is KeyPermanentlyInvalidated -> {
                 Timber.e(intent.exception)
@@ -94,8 +94,8 @@ class FingerprintSetupViewModel(
         }
     }
 
-    private fun useFingerprint() {
-        if (fingerprintInformationProvider.hasBiometricSetUp()) {
+    private fun useBiometric() {
+        if (biometricInformationProvider.hasBiometricSetUp()) {
             showBiometricPrompt()
         } else {
             emitSideEffect(NavigateToAppSystemSettings)
