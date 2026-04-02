@@ -2,8 +2,8 @@ package com.passbolt.mobile.android.locationdetails
 
 import com.passbolt.mobile.android.locationdetails.data.ExpandableFolderTreeCreator
 import org.koin.android.ext.koin.androidContext
-import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.core.module.Module
+import org.koin.core.module.dsl.viewModel
 import org.koin.core.qualifier.named
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
@@ -41,5 +41,16 @@ fun Module.locationDetailsModule() {
             fakeRootFolderName = get(named(ROOT_FOLDER_NAME)),
         )
     }
-    viewModelOf(::LocationDetailsViewModel)
+    viewModel { params ->
+        LocationDetailsViewModel(
+            coroutineLaunchContext = get(),
+            locationItem = params.get(),
+            itemId = params.get(),
+            getLocalFolderDetailsUseCase = get(),
+            getLocalFolderLocationUseCase = get(),
+            getLocalResourceUseCase = get(),
+            expandableFolderTreeCreator = get(),
+            dataRefreshTrackingFlow = get(),
+        )
+    }
 }

@@ -69,7 +69,6 @@ import com.passbolt.mobile.android.core.ui.snackbar.ColoredSnackbarVisuals
 import com.passbolt.mobile.android.core.ui.topbar.BackNavigationIcon
 import com.passbolt.mobile.android.core.ui.topbar.TitleAppBar
 import com.passbolt.mobile.android.locationdetails.LocationDetailsIntent.GoBack
-import com.passbolt.mobile.android.locationdetails.LocationDetailsIntent.Initialize
 import com.passbolt.mobile.android.locationdetails.LocationDetailsIntent.ToggleExpanded
 import com.passbolt.mobile.android.locationdetails.LocationDetailsSideEffect.NavigateToHome
 import com.passbolt.mobile.android.locationdetails.LocationDetailsSideEffect.NavigateUp
@@ -84,6 +83,7 @@ import com.passbolt.mobile.android.ui.ResourcePermission
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
+import org.koin.core.parameter.parametersOf
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
@@ -92,17 +92,13 @@ internal fun LocationDetailsScreen(
     locationItem: LocationItem,
     itemId: String,
     modifier: Modifier = Modifier,
-    viewModel: LocationDetailsViewModel = koinViewModel(),
+    viewModel: LocationDetailsViewModel = koinViewModel(parameters = { parametersOf(locationItem, itemId) }),
     navigator: AppNavigator = koinInject(),
 ) {
     val context = LocalContext.current
     val state = viewModel.viewState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
-
-    LaunchedEffect(locationItem, itemId) {
-        viewModel.onIntent(Initialize(locationItem, itemId))
-    }
 
     LocationDetailsContent(
         state = state.value,

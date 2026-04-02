@@ -25,8 +25,4 @@ package com.passbolt.mobile.android.tagsdetails
 
 internal sealed interface ResourceTagsIntent {
     data object GoBack : ResourceTagsIntent
-
-    data class Initialize(
-        val resourceId: String,
-    ) : ResourceTagsIntent
 }

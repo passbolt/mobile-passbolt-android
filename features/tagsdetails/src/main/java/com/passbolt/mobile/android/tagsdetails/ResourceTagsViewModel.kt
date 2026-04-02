@@ -34,7 +34,6 @@ import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchCont
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceTagsUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUseCase
 import com.passbolt.mobile.android.tagsdetails.ResourceTagsIntent.GoBack
-import com.passbolt.mobile.android.tagsdetails.ResourceTagsIntent.Initialize
 import com.passbolt.mobile.android.tagsdetails.ResourceTagsSideEffect.NavigateBack
 import com.passbolt.mobile.android.tagsdetails.ResourceTagsSideEffect.NavigateToHome
 import com.passbolt.mobile.android.tagsdetails.ResourceTagsSideEffect.ShowContentNotAvailable
@@ -44,22 +43,24 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 internal class ResourceTagsViewModel(
+    coroutineLaunchContext: CoroutineLaunchContext,
+    private val resourceId: String,
     private val getLocalResourceUseCase: GetLocalResourceUseCase,
     private val getLocalResourceTagsUseCase: GetLocalResourceTagsUseCase,
-    private val coroutineLaunchContext: CoroutineLaunchContext,
     private val dataRefreshTrackingFlow: DataRefreshTrackingFlow,
 ) : SideEffectViewModel<ResourceTagsState, ResourceTagsSideEffect>(ResourceTagsState()) {
+    init {
+        viewModelScope.launch(coroutineLaunchContext.io) {
+            synchronizeWithDataRefresh(resourceId)
+        }
+        viewModelScope.launch(coroutineLaunchContext.io) {
+            loadData(resourceId)
+        }
+    }
+
     fun onIntent(intent: ResourceTagsIntent) {
         when (intent) {
             GoBack -> emitSideEffect(NavigateBack)
-            is Initialize -> {
-                viewModelScope.launch(coroutineLaunchContext.io) {
-                    synchronizeWithDataRefresh(intent.resourceId)
-                }
-                viewModelScope.launch(coroutineLaunchContext.io) {
-                    loadData(intent.resourceId)
-                }
-            }
         }
     }
 

@@ -24,8 +24,18 @@
 package com.passbolt.mobile.android.folderdetails
 
 import org.koin.core.module.Module
-import org.koin.core.module.dsl.viewModelOf
+import org.koin.core.module.dsl.viewModel
 
 fun Module.folderDetailsModule() {
-    viewModelOf(::FolderDetailsViewModel)
+    viewModel { params ->
+        FolderDetailsViewModel(
+            folderId = params.get(),
+            coroutineLaunchContext = get(),
+            getLocalFolderDetailsUseCase = get(),
+            getLocalFolderLocationUseCase = get(),
+            getLocalFolderPermissionsUseCase = get(),
+            getRbacRulesUseCase = get(),
+            dataRefreshTrackingFlow = get(),
+        )
+    }
 }

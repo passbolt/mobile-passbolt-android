@@ -37,7 +37,9 @@ import com.passbolt.mobile.android.common.datarefresh.DataRefreshStatus.Idle.Fin
 import com.passbolt.mobile.android.common.datarefresh.DataRefreshStatus.InProgress
 import com.passbolt.mobile.android.common.datarefresh.DataRefreshTrackingFlow
 import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
+import com.passbolt.mobile.android.core.accounts.AccountSwitchFlow
 import com.passbolt.mobile.android.core.accounts.usecase.accountdata.GetSelectedAccountDataUseCase
+import com.passbolt.mobile.android.core.accounts.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalFolderDetailsUseCase
 import com.passbolt.mobile.android.core.mvp.authentication.SessionRefreshTrackingFlow
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
@@ -141,6 +143,7 @@ class HomeViewModelTest : KoinTest {
                     single { mock<CanCreateResourceUseCase>() }
                     single { mock<CanShareResourceUseCase>() }
                     single { mock<DetectAutofillConflict>() }
+                    single { AccountSwitchFlow(mock { on { execute(any()) } doReturn GetSelectedAccountUseCase.Output("id1") }) }
                     single(named(JSON_MODEL_GSON)) { GsonBuilder().serializeNulls().create() }
                     single {
                         Configuration
@@ -590,6 +593,39 @@ class HomeViewModelTest : KoinTest {
             viewModel = get()
 
             assertThat(viewModel.viewState.value.isAutofillConflictDetected).isFalse()
+        }
+
+    @Test
+    fun `should reload home data and avatar when account switches`() =
+        runTest {
+            mockHomeData()
+            viewModel = get()
+            viewModel.onIntent(Initialize(DoNotShow, NotLoaded))
+            advanceUntilIdle()
+
+            val newAvatar = "new_avatar_url"
+            whenever(get<GetSelectedAccountDataUseCase>().execute(anyOrNull())).thenReturn(
+                GetSelectedAccountDataUseCase.Output(
+                    firstName = "New",
+                    lastName = "User",
+                    email = "new@passbolt.com",
+                    avatarUrl = newAvatar,
+                    url = "www.passbolt.com",
+                    serverId = "2",
+                    label = "label2",
+                    role = "user",
+                ),
+            )
+
+            val newHomeData = mockResourcesData()
+            whenever(get<HomeDataProvider>().provideData(any(), any(), any())).thenReturn(newHomeData)
+
+            val accountSwitchFlow: AccountSwitchFlow = get()
+            accountSwitchFlow.notifyAccountSwitch("id2")
+            advanceUntilIdle()
+
+            assertThat(viewModel.viewState.value.userAvatar).isEqualTo(newAvatar)
+            assertThat(viewModel.viewState.value.homeData).isEqualTo(newHomeData)
         }
 
     private fun mockCanCreateResource(canCreate: Boolean) {

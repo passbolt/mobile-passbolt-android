@@ -1,3 +1,9 @@
+package com.passbolt.mobile.android.core.accounts
+
+import com.passbolt.mobile.android.core.accounts.usecase.selectedaccount.GetSelectedAccountUseCase
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -21,12 +27,16 @@
  * @since v1.0
  */
 
-package com.passbolt.mobile.android.locationdetails
+class AccountSwitchFlow(
+    getSelectedAccountUseCase: GetSelectedAccountUseCase,
+) {
+    private val _selectedAccountFlow =
+        MutableStateFlow(
+            getSelectedAccountUseCase.execute(Unit).selectedAccount,
+        )
+    val selectedAccountFlow: StateFlow<String?> = _selectedAccountFlow
 
-internal sealed interface LocationDetailsIntent {
-    data object GoBack : LocationDetailsIntent
-
-    data class ToggleExpanded(
-        val itemId: String,
-    ) : LocationDetailsIntent
+    fun notifyAccountSwitch(newAccountId: String) {
+        _selectedAccountFlow.value = newAccountId
+    }
 }

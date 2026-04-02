@@ -49,7 +49,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.passbolt.mobile.android.core.clipboard.ClipboardAccess
 import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
 import com.passbolt.mobile.android.core.fulldatarefresh.service.DataRefreshService
-import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
 import com.passbolt.mobile.android.core.navigation.compose.BottomTab
 import com.passbolt.mobile.android.core.navigation.compose.keys.CreateFolderNavigationKey
@@ -321,7 +320,7 @@ private fun HomeScreen(
 
     if (state.showAccountSwitchBottomSheet) {
         SwitchAccountBottomSheet(
-            appContext = AppContext.APP,
+            appContext = resourceHandlingStrategy.appContext,
             onDismissRequest = { onIntent(CloseSwitchAccount) },
         )
     }
