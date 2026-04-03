@@ -211,6 +211,7 @@ private fun GroupPermissionsScreen(
 private fun SaveLayout(onIntent: (GroupPermissionsIntent) -> Unit) {
     Surface(
         shadowElevation = 24.dp,
+        color = MaterialTheme.colorScheme.background,
         modifier = Modifier.fillMaxWidth(),
     ) {
         Column(

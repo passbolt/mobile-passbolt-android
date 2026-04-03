@@ -229,6 +229,7 @@ private fun UserHeader(
 private fun SaveLayout(onIntent: (UserPermissionsIntent) -> Unit) {
     Surface(
         shadowElevation = 24.dp,
+        color = MaterialTheme.colorScheme.background,
         modifier = Modifier.fillMaxWidth(),
     ) {
         Column(

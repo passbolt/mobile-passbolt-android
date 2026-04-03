@@ -65,12 +65,10 @@ class UserPermissionsViewModel(
 
     private fun save() {
         emitSideEffect(SetUpdatedPermissionResult(requireNotNull(viewState.value.permission)))
-        emitSideEffect(NavigateBack)
     }
 
     private fun deletePermission() {
         updateViewState { copy(isDeleteConfirmationVisible = false) }
         emitSideEffect(SetDeletePermissionResult(requireNotNull(viewState.value.permission)))
-        emitSideEffect(NavigateBack)
     }
 }
