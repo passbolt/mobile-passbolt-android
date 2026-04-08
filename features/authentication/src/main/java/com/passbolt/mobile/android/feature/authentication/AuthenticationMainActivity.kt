@@ -14,13 +14,13 @@ import com.passbolt.mobile.android.core.security.flagsecure.FlagSecureSetter
 import org.koin.android.ext.android.inject
 import org.koin.compose.scope.KoinScope
 import org.koin.core.annotation.KoinExperimentalAPI
-
-private const val AUTH_NAVIGATOR_SCOPE_ID = "auth_navigator"
+import java.util.UUID
 
 // NOTE: When changing name or package read core/navigation/README.md
 class AuthenticationMainActivity : AppCompatActivity() {
     private val flagSecureSetter: FlagSecureSetter by inject()
     private val startUpResolver: AuthenticationStartUpResolver by inject()
+    private val authNavigatorScopeId = "auth_navigator_${UUID.randomUUID()}"
 
     private val authConfig: AuthConfig by lazy {
         requireNotNull(
@@ -58,7 +58,7 @@ class AuthenticationMainActivity : AppCompatActivity() {
         setContent {
             @OptIn(KoinExperimentalAPI::class)
             KoinScope(
-                scopeID = AUTH_NAVIGATOR_SCOPE_ID,
+                scopeID = authNavigatorScopeId,
                 scopeQualifier = APP_NAVIGATOR_SCOPE,
             ) {
                 AuthenticationNavigation(

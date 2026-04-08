@@ -26,8 +26,7 @@ import org.koin.core.annotation.KoinExperimentalAPI
 import org.koin.core.parameter.parametersOf
 import org.koin.core.qualifier.named
 import org.koin.core.scope.Scope
-
-private const val AUTOFILL_NAVIGATOR_SCOPE_ID = "autofill_navigator"
+import java.util.UUID
 
 // NOTE: When changing name or package read core/navigation/README.md
 class AutofillResourcesActivity :
@@ -36,6 +35,7 @@ class AutofillResourcesActivity :
     AutofillCallback,
     ResourceHandlingStrategyProvider {
     override val scope: Scope by activityScope()
+    private val autofillNavigatorScopeId = "autofill_navigator_${UUID.randomUUID()}"
 
     private lateinit var viewModel: AutofillResourcesViewModel
 
@@ -75,7 +75,7 @@ class AutofillResourcesActivity :
                 }
 
             KoinScope(
-                scopeID = AUTOFILL_NAVIGATOR_SCOPE_ID,
+                scopeID = autofillNavigatorScopeId,
                 scopeQualifier = APP_NAVIGATOR_SCOPE,
             ) {
                 AutofillResourcesScreen(
