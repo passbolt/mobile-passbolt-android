@@ -1,0 +1,50 @@
+# Passbolt 3.0.0-51 Android app release notes
+
+## Added
+- MOB-3491: Add folders fetch using pagination
+
+## Improved
+- MOB-3814: Regenerate licenses.json
+- MOB-3673: Add default scheme if there is none before opening a website
+- MOB-3857, MOB-3788: Lift authentication mechanism to activity level
+- MOB-3860: Improve sign in UI spacing
+- MOB-3866: Change TOTP success fonts and colors
+- MOB-3887: Make error on labels bigger
+- MOB-3884: Correct login bottom insets
+- MOB-3863: Move feedback snackbar to ResourceDetailsScreen
+- MOB-3574: Biometric wording unification
+
+## Fixed
+- MOB-3730: Fix standalone note title and placeholder
+- MOB-3817: Fix showing passphrase hint
+- MOB-3749: Fix dancing bottom sheet glitch on some devices
+- MOB-3833: Fix resource icon not updating after edition
+- MOB-3783: Truncate long names for titles and snackbars
+- MOB-3850: Change copy uri icon to ic_link
+- MOB-3845: Add navigationPadding in metadata key change dialogs
+- MOB-3348: Fix crash on face recognition fail due to low conditions
+- MOB-3836: Fix wrong padding on confirm buttons
+
+## Maintenance
+- MOB-3584: Migrate authentication to MVI
+- MOB-3699: Cleanup folder details navigation
+- MOB-3741: Home navigation cleanup
+- MOB-3733: Migrate startup to MVI
+- MOB-3754: Fix nav graphs override; Remove AccountDetailsActivity and TransferAccountToAnotherDeviceActivity, add inclusive popToKey
+- MOB-3744: ResourceTags navigation cleanup
+- MOB-3727: Migrate autofill to MVI
+- MOB-3782: Migrate autofill dialogs to MVI and clean up legacy MVP
+- MOB-3702: Refactor Main to MVI
+- MOB-3812: Remove metadata key MVP dialogs and base classes
+- MOB-3812: Clean up core ui module
+- MOB-2518: Introduce compose fixes in signIn method automated tests enabling them to be run
+- MOB-3812: Remove MVP libraries
+- MOB-3795: Fix Log In screen automated tests
+- MOB-3708: Migrate main module to Compose navigation
+- MOB-3811: Migrate and fix UI automated tests tests: welcome, setup, settings, login
+- MOB-3811: Migrate and fix UI automated tests: bottom nav, folder creation, folder list, folder (no permission), filters
+- MOB-3811: Migrate and fix UI automated tests: creation, edition, deletion, expiry
+- MOB-3811: Migrate and fix UI automated tests: delete popups, share section, note, details, remove espresso
+- MOB-3875: Add all available for testing resource types
+- MOB-3328: Migrate compose test tags to testtags module
+- MOB-3878: Remove some of KoinComponent usages in favor of factory injection
