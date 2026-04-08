@@ -68,12 +68,10 @@ class GroupPermissionsViewModel(
 
     private fun save() {
         emitSideEffect(SetUpdatedPermissionResult(requireNotNull(viewState.value.groupPermission)))
-        emitSideEffect(NavigateBack)
     }
 
     private fun deletePermission() {
         updateViewState { copy(isDeleteConfirmationVisible = false) }
         emitSideEffect(SetDeletePermissionResult(requireNotNull(viewState.value.groupPermission)))
-        emitSideEffect(NavigateBack)
     }
 }

@@ -134,7 +134,7 @@ class GroupPermissionsViewModelTest : KoinTest {
         }
 
     @Test
-    fun `save should emit updated permission result and navigate back`() =
+    fun `save should emit updated permission result`() =
         runTest {
             viewModel = get { parametersOf(GROUP_PERMISSION, EDIT) }
 
@@ -146,13 +146,11 @@ class GroupPermissionsViewModelTest : KoinTest {
                 val setResult = awaitItem()
                 assertIs<SetUpdatedPermissionResult>(setResult)
                 assertThat(setResult.permission.permission).isEqualTo(UPDATE)
-
-                assertIs<NavigateBack>(awaitItem())
             }
         }
 
     @Test
-    fun `delete permission should show confirmation then emit result and navigate back`() =
+    fun `delete permission should show confirmation then emit result`() =
         runTest {
             viewModel = get { parametersOf(GROUP_PERMISSION, EDIT) }
 
@@ -168,8 +166,6 @@ class GroupPermissionsViewModelTest : KoinTest {
                 val deleteResult = awaitItem()
                 assertIs<SetDeletePermissionResult>(deleteResult)
                 assertThat(deleteResult.permission).isEqualTo(GROUP_PERMISSION)
-
-                assertIs<NavigateBack>(awaitItem())
             }
         }
 
