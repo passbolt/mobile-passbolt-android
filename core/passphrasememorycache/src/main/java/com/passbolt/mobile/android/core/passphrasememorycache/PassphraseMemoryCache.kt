@@ -63,7 +63,11 @@ class PassphraseMemoryCache(
         Timber.d("[Session] Passphrase cached")
     }
 
-    fun get() = value
+    fun get() =
+        when (val current = value) {
+            is PotentialPassphrase.Passphrase -> PotentialPassphrase.Passphrase(current.passphrase.copyOf())
+            is PotentialPassphrase.PassphraseNotPresent -> current
+        }
 
     @Suppress("MagicNumber") // second has 1000 millis
     fun getSessionDurationSeconds() =
