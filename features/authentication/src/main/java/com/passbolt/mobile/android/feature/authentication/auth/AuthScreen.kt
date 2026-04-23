@@ -356,7 +356,7 @@ private fun AuthScreen(
             PasswordInput(
                 title = stringResource(LocalizationR.string.auth_password_title),
                 hint = stringResource(LocalizationR.string.auth_enter_passphrase),
-                text = String(state.passphrase, Charsets.UTF_8),
+                text = state.passphrase,
                 onTextChange = { onIntent(PassphraseInputChanged(it.toByteArray(Charsets.UTF_8))) },
                 testTag = Auth.PASSPHRASE_INPUT,
                 modifier =
@@ -567,8 +567,8 @@ private fun AuthScreenButtonEnabledPreview() {
                             email = "john@passbolt.com",
                             domain = "https://passbolt.local",
                         ),
+                    passphrase = "mypassphrase",
                     isAuthButtonEnabled = true,
-                    passphrase = "mypassphrase".toByteArray(),
                 ),
             onIntent = {},
             snackbarHostState = SnackbarHostState(),
