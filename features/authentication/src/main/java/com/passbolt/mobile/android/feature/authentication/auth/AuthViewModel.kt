@@ -139,9 +139,22 @@ class AuthViewModel(
     ) {
     private var loginState: LoginState? = null
 
+    /**
+     * Operational passphrase.
+     * Typed bytes are mirrored into [AuthState.passphrase] as a display String;
+     * biometric-decrypted bytes are kept here but NOT mirrored into state,
+     * so the visibility toggle can't reveal a value the user never typed.
+     */
+    private var passphrase: ByteArray = ByteArray(0)
+
     init {
         loadAccountData()
         checkRootAndBiometry()
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        passphrase.erase()
     }
 
     @Suppress("CyclomaticComplexMethod")
@@ -244,13 +257,20 @@ class AuthViewModel(
         }
     }
 
-    private fun passphraseInputChanged(passphrase: ByteArray) {
-        updateViewState { copy(passphrase = passphrase, isAuthButtonEnabled = passphrase.isNotEmpty()) }
+    private fun passphraseInputChanged(newPassphrase: ByteArray) {
+        passphrase.erase()
+        passphrase = newPassphrase
+        updateViewState {
+            copy(
+                passphrase = String(newPassphrase, Charsets.UTF_8),
+                isAuthButtonEnabled = newPassphrase.isNotEmpty(),
+            )
+        }
     }
 
     private fun signIn() {
         emitSideEffect(HideKeyboard)
-        validatePassphrase(viewState.value.passphrase.copyOf())
+        validatePassphrase(passphrase.copyOf())
     }
 
     private fun validatePassphrase(passphrase: ByteArray) {
@@ -425,7 +445,7 @@ class AuthViewModel(
     private fun signInSuccess(updateSession: Boolean = true) {
         Timber.d("Authentication success")
         runtimeAuthenticatedFlag.isAuthenticated = true
-        passphraseMemoryCache.set(viewState.value.passphrase)
+        passphraseMemoryCache.set(passphrase.copyOf())
         val currentLoginState = requireNotNull(loginState)
         if (updateSession) {
             saveSessionUseCase.execute(
@@ -484,12 +504,9 @@ class AuthViewModel(
                     }
             if (potentialPassphrase is Passphrase) {
                 passphraseMemoryCache.set(potentialPassphrase.passphrase)
-                updateViewState {
-                    copy(
-                        passphrase = ByteArray(0),
-                        isAuthButtonEnabled = false,
-                    )
-                }
+                passphrase.erase()
+                passphrase = potentialPassphrase.passphrase.copyOf()
+                updateViewState { copy(passphrase = "", isAuthButtonEnabled = false) }
                 when (authConfig) {
                     is AuthConfig.RefreshPassphrase,
                     is AuthConfig.Mfa,
@@ -497,17 +514,7 @@ class AuthViewModel(
                         runtimeAuthenticatedFlag.isAuthenticated = true
                         emitSideEffect(AuthSuccess(authConfig, appContext))
                     }
-                    else -> {
-                        when (val cached = passphraseMemoryCache.get()) {
-                            is Passphrase -> performSignIn(cached.passphrase)
-                            else -> {
-                                emitSideEffect(
-                                    ShowErrorSnackbar(GENERIC),
-                                )
-                                Timber.e("Passphrase not found in cache")
-                            }
-                        }
-                    }
+                    else -> performSignIn(passphrase.copyOf())
                 }
             } else {
                 emitSideEffect(ShowErrorSnackbar(GENERIC))

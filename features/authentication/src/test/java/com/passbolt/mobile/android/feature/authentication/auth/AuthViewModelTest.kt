@@ -67,8 +67,11 @@ import org.koin.test.KoinTestRule
 import org.koin.test.get
 import org.mockito.Mockito.mock
 import org.mockito.kotlin.any
+import org.mockito.kotlin.argThat
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.never
 import org.mockito.kotlin.stub
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import javax.crypto.Cipher
 import kotlin.test.assertIs
@@ -439,8 +442,73 @@ class AuthViewModelTest : KoinTest {
             }
         }
 
+    @Test
+    fun `biometric auth success caches real passphrase and never an empty one`() =
+        runTest {
+            val mockCipher = mock<Cipher>()
+            whenever(mockCipher.iv) doReturn ByteArray(0)
+
+            val getPassphraseUseCase: GetPassphraseUseCase = get()
+            whenever(getPassphraseUseCase.execute(any())) doReturn
+                GetPassphraseUseCase.Output(
+                    PotentialPassphrase.Passphrase(BIOMETRIC_PASSPHRASE.toByteArray()),
+                )
+
+            val passphraseMemoryCache: PassphraseMemoryCache = get()
+
+            viewModel = get(parameters = { parametersOf(AuthConfig.RefreshPassphrase, USER_ID, AppContext.APP) })
+
+            viewModel.sideEffect.test {
+                viewModel.onIntent(BiometricAuthenticationSuccess(mockCipher))
+                assertIs<AuthSuccess>(awaitItem())
+            }
+
+            verify(passphraseMemoryCache).set(
+                argThat { contentEquals(BIOMETRIC_PASSPHRASE.toByteArray()) },
+            )
+            verify(passphraseMemoryCache, never()).set(argThat { isEmpty() })
+        }
+
+    @Test
+    fun `typed passphrase is mirrored into view state for display`() =
+        runTest {
+            viewModel = get(parameters = { parametersOf(AuthConfig.Startup, USER_ID, AppContext.APP) })
+
+            viewModel.onIntent(PassphraseInputChanged(TYPED_PASSPHRASE.toByteArray()))
+
+            viewModel.viewState.test {
+                val state = awaitItem()
+                assertThat(state.passphrase).isEqualTo(TYPED_PASSPHRASE)
+                assertThat(state.isAuthButtonEnabled).isTrue()
+            }
+        }
+
+    @Test
+    fun `biometric auth success does not expose decrypted passphrase in view state`() =
+        runTest {
+            val mockCipher = mock<Cipher>()
+            whenever(mockCipher.iv) doReturn ByteArray(0)
+
+            val getPassphraseUseCase: GetPassphraseUseCase = get()
+            whenever(getPassphraseUseCase.execute(any())) doReturn
+                GetPassphraseUseCase.Output(
+                    PotentialPassphrase.Passphrase(BIOMETRIC_PASSPHRASE.toByteArray()),
+                )
+
+            viewModel = get(parameters = { parametersOf(AuthConfig.RefreshPassphrase, USER_ID, AppContext.APP) })
+
+            viewModel.sideEffect.test {
+                viewModel.onIntent(BiometricAuthenticationSuccess(mockCipher))
+                assertIs<AuthSuccess>(awaitItem())
+            }
+
+            assertThat(viewModel.viewState.value.passphrase).isEmpty()
+        }
+
     private companion object {
         const val USER_ID = "test-user-id"
+        const val TYPED_PASSPHRASE = "typed-passphrase"
+        const val BIOMETRIC_PASSPHRASE = "biometric-passphrase"
 
         private val accountData =
             GetAccountDataUseCase.Output(
