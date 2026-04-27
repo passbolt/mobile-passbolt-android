@@ -5,6 +5,7 @@ sealed class ValueStyle {
 
     data class Secret(
         val differentiateCharacters: Boolean = false,
+        val isRevealed: Boolean = false,
     ) : ValueStyle()
 
     data object Linkified : ValueStyle()

@@ -50,7 +50,11 @@ internal fun PasswordSection(
                 ItemWithHeader(
                     headerText = stringResource(R.string.resource_details_password_header),
                     value = if (isPasswordUnmasked) password else "",
-                    valueStyle = ValueStyle.Secret(differentiateCharacters = isPasswordUnmasked),
+                    valueStyle =
+                        ValueStyle.Secret(
+                            differentiateCharacters = isPasswordUnmasked,
+                            isRevealed = isPasswordUnmasked,
+                        ),
                     actionIcon =
                         if (showPasswordEyeIcon) {
                             if (isPasswordUnmasked) ActionIcon.HIDE else ActionIcon.VIEW
