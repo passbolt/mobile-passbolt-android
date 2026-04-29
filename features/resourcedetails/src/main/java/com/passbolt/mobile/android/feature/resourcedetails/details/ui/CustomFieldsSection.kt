@@ -43,20 +43,20 @@ internal fun CustomFieldsSection(
                 val displayValue =
                     if (isVisible) {
                         when (fieldModel) {
-                            is BooleanCustomField -> fieldModel.secretValue?.toString() ?: ""
-                            is NumberCustomField -> fieldModel.secretValue?.toString() ?: ""
-                            is PasswordCustomField -> fieldModel.secretValue ?: ""
-                            is UriCustomField -> fieldModel.secretValue ?: ""
-                            is TextCustomField -> fieldModel.secretValue ?: ""
-                            null -> ""
-                        }
+                            is BooleanCustomField -> fieldModel.secretValue?.toString()
+                            is NumberCustomField -> fieldModel.secretValue?.toString()
+                            is PasswordCustomField -> fieldModel.secretValue
+                            is UriCustomField -> fieldModel.secretValue
+                            is TextCustomField -> fieldModel.secretValue
+                            null -> null
+                        }.orEmpty()
                     } else {
                         ""
                     }
                 ItemWithHeader(
                     headerText = label,
                     value = displayValue,
-                    valueStyle = ValueStyle.Secret(),
+                    valueStyle = ValueStyle.Secret(isRevealed = isVisible),
                     actionIcon = if (isVisible) ActionIcon.HIDE else ActionIcon.VIEW,
                     onItemClick = { onIntent(CopyCustomField(key)) },
                     onActionClick = { onIntent(ToggleCustomField(key)) },

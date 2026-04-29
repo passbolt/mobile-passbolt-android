@@ -68,12 +68,12 @@ fun ItemWithHeader(
 ) {
     val secretFont = FontFamily(Font(CoreUiR.font.inconsolata))
     val regularFont = FontFamily(Font(CoreUiR.font.inter))
-    val isSecret = valueStyle is ValueStyle.Secret
+    val isMaskedSecret = valueStyle is ValueStyle.Secret && !valueStyle.isRevealed
 
     val displayValue =
         when {
             value == null -> null
-            value.isEmpty() && isSecret -> stringResource(LocalizationR.string.hidden_secret)
+            value.isEmpty() && isMaskedSecret -> stringResource(LocalizationR.string.hidden_secret)
             else -> value
         }
 
