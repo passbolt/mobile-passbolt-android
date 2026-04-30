@@ -35,7 +35,9 @@ import com.passbolt.mobile.android.core.users.UsersInteractor
 import com.passbolt.mobile.android.database.snapshot.ResourcesSnapshot
 import com.passbolt.mobile.android.featureflags.usecase.GetFeatureFlagsUseCase
 import com.passbolt.mobile.android.metadata.interactor.MetadataKeysInteractor
+import com.passbolt.mobile.android.metadata.interactor.MetadataPrivateKeysInteractor
 import com.passbolt.mobile.android.metadata.interactor.MetadataSessionKeysInteractor
+import timber.log.Timber
 
 /**
  * Interactor that is responsible for fetching and updating the database for all home screen resources
@@ -48,6 +50,7 @@ class HomeDataInteractor(
     private val usersInteractor: UsersInteractor,
     private val resourceTypesInteractor: ResourceTypesInteractor,
     private val metadataKeysInteractor: MetadataKeysInteractor,
+    private val metadataPrivateKeysInteractor: MetadataPrivateKeysInteractor,
     private val metadataSessionKeysInteractor: MetadataSessionKeysInteractor,
     private val featureFlagsUseCase: GetFeatureFlagsUseCase,
     private val resourcesFullRefreshIdlingResource: ResourcesFullRefreshIdlingResource,
@@ -74,6 +77,11 @@ class HomeDataInteractor(
 
         val resourceTypesOutput = resourceTypesInteractor.fetchAndSaveResourceTypes()
         val userInteractorOutput = usersInteractor.fetchAndSaveUsers()
+
+        if (featureFlagsOutput.isV5MetadataAvailable) {
+            establishMetadataKeyTrust()
+        }
+
         val groupsRefreshOutput = groupsInteractor.fetchAndSaveGroups()
         val foldersRefreshOutput = foldersInteractor.fetchAndSaveFolders()
         val resourcesOutput = resourcesInteractor.fetchAndSaveResources()
@@ -111,6 +119,11 @@ class HomeDataInteractor(
                     saveSessionKeysOutput.authenticationState,
             )
         }
+    }
+
+    private suspend fun establishMetadataKeyTrust() {
+        val result = metadataPrivateKeysInteractor.verifyMetadataPrivateKey()
+        Timber.d("Metadata key trust verification during data refresh: $result")
     }
 
     sealed class Output : AuthenticatedUseCaseOutput {

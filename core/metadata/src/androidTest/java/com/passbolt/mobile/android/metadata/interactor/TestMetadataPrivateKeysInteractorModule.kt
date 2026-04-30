@@ -81,6 +81,7 @@ val testMetadataPrivateKeysInteractorModule =
                 getSelectedUserPrivateKeyUseCase = mockGetSelectedUserPrivateKeyUseCase,
                 passphraseMemoryCache = mockPassphraseMemoryCache,
                 getTrustedMetadataKeyUseCase = mockGetTrustedMetadataKeyUseCase,
+                metadataKeysInteractor = mockMetadataKeysInteractor,
             )
         }
     }
