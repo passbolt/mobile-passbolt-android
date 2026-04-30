@@ -42,14 +42,14 @@ import com.passbolt.mobile.android.core.navigation.compose.keys.AccountDetailsNa
 import com.passbolt.mobile.android.core.navigation.compose.keys.SettingsNavigationKey.KeyInspector
 import com.passbolt.mobile.android.core.navigation.compose.keys.TransferAccountToAnotherDeviceKey.Onboarding
 import com.passbolt.mobile.android.core.ui.R
-import com.passbolt.mobile.android.core.ui.compose.menu.OpenableSettingsItem
-import com.passbolt.mobile.android.core.ui.compose.topbar.BackNavigationIcon
-import com.passbolt.mobile.android.core.ui.compose.topbar.TitleAppBar
+import com.passbolt.mobile.android.core.ui.menu.OpenableSettingsItem
+import com.passbolt.mobile.android.core.ui.topbar.BackNavigationIcon
+import com.passbolt.mobile.android.core.ui.topbar.TitleAppBar
+import com.passbolt.mobile.android.feature.settings.screen.accounts.AccountsScreenSideEffect.NavigateBack
 import com.passbolt.mobile.android.feature.settings.screen.accounts.AccountsScreenSideEffect.NavigateToAccountDetails
 import com.passbolt.mobile.android.feature.settings.screen.accounts.AccountsScreenSideEffect.NavigateToKeyInspector
 import com.passbolt.mobile.android.feature.settings.screen.accounts.AccountsScreenSideEffect.NavigateToManageAccounts
 import com.passbolt.mobile.android.feature.settings.screen.accounts.AccountsScreenSideEffect.NavigateToTransferAccount
-import com.passbolt.mobile.android.feature.settings.screen.accounts.AccountsScreenSideEffect.NavigateUp
 import com.passbolt.mobile.android.feature.settings.screen.accounts.AccountsSettingsIntent.GoBack
 import com.passbolt.mobile.android.feature.settings.screen.accounts.AccountsSettingsIntent.GoToAccountDetails
 import com.passbolt.mobile.android.feature.settings.screen.accounts.AccountsSettingsIntent.GoToKeyInspector
@@ -78,7 +78,7 @@ internal fun AccountsSettingsScreen(
             NavigateToKeyInspector -> navigator.navigateToKey(KeyInspector)
             NavigateToManageAccounts -> navigator.startNavigationActivity(context, AuthenticationManageAccounts)
             NavigateToTransferAccount -> navigator.navigateToKey(Onboarding)
-            NavigateUp -> navigator.navigateBack()
+            NavigateBack -> navigator.navigateBack()
         }
     }
 }

@@ -15,13 +15,13 @@ import androidx.compose.ui.res.stringResource
 import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
 import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
-import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.AccountDetails
 import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.AuthenticationManageAccounts
 import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.AuthenticationStartUp
+import com.passbolt.mobile.android.core.navigation.compose.keys.AccountDetailsNavigationKey.AccountDetails
 import com.passbolt.mobile.android.core.ui.R
-import com.passbolt.mobile.android.core.ui.compose.bottomsheet.BottomSheetHeader
-import com.passbolt.mobile.android.core.ui.compose.dialogs.SignOutAlertDialog
-import com.passbolt.mobile.android.core.ui.compose.progressdialog.ProgressDialog
+import com.passbolt.mobile.android.core.ui.bottomsheet.BottomSheetHeader
+import com.passbolt.mobile.android.core.ui.dialogs.SignOutAlertDialog
+import com.passbolt.mobile.android.core.ui.progressdialog.ProgressDialog
 import com.passbolt.mobile.android.feature.home.switchaccount.SwitchAccountIntent.CloseSignOutDialog
 import com.passbolt.mobile.android.feature.home.switchaccount.SwitchAccountIntent.Initialize
 import com.passbolt.mobile.android.feature.home.switchaccount.SwitchAccountIntent.SeeCurrentAccountDetails
@@ -85,7 +85,7 @@ fun SwitchAccountBottomSheet(
             Dismiss -> onDismissRequest()
             NavigateToAccountDetails -> {
                 onDismissRequest()
-                navigator.startNavigationActivity(context, AccountDetails)
+                navigator.navigateToKey(AccountDetails)
             }
             is NavigateToSignInForAccount -> {
                 onDismissRequest()

@@ -23,15 +23,8 @@
 
 package com.passbolt.mobile.android.locationdetails
 
-import com.passbolt.mobile.android.locationdetails.ui.LocationItem
-
 internal sealed interface LocationDetailsIntent {
     data object GoBack : LocationDetailsIntent
-
-    data class Initialize(
-        val locationItem: LocationItem,
-        val itemId: String,
-    ) : LocationDetailsIntent
 
     data class ToggleExpanded(
         val itemId: String,

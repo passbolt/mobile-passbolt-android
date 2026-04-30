@@ -1,7 +1,6 @@
 plugins {
     alias libs.plugins.android.library
     alias libs.plugins.kotlin.gradle
-    alias libs.plugins.navigation.safeargs
 }
 
 dependencies {
@@ -25,9 +24,6 @@ dependencies {
 
 android {
     namespace = "com.passbolt.mobile.android.core.groups"
-    buildFeatures {
-        viewBinding true
-    }
 }
 
 kotlin {

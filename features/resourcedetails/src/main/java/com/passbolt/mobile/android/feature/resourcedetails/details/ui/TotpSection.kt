@@ -22,10 +22,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.passbolt.mobile.android.core.compose.Inconsolata
+import com.passbolt.mobile.android.core.formatter.OtpFormatter
 import com.passbolt.mobile.android.core.localization.R
-import com.passbolt.mobile.android.core.ui.compose.section.Section
 import com.passbolt.mobile.android.core.ui.controller.TotpComposeController
-import com.passbolt.mobile.android.core.ui.formatter.OtpFormatter
+import com.passbolt.mobile.android.core.ui.section.Section
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent
 import com.passbolt.mobile.android.ui.OtpItemWrapper
 import org.koin.compose.koinInject

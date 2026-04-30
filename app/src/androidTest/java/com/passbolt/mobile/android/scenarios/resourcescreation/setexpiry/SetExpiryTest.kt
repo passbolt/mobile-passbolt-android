@@ -1,6 +1,6 @@
 /**
  * Passbolt - Open source password manager for teams
- * Copyright (c) 2024 Passbolt SA
+ * Copyright (c) 2024-2026 Passbolt SA
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
  * Public License (AGPL) as published by the Free Software Foundation version 3.
@@ -24,6 +24,7 @@
 package com.passbolt.mobile.android.scenarios.resourcescreation.setexpiry
 
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
+import androidx.compose.ui.test.onNodeWithText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
 import androidx.test.platform.app.InstrumentationRegistry
@@ -36,6 +37,7 @@ import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.feature.authentication.AuthenticationMainActivity
 import com.passbolt.mobile.android.helpers.chooseFilter
 import com.passbolt.mobile.android.helpers.createNewPasswordFromHomeScreen
+import com.passbolt.mobile.android.helpers.getString
 import com.passbolt.mobile.android.helpers.searchAndOpenFirstResourceByName
 import com.passbolt.mobile.android.helpers.signIn
 import com.passbolt.mobile.android.instrumentationTestsModule
@@ -43,18 +45,17 @@ import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
 import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.koin.test.KoinTest
 import org.koin.test.inject
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 @RunWith(AndroidJUnit4::class)
 @MediumTest
-@Ignore("Deprecated: refactor needed - entire test class disabled")
 class SetExpiryTest : KoinTest {
-    @get:Rule
+    @get:Rule(order = 0)
     val startUpActivityRule =
         lazyActivitySetupScenarioRule<AuthenticationMainActivity>(
             koinOverrideModules = listOf(instrumentationTestsModule),
@@ -95,21 +96,29 @@ class SetExpiryTest : KoinTest {
         // And    automatic expiry is enabled on the server
         // And    automatic expiry is set to <number of days> // 7 days
         // When   I create a new resource
-        composeTestRule.signIn(managedAccountIntentCreator.getPassphrase())
-        createNewPasswordFromHomeScreen("PasswordWithExpirySet")
-        composeTestRule.chooseFilter(filters_menu_recently_modified)
+        composeTestRule.apply {
+            signIn(managedAccountIntentCreator.getPassphrase())
+            createNewPasswordFromHomeScreen(RESOURCE_NAME)
+            chooseFilter(filters_menu_recently_modified)
+        }
     }
 
-    //    https://passbolt.testrail.io/index.php?/cases/view/11935
+    /**  [Set expiry of created resource to default expiry period](https://passbolt.testrail.io/index.php?/cases/view/11935)
+     *
+     *      Given   I created a new resource
+     *      When    I open the resource details
+     *      Then    The resource is marked to expire after the configured number of days
+     */
     @Test
     fun setExpiryOfCreatedResourceToDefaultExpiryPeriod() {
-        composeTestRule.searchAndOpenFirstResourceByName("PasswordWithExpirySet")
-//        onView(withId(com.passbolt.mobile.android.feature.resources.R.id.expiryItem)).check(matches(isDisplayed()))
-        // Then   The resource is marked to expire after <number of days>
-//        onView(withText("In 7 days")).check(
-//            matches(
-//                isDisplayed(),
-//            ),
-//        )
+        composeTestRule.apply {
+            searchAndOpenFirstResourceByName(RESOURCE_NAME)
+            onNodeWithText(getString(LocalizationR.string.resource_details_expiry_header)).assertExists()
+            onNodeWithText("In 7 days").assertExists()
+        }
+    }
+
+    private companion object {
+        private const val RESOURCE_NAME = "PasswordWithExpirySet"
     }
 }

@@ -1,6 +1,6 @@
 /**
  * Passbolt - Open source password manager for teams
- * Copyright (c) 2021-2023 Passbolt SA
+ * Copyright (c) 2021-2026 Passbolt SA
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
  * Public License (AGPL) as published by the Free Software Foundation version 3.
@@ -23,39 +23,37 @@
 
 package com.passbolt.mobile.android.scenarios.login
 
-import androidx.appcompat.widget.Toolbar
-import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.matcher.ViewMatchers
-import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
-import androidx.test.espresso.matcher.ViewMatchers.withClassName
-import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.junit4.createEmptyComposeRule
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import androidx.test.platform.app.InstrumentationRegistry
-import com.google.android.material.R
-import com.passbolt.mobile.android.commontest.viewassertions.CastedViewAssertion
 import com.passbolt.mobile.android.core.idlingresource.ResourcesFullRefreshIdlingResource
 import com.passbolt.mobile.android.core.idlingresource.SignInIdlingResource
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.feature.authentication.AuthenticationMainActivity
+import com.passbolt.mobile.android.helpers.getString
 import com.passbolt.mobile.android.instrumentationTestsModule
 import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
 import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
-import org.hamcrest.CoreMatchers.containsString
+import com.passbolt.mobile.android.testtags.composetags.Auth
+import com.passbolt.mobile.android.testtags.composetags.BackNavigation
+import com.passbolt.mobile.android.testtags.composetags.PasswordField
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import com.passbolt.mobile.android.feature.authentication.R as authR
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 @RunWith(AndroidJUnit4::class)
 @LargeTest
 class LogInTest : KoinComponent {
-    @get:Rule
+    @get:Rule(order = 0)
     val startUpActivityRule =
         lazyActivitySetupScenarioRule<AuthenticationMainActivity>(
             koinOverrideModules = listOf(instrumentationTestsModule),
@@ -79,6 +77,9 @@ class LogInTest : KoinComponent {
             IdlingResourceRule(arrayOf(signInIdlingResource, resourcesFullRefreshIdlingResource))
         }
 
+    @get:Rule
+    val composeTestRule = createEmptyComposeRule()
+
     //  https://passbolt.testrail.io/index.php?/cases/view/2368
     @Test
     fun asAMobileUserWithoutBiometricsConfiguredIAmPromptedToEnterMyPassphraseToLogin() {
@@ -89,24 +90,26 @@ class LogInTest : KoinComponent {
         //  When   I open the application
         //  Then   I see the splash screen for a few seconds
         //  And    I see a login page prompting me to enter the passphrase
-        //  And    I see an input field to enter my passphrase
-        onView(withClassName(containsString("TextInputEditText")))
-            .check(matches(isDisplayed()))
-        //  And    I see an eye button to show my passphrase
-        onView(withId(R.id.text_input_end_icon))
-            .check(matches(isDisplayed()))
-        //  And    I do not see a biometric provider button <<not automated>>
-        //  And    I see a “Sign in” primary button
-        onView(withId(authR.id.authButton))
-            .check(matches(isDisplayed()))
-        //  And    I see a forgot my passphrase button
-        onView(withId(authR.id.forgotPasswordButton))
-            .check(matches(isDisplayed()))
-        //  And    I see a back arrow leading to the "List of accounts" welcome screen
-        onView(ViewMatchers.isAssignableFrom(Toolbar::class.java))
-            .check(CastedViewAssertion<Toolbar> { it.navigationIcon != null })
-        //  And    I see my avatar
-        onView(withId(authR.id.avatarImage))
-            .check(matches(isDisplayed()))
+        composeTestRule.apply {
+            //  And    I see an input field to enter my passphrase
+            onNodeWithTag(Auth.PASSPHRASE_INPUT)
+                .assertIsDisplayed()
+            //  And    I see an eye button to show my passphrase
+            onNodeWithTag(PasswordField.VISIBILITY_TOGGLE)
+                .assertIsDisplayed()
+            //  And    I do not see a biometric provider button <<not automated>>
+            //  And    I see a "Sign in" primary button
+            onNodeWithTag(Auth.SIGN_IN_BUTTON)
+                .assertIsDisplayed()
+            //  And    I see a forgot my passphrase button
+            onNodeWithText(getString(LocalizationR.string.auth_forgot_password_button))
+                .assertIsDisplayed()
+            //  And    I see a back arrow leading to the "List of accounts" welcome screen
+            onNodeWithTag(BackNavigation.ICON, useUnmergedTree = true)
+                .assertIsDisplayed()
+            //  And    I see my avatar
+            onNodeWithTag(Auth.AVATAR)
+                .assertIsDisplayed()
+        }
     }
 }

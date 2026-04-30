@@ -29,14 +29,13 @@ import com.passbolt.mobile.android.common.datarefresh.DataRefreshStatus.Idle.Fin
 import com.passbolt.mobile.android.common.datarefresh.DataRefreshStatus.Idle.NotCompleted
 import com.passbolt.mobile.android.common.datarefresh.DataRefreshStatus.InProgress
 import com.passbolt.mobile.android.common.datarefresh.DataRefreshTrackingFlow
+import com.passbolt.mobile.android.core.compose.SideEffectViewModel
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceTagsUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUseCase
-import com.passbolt.mobile.android.feature.authentication.compose.AuthenticatedViewModel
 import com.passbolt.mobile.android.tagsdetails.ResourceTagsIntent.GoBack
-import com.passbolt.mobile.android.tagsdetails.ResourceTagsIntent.Initialize
+import com.passbolt.mobile.android.tagsdetails.ResourceTagsSideEffect.NavigateBack
 import com.passbolt.mobile.android.tagsdetails.ResourceTagsSideEffect.NavigateToHome
-import com.passbolt.mobile.android.tagsdetails.ResourceTagsSideEffect.NavigateUp
 import com.passbolt.mobile.android.tagsdetails.ResourceTagsSideEffect.ShowContentNotAvailable
 import com.passbolt.mobile.android.tagsdetails.ResourceTagsSideEffect.ShowErrorSnackbar
 import com.passbolt.mobile.android.tagsdetails.SnackbarErrorType.FAILED_TO_REFRESH_DATA
@@ -44,22 +43,24 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 internal class ResourceTagsViewModel(
+    coroutineLaunchContext: CoroutineLaunchContext,
+    private val resourceId: String,
     private val getLocalResourceUseCase: GetLocalResourceUseCase,
     private val getLocalResourceTagsUseCase: GetLocalResourceTagsUseCase,
-    private val coroutineLaunchContext: CoroutineLaunchContext,
     private val dataRefreshTrackingFlow: DataRefreshTrackingFlow,
-) : AuthenticatedViewModel<ResourceTagsState, ResourceTagsSideEffect>(ResourceTagsState()) {
+) : SideEffectViewModel<ResourceTagsState, ResourceTagsSideEffect>(ResourceTagsState()) {
+    init {
+        viewModelScope.launch(coroutineLaunchContext.io) {
+            synchronizeWithDataRefresh(resourceId)
+        }
+        viewModelScope.launch(coroutineLaunchContext.io) {
+            loadData(resourceId)
+        }
+    }
+
     fun onIntent(intent: ResourceTagsIntent) {
         when (intent) {
-            GoBack -> emitSideEffect(NavigateUp)
-            is Initialize -> {
-                viewModelScope.launch(coroutineLaunchContext.io) {
-                    synchronizeWithDataRefresh(intent.resourceId)
-                }
-                viewModelScope.launch(coroutineLaunchContext.io) {
-                    loadData(intent.resourceId)
-                }
-            }
+            GoBack -> emitSideEffect(NavigateBack)
         }
     }
 

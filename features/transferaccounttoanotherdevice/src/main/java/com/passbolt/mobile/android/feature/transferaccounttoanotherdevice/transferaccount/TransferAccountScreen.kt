@@ -59,19 +59,18 @@ import com.journeyapps.barcodescanner.BarcodeEncoder
 import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
 import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
 import com.passbolt.mobile.android.core.navigation.compose.keys.TransferAccountToAnotherDeviceKey.TransferStatus
-import com.passbolt.mobile.android.core.ui.compose.button.PrimaryButton
-import com.passbolt.mobile.android.core.ui.compose.dialogs.CancelAccountTransferAlertDialog
-import com.passbolt.mobile.android.core.ui.compose.progressdialog.ProgressDialog
-import com.passbolt.mobile.android.core.ui.compose.topbar.BackNavigationIcon
-import com.passbolt.mobile.android.core.ui.compose.topbar.TitleAppBar
-import com.passbolt.mobile.android.feature.authentication.compose.AuthenticationHandler
-import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.TransferAccountNavigation
+import com.passbolt.mobile.android.core.ui.button.PrimaryButton
+import com.passbolt.mobile.android.core.ui.dialogs.CancelAccountTransferAlertDialog
+import com.passbolt.mobile.android.core.ui.progressdialog.ProgressDialog
+import com.passbolt.mobile.android.core.ui.topbar.BackNavigationIcon
+import com.passbolt.mobile.android.core.ui.topbar.TitleAppBar
 import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccount.TransferAccountIntent.CancelTransfer
 import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccount.TransferAccountIntent.ConfirmCancelTransfer
 import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccount.TransferAccountIntent.DismissCancelDialog
 import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccount.TransferAccountIntent.GoBack
 import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccount.TransferAccountScreenSideEffect.NavigateToResult
 import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccount.TransferAccountScreenSideEffect.ShowErrorSnackbar
+import com.passbolt.mobile.android.testtags.composetags.TransferAccount
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
@@ -97,19 +96,9 @@ internal fun TransferAccountScreen(
         onIntent = viewModel::onIntent,
     )
 
-    AuthenticationHandler(
-        onAuthenticatedIntent = viewModel::onAuthenticationIntent,
-        authenticationSideEffect = viewModel.authenticationSideEffect,
-    )
-
     SideEffectDispatcher(viewModel.sideEffect) {
         when (it) {
-            is NavigateToResult ->
-                if (context is TransferAccountNavigation) {
-                    context.navigateToKey(TransferStatus(it.statusType))
-                } else {
-                    navigator.navigateToKey(TransferStatus(it.statusType))
-                }
+            is NavigateToResult -> navigator.navigateToKey(TransferStatus(it.statusType))
             is ShowErrorSnackbar ->
                 coroutineScope.launch {
                     snackbarHostState.showSnackbar(getSnackbarMessage(context, it), duration = Short)
@@ -225,7 +214,7 @@ private fun QrCodeImage(
             modifier =
                 modifier
                     .size(qrSizePx.dp)
-                    .testTag("QrCode"), // TODO: move it to :testtags module once MOB-3312 gets resolved
+                    .testTag(TransferAccount.QR_CODE),
         )
     }
 }

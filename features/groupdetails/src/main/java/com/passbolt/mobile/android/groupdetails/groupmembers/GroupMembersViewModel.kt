@@ -25,8 +25,8 @@ package com.passbolt.mobile.android.groupdetails.groupmembers
 
 import androidx.lifecycle.viewModelScope
 import com.passbolt.mobile.android.core.commongroups.usecase.db.GetGroupWithUsersUseCase
+import com.passbolt.mobile.android.core.compose.SideEffectViewModel
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
-import com.passbolt.mobile.android.feature.authentication.compose.AuthenticatedViewModel
 import com.passbolt.mobile.android.groupdetails.groupmembers.GroupMembersIntent.GoBack
 import com.passbolt.mobile.android.groupdetails.groupmembers.GroupMembersIntent.GoToMemberDetails
 import com.passbolt.mobile.android.groupdetails.groupmembers.GroupMembersIntent.Initialize
@@ -37,7 +37,7 @@ import kotlinx.coroutines.launch
 internal class GroupMembersViewModel(
     private val getGroupWithUsersUseCase: GetGroupWithUsersUseCase,
     private val coroutineLaunchContext: CoroutineLaunchContext,
-) : AuthenticatedViewModel<GroupMembersState, GroupMembersSideEffect>(GroupMembersState()) {
+) : SideEffectViewModel<GroupMembersState, GroupMembersSideEffect>(GroupMembersState()) {
     fun onIntent(intent: GroupMembersIntent) {
         when (intent) {
             GoBack -> emitSideEffect(NavigateUp)

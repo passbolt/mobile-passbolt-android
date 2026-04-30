@@ -1,6 +1,6 @@
 /**
  * Passbolt - Open source password manager for teams
- * Copyright (c) 2025 Passbolt SA
+ * Copyright (c) 2025-2026 Passbolt SA
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
  * Public License (AGPL) as published by the Free Software Foundation version 3.
@@ -29,7 +29,11 @@ enum class TestResourceType(
     SIMPLE_PASSWORD("Simple password - v4"),
     PASSWORD_WITH_DESCRIPTION("Password with description - v4"),
     PASSWORD_DESCRIPTION_TOTP("Password, Description and TOTP - v4"),
+    TOTP("TOTP - v4"),
     SIMPLE_PASSWORD_DEPRECATED("Simple Password (Deprecated)"),
     DEFAULT_RESOURCE_TYPE("Default resource type"),
     DEFAULT_RESOURCE_TYPE_WITH_TOTP("Default resource with TOTP"),
+    STANDALONE_TOTP("Standalone TOTP"),
+    STANDALONE_NOTE("Standalone note"),
+    STANDALONE_CUSTOM_FIELDS("Standalone custom fields"),
 }

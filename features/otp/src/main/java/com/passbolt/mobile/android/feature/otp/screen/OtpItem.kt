@@ -36,11 +36,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
+import com.passbolt.mobile.android.common.extension.toSingleLine
 import com.passbolt.mobile.android.core.compose.Inconsolata
+import com.passbolt.mobile.android.core.formatter.OtpFormatter
 import com.passbolt.mobile.android.core.resources.resourceicon.ResourceIconProvider
 import com.passbolt.mobile.android.core.ui.R
 import com.passbolt.mobile.android.core.ui.controller.TotpComposeController
-import com.passbolt.mobile.android.core.ui.formatter.OtpFormatter
 import com.passbolt.mobile.android.ui.OtpItemWrapper
 import com.passbolt.mobile.android.ui.isExpired
 import org.koin.compose.koinInject
@@ -109,7 +110,9 @@ internal fun OtpItem(
 
         Column(modifier = Modifier.Companion.weight(1f)) {
             Text(
-                text = otpItem.resource.metadataJsonModel.name,
+                text =
+                    otpItem.resource.metadataJsonModel.name
+                        .toSingleLine(),
                 style = MaterialTheme.typography.titleMedium,
                 maxLines = 1,
                 overflow = TextOverflow.Companion.Ellipsis,

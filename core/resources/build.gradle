@@ -41,9 +41,6 @@ dependencies {
 
 android {
     namespace = "com.passbolt.mobile.android.core.resources"
-    buildFeatures {
-        viewBinding true
-    }
 }
 
 kotlin {

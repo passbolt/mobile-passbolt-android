@@ -26,10 +26,10 @@ package com.passbolt.mobile.android.permissions.permissionrecipients
 import androidx.lifecycle.viewModelScope
 import com.passbolt.mobile.android.common.search.SearchableMatcher
 import com.passbolt.mobile.android.core.commongroups.usecase.db.GetLocalGroupsUseCase
+import com.passbolt.mobile.android.core.compose.SideEffectViewModel
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
-import com.passbolt.mobile.android.core.ui.compose.search.SearchInputEndIconMode
+import com.passbolt.mobile.android.core.ui.search.SearchInputEndIconMode
 import com.passbolt.mobile.android.core.users.usecase.db.GetLocalUsersUseCase
-import com.passbolt.mobile.android.feature.authentication.compose.AuthenticatedViewModel
 import com.passbolt.mobile.android.mappers.PermissionsModelMapper
 import com.passbolt.mobile.android.mappers.SharePermissionsModelMapper.Companion.TEMPORARY_NEW_PERMISSION_ID
 import com.passbolt.mobile.android.permissions.permissionrecipients.PermissionRecipientsIntent.GoBack
@@ -53,7 +53,7 @@ class PermissionRecipientsViewModel(
     private val permissionsModelMapper: PermissionsModelMapper,
     private val searchableMatcher: SearchableMatcher,
     private val coroutineLaunchContext: CoroutineLaunchContext,
-) : AuthenticatedViewModel<PermissionRecipientsState, PermissionRecipientsSideEffect>(
+) : SideEffectViewModel<PermissionRecipientsState, PermissionRecipientsSideEffect>(
         initialState =
             PermissionRecipientsState(
                 currentPermissions = alreadyAddedGroupPermissions.toList() + alreadyAddedUserPermissions.toList(),

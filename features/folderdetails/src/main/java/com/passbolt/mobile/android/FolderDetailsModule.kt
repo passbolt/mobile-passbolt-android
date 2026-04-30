@@ -1,6 +1,10 @@
 package com.passbolt.mobile.android
 
+import com.passbolt.mobile.android.core.navigation.compose.base.Feature
+import com.passbolt.mobile.android.core.navigation.compose.base.FeatureModuleNavigation
+import com.passbolt.mobile.android.folderdetails.FolderDetailsFeatureNavigation
 import com.passbolt.mobile.android.folderdetails.folderDetailsModule
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 /**
@@ -29,4 +33,5 @@ import org.koin.dsl.module
 val folderDetailsModule =
     module {
         folderDetailsModule()
+        single<FeatureModuleNavigation>(named(Feature.FOLDER_DETAILS)) { FolderDetailsFeatureNavigation() }
     }

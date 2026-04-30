@@ -44,8 +44,8 @@ private const val SESSION_DURATION_BEFORE_SKEW_SECONDS = 30L
 
 /**
  * Runs operation which requires authentication (backed or local passphrase). If operation has unauthenticated status
- * it is communicated to the caller (@see BaseAuthenticatedContract) and awaiting on authentication refresh starts. After receiving authentication
- * refreshed event the initial operation is automatically restarted.
+ * it is communicated via SessionRefreshTrackingFlow and awaiting on authentication refresh starts. After receiving
+ * authentication refreshed event the initial operation is automatically restarted.
  *
  */
 class AuthenticatedOperationRunner : KoinComponent {

@@ -35,7 +35,6 @@ import com.passbolt.mobile.android.entity.resource.ResourceWithMetadata
 import com.passbolt.mobile.android.serializers.gson.validation.JsonSchemaValidationRunner
 import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes
 import kotlinx.coroutines.withContext
-import org.koin.core.component.KoinComponent
 import timber.log.Timber
 import java.time.ZonedDateTime
 import java.util.UUID
@@ -54,7 +53,7 @@ open class ResourceListItemDeserializer(
     private val supportedResourceTypesIds: Set<UUID>,
     private val resourcesSnapshot: ResourcesSnapshot,
     private val coroutineLaunchContext: CoroutineLaunchContext,
-) : KoinComponent {
+) {
     suspend fun deserialize(json: JsonElement): ResourceResponseDto? {
         val resourceTypeId = json.asJsonObject[SerializedNames.RESOURCE_TYPE_ID].asString
         val slug = resourceTypeIdToSlugMapping[UUID.fromString(resourceTypeId)]

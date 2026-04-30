@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.mappers
 
 import com.passbolt.mobile.android.dto.response.FolderResponseDto
 import com.passbolt.mobile.android.entity.folder.Folder
+import com.passbolt.mobile.android.entity.folder.FolderUpdateState
 import com.passbolt.mobile.android.entity.folder.FolderWithChildItemsCountAndPath
 import com.passbolt.mobile.android.ui.FolderModel
 import com.passbolt.mobile.android.ui.FolderModelWithAttributes
@@ -50,13 +51,19 @@ class FolderModelMapper(
         )
     }
 
-    fun map(folderModel: FolderModel): Folder =
+    fun map(folderModel: FolderModel): Folder = map(folderModel, FolderUpdateState.UPDATED)
+
+    fun map(
+        folderModel: FolderModel,
+        folderUpdateState: FolderUpdateState,
+    ): Folder =
         Folder(
             folderId = folderModel.folderId,
             name = folderModel.name,
             permission = permissionsModelMapper.map(folderModel.permission),
             parentId = folderModel.parentFolderId,
             isShared = folderModel.isShared,
+            updateState = folderUpdateState,
         )
 
     fun map(folderEntity: Folder): FolderModel =

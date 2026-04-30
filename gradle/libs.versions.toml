@@ -24,7 +24,6 @@ dependencyAnalysis = "3.4.1"
 licensee = "1.14.1"
 androidXcore = "1.17.0"
 appcompat = "1.7.1"
-constraintLayout = "2.2.1"
 navigation = "2.9.6"
 security = "1.1.0-alpha06"
 biometric = "1.2.0-alpha05"
@@ -32,7 +31,6 @@ fragment = "1.8.9"
 activity = "1.11.0"
 cameraX = "1.5.1"
 lifecycle = "2.9.4"
-swiperefresh = "1.1.0"
 appStartUp = "1.2.0"
 splashScreen = "1.2.0"
 material = "1.14.0-alpha03"
@@ -44,8 +42,6 @@ zxing = "4.3.0"
 gson = "2.13.2"
 appDistribution = "5.2.0"
 coil = "3.3.0"
-fastAdapterCore = "5.7.0"
-fastAdapterCoreAnimators = "1.1.0"
 easylauncher = "6.4.1"
 fusionauthJwt = "5.3.3"
 serializationJson = "1.9.0"
@@ -80,7 +76,6 @@ kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref =
 # androidx
 androidx-core = { module = "androidx.core:core-ktx", version.ref = "androidXcore" }
 appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
-constraintlayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "constraintLayout" }
 navigation-fragment = { module = "androidx.navigation:navigation-fragment-ktx", version.ref = "navigation" }
 navigation-ui = { module = "androidx.navigation:navigation-ui-ktx", version.ref = "navigation" }
 security = { module = "androidx.security:security-crypto", version.ref = "security" }
@@ -93,7 +88,6 @@ camerax-view = { module = "androidx.camera:camera-view", version.ref = "cameraX"
 camerax-mlvision = { module = "androidx.camera:camera-mlkit-vision", version.ref = "cameraX" }
 lifecycle-annotationprocessor = { module = "androidx.lifecycle:lifecycle-common-java8", version.ref = "lifecycle" }
 lifecycle-process = { module = "androidx.lifecycle:lifecycle-process", version.ref = "lifecycle" }
-swiperefresh = { module = "androidx.swiperefreshlayout:swiperefreshlayout", version.ref = "swiperefresh" }
 app-startup = { module = "androidx.startup:startup-runtime", version.ref = "appStartUp" }
 splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "splashScreen" }
 androidx-navigation3-runtime = { module = "androidx.navigation3:navigation3-runtime", version.ref = "nav3Core" }
@@ -103,13 +97,6 @@ androidx-lifecycle-service = { module = "androidx.lifecycle:lifecycle-service", 
 
 # ui
 material = { module = "com.google.android.material:material", version.ref = "material" }
-fastadapter-core = { module = "com.mikepenz:fastadapter", version.ref = "fastAdapterCore" }
-fastadapter-binding = { module = "com.mikepenz:fastadapter-extensions-binding", version.ref = "fastAdapterCore" }
-fastadapter-utils = { module = "com.mikepenz:fastadapter-extensions-utils", version.ref = "fastAdapterCore" }
-fastadapter-diff = { module = "com.mikepenz:fastadapter-extensions-diff", version.ref = "fastAdapterCore" }
-fastadapter-expandable = { module = "com.mikepenz:fastadapter-extensions-expandable", version.ref = "fastAdapterCore" }
-fastadapter-ui = { module = "com.mikepenz:fastadapter-extensions-ui", version.ref = "fastAdapterCore" }
-fastadapter-animators = { module = "com.mikepenz:itemanimators", version.ref = "fastAdapterCoreAnimators" }
 compose-bom = { module = "androidx.compose:compose-bom", version.ref = "androidxComposeBom" }
 compose-foundation = { module = "androidx.compose.foundation:foundation" }
 compose-material3 = { module = "androidx.compose.material3:material3" }
@@ -147,9 +134,9 @@ sqlite = { module = "androidx.sqlite:sqlite-ktx", version.ref = "sqlite" }
 room-paging = { module = "androidx.room:room-paging", version.ref = "room" }
 
 # image loading
-coil-networking = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil" }
-coil-views = { module = "io.coil-kt.coil3:coil", version.ref = "coil" }
+coil = { module = "io.coil-kt.coil3:coil", version.ref = "coil" }
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
+coil-networking = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil" }
 
 # build tools
 desugar-jdklibs = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugarJdkLibs" }
@@ -208,7 +195,6 @@ kotlin-gradle = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 gradle-versions = { id = "com.github.ben-manes.versions", version.ref = "gradleVersionsPlugin" }
-navigation-safeargs = { id = "androidx.navigation.safeargs.kotlin", version.ref = "navigation" }
 app-distribution = { id = "com.google.firebase.appdistribution", version.ref = "appDistribution" }
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
 playstore-publisher = { id = "com.github.triplet.play", version.ref = "playStorePublisher" }

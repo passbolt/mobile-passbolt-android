@@ -30,8 +30,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.passbolt.mobile.android.core.ui.compose.permissions.GroupPermissionRow
-import com.passbolt.mobile.android.core.ui.compose.permissions.UserPermissionRow
+import com.passbolt.mobile.android.core.ui.permissions.GroupPermissionRow
+import com.passbolt.mobile.android.core.ui.permissions.UserPermissionRow
 import com.passbolt.mobile.android.ui.GroupModel
 import com.passbolt.mobile.android.ui.PermissionModelUi
 import com.passbolt.mobile.android.ui.PermissionModelUi.GroupPermissionModel

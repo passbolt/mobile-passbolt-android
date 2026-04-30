@@ -49,7 +49,7 @@ import org.koin.test.KoinTest
 @MediumTest
 @Ignore("Deprecated: refactor needed - entire test class disabled")
 class HomeSearchTest : KoinTest {
-    @get:Rule
+    @get:Rule(order = 0)
     val startUpActivityRule =
         lazyActivitySetupScenarioRule<AuthenticationMainActivity>(
             koinOverrideModules = listOf(instrumentationTestsModule),

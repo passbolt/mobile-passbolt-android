@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -31,14 +32,19 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
 import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
+import com.passbolt.mobile.android.core.navigation.compose.keys.OtpNavigationKey.Otp
+import com.passbolt.mobile.android.core.navigation.compose.keys.OtpNavigationKey.ScanOtpSuccess
+import com.passbolt.mobile.android.core.navigation.compose.results.NavigationResultEventBus
+import com.passbolt.mobile.android.core.navigation.compose.results.OtpScanCompleteResult
+import com.passbolt.mobile.android.core.navigation.compose.results.ScanOtpResultEvent
 import com.passbolt.mobile.android.core.qrscan.SCAN_MANAGER_SCOPE
 import com.passbolt.mobile.android.core.qrscan.manager.ScanManager
 import com.passbolt.mobile.android.core.security.flagsecure.FlagSecureEffect
-import com.passbolt.mobile.android.core.ui.compose.button.PrimaryButton
-import com.passbolt.mobile.android.core.ui.compose.dialogs.CameraPermissionRequiredAlertDialog
-import com.passbolt.mobile.android.core.ui.compose.dialogs.CameraRequiredAlertDialog
-import com.passbolt.mobile.android.core.ui.compose.topbar.BackNavigationIcon
-import com.passbolt.mobile.android.core.ui.compose.topbar.TitleAppBar
+import com.passbolt.mobile.android.core.ui.button.PrimaryButton
+import com.passbolt.mobile.android.core.ui.dialogs.CameraPermissionRequiredAlertDialog
+import com.passbolt.mobile.android.core.ui.dialogs.CameraRequiredAlertDialog
+import com.passbolt.mobile.android.core.ui.topbar.BackNavigationIcon
+import com.passbolt.mobile.android.core.ui.topbar.TitleAppBar
 import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpMode
 import com.passbolt.mobile.android.feature.otp.scanotp.compose.ScanOtpIntent.CreateTotpManually
 import com.passbolt.mobile.android.feature.otp.scanotp.compose.ScanOtpIntent.DismissCameraPermissionRequiredDialog
@@ -66,7 +72,7 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
 @Composable
 internal fun ScanOtpScreen(
     mode: ScanOtpMode,
-    navigation: ScanOtpNavigation,
+    parentFolderId: String?,
     modifier: Modifier = Modifier,
     viewModel: ScanOtpViewModel = koinViewModel(),
     navigator: AppNavigator = koinInject(),
@@ -74,6 +80,7 @@ internal fun ScanOtpScreen(
     val state by viewModel.viewState.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
+    val resultBus = NavigationResultEventBus.current
 
     FlagSecureEffect()
 
@@ -86,8 +93,9 @@ internal fun ScanOtpScreen(
             }
         }
 
+    val scanScopeId = remember { "${SCAN_MANAGER_SCOPE}_${java.util.UUID.randomUUID()}" }
     KoinScope(
-        scopeID = SCAN_MANAGER_SCOPE,
+        scopeID = scanScopeId,
         scopeQualifier = named(SCAN_MANAGER_SCOPE),
     ) {
         val scanManager: ScanManager = koinInject()
@@ -119,14 +127,40 @@ internal fun ScanOtpScreen(
     SideEffectDispatcher(viewModel.sideEffect) { sideEffect ->
         when (sideEffect) {
             RequestCameraPermission -> requestPermissionLauncher.launch(CAMERA)
-            is NavigateToSuccess -> navigation.navigateToSuccess(sideEffect.totpQr)
-            is SetResultAndNavigateBack -> navigation.setResultAndNavigateBack(sideEffect.totpQr)
-            SetManualCreationResultAndNavigateBack -> navigation.setManualCreationResultAndNavigateBack()
+            is NavigateToSuccess ->
+                navigator.navigateToKey(
+                    ScanOtpSuccess(
+                        totpLabel = sideEffect.totpQr.label,
+                        totpSecret = sideEffect.totpQr.secret,
+                        totpIssuer = sideEffect.totpQr.issuer,
+                        totpAlgorithm = sideEffect.totpQr.algorithm.name,
+                        totpDigits = sideEffect.totpQr.digits,
+                        totpPeriod = sideEffect.totpQr.period,
+                        parentFolderId = parentFolderId,
+                    ),
+                )
+            is SetResultAndNavigateBack -> {
+                resultBus.sendResult(result = ScanOtpResultEvent(false, sideEffect.totpQr))
+                navigator.navigateBack()
+            }
+            SetManualCreationResultAndNavigateBack ->
+                when (mode) {
+                    ScanOtpMode.SCAN_FOR_RESULT -> {
+                        resultBus.sendResult(result = ScanOtpResultEvent(true, null))
+                        navigator.navigateBack()
+                    }
+                    ScanOtpMode.SCAN_WITH_SUCCESS_SCREEN -> {
+                        resultBus.sendResult(
+                            result = OtpScanCompleteResult(otpCreated = false, otpManualCreationChosen = true),
+                        )
+                        navigator.popToKey(Otp)
+                    }
+                }
             NavigateToAppSettings -> {
-                navigation.navigateBack()
+                navigator.navigateBack()
                 navigator.openAppOsSettings(context)
             }
-            NavigateBack -> navigation.navigateBack()
+            NavigateBack -> navigator.navigateBack()
         }
     }
 }

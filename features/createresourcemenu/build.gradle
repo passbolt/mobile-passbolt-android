@@ -20,8 +20,6 @@ dependencies {
 
     implementation libs.androidx.core
     implementation libs.appcompat
-    implementation libs.constraintlayout
-    implementation libs.material
     implementation platform(libs.koin.bom)
     implementation libs.koin
     implementation libs.koin.compose
@@ -40,7 +38,6 @@ dependencies {
 android {
     namespace = "com.passbolt.mobile.android.feature.createresourcemenu"
     buildFeatures {
-        viewBinding true
         compose true
     }
 }

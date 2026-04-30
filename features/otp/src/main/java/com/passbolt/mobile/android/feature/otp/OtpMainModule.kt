@@ -25,10 +25,14 @@ package com.passbolt.mobile.android.feature.otp
 
 import com.passbolt.mobile.android.common.coroutinetimer.CoroutineTimerFactory
 import com.passbolt.mobile.android.common.coroutinetimer.TimerFactory
+import com.passbolt.mobile.android.core.navigation.compose.base.Feature
+import com.passbolt.mobile.android.core.navigation.compose.base.FeatureModuleNavigation
 import com.passbolt.mobile.android.core.ui.controller.TotpComposeController
+import com.passbolt.mobile.android.feature.otp.navigation.OtpFeatureNavigation
 import com.passbolt.mobile.android.feature.otp.screen.OtpViewModel
-import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.core.module.dsl.singleOf
+import org.koin.core.module.dsl.viewModelOf
+import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
 
@@ -37,4 +41,5 @@ val otpModule =
         viewModelOf(::OtpViewModel)
         singleOf(::TotpComposeController)
         singleOf(::CoroutineTimerFactory) bind TimerFactory::class
+        single<FeatureModuleNavigation>(named(Feature.OTP)) { OtpFeatureNavigation() }
     }

@@ -1,15 +1,15 @@
 package com.passbolt.mobile.android.feature.otp.scanotp.scanotpsuccess
 
+import com.passbolt.mobile.android.core.compose.SideEffectViewModel
 import com.passbolt.mobile.android.core.resources.actions.ResourceCreateActionsInteractor
 import com.passbolt.mobile.android.core.resources.actions.ResourceUpdateActionResult
-import com.passbolt.mobile.android.core.resources.actions.ResourceUpdateActionsInteractor
+import com.passbolt.mobile.android.core.resources.actions.ResourceUpdateActionsInteractorFactory
 import com.passbolt.mobile.android.core.resources.actions.performResourceCreateAction
 import com.passbolt.mobile.android.core.resources.actions.performResourceUpdateAction
 import com.passbolt.mobile.android.core.resources.usecase.GetDefaultCreateContentTypeUseCase
 import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.SecretJsonModel
-import com.passbolt.mobile.android.feature.authentication.compose.AuthenticatedViewModel
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
 import com.passbolt.mobile.android.feature.otp.scanotp.scanotpsuccess.ScanOtpSuccessIntent.CreateStandaloneOtpClick
 import com.passbolt.mobile.android.feature.otp.scanotp.scanotpsuccess.ScanOtpSuccessIntent.DismissNewMetadataTrustDialog
@@ -39,7 +39,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
-import org.koin.core.parameter.parametersOf
 import timber.log.Timber
 import java.util.UUID
 
@@ -49,7 +48,8 @@ internal class ScanOtpSuccessViewModel(
     private val idToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider,
     private val getDefaultCreateContentTypeUseCase: GetDefaultCreateContentTypeUseCase,
     private val metadataPrivateKeysHelperInteractor: MetadataPrivateKeysHelperInteractor,
-) : AuthenticatedViewModel<ScanOtpSuccessState, ScanOtpSuccessSideEffect>(ScanOtpSuccessState()),
+    private val resourceUpdateActionsInteractorFactory: ResourceUpdateActionsInteractorFactory,
+) : SideEffectViewModel<ScanOtpSuccessState, ScanOtpSuccessSideEffect>(ScanOtpSuccessState()),
     KoinComponent {
     fun onIntent(intent: ScanOtpSuccessIntent) {
         when (intent) {
@@ -140,7 +140,7 @@ internal class ScanOtpSuccessViewModel(
             idToSlugMappingProvider.provideMappingForSelectedAccount()[UUID.fromString(resource.resourceTypeId)]
                 ?: return { emptyFlow() }
 
-        val resourceUpdateActionsInteractor = get<ResourceUpdateActionsInteractor> { parametersOf(resource) }
+        val resourceUpdateActionsInteractor = resourceUpdateActionsInteractorFactory.create(resource)
 
         return when (ContentType.fromSlug(slug)) {
             is PasswordAndDescription, V5Default, is PasswordDescriptionTotp, V5DefaultWithTotp ->

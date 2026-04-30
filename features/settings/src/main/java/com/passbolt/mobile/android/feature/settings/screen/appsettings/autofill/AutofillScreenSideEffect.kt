@@ -25,17 +25,17 @@ package com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill
 internal sealed interface AutofillScreenSideEffect {
     data object NavigateUp : AutofillScreenSideEffect
 
-    data object NavigateToNativeAutofillEnabled : AutofillScreenSideEffect
-
     data object NavigateToEncourageNativeAutofill : AutofillScreenSideEffect
 
+    data object NavigateToAutofillEnabled : AutofillScreenSideEffect
+
     data object NavigateToEncourageAccessibilityAutofill : AutofillScreenSideEffect
+
+    data object NavigateToChromeNativeAutofill : AutofillScreenSideEffect
 
     data class ShowErrorSnackBar(
         val type: ErrorSnackbarType,
     ) : AutofillScreenSideEffect
-
-    data object NavigateToChromeNativeAutofill : AutofillScreenSideEffect
 
     enum class ErrorSnackbarType {
         NATIVE_AUTOFILL_NOT_SUPPORTED,

@@ -2,8 +2,8 @@ package com.passbolt.mobile.android.permissions.grouppermissionsdetails
 
 import androidx.lifecycle.viewModelScope
 import com.passbolt.mobile.android.core.commongroups.usecase.db.GetGroupWithUsersUseCase
+import com.passbolt.mobile.android.core.compose.SideEffectViewModel
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
-import com.passbolt.mobile.android.feature.authentication.compose.AuthenticatedViewModel
 import com.passbolt.mobile.android.permissions.grouppermissionsdetails.GroupPermissionsIntent.CancelPermissionDelete
 import com.passbolt.mobile.android.permissions.grouppermissionsdetails.GroupPermissionsIntent.ConfirmPermissionDelete
 import com.passbolt.mobile.android.permissions.grouppermissionsdetails.GroupPermissionsIntent.DeletePermission
@@ -26,7 +26,7 @@ class GroupPermissionsViewModel(
     permission: PermissionModelUi.GroupPermissionModel,
     private val getGroupWithUsersUseCase: GetGroupWithUsersUseCase,
     private val coroutineLaunchContext: CoroutineLaunchContext,
-) : AuthenticatedViewModel<GroupPermissionsState, GroupPermissionsSideEffect>(
+) : SideEffectViewModel<GroupPermissionsState, GroupPermissionsSideEffect>(
         initialState =
             GroupPermissionsState(
                 groupPermission = permission,
@@ -68,12 +68,10 @@ class GroupPermissionsViewModel(
 
     private fun save() {
         emitSideEffect(SetUpdatedPermissionResult(requireNotNull(viewState.value.groupPermission)))
-        emitSideEffect(NavigateBack)
     }
 
     private fun deletePermission() {
         updateViewState { copy(isDeleteConfirmationVisible = false) }
         emitSideEffect(SetDeletePermissionResult(requireNotNull(viewState.value.groupPermission)))
-        emitSideEffect(NavigateBack)
     }
 }

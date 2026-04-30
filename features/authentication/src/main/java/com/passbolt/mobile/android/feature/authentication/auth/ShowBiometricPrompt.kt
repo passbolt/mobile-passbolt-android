@@ -15,7 +15,9 @@ fun showBiometricPrompt(
     activity: AppCompatActivity,
     executor: Executor,
     biometricPromptBuilder: BiometricPrompt.PromptInfo.Builder,
-    fingerprintEncryptionCipher: Cipher,
+    biometricEncryptionCipher: Cipher,
+    title: String = activity.getString(LocalizationR.string.settings_turn_on_biometric_title),
+    subtitle: String = activity.getString(LocalizationR.string.settings_turn_on_biometric_subtitle),
     onAuthenticationSuccess: (Cipher?) -> Unit,
     onAuthenticationError: (BiometricAuthError) -> Unit,
     onAuthenticationCancelled: () -> Unit,
@@ -43,19 +45,28 @@ fun showBiometricPrompt(
                     }
 
                     override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
-                        onAuthenticationSuccess(result.cryptoObject?.cipher)
+                        val cipher = result.cryptoObject?.cipher
+                        if (result.authenticationType == BiometricPrompt.AUTHENTICATION_RESULT_TYPE_DEVICE_CREDENTIAL || cipher == null) {
+                            Timber.w(
+                                "Biometric auth succeeded without crypto cipher (authenticationType=%d)",
+                                result.authenticationType,
+                            )
+                            onAuthenticationError(BiometricAuthError.NO_CRYPTO_CIPHER)
+                            return
+                        }
+                        onAuthenticationSuccess(cipher)
                     }
                 },
             )
 
         val promptInfo =
             biometricPromptBuilder
-                .setTitle(activity.getString(LocalizationR.string.settings_turn_on_biometric_title))
-                .setSubtitle(activity.getString(LocalizationR.string.settings_turn_on_biometric_subtitle))
+                .setTitle(title)
+                .setSubtitle(subtitle)
                 .setNegativeButtonText(activity.getString(LocalizationR.string.cancel))
                 .setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_STRONG)
                 .build()
-        biometricPrompt.authenticate(promptInfo, BiometricPrompt.CryptoObject(fingerprintEncryptionCipher))
+        biometricPrompt.authenticate(promptInfo, BiometricPrompt.CryptoObject(biometricEncryptionCipher))
     } catch (e: KeyPermanentlyInvalidatedException) {
         onKeyPermanentlyInvalidated(e)
     } catch (e: Exception) {

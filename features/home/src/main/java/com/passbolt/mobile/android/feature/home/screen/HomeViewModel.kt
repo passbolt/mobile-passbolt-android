@@ -29,8 +29,10 @@ import com.passbolt.mobile.android.common.datarefresh.DataRefreshStatus.Idle.Fin
 import com.passbolt.mobile.android.common.datarefresh.DataRefreshStatus.Idle.NotCompleted
 import com.passbolt.mobile.android.common.datarefresh.DataRefreshStatus.InProgress
 import com.passbolt.mobile.android.common.datarefresh.DataRefreshTrackingFlow
+import com.passbolt.mobile.android.core.accounts.AccountSwitchFlow
 import com.passbolt.mobile.android.core.accounts.usecase.accountdata.GetSelectedAccountDataUseCase
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalFolderDetailsUseCase
+import com.passbolt.mobile.android.core.compose.SideEffectViewModel
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.preferences.usecase.GetHomeDisplayViewPrefsUseCase
 import com.passbolt.mobile.android.core.resources.actions.ResourceCommonActionsInteractor
@@ -39,10 +41,9 @@ import com.passbolt.mobile.android.core.resources.actions.SecretPropertiesAction
 import com.passbolt.mobile.android.core.resources.actions.performCommonResourceAction
 import com.passbolt.mobile.android.core.resources.actions.performResourcePropertyAction
 import com.passbolt.mobile.android.core.resources.actions.performSecretPropertyAction
-import com.passbolt.mobile.android.core.ui.compose.search.SearchInputEndIconMode.AVATAR
-import com.passbolt.mobile.android.core.ui.compose.search.SearchInputEndIconMode.CLEAR
-import com.passbolt.mobile.android.core.ui.compose.search.SearchInputEndIconMode.NONE
-import com.passbolt.mobile.android.feature.authentication.compose.AuthenticatedViewModel
+import com.passbolt.mobile.android.core.ui.search.SearchInputEndIconMode.AVATAR
+import com.passbolt.mobile.android.core.ui.search.SearchInputEndIconMode.CLEAR
+import com.passbolt.mobile.android.core.ui.search.SearchInputEndIconMode.NONE
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.CloseCreateResourceMenu
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.CloseDeleteConfirmationDialog
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.CloseFiltersBottomSheet
@@ -116,6 +117,8 @@ import com.passbolt.mobile.android.ui.LeadingContentType.STANDALONE_NOTE
 import com.passbolt.mobile.android.ui.LeadingContentType.TOTP
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.FavouriteOption
 import com.passbolt.mobile.android.ui.ResourcePermission
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
@@ -133,7 +136,8 @@ internal class HomeViewModel(
     private val canCreateResourceUse: CanCreateResourceUseCase,
     private val canShareResourceUse: CanShareResourceUseCase,
     private val detectAutofillConflict: DetectAutofillConflict,
-) : AuthenticatedViewModel<HomeState, HomeSideEffect>(HomeState()),
+    private val accountSwitchFlow: AccountSwitchFlow,
+) : SideEffectViewModel<HomeState, HomeSideEffect>(HomeState()),
     KoinComponent {
     private val resourcePropertiesActionsInteractor: ResourcePropertiesActionsInteractor
         get() = get { parametersOf(requireNotNull(viewState.value.moreMenuResource)) }
@@ -141,6 +145,9 @@ internal class HomeViewModel(
         get() = get { parametersOf(requireNotNull(viewState.value.moreMenuResource)) }
     private val resourceCommonActionsInteractor: ResourceCommonActionsInteractor
         get() = get { parametersOf(requireNotNull(viewState.value.moreMenuResource)) }
+
+    private var dataRefreshJob: Job? = null
+    private var accountSwitchJob: Job? = null
 
     init {
         loadUserAvatar()
@@ -262,7 +269,6 @@ internal class HomeViewModel(
 
     private fun resourceDetailsReturned(intent: ResourceDetailsReturned) {
         if (intent.resourceEdited) {
-            emitSideEffect(ShowSuccessSnackbar(RESOURCE_EDITED, intent.resourceName))
             emitSideEffect(InitiateDataRefresh)
         }
         if (intent.resourceDeleted) {
@@ -450,9 +456,27 @@ internal class HomeViewModel(
                     isAutofillConflictDetected = isAutofillConflictDetected,
                 )
             }
-            viewModelScope.launch(coroutineLaunchContext.io) {
-                synchronizeWithDataRefresh(intent.showSuggestedModel)
-            }
+            dataRefreshJob?.cancel()
+            dataRefreshJob =
+                viewModelScope.launch(coroutineLaunchContext.io) {
+                    synchronizeWithDataRefresh(intent.showSuggestedModel)
+                }
+            accountSwitchJob?.cancel()
+            accountSwitchJob =
+                viewModelScope.launch(coroutineLaunchContext.io) {
+                    accountSwitchFlow.selectedAccountFlow
+                        .drop(1)
+                        .collect {
+                            loadUserAvatar()
+                            val homeData =
+                                getHomeData(
+                                    viewState.value.homeView,
+                                    viewState.value.searchQuery,
+                                    intent.showSuggestedModel,
+                                )
+                            updateViewState { copy(homeData = homeData) }
+                        }
+                }
         }
     }
 

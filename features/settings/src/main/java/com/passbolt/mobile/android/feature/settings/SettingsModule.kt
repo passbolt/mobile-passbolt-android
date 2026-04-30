@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.feature.settings
 
 import com.passbolt.mobile.android.core.navigation.compose.base.Feature
 import com.passbolt.mobile.android.core.navigation.compose.base.FeatureModuleNavigation
+import com.passbolt.mobile.android.feature.settings.navigation.AutofillEncouragementsFeatureNavigation
 import com.passbolt.mobile.android.feature.settings.navigation.SettingsFeatureNavigation
 import com.passbolt.mobile.android.feature.settings.screen.accounts.accountsSettingsModule
 import com.passbolt.mobile.android.feature.settings.screen.accounts.keyinspector.keyInspectorModule
@@ -44,6 +45,9 @@ val settingsModule =
     module {
         single<FeatureModuleNavigation>(named(Feature.SETTINGS)) {
             SettingsFeatureNavigation()
+        }
+        single<FeatureModuleNavigation>(named(Feature.AUTOFILL_ENCOURAGEMENTS)) {
+            AutofillEncouragementsFeatureNavigation()
         }
 
         settingsModule()

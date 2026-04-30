@@ -1,10 +1,9 @@
 package com.passbolt.mobile.android.feature.autofill.resources.datasetstrategy
 
 import com.passbolt.mobile.android.core.autofill.accessibility.AccessibilityCommunicator
-import com.passbolt.mobile.android.feature.autofill.resources.AutofillResourcesContract
 
 class ReturnAccessibilityDataset(
-    override var view: AutofillResourcesContract.View?,
+    private val autofillCallback: AutofillCallback,
 ) : ReturnAutofillDatasetStrategy {
     override fun returnDataset(
         username: String,
@@ -17,6 +16,6 @@ class ReturnAccessibilityDataset(
                 password,
                 uri,
             )
-        activeView.finishAutofill()
+        autofillCallback.finishAutofill()
     }
 }

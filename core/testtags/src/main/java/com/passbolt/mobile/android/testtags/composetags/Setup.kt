@@ -24,7 +24,7 @@
 package com.passbolt.mobile.android.testtags.composetags
 
 object Setup {
-    const val LOGO_IMAGE = "welcome_logo_image"
-    const val APPS_IMAGE = "welcome_apps_image"
-    const val HELP_BUTTON = "welcome_help_button"
+    const val LOGO_IMAGE = "WelcomeLogoImage"
+    const val APPS_IMAGE = "WelcomeAppsImage"
+    const val HELP_BUTTON = "WelcomeHelpButton"
 }

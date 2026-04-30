@@ -27,6 +27,7 @@ import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
 import com.passbolt.mobile.android.common.datarefresh.DataRefreshTrackingFlow
 import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
+import com.passbolt.mobile.android.core.idlingresource.CreateMenuModelIdlingResource
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.resourcemoremenu.usecase.CreateResourceMoreMenuModelUseCase
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
@@ -69,6 +70,7 @@ class ResourceMoreMenuTest : KoinTest {
                     single { mockCreateResourceMoreMenuModelUseCase }
                     factoryOf(::TestCoroutineLaunchContext) bind CoroutineLaunchContext::class
                     singleOf(::DataRefreshTrackingFlow)
+                    singleOf(::CreateMenuModelIdlingResource)
                     factoryOf(::ResourceMoreMenuBottomSheetViewModel)
                 },
             )

@@ -39,7 +39,6 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -49,20 +48,25 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.passbolt.mobile.android.common.extension.toSingleLine
 import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
-import com.passbolt.mobile.android.core.ui.compose.header.ItemWithHeader
-import com.passbolt.mobile.android.core.ui.compose.pulltorefresh.PullToRefreshIndicatorBox
-import com.passbolt.mobile.android.core.ui.compose.sharedwith.SharedWithSection
-import com.passbolt.mobile.android.core.ui.compose.snackbar.ColoredSnackbarVisuals
-import com.passbolt.mobile.android.core.ui.compose.text.SeparatedText
-import com.passbolt.mobile.android.core.ui.compose.topbar.BackNavigationIcon
-import com.passbolt.mobile.android.core.ui.compose.topbar.TitleAppBar
+import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
+import com.passbolt.mobile.android.core.navigation.compose.keys.LocationDetailsNavigationKey.LocationDetails
+import com.passbolt.mobile.android.core.navigation.compose.keys.LocationDetailsNavigationKey.LocationItem
+import com.passbolt.mobile.android.core.navigation.compose.keys.PermissionsNavigationKey.Permissions
+import com.passbolt.mobile.android.core.ui.header.ItemWithHeader
+import com.passbolt.mobile.android.core.ui.pulltorefresh.PullToRefreshIndicatorBox
+import com.passbolt.mobile.android.core.ui.sharedwith.SharedWithSection
+import com.passbolt.mobile.android.core.ui.snackbar.ColoredSnackbarVisuals
+import com.passbolt.mobile.android.core.ui.text.SeparatedText
+import com.passbolt.mobile.android.core.ui.topbar.BackNavigationIcon
+import com.passbolt.mobile.android.core.ui.topbar.TitleAppBar
 import com.passbolt.mobile.android.folderdetails.FolderDetailsIntent.GoBack
 import com.passbolt.mobile.android.folderdetails.FolderDetailsIntent.GoToLocationDetails
-import com.passbolt.mobile.android.folderdetails.FolderDetailsIntent.Initialize
 import com.passbolt.mobile.android.folderdetails.FolderDetailsIntent.SharedWithClick
 import com.passbolt.mobile.android.folderdetails.FolderDetailsSideEffect.NavigateToFolderLocation
 import com.passbolt.mobile.android.folderdetails.FolderDetailsSideEffect.NavigateToFolderPermissions
@@ -70,26 +74,25 @@ import com.passbolt.mobile.android.folderdetails.FolderDetailsSideEffect.Navigat
 import com.passbolt.mobile.android.folderdetails.FolderDetailsSideEffect.NavigateUp
 import com.passbolt.mobile.android.folderdetails.FolderDetailsSideEffect.ShowErrorSnackbar
 import com.passbolt.mobile.android.folderdetails.FolderDetailsSideEffect.ShowToast
+import com.passbolt.mobile.android.ui.PermissionsItem
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.koinInject
+import org.koin.core.parameter.parametersOf
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 @Composable
 internal fun FolderDetailsScreen(
     folderId: String,
-    navigation: FolderDetailsNavigation,
     modifier: Modifier = Modifier,
-    viewModel: FolderDetailsViewModel = koinViewModel(),
+    viewModel: FolderDetailsViewModel = koinViewModel(parameters = { parametersOf(folderId) }),
+    navigator: AppNavigator = koinInject(),
 ) {
     val context = LocalContext.current
     val state = viewModel.viewState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
-
-    LaunchedEffect(folderId) {
-        viewModel.onIntent(Initialize(folderId))
-    }
 
     FolderDetailsScreen(
         state = state.value,
@@ -100,10 +103,16 @@ internal fun FolderDetailsScreen(
 
     SideEffectDispatcher(viewModel.sideEffect) { sideEffect ->
         when (sideEffect) {
-            NavigateUp -> navigation.navigateUp()
-            NavigateToHome -> navigation.navigateToHome()
-            is NavigateToFolderPermissions -> navigation.navigateToFolderPermissions(sideEffect.folderId, sideEffect.mode)
-            is NavigateToFolderLocation -> navigation.navigateToFolderLocation(sideEffect.folderId)
+            NavigateUp -> navigator.navigateBack()
+            NavigateToHome -> navigator.popToRoot()
+            is NavigateToFolderPermissions ->
+                navigator.navigateToKey(
+                    Permissions(sideEffect.folderId, sideEffect.mode, PermissionsItem.FOLDER),
+                )
+            is NavigateToFolderLocation ->
+                navigator.navigateToKey(
+                    LocationDetails(LocationItem.FOLDER, sideEffect.folderId),
+                )
             is ShowErrorSnackbar -> {
                 coroutineScope.launch {
                     snackbarHostState.showSnackbar(
@@ -183,10 +192,16 @@ private fun FolderDetailsScreen(
                     )
 
                     Text(
-                        text = state.folder?.name.orEmpty(),
+                        text =
+                            state.folder
+                                ?.name
+                                .orEmpty()
+                                .toSingleLine(),
                         style = MaterialTheme.typography.titleLarge,
                         color = MaterialTheme.colorScheme.onBackground,
                         textAlign = TextAlign.Center,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.padding(top = 16.dp),
                     )
 

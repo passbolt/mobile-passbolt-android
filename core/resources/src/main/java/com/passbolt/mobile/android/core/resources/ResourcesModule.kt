@@ -5,7 +5,9 @@ import com.passbolt.mobile.android.core.resources.actions.ResourceCommonActionsI
 import com.passbolt.mobile.android.core.resources.actions.ResourceCreateActionsInteractor
 import com.passbolt.mobile.android.core.resources.actions.ResourcePropertiesActionsInteractor
 import com.passbolt.mobile.android.core.resources.actions.ResourceUpdateActionsInteractor
+import com.passbolt.mobile.android.core.resources.actions.ResourceUpdateActionsInteractorFactory
 import com.passbolt.mobile.android.core.resources.actions.SecretPropertiesActionsInteractor
+import com.passbolt.mobile.android.core.resources.actions.SecretPropertiesActionsInteractorFactory
 import com.passbolt.mobile.android.core.resources.interactor.create.CreateResourceInteractor
 import com.passbolt.mobile.android.core.resources.interactor.update.UpdateResourceInteractor
 import com.passbolt.mobile.android.core.resources.resourceicon.BackgroundColorIconProvider
@@ -98,6 +100,9 @@ val resourcesModule =
                 idToSlugMappingProvider = get(),
             )
         }
+        factory<SecretPropertiesActionsInteractorFactory> {
+            SecretPropertiesActionsInteractorFactory { resource -> get { parametersOf(resource) } }
+        }
         factory { (resource: ResourceModel) ->
             ResourceUpdateActionsInteractor(
                 resource,
@@ -114,6 +119,9 @@ val resourcesModule =
                 getMetadataKeysUseCase = get(),
                 resourceTypeIdToSlugMappingProvider = get(),
             )
+        }
+        factory<ResourceUpdateActionsInteractorFactory> {
+            ResourceUpdateActionsInteractorFactory { resource -> get { parametersOf(resource) } }
         }
         factory {
             ResourceCreateActionsInteractor(

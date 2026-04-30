@@ -1,31 +1,33 @@
 plugins {
     alias libs.plugins.android.library
     alias libs.plugins.kotlin.gradle
+    alias libs.plugins.compose.compiler
 }
 
 dependencies {
-    implementation project(':architecture')
-    implementation project(':ui')
+    implementation project(':coreui')
     implementation project(':navigation')
-    implementation project(':authentication')
-    implementation project(':navigation')
-    implementation project(':common')
     implementation project(':accounts')
+    implementation project(':common')
 
-    implementation libs.navigation.fragment
-    implementation libs.navigation.ui
-    implementation libs.fragment
-    implementation libs.activity
     implementation platform(libs.koin.bom)
     implementation libs.koin
+    implementation libs.koin.compose
     implementation libs.splashscreen
+
+    implementation platform(libs.compose.bom)
+    implementation libs.compose.foundation
+    implementation libs.compose.activity
+    implementation libs.compose.lifecycle.viewmodel
+
+    testImplementation project(':commontest')
 }
 
 android {
     namespace = "com.passbolt.mobile.android.feature.startup"
     buildFeatures {
-        viewBinding true
         buildConfig true
+        compose true
     }
 }
 

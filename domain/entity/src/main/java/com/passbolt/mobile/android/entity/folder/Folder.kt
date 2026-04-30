@@ -36,7 +36,13 @@ data class Folder(
     val permission: Permission,
     val parentId: String?,
     val isShared: Boolean,
+    val updateState: FolderUpdateState,
 )
+
+enum class FolderUpdateState {
+    PENDING,
+    UPDATED,
+}
 
 data class FolderWithChildItemsCountAndPath(
     val folderId: String,

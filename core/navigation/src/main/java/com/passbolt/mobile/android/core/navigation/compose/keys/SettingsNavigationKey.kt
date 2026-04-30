@@ -55,4 +55,21 @@ sealed interface SettingsNavigationKey : NavKey {
 
     @Serializable
     data object ExpertSettings : SettingsNavigationKey
+
+    @Serializable
+    data class EncourageNativeAutofill(
+        val dismissBehavior: DismissBehavior,
+    ) : SettingsNavigationKey
+
+    @Serializable
+    enum class DismissBehavior {
+        NAVIGATE_BACK,
+        FINISH_TO_HOME,
+    }
+
+    @Serializable
+    data object AutofillEnabled : SettingsNavigationKey
+
+    @Serializable
+    data object EncourageAccessibilityAutofill : SettingsNavigationKey
 }

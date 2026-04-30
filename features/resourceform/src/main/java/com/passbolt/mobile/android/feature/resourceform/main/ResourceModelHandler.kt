@@ -1,6 +1,6 @@
 package com.passbolt.mobile.android.feature.resourceform.main
 
-import com.passbolt.mobile.android.core.resources.actions.SecretPropertiesActionsInteractor
+import com.passbolt.mobile.android.core.resources.actions.SecretPropertiesActionsInteractorFactory
 import com.passbolt.mobile.android.core.resources.actions.SecretPropertyActionResult
 import com.passbolt.mobile.android.core.resources.usecase.GetDefaultCreateContentTypeUseCase
 import com.passbolt.mobile.android.core.resources.usecase.GetDefaultCreateContentTypeUseCase.Output.CreationContentType
@@ -46,9 +46,6 @@ import com.passbolt.mobile.android.ui.ResourceFormUiModel.Secret.NOTE
 import com.passbolt.mobile.android.ui.ResourceFormUiModel.Secret.PASSWORD
 import com.passbolt.mobile.android.ui.ResourceFormUiModel.Secret.TOTP
 import kotlinx.coroutines.flow.single
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.get
-import org.koin.core.parameter.parametersOf
 import timber.log.Timber
 
 /**
@@ -79,7 +76,8 @@ class ResourceModelHandler(
     private val resourceActionsGraph: ResourceTypesUpdatesAdjacencyGraph,
     private val getLocalResourceUseCase: GetLocalResourceUseCase,
     private val defaultValues: DefaultValues,
-) : KoinComponent {
+    private val secretPropertiesActionsInteractorFactory: SecretPropertiesActionsInteractorFactory,
+) {
     lateinit var resourceMetadata: MetadataJsonModel
     lateinit var resourceSecret: SecretJsonModel
     lateinit var metadataType: MetadataTypeModel
@@ -134,7 +132,7 @@ class ResourceModelHandler(
             metadataType = initialEditContentType.metadataType
 
             // init secret
-            val secretPropertiesActionsInteractor: SecretPropertiesActionsInteractor = get { parametersOf(resource) }
+            val secretPropertiesActionsInteractor = secretPropertiesActionsInteractorFactory.create(resource)
             val secret = secretPropertiesActionsInteractor.provideDecryptedSecret().single()
             resourceSecret = (secret as SecretPropertyActionResult.Success<SecretJsonModel>).result
 

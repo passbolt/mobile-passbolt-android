@@ -8,11 +8,14 @@ import com.jayway.jsonpath.spi.mapper.GsonMappingProvider
 import com.passbolt.mobile.android.common.datarefresh.DataRefreshTrackingFlow
 import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.core.idlingresource.CreateResourceIdlingResource
+import com.passbolt.mobile.android.core.idlingresource.UpdateResourceIdlingResource
 import com.passbolt.mobile.android.core.mvp.authentication.SessionRefreshTrackingFlow
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.passwordgenerator.SecretGenerator
 import com.passbolt.mobile.android.core.passwordgenerator.entropy.EntropyCalculator
 import com.passbolt.mobile.android.core.policies.usecase.GetPasswordPoliciesUseCase
+import com.passbolt.mobile.android.core.resources.actions.ResourceUpdateActionsInteractorFactory
+import com.passbolt.mobile.android.core.resources.actions.SecretPropertiesActionsInteractorFactory
 import com.passbolt.mobile.android.core.resources.usecase.GetDefaultCreateContentTypeUseCase
 import com.passbolt.mobile.android.core.resources.usecase.GetEditContentTypeUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUseCase
@@ -63,6 +66,9 @@ internal val mockGetDefaultCreateContentTypeUseCase = mock<GetDefaultCreateConte
 internal val mockGetEditContentTypeUseCase = mock<GetEditContentTypeUseCase>()
 internal val mockGetLocalResourceUseCase = mock<GetLocalResourceUseCase>()
 internal val mockMetadataPrivateKeysHelperInteractor = mock<MetadataPrivateKeysHelperInteractor>()
+internal val mockSecretPropertiesActionsInteractorSecretPropertiesActionsInteractorFactory =
+    mock<SecretPropertiesActionsInteractorFactory>()
+internal val mockResourceUpdateActionsInteractorFactory = mock<ResourceUpdateActionsInteractorFactory>()
 
 @OptIn(ExperimentalCoroutinesApi::class)
 internal val testResourceFormModule =
@@ -73,10 +79,13 @@ internal val testResourceFormModule =
         singleOf(::ResourceModelHandler)
         factoryOf(::ResourceTypesUpdatesAdjacencyGraph)
         factoryOf(::CreateResourceIdlingResource)
+        factoryOf(::UpdateResourceIdlingResource)
 
         single { mockGetDefaultCreateContentTypeUseCase }
         single { mockGetEditContentTypeUseCase }
         single { mockGetLocalResourceUseCase }
+        single<SecretPropertiesActionsInteractorFactory> { mockSecretPropertiesActionsInteractorSecretPropertiesActionsInteractorFactory }
+        single<ResourceUpdateActionsInteractorFactory> { mockResourceUpdateActionsInteractorFactory }
         single {
             mapOf(
                 DefaultValue.NAME to "no name",
@@ -96,6 +105,8 @@ internal val testResourceFormModule =
                 resourceModelHandler = get(),
                 dataRefreshTrackingFlow = get(),
                 createResourceIdlingResource = get(),
+                updateResourceIdlingResource = get(),
+                resourceUpdateActionsInteractorFactory = get(),
             )
         }
 

@@ -1,6 +1,10 @@
 package com.passbolt.mobile.android.feature.resourcedetails
 
+import com.passbolt.mobile.android.core.navigation.compose.base.Feature
+import com.passbolt.mobile.android.core.navigation.compose.base.FeatureModuleNavigation
+import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsFeatureNavigation
 import com.passbolt.mobile.android.feature.resourcedetails.details.detailsModule
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 /**
@@ -29,4 +33,5 @@ import org.koin.dsl.module
 val resourceDetailsModule =
     module {
         detailsModule()
+        single<FeatureModuleNavigation>(named(Feature.RESOURCE_DETAILS)) { ResourceDetailsFeatureNavigation() }
     }

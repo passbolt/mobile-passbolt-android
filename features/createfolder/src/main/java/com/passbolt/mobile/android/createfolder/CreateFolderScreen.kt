@@ -51,17 +51,20 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
-import com.passbolt.mobile.android.core.ui.compose.button.PrimaryButton
-import com.passbolt.mobile.android.core.ui.compose.header.ItemWithHeader
-import com.passbolt.mobile.android.core.ui.compose.progressdialog.ProgressDialog
-import com.passbolt.mobile.android.core.ui.compose.sharedwith.SharedWithSection
-import com.passbolt.mobile.android.core.ui.compose.snackbar.ColoredSnackbarVisuals
-import com.passbolt.mobile.android.core.ui.compose.text.SeparatedText
-import com.passbolt.mobile.android.core.ui.compose.text.TextInput
-import com.passbolt.mobile.android.core.ui.compose.topbar.BackNavigationIcon
-import com.passbolt.mobile.android.core.ui.compose.topbar.TitleAppBar
+import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
+import com.passbolt.mobile.android.core.navigation.compose.results.CreateFolderCompleteResult
+import com.passbolt.mobile.android.core.navigation.compose.results.NavigationResultEventBus
+import com.passbolt.mobile.android.core.ui.button.PrimaryButton
+import com.passbolt.mobile.android.core.ui.header.ItemWithHeader
+import com.passbolt.mobile.android.core.ui.progressdialog.ProgressDialog
+import com.passbolt.mobile.android.core.ui.sharedwith.SharedWithSection
+import com.passbolt.mobile.android.core.ui.snackbar.ColoredSnackbarVisuals
+import com.passbolt.mobile.android.core.ui.text.SeparatedText
+import com.passbolt.mobile.android.core.ui.text.TextInput
 import com.passbolt.mobile.android.core.ui.textinputfield.StatefulInput.State.Default
 import com.passbolt.mobile.android.core.ui.textinputfield.StatefulInput.State.Error
+import com.passbolt.mobile.android.core.ui.topbar.BackNavigationIcon
+import com.passbolt.mobile.android.core.ui.topbar.TitleAppBar
 import com.passbolt.mobile.android.createfolder.CreateFolderIntent.FolderNameChanged
 import com.passbolt.mobile.android.createfolder.CreateFolderIntent.GoBack
 import com.passbolt.mobile.android.createfolder.CreateFolderIntent.Initialize
@@ -69,32 +72,29 @@ import com.passbolt.mobile.android.createfolder.CreateFolderIntent.Save
 import com.passbolt.mobile.android.createfolder.CreateFolderSideEffect.FolderCreated
 import com.passbolt.mobile.android.createfolder.CreateFolderSideEffect.NavigateUp
 import com.passbolt.mobile.android.createfolder.CreateFolderSideEffect.ShowErrorSnackbar
-import com.passbolt.mobile.android.feature.authentication.compose.AuthenticationHandler
+import com.passbolt.mobile.android.testtags.composetags.CreateFolder
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.koinInject
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 @Composable
 internal fun CreateFolderScreen(
     parentFolderId: String?,
-    navigation: CreateFolderNavigation,
     modifier: Modifier = Modifier,
+    navigator: AppNavigator = koinInject(),
     viewModel: CreateFolderViewModel = koinViewModel(),
 ) {
     val context = LocalContext.current
     val state = viewModel.viewState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
+    val resultBus = NavigationResultEventBus.current
 
     LaunchedEffect(parentFolderId) {
         viewModel.onIntent(Initialize(parentFolderId))
     }
-
-    AuthenticationHandler(
-        onAuthenticatedIntent = viewModel::onAuthenticationIntent,
-        authenticationSideEffect = viewModel.authenticationSideEffect,
-    )
 
     CreateFolderScreen(
         state = state.value,
@@ -105,8 +105,11 @@ internal fun CreateFolderScreen(
 
     SideEffectDispatcher(viewModel.sideEffect) { sideEffect ->
         when (sideEffect) {
-            NavigateUp -> navigation.navigateUp()
-            is FolderCreated -> navigation.folderCreated(sideEffect.folderName)
+            NavigateUp -> navigator.navigateBack()
+            is FolderCreated -> {
+                resultBus.sendResult(result = CreateFolderCompleteResult(sideEffect.folderName))
+                navigator.navigateBack()
+            }
             is ShowErrorSnackbar -> {
                 coroutineScope.launch {
                     snackbarHostState.showSnackbar(
@@ -185,7 +188,7 @@ private fun CreateFolderScreen(
                         onTextChange = { onIntent(FolderNameChanged(it)) },
                         isRequired = true,
                         modifier = Modifier.fillMaxWidth(),
-                        testTag = CreateFolderScreenTestTags.NAME_INPUT,
+                        testTag = CreateFolder.NAME_INPUT,
                     )
 
                     Spacer(modifier = Modifier.height(24.dp))
@@ -230,10 +233,6 @@ private fun CreateFolderScreen(
             }
         },
     )
-}
-
-object CreateFolderScreenTestTags {
-    const val NAME_INPUT: String = "create_folder_name_input"
 }
 
 @Preview(showBackground = true)

@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.passboltapi.folders
 
 import com.passbolt.mobile.android.dto.request.CreateFolderRequestDto
+import com.passbolt.mobile.android.dto.response.BasePaginatedResponse
 import com.passbolt.mobile.android.dto.response.CreateFolderResponseDto
 import com.passbolt.mobile.android.dto.response.FolderResponseDto
 
@@ -29,6 +30,11 @@ import com.passbolt.mobile.android.dto.response.FolderResponseDto
 
 interface FoldersDataSource {
     suspend fun getFolders(): List<FolderResponseDto>
+
+    suspend fun getFoldersPaginated(
+        limit: Int,
+        page: Int,
+    ): BasePaginatedResponse<List<FolderResponseDto>>
 
     suspend fun createFolder(createFolderRequestDto: CreateFolderRequestDto): CreateFolderResponseDto
 }

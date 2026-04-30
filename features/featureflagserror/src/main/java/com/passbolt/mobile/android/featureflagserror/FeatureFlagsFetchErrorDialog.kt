@@ -1,82 +1,144 @@
 package com.passbolt.mobile.android.featureflagserror
 
 import PassboltTheme
-import android.content.Context
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.platform.ViewCompositionStrategy
-import com.passbolt.mobile.android.core.mvp.EdgeToEdgeDialogFragment
-import com.passbolt.mobile.android.core.ui.R as CoreUiR
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
+import com.passbolt.mobile.android.core.ui.button.PrimaryButton
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
+import com.passbolt.mobile.android.core.ui.R as CoreR
 
-/**
- * Passbolt - Open source password manager for teams
- * Copyright (c) 2021 Passbolt SA
- *
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
- * Public License (AGPL) as published by the Free Software Foundation version 3.
- *
- * The name "Passbolt" is a registered trademark of Passbolt SA, and Passbolt SA hereby declines to grant a trademark
- * license to "Passbolt" pursuant to the GNU Affero General Public License version 3 Section 7(e), without a separate
- * agreement with Passbolt SA.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License along with this program. If not,
- * see GNU Affero General Public License v3 (http://www.gnu.org/licenses/agpl-3.0.html).
- *
- * @copyright Copyright (c) Passbolt SA (https://www.passbolt.com)
- * @license https://opensource.org/licenses/AGPL-3.0 AGPL License
- * @link https://www.passbolt.com Passbolt (tm)
- * @since v1.0
- */
-class FeatureFlagsFetchErrorDialog : EdgeToEdgeDialogFragment() {
-    private var listener: Listener? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setStyle(STYLE_NO_TITLE, CoreUiR.style.FullscreenDialogTheme)
+@Composable
+fun FeatureFlagsFetchErrorDialog(
+    isVisible: Boolean,
+    onRetry: () -> Unit,
+    onSignOut: () -> Unit,
+) {
+    if (isVisible) {
+        Dialog(
+            onDismissRequest = {},
+            properties =
+                DialogProperties(
+                    dismissOnBackPress = false,
+                    dismissOnClickOutside = false,
+                    usePlatformDefaultWidth = false,
+                ),
+        ) {
+            FeatureFlagsFetchErrorContent(
+                onRetry = onRetry,
+                onSignOut = onSignOut,
+            )
+        }
     }
+}
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?,
-    ): View =
-        ComposeView(requireContext()).apply {
-            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-            setContent {
-                PassboltTheme {
-                    FeatureFlagsFetchErrorUi(
-                        onRetry = { listener?.fetchFeatureFlagsErrorDialogRefreshClick() },
-                        onSignOut = { listener?.fetchFeatureFlagsErrorDialogSignOutClick() },
-                    )
-                }
+@Composable
+private fun FeatureFlagsFetchErrorContent(
+    onRetry: () -> Unit,
+    onSignOut: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Surface(
+        modifier = modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.background,
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+            Column(
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement =
+                    Arrangement.spacedBy(
+                        space = 16.dp,
+                        alignment = Alignment.CenterVertically,
+                    ),
+            ) {
+                Text(
+                    text = stringResource(id = LocalizationR.string.common_startup_configuration_fetch_error),
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    textAlign = TextAlign.Center,
+                    modifier =
+                        Modifier.padding(
+                            start = 72.dp,
+                            end = 72.dp,
+                            bottom = 16.dp,
+                        ),
+                )
+
+                Image(
+                    painter = painterResource(id = CoreR.drawable.apps_list),
+                    contentDescription = null,
+                    modifier = Modifier.padding(bottom = 16.dp),
+                )
+            }
+
+            PrimaryButton(
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .height(56.dp)
+                        .padding(horizontal = 72.dp),
+                onClick = onRetry,
+                text = stringResource(id = LocalizationR.string.common_refresh),
+            )
+
+            TextButton(
+                onClick = onSignOut,
+                modifier = Modifier.padding(bottom = 32.dp),
+            ) {
+                Text(
+                    text = stringResource(id = LocalizationR.string.common_sign_out),
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.onBackground,
+                )
             }
         }
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        isCancelable = false
-        listener =
-            when {
-                parentFragment is Listener -> parentFragment as Listener
-                activity is Listener -> activity as Listener
-                else -> error("Parent must implement ${Listener::class.java.name}")
-            }
     }
+}
 
-    override fun onDetach() {
-        listener = null
-        super.onDetach()
+@Preview(showBackground = true)
+@Composable
+private fun FeatureFlagsFetchErrorUiLightPreview() {
+    PassboltTheme {
+        FeatureFlagsFetchErrorContent(
+            onRetry = {},
+            onSignOut = {},
+        )
     }
+}
 
-    interface Listener {
-        fun fetchFeatureFlagsErrorDialogRefreshClick()
-
-        fun fetchFeatureFlagsErrorDialogSignOutClick()
+@Preview(showBackground = true)
+@Composable
+private fun FeatureFlagsFetchErrorUiDarkPreview() {
+    PassboltTheme(darkTheme = true) {
+        FeatureFlagsFetchErrorContent(
+            onRetry = {},
+            onSignOut = {},
+        )
     }
 }

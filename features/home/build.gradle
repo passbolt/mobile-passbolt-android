@@ -2,7 +2,6 @@ plugins {
     alias libs.plugins.android.library
     alias libs.plugins.kotlin.gradle
     alias libs.plugins.kotlin.parcelize
-    alias libs.plugins.navigation.safeargs
     alias libs.plugins.compose.compiler
     alias libs.plugins.kotlin.serialization
 }
@@ -53,16 +52,9 @@ dependencies {
     implementation project(':metadata')
     implementation project(':testtags')
 
-    implementation libs.navigation.fragment
-    implementation libs.navigation.ui
-    implementation libs.swiperefresh
     implementation platform(libs.koin.bom)
     implementation libs.koin
     implementation libs.koin.compose
-    implementation libs.fastadapter.core
-    implementation libs.fastadapter.binding
-    implementation libs.fastadapter.diff
-    implementation libs.coil.views
     implementation libs.room.core
     implementation libs.espresso.idling.resource
     implementation platform(libs.compose.bom)
@@ -87,7 +79,6 @@ dependencies {
 android {
     namespace = "com.passbolt.mobile.android.feature.home"
     buildFeatures {
-        viewBinding true
         compose true
     }
 }

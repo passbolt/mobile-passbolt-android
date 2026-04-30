@@ -4,7 +4,6 @@ plugins {
     alias libs.plugins.compose.compiler
     alias libs.plugins.kotlin.serialization
     alias libs.plugins.kotlin.parcelize
-    alias libs.plugins.navigation.safeargs
 }
 
 dependencies {
@@ -40,17 +39,11 @@ dependencies {
     implementation project(':metadatakeytrust')
     implementation project(':metadata')
     implementation project(':clipboard')
+    implementation project(':testtags')
 
-    implementation libs.navigation.fragment
-    implementation libs.navigation.ui
     implementation platform(libs.koin.bom)
     implementation libs.koin
     implementation libs.koin.compose
-    implementation libs.swiperefresh
-    implementation libs.fastadapter.core
-    implementation libs.fastadapter.binding
-    implementation libs.fastadapter.diff
-    implementation libs.coil.views
     implementation libs.camerax.view
     implementation libs.camerax
     implementation libs.camerax.lifecycle
@@ -78,7 +71,6 @@ android {
     namespace = "com.passbolt.mobile.android.feature.otp"
     buildFeatures {
         compose true
-        viewBinding true
     }
 }
 

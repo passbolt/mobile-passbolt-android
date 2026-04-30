@@ -15,9 +15,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.passbolt.mobile.android.core.ui.compose.button.SecondaryIconButton
-import com.passbolt.mobile.android.core.ui.compose.section.Section
-import com.passbolt.mobile.android.core.ui.compose.text.TextInput
+import com.passbolt.mobile.android.core.ui.button.SecondaryIconButton
+import com.passbolt.mobile.android.core.ui.section.Section
+import com.passbolt.mobile.android.core.ui.text.TextInput
 import com.passbolt.mobile.android.core.ui.textinputfield.StatefulInput.State.Default
 import com.passbolt.mobile.android.core.ui.textinputfield.StatefulInput.State.Error
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.note.NoteValidationError
@@ -38,6 +38,7 @@ import com.passbolt.mobile.android.feature.resourceform.main.ResourceFormIntent.
 import com.passbolt.mobile.android.feature.resourceform.main.TotpData
 import com.passbolt.mobile.android.feature.resourceform.main.getNoteErrorMessage
 import com.passbolt.mobile.android.feature.resourceform.main.getTotpSecretErrorMessage
+import com.passbolt.mobile.android.testtags.composetags.ResourceForm
 import com.passbolt.mobile.android.ui.LeadingContentType
 import com.passbolt.mobile.android.ui.LeadingContentType.CUSTOM_FIELDS
 import com.passbolt.mobile.android.ui.LeadingContentType.PASSWORD
@@ -99,12 +100,14 @@ private fun PasswordSection(
                 title = stringResource(LocalizationR.string.resource_form_main_uri),
                 text = mainUri,
                 onTextChange = { onIntent(PasswordMainUriTextChanged(it)) },
+                testTag = ResourceForm.URI_INPUT,
             )
             Spacer(modifier = Modifier.height(16.dp))
             TextInput(
                 title = stringResource(LocalizationR.string.resource_form_username),
                 text = username,
                 onTextChange = { onIntent(PasswordUsernameTextChanged(it)) },
+                testTag = ResourceForm.USERNAME_INPUT,
             )
             Spacer(modifier = Modifier.height(16.dp))
             PasswordGenerationInput(
@@ -173,7 +176,8 @@ private fun StandaloneNoteSection(
 ) {
     Section(title = stringResource(LocalizationR.string.resource_form_note)) {
         TextInput(
-            title = stringResource(LocalizationR.string.resource_form_note),
+            title = stringResource(LocalizationR.string.resource_form_note_content),
+            hint = stringResource(LocalizationR.string.resource_form_enter_note),
             text = note,
             onTextChange = { onIntent(NoteChanged(it)) },
             minLines = 3,

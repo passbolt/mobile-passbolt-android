@@ -2,7 +2,6 @@ plugins {
     alias libs.plugins.android.library
     alias libs.plugins.kotlin.gradle
     alias libs.plugins.kotlin.serialization
-    alias libs.plugins.navigation.safeargs
     alias libs.plugins.compose.compiler
 }
 
@@ -34,13 +33,9 @@ dependencies {
     implementation project(':main')
     implementation project(':testtags')
 
-    implementation libs.navigation.fragment
-    implementation libs.navigation.ui
     implementation libs.fragment
     implementation libs.activity
     implementation libs.biometric
-    implementation libs.material
-    implementation libs.constraintlayout
     implementation libs.camerax.view
     implementation libs.camerax
     implementation libs.camerax.lifecycle
@@ -48,7 +43,6 @@ dependencies {
     implementation platform(libs.koin.bom)
     implementation libs.koin
     implementation libs.koin.compose
-    implementation libs.coil.views
     implementation libs.kotlin.serializationjson
     implementation(libs.androidx.navigation3.ui)
     implementation(libs.androidx.navigation3.runtime)
@@ -60,6 +54,7 @@ dependencies {
     debugImplementation libs.compose.ui.tooling.preview
     implementation libs.compose.activity
     implementation libs.compose.foundation
+    implementation libs.compose.icons
 
     testImplementation libs.kotlin.serializationjson
     testImplementation project(':commontest')
@@ -68,7 +63,6 @@ dependencies {
 android {
     namespace = "com.passbolt.mobile.android.feature.setup"
     buildFeatures {
-        viewBinding true
         compose true
     }
 }

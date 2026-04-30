@@ -60,6 +60,7 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import java.util.UUID
+import kotlin.test.assertIs
 import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -302,9 +303,8 @@ class AdditionalUrisFormViewModelTest : KoinTest {
             viewModel.sideEffect.test {
                 viewModel.onIntent(AddAdditionalUri)
 
-                val effect = awaitItem()
-                assertThat(effect).isInstanceOf(ShowErrorSnackbar::class.java)
-                assertThat((effect as ShowErrorSnackbar).type).isEqualTo(SnackbarErrorType.MAX_URIS_EXCEEDED)
+                val effect = assertIs<ShowErrorSnackbar>(awaitItem())
+                assertThat(effect.type).isEqualTo(SnackbarErrorType.MAX_URIS_EXCEEDED)
                 assertThat(effect.message).isEqualTo(MAX_ADDITIONAL_URIS.toString())
             }
         }
@@ -402,9 +402,8 @@ class AdditionalUrisFormViewModelTest : KoinTest {
             viewModel.sideEffect.test {
                 viewModel.onIntent(ApplyChanges)
 
-                val sideEffect = awaitItem()
-                assertThat(sideEffect).isInstanceOf(ApplyAndGoBack::class.java)
-                assertThat((sideEffect as ApplyAndGoBack).model).isEqualTo(
+                val sideEffect = assertIs<ApplyAndGoBack>(awaitItem())
+                assertThat(sideEffect.model).isEqualTo(
                     AdditionalUrisUiModel(MAIN_URI, listOf(ADDITIONAL_URI_1)),
                 )
             }
@@ -424,7 +423,7 @@ class AdditionalUrisFormViewModelTest : KoinTest {
 
             viewModel.sideEffect.test {
                 viewModel.onIntent(GoBack)
-                assertThat(awaitItem()).isInstanceOf(NavigateUp::class.java)
+                assertIs<NavigateUp>(awaitItem())
             }
         }
 

@@ -32,7 +32,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.passbolt.mobile.android.core.compose.rememberDebouncedBoolean
 import com.passbolt.mobile.android.core.resources.resourceicon.ResourceIconProvider
-import com.passbolt.mobile.android.core.ui.compose.empty.EmptyResourceListState
+import com.passbolt.mobile.android.core.ui.empty.EmptyResourceListState
 import com.passbolt.mobile.android.core.ui.lists.HeaderItem
 import com.passbolt.mobile.android.resourcepicker.screen.ResourcePickerIntent
 import com.passbolt.mobile.android.resourcepicker.screen.ResourcePickerIntent.ResourcePicked

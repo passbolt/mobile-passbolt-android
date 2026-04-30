@@ -1,9 +1,9 @@
 package com.passbolt.mobile.android.permissions.userpermissionsdetails
 
 import androidx.lifecycle.viewModelScope
+import com.passbolt.mobile.android.core.compose.SideEffectViewModel
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.users.usecase.db.GetLocalUserUseCase
-import com.passbolt.mobile.android.feature.authentication.compose.AuthenticatedViewModel
 import com.passbolt.mobile.android.permissions.userpermissionsdetails.UserPermissionsIntent.CancelPermissionDelete
 import com.passbolt.mobile.android.permissions.userpermissionsdetails.UserPermissionsIntent.ConfirmPermissionDelete
 import com.passbolt.mobile.android.permissions.userpermissionsdetails.UserPermissionsIntent.DeletePermission
@@ -24,7 +24,7 @@ class UserPermissionsViewModel(
     permission: UserPermissionModel,
     private val getLocalUserUseCase: GetLocalUserUseCase,
     private val coroutineLaunchContext: CoroutineLaunchContext,
-) : AuthenticatedViewModel<UserPermissionsState, UserPermissionsSideEffect>(
+) : SideEffectViewModel<UserPermissionsState, UserPermissionsSideEffect>(
         initialState =
             UserPermissionsState(
                 permission = permission,
@@ -65,12 +65,10 @@ class UserPermissionsViewModel(
 
     private fun save() {
         emitSideEffect(SetUpdatedPermissionResult(requireNotNull(viewState.value.permission)))
-        emitSideEffect(NavigateBack)
     }
 
     private fun deletePermission() {
         updateViewState { copy(isDeleteConfirmationVisible = false) }
         emitSideEffect(SetDeletePermissionResult(requireNotNull(viewState.value.permission)))
-        emitSideEffect(NavigateBack)
     }
 }

@@ -26,14 +26,20 @@ package com.passbolt.mobile.android.feature.authentication.mfa.duo
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetDuoPromptUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.VerifyDuoCallbackUseCase
 import org.koin.core.module.Module
-import org.koin.core.module.dsl.scopedOf
-import org.koin.core.qualifier.named
-import org.koin.dsl.bind
+import org.koin.core.module.dsl.factoryOf
+import org.koin.core.module.dsl.viewModel
 
 fun Module.authWithDuoModule() {
-    scope(named<AuthWithDuoDialog>()) {
-        scopedOf(::AuthWithDuoPresenter) bind AuthWithDuoContract.Presenter::class
-        scopedOf(::GetDuoPromptUseCase)
-        scopedOf(::VerifyDuoCallbackUseCase)
+    factoryOf(::GetDuoPromptUseCase)
+    factoryOf(::VerifyDuoCallbackUseCase)
+    viewModel { params ->
+        AuthWithDuoViewModel(
+            authToken = params[0],
+            hasOtherProvider = params[1],
+            getDuoPromptUseCase = get(),
+            verifyDuoCallbackUseCase = get(),
+            refreshSessionUseCase = get(),
+            signOutUseCase = get(),
+        )
     }
 }

@@ -17,6 +17,7 @@ import com.passbolt.mobile.android.database.FoldersSearchTest.SearchFolderStruct
 import com.passbolt.mobile.android.database.impl.folders.FoldersDao
 import com.passbolt.mobile.android.database.impl.resources.ResourcesDao
 import com.passbolt.mobile.android.entity.folder.Folder
+import com.passbolt.mobile.android.entity.folder.FolderUpdateState
 import com.passbolt.mobile.android.entity.resource.Permission
 import com.passbolt.mobile.android.entity.resource.Resource
 import com.passbolt.mobile.android.entity.resource.ResourceUpdateState
@@ -197,6 +198,7 @@ class FoldersSearchTest {
                 Permission.READ,
                 null,
                 false,
+                FolderUpdateState.UPDATED,
             )
         val FOLDER_2 =
             Folder(
@@ -205,6 +207,7 @@ class FoldersSearchTest {
                 Permission.READ,
                 null,
                 false,
+                FolderUpdateState.UPDATED,
             )
         val FOLDER_3 =
             Folder(
@@ -213,6 +216,7 @@ class FoldersSearchTest {
                 Permission.READ,
                 "rootFolder2",
                 false,
+                FolderUpdateState.UPDATED,
             )
         val FOLDER_4 =
             Folder(
@@ -221,6 +225,7 @@ class FoldersSearchTest {
                 Permission.READ,
                 "rootFolder2Folder1",
                 false,
+                FolderUpdateState.UPDATED,
             )
         val FOLDER_5 =
             Folder(
@@ -229,6 +234,7 @@ class FoldersSearchTest {
                 Permission.READ,
                 "rootFolder2Folder1Folder1",
                 false,
+                FolderUpdateState.UPDATED,
             )
     }
 }

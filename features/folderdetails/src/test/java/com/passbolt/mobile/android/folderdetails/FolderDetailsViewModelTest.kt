@@ -38,7 +38,6 @@ import com.passbolt.mobile.android.core.rbac.usecase.GetRbacRulesUseCase
 import com.passbolt.mobile.android.folderdetails.FolderDetailsIntent.GoBack
 import com.passbolt.mobile.android.folderdetails.FolderDetailsIntent.GoToLocationDetails
 import com.passbolt.mobile.android.folderdetails.FolderDetailsIntent.GoToPermissionDetails
-import com.passbolt.mobile.android.folderdetails.FolderDetailsIntent.Initialize
 import com.passbolt.mobile.android.folderdetails.FolderDetailsIntent.SharedWithClick
 import com.passbolt.mobile.android.folderdetails.FolderDetailsSideEffect.NavigateToFolderLocation
 import com.passbolt.mobile.android.folderdetails.FolderDetailsSideEffect.NavigateToFolderPermissions
@@ -68,8 +67,8 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.koin.core.logger.Level
-import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
+import org.koin.core.parameter.parametersOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.koin.test.KoinTest
@@ -97,7 +96,17 @@ class FolderDetailsViewModelTest : KoinTest {
                         single { mock<GetRbacRulesUseCase>() }
                         singleOf(::DataRefreshTrackingFlow)
                         singleOf(::TestCoroutineLaunchContext) bind CoroutineLaunchContext::class
-                        factoryOf(::FolderDetailsViewModel)
+                        factory { params ->
+                            FolderDetailsViewModel(
+                                folderId = params.get(),
+                                coroutineLaunchContext = get(),
+                                getLocalFolderDetailsUseCase = get(),
+                                getLocalFolderLocationUseCase = get(),
+                                getLocalFolderPermissionsUseCase = get(),
+                                getRbacRulesUseCase = get(),
+                                dataRefreshTrackingFlow = get(),
+                            )
+                        }
                     },
                 ),
             )
@@ -141,8 +150,7 @@ class FolderDetailsViewModelTest : KoinTest {
     @Test
     fun `folder details data should be loaded and displayed when initialized`() =
         runTest {
-            viewModel = get()
-            viewModel.onIntent(Initialize(testFolder.folderId))
+            viewModel = get { parametersOf(testFolder.folderId) }
 
             viewModel.viewState.test {
                 val updatedState = awaitItem()
@@ -164,8 +172,7 @@ class FolderDetailsViewModelTest : KoinTest {
                 onBlocking { execute(any()) } doReturn GetRbacRulesUseCase.Output(testRbacModelWithoutPermissions)
             }
 
-            viewModel = get()
-            viewModel.onIntent(Initialize(testFolder.folderId))
+            viewModel = get { parametersOf(testFolder.folderId) }
 
             viewModel.viewState.test {
                 val updatedState = awaitItem()
@@ -178,7 +185,7 @@ class FolderDetailsViewModelTest : KoinTest {
     @Test
     fun `go back intent should emit navigate up side effect`() =
         runTest {
-            viewModel = get()
+            viewModel = get { parametersOf(testFolder.folderId) }
 
             viewModel.sideEffect.test {
                 viewModel.onIntent(GoBack)
@@ -190,8 +197,7 @@ class FolderDetailsViewModelTest : KoinTest {
     @Test
     fun `go to location details intent should emit navigate to folder location side effect`() =
         runTest {
-            viewModel = get()
-            viewModel.onIntent(Initialize(testFolder.folderId))
+            viewModel = get { parametersOf(testFolder.folderId) }
 
             viewModel.sideEffect.test {
                 viewModel.onIntent(GoToLocationDetails)
@@ -203,8 +209,7 @@ class FolderDetailsViewModelTest : KoinTest {
     @Test
     fun `go to permission details intent should emit navigate to folder permissions side effect`() =
         runTest {
-            viewModel = get()
-            viewModel.onIntent(Initialize(testFolder.folderId))
+            viewModel = get { parametersOf(testFolder.folderId) }
 
             viewModel.sideEffect.test {
                 viewModel.onIntent(GoToPermissionDetails)
@@ -218,8 +223,7 @@ class FolderDetailsViewModelTest : KoinTest {
     @Test
     fun `shared with click intent should emit navigate to folder permissions side effect`() =
         runTest {
-            viewModel = get()
-            viewModel.onIntent(Initialize(testFolder.folderId))
+            viewModel = get { parametersOf(testFolder.folderId) }
 
             viewModel.sideEffect.test {
                 viewModel.onIntent(SharedWithClick)
@@ -233,8 +237,7 @@ class FolderDetailsViewModelTest : KoinTest {
     @Test
     fun `should show refreshing state during data refresh`() =
         runTest {
-            viewModel = get()
-            viewModel.onIntent(Initialize(testFolder.folderId))
+            viewModel = get { parametersOf(testFolder.folderId) }
 
             val dataRefreshTrackingFlow = get<DataRefreshTrackingFlow>()
             dataRefreshTrackingFlow.updateStatus(InProgress)
@@ -249,8 +252,7 @@ class FolderDetailsViewModelTest : KoinTest {
     @Test
     fun `should handle data refresh failure and show error`() =
         runTest {
-            viewModel = get()
-            viewModel.onIntent(Initialize(testFolder.folderId))
+            viewModel = get { parametersOf(testFolder.folderId) }
 
             val dataRefreshTrackingFlow = get<DataRefreshTrackingFlow>()
             dataRefreshTrackingFlow.updateStatus(FinishedWithFailure)
@@ -269,8 +271,7 @@ class FolderDetailsViewModelTest : KoinTest {
     @Test
     fun `should reload folder details after successful data refresh`() =
         runTest {
-            viewModel = get()
-            viewModel.onIntent(Initialize(testFolder.folderId))
+            viewModel = get { parametersOf(testFolder.folderId) }
 
             val dataRefreshTrackingFlow = get<DataRefreshTrackingFlow>()
             dataRefreshTrackingFlow.updateStatus(FinishedWithSuccess)
@@ -291,8 +292,7 @@ class FolderDetailsViewModelTest : KoinTest {
                 onBlocking { execute(any()) } doThrow NullPointerException("Folder not found")
             }
 
-            viewModel = get()
-            viewModel.onIntent(Initialize(testFolder.folderId))
+            viewModel = get { parametersOf(testFolder.folderId) }
 
             viewModel.sideEffect.test {
                 assertThat(awaitItem()).isEqualTo(ShowToast(CONTENT_NOT_AVAILABLE))

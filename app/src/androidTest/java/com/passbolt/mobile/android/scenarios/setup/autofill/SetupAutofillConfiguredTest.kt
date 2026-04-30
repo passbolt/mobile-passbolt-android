@@ -28,12 +28,7 @@ import androidx.compose.ui.test.junit4.createEmptyComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.action.ViewActions.closeSoftKeyboard
-import androidx.test.espresso.action.ViewActions.scrollTo
-import androidx.test.espresso.action.ViewActions.typeText
-import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.compose.ui.test.performTextReplacement
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
 import androidx.test.platform.app.InstrumentationRegistry
@@ -48,6 +43,7 @@ import com.passbolt.mobile.android.instrumentationTestsModule
 import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
 import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivityScenarioRule
+import com.passbolt.mobile.android.testtags.composetags.Auth
 import com.passbolt.mobile.android.testtags.composetags.Home
 import org.junit.After
 import org.junit.Before
@@ -57,13 +53,11 @@ import org.junit.runner.RunWith
 import org.koin.test.KoinTest
 import org.koin.test.inject
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
-import com.passbolt.mobile.android.core.ui.R as CoreUiR
-import com.passbolt.mobile.android.feature.authentication.R as AuthenticationR
 
 @RunWith(AndroidJUnit4::class)
 @MediumTest
 class SetupAutofillConfiguredTest : KoinTest {
-    @get:Rule
+    @get:Rule(order = 1)
     val startActivityRule =
         lazyActivityScenarioRule<StartUpActivity>(
             koinOverrideModules = listOf(instrumentationTestsModule, autofillConfiguredModuleTests),
@@ -85,7 +79,7 @@ class SetupAutofillConfiguredTest : KoinTest {
     @get:Rule
     val permissionRule: GrantPermissionRule = GrantPermissionRule.grant(android.Manifest.permission.CAMERA)
 
-    @get:Rule
+    @get:Rule(order = 0)
     val composeTestRule = createEmptyComposeRule()
 
     private val managedAccountIntentCreator: ManagedAccountIntentCreator by inject()
@@ -100,9 +94,11 @@ class SetupAutofillConfiguredTest : KoinTest {
             onNodeWithText(getString(LocalizationR.string.transfer_details_scan_button)).performClick()
             onNodeWithText(getString(LocalizationR.string.continue_label)).performClick()
         }
-        onView(withId(CoreUiR.id.input)).perform(typeText(managedAccountIntentCreator.getPassphrase()), closeSoftKeyboard())
         accountDataInitializer.initializeAccount()
-        onView(withId(AuthenticationR.id.authButton)).perform(scrollTo(), click())
+        composeTestRule.apply {
+            onNodeWithTag(Auth.PASSPHRASE_INPUT).performTextReplacement(managedAccountIntentCreator.getPassphrase())
+            onNodeWithTag(Auth.SIGN_IN_BUTTON).performClick()
+        }
     }
 
     @After

@@ -10,7 +10,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.passbolt.mobile.android.core.localization.R
-import com.passbolt.mobile.android.core.ui.compose.header.ItemWithHeader
+import com.passbolt.mobile.android.core.ui.header.ItemWithHeader
 
 @Composable
 internal fun AdditionalUrisItem(
