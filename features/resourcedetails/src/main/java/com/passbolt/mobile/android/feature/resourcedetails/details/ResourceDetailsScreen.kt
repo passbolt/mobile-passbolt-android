@@ -50,6 +50,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -57,14 +58,22 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.passbolt.mobile.android.core.clipboard.ClipboardAccess
 import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
 import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
+import com.passbolt.mobile.android.core.navigation.compose.keys.LocationDetailsNavigationKey.LocationDetails
+import com.passbolt.mobile.android.core.navigation.compose.keys.LocationDetailsNavigationKey.LocationItem
+import com.passbolt.mobile.android.core.navigation.compose.keys.PermissionsNavigationKey.Permissions
+import com.passbolt.mobile.android.core.navigation.compose.keys.ResourceFormNavigationKey.MainResourceForm
+import com.passbolt.mobile.android.core.navigation.compose.keys.TagsDetailsNavigationKey.ResourceTags
+import com.passbolt.mobile.android.core.navigation.compose.results.NavigationResultEventBus
+import com.passbolt.mobile.android.core.navigation.compose.results.ResourceDetailsCompleteResult
+import com.passbolt.mobile.android.core.navigation.compose.results.ResourceFormCompleteResult
+import com.passbolt.mobile.android.core.navigation.compose.results.ResultEffect
 import com.passbolt.mobile.android.core.resources.resourceicon.ResourceIconProvider
-import com.passbolt.mobile.android.core.ui.compose.dialogs.ConfirmResourceDeleteAlertDialog
-import com.passbolt.mobile.android.core.ui.compose.progressdialog.ProgressDialog
-import com.passbolt.mobile.android.core.ui.compose.pulltorefresh.PullToRefreshIndicatorBox
-import com.passbolt.mobile.android.core.ui.compose.snackbar.ColoredSnackbarVisuals
-import com.passbolt.mobile.android.core.ui.compose.topbar.BackNavigationIcon
-import com.passbolt.mobile.android.core.ui.compose.topbar.TitleAppBar
-import com.passbolt.mobile.android.feature.authentication.compose.AuthenticationHandler
+import com.passbolt.mobile.android.core.ui.dialogs.ConfirmResourceDeleteAlertDialog
+import com.passbolt.mobile.android.core.ui.progressdialog.ProgressDialog
+import com.passbolt.mobile.android.core.ui.pulltorefresh.PullToRefreshIndicatorBox
+import com.passbolt.mobile.android.core.ui.snackbar.ColoredSnackbarVisuals
+import com.passbolt.mobile.android.core.ui.topbar.BackNavigationIcon
+import com.passbolt.mobile.android.core.ui.topbar.TitleAppBar
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent.CloseDeleteConfirmationDialog
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent.CloseMoreMenu
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent.ConfirmDeleteResource
@@ -81,6 +90,7 @@ import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetai
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent.Initialize
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent.LaunchWebsite
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent.OpenMoreMenu
+import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent.ResourceEdited
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent.ToggleFavourite
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent.ViewPermissions
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsSideEffect.AddToClipboard
@@ -103,6 +113,9 @@ import com.passbolt.mobile.android.feature.resourcedetails.details.ui.ResourceHe
 import com.passbolt.mobile.android.feature.resourcedetails.details.ui.SharedWithSection
 import com.passbolt.mobile.android.feature.resourcedetails.details.ui.TotpSection
 import com.passbolt.mobile.android.resourcemoremenu.ResourceMoreMenuBottomSheet
+import com.passbolt.mobile.android.testtags.composetags.ResourceDetails
+import com.passbolt.mobile.android.ui.PermissionsItem
+import com.passbolt.mobile.android.ui.ResourceFormMode
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.isExpired
 import com.passbolt.mobile.android.ui.isFavourite
@@ -112,33 +125,31 @@ import org.koin.compose.koinInject
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 @Composable
+@Suppress("CyclomaticComplexMethod")
 fun ResourceDetailsScreen(
     resourceModel: ResourceModel,
-    navigation: ResourceDetailsNavigation,
     modifier: Modifier = Modifier,
     viewModel: ResourceDetailsViewModel = koinViewModel(),
     clipboardAccess: ClipboardAccess = koinInject(),
-    appNavigator: AppNavigator = koinInject(),
+    navigator: AppNavigator = koinInject(),
     resourceIconProvider: ResourceIconProvider = koinInject(),
 ) {
     val context = LocalContext.current
     val state = viewModel.viewState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
+    val resultBus = NavigationResultEventBus.current
 
     var resourceIcon by remember { mutableStateOf<Drawable?>(null) }
-    LaunchedEffect(resourceModel) {
-        resourceIcon = resourceIconProvider.getResourceIcon(context, resourceModel)
+    val currentResourceModel = state.value.resourceData.resourceModel ?: resourceModel
+
+    LaunchedEffect(currentResourceModel) {
+        resourceIcon = resourceIconProvider.getResourceIcon(context, currentResourceModel)
     }
 
     LaunchedEffect(resourceModel.resourceId) {
         viewModel.onIntent(Initialize(resourceModel))
     }
-
-    AuthenticationHandler(
-        onAuthenticatedIntent = viewModel::onAuthenticationIntent,
-        authenticationSideEffect = viewModel.authenticationSideEffect,
-    )
 
     ResourceDetailsScreen(
         state = state.value,
@@ -148,6 +159,12 @@ fun ResourceDetailsScreen(
         modifier = modifier,
     )
 
+    ResultEffect<ResourceFormCompleteResult> { result ->
+        if (result.resourceEdited) {
+            viewModel.onIntent(ResourceEdited(result.resourceName))
+        }
+    }
+
     DisposableEffect(Unit) {
         onDispose {
             viewModel.onIntent(Dispose)
@@ -156,16 +173,26 @@ fun ResourceDetailsScreen(
 
     SideEffectDispatcher(viewModel.sideEffect) { sideEffect ->
         when (sideEffect) {
-            NavigateBack -> navigation.navigateBack()
-            is NavigateToEditResource -> navigation.navigateToEditResource(sideEffect.resourceModel)
-            is NavigateToResourcePermissions ->
-                navigation.navigateToResourcePermissions(
-                    sideEffect.resourceId,
-                    sideEffect.mode,
+            NavigateBack -> navigator.navigateBack()
+            is NavigateToEditResource ->
+                navigator.navigateToKey(
+                    MainResourceForm(
+                        ResourceFormMode.Edit(
+                            resourceId = sideEffect.resourceModel.resourceId,
+                            resourceName = sideEffect.resourceModel.metadataJsonModel.name,
+                        ),
+                    ),
                 )
-            is NavigateToResourceTags -> navigation.navigateToResourceTags(sideEffect.resourceId)
-            is NavigateToResourceLocation -> navigation.navigateToResourceLocation(sideEffect.resourceId)
-            is OpenWebsite -> appNavigator.openExternalWebsite(context, sideEffect.url)
+            is NavigateToResourcePermissions ->
+                navigator.navigateToKey(
+                    Permissions(sideEffect.resourceId, sideEffect.mode, PermissionsItem.RESOURCE),
+                )
+            is NavigateToResourceTags -> navigator.navigateToKey(ResourceTags(sideEffect.resourceId))
+            is NavigateToResourceLocation ->
+                navigator.navigateToKey(
+                    LocationDetails(LocationItem.RESOURCE, sideEffect.resourceId),
+                )
+            is OpenWebsite -> navigator.openExternalWebsite(context, sideEffect.url)
             is AddToClipboard ->
                 clipboardAccess.setPrimaryClip(
                     context = context,
@@ -173,8 +200,27 @@ fun ResourceDetailsScreen(
                     value = sideEffect.value,
                     isSensitive = sideEffect.isSecret,
                 )
-            is CloseWithDeleteSuccess -> navigation.closeWithDeleteSuccessResult(sideEffect.resourceName)
-            is SetResourceEditedResult -> navigation.setResourceEditedResult(sideEffect.resourceName)
+            is CloseWithDeleteSuccess -> {
+                resultBus.sendResult(
+                    result =
+                        ResourceDetailsCompleteResult(
+                            resourceEdited = false,
+                            resourceDeleted = true,
+                            resourceName = sideEffect.resourceName,
+                        ),
+                )
+                navigator.navigateBack()
+            }
+            is SetResourceEditedResult -> {
+                resultBus.sendResult(
+                    result =
+                        ResourceDetailsCompleteResult(
+                            resourceEdited = true,
+                            resourceDeleted = false,
+                            resourceName = sideEffect.resourceName,
+                        ),
+                )
+            }
             is ShowSuccessSnackbar -> {
                 coroutineScope.launch {
                     snackbarHostState.showSnackbar(
@@ -221,7 +267,10 @@ private fun ResourceDetailsScreen(
             TitleAppBar(
                 navigationIcon = { BackNavigationIcon(onBackClick = { onIntent(GoBack) }) },
                 actions = {
-                    IconButton(onClick = { onIntent(OpenMoreMenu) }) {
+                    IconButton(
+                        onClick = { onIntent(OpenMoreMenu) },
+                        modifier = Modifier.testTag(ResourceDetails.MORE_ICON),
+                    ) {
                         Icon(
                             painter = painterResource(CoreUiR.drawable.ic_more),
                             contentDescription = null,
@@ -270,7 +319,7 @@ private fun ResourceDetailsScreen(
                 ProgressDialog(state.isLoading)
 
                 if (state.showMoreMenu && state.resourceData.resourceModel != null) {
-                    val resource = state.resourceData.resourceModel!!
+                    val resource = state.resourceData.resourceModel
                     ResourceMoreMenuBottomSheet(
                         resourceId = resource.resourceId,
                         resourceName = resource.metadataJsonModel.name,

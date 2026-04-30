@@ -31,13 +31,14 @@ import com.passbolt.mobile.android.common.datarefresh.DataRefreshStatus.Idle.Not
 import com.passbolt.mobile.android.common.datarefresh.DataRefreshStatus.InProgress
 import com.passbolt.mobile.android.common.datarefresh.DataRefreshTrackingFlow
 import com.passbolt.mobile.android.core.accounts.usecase.accountdata.GetSelectedAccountDataUseCase
+import com.passbolt.mobile.android.core.compose.SideEffectViewModel
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.otpcore.TotpParametersProvider
 import com.passbolt.mobile.android.core.otpcore.TotpParametersProvider.OtpParametersResult.InvalidTotpInput
 import com.passbolt.mobile.android.core.otpcore.TotpParametersProvider.OtpParametersResult.OtpParameters
 import com.passbolt.mobile.android.core.resources.actions.ResourceCommonActionsInteractor
-import com.passbolt.mobile.android.core.resources.actions.ResourceUpdateActionsInteractor
-import com.passbolt.mobile.android.core.resources.actions.SecretPropertiesActionsInteractor
+import com.passbolt.mobile.android.core.resources.actions.ResourceUpdateActionsInteractorFactory
+import com.passbolt.mobile.android.core.resources.actions.SecretPropertiesActionsInteractorFactory
 import com.passbolt.mobile.android.core.resources.actions.SecretPropertyActionResult
 import com.passbolt.mobile.android.core.resources.actions.performCommonResourceAction
 import com.passbolt.mobile.android.core.resources.actions.performResourceUpdateAction
@@ -45,10 +46,9 @@ import com.passbolt.mobile.android.core.resources.actions.performSecretPropertyA
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesUseCase
 import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
-import com.passbolt.mobile.android.core.ui.compose.search.SearchInputEndIconMode.AVATAR
-import com.passbolt.mobile.android.core.ui.compose.search.SearchInputEndIconMode.CLEAR
-import com.passbolt.mobile.android.core.ui.compose.search.SearchInputEndIconMode.NONE
-import com.passbolt.mobile.android.feature.authentication.compose.AuthenticatedViewModel
+import com.passbolt.mobile.android.core.ui.search.SearchInputEndIconMode.AVATAR
+import com.passbolt.mobile.android.core.ui.search.SearchInputEndIconMode.CLEAR
+import com.passbolt.mobile.android.core.ui.search.SearchInputEndIconMode.NONE
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
 import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.CloseCreateResourceMenu
 import com.passbolt.mobile.android.feature.otp.screen.OtpIntent.CloseDeleteConfirmationDialog
@@ -141,7 +141,9 @@ internal class OtpViewModel(
     private val metadataPrivateKeysHelperInteractor: MetadataPrivateKeysHelperInteractor,
     private val timerFactory: TimerFactory,
     private val canCreateResourceUse: CanCreateResourceUseCase,
-) : AuthenticatedViewModel<OtpState, OtpSideEffect>(OtpState()),
+    private val resourceUpdateActionsInteractorFactory: ResourceUpdateActionsInteractorFactory,
+    private val secretPropertiesActionsInteractorFactory: SecretPropertiesActionsInteractorFactory,
+) : SideEffectViewModel<OtpState, OtpSideEffect>(OtpState()),
     KoinComponent {
     init {
         loadUserAvatar()
@@ -325,7 +327,7 @@ internal class OtpViewModel(
     }
 
     private suspend fun downgradeToPasswordAndDescriptionResource(otpResource: ResourceModel) {
-        val resourceUpdateActionInteractor = get<ResourceUpdateActionsInteractor> { parametersOf(otpResource) }
+        val resourceUpdateActionInteractor = resourceUpdateActionsInteractorFactory.create(otpResource)
         performResourceUpdateAction(
             action = {
                 resourceUpdateActionInteractor.updateGenericResource(
@@ -438,7 +440,7 @@ internal class OtpViewModel(
                 copy(otps = otps.refreshingOnly(otpItemWrapper.resource.resourceId))
             }
 
-            val secretPropertiesActionsInteractor = get<SecretPropertiesActionsInteractor> { parametersOf(otpItemWrapper.resource) }
+            val secretPropertiesActionsInteractor = secretPropertiesActionsInteractorFactory.create(otpItemWrapper.resource)
 
             performSecretPropertyAction(
                 action = { secretPropertiesActionsInteractor.provideOtp() },

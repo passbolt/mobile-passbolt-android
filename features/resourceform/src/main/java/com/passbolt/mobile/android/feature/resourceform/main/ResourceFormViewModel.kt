@@ -3,13 +3,15 @@ package com.passbolt.mobile.android.feature.resourceform.main
 import com.passbolt.mobile.android.common.datarefresh.DataRefreshTrackingFlow
 import com.passbolt.mobile.android.common.validation.StringIsBase32
 import com.passbolt.mobile.android.common.validation.StringMaxLength
+import com.passbolt.mobile.android.core.compose.SideEffectViewModel
 import com.passbolt.mobile.android.core.idlingresource.CreateResourceIdlingResource
+import com.passbolt.mobile.android.core.idlingresource.UpdateResourceIdlingResource
 import com.passbolt.mobile.android.core.passwordgenerator.SecretGenerator
 import com.passbolt.mobile.android.core.passwordgenerator.codepoints.toCodepoints
 import com.passbolt.mobile.android.core.passwordgenerator.entropy.EntropyCalculator
 import com.passbolt.mobile.android.core.policies.usecase.GetPasswordPoliciesUseCase
 import com.passbolt.mobile.android.core.resources.actions.ResourceCreateActionsInteractor
-import com.passbolt.mobile.android.core.resources.actions.ResourceUpdateActionsInteractor
+import com.passbolt.mobile.android.core.resources.actions.ResourceUpdateActionsInteractorFactory
 import com.passbolt.mobile.android.core.resources.actions.performResourceCreateAction
 import com.passbolt.mobile.android.core.resources.actions.performResourceUpdateAction
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUseCase
@@ -24,7 +26,6 @@ import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAct
 import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction.REMOVE_NOTE
 import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction.REMOVE_PASSWORD
 import com.passbolt.mobile.android.core.resourcetypes.graph.redesigned.UpdateAction.REMOVE_TOTP
-import com.passbolt.mobile.android.feature.authentication.compose.AuthenticatedViewModel
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.note.NoteFormViewModel
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.note.NoteValidationError.MaxLengthExceeded
@@ -97,8 +98,8 @@ import com.passbolt.mobile.android.ui.ResourceFormMode.Create
 import com.passbolt.mobile.android.ui.ResourceFormMode.Edit
 import com.passbolt.mobile.android.ui.ResourceFormUiModel
 import com.passbolt.mobile.android.ui.TotpUiModel
+import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
-import org.koin.core.parameter.parametersOf
 import timber.log.Timber
 
 @Suppress("TooManyFunctions", "LargeClass")
@@ -114,7 +115,10 @@ class ResourceFormViewModel(
     private val dataRefreshTrackingFlow: DataRefreshTrackingFlow,
     private val metadataPrivateKeysHelperInteractor: MetadataPrivateKeysHelperInteractor,
     private val createResourceIdlingResource: CreateResourceIdlingResource,
-) : AuthenticatedViewModel<ResourceFormState, ResourceFormSideEffect>(ResourceFormState(mode = mode)) {
+    private val updateResourceIdlingResource: UpdateResourceIdlingResource,
+    private val resourceUpdateActionsInteractorFactory: ResourceUpdateActionsInteractorFactory,
+) : SideEffectViewModel<ResourceFormState, ResourceFormSideEffect>(ResourceFormState(mode = mode)),
+    KoinComponent {
     private val uiModel: ResourceFormUiModel by lazy {
         resourceModelHandler.getUiModel(mode)
     }
@@ -654,14 +658,14 @@ class ResourceFormViewModel(
     private fun updateResource() {
         onValid {
             launch {
+                updateResourceIdlingResource.setIdle(false)
                 updateViewState { copy(shouldShowDialogProgress = true) }
                 val editedResource =
                     getLocalResourceUseCase
                         .execute(
                             GetLocalResourceUseCase.Input((mode as Edit).resourceId),
                         ).resource
-                val resourceUpdateActionsInteractor =
-                    get<ResourceUpdateActionsInteractor> { parametersOf(editedResource) }
+                val resourceUpdateActionsInteractor = resourceUpdateActionsInteractorFactory.create(editedResource)
                 performResourceUpdateAction(
                     action = {
                         resourceUpdateActionsInteractor.updateGenericResource(
@@ -694,6 +698,7 @@ class ResourceFormViewModel(
                     },
                 )
                 updateViewState { copy(shouldShowDialogProgress = false) }
+                updateResourceIdlingResource.setIdle(true)
             }
         }
     }

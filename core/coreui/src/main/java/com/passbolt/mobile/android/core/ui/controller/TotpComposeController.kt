@@ -58,8 +58,6 @@ class TotpComposeController {
     ): TotpAnimations {
         val progressPercentage = calculateProgressPercentage(remainingSeconds, expirySeconds)
 
-        val animatedProgress = progressPercentage
-
         val infiniteTransition = rememberInfiniteTransition(label = "refresh_rotation")
         val rotationAngle by infiniteTransition.animateFloat(
             initialValue = 0f,
@@ -72,7 +70,7 @@ class TotpComposeController {
             label = "rotation",
         )
 
-        return TotpAnimations(animatedProgress, rotationAngle)
+        return TotpAnimations(progressPercentage, rotationAngle)
     }
 
     private fun calculateProgressPercentage(

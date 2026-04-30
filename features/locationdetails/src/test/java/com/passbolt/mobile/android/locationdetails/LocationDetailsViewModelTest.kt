@@ -41,7 +41,6 @@ import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUse
 import com.passbolt.mobile.android.jsonmodel.jsonpathops.JsonPathJsonPathOps
 import com.passbolt.mobile.android.jsonmodel.jsonpathops.JsonPathsOps
 import com.passbolt.mobile.android.locationdetails.LocationDetailsIntent.GoBack
-import com.passbolt.mobile.android.locationdetails.LocationDetailsIntent.Initialize
 import com.passbolt.mobile.android.locationdetails.LocationDetailsIntent.ToggleExpanded
 import com.passbolt.mobile.android.locationdetails.LocationDetailsSideEffect.NavigateToHome
 import com.passbolt.mobile.android.locationdetails.LocationDetailsSideEffect.NavigateUp
@@ -69,8 +68,8 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.koin.core.logger.Level
-import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
+import org.koin.core.parameter.parametersOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.koin.test.KoinTest
@@ -109,7 +108,18 @@ class LocationDetailsViewModelTest : KoinTest {
                         }
                         singleOf(::DataRefreshTrackingFlow)
                         singleOf(::TestCoroutineLaunchContext) bind CoroutineLaunchContext::class
-                        factoryOf(::LocationDetailsViewModel)
+                        factory { params ->
+                            LocationDetailsViewModel(
+                                coroutineLaunchContext = get(),
+                                locationItem = params.get(),
+                                itemId = params.get(),
+                                getLocalFolderDetailsUseCase = get(),
+                                getLocalFolderLocationUseCase = get(),
+                                getLocalResourceUseCase = get(),
+                                expandableFolderTreeCreator = get(),
+                                dataRefreshTrackingFlow = get(),
+                            )
+                        }
                     },
                 ),
             )
@@ -153,14 +163,9 @@ class LocationDetailsViewModelTest : KoinTest {
     @Test
     fun `resource location data should be loaded and displayed when initialized with resource`() =
         runTest {
-            viewModel = get()
+            viewModel = get { parametersOf(RESOURCE, testResource.resourceId) }
 
             viewModel.viewState.test {
-                val initialState = awaitItem()
-                assertThat(initialState).isEqualTo(LocationDetailsState())
-
-                viewModel.onIntent(Initialize(RESOURCE, testResource.resourceId))
-
                 val updatedState = awaitItem()
                 assertThat(updatedState.itemName).isEqualTo(testResource.metadataJsonModel.name)
                 assertThat(updatedState.isSharedFolder).isFalse()
@@ -176,14 +181,9 @@ class LocationDetailsViewModelTest : KoinTest {
     @Test
     fun `folder location data should be loaded and displayed when initialized with folder`() =
         runTest {
-            viewModel = get()
+            viewModel = get { parametersOf(FOLDER, testFolder.folderId) }
 
             viewModel.viewState.test {
-                val initialState = awaitItem()
-                assertThat(initialState).isEqualTo(LocationDetailsState())
-
-                viewModel.onIntent(Initialize(FOLDER, testFolder.folderId))
-
                 val updatedState = awaitItem()
                 assertThat(updatedState.itemName).isEqualTo(testFolder.name)
                 assertThat(updatedState.isSharedFolder).isEqualTo(testFolder.isShared)
@@ -199,7 +199,7 @@ class LocationDetailsViewModelTest : KoinTest {
     @Test
     fun `go back intent should emit navigate up side effect`() =
         runTest {
-            viewModel = get()
+            viewModel = get { parametersOf(RESOURCE, testResource.resourceId) }
 
             viewModel.sideEffect.test {
                 viewModel.onIntent(GoBack)
@@ -211,12 +211,9 @@ class LocationDetailsViewModelTest : KoinTest {
     @Test
     fun `toggle expanded should expand folder when it is collapsed`() =
         runTest {
-            viewModel = get()
+            viewModel = get { parametersOf(FOLDER, testFolder.folderId) }
 
             viewModel.viewState.test {
-                awaitItem()
-
-                viewModel.onIntent(Initialize(FOLDER, testFolder.folderId))
                 awaitItem()
 
                 val folderId = "folder-to-expand"
@@ -231,12 +228,9 @@ class LocationDetailsViewModelTest : KoinTest {
     @Test
     fun `toggle expanded should collapse folder when it is expanded`() =
         runTest {
-            viewModel = get()
+            viewModel = get { parametersOf(FOLDER, testFolder.folderId) }
 
             viewModel.viewState.test {
-                awaitItem()
-
-                viewModel.onIntent(Initialize(FOLDER, testFolder.folderId))
                 awaitItem()
 
                 val folderId = testExpandedIds.first()
@@ -251,13 +245,9 @@ class LocationDetailsViewModelTest : KoinTest {
     @Test
     fun `should show refreshing state during data refresh`() =
         runTest {
-            viewModel = get()
+            viewModel = get { parametersOf(RESOURCE, testResource.resourceId) }
 
             viewModel.viewState.test {
-                val initialState = awaitItem()
-                assertThat(initialState.isRefreshing).isFalse()
-
-                viewModel.onIntent(Initialize(RESOURCE, testResource.resourceId))
                 awaitItem()
 
                 val dataRefreshTrackingFlow = get<DataRefreshTrackingFlow>()
@@ -272,12 +262,9 @@ class LocationDetailsViewModelTest : KoinTest {
     @Test
     fun `should handle data refresh failure and show error`() =
         runTest {
-            viewModel = get()
+            viewModel = get { parametersOf(RESOURCE, testResource.resourceId) }
 
             viewModel.viewState.test {
-                awaitItem()
-
-                viewModel.onIntent(Initialize(RESOURCE, testResource.resourceId))
                 awaitItem()
 
                 viewModel.sideEffect.test {
@@ -298,11 +285,9 @@ class LocationDetailsViewModelTest : KoinTest {
                 onBlocking { execute(any()) } doThrow NullPointerException("Resource not found")
             }
 
-            viewModel = get()
+            viewModel = get { parametersOf(RESOURCE, testResource.resourceId) }
 
             viewModel.sideEffect.test {
-                viewModel.onIntent(Initialize(RESOURCE, testResource.resourceId))
-
                 assertThat(awaitItem()).isEqualTo(ShowToast(CONTENT_NOT_AVAILABLE))
                 assertThat(awaitItem()).isEqualTo(NavigateToHome)
             }
@@ -317,11 +302,9 @@ class LocationDetailsViewModelTest : KoinTest {
                 onBlocking { execute(any()) } doThrow NullPointerException("Folder not found")
             }
 
-            viewModel = get()
+            viewModel = get { parametersOf(FOLDER, testFolder.folderId) }
 
             viewModel.sideEffect.test {
-                viewModel.onIntent(Initialize(FOLDER, testFolder.folderId))
-
                 assertThat(awaitItem()).isEqualTo(ShowToast(CONTENT_NOT_AVAILABLE))
                 assertThat(awaitItem()).isEqualTo(NavigateToHome)
             }
@@ -343,13 +326,9 @@ class LocationDetailsViewModelTest : KoinTest {
                 on { create(emptyList()) } doReturn emptyFolderTree
             }
 
-            viewModel = get()
+            viewModel = get { parametersOf(RESOURCE, resourceWithoutFolder.resourceId) }
 
             viewModel.viewState.test {
-                awaitItem()
-
-                viewModel.onIntent(Initialize(RESOURCE, resourceWithoutFolder.resourceId))
-
                 val updatedState = awaitItem()
                 assertThat(updatedState.itemName).isEqualTo(resourceWithoutFolder.metadataJsonModel.name)
                 assertThat(updatedState.resource).isEqualTo(resourceWithoutFolder)
@@ -363,12 +342,9 @@ class LocationDetailsViewModelTest : KoinTest {
     @Test
     fun `should not change state when data refresh status is not completed`() =
         runTest {
-            viewModel = get()
+            viewModel = get { parametersOf(RESOURCE, testResource.resourceId) }
 
             viewModel.viewState.test {
-                awaitItem()
-
-                viewModel.onIntent(Initialize(RESOURCE, testResource.resourceId))
                 awaitItem()
 
                 val dataRefreshTrackingFlow = get<DataRefreshTrackingFlow>()

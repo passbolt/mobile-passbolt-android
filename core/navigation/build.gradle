@@ -9,7 +9,6 @@ plugins {
 android {
     namespace = "com.passbolt.mobile.android.core.navigation"
     buildFeatures {
-        viewBinding true
         compose true
     }
 }
@@ -23,10 +22,6 @@ dependencies {
     implementation project(':common')
     implementation project(':ui')
 
-    implementation libs.navigation.fragment
-    implementation libs.navigation.ui
-    implementation libs.navigation.fragment
-    implementation libs.navigation.ui
     implementation(libs.androidx.navigation3.ui)
     implementation(libs.androidx.navigation3.runtime)
     implementation(libs.androidx.lifecycle.viewmodel.navigation3)

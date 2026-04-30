@@ -23,8 +23,16 @@
 package com.passbolt.mobile.android.core.navigation.compose
 
 import org.koin.core.module.Module
+import org.koin.core.module.dsl.scopedOf
 import org.koin.core.module.dsl.singleOf
+import org.koin.core.qualifier.named
+
+val APP_NAVIGATOR_SCOPE = named<AppNavigator>()
 
 fun Module.composeNavigationModule() {
     singleOf(::AppNavigator)
+
+    scope(APP_NAVIGATOR_SCOPE) {
+        scopedOf(::AppNavigator)
+    }
 }

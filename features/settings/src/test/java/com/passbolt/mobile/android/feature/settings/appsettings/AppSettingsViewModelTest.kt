@@ -2,7 +2,7 @@ package com.passbolt.mobile.android.feature.settings.appsettings
 
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
-import com.passbolt.mobile.android.common.FingerprintInformationProvider
+import com.passbolt.mobile.android.common.BiometricInformationProvider
 import com.passbolt.mobile.android.common.autofill.DetectAutofillConflict
 import com.passbolt.mobile.android.common.usecase.UserIdInput
 import com.passbolt.mobile.android.core.accounts.usecase.biometrickey.SaveBiometricKeyIvUseCase
@@ -17,8 +17,8 @@ import com.passbolt.mobile.android.core.passphrasememorycache.PotentialPassphras
 import com.passbolt.mobile.android.encryptedstorage.biometric.BiometricCipher
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.BiometryInteractor
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsIntent
-import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsIntent.ConfigureFingerprint
-import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsIntent.ConfirmDisableFingerprint
+import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsIntent.ConfigureBiometric
+import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsIntent.ConfirmDisableBiometric
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsSideEffect
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsSideEffect.LaunchBiometricPrompt
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsSideEffect.NavigateToSystemSettings
@@ -84,7 +84,7 @@ class AppSettingsViewModelTest : KoinTest {
                     module {
                         single { mock<CheckIfPassphraseFileExistsUseCase>() }
                         single { mock<GetSelectedAccountUseCase>() }
-                        single { mock<FingerprintInformationProvider>() }
+                        single { mock<BiometricInformationProvider>() }
                         single { mock<PassphraseMemoryCache>() }
                         single { mock<RemovePassphraseUseCase>() }
                         single { mock<BiometricCipher>() }
@@ -118,7 +118,7 @@ class AppSettingsViewModelTest : KoinTest {
     }
 
     @Test
-    fun `initial fingerprint state should be correct for disabled fingerprint`() =
+    fun `initial biometric state should be correct for disabled biometric`() =
         runTest {
             val checkIfPassphraseFileExistsUseCase: CheckIfPassphraseFileExistsUseCase = get()
             whenever(checkIfPassphraseFileExistsUseCase.execute(any())) doReturn
@@ -128,11 +128,11 @@ class AppSettingsViewModelTest : KoinTest {
 
             viewModel = get()
 
-            assertThat(viewModel.viewState.value.isFingerprintEnabled).isFalse()
+            assertThat(viewModel.viewState.value.isBiometricEnabled).isFalse()
         }
 
     @Test
-    fun `initial fingerprint state should be correct for enabled fingerprint`() =
+    fun `initial biometric state should be correct for enabled biometric`() =
         runTest {
             val checkIfPassphraseFileExistsUseCase: CheckIfPassphraseFileExistsUseCase = get()
             whenever(checkIfPassphraseFileExistsUseCase.execute(any())) doReturn
@@ -142,29 +142,29 @@ class AppSettingsViewModelTest : KoinTest {
 
             viewModel = get()
 
-            assertThat(viewModel.viewState.value.isFingerprintEnabled).isTrue()
+            assertThat(viewModel.viewState.value.isBiometricEnabled).isTrue()
         }
 
     @OptIn(ExperimentalTime::class)
     @Test
-    fun `enabling biometric should show info and navigate to settings when fingerprint is not configured`() =
+    fun `enabling biometric should show info and navigate to settings when biometric is not configured`() =
         runTest {
             val checkIfPassphraseFileExistsUseCase: CheckIfPassphraseFileExistsUseCase = get()
             whenever(checkIfPassphraseFileExistsUseCase.execute(any())) doReturn
                 CheckIfPassphraseFileExistsUseCase.Output(
                     passphraseFileExists = false,
                 )
-            val fingerprintInformationProvider: FingerprintInformationProvider = get()
-            whenever(fingerprintInformationProvider.hasBiometricSetUp()) doReturn false
+            val biometricInformationProvider: BiometricInformationProvider = get()
+            whenever(biometricInformationProvider.hasBiometricSetUp()) doReturn false
 
             viewModel = get()
-            viewModel.onIntent(AppSettingsIntent.ToggleFingerprint)
+            viewModel.onIntent(AppSettingsIntent.ToggleBiometric)
 
             viewModel.viewState.test {
-                assertThat(awaitItem().isConfigureFingerprintDialogVisible).isTrue()
+                assertThat(awaitItem().isConfigureBiometricDialogVisible).isTrue()
 
-                viewModel.onIntent(ConfigureFingerprint)
-                assertThat(awaitItem().isConfigureFingerprintDialogVisible).isFalse()
+                viewModel.onIntent(ConfigureBiometric)
+                assertThat(awaitItem().isConfigureBiometricDialogVisible).isFalse()
 
                 viewModel.sideEffect.test {
                     assertThat(awaitItem()).isInstanceOf(NavigateToSystemSettings::class.java)
@@ -183,19 +183,19 @@ class AppSettingsViewModelTest : KoinTest {
                 )
 
             viewModel = get()
-            viewModel.onIntent(AppSettingsIntent.ToggleFingerprint)
+            viewModel.onIntent(AppSettingsIntent.ToggleBiometric)
 
             viewModel.viewState.test {
-                assertThat(awaitItem().isDisableFingerprintDialogVisible).isTrue()
+                assertThat(awaitItem().isDisableBiometricDialogVisible).isTrue()
 
-                viewModel.onIntent(ConfirmDisableFingerprint)
+                viewModel.onIntent(ConfirmDisableBiometric)
 
                 val userIdInput = UserIdInput(SELECTED_ACCOUNT_ID)
                 verify(get<RemovePassphraseUseCase>()).execute(userIdInput)
 
                 val stateAfterDisabling = awaitItem()
-                assertThat(stateAfterDisabling.isDisableFingerprintDialogVisible).isFalse()
-                assertThat(stateAfterDisabling.isFingerprintEnabled).isFalse()
+                assertThat(stateAfterDisabling.isDisableBiometricDialogVisible).isFalse()
+                assertThat(stateAfterDisabling.isBiometricEnabled).isFalse()
             }
         }
 
@@ -208,8 +208,8 @@ class AppSettingsViewModelTest : KoinTest {
                 CheckIfPassphraseFileExistsUseCase.Output(
                     passphraseFileExists = false,
                 )
-            val fingerprintInformationProvider: FingerprintInformationProvider = get()
-            whenever(fingerprintInformationProvider.hasBiometricSetUp()) doReturn true
+            val biometricInformationProvider: BiometricInformationProvider = get()
+            whenever(biometricInformationProvider.hasBiometricSetUp()) doReturn true
             val passphraseMemoryCache: PassphraseMemoryCache = get()
             whenever(passphraseMemoryCache.hasPassphrase()) doReturn true
             whenever(passphraseMemoryCache.get()) doReturn Passphrase(PASSPHRASE)
@@ -217,7 +217,7 @@ class AppSettingsViewModelTest : KoinTest {
             whenever(biometricCipher.getBiometricEncryptCipher()) doReturn mock<Cipher>()
 
             viewModel = get()
-            viewModel.onIntent(AppSettingsIntent.ToggleFingerprint)
+            viewModel.onIntent(AppSettingsIntent.ToggleBiometric)
 
             viewModel.viewState.drop(1).test {
                 viewModel.sideEffect.test {
@@ -233,7 +233,7 @@ class AppSettingsViewModelTest : KoinTest {
                 }
                 verify(get<SaveBiometricKeyIvUseCase>()).execute(any())
 
-                assertThat(awaitItem().isFingerprintEnabled).isTrue()
+                assertThat(awaitItem().isBiometricEnabled).isTrue()
             }
         }
 
@@ -246,8 +246,8 @@ class AppSettingsViewModelTest : KoinTest {
                 CheckIfPassphraseFileExistsUseCase.Output(
                     passphraseFileExists = false,
                 )
-            val fingerprintInformationProvider: FingerprintInformationProvider = get()
-            whenever(fingerprintInformationProvider.hasBiometricSetUp()) doReturn true
+            val biometricInformationProvider: BiometricInformationProvider = get()
+            whenever(biometricInformationProvider.hasBiometricSetUp()) doReturn true
             val passphraseMemoryCache: PassphraseMemoryCache = get()
             whenever(passphraseMemoryCache.hasPassphrase()) doReturn false
             whenever(passphraseMemoryCache.get()) doReturn PassphraseNotPresent(keyStatus = VALID)
@@ -255,7 +255,7 @@ class AppSettingsViewModelTest : KoinTest {
             whenever(biometricCipher.getBiometricEncryptCipher()) doReturn mock<Cipher>()
 
             viewModel = get()
-            viewModel.onIntent(AppSettingsIntent.ToggleFingerprint)
+            viewModel.onIntent(AppSettingsIntent.ToggleBiometric)
 
             viewModel.viewState.drop(1).test {
                 viewModel.sideEffect.test {
@@ -275,7 +275,7 @@ class AppSettingsViewModelTest : KoinTest {
                 }
                 verify(get<SaveBiometricKeyIvUseCase>()).execute(any())
 
-                assertThat(awaitItem().isFingerprintEnabled).isTrue()
+                assertThat(awaitItem().isBiometricEnabled).isTrue()
             }
         }
 

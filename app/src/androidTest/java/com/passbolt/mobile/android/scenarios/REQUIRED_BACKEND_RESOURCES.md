@@ -9,7 +9,7 @@ All resources must be accessible by the test user with **owner permissions**.
 
 ## Quick Setup Checklist
 
-Create the following 8 resources on the backend for the test user.
+Create the following resources on the backend for the test user.
 Unless noted otherwise, every resource uses these field values:
 
 | Field | Value |
@@ -117,7 +117,62 @@ Used by: ResourcesDetailsTest, DeleteResourcePopupTest, SharedWithSubsectionTest
 
 ---
 
-### 7. `Password with description and long note`
+### 7. `TOTP - v4`
+
+| Field | Value |
+|---|---|
+| Name | `TOTP - v4` |
+| TOTP | Any valid TOTP secret |
+| Shared with | At least 1 other user |
+
+> **Note:** This is a v4 TOTP-only resource type. It has no password, URI, or username fields.
+
+Used by: DeleteResourcePopupTest
+
+---
+
+### 8. `Standalone TOTP`
+
+| Field | Value |
+|---|---|
+| Name | `Standalone TOTP` |
+| TOTP | Any valid TOTP secret |
+| Shared with | At least 1 other user |
+
+> **Note:** This is a legacy standalone TOTP resource type. It has no password, URI, or username fields.
+
+Used by: DeleteResourcePopupTest
+
+---
+
+### 9. `Standalone note`
+
+| Field | Value |
+|---|---|
+| Name | `Standalone note` |
+| Note (secret) | Any text |
+| Shared with | At least 1 other user |
+
+> **Note:** This is a note-only resource type. It has no password, URI, or username fields.
+
+Used by: DeleteResourcePopupTest
+
+---
+
+### 10. `Standalone custom fields`
+
+| Field | Value |
+|---|---|
+| Name | `Standalone custom fields` |
+| Shared with | At least 1 other user |
+
+> **Note:** This is a custom-fields-only resource type.
+
+Used by: DeleteResourcePopupTest
+
+---
+
+### 11. `Password with description and long note` (disabled)
 
 | Field | Value |
 |---|---|
@@ -131,7 +186,7 @@ Used by: ResourcesNoteTest (currently disabled)
 
 ---
 
-### 8. `Password, Description and TOTP with long note`
+### 12. `Password, Description and TOTP with long note` (disabled)
 
 | Field | Value |
 |---|---|
@@ -145,9 +200,43 @@ Used by: ResourcesNoteTest (currently disabled)
 
 ---
 
+### 13. `Expired`
+
+| Field | Value |
+|---|---|
+| Name | `Expired` |
+| URI | `https://www.passbolt.com` |
+| Username | `BettyAutomate` |
+| Password | `TestPassword123!` |
+| Expiry date | A date in the past (e.g. yesterday) |
+
+> **Note:** This resource must have an expiry date set to a past date so it shows as expired.
+> The server must have automatic expiry enabled (7 days).
+
+Used by: UpdateExpiryTest
+
+---
+
+---
+
+## Folders
+
+### 1. `Shared without permission to add`
+
+| Property | Value |
+|---|---|
+| Name | `Shared without permission to add` |
+| Test user permission | **Read only** (no write/create) |
+| Contents | At least 1 subfolder and 1 resource |
+
+> **Note:** The test user must NOT have write permission on this folder.
+> Another user should own the folder and share it with the test user as read-only.
+
+Used by: FolderWithoutWritePermissionTest
+
 ## Long Note Content
 
-Resources #7 and #8 must have the following text as their secret note:
+Resources #11 and #12 must have the following text as their secret note:
 
 > Free and open-source software (FOSS) is software available under a license that grants users the right to use, modify, and distribute the software -- modified or not -- to everyone. FOSS is an inclusive umbrella term encompassing free software and open-source software.[a][1] The rights guaranteed by FOSS originate from the "Four Essential Freedoms" of The Free Software Definition and the criteria of The Open Source Definition.[4][6] All FOSS can have publicly available source code, but not all source-available software is FOSS. FOSS is the opposite of proprietary software, which is licensed restrictively or has undisclosed source code.[4]
 >
@@ -190,7 +279,19 @@ the expected value (short note or long FOSS excerpt).
 Opens the action menu for each resource and verifies the delete confirmation
 dialog appears and that cancel returns to the home screen.
 
-Uses all 6 main resources (#1–#6).
+Uses all 10 main resources (#1–#10).
+
+### UpdateExpiryTest (`resourcesedition/updateexpiry/`) — Active
+
+| Test method | Required resources |
+|---|---|
+| `updateExpiryOfAResourceWhenSecretHasChanged` | Creates resource at runtime; server must have automatic expiry (7 days) |
+| `doNotUpdateExpiryOfAResourceWhenAllItemsExceptPasswordHasChanged` | `Expired` (#9) — must have past expiry date |
+
+### SetExpiryTest (`resourcescreation/setexpiry/`) — Active
+
+Creates a resource at runtime and verifies expiry is set to 7 days.
+Server must have automatic expiry enabled (7 days).
 
 ### DeleteResourcesTest (`deleteresource/`) — Partially active
 
@@ -209,4 +310,4 @@ The test user just needs permission to create and delete resources.
 Opens the resource detail view and verifies the "Shared with" section is visible.
 Each resource must have at least one other user in its share list.
 
-Uses all 6 main resources (#1–#6).
+Uses all 10 main resources (#1–#10).

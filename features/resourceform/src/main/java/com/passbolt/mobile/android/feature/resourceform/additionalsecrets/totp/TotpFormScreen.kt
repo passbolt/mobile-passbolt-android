@@ -57,17 +57,19 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
 import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
-import com.passbolt.mobile.android.core.navigation.compose.LocalResourceFormHostNavigation
+import com.passbolt.mobile.android.core.navigation.compose.keys.OtpNavigationKey.ScanOtp
+import com.passbolt.mobile.android.core.navigation.compose.keys.OtpNavigationKey.ScanOtpMode
 import com.passbolt.mobile.android.core.navigation.compose.keys.ResourceFormNavigationKey.TotpAdvancedSettingsForm
 import com.passbolt.mobile.android.core.navigation.compose.results.NavigationResultEventBus
 import com.passbolt.mobile.android.core.navigation.compose.results.ResultEffect
-import com.passbolt.mobile.android.core.ui.compose.button.PrimaryButton
-import com.passbolt.mobile.android.core.ui.compose.button.SecondaryIconButton
-import com.passbolt.mobile.android.core.ui.compose.text.TextInput
-import com.passbolt.mobile.android.core.ui.compose.topbar.BackNavigationIcon
-import com.passbolt.mobile.android.core.ui.compose.topbar.TitleAppBar
+import com.passbolt.mobile.android.core.navigation.compose.results.ScanOtpResultEvent
+import com.passbolt.mobile.android.core.ui.button.PrimaryButton
+import com.passbolt.mobile.android.core.ui.button.SecondaryIconButton
+import com.passbolt.mobile.android.core.ui.text.TextInput
 import com.passbolt.mobile.android.core.ui.textinputfield.StatefulInput.State.Default
 import com.passbolt.mobile.android.core.ui.textinputfield.StatefulInput.State.Error
+import com.passbolt.mobile.android.core.ui.topbar.BackNavigationIcon
+import com.passbolt.mobile.android.core.ui.topbar.TitleAppBar
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.TotpFormIntent.AdvancedSettingsChanged
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.TotpFormIntent.ApplyChanges
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.TotpFormIntent.GoBack
@@ -81,7 +83,6 @@ import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.T
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.TotpFormSideEffect.NavigateBack
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.TotpFormSideEffect.NavigateToAdvancedSettings
 import com.passbolt.mobile.android.feature.resourceform.additionalsecrets.totp.TotpFormSideEffect.NavigateToScanTotp
-import com.passbolt.mobile.android.feature.resourceform.navigation.ScanOtpResultEvent
 import com.passbolt.mobile.android.feature.resourceform.navigation.TotpAdvancedSettingsFormResult
 import com.passbolt.mobile.android.feature.resourceform.navigation.TotpFormResult
 import com.passbolt.mobile.android.ui.LeadingContentType
@@ -105,7 +106,6 @@ internal fun TotpFormScreen(
 ) {
     val state = viewModel.viewState.collectAsStateWithLifecycle()
     val resultBus = NavigationResultEventBus.current
-    val hostNavigation = LocalResourceFormHostNavigation.current
 
     TotpFormScreen(
         modifier = modifier,
@@ -125,7 +125,7 @@ internal fun TotpFormScreen(
                     TotpAdvancedSettingsForm(it.mode, it.totpUiModel),
                 )
             NavigateToScanTotp ->
-                hostNavigation.navigateToScanOtp()
+                navigator.navigateToKey(ScanOtp(ScanOtpMode.SCAN_FOR_RESULT))
         }
     }
 

@@ -25,6 +25,7 @@ package com.passbolt.mobile.android.permissions.permissions
 
 import com.passbolt.mobile.android.ui.PermissionModelUi.GroupPermissionModel
 import com.passbolt.mobile.android.ui.PermissionModelUi.UserPermissionModel
+import com.passbolt.mobile.android.ui.PermissionsItem
 import com.passbolt.mobile.android.ui.PermissionsMode
 
 sealed interface PermissionsSideEffect {
@@ -48,6 +49,7 @@ sealed interface PermissionsSideEffect {
     data class NavigateToSelfWithMode(
         val id: String,
         val mode: PermissionsMode,
+        val permissionsItem: PermissionsItem,
     ) : PermissionsSideEffect
 
     data object CloseWithShareSuccess : PermissionsSideEffect

@@ -3,9 +3,9 @@ package com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.trans
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.viewModelScope
 import com.passbolt.mobile.android.core.authenticationcore.session.GetSessionUseCase
+import com.passbolt.mobile.android.core.compose.SideEffectViewModel
 import com.passbolt.mobile.android.core.idlingresource.TransferAccountIdlingResource
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
-import com.passbolt.mobile.android.feature.authentication.compose.AuthenticatedViewModel
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
 import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccount.TransferAccountIntent.CancelTransfer
 import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccount.TransferAccountIntent.ConfirmCancelTransfer
@@ -59,7 +59,7 @@ internal class TransferAccountViewModel(
     private val getSessionUseCase: GetSessionUseCase,
     private val transferAccountIdlingResource: TransferAccountIdlingResource,
     coroutineLaunchContext: CoroutineLaunchContext,
-) : AuthenticatedViewModel<TransferAccountState, TransferAccountScreenSideEffect>(TransferAccountState()) {
+) : SideEffectViewModel<TransferAccountState, TransferAccountScreenSideEffect>(TransferAccountState()) {
     private var qrCodePagesData: List<String> = emptyList()
     private var transferStatus = Status.START
     private var transferPollingJob: Job? = null

@@ -10,7 +10,6 @@ dependencies {
     implementation libs.androidx.core
     implementation libs.appcompat
     implementation libs.biometric
-    implementation libs.material
     implementation libs.retrofit
     implementation libs.okhttp
     implementation platform(libs.koin.bom)
@@ -20,9 +19,6 @@ dependencies {
 
 android {
     namespace = "com.passbolt.mobile.android.core.common"
-    buildFeatures {
-        viewBinding true
-    }
 }
 
 kotlin {

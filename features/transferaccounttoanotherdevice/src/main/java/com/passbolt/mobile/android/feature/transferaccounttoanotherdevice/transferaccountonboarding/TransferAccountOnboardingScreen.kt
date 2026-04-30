@@ -61,19 +61,18 @@ import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.ActivityIntents.AuthConfig.RefreshPassphrase
 import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
 import com.passbolt.mobile.android.core.navigation.compose.keys.TransferAccountToAnotherDeviceKey.Transfer
-import com.passbolt.mobile.android.core.ui.compose.button.PrimaryButton
-import com.passbolt.mobile.android.core.ui.compose.circlestepsview.CircleStepItemModel
-import com.passbolt.mobile.android.core.ui.compose.circlestepsview.CircleStepsView
-import com.passbolt.mobile.android.core.ui.compose.topbar.BackNavigationIcon
-import com.passbolt.mobile.android.core.ui.compose.topbar.TitleAppBar
-import com.passbolt.mobile.android.feature.authentication.compose.AuthenticationHandler
-import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.TransferAccountNavigation
+import com.passbolt.mobile.android.core.ui.button.PrimaryButton
+import com.passbolt.mobile.android.core.ui.circlestepsview.CircleStepItemModel
+import com.passbolt.mobile.android.core.ui.circlestepsview.CircleStepsView
+import com.passbolt.mobile.android.core.ui.topbar.BackNavigationIcon
+import com.passbolt.mobile.android.core.ui.topbar.TitleAppBar
 import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccountonboarding.TransferAccountOnboardingIntent.GoBack
 import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccountonboarding.TransferAccountOnboardingIntent.RefreshedPassphrase
 import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccountonboarding.TransferAccountOnboardingIntent.StartTransferClick
 import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccountonboarding.TransferAccountOnboardingScreenSideEffect.NavigateToRefreshPassphrase
 import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccountonboarding.TransferAccountOnboardingScreenSideEffect.NavigateToTransferAccount
 import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccountonboarding.TransferAccountOnboardingScreenSideEffect.NavigateUp
+import com.passbolt.mobile.android.testtags.composetags.TransferAccount
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
@@ -100,20 +99,9 @@ internal fun TransferAccountOnboardingScreen(
         onIntent = viewModel::onIntent,
     )
 
-    AuthenticationHandler(
-        onAuthenticatedIntent = viewModel::onAuthenticationIntent,
-        authenticationSideEffect = viewModel.authenticationSideEffect,
-    )
-
     SideEffectDispatcher(viewModel.sideEffect) {
         when (it) {
-            NavigateUp -> {
-                if (context is TransferAccountNavigation) {
-                    context.navigateBack()
-                } else {
-                    navigator.navigateBack()
-                }
-            }
+            NavigateUp -> navigator.navigateBack()
             NavigateToRefreshPassphrase ->
                 authenticationLauncher.launch(
                     ActivityIntents.authentication(
@@ -121,12 +109,7 @@ internal fun TransferAccountOnboardingScreen(
                         RefreshPassphrase,
                     ),
                 )
-            NavigateToTransferAccount ->
-                if (context is TransferAccountNavigation) {
-                    context.navigateToKey(Transfer)
-                } else {
-                    navigator.navigateToKey(Transfer)
-                }
+            NavigateToTransferAccount -> navigator.navigateToKey(Transfer)
         }
     }
 }
@@ -212,7 +195,7 @@ private fun TransferAccountOnboardingScreen(
                     Modifier
                         .fillMaxWidth()
                         .padding(16.dp)
-                        .testTag("StartTransferButton"), // TODO: move it to :testtags module once MOB-3312 gets resolved
+                        .testTag(TransferAccount.START_TRANSFER_BUTTON),
             )
 
             Spacer(modifier = Modifier.height(16.dp))

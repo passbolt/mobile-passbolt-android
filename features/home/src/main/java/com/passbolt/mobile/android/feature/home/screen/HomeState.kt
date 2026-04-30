@@ -23,8 +23,8 @@
 
 package com.passbolt.mobile.android.feature.home.screen
 
-import com.passbolt.mobile.android.core.ui.compose.search.SearchInputEndIconMode
-import com.passbolt.mobile.android.core.ui.compose.search.SearchInputEndIconMode.AVATAR
+import com.passbolt.mobile.android.core.ui.search.SearchInputEndIconMode
+import com.passbolt.mobile.android.core.ui.search.SearchInputEndIconMode.AVATAR
 import com.passbolt.mobile.android.feature.home.screen.data.HomeData
 import com.passbolt.mobile.android.ui.Folder.Child
 import com.passbolt.mobile.android.ui.HomeDisplayViewModel

@@ -1,6 +1,6 @@
 package com.passbolt.mobile.android.permissions.grouppermissionsdetails.ui
 
-import com.passbolt.mobile.android.core.ui.recyclerview.OverlapCalculator
+import com.passbolt.mobile.android.core.ui.overlap.OverlapCalculator
 import com.passbolt.mobile.android.ui.UserModel
 
 class UsersDatasetCreator(

@@ -28,6 +28,7 @@ import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -38,22 +39,8 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.passbolt.mobile.android.core.idlingresource.CreateFolderIdlingResource
 import com.passbolt.mobile.android.core.idlingresource.ResourcesFullRefreshIdlingResource
 import com.passbolt.mobile.android.core.idlingresource.SignInIdlingResource
-import com.passbolt.mobile.android.core.localization.R.string.create_folder_name
-import com.passbolt.mobile.android.core.localization.R.string.create_folder_title
-import com.passbolt.mobile.android.core.localization.R.string.create_resource_menu_create_a_resource
-import com.passbolt.mobile.android.core.localization.R.string.create_resource_menu_create_folder
-import com.passbolt.mobile.android.core.localization.R.string.create_resource_menu_create_note
-import com.passbolt.mobile.android.core.localization.R.string.create_resource_menu_create_password
-import com.passbolt.mobile.android.core.localization.R.string.create_resource_menu_create_totp
-import com.passbolt.mobile.android.core.localization.R.string.filters_menu_folders
-import com.passbolt.mobile.android.core.localization.R.string.folder_root
-import com.passbolt.mobile.android.core.localization.R.string.location
-import com.passbolt.mobile.android.core.localization.R.string.save
-import com.passbolt.mobile.android.core.localization.R.string.shared_with
-import com.passbolt.mobile.android.core.localization.R.string.validation_required_with_max_length
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppContext
-import com.passbolt.mobile.android.core.ui.compose.topbar.BackNavigationIcon.TestTags.ICON
 import com.passbolt.mobile.android.feature.authentication.AuthenticationMainActivity
 import com.passbolt.mobile.android.helpers.chooseFilter
 import com.passbolt.mobile.android.helpers.getString
@@ -62,17 +49,22 @@ import com.passbolt.mobile.android.instrumentationTestsModule
 import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
 import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
+import com.passbolt.mobile.android.testtags.composetags.BackNavigation.ICON
+import com.passbolt.mobile.android.testtags.composetags.BottomSheet
+import com.passbolt.mobile.android.testtags.composetags.CreateFolder
+import com.passbolt.mobile.android.testtags.composetags.Home
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.koin.core.component.inject
 import org.koin.test.KoinTest
+import com.passbolt.mobile.android.core.localization.R as LocalisationR
 
 @RunWith(AndroidJUnit4::class)
 @MediumTest
 class FolderCreationTest : KoinTest {
-    @get:Rule
+    @get:Rule(order = 0)
     val startUpActivityRule =
         lazyActivitySetupScenarioRule<AuthenticationMainActivity>(
             koinOverrideModules = listOf(instrumentationTestsModule),
@@ -110,7 +102,7 @@ class FolderCreationTest : KoinTest {
     @Before
     fun setup() {
         composeTestRule.signIn(managedAccountIntentCreator.getPassphrase())
-        composeTestRule.chooseFilter(filters_menu_folders)
+        composeTestRule.chooseFilter(LocalisationR.string.filters_menu_folders)
     }
 
     /**  [On the folders workspace I can click ‘Create Button’ when v5 resources are enabled and default](https://passbolt.testrail.io/index.php?/cases/view/17611)
@@ -132,25 +124,21 @@ class FolderCreationTest : KoinTest {
      */
     @Test
     fun onTheFoldersWorkspaceICanClickCreateButtonWhenV5ResourcesAreEnabledAndDefault() {
-        composeTestRule
-            .onNodeWithTag("home_fab")
-            .performClick()
-        composeTestRule
-            .onNodeWithText(getString(create_resource_menu_create_a_resource))
-            .assertIsDisplayed()
-        composeTestRule.onNodeWithTag("bottom_sheet_icon_close").assertIsDisplayed()
-        composeTestRule
-            .onNodeWithText(getString(create_resource_menu_create_password))
-            .assertIsDisplayed()
-        composeTestRule
-            .onNodeWithText(getString(create_resource_menu_create_totp))
-            .assertIsDisplayed()
-        composeTestRule
-            .onNodeWithText(getString(create_resource_menu_create_note))
-            .assertIsDisplayed()
-        composeTestRule
-            .onNodeWithText(getString(create_resource_menu_create_folder))
-            .assertIsDisplayed()
+        composeTestRule.apply {
+            onNodeWithTag(Home.FAB).performClick()
+            onNodeWithText(getString(LocalisationR.string.create_resource_menu_create_a_resource))
+                .assertIsDisplayed()
+            onNodeWithTag(BottomSheet.CLOSE_ICON).assertIsDisplayed()
+            onNodeWithText(getString(LocalisationR.string.create_resource_menu_create_password))
+                .assertIsDisplayed()
+            // "TOTP" text appears both in the bottom nav and in the create menu
+            onAllNodesWithText(getString(LocalisationR.string.create_resource_menu_create_totp))[0]
+                .assertIsDisplayed()
+            onNodeWithText(getString(LocalisationR.string.create_resource_menu_create_note))
+                .assertIsDisplayed()
+            onNodeWithText(getString(LocalisationR.string.create_resource_menu_create_folder))
+                .assertIsDisplayed()
+        }
     }
 
     /**  [On the folder workspace I can cancel creation process](https://passbolt.testrail.io/index.php?/cases/view/8162)
@@ -161,9 +149,11 @@ class FolderCreationTest : KoinTest {
      */
     @Test
     fun onTheFolderWorkspaceICanCancelCreationProcess() {
-        composeTestRule.onNodeWithTag("home_fab").performClick()
-        composeTestRule.onNodeWithTag("bottom_sheet_icon_close").performClick()
-        composeTestRule.onNodeWithTag("home_screen").assertIsDisplayed()
+        composeTestRule.apply {
+            onNodeWithTag(Home.FAB).performClick()
+            onNodeWithTag(BottomSheet.CLOSE_ICON).performClick()
+            onNodeWithTag(Home.SCREEN).assertIsDisplayed()
+        }
     }
 
     /**  [I can enter `Create folder` screen](https://passbolt.testrail.io/index.php?/cases/view/8163)
@@ -179,38 +169,29 @@ class FolderCreationTest : KoinTest {
      */
     @Test
     fun iCanEnterCreateFolderScreen() {
-        composeTestRule
-            .onNodeWithTag("home_fab")
-            .performClick()
-        composeTestRule
-            .onNodeWithText(getString(create_resource_menu_create_folder))
-            .performClick()
-        composeTestRule
-            .onNodeWithText(getString(create_folder_title))
-            .assertIsDisplayed()
-        composeTestRule
-            .onNode(
-                hasTestTag(ICON),
+        composeTestRule.apply {
+            onNodeWithTag(Home.FAB).performClick()
+            onNodeWithText(getString(LocalisationR.string.create_resource_menu_create_folder)).performClick()
+            onNodeWithText(getString(LocalisationR.string.create_folder_title)).assertIsDisplayed()
+            onNode(hasTestTag(ICON), useUnmergedTree = true).assertExists()
+            onNode(
+                hasText(getString(LocalisationR.string.enter_folder_name), substring = true, ignoreCase = true),
                 useUnmergedTree = true,
             ).assertExists()
-        composeTestRule
-            .onNode(
-                hasText(getString(create_folder_name), substring = true, ignoreCase = true),
+            onNode(
+                hasText(getString(LocalisationR.string.location), substring = true, ignoreCase = true),
                 useUnmergedTree = true,
             ).assertExists()
-        // TODO: [Placeholder is missing](https://app.clickup.com/t/2593179/MOB-3309)
-        composeTestRule
-            .onNode(hasText(getString(location), substring = true, ignoreCase = true), useUnmergedTree = true)
-            .assertExists()
-        composeTestRule
-            .onNode(hasText(getString(folder_root), substring = true, ignoreCase = true), useUnmergedTree = true)
-            .assertExists()
-        composeTestRule
-            .onNode(hasText(getString(shared_with), substring = true, ignoreCase = true), useUnmergedTree = true)
-            .assertExists()
-        composeTestRule
-            .onNodeWithText(getString(save))
-            .assertExists()
+            onNode(
+                hasText(getString(LocalisationR.string.folder_root), substring = true, ignoreCase = true),
+                useUnmergedTree = true,
+            ).assertExists()
+            onNode(
+                hasText(getString(LocalisationR.string.shared_with), substring = true, ignoreCase = true),
+                useUnmergedTree = true,
+            ).assertExists()
+            onNodeWithText(getString(LocalisationR.string.save)).assertExists()
+        }
     }
 
     /**  [On the root folder workspace I will see an error when saving folder without its name](https://passbolt.testrail.io/index.php?/cases/view/8164)
@@ -225,24 +206,17 @@ class FolderCreationTest : KoinTest {
      */
     @Test
     fun onTheRootFolderWorkspaceIWillSeeAnErrorWhenSavingFolderWithoutItsName() {
-        composeTestRule
-            .onNodeWithTag("home_fab")
-            .performClick()
-        composeTestRule
-            .onNodeWithText(getString(create_resource_menu_create_folder))
-            .performClick()
-        composeTestRule
-            .onNodeWithText(getString(save))
-            .performClick()
-
         val expectedError =
             InstrumentationRegistry
                 .getInstrumentation()
                 .targetContext
-                .getString(validation_required_with_max_length, 256)
-        composeTestRule
-            .onNodeWithText(expectedError)
-            .assertIsDisplayed()
+                .getString(LocalisationR.string.validation_required_with_max_length, 256)
+        composeTestRule.apply {
+            onNodeWithTag(Home.FAB).performClick()
+            onNodeWithText(getString(LocalisationR.string.create_resource_menu_create_folder)).performClick()
+            onNodeWithText(getString(LocalisationR.string.save)).performClick()
+            onNodeWithText(expectedError).assertIsDisplayed()
+        }
     }
 
     /**  [On the root folder workspace I can save new folder](https://passbolt.testrail.io/index.php?/cases/view/8165)
@@ -256,26 +230,18 @@ class FolderCreationTest : KoinTest {
      */
     @Test
     fun onTheRootFolderWorkspaceICanSaveNewFolder() {
-        composeTestRule.waitUntil(timeoutMillis = 4_000) {
-            composeTestRule.onAllNodesWithTag("home_fab").fetchSemanticsNodes().isNotEmpty()
+        composeTestRule.apply {
+            waitUntil(timeoutMillis = 4_000) {
+                onAllNodesWithTag(Home.FAB).fetchSemanticsNodes().isNotEmpty()
+            }
+            onNodeWithTag(Home.FAB).performClick()
+            onNodeWithText(getString(LocalisationR.string.create_resource_menu_create_folder)).performClick()
+            onNodeWithTag(CreateFolder.NAME_INPUT, useUnmergedTree = true)
+                .performClick()
+                .performTextReplacement(NEW_TEST_FOLDER_NAME)
+            onNodeWithText(getString(LocalisationR.string.save)).performClick()
+            onNodeWithTag(Home.SCREEN).assertIsDisplayed()
         }
-        composeTestRule
-            .onNodeWithTag("home_fab")
-            .performClick()
-        composeTestRule
-            .onNodeWithText(getString(create_resource_menu_create_folder))
-            .performClick()
-        // TODO: use .onNodeWithText(getString(placeholder)) when https://app.clickup.com/t/2593179/MOB-3309 will be ready
-        composeTestRule
-            .onNodeWithTag("create_folder_name_input", useUnmergedTree = true)
-            .performClick()
-            .performTextReplacement(NEW_TEST_FOLDER_NAME)
-        composeTestRule
-            .onNodeWithText(getString(save))
-            .performClick()
-        composeTestRule
-            .onNodeWithTag("home_screen")
-            .assertIsDisplayed()
     }
 
     private companion object {

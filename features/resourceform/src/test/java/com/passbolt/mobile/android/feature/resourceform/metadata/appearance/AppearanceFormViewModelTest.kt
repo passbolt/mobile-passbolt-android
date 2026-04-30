@@ -55,6 +55,7 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import kotlin.test.assertIs
 import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -258,7 +259,7 @@ class AppearanceFormViewModelTest : KoinTest {
 
             viewModel.sideEffect.test {
                 viewModel.onIntent(AppearanceFormIntent.GoBack)
-                assertThat(awaitItem()).isInstanceOf(AppearanceFormSideEffect.NavigateUp::class.java)
+                assertIs<AppearanceFormSideEffect.NavigateUp>(awaitItem())
             }
         }
 
@@ -285,9 +286,8 @@ class AppearanceFormViewModelTest : KoinTest {
             viewModel.sideEffect.test {
                 viewModel.onIntent(ApplyChanges)
 
-                val sideEffect = awaitItem()
-                assertThat(sideEffect).isInstanceOf(ApplyAndGoBack::class.java)
-                assertThat((sideEffect as ApplyAndGoBack).model).isEqualTo(mockAppearanceModel)
+                val sideEffect = assertIs<ApplyAndGoBack>(awaitItem())
+                assertThat(sideEffect.model).isEqualTo(mockAppearanceModel)
 
                 verify(resourceFormMapper).toAppearanceModel(iconValue, colorHex)
             }

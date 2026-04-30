@@ -47,6 +47,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.passbolt.mobile.android.common.extension.toSingleLine
+import com.passbolt.mobile.android.testtags.composetags.Home
 import com.passbolt.mobile.android.ui.FolderWithCountAndPath
 import com.passbolt.mobile.android.ui.ResourcePermission
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
@@ -65,7 +67,7 @@ fun FolderItem(
             modifier
                 .fillMaxWidth()
                 .height(64.dp)
-                .testTag(FolderItemTestTags.ROW)
+                .testTag(Home.FOLDER_ROW)
                 .clickable { onFolderClick(folder) }
                 .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -82,7 +84,7 @@ fun FolderItem(
             modifier = Modifier.weight(1f),
         ) {
             Text(
-                text = folder.name,
+                text = folder.name.toSingleLine(),
                 style = MaterialTheme.typography.titleMedium,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
@@ -181,8 +183,4 @@ private fun SharedFolderItemPreview() {
             onFolderClick = {},
         )
     }
-}
-
-object FolderItemTestTags {
-    const val ROW: String = "home_folder_row"
 }

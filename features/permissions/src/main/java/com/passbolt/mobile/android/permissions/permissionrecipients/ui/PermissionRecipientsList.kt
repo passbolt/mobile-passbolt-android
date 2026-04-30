@@ -4,8 +4,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.passbolt.mobile.android.core.ui.compose.permissions.GroupPermissionRow
-import com.passbolt.mobile.android.core.ui.compose.permissions.UserPermissionRow
+import com.passbolt.mobile.android.core.ui.permissions.GroupPermissionRow
+import com.passbolt.mobile.android.core.ui.permissions.UserPermissionRow
 import com.passbolt.mobile.android.permissions.permissionrecipients.PermissionRecipientsIntent
 import com.passbolt.mobile.android.permissions.permissionrecipients.PermissionRecipientsIntent.ToggleGroupSelection
 import com.passbolt.mobile.android.permissions.permissionrecipients.PermissionRecipientsIntent.ToggleUserSelection

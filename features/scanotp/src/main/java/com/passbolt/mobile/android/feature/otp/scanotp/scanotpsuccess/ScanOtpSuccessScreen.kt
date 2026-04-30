@@ -32,10 +32,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
-import com.passbolt.mobile.android.core.ui.compose.button.PrimaryButton
-import com.passbolt.mobile.android.core.ui.compose.progressdialog.ProgressDialog
-import com.passbolt.mobile.android.feature.authentication.compose.AuthenticationHandler
-import com.passbolt.mobile.android.feature.otp.scanotp.compose.ScanOtpNavigation
+import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
+import com.passbolt.mobile.android.core.navigation.compose.keys.OtpNavigationKey.Otp
+import com.passbolt.mobile.android.core.navigation.compose.keys.OtpNavigationKey.ResourcePicker
+import com.passbolt.mobile.android.core.navigation.compose.results.NavigationResultEventBus
+import com.passbolt.mobile.android.core.navigation.compose.results.OtpScanCompleteResult
+import com.passbolt.mobile.android.core.ui.button.PrimaryButton
+import com.passbolt.mobile.android.core.ui.progressdialog.ProgressDialog
 import com.passbolt.mobile.android.feature.otp.scanotp.scanotpsuccess.ScanOtpSuccessIntent.CreateStandaloneOtpClick
 import com.passbolt.mobile.android.feature.otp.scanotp.scanotpsuccess.ScanOtpSuccessIntent.LinkToResourceClick
 import com.passbolt.mobile.android.feature.otp.scanotp.scanotpsuccess.ScanOtpSuccessSideEffect.NavigateToOtpList
@@ -45,6 +48,7 @@ import com.passbolt.mobile.android.feature.otp.scanotp.scanotpsuccess.ScanOtpSuc
 import com.passbolt.mobile.android.ui.OtpParseResult
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.koinInject
 import org.koin.core.parameter.parametersOf
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
@@ -53,25 +57,21 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
 internal fun ScanOtpSuccessScreen(
     scannedTotp: OtpParseResult.OtpQr.TotpQr,
     parentFolderId: String?,
-    navigation: ScanOtpNavigation,
     modifier: Modifier = Modifier,
     viewModel: ScanOtpSuccessViewModel = koinViewModel { parametersOf(scannedTotp, parentFolderId) },
+    navigator: AppNavigator = koinInject(),
 ) {
     val state by viewModel.viewState.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
+    val resultBus = NavigationResultEventBus.current
 
     ScanOtpSuccessScreen(
         state = state,
         onIntent = viewModel::onIntent,
         snackbarHostState = snackbarHostState,
         modifier = modifier,
-    )
-
-    AuthenticationHandler(
-        onAuthenticatedIntent = viewModel::onAuthenticationIntent,
-        authenticationSideEffect = viewModel.authenticationSideEffect,
     )
 
     MetadataKeyDialogs(
@@ -81,10 +81,14 @@ internal fun ScanOtpSuccessScreen(
 
     SideEffectDispatcher(viewModel.sideEffect) { sideEffect ->
         when (sideEffect) {
-            is NavigateToOtpList ->
-                navigation.navigateToOtpList(sideEffect.totp, sideEffect.otpCreated, sideEffect.resourceId)
+            is NavigateToOtpList -> {
+                resultBus.sendResult(
+                    result = OtpScanCompleteResult(otpCreated = sideEffect.otpCreated, otpManualCreationChosen = false),
+                )
+                navigator.popToKey(Otp)
+            }
             is NavigateToResourcePicker ->
-                navigation.navigateToResourcePicker(sideEffect.suggestedUri)
+                navigator.navigateToKey(ResourcePicker(sideEffect.suggestedUri))
             is ShowErrorSnackbar ->
                 coroutineScope.launch {
                     snackbarHostState.showSnackbar(getErrorSnackbarMessage(context, sideEffect))
@@ -134,6 +138,7 @@ private fun ScanOtpSuccessScreen(
                         .padding(top = 32.dp),
                 textAlign = TextAlign.Center,
                 fontSize = 28.sp,
+                lineHeight = 36.sp,
                 fontWeight = FontWeight.W600,
                 color = colorResource(CoreUiR.color.text_primary),
                 maxLines = 2,
@@ -158,7 +163,7 @@ private fun ScanOtpSuccessScreen(
                     Modifier
                         .clickable { onIntent(LinkToResourceClick) }
                         .padding(16.dp),
-                color = MaterialTheme.colorScheme.primary,
+                color = MaterialTheme.colorScheme.onBackground,
                 style = MaterialTheme.typography.labelLarge,
             )
 
@@ -185,6 +190,30 @@ private fun ScanOtpSuccessScreenPreview() {
 @Composable
 private fun ScanOtpSuccessScreenProgressPreview() {
     PassboltTheme {
+        ScanOtpSuccessScreen(
+            state = ScanOtpSuccessState(showProgress = true),
+            onIntent = {},
+            snackbarHostState = SnackbarHostState(),
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun ScanOtpSuccessScreenDarkPreview() {
+    PassboltTheme(darkTheme = true) {
+        ScanOtpSuccessScreen(
+            state = ScanOtpSuccessState(),
+            onIntent = {},
+            snackbarHostState = SnackbarHostState(),
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun ScanOtpSuccessScreenProgressDarkPreview() {
+    PassboltTheme(darkTheme = true) {
         ScanOtpSuccessScreen(
             state = ScanOtpSuccessState(showProgress = true),
             onIntent = {},

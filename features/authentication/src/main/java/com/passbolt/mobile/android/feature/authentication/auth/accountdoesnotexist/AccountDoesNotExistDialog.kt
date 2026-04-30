@@ -1,122 +1,203 @@
 package com.passbolt.mobile.android.feature.authentication.auth.accountdoesnotexist
 
-import android.content.Context
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import androidx.core.os.bundleOf
-import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
-import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
-import com.passbolt.mobile.android.core.mvp.EdgeToEdgeDialogFragment
-import com.passbolt.mobile.android.feature.authentication.databinding.DialogAccountDoesNotExistBinding
+import PassboltTheme
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
+import com.passbolt.mobile.android.core.ui.button.PrimaryButton
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
-/**
- * Passbolt - Open source password manager for teams
- * Copyright (c) 2021 Passbolt SA
- *
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
- * Public License (AGPL) as published by the Free Software Foundation version 3.
- *
- * The name "Passbolt" is a registered trademark of Passbolt SA, and Passbolt SA hereby declines to grant a trademark
- * license to "Passbolt" pursuant to the GNU Affero General Public License version 3 Section 7(e), without a separate
- * agreement with Passbolt SA.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License along with this program. If not,
- * see GNU Affero General Public License v3 (http://www.gnu.org/licenses/agpl-3.0.html).
- *
- * @copyright Copyright (c) Passbolt SA (https://www.passbolt.com)
- * @license https://opensource.org/licenses/AGPL-3.0 AGPL License
- * @link https://www.passbolt.com Passbolt (tm)
- * @since v1.0
- */
-class AccountDoesNotExistDialog : EdgeToEdgeDialogFragment() {
-    private var listener: Listener? = null
-    private val bundledName by lifecycleAwareLazy {
-        requireArguments().getString(EXTRA_NAME).orEmpty()
+@Composable
+fun AccountDoesNotExistDialog(
+    label: String,
+    email: String?,
+    url: String,
+    onConnectToExistingAccount: () -> Unit,
+) {
+    Dialog(
+        onDismissRequest = {},
+        properties =
+            DialogProperties(
+                dismissOnBackPress = false,
+                dismissOnClickOutside = false,
+                usePlatformDefaultWidth = false,
+            ),
+    ) {
+        AccountDoesNotExistContent(
+            label = label,
+            email = email,
+            url = url,
+            onConnectToExistingAccount = onConnectToExistingAccount,
+        )
     }
-    private val bundledUrl by lifecycleAwareLazy {
-        requireArguments().getString(EXTRA_URL).orEmpty()
-    }
-    private val bundledEmail by lifecycleAwareLazy {
-        requireArguments().getString(EXTRA_EMAIL).orEmpty()
-    }
+}
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setStyle(STYLE_NO_TITLE, CoreUiR.style.FullscreenDialogTheme)
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?,
-    ): View {
-        val binding = DialogAccountDoesNotExistBinding.inflate(inflater)
-        setupListeners(binding)
-        showAccountData(binding)
-        isCancelable = false
-        return binding.root
-    }
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        listener =
-            when {
-                parentFragment is Listener -> parentFragment as Listener
-                activity is Listener -> activity as Listener
-                else -> error("Parent must implement ${Listener::class.java.name}")
-            }
-    }
-
-    override fun onDetach() {
-        listener = null
-        super.onDetach()
-    }
-
-    private fun showAccountData(binding: DialogAccountDoesNotExistBinding) {
-        with(binding) {
-            nameLabel.text = bundledName
-            emailLabel.text = bundledEmail
-            urlsLabel.text = bundledUrl
-        }
-    }
-
-    private fun setupListeners(binding: DialogAccountDoesNotExistBinding) {
-        val exitAction = {
-            listener?.connectToExistingAccountClick()
-            dismiss()
-        }
-        with(binding) {
-            closeButton.setDebouncingOnClick { exitAction.invoke() }
-            connectToAccountButton.setDebouncingOnClick { exitAction.invoke() }
-        }
-    }
-
-    interface Listener {
-        fun connectToExistingAccountClick()
-    }
-
-    companion object {
-        private const val EXTRA_NAME = "NAME"
-        private const val EXTRA_EMAIL = "EMAIL"
-        private const val EXTRA_URL = "URL"
-
-        fun newInstance(
-            name: String?,
-            email: String?,
-            url: String?,
-        ) = AccountDoesNotExistDialog().apply {
-            arguments =
-                bundleOf(
-                    EXTRA_NAME to name.orEmpty(),
-                    EXTRA_EMAIL to email.orEmpty(),
-                    EXTRA_URL to url.orEmpty(),
+@Composable
+private fun AccountDoesNotExistContent(
+    label: String,
+    email: String?,
+    url: String,
+    onConnectToExistingAccount: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Surface(
+        modifier = modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.background,
+    ) {
+        Column(
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState()),
+        ) {
+            IconButton(
+                onClick = onConnectToExistingAccount,
+                modifier = Modifier.padding(start = 4.dp, top = 4.dp),
+            ) {
+                Image(
+                    painter = painterResource(CoreUiR.drawable.ic_close),
+                    contentDescription = null,
                 )
+            }
+
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Spacer(modifier = Modifier.height(56.dp))
+
+                Image(
+                    painter = painterResource(CoreUiR.drawable.ic_failed),
+                    contentDescription = null,
+                    modifier = Modifier.size(144.dp),
+                )
+
+                Spacer(modifier = Modifier.height(32.dp))
+
+                Text(
+                    text = stringResource(LocalizationR.string.dialog_account_does_not_exist_title),
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                )
+
+                Spacer(modifier = Modifier.height(32.dp))
+
+                Text(
+                    text = stringResource(LocalizationR.string.dialog_account_does_not_exist_subtitle),
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                )
+
+                Spacer(modifier = Modifier.height(32.dp))
+
+                Column(
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp)
+                            .border(
+                                width = 1.dp,
+                                color = MaterialTheme.colorScheme.outlineVariant,
+                                shape = RoundedCornerShape(8.dp),
+                            ).padding(vertical = 16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    Text(
+                        text = label,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onBackground,
+                        textAlign = TextAlign.Center,
+                    )
+
+                    email?.let {
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                            text = it,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            textAlign = TextAlign.Center,
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = url,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        textAlign = TextAlign.Center,
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            PrimaryButton(
+                text = stringResource(LocalizationR.string.dialog_account_does_not_exist_connect_account),
+                onClick = onConnectToExistingAccount,
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                        .padding(bottom = 24.dp),
+            )
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun AccountDoesNotExistLightPreview() {
+    PassboltTheme {
+        AccountDoesNotExistContent(
+            label = "John Doe",
+            email = "john.doe@passbolt.com",
+            url = "https://passbolt.com/johndoeorg",
+            onConnectToExistingAccount = {},
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun AccountDoesNotExistDarkPreview() {
+    PassboltTheme(darkTheme = true) {
+        AccountDoesNotExistContent(
+            label = "John Doe",
+            email = "john.doe@passbolt.com",
+            url = "https://passbolt.com/johndoeorg",
+            onConnectToExistingAccount = {},
+        )
     }
 }

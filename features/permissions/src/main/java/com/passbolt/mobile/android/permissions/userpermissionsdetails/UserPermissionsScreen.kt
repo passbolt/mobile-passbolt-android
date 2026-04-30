@@ -31,18 +31,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
+import com.passbolt.mobile.android.core.formatter.FingerprintFormatter
 import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
 import com.passbolt.mobile.android.core.navigation.compose.results.NavigationResultEventBus
-import com.passbolt.mobile.android.core.ui.compose.button.PrimaryButton
-import com.passbolt.mobile.android.core.ui.compose.circularimage.CircularProfileImage
-import com.passbolt.mobile.android.core.ui.compose.dialogs.PermissionDeleteAlertDialog
-import com.passbolt.mobile.android.core.ui.compose.header.ItemWithHeader
-import com.passbolt.mobile.android.core.ui.compose.permissions.PermissionLabel
-import com.passbolt.mobile.android.core.ui.compose.permissions.PermissionSelector
-import com.passbolt.mobile.android.core.ui.compose.topbar.BackNavigationIcon
-import com.passbolt.mobile.android.core.ui.compose.topbar.TitleAppBar
-import com.passbolt.mobile.android.core.ui.formatter.FingerprintFormatter
-import com.passbolt.mobile.android.feature.authentication.compose.AuthenticationHandler
+import com.passbolt.mobile.android.core.ui.button.PrimaryButton
+import com.passbolt.mobile.android.core.ui.circularimage.CircularProfileImage
+import com.passbolt.mobile.android.core.ui.dialogs.PermissionDeleteAlertDialog
+import com.passbolt.mobile.android.core.ui.header.ItemWithHeader
+import com.passbolt.mobile.android.core.ui.permissions.PermissionLabel
+import com.passbolt.mobile.android.core.ui.permissions.PermissionSelector
+import com.passbolt.mobile.android.core.ui.topbar.BackNavigationIcon
+import com.passbolt.mobile.android.core.ui.topbar.TitleAppBar
 import com.passbolt.mobile.android.permissions.navigation.UserPermissionDeletedResult
 import com.passbolt.mobile.android.permissions.navigation.UserPermissionModifiedResult
 import com.passbolt.mobile.android.permissions.userpermissionsdetails.UserPermissionsIntent.CancelPermissionDelete
@@ -73,11 +72,6 @@ fun UserPermissionsScreen(
 ) {
     val state = viewModel.viewState.collectAsStateWithLifecycle()
     val resultBus = NavigationResultEventBus.current
-
-    AuthenticationHandler(
-        onAuthenticatedIntent = viewModel::onAuthenticationIntent,
-        authenticationSideEffect = viewModel.authenticationSideEffect,
-    )
 
     UserPermissionsScreen(
         state = state.value,
@@ -235,6 +229,7 @@ private fun UserHeader(
 private fun SaveLayout(onIntent: (UserPermissionsIntent) -> Unit) {
     Surface(
         shadowElevation = 24.dp,
+        color = MaterialTheme.colorScheme.background,
         modifier = Modifier.fillMaxWidth(),
     ) {
         Column(

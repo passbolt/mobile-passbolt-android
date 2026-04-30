@@ -39,6 +39,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -56,10 +57,10 @@ import com.passbolt.mobile.android.core.navigation.compose.keys.SetupNavigationK
 import com.passbolt.mobile.android.core.qrscan.SCAN_MANAGER_SCOPE
 import com.passbolt.mobile.android.core.qrscan.manager.ScanManager
 import com.passbolt.mobile.android.core.security.flagsecure.FlagSecureEffect
-import com.passbolt.mobile.android.core.ui.compose.dialogs.ServerNotReachableDialog
-import com.passbolt.mobile.android.core.ui.compose.dialogs.SetupExitConfirmationDialog
-import com.passbolt.mobile.android.core.ui.compose.progressdialog.ProgressDialog
-import com.passbolt.mobile.android.core.ui.compose.progresstoolbar.ProgressToolbar
+import com.passbolt.mobile.android.core.ui.dialogs.ServerNotReachableDialog
+import com.passbolt.mobile.android.core.ui.dialogs.SetupExitConfirmationDialog
+import com.passbolt.mobile.android.core.ui.progressdialog.ProgressDialog
+import com.passbolt.mobile.android.core.ui.progresstoolbar.ProgressToolbar
 import com.passbolt.mobile.android.feature.setup.AccountSetupDataHolder
 import com.passbolt.mobile.android.feature.setup.scanqr.ScanQrIntent.AccessLogs
 import com.passbolt.mobile.android.feature.setup.scanqr.ScanQrIntent.ConfirmSetupLeave
@@ -76,7 +77,7 @@ import com.passbolt.mobile.android.feature.setup.scanqr.ScanQrSideEffect.Navigat
 import com.passbolt.mobile.android.feature.setup.scanqr.ScanQrSideEffect.NavigateToLogs
 import com.passbolt.mobile.android.feature.setup.scanqr.ScanQrSideEffect.NavigateToSummary
 import com.passbolt.mobile.android.feature.setup.scanqr.ScanQrSideEffect.ShowToast
-import com.passbolt.mobile.android.helpmenu.compose.HelpMenuBottomSheet
+import com.passbolt.mobile.android.helpmenu.HelpMenuBottomSheet
 import com.passbolt.mobile.android.ui.HelpMenuModel
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
@@ -99,8 +100,9 @@ internal fun ScanQrScreen(
 
     FlagSecureEffect()
 
+    val scanScopeId = remember { "${SCAN_MANAGER_SCOPE}_${java.util.UUID.randomUUID()}" }
     KoinScope(
-        scopeID = SCAN_MANAGER_SCOPE,
+        scopeID = scanScopeId,
         scopeQualifier = named(SCAN_MANAGER_SCOPE),
     ) {
         val scanManager: ScanManager = koinInject()

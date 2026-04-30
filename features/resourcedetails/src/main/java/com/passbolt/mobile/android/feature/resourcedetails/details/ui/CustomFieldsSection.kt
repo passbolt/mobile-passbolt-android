@@ -11,10 +11,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.passbolt.mobile.android.core.ui.compose.header.ActionIcon
-import com.passbolt.mobile.android.core.ui.compose.header.ItemWithHeader
-import com.passbolt.mobile.android.core.ui.compose.header.ValueStyle
-import com.passbolt.mobile.android.core.ui.compose.section.Section
+import com.passbolt.mobile.android.core.ui.header.ActionIcon
+import com.passbolt.mobile.android.core.ui.header.ItemWithHeader
+import com.passbolt.mobile.android.core.ui.header.ValueStyle
+import com.passbolt.mobile.android.core.ui.section.Section
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent.CopyCustomField
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent.ToggleCustomField
@@ -43,20 +43,20 @@ internal fun CustomFieldsSection(
                 val displayValue =
                     if (isVisible) {
                         when (fieldModel) {
-                            is BooleanCustomField -> fieldModel.secretValue?.toString() ?: ""
-                            is NumberCustomField -> fieldModel.secretValue?.toString() ?: ""
-                            is PasswordCustomField -> fieldModel.secretValue ?: ""
-                            is UriCustomField -> fieldModel.secretValue ?: ""
-                            is TextCustomField -> fieldModel.secretValue ?: ""
-                            null -> ""
-                        }
+                            is BooleanCustomField -> fieldModel.secretValue?.toString()
+                            is NumberCustomField -> fieldModel.secretValue?.toString()
+                            is PasswordCustomField -> fieldModel.secretValue
+                            is UriCustomField -> fieldModel.secretValue
+                            is TextCustomField -> fieldModel.secretValue
+                            null -> null
+                        }.orEmpty()
                     } else {
                         ""
                     }
                 ItemWithHeader(
                     headerText = label,
                     value = displayValue,
-                    valueStyle = ValueStyle.Secret(),
+                    valueStyle = ValueStyle.Secret(isRevealed = isVisible),
                     actionIcon = if (isVisible) ActionIcon.HIDE else ActionIcon.VIEW,
                     onItemClick = { onIntent(CopyCustomField(key)) },
                     onActionClick = { onIntent(ToggleCustomField(key)) },

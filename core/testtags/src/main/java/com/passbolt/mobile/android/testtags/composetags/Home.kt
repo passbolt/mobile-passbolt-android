@@ -24,5 +24,10 @@
 package com.passbolt.mobile.android.testtags.composetags
 
 object Home {
-    const val SCREEN = "home_screen"
+    const val SCREEN = "HomeScreen"
+    const val SEARCH_FILTER = "HomeSearchFilter"
+    const val FOLDER_ROW = "HomeFolderRow"
+    const val RESOURCE_ROW = "HomeResourceRow"
+    const val RESOURCE_MORE = "HomeResourceMore"
+    const val FAB = "HomeFab"
 }

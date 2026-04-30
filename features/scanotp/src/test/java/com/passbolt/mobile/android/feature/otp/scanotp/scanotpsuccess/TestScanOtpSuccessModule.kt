@@ -8,6 +8,7 @@ import com.jayway.jsonpath.spi.mapper.GsonMappingProvider
 import com.passbolt.mobile.android.core.mvp.authentication.SessionRefreshTrackingFlow
 import com.passbolt.mobile.android.core.resources.actions.ResourceCreateActionsInteractor
 import com.passbolt.mobile.android.core.resources.actions.ResourceUpdateActionsInteractor
+import com.passbolt.mobile.android.core.resources.actions.ResourceUpdateActionsInteractorFactory
 import com.passbolt.mobile.android.core.resources.usecase.GetDefaultCreateContentTypeUseCase
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
 import com.passbolt.mobile.android.jsonmodel.JSON_MODEL_GSON
@@ -24,13 +25,14 @@ import java.util.EnumSet
 internal val mockIdToSlugMappingProvider = mock<ResourceTypeIdToSlugMappingProvider>()
 internal val mockResourceCreateActionsInteractor = mock<ResourceCreateActionsInteractor>()
 internal val mockResourceUpdateActionsInteractor = mock<ResourceUpdateActionsInteractor>()
+internal val mockResourceUpdateActionsInteractorFactory = ResourceUpdateActionsInteractorFactory { mockResourceUpdateActionsInteractor }
 internal val mockGetDefaultCreateContentTypeUseCase = mock<GetDefaultCreateContentTypeUseCase>()
 internal val mockMetadataPrivateKeysHelperInteractor = mock<MetadataPrivateKeysHelperInteractor>()
 
 internal val testScanOtpSuccessModule =
     module {
         single { mockResourceCreateActionsInteractor }
-        single { mockResourceUpdateActionsInteractor }
+        single<ResourceUpdateActionsInteractorFactory> { mockResourceUpdateActionsInteractorFactory }
         single { mockIdToSlugMappingProvider }
         single { mockGetDefaultCreateContentTypeUseCase }
         single { mockMetadataPrivateKeysHelperInteractor }
@@ -42,6 +44,7 @@ internal val testScanOtpSuccessModule =
                 idToSlugMappingProvider = get(),
                 getDefaultCreateContentTypeUseCase = get(),
                 metadataPrivateKeysHelperInteractor = get(),
+                resourceUpdateActionsInteractorFactory = get(),
             )
         }
         single(named(JSON_MODEL_GSON)) { Gson() }

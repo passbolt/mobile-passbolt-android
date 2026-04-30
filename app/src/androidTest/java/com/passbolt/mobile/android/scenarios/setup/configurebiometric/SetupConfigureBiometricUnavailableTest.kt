@@ -26,19 +26,12 @@ package com.passbolt.mobile.android.scenarios.setup.configurebiometric
 import android.provider.Settings
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.action.ViewActions.closeSoftKeyboard
-import androidx.test.espresso.action.ViewActions.scrollTo
-import androidx.test.espresso.action.ViewActions.typeText
-import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.compose.ui.test.performTextReplacement
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
-import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
-import androidx.test.espresso.matcher.ViewMatchers.withId
-import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import androidx.test.platform.app.InstrumentationRegistry
@@ -53,6 +46,7 @@ import com.passbolt.mobile.android.instrumentationTestsModule
 import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
 import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivityScenarioRule
+import com.passbolt.mobile.android.testtags.composetags.Auth
 import org.hamcrest.Matchers.allOf
 import org.junit.After
 import org.junit.Before
@@ -62,14 +56,11 @@ import org.junit.runner.RunWith
 import org.koin.test.KoinTest
 import org.koin.test.inject
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
-import com.passbolt.mobile.android.core.ui.R as CoreUiR
-import com.passbolt.mobile.android.feature.authentication.R as AuthenticationR
-import com.passbolt.mobile.android.feature.autofill.R as AutofillR
 
 @RunWith(AndroidJUnit4::class)
 @LargeTest
 class SetupConfigureBiometricUnavailableTest : KoinTest {
-    @get:Rule
+    @get:Rule(order = 1)
     val startActivityRule =
         lazyActivityScenarioRule<SetUpActivity>(
             koinOverrideModules =
@@ -95,7 +86,7 @@ class SetupConfigureBiometricUnavailableTest : KoinTest {
     @get:Rule
     val permissionRule: GrantPermissionRule = GrantPermissionRule.grant(android.Manifest.permission.CAMERA)
 
-    @get:Rule
+    @get:Rule(order = 0)
     val composeTestRule = createEmptyComposeRule()
 
     private val managedAccountIntentCreator: ManagedAccountIntentCreator by inject()
@@ -118,29 +109,25 @@ class SetupConfigureBiometricUnavailableTest : KoinTest {
         accountDataCleaner.clearAccountData()
     }
 
-    // TODO FAILS
     // https://passbolt.testrail.io/index.php?/cases/view/2358
     @Test
     fun asAMobileUserIHaveAnOptionToConfigureBiometricsOnTheDevice() {
         //    Given     I don't have biometrics configured on my device
         //    And       I am on the Passphrase screen
         //    When      I successfully entered my passphrase
-        onView(withId(CoreUiR.id.input)).perform(typeText(managedAccountIntentCreator.getPassphrase()), closeSoftKeyboard())
-        onView(withId(AuthenticationR.id.authButton)).perform(scrollTo(), click())
-        //    Then       I am prompted to Configure biometrics
-        //    And        I see a "Configure {biometric provider}" primary button
         composeTestRule.apply {
-            onNodeWithText(getString(LocalizationR.string.fingerprint_setup_configure_title)).assertIsDisplayed()
-            onNodeWithText(getString(LocalizationR.string.fingerprint_setup_configure_description)).assertIsDisplayed()
-            onNodeWithText(getString(LocalizationR.string.fingerprint_setup_use_fingerprint_button)).assertIsDisplayed()
+            onNodeWithTag(Auth.PASSPHRASE_INPUT).performTextReplacement(managedAccountIntentCreator.getPassphrase())
+            onNodeWithTag(Auth.SIGN_IN_BUTTON).performClick()
+            //    Then       I am prompted to Configure biometrics
+            //    And        I see a "Configure {biometric provider}" primary button
+            onNodeWithText(getString(LocalizationR.string.biometric_setup_configure_title)).assertIsDisplayed()
+            onNodeWithText(getString(LocalizationR.string.biometric_setup_configure_description)).assertIsDisplayed()
+            onNodeWithText(getString(LocalizationR.string.biometric_setup_use_biometric_button)).assertIsDisplayed()
             //    And       I see a "Maybe later" button
             onNodeWithText(getString(LocalizationR.string.common_maybe_later)).assertIsDisplayed()
         }
     }
 
-    // TODO FAILS on opened fingeprint screen
-    // correct path: configure fingeprint - so fingerprint noe set up
-    // failed path: fingerprint is configured on device
     // https://passbolt.testrail.io/index.php?/cases/view/2359
     @Test
     fun asAMobileUserICanConfigureBiometricsToUseItOnTheDevice() {
@@ -148,10 +135,12 @@ class SetupConfigureBiometricUnavailableTest : KoinTest {
         try {
             //    Given     I don't have biometrics configured on my device
             //    And       I am on the Configure {biometrics provider} screen
-            onView(withId(CoreUiR.id.input)).perform(typeText(managedAccountIntentCreator.getPassphrase()), closeSoftKeyboard())
-            onView(withId(AuthenticationR.id.authButton)).perform(scrollTo(), click())
-            //    When      I click on Configure {biometrics provider} button
-            composeTestRule.onNodeWithText(getString(LocalizationR.string.fingerprint_setup_use_fingerprint_button)).performClick()
+            composeTestRule.apply {
+                onNodeWithTag(Auth.PASSPHRASE_INPUT).performTextReplacement(managedAccountIntentCreator.getPassphrase())
+                onNodeWithTag(Auth.SIGN_IN_BUTTON).performClick()
+                //    When      I click on Configure {biometrics provider} button
+                onNodeWithText(getString(LocalizationR.string.biometric_setup_use_biometric_button)).performClick()
+            }
             //    Then      I am taken to the phone security settings / OS-specific process where I can complete the biometric setup
             Intents.intended(
                 allOf(
@@ -169,15 +158,16 @@ class SetupConfigureBiometricUnavailableTest : KoinTest {
     fun asAMobileUserIShouldBeAbleToSkipTheBiometricsConfiguration() {
         //    Given     I don't have biometrics configured on my device
         //    And       I am on the Configure {biometrics provider} screen
-        onView(withId(CoreUiR.id.input)).perform(typeText(managedAccountIntentCreator.getPassphrase()), closeSoftKeyboard())
-        onView(withId(AuthenticationR.id.authButton)).perform(scrollTo(), click())
-        //    When      I click the "Maybe later" button
-        composeTestRule.onNodeWithText(getString(LocalizationR.string.common_maybe_later)).performClick()
-        composeTestRule.waitForIdle()
-        //    Then      I am redirected to the setup of the autofill screen
-        onView(withText(getString(LocalizationR.string.dialog_encourage_autofill_header))).check(matches(isDisplayed()))
-        onView(withId(AutofillR.id.stepsView)).check(matches(isDisplayed()))
-        onView(withId(AutofillR.id.goToSettingsButton)).check(matches(isDisplayed()))
-        onView(withId(AutofillR.id.maybeLaterButton)).check(matches(isDisplayed()))
+        composeTestRule.apply {
+            onNodeWithTag(Auth.PASSPHRASE_INPUT).performTextReplacement(managedAccountIntentCreator.getPassphrase())
+            onNodeWithTag(Auth.SIGN_IN_BUTTON).performClick()
+            //    When      I click the "Maybe later" button
+            onNodeWithText(getString(LocalizationR.string.common_maybe_later)).performClick()
+            waitForIdle()
+            //    Then      I am redirected to the setup of the autofill screen
+            onNodeWithText(getString(LocalizationR.string.dialog_encourage_autofill_header)).assertIsDisplayed()
+            onNodeWithText(getString(LocalizationR.string.dialog_encourage_autofill_go_to_settings)).assertIsDisplayed()
+            onNodeWithText(getString(LocalizationR.string.common_maybe_later)).assertIsDisplayed()
+        }
     }
 }

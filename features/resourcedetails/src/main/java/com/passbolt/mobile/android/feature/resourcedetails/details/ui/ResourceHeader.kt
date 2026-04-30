@@ -22,7 +22,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
+import com.passbolt.mobile.android.common.extension.toSingleLine
 import com.passbolt.mobile.android.core.ui.R
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 @Composable
 internal fun ResourceHeader(
@@ -74,9 +76,9 @@ internal fun ResourceHeader(
         Text(
             text =
                 if (isExpired) {
-                    stringResource(com.passbolt.mobile.android.core.localization.R.string.name_expired, title)
+                    stringResource(LocalizationR.string.name_expired, title.toSingleLine())
                 } else {
-                    title
+                    title.toSingleLine()
                 },
             style = MaterialTheme.typography.titleLarge,
             color = MaterialTheme.colorScheme.onBackground,

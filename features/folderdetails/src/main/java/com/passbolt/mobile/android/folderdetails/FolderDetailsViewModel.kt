@@ -32,13 +32,12 @@ import com.passbolt.mobile.android.common.datarefresh.DataRefreshTrackingFlow
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalFolderDetailsUseCase
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalFolderLocationUseCase
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalFolderPermissionsUseCase
+import com.passbolt.mobile.android.core.compose.SideEffectViewModel
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.rbac.usecase.GetRbacRulesUseCase
-import com.passbolt.mobile.android.feature.authentication.compose.AuthenticatedViewModel
 import com.passbolt.mobile.android.folderdetails.FolderDetailsIntent.GoBack
 import com.passbolt.mobile.android.folderdetails.FolderDetailsIntent.GoToLocationDetails
 import com.passbolt.mobile.android.folderdetails.FolderDetailsIntent.GoToPermissionDetails
-import com.passbolt.mobile.android.folderdetails.FolderDetailsIntent.Initialize
 import com.passbolt.mobile.android.folderdetails.FolderDetailsIntent.SharedWithClick
 import com.passbolt.mobile.android.folderdetails.FolderDetailsSideEffect.NavigateToFolderLocation
 import com.passbolt.mobile.android.folderdetails.FolderDetailsSideEffect.NavigateToFolderPermissions
@@ -54,35 +53,34 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 internal class FolderDetailsViewModel(
+    folderId: String,
+    coroutineLaunchContext: CoroutineLaunchContext,
     private val getLocalFolderDetailsUseCase: GetLocalFolderDetailsUseCase,
     private val getLocalFolderLocationUseCase: GetLocalFolderLocationUseCase,
     private val getLocalFolderPermissionsUseCase: GetLocalFolderPermissionsUseCase,
     private val getRbacRulesUseCase: GetRbacRulesUseCase,
-    private val coroutineLaunchContext: CoroutineLaunchContext,
     private val dataRefreshTrackingFlow: DataRefreshTrackingFlow,
-) : AuthenticatedViewModel<FolderDetailsState, FolderDetailsSideEffect>(FolderDetailsState()) {
+) : SideEffectViewModel<FolderDetailsState, FolderDetailsSideEffect>(
+        initialState = FolderDetailsState(folderId = folderId),
+    ) {
     val folderId: String
         get() = requireNotNull(viewState.value.folderId)
+
+    init {
+        viewModelScope.launch(coroutineLaunchContext.io) {
+            loadFolderDetails(folderId)
+        }
+        viewModelScope.launch(coroutineLaunchContext.io) {
+            synchronizeWithDataRefresh(folderId)
+        }
+    }
 
     fun onIntent(intent: FolderDetailsIntent) {
         when (intent) {
             GoBack -> emitSideEffect(NavigateUp)
-            is Initialize -> initialize(intent.folderId)
             GoToLocationDetails -> emitSideEffect(NavigateToFolderLocation(folderId))
             GoToPermissionDetails -> emitSideEffect(NavigateToFolderPermissions(folderId, PermissionsMode.VIEW))
             SharedWithClick -> emitSideEffect(NavigateToFolderPermissions(folderId, PermissionsMode.VIEW))
-        }
-    }
-
-    private fun initialize(folderId: String) {
-        updateViewState { copy(folderId = folderId) }
-
-        viewModelScope.launch(coroutineLaunchContext.io) {
-            loadFolderDetails(folderId)
-        }
-
-        viewModelScope.launch(coroutineLaunchContext.io) {
-            synchronizeWithDataRefresh(folderId)
         }
     }
 

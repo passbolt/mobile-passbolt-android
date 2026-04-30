@@ -54,9 +54,12 @@ class MetadataPrivateKeysInteractor(
     private val passphraseMemoryCache: PassphraseMemoryCache,
     private val getTrustedMetadataKeyUseCase: GetTrustedMetadataKeyUseCase,
     private val metadataPrivateKeysHelperInteractor: MetadataPrivateKeysHelperInteractor,
+    private val metadataKeysInteractor: MetadataKeysInteractor,
 ) {
     suspend fun verifyMetadataPrivateKey(): Output {
         Timber.d("Verifying metadata private key trust")
+
+        refreshMetadataKeysFromServer()
 
         val backendMetadataKey =
             getLocalMetadataKeysUseCase
@@ -68,6 +71,15 @@ class MetadataPrivateKeysInteractor(
             verifyWithBackendMetadataKeyPresent(backendMetadataKey, localTrustedKey)
         } else {
             verifyWithNoBackendMetadataKey(localTrustedKey)
+        }
+    }
+
+    private suspend fun refreshMetadataKeysFromServer() {
+        when (metadataKeysInteractor.fetchAndSaveMetadataKeys()) {
+            is MetadataKeysInteractor.Output.Success ->
+                Timber.d("Refreshed metadata keys from server before verification")
+            is MetadataKeysInteractor.Output.Failure ->
+                Timber.w("Failed to refresh metadata keys from server, proceeding with local data")
         }
     }
 

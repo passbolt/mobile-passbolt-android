@@ -59,20 +59,20 @@ import com.passbolt.mobile.android.core.navigation.compose.keys.SettingsNavigati
 import com.passbolt.mobile.android.core.navigation.compose.keys.SettingsNavigationKey.DefaultFilter
 import com.passbolt.mobile.android.core.navigation.compose.keys.SettingsNavigationKey.ExpertSettings
 import com.passbolt.mobile.android.core.ui.R
-import com.passbolt.mobile.android.core.ui.compose.dialogs.CancelAccountTransferAlertDialog
-import com.passbolt.mobile.android.core.ui.compose.dialogs.ConfigureFingerprintAlertDialog
-import com.passbolt.mobile.android.core.ui.compose.dialogs.DisableFingerprintAlertDialog
-import com.passbolt.mobile.android.core.ui.compose.menu.OpenableSettingsItem
-import com.passbolt.mobile.android.core.ui.compose.menu.SwitchableSettingsItem
-import com.passbolt.mobile.android.core.ui.compose.topbar.BackNavigationIcon
-import com.passbolt.mobile.android.core.ui.compose.topbar.TitleAppBar
+import com.passbolt.mobile.android.core.ui.dialogs.CancelAccountTransferAlertDialog
+import com.passbolt.mobile.android.core.ui.dialogs.ConfigureBiometricAlertDialog
+import com.passbolt.mobile.android.core.ui.dialogs.DisableBiometricAlertDialog
+import com.passbolt.mobile.android.core.ui.menu.OpenableSettingsItem
+import com.passbolt.mobile.android.core.ui.menu.SwitchableSettingsItem
+import com.passbolt.mobile.android.core.ui.topbar.BackNavigationIcon
+import com.passbolt.mobile.android.core.ui.topbar.TitleAppBar
 import com.passbolt.mobile.android.feature.authentication.auth.showBiometricPrompt
-import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsIntent.CancelConfigureFingerprint
+import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsIntent.CancelConfigureBiometric
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsIntent.CancelConfirmKeyChange
-import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsIntent.CancelDisableFingerprint
+import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsIntent.CancelDisableBiometric
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsIntent.CanceledBiometricAuth
-import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsIntent.ConfigureFingerprint
-import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsIntent.ConfirmDisableFingerprint
+import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsIntent.ConfigureBiometric
+import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsIntent.ConfirmDisableBiometric
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsIntent.ConfirmKeyChangeClick
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsIntent.ErroredBiometricAuth
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsIntent.FinalizedBiometricAuth
@@ -83,7 +83,7 @@ import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettin
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsIntent.Initialize
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsIntent.InvalidateBiometricKeyPermanently
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsIntent.RefreshedPassphrase
-import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsIntent.ToggleFingerprint
+import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsIntent.ToggleBiometric
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsSideEffect.NavigateToAutofill
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsSideEffect.NavigateToDefaultFilter
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsSideEffect.NavigateToExpertSettings
@@ -181,7 +181,7 @@ private fun AppSettingsSideEffectsHandler(
                     activity = environment.context as AppCompatActivity,
                     executor = environment.executor,
                     biometricPromptBuilder = environment.biometricPromptBuilder,
-                    fingerprintEncryptionCipher = it.cipher,
+                    biometricEncryptionCipher = it.cipher,
                     onAuthenticationSuccess = { onIntent(FinalizedBiometricAuth(it)) },
                     onAuthenticationCancelled = { onIntent(CanceledBiometricAuth) },
                     onAuthenticationError = { onIntent(ErroredBiometricAuth(it)) },
@@ -249,9 +249,9 @@ private fun AppSettingsScreen(
             ) {
                 SwitchableSettingsItem(
                     iconPainter = painterResource(R.drawable.ic_fingerprint),
-                    title = stringResource(LocalizationR.string.settings_app_settings_fingerprint),
-                    isChecked = state.isFingerprintEnabled,
-                    onCheckedChange = { onIntent(ToggleFingerprint) },
+                    title = stringResource(LocalizationR.string.settings_app_settings_biometric),
+                    isChecked = state.isBiometricEnabled,
+                    onCheckedChange = { onIntent(ToggleBiometric) },
                 )
 
                 OpenableSettingsItem(
@@ -274,16 +274,16 @@ private fun AppSettingsScreen(
                 )
             }
 
-            DisableFingerprintAlertDialog(
-                isVisible = state.isDisableFingerprintDialogVisible,
-                onDisableConfirm = { onIntent(ConfirmDisableFingerprint) },
-                onDismiss = { onIntent(CancelDisableFingerprint) },
+            DisableBiometricAlertDialog(
+                isVisible = state.isDisableBiometricDialogVisible,
+                onDisableConfirm = { onIntent(ConfirmDisableBiometric) },
+                onDismiss = { onIntent(CancelDisableBiometric) },
             )
 
-            ConfigureFingerprintAlertDialog(
-                isVisible = state.isConfigureFingerprintDialogVisible,
-                onConfigureFingerprint = { onIntent(ConfigureFingerprint) },
-                onDismiss = { onIntent(CancelConfigureFingerprint) },
+            ConfigureBiometricAlertDialog(
+                isVisible = state.isConfigureBiometricDialogVisible,
+                onConfigureBiometric = { onIntent(ConfigureBiometric) },
+                onDismiss = { onIntent(CancelConfigureBiometric) },
             )
 
             CancelAccountTransferAlertDialog(
@@ -299,7 +299,7 @@ private fun AppSettingsScreen(
 @Composable
 private fun AppSettingsPreview() {
     AppSettingsScreen(
-        state = AppSettingsState(isFingerprintEnabled = true),
+        state = AppSettingsState(isBiometricEnabled = true),
         snackbarHostState = remember { SnackbarHostState() },
         onIntent = {},
         modifier = Modifier,

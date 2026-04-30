@@ -65,7 +65,6 @@ import com.passbolt.mobile.android.ui.TrustedKeyDeletedModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.single
-import org.koin.core.component.KoinComponent
 import timber.log.Timber
 
 class ResourceCreateActionsInteractor(
@@ -81,7 +80,7 @@ class ResourceCreateActionsInteractor(
     private val getLocalCurrentUserUseCase: GetLocalCurrentUserUseCase,
     private val metadataPrivateKeysInteractor: MetadataPrivateKeysInteractor,
     private val resourceTypeIdToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider,
-) : KoinComponent {
+) {
     suspend fun createGenericResource(
         contentType: ContentType,
         resourceParentFolderId: String?,

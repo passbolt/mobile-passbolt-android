@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.core.accounts.usecase.selectedaccount
 
 import com.passbolt.mobile.android.common.usecase.UseCase
 import com.passbolt.mobile.android.common.usecase.UserIdInput
+import com.passbolt.mobile.android.core.accounts.AccountSwitchFlow
 import com.passbolt.mobile.android.core.accounts.usecase.SELECTED_ACCOUNT_ALIAS
 import com.passbolt.mobile.android.core.accounts.usecase.SELECTED_ACCOUNT_KEY
 import com.passbolt.mobile.android.encryptedstorage.EncryptedSharedPreferencesFactory
@@ -31,6 +32,7 @@ import com.passbolt.mobile.android.encryptedstorage.EncryptedSharedPreferencesFa
 
 class SaveSelectedAccountUseCase(
     private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory,
+    private val accountSwitchFlow: AccountSwitchFlow,
 ) : UseCase<UserIdInput, Unit> {
     override fun execute(input: UserIdInput) {
         val sharedPreferences =
@@ -39,5 +41,6 @@ class SaveSelectedAccountUseCase(
             putString(SELECTED_ACCOUNT_KEY, input.userId)
             apply()
         }
+        accountSwitchFlow.notifyAccountSwitch(input.userId)
     }
 }

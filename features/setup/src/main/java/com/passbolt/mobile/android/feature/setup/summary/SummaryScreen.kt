@@ -39,6 +39,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -64,10 +65,10 @@ import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
 import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.AuthenticationManageAccounts
 import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.Start
 import com.passbolt.mobile.android.core.navigation.compose.keys.LogsNavigationKey.Logs
-import com.passbolt.mobile.android.core.navigation.compose.keys.SetupNavigationKey.FingerprintSetup
+import com.passbolt.mobile.android.core.navigation.compose.keys.SetupNavigationKey.BiometricSetup
 import com.passbolt.mobile.android.core.navigation.compose.keys.SetupNavigationKey.Welcome
-import com.passbolt.mobile.android.core.ui.compose.button.PrimaryButton
-import com.passbolt.mobile.android.core.ui.compose.dialogs.LeaveSetupAlertDialog
+import com.passbolt.mobile.android.core.ui.button.PrimaryButton
+import com.passbolt.mobile.android.core.ui.dialogs.LeaveSetupAlertDialog
 import com.passbolt.mobile.android.feature.setup.summary.SummaryIntent.AccessLogs
 import com.passbolt.mobile.android.feature.setup.summary.SummaryIntent.AuthenticationSuccess
 import com.passbolt.mobile.android.feature.setup.summary.SummaryIntent.ConfirmSetupLeave
@@ -78,12 +79,12 @@ import com.passbolt.mobile.android.feature.setup.summary.SummaryIntent.Initializ
 import com.passbolt.mobile.android.feature.setup.summary.SummaryIntent.OpenHelpMenu
 import com.passbolt.mobile.android.feature.setup.summary.SummaryIntent.PrimaryButtonAction
 import com.passbolt.mobile.android.feature.setup.summary.SummarySideEffect.NavigateToAppStart
-import com.passbolt.mobile.android.feature.setup.summary.SummarySideEffect.NavigateToFingerprintSetup
+import com.passbolt.mobile.android.feature.setup.summary.SummarySideEffect.NavigateToBiometricSetup
 import com.passbolt.mobile.android.feature.setup.summary.SummarySideEffect.NavigateToLogs
 import com.passbolt.mobile.android.feature.setup.summary.SummarySideEffect.NavigateToManageAccounts
 import com.passbolt.mobile.android.feature.setup.summary.SummarySideEffect.NavigateToSignIn
 import com.passbolt.mobile.android.feature.setup.summary.SummarySideEffect.NavigateToWelcome
-import com.passbolt.mobile.android.helpmenu.compose.HelpMenuBottomSheet
+import com.passbolt.mobile.android.helpmenu.HelpMenuBottomSheet
 import com.passbolt.mobile.android.ui.HelpMenuModel
 import com.passbolt.mobile.android.ui.ResultStatus
 import org.koin.androidx.compose.koinViewModel
@@ -126,7 +127,7 @@ fun SummaryScreen(
     SideEffectDispatcher(viewModel.sideEffect) { sideEffect ->
         when (sideEffect) {
             NavigateToWelcome -> navigator.popToKey(Welcome)
-            NavigateToFingerprintSetup -> navigator.navigateToKey(FingerprintSetup)
+            NavigateToBiometricSetup -> navigator.navigateToKey(BiometricSetup)
             is NavigateToSignIn ->
                 authenticationResult.launch(
                     ActivityIntents.authentication(
@@ -181,62 +182,59 @@ private fun SummaryScreen(
                 }
             }
         },
+        bottomBar = {
+            if (statusUi != null) {
+                BottomAppBar(
+                    containerColor = MaterialTheme.colorScheme.background,
+                ) {
+                    PrimaryButton(
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        text = stringResource(statusUi.buttonText),
+                        onClick = { onIntent(PrimaryButtonAction) },
+                    )
+                }
+            }
+        },
     ) { paddingValues ->
-        Column(
+        Box(
             modifier =
                 Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
                     .padding(16.dp),
+            contentAlignment = Alignment.Center,
         ) {
-            Box(
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .weight(1f),
-                contentAlignment = Alignment.Center,
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
             ) {
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center,
-                ) {
-                    if (statusUi != null) {
-                        Image(
-                            painter = painterResource(statusUi.icon),
-                            contentDescription = null,
-                            modifier = Modifier.size(120.dp),
-                        )
+                if (statusUi != null) {
+                    Image(
+                        painter = painterResource(statusUi.icon),
+                        contentDescription = null,
+                        modifier = Modifier.size(120.dp),
+                    )
 
-                        Spacer(modifier = Modifier.height(32.dp))
+                    Spacer(modifier = Modifier.height(32.dp))
 
+                    Text(
+                        text = stringResource(statusUi.title),
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = MaterialTheme.colorScheme.onBackground,
+                        textAlign = TextAlign.Center,
+                    )
+
+                    if (state.status is ResultStatus.Failure) {
+                        Spacer(modifier = Modifier.height(16.dp))
                         Text(
-                            text = stringResource(statusUi.title),
-                            style = MaterialTheme.typography.headlineMedium,
-                            color = MaterialTheme.colorScheme.onBackground,
+                            text = state.status.message,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             textAlign = TextAlign.Center,
                         )
-
-                        if (state.status is ResultStatus.Failure) {
-                            Spacer(modifier = Modifier.height(16.dp))
-                            Text(
-                                text = state.status.message,
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                textAlign = TextAlign.Center,
-                            )
-                        }
                     }
                 }
-            }
-
-            if (statusUi != null) {
-                PrimaryButton(
-                    text = stringResource(statusUi.buttonText),
-                    onClick = { onIntent(PrimaryButtonAction) },
-                    modifier = Modifier.fillMaxWidth(),
-                )
-                Spacer(modifier = Modifier.height(32.dp))
             }
         }
 

@@ -30,11 +30,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -42,11 +42,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
 import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
 import com.passbolt.mobile.android.core.navigation.compose.results.NavigationResultEventBus
-import com.passbolt.mobile.android.core.ui.compose.button.PrimaryButton
-import com.passbolt.mobile.android.core.ui.compose.scaffold.HomeScaffold
-import com.passbolt.mobile.android.core.ui.compose.search.SearchInput
-import com.passbolt.mobile.android.core.ui.compose.sharedwith.SharedWithSection
-import com.passbolt.mobile.android.feature.authentication.compose.AuthenticationHandler
+import com.passbolt.mobile.android.core.ui.button.PrimaryButton
+import com.passbolt.mobile.android.core.ui.scaffold.HomeScaffold
+import com.passbolt.mobile.android.core.ui.search.SearchInput
+import com.passbolt.mobile.android.core.ui.sharedwith.SharedWithSection
 import com.passbolt.mobile.android.permissions.navigation.ShareRecipientsAddedResult
 import com.passbolt.mobile.android.permissions.permissionrecipients.PermissionRecipientsIntent.GoBack
 import com.passbolt.mobile.android.permissions.permissionrecipients.PermissionRecipientsIntent.Save
@@ -76,11 +75,6 @@ fun PermissionRecipientsScreen(
     val state = viewModel.viewState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
     val resultBus = NavigationResultEventBus.current
-
-    AuthenticationHandler(
-        onAuthenticatedIntent = viewModel::onAuthenticationIntent,
-        authenticationSideEffect = viewModel.authenticationSideEffect,
-    )
 
     PermissionRecipientsScreen(
         state = state.value,
@@ -141,7 +135,7 @@ private fun PermissionRecipientsScreen(
         bottomBar = {
             BottomAppBar(
                 modifier = Modifier.fillMaxWidth(),
-                containerColor = colorResource(CoreUiR.color.elevated_background),
+                containerColor = MaterialTheme.colorScheme.background,
                 contentPadding = PaddingValues(horizontal = 16.dp),
             ) {
                 PrimaryButton(

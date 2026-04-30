@@ -26,7 +26,7 @@ package com.passbolt.mobile.android.feature.setup.summary
 sealed interface SummarySideEffect {
     data object NavigateToWelcome : SummarySideEffect
 
-    data object NavigateToFingerprintSetup : SummarySideEffect
+    data object NavigateToBiometricSetup : SummarySideEffect
 
     data class NavigateToSignIn(
         val userId: String,

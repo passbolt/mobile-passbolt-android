@@ -11,6 +11,7 @@ fun Module.scanOtpSuccessModule() {
             idToSlugMappingProvider = get(),
             getDefaultCreateContentTypeUseCase = get(),
             metadataPrivateKeysHelperInteractor = get(),
+            resourceUpdateActionsInteractorFactory = get(),
         )
     }
 }

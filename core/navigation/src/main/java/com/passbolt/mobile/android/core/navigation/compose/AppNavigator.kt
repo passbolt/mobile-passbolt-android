@@ -9,13 +9,16 @@ import androidx.navigation3.runtime.NavKey
 import com.passbolt.mobile.android.common.ExternalDeeplinkHandler
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.ActivityIntents.AuthConfig.ManageAccount
+import com.passbolt.mobile.android.core.navigation.ActivityIntents.AuthConfig.SignIn
 import com.passbolt.mobile.android.core.navigation.ActivityIntents.AuthConfig.Startup
-import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.AccountDetails
 import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.AuthenticationManageAccounts
+import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.AuthenticationSignIn
 import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.AuthenticationStartUp
+import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.AutofillReorderToFront
 import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.Home
+import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.Setup
+import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.SetupWithPredefinedAccountData
 import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.Start
-import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.TransferAccount
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -23,7 +26,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import org.koin.core.component.KoinComponent
 import java.io.File
 
 /**
@@ -50,7 +52,7 @@ import java.io.File
  */
 class AppNavigator(
     private val externalDeeplinkHandler: ExternalDeeplinkHandler,
-) : KoinComponent {
+) {
     private var _backStack: NavBackStack<NavKey>? = null
     var backStack: NavBackStack<NavKey>
         get() = requireNotNull(_backStack) { "backStack has not been initialized" }
@@ -72,6 +74,11 @@ class AppNavigator(
     private val _tabSwitchRequest = MutableSharedFlow<BottomTab>(extraBufferCapacity = 1)
     val tabSwitchRequest: SharedFlow<BottomTab> = _tabSwitchRequest.asSharedFlow()
 
+    fun setActiveBackStack(backStack: NavBackStack<NavKey>) {
+        this.backStack = backStack
+        _currentBackStackItem.value = backStack.lastOrNull()
+    }
+
     fun setPendingNavigation(key: NavKey) {
         pendingNavigationKey.update { key }
     }
@@ -90,11 +97,26 @@ class AppNavigator(
         _currentBackStackItem.value = key
     }
 
-    fun popToKey(key: NavKey) {
+    fun popToKey(
+        key: NavKey,
+        inclusive: Boolean = false,
+    ) {
         while (backStack.size > 1 && backStack.last() != key) {
             backStack.removeAt(backStack.lastIndex)
         }
-        _currentBackStackItem.value = key
+        if (inclusive && backStack.size > 1 && backStack.last() == key) {
+            backStack.removeAt(backStack.lastIndex)
+        }
+        _currentBackStackItem.value = backStack.lastOrNull()
+    }
+
+    fun popToRoot() {
+        popToKey(backStack.first())
+    }
+
+    fun replaceAll(key: NavKey) {
+        backStack.clear()
+        navigateToKey(key)
     }
 
     fun navigateBack(): Any? {
@@ -109,6 +131,14 @@ class AppNavigator(
         activity?.finish()
     }
 
+    fun finishActivity(activity: Activity?) {
+        activity?.finish()
+    }
+
+    fun finishAffinity(activity: Activity?) {
+        activity?.finishAffinity()
+    }
+
     fun startNavigationActivity(
         context: Context,
         activity: NavigationActivity,
@@ -116,12 +146,19 @@ class AppNavigator(
     ) {
         val intent =
             when (activity) {
-                is AuthenticationStartUp -> ActivityIntents.authentication(context, Startup, appContext = activity.appContext)
+                is AuthenticationStartUp ->
+                    ActivityIntents.authentication(
+                        context,
+                        Startup,
+                        appContext = activity.appContext,
+                    )
+                AuthenticationSignIn -> ActivityIntents.authentication(context, SignIn)
                 AuthenticationManageAccounts -> ActivityIntents.authentication(context, ManageAccount)
-                TransferAccount -> ActivityIntents.transferAccountToAnotherDevice(context)
-                AccountDetails -> ActivityIntents.accountDetails(context)
                 Home -> ActivityIntents.home(context)
                 Start -> ActivityIntents.start(context)
+                Setup -> ActivityIntents.setup(context)
+                AutofillReorderToFront -> ActivityIntents.autofillReorderToFront(context)
+                is SetupWithPredefinedAccountData -> ActivityIntents.setup(context, activity.accountSetupDataModel)
             }
 
         flags.forEach { intent.addFlags(it) }
@@ -182,6 +219,10 @@ class AppNavigator(
                 shareSheetTitle,
             )
         context.startActivity(shareIntent)
+    }
+
+    fun openAccessibilitySettings(context: Context) {
+        externalDeeplinkHandler.openAccessibilitySettings(context)
     }
 
     fun openAppOsSettings(context: Context) {

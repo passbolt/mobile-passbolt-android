@@ -1,6 +1,6 @@
 /**
  * Passbolt - Open source password manager for teams
- * Copyright (c) 2024 Passbolt SA
+ * Copyright (c) 2024-2026 Passbolt SA
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
  * Public License (AGPL) as published by the Free Software Foundation version 3.
@@ -24,6 +24,7 @@
 package com.passbolt.mobile.android.scenarios.resource.details.sharewithsubsection
 
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
+import androidx.compose.ui.test.onNodeWithText
 import androidx.test.filters.MediumTest
 import androidx.test.platform.app.InstrumentationRegistry
 import com.passbolt.mobile.android.core.idlingresource.ResourceDetailActionIdlingResource
@@ -34,6 +35,7 @@ import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.feature.authentication.AuthenticationMainActivity
 import com.passbolt.mobile.android.helpers.chooseFilter
+import com.passbolt.mobile.android.helpers.getString
 import com.passbolt.mobile.android.helpers.searchAndOpenFirstResourceByName
 import com.passbolt.mobile.android.helpers.signIn
 import com.passbolt.mobile.android.instrumentationTestsModule
@@ -42,21 +44,20 @@ import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
 import com.passbolt.mobile.android.scenarios.resource.TestResourceType
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
 import org.koin.core.component.inject
 import org.koin.test.KoinTest
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 @RunWith(Parameterized::class)
 @MediumTest
-@Ignore("Deprecated: refactor needed - entire test class disabled")
 class SharedWithSubsectionTest(
     private val resourceType: TestResourceType,
 ) : KoinTest {
-    @get:Rule
+    @get:Rule(order = 0)
     val startUpActivityRule =
         lazyActivitySetupScenarioRule<AuthenticationMainActivity>(
             koinOverrideModules = listOf(instrumentationTestsModule),
@@ -92,8 +93,11 @@ class SharedWithSubsectionTest(
 
     @Before
     fun setup() {
-        //      Given   that I am logged in mobile user
-        composeTestRule.signIn(managedAccountIntentCreator.getPassphrase())
+        composeTestRule.apply {
+            signIn(managedAccountIntentCreator.getPassphrase())
+            chooseFilter(filters_menu_all_items)
+            searchAndOpenFirstResourceByName(resourceType.displayName)
+        }
     }
 
     /**
@@ -107,28 +111,24 @@ class SharedWithSubsectionTest(
      * And   At least one icon is presented
      * And   Shared with subsection contains caret
      *
-     * Examples:
-     *     | resource |
-     *     | Simple password             |
-     *     | Password with description   |
-     *     | Password description totp   |
+     *     Examples:
+     *     | resource                       |
+     *     | Simple password                |
+     *     | Password with description      |
+     *     | Password description totp      |
+     *     | TOTP - v4                      |
+     *     | Simple Password (Deprecated)   |
+     *     | Default resource type          |
+     *     | Default resource type with TOTP|
+     *     | Standalone TOTP                |
+     *     | Standalone note                |
+     *     | Standalone Custom Fields       |
      */
     @Test
     fun onTheResourceScreenICanSeeSharedWithSubsection() {
-        composeTestRule.chooseFilter(filters_menu_all_items)
-        composeTestRule.searchAndOpenFirstResourceByName(resourceType.displayName)
-//        onView(withText(localizationString.shared_with))
-//            .perform(scrollTo())
-//            .check(matches(isDisplayed()))
-//        onView(withId(resourcesId.root)).perform(swipeUp())
-//        onView(withId(resourcesId.sharedWithRecycler)).check(matches(isDisplayed()))
-//        onView(
-//            allOf(
-//                isDescendantOfA(withId(resourcesId.sharedWithRecycler)),
-//                withId(permissionsId.userItem),
-//            ),
-//        ).check(matches(isDisplayed()))
-//        onView(withId(resourcesId.sharedWithNavIcon)).check(matches(isDisplayed()))
+        composeTestRule.apply {
+            onNodeWithText(getString(LocalizationR.string.shared_with)).assertExists()
+        }
     }
 
     private companion object {

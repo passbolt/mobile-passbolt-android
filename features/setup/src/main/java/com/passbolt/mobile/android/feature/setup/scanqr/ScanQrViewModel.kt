@@ -69,6 +69,7 @@ import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.ScanQrParser
 import com.passbolt.mobile.android.feature.setup.scanqr.usecase.UpdateTransferUseCase
 import com.passbolt.mobile.android.ui.ResultStatus
 import com.passbolt.mobile.android.ui.Status
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import kotlin.properties.Delegates
@@ -92,6 +93,7 @@ internal class ScanQrViewModel(
     private lateinit var serverDomain: String
     private var totalPages: Int by Delegates.notNull()
     private var currentPage = 0
+    private var qrScanningJob: Job? = null
 
     fun onIntent(intent: ScanQrIntent) {
         when (intent) {
@@ -119,10 +121,12 @@ internal class ScanQrViewModel(
         if (intent.accountSetupDataModel != null) {
             injectPredefinedAccount(intent.accountSetupDataModel)
         } else {
-            viewModelScope.launch {
-                launch { qrParser.startParsing(intent.barcodeScanFlow) }
-                launch { qrParser.parseResultFlow.collect { processParseResult(it) } }
-            }
+            qrScanningJob?.cancel()
+            qrScanningJob =
+                viewModelScope.launch {
+                    launch { qrParser.startParsing(intent.barcodeScanFlow) }
+                    launch { qrParser.parseResultFlow.collect { processParseResult(it) } }
+                }
         }
     }
 

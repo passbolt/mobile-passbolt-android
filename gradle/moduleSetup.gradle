@@ -92,7 +92,6 @@ def setupCommonDependencies(isAndroid) {
         testImplementation libs.koin.test.junit
         if (isAndroid) {
             androidTestImplementation libs.androidx.junit
-            androidTestImplementation libs.espresso.core
             androidTestImplementation libs.truth
         }
         coreLibraryDesugaring libs.desugar.jdklibs

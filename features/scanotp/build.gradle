@@ -4,7 +4,6 @@ plugins {
     alias libs.plugins.kotlin.parcelize
     alias libs.plugins.compose.compiler
     alias libs.plugins.kotlin.serialization
-    alias libs.plugins.navigation.safeargs
 }
 
 android {
@@ -21,7 +20,6 @@ dependencies {
     implementation project(':qrscan')
     implementation project(':otpcore')
     implementation project(':security')
-    implementation project(':resourcepicker')
     implementation project(':authentication')
     implementation project(':resourcetypes')
     implementation project(':resources')
@@ -32,8 +30,6 @@ dependencies {
     implementation project(':metadatakeytrust')
     implementation project(':metadata')
 
-    implementation libs.navigation.fragment
-    implementation libs.navigation.ui
     implementation platform(libs.koin.bom)
     implementation libs.koin
     implementation libs.koin.compose

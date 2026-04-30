@@ -1,6 +1,6 @@
 /**
  * Passbolt - Open source password manager for teams
- * Copyright (c) 2021,2024-2025 Passbolt SA
+ * Copyright (c) 2021,2024-2026 Passbolt SA
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
  * Public License (AGPL) as published by the Free Software Foundation version 3.
@@ -23,38 +23,48 @@
 
 package com.passbolt.mobile.android.scenarios.resource.details.note
 
+import androidx.compose.ui.test.hasAnyAncestor
+import androidx.compose.ui.test.hasContentDescription
+import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.test.filters.MediumTest
 import androidx.test.platform.app.InstrumentationRegistry
 import com.passbolt.mobile.android.core.idlingresource.ResourceDetailActionIdlingResource
 import com.passbolt.mobile.android.core.idlingresource.ResourcesFullRefreshIdlingResource
 import com.passbolt.mobile.android.core.idlingresource.SignInIdlingResource
+import com.passbolt.mobile.android.core.localization.R.string.filters_menu_all_items
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.feature.authentication.AuthenticationMainActivity
+import com.passbolt.mobile.android.helpers.chooseFilter
+import com.passbolt.mobile.android.helpers.getString
 import com.passbolt.mobile.android.helpers.searchAndOpenFirstResourceByName
 import com.passbolt.mobile.android.helpers.signIn
 import com.passbolt.mobile.android.instrumentationTestsModule
 import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
 import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
+import com.passbolt.mobile.android.testtags.composetags.ResourceDetails
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
 import org.koin.core.component.inject
 import org.koin.test.KoinTest
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 @RunWith(Parameterized::class)
 @MediumTest
-@Ignore("Deprecated: refactor needed - test class disabled")
 class ResourcesNoteTest(
     private val testedResource: String,
     private val expectedNote: String,
 ) : KoinTest {
-    @get:Rule
+    @get:Rule(order = 0)
     val startUpActivityRule =
         lazyActivitySetupScenarioRule<AuthenticationMainActivity>(
             koinOverrideModules = listOf(instrumentationTestsModule),
@@ -96,12 +106,7 @@ class ResourcesNoteTest(
                 ),
                 arrayOf(
                     "Password with description and long note",
-                    // Long string literal kept as is to preserve content
-                    "Free and open-source software (FOSS) is software available under a license that grants users the right to use, modify, and distribute the software – modified or not – to everyone. FOSS is an inclusive umbrella term encompassing free software and open-source software.[a][1] The rights guaranteed by FOSS originate from the \"Four Essential Freedoms\" of The Free Software Definition and the criteria of The Open Source Definition.[4][6] All FOSS can have publicly available source code, but not all source-available software is FOSS. FOSS is the opposite of proprietary software, which is licensed restrictively or has undisclosed source code.[4]\n" +
-                        "\n" +
-                        "The historical precursor to FOSS was the hobbyist and academic public domain software ecosystem of the 1960s to 1980s. Free and open-source operating systems such as Linux distributions and descendants of BSD are widely used, powering millions of servers, desktops, smartphones, and other devices.[9][10] Free-software licenses and open-source licenses have been adopted by many software packages. Reasons for using FOSS include decreased software costs, increased security against malware, stability, privacy, opportunities for educational usage, and giving users more control over their own hardware.\n" +
-                        "\n" +
-                        "The free software movement and the open-source software movement are online social movements behind widespread production, adoption and promotion of FOSS, with the former preferring to use the equivalent term free/libre and open-source software (FLOSS). FOSS is supported by a loosely associated movement of multiple organizations, foundations, communities and individuals who share basic philosophical perspectives and collaborate practically, but may diverge in detail questions.",
+                    "but may diverge in detail questions",
                 ),
                 arrayOf(
                     "Password, Description and TOTP - v4",
@@ -109,14 +114,9 @@ class ResourcesNoteTest(
                 ),
                 arrayOf(
                     "Password, Description and TOTP with long note",
-                    // Long string literal kept as is to preserve content
-                    "Free and open-source software (FOSS) is software available under a license that grants users the right to use, modify, and distribute the software – modified or not – to everyone. FOSS is an inclusive umbrella term encompassing free software and open-source software.[a][1] The rights guaranteed by FOSS originate from the \"Four Essential Freedoms\" of The Free Software Definition and the criteria of The Open Source Definition.[4][6] All FOSS can have publicly available source code, but not all source-available software is FOSS. FOSS is the opposite of proprietary software, which is licensed restrictively or has undisclosed source code.[4]\n" +
-                        "\n" +
-                        "The historical precursor to FOSS was the hobbyist and academic public domain software ecosystem of the 1960s to 1980s. Free and open-source operating systems such as Linux distributions and descendants of BSD are widely used, powering millions of servers, desktops, smartphones, and other devices.[9][10] Free-software licenses and open-source licenses have been adopted by many software packages. Reasons for using FOSS include decreased software costs, increased security against malware, stability, privacy, opportunities for educational usage, and giving users more control over their own hardware.\n" +
-                        "\n" +
-                        "The free software movement and the open-source software movement are online social movements behind widespread production, adoption and promotion of FOSS, with the former preferring to use the equivalent term free/libre and open-source software (FLOSS). FOSS is supported by a loosely associated movement of multiple organizations, foundations, communities and individuals who share basic philosophical perspectives and collaborate practically, but may diverge in detail questions.",
+                    "but may diverge in detail questions",
                 ),
-                // TODO - This need to be enabled after enabling V5 on cloud's `Betty` user")
+                // TODO - This need to be enabled after enabling V5 on cloud's `Betty` user
 //            "Default resource type",
 //            "Default resource type with TOTP"
             )
@@ -127,7 +127,10 @@ class ResourcesNoteTest(
 
     @Before
     fun setup() {
-        composeTestRule.signIn(managedAccountIntentCreator.getPassphrase())
+        composeTestRule.apply {
+            signIn(managedAccountIntentCreator.getPassphrase())
+            chooseFilter(filters_menu_all_items)
+        }
     }
 
     /**
@@ -135,9 +138,7 @@ class ResourcesNoteTest(
      * Given I am a mobile user on the <resource> display screen
      * When  I click on the show icon in the "Note" item list
      * And   I successfully authenticate (if needed)
-     * Then  I should see a spinner in place of the eye icon
-     * And   I should see the note body
-     * And   I should see a hide icon
+     * Then  I should see the note body
      *
      * When  I click on the hide icon
      * Then  I should see the note hidden
@@ -149,26 +150,22 @@ class ResourcesNoteTest(
      */
     @Test
     fun asALoggedInMobileUserOnTheResourceDisplayICanShowOrHideResourceNote() {
-        composeTestRule.searchAndOpenFirstResourceByName(testedResource)
-//        onView(
-//            allOf(
-//                isDescendantOfA(withId(note_item)),
-//                withId(actionIcon),
-//            ),
-//        ).perform(click())
-//        onView(withText(expectedNote)).check(matches(isDisplayed()))
-//        onView(
-//            allOf(
-//                isDescendantOfA(withId(note_item)),
-//                withId(actionIcon),
-//            ),
-//        ).perform(scrollTo())
-//            .perform(click())
-//        onView(
-//            allOf(
-//                isDescendantOfA(withId(note_item)),
-//                withId(conceal),
-//            ),
-//        ).check(matches(isDisplayed()))
+        composeTestRule.apply {
+            searchAndOpenFirstResourceByName(testedResource)
+
+            val noteSection = hasTestTag(ResourceDetails.NOTE_SECTION)
+            onNode(hasContentDescription(getString(LocalizationR.string.action_show)) and hasAnyAncestor(noteSection))
+                .performClick()
+            onNodeWithText(expectedNote, substring = true).assertExists()
+
+            onNode(hasContentDescription(getString(LocalizationR.string.action_hide)) and hasAnyAncestor(noteSection))
+                .performScrollTo()
+                .performClick()
+            waitUntil(timeoutMillis = 5_000) {
+                onAllNodesWithText(expectedNote, substring = true)
+                    .fetchSemanticsNodes()
+                    .isEmpty()
+            }
+        }
     }
 }

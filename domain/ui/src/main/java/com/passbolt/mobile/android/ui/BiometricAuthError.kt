@@ -26,4 +26,5 @@ enum class BiometricAuthError {
     GENERIC,
     ERROR_LOCKOUT,
     ERROR_LOCKOUT_PERMANENT,
+    NO_CRYPTO_CIPHER,
 }

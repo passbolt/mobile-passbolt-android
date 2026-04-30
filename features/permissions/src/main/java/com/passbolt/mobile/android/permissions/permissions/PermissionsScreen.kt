@@ -28,6 +28,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
@@ -38,25 +39,25 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
 import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
-import com.passbolt.mobile.android.core.navigation.compose.LocalPermissionsHostNavigation
 import com.passbolt.mobile.android.core.navigation.compose.keys.PermissionsNavigationKey.GroupPermissionDetails
 import com.passbolt.mobile.android.core.navigation.compose.keys.PermissionsNavigationKey.PermissionRecipients
+import com.passbolt.mobile.android.core.navigation.compose.keys.PermissionsNavigationKey.Permissions
 import com.passbolt.mobile.android.core.navigation.compose.keys.PermissionsNavigationKey.UserPermissionDetails
-import com.passbolt.mobile.android.core.ui.compose.button.PrimaryButton
-import com.passbolt.mobile.android.core.ui.compose.fab.AddFloatingActionButton
-import com.passbolt.mobile.android.core.ui.compose.progressdialog.ProgressDialog
-import com.passbolt.mobile.android.core.ui.compose.snackbar.ColoredSnackbarVisuals
-import com.passbolt.mobile.android.core.ui.compose.topbar.BackNavigationIcon
-import com.passbolt.mobile.android.core.ui.compose.topbar.TitleAppBar
-import com.passbolt.mobile.android.feature.authentication.compose.AuthenticationHandler
-import com.passbolt.mobile.android.feature.metadatakeytrust.ui.compose.NewMetadataKeyTrustDialog
-import com.passbolt.mobile.android.feature.metadatakeytrust.ui.compose.TrustedMetadataKeyDeletedDialog
+import com.passbolt.mobile.android.core.navigation.compose.results.NavigationResultEventBus
+import com.passbolt.mobile.android.core.navigation.compose.results.ShareCompleteResult
+import com.passbolt.mobile.android.core.ui.button.PrimaryButton
+import com.passbolt.mobile.android.core.ui.fab.AddFloatingActionButton
+import com.passbolt.mobile.android.core.ui.progressdialog.ProgressDialog
+import com.passbolt.mobile.android.core.ui.snackbar.ColoredSnackbarVisuals
+import com.passbolt.mobile.android.core.ui.topbar.BackNavigationIcon
+import com.passbolt.mobile.android.core.ui.topbar.TitleAppBar
+import com.passbolt.mobile.android.feature.metadatakeytrust.NewMetadataKeyTrustDialog
+import com.passbolt.mobile.android.feature.metadatakeytrust.TrustedMetadataKeyDeletedDialog
 import com.passbolt.mobile.android.permissions.permissions.PermissionsIntent.AddPermission
 import com.passbolt.mobile.android.permissions.permissions.PermissionsIntent.DismissMetadataKeyDeletedDialog
 import com.passbolt.mobile.android.permissions.permissions.PermissionsIntent.DismissMetadataKeyModifiedDialog
@@ -89,15 +90,10 @@ fun PermissionsScreen(
     navigator: AppNavigator = koinInject(),
 ) {
     val context = LocalContext.current
-    val hostNavigation = LocalPermissionsHostNavigation.current
+    val resultBus = NavigationResultEventBus.current
     val state = viewModel.viewState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
-
-    AuthenticationHandler(
-        onAuthenticatedIntent = viewModel::onAuthenticationIntent,
-        authenticationSideEffect = viewModel.authenticationSideEffect,
-    )
 
     PermissionsScreen(
         state = state.value,
@@ -108,7 +104,7 @@ fun PermissionsScreen(
 
     SideEffectDispatcher(viewModel.sideEffect) { effect ->
         when (effect) {
-            NavigateBack -> hostNavigation.navigateBack()
+            NavigateBack -> navigator.navigateBack()
             is NavigateToGroupPermissionDetails ->
                 navigator.navigateToKey(
                     GroupPermissionDetails(
@@ -130,9 +126,13 @@ fun PermissionsScreen(
                         groupPermissions = effect.groups,
                     ),
                 )
-            is NavigateToSelfWithMode -> hostNavigation.navigateToSelfWithMode(effect.id, effect.mode)
-            CloseWithShareSuccess -> hostNavigation.closeWithShareSuccessResult()
-            NavigateToHome -> hostNavigation.navigateToHome()
+            is NavigateToSelfWithMode ->
+                navigator.navigateToKey(Permissions(effect.id, effect.mode, effect.permissionsItem))
+            CloseWithShareSuccess -> {
+                resultBus.sendResult(result = ShareCompleteResult(shared = true))
+                navigator.navigateBack()
+            }
+            NavigateToHome -> navigator.popToRoot()
             ShowContentNotAvailable ->
                 Toast
                     .makeText(context, LocalizationR.string.content_not_available, Toast.LENGTH_SHORT)
@@ -251,7 +251,7 @@ private fun ActionButtonAppBar(
 ) {
     BottomAppBar(
         modifier = modifier.fillMaxWidth(),
-        containerColor = colorResource(CoreUiR.color.elevated_background),
+        containerColor = MaterialTheme.colorScheme.background,
     ) {
         PrimaryButton(
             text =

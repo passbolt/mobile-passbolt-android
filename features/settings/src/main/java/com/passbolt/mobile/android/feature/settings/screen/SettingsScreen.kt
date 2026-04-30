@@ -46,10 +46,10 @@ import com.passbolt.mobile.android.core.navigation.compose.keys.SettingsNavigati
 import com.passbolt.mobile.android.core.navigation.compose.keys.SettingsNavigationKey.DebugLogs
 import com.passbolt.mobile.android.core.navigation.compose.keys.SettingsNavigationKey.TermsAndLicenses
 import com.passbolt.mobile.android.core.ui.R
-import com.passbolt.mobile.android.core.ui.compose.dialogs.SignOutAlertDialog
-import com.passbolt.mobile.android.core.ui.compose.menu.OpenableSettingsItem
-import com.passbolt.mobile.android.core.ui.compose.progressdialog.ProgressDialog
-import com.passbolt.mobile.android.core.ui.compose.topbar.TitleAppBar
+import com.passbolt.mobile.android.core.ui.dialogs.SignOutAlertDialog
+import com.passbolt.mobile.android.core.ui.menu.OpenableSettingsItem
+import com.passbolt.mobile.android.core.ui.progressdialog.ProgressDialog
+import com.passbolt.mobile.android.core.ui.topbar.TitleAppBar
 import com.passbolt.mobile.android.feature.settings.screen.SettingsIntent.CancelSignOut
 import com.passbolt.mobile.android.feature.settings.screen.SettingsIntent.ConfirmSignOut
 import com.passbolt.mobile.android.feature.settings.screen.SettingsIntent.Initialize

@@ -28,10 +28,10 @@ import com.passbolt.mobile.android.core.autofill.AutofillInformationProvider.Chr
 import com.passbolt.mobile.android.core.autofill.AutofillInformationProvider.ChromeNativeAutofillStatus.NOT_SUPPORTED
 import com.passbolt.mobile.android.core.compose.SideEffectViewModel
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.AutofillScreenSideEffect.ErrorSnackbarType.NATIVE_AUTOFILL_NOT_SUPPORTED
+import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.AutofillScreenSideEffect.NavigateToAutofillEnabled
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.AutofillScreenSideEffect.NavigateToChromeNativeAutofill
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.AutofillScreenSideEffect.NavigateToEncourageAccessibilityAutofill
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.AutofillScreenSideEffect.NavigateToEncourageNativeAutofill
-import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.AutofillScreenSideEffect.NavigateToNativeAutofillEnabled
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.AutofillScreenSideEffect.NavigateUp
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.AutofillScreenSideEffect.ShowErrorSnackBar
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.AutofillSettingsIntent.GoBack
@@ -60,7 +60,7 @@ internal class AutofillSettingsViewModel(
     private fun toggleNativeAutofill() {
         if (autofillInformationProvider.isAutofillServiceSupported()) {
             if (viewState.value.isNativeAutofillChecked) {
-                emitSideEffect(NavigateToNativeAutofillEnabled)
+                emitSideEffect(NavigateToAutofillEnabled)
             } else {
                 emitSideEffect(NavigateToEncourageNativeAutofill)
             }

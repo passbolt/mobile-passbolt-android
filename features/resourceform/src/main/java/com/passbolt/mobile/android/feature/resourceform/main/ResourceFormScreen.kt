@@ -25,6 +25,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -32,7 +33,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
 import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
-import com.passbolt.mobile.android.core.navigation.compose.LocalResourceFormHostNavigation
+import com.passbolt.mobile.android.core.navigation.compose.keys.OtpNavigationKey.ScanOtp
+import com.passbolt.mobile.android.core.navigation.compose.keys.OtpNavigationKey.ScanOtpMode
 import com.passbolt.mobile.android.core.navigation.compose.keys.ResourceFormNavigationKey.AdditionalUrisForm
 import com.passbolt.mobile.android.core.navigation.compose.keys.ResourceFormNavigationKey.AppearanceForm
 import com.passbolt.mobile.android.core.navigation.compose.keys.ResourceFormNavigationKey.CustomFieldsForm
@@ -41,14 +43,15 @@ import com.passbolt.mobile.android.core.navigation.compose.keys.ResourceFormNavi
 import com.passbolt.mobile.android.core.navigation.compose.keys.ResourceFormNavigationKey.PasswordForm
 import com.passbolt.mobile.android.core.navigation.compose.keys.ResourceFormNavigationKey.TotpAdvancedSettingsForm
 import com.passbolt.mobile.android.core.navigation.compose.keys.ResourceFormNavigationKey.TotpForm
-import com.passbolt.mobile.android.core.ui.compose.button.PrimaryButton
-import com.passbolt.mobile.android.core.ui.compose.progressdialog.ProgressDialog
-import com.passbolt.mobile.android.core.ui.compose.text.TextInput
-import com.passbolt.mobile.android.core.ui.compose.topbar.BackNavigationIcon
-import com.passbolt.mobile.android.core.ui.compose.topbar.TitleAppBar
-import com.passbolt.mobile.android.feature.authentication.compose.AuthenticationHandler
-import com.passbolt.mobile.android.feature.metadatakeytrust.ui.compose.NewMetadataKeyTrustDialog
-import com.passbolt.mobile.android.feature.metadatakeytrust.ui.compose.TrustedMetadataKeyDeletedDialog
+import com.passbolt.mobile.android.core.navigation.compose.results.NavigationResultEventBus
+import com.passbolt.mobile.android.core.navigation.compose.results.ResourceFormCompleteResult
+import com.passbolt.mobile.android.core.ui.button.PrimaryButton
+import com.passbolt.mobile.android.core.ui.progressdialog.ProgressDialog
+import com.passbolt.mobile.android.core.ui.text.TextInput
+import com.passbolt.mobile.android.core.ui.topbar.BackNavigationIcon
+import com.passbolt.mobile.android.core.ui.topbar.TitleAppBar
+import com.passbolt.mobile.android.feature.metadatakeytrust.NewMetadataKeyTrustDialog
+import com.passbolt.mobile.android.feature.metadatakeytrust.TrustedMetadataKeyDeletedDialog
 import com.passbolt.mobile.android.feature.resourceform.main.ResourceFormIntent.CreateResource
 import com.passbolt.mobile.android.feature.resourceform.main.ResourceFormIntent.DismissMetadataKeyDialog
 import com.passbolt.mobile.android.feature.resourceform.main.ResourceFormIntent.ExpandAdvancedSettings
@@ -74,6 +77,7 @@ import com.passbolt.mobile.android.feature.resourceform.main.ResourceFormSideEff
 import com.passbolt.mobile.android.feature.resourceform.main.ui.AdditionalSecretsSection
 import com.passbolt.mobile.android.feature.resourceform.main.ui.LeadingContent
 import com.passbolt.mobile.android.feature.resourceform.main.ui.MetadataSection
+import com.passbolt.mobile.android.testtags.composetags.ResourceForm
 import com.passbolt.mobile.android.ui.LeadingContentType
 import com.passbolt.mobile.android.ui.PasswordStrength
 import com.passbolt.mobile.android.ui.ResourceFormMode.Create
@@ -92,14 +96,9 @@ internal fun ResourceFormScreen(
 ) {
     val state = viewModel.viewState.collectAsStateWithLifecycle()
     val context = LocalContext.current
-    val hostNavigation = LocalResourceFormHostNavigation.current
+    val resultBus = NavigationResultEventBus.current
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
-
-    AuthenticationHandler(
-        onAuthenticatedIntent = viewModel::onAuthenticationIntent,
-        authenticationSideEffect = viewModel.authenticationSideEffect,
-    )
 
     ResourceFormScreen(
         modifier = modifier,
@@ -128,12 +127,30 @@ internal fun ResourceFormScreen(
                     CustomFieldsForm(mode = sideEffect.mode, customFieldsUiModel = sideEffect.model),
                 )
             NavigateToScanOtp ->
-                hostNavigation.navigateToScanOtp()
-            is NavigateBackWithCreateSuccess ->
-                hostNavigation.navigateBackWithCreateSuccess(sideEffect.name, sideEffect.resourceId)
-            is NavigateBackWithEditSuccess ->
-                hostNavigation.navigateBackWithEditSuccess(sideEffect.name)
-            NavigateBack -> hostNavigation.navigateBack()
+                navigator.navigateToKey(ScanOtp(ScanOtpMode.SCAN_FOR_RESULT))
+            is NavigateBackWithCreateSuccess -> {
+                resultBus.sendResult(
+                    result =
+                        ResourceFormCompleteResult(
+                            resourceCreated = true,
+                            resourceEdited = false,
+                            resourceName = sideEffect.name,
+                        ),
+                )
+                navigator.navigateBack()
+            }
+            is NavigateBackWithEditSuccess -> {
+                resultBus.sendResult(
+                    result =
+                        ResourceFormCompleteResult(
+                            resourceCreated = false,
+                            resourceEdited = true,
+                            resourceName = sideEffect.name,
+                        ),
+                )
+                navigator.navigateBack()
+            }
+            NavigateBack -> navigator.navigateBack()
             is ShowSnackbar ->
                 coroutineScope.launch {
                     snackbarHostState.showSnackbar(getSnackbarMessage(context, sideEffect.type))
@@ -171,7 +188,10 @@ private fun ResourceFormScreen(
                     containerColor = MaterialTheme.colorScheme.background,
                 ) {
                     PrimaryButton(
-                        modifier = Modifier.padding(horizontal = 16.dp),
+                        modifier =
+                            Modifier
+                                .padding(horizontal = 16.dp)
+                                .testTag(ResourceForm.SAVE_BUTTON),
                         text = getPrimaryButtonText(context, state.mode),
                         onClick = {
                             when (state.mode) {
@@ -208,6 +228,7 @@ private fun ResourceFormScreen(
                     hint = stringResource(LocalizationR.string.resource_form_name),
                     text = state.name,
                     onTextChange = { onIntent(NameTextChanged(it)) },
+                    testTag = ResourceForm.NAME_INPUT,
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))

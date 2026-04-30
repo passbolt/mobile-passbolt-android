@@ -27,8 +27,9 @@ import org.koin.core.module.dsl.singleOf
  */
 
 internal fun Module.foldersDbModule() {
-    singleOf(::AddLocalFoldersUseCase)
-    singleOf(::RemoveLocalFoldersUseCase)
+    singleOf(::SetLocalFoldersUpdateStateUseCase)
+    singleOf(::UpsertLocalFoldersUseCase)
+    singleOf(::RemoveLocalFoldersWithUpdateStateUseCase)
     singleOf(::GetLocalResourcesAndFoldersUseCase)
     singleOf(::GetLocalResourcesAndFoldersPaginatedUseCase)
     singleOf(::GetLocalSubFoldersForFolderUseCase)

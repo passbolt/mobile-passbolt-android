@@ -1,6 +1,9 @@
 package com.passbolt.mobile.android.core.accounts.usecase.selectedaccount
 
+import com.passbolt.mobile.android.core.accounts.AccountSwitchFlow
 import org.koin.core.module.Module
+import org.koin.core.module.dsl.factoryOf
+import org.koin.core.module.dsl.singleOf
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,27 +29,10 @@ import org.koin.core.module.Module
  */
 
 internal fun Module.selectedAccountModule() {
-    single {
-        GetSelectedAccountUseCase(
-            encryptedSharedPreferencesFactory = get(),
-        )
-    }
-    factory {
-        RemoveSelectedAccountUseCase(encryptedSharedPreferencesFactory = get())
-    }
-    single {
-        SaveSelectedAccountUseCase(
-            encryptedSharedPreferencesFactory = get(),
-        )
-    }
-    single {
-        GetCurrentApiUrlUseCase(
-            encryptedSharedPreferencesFactory = get(),
-        )
-    }
-    single {
-        SaveCurrentApiUrlUseCase(
-            encryptedSharedPreferencesFactory = get(),
-        )
-    }
+    singleOf(::AccountSwitchFlow)
+    singleOf(::GetSelectedAccountUseCase)
+    factoryOf(::RemoveSelectedAccountUseCase)
+    singleOf(::SaveSelectedAccountUseCase)
+    singleOf(::GetCurrentApiUrlUseCase)
+    singleOf(::SaveCurrentApiUrlUseCase)
 }

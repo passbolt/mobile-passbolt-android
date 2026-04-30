@@ -125,7 +125,7 @@ class UserPermissionsViewModelTest : KoinTest {
         }
 
     @Test
-    fun `save should emit updated permission result and navigate back`() =
+    fun `save should emit updated permission result`() =
         runTest {
             viewModel = get(parameters = { parametersOf(EDIT, USER_PERMISSION) })
             viewModel.onIntent(SelectPermission(UPDATE))
@@ -136,13 +136,11 @@ class UserPermissionsViewModelTest : KoinTest {
                 val setResult = awaitItem()
                 assertIs<SetUpdatedPermissionResult>(setResult)
                 assertThat(setResult.permission.permission).isEqualTo(UPDATE)
-
-                assertIs<NavigateBack>(awaitItem())
             }
         }
 
     @Test
-    fun `delete permission should show confirmation then emit result and navigate back`() =
+    fun `delete permission should show confirmation then emit result`() =
         runTest {
             viewModel = get(parameters = { parametersOf(EDIT, USER_PERMISSION) })
 
@@ -158,8 +156,6 @@ class UserPermissionsViewModelTest : KoinTest {
                 val deleteResult = awaitItem()
                 assertIs<SetDeletePermissionResult>(deleteResult)
                 assertThat(deleteResult.permission).isEqualTo(USER_PERMISSION)
-
-                assertIs<NavigateBack>(awaitItem())
             }
         }
 

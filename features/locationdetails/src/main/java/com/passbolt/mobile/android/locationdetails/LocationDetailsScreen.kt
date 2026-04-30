@@ -60,15 +60,15 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.passbolt.mobile.android.common.extension.toSingleLine
 import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
+import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
 import com.passbolt.mobile.android.core.resources.resourceicon.ResourceIconProvider
-import com.passbolt.mobile.android.core.ui.compose.pulltorefresh.PullToRefreshIndicatorBox
-import com.passbolt.mobile.android.core.ui.compose.snackbar.ColoredSnackbarVisuals
-import com.passbolt.mobile.android.core.ui.compose.topbar.BackNavigationIcon
-import com.passbolt.mobile.android.core.ui.compose.topbar.TitleAppBar
-import com.passbolt.mobile.android.feature.authentication.compose.AuthenticationHandler
+import com.passbolt.mobile.android.core.ui.pulltorefresh.PullToRefreshIndicatorBox
+import com.passbolt.mobile.android.core.ui.snackbar.ColoredSnackbarVisuals
+import com.passbolt.mobile.android.core.ui.topbar.BackNavigationIcon
+import com.passbolt.mobile.android.core.ui.topbar.TitleAppBar
 import com.passbolt.mobile.android.locationdetails.LocationDetailsIntent.GoBack
-import com.passbolt.mobile.android.locationdetails.LocationDetailsIntent.Initialize
 import com.passbolt.mobile.android.locationdetails.LocationDetailsIntent.ToggleExpanded
 import com.passbolt.mobile.android.locationdetails.LocationDetailsSideEffect.NavigateToHome
 import com.passbolt.mobile.android.locationdetails.LocationDetailsSideEffect.NavigateUp
@@ -83,6 +83,7 @@ import com.passbolt.mobile.android.ui.ResourcePermission
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
+import org.koin.core.parameter.parametersOf
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
@@ -90,23 +91,14 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
 internal fun LocationDetailsScreen(
     locationItem: LocationItem,
     itemId: String,
-    navigation: LocationDetailsNavigation,
     modifier: Modifier = Modifier,
-    viewModel: LocationDetailsViewModel = koinViewModel(),
+    viewModel: LocationDetailsViewModel = koinViewModel(parameters = { parametersOf(locationItem, itemId) }),
+    navigator: AppNavigator = koinInject(),
 ) {
     val context = LocalContext.current
     val state = viewModel.viewState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
-
-    LaunchedEffect(locationItem, itemId) {
-        viewModel.onIntent(Initialize(locationItem, itemId))
-    }
-
-    AuthenticationHandler(
-        onAuthenticatedIntent = viewModel::onAuthenticationIntent,
-        authenticationSideEffect = viewModel.authenticationSideEffect,
-    )
 
     LocationDetailsContent(
         state = state.value,
@@ -117,8 +109,8 @@ internal fun LocationDetailsScreen(
 
     SideEffectDispatcher(viewModel.sideEffect) { sideEffect ->
         when (sideEffect) {
-            NavigateUp -> navigation.navigateUp()
-            NavigateToHome -> navigation.navigateToHome()
+            NavigateUp -> navigator.navigateBack()
+            NavigateToHome -> navigator.popToRoot()
             is ShowErrorSnackbar -> {
                 coroutineScope.launch {
                     snackbarHostState.showSnackbar(
@@ -213,7 +205,7 @@ private fun LocationDetailsContent(
                     }
 
                     Text(
-                        text = state.itemName,
+                        text = state.itemName.toSingleLine(),
                         style = MaterialTheme.typography.titleLarge,
                         color = MaterialTheme.colorScheme.onBackground,
                         textAlign = TextAlign.Center,

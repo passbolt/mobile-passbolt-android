@@ -28,11 +28,6 @@ import androidx.compose.ui.test.junit4.createEmptyComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
-import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.filters.MediumTest
 import androidx.test.platform.app.InstrumentationRegistry
 import com.passbolt.mobile.android.core.idlingresource.CreateMenuModelIdlingResource
@@ -44,10 +39,10 @@ import com.passbolt.mobile.android.core.localization.R.string.are_you_sure
 import com.passbolt.mobile.android.core.localization.R.string.cancel
 import com.passbolt.mobile.android.core.localization.R.string.delete
 import com.passbolt.mobile.android.core.localization.R.string.filters_menu_all_items
+import com.passbolt.mobile.android.core.localization.R.string.more_delete
 import com.passbolt.mobile.android.core.localization.R.string.resource_will_be_deleted
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppContext
-import com.passbolt.mobile.android.core.ui.R.drawable.ic_trash
 import com.passbolt.mobile.android.feature.authentication.AuthenticationMainActivity
 import com.passbolt.mobile.android.helpers.chooseFilter
 import com.passbolt.mobile.android.helpers.getString
@@ -55,10 +50,10 @@ import com.passbolt.mobile.android.helpers.searchAndClickMoreOfFirstResource
 import com.passbolt.mobile.android.helpers.signIn
 import com.passbolt.mobile.android.instrumentationTestsModule
 import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
-import com.passbolt.mobile.android.matchers.hasDrawable
 import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
 import com.passbolt.mobile.android.scenarios.resource.TestResourceType
+import com.passbolt.mobile.android.testtags.composetags.Home
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -66,14 +61,13 @@ import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
 import org.koin.test.KoinTest
 import org.koin.test.inject
-import com.passbolt.mobile.android.feature.resourcemoremenu.R.id as resourcemoremenuId
 
 @RunWith(Parameterized::class)
 @MediumTest
 class DeleteResourcePopupTest(
     private val testedResource: String,
 ) : KoinTest {
-    @get:Rule
+    @get:Rule(order = 0)
     val startUpActivityRule =
         lazyActivitySetupScenarioRule<AuthenticationMainActivity>(
             koinOverrideModules = listOf(instrumentationTestsModule),
@@ -119,15 +113,12 @@ class DeleteResourcePopupTest(
 
     @Before
     fun setup() {
-        composeTestRule.signIn(managedAccountIntentCreator.getPassphrase())
-        composeTestRule.chooseFilter(filters_menu_all_items)
-        composeTestRule.searchAndClickMoreOfFirstResource(testedResource)
-
-        onView(withId(resourcemoremenuId.delete))
-            .check(matches(isDisplayed()))
-            .check(matches(hasDrawable(id = ic_trash)))
-
-        onView(withId(resourcemoremenuId.delete)).perform(click())
+        composeTestRule.apply {
+            signIn(managedAccountIntentCreator.getPassphrase())
+            chooseFilter(filters_menu_all_items)
+            searchAndClickMoreOfFirstResource(testedResource)
+            onNodeWithText(getString(more_delete)).assertIsDisplayed().performClick()
+        }
     }
 
     /**  [On the action menu drawer, I can click delete password element when V5 resources are enabled](https://passbolt.testrail.io/index.php?/cases/view/13119)
@@ -146,17 +137,23 @@ class DeleteResourcePopupTest(
      *     | Simple password                |
      *     | Password with description      |
      *     | Password description totp      |
+     *     | TOTP - v4   |
      *     | Simple Password (Deprecated)   |
      *     | Default resource type          |
      *     | Default resource type with TOTP|
+     *     | Standalone TOTP      |
+     *     | Standalone note      |
+     *     | Standalone Custom Fields      |
      *
      */
     @Test
     fun onTheActionMenuDrawerICanClickDeletePasswordElementWhenV5ResourcesAreEnabled() {
-        composeTestRule.onNodeWithText(getString(are_you_sure)).assertIsDisplayed()
-        composeTestRule.onNodeWithText(getString(resource_will_be_deleted)).assertIsDisplayed()
-        composeTestRule.onNodeWithText(getString(cancel)).assertIsDisplayed()
-        composeTestRule.onNodeWithText(getString(delete)).assertIsDisplayed()
+        composeTestRule.apply {
+            onNodeWithText(getString(are_you_sure)).assertIsDisplayed()
+            onNodeWithText(getString(resource_will_be_deleted)).assertIsDisplayed()
+            onNodeWithText(getString(cancel)).assertIsDisplayed()
+            onNodeWithText(getString(delete)).assertIsDisplayed()
+        }
     }
 
     /**
@@ -171,14 +168,20 @@ class DeleteResourcePopupTest(
      *     | Simple password                |
      *     | Password with description      |
      *     | Password description totp      |
+     *     | TOTP - v4                      |
      *     | Simple Password (Deprecated)   |
      *     | Default resource type          |
      *     | Default resource type with TOTP|
+     *     | Standalone TOTP                |
+     *     | Standalone note                |
+     *     | Standalone Custom Fields       |
      *
      */
     @Test
     fun testOnThePasswordRemovalPopupICanClickCancelWhenV5ResourcesAreEnabled() {
-        composeTestRule.onNodeWithText(getString(cancel)).performClick()
-        composeTestRule.onNodeWithTag("home_screen").assertIsDisplayed()
+        composeTestRule.apply {
+            onNodeWithText(getString(cancel)).performClick()
+            onNodeWithTag(Home.SCREEN).assertIsDisplayed()
+        }
     }
 }

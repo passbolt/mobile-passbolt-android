@@ -4,7 +4,6 @@ plugins {
 }
 
 dependencies {
-    implementation libs.material
     implementation libs.androidx.core
     implementation libs.appcompat
     implementation platform(libs.koin.bom)

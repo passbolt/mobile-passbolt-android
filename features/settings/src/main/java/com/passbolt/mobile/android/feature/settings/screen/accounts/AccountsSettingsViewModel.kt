@@ -24,11 +24,11 @@
 package com.passbolt.mobile.android.feature.settings.screen.accounts
 
 import com.passbolt.mobile.android.core.compose.SideEffectViewModel
+import com.passbolt.mobile.android.feature.settings.screen.accounts.AccountsScreenSideEffect.NavigateBack
 import com.passbolt.mobile.android.feature.settings.screen.accounts.AccountsScreenSideEffect.NavigateToAccountDetails
 import com.passbolt.mobile.android.feature.settings.screen.accounts.AccountsScreenSideEffect.NavigateToKeyInspector
 import com.passbolt.mobile.android.feature.settings.screen.accounts.AccountsScreenSideEffect.NavigateToManageAccounts
 import com.passbolt.mobile.android.feature.settings.screen.accounts.AccountsScreenSideEffect.NavigateToTransferAccount
-import com.passbolt.mobile.android.feature.settings.screen.accounts.AccountsScreenSideEffect.NavigateUp
 import com.passbolt.mobile.android.feature.settings.screen.accounts.AccountsSettingsIntent.GoBack
 import com.passbolt.mobile.android.feature.settings.screen.accounts.AccountsSettingsIntent.GoToAccountDetails
 import com.passbolt.mobile.android.feature.settings.screen.accounts.AccountsSettingsIntent.GoToKeyInspector
@@ -38,7 +38,7 @@ import com.passbolt.mobile.android.feature.settings.screen.accounts.AccountsSett
 internal class AccountsSettingsViewModel : SideEffectViewModel<Unit, AccountsScreenSideEffect>(Unit) {
     fun onIntent(intent: AccountsSettingsIntent) {
         when (intent) {
-            GoBack -> emitSideEffect(NavigateUp)
+            GoBack -> emitSideEffect(NavigateBack)
             GoToAccountDetails -> emitSideEffect(NavigateToAccountDetails)
             GoToKeyInspector -> emitSideEffect(NavigateToKeyInspector)
             GoToManageAccounts -> emitSideEffect(NavigateToManageAccounts)

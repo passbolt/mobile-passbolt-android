@@ -1,6 +1,6 @@
 package com.passbolt.mobile.android.feature.authentication.auth.usecase
 
-import com.passbolt.mobile.android.common.FingerprintInformationProvider
+import com.passbolt.mobile.android.common.BiometricInformationProvider
 import com.passbolt.mobile.android.common.usecase.UserIdInput
 import com.passbolt.mobile.android.core.accounts.usecase.biometrickey.RemoveBiometricKeyUseCase
 import com.passbolt.mobile.android.core.authenticationcore.passphrase.CheckIfPassphraseFileExistsUseCase
@@ -33,7 +33,7 @@ class BiometryInteractor(
     private val checkIfPassphraseFileExistsUseCase: CheckIfPassphraseFileExistsUseCase,
     private val removeAllAccountsPassphrasesUseCase: RemoveAllAccountsPassphrasesUseCase,
     private val removeBiometricKeyUseCase: RemoveBiometricKeyUseCase,
-    private val fingerprintInfoProvider: FingerprintInformationProvider,
+    private val biometricInfoProvider: BiometricInformationProvider,
 ) {
     fun onBiometryReady(
         userId: String,
@@ -41,7 +41,7 @@ class BiometryInteractor(
     ) {
         Timber.d("Checking biometry state")
         if (checkIfPassphraseFileExistsUseCase.execute(UserIdInput(userId)).passphraseFileExists) {
-            if (fingerprintInfoProvider.hasBiometricSetUp()) {
+            if (biometricInfoProvider.hasBiometricSetUp()) {
                 Timber.d("Biometry ready")
                 onReady()
             } else {

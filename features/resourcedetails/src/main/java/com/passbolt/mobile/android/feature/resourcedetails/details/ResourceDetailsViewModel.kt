@@ -32,6 +32,7 @@ import com.passbolt.mobile.android.common.datarefresh.DataRefreshStatus.InProgre
 import com.passbolt.mobile.android.common.datarefresh.DataRefreshTrackingFlow
 import com.passbolt.mobile.android.common.types.ClipboardLabel
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalFolderLocationUseCase
+import com.passbolt.mobile.android.core.compose.SideEffectViewModel
 import com.passbolt.mobile.android.core.idlingresource.ResourceDetailActionIdlingResource
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.otpcore.TotpParametersProvider
@@ -48,7 +49,6 @@ import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceTag
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUseCase
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
 import com.passbolt.mobile.android.entity.featureflags.FeatureFlagsModel
-import com.passbolt.mobile.android.feature.authentication.compose.AuthenticatedViewModel
 import com.passbolt.mobile.android.feature.resourcedetails.details.ErrorSnackbarType.CANNOT_PERFORM_ACTION
 import com.passbolt.mobile.android.feature.resourcedetails.details.ErrorSnackbarType.DECRYPTION_FAILURE
 import com.passbolt.mobile.android.feature.resourcedetails.details.ErrorSnackbarType.FETCH_FAILURE
@@ -113,6 +113,7 @@ import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
 import com.passbolt.mobile.android.ui.isExpired
 import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
@@ -139,7 +140,7 @@ class ResourceDetailsViewModel(
     private val coroutineLaunchContext: CoroutineLaunchContext,
     private val dataRefreshTrackingFlow: DataRefreshTrackingFlow,
     private val timerFactory: TimerFactory,
-) : AuthenticatedViewModel<ResourceDetailsState, ResourceDetailsSideEffect>(ResourceDetailsState()),
+) : SideEffectViewModel<ResourceDetailsState, ResourceDetailsSideEffect>(ResourceDetailsState()),
     KoinComponent {
     private val resourcePropertiesActionsInteractor: ResourcePropertiesActionsInteractor
         get() = get { parametersOf(viewState.value.requiredResourceModel) }
@@ -155,6 +156,9 @@ class ResourceDetailsViewModel(
                 emitSideEffect(NavigateBack)
             }
         }
+
+    private var dataRefreshJob: Job? = null
+    private var otpTimerJob: Job? = null
 
     private val resource: ResourceModel
         get() = viewState.value.requiredResourceModel
@@ -200,13 +204,17 @@ class ResourceDetailsViewModel(
             loadResourceDetails()
         }
 
-        viewModelScope.launch(coroutineLaunchContext.io) {
-            synchronizeWithDataRefresh()
-        }
+        dataRefreshJob?.cancel()
+        dataRefreshJob =
+            viewModelScope.launch(coroutineLaunchContext.io) {
+                synchronizeWithDataRefresh()
+            }
 
-        viewModelScope.launch(coroutineLaunchContext.io) {
-            updateOtpCounterTime()
-        }
+        otpTimerJob?.cancel()
+        otpTimerJob =
+            viewModelScope.launch(coroutineLaunchContext.io) {
+                updateOtpCounterTime()
+            }
     }
 
     private suspend fun loadResourceDetails() {
@@ -367,7 +375,16 @@ class ResourceDetailsViewModel(
                     updateViewState { copy(isRefreshing = false) }
                 }
                 FinishedWithSuccess -> {
-                    updateViewState { copy(isRefreshing = false) }
+                    val refreshedResource =
+                        getLocalResourceUseCase
+                            .execute(GetLocalResourceUseCase.Input(resource.resourceId))
+                            .resource
+                    updateViewState {
+                        copy(
+                            isRefreshing = false,
+                            resourceData = resourceData.copy(resourceModel = refreshedResource),
+                        )
+                    }
                     viewModelScope.launch { loadResourceDetails() }
                 }
                 NotCompleted -> {

@@ -24,16 +24,11 @@
 package com.passbolt.mobile.android.scenarios.bottomnavigation
 
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotSelected
+import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
 import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.onNodeWithText
-import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
-import androidx.test.espresso.matcher.ViewMatchers.isNotSelected
-import androidx.test.espresso.matcher.ViewMatchers.isSelected
-import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
@@ -42,28 +37,25 @@ import com.passbolt.mobile.android.core.idlingresource.SignInIdlingResource
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.feature.authentication.AuthenticationMainActivity
-import com.passbolt.mobile.android.feature.home.R.id.homeNav
-import com.passbolt.mobile.android.feature.otp.R.id.otpNav
-import com.passbolt.mobile.android.feature.settings.R.id.settingsNavCompose
-import com.passbolt.mobile.android.helpers.getString
 import com.passbolt.mobile.android.helpers.signIn
 import com.passbolt.mobile.android.instrumentationTestsModule
 import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
 import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
+import com.passbolt.mobile.android.testtags.composetags.BottomNav
 import com.passbolt.mobile.android.testtags.composetags.Home
+import com.passbolt.mobile.android.testtags.composetags.Otp
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.koin.core.component.inject
 import org.koin.test.KoinTest
-import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 @RunWith(AndroidJUnit4::class)
 @LargeTest
 class BottomNavigationTest : KoinTest {
-    @get:Rule
+    @get:Rule(order = 0)
     val startUpActivityRule =
         lazyActivitySetupScenarioRule<AuthenticationMainActivity>(
             koinOverrideModules =
@@ -81,11 +73,6 @@ class BottomNavigationTest : KoinTest {
         )
 
     @get:Rule
-    val composeTestRule = createEmptyComposeRule()
-
-    private val managedAccountIntentCreator: ManagedAccountIntentCreator by inject()
-
-    @get:Rule
     val idlingResourceRule =
         let {
             val signInIdlingResource: SignInIdlingResource by inject()
@@ -93,10 +80,14 @@ class BottomNavigationTest : KoinTest {
             IdlingResourceRule(arrayOf(signInIdlingResource, resourcesFullRefreshIdlingResource))
         }
 
+    private val managedAccountIntentCreator: ManagedAccountIntentCreator by inject()
+
+    @get:Rule
+    val composeTestRule = createEmptyComposeRule()
+
     @Before
     fun setup() {
-        composeTestRule
-            .signIn(managedAccountIntentCreator.getPassphrase())
+        composeTestRule.signIn(managedAccountIntentCreator.getPassphrase())
     }
 
     /**
@@ -111,17 +102,14 @@ class BottomNavigationTest : KoinTest {
      */
     @Test
     fun iCanGoToTheSettingsWorkspaceUsingTheBottomNavigation() {
-        onView(withId(settingsNavCompose))
-            .check(matches(isDisplayed()))
-            .check(matches(isNotSelected()))
-        onView(withId(settingsNavCompose)).perform(click())
         composeTestRule.apply {
-            waitForIdle()
-            onNodeWithText(getString(LocalizationR.string.settings_title))
+            onNodeWithTag(BottomNav.SETTINGS_TAB)
                 .assertIsDisplayed()
+                .assertIsNotSelected()
+            onNodeWithTag(BottomNav.SETTINGS_TAB).performClick()
+            onNodeWithTag(BottomNav.SETTINGS_TAB)
+                .assertIsSelected()
         }
-        onView(withId(settingsNavCompose))
-            .check(matches(isSelected()))
     }
 
     /**
@@ -137,16 +125,16 @@ class BottomNavigationTest : KoinTest {
      */
     @Test
     fun iCanGoToTotpListUsingBottomNavigation() {
-        onView(withId(otpNav))
-            .check(matches(isDisplayed()))
-            .check(matches(isNotSelected()))
-        onView(withId(otpNav)).perform(click())
         composeTestRule.apply {
-            onNodeWithTag("otp_screen")
+            onNodeWithTag(BottomNav.OTP_TAB)
                 .assertIsDisplayed()
+                .assertIsNotSelected()
+            onNodeWithTag(BottomNav.OTP_TAB).performClick()
+            onNodeWithTag(Otp.SCREEN)
+                .assertIsDisplayed()
+            onNodeWithTag(BottomNav.OTP_TAB)
+                .assertIsSelected()
         }
-        onView(withId(otpNav))
-            .check(matches(isSelected()))
     }
 
     /**
@@ -161,19 +149,21 @@ class BottomNavigationTest : KoinTest {
      */
     @Test
     fun iCanGoToTheHomeUsingBottomNavigation() {
-        onView(withId(settingsNavCompose)).perform(click())
-        onView(withId(homeNav))
-            .check(matches(isDisplayed()))
-            .check(matches(isNotSelected()))
-        onView(withId(homeNav)).perform(click())
         composeTestRule.apply {
+            // navigate to settings first
+            onNodeWithTag(BottomNav.SETTINGS_TAB).performClick()
+            // navigate back to home
+            onNodeWithTag(BottomNav.HOME_TAB)
+                .assertIsDisplayed()
+                .assertIsNotSelected()
+            onNodeWithTag(BottomNav.HOME_TAB).performClick()
             onNodeWithTag(Home.SCREEN).assertIsDisplayed()
+            onNodeWithTag(BottomNav.HOME_TAB)
+                .assertIsSelected()
+            onNodeWithTag(BottomNav.OTP_TAB)
+                .assertIsNotSelected()
+            onNodeWithTag(BottomNav.SETTINGS_TAB)
+                .assertIsNotSelected()
         }
-        onView(withId(homeNav))
-            .check(matches(isSelected()))
-        onView(withId(otpNav))
-            .check(matches(isNotSelected()))
-        onView(withId(settingsNavCompose))
-            .check(matches(isNotSelected()))
     }
 }

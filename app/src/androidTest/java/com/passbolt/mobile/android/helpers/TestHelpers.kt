@@ -32,54 +32,47 @@ import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextReplacement
-import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.action.ViewActions.closeSoftKeyboard
-import androidx.test.espresso.action.ViewActions.typeText
-import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.platform.app.InstrumentationRegistry
+import com.passbolt.mobile.android.testtags.composetags.Auth
 import com.passbolt.mobile.android.testtags.composetags.Home
-import com.passbolt.mobile.android.core.ui.R as CoreUiR
+import com.passbolt.mobile.android.testtags.composetags.ResourceForm
+import com.passbolt.mobile.android.testtags.composetags.SearchField
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 internal fun getString(
     @StringRes stringResId: Int,
     vararg formatArgs: String? = emptyArray(),
 ) = InstrumentationRegistry.getInstrumentation().targetContext.getString(stringResId, *formatArgs)
 
-// TODO: Migrate to Compose test - resource form is now in Compose after MVI migration.
-//  This function used Espresso to fill in the resource form fields and click the create button.
-//  Rewrite using ComposeTestRule with appropriate test tags.
-internal fun createNewPasswordFromHomeScreen(name: String) {
-//    onView(withId(com.passbolt.mobile.android.feature.createresourcemenu.R.id.createPassword)).perform(click())
-//
-//    onView(withId(generatePasswordLayout)).perform(click())
-//    onView(
-//        allOf(
-//            isDescendantOfA(withHint(hasToString(EditableFieldInput.NAME.hintName))),
-//            withId(input),
-//        ),
-//    ).perform(
-//        typeText(name),
-//    )
-//    onView(
-//        allOf(
-//            isDescendantOfA(withHint(hasToString(EditableFieldInput.ENTER_URL.hintName))),
-//            withId(input),
-//        ),
-//    ).perform(
-//        typeText("TestURL"),
-//    )
-//    onView(
-//        allOf(
-//            isDescendantOfA(withHint(hasToString(EditableFieldInput.ENTER_USERNAME.hintName))),
-//            withId(input),
-//        ),
-//    ).perform(
-//        typeText("TestUsername"),
-//    )
-//    onView(withId(com.passbolt.mobile.android.feature.resourceform.R.id.primaryButton)).perform(click())
+/**
+ * Creates a new password resource from the Home screen using the FAB -> Password flow.
+ *
+ * Behavior:
+ * - Clicks the FAB button.
+ * - Selects "Password" from the create resource menu.
+ * - Fills in name, URI, username, and password fields.
+ * - Clicks the save button.
+ * - Waits for the home screen to be displayed.
+ *
+ * Assumptions:
+ * - The Home screen is visible.
+ * - CreateResourceIdlingResource is registered so the save operation is awaited.
+ *
+ * @param name The name for the new password resource.
+ */
+internal fun ComposeTestRule.createNewPasswordFromHomeScreen(name: String) {
+    onNodeWithTag(Home.FAB).performClick()
+    onNodeWithText(getString(LocalizationR.string.create_resource_menu_create_password)).performClick()
+    waitForResourceForm()
+    onNodeWithTag(ResourceForm.NAME_INPUT).performTextReplacement(name)
+    onNodeWithTag(ResourceForm.URI_INPUT).performTextReplacement("TestURL")
+    onNodeWithTag(ResourceForm.USERNAME_INPUT).performTextReplacement("TestUsername")
+    onNodeWithTag(ResourceForm.PASSWORD_INPUT).performTextReplacement("TestPassword123!")
+    onNodeWithTag(ResourceForm.SAVE_BUTTON).performClick()
+    onNodeWithTag(Home.SCREEN).assertIsDisplayed()
 }
 
 /**
@@ -88,8 +81,9 @@ internal fun createNewPasswordFromHomeScreen(name: String) {
  * Usage: composeTestRule.signIn(passphrase)
  */
 internal fun ComposeTestRule.signIn(passphrase: String) {
-    onView(withId(CoreUiR.id.input)).perform(typeText(passphrase), closeSoftKeyboard())
-    onView(withId(com.passbolt.mobile.android.feature.authentication.R.id.authButton)).perform(click())
+    onNodeWithTag(Auth.PASSPHRASE_INPUT).performTextReplacement(passphrase)
+    onNodeWithTag(Auth.SIGN_IN_BUTTON).performClick()
+    waitForHomeScreen()
     onNodeWithTag(Home.SCREEN).assertIsDisplayed()
 }
 
@@ -110,12 +104,12 @@ internal fun ComposeTestRule.signIn(passphrase: String) {
  * @param name The resource name to search for.
  */
 internal fun ComposeTestRule.searchAndOpenFirstResourceByName(name: String) {
-    onNodeWithTag("home_search_input_field")
+    onNodeWithTag(SearchField.INPUT)
         .performClick()
         .performTextReplacement(name)
 
     val rowMatcher =
-        hasTestTag("home_resource_row").and(
+        hasTestTag(Home.RESOURCE_ROW).and(
             hasAnyDescendant(hasText(name, substring = true, ignoreCase = true)),
         )
 
@@ -149,12 +143,12 @@ internal fun ComposeTestRule.searchAndOpenFirstResourceByName(name: String) {
  * @param name The resource name to search for.
  */
 internal fun ComposeTestRule.searchAndClickMoreOfFirstResource(name: String) {
-    onNodeWithTag("home_search_input_field")
+    onNodeWithTag(SearchField.INPUT)
         .performClick()
         .performTextReplacement(name)
 
     val rowMatcher =
-        hasTestTag("home_resource_row").and(
+        hasTestTag(Home.RESOURCE_ROW).and(
             hasAnyDescendant(hasText(name, substring = true, ignoreCase = true)),
         )
 
@@ -163,7 +157,7 @@ internal fun ComposeTestRule.searchAndClickMoreOfFirstResource(name: String) {
             .fetchSemanticsNodes()
             .isNotEmpty()
     }
-    onAllNodes(hasTestTag("home_resource_more"), useUnmergedTree = true)
+    onAllNodes(hasTestTag(Home.RESOURCE_MORE), useUnmergedTree = true)
         .onFirst()
         .performClick()
 }
@@ -181,12 +175,12 @@ internal fun ComposeTestRule.searchAndClickMoreOfFirstResource(name: String) {
  * - Ensure the Folders filter is selected before calling this helper.
  */
 internal fun ComposeTestRule.searchAndOpenFirstFolderByName(name: String) {
-    onNodeWithTag("home_search_input_field")
+    onNodeWithTag(SearchField.INPUT)
         .performClick()
         .performTextReplacement(name)
 
     val folderRowMatcher =
-        hasTestTag("home_folder_row").and(
+        hasTestTag(Home.FOLDER_ROW).and(
             hasAnyDescendant(hasText(name, substring = true, ignoreCase = true)),
         )
 
@@ -213,7 +207,7 @@ internal fun ComposeTestRule.searchAndOpenFirstFolderByName(name: String) {
  * @param filter The resource ID of the filter to select.
  */
 internal fun ComposeTestRule.chooseFilter(filter: Int) {
-    onNodeWithTag("home_search_filter").performClick()
+    onNodeWithTag(Home.SEARCH_FILTER).performClick()
     onNode(
         hasClickAction().and(
             hasAnyDescendant(hasText(getString(filter))),
@@ -231,3 +225,29 @@ internal fun getClipboardText(clipboardManager: android.content.ClipboardManager
         ?.getItemAt(0)
         ?.text
         ?.toString()
+
+/**
+ * Waits for the resource form to be ready for interaction.
+ *
+ * // TODO: check if it can be change to sth similar to idling resources
+ */
+internal fun ComposeTestRule.waitForResourceForm() {
+    waitUntil(timeoutMillis = 5_000, conditionDescription = "Waiting for resource form") {
+        onAllNodes(hasTestTag(ResourceForm.NAME_INPUT))
+            .fetchSemanticsNodes()
+            .isNotEmpty()
+    }
+}
+
+/**
+ * Waits for the home screen to be ready for interaction.
+ *
+ * // TODO: check if it can be change to sth similar to idling resources
+ */
+internal fun ComposeTestRule.waitForHomeScreen() {
+    waitUntil(timeoutMillis = 5_000, conditionDescription = "Waiting for home screen") {
+        onAllNodes(hasTestTag(Home.SCREEN))
+            .fetchSemanticsNodes()
+            .isNotEmpty()
+    }
+}

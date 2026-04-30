@@ -56,7 +56,7 @@ import org.koin.test.KoinTest
 @RunWith(AndroidJUnit4::class)
 @LargeTest
 class FilteringResourcesTest : KoinTest {
-    @get:Rule
+    @get:Rule(order = 0)
     val startUpActivityRule =
         lazyActivitySetupScenarioRule<AuthenticationMainActivity>(
             koinOverrideModules =
@@ -121,7 +121,7 @@ class FilteringResourcesTest : KoinTest {
     @FlakyTest(detail = "It is currently failing nondeterministic on Android 12 - reason unknown")
     fun asALoggedInMobileUserOnTheHomepageICanChangeTheCurrentActiveFilter() {
         ResourceFilterModel.entries.forEach { model ->
-            composeTestRule.onNodeWithTag("home_search_filter").performClick()
+            composeTestRule.onNodeWithTag(Home.SEARCH_FILTER).performClick()
             composeTestRule
                 .onNode(
                     hasClickAction().and(

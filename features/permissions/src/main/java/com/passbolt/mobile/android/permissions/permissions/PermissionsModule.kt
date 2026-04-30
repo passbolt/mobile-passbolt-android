@@ -45,6 +45,7 @@ fun Module.permissionsModule() {
             canShareResourceUseCase = get(),
             dataRefreshTrackingFlow = get(),
             coroutineLaunchContext = get(),
+            resourceUpdateActionsInteractorFactory = get(),
         )
     }
 }

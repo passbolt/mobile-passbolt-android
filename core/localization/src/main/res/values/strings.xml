@@ -75,12 +75,15 @@
     <string name="validation_required_integer">Should be an integer number</string>
     <string name="validation_invalid_totp_secret">Invalid TOTP secret</string>
 
-    <string name="fingerprint_biometric_error_generic">An error has occurred with the fingerprint sensor.</string>
-    <string name="fingerprint_biometric_error_too_many_attempts">Biometric authorization has been blocked due to too many attempts.</string>
-    <string name="fingerprint_biometric_error_blocked">Biometric authorization has been blocked for 30 seconds.</string>
-    <string name="fingerprint_biometric_changed_title">Fingerprint changes detected</string>
-    <string name="fingerprint_biometric_changed_message">You have to sign in with passphrase this time and enable fingerprint in Settings again.</string>
-    <string name="fingerprint_authenticate_again">Please sign in with passphrase again</string>
+    <string name="biometric_error_generic">An error has occurred with the biometric sensor.</string>
+    <string name="biometric_error_too_many_attempts">Biometric authorization has been blocked due to too many attempts.</string>
+    <string name="biometric_error_blocked">Biometric authorization has been blocked for 30 seconds.</string>
+    <string name="biometric_changed_title">Biometric changes detected</string>
+    <string name="biometric_changed_message">You have to sign in with passphrase this time and enable biometric in Settings again.</string>
+    <string name="biometric_authenticate_again">Please sign in with passphrase again</string>
+    <string name="biometric_decrypt_error_message">Biometric sign-in is temporarily unavailable. Please enter your passphrase to continue.</string>
+    <string name="biometric_encrypt_error_message">Biometric setup couldn\'t be completed. Try again or continue without it.</string>
+    <string name="biometric_no_crypto_cipher">Your device used PIN or pattern instead of biometrics. Please use biometric unlock or enter your passphrase.</string>
 
     <string name="settings_licenses_title">Licenses</string>
     <string name="settings_logs_title">Logs</string>
@@ -168,7 +171,7 @@
     <string name="auth_forgot_password_message">Unfortunately you cannot access your data if you do not remember your passphrase. Please contact your administrator to unlock your account.</string>
     <string name="auth_enter_passphrase">Enter your passphrase</string>
     <string name="auth_exit_dialog_message">If you leave, you may need to set up your account again.</string>
-    <string name="auth_biometric_title">Confirm Using Your Fingerprint</string>
+    <string name="auth_biometric_title">Confirm using biometric</string>
     <string name="auth_reason_session_expired">Please authenticate to refresh session</string>
     <string name="auth_reason_passphrase_expired">Please authenticate passphrase access</string>
     <string name="auth_server_fingerprint_changed_title">Sorry, the server key has changed.</string>
@@ -303,6 +306,9 @@
     <string name="hidden_secret"
         translatable="false">••••••••••••••••••</string>
     <string name="resource_details_encrypted_description">Description is encrypted</string>
+    <string name="action_show">Show</string>
+    <string name="action_hide">Hide</string>
+    <string name="action_copy">Copy</string>
     <string name="resource_details_information">Information</string>
     <string name="resource_details_invalid_totp_scanned">Invalid TOTP QR code scanned</string>
     <string name="resource_details_metadata_header">Metadata</string>
@@ -374,12 +380,12 @@
     <string name="settings_disable">Disable</string>
     <string name="settings_sign_out">Sign out</string>
     <string name="settings_title">Settings</string>
-    <string name="settings_disable_fingerprint_confirmation_message">After disabling Fingerprint you will need to login by using your passphrase.</string>
-    <string name="settings_turn_on_biometric_title">Turn on fingerprint authentication</string>
-    <string name="settings_turn_on_biometric_subtitle">Touch the fingerprint sensor</string>
-    <string name="settings_add_first_fingerprint">Please add your fingerprint in the system settings first</string>
-    <string name="settings_add_first_fingerprint_title">Configure fingerprint</string>
-    <string name="settings_add_first_fingerprint_settings">Go to settings</string>
+    <string name="settings_disable_biometric_confirmation_message">After disabling biometric you will need to login by using your passphrase.</string>
+    <string name="settings_turn_on_biometric_title">Turn on biometric authentication</string>
+    <string name="settings_turn_on_biometric_subtitle">Confirm using your biometric</string>
+    <string name="settings_add_first_biometric">Please add your biometric in the system settings first</string>
+    <string name="settings_add_first_biometric_title">Configure biometric</string>
+    <string name="settings_add_first_biometric_settings">Go to settings</string>
 
     <string name="settings_debug_logs_settings_logs">Access the logs</string>
     <string name="settings_debug_logs_enable_logs">Enable debug logs</string>
@@ -396,7 +402,7 @@
 
     <string name="settings_app_settings_default_filter">Default filter</string>
     <string name="settings_app_settings_autofill">Autofill</string>
-    <string name="settings_app_settings_fingerprint">Fingerprint</string>
+    <string name="settings_app_settings_biometric">Biometric</string>
     <string name="settings_app_settings_biometry_error">Biometry error. %s</string>
     <string name="settings_app_settings_biometry_authentication_error">Biometry authentication error. %s</string>
     <string name="settings_app_settings_expert_settings">Expert settings</string>
@@ -456,13 +462,13 @@
     <string name="scan_qr_summary_failure_title">Something went wrong!</string>
     <string name="scan_qr_summary_no_network_title">No Internet connection</string>
 
-    <string name="fingerprint_setup_use_fingerprint_button">Use Fingerprint</string>
-    <string name="fingerprint_setup_configure_title">Configure Fingerprint</string>
-    <string name="fingerprint_setup_configure_description">Unlock your secrets in a second.</string>
-    <string name="fingerprint_setup_use_title">Use Fingerprint instead of passphrase</string>
-    <string name="fingerprint_setup_use_description">Unlock your secrets in a second.</string>
-    <string name="fingerprint_setup_biometric_title">Confirm Using Your Fingerprint</string>
-    <string name="fingerprint_setup_biometric_subtitle">Touch the fingerprint sensor</string>
+    <string name="biometric_setup_use_biometric_button">Use Biometric</string>
+    <string name="biometric_setup_configure_title">Configure Biometric</string>
+    <string name="biometric_setup_configure_description">Unlock your secrets in a second.</string>
+    <string name="biometric_setup_use_title">Use Biometric instead of passphrase</string>
+    <string name="biometric_setup_use_description">Unlock your secrets in a second.</string>
+    <string name="biometric_setup_biometric_title">Confirm using biometric</string>
+    <string name="biometric_setup_biometric_subtitle">Confirm using your biometric</string>
     <string name="folder_root">Root</string>
 
     <string name="resource_permissions_can_read">Can read</string>

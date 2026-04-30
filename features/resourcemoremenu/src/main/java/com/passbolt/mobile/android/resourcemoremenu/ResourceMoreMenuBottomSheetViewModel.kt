@@ -26,6 +26,7 @@ package com.passbolt.mobile.android.resourcemoremenu
 import androidx.lifecycle.viewModelScope
 import com.passbolt.mobile.android.common.datarefresh.DataRefreshTrackingFlow
 import com.passbolt.mobile.android.core.compose.SideEffectViewModel
+import com.passbolt.mobile.android.core.idlingresource.CreateMenuModelIdlingResource
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.resourcemoremenu.ResourceMoreMenuBottomSheetIntent.Close
 import com.passbolt.mobile.android.resourcemoremenu.ResourceMoreMenuBottomSheetIntent.CopyMetadataDescription
@@ -51,6 +52,7 @@ class ResourceMoreMenuBottomSheetViewModel(
     private val createResourceMoreMenuModelUseCase: CreateResourceMoreMenuModelUseCase,
     private val coroutineLaunchContext: CoroutineLaunchContext,
     private val dataRefreshTrackingFlow: DataRefreshTrackingFlow,
+    private val createMenuModelIdlingResource: CreateMenuModelIdlingResource,
 ) : SideEffectViewModel<ResourceMoreMenuBottomSheetState, ResourceMoreMenuBottomSheetSideEffect>(
         ResourceMoreMenuBottomSheetState(),
     ) {
@@ -107,6 +109,7 @@ class ResourceMoreMenuBottomSheetViewModel(
 
     private fun initialize(resourceId: String) {
         viewModelScope.launch(coroutineLaunchContext.io) {
+            createMenuModelIdlingResource.setIdle(false)
             updateViewState { ResourceMoreMenuBottomSheetState(title = title) }
             dataRefreshTrackingFlow.awaitIdle()
 
@@ -135,6 +138,8 @@ class ResourceMoreMenuBottomSheetViewModel(
             } catch (exception: NullPointerException) {
                 Timber.d("Resource item for the shown menu was deleted: $exception")
                 emitSideEffect(Dismiss)
+            } finally {
+                createMenuModelIdlingResource.setIdle(true)
             }
         }
     }

@@ -21,12 +21,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.passbolt.mobile.android.core.ui.compose.button.SecondaryIconButton
-import com.passbolt.mobile.android.core.ui.compose.text.PasswordInput
+import com.passbolt.mobile.android.core.ui.button.SecondaryIconButton
+import com.passbolt.mobile.android.core.ui.text.PasswordInput
+import com.passbolt.mobile.android.testtags.composetags.ResourceForm
 import com.passbolt.mobile.android.ui.PasswordStrength
 import com.passbolt.mobile.android.ui.PasswordStrength.Empty
 import com.passbolt.mobile.android.ui.PasswordStrength.Fair
@@ -58,11 +60,12 @@ internal fun PasswordGenerationInput(
                 text = password,
                 onTextChange = onPasswordChange,
                 modifier = Modifier.weight(1f),
+                testTag = ResourceForm.PASSWORD_INPUT,
             )
             Spacer(modifier = Modifier.width(8.dp))
 
             SecondaryIconButton(
-                modifier = Modifier.size(56.dp),
+                modifier = Modifier.size(56.dp).testTag(ResourceForm.GENERATE_PASSWORD_BUTTON),
                 onClick = onGenerateClick,
                 icon = painterResource(CoreUiR.drawable.ic_password_generate),
             )

@@ -1,6 +1,6 @@
 /**
  * Passbolt - Open source password manager for teams
- * Copyright (c) 2021-2023 Passbolt SA
+ * Copyright (c) 2021-2026 Passbolt SA
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
  * Public License (AGPL) as published by the Free Software Foundation version 3.
@@ -23,46 +23,43 @@
 
 package com.passbolt.mobile.android.scenarios.setup.passphrase
 
-import androidx.appcompat.widget.Toolbar
-import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.action.ViewActions.typeText
-import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom
-import androidx.test.espresso.matcher.ViewMatchers.isClickable
-import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
-import androidx.test.espresso.matcher.ViewMatchers.withId
-import androidx.test.espresso.matcher.ViewMatchers.withText
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsEnabled
+import androidx.compose.ui.test.assertTextEquals
+import androidx.compose.ui.test.hasTestTag
+import androidx.compose.ui.test.junit4.createEmptyComposeRule
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTextReplacement
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
 import androidx.test.platform.app.InstrumentationRegistry
-import com.passbolt.mobile.android.commontest.viewassertions.CastedViewAssertion
 import com.passbolt.mobile.android.core.idlingresource.ResourcesFullRefreshIdlingResource
 import com.passbolt.mobile.android.core.idlingresource.SignInIdlingResource
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.feature.authentication.AuthenticationMainActivity
+import com.passbolt.mobile.android.helpers.getString
 import com.passbolt.mobile.android.instrumentationTestsModule
 import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
 import com.passbolt.mobile.android.mappers.AccountModelMapper
-import com.passbolt.mobile.android.matchers.isTextHidden
 import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
-import org.hamcrest.Matchers.not
+import com.passbolt.mobile.android.testtags.composetags.Auth
+import com.passbolt.mobile.android.testtags.composetags.BackNavigation.ICON
+import com.passbolt.mobile.android.testtags.composetags.PasswordField
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.koin.test.KoinTest
 import org.koin.test.inject
-import com.google.android.material.R as MaterialR
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
-import com.passbolt.mobile.android.core.ui.R as CoreUiR
-import com.passbolt.mobile.android.feature.authentication.R as AuthenticationR
 
 @RunWith(AndroidJUnit4::class)
 @MediumTest
 class SetupPassphraseTest : KoinTest {
-    @get:Rule
+    @get:Rule(order = 0)
     val startUpActivityRule =
         lazyActivitySetupScenarioRule<AuthenticationMainActivity>(
             koinOverrideModules = listOf(instrumentationTestsModule),
@@ -86,99 +83,100 @@ class SetupPassphraseTest : KoinTest {
             IdlingResourceRule(arrayOf(signInIdlingResource, resourcesFullRefreshIdlingResource))
         }
 
-    //    https://passbolt.testrail.io/index.php?/cases/view/2349
+    @get:Rule
+    val composeTestRule = createEmptyComposeRule()
+
+    /**  [As a mobile user I should see the enter my passphrase screen after I successfully scanned QR codes](https://passbolt.testrail.io/index.php?/cases/view/2349)
+     *
+     *      Given  the user is on the "Success feedback" screen at the end of the QR code scanning process
+     *      When   the user clicks the "Continue" button
+     *      Then   an "Sign In" page is presented
+     *      And    a back arrow button is presented
+     *      And    current user's name is presented
+     *      And    current user's email is presented
+     *      And    the url of the server is presented
+     *      And    current user's avatar or the default avatar is presented
+     *      And    a passphrase input field is presented
+     *      And    an eye icon to toggle passphrase visibility is presented
+     *      And    a sign in the primary action button is presented
+     *      And    “I forgot my passphrase” link is presented
+     */
     @Test
     fun asAMobileUserIShouldSeeTheEnterMyPassphraseScreenAfterISuccessfullyScannedQrCodes() {
-        //    Given     the user is on the "Success feedback" screen at the end of the QR code scanning process
-        //    When      the user clicks the "Continue" button
-        //    Then      an "Enter your passphrase" page is presented
-        onView(withText(LocalizationR.string.auth_enter_passphrase)).check(matches(isDisplayed()))
-        //    And       a back arrow button is presented
-        onView(isAssignableFrom(Toolbar::class.java))
-            .check(CastedViewAssertion<Toolbar> { it.navigationIcon != null })
-        //    And       current user's name is presented
+        composeTestRule.onNode(hasTestTag(ICON), useUnmergedTree = true).assertExists()
         val firstName = managedAccountIntentCreator.getFirstName()
         val lastName = managedAccountIntentCreator.getLastName()
-        onView(withText(AccountModelMapper.defaultLabel(firstName, lastName))).check(matches(isDisplayed()))
-        //    And       current user's email is presented
-        val email = managedAccountIntentCreator.getUsername()
-        onView(withText(email)).check(matches(isDisplayed()))
-        //    And       the url of the server is presented
-        val url = managedAccountIntentCreator.getDomain()
-        onView(withText(url)).check(matches(isDisplayed()))
-        //    And       current user's avatar or the default avatar is presented
-        onView(withId(AuthenticationR.id.avatarImage)).check(matches(isDisplayed()))
-        //    And       a passphrase input field is presented
-        onView(withId(CoreUiR.id.input)).check(matches(isDisplayed()))
-        //    And       an eye icon to toggle passphrase visibility is presented
-        onView(withId(MaterialR.id.text_input_end_icon)).check(matches(isDisplayed()))
-        //    And       a sign in the primary action button is presented
-        onView(withId(AuthenticationR.id.authButton)).check(matches(isDisplayed()))
-        //    And       “I forgot my passphrase” link is presented
-        onView(withId(AuthenticationR.id.forgotPasswordButton)).check(
-            matches(
-                isDisplayed(),
-            ),
-        )
+        composeTestRule.onNodeWithText(AccountModelMapper.defaultLabel(firstName, lastName)).assertIsDisplayed()
+        composeTestRule.onNodeWithText(managedAccountIntentCreator.getUsername()).assertIsDisplayed()
+        composeTestRule.onNodeWithText(managedAccountIntentCreator.getDomain()).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(Auth.AVATAR).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(Auth.PASSPHRASE_INPUT).assertIsDisplayed()
+        composeTestRule.onNodeWithText(getString(LocalizationR.string.auth_enter_passphrase)).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(Auth.SIGN_IN_BUTTON).assertIsDisplayed()
+        composeTestRule.onNodeWithText(getString(LocalizationR.string.auth_forgot_password_button)).assertIsDisplayed()
     }
 
-    //    https://passbolt.testrail.io/index.php?/cases/view/2353
+    /**  [As a mobile user I can preview my passphrase](https://passbolt.testrail.io/index.php?/cases/view/2353)
+     *
+     *      Given   I am on the "Enter your passphrase" page
+     *      And     there is some <initial text> inside the passphrase field
+     *      When    I click the "eye" button inside the passphrase field
+     *      Then    I see the content of the passphrase field in <output format>
+     *      And     I see the plain text uses Inconsolata (monospace) font (not testable via Compose test APIs)
+     *
+     *      | initial text | output format |
+     *      |--------------|---------------|
+     *      | hidden text  | plain text    |
+     *      | plain text   | hidden text   |
+     */
     @Test
     fun asAMobileUserICanPreviewMyPassphrase() {
-        //    Given     I am on the "Enter your passphrase" page
-        //    And       there is some <initial text> inside the passphrase field
-        onView(withId(CoreUiR.id.input)).perform(typeText("SomeRandomText\n"))
-        //    When      I click the "eye" button inside the passphrase field
-        onView(withId(MaterialR.id.text_input_end_icon)).perform(click())
-        //    Then      I see the content of the passphrase field in <output format>
-        //              |initial text | output format |
-        //              |hidden text  | plain text |
-        //              |plain text   | hidden text |
-        onView(withId(CoreUiR.id.input)).check(matches(not(isTextHidden())))
-        onView(withId(MaterialR.id.text_input_end_icon)).perform(click())
-        onView(withText(managedAccountIntentCreator.getUsername())).check(matches(isDisplayed()))
+        composeTestRule.onNodeWithTag(Auth.PASSPHRASE_INPUT).performTextReplacement(PREVIEW_PASSPHRASE)
+        composeTestRule
+            .onNodeWithTag(PasswordField.VISIBILITY_TOGGLE, useUnmergedTree = true)
+            .performClick()
+        composeTestRule.onNodeWithTag(Auth.PASSPHRASE_INPUT).assertTextEquals(PREVIEW_PASSPHRASE)
     }
 
-    //    https://passbolt.testrail.io/index.php?/cases/view/2354
+    /**  [As a mobile user I can see a feedback message if I entered the wrong passphrase](https://passbolt.testrail.io/index.php?/cases/view/2354)
+     *
+     *      Given   I am on the "Enter your passphrase" page
+     *      When    I submit a wrong passphrase
+     *      Then    I see a toast notification with error message
+     *      And     the toast is at the bottom of the screen (sidenote: colors and positions aren't accessible in the semantics tree)
+     *      And     the toast is in red
+     *      And     the input and label are still in the same colours
+     *      And     the message says "Incorrect passphrase or decryption error. Please try again."
+     */
     @Test
     fun asAMobileUserICanSeeAFeedbackMessageIfIEnteredTheWrongPassphrase() {
-        //    Given     I am on the “Enter your passphrase" page
-        //    When      I submit a wrong passphrase
-//        onView(withId(CoreUiR.id.input)).perform(typeText("wrongPass1!@\n"))
-//        onView(withId(AuthenticationR.id.authButton)).perform(click())
-//        //    Then      I see a toast notification with error message
-//        //    And       the toast is at the bottom of the screen #Not automated
-//        onView(withText(LocalizationR.string.auth_enter_passphrase))
-//            .inRoot(hasToast())
-//            .check(matches(isDisplayed()))
-//        //    And       the toast is in red #Not automated
-//        //    And       the input and label are still in the same colors
-//        onView(withId(R.id.titleLabel)).check(matches(hasTextColor(CoreUiR.color.text_primary)))
-//        onView(
-//            withId(CoreUiR.id.input),
-//        ).check(matches(hasTextColor(com.google.android.gms.base.R.color.common_google_signin_btn_text_light_pressed)))
-//        //    And       the message says "Incorrect passphrase or decryption error. Please try again."
-//        onView(withText("Incorrect passphrase or decryption error. Please try again."))
-//            .inRoot(hasToast())
-//            .check(matches(isDisplayed()))
+        composeTestRule.onNodeWithTag(Auth.PASSPHRASE_INPUT).performTextReplacement("wrongPass1!@")
+        composeTestRule.onNodeWithTag(Auth.SIGN_IN_BUTTON).performClick()
+        composeTestRule.onNodeWithText(getString(LocalizationR.string.auth_incorrect_passphrase)).assertIsDisplayed()
     }
 
-    //    https://passbolt.testrail.io/index.php?/cases/view/2352
+    /**  [As a mobile user I can get some help if I forgot my passphrase](https://passbolt.testrail.io/index.php?/cases/view/2352)
+     *
+     *      Given   I am on the "Enter your passphrase" page
+     *      When    I click the "forgot my passphrase" link
+     *      Then    I see a dialog with a help
+     *      And     help text says the setup process can't be completed without a passphrase
+     *      And     I see a message telling me to contact my administrator
+     *      And     a "Got it" button to close the dialog is presented
+     *      And     a "Got it" button is clickable
+     */
     @Test
     fun asAMobileUserICanGetSomeHelpIfIForgotMyPassphrase() {
-        //    Given     I am on the "Enter your passphrase" page
-        //    When      I click the "forgot my passphrase" link
-        onView(withId(AuthenticationR.id.forgotPasswordButton)).perform(click())
-        //    Then      I see a dialog with a help
-        onView(withId(androidx.appcompat.R.id.parentPanel)).check(matches(isDisplayed()))
-        //    And       help text says the setup process can't be completed without a passphrase
-        onView(withId(androidx.appcompat.R.id.alertTitle)).check(matches(isDisplayed()))
-        //    And        I see a message telling me to contact my administrator
-        onView(withId(android.R.id.message)).check(matches(isDisplayed()))
-        //    And       a “Got it” button to close the dialog is presented
-        //    And       a “Got it” button is clickable
-        onView(withId(android.R.id.button1))
-            .check(matches(isDisplayed()))
-            .check(matches(isClickable()))
+        composeTestRule.onNodeWithText(getString(LocalizationR.string.auth_forgot_password_button)).performClick()
+        composeTestRule.onNodeWithText(getString(LocalizationR.string.auth_forgot_password_title)).assertIsDisplayed()
+        composeTestRule.onNodeWithText(getString(LocalizationR.string.auth_forgot_password_message)).assertIsDisplayed()
+        composeTestRule
+            .onNodeWithText(getString(LocalizationR.string.got_it))
+            .assertIsDisplayed()
+            .assertIsEnabled()
+    }
+
+    private companion object {
+        private const val PREVIEW_PASSPHRASE = "SomeRandomText"
     }
 }
