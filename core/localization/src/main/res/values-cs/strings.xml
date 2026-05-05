@@ -28,7 +28,6 @@
     <string name="shared_with">Sdíleno s</string>
     <string name="location">Umístění</string>
     <string name="content_not_available">Obsah již není k dispozici</string>
-    <string name="consent">Souhlasím</string>
     <string name="name_suspended">%s (pozastaveno)</string>
     <string name="name_expired">%s (vypršelo)</string>
     <string name="proceed">Pokračujte</string>
@@ -182,12 +181,10 @@
     <string name="autofill_service_name">Passbolt Autofill</string>
     <string name="dialog_encourage_autofill_header">Přihlaste se do oblíbených aplikací během 3 sekund!</string>
     <string name="dialog_autofill_header">Autofill</string>
-    <string name="dialog_encourage_autofill_accessibility_description">Chcete-li povolit automatické vyplňování, musíte přejít do nastavení zařízení. Umístění těchto nastavení se může lišit v závislosti na výrobci zařízení a verzi Androidu.</string>
     <string name="dialog_encourage_autofill_accessibility_samsung">Samsung</string>
     <string name="dialog_encourage_autofill_accessibility_xiaomi">Xiaomi</string>
     <string name="dialog_encourage_autofill_accessibility_huawei">Huawei</string>
     <string name="dialog_encourage_autofill_accessibility_other">Jiné</string>
-    <string name="dialog_encourage_autofill_accessibility_title">Potřebujeme vaše oprávnění k vyplnění přihlášení</string>
     <string name="dialog_encourage_autofill_go_to_settings">Přejít do nastavení</string>
     <string name="dialog_encourage_autofill_service_header">Povolit automatické vyplňování pro většinu aplikací</string>
     <string name="dialog_encourage_autofill_service_description">Na obrazovce nastavení systému Android vyberte Passbolt, zapněte přepínač a stiskněte tlačítko OK.
@@ -216,7 +213,6 @@
     <string name="autofill_service_enable_overlay">Povolit oprávnění pro překrytí</string>
     <string name="autofill_service_overlay_description"><![CDATA[Automatické vyplňování uživatelských jmen a hesel pro Android webové prohlížeče. Povolte oprávnění "Vykreslit přes jiné aplikace" pro Passbolt Automatické vyplňování]]></string>
     <string name="autofill_service_enable_service">Povolit automatické vyplňování pro většinu aplikací</string>
-    <string name="autofill_service_enable_service_description"><![CDATA[Automatické vyplňování uživatelských jmen a hesel pro Android aplikace]]></string>
     <string name="autofill_dropdown_select">Vybrat z Passboltu</string>
     <string name="autofill_dropdown_fill">Vyplnit pomocí Passboltu</string>
     <string name="autofill_resources_create">Vytvořit&amp;vyplnit</string>
@@ -437,8 +433,6 @@
     <string name="create_folder_name_validation">Název složky nemůže být prázdný</string>
     <string name="create_folder_error_format">Složku nelze vytvořit. %s</string>
     <string name="share_folder_error_format">Složku nelze sdílet. %s</string>
-    <string name="dialog_accessibility_consent_title">Informace o službách přístupnosti</string>
-    <string name="dialog_accessibility_consent_message">Používáme službu usnadnění přístupu k poskytování další podpory při vyplňování hesel ve webových prohlížečích, které neimplementují nativní automatické vyplňování Androidu nebo výrobce telefonů, kteří je deaktivují. Udělte prosím oprávnění, pokud ho chcete povolit.</string>
     <string name="import_profile_title">Importovat váš účet</string>
     <string name="import_profile_user_id">ID uživatele</string>
     <string name="import_profile_account_url">URL účtu</string>

@@ -28,7 +28,6 @@
     <string name="shared_with">共享给</string>
     <string name="location">位置</string>
     <string name="content_not_available">内容不再可用</string>
-    <string name="consent">我接受</string>
     <string name="name_suspended">%s (已暂停)</string>
     <string name="name_expired">%s (已过期)</string>
     <string name="proceed">继续</string>
@@ -182,12 +181,10 @@
     <string name="autofill_service_name">Passbolt 自动填充</string>
     <string name="dialog_encourage_autofill_header">在 3 秒内登录您最喜欢的应用！</string>
     <string name="dialog_autofill_header">自动填充</string>
-    <string name="dialog_encourage_autofill_accessibility_description">要启用自动填充，您需要前往您的设备设置。这些设置的位置可能因您的设备制造商和安卓版本而不同。</string>
     <string name="dialog_encourage_autofill_accessibility_samsung">三星</string>
     <string name="dialog_encourage_autofill_accessibility_xiaomi">小米</string>
     <string name="dialog_encourage_autofill_accessibility_huawei">华为</string>
     <string name="dialog_encourage_autofill_accessibility_other">其他</string>
-    <string name="dialog_encourage_autofill_accessibility_title">我们需要您的权限才能填写登录</string>
     <string name="dialog_encourage_autofill_go_to_settings">转到设置</string>
     <string name="dialog_encourage_autofill_service_header">对大多数应用启用自动填充</string>
     <string name="dialog_encourage_autofill_service_description">在 Android 设置屏幕上，选择密码，开启开关并按 OK。
@@ -216,7 +213,6 @@
     <string name="autofill_service_enable_overlay">启用覆盖权限</string>
     <string name="autofill_service_overlay_description"><![CDATA[Android 网络浏览器的自动填充用户名和密码。请启用“在其他应用上绘制”权限以便自动填充密码]]></string>
     <string name="autofill_service_enable_service">对大多数应用启用自动填充</string>
-    <string name="autofill_service_enable_service_description"><![CDATA[Android 应用程序的自动填充用户名和密码]]></string>
     <string name="autofill_dropdown_select">从 Passbolt 中选择密码记录</string>
     <string name="autofill_dropdown_fill">用 Passbolt 的密码记录填充</string>
     <string name="autofill_resources_create">创建&amp;填充</string>
@@ -437,8 +433,6 @@
     <string name="create_folder_name_validation">文件夹名称不能为空</string>
     <string name="create_folder_error_format">无法创建文件夹。 %s</string>
     <string name="share_folder_error_format">无法共享文件夹。 %s</string>
-    <string name="dialog_accessibility_consent_title">辅助功能服务披露</string>
-    <string name="dialog_accessibility_consent_message">我们使用无障碍服务来提供额外的支持，在没有实现Android原生自动填充功能的web浏览器或禁用它的手机制造商中填充密码。如果您想启用它，请授予该权限。</string>
     <string name="import_profile_title">导入您的账户</string>
     <string name="import_profile_user_id">用户 ID</string>
     <string name="import_profile_account_url">账户 URL</string>

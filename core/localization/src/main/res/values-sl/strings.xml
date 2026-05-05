@@ -28,7 +28,6 @@
     <string name="shared_with">V skupni rabi z</string>
     <string name="location">Lokacija</string>
     <string name="content_not_available">Vsebina ni več na voljo</string>
-    <string name="consent">Soglašam</string>
     <string name="name_suspended">%s (suspendiran)</string>
     <string name="name_expired">%s (potekel)</string>
     <string name="proceed">Nadaljuj</string>
@@ -181,12 +180,10 @@
     <string name="autofill_service_name">Passbolt Autofill</string>
     <string name="dialog_encourage_autofill_header">Prijavite se v svoje priljubljene aplikacije v 3 sekundah!</string>
     <string name="dialog_autofill_header">Autofill</string>
-    <string name="dialog_encourage_autofill_accessibility_description">Za omogočanje samodejnega polnjenja morate iti v nastavitve vaše naprave. Mesto teh nastavitev se lahko razlikuje glede na proizvajalca vaše naprave in različico Androida.</string>
     <string name="dialog_encourage_autofill_accessibility_samsung">Samsung</string>
     <string name="dialog_encourage_autofill_accessibility_xiaomi">Xiaomi</string>
     <string name="dialog_encourage_autofill_accessibility_huawei">Huawei</string>
     <string name="dialog_encourage_autofill_accessibility_other">Drugo</string>
-    <string name="dialog_encourage_autofill_accessibility_title">Za polnjenje prijav potrebujemo vaše dovoljenje</string>
     <string name="dialog_encourage_autofill_go_to_settings">Pojdite v nastavitve</string>
     <string name="dialog_encourage_autofill_service_header">Omogoči samodejno polnjenje za večino aplikacij</string>
     <string name="dialog_encourage_autofill_service_description">Na zaslonu nastavitev Android izberite Passbolt, vklopite stikalo in pritisnite OK.
@@ -214,7 +211,6 @@ ali preverite specifičen vodnik za vašo napravo:</string>
     <string name="autofill_service_enable_overlay">Omogoči dovoljenje za prekrivanje</string>
     <string name="autofill_service_overlay_description"><![CDATA[Samodejno polnjenje uporabniških imen & gesel za spletne brskalnike Android. Prosimo omogočite dovoljenje ‘Prekrivanje drugih aplikacij’ za Passbolt Autofill]]></string>
     <string name="autofill_service_enable_service">Omogoči samodejno izpolnjevanje za večino aplikacij</string>
-    <string name="autofill_service_enable_service_description"><![CDATA[Samodejno izpolnjevanje uporabniških imen & gesel za aplikacije Android]]></string>
     <string name="autofill_dropdown_select">Izberite iz Passbolt</string>
     <string name="autofill_dropdown_fill">Zapolnite s Passbolt</string>
     <string name="autofill_resources_create">Ustvari&amp;zapolni</string>
@@ -435,8 +431,6 @@ ali preverite specifičen vodnik za vašo napravo:</string>
     <string name="create_folder_name_validation">Ime mape ne more biti prazno</string>
     <string name="create_folder_error_format">Ni bilo mogoče ustvariti mape. %s</string>
     <string name="share_folder_error_format">Ni bilo mogoče deliti mape. %s</string>
-    <string name="dialog_accessibility_consent_title">Razkritje storitve dostopnosti</string>
-    <string name="dialog_accessibility_consent_message">Uporabljamo storitev dostopnosti za zagotavljanje dodatne podpore za izpolnjevanje gesel v spletnih brskalnikih, ki ne implementirajo avtentikacije Android ali proizvajalci telefonov, ki jo onemogočijo. Prosimo, podelite dovoljenje, če želite to omogočiti.</string>
     <string name="import_profile_title">Uvozite svoj račun</string>
     <string name="import_profile_user_id">ID uporabnika</string>
     <string name="import_profile_account_url">URL računa</string>

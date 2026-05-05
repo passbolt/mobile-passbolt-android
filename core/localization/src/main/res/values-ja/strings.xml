@@ -28,7 +28,6 @@
     <string name="shared_with">共有相手</string>
     <string name="location">場所</string>
     <string name="content_not_available">コンテンツはもう利用できません</string>
-    <string name="consent">同意します</string>
     <string name="name_suspended">%s (停止中)</string>
     <string name="name_expired">%s (期限切れ)</string>
     <string name="proceed">続行</string>
@@ -181,12 +180,10 @@
     <string name="autofill_service_name">パスボルト自動入力</string>
     <string name="dialog_encourage_autofill_header">お気に入りのアプリに <b>3</b> 秒でログインしよう！</string>
     <string name="dialog_autofill_header">自動入力</string>
-    <string name="dialog_encourage_autofill_accessibility_description">自動入力を有効にするには、端末の設定に移動する必要があります。設定画面の場所はデバイスメーカーやAndroidバージョンによって異なる場合があります。</string>
     <string name="dialog_encourage_autofill_accessibility_samsung">Samsung（サムスン）</string>
     <string name="dialog_encourage_autofill_accessibility_xiaomi">Xiaomi（シャオミ）</string>
     <string name="dialog_encourage_autofill_accessibility_huawei">Huawei（ファーウェイ）</string>
     <string name="dialog_encourage_autofill_accessibility_other">その他</string>
-    <string name="dialog_encourage_autofill_accessibility_title">ログイン情報を入力する許可が必要です</string>
     <string name="dialog_encourage_autofill_go_to_settings">設定に移動</string>
     <string name="dialog_encourage_autofill_service_header">ほとんどのアプリで自動入力を有効にする</string>
     <string name="dialog_encourage_autofill_service_description">Androidの設定画面で「パスボルト」を選択し、トグルをオンにして「OK」を押してください。\n    またはデバイス別のガイドを確認してください：</string>
@@ -212,7 +209,6 @@
     <string name="autofill_service_enable_overlay">オーバーレイ権限を有効にする</string>
     <string name="autofill_service_overlay_description"><![CDATA[Androidウェブブラウザでユーザー名とパスワードを自動入力します。パスボルト自動入力に「他のアプリの上に重ねて表示」の権限を付与してください]]></string>
     <string name="autofill_service_enable_service">ほとんどのアプリで自動入力を有効にする</string>
-    <string name="autofill_service_enable_service_description"><![CDATA[Androidアプリでユーザー名とパスワードを自動入力します]]></string>
     <string name="autofill_dropdown_select">Passboltから選択</string>
     <string name="autofill_dropdown_fill">Passboltで入力</string>
     <string name="autofill_resources_create">作成&amp;入力</string>
@@ -433,8 +429,6 @@
     <string name="create_folder_name_validation">フォルダ名は空にできません</string>
     <string name="create_folder_error_format">フォルダを作成できませんでした。%s</string>
     <string name="share_folder_error_format">フォルダを共有できませんでした。%s</string>
-    <string name="dialog_accessibility_consent_title">アクセシビリティサービスに関する告知</string>
-    <string name="dialog_accessibility_consent_message">ウェブブラウザがAndroidネイティブの自動入力に対応していない場合や、メーカーが機能を無効化している場合に備えてアクセシビリティサービスを使用しています。有効にする場合はパーミッションを付与してください。</string>
     <string name="import_profile_title">アカウントをインポート</string>
     <string name="import_profile_user_id">ユーザーID</string>
     <string name="import_profile_account_url">アカウントURL</string>

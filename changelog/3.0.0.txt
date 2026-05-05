@@ -1,4 +1,4 @@
-# Passbolt 3.0.0-51 Android app release notes
+# Passbolt 3.0.0-52 Android app release notes
 
 ## Added
 - MOB-3491: Add folders fetch using pagination
@@ -24,6 +24,7 @@
 - MOB-3845: Add navigationPadding in metadata key change dialogs
 - MOB-3348: Fix crash on face recognition fail due to low conditions
 - MOB-3836: Fix wrong padding on confirm buttons
+- MOB-4236: Update accessibility service disclosure to comply with Play Store policy
 
 ## Maintenance
 - MOB-3584: Migrate authentication to MVI

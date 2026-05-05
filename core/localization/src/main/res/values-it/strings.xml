@@ -28,7 +28,6 @@
     <string name="shared_with">Condiviso con</string>
     <string name="location">Posizione</string>
     <string name="content_not_available">Il contenuto non è più disponibile</string>
-    <string name="consent">Acconsento</string>
     <string name="name_suspended">%s (sospeso)</string>
     <string name="name_expired">%s (scaduto)</string>
     <string name="proceed">Prosegui</string>
@@ -182,12 +181,10 @@
     <string name="autofill_service_name">Compilazione automatica di Passbolt</string>
     <string name="dialog_encourage_autofill_header">Accedi alle tue app preferite in 3 secondi!</string>
     <string name="dialog_autofill_header">Compilazione automatica</string>
-    <string name="dialog_encourage_autofill_accessibility_description">Per abilitare la compilazione automatica è necessario andare alle impostazioni del dispositivo. La posizione di tali impostazioni può variare a seconda del produttore del dispositivo e della versione Android.</string>
     <string name="dialog_encourage_autofill_accessibility_samsung">Samsung</string>
     <string name="dialog_encourage_autofill_accessibility_xiaomi">Xiaomi</string>
     <string name="dialog_encourage_autofill_accessibility_huawei">Huawei</string>
     <string name="dialog_encourage_autofill_accessibility_other">Altro</string>
-    <string name="dialog_encourage_autofill_accessibility_title">Abbiamo bisogno del tuo permesso per compilare i login</string>
     <string name="dialog_encourage_autofill_go_to_settings">Vai alle impostazioni</string>
     <string name="dialog_encourage_autofill_service_header">Abilita la compilazione automatica per la maggior parte delle app</string>
     <string name="dialog_encourage_autofill_service_description">Nella schermata delle impostazioni di Android, selezionare Passbolt, attivare l\'interruttore e premere OK.
@@ -214,7 +211,6 @@
     <string name="autofill_service_enable_overlay">Abilita il permesso di sovrapposizione</string>
     <string name="autofill_service_overlay_description"><![CDATA[Compilazione automatica username & password per browser web Android. Si prega di abilitare l\'autorizzazione "Mostra sopra altre app" per Compilazione automatica di Passbolt]]></string>
     <string name="autofill_service_enable_service">Abilita la compilazione automatica per la maggior parte delle applicazioni</string>
-    <string name="autofill_service_enable_service_description"><![CDATA[Compilazione automatica username & password per applicazioni Android]]></string>
     <string name="autofill_dropdown_select">Seleziona da Passbolt</string>
     <string name="autofill_dropdown_fill">Compila con Passbolt</string>
     <string name="autofill_resources_create">Crea e compila</string>
@@ -438,8 +434,6 @@
     <string name="create_folder_error_format">Impossibile creare la cartella. %s</string>
     <string name="enter_folder_name">Enter folder name</string>
     <string name="share_folder_error_format">Impossibile condividere la cartella. %s</string>
-    <string name="dialog_accessibility_consent_title">Informativa sul servizio di accessibilità</string>
-    <string name="dialog_accessibility_consent_message">Utilizziamo il servizio di accessibilità per fornire un supporto aggiuntivo nella compilazione delle password nei browser che non implementano il sistema nativo Android di compilazione automatica, o con i produttori di telefoni che lo disattivano. Per attivarlo, concedere l\'autorizzazione.</string>
     <string name="import_profile_title">Importa il tuo account</string>
     <string name="import_profile_user_id">ID Utente</string>
     <string name="import_profile_account_url">URL dell\'account</string>

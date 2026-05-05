@@ -28,7 +28,6 @@
     <string name="shared_with">Partagé avec</string>
     <string name="location">Emplacement</string>
     <string name="content_not_available">Le contenu n\'est plus disponible</string>
-    <string name="consent">Je donne mon consentement</string>
     <string name="name_suspended">%s (suspendu)</string>
     <string name="name_expired">%s (expiré)</string>
     <string name="proceed">Continuez</string>
@@ -182,12 +181,10 @@
     <string name="autofill_service_name">Passbolt Auto-remplissage</string>
     <string name="dialog_encourage_autofill_header">Connectez-vous à vos applications préférées en quelques secondes!</string>
     <string name="dialog_autofill_header">Auto-remplissage</string>
-    <string name="dialog_encourage_autofill_accessibility_description">Pour activer l\'auto-remplissage, vous devez aller dans les paramètres de votre appareil. La localisation de ces paramètres peut varier selon le fabricant de votre appareil et la version d\'Android.</string>
     <string name="dialog_encourage_autofill_accessibility_samsung">Samsung</string>
     <string name="dialog_encourage_autofill_accessibility_xiaomi">Xiaomi</string>
     <string name="dialog_encourage_autofill_accessibility_huawei">Huawei</string>
     <string name="dialog_encourage_autofill_accessibility_other">Autre</string>
-    <string name="dialog_encourage_autofill_accessibility_title">Nous avons besoin de votre autorisation pour remplir les identifiants</string>
     <string name="dialog_encourage_autofill_go_to_settings">Aller aux paramètres</string>
     <string name="dialog_encourage_autofill_service_header">Activer l\'auto-remplissage pour la plupart des applications</string>
     <string name="dialog_encourage_autofill_service_description">Sur l\'écran des paramètres Android, sélectionnez Passbolt, activez l\'option et appuyez sur OK.
@@ -216,7 +213,6 @@
     <string name="autofill_service_enable_overlay">Activer la permission de superposition</string>
     <string name="autofill_service_overlay_description"><![CDATA[Remplissage automatique des noms d\'utilisateur et des mots de passe pour les navigateurs web Android. Veuillez activer la permission « Se superposer aux autres applications » pour le remplissage automatique de passbolt]]></string>
     <string name="autofill_service_enable_service">Activer le remplissage automatique pour la plupart des applications</string>
-    <string name="autofill_service_enable_service_description"><![CDATA[Remplissage automatique des noms d\'utilisateur et des mots de passe pour les applications Android]]></string>
     <string name="autofill_dropdown_select">Sélectionner dans passbolt</string>
     <string name="autofill_dropdown_fill">Remplir avec passbolt</string>
     <string name="autofill_resources_create">Créer&amp;remplir</string>
@@ -437,8 +433,6 @@
     <string name="create_folder_name_validation">Le nom du dossier ne peut pas être vide</string>
     <string name="create_folder_error_format">Impossible de créer le dossier. %s</string>
     <string name="share_folder_error_format">Impossible de partager le dossier. %s</string>
-    <string name="dialog_accessibility_consent_title">Divulgation du service d\'accessibilité</string>
-    <string name="dialog_accessibility_consent_message">Nous utilisons le service d\'accessibilité pour fournir un support supplémentaire pour le remplissage des mots de passe à l\'intérieur des navigateurs Web qui n\'implémentent pas le remplissage automatique natif d\'Android ou les fabricants de téléphones qui le désactivent. Veuillez accorder la permission si vous souhaitez l\'activer.</string>
     <string name="import_profile_title">Importez votre compte</string>
     <string name="import_profile_user_id">Identifiant utilisateur</string>
     <string name="import_profile_account_url">Adresse du compte</string>

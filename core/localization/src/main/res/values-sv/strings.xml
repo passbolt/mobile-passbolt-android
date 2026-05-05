@@ -28,7 +28,6 @@
     <string name="shared_with">Delade med</string>
     <string name="location">Plats</string>
     <string name="content_not_available">Innehållet är inte längre tillgängligt</string>
-    <string name="consent">Jag samtycker</string>
     <string name="name_suspended">%s (avstängd)</string>
     <string name="name_expired">%s (utgånget)</string>
     <string name="proceed">Fortsätt</string>
@@ -182,12 +181,10 @@ Kontakta din administratör för mer information.</string>
     <string name="autofill_service_name">Passbolt Autofyll</string>
     <string name="dialog_encourage_autofill_header">Logga in i dina favoritappar på 3 sekunder!</string>
     <string name="dialog_autofill_header">Autofyll</string>
-    <string name="dialog_encourage_autofill_accessibility_description">För att aktivera autofyll måste du gå till enhetens inställningar. Placeringen av dessa inställningar kan variera beroende på tillverkare och Android-version.</string>
     <string name="dialog_encourage_autofill_accessibility_samsung">Samsung</string>
     <string name="dialog_encourage_autofill_accessibility_xiaomi">Xiaomi</string>
     <string name="dialog_encourage_autofill_accessibility_huawei">Huawei</string>
     <string name="dialog_encourage_autofill_accessibility_other">Annat</string>
-    <string name="dialog_encourage_autofill_accessibility_title">Vi behöver ditt tillstånd för att fylla i inloggningar</string>
     <string name="dialog_encourage_autofill_go_to_settings">Gå till inställningar</string>
     <string name="dialog_encourage_autofill_service_header">Aktivera autofyll för de flesta appar</string>
     <string name="dialog_encourage_autofill_service_description">I Android-inställningarna, välj Passbolt, slå på växlingen och tryck på OK.
@@ -216,7 +213,6 @@ den aktiverade autofyll-funktionen att föreslå att fylla i dina tidigare tilla
     <string name="autofill_service_enable_overlay">Aktivera overlay-behörighet</string>
     <string name="autofill_service_overlay_description"><![CDATA[Autofyll användarnamn och lösenord i Androids webbläsare. Vänligen aktivera behörigheten ”Rita över andra appar” för Passbolt Autofyll]]></string>
     <string name="autofill_service_enable_service">Aktivera autofyll för de flesta appar</string>
-    <string name="autofill_service_enable_service_description"><![CDATA[Autofyll användarnamn och lösenord i Android-appar]]></string>
     <string name="autofill_dropdown_select">Välj från Passbolt</string>
     <string name="autofill_dropdown_fill">Fyll i med Passbolt</string>
     <string name="autofill_resources_create">Skapa&amp;fyll i</string>
@@ -437,8 +433,6 @@ den aktiverade autofyll-funktionen att föreslå att fylla i dina tidigare tilla
     <string name="create_folder_name_validation">Mappnamnet kan inte vara tomt</string>
     <string name="create_folder_error_format">Kunde inte skapa mapp. %s</string>
     <string name="share_folder_error_format">Kunde inte dela mapp. %s</string>
-    <string name="dialog_accessibility_consent_title">Information om Tillgänglighetstjänst</string>
-    <string name="dialog_accessibility_consent_message">Vi använder tillgänglighetstjänst för att ge ytterligare stöd för att fylla i lösenord i webbläsare som inte implementerar Androids inbyggda autofyll eller telefoner vars tillverkare inaktiverar den. Bevilja behörigheten om du vill aktivera den.</string>
     <string name="import_profile_title">Importera ditt konto</string>
     <string name="import_profile_user_id">Användar-ID</string>
     <string name="import_profile_account_url">Kontots URL</string>
