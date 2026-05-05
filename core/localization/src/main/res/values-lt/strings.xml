@@ -28,7 +28,6 @@
     <string name="shared_with">Pasidalinta su</string>
     <string name="location">Vieta</string>
     <string name="content_not_available">Turinys nebepasiekiamas</string>
-    <string name="consent">Sutinku</string>
     <string name="name_suspended">%s (sustabdyta)</string>
     <string name="name_expired">%s (pasibaigęs)</string>
     <string name="proceed">Tęsti</string>
@@ -182,12 +181,10 @@
     <string name="autofill_service_name">Passbolt automatinis pildymas</string>
     <string name="dialog_encourage_autofill_header">Prisijunkite prie mėgstamų programų per 3 sekundes!</string>
     <string name="dialog_autofill_header">Automatinis pildymas</string>
-    <string name="dialog_encourage_autofill_accessibility_description">Norint įjungti automatinį pildymą, jums reikia eiti į įrenginio nustatymus. Nustatymų vieta gali skirtis priklausomai nuo įrenginio gamintojo ir Android versijos.</string>
     <string name="dialog_encourage_autofill_accessibility_samsung">„Samsung“</string>
     <string name="dialog_encourage_autofill_accessibility_xiaomi">„Xiaomi“</string>
     <string name="dialog_encourage_autofill_accessibility_huawei">„Huawei“</string>
     <string name="dialog_encourage_autofill_accessibility_other">Kita</string>
-    <string name="dialog_encourage_autofill_accessibility_title">Mums reikia jūsų leidimo, kad galėtume pildyti prisijungimus</string>
     <string name="dialog_encourage_autofill_go_to_settings">Eiti į nustatymus</string>
     <string name="dialog_encourage_autofill_service_header">Įjunkite automatinį pildymą daugumai programų</string>
     <string name="dialog_encourage_autofill_service_description">Android nustatymų ekrane pasirinkite Passbolt, įjunkite jungiklį ir paspauskite Gerai.
@@ -215,7 +212,6 @@
     <string name="autofill_service_enable_overlay">Įjungti persidengimo leidimą</string>
     <string name="autofill_service_overlay_description"><![CDATA[Automatiškai pildyti vartotojo vardus ir slaptažodžius Android naršyklėse. Prašome įjungti „Rodyti virš kitų programų“ leidimą Passbolt Autofill]]></string>
     <string name="autofill_service_enable_service">Įjungti automatinį pildymą daugumai programų</string>
-    <string name="autofill_service_enable_service_description"><![CDATA[Automatiškai pildyti vartotojo vardus ir slaptažodžius Android programose]]></string>
     <string name="autofill_dropdown_select">Pasirinkti iš Passbolt</string>
     <string name="autofill_dropdown_fill">Užpildyti su Passbolt</string>
     <string name="autofill_resources_create">Sukurti&amp;užpildyti</string>
@@ -436,8 +432,6 @@
     <string name="create_folder_name_validation">Aplanko pavadinimas negali būti tuščias</string>
     <string name="create_folder_error_format">Nepavyko sukurti aplanko. %s</string>
     <string name="share_folder_error_format">Nepavyko bendrinti aplanko. %s</string>
-    <string name="dialog_accessibility_consent_title">Prieinamumo tarnybos atskleidimas</string>
-    <string name="dialog_accessibility_consent_message">Mes naudojame prieinamumo tarnybą, kad galėtume teikti papildomą palaikymą pildant slaptažodžius naršyklėse, kurios nenaudoja gimtosios Android automatinio pildymo, arba telefonų gamintojams, kurie jį išjungia. Prašome suteikti leidimą, jei norite ją įjungti.</string>
     <string name="import_profile_title">Importuoti paskyrą</string>
     <string name="import_profile_user_id">Vartotojo ID</string>
     <string name="import_profile_account_url">Paskyros URL</string>

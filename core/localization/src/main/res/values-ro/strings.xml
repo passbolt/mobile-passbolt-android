@@ -28,7 +28,6 @@
     <string name="shared_with">Partajată cu</string>
     <string name="location">Locaţie</string>
     <string name="content_not_available">Conținutul nu mai este disponibil</string>
-    <string name="consent">Sunt de acord</string>
     <string name="name_suspended">%s (suspendat)</string>
     <string name="name_expired">%s (expirat)</string>
     <string name="proceed">Continuați</string>
@@ -182,12 +181,10 @@
     <string name="autofill_service_name">Autocompletare Passbolt</string>
     <string name="dialog_encourage_autofill_header">Conectează-te la aplicațiile tale preferate în 3 secunde!</string>
     <string name="dialog_autofill_header">Autocompletare</string>
-    <string name="dialog_encourage_autofill_accessibility_description">Pentru a activa autocompletarea trebuie să accesați setările dispozitivului. Locația acestor setări poate fi diferită în funcție de producătorul dispozitivului și de versiunea Android.</string>
     <string name="dialog_encourage_autofill_accessibility_samsung">Samsung</string>
     <string name="dialog_encourage_autofill_accessibility_xiaomi">Xiaomi</string>
     <string name="dialog_encourage_autofill_accessibility_huawei">Huawei</string>
     <string name="dialog_encourage_autofill_accessibility_other">Altele</string>
-    <string name="dialog_encourage_autofill_accessibility_title">Avem nevoie de permisiunea dvs. pentru a completa autentificările</string>
     <string name="dialog_encourage_autofill_go_to_settings">Accesați setările</string>
     <string name="dialog_encourage_autofill_service_header">Activează autocompletarea pentru majoritatea aplicațiilor</string>
     <string name="dialog_encourage_autofill_service_description">În ecranul de setări Android, selectați Passbolt, activați comutatorul și apăsați OK.
@@ -216,7 +213,6 @@
     <string name="autofill_service_enable_overlay">Activați permisiunea overlay</string>
     <string name="autofill_service_overlay_description"><![CDATA[Completare automată nume de utilizator și parole pentru browserele web Android. Vă rugăm să activați permisiunea ‘Desenează peste alte aplicații’ pentru completarea automată Passbolt]]></string>
     <string name="autofill_service_enable_service">Activează autocompletarea pentru majoritatea aplicațiilor</string>
-    <string name="autofill_service_enable_service_description"><![CDATA[Completează automat numele de utilizator și parolele pentru aplicațiile Android]]></string>
     <string name="autofill_dropdown_select">Selectaţi din Passbolt</string>
     <string name="autofill_dropdown_fill">Completează cu Passbolt</string>
     <string name="autofill_resources_create">Creați&amp;completați</string>
@@ -437,8 +433,6 @@
     <string name="create_folder_name_validation">Numele folderului nu poate fi gol</string>
     <string name="create_folder_error_format">Nu s-a putut crea folderul. %s</string>
     <string name="share_folder_error_format">Nu s-a putut partaja folderul. %s</string>
-    <string name="dialog_accessibility_consent_title">Informarea serviciului de accesibilitate</string>
-    <string name="dialog_accessibility_consent_message">Folosim serviciul de accesibilitate pentru a oferi suport suplimentar pentru completarea parolelor în browserele web ce nu implementează nativ auto-fill pentru Android sau pentru producătorii de telefoane care îl dezactivează. Vă rugăm să acordați permisiunea dacă doriți să o activați.</string>
     <string name="import_profile_title">Importați contul</string>
     <string name="import_profile_user_id">ID utilizator</string>
     <string name="import_profile_account_url">URL-ul contului</string>

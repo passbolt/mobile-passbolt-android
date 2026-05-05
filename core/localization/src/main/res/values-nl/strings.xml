@@ -28,7 +28,6 @@
     <string name="shared_with">Gedeeld met</string>
     <string name="location">Locatie</string>
     <string name="content_not_available">De inhoud is niet meer beschikbaar</string>
-    <string name="consent">Ik ga akkoord</string>
     <string name="name_suspended">%s (opgeschort)</string>
     <string name="name_expired">%s (verlopen)</string>
     <string name="proceed">Doorgaan</string>
@@ -182,12 +181,10 @@
     <string name="autofill_service_name">Passbolt Automatisch invullen</string>
     <string name="dialog_encourage_autofill_header">Log in bij je favoriete apps in 3 seconden!</string>
     <string name="dialog_autofill_header">Auto-aanvullen</string>
-    <string name="dialog_encourage_autofill_accessibility_description">Om auto-aanvullen in te schakelen, moet je naar de apparaatinstellingen gaan. De locatie van deze instellingen kan verschillen afhankelijk van de fabrikant van je apparaat en de Android-versie.</string>
     <string name="dialog_encourage_autofill_accessibility_samsung">Samsung</string>
     <string name="dialog_encourage_autofill_accessibility_xiaomi">Xiaomi</string>
     <string name="dialog_encourage_autofill_accessibility_huawei">Huawei</string>
     <string name="dialog_encourage_autofill_accessibility_other">Overig</string>
-    <string name="dialog_encourage_autofill_accessibility_title">We hebben je toestemming nodig om inloggegevens in te vullen</string>
     <string name="dialog_encourage_autofill_go_to_settings">Ga naar de instellingen</string>
     <string name="dialog_encourage_autofill_service_header">Schakel auto-aanvullen in voor de meeste apps</string>
     <string name="dialog_encourage_autofill_service_description">Selecteer in het Android-instellingsscherm Passbolt, schakel de schakelaar in en druk op OK.
@@ -216,7 +213,6 @@
     <string name="autofill_service_enable_overlay">Machtiging overlay inschakelen</string>
     <string name="autofill_service_overlay_description"><![CDATA[Auto-aanvullen van gebruikersnamen en wachtwoorden voor Android-browsers. Schakel svp \'Over andere apps weergeven\' in voor Passbolt Autofill]]></string>
     <string name="autofill_service_enable_service">Auto-aanvullen inschakelen voor de meeste apps</string>
-    <string name="autofill_service_enable_service_description"><![CDATA[Auto-aanvullen van gebruikersnamen en wachtwoorden voor Android-apps]]></string>
     <string name="autofill_dropdown_select">Selecteer uit Passbolt</string>
     <string name="autofill_dropdown_fill">Invullen met Passbolt</string>
     <string name="autofill_resources_create">Aanmaken&amp;invullen</string>
@@ -437,8 +433,6 @@
     <string name="create_folder_name_validation">Mapnaam mag niet leeg zijn</string>
     <string name="create_folder_error_format">Kon map niet aanmaken. %s</string>
     <string name="share_folder_error_format">Kon map niet delen. %s</string>
-    <string name="dialog_accessibility_consent_title">Openbaarmaking van toegankelijkheidsservice</string>
-    <string name="dialog_accessibility_consent_message">We gebruiken de toegankelijkheidsservice om extra ondersteuning te bieden bij het invullen van wachtwoorden binnen webbrowsers die de Android-native autofill niet implementeren of door telefoonfabrikanten die deze hebben uitgeschakeld. Verleen de machtiging als je deze wilt inschakelen.</string>
     <string name="import_profile_title">Je account importeren</string>
     <string name="import_profile_user_id">Gebruikers-ID</string>
     <string name="import_profile_account_url">Account-URL</string>

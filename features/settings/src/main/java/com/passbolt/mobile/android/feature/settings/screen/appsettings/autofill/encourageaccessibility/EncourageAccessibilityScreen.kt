@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -129,7 +130,16 @@ private fun EncourageAccessibilityScreen(
                 AlertDialog(
                     onDismissRequest = { onIntent(DismissEnableAccessibilityConsent) },
                     title = { Text(stringResource(LocalizationR.string.dialog_accessibility_consent_title)) },
-                    text = { Text(stringResource(LocalizationR.string.dialog_accessibility_consent_message)) },
+                    text = {
+                        Text(
+                            text = stringResource(LocalizationR.string.dialog_accessibility_consent_message),
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .heightIn(max = 480.dp)
+                                    .verticalScroll(rememberScrollState()),
+                        )
+                    },
                     confirmButton = {
                         TextButton(onClick = { onIntent(ConsentToEnableAccessibility) }) {
                             Text(stringResource(LocalizationR.string.consent))
