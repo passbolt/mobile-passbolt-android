@@ -28,7 +28,6 @@
     <string name="shared_with">Freigegeben für</string>
     <string name="location">Standort</string>
     <string name="content_not_available">Der Inhalt ist nicht mehr verfügbar</string>
-    <string name="consent">Ich stimme zu</string>
     <string name="name_suspended">%s (gesperrt)</string>
     <string name="name_expired">%s (abgelaufen)</string>
     <string name="proceed">Fortfahren</string>
@@ -182,12 +181,10 @@
     <string name="autofill_service_name">Passbolt Autofill</string>
     <string name="dialog_encourage_autofill_header">Melde dich in 3 Sekunden bei deinen Lieblings-Apps an!</string>
     <string name="dialog_autofill_header">Autofill</string>
-    <string name="dialog_encourage_autofill_accessibility_description">Um das Autofill zu aktivieren, müssen Sie zu Ihren Geräteeinstellungen wechseln. Der Standort dieser Einstellungen kann je nach Gerätehersteller und Android-Version variieren.</string>
     <string name="dialog_encourage_autofill_accessibility_samsung">Samsung</string>
     <string name="dialog_encourage_autofill_accessibility_xiaomi">Xiaomi</string>
     <string name="dialog_encourage_autofill_accessibility_huawei">Huawei</string>
     <string name="dialog_encourage_autofill_accessibility_other">Andere</string>
-    <string name="dialog_encourage_autofill_accessibility_title">Wir benötigen Ihre Erlaubnis zum Ausfüllen von Logins</string>
     <string name="dialog_encourage_autofill_go_to_settings">Zu den Einstellungen gehen</string>
     <string name="dialog_encourage_autofill_service_header">Automatisch ausfüllen für die meisten Anwendungen aktivieren</string>
     <string name="dialog_encourage_autofill_service_description">Wählen Sie auf dem Android-Einstellungsbildschirm Passbolt aus, schalten Sie den Schalter ein und drücken Sie OK.
@@ -216,7 +213,6 @@
     <string name="autofill_service_enable_overlay">Overlay-Erlaubnis einschalten</string>
     <string name="autofill_service_overlay_description"><![CDATA[Autofill-Benutzernamen & Passwörter für Android-Web-Browser. Bitte aktivieren Sie die "Über andere Apps ziehen" Berechtigung für Passbolt Autofill]]></string>
     <string name="autofill_service_enable_service">Automatischen Ausfüllen für die meisten Anwendungen aktivieren</string>
-    <string name="autofill_service_enable_service_description"><![CDATA[Automatisches Ausfüllen von Benutzernamen und Passwörtern für Android-Apps]]></string>
     <string name="autofill_dropdown_select">Wählen Sie Passbolt</string>
     <string name="autofill_dropdown_fill">Mit Passbolt befüllen</string>
     <string name="autofill_resources_create">Anlegen &amp; ausfüllen</string>
@@ -437,8 +433,6 @@
     <string name="create_folder_name_validation">Ordnername darf nicht leer sein</string>
     <string name="create_folder_error_format">Ordner konnte nicht erstellt werden. %s</string>
     <string name="share_folder_error_format">Ordner konnte nicht geteilt werden. %s</string>
-    <string name="dialog_accessibility_consent_title">Barrierefreiheitsdienst Offenlegung</string>
-    <string name="dialog_accessibility_consent_message">Wir verwenden den Barrierefreiheitsdienst, um zusätzliche Unterstützung für das Ausfüllen von Passwörtern in Webbrowsern bereitzustellen, die das native Android-Autofill nicht implementieren, oder Telefonhersteller, die es deaktivieren. Bitte erteilen Sie die Erlaubnis, wenn Sie sie aktivieren möchten.</string>
     <string name="import_profile_title">Konto importieren</string>
     <string name="import_profile_user_id">Benutzer-ID</string>
     <string name="import_profile_account_url">Konto-URL</string>

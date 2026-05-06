@@ -28,7 +28,6 @@
     <string name="shared_with">Compartilhado com</string>
     <string name="location">Locais</string>
     <string name="content_not_available">O conteúdo não está mais disponível</string>
-    <string name="consent">Estou de acordo</string>
     <string name="name_suspended">%s (suspenso)</string>
     <string name="name_expired">%s (expirado)</string>
     <string name="proceed">Prosseguir</string>
@@ -182,12 +181,10 @@
     <string name="autofill_service_name">Autocompletar Passbolt</string>
     <string name="dialog_encourage_autofill_header">Entre em seus aplicativos favoritos em 3 segundos!</string>
     <string name="dialog_autofill_header">Autocompletar</string>
-    <string name="dialog_encourage_autofill_accessibility_description">Para habilitar o preenchimento automático, você precisa ir às configurações do seu dispositivo. A localização dessas configurações pode ser diferente dependendo do fabricante do seu dispositivo e da versão do Android.</string>
     <string name="dialog_encourage_autofill_accessibility_samsung">Samsung</string>
     <string name="dialog_encourage_autofill_accessibility_xiaomi">Xiaomi</string>
     <string name="dialog_encourage_autofill_accessibility_huawei">Huawei</string>
     <string name="dialog_encourage_autofill_accessibility_other">Outros</string>
-    <string name="dialog_encourage_autofill_accessibility_title">Precisamos da sua permissão para preencher os logins</string>
     <string name="dialog_encourage_autofill_go_to_settings">Ir para Configurações</string>
     <string name="dialog_encourage_autofill_service_header">Habilitar preenchimento automático para a maioria dos apps</string>
     <string name="dialog_encourage_autofill_service_description">Na tela de configurações do Android, selecione Passbolt, ative o botão de alternância e pressione OK.
@@ -216,7 +213,6 @@
     <string name="autofill_service_enable_overlay">Ativar permissão de sobreposição</string>
     <string name="autofill_service_overlay_description"><![CDATA[Autopreencha usuários e senhas para navegadores web Android. Por favor, habilite a permissão \'Chamar sobre outros aplicativos\' para o preenchimento automático Passbolt]]></string>
     <string name="autofill_service_enable_service">Habilitar preenchimento automático para a maioria dos apps</string>
-    <string name="autofill_service_enable_service_description"><![CDATA[Preenchimento automático de usuários e senhas para apps Android]]></string>
     <string name="autofill_dropdown_select">Selecionar do Passbolt</string>
     <string name="autofill_dropdown_fill">Preencher com o Passbolt</string>
     <string name="autofill_resources_create">Criar e preencher</string>
@@ -437,8 +433,6 @@
     <string name="create_folder_name_validation">O nome da pasta não pode estar vazio</string>
     <string name="create_folder_error_format">Não foi possível criar a pasta. %s</string>
     <string name="share_folder_error_format">Não foi possível compartilhar a pasta. %s</string>
-    <string name="dialog_accessibility_consent_title">Divulgação do serviço de acessibilidade</string>
-    <string name="dialog_accessibility_consent_message">Usamos o serviço de acessibilidade para fornecer suporte adicional para o preenchimento de senhas dentro de navegadores web que não implementam o autopreenchimento nativo do Android ou fabricantes de telefones que o desativam. Por favor, conceda a permissão se você quiser habilitá-la.</string>
     <string name="import_profile_title">Importar sua conta</string>
     <string name="import_profile_user_id">ID de usuário</string>
     <string name="import_profile_account_url">URL da conta</string>

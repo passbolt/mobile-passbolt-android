@@ -28,7 +28,6 @@
     <string name="shared_with">공유 대상</string>
     <string name="location">위치</string>
     <string name="content_not_available">콘텐츠를 더 이상 사용할 수 없습니다.</string>
-    <string name="consent">동의</string>
     <string name="name_suspended">%s (중지됨)</string>
     <string name="name_expired">%s (만료됨)</string>
     <string name="proceed">진행</string>
@@ -182,12 +181,10 @@
     <string name="autofill_service_name">Passbolt 자동채우기</string>
     <string name="dialog_encourage_autofill_header">3초만에 즐겨찾는 앱으로 로그인하세요!</string>
     <string name="dialog_autofill_header">자동 채우기</string>
-    <string name="dialog_encourage_autofill_accessibility_description">자동 채우기를 활성화하려면 기기 설정으로 가야 합니다. 이러한 설정의 위치는 장치 제조업체 및 안드로이드 버전에 따라 다를 수 있습니다.</string>
     <string name="dialog_encourage_autofill_accessibility_samsung">삼성</string>
     <string name="dialog_encourage_autofill_accessibility_xiaomi">샤오미</string>
     <string name="dialog_encourage_autofill_accessibility_huawei">화웨이</string>
     <string name="dialog_encourage_autofill_accessibility_other">기타</string>
-    <string name="dialog_encourage_autofill_accessibility_title">로그인 정보를 입력하려면 사용자의 권한이 필요합니다.</string>
     <string name="dialog_encourage_autofill_go_to_settings">설정으로 이동</string>
     <string name="dialog_encourage_autofill_service_header">대부분의 앱에 대해 자동 채우기 사용</string>
     <string name="dialog_encourage_autofill_service_description">안드로이드 설정 화면에서 Passbolt를 선택하고 토글을 켠 다음 확인을 누릅니다.
@@ -216,7 +213,6 @@
     <string name="autofill_service_enable_overlay">오버레이 사용 권한 사용</string>
     <string name="autofill_service_overlay_description"><![CDATA[Android 웹 브라우저의 사용자 이름 및 비밀번호 자동 채우기. Passbolt 자동 채우기에 대한 \'다른 앱 위로 그리기\' 권한을 활성화하세요]]></string>
     <string name="autofill_service_enable_service">대부분의 앱에 대해 자동 채우기 사용</string>
-    <string name="autofill_service_enable_service_description"><![CDATA[Android 앱을 위한 사용자 이름과 비밀번호 자동 채우기]]></string>
     <string name="autofill_dropdown_select">Passbolt에서 선택</string>
     <string name="autofill_dropdown_fill">Passbolt로 채우기</string>
     <string name="autofill_resources_create">생성 &amp; 채우기</string>
@@ -437,8 +433,6 @@
     <string name="create_folder_name_validation">폴더 이름은 비워질수 없습니다.</string>
     <string name="create_folder_error_format">폴더를 생성할수 없습니다. %s</string>
     <string name="share_folder_error_format">폴더를 공유할수 없습니다. %s</string>
-    <string name="dialog_accessibility_consent_title">접근성 서비스 공개</string>
-    <string name="dialog_accessibility_consent_message">접근성 서비스를 사용하여 Android 기본 자동 채우기를 구현하지 않는 웹 브라우저나 이를 비활성화하는 휴대폰 제조업체에서 비밀번호 채우기에 대한 추가 지원을 제공합니다. 활성화하려면 권한을 부여하세요.</string>
     <string name="import_profile_title">계정 가져오기</string>
     <string name="import_profile_user_id">사용자 ID</string>
     <string name="import_profile_account_url">계정 URL</string>
