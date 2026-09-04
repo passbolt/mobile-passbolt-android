@@ -76,6 +76,39 @@ interface PaginatedResourcesDao : BaseDao<Resource> {
             "ON r.resourceId = rm.resourceId " +
             "INNER JOIN ResourceType rt " +
             "ON r.resourceTypeId = rt.resourceTypeId " +
+            "WHERE r.resourceTypeId IN(" +
+            "   SELECT resourceTypeId FROM ResourceType WHERE slug IN (:slugs)" +
+            ") " +
+            "AND (" +
+            "   :ftsQuery IS NULL OR (" +
+            "   EXISTS (SELECT 1 FROM ResourceMetadataFts WHERE ResourceMetadataFts MATCH :ftsQuery AND docid = rm.rowid) OR " +
+            "   EXISTS (" +
+            "       SELECT 1 FROM ResourceUriFts, ResourceUri " +
+            "       WHERE ResourceUriFts.docid = ResourceUri.rowid AND ResourceUriFts MATCH :ftsQuery " +
+            "       AND ResourceUri.resourceId = r.resourceId" +
+            "   ) OR " +
+            "   EXISTS (" +
+            "       SELECT 1 FROM TagFts, Tag, ResourceAndTagsCrossRef rTCR " +
+            "       WHERE TagFts.docid = Tag.rowid AND TagFts MATCH :ftsQuery " +
+            "       AND Tag.id = rTCR.tagId AND rTCR.resourceId = r.resourceId" +
+            "   )" +
+            ")) " +
+            "ORDER BY rm.name COLLATE NOCASE ASC, r.resourceId ASC",
+    )
+    fun getAllOrderedByNamePaginated(
+        slugs: Set<String>,
+        ftsQuery: String?,
+    ): PagingSource<Int, ResourceWithMetadata>
+
+    @Transaction
+    @Query(
+        "SELECT r.resourceId, r.folderId, r.expiry, r.favouriteId, r.modified, " +
+            "r.resourcePermission, r.resourceTypeId, rt.slug, r.metadataKeyId, r.metadataKeyType, rm.metadataJson " +
+            "FROM Resource r " +
+            "INNER JOIN ResourceMetadata rm " +
+            "ON r.resourceId = rm.resourceId " +
+            "INNER JOIN ResourceType rt " +
+            "ON r.resourceTypeId = rt.resourceTypeId " +
             "WHERE r.favouriteId IS NOT NULL AND r.resourceTypeId IN(" +
             "   SELECT resourceTypeId FROM ResourceType WHERE slug IN (:slugs)" +
             ") " +

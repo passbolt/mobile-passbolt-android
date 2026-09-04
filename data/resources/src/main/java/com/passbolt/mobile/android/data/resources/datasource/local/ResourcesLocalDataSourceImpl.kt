@@ -192,8 +192,9 @@ internal class ResourcesLocalDataSourceImpl(
                 val ftsQuery = querySanitizer.sanitize(searchQuery)
 
                 when (val viewType = homeDisplayView.toResourceDatabaseView()) {
-                    is ByModifiedDateDescending, is ByNameAscending ->
+                    is ByModifiedDateDescending ->
                         resourceDao.getAllOrderedByModifiedDatePaginated(slugs, ftsQuery)
+                    is ByNameAscending -> resourceDao.getAllOrderedByNamePaginated(slugs, ftsQuery)
                     is IsFavourite -> resourceDao.getFavouritesPaginated(slugs, ftsQuery)
                     is HasPermissions ->
                         resourceDao.getWithPermissionsPaginated(
