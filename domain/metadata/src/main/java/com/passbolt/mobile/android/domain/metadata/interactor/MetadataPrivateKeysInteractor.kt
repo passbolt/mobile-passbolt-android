@@ -59,10 +59,18 @@ class MetadataPrivateKeysInteractor(
     private val metadataPrivateKeysHelperInteractor: MetadataPrivateKeysHelperInteractor,
     private val metadataKeysInteractor: MetadataKeysInteractor,
 ) {
-    suspend fun verifyMetadataPrivateKey(): Output {
+    /**
+     * @param refreshFromServer whether to fetch and decrypt the metadata keys
+     * from the server first. Callers that have just done that themselves (the
+     * full data refresh) pass false to avoid a second round trip and a second
+     * PGP decryption of every metadata private key.
+     */
+    suspend fun verifyMetadataPrivateKey(refreshFromServer: Boolean = true): Output {
         Timber.d("Verifying metadata private key trust")
 
-        refreshMetadataKeysFromServer()
+        if (refreshFromServer) {
+            refreshMetadataKeysFromServer()
+        }
 
         val backendMetadataKey =
             getLocalMetadataKeysUseCase

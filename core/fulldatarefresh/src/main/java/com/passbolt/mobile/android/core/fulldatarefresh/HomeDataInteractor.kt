@@ -183,7 +183,9 @@ class HomeDataInteractor(
     }
 
     private suspend fun establishMetadataKeyTrust() {
-        val result = metadataPrivateKeysInteractor.verifyMetadataPrivateKey()
+        // Metadata keys were fetched and decrypted a few steps earlier in this
+        // very refresh - do not do it again inside the trust verification.
+        val result = metadataPrivateKeysInteractor.verifyMetadataPrivateKey(refreshFromServer = false)
         Timber.d("Metadata key trust verification during data refresh: $result")
     }
 
