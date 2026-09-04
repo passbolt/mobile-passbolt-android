@@ -77,8 +77,6 @@ class OpenPgp(
         } catch (exception: Exception) {
             Timber.e(exception, "There was an error during encryptSignMessageArmored")
             OpenPgpResult.Error(gopenPgpExceptionParser.parseGopenPgpException(exception))
-        } finally {
-            Mobile.freeOSMemory()
         }
 
     suspend fun encryptSignMessageArmored(
@@ -113,8 +111,6 @@ class OpenPgp(
         } catch (exception: Exception) {
             Timber.e(exception, "There was an error during encryptSignMessageArmored (with pk generation)")
             OpenPgpResult.Error(gopenPgpExceptionParser.parseGopenPgpException(exception))
-        } finally {
-            Mobile.freeOSMemory()
         }
 
     suspend fun decryptVerifyMessageArmored(
@@ -148,8 +144,6 @@ class OpenPgp(
         } catch (exception: Exception) {
             Timber.e(exception, "There was an error during decryptVerifyMessageArmored")
             OpenPgpResult.Error(gopenPgpExceptionParser.parseGopenPgpException(exception))
-        } finally {
-            Mobile.freeOSMemory()
         }
 
     suspend fun decryptVerifyMessageArmored(
@@ -185,8 +179,6 @@ class OpenPgp(
         } catch (exception: Exception) {
             Timber.e(exception, "There was an error during decryptVerifyMessageArmored (with pk generation)")
             OpenPgpResult.Error(gopenPgpExceptionParser.parseGopenPgpException(exception))
-        } finally {
-            Mobile.freeOSMemory()
         }
 
     suspend fun unlockKey(
@@ -206,8 +198,6 @@ class OpenPgp(
         } catch (exception: Exception) {
             Timber.e(exception, "There was an error during unlockKey")
             OpenPgpResult.Error(gopenPgpExceptionParser.parseGopenPgpException(exception))
-        } finally {
-            Mobile.freeOSMemory()
         }
 
     suspend fun decryptMessageArmored(
@@ -239,8 +229,6 @@ class OpenPgp(
         } catch (exception: Exception) {
             Timber.e(exception, "There was an error during decryptMessageArmored")
             OpenPgpResult.Error(gopenPgpExceptionParser.parseGopenPgpException(exception))
-        } finally {
-            Mobile.freeOSMemory()
         }
 
     suspend fun decryptSessionKey(
@@ -270,8 +258,6 @@ class OpenPgp(
         } catch (exception: Exception) {
             Timber.e(exception, "There was an error during decryptSessionKey")
             OpenPgpResult.Error(gopenPgpExceptionParser.parseGopenPgpException(exception))
-        } finally {
-            Mobile.freeOSMemory()
         }
 
     suspend fun generatePublicKey(privateKey: String): OpenPgpResult<String> =
@@ -284,8 +270,6 @@ class OpenPgp(
         } catch (exception: Exception) {
             Timber.e(exception, "There was an error during generatePublicKey")
             OpenPgpResult.Error(gopenPgpExceptionParser.parseGopenPgpException(exception))
-        } finally {
-            Mobile.freeOSMemory()
         }
 
     suspend fun getKeyFingerprint(key: String): OpenPgpResult<String> =
@@ -298,8 +282,6 @@ class OpenPgp(
         } catch (exception: Exception) {
             Timber.e(exception, "There was an error during getPrivateKeyFingerprint")
             OpenPgpResult.Error(gopenPgpExceptionParser.parseGopenPgpException(exception))
-        } finally {
-            Mobile.freeOSMemory()
         }
 
     suspend fun verifyClearTextSignature(
@@ -339,8 +321,6 @@ class OpenPgp(
         } catch (exception: Exception) {
             Timber.e(exception, "There was an error during verifyClearTextSignature")
             return OpenPgpResult.Error(gopenPgpExceptionParser.parseGopenPgpException(exception))
-        } finally {
-            Mobile.freeOSMemory()
         }
     }
 
@@ -440,11 +420,14 @@ class OpenPgp(
         } catch (exception: Exception) {
             Timber.e(exception, "There was an error during verifySignature")
             return OpenPgpResult.Error(gopenPgpExceptionParser.parseGopenPgpException(exception))
-        } finally {
-            Mobile.freeOSMemory()
         }
     }
 
+    // Mobile.freeOSMemory() is Go's debug.FreeOSMemory(): a blocking full
+    // garbage collection plus heap scavenge. It used to run in the finally
+    // block of every operation above, so decrypting N secrets or metadata keys
+    // concurrently triggered N global Go GCs racing each other. Call it once
+    // after a batch instead, as the session-key decrypt loop already does.
     fun freeMemory() {
         Mobile.freeOSMemory()
     }
