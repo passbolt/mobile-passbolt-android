@@ -121,6 +121,7 @@ class WelcomeViewModelTest : KoinTest {
                 apiFetchPageSize = 2000,
                 isApiFetchPageSizeManuallySet = false,
                 accessibilityPoliciesConsentGiven = true,
+                isCopyTotpOnAutofillEnabled = false,
             )
     }
 
@@ -201,6 +202,7 @@ class WelcomeViewModelTest : KoinTest {
                     apiFetchPageSize = PreferencesDefaults.API_FETCH_PAGE_SIZE,
                     isApiFetchPageSizeManuallySet = false,
                     accessibilityPoliciesConsentGiven = true,
+                    isCopyTotpOnAutofillEnabled = false,
                 )
 
             viewModel = get()

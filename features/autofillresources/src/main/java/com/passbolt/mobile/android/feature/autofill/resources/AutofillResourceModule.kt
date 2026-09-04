@@ -14,6 +14,8 @@ fun Module.autofillResourcesModule() {
         AutofillResourcesViewModel(
             getAccountsUseCase = get(),
             uri = params.getOrNull(),
+            autofillType = params.getOrNull(),
+            getGlobalPreferencesUseCase = get(),
             getLocalResourceUseCase = get(),
             totpParametersProvider = get(),
             coroutineLaunchContext = get(),

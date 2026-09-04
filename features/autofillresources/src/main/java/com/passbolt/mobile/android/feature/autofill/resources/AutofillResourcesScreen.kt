@@ -20,6 +20,8 @@ import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.ActivityIntents.AuthConfig.SignIn
 import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.core.navigation.AutofillType
+import com.passbolt.mobile.android.core.clipboard.ClipboardAccess
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
 import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.Start
 import com.passbolt.mobile.android.core.ui.progressdialog.ProgressDialog
@@ -44,9 +46,10 @@ fun AutofillResourcesScreen(
     modifier: Modifier = Modifier,
     viewModel: AutofillResourcesViewModel =
         koinViewModel(
-            parameters = { parametersOf(autofillUri) },
+            parameters = { parametersOf(autofillUri, autofillType) },
         ),
     appNavigator: AppNavigator = koinInject(),
+    clipboardAccess: ClipboardAccess = koinInject(),
 ) {
     val state by viewModel.viewState.collectAsStateWithLifecycle()
     val context = LocalContext.current
@@ -82,8 +85,19 @@ fun AutofillResourcesScreen(
                     finishActivity(activity)
                 }
             }
-            is AutofillReturn ->
+            is AutofillReturn -> {
+                // Must happen BEFORE returnDataset(): the strategies finish the
+                // activity from inside that call.
+                it.payload.totpCodeToCopy?.let { totp ->
+                    clipboardAccess.setPrimaryClip(
+                        context = context,
+                        label = context.getString(LocalizationR.string.settings_autofill_copy_totp_clipboard_label),
+                        value = totp,
+                        isSensitive = true,
+                    )
+                }
                 returnAutofillDatasetStrategy.returnDataset(it.payload)
+            }
             is ShowToast ->
                 Toast.makeText(context, getToastMessage(context, it.type), Toast.LENGTH_SHORT).show()
         }

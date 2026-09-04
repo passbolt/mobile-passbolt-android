@@ -11,4 +11,5 @@ data class GlobalPreferencesUiModel(
     val apiFetchPageSize: Int,
     val isApiFetchPageSizeManuallySet: Boolean,
     val accessibilityPoliciesConsentGiven: Boolean,
+    val isCopyTotpOnAutofillEnabled: Boolean,
 )

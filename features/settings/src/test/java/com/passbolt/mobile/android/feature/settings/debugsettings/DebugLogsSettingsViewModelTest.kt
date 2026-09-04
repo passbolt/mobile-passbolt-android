@@ -100,6 +100,7 @@ class DebugLogsSettingsViewModelTest : KoinTest {
                     apiFetchPageSize = PreferencesDefaults.API_FETCH_PAGE_SIZE,
                     isApiFetchPageSizeManuallySet = false,
                     accessibilityPoliciesConsentGiven = true,
+                    isCopyTotpOnAutofillEnabled = false,
                 )
 
             viewModel = get()
@@ -124,6 +125,7 @@ class DebugLogsSettingsViewModelTest : KoinTest {
                     apiFetchPageSize = PreferencesDefaults.API_FETCH_PAGE_SIZE,
                     isApiFetchPageSizeManuallySet = false,
                     accessibilityPoliciesConsentGiven = true,
+                    isCopyTotpOnAutofillEnabled = false,
                 )
 
             viewModel = get()
@@ -149,6 +151,7 @@ class DebugLogsSettingsViewModelTest : KoinTest {
                     apiFetchPageSize = PreferencesDefaults.API_FETCH_PAGE_SIZE,
                     isApiFetchPageSizeManuallySet = false,
                     accessibilityPoliciesConsentGiven = true,
+                    isCopyTotpOnAutofillEnabled = false,
                 )
 
             viewModel =
@@ -179,6 +182,7 @@ class DebugLogsSettingsViewModelTest : KoinTest {
                     apiFetchPageSize = PreferencesDefaults.API_FETCH_PAGE_SIZE,
                     isApiFetchPageSizeManuallySet = false,
                     accessibilityPoliciesConsentGiven = true,
+                    isCopyTotpOnAutofillEnabled = false,
                 )
 
             viewModel =

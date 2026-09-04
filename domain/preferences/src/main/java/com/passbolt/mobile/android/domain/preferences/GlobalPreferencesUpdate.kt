@@ -34,4 +34,5 @@ data class GlobalPreferencesUpdate(
     val apiFetchPageSize: Int? = null,
     val isApiFetchPageSizeManuallySet: Boolean? = null,
     val accessibilityPoliciesConsentGiven: Boolean? = null,
+    val isCopyTotpOnAutofillEnabled: Boolean? = null,
 )

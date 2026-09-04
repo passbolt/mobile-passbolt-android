@@ -6,7 +6,9 @@ import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchCont
 import com.passbolt.mobile.android.core.otpcore.TotpParametersProvider
 import com.passbolt.mobile.android.core.otpcore.TotpParametersProvider.OtpParametersResult.InvalidTotpInput
 import com.passbolt.mobile.android.core.otpcore.TotpParametersProvider.OtpParametersResult.OtpParameters
+import com.passbolt.mobile.android.core.navigation.AutofillType
 import com.passbolt.mobile.android.domain.accounts.usecase.GetAccountsUseCase
+import com.passbolt.mobile.android.domain.preferences.usecase.GetGlobalPreferencesUseCase
 import com.passbolt.mobile.android.domain.resources.actions.SecretPropertiesActionsInteractor
 import com.passbolt.mobile.android.domain.resources.actions.performSecretPropertyAction
 import com.passbolt.mobile.android.domain.resources.usecase.db.GetLocalResourceUseCase
@@ -34,6 +36,8 @@ import timber.log.Timber
 class AutofillResourcesViewModel(
     getAccountsUseCase: GetAccountsUseCase,
     private val uri: String?,
+    private val autofillType: AutofillType?,
+    private val getGlobalPreferencesUseCase: GetGlobalPreferencesUseCase,
     private val getLocalResourceUseCase: GetLocalResourceUseCase,
     private val totpParametersProvider: TotpParametersProvider,
     private val coroutineLaunchContext: CoroutineLaunchContext,
@@ -86,6 +90,7 @@ class AutofillResourcesViewModel(
                 password = password,
                 totpCode = totpCode,
                 uri = uri,
+                totpCodeToCopy = totpCode?.takeIf { shouldCopyTotpToClipboard() },
             )
         }
     }
@@ -101,6 +106,14 @@ class AutofillResourcesViewModel(
         )
         return secret
     }
+
+    // Copy the TOTP to the clipboard only when the user asked for it and the
+    // form did not have a TOTP field of its own - if it had, the code has just
+    // been filled in directly and a second copy would only overwrite whatever
+    // the user had in the clipboard.
+    private fun shouldCopyTotpToClipboard(): Boolean =
+        autofillType == AutofillType.CREDENTIALS &&
+            getGlobalPreferencesUseCase.execute(Unit).isCopyTotpOnAutofillEnabled
 
     private fun totpCode(totp: TotpSecret): String? =
         when (

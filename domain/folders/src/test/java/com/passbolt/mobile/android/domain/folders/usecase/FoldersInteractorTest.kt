@@ -98,6 +98,7 @@ class FoldersInteractorTest : KoinTest {
                     apiFetchPageSize = FOLDERS_PAGE_SIZE,
                     isApiFetchPageSizeManuallySet = false,
                     accessibilityPoliciesConsentGiven = true,
+                    isCopyTotpOnAutofillEnabled = false,
                 ),
             )
     }

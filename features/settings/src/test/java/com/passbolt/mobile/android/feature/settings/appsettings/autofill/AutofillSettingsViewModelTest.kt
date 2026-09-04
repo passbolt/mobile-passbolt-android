@@ -29,6 +29,7 @@ import com.passbolt.mobile.android.core.autofill.AutofillInformationProvider.Chr
 import com.passbolt.mobile.android.core.autofill.AutofillInformationProvider.ChromeNativeAutofillStatus.NOT_SUPPORTED
 import com.passbolt.mobile.android.domain.preferences.PreferencesDefaults
 import com.passbolt.mobile.android.domain.preferences.usecase.GetGlobalPreferencesUseCase
+import com.passbolt.mobile.android.domain.preferences.usecase.UpdateGlobalPreferencesUseCase
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.AutofillScreenSideEffect.NavigateToAccessibilityPoliciesConsent
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.AutofillScreenSideEffect.NavigateToAutofillEnabled
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.AutofillScreenSideEffect.NavigateToChromeNativeAutofill
@@ -72,6 +73,7 @@ class AutofillSettingsViewModelTest : KoinTest {
                     module {
                         single { mock<AutofillInformationProvider>() }
                         single { mock<GetGlobalPreferencesUseCase>() }
+                        single { mock<UpdateGlobalPreferencesUseCase>() }
                         factoryOf(::AutofillSettingsViewModel)
                     },
                 ),
@@ -85,6 +87,20 @@ class AutofillSettingsViewModelTest : KoinTest {
     @Before
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
+        // The view model reads the "copy TOTP on autofill" preference on init;
+        // tests that care about preferences override this stub.
+        whenever(get<GetGlobalPreferencesUseCase>().execute(Unit)) doReturn
+            GlobalPreferencesUiModel(
+                areDebugLogsEnabled = false,
+                debugLogFileCreationDateTime = null,
+                isHideRootDialogEnabled = false,
+                isAuthRequiredOnEveryEntry = false,
+                debugLogLastAppVersion = null,
+                apiFetchPageSize = PreferencesDefaults.API_FETCH_PAGE_SIZE,
+                isApiFetchPageSizeManuallySet = false,
+                accessibilityPoliciesConsentGiven = false,
+                isCopyTotpOnAutofillEnabled = false,
+            )
     }
 
     @After
@@ -225,6 +241,7 @@ class AutofillSettingsViewModelTest : KoinTest {
                     apiFetchPageSize = PreferencesDefaults.API_FETCH_PAGE_SIZE,
                     isApiFetchPageSizeManuallySet = false,
                     accessibilityPoliciesConsentGiven = true,
+                    isCopyTotpOnAutofillEnabled = false,
                 )
 
             viewModel = get()
@@ -260,6 +277,7 @@ class AutofillSettingsViewModelTest : KoinTest {
                     apiFetchPageSize = PreferencesDefaults.API_FETCH_PAGE_SIZE,
                     isApiFetchPageSizeManuallySet = false,
                     accessibilityPoliciesConsentGiven = false,
+                    isCopyTotpOnAutofillEnabled = false,
                 )
 
             viewModel = get()

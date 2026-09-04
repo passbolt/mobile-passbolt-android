@@ -131,6 +131,7 @@ class ResourceInteractorTest : KoinTest {
                     apiFetchPageSize = RESOURCES_PAGE_SIZE,
                     isApiFetchPageSizeManuallySet = false,
                     accessibilityPoliciesConsentGiven = true,
+                    isCopyTotpOnAutofillEnabled = false,
                 ),
             )
     }

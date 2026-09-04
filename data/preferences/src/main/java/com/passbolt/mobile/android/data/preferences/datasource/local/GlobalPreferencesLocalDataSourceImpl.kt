@@ -27,6 +27,7 @@ import com.passbolt.mobile.android.data.preferences.GLOBAL_PREFERENCES_FILE_NAME
 import com.passbolt.mobile.android.data.preferences.KEY_ACCESSIBILITY_POLICIES_CONSENT_GIVEN
 import com.passbolt.mobile.android.data.preferences.KEY_API_FETCH_PAGE_SIZE
 import com.passbolt.mobile.android.data.preferences.KEY_API_FETCH_PAGE_SIZE_MANUAL
+import com.passbolt.mobile.android.data.preferences.KEY_COPY_TOTP_ON_AUTOFILL_ENABLED
 import com.passbolt.mobile.android.data.preferences.KEY_DEBUG_LOGS_ENABLED
 import com.passbolt.mobile.android.data.preferences.KEY_DEBUG_LOGS_FILE_CREATION_DATE_TIME
 import com.passbolt.mobile.android.data.preferences.KEY_DEBUG_LOGS_LAST_APP_VERSION
@@ -57,6 +58,7 @@ internal class GlobalPreferencesLocalDataSourceImpl(
         val isApiFetchPageSizeManuallySet = sharedPreferences.getBoolean(KEY_API_FETCH_PAGE_SIZE_MANUAL, false)
         val accessibilityPoliciesConsentGiven =
             sharedPreferences.getBoolean(KEY_ACCESSIBILITY_POLICIES_CONSENT_GIVEN, false)
+        val isCopyTotpOnAutofillEnabled = sharedPreferences.getBoolean(KEY_COPY_TOTP_ON_AUTOFILL_ENABLED, false)
         return GlobalPreferencesUiModel(
             areDebugLogsEnabled = areDebugLogsEnabled,
             debugLogFileCreationDateTime = debugLogsCreationDateTime,
@@ -66,6 +68,7 @@ internal class GlobalPreferencesLocalDataSourceImpl(
             apiFetchPageSize = apiFetchPageSize,
             isApiFetchPageSizeManuallySet = isApiFetchPageSizeManuallySet,
             accessibilityPoliciesConsentGiven = accessibilityPoliciesConsentGiven,
+            isCopyTotpOnAutofillEnabled = isCopyTotpOnAutofillEnabled,
         )
     }
 
@@ -95,6 +98,9 @@ internal class GlobalPreferencesLocalDataSourceImpl(
             }
             update.accessibilityPoliciesConsentGiven?.let {
                 putBoolean(KEY_ACCESSIBILITY_POLICIES_CONSENT_GIVEN, it)
+            }
+            update.isCopyTotpOnAutofillEnabled?.let {
+                putBoolean(KEY_COPY_TOTP_ON_AUTOFILL_ENABLED, it)
             }
             apply()
         }

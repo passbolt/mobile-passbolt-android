@@ -27,7 +27,9 @@ import com.passbolt.mobile.android.core.autofill.AutofillInformationProvider
 import com.passbolt.mobile.android.core.autofill.AutofillInformationProvider.ChromeNativeAutofillStatus.ENABLED
 import com.passbolt.mobile.android.core.autofill.AutofillInformationProvider.ChromeNativeAutofillStatus.NOT_SUPPORTED
 import com.passbolt.mobile.android.core.compose.SideEffectViewModel
+import com.passbolt.mobile.android.domain.preferences.GlobalPreferencesUpdate
 import com.passbolt.mobile.android.domain.preferences.usecase.GetGlobalPreferencesUseCase
+import com.passbolt.mobile.android.domain.preferences.usecase.UpdateGlobalPreferencesUseCase
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.AutofillScreenSideEffect.ErrorSnackbarType.NATIVE_AUTOFILL_NOT_SUPPORTED
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.AutofillScreenSideEffect.NavigateToAccessibilityPoliciesConsent
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.AutofillScreenSideEffect.NavigateToAutofillEnabled
@@ -38,6 +40,7 @@ import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.AutofillScreenSideEffect.ShowErrorSnackBar
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.AutofillSettingsIntent.GoBack
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.AutofillSettingsIntent.ToggleAccessibilityAutofill
+import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.AutofillSettingsIntent.ToggleCopyTotpOnAutofill
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.AutofillSettingsIntent.ToggleChromeNativeAutofill
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.AutofillSettingsIntent.ToggleNativeAutofill
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.AutofillSettingsIntent.UpdateAutofillState
@@ -46,6 +49,7 @@ import timber.log.Timber
 internal class AutofillSettingsViewModel(
     private val autofillInformationProvider: AutofillInformationProvider,
     private val getGlobalPreferencesUseCase: GetGlobalPreferencesUseCase,
+    private val updateGlobalPreferencesUseCase: UpdateGlobalPreferencesUseCase,
 ) : SideEffectViewModel<AutofillSettingsState, AutofillScreenSideEffect>(AutofillSettingsState()) {
     init {
         loadInitialValues()
@@ -58,7 +62,14 @@ internal class AutofillSettingsViewModel(
             ToggleChromeNativeAutofill -> emitSideEffect(NavigateToChromeNativeAutofill)
             ToggleNativeAutofill -> toggleNativeAutofill()
             UpdateAutofillState -> loadInitialValues()
+            ToggleCopyTotpOnAutofill -> toggleCopyTotpOnAutofill()
         }
+    }
+
+    private fun toggleCopyTotpOnAutofill() {
+        val enabled = !viewState.value.isCopyTotpOnAutofillChecked
+        updateGlobalPreferencesUseCase.execute(GlobalPreferencesUpdate(isCopyTotpOnAutofillEnabled = enabled))
+        updateViewState { copy(isCopyTotpOnAutofillChecked = enabled) }
     }
 
     private fun toggleAccessibilityAutofill() {
@@ -90,8 +101,10 @@ internal class AutofillSettingsViewModel(
         val chromeNativeAutofillStatus = autofillInformationProvider.getChromeNativeAutofillStatus()
         val isChromeNativeAutofillChecked = chromeNativeAutofillStatus == ENABLED
         val isChromeNativeAutofillEnabled = chromeNativeAutofillStatus != NOT_SUPPORTED
+        val isCopyTotpOnAutofillChecked = getGlobalPreferencesUseCase.execute(Unit).isCopyTotpOnAutofillEnabled
         updateViewState {
             copy(
+                isCopyTotpOnAutofillChecked = isCopyTotpOnAutofillChecked,
                 isNativeAutofillChecked = isNativeAutofillChecked,
                 isAccessibilityAutofillChecked = isAccessibilityAutofillChecked,
                 isChromeNativeAutofillChecked = isChromeNativeAutofillChecked,

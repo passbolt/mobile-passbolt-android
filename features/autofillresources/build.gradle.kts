@@ -25,6 +25,8 @@ dependencies {
     implementation(project(":jsonmodel"))
     implementation(project(":entity"))
     implementation(project(":otpcore"))
+    implementation(project(":clipboard"))
+    implementation(project(":preferences-domain"))
     implementation(project(":otp"))
     implementation(project(":supportedresourcetypes"))
 

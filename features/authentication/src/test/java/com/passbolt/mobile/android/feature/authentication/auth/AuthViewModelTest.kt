@@ -169,6 +169,7 @@ class AuthViewModelTest : KoinTest {
                 apiFetchPageSize = PreferencesDefaults.API_FETCH_PAGE_SIZE,
                 isApiFetchPageSizeManuallySet = false,
                 accessibilityPoliciesConsentGiven = false,
+                isCopyTotpOnAutofillEnabled = false,
             )
 
         val getAccountDataUseCase: GetAccountDataUseCase = get()

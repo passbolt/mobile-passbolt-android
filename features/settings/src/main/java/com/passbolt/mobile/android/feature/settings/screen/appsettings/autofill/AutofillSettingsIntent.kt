@@ -33,4 +33,6 @@ sealed interface AutofillSettingsIntent {
     data object ToggleAccessibilityAutofill : AutofillSettingsIntent
 
     data object UpdateAutofillState : AutofillSettingsIntent
+
+    data object ToggleCopyTotpOnAutofill : AutofillSettingsIntent
 }
