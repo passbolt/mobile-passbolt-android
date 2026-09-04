@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import timber.log.Timber
+import java.util.concurrent.ConcurrentHashMap
 
 /**
  * Passbolt - Open source password manager for teams
@@ -33,17 +34,28 @@ class EncryptedSharedPreferencesFactory internal constructor(
     private val context: Context,
     private val masterKey: MasterKey,
 ) {
+    // EncryptedSharedPreferences.create() unwraps the master key through the
+    // Android Keystore (a binder round-trip) and builds a Tink keyset manager
+    // every time it is called. SharedPreferences instances are process-wide
+    // singletons and thread-safe, so build each file once and hand out the same
+    // instance afterwards. The auth and base-url interceptors read preferences
+    // on every HTTP request, so without this cache every request paid for
+    // several Keystore round-trips before it was even sent.
+    private val cache = ConcurrentHashMap<String, SharedPreferences>()
+
     fun get(fileName: String): SharedPreferences =
-        try {
-            EncryptedSharedPreferences.create(
-                context,
-                fileName,
-                masterKey,
-                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM,
-            )
-        } catch (e: Exception) {
-            Timber.e(e, "Failed to open encrypted preferences")
-            throw e
+        cache.getOrPut(fileName) {
+            try {
+                EncryptedSharedPreferences.create(
+                    context,
+                    fileName,
+                    masterKey,
+                    EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                    EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM,
+                )
+            } catch (e: Exception) {
+                Timber.e(e, "Failed to open encrypted preferences")
+                throw e
+            }
         }
 }
