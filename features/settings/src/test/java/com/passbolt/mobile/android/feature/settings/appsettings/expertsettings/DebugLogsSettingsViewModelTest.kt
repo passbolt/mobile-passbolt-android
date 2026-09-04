@@ -95,6 +95,7 @@ class DebugLogsSettingsViewModelTest : KoinTest {
                     isApiFetchPageSizeManuallySet = false,
                     accessibilityPoliciesConsentGiven = true,
                     deprecatedOsWarningHiddenForSdk = null,
+                    isCopyTotpOnAutofillEnabled = false,
                 )
 
             viewModel = get()
@@ -117,6 +118,7 @@ class DebugLogsSettingsViewModelTest : KoinTest {
                     isApiFetchPageSizeManuallySet = false,
                     accessibilityPoliciesConsentGiven = true,
                     deprecatedOsWarningHiddenForSdk = null,
+                    isCopyTotpOnAutofillEnabled = false,
                 )
 
             viewModel = get()
@@ -139,6 +141,7 @@ class DebugLogsSettingsViewModelTest : KoinTest {
                     isApiFetchPageSizeManuallySet = false,
                     accessibilityPoliciesConsentGiven = true,
                     deprecatedOsWarningHiddenForSdk = null,
+                    isCopyTotpOnAutofillEnabled = false,
                 )
 
             viewModel = get()

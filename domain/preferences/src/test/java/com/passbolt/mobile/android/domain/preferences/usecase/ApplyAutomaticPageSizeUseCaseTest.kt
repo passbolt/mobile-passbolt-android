@@ -92,5 +92,6 @@ class ApplyAutomaticPageSizeUseCaseTest {
         isApiFetchPageSizeManuallySet = isManuallySet,
         accessibilityPoliciesConsentGiven = false,
         deprecatedOsWarningHiddenForSdk = null,
+        isCopyTotpOnAutofillEnabled = false,
     )
 }

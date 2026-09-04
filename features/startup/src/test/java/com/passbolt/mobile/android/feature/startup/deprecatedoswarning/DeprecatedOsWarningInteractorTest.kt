@@ -117,6 +117,7 @@ class DeprecatedOsWarningInteractorTest {
             isApiFetchPageSizeManuallySet = false,
             accessibilityPoliciesConsentGiven = false,
             deprecatedOsWarningHiddenForSdk = hiddenForSdk,
+            isCopyTotpOnAutofillEnabled = false,
         )
 
     private companion object {

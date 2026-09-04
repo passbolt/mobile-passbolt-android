@@ -34,6 +34,7 @@ import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.otpcore.TotpParametersProvider
 import com.passbolt.mobile.android.domain.accounts.usecase.GetAccountsUseCase
+import com.passbolt.mobile.android.domain.preferences.usecase.GetGlobalPreferencesUseCase
 import com.passbolt.mobile.android.domain.resources.actions.SecretPropertiesActionsInteractor
 import com.passbolt.mobile.android.domain.resources.actions.SecretPropertyActionResult
 import com.passbolt.mobile.android.domain.resources.usecase.db.GetLocalResourceUseCase
@@ -91,6 +92,7 @@ class AutofillResourcesViewModelTest : KoinTest {
                     module {
                         single { mock<GetAccountsUseCase>() }
                         single { mock<GetLocalResourceUseCase>() }
+                        single { mock<GetGlobalPreferencesUseCase>() }
                         single { mock<SecretPropertiesActionsInteractor>() }
                         single { mock<TotpParametersProvider>() }
                         singleOf(::TestCoroutineLaunchContext) bind CoroutineLaunchContext::class
@@ -108,6 +110,8 @@ class AutofillResourcesViewModelTest : KoinTest {
                             AutofillResourcesViewModel(
                                 getAccountsUseCase = get(),
                                 uri = uri,
+                                autofillType = null,
+                                getGlobalPreferencesUseCase = get(),
                                 getLocalResourceUseCase = get(),
                                 totpParametersProvider = get(),
                                 coroutineLaunchContext = get(),

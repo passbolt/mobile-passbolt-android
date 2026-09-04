@@ -78,6 +78,7 @@ import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.AutofillSettingsIntent.GoBack
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.AutofillSettingsIntent.ToggleAccessibilityAutofill
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.AutofillSettingsIntent.ToggleChromeNativeAutofill
+import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.AutofillSettingsIntent.ToggleCopyTotpOnAutofill
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.AutofillSettingsIntent.ToggleNativeAutofill
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.AutofillSettingsIntent.UpdateAutofillState
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.conflict.AutofillConflictBanner
@@ -253,6 +254,14 @@ private fun AutofillSettingsScreen(
                     description = stringResource(LocalizationR.string.settings_autofill_accessibility_description),
                     isChecked = state.isAccessibilityAutofillChecked,
                     onClick = { onIntent(ToggleAccessibilityAutofill) },
+                    titleColor = titleColor,
+                )
+
+                SwitchWithDescriptionItem(
+                    title = stringResource(LocalizationR.string.settings_autofill_copy_totp),
+                    description = stringResource(LocalizationR.string.settings_autofill_copy_totp_description),
+                    isChecked = state.isCopyTotpOnAutofillChecked,
+                    onClick = { onIntent(ToggleCopyTotpOnAutofill) },
                     titleColor = titleColor,
                 )
             }

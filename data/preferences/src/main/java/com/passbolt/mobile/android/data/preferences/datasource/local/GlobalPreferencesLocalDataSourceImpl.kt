@@ -28,6 +28,7 @@ import com.passbolt.mobile.android.data.preferences.GLOBAL_PREFERENCES_FILE_NAME
 import com.passbolt.mobile.android.data.preferences.KEY_ACCESSIBILITY_POLICIES_CONSENT_GIVEN
 import com.passbolt.mobile.android.data.preferences.KEY_API_FETCH_PAGE_SIZE
 import com.passbolt.mobile.android.data.preferences.KEY_API_FETCH_PAGE_SIZE_MANUAL
+import com.passbolt.mobile.android.data.preferences.KEY_COPY_TOTP_ON_AUTOFILL_ENABLED
 import com.passbolt.mobile.android.data.preferences.KEY_DEBUG_LOGS_ENABLED
 import com.passbolt.mobile.android.data.preferences.KEY_DEBUG_LOGS_FILE_CREATION_DATE_TIME
 import com.passbolt.mobile.android.data.preferences.KEY_DEBUG_LOGS_LAST_APP_VERSION
@@ -61,6 +62,7 @@ internal class GlobalPreferencesLocalDataSourceImpl(
             sharedPreferences.getBoolean(KEY_ACCESSIBILITY_POLICIES_CONSENT_GIVEN, false)
         val deprecatedOsWarningHiddenForSdk =
             sharedPreferences.getInt(KEY_DEPRECATED_OS_WARNING_HIDDEN_FOR_SDK, -1).let { if (it == -1) null else it }
+        val isCopyTotpOnAutofillEnabled = sharedPreferences.getBoolean(KEY_COPY_TOTP_ON_AUTOFILL_ENABLED, false)
         return GlobalPreferencesUiModel(
             areDebugLogsEnabled = areDebugLogsEnabled,
             debugLogFileCreationDateTime = debugLogsCreationDateTime,
@@ -71,6 +73,7 @@ internal class GlobalPreferencesLocalDataSourceImpl(
             isApiFetchPageSizeManuallySet = isApiFetchPageSizeManuallySet,
             accessibilityPoliciesConsentGiven = accessibilityPoliciesConsentGiven,
             deprecatedOsWarningHiddenForSdk = deprecatedOsWarningHiddenForSdk,
+            isCopyTotpOnAutofillEnabled = isCopyTotpOnAutofillEnabled,
         )
     }
 
@@ -103,6 +106,9 @@ internal class GlobalPreferencesLocalDataSourceImpl(
             }
             update.deprecatedOsWarningHiddenForSdk?.let {
                 putInt(KEY_DEPRECATED_OS_WARNING_HIDDEN_FOR_SDK, it)
+            }
+            update.isCopyTotpOnAutofillEnabled?.let {
+                putBoolean(KEY_COPY_TOTP_ON_AUTOFILL_ENABLED, it)
             }
         }
     }

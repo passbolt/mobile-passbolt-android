@@ -122,6 +122,7 @@ class WelcomeViewModelTest : KoinTest {
                 isApiFetchPageSizeManuallySet = false,
                 accessibilityPoliciesConsentGiven = true,
                 deprecatedOsWarningHiddenForSdk = null,
+                isCopyTotpOnAutofillEnabled = false,
             )
     }
 
@@ -203,6 +204,7 @@ class WelcomeViewModelTest : KoinTest {
                     isApiFetchPageSizeManuallySet = false,
                     accessibilityPoliciesConsentGiven = true,
                     deprecatedOsWarningHiddenForSdk = null,
+                    isCopyTotpOnAutofillEnabled = false,
                 )
 
             viewModel = get()
