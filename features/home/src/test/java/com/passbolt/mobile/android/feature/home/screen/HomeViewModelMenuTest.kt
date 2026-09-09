@@ -48,6 +48,10 @@ import com.passbolt.mobile.android.domain.resources.actions.ResourcePropertiesAc
 import com.passbolt.mobile.android.domain.resources.actions.ResourcePropertyActionResult
 import com.passbolt.mobile.android.domain.resources.actions.SecretPropertiesActionsInteractor
 import com.passbolt.mobile.android.domain.resources.actions.SecretPropertyActionResult
+import com.passbolt.mobile.android.domain.secrets.offline.OfflineSessionState
+import com.passbolt.mobile.android.domain.secrets.usecase.offline.GetOfflineCacheStatusUseCase
+import com.passbolt.mobile.android.domain.secrets.usecase.offline.MarkResourceOfflineUseCase
+import com.passbolt.mobile.android.domain.secrets.usecase.offline.UnmarkResourceOfflineUseCase
 import com.passbolt.mobile.android.domain.users.profile.UserProfileInteractor
 import com.passbolt.mobile.android.domain.users.profile.UserProfileRefreshTrackingFlow
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.CopyNote
@@ -74,6 +78,7 @@ import com.passbolt.mobile.android.ui.HomeDisplayViewModel.NotLoaded
 import com.passbolt.mobile.android.ui.HomeDisplayViewPreferencesUiModel
 import com.passbolt.mobile.android.ui.HomeDisplayViewUiModel
 import com.passbolt.mobile.android.ui.MetadataJsonModel
+import com.passbolt.mobile.android.ui.OfflineModeSetting
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.FavouriteOption.ADD_TO_FAVOURITES
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.FavouriteOption.REMOVE_FROM_FAVOURITES
 import com.passbolt.mobile.android.ui.ResourcePermission
@@ -129,6 +134,21 @@ class HomeViewModelMenuTest : KoinTest {
                     single { mock<GetLocalFolderDetailsUseCase>() }
                     single { mock<ResourceAccessInteractor>() }
                     single { mock<DetectAutofillConflict>() }
+                    singleOf(::OfflineSessionState)
+                    single { mock<MarkResourceOfflineUseCase>() }
+                    single { mock<UnmarkResourceOfflineUseCase>() }
+                    single {
+                        mock<GetOfflineCacheStatusUseCase> {
+                            onBlocking { execute(Unit) } doReturn
+                                GetOfflineCacheStatusUseCase.Output(
+                                    mode = OfflineModeSetting.OFF,
+                                    lastSyncEpochMillis = null,
+                                    cachedCount = 0,
+                                    markedCount = 0,
+                                    isOfflineSession = false,
+                                )
+                        }
+                    }
                     single {
                         mock<UserProfileInteractor> {
                             onBlocking { fetchAndUpdateUserProfile() } doReturn UserProfileInteractor.Output.Success

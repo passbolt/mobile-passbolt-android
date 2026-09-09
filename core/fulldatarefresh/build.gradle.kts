@@ -11,6 +11,7 @@ dependencies {
     implementation(project(":groups-domain"))
     implementation(project(":users-domain"))
     implementation(project(":architecture"))
+    implementation(project(":accounts-domain"))
     implementation(project(":resources-domain"))
     implementation(project(":folders-domain"))
     implementation(project(":idlingresource"))
@@ -22,6 +23,8 @@ dependencies {
     implementation(project(":database"))
     implementation(project(":coreui"))
     implementation(project(":notifications"))
+    implementation(project(":secrets-domain"))
+    implementation(project(":networking"))
 
     implementation(platform(libs.koin.bom))
     implementation(libs.koin)

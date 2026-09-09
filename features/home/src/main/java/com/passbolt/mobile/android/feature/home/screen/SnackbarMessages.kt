@@ -16,11 +16,15 @@ import com.passbolt.mobile.android.feature.home.screen.SnackbarErrorType.PROFILE
 import com.passbolt.mobile.android.feature.home.screen.SnackbarErrorType.RESOURCE_SCHEMA_INVALID
 import com.passbolt.mobile.android.feature.home.screen.SnackbarErrorType.SECRET_SCHEMA_INVALID
 import com.passbolt.mobile.android.feature.home.screen.SnackbarErrorType.TOGGLE_FAVOURITE_FAILURE
+import com.passbolt.mobile.android.feature.home.screen.SnackbarErrorType.TOGGLE_OFFLINE_AVAILABILITY_FAILURE
 import com.passbolt.mobile.android.feature.home.screen.SnackbarSuccessType.FOLDER_CREATED
 import com.passbolt.mobile.android.feature.home.screen.SnackbarSuccessType.METADATA_KEY_IS_TRUSTED
+import com.passbolt.mobile.android.feature.home.screen.SnackbarSuccessType.RESOURCE_AVAILABLE_OFFLINE
 import com.passbolt.mobile.android.feature.home.screen.SnackbarSuccessType.RESOURCE_CREATED
 import com.passbolt.mobile.android.feature.home.screen.SnackbarSuccessType.RESOURCE_DELETED
 import com.passbolt.mobile.android.feature.home.screen.SnackbarSuccessType.RESOURCE_EDITED
+import com.passbolt.mobile.android.feature.home.screen.SnackbarSuccessType.RESOURCE_MARKED_OFFLINE_NOT_CACHED
+import com.passbolt.mobile.android.feature.home.screen.SnackbarSuccessType.RESOURCE_OFFLINE_AVAILABILITY_REMOVED
 import com.passbolt.mobile.android.feature.home.screen.SnackbarSuccessType.RESOURCE_SHARED
 import com.passbolt.mobile.android.feature.home.screen.ToastType.WAIT_FOR_DATA_REFRESH_FINISH
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
@@ -57,6 +61,9 @@ internal fun getSuccessMessage(
                 LocalizationR.string.common_message_folder_created,
                 additionalSuccessMessage.orEmpty().toSingleLine(),
             )
+        RESOURCE_AVAILABLE_OFFLINE -> context.getString(LocalizationR.string.offline_resource_available)
+        RESOURCE_MARKED_OFFLINE_NOT_CACHED -> context.getString(LocalizationR.string.offline_resource_marked_not_cached)
+        RESOURCE_OFFLINE_AVAILABILITY_REMOVED -> context.getString(LocalizationR.string.offline_resource_availability_removed)
     }
 
 @Suppress("CyclomaticComplexMethod")
@@ -90,4 +97,5 @@ internal fun getErrorMessage(
             }
         }
         TOGGLE_FAVOURITE_FAILURE -> context.getString(LocalizationR.string.favourites_failure)
+        TOGGLE_OFFLINE_AVAILABILITY_FAILURE -> context.getString(LocalizationR.string.offline_toggle_failure)
     }

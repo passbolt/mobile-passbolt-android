@@ -44,6 +44,7 @@ dependencies {
 
     testImplementation(project(":commontest"))
     testImplementation(project(":passphrasememorycache"))
+    testImplementation(project(":secrets-domain"))
 }
 
 android {

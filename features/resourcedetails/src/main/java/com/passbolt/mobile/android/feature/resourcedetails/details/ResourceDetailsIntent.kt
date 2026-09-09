@@ -93,6 +93,10 @@ sealed class ResourceDetailsIntent {
         val option: ResourceMoreMenuModel.FavouriteOption,
     ) : ResourceDetailsIntent()
 
+    data class ToggleOfflineAvailability(
+        val option: ResourceMoreMenuModel.OfflineOption,
+    ) : ResourceDetailsIntent()
+
     // Result handling
     data class ResourceEdited(
         val resourceName: String?,

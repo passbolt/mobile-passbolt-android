@@ -33,6 +33,7 @@ import com.passbolt.mobile.android.core.mvp.authentication.SessionRefreshTrackin
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.passphrasememorycache.PassphraseMemoryCache
 import com.passbolt.mobile.android.domain.accounts.usecase.GetSelectedAccountDataUseCase
+import com.passbolt.mobile.android.domain.secrets.offline.OfflineSessionState
 import com.passbolt.mobile.android.domain.users.usecase.FetchCurrentUserUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetSessionExpiryUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetSessionExpiryUseCase.Output.JwtWillExpire
@@ -88,6 +89,7 @@ class KeyInspectorViewModelTest : KoinTest {
                         single { mock<DateFormatter>() }
                         single { mock<FingerprintFormatter>() }
                         single { mock<GetSessionExpiryUseCase>() }
+                        singleOf(::OfflineSessionState)
                         single { mock<PassphraseMemoryCache>() }
                         singleOf(::TestCoroutineLaunchContext) bind CoroutineLaunchContext::class
                         factoryOf(::KeyInspectorViewModel)

@@ -49,4 +49,6 @@ sealed interface ResourceMoreMenuBottomSheetIntent {
     data object Share : ResourceMoreMenuBottomSheetIntent
 
     data object ToggleFavourite : ResourceMoreMenuBottomSheetIntent
+
+    data object ToggleOfflineAvailability : ResourceMoreMenuBottomSheetIntent
 }

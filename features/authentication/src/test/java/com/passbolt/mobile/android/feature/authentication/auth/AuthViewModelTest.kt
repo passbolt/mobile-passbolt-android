@@ -21,6 +21,8 @@ import com.passbolt.mobile.android.domain.preferences.PreferencesDefaults
 import com.passbolt.mobile.android.domain.preferences.usecase.GetGlobalPreferencesUseCase
 import com.passbolt.mobile.android.domain.privatekey.model.PrivateKey
 import com.passbolt.mobile.android.domain.privatekey.usecase.GetPrivateKeyUseCase
+import com.passbolt.mobile.android.domain.secrets.offline.OfflineSessionState
+import com.passbolt.mobile.android.domain.secrets.usecase.offline.OfflineSignInGate
 import com.passbolt.mobile.android.encryptedstorage.biometric.BiometricCipher
 import com.passbolt.mobile.android.feature.authentication.auth.AuthIntent.BiometricAuthenticationError
 import com.passbolt.mobile.android.feature.authentication.auth.AuthIntent.BiometricAuthenticationSuccess
@@ -113,6 +115,8 @@ class AuthViewModelTest : KoinTest {
                     single { mock<PostSignInActionsInteractor>() }
                     single { mock<RefreshSessionUseCase>() }
                     single { mock<ServerKeysWarmup>() }
+                    single { mock<OfflineSignInGate>() }
+                    single { OfflineSessionState() }
                     single { RuntimeAuthenticatedFlag() }
                     singleOf(::SignInIdlingResource)
                     factoryOf(::MfaProvidersHandler)
@@ -144,6 +148,8 @@ class AuthViewModelTest : KoinTest {
                             refreshSessionUseCase = get(),
                             mfaProvidersHandler = get(),
                             serverKeysWarmup = get(),
+                            offlineSignInGate = get(),
+                            offlineSessionState = get(),
                         )
                     }
                 },

@@ -56,11 +56,13 @@ import com.passbolt.mobile.android.resourcemoremenu.ResourceMoreMenuBottomSheetI
 import com.passbolt.mobile.android.resourcemoremenu.ResourceMoreMenuBottomSheetIntent.LaunchWebsite
 import com.passbolt.mobile.android.resourcemoremenu.ResourceMoreMenuBottomSheetIntent.Share
 import com.passbolt.mobile.android.resourcemoremenu.ResourceMoreMenuBottomSheetIntent.ToggleFavourite
+import com.passbolt.mobile.android.resourcemoremenu.ResourceMoreMenuBottomSheetIntent.ToggleOfflineAvailability
 import com.passbolt.mobile.android.resourcemoremenu.ResourceMoreMenuBottomSheetSideEffect.Dismiss
 import com.passbolt.mobile.android.resourcemoremenu.ResourceMoreMenuBottomSheetSideEffect.ShowContentNotAvailable
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.FavouriteOption
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.FavouriteOption.ADD_TO_FAVOURITES
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.FavouriteOption.REMOVE_FROM_FAVOURITES
+import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.OfflineOption
 import org.koin.androidx.compose.koinViewModel
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
@@ -80,6 +82,7 @@ fun ResourceMoreMenuBottomSheet(
     onEdit: () -> Unit,
     onShare: () -> Unit,
     onToggleFavourite: (FavouriteOption) -> Unit,
+    onToggleOfflineAvailability: (OfflineOption) -> Unit = {},
     viewModel: ResourceMoreMenuBottomSheetViewModel = koinViewModel(),
 ) {
     val context = LocalContext.current
@@ -117,11 +120,13 @@ fun ResourceMoreMenuBottomSheet(
             ResourceMoreMenuBottomSheetSideEffect.Edit -> onEdit()
             ResourceMoreMenuBottomSheetSideEffect.Share -> onShare()
             is ResourceMoreMenuBottomSheetSideEffect.ToggleFavourite -> onToggleFavourite(sideEffect.option)
+            is ResourceMoreMenuBottomSheetSideEffect.ToggleOfflineAvailability -> onToggleOfflineAvailability(sideEffect.option)
         }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
+@Suppress("CyclomaticComplexMethod")
 @Composable
 private fun ResourceMoreMenuBottomSheet(
     state: ResourceMoreMenuBottomSheetState,
@@ -229,6 +234,26 @@ private fun ResourceMoreMenuBottomSheet(
                     }
                 }
 
+                state.offlineOption?.let { option ->
+                    item {
+                        val titleRes =
+                            when (option) {
+                                OfflineOption.MAKE_AVAILABLE_OFFLINE -> LocalizationR.string.more_make_available_offline
+                                OfflineOption.REMOVE_OFFLINE_AVAILABILITY -> LocalizationR.string.more_remove_offline_availability
+                            }
+                        val iconRes =
+                            when (option) {
+                                OfflineOption.MAKE_AVAILABLE_OFFLINE -> CoreUiR.drawable.ic_lock
+                                OfflineOption.REMOVE_OFFLINE_AVAILABILITY -> CoreUiR.drawable.ic_lock_open
+                            }
+                        OpenableSettingsItem(
+                            title = stringResource(titleRes),
+                            iconPainter = painterResource(iconRes),
+                            onClick = { onIntent(ToggleOfflineAvailability) },
+                            opensInternally = false,
+                        )
+                    }
+                }
                 if (state.showSeparator) {
                     item {
                         HorizontalDivider(

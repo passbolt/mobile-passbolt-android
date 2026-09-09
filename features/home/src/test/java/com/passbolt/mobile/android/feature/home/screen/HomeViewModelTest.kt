@@ -51,6 +51,10 @@ import com.passbolt.mobile.android.domain.accounts.usecase.GetSelectedAccountUse
 import com.passbolt.mobile.android.domain.folders.usecase.GetLocalFolderDetailsUseCase
 import com.passbolt.mobile.android.domain.metadata.interactor.ResourceAccessInteractor
 import com.passbolt.mobile.android.domain.preferences.usecase.GetHomeDisplayViewPreferencesUseCase
+import com.passbolt.mobile.android.domain.secrets.offline.OfflineSessionState
+import com.passbolt.mobile.android.domain.secrets.usecase.offline.GetOfflineCacheStatusUseCase
+import com.passbolt.mobile.android.domain.secrets.usecase.offline.MarkResourceOfflineUseCase
+import com.passbolt.mobile.android.domain.secrets.usecase.offline.UnmarkResourceOfflineUseCase
 import com.passbolt.mobile.android.domain.users.profile.UserProfileInteractor
 import com.passbolt.mobile.android.domain.users.profile.UserProfileRefreshTrackingFlow
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.CloseCreateResourceMenu
@@ -93,6 +97,7 @@ import com.passbolt.mobile.android.ui.HomeDisplayViewUiModel
 import com.passbolt.mobile.android.ui.LeadingContentType.PASSWORD
 import com.passbolt.mobile.android.ui.LeadingContentType.STANDALONE_NOTE
 import com.passbolt.mobile.android.ui.MetadataJsonModel
+import com.passbolt.mobile.android.ui.OfflineModeSetting
 import com.passbolt.mobile.android.ui.ResourcePermission
 import com.passbolt.mobile.android.ui.ResourceUiModel
 import kotlinx.coroutines.Dispatchers
@@ -150,6 +155,21 @@ class HomeViewModelTest : KoinTest {
                     single { mock<GetLocalFolderDetailsUseCase>() }
                     single { mock<ResourceAccessInteractor>() }
                     single { mock<DetectAutofillConflict>() }
+                    singleOf(::OfflineSessionState)
+                    single { mock<MarkResourceOfflineUseCase>() }
+                    single { mock<UnmarkResourceOfflineUseCase>() }
+                    single {
+                        mock<GetOfflineCacheStatusUseCase> {
+                            onBlocking { execute(Unit) } doReturn
+                                GetOfflineCacheStatusUseCase.Output(
+                                    mode = OfflineModeSetting.OFF,
+                                    lastSyncEpochMillis = null,
+                                    cachedCount = 0,
+                                    markedCount = 0,
+                                    isOfflineSession = false,
+                                )
+                        }
+                    }
                     single {
                         mock<UserProfileInteractor> {
                             onBlocking { fetchAndUpdateUserProfile() } doReturn UserProfileInteractor.Output.Success

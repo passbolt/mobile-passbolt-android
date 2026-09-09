@@ -37,6 +37,7 @@ import com.passbolt.mobile.android.domain.metadata.interactor.MetadataSessionKey
 import com.passbolt.mobile.android.domain.metadata.interactor.MetadataTypesSettingsInteractor
 import com.passbolt.mobile.android.domain.resources.usecase.ResourceInteractor
 import com.passbolt.mobile.android.domain.resourcetypes.usecase.ResourceTypesInteractor
+import com.passbolt.mobile.android.domain.secrets.usecase.offline.OfflineSecretsSyncInteractor
 import com.passbolt.mobile.android.domain.users.usecase.UsersInteractor
 import com.passbolt.mobile.android.featureflags.usecase.GetFeatureFlagsUseCase
 import kotlinx.coroutines.async
@@ -62,6 +63,7 @@ class HomeDataInteractor(
     private val resourcesFullRefreshIdlingResource: ResourcesFullRefreshIdlingResource,
     private val resourcesSnapshot: ResourcesSnapshot,
     private val refreshProgressTrackerFactory: RefreshProgressTrackerFactory,
+    private val offlineSecretsSyncInteractor: OfflineSecretsSyncInteractor,
 ) {
     // TODO start multiple async where possible
     @Suppress("LongMethod", "CyclomaticComplexMethod")
@@ -150,6 +152,13 @@ class HomeDataInteractor(
                 MetadataSessionKeysInteractor.Output.Success
             }
 
+        // offline mode: keep the encrypted secret cache in step with the fresh resource list.
+        // Non-fatal - a failure leaves the previous cache in place and is reported in Settings.
+        if (resourcesOutput is ResourceInteractor.Output.Success) {
+            val syncOutput = offlineSecretsSyncInteractor.sync { done, total -> progressCounter.onStepPageDownloaded(done, total) }
+            Timber.d("Offline secrets sync: $syncOutput")
+        }
+        progressCounter.onStepCompleted()
         resourcesSnapshot.clear()
         resourcesFullRefreshIdlingResource.setIdle(true)
 
@@ -188,7 +197,7 @@ class HomeDataInteractor(
     }
 
     private companion object {
-        private const val TOTAL_REFRESH_STEPS = 11
+        private const val TOTAL_REFRESH_STEPS = 12
     }
 
     sealed class Output : AuthenticatedUseCaseOutput {

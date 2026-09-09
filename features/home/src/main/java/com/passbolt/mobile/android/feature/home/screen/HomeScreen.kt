@@ -27,6 +27,7 @@ import android.widget.Toast
 import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -60,6 +61,7 @@ import com.passbolt.mobile.android.core.navigation.compose.keys.OtpNavigationKey
 import com.passbolt.mobile.android.core.navigation.compose.keys.PermissionsNavigationKey.Permissions
 import com.passbolt.mobile.android.core.navigation.compose.keys.ResourceFormNavigationKey.MainResourceForm
 import com.passbolt.mobile.android.core.navigation.compose.keys.SettingsNavigationKey.Autofill
+import com.passbolt.mobile.android.core.ui.banner.OfflineModeBanner
 import com.passbolt.mobile.android.core.ui.dialogs.ConfirmResourceDeleteAlertDialog
 import com.passbolt.mobile.android.core.ui.fab.AddFloatingActionButton
 import com.passbolt.mobile.android.core.ui.progressdialog.ProgressDialog
@@ -99,6 +101,7 @@ import com.passbolt.mobile.android.feature.home.screen.HomeIntent.Search
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.SearchEndIconAction
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.ShareResource
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.ToggleResourceFavourite
+import com.passbolt.mobile.android.feature.home.screen.HomeIntent.ToggleResourceOfflineAvailability
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.ViewFolderDetails
 import com.passbolt.mobile.android.feature.home.screen.HomeSideEffect.CopyToClipboard
 import com.passbolt.mobile.android.feature.home.screen.HomeSideEffect.InitiateDataRefresh
@@ -300,16 +303,23 @@ private fun HomeScreen(
             }
         },
         content = { paddingValues ->
-            SlidingFeedbackPullToRefreshBox(
-                isRefreshing = state.isRefreshing,
-                refreshProgress = state.refreshProgress,
-                onRefresh = { DataRefreshService.start(context) },
+            Column(
                 modifier =
                     Modifier
                         .fillMaxSize()
                         .padding(paddingValues),
             ) {
-                HomeResourceList(state, navigator, resourceHandlingStrategy, onIntent)
+                if (state.isOfflineSession) {
+                    OfflineModeBanner(lastSyncEpochMillis = state.offlineLastSyncEpochMillis)
+                }
+                SlidingFeedbackPullToRefreshBox(
+                    isRefreshing = state.isRefreshing,
+                    refreshProgress = state.refreshProgress,
+                    onRefresh = { DataRefreshService.start(context) },
+                    modifier = Modifier.fillMaxSize(),
+                ) {
+                    HomeResourceList(state, navigator, resourceHandlingStrategy, onIntent)
+                }
             }
         },
     )
@@ -363,6 +373,7 @@ private fun HomeScreen(
             onEdit = { onIntent(EditResource) },
             onShare = { onIntent(ShareResource) },
             onToggleFavourite = { onIntent(ToggleResourceFavourite(it)) },
+            onToggleOfflineAvailability = { onIntent(ToggleResourceOfflineAvailability(it)) },
         )
     }
 

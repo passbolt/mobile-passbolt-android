@@ -12,6 +12,7 @@ import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.defaultfilter.defaultFilterModule
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.expertsettings.expertSettingsModule
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.expertsettings.pagesize.pageSizeModule
+import com.passbolt.mobile.android.feature.settings.screen.appsettings.offlinemode.offlineModeSettingsModule
 import com.passbolt.mobile.android.feature.settings.screen.debuglogssettings.debugLogsSettingsModule
 import com.passbolt.mobile.android.feature.settings.screen.settingsModule
 import com.passbolt.mobile.android.feature.settings.screen.termsandlicenses.licenses.licensesModule
@@ -59,6 +60,7 @@ val settingsModule =
         termsAndLicensesSettingsModule()
         expertSettingsModule()
         pageSizeModule()
+        offlineModeSettingsModule()
 
         settingsAutofillModule()
         licensesModule()

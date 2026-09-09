@@ -32,6 +32,7 @@ dependencies {
     implementation(project(":clipboard"))
     implementation(project(":accessibilitypolicies"))
     implementation(project(":testtags"))
+    implementation(project(":secrets-domain"))
 
     implementation(libs.androidx.navigation3.ui)
     implementation(libs.androidx.navigation3.runtime)

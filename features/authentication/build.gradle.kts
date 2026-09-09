@@ -34,6 +34,7 @@ dependencies {
     implementation(project(":encryptedstorage"))
     implementation(project(":preferences-domain"))
     implementation(project(":clipboard"))
+    implementation(project(":secrets-domain"))
 
     implementation(libs.androidx.navigation3.runtime)
     implementation(libs.androidx.core)

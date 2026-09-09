@@ -106,9 +106,11 @@ val networkingModule =
                     ),
             )
         }
+        single { ServerReachabilityTracker() }
         single {
             ResponseHandler(
                 errorHeaderMapper = get(),
+                serverReachabilityTracker = get(),
             )
         }
         single {

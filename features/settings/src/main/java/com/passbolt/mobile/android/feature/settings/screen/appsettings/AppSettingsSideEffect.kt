@@ -33,6 +33,8 @@ internal sealed interface AppSettingsSideEffect {
 
     data object NavigateToExpertSettings : AppSettingsSideEffect
 
+    data object NavigateToOfflineMode : AppSettingsSideEffect
+
     data object NavigateToGetPassphrase : AppSettingsSideEffect
 
     data object NavigateToSystemSettings : AppSettingsSideEffect

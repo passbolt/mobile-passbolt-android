@@ -49,6 +49,8 @@ import com.passbolt.mobile.android.domain.resources.mapper.toOtpItemWrapper
 import com.passbolt.mobile.android.domain.resources.usecase.db.GetLocalResourcePermissionsUseCase
 import com.passbolt.mobile.android.domain.resources.usecase.db.GetLocalResourceTagsUseCase
 import com.passbolt.mobile.android.domain.resources.usecase.db.GetLocalResourceUseCase
+import com.passbolt.mobile.android.domain.secrets.usecase.offline.MarkResourceOfflineUseCase
+import com.passbolt.mobile.android.domain.secrets.usecase.offline.UnmarkResourceOfflineUseCase
 import com.passbolt.mobile.android.entity.featureflags.FeatureFlagsModel
 import com.passbolt.mobile.android.feature.resourcedetails.details.ErrorSnackbarType.CANNOT_PERFORM_ACTION
 import com.passbolt.mobile.android.feature.resourcedetails.details.ErrorSnackbarType.DECRYPTION_FAILURE
@@ -82,6 +84,7 @@ import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetai
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent.ToggleCustomField
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent.ToggleFavourite
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent.ToggleNoteVisibility
+import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent.ToggleOfflineAvailability
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent.TogglePasswordVisibility
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent.TogglePinCodeVisibility
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsIntent.ToggleTotpVisibility
@@ -140,6 +143,8 @@ class ResourceDetailsViewModel(
     private val coroutineLaunchContext: CoroutineLaunchContext,
     private val dataRefreshTrackingFlow: DataRefreshTrackingFlow,
     private val timerFactory: TimerFactory,
+    private val markResourceOfflineUseCase: MarkResourceOfflineUseCase,
+    private val unmarkResourceOfflineUseCase: UnmarkResourceOfflineUseCase,
 ) : SideEffectViewModel<ResourceDetailsState, ResourceDetailsSideEffect>(ResourceDetailsState()),
     KoinComponent {
     private val resourcePropertiesActionsInteractor: ResourcePropertiesActionsInteractor
@@ -192,6 +197,7 @@ class ResourceDetailsViewModel(
             CloseDeleteConfirmationDialog -> updateViewState { copy(showDeleteResourceConfirmationDialog = false) }
             LaunchWebsite -> launchWebsite()
             is ToggleFavourite -> toggleFavourite(intent.option)
+            is ToggleOfflineAvailability -> toggleOfflineAvailability(intent.option)
             is ResourceEdited -> handleResourceEdited(intent.resourceName)
             ResourceShared -> emitSideEffect(ShowSuccessSnackbar(SuccessSnackbarType.RESOURCE_SHARED))
             Dispose -> dispose()
@@ -780,6 +786,37 @@ class ResourceDetailsViewModel(
                 action = { resourcePropertiesActionsInteractor.provideMainUri() },
                 doOnResult = { emitSideEffect(OpenWebsite(it.result)) },
             )
+        }
+    }
+
+    private fun toggleOfflineAvailability(option: ResourceMoreMenuModel.OfflineOption) {
+        viewModelScope.launch(coroutineLaunchContext.io + missingItemExceptionHandler) {
+            try {
+                when (option) {
+                    ResourceMoreMenuModel.OfflineOption.MAKE_AVAILABLE_OFFLINE -> {
+                        val output =
+                            markResourceOfflineUseCase.execute(
+                                MarkResourceOfflineUseCase.Input(resource.resourceId, resource.modified),
+                            )
+                        emitSideEffect(
+                            ShowSuccessSnackbar(
+                                when (output) {
+                                    is MarkResourceOfflineUseCase.Output.Success -> SuccessSnackbarType.RESOURCE_AVAILABLE_OFFLINE
+                                    is MarkResourceOfflineUseCase.Output.MarkedNotCached ->
+                                        SuccessSnackbarType.RESOURCE_MARKED_OFFLINE_NOT_CACHED
+                                },
+                            ),
+                        )
+                    }
+                    ResourceMoreMenuModel.OfflineOption.REMOVE_OFFLINE_AVAILABILITY -> {
+                        unmarkResourceOfflineUseCase.execute(UnmarkResourceOfflineUseCase.Input(resource.resourceId))
+                        emitSideEffect(ShowSuccessSnackbar(SuccessSnackbarType.RESOURCE_OFFLINE_AVAILABILITY_REMOVED))
+                    }
+                }
+            } catch (e: Exception) {
+                Timber.e(e, "Could not change offline availability")
+                emitSideEffect(ShowErrorSnackbar(ErrorSnackbarType.TOGGLE_OFFLINE_AVAILABILITY_FAILURE))
+            }
         }
     }
 

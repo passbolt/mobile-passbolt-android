@@ -48,6 +48,10 @@ import com.passbolt.mobile.android.domain.resources.actions.SecretPropertiesActi
 import com.passbolt.mobile.android.domain.resources.actions.performCommonResourceAction
 import com.passbolt.mobile.android.domain.resources.actions.performResourcePropertyAction
 import com.passbolt.mobile.android.domain.resources.actions.performSecretPropertyAction
+import com.passbolt.mobile.android.domain.secrets.offline.OfflineSessionState
+import com.passbolt.mobile.android.domain.secrets.usecase.offline.GetOfflineCacheStatusUseCase
+import com.passbolt.mobile.android.domain.secrets.usecase.offline.MarkResourceOfflineUseCase
+import com.passbolt.mobile.android.domain.secrets.usecase.offline.UnmarkResourceOfflineUseCase
 import com.passbolt.mobile.android.domain.users.profile.UserProfileInteractor
 import com.passbolt.mobile.android.domain.users.profile.UserProfileInteractor.Output.Failure
 import com.passbolt.mobile.android.domain.users.profile.UserProfileInteractor.Output.Success
@@ -89,6 +93,7 @@ import com.passbolt.mobile.android.feature.home.screen.HomeIntent.SearchEndIconA
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.ShareResource
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.ShowHomeView
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.ToggleResourceFavourite
+import com.passbolt.mobile.android.feature.home.screen.HomeIntent.ToggleResourceOfflineAvailability
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.ViewFolderDetails
 import com.passbolt.mobile.android.feature.home.screen.HomeSideEffect.CopyToClipboard
 import com.passbolt.mobile.android.feature.home.screen.HomeSideEffect.InitiateDataRefresh
@@ -109,9 +114,13 @@ import com.passbolt.mobile.android.feature.home.screen.SnackbarErrorType.FETCH_F
 import com.passbolt.mobile.android.feature.home.screen.SnackbarErrorType.NO_SHARED_KEY_ACCESS
 import com.passbolt.mobile.android.feature.home.screen.SnackbarErrorType.PROFILE_FETCH_FAILURE
 import com.passbolt.mobile.android.feature.home.screen.SnackbarErrorType.TOGGLE_FAVOURITE_FAILURE
+import com.passbolt.mobile.android.feature.home.screen.SnackbarErrorType.TOGGLE_OFFLINE_AVAILABILITY_FAILURE
+import com.passbolt.mobile.android.feature.home.screen.SnackbarSuccessType.RESOURCE_AVAILABLE_OFFLINE
 import com.passbolt.mobile.android.feature.home.screen.SnackbarSuccessType.RESOURCE_CREATED
 import com.passbolt.mobile.android.feature.home.screen.SnackbarSuccessType.RESOURCE_DELETED
 import com.passbolt.mobile.android.feature.home.screen.SnackbarSuccessType.RESOURCE_EDITED
+import com.passbolt.mobile.android.feature.home.screen.SnackbarSuccessType.RESOURCE_MARKED_OFFLINE_NOT_CACHED
+import com.passbolt.mobile.android.feature.home.screen.SnackbarSuccessType.RESOURCE_OFFLINE_AVAILABILITY_REMOVED
 import com.passbolt.mobile.android.feature.home.screen.SnackbarSuccessType.RESOURCE_SHARED
 import com.passbolt.mobile.android.feature.home.screen.ToastType.WAIT_FOR_DATA_REFRESH_FINISH
 import com.passbolt.mobile.android.feature.home.screen.data.HomeDataProvider
@@ -128,6 +137,7 @@ import com.passbolt.mobile.android.ui.LeadingContentType.PIN_CODE
 import com.passbolt.mobile.android.ui.LeadingContentType.STANDALONE_NOTE
 import com.passbolt.mobile.android.ui.LeadingContentType.TOTP
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.FavouriteOption
+import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.OfflineOption
 import com.passbolt.mobile.android.ui.ResourcePermission
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.drop
@@ -137,6 +147,7 @@ import org.koin.core.component.get
 import org.koin.core.parameter.parametersOf
 import timber.log.Timber
 
+@Suppress("TooManyFunctions")
 internal class HomeViewModel(
     private val coroutineLaunchContext: CoroutineLaunchContext,
     private val dataRefreshTrackingFlow: DataRefreshTrackingFlow,
@@ -150,6 +161,10 @@ internal class HomeViewModel(
     private val accountSwitchFlow: AccountSwitchFlow,
     private val userProfileInteractor: UserProfileInteractor,
     private val userProfileRefreshTrackingFlow: UserProfileRefreshTrackingFlow,
+    private val markResourceOfflineUseCase: MarkResourceOfflineUseCase,
+    private val unmarkResourceOfflineUseCase: UnmarkResourceOfflineUseCase,
+    private val getOfflineCacheStatusUseCase: GetOfflineCacheStatusUseCase,
+    private val offlineSessionState: OfflineSessionState,
 ) : SideEffectViewModel<HomeState, HomeSideEffect>(HomeState()),
     KoinComponent {
     private val resourcePropertiesActionsInteractor: ResourcePropertiesActionsInteractor
@@ -161,6 +176,7 @@ internal class HomeViewModel(
 
     private var dataRefreshJob: Job? = null
     private var accountSwitchJob: Job? = null
+    private var offlineSessionJob: Job? = null
     private var lastInitializeIntent: Initialize? = null
     private var loadedAccountId: String? = null
 
@@ -237,6 +253,7 @@ internal class HomeViewModel(
                     emitSideEffect(NavigateToShare(viewState.value.requireMoreMenuResource))
                 }
             is ToggleResourceFavourite -> toggleFavourite(intent.option)
+            is ToggleResourceOfflineAvailability -> toggleOfflineAvailability(intent.option)
             is FolderCreateReturned -> folderCreationReturned(intent)
             is OtpQRScanReturned -> processOtpScanResult(intent)
             is ResourceFormReturned -> processResourceFormResult(intent)
@@ -337,6 +354,47 @@ internal class HomeViewModel(
                 action = { resourceCommonActionsInteractor.toggleFavourite(option) },
                 doOnFailure = { emitSideEffect(ShowErrorSnackbar(TOGGLE_FAVOURITE_FAILURE)) },
                 doOnSuccess = { showHomeView(viewState.value.homeView) },
+            )
+        }
+    }
+
+    private fun toggleOfflineAvailability(option: OfflineOption) {
+        val resource = viewState.value.requireMoreMenuResource
+        viewModelScope.launch(coroutineLaunchContext.io) {
+            try {
+                when (option) {
+                    OfflineOption.MAKE_AVAILABLE_OFFLINE -> {
+                        val output =
+                            markResourceOfflineUseCase.execute(
+                                MarkResourceOfflineUseCase.Input(resource.resourceId, resource.modified),
+                            )
+                        emitSideEffect(
+                            ShowSuccessSnackbar(
+                                when (output) {
+                                    is MarkResourceOfflineUseCase.Output.Success -> RESOURCE_AVAILABLE_OFFLINE
+                                    is MarkResourceOfflineUseCase.Output.MarkedNotCached -> RESOURCE_MARKED_OFFLINE_NOT_CACHED
+                                },
+                            ),
+                        )
+                    }
+                    OfflineOption.REMOVE_OFFLINE_AVAILABILITY -> {
+                        unmarkResourceOfflineUseCase.execute(UnmarkResourceOfflineUseCase.Input(resource.resourceId))
+                        emitSideEffect(ShowSuccessSnackbar(RESOURCE_OFFLINE_AVAILABILITY_REMOVED))
+                    }
+                }
+            } catch (e: Exception) {
+                Timber.e(e, "Could not change offline availability")
+                emitSideEffect(ShowErrorSnackbar(TOGGLE_OFFLINE_AVAILABILITY_FAILURE))
+            }
+        }
+    }
+
+    private suspend fun refreshOfflineState() {
+        val status = getOfflineCacheStatusUseCase.execute(Unit)
+        updateViewState {
+            copy(
+                isOfflineSession = status.isOfflineSession,
+                offlineLastSyncEpochMillis = status.lastSyncEpochMillis,
             )
         }
     }
@@ -505,6 +563,7 @@ internal class HomeViewModel(
                     ?: filterPreferences.userSetHomeView.toHomeDisplayViewModel(filterPreferences.lastUsedHomeView)
             val homeData = getHomeData(homeView, viewState.value.searchQuery, intent.showSuggestedModel)
             val isAutofillConflictDetected = detectAutofillConflict()
+            refreshOfflineState()
 
             updateViewState {
                 copy(
@@ -518,6 +577,21 @@ internal class HomeViewModel(
             dataRefreshJob =
                 viewModelScope.launch(coroutineLaunchContext.io) {
                     synchronizeWithDataRefresh()
+                }
+            offlineSessionJob?.cancel()
+            offlineSessionJob =
+                viewModelScope.launch(coroutineLaunchContext.io) {
+                    // the app can enter (server vanished under a live session) or leave
+                    // (server back) the offline session at any time - the banner and the
+                    // create button follow immediately, not only at the next refresh
+                    offlineSessionState.isOfflineSessionFlow
+                        .drop(1)
+                        .collect { isOffline ->
+                            refreshOfflineState()
+                            val showCreateResourceButton =
+                                !isOffline && !viewState.value.isRefreshing && shouldShowCreateButton()
+                            updateViewState { copy(canCreateResource = showCreateResourceButton) }
+                        }
                 }
             accountSwitchJob?.cancel()
             accountSwitchJob =
@@ -630,11 +704,15 @@ internal class HomeViewModel(
                         copy(isRefreshing = true, refreshProgress = it.progress, canCreateResource = false)
                     }
                 FinishedWithFailure -> {
-                    emitSideEffect(ShowErrorSnackbar(FAILED_TO_REFRESH_DATA))
+                    refreshOfflineState()
+                    if (!viewState.value.isOfflineSession) {
+                        emitSideEffect(ShowErrorSnackbar(FAILED_TO_REFRESH_DATA))
+                    }
                     updateViewState { copy(isRefreshing = false, canCreateResource = false) }
                 }
                 FinishedWithSuccess -> {
-                    val showCreateResourceButton = shouldShowCreateButton()
+                    refreshOfflineState()
+                    val showCreateResourceButton = shouldShowCreateButton() && !viewState.value.isOfflineSession
                     updateViewState {
                         copy(
                             isRefreshing = false,
@@ -645,7 +723,8 @@ internal class HomeViewModel(
                 NotCompleted -> {
                     // autofill does not perform automatic data refresh - evaluate from local data
                     if (viewState.value.appContext == AppContext.AUTOFILL) {
-                        val showCreateResourceButton = shouldShowCreateButton()
+                        refreshOfflineState()
+                        val showCreateResourceButton = shouldShowCreateButton() && !viewState.value.isOfflineSession
                         updateViewState { copy(canCreateResource = showCreateResourceButton) }
                     }
                 }

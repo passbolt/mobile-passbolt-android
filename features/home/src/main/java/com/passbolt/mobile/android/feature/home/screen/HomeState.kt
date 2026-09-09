@@ -54,6 +54,8 @@ data class HomeState(
     val showFolderMoreMenuBottomSheet: Boolean = false,
     val isAutofillConflictDetected: Boolean = false,
     val appContext: AppContext = AppContext.APP,
+    val isOfflineSession: Boolean = false,
+    val offlineLastSyncEpochMillis: Long? = null,
 ) {
     val showBackIcon: Boolean
         get() =

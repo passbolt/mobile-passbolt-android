@@ -13,6 +13,8 @@ import com.passbolt.mobile.android.database.impl.metadata.MetadataKeysDao
 import com.passbolt.mobile.android.database.impl.metadata.MetadataPrivateKeysDao
 import com.passbolt.mobile.android.database.impl.metadata.ResourceMetadataDao
 import com.passbolt.mobile.android.database.impl.metadata.ResourceUriDao
+import com.passbolt.mobile.android.database.impl.offline.OfflineItemsDao
+import com.passbolt.mobile.android.database.impl.offline.OfflineSecretsDao
 import com.passbolt.mobile.android.database.impl.resourceandgroupscrossref.ResourceAndGroupsCrossRefDao
 import com.passbolt.mobile.android.database.impl.resourceandtagcrossref.ResourcesAndTagsCrossRefDao
 import com.passbolt.mobile.android.database.impl.resourceanduserscrossref.ResourcesAndUsersCrossRefDao
@@ -34,6 +36,8 @@ import com.passbolt.mobile.android.entity.group.UsersGroup
 import com.passbolt.mobile.android.entity.group.UsersGroupFts
 import com.passbolt.mobile.android.entity.metadata.MetadataKey
 import com.passbolt.mobile.android.entity.metadata.MetadataPrivateKey
+import com.passbolt.mobile.android.entity.offline.OfflineItem
+import com.passbolt.mobile.android.entity.offline.OfflineSecret
 import com.passbolt.mobile.android.entity.resource.Resource
 import com.passbolt.mobile.android.entity.resource.ResourceAndTagsCrossRef
 import com.passbolt.mobile.android.entity.resource.ResourceMetadata
@@ -92,8 +96,10 @@ import com.passbolt.mobile.android.entity.user.User
         UsersGroupFts::class,
         MetadataKey::class,
         MetadataPrivateKey::class,
+        OfflineItem::class,
+        OfflineSecret::class,
     ],
-    version = 27,
+    version = 28,
 )
 @TypeConverters(Converters::class)
 abstract class ResourceDatabase : RoomDatabase() {
@@ -136,4 +142,8 @@ abstract class ResourceDatabase : RoomDatabase() {
     abstract fun metadataKeysDao(): MetadataKeysDao
 
     abstract fun metadataPrivateKeysDao(): MetadataPrivateKeysDao
+
+    abstract fun offlineItemsDao(): OfflineItemsDao
+
+    abstract fun offlineSecretsDao(): OfflineSecretsDao
 }

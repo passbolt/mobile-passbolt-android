@@ -8,7 +8,11 @@ import com.passbolt.mobile.android.feature.resourcedetails.details.ErrorSnackbar
 import com.passbolt.mobile.android.feature.resourcedetails.details.ErrorSnackbarType.GENERAL_ERROR
 import com.passbolt.mobile.android.feature.resourcedetails.details.ErrorSnackbarType.INVALID_TOTP_PARAMETERS
 import com.passbolt.mobile.android.feature.resourcedetails.details.ErrorSnackbarType.TOGGLE_FAVOURITE_FAILURE
+import com.passbolt.mobile.android.feature.resourcedetails.details.ErrorSnackbarType.TOGGLE_OFFLINE_AVAILABILITY_FAILURE
+import com.passbolt.mobile.android.feature.resourcedetails.details.SuccessSnackbarType.RESOURCE_AVAILABLE_OFFLINE
 import com.passbolt.mobile.android.feature.resourcedetails.details.SuccessSnackbarType.RESOURCE_EDITED
+import com.passbolt.mobile.android.feature.resourcedetails.details.SuccessSnackbarType.RESOURCE_MARKED_OFFLINE_NOT_CACHED
+import com.passbolt.mobile.android.feature.resourcedetails.details.SuccessSnackbarType.RESOURCE_OFFLINE_AVAILABILITY_REMOVED
 import com.passbolt.mobile.android.feature.resourcedetails.details.SuccessSnackbarType.RESOURCE_SHARED
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
@@ -19,6 +23,9 @@ internal fun getSuccessSnackbarMessage(
     when (type) {
         RESOURCE_EDITED -> context.getString(LocalizationR.string.common_message_resource_edited, "")
         RESOURCE_SHARED -> context.getString(LocalizationR.string.common_message_resource_shared)
+        RESOURCE_AVAILABLE_OFFLINE -> context.getString(LocalizationR.string.offline_resource_available)
+        RESOURCE_MARKED_OFFLINE_NOT_CACHED -> context.getString(LocalizationR.string.offline_resource_marked_not_cached)
+        RESOURCE_OFFLINE_AVAILABILITY_REMOVED -> context.getString(LocalizationR.string.offline_resource_availability_removed)
     }
 
 internal fun getErrorSnackbarMessage(
@@ -31,6 +38,7 @@ internal fun getErrorSnackbarMessage(
         GENERAL_ERROR -> context.getString(LocalizationR.string.common_failure_format, "")
         DATA_REFRESH_ERROR -> context.getString(LocalizationR.string.common_data_refresh_error)
         TOGGLE_FAVOURITE_FAILURE -> context.getString(LocalizationR.string.favourites_failure)
+        TOGGLE_OFFLINE_AVAILABILITY_FAILURE -> context.getString(LocalizationR.string.offline_toggle_failure)
         CANNOT_PERFORM_ACTION -> context.getString(LocalizationR.string.common_lack_shared_key_access)
         INVALID_TOTP_PARAMETERS -> context.getString(LocalizationR.string.common_invalid_totp_parameters)
     }

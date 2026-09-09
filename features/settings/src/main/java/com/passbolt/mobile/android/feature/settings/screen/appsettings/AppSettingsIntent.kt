@@ -38,6 +38,8 @@ internal sealed interface AppSettingsIntent {
 
     object GoToExpertSettings : AppSettingsIntent
 
+    object GoToOfflineMode : AppSettingsIntent
+
     object ToggleBiometric : AppSettingsIntent
 
     object ConfirmDisableBiometric : AppSettingsIntent
