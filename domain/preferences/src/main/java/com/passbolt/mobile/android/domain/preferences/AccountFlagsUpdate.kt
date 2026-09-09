@@ -23,6 +23,12 @@
 
 package com.passbolt.mobile.android.domain.preferences
 
+import com.passbolt.mobile.android.ui.OfflineModeSetting
+
 data class AccountFlagsUpdate(
     val wasChromeNativeAutofillDialogShown: Boolean? = null,
+    val offlineMode: OfflineModeSetting? = null,
+    // pass null to leave unchanged; clearing is done through [clearOfflineLastSync]
+    val offlineLastSyncEpochMillis: Long? = null,
+    val clearOfflineLastSync: Boolean = false,
 )

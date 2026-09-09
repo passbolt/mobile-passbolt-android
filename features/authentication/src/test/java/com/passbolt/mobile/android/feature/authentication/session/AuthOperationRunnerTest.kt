@@ -34,6 +34,7 @@ import com.passbolt.mobile.android.core.mvp.authentication.SessionRefreshTrackin
 import com.passbolt.mobile.android.core.mvp.authentication.SessionState.NeedsRefresh
 import com.passbolt.mobile.android.core.navigation.AppForegroundListener
 import com.passbolt.mobile.android.core.passphrasememorycache.PassphraseMemoryCache
+import com.passbolt.mobile.android.domain.secrets.offline.OfflineSessionState
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetSessionExpiryUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.RefreshSessionUseCase
 import kotlinx.coroutines.delay
@@ -76,6 +77,7 @@ class AuthOperationRunnerTest : KoinTest {
                     single { mockRefreshSessionUseCase }
                     single { mockAppForegroundListener }
                     singleOf(::SessionRefreshTrackingFlow)
+                    singleOf(::OfflineSessionState)
                 },
             )
         }

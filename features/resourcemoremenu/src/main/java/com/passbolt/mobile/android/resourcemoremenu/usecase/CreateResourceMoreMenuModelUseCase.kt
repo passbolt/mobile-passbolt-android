@@ -24,14 +24,19 @@
 package com.passbolt.mobile.android.resourcemoremenu.usecase
 
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
+import com.passbolt.mobile.android.domain.accounts.usecase.GetSelectedAccountUseCase
+import com.passbolt.mobile.android.domain.preferences.AccountPreferencesRepository
 import com.passbolt.mobile.android.domain.rbac.usecase.GetRbacRulesUseCase
 import com.passbolt.mobile.android.domain.resources.usecase.db.GetLocalResourceUseCase
+import com.passbolt.mobile.android.domain.secrets.usecase.offline.IsResourceMarkedOfflineUseCase
+import com.passbolt.mobile.android.ui.OfflineModeSetting
 import com.passbolt.mobile.android.ui.RbacRuleModel.ALLOW
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.DescriptionOption.HAS_METADATA_DESCRIPTION
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.DescriptionOption.HAS_NOTE
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.FavouriteOption.ADD_TO_FAVOURITES
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.FavouriteOption.REMOVE_FROM_FAVOURITES
+import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.OfflineOption
 import com.passbolt.mobile.android.ui.ResourcePermission
 import com.passbolt.mobile.android.ui.contentType
 import com.passbolt.mobile.android.ui.isFavourite
@@ -39,6 +44,9 @@ import com.passbolt.mobile.android.ui.isFavourite
 class CreateResourceMoreMenuModelUseCase(
     private val getLocalResourceUseCase: GetLocalResourceUseCase,
     private val getRbacRulesUseCase: GetRbacRulesUseCase,
+    private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
+    private val accountPreferencesRepository: AccountPreferencesRepository,
+    private val isResourceMarkedOfflineUseCase: IsResourceMarkedOfflineUseCase,
 ) : AsyncUseCase<CreateResourceMoreMenuModelUseCase.Input, CreateResourceMoreMenuModelUseCase.Output> {
     override suspend fun execute(input: Input): Output {
         val resource = getLocalResourceUseCase.execute(GetLocalResourceUseCase.Input(input.resourceId)).resource
@@ -46,6 +54,7 @@ class CreateResourceMoreMenuModelUseCase(
         val isCopyRbacAllowed = rbacModel.passwordCopyRule == ALLOW
         val isShareRbacAllowed = rbacModel.shareViewRule == ALLOW
         val contentType = resource.contentType()
+        val offlineOption = offlineOptionFor(input.resourceId)
 
         return Output(
             ResourceMoreMenuModel(
@@ -69,8 +78,23 @@ class CreateResourceMoreMenuModelUseCase(
                             add(HAS_NOTE)
                         }
                     },
+                offlineOption = offlineOption,
             ),
         )
+    }
+
+    // the per-entry choice only exists in "selected entries" mode; with "all entries"
+    // every secret is cached anyway and with offline mode off there is nothing to mark
+    private suspend fun offlineOptionFor(resourceId: String): OfflineOption? {
+        val userId = getSelectedAccountUseCase.execute(Unit).selectedAccount ?: return null
+        if (accountPreferencesRepository.getAccountFlags(userId).offlineMode != OfflineModeSetting.SELECTED_ENTRIES) {
+            return null
+        }
+        return if (isResourceMarkedOfflineUseCase.execute(IsResourceMarkedOfflineUseCase.Input(resourceId))) {
+            OfflineOption.REMOVE_OFFLINE_AVAILABILITY
+        } else {
+            OfflineOption.MAKE_AVAILABLE_OFFLINE
+        }
     }
 
     data class Input(

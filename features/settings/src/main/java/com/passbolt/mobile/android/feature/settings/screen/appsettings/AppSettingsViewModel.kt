@@ -51,6 +51,7 @@ import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettin
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsIntent.GoToAutofill
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsIntent.GoToDefaultFilter
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsIntent.GoToExpertSettings
+import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsIntent.GoToOfflineMode
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsIntent.Initialize
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsIntent.InvalidateBiometricKeyPermanently
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsIntent.RefreshedPassphrase
@@ -61,6 +62,7 @@ import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettin
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsSideEffect.NavigateToDefaultFilter
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsSideEffect.NavigateToExpertSettings
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsSideEffect.NavigateToGetPassphrase
+import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsSideEffect.NavigateToOfflineMode
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsSideEffect.NavigateToSystemSettings
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsSideEffect.NavigateUp
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsSideEffect.SnackbarKind.AUTHENTICAION_ERROR
@@ -93,6 +95,7 @@ internal class AppSettingsViewModel(
             GoToAutofill -> emitSideEffect(NavigateToAutofill)
             GoToDefaultFilter -> emitSideEffect(NavigateToDefaultFilter)
             GoToExpertSettings -> emitSideEffect(NavigateToExpertSettings)
+            GoToOfflineMode -> emitSideEffect(NavigateToOfflineMode)
             ToggleBiometric -> toggleBiometric()
             CancelDisableBiometric -> updateViewState { copy(isDisableBiometricDialogVisible = false) }
             ConfirmDisableBiometric -> disableBiometric()

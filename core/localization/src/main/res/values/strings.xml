@@ -111,6 +111,8 @@
     <string name="more_share">Share</string>
     <string name="more_add_to_favourite">Add to favourite</string>
     <string name="more_remove_from_favourite">Remove from favourite</string>
+    <string name="more_make_available_offline">Make available offline</string>
+    <string name="more_remove_offline_availability">Remove offline availability</string>
 
     <string name="folder_more_see_details">See details</string>
 
@@ -458,6 +460,42 @@
     <string name="settings_app_settings_biometry_error">Biometry error. %s</string>
     <string name="settings_app_settings_biometry_authentication_error">Biometry authentication error. %s</string>
     <string name="settings_app_settings_expert_settings">Expert settings</string>
+    <string name="settings_app_settings_offline_mode">Offline mode</string>
+
+    <!-- Offline mode -->
+    <string name="offline_settings_description">Read-only access to your entries when the server cannot be reached. Entries stay encrypted on this device and can only be opened with your passphrase.</string>
+    <string name="offline_settings_enable">Enable offline mode</string>
+    <string name="offline_settings_mode_selected">Selected entries only</string>
+    <string name="offline_settings_mode_selected_description">Use “Make available offline” in an entry’s menu to cache it.</string>
+    <string name="offline_settings_mode_all">All entries</string>
+    <string name="offline_settings_mode_all_description">Every entry you can access is cached (still encrypted) on each sync.</string>
+    <string name="offline_settings_status_cached">Entries cached</string>
+    <string name="offline_settings_status_marked">Entries marked</string>
+    <string name="offline_settings_status_last_sync">Last updated</string>
+    <string name="offline_settings_status_valid_until">Offline access valid until</string>
+    <string name="offline_settings_status_never">Never</string>
+    <string name="offline_settings_status_just_now">Just now</string>
+    <string name="offline_settings_retention_note">Offline data is updated automatically every time you use the app while the server is reachable - no manual sync is needed. Offline access expires 7 days after the last update, so a lost device does not keep usable data for long; using the app online at least once a week keeps it active. Like the online session, the offline session asks for your passphrase again after 5 minutes. Offline data is removed on sign out and when offline mode is turned off.</string>
+    <string name="offline_settings_sync_hint">Use “Sync now” only if you want to update the offline data right away - for example just before going offline.</string>
+    <string name="offline_settings_syncing">Syncing…</string>
+    <string name="offline_settings_syncing_progress">Updating offline data (%1$d of %2$d entries)</string>
+    <string name="offline_settings_syncing_indeterminate">Updating offline data…</string>
+    <string name="offline_settings_sync_result_success">Offline data is up to date - %1$d entries cached</string>
+    <string name="offline_settings_sync_result_partial">Sync finished, but some entries could not be cached. Try again later.</string>
+    <string name="offline_settings_sync_result_failed">Sync failed - the server could not be reached</string>
+    <string name="offline_settings_offline_session_note">You are currently offline. Settings can be changed once the server is reachable again.</string>
+    <string name="offline_settings_sync_now">Sync now</string>
+    <string name="offline_settings_clear">Clear offline data</string>
+    <string name="offline_settings_clear_confirmation">All cached entries and “available offline” marks on this device will be removed.</string>
+    <string name="offline_settings_clear_confirm">Clear</string>
+    <string name="offline_resource_available">Entry is now available offline</string>
+    <string name="offline_resource_marked_not_cached">Entry marked - it will be cached on the next sync</string>
+    <string name="offline_resource_availability_removed">Entry is no longer available offline</string>
+    <string name="offline_toggle_failure">Could not change offline availability</string>
+    <string name="offline_banner_title">Offline mode - read only</string>
+    <string name="offline_banner_last_sync">Server unreachable. Showing data synced %s.</string>
+    <string name="offline_banner_read_only">Server unreachable. Showing cached data.</string>
+    <string name="offline_sign_in_expired">Offline data has expired - it was last updated more than 7 days ago. Connect to the server once to renew it.</string>
 
     <string name="settings_app_settings_expert_settings_require_auth_on_every_entry">Require auth on every entry</string>
     <string name="settings_app_settings_expert_settings_hide_root">Hide “device is rooted” dialog</string>

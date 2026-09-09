@@ -46,6 +46,9 @@ import com.passbolt.mobile.android.domain.resources.actions.SecretPropertiesActi
 import com.passbolt.mobile.android.domain.resources.usecase.db.GetLocalResourcePermissionsUseCase
 import com.passbolt.mobile.android.domain.resources.usecase.db.GetLocalResourceTagsUseCase
 import com.passbolt.mobile.android.domain.resources.usecase.db.GetLocalResourceUseCase
+import com.passbolt.mobile.android.domain.secrets.offline.OfflineSessionState
+import com.passbolt.mobile.android.domain.secrets.usecase.offline.MarkResourceOfflineUseCase
+import com.passbolt.mobile.android.domain.secrets.usecase.offline.UnmarkResourceOfflineUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetSessionExpiryUseCase
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsViewModel
 import com.passbolt.mobile.android.featureflags.usecase.GetFeatureFlagsUseCase
@@ -83,11 +86,14 @@ internal val testModule =
         single { mock<TotpParametersProvider>() }
         single { mock<GetRbacRulesUseCase>() }
         single { mock<CanShareResourceUseCase>() }
+        single { mock<MarkResourceOfflineUseCase>() }
+        single { mock<UnmarkResourceOfflineUseCase>() }
         single { mock<ResourceDetailActionIdlingResource>() }
         single { mock<SecretPropertiesActionsInteractor>() }
         single { mock<ResourcePropertiesActionsInteractor>() }
         single { mock<ResourceCommonActionsInteractor>() }
         single { mock<GetSessionExpiryUseCase>() }
+        singleOf(::OfflineSessionState)
         single { mock<PassphraseMemoryCache>() }
         single { mock<TimerFactory>() }
         singleOf(::DataRefreshTrackingFlow)

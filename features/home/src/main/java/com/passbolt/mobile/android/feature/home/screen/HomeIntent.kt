@@ -26,6 +26,7 @@ package com.passbolt.mobile.android.feature.home.screen
 import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.ui.HomeDisplayViewModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.FavouriteOption
+import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.OfflineOption
 import com.passbolt.mobile.android.ui.ResourceUiModel
 
 sealed interface HomeIntent {
@@ -134,5 +135,9 @@ sealed interface HomeIntent {
 
     data class ToggleResourceFavourite(
         val option: FavouriteOption,
+    ) : HomeIntent
+
+    data class ToggleResourceOfflineAvailability(
+        val option: OfflineOption,
     ) : HomeIntent
 }

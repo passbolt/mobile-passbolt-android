@@ -22,6 +22,9 @@ dependencies {
     implementation(project(":idlingresource"))
     implementation(project(":featureflags-domain"))
     implementation(project(":jsonmodel"))
+    implementation(project(":secrets-domain"))
+    implementation(project(":preferences-domain"))
+    implementation(project(":accounts-domain"))
 
     implementation(libs.androidx.core)
     implementation(platform(libs.koin.bom))

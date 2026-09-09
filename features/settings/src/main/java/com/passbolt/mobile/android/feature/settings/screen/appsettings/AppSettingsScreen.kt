@@ -58,6 +58,7 @@ import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
 import com.passbolt.mobile.android.core.navigation.compose.keys.SettingsNavigationKey.Autofill
 import com.passbolt.mobile.android.core.navigation.compose.keys.SettingsNavigationKey.DefaultFilter
 import com.passbolt.mobile.android.core.navigation.compose.keys.SettingsNavigationKey.ExpertSettings
+import com.passbolt.mobile.android.core.navigation.compose.keys.SettingsNavigationKey.OfflineMode
 import com.passbolt.mobile.android.core.ui.R
 import com.passbolt.mobile.android.core.ui.dialogs.CancelAccountTransferAlertDialog
 import com.passbolt.mobile.android.core.ui.dialogs.ConfigureBiometricAlertDialog
@@ -80,6 +81,7 @@ import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettin
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsIntent.GoToAutofill
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsIntent.GoToDefaultFilter
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsIntent.GoToExpertSettings
+import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsIntent.GoToOfflineMode
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsIntent.Initialize
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsIntent.InvalidateBiometricKeyPermanently
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsIntent.RefreshedPassphrase
@@ -88,6 +90,7 @@ import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettin
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsSideEffect.NavigateToDefaultFilter
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsSideEffect.NavigateToExpertSettings
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsSideEffect.NavigateToGetPassphrase
+import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsSideEffect.NavigateToOfflineMode
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsSideEffect.NavigateToSystemSettings
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsSideEffect.NavigateUp
 import kotlinx.coroutines.flow.Flow
@@ -167,6 +170,7 @@ private fun AppSettingsSideEffectsHandler(
             NavigateToAutofill -> navigator.navigateToKey(Autofill)
             NavigateToDefaultFilter -> navigator.navigateToKey(DefaultFilter)
             NavigateToExpertSettings -> navigator.navigateToKey(ExpertSettings)
+            NavigateToOfflineMode -> navigator.navigateToKey(OfflineMode)
             NavigateUp -> navigator.navigateBack()
             NavigateToGetPassphrase ->
                 environment.authenticationLauncher.launch(
@@ -267,6 +271,11 @@ private fun AppSettingsScreen(
                     onClick = { onIntent(GoToDefaultFilter) },
                 )
 
+                OpenableSettingsItem(
+                    iconPainter = painterResource(R.drawable.ic_lock),
+                    title = stringResource(LocalizationR.string.settings_app_settings_offline_mode),
+                    onClick = { onIntent(GoToOfflineMode) },
+                )
                 OpenableSettingsItem(
                     iconPainter = painterResource(R.drawable.ic_cog),
                     title = stringResource(LocalizationR.string.settings_app_settings_expert_settings),

@@ -28,6 +28,7 @@ import com.passbolt.mobile.android.domain.resources.actions.SecretPropertiesActi
 import com.passbolt.mobile.android.domain.resources.usecase.GetDefaultCreateContentTypeUseCase
 import com.passbolt.mobile.android.domain.resources.usecase.GetEditContentTypeUseCase
 import com.passbolt.mobile.android.domain.resources.usecase.db.GetLocalResourceUseCase
+import com.passbolt.mobile.android.domain.secrets.offline.OfflineSessionState
 import com.passbolt.mobile.android.entity.featureflags.FeatureFlagsModel
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetSessionExpiryUseCase
 import com.passbolt.mobile.android.featureflags.usecase.GetFeatureFlagsUseCase
@@ -161,6 +162,8 @@ internal val testResourceFormModule =
         }
 
         single { mock<GetSessionExpiryUseCase>() }
+
+        singleOf(::OfflineSessionState)
         single { mock<PassphraseMemoryCache>() }
 
         viewModel { params ->

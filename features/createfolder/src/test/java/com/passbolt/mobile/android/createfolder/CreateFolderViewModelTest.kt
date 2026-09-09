@@ -51,6 +51,7 @@ import com.passbolt.mobile.android.domain.folders.usecase.GetLocalFolderDetailsU
 import com.passbolt.mobile.android.domain.folders.usecase.GetLocalFolderLocationUseCase
 import com.passbolt.mobile.android.domain.folders.usecase.GetLocalFolderPermissionsUseCase
 import com.passbolt.mobile.android.domain.folders.usecase.GetLocalParentFolderPermissionsToApplyToNewItemUseCase
+import com.passbolt.mobile.android.domain.secrets.offline.OfflineSessionState
 import com.passbolt.mobile.android.domain.users.usecase.GetLocalCurrentUserUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetSessionExpiryUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetSessionExpiryUseCase.Output.JwtWillExpire
@@ -109,6 +110,7 @@ class CreateFolderViewModelTest : KoinTest {
                         single { mock<GetLocalCurrentUserUseCase>() }
                         single { mock<UsersModelMapper>() }
                         single { mock<GetSessionExpiryUseCase>() }
+                        singleOf(::OfflineSessionState)
                         single { mock<PassphraseMemoryCache>() }
                         single { CreateFolderIdlingResource() }
                         singleOf(::TestCoroutineLaunchContext) bind CoroutineLaunchContext::class

@@ -39,6 +39,7 @@ sealed interface AuthSideEffect {
         WRONG_PASSPHRASE,
         GENERIC,
         CONNECTION_FAILURE,
+        OFFLINE_DATA_EXPIRED,
         BIOMETRIC_CHANGED,
         AUTHENTICATION_ERROR,
         DECRYPTION_ERROR,

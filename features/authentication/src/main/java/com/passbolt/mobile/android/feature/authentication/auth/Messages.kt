@@ -13,6 +13,7 @@ import com.passbolt.mobile.android.feature.authentication.auth.AuthSideEffect.Sn
 import com.passbolt.mobile.android.feature.authentication.auth.AuthSideEffect.SnackbarErrorType.CONNECTION_FAILURE
 import com.passbolt.mobile.android.feature.authentication.auth.AuthSideEffect.SnackbarErrorType.DECRYPTION_ERROR
 import com.passbolt.mobile.android.feature.authentication.auth.AuthSideEffect.SnackbarErrorType.GENERIC
+import com.passbolt.mobile.android.feature.authentication.auth.AuthSideEffect.SnackbarErrorType.OFFLINE_DATA_EXPIRED
 import com.passbolt.mobile.android.feature.authentication.auth.AuthSideEffect.SnackbarErrorType.TIME_OUT_OF_SYNC
 import com.passbolt.mobile.android.feature.authentication.auth.AuthSideEffect.SnackbarErrorType.WRONG_PASSPHRASE
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
@@ -36,6 +37,7 @@ internal fun getSnackBarMessage(
         WRONG_PASSPHRASE -> context.getString(LocalizationR.string.auth_incorrect_passphrase)
         GENERIC -> context.getString(LocalizationR.string.common_failure)
         CONNECTION_FAILURE -> context.getString(LocalizationR.string.common_network_failure)
+        OFFLINE_DATA_EXPIRED -> context.getString(LocalizationR.string.offline_sign_in_expired)
         BIOMETRIC_CHANGED -> context.getString(LocalizationR.string.biometric_changed_title)
         AUTHENTICATION_ERROR -> message ?: context.getString(LocalizationR.string.common_failure)
         DECRYPTION_ERROR -> {

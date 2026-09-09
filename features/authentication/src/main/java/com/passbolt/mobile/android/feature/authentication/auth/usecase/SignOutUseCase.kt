@@ -7,6 +7,7 @@ import com.passbolt.mobile.android.domain.accounts.usecase.GetSelectedAccountUse
 import com.passbolt.mobile.android.domain.accounts.usecase.RemoveSelectedAccountUseCase
 import com.passbolt.mobile.android.domain.auth.AuthRepository
 import com.passbolt.mobile.android.domain.auth.usecase.GetSessionUseCase
+import com.passbolt.mobile.android.domain.secrets.usecase.offline.ClearOfflineSecretsUseCase
 import timber.log.Timber
 
 /**
@@ -38,6 +39,7 @@ class SignOutUseCase(
     private val authRepository: AuthRepository,
     private val getSessionUseCase: GetSessionUseCase,
     private val signOutIdlingResource: SignOutIdlingResource,
+    private val clearOfflineSecretsUseCase: ClearOfflineSecretsUseCase,
 ) : AsyncUseCase<Unit, Unit> {
     override suspend fun execute(input: Unit) {
         Timber.d("Signing out")
@@ -46,6 +48,8 @@ class SignOutUseCase(
             authRepository.signOut(it)
         }
         passphraseMemoryCache.clear()
+        // an explicit sign-out ends offline access: drop the cached ciphertext
+        clearOfflineSecretsUseCase.execute(Unit)
         getSelectedAccountUseCase.execute(Unit).selectedAccount?.let {
             removeSelectedAccountUseCase.execute(Unit)
         }

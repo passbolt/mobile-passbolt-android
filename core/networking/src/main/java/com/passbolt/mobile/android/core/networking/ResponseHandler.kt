@@ -34,12 +34,20 @@ import java.net.UnknownHostException
  */
 class ResponseHandler(
     private val errorHeaderMapper: ErrorHeaderMapper,
+    private val serverReachabilityTracker: ServerReachabilityTracker,
 ) {
-    fun <T : Any> handleSuccess(data: T): NetworkResult<T> = NetworkResult.Success(data)
+    fun <T : Any> handleSuccess(data: T): NetworkResult<T> {
+        serverReachabilityTracker.markReachable()
+        return NetworkResult.Success(data)
+    }
+
+    /** An HTTP error response still proves the server is there. */
+    fun markServerReachable() = serverReachabilityTracker.markReachable()
 
     fun <T : Any> handleException(e: Exception): NetworkResult<T> =
         when (e) {
             is HttpException -> {
+                serverReachabilityTracker.markReachable()
                 val baseResponse = parseErrorResponseBody(e.response())
                 NetworkResult.Failure.ServerError(
                     exception = e,
@@ -49,23 +57,29 @@ class ResponseHandler(
                 )
             }
 
-            is UnknownHostException ->
+            is UnknownHostException -> {
+                serverReachabilityTracker.markUnreachable()
                 NetworkResult.Failure.NetworkError(
                     exception = e,
                     headerMessage = errorHeaderMapper.getMessage(),
                 )
+            }
 
-            is ConnectException ->
+            is ConnectException -> {
+                serverReachabilityTracker.markUnreachable()
                 NetworkResult.Failure.NetworkError(
                     exception = e,
                     headerMessage = errorHeaderMapper.getMessage(),
                 )
+            }
 
-            is SocketTimeoutException ->
+            is SocketTimeoutException -> {
+                serverReachabilityTracker.markUnreachable()
                 NetworkResult.Failure.ServerError(
                     exception = e,
                     headerMessage = errorHeaderMapper.getMessage(),
                 )
+            }
 
             else ->
                 NetworkResult.Failure.ServerError(
@@ -113,6 +127,7 @@ inline fun <T : Any> callWithLibraryResponseHandler(
     return if (response.isSuccessful) {
         responseHandler.handleSuccess(response)
     } else {
+        responseHandler.markServerReachable()
         try {
             val errorResponse = responseHandler.parseErrorResponseBody(response)
             NetworkResult.Failure.ServerError(

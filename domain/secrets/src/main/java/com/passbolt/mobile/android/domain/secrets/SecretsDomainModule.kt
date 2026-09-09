@@ -1,32 +1,20 @@
-/**
- * Passbolt - Open source password manager for teams
- * Copyright (c) 2021 Passbolt SA
- *
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
- * Public License (AGPL) as published by the Free Software Foundation version 3.
- *
- * The name "Passbolt" is a registered trademark of Passbolt SA, and Passbolt SA hereby declines to grant a trademark
- * license to "Passbolt" pursuant to the GNU Affero General Public License version 3 Section 7(e), without a separate
- * agreement with Passbolt SA.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License along with this program. If not,
- * see GNU Affero General Public License v3 (http://www.gnu.org/licenses/agpl-3.0.html).
- *
- * @copyright Copyright (c) Passbolt SA (https://www.passbolt.com)
- * @license https://opensource.org/licenses/AGPL-3.0 AGPL License
- * @link https://www.passbolt.com Passbolt (tm)
- * @since v1.0
- */
-
 package com.passbolt.mobile.android.domain.secrets
 
+import com.passbolt.mobile.android.domain.secrets.offline.OfflineSessionState
+import com.passbolt.mobile.android.domain.secrets.offline.OfflineSyncTracker
 import com.passbolt.mobile.android.domain.secrets.parser.SecretParser
 import com.passbolt.mobile.android.domain.secrets.usecase.decrypt.DecryptSecretUseCase
 import com.passbolt.mobile.android.domain.secrets.usecase.decrypt.FetchSecretUseCase
 import com.passbolt.mobile.android.domain.secrets.usecase.decrypt.SecretInteractor
+import com.passbolt.mobile.android.domain.secrets.usecase.offline.ClearOfflineCacheUseCase
+import com.passbolt.mobile.android.domain.secrets.usecase.offline.ClearOfflineSecretsUseCase
+import com.passbolt.mobile.android.domain.secrets.usecase.offline.GetOfflineCacheStatusUseCase
+import com.passbolt.mobile.android.domain.secrets.usecase.offline.IsResourceMarkedOfflineUseCase
+import com.passbolt.mobile.android.domain.secrets.usecase.offline.MarkResourceOfflineUseCase
+import com.passbolt.mobile.android.domain.secrets.usecase.offline.OfflineSecretsSyncInteractor
+import com.passbolt.mobile.android.domain.secrets.usecase.offline.OfflineSignInGate
+import com.passbolt.mobile.android.domain.secrets.usecase.offline.SetOfflineModeUseCase
+import com.passbolt.mobile.android.domain.secrets.usecase.offline.UnmarkResourceOfflineUseCase
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
@@ -36,4 +24,16 @@ val secretsDomainModule =
         singleOf(::DecryptSecretUseCase)
         singleOf(::SecretInteractor)
         singleOf(::SecretParser)
+        // offline mode
+        singleOf(::OfflineSessionState)
+        singleOf(::OfflineSyncTracker)
+        singleOf(::OfflineSecretsSyncInteractor)
+        singleOf(::OfflineSignInGate)
+        singleOf(::MarkResourceOfflineUseCase)
+        singleOf(::UnmarkResourceOfflineUseCase)
+        singleOf(::IsResourceMarkedOfflineUseCase)
+        singleOf(::SetOfflineModeUseCase)
+        singleOf(::ClearOfflineCacheUseCase)
+        singleOf(::ClearOfflineSecretsUseCase)
+        singleOf(::GetOfflineCacheStatusUseCase)
     }

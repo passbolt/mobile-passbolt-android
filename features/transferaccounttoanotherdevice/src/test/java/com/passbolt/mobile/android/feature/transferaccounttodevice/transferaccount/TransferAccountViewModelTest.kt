@@ -35,6 +35,7 @@ import com.passbolt.mobile.android.core.passphrasememorycache.PassphraseMemoryCa
 import com.passbolt.mobile.android.domain.auth.usecase.GetSessionUseCase
 import com.passbolt.mobile.android.domain.mobiletransfer.usecase.CreateTransferUseCase
 import com.passbolt.mobile.android.domain.mobiletransfer.usecase.ViewTransferUseCase
+import com.passbolt.mobile.android.domain.secrets.offline.OfflineSessionState
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetSessionExpiryUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetSessionExpiryUseCase.Output.JwtWillExpire
 import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccount.TransferAccountIntent.CancelTransfer
@@ -97,6 +98,7 @@ class TransferAccountViewModelTest : KoinTest {
                         single { mock<ViewTransferUseCase>() }
                         single { mock<GetSessionUseCase>() }
                         single { mock<GetSessionExpiryUseCase>() }
+                        singleOf(::OfflineSessionState)
                         single { mock<PassphraseMemoryCache>() }
                         singleOf(::TransferAccountIdlingResource)
                         singleOf(::TestCoroutineLaunchContext) bind CoroutineLaunchContext::class

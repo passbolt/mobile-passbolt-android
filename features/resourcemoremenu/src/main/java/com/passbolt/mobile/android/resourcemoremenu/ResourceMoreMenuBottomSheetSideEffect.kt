@@ -51,4 +51,8 @@ sealed interface ResourceMoreMenuBottomSheetSideEffect {
     data class ToggleFavourite(
         val option: ResourceMoreMenuModel.FavouriteOption,
     ) : ResourceMoreMenuBottomSheetSideEffect
+
+    data class ToggleOfflineAvailability(
+        val option: ResourceMoreMenuModel.OfflineOption,
+    ) : ResourceMoreMenuBottomSheetSideEffect
 }

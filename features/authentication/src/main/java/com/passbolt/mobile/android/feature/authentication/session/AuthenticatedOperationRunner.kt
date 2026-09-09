@@ -7,6 +7,7 @@ import com.passbolt.mobile.android.core.mvp.authentication.SessionRefreshTrackin
 import com.passbolt.mobile.android.core.mvp.authentication.UnauthenticatedReason
 import com.passbolt.mobile.android.core.navigation.AppForegroundListener
 import com.passbolt.mobile.android.core.passphrasememorycache.PassphraseMemoryCache
+import com.passbolt.mobile.android.domain.secrets.offline.OfflineSessionState
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetSessionExpiryUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.RefreshSessionUseCase
 import kotlinx.coroutines.flow.collect
@@ -54,9 +55,12 @@ class AuthenticatedOperationRunner : KoinComponent {
     private val passphraseMemoryCache: PassphraseMemoryCache by inject()
     private val appForegroundListener: AppForegroundListener by inject()
     private val sessionRefreshTrackingFlow: SessionRefreshTrackingFlow by inject()
+    private val offlineSessionState: OfflineSessionState by inject()
 
     suspend fun <OUTPUT : AuthenticatedUseCaseOutput> runOperation(request: suspend () -> OUTPUT): OUTPUT {
-        val needFullSignIn = isFullSignInNeeded()
+        // offline session: there is no JWT to check and no server to refresh it with;
+        // only the local passphrase session is enforced
+        val needFullSignIn = if (offlineSessionState.isOfflineSession) false else isFullSignInNeeded()
         val needPassphraseRefresh = isPassphraseRefreshNeeded()
 
         // session is refreshed proactively to avoid waiting for the first request to fail

@@ -24,6 +24,7 @@
 package com.passbolt.mobile.android.resourcemoremenu
 
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.FavouriteOption
+import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.OfflineOption
 
 data class ResourceMoreMenuBottomSheetState(
     val title: String = "",
@@ -36,4 +37,5 @@ data class ResourceMoreMenuBottomSheetState(
     val showEdit: Boolean = false,
     val showShare: Boolean = false,
     val favouriteOption: FavouriteOption? = null,
+    val offlineOption: OfflineOption? = null,
 )
