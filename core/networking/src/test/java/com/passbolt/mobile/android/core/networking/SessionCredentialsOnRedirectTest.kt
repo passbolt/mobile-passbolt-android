@@ -59,7 +59,7 @@ class SessionCredentialsOnRedirectTest : KoinTest {
         }
     private val getSessionUseCase =
         mock<GetSessionUseCase> {
-            on { execute(Unit) } doReturn GetSessionUseCase.Output(accessToken = ACCESS_TOKEN, refreshToken = null, mfaToken = null)
+            on { execute(Unit) } doReturn GetSessionUseCase.Output(accessToken = ACCESS_TOKEN, refreshToken = null, mfaToken = MFA_COOKIE)
         }
 
     @get:Rule
@@ -80,7 +80,6 @@ class SessionCredentialsOnRedirectTest : KoinTest {
     fun setUp() {
         apiServer.start()
         foreignServer.start()
-        receiveMfaCookieFromApi()
     }
 
     @After
@@ -144,16 +143,6 @@ class SessionCredentialsOnRedirectTest : KoinTest {
         assertThat(response.request.url).isEqualTo(redirectTarget)
         assertSessionCredentialsSent(apiServer.nextRequest())
         assertSessionCredentialsSent(apiServer.nextRequest())
-    }
-
-    private fun receiveMfaCookieFromApi() {
-        apiServer.enqueue(
-            MockResponse()
-                .setResponseCode(HTTP_OK)
-                .addHeader(SET_COOKIE_HEADER, "$MFA_COOKIE; Path=/; HttpOnly"),
-        )
-        client.get("$PLACEHOLDER_BASE_URL${AuthPaths.MFA_VERIFICATION_TOTP}")
-        apiServer.nextRequest()
     }
 
     private fun OkHttpClient.get(url: String): Response = newCall(Request.Builder().url(url).build()).execute().apply { close() }
