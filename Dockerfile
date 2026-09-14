@@ -1,4 +1,4 @@
-FROM --platform=linux/amd64 eclipse-temurin:21.0.12_8-jdk-noble@sha256:75ce56643243c3db632be2ef259625fb42ee3be1334389659f7a1a61acb78783
+FROM --platform=linux/amd64 eclipse-temurin:21.0.12_8-jdk-noble@sha256:2fc8306f51cd8c1582b972213f3115300074084ec4f9060448454f04ecbd941b
 
 ENV ANDROID_HOME="/usr/local/android-sdk" \
     ANDROID_SDK_ROOT="/usr/local/android-sdk" \
