@@ -449,7 +449,7 @@ class ResourceUpdateActionsInteractorConfirmedPermissionsTest : KoinTest {
                 )
         }
         metadataPrivateKeysInteractor.stub {
-            on { verifyMetadataPrivateKey() } doReturn MetadataPrivateKeysInteractor.Output.KeyIsTrusted
+            on { refreshAndVerifyMetadataPrivateKey() } doReturn MetadataPrivateKeysInteractor.Output.KeyIsTrusted
         }
         getMetadataKeysUseCase.stub {
             on { execute(any()) } doReturn emptyList()

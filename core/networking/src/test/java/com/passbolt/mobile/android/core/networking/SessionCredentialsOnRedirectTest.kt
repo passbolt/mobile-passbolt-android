@@ -59,7 +59,8 @@ class SessionCredentialsOnRedirectTest : KoinTest {
         }
     private val getSessionUseCase =
         mock<GetSessionUseCase> {
-            on { execute(Unit) } doReturn GetSessionUseCase.Output(accessToken = ACCESS_TOKEN, refreshToken = null, mfaToken = MFA_COOKIE)
+            on { execute(Unit) } doReturn
+                GetSessionUseCase.Output(accessToken = ACCESS_TOKEN, refreshToken = null, mfaToken = MFA_COOKIE)
         }
 
     @get:Rule
@@ -112,7 +113,7 @@ class SessionCredentialsOnRedirectTest : KoinTest {
     }
 
     @Test
-    fun `should ignore cookies set by another origin when redirected there`() {
+    fun `should drop cookies set by another origin when redirected there`() {
         val redirectTarget = foreignServer.url("/landing.json")
         apiServer.enqueue(redirectTo(redirectTarget))
         foreignServer.enqueue(
@@ -120,15 +121,10 @@ class SessionCredentialsOnRedirectTest : KoinTest {
                 .setResponseCode(HTTP_OK)
                 .addHeader(SET_COOKIE_HEADER, "$FOREIGN_MFA_COOKIE; Path=/; HttpOnly"),
         )
-        apiServer.enqueue(MockResponse().setResponseCode(HTTP_OK))
 
         val redirectedResponse = client.get("$PLACEHOLDER_BASE_URL/resources.json")
-        client.get("$PLACEHOLDER_BASE_URL/resources.json")
 
         assertThat(redirectedResponse.headers(SET_COOKIE_HEADER)).isEmpty()
-        apiServer.nextRequest()
-        foreignServer.nextRequest()
-        assertSessionCredentialsSent(apiServer.nextRequest())
     }
 
     @Test

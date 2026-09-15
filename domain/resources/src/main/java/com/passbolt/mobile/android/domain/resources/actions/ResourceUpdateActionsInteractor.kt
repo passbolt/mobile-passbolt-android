@@ -503,7 +503,7 @@ class ResourceUpdateActionsInteractor(
             MetadataKeyTypeModel.SHARED -> {
                 val verifyOutput =
                     runAuthenticatedOperation {
-                        metadataPrivateKeysInteractor.verifyMetadataPrivateKey()
+                        metadataPrivateKeysInteractor.refreshAndVerifyMetadataPrivateKey()
                     }
 
                 when (verifyOutput) {
