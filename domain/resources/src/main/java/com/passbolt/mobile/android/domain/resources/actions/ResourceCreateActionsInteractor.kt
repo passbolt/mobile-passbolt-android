@@ -190,7 +190,7 @@ class ResourceCreateActionsInteractor(
             MetadataKeyTypeModel.SHARED -> {
                 val verifyOutput =
                     runAuthenticatedOperation {
-                        metadataPrivateKeysInteractor.verifyMetadataPrivateKey()
+                        metadataPrivateKeysInteractor.refreshAndVerifyMetadataPrivateKey()
                     }
 
                 when (verifyOutput) {

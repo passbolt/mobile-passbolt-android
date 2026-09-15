@@ -25,6 +25,8 @@ package com.passbolt.mobile.android.domain.metadata.interactor
 
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import com.google.common.truth.Truth.assertThat
+import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
+import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated.Reason.Passphrase
 import com.passbolt.mobile.android.core.passphrasememorycache.PassphraseMemoryCache
 import com.passbolt.mobile.android.core.passphrasememorycache.PotentialPassphrase
 import com.passbolt.mobile.android.domain.accounts.usecase.GetSelectedAccountDataUseCase
@@ -56,6 +58,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.inOrder
 import org.mockito.kotlin.never
 import org.mockito.kotlin.reset
 import org.mockito.kotlin.stub
@@ -186,7 +189,7 @@ class MetadataPrivateKeysInteractorTest : KoinTest {
 
     @After
     fun tearDown() {
-        reset(mockSaveTrustedMetadataKeyUseCase, mockUpdateMetadataPrivateKeyUseCase)
+        reset(mockSaveTrustedMetadataKeyUseCase, mockUpdateMetadataPrivateKeyUseCase, mockMetadataKeysInteractor)
     }
 
     @Test
@@ -203,6 +206,44 @@ class MetadataPrivateKeysInteractorTest : KoinTest {
 
             verify(mockSaveTrustedMetadataKeyUseCase, never()).execute(any())
             verify(mockUpdateMetadataPrivateKeyUseCase, never()).execute(any())
+            assertThat(result).isInstanceOf(MetadataPrivateKeysInteractor.Output.NoMetadataKey::class.java)
+        }
+
+    @Test
+    fun refreshAndVerifyShouldRefreshMetadataKeysFromServerOnceBeforeReadingLocalKeys() =
+        runTest {
+            mockGetLocalMetadataKeysUseCase.stub {
+                on { execute(any()) } doReturn emptyList()
+            }
+            mockGetTrustedMetadataKeyUseCase.stub {
+                on { execute(any()) } doReturn GetTrustedMetadataKeyUseCase.Output.NoTrustedKey
+            }
+
+            val result = metadataPrivateKeysInteractor.refreshAndVerifyMetadataPrivateKey()
+
+            val order = inOrder(mockMetadataKeysInteractor, mockGetLocalMetadataKeysUseCase)
+            order.verify(mockMetadataKeysInteractor).fetchAndSaveMetadataKeys()
+            order.verify(mockGetLocalMetadataKeysUseCase).execute(any())
+            assertThat(result).isInstanceOf(MetadataPrivateKeysInteractor.Output.NoMetadataKey::class.java)
+        }
+
+    @Test
+    fun refreshAndVerifyShouldVerifyWithLocalDataWhenRefreshFails() =
+        runTest {
+            mockMetadataKeysInteractor.stub {
+                on { fetchAndSaveMetadataKeys() } doReturn
+                    MetadataKeysInteractor.Output.Failure(AuthenticationState.Unauthenticated(Passphrase))
+            }
+            mockGetLocalMetadataKeysUseCase.stub {
+                on { execute(any()) } doReturn emptyList()
+            }
+            mockGetTrustedMetadataKeyUseCase.stub {
+                on { execute(any()) } doReturn GetTrustedMetadataKeyUseCase.Output.NoTrustedKey
+            }
+
+            val result = metadataPrivateKeysInteractor.refreshAndVerifyMetadataPrivateKey()
+
+            verify(mockGetLocalMetadataKeysUseCase).execute(any())
             assertThat(result).isInstanceOf(MetadataPrivateKeysInteractor.Output.NoMetadataKey::class.java)
         }
 

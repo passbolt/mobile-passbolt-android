@@ -59,10 +59,13 @@ class MetadataPrivateKeysInteractor(
     private val metadataPrivateKeysHelperInteractor: MetadataPrivateKeysHelperInteractor,
     private val metadataKeysInteractor: MetadataKeysInteractor,
 ) {
+    suspend fun refreshAndVerifyMetadataPrivateKey(): Output {
+        refreshMetadataKeysFromServer()
+        return verifyMetadataPrivateKey()
+    }
+
     suspend fun verifyMetadataPrivateKey(): Output {
         Timber.d("Verifying metadata private key trust")
-
-        refreshMetadataKeysFromServer()
 
         val backendMetadataKey =
             getLocalMetadataKeysUseCase
