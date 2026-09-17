@@ -2,9 +2,9 @@ FROM --platform=linux/amd64 eclipse-temurin:21.0.12_8-jdk-noble@sha256:75ce56643
 
 ENV ANDROID_HOME="/usr/local/android-sdk" \
     ANDROID_SDK_ROOT="/usr/local/android-sdk" \
-    ANDROID_VERSION=36 \
+    ANDROID_VERSION=37.0 \
     ANDROID_BUILD_TOOLS_VERSION="36.0.0" \
-    ANDROID_SDK_TOOLS_VERSION="13114758" \
+    ANDROID_SDK_TOOLS_VERSION="16111833" \
     DEBIAN_FRONTEND=noninteractive
 
 # wget + unzip: needed for android sdk download
@@ -51,7 +51,8 @@ RUN wget --quiet --output-document=$ANDROID_HOME/cmdline-tools.zip https://dl.go
     && yes | sdkmanager --sdk_root=${ANDROID_HOME} --licenses || true \
     && sdkmanager --sdk_root=${ANDROID_HOME} --update \
     && sdkmanager --sdk_root=${ANDROID_HOME} "build-tools;${ANDROID_BUILD_TOOLS_VERSION}" \
-    && sdkmanager --sdk_root=${ANDROID_HOME} "platforms;android-${ANDROID_VERSION}"
+    && sdkmanager --sdk_root=${ANDROID_HOME} "platforms;android-${ANDROID_VERSION}" \
+    && sdkmanager --sdk_root=${ANDROID_HOME} "platform-tools"
 
 # switch to non-root and lock root
 RUN useradd --create-home --home-dir /application --shell /bin/bash ci-build \
