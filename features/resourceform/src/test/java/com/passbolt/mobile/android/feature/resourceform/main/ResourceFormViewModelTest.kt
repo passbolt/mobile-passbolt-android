@@ -8,6 +8,7 @@ import com.passbolt.mobile.android.core.passphrasememorycache.PassphraseMemoryCa
 import com.passbolt.mobile.android.core.passwordgenerator.SecretGenerator
 import com.passbolt.mobile.android.core.passwordgenerator.codepoints.Codepoint
 import com.passbolt.mobile.android.core.passwordgenerator.usecase.CheckPasswordPropertiesUseCase
+import com.passbolt.mobile.android.domain.metadata.interactor.MetadataPrivateKeysHelperInteractor
 import com.passbolt.mobile.android.domain.metadata.usecase.GetMetadataTypesSettingsUseCase
 import com.passbolt.mobile.android.domain.passwordexpiry.model.PasswordExpirySettings
 import com.passbolt.mobile.android.domain.passwordexpiry.usecase.PasswordExpiryPoliciesInteractor
@@ -55,6 +56,8 @@ import com.passbolt.mobile.android.feature.resourceform.main.ResourceFormIntent.
 import com.passbolt.mobile.android.feature.resourceform.main.ResourceFormIntent.ScanTotp
 import com.passbolt.mobile.android.feature.resourceform.main.ResourceFormIntent.TotpSecretChanged
 import com.passbolt.mobile.android.feature.resourceform.main.ResourceFormIntent.TotpUrlChanged
+import com.passbolt.mobile.android.feature.resourceform.main.ResourceFormIntent.TrustNewMetadataKey
+import com.passbolt.mobile.android.feature.resourceform.main.ResourceFormIntent.TrustedMetadataKeyDeleted
 import com.passbolt.mobile.android.feature.resourceform.main.ResourceFormIntent.UpgradeResource
 import com.passbolt.mobile.android.feature.resourceform.main.ResourceFormSideEffect.NavigateBack
 import com.passbolt.mobile.android.feature.resourceform.main.ResourceFormSideEffect.NavigateToAdditionalUris
@@ -81,10 +84,13 @@ import com.passbolt.mobile.android.ui.CaseTypeUiModel
 import com.passbolt.mobile.android.ui.CaseTypeUiModel.LOWERCASE
 import com.passbolt.mobile.android.ui.LeadingContentType
 import com.passbolt.mobile.android.ui.MetadataJsonModel
+import com.passbolt.mobile.android.ui.MetadataKeyModification
 import com.passbolt.mobile.android.ui.MetadataKeyTypeModel.PERSONAL
 import com.passbolt.mobile.android.ui.MetadataTypeModel
 import com.passbolt.mobile.android.ui.MetadataTypeModel.V4
+import com.passbolt.mobile.android.ui.NewMetadataKeyToTrustModel
 import com.passbolt.mobile.android.ui.OtpParseResult
+import com.passbolt.mobile.android.ui.ParsedMetadataPrivateKeyModel
 import com.passbolt.mobile.android.ui.PassphraseGeneratorSettingsUiModel
 import com.passbolt.mobile.android.ui.PasswordGeneratorSettingsUiModel
 import com.passbolt.mobile.android.ui.PasswordGeneratorTypeUiModel
@@ -100,6 +106,7 @@ import com.passbolt.mobile.android.ui.ResourceFormUiModel.Secret.PASSWORD
 import com.passbolt.mobile.android.ui.ResourceFormUiModel.Secret.TOTP
 import com.passbolt.mobile.android.ui.ResourcePermission.OWNER
 import com.passbolt.mobile.android.ui.ResourceUiModel
+import com.passbolt.mobile.android.ui.TrustedKeyDeletedModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.drop
@@ -129,6 +136,7 @@ import org.mockito.kotlin.stub
 import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
 import java.time.ZonedDateTime
+import java.util.UUID
 import kotlin.test.assertIs
 
 /**
@@ -1648,6 +1656,64 @@ class ResourceFormViewModelTest : KoinTest {
         }
 
     @Test
+    fun `trust new metadata key should dismiss dialog and show trusted snackbar`() =
+        runTest {
+            stubCreateResultingIn(ResourceCreateActionResult.MetadataKeyModified(NEW_METADATA_KEY_TO_TRUST))
+            whenever(mockMetadataPrivateKeysHelperInteractor.trustNewKey(any()))
+                .thenReturn(MetadataPrivateKeysHelperInteractor.Output.Success)
+
+            val mode =
+                ResourceFormMode.Create(
+                    leadingContentType = LeadingContentType.PASSWORD,
+                    parentFolderId = null,
+                )
+            val viewModel: ResourceFormViewModel = get { parametersOf(mode) }
+            advanceUntilIdle()
+
+            viewModel.onIntent(PasswordTextChanged("strongpassword123!"))
+            viewModel.onIntent(CreateResource)
+            advanceUntilIdle()
+            assertThat(viewModel.viewState.value.metadataKeyModifiedDialog).isEqualTo(NEW_METADATA_KEY_TO_TRUST)
+
+            viewModel.sideEffect.test {
+                viewModel.onIntent(TrustNewMetadataKey(NEW_METADATA_KEY_TO_TRUST))
+                advanceUntilIdle()
+
+                val sideEffect = awaitItem()
+                assertIs<ShowSnackbar>(sideEffect)
+                assertThat(sideEffect.type).isEqualTo(SnackbarMessage.METADATA_KEY_IS_TRUSTED)
+            }
+            val state = viewModel.viewState.value
+            assertThat(state.metadataKeyModifiedDialog).isNull()
+            assertThat(state.shouldShowDialogProgress).isFalse()
+        }
+
+    @Test
+    fun `trusted metadata key deleted should dismiss dialog and forget the trusted key`() =
+        runTest {
+            stubCreateResultingIn(ResourceCreateActionResult.MetadataKeyDeleted(TRUSTED_KEY_DELETED))
+
+            val mode =
+                ResourceFormMode.Create(
+                    leadingContentType = LeadingContentType.PASSWORD,
+                    parentFolderId = null,
+                )
+            val viewModel: ResourceFormViewModel = get { parametersOf(mode) }
+            advanceUntilIdle()
+
+            viewModel.onIntent(PasswordTextChanged("strongpassword123!"))
+            viewModel.onIntent(CreateResource)
+            advanceUntilIdle()
+            assertThat(viewModel.viewState.value.metadataKeyDeletedDialog).isEqualTo(TRUSTED_KEY_DELETED)
+
+            viewModel.onIntent(TrustedMetadataKeyDeleted)
+            advanceUntilIdle()
+
+            assertThat(viewModel.viewState.value.metadataKeyDeletedDialog).isNull()
+            verify(mockMetadataPrivateKeysHelperInteractor).deletedTrustedMetadataPrivateKey()
+        }
+
+    @Test
     fun `create resource with pwned password should show data breach warning`() =
         runTest {
             mockGetDefaultCreateContentTypeUseCase.stub {
@@ -2123,6 +2189,19 @@ class ResourceFormViewModelTest : KoinTest {
         }
     }
 
+    private fun stubCreateResultingIn(result: ResourceCreateActionResult) {
+        stubCreatePasswordMode()
+        mockGetPasswordPoliciesUseCase.stub {
+            on { execute(any()) }.thenReturn(MOCK_PASSWORD_POLICIES)
+        }
+        mockCheckPasswordPropertiesUseCase.stub {
+            on { execute(any()) }.thenReturn(CheckPasswordPropertiesUseCase.Output.Fine)
+        }
+        mockResourceCreateActionsInteractor.stub {
+            on { createGenericResource(any(), anyOrNull(), any(), any()) }.thenReturn(flowOf(result))
+        }
+    }
+
     @Test
     fun `upgrade panel should be shown when feature flag, settings and v4 resource all allow it`() =
         runTest {
@@ -2407,6 +2486,37 @@ class ResourceFormViewModelTest : KoinTest {
                 automaticExpiry = true,
                 automaticUpdate = true,
                 defaultExpiryPeriodDays = 90,
+            )
+
+        val NEW_METADATA_KEY_TO_TRUST =
+            NewMetadataKeyToTrustModel(
+                id = UUID.fromString("00000000-0000-0000-0000-000000000001"),
+                signedUsername = "ada@passbolt.com",
+                signedName = "Ada Lovelace",
+                signatureCreationTimestampSeconds = 0L,
+                signatureKeyFingerprint = "signatureFingerprint",
+                metadataPrivateKey =
+                    ParsedMetadataPrivateKeyModel(
+                        id = UUID.fromString("00000000-0000-0000-0000-000000000001"),
+                        userId = UUID.fromString("00000000-0000-0000-0000-000000000002"),
+                        keyData = "keyData",
+                        passphrase = "",
+                        created = ZonedDateTime.now(),
+                        createdBy = null,
+                        modified = ZonedDateTime.now(),
+                        modifiedBy = null,
+                        fingerprint = "keyFingerprint",
+                        domain = "https://passbolt.test",
+                        pgpMessage = "pgpMessage",
+                    ),
+                modificationKind = MetadataKeyModification.ROTATION,
+            )
+
+        val TRUSTED_KEY_DELETED =
+            TrustedKeyDeletedModel(
+                keyFingerprint = "keyFingerprint",
+                signedUsername = "ada@passbolt.com",
+                signedName = "Ada Lovelace",
             )
     }
 }
