@@ -35,8 +35,15 @@ import com.passbolt.mobile.android.entity.group.UsersGroupWithChildItemsCount
 @Dao
 interface GroupsDao : BaseDao<UsersGroup> {
     @Transaction
-    @Query("SELECT * FROM UsersGroup WHERE groupId NOT IN (:ids) ORDER BY name ASC")
-    suspend fun getAllExcluding(ids: List<String>): List<UsersGroup>
+    @Query(
+        "SELECT * FROM UsersGroup g " +
+            "WHERE :ftsQuery IS NULL OR " +
+            "   EXISTS (" +
+            "       SELECT 1 FROM UsersGroupFts WHERE UsersGroupFts MATCH :ftsQuery AND UsersGroupFts.docid = g.rowid" +
+            "   ) " +
+            "ORDER BY name ASC",
+    )
+    suspend fun getAll(ftsQuery: String?): List<UsersGroup>
 
     @Query("UPDATE UsersGroup SET updateState = :updateState")
     suspend fun setAllUpdateState(updateState: GroupUpdateState)

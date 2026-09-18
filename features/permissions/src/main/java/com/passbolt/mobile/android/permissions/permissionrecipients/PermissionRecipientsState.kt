@@ -30,12 +30,10 @@ import com.passbolt.mobile.android.ui.PermissionModelUi
 import com.passbolt.mobile.android.ui.UserUiModel
 
 data class PermissionRecipientsState(
-    val groups: List<GroupModel> = emptyList(),
-    val users: List<UserUiModel> = emptyList(),
     val filteredGroups: List<GroupModel> = emptyList(),
     val filteredUsers: List<UserUiModel> = emptyList(),
-    val selectedGroupIds: Set<String> = emptySet(),
-    val selectedUserIds: Set<String> = emptySet(),
+    val selectedGroups: Map<String, GroupModel> = emptyMap(),
+    val selectedUsers: Map<String, UserUiModel> = emptyMap(),
     val searchInputEndIconMode: SearchInputEndIconMode = NONE,
     val currentPermissions: List<PermissionModelUi> = emptyList(),
     val filteredExistingPermissions: List<PermissionModelUi> = emptyList(),

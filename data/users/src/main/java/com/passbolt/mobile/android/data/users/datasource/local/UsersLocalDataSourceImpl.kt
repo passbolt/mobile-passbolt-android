@@ -26,12 +26,14 @@ package com.passbolt.mobile.android.data.users.datasource.local
 import com.passbolt.mobile.android.data.users.mapper.toDomain
 import com.passbolt.mobile.android.data.users.mapper.toEntity
 import com.passbolt.mobile.android.database.DatabaseProvider
+import com.passbolt.mobile.android.database.QuerySanitizer
 import com.passbolt.mobile.android.domain.users.UsersLocalDataSource
 import com.passbolt.mobile.android.domain.users.model.UserProfile
 import com.passbolt.mobile.android.entity.user.UserUpdateState.PENDING
 
 internal class UsersLocalDataSourceImpl(
     private val databaseProvider: DatabaseProvider,
+    private val querySanitizer: QuerySanitizer,
 ) : UsersLocalDataSource {
     override suspend fun getUser(
         selectedAccountId: String,
@@ -55,12 +57,12 @@ internal class UsersLocalDataSourceImpl(
 
     override suspend fun getUsers(
         selectedAccountId: String,
-        excludingIds: List<String>,
+        searchQuery: String?,
     ): List<UserProfile> =
         databaseProvider
             .get(selectedAccountId)
             .usersDao()
-            .getAllExcluding(excludingIds)
+            .getAll(querySanitizer.sanitize(searchQuery))
             .map { it.toDomain() }
 
     override suspend fun upsertUsers(

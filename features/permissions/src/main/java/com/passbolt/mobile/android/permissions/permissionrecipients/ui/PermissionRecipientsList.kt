@@ -29,7 +29,7 @@ internal fun PermissionRecipientsList(
         ) { group ->
             GroupRecipientRow(
                 group = group,
-                isSelected = group.groupId in state.selectedGroupIds,
+                isSelected = group.groupId in state.selectedGroups,
                 onClick = { onIntent(ToggleGroupSelection(group)) },
             )
         }
@@ -40,7 +40,7 @@ internal fun PermissionRecipientsList(
         ) { user ->
             UserRecipientRow(
                 user = user,
-                isSelected = user.id in state.selectedUserIds,
+                isSelected = user.id in state.selectedUsers,
                 onClick = { onIntent(ToggleUserSelection(user)) },
             )
         }

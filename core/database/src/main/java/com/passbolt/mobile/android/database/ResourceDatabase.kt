@@ -45,6 +45,7 @@ import com.passbolt.mobile.android.entity.resource.Tag
 import com.passbolt.mobile.android.entity.resource.TagFts
 import com.passbolt.mobile.android.entity.user.ResourceAndUsersCrossRef
 import com.passbolt.mobile.android.entity.user.User
+import com.passbolt.mobile.android.entity.user.UserFts
 
 /**
  * Passbolt - Open source password manager for teams
@@ -90,10 +91,11 @@ import com.passbolt.mobile.android.entity.user.User
         TagFts::class,
         FolderFts::class,
         UsersGroupFts::class,
+        UserFts::class,
         MetadataKey::class,
         MetadataPrivateKey::class,
     ],
-    version = 28,
+    version = 29,
 )
 @TypeConverters(Converters::class)
 abstract class ResourceDatabase : RoomDatabase() {

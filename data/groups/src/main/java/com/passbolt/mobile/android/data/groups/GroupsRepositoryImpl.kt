@@ -39,9 +39,9 @@ internal class GroupsRepositoryImpl(
     private val remoteDataSource: GroupsRemoteDataSource,
 ) : GroupsRepository {
     override suspend fun getGroups(
-        excludingIds: List<String>,
+        searchQuery: String?,
         userId: String,
-    ): List<Group> = localDataSource.getGroups(excludingIds, userId)
+    ): List<Group> = localDataSource.getGroups(searchQuery, userId)
 
     override fun getGroupsWithItemsCountPaged(
         searchQuery: String?,
