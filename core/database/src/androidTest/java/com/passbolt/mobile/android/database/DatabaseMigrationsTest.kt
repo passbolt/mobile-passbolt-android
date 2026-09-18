@@ -47,6 +47,7 @@ import com.passbolt.mobile.android.database.migrations.Migration24to25
 import com.passbolt.mobile.android.database.migrations.Migration25to26
 import com.passbolt.mobile.android.database.migrations.Migration26to27
 import com.passbolt.mobile.android.database.migrations.Migration27to28
+import com.passbolt.mobile.android.database.migrations.Migration28to29
 import com.passbolt.mobile.android.database.migrations.Migration2to3
 import com.passbolt.mobile.android.database.migrations.Migration3to4
 import com.passbolt.mobile.android.database.migrations.Migration4to5
@@ -791,6 +792,37 @@ class DatabaseMigrationsTest {
     }
 
     @Test
+    fun migrate28To29() {
+        helper
+            .createDatabase(TEST_DB, 28)
+            .apply {
+                execSQL(
+                    "INSERT INTO User VALUES('userId', 'ada@passbolt.com', 0, 'UPDATED', 'Ada', 'Lovelace', null, " +
+                        "'userKeyId', 'armoredKey', 4096, null, 'keyId', 'fingerprint', 'RSA', null, null)",
+                )
+                close()
+            }
+
+        helper
+            .runMigrationsAndValidate(TEST_DB, 29, true, Migration28to29)
+            .apply {
+                val lastNameCursor = query("SELECT count(*) FROM UserFts WHERE UserFts MATCH 'lovelace*'")
+                lastNameCursor.moveToFirst()
+                assertThat(lastNameCursor.getInt(0)).isEqualTo(1)
+                lastNameCursor.close()
+
+                execSQL("UPDATE User SET lastName = 'Byron' WHERE id = 'userId'")
+
+                val updatedLastNameCursor = query("SELECT count(*) FROM UserFts WHERE UserFts MATCH 'byron*'")
+                updatedLastNameCursor.moveToFirst()
+                assertThat(updatedLastNameCursor.getInt(0)).isEqualTo(1)
+                updatedLastNameCursor.close()
+
+                close()
+            }
+    }
+
+    @Test
     fun migrateAll() {
         helper.createDatabase(TEST_DB, 1).apply {
             close()
@@ -829,6 +861,7 @@ class DatabaseMigrationsTest {
                 Migration25to26,
                 Migration26to27,
                 Migration27to28,
+                Migration28to29,
             ).build()
             .apply {
                 openHelper.writableDatabase

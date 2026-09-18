@@ -36,8 +36,15 @@ interface UsersDao : BaseDao<User> {
     suspend fun get(userId: String): User
 
     @Transaction
-    @Query("SELECT * FROM User WHERE id NOT IN (:ids)")
-    suspend fun getAllExcluding(ids: List<String>): List<User>
+    @Query(
+        "SELECT * FROM User u " +
+            "WHERE :ftsQuery IS NULL OR " +
+            "   EXISTS (" +
+            "       SELECT 1 FROM UserFts WHERE UserFts MATCH :ftsQuery AND UserFts.docid = u.rowid" +
+            "   ) " +
+            "ORDER BY u.firstName COLLATE NOCASE ASC, u.lastName COLLATE NOCASE ASC, u.userName COLLATE NOCASE ASC",
+    )
+    suspend fun getAll(ftsQuery: String?): List<User>
 
     @Query("UPDATE User SET updateState = :updateState")
     suspend fun setAllUpdateState(updateState: UserUpdateState)

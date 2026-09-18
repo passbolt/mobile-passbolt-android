@@ -23,7 +23,6 @@
 
 package com.passbolt.mobile.android.domain.folders.model
 
-import com.passbolt.mobile.android.common.search.Searchable
 import com.passbolt.mobile.android.ui.PermissionModel
 import com.passbolt.mobile.android.ui.ResourcePermission
 import java.time.ZonedDateTime
@@ -45,8 +44,7 @@ data class FolderWithCountAndPath(
     val isShared: Boolean,
     val subItemsCount: Int,
     val path: String?,
-    override val searchCriteria: String = name,
-) : Searchable
+)
 
 data class FolderModelWithAttributes(
     val folderModel: FolderModel,

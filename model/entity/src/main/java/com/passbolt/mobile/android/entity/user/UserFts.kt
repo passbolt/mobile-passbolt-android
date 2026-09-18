@@ -1,8 +1,12 @@
-package com.passbolt.mobile.android.common.search
+package com.passbolt.mobile.android.entity.user
+
+import androidx.room.Entity
+import androidx.room.Fts4
+import androidx.room.FtsOptions
 
 /**
  * Passbolt - Open source password manager for teams
- * Copyright (c) 2021 Passbolt SA
+ * Copyright (c) 2026 Passbolt SA
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
  * Public License (AGPL) as published by the Free Software Foundation version 3.
@@ -22,7 +26,14 @@ package com.passbolt.mobile.android.common.search
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-@Deprecated("Search should be implemented using database now to account for large datasets")
-interface Searchable {
-    val searchCriteria: String
-}
+
+@Fts4(
+    contentEntity = User::class,
+    tokenizer = FtsOptions.TOKENIZER_UNICODE61,
+)
+@Entity(tableName = "UserFts")
+data class UserFts(
+    val userName: String,
+    val firstName: String?,
+    val lastName: String?,
+)

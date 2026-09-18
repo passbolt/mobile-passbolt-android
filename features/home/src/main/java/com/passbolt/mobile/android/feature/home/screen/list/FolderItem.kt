@@ -151,7 +151,6 @@ private fun FolderItemPreview() {
             isShared = false,
             subItemsCount = 7,
             path = null,
-            searchCriteria = "Work Documents",
         )
 
     MaterialTheme {
