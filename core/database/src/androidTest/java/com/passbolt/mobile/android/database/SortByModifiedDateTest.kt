@@ -1,9 +1,10 @@
 package com.passbolt.mobile.android.database
 
 import android.content.Context
-import androidx.room.Room
+import androidx.room3.Room
 import androidx.test.core.app.ApplicationProvider
 import com.google.common.truth.Truth.assertThat
+import com.passbolt.mobile.android.database.helpers.testSqlCipherDriver
 import com.passbolt.mobile.android.database.impl.resources.ResourcesDao
 import com.passbolt.mobile.android.entity.resource.Permission
 import com.passbolt.mobile.android.entity.resource.Resource
@@ -52,7 +53,8 @@ class SortByModifiedDateTest {
                 .inMemoryDatabaseBuilder(
                     context,
                     ResourceDatabase::class.java,
-                ).build()
+                ).setDriver(testSqlCipherDriver())
+                .build()
         resourcesDao = db.resourcesDao()
         runBlocking {
             db.resourceTypesDao().insert(RESOURCE_TYPE)
@@ -102,7 +104,7 @@ class SortByModifiedDateTest {
         private val RESOURCE_1 =
             Resource(
                 resourceId = "1",
-                folderId = "folderid",
+                folderId = null,
                 resourcePermission = Permission.READ,
                 resourceTypeId = "1",
                 favouriteId = null,
@@ -115,7 +117,7 @@ class SortByModifiedDateTest {
         private val RESOURCE_2 =
             Resource(
                 resourceId = "2",
-                folderId = "folderid",
+                folderId = null,
                 resourcePermission = Permission.READ,
                 resourceTypeId = "1",
                 favouriteId = null,
@@ -128,7 +130,7 @@ class SortByModifiedDateTest {
         private val RESOURCE_3 =
             Resource(
                 resourceId = "3",
-                folderId = "folderid",
+                folderId = null,
                 resourcePermission = Permission.READ,
                 resourceTypeId = "1",
                 favouriteId = null,
@@ -141,7 +143,7 @@ class SortByModifiedDateTest {
         private val RESOURCE_1_ZONE_MINUS =
             Resource(
                 resourceId = "4",
-                folderId = "folderid",
+                folderId = null,
                 resourcePermission = Permission.READ,
                 resourceTypeId = "1",
                 favouriteId = null,
@@ -154,7 +156,7 @@ class SortByModifiedDateTest {
         private val RESOURCE_1_ZONE_PLUS =
             Resource(
                 resourceId = "5",
-                folderId = "folderid",
+                folderId = null,
                 resourcePermission = Permission.READ,
                 resourceTypeId = "1",
                 favouriteId = null,

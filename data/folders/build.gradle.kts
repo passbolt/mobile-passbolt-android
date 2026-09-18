@@ -16,7 +16,6 @@ dependencies {
     implementation(platform(libs.koin.bom))
     implementation(libs.koin)
     implementation(libs.kotlin.coroutines)
-    implementation(libs.room.core)
     implementation(libs.room.paging)
     implementation(libs.paging.runtime)
     implementation(libs.sqlite.cipher) { artifact { type = "aar" } }

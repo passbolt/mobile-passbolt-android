@@ -1,7 +1,8 @@
 package com.passbolt.mobile.android.database.migrations
 
-import androidx.room.migration.Migration
-import androidx.sqlite.db.SupportSQLiteDatabase
+import androidx.room3.migration.Migration
+import androidx.sqlite.SQLiteConnection
+import androidx.sqlite.execSQL
 
 /**
  * Passbolt - Open source password manager for teams
@@ -40,8 +41,8 @@ object Migration5to6 : Migration(5, 6) {
             "`resourceId` TEXT NOT NULL, " +
             "PRIMARY KEY(`tagId`, `resourceId`))"
 
-    override fun migrate(db: SupportSQLiteDatabase) {
-        with(db) {
+    override suspend fun migrate(connection: SQLiteConnection) {
+        with(connection) {
             execSQL(CREATE_TAGS_TABLE)
             execSQL(CREATE_TAG_RESOURCE_CROSS_REF_TABLE)
         }

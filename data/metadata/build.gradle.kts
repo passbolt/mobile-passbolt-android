@@ -14,7 +14,6 @@ dependencies {
     implementation(platform(libs.koin.bom))
     implementation(libs.koin)
     implementation(libs.kotlin.coroutines)
-    implementation(libs.room.core)
 }
 
 android {

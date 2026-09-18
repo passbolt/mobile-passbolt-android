@@ -1,11 +1,11 @@
 package com.passbolt.mobile.android.entity.group
 
-import androidx.room.ColumnInfo
-import androidx.room.Embedded
-import androidx.room.Entity
-import androidx.room.Junction
-import androidx.room.PrimaryKey
-import androidx.room.Relation
+import androidx.room3.ColumnInfo
+import androidx.room3.Embedded
+import androidx.room3.Entity
+import androidx.room3.Junction
+import androidx.room3.PrimaryKey
+import androidx.room3.Relation
 import com.passbolt.mobile.android.entity.user.User
 
 /**
@@ -53,9 +53,9 @@ data class UsersGroupWithChildItemsCount(
 data class GroupWithUsers(
     @Embedded val group: UsersGroup,
     @Relation(
-        parentColumn = "groupId",
-        entityColumn = "id",
-        associateBy = Junction(UsersAndGroupCrossRef::class, parentColumn = "groupId", entityColumn = "userId"),
+        parentColumns = ["groupId"],
+        entityColumns = ["id"],
+        associateBy = Junction(UsersAndGroupCrossRef::class, parentColumns = ["groupId"], entityColumns = ["userId"]),
     )
     val users: List<User>,
 )

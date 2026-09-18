@@ -23,6 +23,7 @@
 
 package com.passbolt.mobile.android.benchmark.pagesize.appstate
 
+import androidx.room3.useReaderConnection
 import com.passbolt.mobile.android.database.DatabaseProvider
 import com.passbolt.mobile.android.domain.resources.usecase.db.RemoveLocalResourcesWithUpdateStateUseCase
 import com.passbolt.mobile.android.domain.resources.usecase.db.SetLocalResourcesUpdateStateUseCase
@@ -42,12 +43,15 @@ class LocalResourceStore(
         }
 
     fun count(): Int =
-        databaseProvider
-            .get(userId)
-            .openHelper
-            .readableDatabase
-            .query(COUNT_RESOURCES)
-            .use { cursor -> if (cursor.moveToFirst()) cursor.getInt(0) else 0 }
+        runBlocking {
+            databaseProvider
+                .get(userId)
+                .useReaderConnection { transactor ->
+                    transactor.usePrepared(COUNT_RESOURCES) { statement ->
+                        if (statement.step()) statement.getInt(0) else 0
+                    }
+                }
+        }
 
     private companion object {
         private const val COUNT_RESOURCES = "SELECT COUNT(*) FROM Resource"

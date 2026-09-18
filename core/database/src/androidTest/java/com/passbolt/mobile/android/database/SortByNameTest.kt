@@ -2,9 +2,10 @@ package com.passbolt.mobile.android.database
 
 import android.content.Context
 import androidx.paging.PagingSource
-import androidx.room.Room
+import androidx.room3.Room
 import androidx.test.core.app.ApplicationProvider
 import com.google.common.truth.Truth.assertThat
+import com.passbolt.mobile.android.database.helpers.testSqlCipherDriver
 import com.passbolt.mobile.android.database.impl.resources.PaginatedResourcesDao
 import com.passbolt.mobile.android.entity.resource.Permission
 import com.passbolt.mobile.android.entity.resource.Resource
@@ -53,7 +54,8 @@ class SortByNameTest {
                 .inMemoryDatabaseBuilder(
                     context,
                     ResourceDatabase::class.java,
-                ).build()
+                ).setDriver(testSqlCipherDriver())
+                .build()
         paginatedResourcesDao = db.paginatedResourcesDao()
         runBlocking {
             db.resourceTypesDao().insert(RESOURCE_TYPE)

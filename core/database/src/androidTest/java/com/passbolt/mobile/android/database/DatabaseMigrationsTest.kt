@@ -23,11 +23,13 @@
 
 package com.passbolt.mobile.android.database
 
-import androidx.room.Room
-import androidx.room.testing.MigrationTestHelper
-import androidx.sqlite.db.framework.FrameworkSQLiteOpenHelperFactory
+import androidx.room3.Room
+import androidx.room3.testing.MigrationTestHelper
+import androidx.room3.useWriterConnection
+import androidx.sqlite.execSQL
 import androidx.test.platform.app.InstrumentationRegistry
 import com.google.common.truth.Truth.assertThat
+import com.passbolt.mobile.android.database.helpers.testSqlCipherDriver
 import com.passbolt.mobile.android.database.migrations.Migration10to11
 import com.passbolt.mobile.android.database.migrations.Migration11to12
 import com.passbolt.mobile.android.database.migrations.Migration12to13
@@ -56,820 +58,864 @@ import com.passbolt.mobile.android.database.migrations.Migration6to7
 import com.passbolt.mobile.android.database.migrations.Migration7to8
 import com.passbolt.mobile.android.database.migrations.Migration8to9
 import com.passbolt.mobile.android.database.migrations.Migration9to10
+import kotlinx.coroutines.test.runTest
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
 class DatabaseMigrationsTest {
+    private val instrumentation = InstrumentationRegistry.getInstrumentation()
+    private val databaseFile = instrumentation.targetContext.getDatabasePath(TEST_DB)
+    private val driver = testSqlCipherDriver()
+
     @get:Rule
     val helper: MigrationTestHelper =
         MigrationTestHelper(
-            InstrumentationRegistry.getInstrumentation(),
-            ResourceDatabase::class.java,
-            emptyList(),
-            FrameworkSQLiteOpenHelperFactory(),
+            instrumentation = instrumentation,
+            file = databaseFile,
+            driver = driver,
+            databaseClass = ResourceDatabase::class,
         )
 
-    @Test
-    fun migrate1To2() {
-        helper.createDatabase(TEST_DB, 1).apply {
-            execSQL("INSERT INTO ResourceType VALUES(1, 'resourceTypeName')")
-            close()
-        }
-
-        helper
-            .runMigrationsAndValidate(TEST_DB, 2, true, Migration1to2)
-            .apply {
-                execSQL("INSERT INTO ResourceType VALUES(2, 'resourceTypeName', 'resourceTypeSlug')")
-                close()
-            }
+    @Before
+    fun setUp() {
+        instrumentation.targetContext.deleteDatabase(TEST_DB)
     }
 
     @Test
-    fun migrate2To3() {
-        helper.createDatabase(TEST_DB, 2).apply {
-            execSQL(
-                "INSERT INTO Resource VALUES('id','name','READ','url','username','desc','typeId','1'," +
-                    "'folderName','READ','1')",
-            )
-            close()
+    fun migrate1To2() =
+        runTest {
+            helper.createDatabase(1).apply {
+                execSQL("INSERT INTO ResourceType VALUES(1, 'resourceTypeName')")
+                close()
+            }
+
+            helper
+                .runMigrationsAndValidate(2, listOf(Migration1to2))
+                .apply {
+                    execSQL("INSERT INTO ResourceType VALUES(2, 'resourceTypeName', 'resourceTypeSlug')")
+                    close()
+                }
         }
 
-        helper
-            .runMigrationsAndValidate(TEST_DB, 3, true, Migration2to3)
-            .apply {
+    @Test
+    fun migrate2To3() =
+        runTest {
+            helper.createDatabase(2).apply {
                 execSQL(
-                    "INSERT INTO Resource VALUES('id2','name','READ','url','username','desc','typeId', '1','1'," +
+                    "INSERT INTO Resource VALUES('id','name','READ','url','username','desc','typeId','1'," +
                         "'folderName','READ','1')",
                 )
                 close()
             }
-    }
 
-    @Test
-    fun migrate3To4() {
-        helper.createDatabase(TEST_DB, 3).apply {
-            execSQL(
-                "INSERT INTO Resource VALUES('id1','name','READ','url','username','desc','typeId', " +
-                    "'1','1','folderName','READ','1')",
-            )
-            close()
+            helper
+                .runMigrationsAndValidate(3, listOf(Migration2to3))
+                .apply {
+                    execSQL(
+                        "INSERT INTO Resource VALUES('id2','name','READ','url','username','desc','typeId', '1','1'," +
+                            "'folderName','READ','1')",
+                    )
+                    close()
+                }
         }
 
-        helper
-            .runMigrationsAndValidate(TEST_DB, 4, true, Migration3to4)
-            .apply {
+    @Test
+    fun migrate3To4() =
+        runTest {
+            helper.createDatabase(3).apply {
                 execSQL(
-                    "INSERT INTO Resource VALUES('id2','name','READ','url','username','desc','typeId', '1'," +
+                    "INSERT INTO Resource VALUES('id1','name','READ','url','username','desc','typeId', " +
+                        "'1','1','folderName','READ','1')",
+                )
+                close()
+            }
+
+            helper
+                .runMigrationsAndValidate(4, listOf(Migration3to4))
+                .apply {
+                    execSQL(
+                        "INSERT INTO Resource VALUES('id2','name','READ','url','username','desc','typeId', '1'," +
+                            "1644909225833, '1','folderName','READ','1')",
+                    )
+                    close()
+                }
+        }
+
+    @Test
+    fun migrate4To5() =
+        runTest {
+            helper.createDatabase(4).apply {
+                execSQL(
+                    "INSERT INTO Resource VALUES('id1','name','READ','url','username','desc','typeId', '1'," +
                         "1644909225833, '1','folderName','READ','1')",
                 )
                 close()
             }
-    }
 
-    @Test
-    fun migrate4To5() {
-        helper.createDatabase(TEST_DB, 4).apply {
-            execSQL(
-                "INSERT INTO Resource VALUES('id1','name','READ','url','username','desc','typeId', '1'," +
-                    "1644909225833, '1','folderName','READ','1')",
-            )
-            close()
+            helper
+                .runMigrationsAndValidate(5, listOf(Migration4to5))
+                .apply {
+                    execSQL(
+                        "INSERT INTO Resource VALUES('id2','folderid','name','READ','url','username','desc'," +
+                            "'typeId', '1',1644909225833)",
+                    )
+                    close()
+                }
         }
 
-        helper
-            .runMigrationsAndValidate(TEST_DB, 5, true, Migration4to5)
-            .apply {
-                execSQL(
-                    "INSERT INTO Resource VALUES('id2','folderid','name','READ','url','username','desc'," +
-                        "'typeId', '1',1644909225833)",
-                )
+    @Test
+    fun migrate5To6() =
+        runTest {
+            helper.createDatabase(5).apply {
                 close()
             }
-    }
 
-    @Test
-    fun migrate5To6() {
-        helper.createDatabase(TEST_DB, 5).apply {
-            close()
+            helper
+                .runMigrationsAndValidate(6, listOf(Migration5to6))
+                .apply {
+                    execSQL("INSERT INTO Tag VALUES('id1','tagSlug',0)")
+                    execSQL("INSERT INTO ResourceAndTagsCrossRef VALUES('id1','id2')")
+                    close()
+                }
         }
 
-        helper
-            .runMigrationsAndValidate(TEST_DB, 6, true, Migration5to6)
-            .apply {
-                execSQL("INSERT INTO Tag VALUES('id1','tagSlug',0)")
-                execSQL("INSERT INTO ResourceAndTagsCrossRef VALUES('id1','id2')")
+    @Test
+    fun migrate6To7() =
+        runTest {
+            helper.createDatabase(6).apply {
                 close()
             }
-    }
 
-    @Test
-    fun migrate6To7() {
-        helper.createDatabase(TEST_DB, 6).apply {
-            close()
+            helper
+                .runMigrationsAndValidate(7, listOf(Migration6to7))
+                .apply {
+                    execSQL("INSERT INTO UsersGroup VALUES('id1','name')")
+                    execSQL("INSERT INTO ResourceAndGroupsCrossRef VALUES('resId1','id1')")
+                    close()
+                }
         }
 
-        helper
-            .runMigrationsAndValidate(TEST_DB, 7, true, Migration6to7)
-            .apply {
-                execSQL("INSERT INTO UsersGroup VALUES('id1','name')")
+    @Test
+    fun migrate7To8() =
+        runTest {
+            helper.createDatabase(7).apply {
                 execSQL("INSERT INTO ResourceAndGroupsCrossRef VALUES('resId1','id1')")
                 close()
             }
-    }
 
-    @Test
-    fun migrate7To8() {
-        helper.createDatabase(TEST_DB, 7).apply {
-            execSQL("INSERT INTO ResourceAndGroupsCrossRef VALUES('resId1','id1')")
-            close()
+            helper
+                .runMigrationsAndValidate(8, listOf(Migration7to8))
+                .apply {
+                    execSQL(
+                        "INSERT INTO User VALUES('id','username','fName','lName','avatar','armoredKey'," +
+                            "4096,'uid','keyId','fingerprint','type',1644909225833)",
+                    )
+                    execSQL(
+                        "INSERT INTO ResourceAndGroupsCrossRef VALUES('resourceId','groupId','READ')",
+                    )
+                    execSQL(
+                        "INSERT INTO UsersAndGroupCrossRef VALUES('userId','groupId')",
+                    )
+                    execSQL(
+                        "INSERT INTO ResourceAndUsersCrossRef VALUES('resourceId','userId', 'OWNER')",
+                    )
+                    close()
+                }
         }
 
-        helper
-            .runMigrationsAndValidate(TEST_DB, 8, true, Migration7to8)
-            .apply {
-                execSQL(
-                    "INSERT INTO User VALUES('id','username','fName','lName','avatar','armoredKey'," +
-                        "4096,'uid','keyId','fingerprint','type',1644909225833)",
-                )
+    @Test
+    fun migrate8To9() =
+        runTest {
+            helper.createDatabase(8).apply {
                 execSQL(
                     "INSERT INTO ResourceAndGroupsCrossRef VALUES('resourceId','groupId','READ')",
-                )
-                execSQL(
-                    "INSERT INTO UsersAndGroupCrossRef VALUES('userId','groupId')",
                 )
                 execSQL(
                     "INSERT INTO ResourceAndUsersCrossRef VALUES('resourceId','userId', 'OWNER')",
                 )
                 close()
             }
-    }
 
-    @Test
-    fun migrate8To9() {
-        helper.createDatabase(TEST_DB, 8).apply {
-            execSQL(
-                "INSERT INTO ResourceAndGroupsCrossRef VALUES('resourceId','groupId','READ')",
-            )
-            execSQL(
-                "INSERT INTO ResourceAndUsersCrossRef VALUES('resourceId','userId', 'OWNER')",
-            )
-            close()
+            helper
+                .runMigrationsAndValidate(9, listOf(Migration8to9))
+                .apply {
+                    execSQL(
+                        "INSERT INTO ResourceAndGroupsCrossRef VALUES('resourceId9','groupId9','READ','permissionId')",
+                    )
+                    execSQL(
+                        "INSERT INTO ResourceAndUsersCrossRef VALUES('resourceId9','userId9', 'OWNER','permissionId')",
+                    )
+                    close()
+                }
         }
 
-        helper
-            .runMigrationsAndValidate(TEST_DB, 9, true, Migration8to9)
-            .apply {
-                execSQL(
-                    "INSERT INTO ResourceAndGroupsCrossRef VALUES('resourceId9','groupId9','READ','permissionId')",
-                )
-                execSQL(
-                    "INSERT INTO ResourceAndUsersCrossRef VALUES('resourceId9','userId9', 'OWNER','permissionId')",
-                )
-                close()
-            }
-    }
-
     @Test
-    fun migrate9To10() {
-        helper.createDatabase(TEST_DB, 9).apply {
-            execSQL(
-                "INSERT INTO Resource VALUES('id2','folderid','name','READ','url','username','desc'," +
-                    "'typeId', '1',1644909225833)",
-            )
-            close()
-        }
-
-        helper
-            .runMigrationsAndValidate(TEST_DB, 10, true, Migration9to10)
-            .apply {
+    fun migrate9To10() =
+        runTest {
+            helper.createDatabase(9).apply {
                 execSQL(
                     "INSERT INTO Resource VALUES('id2','folderid','name','READ','url','username','desc'," +
-                        "'typeId', 'favouriteId',1644909225833)",
+                        "'typeId', '1',1644909225833)",
                 )
                 close()
             }
-    }
 
-    @Test
-    fun migrate10To11() {
-        helper.createDatabase(TEST_DB, 10).apply {
-            close()
+            helper
+                .runMigrationsAndValidate(10, listOf(Migration9to10))
+                .apply {
+                    execSQL(
+                        "INSERT INTO Resource VALUES('id2','folderid','name','READ','url','username','desc'," +
+                            "'typeId', 'favouriteId',1644909225833)",
+                    )
+                    close()
+                }
         }
 
-        helper
-            .runMigrationsAndValidate(TEST_DB, 11, true, Migration10to11)
-            .apply {
-                execSQL("INSERT INTO FolderAndUsersCrossRef VALUES('folderId','userId','READ','permId1')")
-                execSQL("INSERT INTO FolderAndGroupsCrossRef VALUES('folderId','groupId','READ','permId2')")
-                close()
-            }
-    }
-
     @Test
-    fun migrate11To12() {
-        helper
-            .createDatabase(TEST_DB, 11)
-            .apply {
+    fun migrate10To11() =
+        runTest {
+            helper.createDatabase(10).apply {
                 close()
             }
 
-        helper
-            .runMigrationsAndValidate(TEST_DB, 12, true, Migration11to12)
-            .apply {
-                // foreign key constraints added - nothing to test here
-                close()
-            }
-    }
-
-    @Test
-    fun migrate12To13() {
-        helper
-            .createDatabase(TEST_DB, 12)
-            .apply {
-                execSQL(
-                    "INSERT INTO User VALUES('id','username','fName','lName','avatar','armoredKey'," +
-                        "4096,'uid','keyId','fingerprint','type',1644909225833)",
-                )
-                close()
-            }
-
-        helper
-            .runMigrationsAndValidate(TEST_DB, 13, true, Migration12to13)
-            .apply {
-                execSQL(
-                    "INSERT INTO User VALUES('id2','username','fName','lName','avatar','armoredKey'," +
-                        "4096,'uid','keyId','fingerprint','type',1644909225833, 1644909225830)",
-                )
-                close()
-            }
-    }
-
-    @Test
-    fun migrate13To14() {
-        helper
-            .createDatabase(TEST_DB, 13)
-            .apply {
-                execSQL(
-                    "INSERT INTO User VALUES('id','username','fName','lName','avatar','armoredKey'," +
-                        "4096,'uid','keyId','fingerprint','type',1644909225833, 1644909225830)",
-                )
-                close()
-            }
-
-        helper
-            .runMigrationsAndValidate(TEST_DB, 14, true, Migration13to14)
-            .apply {
-                execSQL(
-                    "INSERT INTO User VALUES('id2','username',1,'fName','lName','avatar','armoredKey'," +
-                        "4096,'uid','keyId','fingerprint','type',1644909225833, 1644909225830)",
-                )
-                close()
-            }
-    }
-
-    @Test
-    fun migrate14To15() {
-        helper
-            .createDatabase(TEST_DB, 14)
-            .apply {
-                execSQL("INSERT INTO ResourceType VALUES('1', 'resourceTypeName', 'resourceTypeSlug')")
-                execSQL(
-                    "INSERT INTO Resource VALUES('id1','folderid','name','READ','url','username','desc'," +
-                        "'1', 'favouriteId',1644909225833)",
-                )
-                close()
-            }
-
-        helper
-            .runMigrationsAndValidate(TEST_DB, 15, true, Migration14to15)
-            .apply {
-                execSQL(
-                    "INSERT INTO ResourceType VALUES('2', 'resourceTypeName', 'resourceTypeSlug', " +
-                        "'resourceSchemaJson', 'secretSchemaJson')",
-                )
-
-                execSQL(
-                    "INSERT INTO Resource VALUES('id3','folderid','name','READ','url','username','desc'," +
-                        "'typeId', 'favouriteId', 1644909225833, null,'resourceJson')",
-                )
-                close()
-            }
-    }
-
-    @Test
-    fun migrate15To16() {
-        helper
-            .createDatabase(TEST_DB, 15)
-            .apply {
-                execSQL(
-                    "INSERT INTO ResourceType VALUES('2', 'resourceTypeName', 'resourceTypeSlug', " +
-                        "'resourceSchemaJson', 'secretSchemaJson')",
-                )
-
-                execSQL(
-                    "INSERT INTO Resource VALUES('id2','folderid','name','READ','url','username','desc'," +
-                        "'2', 'favouriteId',1644909225833,1644909225833, 'resourceJson')",
-                )
-                close()
-            }
-
-        helper
-            .runMigrationsAndValidate(TEST_DB, 16, true, Migration15to16)
-            .apply {
-                execSQL(
-                    "INSERT INTO ResourceType VALUES('3', 'resourceTypeName', 'resourceTypeSlug', " +
-                        "'resourceSchemaJson', 'secretSchemaJson', 1644909225833)",
-                )
-                execSQL(
-                    "INSERT INTO ResourceType VALUES('4', 'resourceTypeName', 'resourceTypeSlug', " +
-                        "'resourceSchemaJson', 'secretSchemaJson', null)",
-                )
-                execSQL(
-                    "INSERT INTO Resource VALUES('id2','folderid','READ', '2'," +
-                        " 'favouriteId', 1644909225833, 1644909225833)",
-                )
-                execSQL(
-                    "INSERT INTO ResourceMetadata VALUES(1, 'id2', 'metadataJson', 'name', 'username', 'desc')",
-                )
-                execSQL("INSERT INTO ResourceUri VALUES(1, 'id2', 'uri1')")
-                execSQL("INSERT INTO ResourceUri VALUES(2, 'id2', 'uri2')")
-                close()
-            }
-    }
-
-    @Test
-    fun migrate16To17() {
-        helper
-            .createDatabase(TEST_DB, 16)
-            .apply {
-                execSQL(
-                    "INSERT INTO ResourceType VALUES('1', 'resourceTypeName', 'resourceTypeSlug', " +
-                        "'resourceSchemaJson', 'secretSchemaJson', 1644909225833)",
-                )
-                execSQL(
-                    "INSERT INTO Resource VALUES('id1','folderid','READ', '1'," +
-                        " 'favouriteId', 1644909225833, 1644909225833)",
-                )
-                execSQL(
-                    "INSERT INTO User VALUES('id2','username',1,'fName','lName','avatar','armoredKey'," +
-                        "4096,'uid','keyId','fingerprint','type',1644909225833, 1644909225830)",
-                )
-                close()
-            }
-
-        helper
-            .runMigrationsAndValidate(TEST_DB, 17, true, Migration16to17)
-            .apply {
-                execSQL(
-                    "INSERT INTO ResourceType VALUES('1', 'resourceTypeName', " +
-                        "'resourceTypeSlug', 1644909225833)",
-                )
-
-                execSQL(
-                    "INSERT INTO MetadataKey VALUES('id', 'fingerprint', 'armoredKey', " +
-                        "1644909225833, 1644909225833)",
-                )
-                execSQL("INSERT INTO MetadataKey VALUES('id2', 'fingerprint', 'armoredKey', null, null)")
-                execSQL(
-                    "INSERT INTO MetadataPrivateKey VALUES(0,'id', 'userId', 'data')",
-                )
-                execSQL(
-                    "INSERT INTO Resource VALUES('id2','folderid','READ', '1'," +
-                        " 'favouriteId', 1644909225833, 1644909225833, null, 'SHARED')",
-                )
-                execSQL(
-                    "INSERT INTO Resource VALUES('id3','folderid','READ', '1'," +
-                        " 'favouriteId', 1644909225833, 1644909225833, 'id', 'SHARED')",
-                )
-                execSQL(
-                    "INSERT INTO User VALUES('id3','username',1,'fName','lName','avatar','userKeyId', 'armoredKey'," +
-                        "4096,'uid','keyId','fingerprint','type',1644909225833, 1644909225830)",
-                )
-                close()
-            }
-    }
-
-    @Test
-    fun migrate17To18() {
-        helper
-            .createDatabase(TEST_DB, 17)
-            .apply {
-                execSQL(
-                    "INSERT INTO MetadataKey VALUES('id', 'fingerprint', 'armoredKey', " +
-                        "1644909225833, 1644909225833)",
-                )
-                execSQL("INSERT INTO MetadataKey VALUES('id2', 'fingerprint', 'armoredKey', null, null)")
-                execSQL("INSERT INTO MetadataPrivateKey VALUES(0,'id', 'userId', 'data')")
-                execSQL("INSERT INTO ResourceType VALUES('1', 'resourceTypeName', 'resourceTypeSlug', 1644909225833)")
-                execSQL(
-                    "INSERT INTO Resource VALUES('id2','folderid','READ', '1'," +
-                        " 'favouriteId', 1644909225833, 1644909225833, null, 'SHARED')",
-                )
-                close()
-            }
-
-        helper
-            .runMigrationsAndValidate(TEST_DB, 18, true, Migration17to18)
-            .apply {
-                execSQL(
-                    "INSERT INTO MetadataPrivateKey VALUES(1,'id', 'userId', 'data', 'passphrase')",
-                )
-                execSQL(
-                    "INSERT INTO Resource VALUES('id3','folderid','READ', '1'," +
-                        " 'favouriteId', 1644909225833, 1644909225833, null, 'SHARED')",
-                )
-                close()
-            }
-    }
-
-    @Test
-    fun migrate18To19() {
-        helper
-            .createDatabase(TEST_DB, 18)
-            .apply {
-                execSQL(
-                    "INSERT INTO MetadataKey VALUES('id', 'fingerprint', 'armoredKey', " +
-                        "1644909225833, 1644909225833)",
-                )
-                execSQL("INSERT INTO MetadataPrivateKey VALUES(1,'id', 'userId', 'data', 'passphrase')")
-                close()
-            }
-
-        helper
-            .runMigrationsAndValidate(TEST_DB, 19, true, Migration18to19)
-            .apply {
-                execSQL(
-                    "INSERT INTO MetadataKey VALUES('id1', 'fingerprint', 'armoredKey', 1644909225833, " +
-                        "1644909225833, 1644909225833)",
-                )
-                execSQL(
-                    "INSERT INTO MetadataPrivateKey VALUES('id','id1', 'userId', 'data', 'passphrase', 1644909225833, " +
-                        "'modifiedBy', 1644909225833, 'createdBy', 'pgpMessage', 'fingerprint', 'domain')",
-                )
-                close()
-            }
-    }
-
-    @Test
-    fun migrate19To20() {
-        helper
-            .createDatabase(TEST_DB, 19)
-            .apply {
-                execSQL("INSERT INTO ResourceMetadata VALUES(0, 'id', 'metadataJson', 'name', 'username', 'desc')")
-                close()
-            }
-
-        helper
-            .runMigrationsAndValidate(TEST_DB, 20, true, Migration19to20)
-            .apply {
-                execSQL(
-                    "INSERT INTO ResourceMetadata VALUES(1, 'id', 'metadataJson', 'name', 'username', 'desc', 'customFieldsKeys')",
-                )
-                close()
-            }
-    }
-
-    @Test
-    fun migrate20To21() {
-        helper
-            .createDatabase(TEST_DB, 20)
-            .apply {
-                execSQL(
-                    "INSERT INTO Resource VALUES('id3','folderid','READ', '1'," +
-                        " 'favouriteId', 1644909225833, 1644909225833, null, 'SHARED')",
-                )
-                execSQL(
-                    "INSERT INTO ResourceMetadata VALUES(1, 'id3', 'metadataJson', 'name', 'username', 'desc', 'customFieldsKeys')",
-                )
-                close()
-            }
-
-        helper
-            .runMigrationsAndValidate(TEST_DB, 21, true, Migration20to21)
-            .apply {
-                execSQL(
-                    "INSERT INTO Resource VALUES('id4','folderid','READ', '1'," +
-                        " 'favouriteId', 1644909225833, 1644909225833, null, 'SHARED', 'PENDING')",
-                )
-                execSQL(
-                    "INSERT INTO ResourceMetadata VALUES('id3', 'metadataJson', 'name', 'username', 'desc', 'customFieldsKeys')",
-                )
-                close()
-            }
-    }
-
-    @Test
-    fun migrate21To22() {
-        helper
-            .createDatabase(TEST_DB, 21)
-            .apply {
-                execSQL(
-                    "INSERT INTO ResourceMetadata VALUES('resId', 'metadataJson', 'name', 'username', 'desc', 'customFieldsKeys')",
-                )
-                execSQL("INSERT INTO ResourceUri VALUES(1, 'resId', 'https://example.com')")
-                execSQL("INSERT INTO Tag VALUES('tagId', 'tagSlug', 0)")
-                execSQL("INSERT INTO Folder VALUES('folderId', 'folderName', 'READ', null, 0)")
-                execSQL("INSERT INTO UsersGroup VALUES('groupId', 'groupName')")
-                close()
-            }
-
-        helper
-            .runMigrationsAndValidate(TEST_DB, 22, true, Migration21to22)
-            .apply {
-                val resourceMetadataCursor = query("SELECT count(*) FROM ResourceMetadataFts WHERE ResourceMetadataFts MATCH 'name*'")
-                resourceMetadataCursor.moveToFirst()
-                assertThat(resourceMetadataCursor.getInt(0)).isEqualTo(1)
-                resourceMetadataCursor.close()
-
-                val resourceUriCursor = query("SELECT count(*) FROM ResourceUriFts WHERE ResourceUriFts MATCH 'example*'")
-                resourceUriCursor.moveToFirst()
-                assertThat(resourceUriCursor.getInt(0)).isEqualTo(1)
-                resourceUriCursor.close()
-
-                val tagCursor = query("SELECT count(*) FROM TagFts WHERE TagFts MATCH 'tagSlug*'")
-                tagCursor.moveToFirst()
-                assertThat(tagCursor.getInt(0)).isEqualTo(1)
-                tagCursor.close()
-
-                val folderCursor = query("SELECT count(*) FROM FolderFts WHERE FolderFts MATCH 'folderName*'")
-                folderCursor.moveToFirst()
-                assertThat(folderCursor.getInt(0)).isEqualTo(1)
-                folderCursor.close()
-
-                val usersGroupCursor = query("SELECT count(*) FROM UsersGroupFts WHERE UsersGroupFts MATCH 'groupName*'")
-                usersGroupCursor.moveToFirst()
-                assertThat(usersGroupCursor.getInt(0)).isEqualTo(1)
-                usersGroupCursor.close()
-
-                close()
-            }
-    }
-
-    @Test
-    fun migrate22To23() {
-        helper
-            .createDatabase(TEST_DB, 22)
-            .apply {
-                execSQL("INSERT INTO Folder VALUES('folderId', 'folderName', 'READ', null, 0)")
-                close()
-            }
-
-        helper
-            .runMigrationsAndValidate(TEST_DB, 23, true, Migration22to23)
-            .apply {
-                val cursor = query("SELECT updateState FROM Folder WHERE folderId = 'folderId'")
-                cursor.moveToFirst()
-                assertThat(cursor.getString(0)).isEqualTo("UPDATED")
-                cursor.close()
-
-                execSQL(
-                    "INSERT INTO Folder VALUES('folderId2', 'folderName2', 'READ', null, 0, 'PENDING')",
-                )
-
-                close()
-            }
-    }
-
-    @Test
-    fun migrate23To24() {
-        helper
-            .createDatabase(TEST_DB, 23)
-            .apply {
-                close()
-            }
-
-        helper
-            .runMigrationsAndValidate(TEST_DB, 24, true, Migration23to24)
-            .apply {
-                val cursor =
-                    query(
-                        "SELECT name FROM sqlite_master WHERE type='index' AND name LIKE 'index_%'",
-                    )
-                val indexNames = mutableListOf<String>()
-                while (cursor.moveToNext()) {
-                    indexNames.add(cursor.getString(0))
+            helper
+                .runMigrationsAndValidate(11, listOf(Migration10to11))
+                .apply {
+                    execSQL("INSERT INTO FolderAndUsersCrossRef VALUES('folderId','userId','READ','permId1')")
+                    execSQL("INSERT INTO FolderAndGroupsCrossRef VALUES('folderId','groupId','READ','permId2')")
+                    close()
                 }
-                cursor.close()
-
-                assertThat(indexNames).containsAtLeast(
-                    "index_Resource_folderId",
-                    "index_Resource_resourceTypeId",
-                    "index_ResourceAndTagsCrossRef_resourceId",
-                    "index_ResourceAndGroupsCrossRef_groupId",
-                    "index_UsersAndGroupCrossRef_groupId",
-                    "index_ResourceAndUsersCrossRef_userId",
-                    "index_FolderAndUsersCrossRef_folderId",
-                    "index_FolderAndGroupsCrossRef_groupId",
-                    "index_ResourceUri_resourceId",
-                    "index_MetadataPrivateKey_metadataKeyId",
-                )
-
-                close()
-            }
-    }
-
-    @Test
-    fun migrate24To25() {
-        helper
-            .createDatabase(TEST_DB, 24)
-            .apply {
-                execSQL("INSERT INTO Folder VALUES('folderId', 'folderName', 'READ', null, 0, 'UPDATED')")
-                close()
-            }
-
-        helper
-            .runMigrationsAndValidate(TEST_DB, 25, true, Migration24to25)
-            .apply {
-                val cursor = query("SELECT modified FROM Folder WHERE folderId = 'folderId'")
-                cursor.moveToFirst()
-                assertThat(cursor.getLong(0)).isEqualTo(0)
-                cursor.close()
-
-                execSQL(
-                    "INSERT INTO Folder VALUES('folderId2', 'folderName2', 'READ', null, 0, 'UPDATED', 1644909225833)",
-                )
-
-                close()
-            }
-    }
-
-    @Test
-    fun migrate25To26() {
-        helper
-            .createDatabase(TEST_DB, 25)
-            .apply {
-                execSQL(
-                    "INSERT INTO User VALUES('id','username',1,'fName','lName','avatar','userKeyId','armoredKey'," +
-                        "4096,'uid','keyId','fingerprint','type',1644909225833, 1644909225830)",
-                )
-                close()
-            }
-
-        helper
-            .runMigrationsAndValidate(TEST_DB, 26, true, Migration25to26)
-            .apply {
-                val cursor = query("SELECT updateState FROM User WHERE id = 'id'")
-                cursor.moveToFirst()
-                assertThat(cursor.getString(0)).isEqualTo("UPDATED")
-                cursor.close()
-
-                execSQL(
-                    "INSERT INTO User VALUES('id2','username',1,'fName','lName','avatar','userKeyId','armoredKey'," +
-                        "4096,'uid','keyId','fingerprint','type',1644909225833, 1644909225830, 'PENDING')",
-                )
-
-                close()
-            }
-    }
-
-    @Test
-    fun migrate26To27() {
-        helper
-            .createDatabase(TEST_DB, 26)
-            .apply {
-                execSQL("INSERT INTO UsersGroup VALUES('groupId', 'groupName')")
-                close()
-            }
-
-        helper
-            .runMigrationsAndValidate(TEST_DB, 27, true, Migration26to27)
-            .apply {
-                val cursor = query("SELECT updateState FROM UsersGroup WHERE groupId = 'groupId'")
-                cursor.moveToFirst()
-                assertThat(cursor.getString(0)).isEqualTo("UPDATED")
-                cursor.close()
-
-                execSQL("INSERT INTO UsersGroup VALUES('groupId2', 'groupName2', 'PENDING')")
-
-                close()
-            }
-    }
-
-    @Test
-    fun migrate27To28() {
-        helper
-            .createDatabase(TEST_DB, 27)
-            .apply {
-                execSQL(
-                    "INSERT INTO Folder(folderId, name, permission, parentId, isShared, modified, updateState) " +
-                        "VALUES('folderId1', 'parentFolder', 'READ', null, 0, 1644909225833, 'UPDATED')",
-                )
-                execSQL(
-                    "INSERT INTO Folder(folderId, name, permission, parentId, isShared, modified, updateState) " +
-                        "VALUES('folderId2', 'childFolder', 'READ', 'folderId1', 0, 1644909225834, 'UPDATED')",
-                )
-                close()
-            }
-
-        helper
-            .runMigrationsAndValidate(TEST_DB, 28, true, Migration27to28)
-            .apply {
-                val cursor =
-                    query(
-                        "SELECT name FROM sqlite_master WHERE type='index' AND name LIKE 'index_%'",
-                    )
-                val indexNames = mutableListOf<String>()
-                while (cursor.moveToNext()) {
-                    indexNames.add(cursor.getString(0))
-                }
-                cursor.close()
-
-                assertThat(indexNames).containsAtLeast(
-                    "index_Folder_parentId",
-                    "index_Folder_modified_folderId",
-                    "index_Resource_modified_resourceId",
-                    "index_Resource_expiry_resourceId",
-                    "index_Resource_favouriteId",
-                )
-
-                val childFoldersCursor = query("SELECT count(*) FROM Folder WHERE parentId = 'folderId1'")
-                childFoldersCursor.moveToFirst()
-                assertThat(childFoldersCursor.getInt(0)).isEqualTo(1)
-                childFoldersCursor.close()
-
-                close()
-            }
-    }
-
-    @Test
-    fun migrate28To29() {
-        helper
-            .createDatabase(TEST_DB, 28)
-            .apply {
-                execSQL(
-                    "INSERT INTO User VALUES('userId', 'ada@passbolt.com', 0, 'UPDATED', 'Ada', 'Lovelace', null, " +
-                        "'userKeyId', 'armoredKey', 4096, null, 'keyId', 'fingerprint', 'RSA', null, null)",
-                )
-                close()
-            }
-
-        helper
-            .runMigrationsAndValidate(TEST_DB, 29, true, Migration28to29)
-            .apply {
-                val lastNameCursor = query("SELECT count(*) FROM UserFts WHERE UserFts MATCH 'lovelace*'")
-                lastNameCursor.moveToFirst()
-                assertThat(lastNameCursor.getInt(0)).isEqualTo(1)
-                lastNameCursor.close()
-
-                execSQL("UPDATE User SET lastName = 'Byron' WHERE id = 'userId'")
-
-                val updatedLastNameCursor = query("SELECT count(*) FROM UserFts WHERE UserFts MATCH 'byron*'")
-                updatedLastNameCursor.moveToFirst()
-                assertThat(updatedLastNameCursor.getInt(0)).isEqualTo(1)
-                updatedLastNameCursor.close()
-
-                close()
-            }
-    }
-
-    @Test
-    fun migrateAll() {
-        helper.createDatabase(TEST_DB, 1).apply {
-            close()
         }
 
-        Room
-            .databaseBuilder(
-                InstrumentationRegistry.getInstrumentation().targetContext,
-                ResourceDatabase::class.java,
-                TEST_DB,
-            ).addMigrations(
-                Migration1to2,
-                Migration2to3,
-                Migration3to4,
-                Migration4to5,
-                Migration5to6,
-                Migration6to7,
-                Migration7to8,
-                Migration8to9,
-                Migration9to10,
-                Migration10to11,
-                Migration11to12,
-                Migration12to13,
-                Migration13to14,
-                Migration14to15,
-                Migration15to16,
-                Migration16to17,
-                Migration17to18,
-                Migration18to19,
-                Migration19to20,
-                Migration20to21,
-                Migration21to22,
-                Migration22to23,
-                Migration23to24,
-                Migration24to25,
-                Migration25to26,
-                Migration26to27,
-                Migration27to28,
-                Migration28to29,
-            ).build()
-            .apply {
-                openHelper.writableDatabase
+    @Test
+    fun migrate11To12() =
+        runTest {
+            helper
+                .createDatabase(11)
+                .apply {
+                    close()
+                }
+
+            helper
+                .runMigrationsAndValidate(12, listOf(Migration11to12))
+                .apply {
+                    // foreign key constraints added - nothing to test here
+                    close()
+                }
+        }
+
+    @Test
+    fun migrate12To13() =
+        runTest {
+            helper
+                .createDatabase(12)
+                .apply {
+                    execSQL(
+                        "INSERT INTO User VALUES('id','username','fName','lName','avatar','armoredKey'," +
+                            "4096,'uid','keyId','fingerprint','type',1644909225833)",
+                    )
+                    close()
+                }
+
+            helper
+                .runMigrationsAndValidate(13, listOf(Migration12to13))
+                .apply {
+                    execSQL(
+                        "INSERT INTO User VALUES('id2','username','fName','lName','avatar','armoredKey'," +
+                            "4096,'uid','keyId','fingerprint','type',1644909225833, 1644909225830)",
+                    )
+                    close()
+                }
+        }
+
+    @Test
+    fun migrate13To14() =
+        runTest {
+            helper
+                .createDatabase(13)
+                .apply {
+                    execSQL(
+                        "INSERT INTO User VALUES('id','username','fName','lName','avatar','armoredKey'," +
+                            "4096,'uid','keyId','fingerprint','type',1644909225833, 1644909225830)",
+                    )
+                    close()
+                }
+
+            helper
+                .runMigrationsAndValidate(14, listOf(Migration13to14))
+                .apply {
+                    execSQL(
+                        "INSERT INTO User VALUES('id2','username',1,'fName','lName','avatar','armoredKey'," +
+                            "4096,'uid','keyId','fingerprint','type',1644909225833, 1644909225830)",
+                    )
+                    close()
+                }
+        }
+
+    @Test
+    fun migrate14To15() =
+        runTest {
+            helper
+                .createDatabase(14)
+                .apply {
+                    execSQL("INSERT INTO ResourceType VALUES('1', 'resourceTypeName', 'resourceTypeSlug')")
+                    execSQL(
+                        "INSERT INTO Resource VALUES('id1','folderid','name','READ','url','username','desc'," +
+                            "'1', 'favouriteId',1644909225833)",
+                    )
+                    close()
+                }
+
+            helper
+                .runMigrationsAndValidate(15, listOf(Migration14to15))
+                .apply {
+                    execSQL(
+                        "INSERT INTO ResourceType VALUES('2', 'resourceTypeName', 'resourceTypeSlug', " +
+                            "'resourceSchemaJson', 'secretSchemaJson')",
+                    )
+
+                    execSQL(
+                        "INSERT INTO Resource VALUES('id3','folderid','name','READ','url','username','desc'," +
+                            "'typeId', 'favouriteId', 1644909225833, null,'resourceJson')",
+                    )
+                    close()
+                }
+        }
+
+    @Test
+    fun migrate15To16() =
+        runTest {
+            helper
+                .createDatabase(15)
+                .apply {
+                    execSQL(
+                        "INSERT INTO ResourceType VALUES('2', 'resourceTypeName', 'resourceTypeSlug', " +
+                            "'resourceSchemaJson', 'secretSchemaJson')",
+                    )
+
+                    execSQL(
+                        "INSERT INTO Resource VALUES('id2','folderid','name','READ','url','username','desc'," +
+                            "'2', 'favouriteId',1644909225833,1644909225833, 'resourceJson')",
+                    )
+                    close()
+                }
+
+            helper
+                .runMigrationsAndValidate(16, listOf(Migration15to16))
+                .apply {
+                    execSQL(
+                        "INSERT INTO ResourceType VALUES('3', 'resourceTypeName', 'resourceTypeSlug', " +
+                            "'resourceSchemaJson', 'secretSchemaJson', 1644909225833)",
+                    )
+                    execSQL(
+                        "INSERT INTO ResourceType VALUES('4', 'resourceTypeName', 'resourceTypeSlug', " +
+                            "'resourceSchemaJson', 'secretSchemaJson', null)",
+                    )
+                    execSQL(
+                        "INSERT INTO Resource VALUES('id2','folderid','READ', '2'," +
+                            " 'favouriteId', 1644909225833, 1644909225833)",
+                    )
+                    execSQL(
+                        "INSERT INTO ResourceMetadata VALUES(1, 'id2', 'metadataJson', 'name', 'username', 'desc')",
+                    )
+                    execSQL("INSERT INTO ResourceUri VALUES(1, 'id2', 'uri1')")
+                    execSQL("INSERT INTO ResourceUri VALUES(2, 'id2', 'uri2')")
+                    close()
+                }
+        }
+
+    @Test
+    fun migrate16To17() =
+        runTest {
+            helper
+                .createDatabase(16)
+                .apply {
+                    execSQL(
+                        "INSERT INTO ResourceType VALUES('1', 'resourceTypeName', 'resourceTypeSlug', " +
+                            "'resourceSchemaJson', 'secretSchemaJson', 1644909225833)",
+                    )
+                    execSQL(
+                        "INSERT INTO Resource VALUES('id1','folderid','READ', '1'," +
+                            " 'favouriteId', 1644909225833, 1644909225833)",
+                    )
+                    execSQL(
+                        "INSERT INTO User VALUES('id2','username',1,'fName','lName','avatar','armoredKey'," +
+                            "4096,'uid','keyId','fingerprint','type',1644909225833, 1644909225830)",
+                    )
+                    close()
+                }
+
+            helper
+                .runMigrationsAndValidate(17, listOf(Migration16to17))
+                .apply {
+                    execSQL(
+                        "INSERT INTO ResourceType VALUES('1', 'resourceTypeName', " +
+                            "'resourceTypeSlug', 1644909225833)",
+                    )
+
+                    execSQL(
+                        "INSERT INTO MetadataKey VALUES('id', 'fingerprint', 'armoredKey', " +
+                            "1644909225833, 1644909225833)",
+                    )
+                    execSQL("INSERT INTO MetadataKey VALUES('id2', 'fingerprint', 'armoredKey', null, null)")
+                    execSQL(
+                        "INSERT INTO MetadataPrivateKey VALUES(0,'id', 'userId', 'data')",
+                    )
+                    execSQL(
+                        "INSERT INTO Resource VALUES('id2','folderid','READ', '1'," +
+                            " 'favouriteId', 1644909225833, 1644909225833, null, 'SHARED')",
+                    )
+                    execSQL(
+                        "INSERT INTO Resource VALUES('id3','folderid','READ', '1'," +
+                            " 'favouriteId', 1644909225833, 1644909225833, 'id', 'SHARED')",
+                    )
+                    execSQL(
+                        "INSERT INTO User VALUES('id3','username',1,'fName','lName','avatar','userKeyId', 'armoredKey'," +
+                            "4096,'uid','keyId','fingerprint','type',1644909225833, 1644909225830)",
+                    )
+                    close()
+                }
+        }
+
+    @Test
+    fun migrate17To18() =
+        runTest {
+            helper
+                .createDatabase(17)
+                .apply {
+                    execSQL(
+                        "INSERT INTO MetadataKey VALUES('id', 'fingerprint', 'armoredKey', " +
+                            "1644909225833, 1644909225833)",
+                    )
+                    execSQL("INSERT INTO MetadataKey VALUES('id2', 'fingerprint', 'armoredKey', null, null)")
+                    execSQL("INSERT INTO MetadataPrivateKey VALUES(0,'id', 'userId', 'data')")
+                    execSQL("INSERT INTO ResourceType VALUES('1', 'resourceTypeName', 'resourceTypeSlug', 1644909225833)")
+                    execSQL(
+                        "INSERT INTO Resource VALUES('id2','folderid','READ', '1'," +
+                            " 'favouriteId', 1644909225833, 1644909225833, null, 'SHARED')",
+                    )
+                    close()
+                }
+
+            helper
+                .runMigrationsAndValidate(18, listOf(Migration17to18))
+                .apply {
+                    execSQL(
+                        "INSERT INTO MetadataPrivateKey VALUES(1,'id', 'userId', 'data', 'passphrase')",
+                    )
+                    execSQL(
+                        "INSERT INTO Resource VALUES('id3','folderid','READ', '1'," +
+                            " 'favouriteId', 1644909225833, 1644909225833, null, 'SHARED')",
+                    )
+                    close()
+                }
+        }
+
+    @Test
+    fun migrate18To19() =
+        runTest {
+            helper
+                .createDatabase(18)
+                .apply {
+                    execSQL(
+                        "INSERT INTO MetadataKey VALUES('id', 'fingerprint', 'armoredKey', " +
+                            "1644909225833, 1644909225833)",
+                    )
+                    execSQL("INSERT INTO MetadataPrivateKey VALUES(1,'id', 'userId', 'data', 'passphrase')")
+                    close()
+                }
+
+            helper
+                .runMigrationsAndValidate(19, listOf(Migration18to19))
+                .apply {
+                    execSQL(
+                        "INSERT INTO MetadataKey VALUES('id1', 'fingerprint', 'armoredKey', 1644909225833, " +
+                            "1644909225833, 1644909225833)",
+                    )
+                    execSQL(
+                        "INSERT INTO MetadataPrivateKey VALUES('id','id1', 'userId', 'data', 'passphrase', 1644909225833, " +
+                            "'modifiedBy', 1644909225833, 'createdBy', 'pgpMessage', 'fingerprint', 'domain')",
+                    )
+                    close()
+                }
+        }
+
+    @Test
+    fun migrate19To20() =
+        runTest {
+            helper
+                .createDatabase(19)
+                .apply {
+                    execSQL("INSERT INTO ResourceMetadata VALUES(0, 'id', 'metadataJson', 'name', 'username', 'desc')")
+                    close()
+                }
+
+            helper
+                .runMigrationsAndValidate(20, listOf(Migration19to20))
+                .apply {
+                    execSQL(
+                        "INSERT INTO ResourceMetadata VALUES(1, 'id', 'metadataJson', 'name', 'username', 'desc', 'customFieldsKeys')",
+                    )
+                    close()
+                }
+        }
+
+    @Test
+    fun migrate20To21() =
+        runTest {
+            helper
+                .createDatabase(20)
+                .apply {
+                    execSQL(
+                        "INSERT INTO Resource VALUES('id3','folderid','READ', '1'," +
+                            " 'favouriteId', 1644909225833, 1644909225833, null, 'SHARED')",
+                    )
+                    execSQL(
+                        "INSERT INTO ResourceMetadata VALUES(1, 'id3', 'metadataJson', 'name', 'username', 'desc', 'customFieldsKeys')",
+                    )
+                    close()
+                }
+
+            helper
+                .runMigrationsAndValidate(21, listOf(Migration20to21))
+                .apply {
+                    execSQL(
+                        "INSERT INTO Resource VALUES('id4','folderid','READ', '1'," +
+                            " 'favouriteId', 1644909225833, 1644909225833, null, 'SHARED', 'PENDING')",
+                    )
+                    execSQL(
+                        "INSERT INTO ResourceMetadata VALUES('id3', 'metadataJson', 'name', 'username', 'desc', 'customFieldsKeys')",
+                    )
+                    close()
+                }
+        }
+
+    @Test
+    fun migrate21To22() =
+        runTest {
+            helper
+                .createDatabase(21)
+                .apply {
+                    execSQL(
+                        "INSERT INTO ResourceMetadata VALUES('resId', 'metadataJson', 'name', 'username', 'desc', 'customFieldsKeys')",
+                    )
+                    execSQL("INSERT INTO ResourceUri VALUES(1, 'resId', 'https://example.com')")
+                    execSQL("INSERT INTO Tag VALUES('tagId', 'tagSlug', 0)")
+                    execSQL("INSERT INTO Folder VALUES('folderId', 'folderName', 'READ', null, 0)")
+                    execSQL("INSERT INTO UsersGroup VALUES('groupId', 'groupName')")
+                    close()
+                }
+
+            helper
+                .runMigrationsAndValidate(22, listOf(Migration21to22))
+                .apply {
+                    prepare("SELECT count(*) FROM ResourceMetadataFts WHERE ResourceMetadataFts MATCH 'name*'").use { statement ->
+                        statement.step()
+                        assertThat(statement.getInt(0)).isEqualTo(1)
+                    }
+
+                    prepare("SELECT count(*) FROM ResourceUriFts WHERE ResourceUriFts MATCH 'example*'").use { statement ->
+                        statement.step()
+                        assertThat(statement.getInt(0)).isEqualTo(1)
+                    }
+
+                    prepare("SELECT count(*) FROM TagFts WHERE TagFts MATCH 'tagSlug*'").use { statement ->
+                        statement.step()
+                        assertThat(statement.getInt(0)).isEqualTo(1)
+                    }
+
+                    prepare("SELECT count(*) FROM FolderFts WHERE FolderFts MATCH 'folderName*'").use { statement ->
+                        statement.step()
+                        assertThat(statement.getInt(0)).isEqualTo(1)
+                    }
+
+                    prepare("SELECT count(*) FROM UsersGroupFts WHERE UsersGroupFts MATCH 'groupName*'").use { statement ->
+                        statement.step()
+                        assertThat(statement.getInt(0)).isEqualTo(1)
+                    }
+
+                    close()
+                }
+        }
+
+    @Test
+    fun migrate22To23() =
+        runTest {
+            helper
+                .createDatabase(22)
+                .apply {
+                    execSQL("INSERT INTO Folder VALUES('folderId', 'folderName', 'READ', null, 0)")
+                    close()
+                }
+
+            helper
+                .runMigrationsAndValidate(23, listOf(Migration22to23))
+                .apply {
+                    prepare("SELECT updateState FROM Folder WHERE folderId = 'folderId'").use { statement ->
+                        statement.step()
+                        assertThat(statement.getText(0)).isEqualTo("UPDATED")
+                    }
+
+                    execSQL(
+                        "INSERT INTO Folder VALUES('folderId2', 'folderName2', 'READ', null, 0, 'PENDING')",
+                    )
+
+                    close()
+                }
+        }
+
+    @Test
+    fun migrate23To24() =
+        runTest {
+            helper
+                .createDatabase(23)
+                .apply {
+                    close()
+                }
+
+            helper
+                .runMigrationsAndValidate(24, listOf(Migration23to24))
+                .apply {
+                    val indexNames = mutableListOf<String>()
+                    prepare(
+                        "SELECT name FROM sqlite_master WHERE type='index' AND name LIKE 'index_%'",
+                    ).use { statement ->
+                        while (statement.step()) {
+                            indexNames.add(statement.getText(0))
+                        }
+                    }
+
+                    assertThat(indexNames).containsAtLeast(
+                        "index_Resource_folderId",
+                        "index_Resource_resourceTypeId",
+                        "index_ResourceAndTagsCrossRef_resourceId",
+                        "index_ResourceAndGroupsCrossRef_groupId",
+                        "index_UsersAndGroupCrossRef_groupId",
+                        "index_ResourceAndUsersCrossRef_userId",
+                        "index_FolderAndUsersCrossRef_folderId",
+                        "index_FolderAndGroupsCrossRef_groupId",
+                        "index_ResourceUri_resourceId",
+                        "index_MetadataPrivateKey_metadataKeyId",
+                    )
+
+                    close()
+                }
+        }
+
+    @Test
+    fun migrate24To25() =
+        runTest {
+            helper
+                .createDatabase(24)
+                .apply {
+                    execSQL("INSERT INTO Folder VALUES('folderId', 'folderName', 'READ', null, 0, 'UPDATED')")
+                    close()
+                }
+
+            helper
+                .runMigrationsAndValidate(25, listOf(Migration24to25))
+                .apply {
+                    prepare("SELECT modified FROM Folder WHERE folderId = 'folderId'").use { statement ->
+                        statement.step()
+                        assertThat(statement.getLong(0)).isEqualTo(0)
+                    }
+
+                    execSQL(
+                        "INSERT INTO Folder VALUES('folderId2', 'folderName2', 'READ', null, 0, 'UPDATED', 1644909225833)",
+                    )
+
+                    close()
+                }
+        }
+
+    @Test
+    fun migrate25To26() =
+        runTest {
+            helper
+                .createDatabase(25)
+                .apply {
+                    execSQL(
+                        "INSERT INTO User VALUES('id','username',1,'fName','lName','avatar','userKeyId','armoredKey'," +
+                            "4096,'uid','keyId','fingerprint','type',1644909225833, 1644909225830)",
+                    )
+                    close()
+                }
+
+            helper
+                .runMigrationsAndValidate(26, listOf(Migration25to26))
+                .apply {
+                    prepare("SELECT updateState FROM User WHERE id = 'id'").use { statement ->
+                        statement.step()
+                        assertThat(statement.getText(0)).isEqualTo("UPDATED")
+                    }
+
+                    execSQL(
+                        "INSERT INTO User VALUES('id2','username',1,'fName','lName','avatar','userKeyId','armoredKey'," +
+                            "4096,'uid','keyId','fingerprint','type',1644909225833, 1644909225830, 'PENDING')",
+                    )
+
+                    close()
+                }
+        }
+
+    @Test
+    fun migrate26To27() =
+        runTest {
+            helper
+                .createDatabase(26)
+                .apply {
+                    execSQL("INSERT INTO UsersGroup VALUES('groupId', 'groupName')")
+                    close()
+                }
+
+            helper
+                .runMigrationsAndValidate(27, listOf(Migration26to27))
+                .apply {
+                    prepare("SELECT updateState FROM UsersGroup WHERE groupId = 'groupId'").use { statement ->
+                        statement.step()
+                        assertThat(statement.getText(0)).isEqualTo("UPDATED")
+                    }
+
+                    execSQL("INSERT INTO UsersGroup VALUES('groupId2', 'groupName2', 'PENDING')")
+
+                    close()
+                }
+        }
+
+    @Test
+    fun migrate27To28() =
+        runTest {
+            helper
+                .createDatabase(27)
+                .apply {
+                    execSQL(
+                        "INSERT INTO Folder(folderId, name, permission, parentId, isShared, modified, updateState) " +
+                            "VALUES('folderId1', 'parentFolder', 'READ', null, 0, 1644909225833, 'UPDATED')",
+                    )
+                    execSQL(
+                        "INSERT INTO Folder(folderId, name, permission, parentId, isShared, modified, updateState) " +
+                            "VALUES('folderId2', 'childFolder', 'READ', 'folderId1', 0, 1644909225834, 'UPDATED')",
+                    )
+                    close()
+                }
+
+            helper
+                .runMigrationsAndValidate(28, listOf(Migration27to28))
+                .apply {
+                    val indexNames = mutableListOf<String>()
+                    prepare(
+                        "SELECT name FROM sqlite_master WHERE type='index' AND name LIKE 'index_%'",
+                    ).use { statement ->
+                        while (statement.step()) {
+                            indexNames.add(statement.getText(0))
+                        }
+                    }
+
+                    assertThat(indexNames).containsAtLeast(
+                        "index_Folder_parentId",
+                        "index_Folder_modified_folderId",
+                        "index_Resource_modified_resourceId",
+                        "index_Resource_expiry_resourceId",
+                        "index_Resource_favouriteId",
+                    )
+
+                    prepare("SELECT count(*) FROM Folder WHERE parentId = 'folderId1'").use { statement ->
+                        statement.step()
+                        assertThat(statement.getInt(0)).isEqualTo(1)
+                    }
+
+                    close()
+                }
+        }
+
+    @Test
+    fun migrate28To29() =
+        runTest {
+            helper
+                .createDatabase(28)
+                .apply {
+                    execSQL(
+                        "INSERT INTO User VALUES('userId', 'ada@passbolt.com', 0, 'UPDATED', 'Ada', 'Lovelace', null, " +
+                            "'userKeyId', 'armoredKey', 4096, null, 'keyId', 'fingerprint', 'RSA', null, null)",
+                    )
+                    close()
+                }
+
+            helper
+                .runMigrationsAndValidate(29, listOf(Migration28to29))
+                .apply {
+                    prepare("SELECT count(*) FROM UserFts WHERE UserFts MATCH 'lovelace*'").use { statement ->
+                        statement.step()
+                        assertThat(statement.getInt(0)).isEqualTo(1)
+                    }
+
+                    execSQL("UPDATE User SET lastName = 'Byron' WHERE id = 'userId'")
+
+                    prepare("SELECT count(*) FROM UserFts WHERE UserFts MATCH 'byron*'").use { statement ->
+                        statement.step()
+                        assertThat(statement.getInt(0)).isEqualTo(1)
+                    }
+
+                    close()
+                }
+        }
+
+    @Test
+    fun migrateAll() =
+        runTest {
+            helper.createDatabase(1).apply {
                 close()
             }
-    }
+
+            Room
+                .databaseBuilder(
+                    InstrumentationRegistry.getInstrumentation().targetContext,
+                    ResourceDatabase::class.java,
+                    TEST_DB,
+                ).addMigrations(
+                    Migration1to2,
+                    Migration2to3,
+                    Migration3to4,
+                    Migration4to5,
+                    Migration5to6,
+                    Migration6to7,
+                    Migration7to8,
+                    Migration8to9,
+                    Migration9to10,
+                    Migration10to11,
+                    Migration11to12,
+                    Migration12to13,
+                    Migration13to14,
+                    Migration14to15,
+                    Migration15to16,
+                    Migration16to17,
+                    Migration17to18,
+                    Migration18to19,
+                    Migration19to20,
+                    Migration20to21,
+                    Migration21to22,
+                    Migration22to23,
+                    Migration23to24,
+                    Migration24to25,
+                    Migration25to26,
+                    Migration26to27,
+                    Migration27to28,
+                    Migration28to29,
+                ).setDriver(driver)
+                .build()
+                .apply {
+                    useWriterConnection { }
+                    close()
+                }
+
+            val header = ByteArray(PLAIN_SQLITE_HEADER.size)
+            databaseFile.inputStream().use { it.read(header) }
+            assertThat(header).isNotEqualTo(PLAIN_SQLITE_HEADER)
+        }
 
     private companion object {
         private const val TEST_DB = "migration-test"
+        private val PLAIN_SQLITE_HEADER = "SQLite format 3".toByteArray()
     }
 }

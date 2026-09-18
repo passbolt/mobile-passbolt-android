@@ -1,7 +1,8 @@
 package com.passbolt.mobile.android.database.migrations
 
-import androidx.room.migration.Migration
-import androidx.sqlite.db.SupportSQLiteDatabase
+import androidx.room3.migration.Migration
+import androidx.sqlite.SQLiteConnection
+import androidx.sqlite.execSQL
 
 /**
  * Passbolt - Open source password manager for teams
@@ -60,49 +61,49 @@ object Migration21to22 : Migration(21, 22) {
         ),
     }
 
-    override fun migrate(db: SupportSQLiteDatabase) {
+    override suspend fun migrate(connection: SQLiteConnection) {
         FtsTable.entries.forEach { table ->
-            createFtsTable(db, table)
-            createSyncTriggers(db, table)
-            populateFromContentTable(db, table)
+            createFtsTable(connection, table)
+            createSyncTriggers(connection, table)
+            populateFromContentTable(connection, table)
         }
     }
 
     private fun createFtsTable(
-        db: SupportSQLiteDatabase,
+        connection: SQLiteConnection,
         table: FtsTable,
     ) {
         val columns = table.columns.toQuotedCsv()
-        db.execSQL(
+        connection.execSQL(
             "CREATE VIRTUAL TABLE IF NOT EXISTS `${table.ftsTableName}` USING FTS4(" +
                 "$columns, content=`${table.contentTableName}`, tokenize=unicode61)",
         )
     }
 
     private fun createSyncTriggers(
-        db: SupportSQLiteDatabase,
+        connection: SQLiteConnection,
         table: FtsTable,
     ) {
         val columns = table.columns.toQuotedCsv()
         val newValues = table.columns.joinToString(", ") { "NEW.`$it`" }
 
-        db.execSQL(
+        connection.execSQL(
             "CREATE TRIGGER IF NOT EXISTS room_fts_content_sync_${table.ftsTableName}_BEFORE_UPDATE " +
                 "BEFORE UPDATE ON `${table.contentTableName}` BEGIN " +
                 "DELETE FROM `${table.ftsTableName}` WHERE docid=OLD.rowid; END",
         )
-        db.execSQL(
+        connection.execSQL(
             "CREATE TRIGGER IF NOT EXISTS room_fts_content_sync_${table.ftsTableName}_BEFORE_DELETE " +
                 "BEFORE DELETE ON `${table.contentTableName}` BEGIN " +
                 "DELETE FROM `${table.ftsTableName}` WHERE docid=OLD.rowid; END",
         )
-        db.execSQL(
+        connection.execSQL(
             "CREATE TRIGGER IF NOT EXISTS room_fts_content_sync_${table.ftsTableName}_AFTER_INSERT " +
                 "AFTER INSERT ON `${table.contentTableName}` BEGIN " +
                 "INSERT INTO `${table.ftsTableName}`(docid, $columns) " +
                 "VALUES (NEW.rowid, $newValues); END",
         )
-        db.execSQL(
+        connection.execSQL(
             "CREATE TRIGGER IF NOT EXISTS room_fts_content_sync_${table.ftsTableName}_AFTER_UPDATE " +
                 "AFTER UPDATE ON `${table.contentTableName}` BEGIN " +
                 "INSERT INTO `${table.ftsTableName}`(docid, $columns) " +
@@ -111,10 +112,10 @@ object Migration21to22 : Migration(21, 22) {
     }
 
     private fun populateFromContentTable(
-        db: SupportSQLiteDatabase,
+        connection: SQLiteConnection,
         table: FtsTable,
     ) {
-        db.execSQL(
+        connection.execSQL(
             "INSERT INTO `${table.ftsTableName}`(`${table.ftsTableName}`) VALUES('rebuild')",
         )
     }

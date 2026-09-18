@@ -23,10 +23,10 @@
 
 package com.passbolt.mobile.android.database.impl.base
 
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Update
-import androidx.room.Upsert
+import androidx.room3.Insert
+import androidx.room3.OnConflictStrategy
+import androidx.room3.Update
+import androidx.room3.Upsert
 
 /**
  * Base DAO class implementing simple CRUD ops.
