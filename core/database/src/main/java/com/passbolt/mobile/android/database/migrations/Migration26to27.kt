@@ -1,7 +1,8 @@
 package com.passbolt.mobile.android.database.migrations
 
-import androidx.room.migration.Migration
-import androidx.sqlite.db.SupportSQLiteDatabase
+import androidx.room3.migration.Migration
+import androidx.sqlite.SQLiteConnection
+import androidx.sqlite.execSQL
 
 /**
  * Passbolt - Open source password manager for teams
@@ -31,7 +32,7 @@ object Migration26to27 : Migration(26, 27) {
     private const val ADD_GROUP_UPDATE_STATE_COLUMN =
         "ALTER TABLE UsersGroup ADD COLUMN updateState TEXT NOT NULL DEFAULT 'UPDATED'"
 
-    override fun migrate(db: SupportSQLiteDatabase) {
-        db.execSQL(ADD_GROUP_UPDATE_STATE_COLUMN)
+    override suspend fun migrate(connection: SQLiteConnection) {
+        connection.execSQL(ADD_GROUP_UPDATE_STATE_COLUMN)
     }
 }

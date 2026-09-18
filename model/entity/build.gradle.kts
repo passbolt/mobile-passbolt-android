@@ -4,7 +4,6 @@ plugins {
 }
 
 dependencies {
-    implementation(libs.room.core)
     implementation(libs.room.runtime)
     ksp(libs.room.compiler)
     implementation(libs.gson)

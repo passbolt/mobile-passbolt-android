@@ -23,7 +23,7 @@
 
 package com.passbolt.mobile.android.database.typeconverters
 
-import androidx.room.TypeConverter
+import androidx.room3.ColumnTypeConverter
 import com.google.gson.Gson
 import com.google.gson.JsonElement
 import org.koin.core.component.KoinComponent
@@ -43,7 +43,7 @@ class Converters : KoinComponent {
      * @param timestampMillis Unix timestamp in millis
      * @return Zoned date time instance
      */
-    @TypeConverter
+    @ColumnTypeConverter
     fun dateFromTimestamp(timestampMillis: Long): ZonedDateTime =
         ZonedDateTime.ofInstant(Instant.ofEpochMilli(timestampMillis), ZoneOffset.UTC)
 
@@ -53,7 +53,7 @@ class Converters : KoinComponent {
      * @param date Zoned date time instance
      * @return Unix timestamp in millis
      */
-    @TypeConverter
+    @ColumnTypeConverter
     fun dateToTimestamp(date: ZonedDateTime): Long = date.toInstant().toEpochMilli()
 
     /**
@@ -62,7 +62,7 @@ class Converters : KoinComponent {
      * @param jsonElement Gson Json Element
      * @return Json string
      */
-    @TypeConverter
+    @ColumnTypeConverter
     fun jsonElementToString(jsonElement: JsonElement): String = jsonElement.toString()
 
     /**
@@ -71,6 +71,6 @@ class Converters : KoinComponent {
      * @param jsonString Json String
      * @return Gson Json Element
      */
-    @TypeConverter
+    @ColumnTypeConverter
     fun stringToJsonElement(jsonString: String): JsonElement = get<Gson>().fromJson(jsonString, JsonElement::class.java)
 }

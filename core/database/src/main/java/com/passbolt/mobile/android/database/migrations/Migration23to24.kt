@@ -1,7 +1,8 @@
 package com.passbolt.mobile.android.database.migrations
 
-import androidx.room.migration.Migration
-import androidx.sqlite.db.SupportSQLiteDatabase
+import androidx.room3.migration.Migration
+import androidx.sqlite.SQLiteConnection
+import androidx.sqlite.execSQL
 
 /**
  * Passbolt - Open source password manager for teams
@@ -49,16 +50,16 @@ object Migration23to24 : Migration(23, 24) {
     private const val CREATE_INDEX_METADATA_PRIVATE_KEY_METADATA_KEY_ID =
         "CREATE INDEX IF NOT EXISTS `index_MetadataPrivateKey_metadataKeyId` ON `MetadataPrivateKey` (`metadataKeyId`)"
 
-    override fun migrate(db: SupportSQLiteDatabase) {
-        db.execSQL(CREATE_INDEX_RESOURCE_FOLDER_ID)
-        db.execSQL(CREATE_INDEX_RESOURCE_RESOURCE_TYPE_ID)
-        db.execSQL(CREATE_INDEX_RESOURCE_AND_TAGS_CROSS_REF_RESOURCE_ID)
-        db.execSQL(CREATE_INDEX_RESOURCE_AND_GROUPS_CROSS_REF_GROUP_ID)
-        db.execSQL(CREATE_INDEX_USERS_AND_GROUP_CROSS_REF_GROUP_ID)
-        db.execSQL(CREATE_INDEX_RESOURCE_AND_USERS_CROSS_REF_USER_ID)
-        db.execSQL(CREATE_INDEX_FOLDER_AND_USERS_CROSS_REF_FOLDER_ID)
-        db.execSQL(CREATE_INDEX_FOLDER_AND_GROUPS_CROSS_REF_GROUP_ID)
-        db.execSQL(CREATE_INDEX_RESOURCE_URI_RESOURCE_ID)
-        db.execSQL(CREATE_INDEX_METADATA_PRIVATE_KEY_METADATA_KEY_ID)
+    override suspend fun migrate(connection: SQLiteConnection) {
+        connection.execSQL(CREATE_INDEX_RESOURCE_FOLDER_ID)
+        connection.execSQL(CREATE_INDEX_RESOURCE_RESOURCE_TYPE_ID)
+        connection.execSQL(CREATE_INDEX_RESOURCE_AND_TAGS_CROSS_REF_RESOURCE_ID)
+        connection.execSQL(CREATE_INDEX_RESOURCE_AND_GROUPS_CROSS_REF_GROUP_ID)
+        connection.execSQL(CREATE_INDEX_USERS_AND_GROUP_CROSS_REF_GROUP_ID)
+        connection.execSQL(CREATE_INDEX_RESOURCE_AND_USERS_CROSS_REF_USER_ID)
+        connection.execSQL(CREATE_INDEX_FOLDER_AND_USERS_CROSS_REF_FOLDER_ID)
+        connection.execSQL(CREATE_INDEX_FOLDER_AND_GROUPS_CROSS_REF_GROUP_ID)
+        connection.execSQL(CREATE_INDEX_RESOURCE_URI_RESOURCE_ID)
+        connection.execSQL(CREATE_INDEX_METADATA_PRIVATE_KEY_METADATA_KEY_ID)
     }
 }

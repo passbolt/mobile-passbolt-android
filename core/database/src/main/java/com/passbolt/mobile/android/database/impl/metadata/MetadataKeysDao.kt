@@ -1,8 +1,8 @@
 package com.passbolt.mobile.android.database.impl.metadata
 
-import androidx.room.Dao
-import androidx.room.Query
-import androidx.room.Transaction
+import androidx.room3.Dao
+import androidx.room3.Query
+import androidx.room3.Transaction
 import com.passbolt.mobile.android.database.impl.base.BaseDao
 import com.passbolt.mobile.android.entity.metadata.MetadataKey
 import com.passbolt.mobile.android.entity.metadata.MetadataKeyWithPrivateKeys

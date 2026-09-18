@@ -2259,8 +2259,8 @@
   {
     "groupId": "androidx.room",
     "artifactId": "room-common",
-    "version": "2.8.4",
-    "name": "Room-Common",
+    "version": "2.2.5",
+    "name": "Android Room-Common",
     "spdxLicenses": [
       {
         "identifier": "Apache-2.0",
@@ -2269,77 +2269,93 @@
       }
     ],
     "scm": {
-      "url": "https://cs.android.com/androidx/platform/frameworks/support"
-    }
-  },
-  {
-    "groupId": "androidx.room",
-    "artifactId": "room-common-jvm",
-    "version": "2.8.4",
-    "name": "Room-Common",
-    "spdxLicenses": [
-      {
-        "identifier": "Apache-2.0",
-        "name": "Apache License 2.0",
-        "url": "https://www.apache.org/licenses/LICENSE-2.0"
-      }
-    ],
-    "scm": {
-      "url": "https://cs.android.com/androidx/platform/frameworks/support"
-    }
-  },
-  {
-    "groupId": "androidx.room",
-    "artifactId": "room-ktx",
-    "version": "2.8.4",
-    "name": "Room Kotlin Extensions",
-    "spdxLicenses": [
-      {
-        "identifier": "Apache-2.0",
-        "name": "Apache License 2.0",
-        "url": "https://www.apache.org/licenses/LICENSE-2.0"
-      }
-    ],
-    "scm": {
-      "url": "https://cs.android.com/androidx/platform/frameworks/support"
-    }
-  },
-  {
-    "groupId": "androidx.room",
-    "artifactId": "room-paging",
-    "version": "2.8.4",
-    "name": "Room Paging",
-    "spdxLicenses": [
-      {
-        "identifier": "Apache-2.0",
-        "name": "Apache License 2.0",
-        "url": "https://www.apache.org/licenses/LICENSE-2.0"
-      }
-    ],
-    "scm": {
-      "url": "https://cs.android.com/androidx/platform/frameworks/support"
-    }
-  },
-  {
-    "groupId": "androidx.room",
-    "artifactId": "room-paging-android",
-    "version": "2.8.4",
-    "name": "Room Paging",
-    "spdxLicenses": [
-      {
-        "identifier": "Apache-2.0",
-        "name": "Apache License 2.0",
-        "url": "https://www.apache.org/licenses/LICENSE-2.0"
-      }
-    ],
-    "scm": {
-      "url": "https://cs.android.com/androidx/platform/frameworks/support"
+      "url": "http://source.android.com"
     }
   },
   {
     "groupId": "androidx.room",
     "artifactId": "room-runtime",
-    "version": "2.8.4",
+    "version": "2.2.5",
+    "name": "Android Room-Runtime",
+    "spdxLicenses": [
+      {
+        "identifier": "Apache-2.0",
+        "name": "Apache License 2.0",
+        "url": "https://www.apache.org/licenses/LICENSE-2.0"
+      }
+    ],
+    "scm": {
+      "url": "http://source.android.com"
+    }
+  },
+  {
+    "groupId": "androidx.room3",
+    "artifactId": "room3-common",
+    "version": "3.0.3",
+    "name": "Room-Common",
+    "spdxLicenses": [
+      {
+        "identifier": "Apache-2.0",
+        "name": "Apache License 2.0",
+        "url": "https://www.apache.org/licenses/LICENSE-2.0"
+      }
+    ],
+    "scm": {
+      "url": "https://cs.android.com/androidx/platform/frameworks/support"
+    }
+  },
+  {
+    "groupId": "androidx.room3",
+    "artifactId": "room3-common-jvm",
+    "version": "3.0.3",
+    "name": "Room-Common",
+    "spdxLicenses": [
+      {
+        "identifier": "Apache-2.0",
+        "name": "Apache License 2.0",
+        "url": "https://www.apache.org/licenses/LICENSE-2.0"
+      }
+    ],
+    "scm": {
+      "url": "https://cs.android.com/androidx/platform/frameworks/support"
+    }
+  },
+  {
+    "groupId": "androidx.room3",
+    "artifactId": "room3-paging",
+    "version": "3.0.3",
+    "name": "Room Paging",
+    "spdxLicenses": [
+      {
+        "identifier": "Apache-2.0",
+        "name": "Apache License 2.0",
+        "url": "https://www.apache.org/licenses/LICENSE-2.0"
+      }
+    ],
+    "scm": {
+      "url": "https://cs.android.com/androidx/platform/frameworks/support"
+    }
+  },
+  {
+    "groupId": "androidx.room3",
+    "artifactId": "room3-paging-android",
+    "version": "3.0.3",
+    "name": "Room Paging",
+    "spdxLicenses": [
+      {
+        "identifier": "Apache-2.0",
+        "name": "Apache License 2.0",
+        "url": "https://www.apache.org/licenses/LICENSE-2.0"
+      }
+    ],
+    "scm": {
+      "url": "https://cs.android.com/androidx/platform/frameworks/support"
+    }
+  },
+  {
+    "groupId": "androidx.room3",
+    "artifactId": "room3-runtime",
+    "version": "3.0.3",
     "name": "Room-Runtime",
     "spdxLicenses": [
       {
@@ -2353,9 +2369,9 @@
     }
   },
   {
-    "groupId": "androidx.room",
-    "artifactId": "room-runtime-android",
-    "version": "2.8.4",
+    "groupId": "androidx.room3",
+    "artifactId": "room3-runtime-android",
+    "version": "3.0.3",
     "name": "Room-Runtime",
     "spdxLicenses": [
       {
@@ -2467,7 +2483,7 @@
   {
     "groupId": "androidx.sqlite",
     "artifactId": "sqlite",
-    "version": "2.7.0",
+    "version": "2.7.1",
     "name": "SQLite",
     "spdxLicenses": [
       {
@@ -2483,7 +2499,7 @@
   {
     "groupId": "androidx.sqlite",
     "artifactId": "sqlite-android",
-    "version": "2.7.0",
+    "version": "2.7.1",
     "name": "SQLite",
     "spdxLicenses": [
       {
@@ -2498,8 +2514,40 @@
   },
   {
     "groupId": "androidx.sqlite",
+    "artifactId": "sqlite-async",
+    "version": "2.7.1",
+    "name": "SQLite Async",
+    "spdxLicenses": [
+      {
+        "identifier": "Apache-2.0",
+        "name": "Apache License 2.0",
+        "url": "https://www.apache.org/licenses/LICENSE-2.0"
+      }
+    ],
+    "scm": {
+      "url": "https://cs.android.com/androidx/platform/frameworks/support"
+    }
+  },
+  {
+    "groupId": "androidx.sqlite",
+    "artifactId": "sqlite-async-android",
+    "version": "2.7.1",
+    "name": "SQLite Async",
+    "spdxLicenses": [
+      {
+        "identifier": "Apache-2.0",
+        "name": "Apache License 2.0",
+        "url": "https://www.apache.org/licenses/LICENSE-2.0"
+      }
+    ],
+    "scm": {
+      "url": "https://cs.android.com/androidx/platform/frameworks/support"
+    }
+  },
+  {
+    "groupId": "androidx.sqlite",
     "artifactId": "sqlite-framework",
-    "version": "2.7.0",
+    "version": "2.7.1",
     "name": "SQLite Framework Integration",
     "spdxLicenses": [
       {
@@ -2515,7 +2563,7 @@
   {
     "groupId": "androidx.sqlite",
     "artifactId": "sqlite-framework-android",
-    "version": "2.7.0",
+    "version": "2.7.1",
     "name": "SQLite Framework Integration",
     "spdxLicenses": [
       {
@@ -2531,7 +2579,7 @@
   {
     "groupId": "androidx.sqlite",
     "artifactId": "sqlite-ktx",
-    "version": "2.7.0",
+    "version": "2.7.1",
     "name": "SQLite Kotlin Extensions",
     "spdxLicenses": [
       {

@@ -1,7 +1,8 @@
 package com.passbolt.mobile.android.database.migrations
 
-import androidx.room.migration.Migration
-import androidx.sqlite.db.SupportSQLiteDatabase
+import androidx.room3.migration.Migration
+import androidx.sqlite.SQLiteConnection
+import androidx.sqlite.execSQL
 
 /**
  * Passbolt - Open source password manager for teams
@@ -45,8 +46,8 @@ object Migration10to11 : Migration(10, 11) {
             "PRIMARY KEY(`folderId`, `groupId`)" +
             ")"
 
-    override fun migrate(db: SupportSQLiteDatabase) {
-        with(db) {
+    override suspend fun migrate(connection: SQLiteConnection) {
+        with(connection) {
             execSQL(CREATE_FOLDER_AND_USERS_CROSS_REF_TABLE)
             execSQL(CREATE_FOLDER_AND_GROUPS_CROSS_REF_TABLE)
         }

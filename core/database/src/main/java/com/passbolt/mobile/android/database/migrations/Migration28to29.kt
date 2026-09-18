@@ -1,7 +1,8 @@
 package com.passbolt.mobile.android.database.migrations
 
-import androidx.room.migration.Migration
-import androidx.sqlite.db.SupportSQLiteDatabase
+import androidx.room3.migration.Migration
+import androidx.sqlite.SQLiteConnection
+import androidx.sqlite.execSQL
 
 /**
  * Passbolt - Open source password manager for teams
@@ -52,12 +53,12 @@ object Migration28to29 : Migration(28, 29) {
     private const val POPULATE_USER_FTS_FROM_USERS =
         "INSERT INTO `UserFts`(`UserFts`) VALUES('rebuild')"
 
-    override fun migrate(db: SupportSQLiteDatabase) {
-        db.execSQL(CREATE_USER_FTS_TABLE)
-        db.execSQL(CREATE_USER_FTS_BEFORE_UPDATE_TRIGGER)
-        db.execSQL(CREATE_USER_FTS_BEFORE_DELETE_TRIGGER)
-        db.execSQL(CREATE_USER_FTS_AFTER_INSERT_TRIGGER)
-        db.execSQL(CREATE_USER_FTS_AFTER_UPDATE_TRIGGER)
-        db.execSQL(POPULATE_USER_FTS_FROM_USERS)
+    override suspend fun migrate(connection: SQLiteConnection) {
+        connection.execSQL(CREATE_USER_FTS_TABLE)
+        connection.execSQL(CREATE_USER_FTS_BEFORE_UPDATE_TRIGGER)
+        connection.execSQL(CREATE_USER_FTS_BEFORE_DELETE_TRIGGER)
+        connection.execSQL(CREATE_USER_FTS_AFTER_INSERT_TRIGGER)
+        connection.execSQL(CREATE_USER_FTS_AFTER_UPDATE_TRIGGER)
+        connection.execSQL(POPULATE_USER_FTS_FROM_USERS)
     }
 }

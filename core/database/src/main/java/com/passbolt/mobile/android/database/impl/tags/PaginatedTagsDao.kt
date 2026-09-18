@@ -1,9 +1,11 @@
 package com.passbolt.mobile.android.database.impl.tags
 
 import androidx.paging.PagingSource
-import androidx.room.Dao
-import androidx.room.Query
-import androidx.room.Transaction
+import androidx.room3.Dao
+import androidx.room3.DaoReturnTypeConverters
+import androidx.room3.Query
+import androidx.room3.Transaction
+import androidx.room3.paging.PagingSourceDaoReturnTypeConverter
 import com.passbolt.mobile.android.database.impl.base.BaseDao
 import com.passbolt.mobile.android.entity.resource.Tag
 import com.passbolt.mobile.android.entity.resource.TagWithTaggedItemsCount
@@ -31,6 +33,7 @@ import com.passbolt.mobile.android.entity.resource.TagWithTaggedItemsCount
  * @since v1.0
  */
 @Dao
+@DaoReturnTypeConverters(PagingSourceDaoReturnTypeConverter::class)
 interface PaginatedTagsDao : BaseDao<Tag> {
     @Transaction
     @Query(

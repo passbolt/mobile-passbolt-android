@@ -1,7 +1,8 @@
 package com.passbolt.mobile.android.database.migrations
 
-import androidx.room.migration.Migration
-import androidx.sqlite.db.SupportSQLiteDatabase
+import androidx.room3.migration.Migration
+import androidx.sqlite.SQLiteConnection
+import androidx.sqlite.execSQL
 
 /**
  * Passbolt - Open source password manager for teams
@@ -50,8 +51,8 @@ object Migration18to19 : Migration(18, 19) {
             "PRIMARY KEY(`id`), " +
             "FOREIGN KEY(`metadataKeyId`) REFERENCES `MetadataKey`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )"
 
-    override fun migrate(db: SupportSQLiteDatabase) {
-        with(db) {
+    override suspend fun migrate(connection: SQLiteConnection) {
+        with(connection) {
             execSQL(ADD_METADATA_KEY_MODIFIED_COLUMN)
             execSQL(DROP_METADATA_PRIVATE_KEY)
             execSQL(CREATE_METADATA_PRIVATE_KEY)

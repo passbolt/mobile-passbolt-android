@@ -1,7 +1,7 @@
 package com.passbolt.mobile.android.database
 
 import android.content.Context
-import androidx.room.Room
+import androidx.room3.Room
 import androidx.test.core.app.ApplicationProvider
 import com.google.common.truth.Truth.assertThat
 import com.passbolt.mobile.android.database.FoldersSearchTest.SearchFolderStructure.FOLDER_1
@@ -14,12 +14,15 @@ import com.passbolt.mobile.android.database.FoldersSearchTest.SearchFolderStruct
 import com.passbolt.mobile.android.database.FoldersSearchTest.SearchFolderStructure.RESOURCE_3
 import com.passbolt.mobile.android.database.FoldersSearchTest.SearchFolderStructure.RESOURCE_4
 import com.passbolt.mobile.android.database.FoldersSearchTest.SearchFolderStructure.RESOURCE_5
+import com.passbolt.mobile.android.database.FoldersSearchTest.SearchFolderStructure.RESOURCE_TYPE
+import com.passbolt.mobile.android.database.helpers.testSqlCipherDriver
 import com.passbolt.mobile.android.database.impl.folders.FoldersDao
 import com.passbolt.mobile.android.database.impl.resources.ResourcesDao
 import com.passbolt.mobile.android.entity.folder.Folder
 import com.passbolt.mobile.android.entity.folder.FolderUpdateState
 import com.passbolt.mobile.android.entity.resource.Permission
 import com.passbolt.mobile.android.entity.resource.Resource
+import com.passbolt.mobile.android.entity.resource.ResourceType
 import com.passbolt.mobile.android.entity.resource.ResourceUpdateState
 import kotlinx.coroutines.runBlocking
 import org.junit.After
@@ -63,7 +66,8 @@ class FoldersSearchTest {
                 .inMemoryDatabaseBuilder(
                     context,
                     ResourceDatabase::class.java,
-                ).build()
+                ).setDriver(testSqlCipherDriver())
+                .build()
         resourcesDao = db.resourcesDao()
         foldersDao = db.foldersDao()
 
@@ -72,6 +76,7 @@ class FoldersSearchTest {
 
     private fun insertTestStructure() =
         runBlocking {
+            db.resourceTypesDao().insert(RESOURCE_TYPE)
             foldersDao.apply {
                 insertAll(listOf(FOLDER_1, FOLDER_2, FOLDER_3, FOLDER_4, FOLDER_5))
             }
@@ -189,6 +194,14 @@ class FoldersSearchTest {
                 metadataKeyId = null,
                 metadataKeyType = null,
                 updateState = ResourceUpdateState.PENDING,
+            )
+
+        val RESOURCE_TYPE =
+            ResourceType(
+                resourceTypeId = "1",
+                name = "password-description",
+                slug = "password-description",
+                deleted = null,
             )
 
         val FOLDER_1 =

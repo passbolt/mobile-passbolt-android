@@ -1,11 +1,11 @@
 package com.passbolt.mobile.android.entity.folder
 
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.Index
-import androidx.room.Index.Order.ASC
-import androidx.room.Index.Order.DESC
-import androidx.room.PrimaryKey
+import androidx.room3.ColumnInfo
+import androidx.room3.Entity
+import androidx.room3.Index
+import androidx.room3.Index.Order.ASC
+import androidx.room3.Index.Order.DESC
+import androidx.room3.PrimaryKey
 import com.passbolt.mobile.android.entity.resource.Permission
 import java.time.ZonedDateTime
 

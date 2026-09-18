@@ -1,13 +1,15 @@
 package com.passbolt.mobile.android.database.ftsbenchmark
 
 import android.content.Context
-import androidx.room.Room
-import androidx.sqlite.db.SimpleSQLiteQuery
+import androidx.room3.Room
 import androidx.test.core.app.ApplicationProvider
 import com.google.common.truth.Truth.assertThat
 import com.passbolt.mobile.android.database.ResourceDatabase
 import com.passbolt.mobile.android.database.ftsbenchmark.FtsBenchmarkDataFactory.DataSet
 import com.passbolt.mobile.android.database.ftsbenchmark.FtsBenchmarkDataFactory.SLUG
+import com.passbolt.mobile.android.database.helpers.countRows
+import com.passbolt.mobile.android.database.helpers.executeSql
+import com.passbolt.mobile.android.database.helpers.testSqlCipherDriver
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
@@ -54,9 +56,9 @@ class FtsVsLikeBenchmark {
     @Before
     fun setup() {
         val context = ApplicationProvider.getApplicationContext<Context>()
-        ftsDb = Room.inMemoryDatabaseBuilder(context, ResourceDatabase::class.java).build()
-        likeDb = Room.inMemoryDatabaseBuilder(context, ResourceDatabase::class.java).build()
-        dropFtsSyncTriggers(likeDb)
+        ftsDb = Room.inMemoryDatabaseBuilder(context, ResourceDatabase::class.java).setDriver(testSqlCipherDriver()).build()
+        likeDb = Room.inMemoryDatabaseBuilder(context, ResourceDatabase::class.java).setDriver(testSqlCipherDriver()).build()
+        runBlocking { dropFtsSyncTriggers(likeDb) }
     }
 
     @After
@@ -66,145 +68,142 @@ class FtsVsLikeBenchmark {
     }
 
     @Test
-    fun benchmarkInsert() {
-        printHeader("INSERT")
-        DATASET_SIZES.forEach { size ->
-            val dataSet = FtsBenchmarkDataFactory.createDataSet(size)
-            runBlocking {
+    fun benchmarkInsert() =
+        runBlocking {
+            printHeader("INSERT")
+            DATASET_SIZES.forEach { size ->
+                val dataSet = FtsBenchmarkDataFactory.createDataSet(size)
                 seedReferenceData(ftsDb, dataSet)
                 seedReferenceData(likeDb, dataSet)
+
+                val ftsDuration =
+                    measureTime {
+                        insertResourceData(ftsDb, dataSet)
+                    }
+                val likeDuration =
+                    measureTime {
+                        insertResourceData(likeDb, dataSet)
+                    }
+
+                printResult("INSERT", size, ftsDuration, likeDuration)
+                clearBothDatabases()
             }
-
-            val ftsDuration =
-                measureTime {
-                    runBlocking { insertResourceData(ftsDb, dataSet) }
-                }
-            val likeDuration =
-                measureTime {
-                    runBlocking { insertResourceData(likeDb, dataSet) }
-                }
-
-            printResult("INSERT", size, ftsDuration, likeDuration)
-            clearBothDatabases()
         }
-    }
 
     @Test
-    fun benchmarkSearch() {
-        printHeader("SEARCH")
-        DATASET_SIZES.forEach { size ->
-            val dataSet = FtsBenchmarkDataFactory.createDataSet(size)
-            runBlocking { populateBothDatabases(dataSet) }
+    fun benchmarkSearch() =
+        runBlocking {
+            printHeader("SEARCH")
+            DATASET_SIZES.forEach { size ->
+                val dataSet = FtsBenchmarkDataFactory.createDataSet(size)
+                populateBothDatabases(dataSet)
 
-            // Warm up SQLite page cache
-            searchWithFts(ftsDb)
-            searchWithLike(likeDb)
+                // Warm up SQLite page cache
+                searchWithFts(ftsDb)
+                searchWithLike(likeDb)
 
-            val (ftsCount, ftsDuration) = runSearchIterations { searchWithFts(ftsDb) }
-            val (likeCount, likeDuration) = runSearchIterations { searchWithLike(likeDb) }
+                val (ftsCount, ftsDuration) = runSearchIterations { searchWithFts(ftsDb) }
+                val (likeCount, likeDuration) = runSearchIterations { searchWithLike(likeDb) }
 
-            assertThat(ftsCount).isEqualTo(likeCount)
-            printResult(
-                "SEARCH ($SEARCH_ITERATIONS iterations)",
-                size,
-                ftsDuration,
-                likeDuration,
-                ftsCount,
-            )
-            clearBothDatabases()
+                assertThat(ftsCount).isEqualTo(likeCount)
+                printResult(
+                    "SEARCH ($SEARCH_ITERATIONS iterations)",
+                    size,
+                    ftsDuration,
+                    likeDuration,
+                    ftsCount,
+                )
+                clearBothDatabases()
+            }
         }
-    }
 
     @Test
-    fun benchmarkUpdate() {
-        printHeader("UPDATE")
-        DATASET_SIZES.forEach { size ->
-            val dataSet = FtsBenchmarkDataFactory.createDataSet(size)
-            runBlocking { populateBothDatabases(dataSet) }
+    fun benchmarkUpdate() =
+        runBlocking {
+            printHeader("UPDATE")
+            DATASET_SIZES.forEach { size ->
+                val dataSet = FtsBenchmarkDataFactory.createDataSet(size)
+                populateBothDatabases(dataSet)
 
-            val updatedMetadata = dataSet.metadata.map { it.copy(name = "Updated ${it.name}") }
+                val updatedMetadata = dataSet.metadata.map { it.copy(name = "Updated ${it.name}") }
 
-            val ftsDuration =
-                measureTime {
-                    runBlocking {
+                val ftsDuration =
+                    measureTime {
                         updatedMetadata.chunked(BATCH_SIZE).forEach {
                             ftsDb.resourceMetadataDao().upsertAll(it)
                         }
                     }
-                }
-            val likeDuration =
-                measureTime {
-                    runBlocking {
+                val likeDuration =
+                    measureTime {
                         updatedMetadata.chunked(BATCH_SIZE).forEach {
                             likeDb.resourceMetadataDao().upsertAll(it)
                         }
                     }
-                }
 
-            printResult("UPDATE", size, ftsDuration, likeDuration)
-            clearBothDatabases()
+                printResult("UPDATE", size, ftsDuration, likeDuration)
+                clearBothDatabases()
+            }
         }
-    }
 
     @Test
-    fun benchmarkFetchAll() {
-        printHeader("FETCH ALL (no search query - control)")
-        DATASET_SIZES.forEach { size ->
-            val dataSet = FtsBenchmarkDataFactory.createDataSet(size)
-            runBlocking { populateBothDatabases(dataSet) }
+    fun benchmarkFetchAll() =
+        runBlocking {
+            printHeader("FETCH ALL (no search query - control)")
+            DATASET_SIZES.forEach { size ->
+                val dataSet = FtsBenchmarkDataFactory.createDataSet(size)
+                populateBothDatabases(dataSet)
 
-            // Warm up
-            fetchAll(ftsDb)
-            fetchAll(likeDb)
+                // Warm up
+                fetchAll(ftsDb)
+                fetchAll(likeDb)
 
-            val (ftsCount, ftsDuration) = runSearchIterations { fetchAll(ftsDb) }
-            val (likeCount, likeDuration) = runSearchIterations { fetchAll(likeDb) }
+                val (ftsCount, ftsDuration) = runSearchIterations { fetchAll(ftsDb) }
+                val (likeCount, likeDuration) = runSearchIterations { fetchAll(likeDb) }
 
-            assertThat(ftsCount).isEqualTo(likeCount)
-            assertThat(ftsCount).isEqualTo(size)
-            printResult(
-                "FETCH ALL ($SEARCH_ITERATIONS iterations)",
-                size,
-                ftsDuration,
-                likeDuration,
-                ftsCount,
-            )
-            clearBothDatabases()
+                assertThat(ftsCount).isEqualTo(likeCount)
+                assertThat(ftsCount).isEqualTo(size)
+                printResult(
+                    "FETCH ALL ($SEARCH_ITERATIONS iterations)",
+                    size,
+                    ftsDuration,
+                    likeDuration,
+                    ftsCount,
+                )
+                clearBothDatabases()
+            }
         }
-    }
 
     @Test
-    fun benchmarkDelete() {
-        printHeader("DELETE (cascade from Resource)")
-        DATASET_SIZES.forEach { size ->
-            val dataSet = FtsBenchmarkDataFactory.createDataSet(size)
-            runBlocking { populateBothDatabases(dataSet) }
+    fun benchmarkDelete() =
+        runBlocking {
+            printHeader("DELETE (cascade from Resource)")
+            DATASET_SIZES.forEach { size ->
+                val dataSet = FtsBenchmarkDataFactory.createDataSet(size)
+                populateBothDatabases(dataSet)
 
-            val ftsDuration =
-                measureTime {
-                    ftsDb.openHelper.writableDatabase.execSQL("DELETE FROM Resource")
-                }
-            val likeDuration =
-                measureTime {
-                    likeDb.openHelper.writableDatabase.execSQL("DELETE FROM Resource")
-                }
+                val ftsDuration =
+                    measureTime {
+                        ftsDb.executeSql("DELETE FROM Resource")
+                    }
+                val likeDuration =
+                    measureTime {
+                        likeDb.executeSql("DELETE FROM Resource")
+                    }
 
-            printResult("DELETE", size, ftsDuration, likeDuration)
-            clearBothDatabases()
+                printResult("DELETE", size, ftsDuration, likeDuration)
+                clearBothDatabases()
+            }
         }
-    }
 
-    private fun dropFtsSyncTriggers(db: ResourceDatabase) {
-        with(db.openHelper.writableDatabase) {
-            FTS_TABLE_NAMES.forEach { table ->
-                TRIGGER_SUFFIXES.forEach { suffix ->
-                    execSQL("DROP TRIGGER IF EXISTS room_fts_content_sync_${table}_$suffix")
-                }
+    private suspend fun dropFtsSyncTriggers(db: ResourceDatabase) {
+        FTS_TABLE_NAMES.forEach { table ->
+            TRIGGER_SUFFIXES.forEach { suffix ->
+                db.executeSql("DROP TRIGGER IF EXISTS room_fts_content_sync_${table}_$suffix")
             }
         }
     }
 
-    private fun clearBothDatabases() {
+    private suspend fun clearBothDatabases() {
         ftsDb.clearAllTables()
         likeDb.clearAllTables()
     }
@@ -240,38 +239,20 @@ class FtsVsLikeBenchmark {
         insertResourceData(likeDb, dataSet)
     }
 
-    private fun searchWithFts(db: ResourceDatabase): Int {
+    private suspend fun searchWithFts(db: ResourceDatabase): Int {
         val ftsQuery = "$SEARCH_TERM*"
-        val cursor =
-            db.query(
-                SimpleSQLiteQuery(FTS_SEARCH_SQL, arrayOf(SLUG, ftsQuery, ftsQuery, ftsQuery)),
-            )
-        val count = cursor.count
-        cursor.close()
-        return count
+        return db.countRows(FTS_SEARCH_SQL, arrayOf(SLUG, ftsQuery, ftsQuery, ftsQuery))
     }
 
-    private fun searchWithLike(db: ResourceDatabase): Int {
-        val cursor =
-            db.query(
-                SimpleSQLiteQuery(
-                    LIKE_SEARCH_SQL,
-                    arrayOf(SLUG, SEARCH_TERM, SEARCH_TERM, SEARCH_TERM, SEARCH_TERM, SEARCH_TERM),
-                ),
-            )
-        val count = cursor.count
-        cursor.close()
-        return count
-    }
+    private suspend fun searchWithLike(db: ResourceDatabase): Int =
+        db.countRows(
+            LIKE_SEARCH_SQL,
+            arrayOf(SLUG, SEARCH_TERM, SEARCH_TERM, SEARCH_TERM, SEARCH_TERM, SEARCH_TERM),
+        )
 
-    private fun fetchAll(db: ResourceDatabase): Int {
-        val cursor = db.query(SimpleSQLiteQuery(FETCH_ALL_SQL, arrayOf(SLUG)))
-        val count = cursor.count
-        cursor.close()
-        return count
-    }
+    private suspend fun fetchAll(db: ResourceDatabase): Int = db.countRows(FETCH_ALL_SQL, arrayOf(SLUG))
 
-    private fun runSearchIterations(query: () -> Int): Pair<Int, Duration> =
+    private suspend fun runSearchIterations(query: suspend () -> Int): Pair<Int, Duration> =
         measureTimedValue {
             var count = 0
             repeat(SEARCH_ITERATIONS) { count = query() }

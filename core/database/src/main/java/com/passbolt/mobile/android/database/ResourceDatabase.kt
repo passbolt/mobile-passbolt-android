@@ -1,8 +1,8 @@
 package com.passbolt.mobile.android.database
 
-import androidx.room.Database
-import androidx.room.RoomDatabase
-import androidx.room.TypeConverters
+import androidx.room3.ColumnTypeConverters
+import androidx.room3.Database
+import androidx.room3.RoomDatabase
 import com.passbolt.mobile.android.database.impl.folderandgroupscrossref.FolderAndGroupsCrossRefDao
 import com.passbolt.mobile.android.database.impl.folderanduserscrossref.FoldersAndUsersCrossRefDao
 import com.passbolt.mobile.android.database.impl.folders.FoldersDao
@@ -97,7 +97,7 @@ import com.passbolt.mobile.android.entity.user.UserFts
     ],
     version = 29,
 )
-@TypeConverters(Converters::class)
+@ColumnTypeConverters(Converters::class)
 abstract class ResourceDatabase : RoomDatabase() {
     abstract fun resourcesDao(): ResourcesDao
 

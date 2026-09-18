@@ -1,7 +1,8 @@
 package com.passbolt.mobile.android.database.migrations
 
-import androidx.room.migration.Migration
-import androidx.sqlite.db.SupportSQLiteDatabase
+import androidx.room3.migration.Migration
+import androidx.sqlite.SQLiteConnection
+import androidx.sqlite.execSQL
 
 /**
  * Passbolt - Open source password manager for teams
@@ -33,7 +34,7 @@ object Migration24to25 : Migration(24, 25) {
     private const val ADD_FOLDER_MODIFIED_COLUMN =
         "ALTER TABLE Folder ADD COLUMN modified INTEGER NOT NULL DEFAULT 0"
 
-    override fun migrate(db: SupportSQLiteDatabase) {
-        db.execSQL(ADD_FOLDER_MODIFIED_COLUMN)
+    override suspend fun migrate(connection: SQLiteConnection) {
+        connection.execSQL(ADD_FOLDER_MODIFIED_COLUMN)
     }
 }

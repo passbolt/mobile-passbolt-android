@@ -1,13 +1,13 @@
 package com.passbolt.mobile.android.entity.resource
 
-import androidx.room.Entity
-import androidx.room.ForeignKey
-import androidx.room.ForeignKey.Companion.CASCADE
-import androidx.room.ForeignKey.Companion.SET_NULL
-import androidx.room.Index
-import androidx.room.Index.Order.ASC
-import androidx.room.Index.Order.DESC
-import androidx.room.PrimaryKey
+import androidx.room3.Entity
+import androidx.room3.ForeignKey
+import androidx.room3.ForeignKey.Companion.CASCADE
+import androidx.room3.ForeignKey.Companion.SET_NULL
+import androidx.room3.Index
+import androidx.room3.Index.Order.ASC
+import androidx.room3.Index.Order.DESC
+import androidx.room3.PrimaryKey
 import com.passbolt.mobile.android.entity.folder.Folder
 import com.passbolt.mobile.android.entity.metadata.MetadataKeyType
 import java.time.ZonedDateTime

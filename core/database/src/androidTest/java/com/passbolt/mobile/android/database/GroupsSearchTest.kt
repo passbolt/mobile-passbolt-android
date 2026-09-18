@@ -1,9 +1,10 @@
 package com.passbolt.mobile.android.database
 
 import android.content.Context
-import androidx.room.Room
+import androidx.room3.Room
 import androidx.test.core.app.ApplicationProvider
 import com.google.common.truth.Truth.assertThat
+import com.passbolt.mobile.android.database.helpers.testSqlCipherDriver
 import com.passbolt.mobile.android.database.impl.groups.GroupsDao
 import com.passbolt.mobile.android.entity.group.GroupUpdateState
 import com.passbolt.mobile.android.entity.group.UsersGroup
@@ -47,7 +48,8 @@ class GroupsSearchTest {
                 .inMemoryDatabaseBuilder(
                     context,
                     ResourceDatabase::class.java,
-                ).build()
+                ).setDriver(testSqlCipherDriver())
+                .build()
         groupsDao = db.groupsDao()
 
         runBlocking {

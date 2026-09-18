@@ -1,9 +1,11 @@
 package com.passbolt.mobile.android.database.impl.resources
 
 import androidx.paging.PagingSource
-import androidx.room.Dao
-import androidx.room.Query
-import androidx.room.Transaction
+import androidx.room3.Dao
+import androidx.room3.DaoReturnTypeConverters
+import androidx.room3.Query
+import androidx.room3.Transaction
+import androidx.room3.paging.PagingSourceDaoReturnTypeConverter
 import com.passbolt.mobile.android.database.impl.base.BaseDao
 import com.passbolt.mobile.android.entity.resource.Permission
 import com.passbolt.mobile.android.entity.resource.Resource
@@ -33,6 +35,7 @@ import java.time.ZonedDateTime
  * @since v1.0
  */
 @Dao
+@DaoReturnTypeConverters(PagingSourceDaoReturnTypeConverter::class)
 interface PaginatedResourcesDao : BaseDao<Resource> {
     @Transaction
     @Query(
@@ -76,9 +79,7 @@ interface PaginatedResourcesDao : BaseDao<Resource> {
             "ON r.resourceId = rm.resourceId " +
             "INNER JOIN ResourceType rt " +
             "ON r.resourceTypeId = rt.resourceTypeId " +
-            "WHERE r.resourceTypeId IN(" +
-            "   SELECT resourceTypeId FROM ResourceType WHERE slug IN (:slugs)" +
-            ") " +
+            "WHERE rt.slug IN (:slugs) " +
             "AND (" +
             "   :ftsQuery IS NULL OR (" +
             "   EXISTS (SELECT 1 FROM ResourceMetadataFts WHERE ResourceMetadataFts MATCH :ftsQuery AND docid = rm.rowid) OR " +
@@ -176,9 +177,7 @@ interface PaginatedResourcesDao : BaseDao<Resource> {
             "ON r.resourceId = rm.resourceId " +
             "INNER JOIN ResourceType rt " +
             "ON r.resourceTypeId = rt.resourceTypeId " +
-            "WHERE r.expiry IS NOT NULL AND r.expiry < :expiryTimestampMillis AND r.resourceTypeId IN(" +
-            "   SELECT resourceTypeId FROM ResourceType WHERE slug IN (:slugs)" +
-            ") " +
+            "WHERE r.expiry IS NOT NULL AND r.expiry < :expiryTimestampMillis AND rt.slug IN (:slugs) " +
             "AND (" +
             "   :ftsQuery IS NULL OR (" +
             "   EXISTS (SELECT 1 FROM ResourceMetadataFts WHERE ResourceMetadataFts MATCH :ftsQuery AND docid = rm.rowid) OR " +
