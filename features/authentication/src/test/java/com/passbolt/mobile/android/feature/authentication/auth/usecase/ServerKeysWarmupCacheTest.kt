@@ -50,7 +50,7 @@ class ServerKeysWarmupCacheTest {
 
     @Before
     fun setUp() {
-        whenever(timeProvider.getCurrentEpochSeconds()) doReturn DEVICE_TIME
+        whenever(timeProvider.getCurrentEpochMillis()) doReturn DEVICE_TIME_MILLIS
         cache = ServerKeysWarmupCache(pgpUseCase, rsaUseCase, timeProvider, TestCoroutineLaunchContext())
     }
 
@@ -153,7 +153,7 @@ class ServerKeysWarmupCacheTest {
 
             val result = cache.fetchOrAwait(USER_ID)
 
-            assertThat(result.deviceTimeAtFetchSeconds).isEqualTo(DEVICE_TIME)
+            assertThat(result.deviceTimeAtFetchMillis).isEqualTo(DEVICE_TIME_MILLIS)
         }
 
     private suspend fun stubSuccess() {
@@ -170,6 +170,6 @@ class ServerKeysWarmupCacheTest {
         const val RSA_KEY = "rsa-key"
         const val FINGERPRINT = "fingerprint"
         const val SERVER_TIME = 1_700_000_000L
-        const val DEVICE_TIME = 1_700_000_050L
+        const val DEVICE_TIME_MILLIS = 1_700_000_050_000L
     }
 }

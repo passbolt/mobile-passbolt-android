@@ -116,7 +116,7 @@ class GetAndVerifyServerKeysAndTimeInteractorTest : KoinTest {
             ServerKeysResult(
                 timedPgp = TimedValue(FetchServerPublicPgpKeyUseCase.Output.Failure(incomplete), Duration.ZERO),
                 rsa = FetchServerPublicRsaKeyUseCase.Output.Failure(incomplete),
-                deviceTimeAtFetchSeconds = 0L,
+                deviceTimeAtFetchMillis = 0L,
             ),
         )
     }
@@ -178,7 +178,7 @@ class GetAndVerifyServerKeysAndTimeInteractorTest : KoinTest {
                         Duration.ZERO,
                     ),
                 rsa = FetchServerPublicRsaKeyUseCase.Output.Success(RSA_KEY),
-                deviceTimeAtFetchSeconds = 0L,
+                deviceTimeAtFetchMillis = 0L,
             ),
         )
         whenever(mockGopenPgpTimeUpdater.updateTimeIfNeeded(any(), any(), any()))

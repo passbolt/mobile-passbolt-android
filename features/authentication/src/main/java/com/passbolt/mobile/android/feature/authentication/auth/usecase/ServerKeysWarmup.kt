@@ -35,5 +35,5 @@ interface ServerKeysWarmup {
 data class ServerKeysResult(
     val timedPgp: TimedValue<FetchServerPublicPgpKeyUseCase.Output>,
     val rsa: FetchServerPublicRsaKeyUseCase.Output,
-    val deviceTimeAtFetchSeconds: Long,
+    val deviceTimeAtFetchMillis: Long,
 )

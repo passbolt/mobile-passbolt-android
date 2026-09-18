@@ -10,21 +10,19 @@ class GopenPgpTimeUpdater(
 ) {
     fun updateTimeIfNeeded(
         serverTimeSeconds: Long,
-        deviceTimeAtFetchSeconds: Long,
-        getTimeRequestDurationSeconds: Long,
+        deviceTimeAtFetchMillis: Long,
+        getTimeRequestDurationMillis: Long,
     ): Result {
-        // The server timestamp is already stale by the time the phone reads it - the response still had
-        // to travel back, roughly half the round-trip. Adding that half (instead of subtracting the whole
-        // request duration) stops a slow connection from looking like a wrong device clock.
-        val timeDeltaSeconds =
-            serverTimeSeconds - deviceTimeAtFetchSeconds + getTimeRequestDurationSeconds / 2
+        val halfRoundTripMillis = getTimeRequestDurationMillis / 2
+        val serverTimeAtFetchMillis = serverTimeSeconds * MILLIS_PER_SECOND + halfRoundTripMillis
+        val timeOffsetMillis = serverTimeAtFetchMillis - deviceTimeAtFetchMillis
 
-        return if (abs(timeDeltaSeconds) <= TIME_DELTA_FOR_LOCAL_SYNC_SECS) {
-            Timber.d("Local time sync needed. Adjusted: $timeDeltaSeconds")
-            openPgp.setTimeOffsetSeconds(timeDeltaSeconds)
+        return if (abs(timeOffsetMillis) <= TIME_DELTA_FOR_LOCAL_SYNC_SECS * MILLIS_PER_SECOND) {
+            Timber.d("Local time sync needed. Adjusted: $timeOffsetMillis ms, uncertainty: $halfRoundTripMillis ms")
+            openPgp.setTimeOffsetMillis(timeOffsetMillis, halfRoundTripMillis)
             Result.TIME_SYNCED
         } else {
-            Timber.d("Time delta to big for sync: $timeDeltaSeconds. Showing error.")
+            Timber.d("Time delta to big for sync: $timeOffsetMillis ms. Showing error.")
             Result.TIME_DELTA_TOO_BIG_FOR_SYNC
         }
     }
@@ -37,5 +35,6 @@ class GopenPgpTimeUpdater(
     companion object {
         @VisibleForTesting
         const val TIME_DELTA_FOR_LOCAL_SYNC_SECS = 10
+        private const val MILLIS_PER_SECOND = 1_000L
     }
 }

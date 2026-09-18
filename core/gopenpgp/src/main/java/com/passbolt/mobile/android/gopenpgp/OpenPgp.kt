@@ -50,7 +50,8 @@ class OpenPgp(
     private val pgpHandle: PGPHandle,
     private val gopenPgpExceptionParser: GopenPgpExceptionParser,
 ) {
-    private var timeOffsetSeconds: Long = 0L
+    private var timeOffsetMillis: Long = 0L
+    private var timeOffsetUncertaintyMillis: Long = 0L
 
     suspend fun encryptSignMessageArmored(
         publicKey: String,
@@ -473,22 +474,32 @@ class OpenPgp(
     /**
      * Sets time offset for all crypto operations for the session duration.
      */
-    fun setTimeOffsetSeconds(timeOffsetSec: Long) {
-        timeOffsetSeconds = timeOffsetSec
+    fun setTimeOffsetMillis(
+        timeOffsetMs: Long,
+        timeOffsetUncertaintyMs: Long,
+    ) {
+        timeOffsetMillis = timeOffsetMs
+        timeOffsetUncertaintyMillis = timeOffsetUncertaintyMs
     }
 
     private fun PGPHandle.encryptionWithTimeOffset() =
         encryption()
-            .encryptionTime(Instant.now().epochSecond + timeOffsetSeconds)
-            .signTime(Instant.now().epochSecond + timeOffsetSeconds)
+            .encryptionTime(serverClockLowerBoundSeconds())
+            .signTime(serverClockLowerBoundSeconds())
 
     private fun PGPHandle.decryptionWithTimeOffset() =
         decryption()
-            .verifyTime(Instant.now().epochSecond + timeOffsetSeconds)
+            .verifyTime(serverClockUpperBoundSeconds())
 
     private fun PGPHandle.verificationWithTimeOffset() =
         verify()
-            .verifyTime(Instant.now().epochSecond + timeOffsetSeconds)
+            .verifyTime(serverClockUpperBoundSeconds())
+
+    private fun serverClockLowerBoundSeconds() =
+        serverClockLowerBoundSeconds(Instant.now().toEpochMilli(), timeOffsetMillis, timeOffsetUncertaintyMillis)
+
+    private fun serverClockUpperBoundSeconds() =
+        serverClockUpperBoundSeconds(Instant.now().toEpochMilli(), timeOffsetMillis, timeOffsetUncertaintyMillis)
 
     /* IMPORTANT
      * gopenpgp is Go compiled to a native library via gomobile.
@@ -523,5 +534,25 @@ class OpenPgp(
     companion object {
         @VisibleForTesting
         const val SESSION_KEY_ALGORITHM = AES256
+
+        @VisibleForTesting
+        const val SERVER_TIME_RESOLUTION_SECS = 1L
+        private const val MILLIS_PER_SECOND = 1_000L
+
+        @VisibleForTesting
+        fun serverClockLowerBoundSeconds(
+            deviceTimeMillis: Long,
+            timeOffsetMillis: Long,
+            timeOffsetUncertaintyMillis: Long,
+        ): Long = (deviceTimeMillis + timeOffsetMillis - timeOffsetUncertaintyMillis).floorDiv(MILLIS_PER_SECOND)
+
+        @VisibleForTesting
+        fun serverClockUpperBoundSeconds(
+            deviceTimeMillis: Long,
+            timeOffsetMillis: Long,
+            timeOffsetUncertaintyMillis: Long,
+        ): Long =
+            (deviceTimeMillis + timeOffsetMillis + timeOffsetUncertaintyMillis).floorDiv(MILLIS_PER_SECOND) +
+                SERVER_TIME_RESOLUTION_SECS
     }
 }

@@ -60,7 +60,7 @@ class GetAndVerifyServerKeysAndTimeInteractor(
             return
         }
 
-        if (isServerTimeOutOfSync(pgpKey, serverKeys.deviceTimeAtFetchSeconds, getTimeRequestDuration.inWholeSeconds)) {
+        if (isServerTimeOutOfSync(pgpKey, serverKeys.deviceTimeAtFetchMillis, getTimeRequestDuration.inWholeMilliseconds)) {
             onError(Error.TimeIsOutOfSync)
             return
         }
@@ -94,13 +94,13 @@ class GetAndVerifyServerKeysAndTimeInteractor(
 
     private fun isServerTimeOutOfSync(
         pgpKey: FetchServerPublicPgpKeyUseCase.Output.Success,
-        deviceTimeAtFetchSeconds: Long,
-        getTimeRequestDurationSeconds: Long,
+        deviceTimeAtFetchMillis: Long,
+        getTimeRequestDurationMillis: Long,
     ): Boolean =
         gopenPgpTimeUpdater.updateTimeIfNeeded(
             pgpKey.serverTime,
-            deviceTimeAtFetchSeconds,
-            getTimeRequestDurationSeconds,
+            deviceTimeAtFetchMillis,
+            getTimeRequestDurationMillis,
         ) == GopenPgpTimeUpdater.Result.TIME_DELTA_TOO_BIG_FOR_SYNC
 
     private suspend fun computeServerKeyFingerprint(publicKey: String): String? =
