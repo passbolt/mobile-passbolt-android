@@ -25,4 +25,6 @@ package com.passbolt.mobile.android.common.time
 
 interface TimeProvider {
     fun getCurrentEpochSeconds(): Long
+
+    fun getCurrentEpochMillis(): Long
 }

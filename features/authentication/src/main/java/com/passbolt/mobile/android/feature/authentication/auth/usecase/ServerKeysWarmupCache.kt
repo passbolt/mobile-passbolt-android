@@ -85,7 +85,7 @@ class ServerKeysWarmupCache(
             val pgp = async { measureTimedValue { fetchServerPublicPgpKeyUseCase.execute(Unit) } }
             val rsa = async { fetchServerPublicRsaKeyUseCase.execute(Unit) }
             val timedPgp = pgp.await()
-            val deviceTimeAtFetchSeconds = timeProvider.getCurrentEpochSeconds()
-            ServerKeysResult(timedPgp, rsa.await(), deviceTimeAtFetchSeconds)
+            val deviceTimeAtFetchMillis = timeProvider.getCurrentEpochMillis()
+            ServerKeysResult(timedPgp, rsa.await(), deviceTimeAtFetchMillis)
         }
 }
