@@ -1213,12 +1213,14 @@ class ResourceFormViewModel(
     }
 
     private fun trustedMetadataKeyDeleted() {
+        updateViewState { copy(metadataKeyDeletedDialog = null) }
         launch {
             metadataPrivateKeysHelperInteractor.deletedTrustedMetadataPrivateKey()
         }
     }
 
     private fun trustNewMetadataKey(model: NewMetadataKeyToTrustModel) {
+        updateViewState { copy(metadataKeyModifiedDialog = null) }
         launch {
             updateViewState { copy(shouldShowDialogProgress = true) }
             when (
