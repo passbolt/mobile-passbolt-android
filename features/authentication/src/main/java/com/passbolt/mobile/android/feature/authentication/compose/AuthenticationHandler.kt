@@ -50,6 +50,7 @@ import com.passbolt.mobile.android.feature.authentication.mfa.MfaResult
 import com.passbolt.mobile.android.feature.authentication.mfa.duo.AuthWithDuoScreen
 import com.passbolt.mobile.android.feature.authentication.mfa.totp.EnterTotpScreen
 import com.passbolt.mobile.android.feature.authentication.mfa.unknown.UnknownProviderScreen
+import com.passbolt.mobile.android.feature.authentication.mfa.webauthn.AuthWithWebauthnScreen
 import com.passbolt.mobile.android.feature.authentication.mfa.yubikey.ScanYubikeyScreen
 import org.koin.compose.koinInject
 
@@ -144,6 +145,7 @@ private fun MfaDialog(
         is MfaDialogState.Totp -> EnterTotpScreen(mfaState = state, onMfaResult = onMfaResult)
         is MfaDialogState.Yubikey -> ScanYubikeyScreen(mfaState = state, onMfaResult = onMfaResult)
         is MfaDialogState.Duo -> AuthWithDuoScreen(mfaState = state, onMfaResult = onMfaResult)
+        is MfaDialogState.Webauthn -> AuthWithWebauthnScreen(mfaState = state, onMfaResult = onMfaResult)
         is MfaDialogState.UnknownProvider -> UnknownProviderScreen()
     }
 }
@@ -157,5 +159,6 @@ private fun toMfaDialogState(
         MfaProvider.TOTP -> MfaDialogState.Totp(authToken = sessionAccessToken, hasOtherProviders = hasMultipleProviders)
         MfaProvider.YUBIKEY -> MfaDialogState.Yubikey(authToken = sessionAccessToken, hasOtherProviders = hasMultipleProviders)
         MfaProvider.DUO -> MfaDialogState.Duo(authToken = sessionAccessToken, hasOtherProviders = hasMultipleProviders)
+        MfaProvider.WEBAUTHN -> MfaDialogState.Webauthn(authToken = sessionAccessToken, hasOtherProviders = hasMultipleProviders)
         null -> MfaDialogState.UnknownProvider
     }

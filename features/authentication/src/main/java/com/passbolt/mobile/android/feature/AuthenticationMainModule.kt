@@ -9,6 +9,7 @@ import com.passbolt.mobile.android.feature.authentication.auth.authModule
 import com.passbolt.mobile.android.feature.authentication.mfa.duo.authWithDuoModule
 import com.passbolt.mobile.android.feature.authentication.mfa.totp.enterTotpModule
 import com.passbolt.mobile.android.feature.authentication.mfa.unknown.unknownProviderModule
+import com.passbolt.mobile.android.feature.authentication.mfa.webauthn.authWithWebauthnModule
 import com.passbolt.mobile.android.feature.authentication.mfa.yubikey.scanYubikeyModule
 import com.passbolt.mobile.android.feature.authentication.navigation.AuthenticationFeatureNavigation
 import org.koin.core.module.dsl.factoryOf
@@ -29,4 +30,5 @@ val authenticationModule =
         enterTotpModule()
         unknownProviderModule()
         authWithDuoModule()
+        authWithWebauthnModule()
     }

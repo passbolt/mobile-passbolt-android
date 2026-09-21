@@ -208,6 +208,8 @@
     <string name="dialog_mfa_scan_youbikey_not_from_current_user_title">Yubikey is not recognized</string>
     <string name="dialog_mfa_scan_youbikey_not_from_current_user_message">Yubikey is not recognized by the server. Please try another Yubikey or use another provider.</string>
     <string name="dialog_mfa_auth_with_duo">Authenticate with Duo</string>
+    <string name="dialog_mfa_webauthn">Additional Authentication with Passkey</string>
+    <string name="dialog_mfa_auth_with_webauthn">Verify with passkey</string>
     <string name="dialog_mfa_other_provider">Try with another provider</string>
     <string name="dialog_mfa_remember_me">Remember this device for 30 days</string>
     <string name="dialog_mfa_scan_empty_otp">Scanned OTP is empty</string>

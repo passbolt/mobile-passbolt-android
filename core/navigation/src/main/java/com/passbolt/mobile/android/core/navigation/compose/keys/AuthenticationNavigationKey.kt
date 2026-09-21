@@ -33,5 +33,11 @@ sealed interface AuthenticationNavigationKey : NavKey {
     ) : AuthenticationNavigationKey
 
     @Serializable
+    data class MfaWebauthn(
+        val authToken: String?,
+        val hasOtherProviders: Boolean,
+    ) : AuthenticationNavigationKey
+
+    @Serializable
     data object MfaUnknownProvider : AuthenticationNavigationKey
 }
