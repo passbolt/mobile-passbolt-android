@@ -1,0 +1,38 @@
+# Passbolt 3.3.0-57 Android app release notes
+
+## Added
+- [multiple] Add permissions confirmation dialog
+- MOB-4278: Add min SDK support warning
+- MOB-4515: Screenshot tests phase 2 (cover selected screens)
+
+## Improved
+- MOB-5084: Add dark mode fix for warning banner
+- MOB-4959: Synchronize and lock multiple session refresh fired at once for async requests
+- MOB-5081: Make fingerprint font and styling consistent across all screens
+- MOB-4963: Lock PassphraseMemoryCache with ReentrantLock
+- MOB-4888: Enable to display resource details when refreshing
+
+## Fixed
+- MOB-4965: Fix a crash when adding new fingerprint within 1 minute re-auth grace period
+- MOB-4996: Sort resource list alphabetically
+
+## Security
+- MOB-4962: Wipe out ByteArrays copies from memory right after use
+- MOB-4956, MOB-4958: Remove stale session data from storage after sign out; Show error on failed sign out
+- MOB-4976: Match auth paths exactly not by contains
+- MOB-4968: Remove leftover user profile data from storage after account removal
+- MOB-4966: Remove whole database file and database passphrase file when account removed
+- MOB-4957: Clear RuntimeAuthenticatedFlag on sign out
+- MOB-4955: Pass database passphrase as byte array wherever possible
+- MOB-4955: Save server rsa key after added local verification instead of after server fetch
+- MOB-4951: Verify sign in token and domain
+- MOB-4977, MOB-4978: Add flag secure to screens on which secret appears
+- MOB-4952: Verify if server-sent server key fingerprint is equal to a locally computed one from the key data
+
+## Maintenance
+- MOB-5076: Update dev container setup and add dev container lockfile
+- Recurring dependencies updates
+- MOB-4971: Use the passed user id for providing database
+- MOB-4970: Remove unused linksapi module
+- MOB-4954: Store MFA cookie per account
+- Fix build warnings
