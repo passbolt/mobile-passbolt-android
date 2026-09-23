@@ -15,6 +15,7 @@ androidx.arch.core:core-runtime:2.2.0=releaseRuntimeClasspath
 androidx.autofill:autofill:1.0.0=releaseRuntimeClasspath
 androidx.biometric:biometric-ktx:1.2.0-alpha05=releaseRuntimeClasspath
 androidx.biometric:biometric:1.2.0-alpha05=releaseRuntimeClasspath
+androidx.browser:browser:1.10.0=releaseRuntimeClasspath
 androidx.camera.featurecombinationquery:featurecombinationquery:1.6.2=releaseRuntimeClasspath
 androidx.camera.viewfinder:viewfinder-core:1.5.1=releaseRuntimeClasspath
 androidx.camera:camera-camera2-pipe:1.6.2=releaseRuntimeClasspath
