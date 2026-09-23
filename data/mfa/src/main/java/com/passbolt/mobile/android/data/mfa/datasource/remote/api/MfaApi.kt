@@ -25,6 +25,9 @@ package com.passbolt.mobile.android.data.mfa.datasource.remote.api
 
 import com.passbolt.mobile.android.dto.request.HotpRequest
 import com.passbolt.mobile.android.dto.request.TotpRequest
+import com.passbolt.mobile.android.dto.request.WebauthnDelegatedCallbackRequest
+import com.passbolt.mobile.android.dto.response.BaseResponse
+import com.passbolt.mobile.android.dto.response.WebauthnDelegatedPromptResponseDto
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -68,6 +71,21 @@ internal interface MfaApi {
         @Query(QUERY_MOBILE) isMobile: Int = 1,
     ): Response<Void>
 
+    @POST(MFA_VERIFICATION_WEBAUTHN_DELEGATED_PROMPT)
+    suspend fun getWebauthnDelegatedPrompt(
+        // auth header needs to be added manually because this request
+        // requires auth token and is before user is signed in
+        @Header(MFA_AUTH_HEADER) authHeader: String?,
+    ): Response<BaseResponse<WebauthnDelegatedPromptResponseDto>>
+
+    @POST(MFA_VERIFICATION_WEBAUTHN_DELEGATED_CALLBACK)
+    suspend fun verifyWebauthnExchangeCode(
+        @Body request: WebauthnDelegatedCallbackRequest,
+        // auth header needs to be added manually because this request
+        // requires auth token and is before user is signed in
+        @Header(MFA_AUTH_HEADER) authHeader: String?,
+    ): Response<Void>
+
     private companion object {
         private const val QUERY_MOBILE = "mobile"
         private const val QUERY_STATE = "state"
@@ -79,6 +97,9 @@ internal interface MfaApi {
         private const val MFA_VERIFICATION_DUO = "$MFA_VERIFICATION/duo"
         private const val MFA_VERIFICATION_DUO_PROMPT = "$MFA_VERIFICATION_DUO/prompt"
         private const val MFA_VERIFICATION_DUO_CALLBACK = "$MFA_VERIFICATION_DUO/callback"
+        private const val MFA_VERIFICATION_WEBAUTHN_DELEGATED = "$MFA_VERIFICATION/webauthn/delegated"
+        private const val MFA_VERIFICATION_WEBAUTHN_DELEGATED_PROMPT = "$MFA_VERIFICATION_WEBAUTHN_DELEGATED/prompt.json"
+        private const val MFA_VERIFICATION_WEBAUTHN_DELEGATED_CALLBACK = "$MFA_VERIFICATION_WEBAUTHN_DELEGATED/callback.json"
         private const val MFA_AUTH_HEADER = "Authorization"
     }
 }
