@@ -24,6 +24,7 @@ sealed class AuthenticationState {
                     YUBIKEY("yubikey"),
                     TOTP("totp"),
                     DUO("duo"),
+                    WEBAUTHN("webauthn"),
                     ;
 
                     companion object {
@@ -32,6 +33,7 @@ sealed class AuthenticationState {
                                 "yubikey" -> YUBIKEY
                                 "totp" -> TOTP
                                 "duo" -> DUO
+                                "webauthn" -> WEBAUTHN
                                 else -> null
                             }
                     }

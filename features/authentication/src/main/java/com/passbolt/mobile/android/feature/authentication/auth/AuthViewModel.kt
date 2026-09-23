@@ -8,6 +8,7 @@ import com.passbolt.mobile.android.core.idlingresource.SignInIdlingResource
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated.Reason.Mfa.MfaProvider
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated.Reason.Mfa.MfaProvider.DUO
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated.Reason.Mfa.MfaProvider.TOTP
+import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated.Reason.Mfa.MfaProvider.WEBAUTHN
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated.Reason.Mfa.MfaProvider.YUBIKEY
 import com.passbolt.mobile.android.core.mvp.authentication.MfaProvidersHandler
 import com.passbolt.mobile.android.core.navigation.ActivityIntents.AuthConfig
@@ -113,6 +114,7 @@ import com.passbolt.mobile.android.feature.authentication.auth.usecase.VerifyPas
 import com.passbolt.mobile.android.feature.authentication.mfa.MfaDialogState.Duo
 import com.passbolt.mobile.android.feature.authentication.mfa.MfaDialogState.Totp
 import com.passbolt.mobile.android.feature.authentication.mfa.MfaDialogState.UnknownProvider
+import com.passbolt.mobile.android.feature.authentication.mfa.MfaDialogState.Webauthn
 import com.passbolt.mobile.android.feature.authentication.mfa.MfaDialogState.Yubikey
 import com.passbolt.mobile.android.mappers.AccountModelMapper
 import com.passbolt.mobile.android.ui.BiometricAuthError
@@ -656,6 +658,7 @@ class AuthViewModel(
                 YUBIKEY -> Yubikey(jwtToken, hasMultiple)
                 TOTP -> Totp(jwtToken, hasMultiple)
                 DUO -> Duo(jwtToken, hasMultiple)
+                WEBAUTHN -> Webauthn(jwtToken, hasMultiple)
                 else -> {
                     Timber.e("Unknown provider: $provider")
                     UnknownProvider
@@ -675,6 +678,7 @@ class AuthViewModel(
                 YUBIKEY -> Yubikey(bearer, hasMultiple)
                 TOTP -> Totp(bearer, hasMultiple)
                 DUO -> Duo(bearer, hasMultiple)
+                WEBAUTHN -> Webauthn(bearer, hasMultiple)
                 null -> UnknownProvider
             }
         emitSideEffect(NavigateToMfa(mfaState))

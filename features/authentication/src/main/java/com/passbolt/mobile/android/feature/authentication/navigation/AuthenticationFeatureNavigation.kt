@@ -11,6 +11,7 @@ import com.passbolt.mobile.android.core.navigation.compose.keys.AuthenticationNa
 import com.passbolt.mobile.android.core.navigation.compose.keys.AuthenticationNavigationKey.MfaDuo
 import com.passbolt.mobile.android.core.navigation.compose.keys.AuthenticationNavigationKey.MfaTotp
 import com.passbolt.mobile.android.core.navigation.compose.keys.AuthenticationNavigationKey.MfaUnknownProvider
+import com.passbolt.mobile.android.core.navigation.compose.keys.AuthenticationNavigationKey.MfaWebauthn
 import com.passbolt.mobile.android.core.navigation.compose.keys.AuthenticationNavigationKey.MfaYubikey
 import com.passbolt.mobile.android.core.navigation.compose.results.NavigationResultEventBus
 import com.passbolt.mobile.android.feature.authentication.accountslist.AccountsListScreen
@@ -20,6 +21,7 @@ import com.passbolt.mobile.android.feature.authentication.mfa.MfaResult
 import com.passbolt.mobile.android.feature.authentication.mfa.duo.AuthWithDuoScreen
 import com.passbolt.mobile.android.feature.authentication.mfa.totp.EnterTotpScreen
 import com.passbolt.mobile.android.feature.authentication.mfa.unknown.UnknownProviderScreen
+import com.passbolt.mobile.android.feature.authentication.mfa.webauthn.AuthWithWebauthnScreen
 import com.passbolt.mobile.android.feature.authentication.mfa.yubikey.ScanYubikeyScreen
 import org.koin.compose.koinInject
 
@@ -87,6 +89,22 @@ class AuthenticationFeatureNavigation : FeatureModuleNavigation {
                 PassboltTheme {
                     AuthWithDuoScreen(
                         mfaState = MfaDialogState.Duo(key.authToken, key.hasOtherProviders),
+                        onMfaResult = {
+                            resultBus.sendResult<MfaResult>(result = it)
+                            navigator.navigateBack()
+                        },
+                        isSetupFlow = params.authConfig is AuthConfig.Setup,
+                    )
+                }
+            }
+
+            entry<MfaWebauthn> { key ->
+                val resultBus = NavigationResultEventBus.current
+                val navigator: AppNavigator = koinInject()
+                val params = LocalAuthenticationParams.current
+                PassboltTheme {
+                    AuthWithWebauthnScreen(
+                        mfaState = MfaDialogState.Webauthn(key.authToken, key.hasOtherProviders),
                         onMfaResult = {
                             resultBus.sendResult<MfaResult>(result = it)
                             navigator.navigateBack()
