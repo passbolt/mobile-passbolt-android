@@ -32,6 +32,8 @@ object AuthPaths {
     const val MFA_VERIFICATION_YUBIKEY = "/mfa/verify/yubikey.json"
     const val MFA_VERIFICATION_DUO_PROMPT = "/mfa/verify/duo/prompt"
     const val MFA_VERIFICATION_DUO_VERIFY = "/mfa/verify/duo/callback"
+    const val MFA_VERIFICATION_WEBAUTHN_DELEGATED_PROMPT = "/mfa/verify/webauthn/delegated/prompt.json"
+    const val MFA_VERIFICATION_WEBAUTHN_DELEGATED_CALLBACK = "/mfa/verify/webauthn/delegated/callback.json"
     const val AVATAR_PATH = "/img/avatar/"
     const val TRANSFER_PATH = "/mobile/transfers/"
 }

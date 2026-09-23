@@ -59,6 +59,8 @@ class CookiesInterceptor {
                 AuthPaths.MFA_VERIFICATION_YUBIKEY,
                 AuthPaths.MFA_VERIFICATION_DUO_PROMPT,
                 AuthPaths.MFA_VERIFICATION_DUO_VERIFY,
+                AuthPaths.MFA_VERIFICATION_WEBAUTHN_DELEGATED_PROMPT,
+                AuthPaths.MFA_VERIFICATION_WEBAUTHN_DELEGATED_CALLBACK,
                 AuthPaths.AUTH_VERIFY,
             )
     }

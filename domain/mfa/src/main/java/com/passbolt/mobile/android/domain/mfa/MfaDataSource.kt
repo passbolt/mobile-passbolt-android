@@ -27,6 +27,8 @@ import com.passbolt.mobile.android.core.architecture.result.DomainResult
 import com.passbolt.mobile.android.domain.mfa.model.DuoPrompt
 import com.passbolt.mobile.android.domain.mfa.model.DuoVerification
 import com.passbolt.mobile.android.domain.mfa.model.TotpVerification
+import com.passbolt.mobile.android.domain.mfa.model.WebauthnDelegatedPrompt
+import com.passbolt.mobile.android.domain.mfa.model.WebauthnVerification
 import com.passbolt.mobile.android.domain.mfa.model.YubikeyVerification
 
 interface MfaDataSource {
@@ -50,4 +52,12 @@ interface MfaDataSource {
         state: String?,
         code: String?,
     ): DomainResult<DuoVerification>
+
+    suspend fun getWebauthnDelegatedPrompt(authToken: String?): DomainResult<WebauthnDelegatedPrompt>
+
+    suspend fun verifyWebauthnExchangeCode(
+        authToken: String?,
+        exchangeCode: String,
+        remember: Boolean,
+    ): DomainResult<WebauthnVerification>
 }
