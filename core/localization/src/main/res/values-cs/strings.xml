@@ -15,6 +15,7 @@
     <string name="default_home_search_hint">Hledat jméno, uživatele nebo URL</string>
     <string name="all_items_home_search_hint">Hledat jméno, uživatele, url nebo štítek</string>
     <string name="user_search_hint">Hledat uživatele…</string>
+    <string name="search_in_progress">Searching…</string>
     <string name="no_passwords">Nejsou zde žádná hesla</string>
     <string name="no_otps">Nejsou zde žádné TOTP</string>
     <string name="authentication_required">Je vyžadováno přihlášení</string>
@@ -28,6 +29,9 @@
     <string name="shared_with">Sdíleno s</string>
     <string name="location">Umístění</string>
     <string name="content_not_available">Obsah již není k dispozici</string>
+    <string name="consent">Přečetl(a) jsem si a souhlasím</string>
+    <string name="accessibility_policies_accept">Přijmout</string>
+    <string name="accessibility_policies_decline">Odmítnout</string>
     <string name="name_suspended">%s (pozastaveno)</string>
     <string name="name_expired">%s (vypršelo)</string>
     <string name="proceed">Pokračujte</string>
@@ -43,6 +47,7 @@
     <string name="common_sign_out">Odhlásit se</string>
     <string name="common_data_refresh_error">Při obnovování dat došlo k chybě. Sjeďte prstem dolů pro obnovení.</string>
     <string name="common_decryption_failure">Při dešifrování došlo k chybě</string>
+    <string name="common_invalid_totp_parameters">Neplatné parametry TOTP</string>
     <string name="common_metadata_encryption_failure">Chyba při šifrování metadat</string>
     <string name="common_fetch_failure">Chyba při stahování tajného klíče</string>
     <string name="common_encryption_failure">Při šifrování tajností došlo k chybě</string>
@@ -53,6 +58,8 @@
     <string name="common_metadata_key_verification_failure">Nelze ověřit klíče metadat</string>
     <string name="common_metadata_key_is_trusted">Nový klíč metadat je důvěryhodný</string>
     <string name="common_metadata_key_trust_failed">Nepodařilo se důvěřovat novému klíči metadat</string>
+    <string name="common_password_policies_fetch_failed">Failed to fetch password policies - using defaults</string>
+    <string name="common_password_expiry_fetch_failed">Failed to fetch password expiry settings - using defaults</string>
     <string name="common_message_resource_edited">Zdroj %s byl úspěšně upraven.</string>
     <string name="common_message_resource_deleted">Zdroj %s byl odstraněn.</string>
     <string name="common_message_resource_shared">Oprávnění zdroje byla aktualizována.</string>
@@ -69,6 +76,9 @@
     <string name="biometric_changed_title">Zjištěny změny otisku prstu</string>
     <string name="biometric_changed_message">Tentokrát se musíte přihlásit pomocí přístupové fráze a znovu povolit otisk prstu v Nastavení.</string>
     <string name="biometric_authenticate_again">Přihlaste se prosím znovu pomocí přístupové fráze</string>
+    <string name="biometric_decrypt_error_message">Biometrické přihlášení je dočasně nedostupné. Pro pokračování zadejte svou přístupovou frázi.</string>
+    <string name="biometric_encrypt_error_message">Nastavení biometrie se nepodařilo dokončit. Zkuste to znovu nebo pokračujte bez ní.</string>
+    <string name="biometric_no_crypto_cipher">Vaše zařízení použilo PIN nebo gesto místo biometrie. Použijte biometrické odemknutí nebo zadejte svou přístupovou frázi.</string>
     <string name="settings_licenses_title">Licence</string>
     <string name="settings_logs_title">Logy</string>
     <string name="resource_will_be_deleted">Tímto trvale odeberete toto heslo z vašeho účtu.</string>
@@ -150,8 +160,11 @@
     <string name="auth_decryption_error_title">Chyba při dešifrování</string>
     <string name="auth_decryption_error_description">Došlo k chybě při dešifrování. Zkuste to prosím znovu.\n</string>
     <string name="auth_decryption_error_cause">Chyba Open PGP je:\n%s</string>
+    <string name="auth_error_server_signature_invalid">Server signature invalid</string>
     <string name="auth_error_invalid_signature">Chyba ověření (neplatný podpis)</string>
     <string name="auth_error_token_expired">Chyba ověření (platnost tokenu vypršela)</string>
+    <string name="auth_error_verify_token_mismatch">Challenge verification error (verify token mismatch)</string>
+    <string name="auth_error_domain_mismatch">Challenge verification error (domain mismatch)</string>
     <string name="auth_error_challenge_verification_failure">Ověření výzvy selhalo</string>
     <string name="auth_error_profile_fetch_failure">Při aktualizaci profilu došlo k chybě</string>
     <string name="dialog_account_does_not_exist_title">Účet neexistuje</string>
@@ -181,10 +194,12 @@
     <string name="autofill_service_name">Passbolt Autofill</string>
     <string name="dialog_encourage_autofill_header">Přihlaste se do oblíbených aplikací během 3 sekund!</string>
     <string name="dialog_autofill_header">Autofill</string>
+    <string name="dialog_encourage_autofill_accessibility_description">Tato možnost používá službu Zpřístupnění systému Android k automatickému vyplňování přihlašovacích údajů v aplikacích a prohlížečích, které nepodporují nativní automatické vyplňování systému Android. Klepnutím na přepínač níže zkontrolujete, k čemu se přistupuje, a udělíte svůj souhlas.</string>
     <string name="dialog_encourage_autofill_accessibility_samsung">Samsung</string>
     <string name="dialog_encourage_autofill_accessibility_xiaomi">Xiaomi</string>
     <string name="dialog_encourage_autofill_accessibility_huawei">Huawei</string>
     <string name="dialog_encourage_autofill_accessibility_other">Jiné</string>
+    <string name="dialog_encourage_autofill_accessibility_title">Povolit automatické vyplňování prostřednictvím služby Zpřístupnění</string>
     <string name="dialog_encourage_autofill_go_to_settings">Přejít do nastavení</string>
     <string name="dialog_encourage_autofill_service_header">Povolit automatické vyplňování pro většinu aplikací</string>
     <string name="dialog_encourage_autofill_service_description">Na obrazovce nastavení systému Android vyberte Passbolt, zapněte přepínač a stiskněte tlačítko OK.
@@ -213,9 +228,12 @@
     <string name="autofill_service_enable_overlay">Povolit oprávnění pro překrytí</string>
     <string name="autofill_service_overlay_description"><![CDATA[Automatické vyplňování uživatelských jmen a hesel pro Android webové prohlížeče. Povolte oprávnění "Vykreslit přes jiné aplikace" pro Passbolt Automatické vyplňování]]></string>
     <string name="autofill_service_enable_service">Povolit automatické vyplňování pro většinu aplikací</string>
+    <string name="autofill_service_enable_service_description"><![CDATA[Zjišťujte přihlašovací pole v aplikacích a prohlížečích a nabídněte automatické vyplňování. K povolení služby Zpřístupnění je vyžadován váš souhlas.]]></string>
     <string name="autofill_dropdown_select">Vybrat z Passboltu</string>
     <string name="autofill_dropdown_fill">Vyplnit pomocí Passboltu</string>
     <string name="autofill_resources_create">Vytvořit&amp;vyplnit</string>
+    <string name="autofill_conflict_message">Je aktivních více metod automatického vyplňování.\nTo může způsobit problémy.</string>
+    <string name="autofill_conflict_message_detailed">Je aktivních více metod automatického vyplňování.\nChcete-li zajistit bezproblémové automatické vyplňování, jednu vypněte.</string>
     <string name="home_empty_list">Prázdný seznam</string>
     <string name="home_create">Vytvořit</string>
     <string name="home_in_sub_folders">v podsložkách:</string>
@@ -253,12 +271,23 @@
     <string name="resource_details_description_header">Popis</string>
     <string name="resource_details_note_header">Poznámka</string>
     <string name="resource_details_note_content">Obsah</string>
+    <string name="resource_details_pin_code_header">Pin kód</string>
+    <string name="resource_details_pin_code_code">Kód</string>
     <string name="resource_details_tags_header">Štítky</string>
     <string name="resource_details_encrypted_description">Popis je šifrovaný</string>
+    <string name="action_show">Zobrazit</string>
+    <string name="action_hide">Skrýt</string>
+    <string name="action_copy">Kopírovat</string>
     <string name="resource_details_information">Informace</string>
     <string name="resource_details_invalid_totp_scanned">Naskenován chybný TOTP QR kód</string>
     <string name="resource_details_metadata_header">Metadata</string>
     <string name="resource_details_custom_fields_header">Vlastní pole</string>
+    <string name="resource_details_upgrade_available_header">Upgrade available</string>
+    <string name="resource_details_upgrade_panel_message">This is a legacy resource. Upgrade for security improvements and new features.</string>
+    <string name="resource_details_upgrade_action">Upgrade</string>
+    <string name="resource_details_upgrade_learn_more">Zjistit více</string>
+    <string name="resource_details_upgrade_success">Resource upgraded.</string>
+    <string name="resource_details_upgrade_failure">Could not upgrade the resource. Please try again.</string>
     <string name="additional_uri_format">• %s</string>
     <string name="more_details_copy_password">Kopírovat heslo</string>
     <string name="more_details_copy_description">Kopírovat popis</string>
@@ -276,6 +305,34 @@
     <string name="resource_form_totp_url_issuer">URL (Vydavatel)</string>
     <string name="resource_form_totp_more_settings">Další nastavení TOTP</string>
     <string name="resource_form_totp_settings">Nastavení TOTP</string>
+    <string name="resource_form_advanced_password_generation">Advanced password generation</string>
+    <string name="resource_form_advanced_passphrase_generation">Advanced passphrase generation</string>
+    <string name="resource_form_advanced_password_generation_save_preferences">Save preferences</string>
+    <string name="resource_form_advanced_password_generation_password_preview">Password preview</string>
+    <string name="resource_form_advanced_password_generation_passphrase_preview">Passphrase preview</string>
+    <string name="resource_form_advanced_password_generation_tab_password">Heslo</string>
+    <string name="resource_form_advanced_password_generation_tab_passphrase">Přístupová fráze</string>
+    <string name="resource_form_advanced_password_generation_length">Délka</string>
+    <string name="resource_form_advanced_password_generation_character_types">Typy znaků</string>
+    <string name="resource_form_advanced_password_generation_exclude_look_alike">Vyloučit znaky podobného vzhledu</string>
+    <string name="resource_form_advanced_password_generation_exclude_look_alike_description">Skip characters that can be confused with each other (O/0, l/I/1).</string>
+    <string name="resource_form_advanced_password_generation_number_of_words">Počet slov</string>
+    <string name="resource_form_advanced_password_generation_word_separator">Word separator</string>
+    <string name="resource_form_advanced_password_generation_word_separator_hint">Zadejte jeden nebo více znaků</string>
+    <string name="resource_form_advanced_password_generation_word_case">Word case</string>
+    <string name="resource_form_character_set_upper">A-Z</string>
+    <string name="resource_form_character_set_digit">0-9</string>
+    <string name="resource_form_character_set_lower">a-z</string>
+    <string name="resource_form_character_set_parenthesis">{ [ ( | ) ] }</string>
+    <string name="resource_form_character_set_special_char1"># $ % &amp; @ ^ ~</string>
+    <string name="resource_form_character_set_special_char2">. , : ;</string>
+    <string name="resource_form_character_set_special_char3">\' \" `</string>
+    <string name="resource_form_character_set_special_char4">/ \\ _ -</string>
+    <string name="resource_form_character_set_special_char5">&lt; * + ! ? =</string>
+    <string name="resource_form_character_set_emoji">🙂</string>
+    <string name="resource_form_word_case_lowercase">Malá písmena</string>
+    <string name="resource_form_word_case_uppercase">Velká písmena</string>
+    <string name="resource_form_word_case_camelcase">Velbloudí notace</string>
     <string name="resource_form_description">Popis</string>
     <string name="resource_form_additional_uris">Další URI</string>
     <string name="resource_form_enter_description">Zadejte popis</string>
@@ -305,8 +362,22 @@
     <string name="resource_form_save">Uložit</string>
     <string name="resource_form_edit_init_error">Nepodařilo se spustit editaci zdroje</string>
     <string name="resource_form_create_init_error">Nepodařilo se inicializovat vytváření prostředku</string>
+    <string name="resource_form_created_share_failed">Resource created but not shared - sharing failed.</string>
+    <string name="resource_form_edited_share_failed">Unable to apply the confirmed permissions - please try again.</string>
+    <string name="resource_form_created_permissions_changed">Resource created but not shared - permissions changed in the meantime.</string>
     <string name="resource_form_remove_totp">Odstranit TOTP</string>
     <string name="resource_form_remove_note">Odstranit poznámku</string>
+    <string name="resource_form_remove_pin_code">Odstranit pin kód</string>
+    <string name="resource_form_pin_code">Pin kód</string>
+    <string name="resource_form_create_pin_code">Vytvořit pin kód</string>
+    <string name="resource_form_pin_code_code">Kód</string>
+    <string name="resource_form_enter_pin_code">Zadat pin kód</string>
+    <string name="resource_form_pin_code_advanced">Pokročilé generování pin kódu</string>
+    <string name="resource_form_pin_code_length">Délka</string>
+    <string name="resource_form_pin_code_save_preferences">Uložit předvolby</string>
+    <string name="resource_form_pin_code_additional_information">Další informace</string>
+    <string name="resource_form_pin_code_validation_too_short">Pin kód musí mít alespoň %d číslic</string>
+    <string name="resource_form_pin_code_validation_too_long">Pin kód může mít nejvýše %d číslic</string>
     <string name="resource_form_no_name">bez názvu</string>
     <string name="resource_form_max_additional_uris_limit">Můžete přidat maximálně %d dalších URI</string>
     <string name="resource_form_appearance">Vzhled</string>
@@ -322,6 +393,7 @@
     <string name="settings_debug_logs">Debug, logy</string>
     <string name="settings_disable">Zakázáno</string>
     <string name="settings_sign_out">Odhlásit se</string>
+    <string name="settings_sign_out_server_error">Signed out on this device. The server session may still be active.</string>
     <string name="settings_title">Nastavení</string>
     <string name="settings_disable_biometric_confirmation_message">Po vypnutí otisku prstu se budete muset přihlásit pomocí přístupové fráze.</string>
     <string name="settings_turn_on_biometric_title">Zapnout ověření otiskem prstu</string>
@@ -345,7 +417,12 @@
     <string name="settings_app_settings_biometry_error">Chyba biometrie. %s</string>
     <string name="settings_app_settings_biometry_authentication_error">Chyba ověřování biometrie. %s</string>
     <string name="settings_app_settings_expert_settings">Expertní nastavení</string>
+    <string name="settings_app_settings_expert_settings_require_auth_on_every_entry">Vyžadovat ověření při každém otevření aplikace</string>
     <string name="settings_app_settings_expert_settings_hide_root">Skrýt dialogové okno „zařízení je root“</string>
+    <string name="settings_app_settings_expert_settings_fetch_page_size">Velikost stránky načítání API</string>
+    <string name="settings_page_size_description">Počet prostředků načtených na jeden požadavek API. Vyšší hodnoty používají více paměti, ale snižují počet síťových požadavků.</string>
+    <string name="settings_page_size_exceeds_recommended_limit">Exceeds recommended limit. May cause app slowdowns.</string>
+    <string name="settings_page_size_restore_default_values">Restore default values</string>
     <string name="settings_autofill_autofill_title">Zde můžete změnit metody automatického vyplňování</string>
     <string name="settings_autofill_autofill_desc">Doporučuje se používat metodu služby automatického vyplňování, ale výkon služby může záviset na vašem zařízení a nastavení optimalizace baterie. \n\nPokud služba automatického vyplňování nefunguje spolehlivě na vašem zařízení, můžete zkusit povolit automatické vyplňování na základě služby usnadnění přístupu.</string>
     <string name="settings_autofill_autofill_service">Služba automatického vyplňování (doporučeno)</string>
@@ -406,6 +483,15 @@
     <string name="resource_permissions_share_simulation_failed">Během simulace sdílení došlo k chybě</string>
     <string name="resource_permissions_share_failed">Během sdílení došlo k chybě </string>
     <string name="resource_permissions_edit_permissions">Upravit oprávnění</string>
+    <string name="confirm_permissions_title">Confirm permissions</string>
+    <string name="confirm_permissions_fetch_failure">Unable to load current permissions. Please try again.</string>
+    <string name="confirm_permissions_preparing">Preparing permissions to approve…</string>
+    <string name="confirm_permissions_refreshing_users_and_groups">Refreshing users and groups…</string>
+    <string name="confirm_permissions_drifted">The permissions changed in the meantime. Please review them and confirm again.</string>
+    <string name="confirm_permissions_drifted_single">Permissions for %1$s have changed</string>
+    <string name="confirm_permissions_drifted_multiple">Permissions for %1$s (and more) have changed</string>
+    <string name="confirm_permissions_indirect_access_single_user">%1$s is already part of the group %2$s</string>
+    <string name="confirm_permissions_indirect_access_multiple_users">%1$s (and more) already have access via group membership</string>
     <string name="group_permission_permission">Oprávnění</string>
     <string name="group_permission_group_members">Členové skupiny</string>
     <string name="group_permission_delete">Odstranit oprávnění</string>
@@ -420,6 +506,11 @@
     <string name="main_update_downloaded">Aktualizace Passbolt byla právě stažena</string>
     <string name="main_update_download_in_progress">Stahování na pozadí. Jakmile stahování skončí, budeme Vás informovat.</string>
     <string name="main_update_downloaded_install">Instalovat</string>
+    <string name="deprecated_os_warning_title">Outdated Android version</string>
+    <string name="deprecated_os_warning_message">Your device runs an Android version that no longer receives security updates. Passbolt support for this version is scheduled to be phased out.</string>
+    <string name="deprecated_os_warning_call_to_action">To stay protected and keep receiving Passbolt updates, &lt;b&gt;update your device to a newer Android version&lt;/b&gt;.</string>
+    <string name="deprecated_os_warning_acknowledge">Rozumím</string>
+    <string name="deprecated_os_warning_hide">Don\'t show again</string>
     <string name="dialog_encryption_error_title">Došlo k chybě při šifrování</string>
     <string name="dialog_encryption_error_message">Došlo k chybě při šifrování (%s). Zkuste to prosím znovu.</string>
     <string name="resource_tags_section">Štítky</string>
@@ -431,7 +522,33 @@
     <string name="create_folder_name">Jméno</string>
     <string name="create_folder_name_validation">Název složky nemůže být prázdný</string>
     <string name="create_folder_error_format">Složku nelze vytvořit. %s</string>
+    <string name="enter_folder_name">Zadejte název složky</string>
     <string name="share_folder_error_format">Složku nelze sdílet. %s</string>
+    <string name="dialog_accessibility_consent_title">Jak Passbolt používá službu Zpřístupnění</string>
+    <string name="dialog_accessibility_consent_message">Passbolt používá službu Zpřístupnění systému Android pouze k nabízení automatického vyplňování v aplikacích a prohlížečích, které nepodporují standardní rámec automatického vyplňování systému Android.
+
+K ČEMU SE PŘISTUPUJE
+Když je služba povolena, Passbolt čte pouze ve vašem zařízení:
+• název balíčku aplikace v popředí a webovou adresu zobrazenou v prohlížečích, aby přiřadil přihlašovací údaje ke správnému webu nebo aplikaci;
+• rozvržení a identifikátory vstupních polí na aktuální obrazovce (například zda je pole uživatelské jméno, heslo nebo jednorázový kód), aby vyplnil správnou hodnotu;
+• události zaměření a klepnutí na těchto polích, aby věděl, kdy nabídnout automatické vyplňování.
+
+JAK JSOU DATA POUŽÍVÁNA
+• Veškeré zpracování probíhá lokálně ve vašem zařízení. Výše uvedené informace se používají pouze ke zjištění přihlašovacích polí a k vyplnění přihlašovacích údajů, když zvolíte automatické vyplňování.
+• Passbolt nepřenáší, nesdílí, neprodává ani neukládá obsah obrazovky, obsah polí, aktivitu při procházení ani seznam aplikací, které používáte. Nic, co služba Zpřístupnění přečte, neopouští vaše zařízení ani není odesíláno na servery Passbolt nebo jakékoli třetí straně.
+• Služba je aktivní pouze tehdy, když je obrazovka zapnutá, a můžete ji kdykoli vypnout v Nastavení Androidu › Zpřístupnění nebo v nastavení automatického vyplňování Passbolt.
+
+Klepnutím na \"Přečetl(a) jsem si a souhlasím\" potvrzujete, že jste si výše uvedené přečetl(a) a přijal(a) je.</string>
+    <string name="dialog_accessibility_consent_intro">Passbolt používá službu Zpřístupnění systému Android pouze k nabízení automatického vyplňování v aplikacích a prohlížečích, které nepodporují standardní rámec automatického vyplňování systému Android.</string>
+    <string name="dialog_accessibility_consent_section_what_title">K čemu se přistupuje</string>
+    <string name="dialog_accessibility_consent_section_what_lead">Když je služba povolena, Passbolt čte pouze ve vašem zařízení:</string>
+    <string name="dialog_accessibility_consent_section_what_bullet_1">název balíčku aplikace v popředí a webovou adresu zobrazenou prohlížeči, aby přiřadil přihlašovací údaje ke správnému webu nebo aplikaci;</string>
+    <string name="dialog_accessibility_consent_section_what_bullet_2">rozvržení a identifikátory vstupních polí na aktuální obrazovce (například zda je pole uživatelské jméno, heslo nebo jednorázový kód), aby vyplnil správnou hodnotu;</string>
+    <string name="dialog_accessibility_consent_section_what_bullet_3">události zaměření a klepnutí na těchto polích, aby věděl, kdy nabídnout automatické vyplňování.</string>
+    <string name="dialog_accessibility_consent_section_how_title">Jak jsou data používána</string>
+    <string name="dialog_accessibility_consent_section_how_bullet_1">Veškeré zpracování probíhá lokálně ve vašem zařízení. Výše uvedené informace se používají pouze ke zjištění přihlašovacích polí a k vyplnění přihlašovacích údajů, když zvolíte automatické vyplňování.</string>
+    <string name="dialog_accessibility_consent_section_how_bullet_2">Passbolt nepřenáší, nesdílí, neprodává ani neukládá obsah obrazovky, obsah polí, aktivitu při procházení ani seznam aplikací, které používáte. Nic, co služba Zpřístupnění přečte, neopouští vaše zařízení ani není odesíláno na servery Passbolt nebo jakékoli třetí straně.</string>
+    <string name="dialog_accessibility_consent_section_how_bullet_3">Služba je aktivní pouze tehdy, když je obrazovka zapnutá, a můžete ji kdykoli vypnout v Nastavení Androidu › Zpřístupnění nebo v nastavení automatického vyplňování Passbolt.</string>
     <string name="import_profile_title">Importovat váš účet</string>
     <string name="import_profile_user_id">ID uživatele</string>
     <string name="import_profile_account_url">URL účtu</string>
@@ -526,6 +643,9 @@
     <string name="create_resource_menu_create_password">Heslo</string>
     <string name="create_resource_menu_create_note">Poznámka</string>
     <string name="create_resource_menu_create_folder">Složka</string>
+    <string name="create_resource_menu_other">Ostatní</string>
+    <string name="create_resource_menu_other_title">Ostatní typy prostředků</string>
+    <string name="create_resource_menu_create_pin_code">Pin kód</string>
     <string name="dialog_new_metadata_key_trust_changed">Klíč metadat se změnil.</string>
     <string name="dialog_new_metadata_key_trust_modified_by_user">Šifrovací klíč použitý pro sdílení metadat mezi uživateli byl aktualizován %s.</string>
     <string name="dialog_new_metadata_key_trust_key_rotation_info">Pokud jste toto neočekávali, můžete to ověřit u svého administrátora.</string>
@@ -540,8 +660,7 @@
     arrays can be inconsistent when in other languages
     index / size is not used in code
     -->
-    <string-array name="username_hint_values"
-        tools:ignore="InconsistentArrays">
+    <string-array name="username_hint_values" tools:ignore="InconsistentArrays">
         <item>e-mail</item>
         <item>uživatelské jméno</item>
         <item>mobilní</item>
@@ -552,11 +671,27 @@
       arrays can be inconsistent when in other languages
       index / size is not used in code
     -->
-    <string-array name="password_hint_values"
-        tools:ignore="InconsistentArrays">
+    <string-array name="password_hint_values" tools:ignore="InconsistentArrays">
         <item>heslo</item>
         <item>tajný</item>
         <item>přístupová fráze</item>
+    </string-array>
+    <!--
+      arrays can be inconsistent when in other languages
+      index / size is not used in code
+    -->
+    <string-array name="totp_hint_values" tools:ignore="InconsistentArrays">
+        <item>otp</item>
+        <item>totp</item>
+        <item>jednorázový</item>
+        <item>jednorázový-kód</item>
+        <item>ověření</item>
+        <item>ověřovací kód</item>
+        <item>ověřovací kód</item>
+        <item>autentizační kód</item>
+        <item>2fa</item>
+        <item>mfa</item>
+        <item>bezpečnostní kód</item>
     </string-array>
     <string-array name="dialog_encourage_autofill_setup_steps">
         <item>&lt;b&gt;Zapnout nastavení automatického vyplňování&lt;/b&gt;</item>

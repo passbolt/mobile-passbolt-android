@@ -15,6 +15,7 @@
     <string name="default_home_search_hint">Name, Benutzer oder URL suchen</string>
     <string name="all_items_home_search_hint">Name, Benutzer, URL oder Tag suchen</string>
     <string name="user_search_hint">Suche nach Benutzern…</string>
+    <string name="search_in_progress">Searching…</string>
     <string name="no_passwords">Keine Passwörter vorhanden</string>
     <string name="no_otps">Keine TOTPs vorhanden</string>
     <string name="authentication_required">Authentifizierung erforderlich</string>
@@ -28,6 +29,9 @@
     <string name="shared_with">Freigegeben für</string>
     <string name="location">Standort</string>
     <string name="content_not_available">Der Inhalt ist nicht mehr verfügbar</string>
+    <string name="consent">Ich habe es gelesen und stimme zu</string>
+    <string name="accessibility_policies_accept">Akzeptieren</string>
+    <string name="accessibility_policies_decline">Ablehnen</string>
     <string name="name_suspended">%s (gesperrt)</string>
     <string name="name_expired">%s (abgelaufen)</string>
     <string name="proceed">Fortfahren</string>
@@ -43,6 +47,7 @@
     <string name="common_sign_out">Abmelden</string>
     <string name="common_data_refresh_error">Es gab einen Fehler beim Aktualisieren der Daten</string>
     <string name="common_decryption_failure">Fehler bei der Entschlüsselung des Geheimnisses</string>
+    <string name="common_invalid_totp_parameters">Ungültige TOTP-Parameter</string>
     <string name="common_metadata_encryption_failure">Fehler während der Verschlüsselung von Metadaten</string>
     <string name="common_fetch_failure">Fehler beim Herunterladen des Geheimnisses</string>
     <string name="common_encryption_failure">Es gab einen Fehler bei der geheimen Verschlüsselung</string>
@@ -53,6 +58,8 @@
     <string name="common_metadata_key_verification_failure">Metadaten-Schlüssel konnten nicht verifiziert werden</string>
     <string name="common_metadata_key_is_trusted">Neuer Metadaten-Schlüssel ist vertrauenswürdig</string>
     <string name="common_metadata_key_trust_failed">Konnte neuem Metadaten-Schlüssel nicht vertrauen</string>
+    <string name="common_password_policies_fetch_failed">Failed to fetch password policies - using defaults</string>
+    <string name="common_password_expiry_fetch_failed">Failed to fetch password expiry settings - using defaults</string>
     <string name="common_message_resource_edited">%s Ressource wurde erfolgreich bearbeitet.</string>
     <string name="common_message_resource_deleted">%s Ressource wurde gelöscht.</string>
     <string name="common_message_resource_shared">Die Berechtigungen für die Ressource wurden aktualisiert.</string>
@@ -69,6 +76,9 @@
     <string name="biometric_changed_title">Fingerabdruckänderungen entdeckt</string>
     <string name="biometric_changed_message">Diesmal müssen Sie sich mit einer Passphrase anmelden und den Fingerabdruck in den Einstellungen erneut aktivieren.</string>
     <string name="biometric_authenticate_again">Bitte melden Sie sich erneut mit der Passphrase an</string>
+    <string name="biometric_decrypt_error_message">Biometrische Anmeldung ist momentan nicht verfügbar. Bitte geben Sie Ihre Passphrase ein.</string>
+    <string name="biometric_encrypt_error_message">Die Einrichtung der Biometrie konnte nicht abgeschlossen werden. Versuchen Sie es erneut oder fahren Sie ohne sie fort.</string>
+    <string name="biometric_no_crypto_cipher">Ihr Gerät hat anstelle der Biometrie eine PIN oder ein Muster verwendet. Bitte verwenden Sie die biometrische Entsperrung oder geben Sie Ihre Passphrase ein.</string>
     <string name="settings_licenses_title">Lizenzen</string>
     <string name="settings_logs_title">Protokollen</string>
     <string name="resource_will_be_deleted">Dadurch wird dieses Passwort dauerhaft aus Ihrem Konto entfernt.</string>
@@ -150,8 +160,11 @@
     <string name="auth_decryption_error_title">Entschlüsselungsfehler</string>
     <string name="auth_decryption_error_description">Es ist ein Entschlüsselungsfehler aufgetreten. Bitte versuchen Sie es erneut.\n</string>
     <string name="auth_decryption_error_cause">Offener PGP-Fehler ist:\n%s</string>
+    <string name="auth_error_server_signature_invalid">Server signature invalid</string>
     <string name="auth_error_invalid_signature">Überprüfungsfehler (ungültige Signatur)</string>
     <string name="auth_error_token_expired">Fehler bei der Überprüfung (Token abgelaufen)</string>
+    <string name="auth_error_verify_token_mismatch">Challenge verification error (verify token mismatch)</string>
+    <string name="auth_error_domain_mismatch">Challenge verification error (domain mismatch)</string>
     <string name="auth_error_challenge_verification_failure">Fehler bei der Challenge-Verifizierung</string>
     <string name="auth_error_profile_fetch_failure">Bei der Profilaktualisierung ist ein Fehler aufgetreten</string>
     <string name="dialog_account_does_not_exist_title">Das Konto existiert nicht</string>
@@ -181,10 +194,12 @@
     <string name="autofill_service_name">Passbolt Autofill</string>
     <string name="dialog_encourage_autofill_header">Melde dich in 3 Sekunden bei deinen Lieblings-Apps an!</string>
     <string name="dialog_autofill_header">Autofill</string>
+    <string name="dialog_encourage_autofill_accessibility_description">Diese Option verwendet den Android-Dienst für Barrierefreiheit, um Anmeldedaten in Apps und Browsern automatisch auszufüllen, die das native automatische Ausfüllen von Android nicht unterstützen. Tippen Sie unten auf den Schalter, um zu prüfen, worauf zugegriffen wird, und Ihre Zustimmung zu erteilen.</string>
     <string name="dialog_encourage_autofill_accessibility_samsung">Samsung</string>
     <string name="dialog_encourage_autofill_accessibility_xiaomi">Xiaomi</string>
     <string name="dialog_encourage_autofill_accessibility_huawei">Huawei</string>
     <string name="dialog_encourage_autofill_accessibility_other">Andere</string>
+    <string name="dialog_encourage_autofill_accessibility_title">Automatisches Ausfüllen über den Dienst für Barrierefreiheit aktivieren</string>
     <string name="dialog_encourage_autofill_go_to_settings">Zu den Einstellungen gehen</string>
     <string name="dialog_encourage_autofill_service_header">Automatisch ausfüllen für die meisten Anwendungen aktivieren</string>
     <string name="dialog_encourage_autofill_service_description">Wählen Sie auf dem Android-Einstellungsbildschirm Passbolt aus, schalten Sie den Schalter ein und drücken Sie OK.
@@ -213,9 +228,12 @@
     <string name="autofill_service_enable_overlay">Overlay-Erlaubnis einschalten</string>
     <string name="autofill_service_overlay_description"><![CDATA[Autofill-Benutzernamen & Passwörter für Android-Web-Browser. Bitte aktivieren Sie die "Über andere Apps ziehen" Berechtigung für Passbolt Autofill]]></string>
     <string name="autofill_service_enable_service">Automatischen Ausfüllen für die meisten Anwendungen aktivieren</string>
+    <string name="autofill_service_enable_service_description"><![CDATA[Anmeldefelder in Apps und Browsern erkennen und automatisches Ausfüllen anbieten. Erfordert Ihre Zustimmung, um den Dienst für Barrierefreiheit zu aktivieren.]]></string>
     <string name="autofill_dropdown_select">Wählen Sie Passbolt</string>
     <string name="autofill_dropdown_fill">Mit Passbolt befüllen</string>
     <string name="autofill_resources_create">Anlegen &amp; ausfüllen</string>
+    <string name="autofill_conflict_message">Verschiedene Autofill-Methoden sind aktiv. \nDas kann zu Fehlern führen.</string>
+    <string name="autofill_conflict_message_detailed">Mehrere Autofill-Methoden sind aktiv. \nBitte deaktivieren Sie eine, um einen reibungslosen Ablauf zu gewährleisten.</string>
     <string name="home_empty_list">Leere Liste</string>
     <string name="home_create">Erstellen</string>
     <string name="home_in_sub_folders">in Unterordnern:</string>
@@ -253,12 +271,23 @@
     <string name="resource_details_description_header">Beschreibung</string>
     <string name="resource_details_note_header">Notiz</string>
     <string name="resource_details_note_content">Inhalt</string>
+    <string name="resource_details_pin_code_header">Pin-Code</string>
+    <string name="resource_details_pin_code_code">Code</string>
     <string name="resource_details_tags_header">Tags</string>
     <string name="resource_details_encrypted_description">Beschreibung ist verschlüsselt</string>
+    <string name="action_show">Anzeigen</string>
+    <string name="action_hide">Ausblenden</string>
+    <string name="action_copy">Kopieren</string>
     <string name="resource_details_information">Informationen</string>
     <string name="resource_details_invalid_totp_scanned">Ungültiger TOTP QR-Code gescannt</string>
     <string name="resource_details_metadata_header">Metadaten</string>
     <string name="resource_details_custom_fields_header">Benutzerdefinierte Felder</string>
+    <string name="resource_details_upgrade_available_header">Aktualisierung verfügbar</string>
+    <string name="resource_details_upgrade_panel_message">This is a legacy resource. Upgrade for security improvements and new features.</string>
+    <string name="resource_details_upgrade_action">Aktualisieren</string>
+    <string name="resource_details_upgrade_learn_more">Weitere Informationen</string>
+    <string name="resource_details_upgrade_success">Resource upgraded.</string>
+    <string name="resource_details_upgrade_failure">Could not upgrade the resource. Please try again.</string>
     <string name="additional_uri_format">• %s</string>
     <string name="more_details_copy_password">Passwort kopieren</string>
     <string name="more_details_copy_description">Beschreibung kopieren</string>
@@ -276,6 +305,34 @@
     <string name="resource_form_totp_url_issuer">URL (Aussteller)</string>
     <string name="resource_form_totp_more_settings">Weitere TOTP-Einstellungen</string>
     <string name="resource_form_totp_settings">TOTP-Einstellungen</string>
+    <string name="resource_form_advanced_password_generation">Erweiterte Passwortgenerierung</string>
+    <string name="resource_form_advanced_passphrase_generation">Advanced passphrase generation</string>
+    <string name="resource_form_advanced_password_generation_save_preferences">Save preferences</string>
+    <string name="resource_form_advanced_password_generation_password_preview">Password preview</string>
+    <string name="resource_form_advanced_password_generation_passphrase_preview">Passphrase preview</string>
+    <string name="resource_form_advanced_password_generation_tab_password">Passwort</string>
+    <string name="resource_form_advanced_password_generation_tab_passphrase">Passphrase</string>
+    <string name="resource_form_advanced_password_generation_length">Länge</string>
+    <string name="resource_form_advanced_password_generation_character_types">Zeichentypen</string>
+    <string name="resource_form_advanced_password_generation_exclude_look_alike">Ähnlich aussehende Zeichen ausschließen</string>
+    <string name="resource_form_advanced_password_generation_exclude_look_alike_description">Skip characters that can be confused with each other (O/0, l/I/1).</string>
+    <string name="resource_form_advanced_password_generation_number_of_words">Anzahl der Wörter</string>
+    <string name="resource_form_advanced_password_generation_word_separator">Word separator</string>
+    <string name="resource_form_advanced_password_generation_word_separator_hint">Ein oder mehrere Zeichen eingeben</string>
+    <string name="resource_form_advanced_password_generation_word_case">Word case</string>
+    <string name="resource_form_character_set_upper">A-Z</string>
+    <string name="resource_form_character_set_digit">0-9</string>
+    <string name="resource_form_character_set_lower">a-z</string>
+    <string name="resource_form_character_set_parenthesis">{ [ ( | ) ] }</string>
+    <string name="resource_form_character_set_special_char1"># $ % &amp; @ ^ ~</string>
+    <string name="resource_form_character_set_special_char2">. , : ;</string>
+    <string name="resource_form_character_set_special_char3">\' \" `</string>
+    <string name="resource_form_character_set_special_char4">/ \\ _ -</string>
+    <string name="resource_form_character_set_special_char5">&lt; * + ! ? =</string>
+    <string name="resource_form_character_set_emoji">🙂</string>
+    <string name="resource_form_word_case_lowercase">Kleinbuchstaben</string>
+    <string name="resource_form_word_case_uppercase">Großbuchstaben</string>
+    <string name="resource_form_word_case_camelcase">CamelCase</string>
     <string name="resource_form_description">Beschreibung</string>
     <string name="resource_form_additional_uris">Zusätzliche URIs</string>
     <string name="resource_form_enter_description">Beschreibung eingeben</string>
@@ -305,8 +362,22 @@
     <string name="resource_form_save">Speichern</string>
     <string name="resource_form_edit_init_error">Fehler beim Initialisieren der Ressourcenbearbeitung</string>
     <string name="resource_form_create_init_error">Initialisierung der Ressourcenerstellung fehlgeschlagen</string>
+    <string name="resource_form_created_share_failed">Resource created but not shared - sharing failed.</string>
+    <string name="resource_form_edited_share_failed">Unable to apply the confirmed permissions - please try again.</string>
+    <string name="resource_form_created_permissions_changed">Resource created but not shared - permissions changed in the meantime.</string>
     <string name="resource_form_remove_totp">TOTP entfernen</string>
     <string name="resource_form_remove_note">Notiz entfernen</string>
+    <string name="resource_form_remove_pin_code">Pin-Code entfernen</string>
+    <string name="resource_form_pin_code">Pin-Code</string>
+    <string name="resource_form_create_pin_code">Pin-Code erstellen</string>
+    <string name="resource_form_pin_code_code">Code</string>
+    <string name="resource_form_enter_pin_code">Pin-Code eingeben</string>
+    <string name="resource_form_pin_code_advanced">Erweiterte Pin-Code-Generierung</string>
+    <string name="resource_form_pin_code_length">Länge</string>
+    <string name="resource_form_pin_code_save_preferences">Einstellungen speichern</string>
+    <string name="resource_form_pin_code_additional_information">Zusätzliche Informationen</string>
+    <string name="resource_form_pin_code_validation_too_short">Der Pin-Code muss mindestens %d Ziffern haben</string>
+    <string name="resource_form_pin_code_validation_too_long">Der Pin-Code darf höchstens %d Ziffern haben</string>
     <string name="resource_form_no_name">kein Name</string>
     <string name="resource_form_max_additional_uris_limit">Sie können ein Maximum von %d zusätzlichen URIs hinzufügen</string>
     <string name="resource_form_appearance">Ansicht</string>
@@ -322,13 +393,14 @@
     <string name="settings_debug_logs">Debug, Protokolle</string>
     <string name="settings_disable">Deaktiviert</string>
     <string name="settings_sign_out">Abmelden</string>
+    <string name="settings_sign_out_server_error">Signed out on this device. The server session may still be active.</string>
     <string name="settings_title">Einstellungen</string>
     <string name="settings_disable_biometric_confirmation_message">Nachdem Sie den Fingerabdruck deaktiviert haben, müssen Sie sich mit Ihrer Passphrase anmelden.</string>
     <string name="settings_turn_on_biometric_title">Aktivieren der Fingerabdruck-Authentifizierung</string>
     <string name="settings_turn_on_biometric_subtitle">Berühren Sie den Fingerabdrucksensor</string>
     <string name="settings_add_first_biometric">Bitte fügen Sie zunächst Ihren Fingerabdruck in den Systemeinstellungen hinzu</string>
     <string name="settings_add_first_biometric_title">Fingerabdruck konfigurieren</string>
-    <string name="settings_add_first_biometric_settings">Zu den Einstellungen</string>
+    <string name="settings_add_first_biometric_settings">Zu den Einstellungen gehen</string>
     <string name="settings_debug_logs_settings_logs">Protokolle</string>
     <string name="settings_debug_logs_enable_logs">Debug-Logs aktivieren</string>
     <string name="settings_debug_logs_visit_help_website">Hilfe-Website besuchen</string>
@@ -345,7 +417,12 @@
     <string name="settings_app_settings_biometry_error">Biometriefehler. %s</string>
     <string name="settings_app_settings_biometry_authentication_error">Biometrie-Authentifizierungsfehler. %s</string>
     <string name="settings_app_settings_expert_settings">Experteneinstellungen</string>
+    <string name="settings_app_settings_expert_settings_require_auth_on_every_entry">Authentifizierung bei jedem Öffnen der App verlangen</string>
     <string name="settings_app_settings_expert_settings_hide_root">\"Gerät ist gerootet\"-Dialog ausblenden</string>
+    <string name="settings_app_settings_expert_settings_fetch_page_size">Seitengröße beim API-Abruf</string>
+    <string name="settings_page_size_description">Anzahl der pro API-Anfrage abgerufenen Ressourcen. Höhere Werte verwenden mehr Speicher, verringern jedoch die Anzahl der Netzwerkanfragen.</string>
+    <string name="settings_page_size_exceeds_recommended_limit">Exceeds recommended limit. May cause app slowdowns.</string>
+    <string name="settings_page_size_restore_default_values">Restore default values</string>
     <string name="settings_autofill_autofill_title">Hier können Sie die Autofüllungsmethoden ändern</string>
     <string name="settings_autofill_autofill_desc">Es wird empfohlen, die Autofill-Service-Methode zu verwenden, aber die Leistung des Services kann von den Einstellungen Ihres Geräts und der Batterieoptimierung abhängen. \n\nWenn der Autofill-Service nicht zuverlässig auf Ihrem Gerät funktioniert, können Sie versuchen, Autofill basierend auf den Bedienungshilfen zu aktivieren.</string>
     <string name="settings_autofill_autofill_service">Autmatisches ausfüllen Service (empfohlen)</string>
@@ -406,6 +483,15 @@
     <string name="resource_permissions_share_simulation_failed">Es gab einen Fehler während der Freigabesimulation</string>
     <string name="resource_permissions_share_failed">Beim Teilen ist ein Fehler aufgetreten </string>
     <string name="resource_permissions_edit_permissions">Berechtigungen bearbeiten</string>
+    <string name="confirm_permissions_title">Berechtigungen bestätigen</string>
+    <string name="confirm_permissions_fetch_failure">Unable to load current permissions. Please try again.</string>
+    <string name="confirm_permissions_preparing">Preparing permissions to approve…</string>
+    <string name="confirm_permissions_refreshing_users_and_groups">Refreshing users and groups…</string>
+    <string name="confirm_permissions_drifted">The permissions changed in the meantime. Please review them and confirm again.</string>
+    <string name="confirm_permissions_drifted_single">Permissions for %1$s have changed</string>
+    <string name="confirm_permissions_drifted_multiple">Permissions for %1$s (and more) have changed</string>
+    <string name="confirm_permissions_indirect_access_single_user">%1$s is already part of the group %2$s</string>
+    <string name="confirm_permissions_indirect_access_multiple_users">%1$s (and more) already have access via group membership</string>
     <string name="group_permission_permission">Berechtigung</string>
     <string name="group_permission_group_members">Gruppenmitglieder</string>
     <string name="group_permission_delete">Berechtigung löschen</string>
@@ -420,6 +506,11 @@
     <string name="main_update_downloaded">Passbolt Update wurde soeben heruntergeladen</string>
     <string name="main_update_download_in_progress">Herunterladen im Hintergrund. Wir werden Sie benachrichtigen, sobald der Download abgeschlossen ist.</string>
     <string name="main_update_downloaded_install">Installieren</string>
+    <string name="deprecated_os_warning_title">Outdated Android version</string>
+    <string name="deprecated_os_warning_message">Your device runs an Android version that no longer receives security updates. Passbolt support for this version is scheduled to be phased out.</string>
+    <string name="deprecated_os_warning_call_to_action">To stay protected and keep receiving Passbolt updates, &lt;b&gt;update your device to a newer Android version&lt;/b&gt;.</string>
+    <string name="deprecated_os_warning_acknowledge">Ich verstehe</string>
+    <string name="deprecated_os_warning_hide">Don\'t show again</string>
     <string name="dialog_encryption_error_title">Es ist ein Verschlüsselungsfehler aufgetreten</string>
     <string name="dialog_encryption_error_message">Es gab einen Verschlüsselungsfehler (%s). Bitte versuchen Sie es erneut.</string>
     <string name="resource_tags_section">Tags</string>
@@ -431,7 +522,20 @@
     <string name="create_folder_name">Name</string>
     <string name="create_folder_name_validation">Ordnername darf nicht leer sein</string>
     <string name="create_folder_error_format">Ordner konnte nicht erstellt werden. %s</string>
+    <string name="enter_folder_name">Ordnernamen eingeben</string>
     <string name="share_folder_error_format">Ordner konnte nicht geteilt werden. %s</string>
+    <string name="dialog_accessibility_consent_title">Wie Passbolt den Dienst für Barrierefreiheit verwendet</string>
+    <string name="dialog_accessibility_consent_message">Passbolt verwendet den Android-Dienst für Barrierefreiheit nur, um automatisches Ausfüllen in Apps und Browsern anzubieten, die das standardmäßige Framework für automatisches Ausfüllen von Android nicht unterstützen.\n\nWORAUF ZUGEGRIFFEN WIRD\nWährend der Dienst aktiviert ist, liest Passbolt nur auf Ihrem Gerät:\n• den Paketnamen der App im Vordergrund und die von Browsern angezeigte Webadresse, um Anmeldedaten der richtigen Website oder App zuzuordnen;\n• das Layout und die Kennungen der Eingabefelder auf dem aktuellen Bildschirm (zum Beispiel, ob ein Feld ein Benutzername, ein Passwort oder ein Einmalcode ist), um den richtigen Wert auszufüllen;\n• Fokus- und Tippereignisse auf diesen Feldern, um zu wissen, wann automatisches Ausfüllen angeboten werden soll.\n\nWIE DIE DATEN VERWENDET WERDEN\n• Die gesamte Verarbeitung erfolgt lokal auf Ihrem Gerät. Die obigen Informationen werden nur verwendet, um Anmeldefelder zu erkennen und Anmeldedaten auszufüllen, wenn Sie automatisches Ausfüllen auswählen.\n• Passbolt überträgt, teilt, verkauft oder speichert keine Bildschirminhalte, Feldinhalte, Surfaktivitäten oder die Liste der von Ihnen verwendeten Apps. Nichts, was vom Dienst für Barrierefreiheit gelesen wird, verlässt Ihr Gerät oder wird an Passbolt-Server oder Dritte gesendet.\n• Der Dienst ist nur aktiv, solange der Bildschirm eingeschaltet ist, und Sie können ihn jederzeit in den Android-Einstellungen › Barrierefreiheit oder in den Einstellungen für automatisches Ausfüllen von Passbolt deaktivieren.\n\nDurch Tippen auf \"Ich habe es gelesen und stimme zu\" bestätigen Sie, dass Sie das Obige gelesen und akzeptiert haben.</string>
+    <string name="dialog_accessibility_consent_intro">Passbolt verwendet den Android-Dienst für Barrierefreiheit nur, um automatisches Ausfüllen in Apps und Browsern anzubieten, die das standardmäßige Framework für automatisches Ausfüllen von Android nicht unterstützen.</string>
+    <string name="dialog_accessibility_consent_section_what_title">Worauf zugegriffen wird</string>
+    <string name="dialog_accessibility_consent_section_what_lead">Während der Dienst aktiviert ist, liest Passbolt nur auf Ihrem Gerät:</string>
+    <string name="dialog_accessibility_consent_section_what_bullet_1">den Paketnamen der App im Vordergrund und die von Browsern angezeigte Webadresse, um Anmeldedaten der richtigen Website oder App zuzuordnen;</string>
+    <string name="dialog_accessibility_consent_section_what_bullet_2">das Layout und die Kennungen der Eingabefelder auf dem aktuellen Bildschirm (zum Beispiel, ob ein Feld ein Benutzername, ein Passwort oder ein Einmalcode ist), um den richtigen Wert auszufüllen;</string>
+    <string name="dialog_accessibility_consent_section_what_bullet_3">Fokus- und Tippereignisse auf diesen Feldern, um zu wissen, wann automatisches Ausfüllen angeboten werden soll.</string>
+    <string name="dialog_accessibility_consent_section_how_title">Wie die Daten verwendet werden</string>
+    <string name="dialog_accessibility_consent_section_how_bullet_1">Die gesamte Verarbeitung erfolgt lokal auf Ihrem Gerät. Die obigen Informationen werden nur verwendet, um Anmeldefelder zu erkennen und Anmeldedaten auszufüllen, wenn Sie automatisches Ausfüllen auswählen.</string>
+    <string name="dialog_accessibility_consent_section_how_bullet_2">Passbolt überträgt, teilt, verkauft oder speichert keine Bildschirminhalte, Feldinhalte, Surfaktivitäten oder die Liste der von Ihnen verwendeten Apps. Nichts, was vom Dienst für Barrierefreiheit gelesen wird, verlässt Ihr Gerät oder wird an Passbolt-Server oder Dritte gesendet.</string>
+    <string name="dialog_accessibility_consent_section_how_bullet_3">Der Dienst ist nur aktiv, solange der Bildschirm eingeschaltet ist, und Sie können ihn jederzeit in den Android-Einstellungen › Barrierefreiheit oder in den Einstellungen für automatisches Ausfüllen von Passbolt deaktivieren.</string>
     <string name="import_profile_title">Konto importieren</string>
     <string name="import_profile_user_id">Benutzer-ID</string>
     <string name="import_profile_account_url">Konto-URL</string>
@@ -526,6 +630,9 @@
     <string name="create_resource_menu_create_password">Passwort</string>
     <string name="create_resource_menu_create_note">Notiz</string>
     <string name="create_resource_menu_create_folder">Ordner</string>
+    <string name="create_resource_menu_other">Andere</string>
+    <string name="create_resource_menu_other_title">Andere Ressourcentypen</string>
+    <string name="create_resource_menu_create_pin_code">Pin-Code</string>
     <string name="dialog_new_metadata_key_trust_changed">Der Metadatenschlüssel hat sich geändert.</string>
     <string name="dialog_new_metadata_key_trust_modified_by_user">Der Verschlüsselungsschlüssel, der benutzt wird, um Metadaten zwischen Benutzern zu teilen, wurde von %s aktualisiert.</string>
     <string name="dialog_new_metadata_key_trust_key_rotation_info">Wenn Sie dies nicht erwarten, bitte mit Ihrem Administrator überprüfen.</string>
@@ -540,8 +647,7 @@
     arrays can be inconsistent when in other languages
     index / size is not used in code
     -->
-    <string-array name="username_hint_values"
-        tools:ignore="InconsistentArrays">
+    <string-array name="username_hint_values" tools:ignore="InconsistentArrays">
         <item>E-Mail</item>
         <item>Benutzername</item>
         <item>Mobil</item>
@@ -552,11 +658,27 @@
       arrays can be inconsistent when in other languages
       index / size is not used in code
     -->
-    <string-array name="password_hint_values"
-        tools:ignore="InconsistentArrays">
+    <string-array name="password_hint_values" tools:ignore="InconsistentArrays">
         <item>Passwort</item>
         <item>Geheimniss</item>
         <item>Passphrase</item>
+    </string-array>
+    <!--
+      arrays can be inconsistent when in other languages
+      index / size is not used in code
+    -->
+    <string-array name="totp_hint_values" tools:ignore="InconsistentArrays">
+        <item>OTP</item>
+        <item>totp</item>
+        <item>einmalig</item>
+        <item>einmalcode</item>
+        <item>verifizierung</item>
+        <item>Verifizierungscode</item>
+        <item>authentifizierungscode</item>
+        <item>Authentifizierungscode</item>
+        <item>2FA</item>
+        <item>MFA</item>
+        <item>sicherheitscode</item>
     </string-array>
     <string-array name="dialog_encourage_autofill_setup_steps">
         <item>&lt;b&gt;Einschalten der Autofill&lt;/b&gt; Einstellung</item>
