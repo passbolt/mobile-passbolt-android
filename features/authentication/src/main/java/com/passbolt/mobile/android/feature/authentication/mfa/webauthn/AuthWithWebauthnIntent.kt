@@ -30,8 +30,6 @@ sealed interface AuthWithWebauthnIntent {
         val result: WebauthnCeremonyResult,
     ) : AuthWithWebauthnIntent
 
-    data object BrowserUnavailable : AuthWithWebauthnIntent
-
     data class ToggleRememberMe(
         val checked: Boolean,
     ) : AuthWithWebauthnIntent

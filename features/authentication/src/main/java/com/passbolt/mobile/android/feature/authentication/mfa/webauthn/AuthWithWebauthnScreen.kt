@@ -23,10 +23,8 @@
 
 package com.passbolt.mobile.android.feature.authentication.mfa.webauthn
 
-import android.content.ActivityNotFoundException
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.browser.auth.AuthTabIntent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -58,7 +56,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.passbolt.mobile.android.core.compose.PassboltTheme
 import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
@@ -76,7 +73,6 @@ import com.passbolt.mobile.android.feature.authentication.mfa.MfaResult
 import com.passbolt.mobile.android.feature.authentication.mfa.MfaResult.OtherProvider
 import com.passbolt.mobile.android.feature.authentication.mfa.MfaResult.Succeeded
 import com.passbolt.mobile.android.feature.authentication.mfa.webauthn.AuthWithWebauthnIntent.AuthenticateWithWebauthn
-import com.passbolt.mobile.android.feature.authentication.mfa.webauthn.AuthWithWebauthnIntent.BrowserUnavailable
 import com.passbolt.mobile.android.feature.authentication.mfa.webauthn.AuthWithWebauthnIntent.ChooseOtherProvider
 import com.passbolt.mobile.android.feature.authentication.mfa.webauthn.AuthWithWebauthnIntent.Close
 import com.passbolt.mobile.android.feature.authentication.mfa.webauthn.AuthWithWebauthnIntent.ConfirmSetupLeave
@@ -96,8 +92,6 @@ import org.koin.core.parameter.parametersOf
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
-private const val REDIRECT_SCHEME = "passbolt"
-
 @Composable
 internal fun AuthWithWebauthnScreen(
     mfaState: MfaDialogState.Webauthn,
@@ -114,9 +108,9 @@ internal fun AuthWithWebauthnScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
 
-    val authTabLauncher =
-        rememberLauncherForActivityResult(AuthTabIntent.AuthenticateUserResultContract()) { result ->
-            viewModel.onIntent(WebauthnCeremonyFinished(result.toWebauthnCeremonyResult()))
+    val ceremonyLauncher =
+        rememberLauncherForActivityResult(WebauthnCeremonyResultContract()) { result ->
+            viewModel.onIntent(WebauthnCeremonyFinished(result))
         }
 
     BackHandler { viewModel.onIntent(Close) }
@@ -124,16 +118,7 @@ internal fun AuthWithWebauthnScreen(
     val errorSnackbarColor = colorResource(CoreUiR.color.red)
     SideEffectDispatcher(viewModel.sideEffect) { sideEffect ->
         when (sideEffect) {
-            is LaunchWebauthnCeremony -> {
-                try {
-                    AuthTabIntent
-                        .Builder()
-                        .build()
-                        .launch(authTabLauncher, sideEffect.ceremonyUrl.toUri(), REDIRECT_SCHEME)
-                } catch (_: ActivityNotFoundException) {
-                    viewModel.onIntent(BrowserUnavailable)
-                }
-            }
+            is LaunchWebauthnCeremony -> ceremonyLauncher.launch(sideEffect.ceremonyUrl)
             is NotifyVerificationSucceeded -> onMfaResult(Succeeded(sideEffect.mfaHeader))
             is NotifyOtherProviderClicked -> onMfaResult(OtherProvider(sideEffect.bearer, MfaProvider.WEBAUTHN))
             is CloseAndNavigateToStartup -> appNavigator.startNavigationActivity(context, Start)

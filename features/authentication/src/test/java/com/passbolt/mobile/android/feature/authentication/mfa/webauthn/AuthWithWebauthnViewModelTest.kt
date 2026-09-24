@@ -34,7 +34,6 @@ import com.passbolt.mobile.android.feature.authentication.auth.OneTimeSessionRef
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.RefreshSessionUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
 import com.passbolt.mobile.android.feature.authentication.mfa.webauthn.AuthWithWebauthnIntent.AuthenticateWithWebauthn
-import com.passbolt.mobile.android.feature.authentication.mfa.webauthn.AuthWithWebauthnIntent.BrowserUnavailable
 import com.passbolt.mobile.android.feature.authentication.mfa.webauthn.AuthWithWebauthnIntent.ChooseOtherProvider
 import com.passbolt.mobile.android.feature.authentication.mfa.webauthn.AuthWithWebauthnIntent.Close
 import com.passbolt.mobile.android.feature.authentication.mfa.webauthn.AuthWithWebauthnIntent.ConfirmSetupLeave
@@ -54,6 +53,7 @@ import com.passbolt.mobile.android.feature.authentication.mfa.webauthn.AuthWithW
 import com.passbolt.mobile.android.feature.authentication.mfa.webauthn.AuthWithWebauthnSideEffect.SnackbarErrorType.PROVIDER_UNAVAILABLE
 import com.passbolt.mobile.android.feature.authentication.mfa.webauthn.AuthWithWebauthnSideEffect.SnackbarErrorType.SESSION_EXPIRED
 import com.passbolt.mobile.android.feature.authentication.mfa.webauthn.AuthWithWebauthnSideEffect.SnackbarErrorType.VERIFICATION_EXPIRED
+import com.passbolt.mobile.android.feature.authentication.mfa.webauthn.WebauthnCeremonyResult.BrowserUnavailable
 import com.passbolt.mobile.android.feature.authentication.mfa.webauthn.WebauthnCeremonyResult.Cancelled
 import com.passbolt.mobile.android.feature.authentication.mfa.webauthn.WebauthnCeremonyResult.Completed
 import com.passbolt.mobile.android.feature.authentication.mfa.webauthn.WebauthnCeremonyResult.Failed
@@ -300,7 +300,7 @@ class AuthWithWebauthnViewModelTest : KoinTest {
             viewModel = get(parameters = { parametersOf(AUTH_TOKEN, false, false) })
 
             viewModel.sideEffect.test {
-                viewModel.onIntent(BrowserUnavailable)
+                viewModel.onIntent(WebauthnCeremonyFinished(BrowserUnavailable))
 
                 val snackbar = awaitItem()
                 assertIs<ShowErrorSnackbar>(snackbar)

@@ -30,6 +30,8 @@ sealed interface WebauthnCeremonyResult {
 
     data object Cancelled : WebauthnCeremonyResult
 
+    data object BrowserUnavailable : WebauthnCeremonyResult
+
     data class Failed(
         val error: String?,
     ) : WebauthnCeremonyResult
