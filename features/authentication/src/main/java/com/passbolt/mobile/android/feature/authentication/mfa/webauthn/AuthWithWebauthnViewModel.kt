@@ -31,7 +31,6 @@ import com.passbolt.mobile.android.domain.mfa.usecase.VerifyWebauthnExchangeCode
 import com.passbolt.mobile.android.feature.authentication.auth.OneTimeSessionRefreshRetry
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
 import com.passbolt.mobile.android.feature.authentication.mfa.webauthn.AuthWithWebauthnIntent.AuthenticateWithWebauthn
-import com.passbolt.mobile.android.feature.authentication.mfa.webauthn.AuthWithWebauthnIntent.BrowserUnavailable
 import com.passbolt.mobile.android.feature.authentication.mfa.webauthn.AuthWithWebauthnIntent.ChooseOtherProvider
 import com.passbolt.mobile.android.feature.authentication.mfa.webauthn.AuthWithWebauthnIntent.Close
 import com.passbolt.mobile.android.feature.authentication.mfa.webauthn.AuthWithWebauthnIntent.ConfirmSetupLeave
@@ -52,6 +51,7 @@ import com.passbolt.mobile.android.feature.authentication.mfa.webauthn.AuthWithW
 import com.passbolt.mobile.android.feature.authentication.mfa.webauthn.AuthWithWebauthnSideEffect.SnackbarErrorType.PROVIDER_UNAVAILABLE
 import com.passbolt.mobile.android.feature.authentication.mfa.webauthn.AuthWithWebauthnSideEffect.SnackbarErrorType.SESSION_EXPIRED
 import com.passbolt.mobile.android.feature.authentication.mfa.webauthn.AuthWithWebauthnSideEffect.SnackbarErrorType.VERIFICATION_EXPIRED
+import com.passbolt.mobile.android.feature.authentication.mfa.webauthn.WebauthnCeremonyResult.BrowserUnavailable
 import com.passbolt.mobile.android.feature.authentication.mfa.webauthn.WebauthnCeremonyResult.Cancelled
 import com.passbolt.mobile.android.feature.authentication.mfa.webauthn.WebauthnCeremonyResult.Completed
 import com.passbolt.mobile.android.feature.authentication.mfa.webauthn.WebauthnCeremonyResult.Failed
@@ -74,10 +74,6 @@ class AuthWithWebauthnViewModel(
         when (intent) {
             is AuthenticateWithWebauthn -> authenticateWithWebauthn()
             is WebauthnCeremonyFinished -> ceremonyFinished(intent.result)
-            is BrowserUnavailable -> {
-                Timber.e("No browser available to run the webauthn ceremony")
-                emitSideEffect(ShowErrorSnackbar(BROWSER_UNAVAILABLE))
-            }
             is ToggleRememberMe -> updateViewState { copy(rememberMe = intent.checked) }
             is ChooseOtherProvider -> emitSideEffect(NotifyOtherProviderClicked(authToken))
             is Close -> close()
@@ -148,6 +144,10 @@ class AuthWithWebauthnViewModel(
                 verifyExchangeCode(result.exchangeCode)
             }
             is Cancelled -> Timber.d("Webauthn ceremony cancelled")
+            is BrowserUnavailable -> {
+                Timber.e("No browser available to run the webauthn ceremony")
+                emitSideEffect(ShowErrorSnackbar(BROWSER_UNAVAILABLE))
+            }
             is Failed -> {
                 Timber.e("Webauthn ceremony failed: ${result.error}")
                 emitSideEffect(ShowErrorSnackbar(CEREMONY_FAILED))

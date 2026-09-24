@@ -23,28 +23,15 @@
 
 package com.passbolt.mobile.android.feature.authentication.mfa.webauthn
 
-import android.app.Activity
 import androidx.browser.auth.AuthTabIntent
 import com.passbolt.mobile.android.feature.authentication.mfa.webauthn.WebauthnCeremonyResult.Cancelled
-import com.passbolt.mobile.android.feature.authentication.mfa.webauthn.WebauthnCeremonyResult.Completed
 import com.passbolt.mobile.android.feature.authentication.mfa.webauthn.WebauthnCeremonyResult.Failed
 
-private const val QUERY_EXCHANGE_CODE = "exchange_code"
-private const val QUERY_ERROR = "error"
-private const val ERROR_USER_CANCELLED = "user_cancelled"
-
-internal fun AuthTabIntent.AuthResult.toWebauthnCeremonyResult(): WebauthnCeremonyResult {
-    if (resultCode == Activity.RESULT_CANCELED) {
-        return Cancelled
+internal fun AuthTabIntent.AuthResult.toWebauthnCeremonyResult(): WebauthnCeremonyResult =
+    when (resultCode) {
+        AuthTabIntent.RESULT_CANCELED -> Cancelled
+        AuthTabIntent.RESULT_OK -> parseWebauthnCallbackUri(resultUri?.toString())
+        AuthTabIntent.RESULT_VERIFICATION_FAILED -> Failed("auth_tab_verification_failed")
+        AuthTabIntent.RESULT_VERIFICATION_TIMED_OUT -> Failed("auth_tab_verification_timed_out")
+        else -> Failed("auth_tab_unknown_result_$resultCode")
     }
-    if (resultCode != Activity.RESULT_OK) {
-        return Failed("auth_tab_result_$resultCode")
-    }
-    val exchangeCode = resultUri?.getQueryParameter(QUERY_EXCHANGE_CODE)
-    val error = resultUri?.getQueryParameter(QUERY_ERROR)
-    return when {
-        !exchangeCode.isNullOrBlank() -> Completed(exchangeCode)
-        error == ERROR_USER_CANCELLED -> Cancelled
-        else -> Failed(error)
-    }
-}
