@@ -23,13 +23,10 @@
 
 package com.passbolt.mobile.android.feature.authentication.mfa.webauthn
 
-import com.passbolt.mobile.android.feature.authentication.auth.OneTimeSessionRefreshRetry
 import org.koin.core.module.Module
-import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.viewModel
 
 fun Module.authWithWebauthnModule() {
-    factoryOf(::OneTimeSessionRefreshRetry)
     viewModel { params ->
         AuthWithWebauthnViewModel(
             authToken = params[0],

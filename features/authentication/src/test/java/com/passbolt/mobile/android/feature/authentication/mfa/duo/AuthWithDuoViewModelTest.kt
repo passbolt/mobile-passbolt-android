@@ -2,6 +2,8 @@ package com.passbolt.mobile.android.feature.authentication.mfa.duo
 
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
+import com.passbolt.mobile.android.domain.auth.usecase.GetSessionUseCase
+import com.passbolt.mobile.android.feature.authentication.auth.OneTimeSessionRefreshRetry
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetDuoPromptUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.RefreshSessionUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
@@ -12,6 +14,7 @@ import com.passbolt.mobile.android.feature.authentication.mfa.duo.AuthWithDuoInt
 import com.passbolt.mobile.android.feature.authentication.mfa.duo.AuthWithDuoIntent.DismissSetupLeave
 import com.passbolt.mobile.android.feature.authentication.mfa.duo.AuthWithDuoIntent.DuoAuthFinished
 import com.passbolt.mobile.android.feature.authentication.mfa.duo.AuthWithDuoSideEffect.CloseAndNavigateToStartup
+import com.passbolt.mobile.android.feature.authentication.mfa.duo.AuthWithDuoSideEffect.NavigateToLogin
 import com.passbolt.mobile.android.feature.authentication.mfa.duo.AuthWithDuoSideEffect.NotifyVerificationSucceeded
 import com.passbolt.mobile.android.feature.authentication.mfa.duo.duowebviewsheet.DuoState
 import kotlinx.coroutines.Dispatchers
@@ -35,6 +38,7 @@ import org.mockito.Mockito.mock
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.stub
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
 import kotlin.test.assertIs
@@ -50,6 +54,8 @@ class AuthWithDuoViewModelTest : KoinTest {
                     single { mock<GetDuoPromptUseCase>() }
                     single { mock<VerifyDuoCallbackUseCase>() }
                     single { mock<RefreshSessionUseCase>() }
+                    single { mock<GetSessionUseCase>() }
+                    single { OneTimeSessionRefreshRetry(refreshSessionUseCase = get(), getSessionUseCase = get()) }
                     single { mock<SignOutUseCase>() }
                     factory { params ->
                         AuthWithDuoViewModel(
@@ -58,7 +64,7 @@ class AuthWithDuoViewModelTest : KoinTest {
                             isSetupFlow = params[2],
                             getDuoPromptUseCase = get(),
                             verifyDuoCallbackUseCase = get(),
-                            refreshSessionUseCase = get(),
+                            oneTimeSessionRefreshRetry = get(),
                             signOutUseCase = get(),
                         )
                     }
@@ -124,6 +130,60 @@ class AuthWithDuoViewModelTest : KoinTest {
                     duoCode = "duo-code-val",
                 ),
             )
+        }
+
+    @Test
+    fun `unauthorized prompt refreshes session and retries once with refreshed token`() =
+        runTest {
+            val getDuoPromptUseCase: GetDuoPromptUseCase = get()
+            getDuoPromptUseCase.stub {
+                on { execute(any()) } doReturn
+                    GetDuoPromptUseCase.Output.Unauthorized doReturn
+                    GetDuoPromptUseCase.Output.Success(
+                        duoPromptUrl = "https://duo.example.com/prompt",
+                        passboltDuoCookieUuid = "duo-cookie-123",
+                    )
+            }
+            get<RefreshSessionUseCase>().stub {
+                on { execute(Unit) } doReturn RefreshSessionUseCase.Output.Success
+            }
+            get<GetSessionUseCase>().stub {
+                on { execute(Unit) } doReturn GetSessionUseCase.Output(REFRESHED_AUTH_TOKEN, null, null)
+            }
+            viewModel = get(parameters = { parametersOf(AUTH_TOKEN, false, false) })
+
+            viewModel.onIntent(AuthenticateWithDuo)
+
+            viewModel.viewState.drop(2).test {
+                assertThat(awaitItem().showDuoWebViewSheet).isTrue()
+            }
+
+            verify(getDuoPromptUseCase).execute(GetDuoPromptUseCase.Input(AUTH_TOKEN))
+            verify(getDuoPromptUseCase).execute(GetDuoPromptUseCase.Input(REFRESHED_AUTH_TOKEN))
+        }
+
+    @Test
+    fun `unauthorized prompt after successful refresh does not retry again`() =
+        runTest {
+            val getDuoPromptUseCase: GetDuoPromptUseCase = get()
+            getDuoPromptUseCase.stub {
+                on { execute(any()) } doReturn GetDuoPromptUseCase.Output.Unauthorized
+            }
+            get<RefreshSessionUseCase>().stub {
+                on { execute(Unit) } doReturn RefreshSessionUseCase.Output.Success
+            }
+            get<GetSessionUseCase>().stub {
+                on { execute(Unit) } doReturn GetSessionUseCase.Output(REFRESHED_AUTH_TOKEN, null, null)
+            }
+            viewModel = get(parameters = { parametersOf(AUTH_TOKEN, false, false) })
+
+            viewModel.sideEffect.test {
+                viewModel.onIntent(AuthenticateWithDuo)
+                assertIs<NavigateToLogin>(awaitItem())
+            }
+
+            verify(get<RefreshSessionUseCase>(), times(1)).execute(Unit)
+            verify(getDuoPromptUseCase, times(2)).execute(any())
         }
 
     @Test
@@ -196,5 +256,6 @@ class AuthWithDuoViewModelTest : KoinTest {
 
     private companion object {
         const val AUTH_TOKEN = "test-auth-token"
+        const val REFRESHED_AUTH_TOKEN = "refreshed-auth-token"
     }
 }

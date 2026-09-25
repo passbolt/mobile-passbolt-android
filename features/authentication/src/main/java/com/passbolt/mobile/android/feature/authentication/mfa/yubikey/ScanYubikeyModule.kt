@@ -14,7 +14,7 @@ fun Module.scanYubikeyModule() {
             isSetupFlow = params[2],
             signOutUseCase = get(),
             verifyYubikeyUseCase = get(),
-            refreshSessionUseCase = get(),
+            oneTimeSessionRefreshRetry = get(),
         )
     }
 }
