@@ -2,6 +2,8 @@ package com.passbolt.mobile.android.feature.authentication.mfa.totp
 
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
+import com.passbolt.mobile.android.domain.auth.usecase.GetSessionUseCase
+import com.passbolt.mobile.android.feature.authentication.auth.OneTimeSessionRefreshRetry
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.RefreshSessionUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.VerifyTotpUseCase
@@ -12,6 +14,7 @@ import com.passbolt.mobile.android.feature.authentication.mfa.totp.EnterTotpInte
 import com.passbolt.mobile.android.feature.authentication.mfa.totp.EnterTotpSideEffect.ClearOtp
 import com.passbolt.mobile.android.feature.authentication.mfa.totp.EnterTotpSideEffect.CloseAndNavigateToStartup
 import com.passbolt.mobile.android.feature.authentication.mfa.totp.EnterTotpSideEffect.NavigateToLogin
+import com.passbolt.mobile.android.feature.authentication.mfa.totp.EnterTotpSideEffect.NotifyVerificationSucceeded
 import com.passbolt.mobile.android.feature.authentication.mfa.totp.EnterTotpSideEffect.ShowErrorSnackbar
 import com.passbolt.mobile.android.feature.authentication.mfa.totp.EnterTotpSideEffect.SnackbarErrorType.GENERIC
 import com.passbolt.mobile.android.feature.authentication.mfa.totp.EnterTotpSideEffect.SnackbarErrorType.SESSION_EXPIRED
@@ -37,6 +40,7 @@ import org.mockito.Mockito.mock
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.stub
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
@@ -53,6 +57,8 @@ class EnterTotpViewModelTest : KoinTest {
                     single { mock<SignOutUseCase>() }
                     single { mock<VerifyTotpUseCase>() }
                     single { mock<RefreshSessionUseCase>() }
+                    single { mock<GetSessionUseCase>() }
+                    single { OneTimeSessionRefreshRetry(refreshSessionUseCase = get(), getSessionUseCase = get()) }
                     factory { params ->
                         EnterTotpViewModel(
                             authToken = params[0],
@@ -60,7 +66,7 @@ class EnterTotpViewModelTest : KoinTest {
                             isSetupFlow = params[2],
                             signOutUseCase = get(),
                             verifyTotpUseCase = get(),
-                            refreshSessionUseCase = get(),
+                            oneTimeSessionRefreshRetry = get(),
                         )
                     }
                 },
@@ -101,6 +107,57 @@ class EnterTotpViewModelTest : KoinTest {
                 assertThat(error.kind).isEqualTo(SESSION_EXPIRED)
                 assertIs<NavigateToLogin>(awaitItem())
             }
+        }
+
+    @Test
+    fun `unauthorized refreshes session and retries once with refreshed token`() =
+        runTest {
+            val verifyTotpUseCase: VerifyTotpUseCase = get()
+            verifyTotpUseCase.stub {
+                on { execute(any()) } doReturn
+                    VerifyTotpUseCase.Output.Unauthorized doReturn
+                    VerifyTotpUseCase.Output.Success(MFA_HEADER)
+            }
+            whenever(get<RefreshSessionUseCase>().execute(any())) doReturn RefreshSessionUseCase.Output.Success
+            whenever(get<GetSessionUseCase>().execute(Unit)) doReturn
+                GetSessionUseCase.Output(REFRESHED_AUTH_TOKEN, null, null)
+
+            viewModel = get(parameters = { parametersOf(AUTH_TOKEN, false, false) })
+
+            viewModel.sideEffect.test {
+                viewModel.onIntent(ValidateOtp("123456"))
+                val success = awaitItem()
+                assertIs<NotifyVerificationSucceeded>(success)
+                assertThat(success.mfaHeader).isEqualTo(MFA_HEADER)
+            }
+
+            verify(verifyTotpUseCase).execute(VerifyTotpUseCase.Input("123456", AUTH_TOKEN, true))
+            verify(verifyTotpUseCase).execute(VerifyTotpUseCase.Input("123456", REFRESHED_AUTH_TOKEN, true))
+        }
+
+    @Test
+    fun `unauthorized after successful refresh does not retry again`() =
+        runTest {
+            val verifyTotpUseCase: VerifyTotpUseCase = get()
+            verifyTotpUseCase.stub {
+                on { execute(any()) } doReturn VerifyTotpUseCase.Output.Unauthorized
+            }
+            whenever(get<RefreshSessionUseCase>().execute(any())) doReturn RefreshSessionUseCase.Output.Success
+            whenever(get<GetSessionUseCase>().execute(Unit)) doReturn
+                GetSessionUseCase.Output(REFRESHED_AUTH_TOKEN, null, null)
+
+            viewModel = get(parameters = { parametersOf(AUTH_TOKEN, false, false) })
+
+            viewModel.sideEffect.test {
+                viewModel.onIntent(ValidateOtp("123456"))
+                val error = awaitItem()
+                assertIs<ShowErrorSnackbar>(error)
+                assertThat(error.kind).isEqualTo(SESSION_EXPIRED)
+                assertIs<NavigateToLogin>(awaitItem())
+            }
+
+            verify(get<RefreshSessionUseCase>(), times(1)).execute(any())
+            verify(verifyTotpUseCase, times(2)).execute(any())
         }
 
     @Test
@@ -196,5 +253,7 @@ class EnterTotpViewModelTest : KoinTest {
 
     private companion object {
         const val AUTH_TOKEN = "test-auth-token"
+        const val REFRESHED_AUTH_TOKEN = "refreshed-auth-token"
+        const val MFA_HEADER = "passbolt_mfa=jwt"
     }
 }

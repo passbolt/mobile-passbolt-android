@@ -39,7 +39,7 @@ fun Module.authWithDuoModule() {
             isSetupFlow = params[2],
             getDuoPromptUseCase = get(),
             verifyDuoCallbackUseCase = get(),
-            refreshSessionUseCase = get(),
+            oneTimeSessionRefreshRetry = get(),
             signOutUseCase = get(),
         )
     }

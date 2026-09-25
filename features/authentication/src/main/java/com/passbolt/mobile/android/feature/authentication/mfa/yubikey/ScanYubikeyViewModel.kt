@@ -1,7 +1,7 @@
 package com.passbolt.mobile.android.feature.authentication.mfa.yubikey
 
 import com.passbolt.mobile.android.core.compose.SideEffectViewModel
-import com.passbolt.mobile.android.feature.authentication.auth.usecase.RefreshSessionUseCase
+import com.passbolt.mobile.android.feature.authentication.auth.OneTimeSessionRefreshRetry
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.VerifyYubikeyUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.VerifyYubikeyUseCase.Output.Failure
@@ -36,7 +36,7 @@ class ScanYubikeyViewModel(
     private val authToken: String?,
     private val signOutUseCase: SignOutUseCase,
     private val verifyYubikeyUseCase: VerifyYubikeyUseCase,
-    private val refreshSessionUseCase: RefreshSessionUseCase,
+    private val oneTimeSessionRefreshRetry: OneTimeSessionRefreshRetry,
 ) : SideEffectViewModel<ScanYubikeyState, ScanYubikeySideEffect>(
         ScanYubikeyState(hasOtherProvider = hasOtherProvider),
     ) {
@@ -78,23 +78,20 @@ class ScanYubikeyViewModel(
         Timber.d("Verifying Yubikey")
         updateViewState { copy(showProgress = true) }
         launch {
-            when (
-                val result =
-                    verifyYubikeyUseCase.execute(
-                        VerifyYubikeyUseCase.Input(otp, authToken, viewState.value.rememberMe),
-                    )
-            ) {
+            val result =
+                oneTimeSessionRefreshRetry.execute(
+                    token = authToken.orEmpty(),
+                    isUnauthorized = { it is Unauthorized },
+                ) { bearer ->
+                    verifyYubikeyUseCase.execute(VerifyYubikeyUseCase.Input(otp, bearer, viewState.value.rememberMe))
+                }
+            when (result) {
                 is Failure -> emitSideEffect(ShowErrorSnackbar(GENERIC))
                 is NetworkFailure -> emitSideEffect(ShowErrorSnackbar(GENERIC))
                 is Success -> yubikeySuccess(result.mfaHeader)
                 is Unauthorized -> {
-                    if (backgroundSessionRefreshSucceeded()) {
-                        verifyYubikey(otp)
-                        return@launch
-                    } else {
-                        emitSideEffect(ShowErrorSnackbar(SESSION_EXPIRED))
-                        emitSideEffect(NavigateToLogin)
-                    }
+                    emitSideEffect(ShowErrorSnackbar(SESSION_EXPIRED))
+                    emitSideEffect(NavigateToLogin)
                 }
                 is YubikeyNotFromCurrentUser ->
                     updateViewState { copy(showNotFromCurrentUserDialog = true) }
@@ -102,8 +99,6 @@ class ScanYubikeyViewModel(
             updateViewState { copy(showProgress = false) }
         }
     }
-
-    private suspend fun backgroundSessionRefreshSucceeded() = refreshSessionUseCase.execute(Unit) is RefreshSessionUseCase.Output.Success
 
     private fun yubikeySuccess(mfaHeader: String?) {
         mfaHeader?.let {

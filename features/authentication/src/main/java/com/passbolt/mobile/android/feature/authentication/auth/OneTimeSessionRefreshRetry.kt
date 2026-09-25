@@ -26,7 +26,6 @@ package com.passbolt.mobile.android.feature.authentication.auth
 import com.passbolt.mobile.android.domain.auth.usecase.GetSessionUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.RefreshSessionUseCase
 
-// TODO reuse in Duo, TOTP and Yubikey view models when their session refresh handling is aligned
 class OneTimeSessionRefreshRetry(
     private val refreshSessionUseCase: RefreshSessionUseCase,
     private val getSessionUseCase: GetSessionUseCase,

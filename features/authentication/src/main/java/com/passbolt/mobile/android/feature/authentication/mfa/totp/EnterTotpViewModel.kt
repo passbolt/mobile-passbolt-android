@@ -1,7 +1,7 @@
 package com.passbolt.mobile.android.feature.authentication.mfa.totp
 
 import com.passbolt.mobile.android.core.compose.SideEffectViewModel
-import com.passbolt.mobile.android.feature.authentication.auth.usecase.RefreshSessionUseCase
+import com.passbolt.mobile.android.feature.authentication.auth.OneTimeSessionRefreshRetry
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.VerifyTotpUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.VerifyTotpUseCase.Output.Failure
@@ -37,7 +37,7 @@ class EnterTotpViewModel(
     private val authToken: String?,
     private val signOutUseCase: SignOutUseCase,
     private val verifyTotpUseCase: VerifyTotpUseCase,
-    private val refreshSessionUseCase: RefreshSessionUseCase,
+    private val oneTimeSessionRefreshRetry: OneTimeSessionRefreshRetry,
 ) : SideEffectViewModel<EnterTotpState, EnterTotpSideEffect>(
         EnterTotpState(hasOtherProvider = hasOtherProvider),
     ) {
@@ -68,31 +68,26 @@ class EnterTotpViewModel(
         Timber.d("Verifying TOTP")
         updateViewState { copy(showProgress = true) }
         launch {
-            when (
-                val result =
-                    verifyTotpUseCase.execute(
-                        VerifyTotpUseCase.Input(otp, authToken.orEmpty(), viewState.value.rememberMe),
-                    )
-            ) {
+            val result =
+                oneTimeSessionRefreshRetry.execute(
+                    token = authToken.orEmpty(),
+                    isUnauthorized = { it is Unauthorized },
+                ) { bearer ->
+                    verifyTotpUseCase.execute(VerifyTotpUseCase.Input(otp, bearer, viewState.value.rememberMe))
+                }
+            when (result) {
                 is Failure -> genericError()
                 is NetworkFailure -> networkError()
                 is Success -> otpSuccess(result.mfaHeader)
                 is WrongCode -> totpError()
                 is Unauthorized -> {
-                    if (backgroundSessionRefreshSucceeded()) {
-                        validateOtp(otp)
-                        return@launch
-                    } else {
-                        emitSideEffect(ShowErrorSnackbar(SESSION_EXPIRED))
-                        emitSideEffect(NavigateToLogin)
-                    }
+                    emitSideEffect(ShowErrorSnackbar(SESSION_EXPIRED))
+                    emitSideEffect(NavigateToLogin)
                 }
             }
             updateViewState { copy(showProgress = false) }
         }
     }
-
-    private suspend fun backgroundSessionRefreshSucceeded() = refreshSessionUseCase.execute(Unit) is RefreshSessionUseCase.Output.Success
 
     private fun otpSuccess(mfaHeader: String?) {
         mfaHeader?.let {

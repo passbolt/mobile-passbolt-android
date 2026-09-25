@@ -5,6 +5,7 @@ import com.passbolt.mobile.android.core.navigation.compose.base.Feature
 import com.passbolt.mobile.android.core.navigation.compose.base.FeatureModuleNavigation
 import com.passbolt.mobile.android.feature.authentication.AuthenticationStartUpResolver
 import com.passbolt.mobile.android.feature.authentication.accountslist.accountsListModule
+import com.passbolt.mobile.android.feature.authentication.auth.OneTimeSessionRefreshRetry
 import com.passbolt.mobile.android.feature.authentication.auth.authModule
 import com.passbolt.mobile.android.feature.authentication.mfa.duo.authWithDuoModule
 import com.passbolt.mobile.android.feature.authentication.mfa.totp.enterTotpModule
@@ -23,6 +24,7 @@ val authenticationModule =
         }
         single { BiometricPrompt.PromptInfo.Builder() }
         factoryOf(::AuthenticationStartUpResolver)
+        factoryOf(::OneTimeSessionRefreshRetry)
 
         accountsListModule()
         authModule()
