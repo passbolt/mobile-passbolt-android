@@ -106,6 +106,7 @@ import com.passbolt.mobile.android.feature.home.screen.SnackbarErrorType.FETCH_F
 import com.passbolt.mobile.android.feature.home.screen.SnackbarErrorType.NO_SHARED_KEY_ACCESS
 import com.passbolt.mobile.android.feature.home.screen.SnackbarErrorType.PROFILE_FETCH_FAILURE
 import com.passbolt.mobile.android.feature.home.screen.SnackbarErrorType.TOGGLE_FAVOURITE_FAILURE
+import com.passbolt.mobile.android.feature.home.screen.SnackbarSuccessType.OTP_CREATED
 import com.passbolt.mobile.android.feature.home.screen.SnackbarSuccessType.RESOURCE_CREATED
 import com.passbolt.mobile.android.feature.home.screen.SnackbarSuccessType.RESOURCE_DELETED
 import com.passbolt.mobile.android.feature.home.screen.SnackbarSuccessType.RESOURCE_EDITED
@@ -432,6 +433,7 @@ internal class HomeViewModel(
     private fun processOtpScanResult(intent: OtpQRScanReturned) {
         if (intent.otpCreated) {
             emitSideEffect(InitiateDataRefresh)
+            emitSideEffect(ShowSuccessSnackbar(OTP_CREATED))
         } else {
             if (intent.otpManualCreationChosen) {
                 emitSideEffect(
