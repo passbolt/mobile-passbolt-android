@@ -10,11 +10,12 @@
     <string name="continue_label">Continuați</string>
     <string name="copied_info">%s copiat!</string>
     <string name="stop_scanning">Opriți scanarea</string>
-    <string name="delete">Ştergeţi</string>
+    <string name="delete">Ștergeți</string>
     <string name="are_you_sure">Sunteți sigur?</string>
     <string name="default_home_search_hint">Căutare nume, utilizator sau URL</string>
     <string name="all_items_home_search_hint">Căutare nume, utilizator sau URL</string>
     <string name="user_search_hint">Căutați utilizatori…</string>
+    <string name="search_in_progress">Searching…</string>
     <string name="no_passwords">Nu există parole</string>
     <string name="no_otps">Nu există TOTP-uri</string>
     <string name="authentication_required">Autentificare necesară</string>
@@ -26,8 +27,11 @@
     <string name="favourites_failure">Nu s-a putut modifica preferința</string>
     <string name="delete_failure">Nu s-a putut șterge resursa</string>
     <string name="shared_with">Partajată cu</string>
-    <string name="location">Locaţie</string>
+    <string name="location">Locație</string>
     <string name="content_not_available">Conținutul nu mai este disponibil</string>
+    <string name="consent">Am citit și sunt de acord</string>
+    <string name="accessibility_policies_accept">Accept</string>
+    <string name="accessibility_policies_decline">Refuz</string>
     <string name="name_suspended">%s (suspendat)</string>
     <string name="name_expired">%s (expirat)</string>
     <string name="proceed">Continuați</string>
@@ -43,6 +47,7 @@
     <string name="common_sign_out">Deconectare</string>
     <string name="common_data_refresh_error">A apărut o eroare în timpul reîmprospătării datelor. Glisați în jos pentru a reîmprospăta.</string>
     <string name="common_decryption_failure">Eroare la decriptarea secretului</string>
+    <string name="common_invalid_totp_parameters">Parametri TOTP nevalizi</string>
     <string name="common_metadata_encryption_failure">Eroare în timpul criptării metadatelor</string>
     <string name="common_fetch_failure">Eroare în timpul descărcării secretului</string>
     <string name="common_encryption_failure">A apărut o eroare la criptarea secretului</string>
@@ -53,6 +58,8 @@
     <string name="common_metadata_key_verification_failure">Nu s-au putut verifica cheile de metadate</string>
     <string name="common_metadata_key_is_trusted">Noua cheie de metadate este de încredere</string>
     <string name="common_metadata_key_trust_failed">Nu s-a reușit acordarea încrederii noii chei de metadate</string>
+    <string name="common_password_policies_fetch_failed">Nu s-a reușit preluarea politicilor de parole - se vor utiliza valorile implicite</string>
+    <string name="common_password_expiry_fetch_failed">Preluarea setărilor de expirare a parolei a eșuat - se vor utiliza valorile implicite</string>
     <string name="common_message_resource_edited">Resursa %s a fost editată cu succes.</string>
     <string name="common_message_resource_deleted">Resursa %s a fost ștearsă.</string>
     <string name="common_message_resource_shared">Permisiunile pentru resursă au fost actualizate.</string>
@@ -69,6 +76,9 @@
     <string name="biometric_changed_title">Modificări ale amprentei detectate</string>
     <string name="biometric_changed_message">De data aceasta trebuie să te autentifici cu parola și să activezi amprenta în setări.</string>
     <string name="biometric_authenticate_again">Vă rugăm să vă autentificați din nou cu parola</string>
+    <string name="biometric_decrypt_error_message">Autentificarea biometrică este temporar indisponibilă. Te rugăm să introduci parola pentru a continua.</string>
+    <string name="biometric_encrypt_error_message">Configurarea biometrică nu a putut fi finalizată. Încearcă din nou sau continuă fără aceasta.</string>
+    <string name="biometric_no_crypto_cipher">Dispozitivul tău a folosit codul PIN sau modelul în locul biometriei. Te rugăm să folosești deblocarea biometrică sau să introduci parola.</string>
     <string name="settings_licenses_title">Licențe</string>
     <string name="settings_logs_title">Loguri</string>
     <string name="resource_will_be_deleted">Acest lucru va elimina definitiv această parolă din contul dvs.</string>
@@ -150,8 +160,11 @@
     <string name="auth_decryption_error_title">Eroare la decriptare</string>
     <string name="auth_decryption_error_description">A apărut o eroare de decriptare. Te rugăm să încerci din nou.\n</string>
     <string name="auth_decryption_error_cause">Eroarea Open PGP este:\n%s</string>
+    <string name="auth_error_server_signature_invalid">Server signature invalid</string>
     <string name="auth_error_invalid_signature">Eroare la verificarea challenge (semnătură invalidă)</string>
     <string name="auth_error_token_expired">Eroare la verificarea challenge (token expirat)</string>
+    <string name="auth_error_verify_token_mismatch">Challenge verification error (verify token mismatch)</string>
+    <string name="auth_error_domain_mismatch">Challenge verification error (domain mismatch)</string>
     <string name="auth_error_challenge_verification_failure">Eroare la verificarea challenge</string>
     <string name="auth_error_profile_fetch_failure">A apărut o eroare la actualizarea profilului</string>
     <string name="dialog_account_does_not_exist_title">Contul nu există</string>
@@ -181,10 +194,12 @@
     <string name="autofill_service_name">Autocompletare Passbolt</string>
     <string name="dialog_encourage_autofill_header">Conectează-te la aplicațiile tale preferate în 3 secunde!</string>
     <string name="dialog_autofill_header">Autocompletare</string>
+    <string name="dialog_encourage_autofill_accessibility_description">Această opțiune folosește serviciul de accesibilitate Android pentru a completa automat datele de autentificare în aplicații și browsere care nu acceptă completarea automată nativă Android. Atinge comutatorul de mai jos pentru a vedea ce este accesat și pentru a-ți da consimțământul.</string>
     <string name="dialog_encourage_autofill_accessibility_samsung">Samsung</string>
     <string name="dialog_encourage_autofill_accessibility_xiaomi">Xiaomi</string>
     <string name="dialog_encourage_autofill_accessibility_huawei">Huawei</string>
     <string name="dialog_encourage_autofill_accessibility_other">Altele</string>
+    <string name="dialog_encourage_autofill_accessibility_title">Activează completarea automată prin serviciul de accesibilitate</string>
     <string name="dialog_encourage_autofill_go_to_settings">Accesați setările</string>
     <string name="dialog_encourage_autofill_service_header">Activează autocompletarea pentru majoritatea aplicațiilor</string>
     <string name="dialog_encourage_autofill_service_description">În ecranul de setări Android, selectați Passbolt, activați comutatorul și apăsați OK.
@@ -213,9 +228,12 @@
     <string name="autofill_service_enable_overlay">Activați permisiunea overlay</string>
     <string name="autofill_service_overlay_description"><![CDATA[Completare automată nume de utilizator și parole pentru browserele web Android. Vă rugăm să activați permisiunea ‘Desenează peste alte aplicații’ pentru completarea automată Passbolt]]></string>
     <string name="autofill_service_enable_service">Activează autocompletarea pentru majoritatea aplicațiilor</string>
+    <string name="autofill_service_enable_service_description"><![CDATA[Detectează câmpurile de autentificare din aplicații și browsere și oferă completare automată. Necesită consimțământul tău pentru a activa serviciul de accesibilitate.]]></string>
     <string name="autofill_dropdown_select">Selectaţi din Passbolt</string>
     <string name="autofill_dropdown_fill">Completează cu Passbolt</string>
     <string name="autofill_resources_create">Creați&amp;completați</string>
+    <string name="autofill_conflict_message">Sunt active mai multe metode de completare automată.\nAcest lucru poate cauza probleme.</string>
+    <string name="autofill_conflict_message_detailed">Sunt active mai multe metode de completare automată.\nVă rugăm să dezactivați una pentru a asigura o experiență de completare automată fără probleme.</string>
     <string name="home_empty_list">Listă goală</string>
     <string name="home_create">Creare</string>
     <string name="home_in_sub_folders">în subfoldere:</string>
@@ -253,12 +271,23 @@
     <string name="resource_details_description_header">Descriere</string>
     <string name="resource_details_note_header">Notă</string>
     <string name="resource_details_note_content">Conținut</string>
+    <string name="resource_details_pin_code_header">Cod PIN</string>
+    <string name="resource_details_pin_code_code">Cod</string>
     <string name="resource_details_tags_header">Tag-uri</string>
     <string name="resource_details_encrypted_description">Descrierea este criptată</string>
+    <string name="action_show">Afișați</string>
+    <string name="action_hide">Ascundeți</string>
+    <string name="action_copy">Copiați</string>
     <string name="resource_details_information">Informaţii</string>
     <string name="resource_details_invalid_totp_scanned">A fost scanat un cod QR TOTP nevalid</string>
     <string name="resource_details_metadata_header">Metadate</string>
     <string name="resource_details_custom_fields_header">Câmpuri personalizate</string>
+    <string name="resource_details_upgrade_available_header">Actualizare disponibilă</string>
+    <string name="resource_details_upgrade_panel_message">Aceasta este o resursă neactualizată. Actualizați pentru îmbunătățiri de securitate și noi caracteristici.</string>
+    <string name="resource_details_upgrade_action">Actualizare</string>
+    <string name="resource_details_upgrade_learn_more">Aflați mai multe</string>
+    <string name="resource_details_upgrade_success">Resursă actualizată.</string>
+    <string name="resource_details_upgrade_failure">Nu s-a putut actualiza resursa. Te rugăm să încerci din nou.</string>
     <string name="additional_uri_format">• %s</string>
     <string name="more_details_copy_password">Copiază parola</string>
     <string name="more_details_copy_description">Copiază descrierea</string>
@@ -276,6 +305,34 @@
     <string name="resource_form_totp_url_issuer">URL (Emitent)</string>
     <string name="resource_form_totp_more_settings">Mai multe setări TOTP</string>
     <string name="resource_form_totp_settings">Setări TOTP</string>
+    <string name="resource_form_advanced_password_generation">Generare avansată a parolei</string>
+    <string name="resource_form_advanced_passphrase_generation">Generare avansată a frazei de acces</string>
+    <string name="resource_form_advanced_password_generation_save_preferences">Salvează preferințele</string>
+    <string name="resource_form_advanced_password_generation_password_preview">Previzualizare parolă</string>
+    <string name="resource_form_advanced_password_generation_passphrase_preview">Previzualizare frază de acces</string>
+    <string name="resource_form_advanced_password_generation_tab_password">Parolă</string>
+    <string name="resource_form_advanced_password_generation_tab_passphrase">Frază de acces</string>
+    <string name="resource_form_advanced_password_generation_length">Lungime</string>
+    <string name="resource_form_advanced_password_generation_character_types">Tipurile de caractere</string>
+    <string name="resource_form_advanced_password_generation_exclude_look_alike">Exclude caracterele asemănătoare</string>
+    <string name="resource_form_advanced_password_generation_exclude_look_alike_description">Omite caracterele care pot fi confundate între ele (O/0, l/I/1).</string>
+    <string name="resource_form_advanced_password_generation_number_of_words">Numărul de cuvinte</string>
+    <string name="resource_form_advanced_password_generation_word_separator">Separator cuvinte</string>
+    <string name="resource_form_advanced_password_generation_word_separator_hint">Introduceți unul sau mai multe caractere</string>
+    <string name="resource_form_advanced_password_generation_word_case">Forma literelor</string>
+    <string name="resource_form_character_set_upper">A-Z</string>
+    <string name="resource_form_character_set_digit">0-9</string>
+    <string name="resource_form_character_set_lower">a-z</string>
+    <string name="resource_form_character_set_parenthesis">{ [ ( | ) ] }</string>
+    <string name="resource_form_character_set_special_char1"># $ % &amp; @ ^ ~</string>
+    <string name="resource_form_character_set_special_char2">. , : ;</string>
+    <string name="resource_form_character_set_special_char3">\' \" `</string>
+    <string name="resource_form_character_set_special_char4">/ \\ _ -</string>
+    <string name="resource_form_character_set_special_char5">&lt; * + ! ? =</string>
+    <string name="resource_form_character_set_emoji">🙂</string>
+    <string name="resource_form_word_case_lowercase">Caractere mici</string>
+    <string name="resource_form_word_case_uppercase">Majuscule</string>
+    <string name="resource_form_word_case_camelcase">Camel case</string>
     <string name="resource_form_description">Descriere</string>
     <string name="resource_form_additional_uris">URI-uri suplimentare</string>
     <string name="resource_form_enter_description">Introduceți descrierea</string>
@@ -305,8 +362,22 @@
     <string name="resource_form_save">Salvare</string>
     <string name="resource_form_edit_init_error">Nu s-a reușit inițializarea editării resursei</string>
     <string name="resource_form_create_init_error">Nu s-a reușit inițializarea creării resursei</string>
+    <string name="resource_form_created_share_failed">Resource created but not shared - sharing failed.</string>
+    <string name="resource_form_edited_share_failed">Unable to apply the confirmed permissions - please try again.</string>
+    <string name="resource_form_created_permissions_changed">Resource created but not shared - permissions changed in the meantime.</string>
     <string name="resource_form_remove_totp">Eliminați TOTP</string>
     <string name="resource_form_remove_note">Eliminați nota</string>
+    <string name="resource_form_remove_pin_code">Eliminați codul PIN</string>
+    <string name="resource_form_pin_code">Cod PIN</string>
+    <string name="resource_form_create_pin_code">Creați un cod PIN</string>
+    <string name="resource_form_pin_code_code">Cod</string>
+    <string name="resource_form_enter_pin_code">Introduceți codul PIN</string>
+    <string name="resource_form_pin_code_advanced">Generare avansată a codului PIN</string>
+    <string name="resource_form_pin_code_length">Lungime</string>
+    <string name="resource_form_pin_code_save_preferences">Salvați preferințele</string>
+    <string name="resource_form_pin_code_additional_information">Informații suplimentare</string>
+    <string name="resource_form_pin_code_validation_too_short">Codul PIN trebuie să aibă cel puțin %d cifre</string>
+    <string name="resource_form_pin_code_validation_too_long">Codul PIN poate avea cel mult %d cifre</string>
     <string name="resource_form_no_name">fără nume</string>
     <string name="resource_form_max_additional_uris_limit">Puteți adăuga maximum %d URI-uri suplimentare</string>
     <string name="resource_form_appearance">Aspect</string>
@@ -322,6 +393,7 @@
     <string name="settings_debug_logs">Debug, jurnale</string>
     <string name="settings_disable">Dezactivează</string>
     <string name="settings_sign_out">Deconectare</string>
+    <string name="settings_sign_out_server_error">Signed out on this device. The server session may still be active.</string>
     <string name="settings_title">Setări</string>
     <string name="settings_disable_biometric_confirmation_message">După dezactivarea amprentei va trebui să vă autentificați folosind parola de acces.</string>
     <string name="settings_turn_on_biometric_title">Activați autentificarea cu amprentă</string>
@@ -345,7 +417,12 @@
     <string name="settings_app_settings_biometry_error">Eroare biometrică. %s</string>
     <string name="settings_app_settings_biometry_authentication_error">Eroare de autentificare biometrică. %s</string>
     <string name="settings_app_settings_expert_settings">Setări avansate</string>
+    <string name="settings_app_settings_expert_settings_require_auth_on_every_entry">Solicită autentificare la fiecare accesare</string>
     <string name="settings_app_settings_expert_settings_hide_root">Ascundeți dialogul \"dispozitivul este rootat\"</string>
+    <string name="settings_app_settings_expert_settings_fetch_page_size">Dimensiunea paginii de preluare API</string>
+    <string name="settings_page_size_description">Numărul de resurse preluate per cerere API. Valorile mai mari folosesc mai multă memorie, dar reduc numărul de cereri de rețea.</string>
+    <string name="settings_page_size_exceeds_recommended_limit">Depășește limita recomandată. Poate cauza încetiniri aplicației.</string>
+    <string name="settings_page_size_restore_default_values">Restabilire valori implicite</string>
     <string name="settings_autofill_autofill_title">Aici puteţi schimba metodele de autocompletare</string>
     <string name="settings_autofill_autofill_desc">Este recomandat să utilizaţi Serviciul de Autocompletare, dar performanţa serviciului poate depinde de setările de optimizare ale bateriei şi de setările dispozitivului. \n\nÎn cazul în care serviciul de autocompletare nu funcționează în mod fiabil pe dispozitivul dvs., puteți încerca să activați autocompletarea pe baza Serviciului de Accesibilitate.</string>
     <string name="settings_autofill_autofill_service">Serviciu autocompletare (recomandat)</string>
@@ -406,6 +483,15 @@
     <string name="resource_permissions_share_simulation_failed">A apărut o eroare în timpul simulării de partajare</string>
     <string name="resource_permissions_share_failed">A apărut o eroare în timpul partajării </string>
     <string name="resource_permissions_edit_permissions">Modifică permisiunile</string>
+    <string name="confirm_permissions_title">Confirmați permisiunile</string>
+    <string name="confirm_permissions_fetch_failure">Unable to load current permissions. Please try again.</string>
+    <string name="confirm_permissions_preparing">Preparing permissions to approve…</string>
+    <string name="confirm_permissions_refreshing_users_and_groups">Refreshing users and groups…</string>
+    <string name="confirm_permissions_drifted">The permissions changed in the meantime. Please review them and confirm again.</string>
+    <string name="confirm_permissions_drifted_single">Permissions for %1$s have changed</string>
+    <string name="confirm_permissions_drifted_multiple">Permissions for %1$s (and more) have changed</string>
+    <string name="confirm_permissions_indirect_access_single_user">%1$s is already part of the group %2$s</string>
+    <string name="confirm_permissions_indirect_access_multiple_users">%1$s (and more) already have access via group membership</string>
     <string name="group_permission_permission">Permisiune</string>
     <string name="group_permission_group_members">Membrii grupului</string>
     <string name="group_permission_delete">Ștergeți permisiunea</string>
@@ -420,6 +506,11 @@
     <string name="main_update_downloaded">Actualizarea Passbolt a fost descărcată</string>
     <string name="main_update_download_in_progress">Se descarcă în fundal. Te vom notifica de îndată ce descărcarea se va termina.</string>
     <string name="main_update_downloaded_install">Instalează</string>
+    <string name="deprecated_os_warning_title">Outdated Android version</string>
+    <string name="deprecated_os_warning_message">Your device runs an Android version that no longer receives security updates. Passbolt support for this version is scheduled to be phased out.</string>
+    <string name="deprecated_os_warning_call_to_action">To stay protected and keep receiving Passbolt updates, &lt;b&gt;update your device to a newer Android version&lt;/b&gt;.</string>
+    <string name="deprecated_os_warning_acknowledge">Am înțeles</string>
+    <string name="deprecated_os_warning_hide">Don\'t show again</string>
     <string name="dialog_encryption_error_title">A apărut o eroare de criptare</string>
     <string name="dialog_encryption_error_message">A apărut o eroare de criptare (%s). Încercați din nou.</string>
     <string name="resource_tags_section">Tag-uri</string>
@@ -431,7 +522,20 @@
     <string name="create_folder_name">Nume</string>
     <string name="create_folder_name_validation">Numele folderului nu poate fi gol</string>
     <string name="create_folder_error_format">Nu s-a putut crea folderul. %s</string>
+    <string name="enter_folder_name">Introduceți numele dosarului</string>
     <string name="share_folder_error_format">Nu s-a putut partaja folderul. %s</string>
+    <string name="dialog_accessibility_consent_title">Cum folosește Passbolt serviciul de accesibilitate</string>
+    <string name="dialog_accessibility_consent_message">Passbolt folosește serviciul de accesibilitate Android doar pentru a oferi completare automată în aplicații și browsere care nu acceptă cadrul standard Android de completare automată.\n\nCE ESTE ACCESAT\nCât timp serviciul este activat, Passbolt citește, doar pe dispozitivul tău:\n• numele pachetului aplicației aflate în prim-plan și adresa web afișată de browsere, pentru a potrivi datele de autentificare cu site-ul sau aplicația corectă;\n• aspectul și identificatorii câmpurilor de introducere de pe ecranul curent (de exemplu, dacă un câmp este pentru nume de utilizator, parolă sau cod de unică folosință), pentru a completa valoarea corectă;\n• evenimentele de focalizare și atingere pentru aceste câmpuri, pentru a ști când să ofere completare automată.\n\nCUM SUNT FOLOSITE DATELE\n• Toată prelucrarea are loc local pe dispozitivul tău. Informațiile de mai sus sunt folosite doar pentru a detecta câmpurile de autentificare și pentru a completa datele de autentificare atunci când alegi completarea automată.\n• Passbolt nu transmite, nu partajează, nu vinde și nu stochează conținutul ecranului, conținutul câmpurilor, activitatea de navigare sau lista aplicațiilor pe care le folosești. Nimic din ceea ce este citit de serviciul de accesibilitate nu părăsește dispozitivul tău și nu este trimis către serverele Passbolt sau către terți.\n• Serviciul este activ doar cât timp ecranul este pornit și îl poți dezactiva oricând din Setări Android › Accesibilitate sau din setările de completare automată Passbolt.\n\nAtingând \"Am citit și sunt de acord\" confirmi că ai citit și ai acceptat cele de mai sus.</string>
+    <string name="dialog_accessibility_consent_intro">Passbolt folosește serviciul de accesibilitate Android doar pentru a oferi completare automată în aplicații și browsere care nu acceptă cadrul standard Android de completare automată.</string>
+    <string name="dialog_accessibility_consent_section_what_title">Ce este accesat</string>
+    <string name="dialog_accessibility_consent_section_what_lead">Cât timp serviciul este activat, Passbolt citește, doar pe dispozitivul tău:</string>
+    <string name="dialog_accessibility_consent_section_what_bullet_1">numele pachetului aplicației aflate în prim-plan și adresa web afișată de browsere, pentru a potrivi datele de autentificare cu site-ul sau aplicația corectă;</string>
+    <string name="dialog_accessibility_consent_section_what_bullet_2">aspectul și identificatorii câmpurilor de introducere de pe ecranul curent (de exemplu, dacă un câmp este pentru nume de utilizator, parolă sau cod de unică folosință), pentru a completa valoarea corectă;</string>
+    <string name="dialog_accessibility_consent_section_what_bullet_3">evenimentele de focalizare și atingere pentru aceste câmpuri, pentru a ști când să ofere completare automată.</string>
+    <string name="dialog_accessibility_consent_section_how_title">Cum sunt folosite datele</string>
+    <string name="dialog_accessibility_consent_section_how_bullet_1">Toată prelucrarea are loc local pe dispozitivul tău. Informațiile de mai sus sunt folosite doar pentru a detecta câmpurile de autentificare și pentru a completa datele de autentificare atunci când alegi completarea automată.</string>
+    <string name="dialog_accessibility_consent_section_how_bullet_2">Passbolt nu transmite, nu partajează, nu vinde și nu stochează conținutul ecranului, conținutul câmpurilor, activitatea de navigare sau lista aplicațiilor pe care le folosești. Nimic din ceea ce este citit de serviciul de accesibilitate nu părăsește dispozitivul tău și nu este trimis către serverele Passbolt sau către terți.</string>
+    <string name="dialog_accessibility_consent_section_how_bullet_3">Serviciul este activ doar cât timp ecranul este pornit și îl poți dezactiva oricând din Setări Android › Accesibilitate sau din setările de completare automată Passbolt.</string>
     <string name="import_profile_title">Importați contul</string>
     <string name="import_profile_user_id">ID utilizator</string>
     <string name="import_profile_account_url">URL-ul contului</string>
@@ -526,6 +630,9 @@
     <string name="create_resource_menu_create_password">Parolă</string>
     <string name="create_resource_menu_create_note">Notă</string>
     <string name="create_resource_menu_create_folder">Folder</string>
+    <string name="create_resource_menu_other">Altele</string>
+    <string name="create_resource_menu_other_title">Alte tipuri de resurse</string>
+    <string name="create_resource_menu_create_pin_code">Cod PIN</string>
     <string name="dialog_new_metadata_key_trust_changed">Cheia de metadate a fost schimbată.</string>
     <string name="dialog_new_metadata_key_trust_modified_by_user">Cheia de criptare folosită pentru a partaja metadate între utilizatori a fost actualizată de %s.</string>
     <string name="dialog_new_metadata_key_trust_key_rotation_info">Dacă nu vă așteptați la asta, verificați cu administratorul.</string>
@@ -540,8 +647,7 @@
     arrays can be inconsistent when in other languages
     index / size is not used in code
     -->
-    <string-array name="username_hint_values"
-        tools:ignore="InconsistentArrays">
+    <string-array name="username_hint_values" tools:ignore="InconsistentArrays">
         <item>e-mail</item>
         <item>utilizator</item>
         <item>telefon mobil</item>
@@ -552,11 +658,27 @@
       arrays can be inconsistent when in other languages
       index / size is not used in code
     -->
-    <string-array name="password_hint_values"
-        tools:ignore="InconsistentArrays">
+    <string-array name="password_hint_values" tools:ignore="InconsistentArrays">
         <item>parolă</item>
         <item>secret</item>
         <item>parolă</item>
+    </string-array>
+    <!--
+      arrays can be inconsistent when in other languages
+      index / size is not used in code
+    -->
+    <string-array name="totp_hint_values" tools:ignore="InconsistentArrays">
+        <item>OTP</item>
+        <item>TOTP</item>
+        <item>de unică folosință</item>
+        <item>cod-de-unică-folosință</item>
+        <item>verificare</item>
+        <item>cod de verificare</item>
+        <item>cod de autentificare</item>
+        <item>cod de autentificare</item>
+        <item>2FA</item>
+        <item>MFA</item>
+        <item>cod de securitate</item>
     </string-array>
     <string-array name="dialog_encourage_autofill_setup_steps">
         <item>&lt;b&gt;Activați setările pentru autocompletare&lt;/b&gt;</item>
