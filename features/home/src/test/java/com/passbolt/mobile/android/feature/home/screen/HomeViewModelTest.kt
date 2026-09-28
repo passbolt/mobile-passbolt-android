@@ -59,6 +59,7 @@ import com.passbolt.mobile.android.feature.home.screen.HomeIntent.CreatePassword
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.CreateTotp
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.Initialize
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.OpenCreateResourceMenu
+import com.passbolt.mobile.android.feature.home.screen.HomeIntent.OtpQRScanReturned
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.Search
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.SearchEndIconAction
 import com.passbolt.mobile.android.feature.home.screen.HomeSideEffect.InitiateDataRefresh
@@ -72,6 +73,7 @@ import com.passbolt.mobile.android.feature.home.screen.SnackbarErrorType.FAILED_
 import com.passbolt.mobile.android.feature.home.screen.SnackbarErrorType.NO_SHARED_KEY_ACCESS
 import com.passbolt.mobile.android.feature.home.screen.SnackbarErrorType.PROFILE_FETCH_FAILURE
 import com.passbolt.mobile.android.feature.home.screen.SnackbarSuccessType.FOLDER_CREATED
+import com.passbolt.mobile.android.feature.home.screen.SnackbarSuccessType.OTP_CREATED
 import com.passbolt.mobile.android.feature.home.screen.SnackbarSuccessType.RESOURCE_CREATED
 import com.passbolt.mobile.android.feature.home.screen.SnackbarSuccessType.RESOURCE_DELETED
 import com.passbolt.mobile.android.feature.home.screen.SnackbarSuccessType.RESOURCE_EDITED
@@ -560,6 +562,21 @@ class HomeViewModelTest : KoinTest {
                 assertIs<ShowSuccessSnackbar>(editSnackbarEffect)
                 assertEquals(RESOURCE_EDITED, editSnackbarEffect.type)
                 assertEquals("Test Resource", editSnackbarEffect.message)
+            }
+        }
+
+    @Test
+    fun `should refresh data and show snackbar after otp scan return with created otp`() =
+        runTest {
+            viewModel = get()
+
+            viewModel.sideEffect.test {
+                viewModel.onIntent(OtpQRScanReturned(otpCreated = true, otpManualCreationChosen = false))
+
+                assertIs<InitiateDataRefresh>(awaitItem())
+                val snackbarEffect = awaitItem()
+                assertIs<ShowSuccessSnackbar>(snackbarEffect)
+                assertEquals(OTP_CREATED, snackbarEffect.type)
             }
         }
 

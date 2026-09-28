@@ -98,6 +98,7 @@ import com.passbolt.mobile.android.feature.otp.screen.SnackbarErrorType.NO_SHARE
 import com.passbolt.mobile.android.feature.otp.screen.SnackbarErrorType.RESOURCE_SCHEMA_INVALID
 import com.passbolt.mobile.android.feature.otp.screen.SnackbarErrorType.SECRET_SCHEMA_INVALID
 import com.passbolt.mobile.android.feature.otp.screen.SnackbarSuccessType.METADATA_KEY_IS_TRUSTED
+import com.passbolt.mobile.android.feature.otp.screen.SnackbarSuccessType.OTP_CREATED
 import com.passbolt.mobile.android.feature.otp.screen.SnackbarSuccessType.RESOURCE_CREATED
 import com.passbolt.mobile.android.feature.otp.screen.SnackbarSuccessType.RESOURCE_DELETED
 import com.passbolt.mobile.android.feature.otp.screen.SnackbarSuccessType.RESOURCE_EDITED
@@ -462,6 +463,7 @@ internal class OtpViewModel(
     private fun processOtpScanResult(intent: OtpQRScanReturned) {
         if (intent.otpCreated) {
             emitSideEffect(InitiateDataRefresh)
+            emitSideEffect(ShowSuccessSnackbar(OTP_CREATED))
         } else {
             if (intent.otpManualCreationChosen) {
                 emitSideEffect(NavigateToCreateResourceForm(leadingContentType = TOTP))
