@@ -248,6 +248,41 @@ class MetadataPrivateKeysInteractorTest : KoinTest {
         }
 
     @Test
+    fun refreshAndVerifyShouldReturnInvalidKeyInsteadOfDeletedKeyWhenServerEncryptionKeyIsRejected() =
+        runTest {
+            mockMetadataKeysInteractor.stub {
+                on { fetchAndSaveMetadataKeys() } doReturn MetadataKeysInteractor.Output.InvalidEncryptionKey
+            }
+            mockGetLocalMetadataKeysUseCase.stub {
+                on { execute(any()) } doReturn emptyList()
+            }
+            mockGetTrustedMetadataKeyUseCase.stub {
+                on { execute(any()) } doReturn
+                    GetTrustedMetadataKeyUseCase.Output.TrustedKey(
+                        id = UUID.randomUUID(),
+                        userId = UUID.randomUUID(),
+                        keyData = "",
+                        passphrase = "",
+                        created = ZonedDateTime.now(),
+                        createdBy = UUID.randomUUID(),
+                        modified = ZonedDateTime.now(),
+                        modifiedBy = UUID.randomUUID(),
+                        keyPgpMessage = "",
+                        signingKeyFingerprint = "",
+                        signatureCreationTimestampSeconds = 0,
+                        signedUsername = "",
+                        signedName = "",
+                    )
+            }
+
+            val result = metadataPrivateKeysInteractor.refreshAndVerifyMetadataPrivateKey()
+
+            verify(mockSaveTrustedMetadataKeyUseCase, never()).execute(any())
+            verify(mockUpdateMetadataPrivateKeyUseCase, never()).execute(any())
+            assertThat(result).isInstanceOf(MetadataPrivateKeysInteractor.Output.InvalidMetadataKey::class.java)
+        }
+
+    @Test
     fun correctOutputShouldBeReturnedWhenThereIsNoKeyServerSideAndThereIsAKeyLocally() =
         runTest {
             mockGetLocalMetadataKeysUseCase.stub {
