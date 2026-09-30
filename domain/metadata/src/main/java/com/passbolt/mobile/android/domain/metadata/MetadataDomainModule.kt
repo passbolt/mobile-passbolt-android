@@ -30,7 +30,7 @@ import com.passbolt.mobile.android.domain.metadata.interactor.MetadataPrivateKey
 import com.passbolt.mobile.android.domain.metadata.interactor.MetadataSessionKeysInteractor
 import com.passbolt.mobile.android.domain.metadata.interactor.MetadataTypesSettingsInteractor
 import com.passbolt.mobile.android.domain.metadata.interactor.ResourceAccessInteractor
-import com.passbolt.mobile.android.domain.metadata.privatekeys.MetadataPrivateKeysValidator
+import com.passbolt.mobile.android.domain.metadata.keys.MetadataKeysValidator
 import com.passbolt.mobile.android.domain.metadata.sessionkeys.SessionKeysBundleMerger
 import com.passbolt.mobile.android.domain.metadata.sessionkeys.SessionKeysBundleProcessor
 import com.passbolt.mobile.android.domain.metadata.sessionkeys.SessionKeysBundleValidator
@@ -84,7 +84,7 @@ val metadataDomainModule =
         singleOf(::SessionKeysBundleProcessor)
         singleOf(::MetadataSessionKeysInteractor)
 
-        singleOf(::MetadataPrivateKeysValidator)
+        singleOf(::MetadataKeysValidator)
         singleOf(::UpdateMetadataPrivateKeyUseCase)
         singleOf(::GetTrustedMetadataKeyUseCase)
         singleOf(::SaveTrustedMetadataKeyUseCase)

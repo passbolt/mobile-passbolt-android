@@ -156,7 +156,7 @@ class HomeDataInteractor(
         @Suppress("ComplexCondition")
         return if (metadataTypesSettingsOutput is MetadataTypesSettingsInteractor.Output.Success &&
             metadataKeysSettingsOutput is MetadataKeysSettingsInteractor.Output.Success &&
-            metadataKeysOutput is MetadataKeysInteractor.Output.Success &&
+            metadataKeysOutput !is MetadataKeysInteractor.Output.Failure &&
             metadataSessionKeysOutput is MetadataSessionKeysInteractor.Output.Success &&
             resourceTypesOutput is ResourceTypesInteractor.Output.Success &&
             userInteractorOutput is UsersInteractor.Output.Success &&

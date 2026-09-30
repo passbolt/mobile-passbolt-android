@@ -59,10 +59,21 @@ class MetadataPrivateKeysInteractor(
     private val metadataPrivateKeysHelperInteractor: MetadataPrivateKeysHelperInteractor,
     private val metadataKeysInteractor: MetadataKeysInteractor,
 ) {
-    suspend fun refreshAndVerifyMetadataPrivateKey(): Output {
-        refreshMetadataKeysFromServer()
-        return verifyMetadataPrivateKey()
-    }
+    suspend fun refreshAndVerifyMetadataPrivateKey(): Output =
+        when (metadataKeysInteractor.fetchAndSaveMetadataKeys()) {
+            is MetadataKeysInteractor.Output.Success -> {
+                Timber.d("Refreshed metadata keys from server before verification")
+                verifyMetadataPrivateKey()
+            }
+            is MetadataKeysInteractor.Output.InvalidEncryptionKey -> {
+                Timber.e("Metadata encryption key from server failed verification - it cannot be trusted")
+                Output.InvalidMetadataKey
+            }
+            is MetadataKeysInteractor.Output.Failure -> {
+                Timber.w("Failed to refresh metadata keys from server, proceeding with local data")
+                verifyMetadataPrivateKey()
+            }
+        }
 
     suspend fun verifyMetadataPrivateKey(): Output {
         Timber.d("Verifying metadata private key trust")
@@ -78,15 +89,6 @@ class MetadataPrivateKeysInteractor(
         } else {
             Timber.d("Metadata key is not present server-side")
             verifyWithNoUsableBackendMetadataKey(localTrustedKey)
-        }
-    }
-
-    private suspend fun refreshMetadataKeysFromServer() {
-        when (metadataKeysInteractor.fetchAndSaveMetadataKeys()) {
-            is MetadataKeysInteractor.Output.Success ->
-                Timber.d("Refreshed metadata keys from server before verification")
-            is MetadataKeysInteractor.Output.Failure ->
-                Timber.w("Failed to refresh metadata keys from server, proceeding with local data")
         }
     }
 
@@ -389,5 +391,7 @@ class MetadataPrivateKeysInteractor(
         ) : Output()
 
         data object NoMetadataKey : Output()
+
+        data object InvalidMetadataKey : Output()
     }
 }
