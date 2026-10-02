@@ -79,7 +79,7 @@ internal interface MfaApi {
     ): Response<BaseResponse<WebauthnDelegatedPromptResponseDto>>
 
     @POST(MFA_VERIFICATION_WEBAUTHN_DELEGATED_CALLBACK)
-    suspend fun verifyWebauthnExchangeCode(
+    suspend fun verifyWebauthnDelegatedToken(
         @Body request: WebauthnDelegatedCallbackRequest,
         // auth header needs to be added manually because this request
         // requires auth token and is before user is signed in

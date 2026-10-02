@@ -25,7 +25,7 @@ package com.passbolt.mobile.android.feature.authentication.mfa.webauthn
 
 sealed interface WebauthnCeremonyResult {
     data class Completed(
-        val exchangeCode: String,
+        val delegatedToken: String,
     ) : WebauthnCeremonyResult
 
     data object Cancelled : WebauthnCeremonyResult

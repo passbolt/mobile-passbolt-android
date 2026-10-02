@@ -58,7 +58,7 @@ import timber.log.Timber
  *    b. Custom Tab, launched into this task. The stack is: host -> this activity -> browser tab.
  *    c. Plain ACTION_VIEW browser intent when no Custom Tabs provider exists.
  * 3. The MFA page completes the passkey ceremony with the server and navigates to
- *    `passbolt://mfa/webauthn/callback?exchange_code=...` (or `?error=...`).
+ *    `passbolt://mfa/webauthn/callback?mfa_delegated_token=...` (or `?error=...`).
  * 4. For (a) the Auth Tab result arrives in [authTabLauncher] and this activity finishes with it.
  *    For (b) and (c) the browser resolves the scheme to [WebauthnCallbackActivity], which restarts
  *    this activity with the redirect URI as data and CLEAR_TOP | SINGLE_TOP. That destroys the browser
@@ -67,7 +67,8 @@ import timber.log.Timber
  *    data absent -> the user backed out of the browser -> [WebauthnCeremonyResult.Cancelled].
  * 6. The result is encoded by [WebauthnCeremonyResultContract] and returned to the launching screen, which
  *    forwards it to [AuthWithWebauthnViewModel] as [AuthWithWebauthnIntent.WebauthnCeremonyFinished].
- *    The view model exchanges the code for the MFA token via the JWT-authenticated API.
+ *    The view model checks the delegated token locally, then trades it together with the delegated secret
+ *    for the MFA token via the JWT-authenticated API.
  *
  * Hosts of the MFA screen, and therefore of this flow:
  * - Sign-in: the screen is a navigation entry inside AuthenticationMainActivity. The result returns to

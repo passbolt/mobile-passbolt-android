@@ -40,15 +40,16 @@ class GetWebauthnDelegatedPromptUseCaseTest {
     private val useCase = GetWebauthnDelegatedPromptUseCase(mfaRepository)
 
     @Test
-    fun `should return ceremony token when prompt is found`() =
+    fun `should return state and secret when prompt succeeds`() =
         runTest {
             whenever(mfaRepository.getWebauthnDelegatedPrompt(JWT)) doReturn
-                DomainResult.Finished(WebauthnDelegatedPrompt.Succeeded(CEREMONY_TOKEN))
+                DomainResult.Finished(WebauthnDelegatedPrompt.Succeeded(STATE, SECRET))
 
             val output = useCase.execute(GetWebauthnDelegatedPromptUseCase.Input(JWT))
 
             assertIs<GetWebauthnDelegatedPromptUseCase.Output.Success>(output)
-            assertThat(output.ceremonyToken).isEqualTo(CEREMONY_TOKEN)
+            assertThat(output.state).isEqualTo(STATE)
+            assertThat(output.secret).isEqualTo(SECRET)
             verify(mfaRepository).getWebauthnDelegatedPrompt(JWT)
         }
 
@@ -88,6 +89,7 @@ class GetWebauthnDelegatedPromptUseCaseTest {
 
     private companion object {
         const val JWT = "jwt"
-        const val CEREMONY_TOKEN = "ceremony-token"
+        const val STATE = "delegated-state"
+        const val SECRET = "delegated-secret"
     }
 }

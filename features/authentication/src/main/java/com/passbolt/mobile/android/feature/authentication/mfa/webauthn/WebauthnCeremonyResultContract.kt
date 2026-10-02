@@ -44,8 +44,8 @@ internal class WebauthnCeremonyResultContract : ActivityResultContract<String, W
     ): WebauthnCeremonyResult =
         when (resultCode) {
             Activity.RESULT_OK -> {
-                val exchangeCode = intent?.getStringExtra(EXTRA_EXCHANGE_CODE)
-                if (exchangeCode.isNullOrBlank()) Failed(null) else Completed(exchangeCode)
+                val delegatedToken = intent?.getStringExtra(EXTRA_DELEGATED_TOKEN)
+                if (delegatedToken.isNullOrBlank()) Failed(null) else Completed(delegatedToken)
             }
             RESULT_FAILED -> Failed(intent?.getStringExtra(EXTRA_ERROR))
             RESULT_BROWSER_UNAVAILABLE -> BrowserUnavailable
@@ -54,7 +54,7 @@ internal class WebauthnCeremonyResultContract : ActivityResultContract<String, W
 
     companion object {
         const val EXTRA_CEREMONY_URL = "CEREMONY_URL"
-        private const val EXTRA_EXCHANGE_CODE = "EXCHANGE_CODE"
+        private const val EXTRA_DELEGATED_TOKEN = "DELEGATED_TOKEN"
         private const val EXTRA_ERROR = "ERROR"
         private const val RESULT_FAILED = Activity.RESULT_FIRST_USER
         private const val RESULT_BROWSER_UNAVAILABLE = Activity.RESULT_FIRST_USER + 1
@@ -70,7 +70,7 @@ internal class WebauthnCeremonyResultContract : ActivityResultContract<String, W
         fun resultIntentOf(result: WebauthnCeremonyResult): Intent =
             Intent().apply {
                 when (result) {
-                    is Completed -> putExtra(EXTRA_EXCHANGE_CODE, result.exchangeCode)
+                    is Completed -> putExtra(EXTRA_DELEGATED_TOKEN, result.delegatedToken)
                     is Failed -> putExtra(EXTRA_ERROR, result.error)
                     is BrowserUnavailable, is Cancelled -> Unit
                 }

@@ -32,7 +32,7 @@ import java.net.URLDecoder
 private const val CALLBACK_SCHEME = "passbolt"
 private const val CALLBACK_HOST = "mfa"
 private const val CALLBACK_PATH = "/webauthn/callback"
-private const val QUERY_EXCHANGE_CODE = "exchange_code"
+private const val QUERY_DELEGATED_TOKEN = "mfa_delegated_token"
 private const val QUERY_ERROR = "error"
 private const val ERROR_USER_CANCELLED = "user_cancelled"
 private const val ERROR_INVALID_CALLBACK_URI = "invalid_callback_uri"
@@ -44,11 +44,11 @@ internal fun parseWebauthnCallbackUri(uri: String?): WebauthnCeremonyResult =
 private fun parseValidCallbackUri(uri: URI): WebauthnCeremonyResult {
     require(uri.scheme == CALLBACK_SCHEME && uri.host == CALLBACK_HOST && uri.path == CALLBACK_PATH)
     val params = parseQuery(uri.rawQuery.orEmpty())
-    val exchangeCode = params[QUERY_EXCHANGE_CODE]
+    val delegatedToken = params[QUERY_DELEGATED_TOKEN]
     val error = params[QUERY_ERROR]
 
-    return if (!exchangeCode.isNullOrBlank() && error == null) {
-        Completed(exchangeCode)
+    return if (!delegatedToken.isNullOrBlank() && error == null) {
+        Completed(delegatedToken)
     } else if (error != null) {
         if (error == ERROR_USER_CANCELLED) Cancelled else Failed(error)
     } else {

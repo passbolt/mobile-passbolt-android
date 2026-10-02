@@ -104,7 +104,7 @@ class AuthenticationFeatureNavigation : FeatureModuleNavigation {
                 val params = LocalAuthenticationParams.current
                 PassboltTheme {
                     AuthWithWebauthnScreen(
-                        mfaState = MfaDialogState.Webauthn(key.authToken, key.hasOtherProviders),
+                        mfaState = MfaDialogState.Webauthn(key.userId, key.authToken, key.hasOtherProviders),
                         onMfaResult = {
                             resultBus.sendResult<MfaResult>(result = it)
                             navigator.navigateBack()

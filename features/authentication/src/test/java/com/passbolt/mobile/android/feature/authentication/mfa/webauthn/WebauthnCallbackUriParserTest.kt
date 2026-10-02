@@ -32,22 +32,22 @@ import org.junit.Test
 
 class WebauthnCallbackUriParserTest {
     @Test
-    fun `should return completed with exchange code`() {
-        val result = parseWebauthnCallbackUri("$CALLBACK?exchange_code=abc-123")
+    fun `should return completed with delegated token`() {
+        val result = parseWebauthnCallbackUri("$CALLBACK?mfa_delegated_token=abc-123")
 
         assertThat(result).isEqualTo(Completed("abc-123"))
     }
 
     @Test
-    fun `should url decode exchange code`() {
-        val result = parseWebauthnCallbackUri("$CALLBACK?exchange_code=a%2Bb%3Dc")
+    fun `should url decode delegated token`() {
+        val result = parseWebauthnCallbackUri("$CALLBACK?mfa_delegated_token=a%2Bb%3Dc")
 
         assertThat(result).isEqualTo(Completed("a+b=c"))
     }
 
     @Test
     fun `should ignore unrelated query parameters`() {
-        val result = parseWebauthnCallbackUri("$CALLBACK?utm=x&exchange_code=abc&other=y")
+        val result = parseWebauthnCallbackUri("$CALLBACK?utm=x&mfa_delegated_token=abc&other=y")
 
         assertThat(result).isEqualTo(Completed("abc"))
     }
@@ -72,8 +72,8 @@ class WebauthnCallbackUriParserTest {
     }
 
     @Test
-    fun `should treat exchange code accompanied by error as failure`() {
-        val result = parseWebauthnCallbackUri("$CALLBACK?error=x&exchange_code=abc")
+    fun `should treat delegated token accompanied by error as failure`() {
+        val result = parseWebauthnCallbackUri("$CALLBACK?error=x&mfa_delegated_token=abc")
 
         assertThat(result).isEqualTo(Failed("x"))
     }
@@ -84,12 +84,12 @@ class WebauthnCallbackUriParserTest {
             null,
             "",
             "::not a uri::",
-            "https://mfa/webauthn/callback?exchange_code=abc",
-            "passbolt://attacker/webauthn/callback?exchange_code=abc",
-            "passbolt://mfa/webauthn/callback/extra?exchange_code=abc",
-            "passbolt://mfa/webauthn?exchange_code=abc",
-            "passbolt://mfa.attacker.com/webauthn/callback?exchange_code=abc",
-            "https://attacker.com?url=passbolt://mfa/webauthn/callback?exchange_code=abc",
+            "https://mfa/webauthn/callback?mfa_delegated_token=abc",
+            "passbolt://attacker/webauthn/callback?mfa_delegated_token=abc",
+            "passbolt://mfa/webauthn/callback/extra?mfa_delegated_token=abc",
+            "passbolt://mfa/webauthn?mfa_delegated_token=abc",
+            "passbolt://mfa.attacker.com/webauthn/callback?mfa_delegated_token=abc",
+            "https://attacker.com?url=passbolt://mfa/webauthn/callback?mfa_delegated_token=abc",
         ).forEach { uri ->
             assertWithMessage("$uri should be rejected")
                 .that(parseWebauthnCallbackUri(uri))
@@ -100,8 +100,8 @@ class WebauthnCallbackUriParserTest {
     @Test
     fun `should reject malformed or ambiguous query`() {
         listOf(
-            "$CALLBACK?exchange_code=%zz",
-            "$CALLBACK?exchange_code=abc&exchange_code=def",
+            "$CALLBACK?mfa_delegated_token=%zz",
+            "$CALLBACK?mfa_delegated_token=abc&mfa_delegated_token=def",
             "$CALLBACK?error=user_cancelled&error=x",
         ).forEach { uri ->
             assertWithMessage("$uri should be rejected")
@@ -111,10 +111,10 @@ class WebauthnCallbackUriParserTest {
     }
 
     @Test
-    fun `should not read exchange code from fragment`() {
+    fun `should not read delegated token from fragment`() {
         listOf(
-            "$CALLBACK#exchange_code=abc",
-            "$CALLBACK#?exchange_code=abc",
+            "$CALLBACK#mfa_delegated_token=abc",
+            "$CALLBACK#?mfa_delegated_token=abc",
         ).forEach { uri ->
             assertWithMessage("$uri should not complete")
                 .that(parseWebauthnCallbackUri(uri))

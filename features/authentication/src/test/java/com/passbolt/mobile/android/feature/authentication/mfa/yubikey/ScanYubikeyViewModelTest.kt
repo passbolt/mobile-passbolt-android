@@ -2,9 +2,6 @@ package com.passbolt.mobile.android.feature.authentication.mfa.yubikey
 
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
-import com.passbolt.mobile.android.domain.auth.usecase.GetSessionUseCase
-import com.passbolt.mobile.android.feature.authentication.auth.OneTimeSessionRefreshRetry
-import com.passbolt.mobile.android.feature.authentication.auth.usecase.RefreshSessionUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.VerifyYubikeyUseCase
 import com.passbolt.mobile.android.feature.authentication.mfa.yubikey.ScanYubikeyIntent.Close
@@ -13,7 +10,6 @@ import com.passbolt.mobile.android.feature.authentication.mfa.yubikey.ScanYubike
 import com.passbolt.mobile.android.feature.authentication.mfa.yubikey.ScanYubikeyIntent.ValidateYubikeyOtp
 import com.passbolt.mobile.android.feature.authentication.mfa.yubikey.ScanYubikeySideEffect.CloseAndNavigateToStartup
 import com.passbolt.mobile.android.feature.authentication.mfa.yubikey.ScanYubikeySideEffect.NavigateToLogin
-import com.passbolt.mobile.android.feature.authentication.mfa.yubikey.ScanYubikeySideEffect.NotifyVerificationSucceeded
 import com.passbolt.mobile.android.feature.authentication.mfa.yubikey.ScanYubikeySideEffect.ShowErrorSnackbar
 import com.passbolt.mobile.android.feature.authentication.mfa.yubikey.ScanYubikeySideEffect.SnackbarErrorType.EMPTY_OTP
 import com.passbolt.mobile.android.feature.authentication.mfa.yubikey.ScanYubikeySideEffect.SnackbarErrorType.SESSION_EXPIRED
@@ -37,7 +33,6 @@ import org.mockito.Mockito.mock
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.stub
-import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
 import kotlin.test.assertIs
@@ -52,9 +47,6 @@ class ScanYubikeyViewModelTest : KoinTest {
                 module {
                     single { mock<SignOutUseCase>() }
                     single { mock<VerifyYubikeyUseCase>() }
-                    single { mock<RefreshSessionUseCase>() }
-                    single { mock<GetSessionUseCase>() }
-                    single { OneTimeSessionRefreshRetry(refreshSessionUseCase = get(), getSessionUseCase = get()) }
                     factory { params ->
                         ScanYubikeyViewModel(
                             authToken = params[0],
@@ -62,7 +54,6 @@ class ScanYubikeyViewModelTest : KoinTest {
                             isSetupFlow = params[2],
                             signOutUseCase = get(),
                             verifyYubikeyUseCase = get(),
-                            oneTimeSessionRefreshRetry = get(),
                         )
                     }
                 },
@@ -97,48 +88,11 @@ class ScanYubikeyViewModelTest : KoinTest {
         }
 
     @Test
-    fun `unauthorized refreshes session and retries once with refreshed token`() =
+    fun `unauthorized navigates to login`() =
         runTest {
-            val verifyYubikeyUseCase: VerifyYubikeyUseCase = get()
-            verifyYubikeyUseCase.stub {
-                on { execute(any()) } doReturn
-                    VerifyYubikeyUseCase.Output.Unauthorized doReturn
-                    VerifyYubikeyUseCase.Output.Success(MFA_HEADER)
-            }
-            get<RefreshSessionUseCase>().stub {
-                on { execute(Unit) } doReturn RefreshSessionUseCase.Output.Success
-            }
-            get<GetSessionUseCase>().stub {
-                on { execute(Unit) } doReturn GetSessionUseCase.Output(REFRESHED_AUTH_TOKEN, null, null)
-            }
-
-            viewModel = get(parameters = { parametersOf(AUTH_TOKEN, false, false) })
-
-            viewModel.sideEffect.test {
-                viewModel.onIntent(ValidateYubikeyOtp(OTP))
-                val success = awaitItem()
-                assertIs<NotifyVerificationSucceeded>(success)
-                assertThat(success.mfaHeader).isEqualTo(MFA_HEADER)
-            }
-
-            verify(verifyYubikeyUseCase).execute(VerifyYubikeyUseCase.Input(OTP, AUTH_TOKEN, true))
-            verify(verifyYubikeyUseCase).execute(VerifyYubikeyUseCase.Input(OTP, REFRESHED_AUTH_TOKEN, true))
-        }
-
-    @Test
-    fun `unauthorized after successful refresh does not retry again`() =
-        runTest {
-            val verifyYubikeyUseCase: VerifyYubikeyUseCase = get()
-            verifyYubikeyUseCase.stub {
+            get<VerifyYubikeyUseCase>().stub {
                 on { execute(any()) } doReturn VerifyYubikeyUseCase.Output.Unauthorized
             }
-            get<RefreshSessionUseCase>().stub {
-                on { execute(Unit) } doReturn RefreshSessionUseCase.Output.Success
-            }
-            get<GetSessionUseCase>().stub {
-                on { execute(Unit) } doReturn GetSessionUseCase.Output(REFRESHED_AUTH_TOKEN, null, null)
-            }
-
             viewModel = get(parameters = { parametersOf(AUTH_TOKEN, false, false) })
 
             viewModel.sideEffect.test {
@@ -148,9 +102,6 @@ class ScanYubikeyViewModelTest : KoinTest {
                 assertThat(error.kind).isEqualTo(SESSION_EXPIRED)
                 assertIs<NavigateToLogin>(awaitItem())
             }
-
-            verify(get<RefreshSessionUseCase>(), times(1)).execute(Unit)
-            verify(verifyYubikeyUseCase, times(2)).execute(any())
         }
 
     @Test
@@ -228,7 +179,6 @@ class ScanYubikeyViewModelTest : KoinTest {
 
     private companion object {
         const val AUTH_TOKEN = "test-auth-token"
-        const val REFRESHED_AUTH_TOKEN = "refreshed-auth-token"
         const val MFA_HEADER = "passbolt_mfa=jwt"
         const val OTP = "yubikey-otp-value"
     }

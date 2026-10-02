@@ -1,7 +1,6 @@
 package com.passbolt.mobile.android.feature.authentication.mfa.duo
 
 import com.passbolt.mobile.android.core.compose.SideEffectViewModel
-import com.passbolt.mobile.android.feature.authentication.auth.OneTimeSessionRefreshRetry
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetDuoPromptUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetDuoPromptUseCase.Output.DuoPromptUrlNotFound
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetDuoPromptUseCase.Output.Failure
@@ -32,7 +31,6 @@ class AuthWithDuoViewModel(
     private val authToken: String?,
     private val getDuoPromptUseCase: GetDuoPromptUseCase,
     private val verifyDuoCallbackUseCase: VerifyDuoCallbackUseCase,
-    private val oneTimeSessionRefreshRetry: OneTimeSessionRefreshRetry,
     private val signOutUseCase: SignOutUseCase,
 ) : SideEffectViewModel<AuthWithDuoState, AuthWithDuoSideEffect>(
         AuthWithDuoState(hasOtherProvider = hasOtherProvider),
@@ -66,13 +64,7 @@ class AuthWithDuoViewModel(
         updateViewState { copy(showProgress = true) }
         launch {
             authToken?.let { token ->
-                val result =
-                    oneTimeSessionRefreshRetry.execute(
-                        token = token,
-                        isUnauthorized = { it is Unauthorized },
-                    ) { bearer ->
-                        getDuoPromptUseCase.execute(GetDuoPromptUseCase.Input(bearer))
-                    }
+                val result = getDuoPromptUseCase.execute(GetDuoPromptUseCase.Input(token))
                 when (result) {
                     is DuoPromptUrlNotFound ->
                         emitSideEffect(ShowErrorSnackbar(GENERIC))
@@ -97,19 +89,14 @@ class AuthWithDuoViewModel(
             val (token, duoCookie) = authToken to passboltDuoCookieUuid
             if (token != null && duoCookie != null) {
                 val result =
-                    oneTimeSessionRefreshRetry.execute(
-                        token = token,
-                        isUnauthorized = { it is VerifyDuoCallbackUseCase.Output.Unauthorized },
-                    ) { bearer ->
-                        verifyDuoCallbackUseCase.execute(
-                            VerifyDuoCallbackUseCase.Input(
-                                jwtHeader = bearer,
-                                passboltDuoCookieUuid = duoCookie,
-                                duoState = duoState.state,
-                                duoCode = duoState.duoCode,
-                            ),
-                        )
-                    }
+                    verifyDuoCallbackUseCase.execute(
+                        VerifyDuoCallbackUseCase.Input(
+                            jwtHeader = token,
+                            passboltDuoCookieUuid = duoCookie,
+                            duoState = duoState.state,
+                            duoCode = duoState.duoCode,
+                        ),
+                    )
                 when (result) {
                     is VerifyDuoCallbackUseCase.Output.Error ->
                         emitSideEffect(ShowErrorSnackbar(GENERIC))

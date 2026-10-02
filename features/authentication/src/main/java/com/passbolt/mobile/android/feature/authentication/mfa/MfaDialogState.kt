@@ -17,6 +17,7 @@ sealed interface MfaDialogState {
     ) : MfaDialogState
 
     data class Webauthn(
+        val userId: String,
         val authToken: String?,
         val hasOtherProviders: Boolean,
     ) : MfaDialogState

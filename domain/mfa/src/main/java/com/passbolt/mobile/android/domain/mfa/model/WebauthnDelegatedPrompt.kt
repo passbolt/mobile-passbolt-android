@@ -24,7 +24,8 @@ package com.passbolt.mobile.android.domain.mfa.model
 
 sealed interface WebauthnDelegatedPrompt {
     data class Succeeded(
-        val ceremonyToken: String,
+        val state: String,
+        val secret: String,
     ) : WebauthnDelegatedPrompt
 
     data object Unauthorized : WebauthnDelegatedPrompt

@@ -31,12 +31,12 @@ class GetPasskeyCeremonyUrlUseCase(
 ) : UseCase<GetPasskeyCeremonyUrlUseCase.Input, GetPasskeyCeremonyUrlUseCase.Output> {
     override fun execute(input: Input): Output {
         val baseUrl = getCurrentApiUrlUseCase.execute(Unit).currentUrl.trimEnd('/')
-        val encodedToken = URLEncoder.encode(input.ceremonyToken, Charsets.UTF_8.name())
-        return Output("$baseUrl/$CEREMONY_PATH?$CEREMONY_TOKEN_QUERY=$encodedToken")
+        val encodedState = URLEncoder.encode(input.state, Charsets.UTF_8.name())
+        return Output("$baseUrl/$CEREMONY_PATH?$STATE_QUERY=$encodedState")
     }
 
     data class Input(
-        val ceremonyToken: String,
+        val state: String,
     )
 
     data class Output(
@@ -45,6 +45,6 @@ class GetPasskeyCeremonyUrlUseCase(
 
     private companion object {
         private const val CEREMONY_PATH = "mfa/verify/webauthn/delegated"
-        private const val CEREMONY_TOKEN_QUERY = "ceremony_token"
+        private const val STATE_QUERY = "mfa_delegated_state"
     }
 }

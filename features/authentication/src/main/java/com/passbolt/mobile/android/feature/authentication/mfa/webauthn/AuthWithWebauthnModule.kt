@@ -23,20 +23,25 @@
 
 package com.passbolt.mobile.android.feature.authentication.mfa.webauthn
 
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.VerifyWebauthnDelegatedTokenLocallyUseCase
 import org.koin.core.module.Module
+import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.viewModel
 
 fun Module.authWithWebauthnModule() {
     viewModel { params ->
         AuthWithWebauthnViewModel(
-            authToken = params[0],
-            hasOtherProvider = params[1],
-            isSetupFlow = params[2],
+            userId = params[0],
+            authToken = params[1],
+            hasOtherProvider = params[2],
+            isSetupFlow = params[3],
             getWebauthnDelegatedPromptUseCase = get(),
-            verifyWebauthnExchangeCodeUseCase = get(),
             getPasskeyCeremonyUrlUseCase = get(),
-            oneTimeSessionRefreshRetry = get(),
+            verifyWebauthnDelegatedTokenLocallyUseCase = get(),
+            verifyWebauthnDelegatedTokenUseCase = get(),
             signOutUseCase = get(),
         )
     }
+    factoryOf(::WebauthnDelegatedTokenVerifier)
+    factoryOf(::VerifyWebauthnDelegatedTokenLocallyUseCase)
 }
