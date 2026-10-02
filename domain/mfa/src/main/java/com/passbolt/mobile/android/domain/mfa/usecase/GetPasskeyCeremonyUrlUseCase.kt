@@ -20,20 +20,31 @@
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+
 package com.passbolt.mobile.android.domain.mfa.usecase
 
+import com.passbolt.mobile.android.common.locale.LocaleProvider
 import com.passbolt.mobile.android.common.usecase.UseCase
 import com.passbolt.mobile.android.domain.accounts.usecase.GetCurrentApiUrlUseCase
 import java.net.URLEncoder
 
 class GetPasskeyCeremonyUrlUseCase(
     private val getCurrentApiUrlUseCase: GetCurrentApiUrlUseCase,
+    private val localeProvider: LocaleProvider,
 ) : UseCase<GetPasskeyCeremonyUrlUseCase.Input, GetPasskeyCeremonyUrlUseCase.Output> {
     override fun execute(input: Input): Output {
         val baseUrl = getCurrentApiUrlUseCase.execute(Unit).currentUrl.trimEnd('/')
-        val encodedState = URLEncoder.encode(input.state, Charsets.UTF_8.name())
-        return Output("$baseUrl/$CEREMONY_PATH?$STATE_QUERY=$encodedState")
+        val query =
+            buildList {
+                add("$STATE_QUERY=${encode(input.state)}")
+                serverLocale()?.let { add("$LOCALE_QUERY=${encode(it)}") }
+            }.joinToString("&")
+        return Output("$baseUrl/$CEREMONY_PATH?$query")
     }
+
+    private fun serverLocale(): String? = SERVER_LOCALES_BY_LANGUAGE[localeProvider.getCurrentLocale().language]
+
+    private fun encode(value: String): String = URLEncoder.encode(value, Charsets.UTF_8.name())
 
     data class Input(
         val state: String,
@@ -46,5 +57,26 @@ class GetPasskeyCeremonyUrlUseCase(
     private companion object {
         private const val CEREMONY_PATH = "mfa/verify/webauthn/delegated"
         private const val STATE_QUERY = "mfa_delegated_state"
+        private const val LOCALE_QUERY = "locale"
+        private val SERVER_LOCALES_BY_LANGUAGE =
+            mapOf(
+                "cs" to "cs-CZ",
+                "de" to "de-DE",
+                "en" to "en-UK",
+                "es" to "es-ES",
+                "fr" to "fr-FR",
+                "it" to "it-IT",
+                "ja" to "ja-JP",
+                "ko" to "ko-KR",
+                "lt" to "lt-LT",
+                "nl" to "nl-NL",
+                "pl" to "pl-PL",
+                "pt" to "pt-BR",
+                "ro" to "ro-RO",
+                "ru" to "ru-RU",
+                "sl" to "sl-SI",
+                "sv" to "sv-SE",
+                "uk" to "uk-UA",
+            )
     }
 }
