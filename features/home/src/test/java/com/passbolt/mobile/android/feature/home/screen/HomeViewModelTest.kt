@@ -40,6 +40,7 @@ import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.commontest.session.validSessionTestModule
 import com.passbolt.mobile.android.core.architecture.result.DomainResult
 import com.passbolt.mobile.android.core.architecture.result.DomainResult.Incomplete.Error.Reason.UNKNOWN
+import com.passbolt.mobile.android.core.idlingresource.SearchIdlingResource
 import com.passbolt.mobile.android.core.mvp.authentication.SessionRefreshTrackingFlow
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.navigation.AppContext
@@ -158,6 +159,7 @@ class HomeViewModelTest : KoinTest {
                         }
                     }
                     singleOf(::UserProfileRefreshTrackingFlow)
+                    singleOf(::SearchIdlingResource)
                     single(named(JSON_MODEL_GSON)) { GsonBuilder().serializeNulls().create() }
                     single {
                         Configuration
@@ -287,6 +289,31 @@ class HomeViewModelTest : KoinTest {
                 val appliedState = awaitItem()
                 assertThat(appliedState.homeData).isEqualTo(mockHomeData)
                 assertThat(appliedState.isSearching).isFalse()
+            }
+        }
+
+    @Test
+    fun `should keep search idling resource busy until the search query is applied`() =
+        runTest {
+            val mockHomeData = mockResourcesData()
+            whenever(get<HomeDataProvider>().provideData(any(), any(), any(), any())).thenReturn(mockHomeData)
+            val searchIdlingResource = get<SearchIdlingResource>()
+
+            viewModel = get()
+
+            viewModel.viewState.test {
+                assertThat(awaitItem().isSearching).isFalse()
+                assertThat(searchIdlingResource.isIdleNow()).isTrue()
+
+                viewModel.onIntent(Search("test query"))
+
+                assertThat(awaitItem().isSearching).isTrue()
+                assertThat(searchIdlingResource.isIdleNow()).isFalse()
+
+                advanceTimeBy(HomeViewModel.SEARCH_DEBOUNCE + 1.milliseconds)
+
+                assertThat(awaitItem().isSearching).isFalse()
+                assertThat(searchIdlingResource.isIdleNow()).isTrue()
             }
         }
 

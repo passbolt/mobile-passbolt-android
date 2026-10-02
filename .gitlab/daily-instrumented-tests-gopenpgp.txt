@@ -1,0 +1,1 @@
+class com.passbolt.mobile.android.gopenpgp.OpenPgpTest
