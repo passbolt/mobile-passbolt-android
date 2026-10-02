@@ -53,8 +53,8 @@ class WebauthnCallbackUriParserTest {
     }
 
     @Test
-    fun `should return cancelled for user cancelled error`() {
-        val result = parseWebauthnCallbackUri("$CALLBACK?error=user_cancelled")
+    fun `should return cancelled for cancelled error`() {
+        val result = parseWebauthnCallbackUri("$CALLBACK?error=cancelled")
 
         assertThat(result).isEqualTo(Cancelled)
     }
@@ -102,7 +102,7 @@ class WebauthnCallbackUriParserTest {
         listOf(
             "$CALLBACK?mfa_delegated_token=%zz",
             "$CALLBACK?mfa_delegated_token=abc&mfa_delegated_token=def",
-            "$CALLBACK?error=user_cancelled&error=x",
+            "$CALLBACK?error=cancelled&error=x",
         ).forEach { uri ->
             assertWithMessage("$uri should be rejected")
                 .that(parseWebauthnCallbackUri(uri))
