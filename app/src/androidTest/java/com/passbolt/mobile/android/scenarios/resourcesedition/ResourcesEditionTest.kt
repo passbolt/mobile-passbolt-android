@@ -37,6 +37,7 @@ import androidx.test.filters.MediumTest
 import androidx.test.platform.app.InstrumentationRegistry
 import com.passbolt.mobile.android.core.idlingresource.CreateResourceIdlingResource
 import com.passbolt.mobile.android.core.idlingresource.ResourcesFullRefreshIdlingResource
+import com.passbolt.mobile.android.core.idlingresource.SearchIdlingResource
 import com.passbolt.mobile.android.core.idlingresource.SignInIdlingResource
 import com.passbolt.mobile.android.core.idlingresource.UpdateResourceIdlingResource
 import com.passbolt.mobile.android.core.localization.R.string.filters_menu_all_items
@@ -90,6 +91,7 @@ class ResourcesEditionTest : KoinTest {
             val signInIdlingResource: SignInIdlingResource by inject()
             val updateResourceIdlingResource: UpdateResourceIdlingResource by inject()
             val createResourceIdlingResource: CreateResourceIdlingResource by inject()
+            val searchIdlingResource: SearchIdlingResource by inject()
             // TODO: register CreateMenuModelIdlingResource here. This test opens the resource More
             //  menu (searchAndClickMoreOfFirstResource), whose contents load asynchronously; without
             //  this idling resource, assertions on the menu items can race the model load.
@@ -99,6 +101,7 @@ class ResourcesEditionTest : KoinTest {
                     resourcesFullRefreshIdlingResource,
                     updateResourceIdlingResource,
                     createResourceIdlingResource,
+                    searchIdlingResource,
                 ),
             )
         }

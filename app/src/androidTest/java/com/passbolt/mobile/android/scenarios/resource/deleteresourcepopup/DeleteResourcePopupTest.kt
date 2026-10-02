@@ -34,6 +34,7 @@ import com.passbolt.mobile.android.core.idlingresource.CreateMenuModelIdlingReso
 import com.passbolt.mobile.android.core.idlingresource.CreateResourceIdlingResource
 import com.passbolt.mobile.android.core.idlingresource.DeleteResourceIdlingResource
 import com.passbolt.mobile.android.core.idlingresource.ResourcesFullRefreshIdlingResource
+import com.passbolt.mobile.android.core.idlingresource.SearchIdlingResource
 import com.passbolt.mobile.android.core.idlingresource.SignInIdlingResource
 import com.passbolt.mobile.android.core.localization.R.string.are_you_sure
 import com.passbolt.mobile.android.core.localization.R.string.cancel
@@ -91,6 +92,7 @@ class DeleteResourcePopupTest(
             val deleteIdlingResource: DeleteResourceIdlingResource by inject()
             val createResourceIdlingResource: CreateResourceIdlingResource by inject()
             val createMenuModelIdlingResource: CreateMenuModelIdlingResource by inject()
+            val searchIdlingResource: SearchIdlingResource by inject()
             IdlingResourceRule(
                 arrayOf(
                     signInIdlingResource,
@@ -98,6 +100,7 @@ class DeleteResourcePopupTest(
                     deleteIdlingResource,
                     createResourceIdlingResource,
                     createMenuModelIdlingResource,
+                    searchIdlingResource,
                 ),
             )
         }

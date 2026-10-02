@@ -31,6 +31,7 @@ import androidx.compose.ui.test.hasAnyDescendant
 import androidx.compose.ui.test.hasClickAction
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.isDisplayed
 import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.onNodeWithTag
@@ -366,6 +367,18 @@ internal fun ComposeTestRule.waitForText(
         onAllNodes(hasText(text))
             .fetchSemanticsNodes()
             .isNotEmpty()
+    }
+}
+
+internal fun ComposeTestRule.waitForTextDisplayed(
+    text: String,
+    timeoutMillis: Long = 5_000,
+) {
+    waitUntil(
+        timeoutMillis = timeoutMillis,
+        conditionDescription = "Waiting for text '$text' to be displayed",
+    ) {
+        onNodeWithText(text).isDisplayed()
     }
 }
 
