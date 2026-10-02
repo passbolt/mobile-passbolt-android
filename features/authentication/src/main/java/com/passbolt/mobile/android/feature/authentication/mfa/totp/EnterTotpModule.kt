@@ -39,7 +39,6 @@ fun Module.enterTotpModule() {
             isSetupFlow = params[2],
             signOutUseCase = get(),
             verifyTotpUseCase = get(),
-            oneTimeSessionRefreshRetry = get(),
         )
     }
 

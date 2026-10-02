@@ -88,9 +88,10 @@ internal fun Response<Void>.toDuoVerification(cookieExtractor: CookieExtractor):
     }
 
 internal fun Response<BaseResponse<WebauthnDelegatedPromptResponseDto>>.toWebauthnDelegatedPrompt(): WebauthnDelegatedPrompt {
-    val ceremonyToken = body()?.body?.ceremonyToken
+    val prompt = body()?.body
     return when {
-        isSuccessful && !ceremonyToken.isNullOrBlank() -> WebauthnDelegatedPrompt.Succeeded(ceremonyToken)
+        isSuccessful && prompt != null && prompt.state.isNotBlank() && prompt.secret.isNotBlank() ->
+            WebauthnDelegatedPrompt.Succeeded(prompt.state, prompt.secret)
         code() == HTTP_UNAUTHORIZED -> WebauthnDelegatedPrompt.Unauthorized
         else -> WebauthnDelegatedPrompt.OtherFailure(code())
     }

@@ -24,13 +24,13 @@ package com.passbolt.mobile.android.domain.mfa
 
 import com.passbolt.mobile.android.domain.mfa.usecase.GetPasskeyCeremonyUrlUseCase
 import com.passbolt.mobile.android.domain.mfa.usecase.GetWebauthnDelegatedPromptUseCase
-import com.passbolt.mobile.android.domain.mfa.usecase.VerifyWebauthnExchangeCodeUseCase
+import com.passbolt.mobile.android.domain.mfa.usecase.VerifyWebauthnDelegatedTokenUseCase
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
 val mfaDomainModule =
     module {
         singleOf(::GetWebauthnDelegatedPromptUseCase)
-        singleOf(::VerifyWebauthnExchangeCodeUseCase)
+        singleOf(::VerifyWebauthnDelegatedTokenUseCase)
         singleOf(::GetPasskeyCeremonyUrlUseCase)
     }

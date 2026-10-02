@@ -60,9 +60,11 @@ internal class MfaRepositoryImpl(
     override suspend fun getWebauthnDelegatedPrompt(authToken: String?): DomainResult<WebauthnDelegatedPrompt> =
         remoteDataSource.getWebauthnDelegatedPrompt(authToken)
 
-    override suspend fun verifyWebauthnExchangeCode(
+    override suspend fun verifyWebauthnDelegatedToken(
         authToken: String?,
-        exchangeCode: String,
+        delegatedToken: String,
+        delegatedSecret: String,
         remember: Boolean,
-    ): DomainResult<WebauthnVerification> = remoteDataSource.verifyWebauthnExchangeCode(authToken, exchangeCode, remember)
+    ): DomainResult<WebauthnVerification> =
+        remoteDataSource.verifyWebauthnDelegatedToken(authToken, delegatedToken, delegatedSecret, remember)
 }

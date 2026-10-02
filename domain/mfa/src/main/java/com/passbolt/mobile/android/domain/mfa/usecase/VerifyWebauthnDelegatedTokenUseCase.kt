@@ -20,6 +20,7 @@
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+
 package com.passbolt.mobile.android.domain.mfa.usecase
 
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
@@ -30,15 +31,16 @@ import com.passbolt.mobile.android.core.mvp.authentication.IncompleteAuthenticat
 import com.passbolt.mobile.android.domain.mfa.MfaRepository
 import com.passbolt.mobile.android.domain.mfa.model.WebauthnVerification
 
-class VerifyWebauthnExchangeCodeUseCase(
+class VerifyWebauthnDelegatedTokenUseCase(
     private val mfaRepository: MfaRepository,
-) : AsyncUseCase<VerifyWebauthnExchangeCodeUseCase.Input, VerifyWebauthnExchangeCodeUseCase.Output> {
+) : AsyncUseCase<VerifyWebauthnDelegatedTokenUseCase.Input, VerifyWebauthnDelegatedTokenUseCase.Output> {
     override suspend fun execute(input: Input): Output =
         when (
             val result =
-                mfaRepository.verifyWebauthnExchangeCode(
+                mfaRepository.verifyWebauthnDelegatedToken(
                     authToken = input.jwtHeader,
-                    exchangeCode = input.exchangeCode,
+                    delegatedToken = input.delegatedToken,
+                    delegatedSecret = input.delegatedSecret,
                     remember = input.remember,
                 )
         ) {
@@ -53,7 +55,8 @@ class VerifyWebauthnExchangeCodeUseCase(
 
     data class Input(
         val jwtHeader: String,
-        val exchangeCode: String,
+        val delegatedToken: String,
+        val delegatedSecret: String,
         val remember: Boolean,
     )
 

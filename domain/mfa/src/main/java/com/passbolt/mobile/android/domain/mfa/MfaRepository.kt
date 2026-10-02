@@ -55,9 +55,10 @@ interface MfaRepository {
 
     suspend fun getWebauthnDelegatedPrompt(authToken: String?): DomainResult<WebauthnDelegatedPrompt>
 
-    suspend fun verifyWebauthnExchangeCode(
+    suspend fun verifyWebauthnDelegatedToken(
         authToken: String?,
-        exchangeCode: String,
+        delegatedToken: String,
+        delegatedSecret: String,
         remember: Boolean,
     ): DomainResult<WebauthnVerification>
 }

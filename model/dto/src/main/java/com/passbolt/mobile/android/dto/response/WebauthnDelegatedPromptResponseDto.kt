@@ -25,6 +25,8 @@ package com.passbolt.mobile.android.dto.response
 import com.google.gson.annotations.SerializedName
 
 data class WebauthnDelegatedPromptResponseDto(
-    @SerializedName("ceremony_token")
-    val ceremonyToken: String,
+    @SerializedName("mfa_delegated_state")
+    val state: String,
+    @SerializedName("mfa_delegated_secret")
+    val secret: String,
 )

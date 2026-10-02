@@ -97,14 +97,15 @@ internal class MfaRemoteDataSource(
             mfaApi.getWebauthnDelegatedPrompt(authToken.toBearer())
         }.toDomainResult().map { it.toWebauthnDelegatedPrompt() }
 
-    override suspend fun verifyWebauthnExchangeCode(
+    override suspend fun verifyWebauthnDelegatedToken(
         authToken: String?,
-        exchangeCode: String,
+        delegatedToken: String,
+        delegatedSecret: String,
         remember: Boolean,
     ): DomainResult<WebauthnVerification> =
         callWithHandler(responseHandler) {
-            mfaApi.verifyWebauthnExchangeCode(
-                WebauthnDelegatedCallbackRequest(exchangeCode, remember),
+            mfaApi.verifyWebauthnDelegatedToken(
+                WebauthnDelegatedCallbackRequest(delegatedToken, delegatedSecret, remember),
                 authToken.toBearer(),
             )
         }.toDomainResult().map { it.toWebauthnVerification(cookieExtractor) }

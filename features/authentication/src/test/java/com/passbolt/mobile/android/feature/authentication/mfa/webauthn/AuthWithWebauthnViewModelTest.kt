@@ -26,13 +26,11 @@ package com.passbolt.mobile.android.feature.authentication.mfa.webauthn
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
 import com.passbolt.mobile.android.core.architecture.result.DomainResult
-import com.passbolt.mobile.android.domain.auth.usecase.GetSessionUseCase
 import com.passbolt.mobile.android.domain.mfa.usecase.GetPasskeyCeremonyUrlUseCase
 import com.passbolt.mobile.android.domain.mfa.usecase.GetWebauthnDelegatedPromptUseCase
-import com.passbolt.mobile.android.domain.mfa.usecase.VerifyWebauthnExchangeCodeUseCase
-import com.passbolt.mobile.android.feature.authentication.auth.OneTimeSessionRefreshRetry
-import com.passbolt.mobile.android.feature.authentication.auth.usecase.RefreshSessionUseCase
+import com.passbolt.mobile.android.domain.mfa.usecase.VerifyWebauthnDelegatedTokenUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.VerifyWebauthnDelegatedTokenLocallyUseCase
 import com.passbolt.mobile.android.feature.authentication.mfa.webauthn.AuthWithWebauthnIntent.AuthenticateWithWebauthn
 import com.passbolt.mobile.android.feature.authentication.mfa.webauthn.AuthWithWebauthnIntent.ChooseOtherProvider
 import com.passbolt.mobile.android.feature.authentication.mfa.webauthn.AuthWithWebauthnIntent.Close
@@ -91,21 +89,20 @@ class AuthWithWebauthnViewModelTest : KoinTest {
             modules(
                 module {
                     single { mock<GetWebauthnDelegatedPromptUseCase>() }
-                    single { mock<VerifyWebauthnExchangeCodeUseCase>() }
                     single { mock<GetPasskeyCeremonyUrlUseCase>() }
-                    single { mock<GetSessionUseCase>() }
-                    single { mock<RefreshSessionUseCase>() }
+                    single { mock<VerifyWebauthnDelegatedTokenLocallyUseCase>() }
+                    single { mock<VerifyWebauthnDelegatedTokenUseCase>() }
                     single { mock<SignOutUseCase>() }
-                    single { OneTimeSessionRefreshRetry(refreshSessionUseCase = get(), getSessionUseCase = get()) }
                     factory { params ->
                         AuthWithWebauthnViewModel(
-                            authToken = params[0],
-                            hasOtherProvider = params[1],
-                            isSetupFlow = params[2],
+                            userId = params[0],
+                            authToken = params[1],
+                            hasOtherProvider = params[2],
+                            isSetupFlow = params[3],
                             getWebauthnDelegatedPromptUseCase = get(),
-                            verifyWebauthnExchangeCodeUseCase = get(),
                             getPasskeyCeremonyUrlUseCase = get(),
-                            oneTimeSessionRefreshRetry = get(),
+                            verifyWebauthnDelegatedTokenLocallyUseCase = get(),
+                            verifyWebauthnDelegatedTokenUseCase = get(),
                             signOutUseCase = get(),
                         )
                     }
@@ -121,11 +118,14 @@ class AuthWithWebauthnViewModelTest : KoinTest {
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
         get<GetPasskeyCeremonyUrlUseCase>().stub {
-            on { execute(GetPasskeyCeremonyUrlUseCase.Input(CEREMONY_TOKEN)) } doReturn
+            on { execute(GetPasskeyCeremonyUrlUseCase.Input(STATE)) } doReturn
                 GetPasskeyCeremonyUrlUseCase.Output(CEREMONY_URL)
         }
-        get<GetSessionUseCase>().stub {
-            on { execute(Unit) } doReturn GetSessionUseCase.Output(REFRESHED_AUTH_TOKEN, null, null)
+        get<GetWebauthnDelegatedPromptUseCase>().stub {
+            on { execute(any()) } doReturn GetWebauthnDelegatedPromptUseCase.Output.Success(STATE, SECRET)
+        }
+        get<VerifyWebauthnDelegatedTokenLocallyUseCase>().stub {
+            on { execute(any()) } doReturn VerifyWebauthnDelegatedTokenLocallyUseCase.Output.Valid
         }
     }
 
@@ -135,12 +135,9 @@ class AuthWithWebauthnViewModelTest : KoinTest {
     }
 
     @Test
-    fun `authenticate builds ceremony url from api url and ceremony token`() =
+    fun `authenticate builds ceremony url from api url and delegated state`() =
         runTest {
-            get<GetWebauthnDelegatedPromptUseCase>().stub {
-                on { execute(any()) } doReturn GetWebauthnDelegatedPromptUseCase.Output.Success(CEREMONY_TOKEN)
-            }
-            viewModel = get(parameters = { parametersOf(AUTH_TOKEN, false, false) })
+            viewModel = get(parameters = { parametersOf(USER_ID, AUTH_TOKEN, false, false) })
 
             viewModel.sideEffect.test {
                 viewModel.onIntent(AuthenticateWithWebauthn)
@@ -154,65 +151,12 @@ class AuthWithWebauthnViewModelTest : KoinTest {
         }
 
     @Test
-    fun `authenticate unauthorized refreshes session and retries with refreshed token`() =
-        runTest {
-            get<GetWebauthnDelegatedPromptUseCase>().stub {
-                on { execute(any()) } doReturn
-                    GetWebauthnDelegatedPromptUseCase.Output.Unauthorized doReturn
-                    GetWebauthnDelegatedPromptUseCase.Output.Success(CEREMONY_TOKEN)
-            }
-            get<RefreshSessionUseCase>().stub {
-                on { execute(Unit) } doReturn RefreshSessionUseCase.Output.Success
-            }
-            viewModel = get(parameters = { parametersOf(AUTH_TOKEN, false, false) })
-
-            viewModel.sideEffect.test {
-                viewModel.onIntent(AuthenticateWithWebauthn)
-
-                assertIs<LaunchWebauthnCeremony>(awaitItem())
-            }
-
-            verify(get<RefreshSessionUseCase>()).execute(Unit)
-            verify(get<GetWebauthnDelegatedPromptUseCase>()).execute(GetWebauthnDelegatedPromptUseCase.Input(AUTH_TOKEN))
-            verify(get<GetWebauthnDelegatedPromptUseCase>()).execute(
-                GetWebauthnDelegatedPromptUseCase.Input(REFRESHED_AUTH_TOKEN),
-            )
-        }
-
-    @Test
-    fun `authenticate unauthorized after successful refresh retries only once`() =
+    fun `authenticate unauthorized navigates to login`() =
         runTest {
             get<GetWebauthnDelegatedPromptUseCase>().stub {
                 on { execute(any()) } doReturn GetWebauthnDelegatedPromptUseCase.Output.Unauthorized
             }
-            get<RefreshSessionUseCase>().stub {
-                on { execute(Unit) } doReturn RefreshSessionUseCase.Output.Success
-            }
-            viewModel = get(parameters = { parametersOf(AUTH_TOKEN, false, false) })
-
-            viewModel.sideEffect.test {
-                viewModel.onIntent(AuthenticateWithWebauthn)
-
-                val snackbar = awaitItem()
-                assertIs<ShowErrorSnackbar>(snackbar)
-                assertThat(snackbar.kind).isEqualTo(SESSION_EXPIRED)
-                assertIs<NavigateToLogin>(awaitItem())
-            }
-
-            verify(get<RefreshSessionUseCase>(), times(1)).execute(Unit)
-            verify(get<GetWebauthnDelegatedPromptUseCase>(), times(2)).execute(any())
-        }
-
-    @Test
-    fun `authenticate unauthorized with failed refresh navigates to login`() =
-        runTest {
-            get<GetWebauthnDelegatedPromptUseCase>().stub {
-                on { execute(any()) } doReturn GetWebauthnDelegatedPromptUseCase.Output.Unauthorized
-            }
-            get<RefreshSessionUseCase>().stub {
-                on { execute(Unit) } doReturn RefreshSessionUseCase.Output.Failure
-            }
-            viewModel = get(parameters = { parametersOf(AUTH_TOKEN, false, false) })
+            viewModel = get(parameters = { parametersOf(USER_ID, AUTH_TOKEN, false, false) })
 
             viewModel.sideEffect.test {
                 viewModel.onIntent(AuthenticateWithWebauthn)
@@ -230,7 +174,7 @@ class AuthWithWebauthnViewModelTest : KoinTest {
             get<GetWebauthnDelegatedPromptUseCase>().stub {
                 on { execute(any()) } doReturn GetWebauthnDelegatedPromptUseCase.Output.NetworkFailure(400)
             }
-            viewModel = get(parameters = { parametersOf(AUTH_TOKEN, false, false) })
+            viewModel = get(parameters = { parametersOf(USER_ID, AUTH_TOKEN, false, false) })
 
             viewModel.sideEffect.test {
                 viewModel.onIntent(AuthenticateWithWebauthn)
@@ -247,7 +191,7 @@ class AuthWithWebauthnViewModelTest : KoinTest {
             get<GetWebauthnDelegatedPromptUseCase>().stub {
                 on { execute(any()) } doReturn GetWebauthnDelegatedPromptUseCase.Output.NetworkFailure(500)
             }
-            viewModel = get(parameters = { parametersOf(AUTH_TOKEN, false, false) })
+            viewModel = get(parameters = { parametersOf(USER_ID, AUTH_TOKEN, false, false) })
 
             viewModel.sideEffect.test {
                 viewModel.onIntent(AuthenticateWithWebauthn)
@@ -267,7 +211,7 @@ class AuthWithWebauthnViewModelTest : KoinTest {
                         DomainResult.Incomplete.Error(DomainResult.Incomplete.Error.Reason.OFFLINE, null),
                     )
             }
-            viewModel = get(parameters = { parametersOf(AUTH_TOKEN, false, false) })
+            viewModel = get(parameters = { parametersOf(USER_ID, AUTH_TOKEN, false, false) })
 
             viewModel.sideEffect.test {
                 viewModel.onIntent(AuthenticateWithWebauthn)
@@ -281,7 +225,7 @@ class AuthWithWebauthnViewModelTest : KoinTest {
     @Test
     fun `authenticate with null auth token shows generic error and does not call api`() =
         runTest {
-            viewModel = get(parameters = { parametersOf(null, false, false) })
+            viewModel = get(parameters = { parametersOf(USER_ID, null, false, false) })
 
             viewModel.sideEffect.test {
                 viewModel.onIntent(AuthenticateWithWebauthn)
@@ -297,9 +241,11 @@ class AuthWithWebauthnViewModelTest : KoinTest {
     @Test
     fun `browser unavailable shows dedicated error`() =
         runTest {
-            viewModel = get(parameters = { parametersOf(AUTH_TOKEN, false, false) })
+            viewModel = get(parameters = { parametersOf(USER_ID, AUTH_TOKEN, false, false) })
 
             viewModel.sideEffect.test {
+                viewModel.onIntent(AuthenticateWithWebauthn)
+                skipItems(1)
                 viewModel.onIntent(WebauthnCeremonyFinished(BrowserUnavailable))
 
                 val snackbar = awaitItem()
@@ -309,41 +255,157 @@ class AuthWithWebauthnViewModelTest : KoinTest {
         }
 
     @Test
-    fun `completed ceremony exchanges code with remember flag and notifies success`() =
+    fun `completed ceremony checks token locally then exchanges it with secret and remember flag`() =
         runTest {
-            get<VerifyWebauthnExchangeCodeUseCase>().stub {
-                on { execute(any()) } doReturn VerifyWebauthnExchangeCodeUseCase.Output.Success(MFA_HEADER)
+            get<VerifyWebauthnDelegatedTokenUseCase>().stub {
+                on { execute(any()) } doReturn VerifyWebauthnDelegatedTokenUseCase.Output.Success(MFA_HEADER)
             }
-            viewModel = get(parameters = { parametersOf(AUTH_TOKEN, false, false) })
+            viewModel = get(parameters = { parametersOf(USER_ID, AUTH_TOKEN, false, false) })
             viewModel.onIntent(ToggleRememberMe(false))
 
             viewModel.sideEffect.test {
-                viewModel.onIntent(WebauthnCeremonyFinished(Completed(EXCHANGE_CODE)))
+                viewModel.onIntent(AuthenticateWithWebauthn)
+                skipItems(1)
+                viewModel.onIntent(WebauthnCeremonyFinished(Completed(DELEGATED_TOKEN)))
 
                 val success = awaitItem()
                 assertIs<NotifyVerificationSucceeded>(success)
                 assertThat(success.mfaHeader).isEqualTo(MFA_HEADER)
             }
 
-            verify(get<VerifyWebauthnExchangeCodeUseCase>()).execute(
-                VerifyWebauthnExchangeCodeUseCase.Input(
+            verify(get<VerifyWebauthnDelegatedTokenLocallyUseCase>()).execute(
+                VerifyWebauthnDelegatedTokenLocallyUseCase.Input(
+                    userId = USER_ID,
+                    delegatedToken = DELEGATED_TOKEN,
+                    expectedState = STATE,
+                ),
+            )
+            verify(get<VerifyWebauthnDelegatedTokenUseCase>()).execute(
+                VerifyWebauthnDelegatedTokenUseCase.Input(
                     jwtHeader = AUTH_TOKEN,
-                    exchangeCode = EXCHANGE_CODE,
+                    delegatedToken = DELEGATED_TOKEN,
+                    delegatedSecret = SECRET,
                     remember = false,
                 ),
             )
         }
 
     @Test
-    fun `completed ceremony without mfa cookie shows generic error`() =
+    fun `completed ceremony rejected locally shows ceremony failed and does not call api`() =
         runTest {
-            get<VerifyWebauthnExchangeCodeUseCase>().stub {
-                on { execute(any()) } doReturn VerifyWebauthnExchangeCodeUseCase.Output.Success(null)
+            get<VerifyWebauthnDelegatedTokenLocallyUseCase>().stub {
+                on { execute(any()) } doReturn
+                    VerifyWebauthnDelegatedTokenLocallyUseCase.Output.Invalid(
+                        WebauthnDelegatedTokenVerifier.Output.StateMismatch,
+                    )
             }
-            viewModel = get(parameters = { parametersOf(AUTH_TOKEN, false, false) })
+            viewModel = get(parameters = { parametersOf(USER_ID, AUTH_TOKEN, false, false) })
 
             viewModel.sideEffect.test {
-                viewModel.onIntent(WebauthnCeremonyFinished(Completed(EXCHANGE_CODE)))
+                viewModel.onIntent(AuthenticateWithWebauthn)
+                skipItems(1)
+                viewModel.onIntent(WebauthnCeremonyFinished(Completed(DELEGATED_TOKEN)))
+
+                val snackbar = awaitItem()
+                assertIs<ShowErrorSnackbar>(snackbar)
+                assertThat(snackbar.kind).isEqualTo(CEREMONY_FAILED)
+            }
+
+            verifyNoInteractions(get<VerifyWebauthnDelegatedTokenUseCase>())
+        }
+
+    @Test
+    fun `completed ceremony without server key shows generic error and does not call api`() =
+        runTest {
+            get<VerifyWebauthnDelegatedTokenLocallyUseCase>().stub {
+                on { execute(any()) } doReturn VerifyWebauthnDelegatedTokenLocallyUseCase.Output.ServerKeyUnavailable
+            }
+            viewModel = get(parameters = { parametersOf(USER_ID, AUTH_TOKEN, false, false) })
+
+            viewModel.sideEffect.test {
+                viewModel.onIntent(AuthenticateWithWebauthn)
+                skipItems(1)
+                viewModel.onIntent(WebauthnCeremonyFinished(Completed(DELEGATED_TOKEN)))
+
+                val snackbar = awaitItem()
+                assertIs<ShowErrorSnackbar>(snackbar)
+                assertThat(snackbar.kind).isEqualTo(GENERIC)
+            }
+
+            verifyNoInteractions(get<VerifyWebauthnDelegatedTokenUseCase>())
+        }
+
+    @Test
+    fun `completed ceremony without a started ceremony shows ceremony failed and does not call api`() =
+        runTest {
+            viewModel = get(parameters = { parametersOf(USER_ID, AUTH_TOKEN, false, false) })
+
+            viewModel.sideEffect.test {
+                viewModel.onIntent(WebauthnCeremonyFinished(Completed(DELEGATED_TOKEN)))
+
+                val snackbar = awaitItem()
+                assertIs<ShowErrorSnackbar>(snackbar)
+                assertThat(snackbar.kind).isEqualTo(CEREMONY_FAILED)
+            }
+
+            verifyNoInteractions(get<VerifyWebauthnDelegatedTokenLocallyUseCase>())
+            verifyNoInteractions(get<VerifyWebauthnDelegatedTokenUseCase>())
+        }
+
+    @Test
+    fun `delegated state and secret are dropped after the ceremony finishes`() =
+        runTest {
+            get<VerifyWebauthnDelegatedTokenUseCase>().stub {
+                on { execute(any()) } doReturn VerifyWebauthnDelegatedTokenUseCase.Output.Success(MFA_HEADER)
+            }
+            viewModel = get(parameters = { parametersOf(USER_ID, AUTH_TOKEN, false, false) })
+
+            viewModel.sideEffect.test {
+                viewModel.onIntent(AuthenticateWithWebauthn)
+                skipItems(1)
+                viewModel.onIntent(WebauthnCeremonyFinished(Completed(DELEGATED_TOKEN)))
+                assertIs<NotifyVerificationSucceeded>(awaitItem())
+
+                viewModel.onIntent(WebauthnCeremonyFinished(Completed(DELEGATED_TOKEN)))
+                val snackbar = awaitItem()
+                assertIs<ShowErrorSnackbar>(snackbar)
+                assertThat(snackbar.kind).isEqualTo(CEREMONY_FAILED)
+            }
+
+            verify(get<VerifyWebauthnDelegatedTokenUseCase>(), times(1)).execute(any())
+        }
+
+    @Test
+    fun `cancelled ceremony drops the delegated state and secret`() =
+        runTest {
+            viewModel = get(parameters = { parametersOf(USER_ID, AUTH_TOKEN, false, false) })
+
+            viewModel.sideEffect.test {
+                viewModel.onIntent(AuthenticateWithWebauthn)
+                skipItems(1)
+                viewModel.onIntent(WebauthnCeremonyFinished(Cancelled))
+                viewModel.onIntent(WebauthnCeremonyFinished(Completed(DELEGATED_TOKEN)))
+
+                val snackbar = awaitItem()
+                assertIs<ShowErrorSnackbar>(snackbar)
+                assertThat(snackbar.kind).isEqualTo(CEREMONY_FAILED)
+            }
+
+            verifyNoInteractions(get<VerifyWebauthnDelegatedTokenUseCase>())
+        }
+
+    @Test
+    fun `completed ceremony without mfa cookie shows generic error`() =
+        runTest {
+            get<VerifyWebauthnDelegatedTokenUseCase>().stub {
+                on { execute(any()) } doReturn VerifyWebauthnDelegatedTokenUseCase.Output.Success(null)
+            }
+            viewModel = get(parameters = { parametersOf(USER_ID, AUTH_TOKEN, false, false) })
+
+            viewModel.sideEffect.test {
+                viewModel.onIntent(AuthenticateWithWebauthn)
+                skipItems(1)
+                viewModel.onIntent(WebauthnCeremonyFinished(Completed(DELEGATED_TOKEN)))
 
                 val snackbar = awaitItem()
                 assertIs<ShowErrorSnackbar>(snackbar)
@@ -352,43 +414,17 @@ class AuthWithWebauthnViewModelTest : KoinTest {
         }
 
     @Test
-    fun `completed ceremony unauthorized refreshes session and retries with refreshed token`() =
+    fun `completed ceremony unauthorized navigates to login`() =
         runTest {
-            get<VerifyWebauthnExchangeCodeUseCase>().stub {
-                on { execute(any()) } doReturn
-                    VerifyWebauthnExchangeCodeUseCase.Output.Unauthorized doReturn
-                    VerifyWebauthnExchangeCodeUseCase.Output.Success(MFA_HEADER)
+            get<VerifyWebauthnDelegatedTokenUseCase>().stub {
+                on { execute(any()) } doReturn VerifyWebauthnDelegatedTokenUseCase.Output.Unauthorized
             }
-            get<RefreshSessionUseCase>().stub {
-                on { execute(Unit) } doReturn RefreshSessionUseCase.Output.Success
-            }
-            viewModel = get(parameters = { parametersOf(AUTH_TOKEN, false, false) })
+            viewModel = get(parameters = { parametersOf(USER_ID, AUTH_TOKEN, false, false) })
 
             viewModel.sideEffect.test {
-                viewModel.onIntent(WebauthnCeremonyFinished(Completed(EXCHANGE_CODE)))
-
-                assertIs<NotifyVerificationSucceeded>(awaitItem())
-            }
-
-            verify(get<RefreshSessionUseCase>()).execute(Unit)
-            verify(get<VerifyWebauthnExchangeCodeUseCase>()).execute(
-                VerifyWebauthnExchangeCodeUseCase.Input(REFRESHED_AUTH_TOKEN, EXCHANGE_CODE, remember = true),
-            )
-        }
-
-    @Test
-    fun `completed ceremony unauthorized with failed refresh navigates to login`() =
-        runTest {
-            get<VerifyWebauthnExchangeCodeUseCase>().stub {
-                on { execute(any()) } doReturn VerifyWebauthnExchangeCodeUseCase.Output.Unauthorized
-            }
-            get<RefreshSessionUseCase>().stub {
-                on { execute(Unit) } doReturn RefreshSessionUseCase.Output.Failure
-            }
-            viewModel = get(parameters = { parametersOf(AUTH_TOKEN, false, false) })
-
-            viewModel.sideEffect.test {
-                viewModel.onIntent(WebauthnCeremonyFinished(Completed(EXCHANGE_CODE)))
+                viewModel.onIntent(AuthenticateWithWebauthn)
+                skipItems(1)
+                viewModel.onIntent(WebauthnCeremonyFinished(Completed(DELEGATED_TOKEN)))
 
                 val snackbar = awaitItem()
                 assertIs<ShowErrorSnackbar>(snackbar)
@@ -400,13 +436,15 @@ class AuthWithWebauthnViewModelTest : KoinTest {
     @Test
     fun `completed ceremony bad request shows verification expired error`() =
         runTest {
-            get<VerifyWebauthnExchangeCodeUseCase>().stub {
-                on { execute(any()) } doReturn VerifyWebauthnExchangeCodeUseCase.Output.NetworkFailure(400)
+            get<VerifyWebauthnDelegatedTokenUseCase>().stub {
+                on { execute(any()) } doReturn VerifyWebauthnDelegatedTokenUseCase.Output.NetworkFailure(400)
             }
-            viewModel = get(parameters = { parametersOf(AUTH_TOKEN, false, false) })
+            viewModel = get(parameters = { parametersOf(USER_ID, AUTH_TOKEN, false, false) })
 
             viewModel.sideEffect.test {
-                viewModel.onIntent(WebauthnCeremonyFinished(Completed(EXCHANGE_CODE)))
+                viewModel.onIntent(AuthenticateWithWebauthn)
+                skipItems(1)
+                viewModel.onIntent(WebauthnCeremonyFinished(Completed(DELEGATED_TOKEN)))
 
                 val snackbar = awaitItem()
                 assertIs<ShowErrorSnackbar>(snackbar)
@@ -417,16 +455,18 @@ class AuthWithWebauthnViewModelTest : KoinTest {
     @Test
     fun `completed ceremony timeout shows network error`() =
         runTest {
-            get<VerifyWebauthnExchangeCodeUseCase>().stub {
+            get<VerifyWebauthnDelegatedTokenUseCase>().stub {
                 on { execute(any()) } doReturn
-                    VerifyWebauthnExchangeCodeUseCase.Output.Failure(
+                    VerifyWebauthnDelegatedTokenUseCase.Output.Failure(
                         DomainResult.Incomplete.Error(DomainResult.Incomplete.Error.Reason.TIMEOUT, null),
                     )
             }
-            viewModel = get(parameters = { parametersOf(AUTH_TOKEN, false, false) })
+            viewModel = get(parameters = { parametersOf(USER_ID, AUTH_TOKEN, false, false) })
 
             viewModel.sideEffect.test {
-                viewModel.onIntent(WebauthnCeremonyFinished(Completed(EXCHANGE_CODE)))
+                viewModel.onIntent(AuthenticateWithWebauthn)
+                skipItems(1)
+                viewModel.onIntent(WebauthnCeremonyFinished(Completed(DELEGATED_TOKEN)))
 
                 val snackbar = awaitItem()
                 assertIs<ShowErrorSnackbar>(snackbar)
@@ -437,18 +477,18 @@ class AuthWithWebauthnViewModelTest : KoinTest {
     @Test
     fun `cancelled ceremony does nothing`() =
         runTest {
-            viewModel = get(parameters = { parametersOf(AUTH_TOKEN, false, false) })
+            viewModel = get(parameters = { parametersOf(USER_ID, AUTH_TOKEN, false, false) })
 
             viewModel.onIntent(WebauthnCeremonyFinished(Cancelled))
 
-            verifyNoInteractions(get<VerifyWebauthnExchangeCodeUseCase>())
+            verifyNoInteractions(get<VerifyWebauthnDelegatedTokenUseCase>())
             assertThat(viewModel.viewState.value.showProgress).isFalse()
         }
 
     @Test
     fun `failed ceremony shows ceremony failed error and does not exchange`() =
         runTest {
-            viewModel = get(parameters = { parametersOf(AUTH_TOKEN, false, false) })
+            viewModel = get(parameters = { parametersOf(USER_ID, AUTH_TOKEN, false, false) })
 
             viewModel.sideEffect.test {
                 viewModel.onIntent(WebauthnCeremonyFinished(Failed("ceremony_failed")))
@@ -458,13 +498,13 @@ class AuthWithWebauthnViewModelTest : KoinTest {
                 assertThat(snackbar.kind).isEqualTo(CEREMONY_FAILED)
             }
 
-            verifyNoInteractions(get<VerifyWebauthnExchangeCodeUseCase>())
+            verifyNoInteractions(get<VerifyWebauthnDelegatedTokenUseCase>())
         }
 
     @Test
     fun `toggle remember me updates state`() =
         runTest {
-            viewModel = get(parameters = { parametersOf(AUTH_TOKEN, false, false) })
+            viewModel = get(parameters = { parametersOf(USER_ID, AUTH_TOKEN, false, false) })
 
             viewModel.onIntent(ToggleRememberMe(false))
 
@@ -474,7 +514,7 @@ class AuthWithWebauthnViewModelTest : KoinTest {
     @Test
     fun `choose other provider emits bearer`() =
         runTest {
-            viewModel = get(parameters = { parametersOf(AUTH_TOKEN, true, false) })
+            viewModel = get(parameters = { parametersOf(USER_ID, AUTH_TOKEN, true, false) })
 
             viewModel.sideEffect.test {
                 viewModel.onIntent(ChooseOtherProvider)
@@ -488,7 +528,7 @@ class AuthWithWebauthnViewModelTest : KoinTest {
     @Test
     fun `close in setup flow shows leave confirmation and does not sign out`() =
         runTest {
-            viewModel = get(parameters = { parametersOf(AUTH_TOKEN, false, true) })
+            viewModel = get(parameters = { parametersOf(USER_ID, AUTH_TOKEN, false, true) })
 
             viewModel.onIntent(Close)
 
@@ -499,7 +539,7 @@ class AuthWithWebauthnViewModelTest : KoinTest {
     @Test
     fun `confirm setup leave signs out and navigates to startup`() =
         runTest {
-            viewModel = get(parameters = { parametersOf(AUTH_TOKEN, false, true) })
+            viewModel = get(parameters = { parametersOf(USER_ID, AUTH_TOKEN, false, true) })
             viewModel.onIntent(Close)
 
             viewModel.sideEffect.test {
@@ -514,7 +554,7 @@ class AuthWithWebauthnViewModelTest : KoinTest {
     @Test
     fun `dismiss setup leave hides confirmation and does not sign out`() =
         runTest {
-            viewModel = get(parameters = { parametersOf(AUTH_TOKEN, false, true) })
+            viewModel = get(parameters = { parametersOf(USER_ID, AUTH_TOKEN, false, true) })
             viewModel.onIntent(Close)
 
             viewModel.onIntent(DismissSetupLeave)
@@ -526,7 +566,7 @@ class AuthWithWebauthnViewModelTest : KoinTest {
     @Test
     fun `close outside setup flow signs out and navigates to startup`() =
         runTest {
-            viewModel = get(parameters = { parametersOf(AUTH_TOKEN, false, false) })
+            viewModel = get(parameters = { parametersOf(USER_ID, AUTH_TOKEN, false, false) })
 
             viewModel.sideEffect.test {
                 viewModel.onIntent(Close)
@@ -537,11 +577,12 @@ class AuthWithWebauthnViewModelTest : KoinTest {
         }
 
     private companion object {
+        const val USER_ID = "user-id"
         const val AUTH_TOKEN = "test-auth-token"
-        const val REFRESHED_AUTH_TOKEN = "refreshed-auth-token"
-        const val CEREMONY_URL = "https://passbolt.example.com/mfa/verify/webauthn/delegated?ceremony_token=x"
-        const val CEREMONY_TOKEN = "ceremony-token-123"
-        const val EXCHANGE_CODE = "exchange-code-456"
+        const val CEREMONY_URL = "https://passbolt.example.com/mfa/verify/webauthn/delegated?mfa_delegated_state=x"
+        const val STATE = "delegated-state-123"
+        const val SECRET = "delegated-secret-789"
+        const val DELEGATED_TOKEN = "delegated-token-456"
         const val MFA_HEADER = "passbolt_mfa=jwt"
     }
 }

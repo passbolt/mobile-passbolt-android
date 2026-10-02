@@ -100,7 +100,7 @@ internal fun AuthWithWebauthnScreen(
     appNavigator: AppNavigator = koinInject(),
     viewModel: AuthWithWebauthnViewModel =
         koinViewModel {
-            parametersOf(mfaState.authToken, mfaState.hasOtherProviders, isSetupFlow)
+            parametersOf(mfaState.userId, mfaState.authToken, mfaState.hasOtherProviders, isSetupFlow)
         },
 ) {
     val context = LocalContext.current

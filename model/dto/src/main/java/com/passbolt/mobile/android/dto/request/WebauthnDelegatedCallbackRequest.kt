@@ -25,7 +25,9 @@ package com.passbolt.mobile.android.dto.request
 import com.google.gson.annotations.SerializedName
 
 data class WebauthnDelegatedCallbackRequest(
-    @SerializedName("exchange_code")
-    val exchangeCode: String,
+    @SerializedName("mfa_delegated_token")
+    val delegatedToken: String,
+    @SerializedName("mfa_delegated_secret")
+    val delegatedSecret: String,
     val remember: Boolean,
 )

@@ -37,7 +37,7 @@ class GetWebauthnDelegatedPromptUseCase(
         when (val result = mfaRepository.getWebauthnDelegatedPrompt(input.jwtHeader)) {
             is DomainResult.Finished ->
                 when (val prompt = result.value) {
-                    is WebauthnDelegatedPrompt.Succeeded -> Output.Success(prompt.ceremonyToken)
+                    is WebauthnDelegatedPrompt.Succeeded -> Output.Success(prompt.state, prompt.secret)
                     is WebauthnDelegatedPrompt.Unauthorized -> Output.Unauthorized
                     is WebauthnDelegatedPrompt.OtherFailure -> Output.NetworkFailure(prompt.errorCode)
                 }
@@ -50,7 +50,8 @@ class GetWebauthnDelegatedPromptUseCase(
 
     sealed class Output : AuthenticatedUseCaseOutput {
         data class Success(
-            val ceremonyToken: String,
+            val state: String,
+            val secret: String,
         ) : Output(),
             CompleteAuthenticatedOutput
 

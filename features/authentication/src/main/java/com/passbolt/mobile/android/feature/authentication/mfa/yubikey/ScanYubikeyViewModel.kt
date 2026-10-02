@@ -1,7 +1,6 @@
 package com.passbolt.mobile.android.feature.authentication.mfa.yubikey
 
 import com.passbolt.mobile.android.core.compose.SideEffectViewModel
-import com.passbolt.mobile.android.feature.authentication.auth.OneTimeSessionRefreshRetry
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.VerifyYubikeyUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.VerifyYubikeyUseCase.Output.Failure
@@ -36,7 +35,6 @@ class ScanYubikeyViewModel(
     private val authToken: String?,
     private val signOutUseCase: SignOutUseCase,
     private val verifyYubikeyUseCase: VerifyYubikeyUseCase,
-    private val oneTimeSessionRefreshRetry: OneTimeSessionRefreshRetry,
 ) : SideEffectViewModel<ScanYubikeyState, ScanYubikeySideEffect>(
         ScanYubikeyState(hasOtherProvider = hasOtherProvider),
     ) {
@@ -78,13 +76,7 @@ class ScanYubikeyViewModel(
         Timber.d("Verifying Yubikey")
         updateViewState { copy(showProgress = true) }
         launch {
-            val result =
-                oneTimeSessionRefreshRetry.execute(
-                    token = authToken.orEmpty(),
-                    isUnauthorized = { it is Unauthorized },
-                ) { bearer ->
-                    verifyYubikeyUseCase.execute(VerifyYubikeyUseCase.Input(otp, bearer, viewState.value.rememberMe))
-                }
+            val result = verifyYubikeyUseCase.execute(VerifyYubikeyUseCase.Input(otp, authToken.orEmpty(), viewState.value.rememberMe))
             when (result) {
                 is Failure -> emitSideEffect(ShowErrorSnackbar(GENERIC))
                 is NetworkFailure -> emitSideEffect(ShowErrorSnackbar(GENERIC))

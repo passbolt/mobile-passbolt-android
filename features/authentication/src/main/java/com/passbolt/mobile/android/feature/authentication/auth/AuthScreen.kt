@@ -199,7 +199,8 @@ internal fun AuthScreen(
                         is MfaDialogState.Totp -> MfaTotp(mfaState.authToken, mfaState.hasOtherProviders)
                         is MfaDialogState.Yubikey -> MfaYubikey(mfaState.authToken, mfaState.hasOtherProviders)
                         is MfaDialogState.Duo -> MfaDuo(mfaState.authToken, mfaState.hasOtherProviders)
-                        is MfaDialogState.Webauthn -> MfaWebauthn(mfaState.authToken, mfaState.hasOtherProviders)
+                        is MfaDialogState.Webauthn ->
+                            MfaWebauthn(mfaState.userId, mfaState.authToken, mfaState.hasOtherProviders)
                         is MfaDialogState.UnknownProvider -> MfaUnknownProvider
                     }
                 navigator.navigateToKey(key)

@@ -658,7 +658,7 @@ class AuthViewModel(
                 YUBIKEY -> Yubikey(jwtToken, hasMultiple)
                 TOTP -> Totp(jwtToken, hasMultiple)
                 DUO -> Duo(jwtToken, hasMultiple)
-                WEBAUTHN -> Webauthn(jwtToken, hasMultiple)
+                WEBAUTHN -> Webauthn(userId, jwtToken, hasMultiple)
                 else -> {
                     Timber.e("Unknown provider: $provider")
                     UnknownProvider
@@ -678,7 +678,7 @@ class AuthViewModel(
                 YUBIKEY -> Yubikey(bearer, hasMultiple)
                 TOTP -> Totp(bearer, hasMultiple)
                 DUO -> Duo(bearer, hasMultiple)
-                WEBAUTHN -> Webauthn(bearer, hasMultiple)
+                WEBAUTHN -> Webauthn(userId, bearer, hasMultiple)
                 null -> UnknownProvider
             }
         emitSideEffect(NavigateToMfa(mfaState))

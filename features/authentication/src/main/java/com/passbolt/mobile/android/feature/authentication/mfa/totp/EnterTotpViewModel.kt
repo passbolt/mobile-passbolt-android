@@ -1,7 +1,6 @@
 package com.passbolt.mobile.android.feature.authentication.mfa.totp
 
 import com.passbolt.mobile.android.core.compose.SideEffectViewModel
-import com.passbolt.mobile.android.feature.authentication.auth.OneTimeSessionRefreshRetry
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.VerifyTotpUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.VerifyTotpUseCase.Output.Failure
@@ -37,7 +36,6 @@ class EnterTotpViewModel(
     private val authToken: String?,
     private val signOutUseCase: SignOutUseCase,
     private val verifyTotpUseCase: VerifyTotpUseCase,
-    private val oneTimeSessionRefreshRetry: OneTimeSessionRefreshRetry,
 ) : SideEffectViewModel<EnterTotpState, EnterTotpSideEffect>(
         EnterTotpState(hasOtherProvider = hasOtherProvider),
     ) {
@@ -68,14 +66,7 @@ class EnterTotpViewModel(
         Timber.d("Verifying TOTP")
         updateViewState { copy(showProgress = true) }
         launch {
-            val result =
-                oneTimeSessionRefreshRetry.execute(
-                    token = authToken.orEmpty(),
-                    isUnauthorized = { it is Unauthorized },
-                ) { bearer ->
-                    verifyTotpUseCase.execute(VerifyTotpUseCase.Input(otp, bearer, viewState.value.rememberMe))
-                }
-            when (result) {
+            when (val result = verifyTotpUseCase.execute(VerifyTotpUseCase.Input(otp, authToken.orEmpty(), viewState.value.rememberMe))) {
                 is Failure -> genericError()
                 is NetworkFailure -> networkError()
                 is Success -> otpSuccess(result.mfaHeader)
