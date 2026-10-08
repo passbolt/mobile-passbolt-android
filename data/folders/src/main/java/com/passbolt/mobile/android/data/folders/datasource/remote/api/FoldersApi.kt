@@ -49,8 +49,8 @@ internal interface FoldersApi {
         @Query(QUERY_CONTAIN_PERMISSIONS) containingPermissions: Int? = 1,
         @Query(QUERY_LIMIT) limit: Int,
         @Query(QUERY_PAGE) page: Int,
-        @Query(QUERY_SORT) sort: String = "Folders.modified",
-        @Query(QUERY_DIRECTION) direction: String = "desc",
+        @Query(QUERY_SORT) sort: String = "Folders.name",
+        @Query(QUERY_DIRECTION) direction: String = "asc",
     ): BasePaginatedResponse<List<FolderResponseDto>>
 
     @GET(FOLDER_BY_ID)

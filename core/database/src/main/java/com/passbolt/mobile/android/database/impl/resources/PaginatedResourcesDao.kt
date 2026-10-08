@@ -323,7 +323,7 @@ interface PaginatedResourcesDao : BaseDao<Resource> {
             "       AND Tag.id = rTCR.tagId AND rTCR.resourceId = r.resourceId" +
             "   )" +
             ")) " +
-            "ORDER BY modified DESC, r.resourceId ASC",
+            "ORDER BY rm.name COLLATE NOCASE ASC, r.resourceId ASC",
     )
     fun getFilteredForChildFolders(
         inOneOfFolders: List<String>,

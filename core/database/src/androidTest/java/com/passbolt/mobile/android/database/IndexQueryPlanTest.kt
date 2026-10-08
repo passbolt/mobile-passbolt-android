@@ -66,7 +66,7 @@ class IndexQueryPlanTest {
         }
 
     @Test
-    fun allFoldersPaginatedQueryUsesModifiedIndexForOrderingAndParentIdIndexForCounts() =
+    fun allFoldersPaginatedQueryUsesParentIdIndexForCounts() =
         runTest {
             val plan =
                 queryPlan(
@@ -74,7 +74,6 @@ class IndexQueryPlanTest {
                     arrayOf(null, null, PAGE_SIZE, OFFSET_FIRST_PAGE),
                 )
 
-            assertThat(plan).contains("index_Folder_modified_folderId")
             assertThat(plan).contains("index_Folder_parentId")
         }
 
@@ -221,7 +220,7 @@ class IndexQueryPlanTest {
                 "   EXISTS (" +
                 "       SELECT 1 FROM FolderFts WHERE FolderFts MATCH ? AND FolderFts.docid = f.rowid" +
                 "   ) " +
-                "ORDER BY f.modified DESC, f.folderId ASC"
+                "ORDER BY f.name COLLATE NOCASE ASC, f.folderId ASC"
 
         const val RECURSIVE_SUB_FOLDERS_SQL =
             "WITH RECURSIVE ancestor(folderId, name, permission, parentId, isShared, level) as (" +
