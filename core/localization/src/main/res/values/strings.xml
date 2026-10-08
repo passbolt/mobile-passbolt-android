@@ -212,7 +212,7 @@
     <string name="dialog_mfa_auth_with_webauthn">Verify with passkey</string>
     <string name="dialog_mfa_webauthn_browser_unavailable">No browser available to complete passkey verification</string>
     <string name="dialog_mfa_webauthn_provider_unavailable">Passkey verification is not available for your organization</string>
-    <string name="dialog_mfa_webauthn_ceremony_failed">Passkey verification failed, please try again</string>
+    <string name="dialog_mfa_webauthn_ceremony_failed">Passkey verification failed</string>
     <string name="dialog_mfa_webauthn_verification_expired">Passkey verification expired, please try again</string>
     <string name="dialog_mfa_other_provider">Try with another provider</string>
     <string name="dialog_mfa_remember_me">Remember this device for 30 days</string>
