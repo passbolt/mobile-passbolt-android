@@ -59,9 +59,9 @@ class CanCreateResourceUseCase(
                         getLocalMetadataKeysUseCase
                             .execute(
                                 GetLocalMetadataKeysUseCase.Input(ENCRYPT),
-                            ).first()
-                            .metadataPrivateKeys
-                            .isNotEmpty()
+                            ).firstOrNull()
+                            ?.metadataPrivateKeys
+                            ?.isNotEmpty() == true
 
                     val isPersonalKeyAllowed =
                         getMetadataKeysSettingsUseCase
