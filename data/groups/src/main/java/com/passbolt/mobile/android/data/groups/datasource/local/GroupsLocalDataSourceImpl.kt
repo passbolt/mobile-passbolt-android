@@ -46,13 +46,13 @@ internal class GroupsLocalDataSourceImpl(
     private val querySanitizer: QuerySanitizer,
 ) : GroupsLocalDataSource {
     override suspend fun getGroups(
-        excludingIds: List<String>,
+        searchQuery: String?,
         userId: String,
     ): List<Group> =
         databaseProvider
             .get(userId)
             .groupsDao()
-            .getAllExcluding(excludingIds)
+            .getAll(querySanitizer.sanitize(searchQuery))
             .map { it.toDomain() }
 
     override fun getGroupsWithItemsCountPaged(

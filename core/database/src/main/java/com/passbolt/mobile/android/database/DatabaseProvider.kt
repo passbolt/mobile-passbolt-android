@@ -1,8 +1,9 @@
 package com.passbolt.mobile.android.database
 
 import android.content.Context
-import androidx.room.Room
-import androidx.room.withTransaction
+import androidx.room3.Room
+import androidx.room3.immediateTransaction
+import androidx.room3.useWriterConnection
 import com.passbolt.mobile.android.common.hash.MessageDigestHash
 import com.passbolt.mobile.android.common.usecase.UserIdInput
 import com.passbolt.mobile.android.database.migrations.Migration10to11
@@ -24,6 +25,7 @@ import com.passbolt.mobile.android.database.migrations.Migration24to25
 import com.passbolt.mobile.android.database.migrations.Migration25to26
 import com.passbolt.mobile.android.database.migrations.Migration26to27
 import com.passbolt.mobile.android.database.migrations.Migration27to28
+import com.passbolt.mobile.android.database.migrations.Migration28to29
 import com.passbolt.mobile.android.database.migrations.Migration2to3
 import com.passbolt.mobile.android.database.migrations.Migration3to4
 import com.passbolt.mobile.android.database.migrations.Migration4to5
@@ -34,7 +36,7 @@ import com.passbolt.mobile.android.database.migrations.Migration8to9
 import com.passbolt.mobile.android.database.migrations.Migration9to10
 import com.passbolt.mobile.android.domain.auth.usecase.GetResourcesDatabasePassphraseUseCase
 import kotlinx.coroutines.suspendCancellableCoroutine
-import net.zetetic.database.sqlcipher.SupportOpenHelperFactory
+import net.zetetic.database.sqlcipher.driver.SQLCipherDriver
 import timber.log.Timber
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.coroutines.resume
@@ -74,7 +76,7 @@ class DatabaseProvider(
         return instance.computeIfAbsent(databaseName) {
             try {
                 val passphrase = getResourcesDatabasePassphraseUseCase.execute(UserIdInput(userId)).passphrase
-                val factory = SupportOpenHelperFactory(passphrase)
+                val driver = SQLCipherDriver(passphrase, null, null)
                 Room
                     .databaseBuilder(
                         context,
@@ -108,7 +110,8 @@ class DatabaseProvider(
                         Migration25to26,
                         Migration26to27,
                         Migration27to28,
-                    ).openHelperFactory(factory)
+                        Migration28to29,
+                    ).setDriver(driver)
                     .build()
             } catch (e: Exception) {
                 Timber.e(e, "Failed to open resources database")
@@ -120,7 +123,7 @@ class DatabaseProvider(
     suspend fun <T> inTransaction(
         userId: String,
         block: suspend () -> T,
-    ): T = get(userId).withTransaction { block() }
+    ): T = get(userId).useWriterConnection { it.immediateTransaction { block() } }
 
     suspend fun delete(userId: String) {
         Timber.d("Deleting resources database")

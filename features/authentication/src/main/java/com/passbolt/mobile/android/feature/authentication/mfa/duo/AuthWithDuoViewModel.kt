@@ -7,7 +7,6 @@ import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetDuoPro
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetDuoPromptUseCase.Output.NetworkFailure
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetDuoPromptUseCase.Output.Success
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetDuoPromptUseCase.Output.Unauthorized
-import com.passbolt.mobile.android.feature.authentication.auth.usecase.RefreshSessionUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.VerifyDuoCallbackUseCase
 import com.passbolt.mobile.android.feature.authentication.mfa.duo.AuthWithDuoIntent.AuthenticateWithDuo
@@ -32,7 +31,6 @@ class AuthWithDuoViewModel(
     private val authToken: String?,
     private val getDuoPromptUseCase: GetDuoPromptUseCase,
     private val verifyDuoCallbackUseCase: VerifyDuoCallbackUseCase,
-    private val refreshSessionUseCase: RefreshSessionUseCase,
     private val signOutUseCase: SignOutUseCase,
 ) : SideEffectViewModel<AuthWithDuoState, AuthWithDuoSideEffect>(
         AuthWithDuoState(hasOtherProvider = hasOtherProvider),
@@ -66,21 +64,15 @@ class AuthWithDuoViewModel(
         updateViewState { copy(showProgress = true) }
         launch {
             authToken?.let { token ->
-                when (val result = getDuoPromptUseCase.execute(GetDuoPromptUseCase.Input(token))) {
+                val result = getDuoPromptUseCase.execute(GetDuoPromptUseCase.Input(token))
+                when (result) {
                     is DuoPromptUrlNotFound ->
                         emitSideEffect(ShowErrorSnackbar(GENERIC))
                     is Failure ->
                         emitSideEffect(ShowErrorSnackbar(GENERIC))
                     is NetworkFailure ->
                         emitSideEffect(ShowErrorSnackbar(GENERIC))
-                    is Unauthorized -> {
-                        if (backgroundSessionRefreshSucceeded()) {
-                            authenticateWithDuo()
-                            return@launch
-                        } else {
-                            emitSideEffect(NavigateToLogin)
-                        }
-                    }
+                    is Unauthorized -> emitSideEffect(NavigateToLogin)
                     is Success -> {
                         passboltDuoCookieUuid = result.passboltDuoCookieUuid
                         updateViewState { copy(showDuoWebViewSheet = true, duoPromptUrl = result.duoPromptUrl) }
@@ -96,29 +88,21 @@ class AuthWithDuoViewModel(
         launch {
             val (token, duoCookie) = authToken to passboltDuoCookieUuid
             if (token != null && duoCookie != null) {
-                when (
-                    val result =
-                        verifyDuoCallbackUseCase.execute(
-                            VerifyDuoCallbackUseCase.Input(
-                                jwtHeader = token,
-                                passboltDuoCookieUuid = duoCookie,
-                                duoState = duoState.state,
-                                duoCode = duoState.duoCode,
-                            ),
-                        )
-                ) {
+                val result =
+                    verifyDuoCallbackUseCase.execute(
+                        VerifyDuoCallbackUseCase.Input(
+                            jwtHeader = token,
+                            passboltDuoCookieUuid = duoCookie,
+                            duoState = duoState.state,
+                            duoCode = duoState.duoCode,
+                        ),
+                    )
+                when (result) {
                     is VerifyDuoCallbackUseCase.Output.Error ->
                         emitSideEffect(ShowErrorSnackbar(GENERIC))
                     is VerifyDuoCallbackUseCase.Output.Failure ->
                         emitSideEffect(ShowErrorSnackbar(GENERIC))
-                    is VerifyDuoCallbackUseCase.Output.Unauthorized -> {
-                        if (backgroundSessionRefreshSucceeded()) {
-                            verifyDuoAuth(duoState)
-                            return@launch
-                        } else {
-                            emitSideEffect(NavigateToLogin)
-                        }
-                    }
+                    is VerifyDuoCallbackUseCase.Output.Unauthorized -> emitSideEffect(NavigateToLogin)
                     is VerifyDuoCallbackUseCase.Output.Success -> duoSuccess(result.mfaHeader)
                 }
             } else {
@@ -135,8 +119,6 @@ class AuthWithDuoViewModel(
             emitSideEffect(ShowErrorSnackbar(GENERIC))
         }
     }
-
-    private suspend fun backgroundSessionRefreshSucceeded() = refreshSessionUseCase.execute(Unit) is RefreshSessionUseCase.Output.Success
 
     private fun signOutAndClose() {
         launch {

@@ -102,6 +102,7 @@ internal enum class SnackbarSuccessType {
     RESOURCE_SHARED,
     METADATA_KEY_IS_TRUSTED,
     FOLDER_CREATED,
+    OTP_CREATED,
 }
 
 internal enum class ToastType {

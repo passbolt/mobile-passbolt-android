@@ -13,7 +13,6 @@ dependencies {
 
     implementation(platform(libs.koin.bom))
     implementation(libs.koin)
-    implementation(libs.room.core)
 }
 
 android {

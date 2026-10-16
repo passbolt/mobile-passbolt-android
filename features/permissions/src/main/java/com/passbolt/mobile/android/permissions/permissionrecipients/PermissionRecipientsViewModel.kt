@@ -24,10 +24,10 @@
 package com.passbolt.mobile.android.permissions.permissionrecipients
 
 import androidx.lifecycle.viewModelScope
-import com.passbolt.mobile.android.common.search.SearchableMatcher
 import com.passbolt.mobile.android.core.compose.SideEffectViewModel
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
-import com.passbolt.mobile.android.core.ui.search.SearchInputEndIconMode
+import com.passbolt.mobile.android.core.ui.search.SearchInputEndIconMode.CLEAR
+import com.passbolt.mobile.android.core.ui.search.SearchInputEndIconMode.NONE
 import com.passbolt.mobile.android.domain.groups.usecase.GetLocalGroupsUseCase
 import com.passbolt.mobile.android.domain.users.usecase.GetLocalUsersUseCase
 import com.passbolt.mobile.android.mappers.PermissionsModelMapper
@@ -43,7 +43,15 @@ import com.passbolt.mobile.android.ui.GroupModel
 import com.passbolt.mobile.android.ui.PermissionModelUi
 import com.passbolt.mobile.android.ui.ResourcePermission
 import com.passbolt.mobile.android.ui.UserUiModel
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
+import timber.log.Timber
+import kotlin.time.Duration.Companion.milliseconds
 
 class PermissionRecipientsViewModel(
     alreadyAddedGroupPermissions: Array<PermissionModelUi.GroupPermissionModel>,
@@ -51,7 +59,6 @@ class PermissionRecipientsViewModel(
     private val getLocalGroupsUseCase: GetLocalGroupsUseCase,
     private val getLocalUsersUseCase: GetLocalUsersUseCase,
     private val permissionsModelMapper: PermissionsModelMapper,
-    private val searchableMatcher: SearchableMatcher,
     private val coroutineLaunchContext: CoroutineLaunchContext,
 ) : SideEffectViewModel<PermissionRecipientsState, PermissionRecipientsSideEffect>(
         initialState =
@@ -61,15 +68,19 @@ class PermissionRecipientsViewModel(
     ) {
     private val alreadyAddedGroups = alreadyAddedGroupPermissions.toList()
     private val alreadyAddedUsers = alreadyAddedUserPermissions.toList()
+    private val alreadyAddedGroupIds = alreadyAddedGroups.map { it.group.groupId }.toSet()
+    private val alreadyAddedUserIds = alreadyAddedUsers.map { it.user.userId }.toSet()
+    private val searchQueryFlow = MutableStateFlow("")
 
     init {
         loadRecipients()
+        observeSearchQuery()
     }
 
     fun onIntent(intent: PermissionRecipientsIntent) {
         when (intent) {
             GoBack -> emitSideEffect(NavigateBack)
-            is Search -> search(intent.query)
+            is Search -> searchQueryChanged(intent.query)
             is ToggleGroupSelection -> toggleGroupSelection(intent.group)
             is ToggleUserSelection -> toggleUserSelection(intent.user)
             Save -> save()
@@ -78,87 +89,92 @@ class PermissionRecipientsViewModel(
 
     private fun loadRecipients() {
         viewModelScope.launch(coroutineLaunchContext.io) {
-            val groups =
-                getLocalGroupsUseCase
-                    .execute(
-                        GetLocalGroupsUseCase.Input(alreadyAddedGroups.map { it.group.groupId }),
-                    ).groups
-
-            val users =
-                getLocalUsersUseCase
-                    .execute(
-                        GetLocalUsersUseCase.Input(alreadyAddedUsers.map { it.user.userId }),
-                    ).users
-
-            updateViewState {
-                copy(
-                    groups = groups,
-                    users = users,
-                    filteredGroups = groups,
-                    filteredUsers = users,
-                )
-            }
+            showRecipients(searchQuery = "")
         }
     }
 
-    private fun search(query: String) {
+    @OptIn(FlowPreview::class)
+    private fun observeSearchQuery() {
         viewModelScope.launch(coroutineLaunchContext.io) {
-            val state = viewState.value
-            val filteredGroups = state.groups.filter { searchableMatcher.matches(it, query) }
-            val filteredUsers = state.users.filter { searchableMatcher.matches(it, query) }
-
-            val filteredExistingPermissions =
-                if (query.isNotBlank()) {
-                    (alreadyAddedGroups + alreadyAddedUsers)
-                        .filter { searchableMatcher.matches(it, query) }
-                } else {
-                    emptyList()
+            searchQueryFlow
+                .drop(1)
+                .debounce(SEARCH_DEBOUNCE)
+                .collectLatest { searchQuery ->
+                    try {
+                        showRecipients(searchQuery)
+                    } catch (exception: CancellationException) {
+                        throw exception
+                    } catch (exception: Exception) {
+                        Timber.e(exception, "Failed to search permission recipients")
+                    }
                 }
-
-            val shouldShowEmptyState =
-                query.isNotBlank() &&
-                    filteredGroups.isEmpty() &&
-                    filteredUsers.isEmpty() &&
-                    filteredExistingPermissions.isEmpty()
-
-            updateViewState {
-                copy(
-                    filteredGroups = filteredGroups,
-                    filteredUsers = filteredUsers,
-                    searchInputEndIconMode =
-                        if (query.isNotBlank()) {
-                            SearchInputEndIconMode.CLEAR
-                        } else {
-                            SearchInputEndIconMode.NONE
-                        },
-                    filteredExistingPermissions = filteredExistingPermissions,
-                    showEmptyState = shouldShowEmptyState,
-                )
-            }
         }
+    }
+
+    private fun searchQueryChanged(searchQuery: String) {
+        searchQueryFlow.value = searchQuery
+        updateViewState {
+            copy(searchInputEndIconMode = if (searchQuery.isNotBlank()) CLEAR else NONE)
+        }
+    }
+
+    private suspend fun showRecipients(searchQuery: String) {
+        val matchingGroups = getLocalGroupsUseCase.execute(GetLocalGroupsUseCase.Input(searchQuery)).groups
+        val matchingUsers = getLocalUsersUseCase.execute(GetLocalUsersUseCase.Input(searchQuery)).users
+        val filteredGroups = matchingGroups.filterNot { it.groupId in alreadyAddedGroupIds }
+        val filteredUsers = matchingUsers.filterNot { it.id in alreadyAddedUserIds }
+        val filteredExistingPermissions =
+            if (searchQuery.isNotBlank()) {
+                matchingExistingPermissions(matchingGroups, matchingUsers)
+            } else {
+                emptyList()
+            }
+
+        updateViewState {
+            copy(
+                filteredGroups = filteredGroups,
+                filteredUsers = filteredUsers,
+                filteredExistingPermissions = filteredExistingPermissions,
+                showEmptyState =
+                    searchQuery.isNotBlank() &&
+                        filteredGroups.isEmpty() &&
+                        filteredUsers.isEmpty() &&
+                        filteredExistingPermissions.isEmpty(),
+            )
+        }
+    }
+
+    private fun matchingExistingPermissions(
+        matchingGroups: List<GroupModel>,
+        matchingUsers: List<UserUiModel>,
+    ): List<PermissionModelUi> {
+        val matchingGroupIds = matchingGroups.map { it.groupId }.toSet()
+        val matchingUserIds = matchingUsers.map { it.id }.toSet()
+        return alreadyAddedGroups.filter { it.group.groupId in matchingGroupIds } +
+            alreadyAddedUsers.filter { it.user.userId in matchingUserIds }
     }
 
     private fun toggleGroupSelection(group: GroupModel) {
-        val currentIds = viewState.value.selectedGroupIds
-        val newIds =
-            if (group.groupId in currentIds) {
-                currentIds - group.groupId
+        val selectedGroups = viewState.value.selectedGroups
+        val newSelectedGroups =
+            if (group.groupId in selectedGroups) {
+                selectedGroups - group.groupId
             } else {
-                currentIds + group.groupId
+                selectedGroups + (group.groupId to group)
             }
-        updateViewState { copy(selectedGroupIds = newIds) }
+        updateViewState { copy(selectedGroups = newSelectedGroups) }
         recomputeDisplayPermissions()
     }
 
     private fun toggleUserSelection(user: UserUiModel) {
-        val currentIds = viewState.value.selectedUserIds
-        val newIds =
-            if (user.id in currentIds) {
-                currentIds - user.id
+        val selectedUsers = viewState.value.selectedUsers
+        val newSelectedUsers =
+            if (user.id in selectedUsers) {
+                selectedUsers - user.id
             } else {
-                currentIds + user.id
+                selectedUsers + (user.id to user)
             }
-        updateViewState { copy(selectedUserIds = newIds) }
+        updateViewState { copy(selectedUsers = newSelectedUsers) }
         recomputeDisplayPermissions()
     }
 
@@ -172,8 +188,7 @@ class PermissionRecipientsViewModel(
 
     private fun buildSelectedPermissions(state: PermissionRecipientsState): List<PermissionModelUi> {
         val selectedGroups =
-            state.groups
-                .filter { it.groupId in state.selectedGroupIds }
+            state.selectedGroups.values
                 .map {
                     permissionsModelMapper.map(
                         it,
@@ -182,8 +197,7 @@ class PermissionRecipientsViewModel(
                     )
                 }
         val selectedUsers =
-            state.users
-                .filter { it.id in state.selectedUserIds }
+            state.selectedUsers.values
                 .map {
                     permissionsModelMapper.map(
                         it,
@@ -202,5 +216,6 @@ class PermissionRecipientsViewModel(
 
     companion object {
         val DEFAULT_PERMISSIONS_FOR_NEW_RECIPIENTS = ResourcePermission.READ
+        val SEARCH_DEBOUNCE = 300.milliseconds
     }
 }

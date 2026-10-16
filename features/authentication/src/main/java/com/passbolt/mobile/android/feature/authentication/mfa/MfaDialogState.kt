@@ -16,5 +16,11 @@ sealed interface MfaDialogState {
         val hasOtherProviders: Boolean,
     ) : MfaDialogState
 
+    data class Webauthn(
+        val userId: String,
+        val authToken: String?,
+        val hasOtherProviders: Boolean,
+    ) : MfaDialogState
+
     data object UnknownProvider : MfaDialogState
 }

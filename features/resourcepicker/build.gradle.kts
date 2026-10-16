@@ -22,7 +22,6 @@ dependencies {
     implementation(platform(libs.koin.bom))
     implementation(libs.koin)
     implementation(libs.koin.compose)
-    implementation(libs.room.core)
     implementation(platform(libs.compose.bom))
     implementation(libs.compose.foundation)
     implementation(libs.compose.icons)

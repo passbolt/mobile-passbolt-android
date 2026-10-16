@@ -29,6 +29,8 @@ import com.passbolt.mobile.android.domain.mfa.MfaRepository
 import com.passbolt.mobile.android.domain.mfa.model.DuoPrompt
 import com.passbolt.mobile.android.domain.mfa.model.DuoVerification
 import com.passbolt.mobile.android.domain.mfa.model.TotpVerification
+import com.passbolt.mobile.android.domain.mfa.model.WebauthnDelegatedPrompt
+import com.passbolt.mobile.android.domain.mfa.model.WebauthnVerification
 import com.passbolt.mobile.android.domain.mfa.model.YubikeyVerification
 
 internal class MfaRepositoryImpl(
@@ -54,4 +56,15 @@ internal class MfaRepositoryImpl(
         state: String?,
         code: String?,
     ): DomainResult<DuoVerification> = remoteDataSource.verifyDuoCallback(authToken, duoStateUuid, state, code)
+
+    override suspend fun getWebauthnDelegatedPrompt(authToken: String?): DomainResult<WebauthnDelegatedPrompt> =
+        remoteDataSource.getWebauthnDelegatedPrompt(authToken)
+
+    override suspend fun verifyWebauthnDelegatedToken(
+        authToken: String?,
+        delegatedToken: String,
+        delegatedSecret: String,
+        remember: Boolean,
+    ): DomainResult<WebauthnVerification> =
+        remoteDataSource.verifyWebauthnDelegatedToken(authToken, delegatedToken, delegatedSecret, remember)
 }

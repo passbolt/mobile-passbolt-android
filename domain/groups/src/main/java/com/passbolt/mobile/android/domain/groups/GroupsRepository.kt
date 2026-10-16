@@ -33,7 +33,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface GroupsRepository {
     suspend fun getGroups(
-        excludingIds: List<String>,
+        searchQuery: String?,
         userId: String,
     ): List<Group>
 

@@ -1,7 +1,8 @@
 package com.passbolt.mobile.android.database.migrations
 
-import androidx.room.migration.Migration
-import androidx.sqlite.db.SupportSQLiteDatabase
+import androidx.room3.migration.Migration
+import androidx.sqlite.SQLiteConnection
+import androidx.sqlite.execSQL
 
 /**
  * Passbolt - Open source password manager for teams
@@ -33,8 +34,8 @@ object Migration8to9 : Migration(8, 9) {
     private const val ADD_RESOURCE_AND_USERS_CROSS_REF_PERMISSION_COLUMN =
         "ALTER TABLE ResourceAndUsersCrossRef ADD COLUMN permissionId TEXT NOT NULL DEFAULT ''"
 
-    override fun migrate(db: SupportSQLiteDatabase) {
-        with(db) {
+    override suspend fun migrate(connection: SQLiteConnection) {
+        with(connection) {
             execSQL(ADD_RESOURCE_AND_GROUPS_CROSS_REF_PERMISSION_COLUMN)
             execSQL(ADD_RESOURCE_AND_USERS_CROSS_REF_PERMISSION_COLUMN)
         }

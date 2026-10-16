@@ -15,6 +15,7 @@
     <string name="default_home_search_hint">Искать имя пользователя или URL</string>
     <string name="all_items_home_search_hint">Искать имя, пользователя, url или tag</string>
     <string name="user_search_hint">Поиск пользователя…</string>
+    <string name="search_in_progress">Searching…</string>
     <string name="no_passwords">Пароли отсутствуют</string>
     <string name="no_otps">Нет TOTP</string>
     <string name="authentication_required">Необходима аутентификация</string>
@@ -28,6 +29,9 @@
     <string name="shared_with">Поделиться с</string>
     <string name="location">Расположение</string>
     <string name="content_not_available">Содержимое больше не доступно</string>
+    <string name="consent">Я прочитал и даю согласие</string>
+    <string name="accessibility_policies_accept">Принять</string>
+    <string name="accessibility_policies_decline">Отклонить</string>
     <string name="name_suspended">%s (приостановлено)</string>
     <string name="name_expired">%s (истёк)</string>
     <string name="proceed">Продолжить</string>
@@ -43,6 +47,7 @@
     <string name="common_sign_out">Выйти</string>
     <string name="common_data_refresh_error">Произошла ошибка при обновлении данных. Проведите вниз, чтобы обновить.</string>
     <string name="common_decryption_failure">Ошибка при расшифровке секретного ключа</string>
+    <string name="common_invalid_totp_parameters">Недопустимые параметры TOTP</string>
     <string name="common_metadata_encryption_failure">Ошибка при шифровании метаданных</string>
     <string name="common_fetch_failure">Ошибка при загрузке секретного ключа</string>
     <string name="common_encryption_failure">Произошла ошибка при шифровании секретного ключа</string>
@@ -53,6 +58,8 @@
     <string name="common_metadata_key_verification_failure">Не удалось проверить ключи метаданных</string>
     <string name="common_metadata_key_is_trusted">Новый ключ метаданных доверен</string>
     <string name="common_metadata_key_trust_failed">Не удалось довериться новому ключу метаданных</string>
+    <string name="common_password_policies_fetch_failed">Failed to fetch password policies - using defaults</string>
+    <string name="common_password_expiry_fetch_failed">Failed to fetch password expiry settings - using defaults</string>
     <string name="common_message_resource_edited">Ресурс %s был успешно отредактирован.</string>
     <string name="common_message_resource_deleted">Ресурс %s был удалён.</string>
     <string name="common_message_resource_shared">Права доступа к ресурсу обновлены.</string>
@@ -69,6 +76,9 @@
     <string name="biometric_changed_title">Обнаружены изменения отпечатка пальца</string>
     <string name="biometric_changed_message">Вы должны войти с помощью ключевой фразы и снова включить отпечаток пальца в Настройках.</string>
     <string name="biometric_authenticate_again">Пожалуйста, войдите с помощью ключевой фразы еще раз</string>
+    <string name="biometric_decrypt_error_message">Биометрический вход временно недоступен. Пожалуйста, введите вашу парольную фразу, чтобы продолжить.</string>
+    <string name="biometric_encrypt_error_message">Не удалось завершить настройку биометрии. Повторите попытку или продолжите без неё.</string>
+    <string name="biometric_no_crypto_cipher">Ваше устройство использовало PIN-код или графический ключ вместо биометрии. Пожалуйста, используйте биометрическую разблокировку или введите вашу парольную фразу.</string>
     <string name="settings_licenses_title">Лицензии</string>
     <string name="settings_logs_title">Логи</string>
     <string name="resource_will_be_deleted">Это навсегда удалит пароль из вашей учетной записи.</string>
@@ -150,8 +160,11 @@
     <string name="auth_decryption_error_title">Ошибка расшифровки</string>
     <string name="auth_decryption_error_description">Произошла ошибка расшифровки. Пожалуйста, попробуйте еще раз.\n</string>
     <string name="auth_decryption_error_cause">Ошибка открытого PGP:\n%s</string>
+    <string name="auth_error_server_signature_invalid">Server signature invalid</string>
     <string name="auth_error_invalid_signature">Ошибка верификации вызова (некорректная подпись)</string>
     <string name="auth_error_token_expired">Ошибка проверки вызова (токен истёк)</string>
+    <string name="auth_error_verify_token_mismatch">Challenge verification error (verify token mismatch)</string>
+    <string name="auth_error_domain_mismatch">Challenge verification error (domain mismatch)</string>
     <string name="auth_error_challenge_verification_failure">Ошибка проверки вызова</string>
     <string name="auth_error_profile_fetch_failure">Произошла ошибка при обновлении профиля</string>
     <string name="dialog_account_does_not_exist_title">Учетная запись не существует</string>
@@ -181,10 +194,12 @@
     <string name="autofill_service_name">Passbolt Автозаполнение</string>
     <string name="dialog_encourage_autofill_header">Войдите в свои любимые приложения за 3 секунды!</string>
     <string name="dialog_autofill_header">Автозаполнение</string>
+    <string name="dialog_encourage_autofill_accessibility_description">Эта функция использует службу специальных возможностей Android для автозаполнения учётных данных в приложениях и браузерах, которые не поддерживают встроенное автозаполнение Android. Нажмите переключатель ниже, чтобы проверить, к чему предоставляется доступ, и дать своё согласие.</string>
     <string name="dialog_encourage_autofill_accessibility_samsung">Samsung</string>
     <string name="dialog_encourage_autofill_accessibility_xiaomi">Xiaomi</string>
     <string name="dialog_encourage_autofill_accessibility_huawei">Huawei</string>
     <string name="dialog_encourage_autofill_accessibility_other">Прочие</string>
+    <string name="dialog_encourage_autofill_accessibility_title">Включить автозаполнение через службу специальных возможностей</string>
     <string name="dialog_encourage_autofill_go_to_settings">Перейти к настройкам</string>
     <string name="dialog_encourage_autofill_service_header">Включить автозаполнение для большинства приложений</string>
     <string name="dialog_encourage_autofill_service_description">На экране настроек Android выберите Passbolt, включите переключатель и нажмите OK.
@@ -212,9 +227,12 @@
     <string name="autofill_service_enable_overlay">Включить разрешение на наложение</string>
     <string name="autofill_service_overlay_description"><![CDATA[Автозаполнение имен пользователей и паролей для браузеров Android. Пожалуйста, включите «Наложение поверх других окон» для автозаполнения Passbolt]]></string>
     <string name="autofill_service_enable_service">Включить автозаполнение для большинства приложений</string>
+    <string name="autofill_service_enable_service_description"><![CDATA[Определяет поля входа в приложениях и браузерах и предлагает автозаполнение. Для включения службы специальных возможностей требуется ваше согласие.]]></string>
     <string name="autofill_dropdown_select">Выбрать из Passbolt</string>
     <string name="autofill_dropdown_fill">Заполнить с помощью Passbolt</string>
     <string name="autofill_resources_create">Создать и заполнить</string>
+    <string name="autofill_conflict_message">Активны несколько методов автозаполнения.\nЭто может вызвать проблемы.</string>
+    <string name="autofill_conflict_message_detailed">Активны несколько методов автозаполнения.\nПожалуйста, отключите один из них, чтобы обеспечить корректную работу автозаполнения.</string>
     <string name="home_empty_list">Пустой список</string>
     <string name="home_create">Создать</string>
     <string name="home_in_sub_folders">в подпапках:</string>
@@ -252,12 +270,23 @@
     <string name="resource_details_description_header">Описание</string>
     <string name="resource_details_note_header">Заметка</string>
     <string name="resource_details_note_content">Содержимое</string>
+    <string name="resource_details_pin_code_header">Пин-код</string>
+    <string name="resource_details_pin_code_code">Код</string>
     <string name="resource_details_tags_header">Тэги</string>
     <string name="resource_details_encrypted_description">Описание зашифровано</string>
+    <string name="action_show">Показать</string>
+    <string name="action_hide">Скрыть</string>
+    <string name="action_copy">Копировать</string>
     <string name="resource_details_information">Сведения</string>
     <string name="resource_details_invalid_totp_scanned">Сканирован некорректный QR-код для TOTP</string>
     <string name="resource_details_metadata_header">Метадата</string>
     <string name="resource_details_custom_fields_header">Пользовательские поля</string>
+    <string name="resource_details_upgrade_available_header">Upgrade available</string>
+    <string name="resource_details_upgrade_panel_message">This is a legacy resource. Upgrade for security improvements and new features.</string>
+    <string name="resource_details_upgrade_action">Upgrade</string>
+    <string name="resource_details_upgrade_learn_more">Узнать больше</string>
+    <string name="resource_details_upgrade_success">Resource upgraded.</string>
+    <string name="resource_details_upgrade_failure">Could not upgrade the resource. Please try again.</string>
     <string name="additional_uri_format">• %s</string>
     <string name="more_details_copy_password">Скопировать пароль</string>
     <string name="more_details_copy_description">Скопировать описание</string>
@@ -275,6 +304,34 @@
     <string name="resource_form_totp_url_issuer">URL (издатель)</string>
     <string name="resource_form_totp_more_settings">Дополнительные настройки TOTP</string>
     <string name="resource_form_totp_settings">Настройки TOTP</string>
+    <string name="resource_form_advanced_password_generation">Advanced password generation</string>
+    <string name="resource_form_advanced_passphrase_generation">Advanced passphrase generation</string>
+    <string name="resource_form_advanced_password_generation_save_preferences">Save preferences</string>
+    <string name="resource_form_advanced_password_generation_password_preview">Password preview</string>
+    <string name="resource_form_advanced_password_generation_passphrase_preview">Passphrase preview</string>
+    <string name="resource_form_advanced_password_generation_tab_password">Пароль</string>
+    <string name="resource_form_advanced_password_generation_tab_passphrase">Парольная фраза</string>
+    <string name="resource_form_advanced_password_generation_length">Длина</string>
+    <string name="resource_form_advanced_password_generation_character_types">Типы символов</string>
+    <string name="resource_form_advanced_password_generation_exclude_look_alike">Исключить похожие символы</string>
+    <string name="resource_form_advanced_password_generation_exclude_look_alike_description">Skip characters that can be confused with each other (O/0, l/I/1).</string>
+    <string name="resource_form_advanced_password_generation_number_of_words">Количество слов</string>
+    <string name="resource_form_advanced_password_generation_word_separator">Word separator</string>
+    <string name="resource_form_advanced_password_generation_word_separator_hint">Введите один или несколько символов</string>
+    <string name="resource_form_advanced_password_generation_word_case">Word case</string>
+    <string name="resource_form_character_set_upper">A-Z</string>
+    <string name="resource_form_character_set_digit">0-9</string>
+    <string name="resource_form_character_set_lower">a-z</string>
+    <string name="resource_form_character_set_parenthesis">{ [ ( | ) ] }</string>
+    <string name="resource_form_character_set_special_char1"># $ % &amp; @ ^ ~</string>
+    <string name="resource_form_character_set_special_char2">. , : ;</string>
+    <string name="resource_form_character_set_special_char3">\' \" `</string>
+    <string name="resource_form_character_set_special_char4">/ \\ _ -</string>
+    <string name="resource_form_character_set_special_char5">&lt; * + ! ? =</string>
+    <string name="resource_form_character_set_emoji">🙂</string>
+    <string name="resource_form_word_case_lowercase">Строчные буквы</string>
+    <string name="resource_form_word_case_uppercase">Заглавные буквы</string>
+    <string name="resource_form_word_case_camelcase">Стиль написания CamelStyle</string>
     <string name="resource_form_description">Описание</string>
     <string name="resource_form_additional_uris">Дополнительные URI</string>
     <string name="resource_form_enter_description">Введите описание</string>
@@ -304,8 +361,22 @@
     <string name="resource_form_save">Сохранить</string>
     <string name="resource_form_edit_init_error">Не удалось инициализировать редактирование ресурса</string>
     <string name="resource_form_create_init_error">Не удалось инициализировать создание ресурса</string>
+    <string name="resource_form_created_share_failed">Resource created but not shared - sharing failed.</string>
+    <string name="resource_form_edited_share_failed">Unable to apply the confirmed permissions - please try again.</string>
+    <string name="resource_form_created_permissions_changed">Resource created but not shared - permissions changed in the meantime.</string>
     <string name="resource_form_remove_totp">Удалить TOTP</string>
     <string name="resource_form_remove_note">Удалить заметку</string>
+    <string name="resource_form_remove_pin_code">Удалить пин-код</string>
+    <string name="resource_form_pin_code">Пин-код</string>
+    <string name="resource_form_create_pin_code">Создать пин-код</string>
+    <string name="resource_form_pin_code_code">Код</string>
+    <string name="resource_form_enter_pin_code">Введите пин-код</string>
+    <string name="resource_form_pin_code_advanced">Расширенная генерация пин-кода</string>
+    <string name="resource_form_pin_code_length">Длина</string>
+    <string name="resource_form_pin_code_save_preferences">Сохранить настройки</string>
+    <string name="resource_form_pin_code_additional_information">Дополнительная информация</string>
+    <string name="resource_form_pin_code_validation_too_short">Пин-код должен содержать не менее %d цифр</string>
+    <string name="resource_form_pin_code_validation_too_long">Пин-код может содержать не более %d цифр</string>
     <string name="resource_form_no_name">без имени</string>
     <string name="resource_form_max_additional_uris_limit">Вы можете добавить максимум %d дополнительных URI</string>
     <string name="resource_form_appearance">Внешний вид</string>
@@ -321,6 +392,7 @@
     <string name="settings_debug_logs">Отладка, журналы</string>
     <string name="settings_disable">Отключено</string>
     <string name="settings_sign_out">Выйти</string>
+    <string name="settings_sign_out_server_error">Signed out on this device. The server session may still be active.</string>
     <string name="settings_title">Настройки</string>
     <string name="settings_disable_biometric_confirmation_message">После отключения отпечатка пальца вам нужно будет войти в систему, используя вашу парольную фразу.</string>
     <string name="settings_turn_on_biometric_title">Включить аутентификацию по отпечатку пальцев</string>
@@ -344,7 +416,12 @@
     <string name="settings_app_settings_biometry_error">Ошибка биометрии. %s</string>
     <string name="settings_app_settings_biometry_authentication_error">Ошибка биометрической аутентификации. %s</string>
     <string name="settings_app_settings_expert_settings">Экспертные настройки</string>
+    <string name="settings_app_settings_expert_settings_require_auth_on_every_entry">Требовать аутентификацию при каждом входе</string>
     <string name="settings_app_settings_expert_settings_hide_root">Скрывать диалог «устройство с правами суперпользователя»</string>
+    <string name="settings_app_settings_expert_settings_fetch_page_size">Размер страницы выборки API</string>
+    <string name="settings_page_size_description">Количество ресурсов, получаемых за один запрос API. Более высокие значения используют больше памяти, но уменьшают количество сетевых запросов.</string>
+    <string name="settings_page_size_exceeds_recommended_limit">Exceeds recommended limit. May cause app slowdowns.</string>
+    <string name="settings_page_size_restore_default_values">Restore default values</string>
     <string name="settings_autofill_autofill_title">Здесь вы можете изменить методы автозаполнения</string>
     <string name="settings_autofill_autofill_desc">Рекомендуется использовать метод службы автозаполнения, но производительность службы может зависеть от настроек оптимизации аккумулятора и устройства. \n\nЕсли Служба автозаполнения на вашем устройстве работает не надёжно, вы можете попробовать включить автозаполнение на основе службы специальных возможностей.</string>
     <string name="settings_autofill_autofill_service">Служба автозаполнения (рекомендуется)</string>
@@ -405,6 +482,15 @@
     <string name="resource_permissions_share_simulation_failed">Произошла ошибка во время симуляции совместного использования</string>
     <string name="resource_permissions_share_failed">Произошла ошибка во время совместного использования </string>
     <string name="resource_permissions_edit_permissions">Изменить права доступа</string>
+    <string name="confirm_permissions_title">Confirm permissions</string>
+    <string name="confirm_permissions_fetch_failure">Unable to load current permissions. Please try again.</string>
+    <string name="confirm_permissions_preparing">Preparing permissions to approve…</string>
+    <string name="confirm_permissions_refreshing_users_and_groups">Refreshing users and groups…</string>
+    <string name="confirm_permissions_drifted">The permissions changed in the meantime. Please review them and confirm again.</string>
+    <string name="confirm_permissions_drifted_single">Permissions for %1$s have changed</string>
+    <string name="confirm_permissions_drifted_multiple">Permissions for %1$s (and more) have changed</string>
+    <string name="confirm_permissions_indirect_access_single_user">%1$s is already part of the group %2$s</string>
+    <string name="confirm_permissions_indirect_access_multiple_users">%1$s (and more) already have access via group membership</string>
     <string name="group_permission_permission">Доступ</string>
     <string name="group_permission_group_members">Участники группы</string>
     <string name="group_permission_delete">Удалить разрешение</string>
@@ -419,6 +505,11 @@
     <string name="main_update_downloaded">Обновление Passbolt было загружено</string>
     <string name="main_update_download_in_progress">Загрузка в фоновом режиме. Мы уведомим вас о завершении загрузки.</string>
     <string name="main_update_downloaded_install">Установка</string>
+    <string name="deprecated_os_warning_title">Outdated Android version</string>
+    <string name="deprecated_os_warning_message">Your device runs an Android version that no longer receives security updates. Passbolt support for this version is scheduled to be phased out.</string>
+    <string name="deprecated_os_warning_call_to_action">To stay protected and keep receiving Passbolt updates, &lt;b&gt;update your device to a newer Android version&lt;/b&gt;.</string>
+    <string name="deprecated_os_warning_acknowledge">Я понимаю</string>
+    <string name="deprecated_os_warning_hide">Don\'t show again</string>
     <string name="dialog_encryption_error_title">Произошла ошибка шифрования</string>
     <string name="dialog_encryption_error_message">Произошла ошибка шифрования (%s). Пожалуйста, попробуйте еще раз.</string>
     <string name="resource_tags_section">Тэги</string>
@@ -430,7 +521,33 @@
     <string name="create_folder_name">Имя</string>
     <string name="create_folder_name_validation">Имя раздела не может быть пустым</string>
     <string name="create_folder_error_format">Невозможно создать раздел. %s</string>
+    <string name="enter_folder_name">Введите название папки</string>
     <string name="share_folder_error_format">Не удалось поделиться разделом. %s</string>
+    <string name="dialog_accessibility_consent_title">Как Passbolt использует службу специальных возможностей</string>
+    <string name="dialog_accessibility_consent_message">Passbolt использует службу специальных возможностей Android только для того, чтобы предлагать автозаполнение в приложениях и браузерах, которые не поддерживают стандартную платформу автозаполнения Android.
+
+ЧТО ДОСТУПНО
+Пока служба включена, Passbolt считывает только на вашем устройстве:
+• имя пакета активного приложения и веб-адрес, отображаемый браузерами, чтобы сопоставлять учетные данные с правильным сайтом или приложением;
+• структуру и идентификаторы полей ввода на текущем экране (например, является ли поле именем пользователя, паролем или одноразовым кодом), чтобы заполнить правильное значение;
+• события фокуса и касания этих полей, чтобы понимать, когда предлагать автозаполнение.
+
+КАК ИСПОЛЬЗУЮТСЯ ДАННЫЕ
+• Вся обработка происходит локально на вашем устройстве. Указанная выше информация используется только для обнаружения полей входа и заполнения учетных данных, когда вы выбираете автозаполнение.
+• Passbolt не передает, не предоставляет, не продает и не хранит содержимое экрана, содержимое полей, историю просмотров или список используемых вами приложений. Ничто из прочитанного службой специальных возможностей не покидает ваше устройство и не отправляется на серверы Passbolt или каким-либо третьим лицам.
+• Служба активна только пока экран включен, и вы можете отключить ее в любое время в Настройках Android › Специальные возможности или в настройках автозаполнения Passbolt.
+
+Нажимая \"Я прочитал и даю согласие\", вы подтверждаете, что прочитали и приняли изложенное выше.</string>
+    <string name="dialog_accessibility_consent_intro">Passbolt использует службу специальных возможностей Android только для предложения автозаполнения в приложениях и браузерах, которые не поддерживают стандартную платформу автозаполнения Android.</string>
+    <string name="dialog_accessibility_consent_section_what_title">К чему предоставляется доступ</string>
+    <string name="dialog_accessibility_consent_section_what_lead">Пока служба включена, Passbolt считывает только на вашем устройстве:</string>
+    <string name="dialog_accessibility_consent_section_what_bullet_1">имя пакета активного приложения и веб-адрес, отображаемый браузерами, чтобы сопоставлять учётные данные с правильным сайтом или приложением;</string>
+    <string name="dialog_accessibility_consent_section_what_bullet_2">структуру и идентификаторы полей ввода на текущем экране (например, является ли поле именем пользователя, паролем или одноразовым кодом), чтобы заполнить правильное значение;</string>
+    <string name="dialog_accessibility_consent_section_what_bullet_3">события фокуса и касания этих полей, чтобы понимать, когда предлагать автозаполнение.</string>
+    <string name="dialog_accessibility_consent_section_how_title">Как используются данные</string>
+    <string name="dialog_accessibility_consent_section_how_bullet_1">Вся обработка происходит локально на вашем устройстве. Указанная выше информация используется только для обнаружения полей входа и заполнения учётных данных, когда вы выбираете автозаполнение.</string>
+    <string name="dialog_accessibility_consent_section_how_bullet_2">Passbolt не передаёт, не предоставляет, не продаёт и не хранит содержимое экрана, содержимое полей, историю просмотров или список используемых вами приложений. Ничто из прочитанного службой специальных возможностей не покидает ваше устройство и не отправляется на серверы Passbolt или каким-либо третьим лицам.</string>
+    <string name="dialog_accessibility_consent_section_how_bullet_3">Служба активна только пока экран включён, и вы можете отключить её в любое время в Настройках Android › Специальные возможности или в настройках автозаполнения Passbolt.</string>
     <string name="import_profile_title">Импортировать учетную запись</string>
     <string name="import_profile_user_id">ID пользователя</string>
     <string name="import_profile_account_url">URL-адрес аккаунта</string>
@@ -525,6 +642,9 @@
     <string name="create_resource_menu_create_password">Пароль</string>
     <string name="create_resource_menu_create_note">Заметка</string>
     <string name="create_resource_menu_create_folder">Папка</string>
+    <string name="create_resource_menu_other">Другие</string>
+    <string name="create_resource_menu_other_title">Другие типы ресурсов</string>
+    <string name="create_resource_menu_create_pin_code">Пин-код</string>
     <string name="dialog_new_metadata_key_trust_changed">Ключ метаданных был изменён.</string>
     <string name="dialog_new_metadata_key_trust_modified_by_user">Ключ шифрования, используемый для обмена метаданными между пользователями, был обновлён пользователем %s.</string>
     <string name="dialog_new_metadata_key_trust_key_rotation_info">Если вы этого не ожидали, проверьте у вашего администратора.</string>
@@ -539,8 +659,7 @@
     arrays can be inconsistent when in other languages
     index / size is not used in code
     -->
-    <string-array name="username_hint_values"
-        tools:ignore="InconsistentArrays">
+    <string-array name="username_hint_values" tools:ignore="InconsistentArrays">
         <item>почта</item>
         <item>имя пользователя</item>
         <item>мобильный</item>
@@ -551,11 +670,27 @@
       arrays can be inconsistent when in other languages
       index / size is not used in code
     -->
-    <string-array name="password_hint_values"
-        tools:ignore="InconsistentArrays">
+    <string-array name="password_hint_values" tools:ignore="InconsistentArrays">
         <item>пароль</item>
         <item>секретный ключ</item>
         <item>парольная фраза</item>
+    </string-array>
+    <!--
+      arrays can be inconsistent when in other languages
+      index / size is not used in code
+    -->
+    <string-array name="totp_hint_values" tools:ignore="InconsistentArrays">
+        <item>одноразовый пароль</item>
+        <item>TOTP</item>
+        <item>одноразовый</item>
+        <item>одноразовый-код</item>
+        <item>подтверждение</item>
+        <item>код подтверждения</item>
+        <item>код аутентификации</item>
+        <item>код аутентификации</item>
+        <item>2FA</item>
+        <item>MFA</item>
+        <item>код безопасности</item>
     </string-array>
     <string-array name="dialog_encourage_autofill_setup_steps">
         <item>&lt;b&gt;Включить Автозаполнение&lt;/b&gt; настройки</item>

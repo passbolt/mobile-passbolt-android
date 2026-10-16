@@ -32,7 +32,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface GroupsLocalDataSource {
     suspend fun getGroups(
-        excludingIds: List<String>,
+        searchQuery: String?,
         userId: String,
     ): List<Group>
 

@@ -40,7 +40,6 @@ import com.proton.gopenpgp.crypto.Key
 import com.proton.gopenpgp.crypto.PGPHandle
 import com.proton.gopenpgp.crypto.VerifiedDataResult
 import com.proton.gopenpgp.crypto.VerifyCleartextResult
-import com.proton.gopenpgp.mobile.Mobile
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import timber.log.Timber
@@ -82,7 +81,6 @@ class OpenPgp(
             OpenPgpResult.Error(gopenPgpExceptionParser.parseGopenPgpException(exception))
         } finally {
             passphraseCopy.erase()
-            Mobile.freeOSMemory()
         }
     }
 
@@ -117,7 +115,6 @@ class OpenPgp(
             OpenPgpResult.Error(gopenPgpExceptionParser.parseGopenPgpException(exception))
         } finally {
             passphraseCopy.erase()
-            Mobile.freeOSMemory()
         }
     }
 
@@ -160,7 +157,6 @@ class OpenPgp(
             OpenPgpResult.Error(gopenPgpExceptionParser.parseGopenPgpException(exception))
         } finally {
             passphraseCopy.erase()
-            Mobile.freeOSMemory()
         }
     }
 
@@ -205,7 +201,6 @@ class OpenPgp(
             OpenPgpResult.Error(gopenPgpExceptionParser.parseGopenPgpException(exception))
         } finally {
             passphraseCopy.erase()
-            Mobile.freeOSMemory()
         }
     }
 
@@ -225,7 +220,6 @@ class OpenPgp(
             OpenPgpResult.Error(gopenPgpExceptionParser.parseGopenPgpException(exception))
         } finally {
             passphraseCopy.erase()
-            Mobile.freeOSMemory()
         }
     }
 
@@ -257,7 +251,6 @@ class OpenPgp(
             OpenPgpResult.Error(gopenPgpExceptionParser.parseGopenPgpException(exception))
         } finally {
             passphraseCopy.erase()
-            Mobile.freeOSMemory()
         }
     }
 
@@ -287,7 +280,6 @@ class OpenPgp(
             OpenPgpResult.Error(gopenPgpExceptionParser.parseGopenPgpException(exception))
         } finally {
             passphraseCopy.erase()
-            Mobile.freeOSMemory()
         }
     }
 
@@ -301,8 +293,6 @@ class OpenPgp(
         } catch (exception: Exception) {
             Timber.e(exception, "There was an error during generatePublicKey")
             OpenPgpResult.Error(gopenPgpExceptionParser.parseGopenPgpException(exception))
-        } finally {
-            Mobile.freeOSMemory()
         }
 
     suspend fun getKeyFingerprint(key: String): OpenPgpResult<String> =
@@ -315,8 +305,6 @@ class OpenPgp(
         } catch (exception: Exception) {
             Timber.e(exception, "There was an error during getPrivateKeyFingerprint")
             OpenPgpResult.Error(gopenPgpExceptionParser.parseGopenPgpException(exception))
-        } finally {
-            Mobile.freeOSMemory()
         }
 
     suspend fun verifyClearTextSignature(
@@ -355,13 +343,9 @@ class OpenPgp(
         } catch (exception: Exception) {
             Timber.e(exception, "There was an error during verifyClearTextSignature")
             return OpenPgpResult.Error(gopenPgpExceptionParser.parseGopenPgpException(exception))
-        } finally {
-            Mobile.freeOSMemory()
         }
     }
 
-    // this method is meant to be called in a loop
-    // call freeMemory() after loop completes
     suspend fun decryptMessageArmoredWithSessionKey(
         sessionKeyHexString: String,
         message: String,
@@ -390,8 +374,6 @@ class OpenPgp(
         }
     }
 
-    // this method is meant to be called in a loop
-    // call freeMemory() after loop completes
     @OptIn(ExperimentalStdlibApi::class)
     suspend fun decryptMessageArmoredWithSessionKeyRetrieve(
         unlockedKey: Key,
@@ -463,12 +445,7 @@ class OpenPgp(
             return OpenPgpResult.Error(gopenPgpExceptionParser.parseGopenPgpException(exception))
         } finally {
             passphraseCopy.erase()
-            Mobile.freeOSMemory()
         }
-    }
-
-    fun freeMemory() {
-        Mobile.freeOSMemory()
     }
 
     /**

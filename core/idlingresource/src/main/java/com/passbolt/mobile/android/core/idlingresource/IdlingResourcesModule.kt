@@ -38,4 +38,5 @@ val idlingResourcesModule =
         singleOf(::TransferAccountIdlingResource)
         singleOf(::ResourceDetailActionIdlingResource)
         singleOf(::CreateMenuModelIdlingResource)
+        singleOf(::SearchIdlingResource)
     }

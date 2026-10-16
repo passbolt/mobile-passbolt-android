@@ -1,8 +1,8 @@
 package com.passbolt.mobile.android.entity.group
 
-import androidx.room.Entity
-import androidx.room.ForeignKey
-import androidx.room.Index
+import androidx.room3.Entity
+import androidx.room3.ForeignKey
+import androidx.room3.Index
 import com.passbolt.mobile.android.entity.folder.Folder
 import com.passbolt.mobile.android.entity.resource.Permission
 

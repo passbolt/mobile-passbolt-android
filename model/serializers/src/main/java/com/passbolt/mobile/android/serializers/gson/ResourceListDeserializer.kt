@@ -33,7 +33,6 @@ import com.passbolt.mobile.android.domain.metadata.model.MetadataKeyPurpose.DECR
 import com.passbolt.mobile.android.domain.metadata.usecase.db.GetLocalMetadataKeysUseCase
 import com.passbolt.mobile.android.domain.resourcetypes.usecase.ResourceTypeIdToSlugMappingProvider
 import com.passbolt.mobile.android.dto.response.ResourceResponseDto
-import com.passbolt.mobile.android.gopenpgp.OpenPgp
 import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.allSlugs
 import kotlinx.coroutines.runBlocking
 import org.koin.core.component.KoinComponent
@@ -46,7 +45,6 @@ open class ResourceListDeserializer(
     private val resourceTypeIdToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider,
     private val getLocalMetadataKeysUseCase: GetLocalMetadataKeysUseCase,
     private val coroutineLaunchContext: CoroutineLaunchContext,
-    private val openPgp: OpenPgp,
 ) : JsonDeserializer<List<ResourceResponseDto>>,
     KoinComponent {
     override fun deserialize(
@@ -95,7 +93,6 @@ open class ResourceListDeserializer(
                             null
                         }
                     }
-                openPgp.freeMemory()
                 Timber.d("Finished resource list deserialization")
                 results
             } else {

@@ -12,8 +12,7 @@ dependencies {
 
     implementation(platform(libs.koin.bom))
     implementation(libs.koin)
-    implementation(libs.room.core)
-    implementation(libs.room.runtime)
+    api(libs.room.runtime)
     implementation(libs.sqlite.cipher) { artifact { type = "aar" } }
     ksp(libs.room.compiler)
     implementation(libs.sqlite)
@@ -41,6 +40,6 @@ android {
     }
 }
 
-room {
+room3 {
     schemaDirectory("$projectDir/schemas")
 }

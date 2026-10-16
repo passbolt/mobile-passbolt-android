@@ -22,7 +22,6 @@ dependencies {
     implementation(libs.koin)
     implementation(libs.gson)
     implementation(libs.jsonschema.friend)
-    implementation(libs.room.core)
 
     testImplementation(project(":commontest"))
 }

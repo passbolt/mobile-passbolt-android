@@ -1,6 +1,5 @@
 package com.passbolt.mobile.android.ui
 
-import com.passbolt.mobile.android.common.search.Searchable
 import kotlinx.serialization.Serializable
 
 /**
@@ -43,7 +42,7 @@ sealed class PermissionModel(
 }
 
 @Serializable
-sealed class PermissionModelUi : Searchable {
+sealed class PermissionModelUi {
     abstract val permission: ResourcePermission
     abstract val permissionId: String
 
@@ -52,7 +51,6 @@ sealed class PermissionModelUi : Searchable {
         override val permission: ResourcePermission,
         override val permissionId: String,
         val user: UserWithAvatar,
-        override val searchCriteria: String = user.searchCriteria,
     ) : PermissionModelUi()
 
     @Serializable
@@ -60,7 +58,6 @@ sealed class PermissionModelUi : Searchable {
         override val permission: ResourcePermission,
         override val permissionId: String,
         val group: GroupModel,
-        override val searchCriteria: String = group.searchCriteria,
     ) : PermissionModelUi()
 }
 
@@ -72,8 +69,7 @@ data class UserWithAvatar(
     val userName: String,
     val isDisabled: Boolean,
     val avatarUrl: String?,
-    override val searchCriteria: String = "$userName$firstName$lastName",
-) : Searchable {
+) {
     val fullName: String
         get() = "$firstName $lastName"
 }

@@ -1,7 +1,8 @@
 package com.passbolt.mobile.android.database.migrations
 
-import androidx.room.migration.Migration
-import androidx.sqlite.db.SupportSQLiteDatabase
+import androidx.room3.migration.Migration
+import androidx.sqlite.SQLiteConnection
+import androidx.sqlite.execSQL
 
 /**
  * Passbolt - Open source password manager for teams
@@ -76,8 +77,8 @@ object Migration16to17 : Migration(16, 17) {
             ")"
     private const val ADD_USER_KEY_ID_COLUMN = "ALTER TABLE User ADD COLUMN `userKeyId` TEXT NOT NULL DEFAULT ''"
 
-    override fun migrate(db: SupportSQLiteDatabase) {
-        with(db) {
+    override suspend fun migrate(connection: SQLiteConnection) {
+        with(connection) {
             execSQL(DROP_RESOURCE_TYPE_FIELDS_CROSS_REF)
             execSQL(DROP_RESOURCE_TYPE_FIELDS)
             execSQL(DROP_RESOURCE_TYPE)

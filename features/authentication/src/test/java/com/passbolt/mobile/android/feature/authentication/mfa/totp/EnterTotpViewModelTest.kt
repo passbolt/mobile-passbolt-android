@@ -2,7 +2,6 @@ package com.passbolt.mobile.android.feature.authentication.mfa.totp
 
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
-import com.passbolt.mobile.android.feature.authentication.auth.usecase.RefreshSessionUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.VerifyTotpUseCase
 import com.passbolt.mobile.android.feature.authentication.mfa.totp.EnterTotpIntent.Close
@@ -39,7 +38,6 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
-import org.mockito.kotlin.whenever
 import kotlin.test.assertIs
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -52,7 +50,6 @@ class EnterTotpViewModelTest : KoinTest {
                 module {
                     single { mock<SignOutUseCase>() }
                     single { mock<VerifyTotpUseCase>() }
-                    single { mock<RefreshSessionUseCase>() }
                     factory { params ->
                         EnterTotpViewModel(
                             authToken = params[0],
@@ -60,7 +57,6 @@ class EnterTotpViewModelTest : KoinTest {
                             isSetupFlow = params[2],
                             signOutUseCase = get(),
                             verifyTotpUseCase = get(),
-                            refreshSessionUseCase = get(),
                         )
                     }
                 },
@@ -82,15 +78,12 @@ class EnterTotpViewModelTest : KoinTest {
     }
 
     @Test
-    fun `unauthorized triggers session refresh retry and on failure navigates to login`() =
+    fun `unauthorized navigates to login`() =
         runTest {
             val verifyTotpUseCase: VerifyTotpUseCase = get()
             verifyTotpUseCase.stub {
                 on { execute(any()) } doReturn VerifyTotpUseCase.Output.Unauthorized
             }
-
-            val refreshSessionUseCase: RefreshSessionUseCase = get()
-            whenever(refreshSessionUseCase.execute(any())) doReturn RefreshSessionUseCase.Output.Failure
 
             viewModel = get(parameters = { parametersOf(AUTH_TOKEN, false, false) })
 
@@ -196,5 +189,6 @@ class EnterTotpViewModelTest : KoinTest {
 
     private companion object {
         const val AUTH_TOKEN = "test-auth-token"
+        const val MFA_HEADER = "passbolt_mfa=jwt"
     }
 }

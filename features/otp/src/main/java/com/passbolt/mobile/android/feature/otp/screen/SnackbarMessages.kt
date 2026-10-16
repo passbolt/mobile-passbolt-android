@@ -18,6 +18,7 @@ import com.passbolt.mobile.android.feature.otp.screen.SnackbarErrorType.RESOURCE
 import com.passbolt.mobile.android.feature.otp.screen.SnackbarErrorType.SECRET_SCHEMA_INVALID
 import com.passbolt.mobile.android.feature.otp.screen.SnackbarErrorType.SHARE_FAILED
 import com.passbolt.mobile.android.feature.otp.screen.SnackbarSuccessType.METADATA_KEY_IS_TRUSTED
+import com.passbolt.mobile.android.feature.otp.screen.SnackbarSuccessType.OTP_CREATED
 import com.passbolt.mobile.android.feature.otp.screen.SnackbarSuccessType.RESOURCE_CREATED
 import com.passbolt.mobile.android.feature.otp.screen.SnackbarSuccessType.RESOURCE_DELETED
 import com.passbolt.mobile.android.feature.otp.screen.SnackbarSuccessType.RESOURCE_EDITED
@@ -46,6 +47,7 @@ internal fun getSuccessMessage(
         RESOURCE_CREATED -> context.getString(R.string.resource_form_create_success)
         RESOURCE_DELETED -> context.getString(R.string.otp_deleted)
         METADATA_KEY_IS_TRUSTED -> context.getString(R.string.common_metadata_key_is_trusted)
+        OTP_CREATED -> context.getString(R.string.otp_new_otp_created)
     }
 
 @Suppress("CyclomaticComplexMethod")

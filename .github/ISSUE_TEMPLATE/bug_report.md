@@ -20,6 +20,7 @@ If you are certain this is an Android application bug, please fill in the format
 -->
 
 * Application version: <!-- e.g. 3.1.0 -->
+* Installation source: <!-- Google Play, GitHub release APK, or built from source -->
 * API edition & version: <!-- e.g. CE 5.12.0 -->
 * Environment
     * Android OS version: <!-- e.g. 16 -->

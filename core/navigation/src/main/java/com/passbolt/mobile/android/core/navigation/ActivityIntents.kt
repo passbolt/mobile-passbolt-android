@@ -99,21 +99,28 @@ object ActivityIntents {
 
     @kotlinx.serialization.Serializable
     sealed class AuthConfig : Serializable {
+        @kotlinx.serialization.Serializable
         data object Startup : AuthConfig()
 
+        @kotlinx.serialization.Serializable
         data object Setup : AuthConfig()
 
+        @kotlinx.serialization.Serializable
         data object ManageAccount : AuthConfig()
 
         // refreshes backend session and passphrase
+        @kotlinx.serialization.Serializable
         data object SignIn : AuthConfig()
 
         // refreshes only passphrase
+        @kotlinx.serialization.Serializable
         data object RefreshPassphrase : AuthConfig()
 
         // tries to refresh background session and if fails fallbacks to SignIn
+        @kotlinx.serialization.Serializable
         data object RefreshSession : AuthConfig()
 
+        @kotlinx.serialization.Serializable
         class Mfa(
             val provider: String,
         ) : AuthConfig()

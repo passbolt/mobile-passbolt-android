@@ -36,13 +36,13 @@ class GetLocalUsersUseCase(
     override suspend fun execute(input: Input): Output {
         val selectedAccountId = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
         return usersRepository
-            .getLocalUsers(selectedAccountId, input.excludedByIds)
+            .getLocalUsers(selectedAccountId, input.searchQuery)
             .map { it.toUserModel() }
             .let { Output(it) }
     }
 
     data class Input(
-        val excludedByIds: List<String> = emptyList(),
+        val searchQuery: String? = null,
     )
 
     data class Output(

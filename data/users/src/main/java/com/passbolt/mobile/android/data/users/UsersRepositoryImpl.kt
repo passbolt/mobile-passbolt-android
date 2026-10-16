@@ -51,8 +51,8 @@ internal class UsersRepositoryImpl(
 
     override suspend fun getLocalUsers(
         selectedAccountId: String,
-        excludingIds: List<String>,
-    ): List<UserProfile> = localDataSource.getUsers(selectedAccountId, excludingIds)
+        searchQuery: String?,
+    ): List<UserProfile> = localDataSource.getUsers(selectedAccountId, searchQuery)
 
     override suspend fun refreshUsers(selectedAccountId: String): DomainResult<List<UserProfile>> =
         remoteDataSource.getUsers().also {

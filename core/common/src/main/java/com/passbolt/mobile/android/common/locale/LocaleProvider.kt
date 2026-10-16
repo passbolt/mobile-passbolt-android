@@ -1,5 +1,3 @@
-package com.passbolt.mobile.android.common.search
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -22,14 +20,11 @@ package com.passbolt.mobile.android.common.search
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class SearchableMatcher {
-    fun matches(
-        searchable: Searchable,
-        query: String,
-    ): Boolean =
-        searchable.searchCriteria
-            .removeWhiteSpace()
-            .contains(query.removeWhiteSpace(), ignoreCase = true)
 
-    private fun String.removeWhiteSpace() = replace("\\s".toRegex(), "")
+package com.passbolt.mobile.android.common.locale
+
+import java.util.Locale
+
+interface LocaleProvider {
+    fun getCurrentLocale(): Locale
 }

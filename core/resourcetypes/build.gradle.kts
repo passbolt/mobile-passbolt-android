@@ -17,7 +17,6 @@ dependencies {
 
     implementation(platform(libs.koin.bom))
     implementation(libs.koin)
-    implementation(libs.room.core)
     implementation(libs.sqlite.cipher) { artifact { type = "aar" } }
 }
 

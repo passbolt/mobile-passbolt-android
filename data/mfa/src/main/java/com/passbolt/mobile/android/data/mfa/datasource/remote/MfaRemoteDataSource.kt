@@ -31,19 +31,22 @@ import com.passbolt.mobile.android.core.networking.ResponseHandler
 import com.passbolt.mobile.android.core.networking.callWithHandler
 import com.passbolt.mobile.android.core.networking.toDomainResult
 import com.passbolt.mobile.android.data.mfa.datasource.remote.api.MfaApi
+import com.passbolt.mobile.android.data.mfa.mapper.toDuoPrompt
+import com.passbolt.mobile.android.data.mfa.mapper.toDuoVerification
+import com.passbolt.mobile.android.data.mfa.mapper.toTotpVerification
+import com.passbolt.mobile.android.data.mfa.mapper.toWebauthnDelegatedPrompt
+import com.passbolt.mobile.android.data.mfa.mapper.toWebauthnVerification
+import com.passbolt.mobile.android.data.mfa.mapper.toYubikeyVerification
 import com.passbolt.mobile.android.domain.mfa.MfaDataSource
 import com.passbolt.mobile.android.domain.mfa.model.DuoPrompt
 import com.passbolt.mobile.android.domain.mfa.model.DuoVerification
 import com.passbolt.mobile.android.domain.mfa.model.TotpVerification
+import com.passbolt.mobile.android.domain.mfa.model.WebauthnDelegatedPrompt
+import com.passbolt.mobile.android.domain.mfa.model.WebauthnVerification
 import com.passbolt.mobile.android.domain.mfa.model.YubikeyVerification
 import com.passbolt.mobile.android.dto.request.HotpRequest
 import com.passbolt.mobile.android.dto.request.TotpRequest
-import org.json.JSONException
-import org.json.JSONObject
-import retrofit2.Response
-import java.net.HttpURLConnection.HTTP_BAD_REQUEST
-import java.net.HttpURLConnection.HTTP_MOVED_TEMP
-import java.net.HttpURLConnection.HTTP_UNAUTHORIZED
+import com.passbolt.mobile.android.dto.request.WebauthnDelegatedCallbackRequest
 
 internal class MfaRemoteDataSource(
     private val mfaApi: MfaApi,
@@ -58,7 +61,7 @@ internal class MfaRemoteDataSource(
     ): DomainResult<TotpVerification> =
         callWithHandler(responseHandler) {
             mfaApi.verifyTotp(TotpRequest(otp, remember), authToken.toBearer())
-        }.toDomainResult().map { it.toTotpVerification() }
+        }.toDomainResult().map { it.toTotpVerification(cookieExtractor, errorHeaderMapper) }
 
     override suspend fun verifyYubikeyOtp(
         otp: String,
@@ -67,12 +70,12 @@ internal class MfaRemoteDataSource(
     ): DomainResult<YubikeyVerification> =
         callWithHandler(responseHandler) {
             mfaApi.verifyYubikeyOtp(HotpRequest(otp, remember), authToken.toBearer())
-        }.toDomainResult().map { it.toYubikeyVerification() }
+        }.toDomainResult().map { it.toYubikeyVerification(cookieExtractor) }
 
     override suspend fun getDuoPrompt(authToken: String?): DomainResult<DuoPrompt> =
         callWithHandler(responseHandler) {
             mfaApi.getDuoPromptUrl(authToken.toBearer())
-        }.toDomainResult().map { it.toDuoPrompt() }
+        }.toDomainResult().map { it.toDuoPrompt(cookieExtractor) }
 
     override suspend fun verifyDuoCallback(
         authToken: String?,
@@ -87,71 +90,29 @@ internal class MfaRemoteDataSource(
                 state = state,
                 code = code,
             )
-        }.toDomainResult().map { it.toDuoVerification() }
+        }.toDomainResult().map { it.toDuoVerification(cookieExtractor) }
 
-    private fun Response<Void>.toTotpVerification(): TotpVerification =
-        when {
-            isSuccessful -> TotpVerification.Succeeded(mfaHeader())
-            code() == HTTP_UNAUTHORIZED -> TotpVerification.Unauthorized
-            errorHeaderMapper.getValidationFieldsError(errorBody())?.contains(VALID_OTP) == true -> TotpVerification.WrongOtp
-            else -> TotpVerification.OtherFailure(code())
-        }
+    override suspend fun getWebauthnDelegatedPrompt(authToken: String?): DomainResult<WebauthnDelegatedPrompt> =
+        callWithHandler(responseHandler) {
+            mfaApi.getWebauthnDelegatedPrompt(authToken.toBearer())
+        }.toDomainResult().map { it.toWebauthnDelegatedPrompt() }
 
-    private fun Response<Void>.toYubikeyVerification(): YubikeyVerification =
-        when {
-            isSuccessful -> YubikeyVerification.Succeeded(mfaHeader())
-            code() == HTTP_UNAUTHORIZED -> YubikeyVerification.Unauthorized
-            code() == HTTP_BAD_REQUEST && isYubikeyFromAnotherUser() -> YubikeyVerification.NotFromCurrentUser
-            else -> YubikeyVerification.OtherFailure(code())
-        }
-
-    private fun Response<Void>.toDuoPrompt(): DuoPrompt =
-        when (code()) {
-            HTTP_MOVED_TEMP -> {
-                val location = headers()[LOCATION_HEADER]
-                val duoUuid = cookieExtractor.getCookieValue(this, DUO_UUID_COOKIE)
-                if (location != null && duoUuid != null) {
-                    DuoPrompt.Found(location, duoUuid)
-                } else {
-                    DuoPrompt.NotFound
-                }
-            }
-            HTTP_UNAUTHORIZED -> DuoPrompt.Unauthorized
-            else -> DuoPrompt.OtherFailure(code())
-        }
-
-    private fun Response<Void>.toDuoVerification(): DuoVerification =
-        if (isSuccessful) {
-            DuoVerification.Succeeded(mfaHeader())
-        } else {
-            DuoVerification.Failed(message())
-        }
-
-    private fun Response<Void>.mfaHeader(): String? = cookieExtractor.get(this, CookieExtractor.MFA_COOKIE)
-
-    // checks if field "isSameYubikeyId" exists in the response - that means that it's not a Yubikey
-    // that is associated with the account
-    private fun Response<Void>.isYubikeyFromAnotherUser(): Boolean =
-        try {
-            errorBody()?.string()?.let { body ->
-                JSONObject(body)
-                    .getJSONObject(RESPONSE_BODY)
-                    .getJSONObject(RESPONSE_BODY_HOTP)
-                    .has(HOTP_BODY_IS_SAME_YUBIKEY)
-            } ?: false
-        } catch (exception: JSONException) {
-            false
-        }
+    override suspend fun verifyWebauthnDelegatedToken(
+        authToken: String?,
+        delegatedToken: String,
+        delegatedSecret: String,
+        remember: Boolean,
+    ): DomainResult<WebauthnVerification> =
+        callWithHandler(responseHandler) {
+            mfaApi.verifyWebauthnDelegatedToken(
+                WebauthnDelegatedCallbackRequest(delegatedToken, delegatedSecret, remember),
+                authToken.toBearer(),
+            )
+        }.toDomainResult().map { it.toWebauthnVerification(cookieExtractor) }
 
     private fun String?.toBearer(): String? = this?.let { "Bearer $it" }
 
     private companion object {
-        private const val VALID_OTP = "isValidOtp"
-        private const val LOCATION_HEADER = "location"
-        private const val DUO_UUID_COOKIE = "passbolt_duo_state"
         private const val DUO_STATE_COOKIE_TEMPLATE = "passbolt_duo_state=%s"
-        private const val RESPONSE_BODY = "body"
-        private const val RESPONSE_BODY_HOTP = "hotp"
-        private const val HOTP_BODY_IS_SAME_YUBIKEY = "isSameYubikeyId"
     }
 }

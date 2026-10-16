@@ -33,6 +33,7 @@ import androidx.test.filters.MediumTest
 import androidx.test.platform.app.InstrumentationRegistry
 import com.passbolt.mobile.android.core.idlingresource.CreateFolderIdlingResource
 import com.passbolt.mobile.android.core.idlingresource.ResourcesFullRefreshIdlingResource
+import com.passbolt.mobile.android.core.idlingresource.SearchIdlingResource
 import com.passbolt.mobile.android.core.idlingresource.SignInIdlingResource
 import com.passbolt.mobile.android.core.localization.R.string.filters_menu_folders
 import com.passbolt.mobile.android.core.localization.R.string.no_passwords
@@ -43,6 +44,8 @@ import com.passbolt.mobile.android.helpers.chooseFilter
 import com.passbolt.mobile.android.helpers.getString
 import com.passbolt.mobile.android.helpers.searchAndOpenFirstFolderByName
 import com.passbolt.mobile.android.helpers.signIn
+import com.passbolt.mobile.android.helpers.waitForCreateButton
+import com.passbolt.mobile.android.helpers.waitForTextDisplayed
 import com.passbolt.mobile.android.instrumentationTestsModule
 import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
 import com.passbolt.mobile.android.rules.IdlingResourceRule
@@ -84,11 +87,13 @@ class FoldersListTest : KoinTest {
         let {
             val signInIdlingResource: SignInIdlingResource by inject()
             val createFolderIdlingResource: CreateFolderIdlingResource by inject()
+            val searchIdlingResource: SearchIdlingResource by inject()
             IdlingResourceRule(
                 arrayOf(
                     signInIdlingResource,
                     createFolderIdlingResource,
                     resourcesFullRefreshIdlingResource,
+                    searchIdlingResource,
                 ),
             )
         }
@@ -125,7 +130,9 @@ class FoldersListTest : KoinTest {
             onNode(hasTestTag(HomeAppBar.ICON), useUnmergedTree = true).assertExists() // Folder icon
             onNodeWithTag(SearchField.INPUT).assertExists()
             onNodeWithTag(Home.SEARCH_FILTER).assertExists()
+            waitForTextDisplayed(getString(no_passwords))
             onNodeWithText(getString(no_passwords)).assertIsDisplayed()
+            waitForCreateButton()
             onNodeWithTag(Home.FAB).assertExists()
         }
     }

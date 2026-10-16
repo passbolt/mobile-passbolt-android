@@ -30,6 +30,7 @@ import com.passbolt.mobile.android.common.datarefresh.DataRefreshStatus.Idle.Not
 import com.passbolt.mobile.android.common.datarefresh.DataRefreshStatus.InProgress
 import com.passbolt.mobile.android.common.datarefresh.DataRefreshTrackingFlow
 import com.passbolt.mobile.android.core.compose.SideEffectViewModel
+import com.passbolt.mobile.android.core.idlingresource.SearchIdlingResource
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.core.ui.search.SearchInputEndIconMode.AVATAR
@@ -106,6 +107,7 @@ import com.passbolt.mobile.android.feature.home.screen.SnackbarErrorType.FETCH_F
 import com.passbolt.mobile.android.feature.home.screen.SnackbarErrorType.NO_SHARED_KEY_ACCESS
 import com.passbolt.mobile.android.feature.home.screen.SnackbarErrorType.PROFILE_FETCH_FAILURE
 import com.passbolt.mobile.android.feature.home.screen.SnackbarErrorType.TOGGLE_FAVOURITE_FAILURE
+import com.passbolt.mobile.android.feature.home.screen.SnackbarSuccessType.OTP_CREATED
 import com.passbolt.mobile.android.feature.home.screen.SnackbarSuccessType.RESOURCE_CREATED
 import com.passbolt.mobile.android.feature.home.screen.SnackbarSuccessType.RESOURCE_DELETED
 import com.passbolt.mobile.android.feature.home.screen.SnackbarSuccessType.RESOURCE_EDITED
@@ -152,6 +154,7 @@ internal class HomeViewModel(
     private val detectAutofillConflict: DetectAutofillConflict,
     private val userProfileInteractor: UserProfileInteractor,
     private val userProfileRefreshTrackingFlow: UserProfileRefreshTrackingFlow,
+    private val searchIdlingResource: SearchIdlingResource,
 ) : SideEffectViewModel<HomeState, HomeSideEffect>(HomeState()),
     KoinComponent {
     private val resourcePropertiesActionsInteractor: ResourcePropertiesActionsInteractor
@@ -188,11 +191,13 @@ internal class HomeViewModel(
                                 viewState.value.showSuggestedModel,
                             )
                         updateViewState { copy(homeData = homeData, isSearching = false) }
+                        searchIdlingResource.setIdle(true)
                     } catch (exception: CancellationException) {
                         throw exception
                     } catch (exception: Exception) {
                         Timber.e(exception, "Failed to apply the search query")
                         updateViewState { copy(isSearching = false) }
+                        searchIdlingResource.setIdle(true)
                     }
                 }
         }
@@ -432,6 +437,7 @@ internal class HomeViewModel(
     private fun processOtpScanResult(intent: OtpQRScanReturned) {
         if (intent.otpCreated) {
             emitSideEffect(InitiateDataRefresh)
+            emitSideEffect(ShowSuccessSnackbar(OTP_CREATED))
         } else {
             if (intent.otpManualCreationChosen) {
                 emitSideEffect(
@@ -467,6 +473,7 @@ internal class HomeViewModel(
             return
         }
         searchQueryFlow.value = searchQuery
+        searchIdlingResource.setIdle(false)
         updateViewState {
             copy(
                 searchInputEndIconMode = if (searchQuery.isNotBlank()) CLEAR else AVATAR,
@@ -621,6 +628,11 @@ internal class HomeViewModel(
                 emitSideEffect(ShowErrorSnackbar(NO_SHARED_KEY_ACCESS))
             }
         }
+    }
+
+    override fun onCleared() {
+        searchIdlingResource.setIdle(true)
+        super.onCleared()
     }
 
     companion object {

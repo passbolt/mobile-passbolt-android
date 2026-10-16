@@ -15,6 +15,7 @@
     <string name="default_home_search_hint">Sök namn, användare eller url</string>
     <string name="all_items_home_search_hint">Sök namn, användare, url eller tagg</string>
     <string name="user_search_hint">Sök efter användare…</string>
+    <string name="search_in_progress">Searching…</string>
     <string name="no_passwords">Det finns inga lösenord</string>
     <string name="no_otps">Det finns inga TOTP</string>
     <string name="authentication_required">Autentisering krävs</string>
@@ -28,6 +29,9 @@
     <string name="shared_with">Delade med</string>
     <string name="location">Plats</string>
     <string name="content_not_available">Innehållet är inte längre tillgängligt</string>
+    <string name="consent">Jag har läst och samtycker</string>
+    <string name="accessibility_policies_accept">Godkänn</string>
+    <string name="accessibility_policies_decline">Avböj</string>
     <string name="name_suspended">%s (avstängd)</string>
     <string name="name_expired">%s (utgånget)</string>
     <string name="proceed">Fortsätt</string>
@@ -43,6 +47,7 @@
     <string name="common_sign_out">Logga ut</string>
     <string name="common_data_refresh_error">Ett fel uppstod vid datauppdatering. Svep nedåt för att uppdatera.</string>
     <string name="common_decryption_failure">Fel vid dekryptering av hemlighet</string>
+    <string name="common_invalid_totp_parameters">Ogiltiga TOTP-parametrar</string>
     <string name="common_metadata_encryption_failure">Fel vid kryptering av metadata</string>
     <string name="common_fetch_failure">Fel vid hämtning av hemlighet</string>
     <string name="common_encryption_failure">Ett fel uppstod vid kryptering av hemlighet</string>
@@ -53,6 +58,8 @@
     <string name="common_metadata_key_verification_failure">Kunde inte verifiera metadatanycklar</string>
     <string name="common_metadata_key_is_trusted">Ny metadatanyckel är betrodd</string>
     <string name="common_metadata_key_trust_failed">Det gick inte att lita på den nya metadatanyckeln</string>
+    <string name="common_password_policies_fetch_failed">Failed to fetch password policies - using defaults</string>
+    <string name="common_password_expiry_fetch_failed">Failed to fetch password expiry settings - using defaults</string>
     <string name="common_message_resource_edited">Resursen %s har redigerats.</string>
     <string name="common_message_resource_deleted">Resursen %s har raderats.</string>
     <string name="common_message_resource_shared">Resursbehörigheterna uppdaterades.</string>
@@ -69,6 +76,9 @@
     <string name="biometric_changed_title">Fingeravtrycksändringar upptäcktes</string>
     <string name="biometric_changed_message">Du måste logga in med lösenfras den här gången och aktivera fingeravtryck i Inställningar igen.</string>
     <string name="biometric_authenticate_again">Vänligen logga in med lösenfras igen</string>
+    <string name="biometric_decrypt_error_message">Biometrisk inloggning är tillfälligt otillgänglig. Ange din lösenfras för att fortsätta.</string>
+    <string name="biometric_encrypt_error_message">Det gick inte att slutföra konfigureringen av biometri. Försök igen eller fortsätt utan den.</string>
+    <string name="biometric_no_crypto_cipher">Din enhet använde PIN-kod eller mönster i stället för biometri. Använd biometrisk upplåsning eller ange din lösenfras.</string>
     <string name="settings_licenses_title">Licenser</string>
     <string name="settings_logs_title">Loggar</string>
     <string name="resource_will_be_deleted">Detta kommer permanent att ta bort lösenordet från ditt konto.</string>
@@ -150,8 +160,11 @@
     <string name="auth_decryption_error_title">Dekrypteringsfel</string>
     <string name="auth_decryption_error_description">Ett dekrypteringsfel uppstod. Försök igen\n</string>
     <string name="auth_decryption_error_cause">Open PGP-fel är:\n%s</string>
+    <string name="auth_error_server_signature_invalid">Server signature invalid</string>
     <string name="auth_error_invalid_signature">Fel vid verifiering av utmaning (ogiltig signatur)</string>
     <string name="auth_error_token_expired">Fel vid verifiering av utmaning (token har löpt ut)</string>
+    <string name="auth_error_verify_token_mismatch">Challenge verification error (verify token mismatch)</string>
+    <string name="auth_error_domain_mismatch">Challenge verification error (domain mismatch)</string>
     <string name="auth_error_challenge_verification_failure">Misslyckad verifiering av utmaning</string>
     <string name="auth_error_profile_fetch_failure">Ett fel uppstod under profiluppdatering</string>
     <string name="dialog_account_does_not_exist_title">Kontot finns inte</string>
@@ -181,10 +194,12 @@ Kontakta din administratör för mer information.</string>
     <string name="autofill_service_name">Passbolt Autofyll</string>
     <string name="dialog_encourage_autofill_header">Logga in i dina favoritappar på 3 sekunder!</string>
     <string name="dialog_autofill_header">Autofyll</string>
+    <string name="dialog_encourage_autofill_accessibility_description">Det här alternativet använder Androids tillgänglighetstjänst för att autofylla inloggningsuppgifter i appar och webbläsare som inte stöder Androids inbyggda autofyllning. Tryck på reglaget nedan för att granska vad som nås och ge ditt samtycke.</string>
     <string name="dialog_encourage_autofill_accessibility_samsung">Samsung</string>
     <string name="dialog_encourage_autofill_accessibility_xiaomi">Xiaomi</string>
     <string name="dialog_encourage_autofill_accessibility_huawei">Huawei</string>
     <string name="dialog_encourage_autofill_accessibility_other">Annat</string>
+    <string name="dialog_encourage_autofill_accessibility_title">Aktivera autofyllning via tillgänglighetstjänsten</string>
     <string name="dialog_encourage_autofill_go_to_settings">Gå till inställningar</string>
     <string name="dialog_encourage_autofill_service_header">Aktivera autofyll för de flesta appar</string>
     <string name="dialog_encourage_autofill_service_description">I Android-inställningarna, välj Passbolt, slå på växlingen och tryck på OK.
@@ -213,9 +228,12 @@ den aktiverade autofyll-funktionen att föreslå att fylla i dina tidigare tilla
     <string name="autofill_service_enable_overlay">Aktivera overlay-behörighet</string>
     <string name="autofill_service_overlay_description"><![CDATA[Autofyll användarnamn och lösenord i Androids webbläsare. Vänligen aktivera behörigheten ”Rita över andra appar” för Passbolt Autofyll]]></string>
     <string name="autofill_service_enable_service">Aktivera autofyll för de flesta appar</string>
+    <string name="autofill_service_enable_service_description"><![CDATA[Identifiera inloggningsfält i appar och webbläsare och erbjud autofyllning. Kräver ditt samtycke för att aktivera tillgänglighetstjänsten.]]></string>
     <string name="autofill_dropdown_select">Välj från Passbolt</string>
     <string name="autofill_dropdown_fill">Fyll i med Passbolt</string>
     <string name="autofill_resources_create">Skapa&amp;fyll i</string>
+    <string name="autofill_conflict_message">Flera metoder för automatisk ifyllning är aktiva.\nDetta kan orsaka problem.</string>
+    <string name="autofill_conflict_message_detailed">Flera metoder för automatisk ifyllning är aktiva.\nInaktivera en för att säkerställa en smidig upplevelse med automatisk ifyllning.</string>
     <string name="home_empty_list">Tom lista</string>
     <string name="home_create">Skapa</string>
     <string name="home_in_sub_folders">i undermappar:</string>
@@ -253,12 +271,23 @@ den aktiverade autofyll-funktionen att föreslå att fylla i dina tidigare tilla
     <string name="resource_details_description_header">Beskrivning</string>
     <string name="resource_details_note_header">Anteckning</string>
     <string name="resource_details_note_content">Innehåll</string>
+    <string name="resource_details_pin_code_header">Pinkod</string>
+    <string name="resource_details_pin_code_code">Kod</string>
     <string name="resource_details_tags_header">Taggar</string>
     <string name="resource_details_encrypted_description">Beskrivning är krypterad</string>
+    <string name="action_show">Visa</string>
+    <string name="action_hide">Dölj</string>
+    <string name="action_copy">Kopiera</string>
     <string name="resource_details_information">Information</string>
     <string name="resource_details_invalid_totp_scanned">Ogiltig TOTP-QR skannades</string>
     <string name="resource_details_metadata_header">Metadata</string>
     <string name="resource_details_custom_fields_header">Anpassade fält</string>
+    <string name="resource_details_upgrade_available_header">Upgrade available</string>
+    <string name="resource_details_upgrade_panel_message">This is a legacy resource. Upgrade for security improvements and new features.</string>
+    <string name="resource_details_upgrade_action">Upgrade</string>
+    <string name="resource_details_upgrade_learn_more">Mer information</string>
+    <string name="resource_details_upgrade_success">Resource upgraded.</string>
+    <string name="resource_details_upgrade_failure">Could not upgrade the resource. Please try again.</string>
     <string name="additional_uri_format">• %s</string>
     <string name="more_details_copy_password">Kopiera lösenord</string>
     <string name="more_details_copy_description">Kopiera beskrivning</string>
@@ -276,6 +305,34 @@ den aktiverade autofyll-funktionen att föreslå att fylla i dina tidigare tilla
     <string name="resource_form_totp_url_issuer">URL (utfärdare)</string>
     <string name="resource_form_totp_more_settings">Fler TOTP-inställningar</string>
     <string name="resource_form_totp_settings">TOTP-inställningar</string>
+    <string name="resource_form_advanced_password_generation">Advanced password generation</string>
+    <string name="resource_form_advanced_passphrase_generation">Advanced passphrase generation</string>
+    <string name="resource_form_advanced_password_generation_save_preferences">Save preferences</string>
+    <string name="resource_form_advanced_password_generation_password_preview">Password preview</string>
+    <string name="resource_form_advanced_password_generation_passphrase_preview">Passphrase preview</string>
+    <string name="resource_form_advanced_password_generation_tab_password">Lösenord</string>
+    <string name="resource_form_advanced_password_generation_tab_passphrase">Lösenfras</string>
+    <string name="resource_form_advanced_password_generation_length">Längd</string>
+    <string name="resource_form_advanced_password_generation_character_types">Teckentyper</string>
+    <string name="resource_form_advanced_password_generation_exclude_look_alike">Exkludera utseendemässigt lika tecken</string>
+    <string name="resource_form_advanced_password_generation_exclude_look_alike_description">Skip characters that can be confused with each other (O/0, l/I/1).</string>
+    <string name="resource_form_advanced_password_generation_number_of_words">Antal ord</string>
+    <string name="resource_form_advanced_password_generation_word_separator">Word separator</string>
+    <string name="resource_form_advanced_password_generation_word_separator_hint">Skriv ett eller flera tecken</string>
+    <string name="resource_form_advanced_password_generation_word_case">Word case</string>
+    <string name="resource_form_character_set_upper">A-Z</string>
+    <string name="resource_form_character_set_digit">0-9</string>
+    <string name="resource_form_character_set_lower">a-z</string>
+    <string name="resource_form_character_set_parenthesis">{ [ ( | ) ] }</string>
+    <string name="resource_form_character_set_special_char1"># $ % &amp; @ ^ ~</string>
+    <string name="resource_form_character_set_special_char2">. , : ;</string>
+    <string name="resource_form_character_set_special_char3">\' \" `</string>
+    <string name="resource_form_character_set_special_char4">/ \\ _ -</string>
+    <string name="resource_form_character_set_special_char5">&lt; * + ! ? =</string>
+    <string name="resource_form_character_set_emoji">🙂</string>
+    <string name="resource_form_word_case_lowercase">Små bokstäver</string>
+    <string name="resource_form_word_case_uppercase">Stora bokstäver</string>
+    <string name="resource_form_word_case_camelcase">Kamelnotation</string>
     <string name="resource_form_description">Beskrivning</string>
     <string name="resource_form_additional_uris">Ytterligare URI:er</string>
     <string name="resource_form_enter_description">Lägg till en beskrivning</string>
@@ -305,8 +362,22 @@ den aktiverade autofyll-funktionen att föreslå att fylla i dina tidigare tilla
     <string name="resource_form_save">Spara</string>
     <string name="resource_form_edit_init_error">Det gick inte att initiera resursredigering</string>
     <string name="resource_form_create_init_error">Det gick inte att initiera resursskapande</string>
+    <string name="resource_form_created_share_failed">Resource created but not shared - sharing failed.</string>
+    <string name="resource_form_edited_share_failed">Unable to apply the confirmed permissions - please try again.</string>
+    <string name="resource_form_created_permissions_changed">Resource created but not shared - permissions changed in the meantime.</string>
     <string name="resource_form_remove_totp">Ta bort TOTP</string>
     <string name="resource_form_remove_note">Ta bort anteckning</string>
+    <string name="resource_form_remove_pin_code">Ta bort pinkod</string>
+    <string name="resource_form_pin_code">Pinkod</string>
+    <string name="resource_form_create_pin_code">Skapa en pinkod</string>
+    <string name="resource_form_pin_code_code">Kod</string>
+    <string name="resource_form_enter_pin_code">Ange pinkod</string>
+    <string name="resource_form_pin_code_advanced">Avancerad pinkodsgenerering</string>
+    <string name="resource_form_pin_code_length">Längd</string>
+    <string name="resource_form_pin_code_save_preferences">Spara inställningar</string>
+    <string name="resource_form_pin_code_additional_information">Ytterligare information</string>
+    <string name="resource_form_pin_code_validation_too_short">Pinkoden måste vara minst %d siffror</string>
+    <string name="resource_form_pin_code_validation_too_long">Pinkoden får vara högst %d siffror</string>
     <string name="resource_form_no_name">inget namn</string>
     <string name="resource_form_max_additional_uris_limit">Du kan lägga till högst %d ytterligare URI:er</string>
     <string name="resource_form_appearance">Utseende</string>
@@ -322,6 +393,7 @@ den aktiverade autofyll-funktionen att föreslå att fylla i dina tidigare tilla
     <string name="settings_debug_logs">Felsök, loggar</string>
     <string name="settings_disable">Inaktivera</string>
     <string name="settings_sign_out">Logga ut</string>
+    <string name="settings_sign_out_server_error">Signed out on this device. The server session may still be active.</string>
     <string name="settings_title">Inställningar</string>
     <string name="settings_disable_biometric_confirmation_message">Efter att fingeravtryck inaktiverats måste du logga in med din lösenfras.</string>
     <string name="settings_turn_on_biometric_title">Aktivera fingeravtrycksautentisering</string>
@@ -345,7 +417,12 @@ den aktiverade autofyll-funktionen att föreslå att fylla i dina tidigare tilla
     <string name="settings_app_settings_biometry_error">Biometri-fel. %s</string>
     <string name="settings_app_settings_biometry_authentication_error">Fel vid biometri-autentisering. %s</string>
     <string name="settings_app_settings_expert_settings">Expertinställningar</string>
+    <string name="settings_app_settings_expert_settings_require_auth_on_every_entry">Kräv autentisering varje gång appen öppnas</string>
     <string name="settings_app_settings_expert_settings_hide_root">Dölj dialogen ”enheten är rootad”</string>
+    <string name="settings_app_settings_expert_settings_fetch_page_size">Sidstorlek för API-hämtning</string>
+    <string name="settings_page_size_description">Antal resurser som hämtas per API-begäran. Högre värden använder mer minne men minskar antalet nätverksbegäranden.</string>
+    <string name="settings_page_size_exceeds_recommended_limit">Exceeds recommended limit. May cause app slowdowns.</string>
+    <string name="settings_page_size_restore_default_values">Restore default values</string>
     <string name="settings_autofill_autofill_title">Här kan du ändra autofyll-metoder</string>
     <string name="settings_autofill_autofill_desc">Vi rekommenderar att använda Autofylltjänst-metoden, men tjänstens prestanda kan bero på din enhet och inställningar för batterioptimering. \n\nOm Autofylltjänsten inte fungerar tillförlitligt på din enhet kan du prova att aktivera autofyll baserad på Tillgänglighetstjänst.</string>
     <string name="settings_autofill_autofill_service">Autofilltjänst (rekommenderas)</string>
@@ -406,6 +483,15 @@ den aktiverade autofyll-funktionen att föreslå att fylla i dina tidigare tilla
     <string name="resource_permissions_share_simulation_failed">Ett fel uppstod under delningssimulering</string>
     <string name="resource_permissions_share_failed">Ett fel uppstod under delning </string>
     <string name="resource_permissions_edit_permissions">Redigera behörigheter</string>
+    <string name="confirm_permissions_title">Confirm permissions</string>
+    <string name="confirm_permissions_fetch_failure">Unable to load current permissions. Please try again.</string>
+    <string name="confirm_permissions_preparing">Preparing permissions to approve…</string>
+    <string name="confirm_permissions_refreshing_users_and_groups">Refreshing users and groups…</string>
+    <string name="confirm_permissions_drifted">The permissions changed in the meantime. Please review them and confirm again.</string>
+    <string name="confirm_permissions_drifted_single">Permissions for %1$s have changed</string>
+    <string name="confirm_permissions_drifted_multiple">Permissions for %1$s (and more) have changed</string>
+    <string name="confirm_permissions_indirect_access_single_user">%1$s is already part of the group %2$s</string>
+    <string name="confirm_permissions_indirect_access_multiple_users">%1$s (and more) already have access via group membership</string>
     <string name="group_permission_permission">Behörighet</string>
     <string name="group_permission_group_members">Gruppmedlemmar</string>
     <string name="group_permission_delete">Ta bort behörighet</string>
@@ -420,6 +506,11 @@ den aktiverade autofyll-funktionen att föreslå att fylla i dina tidigare tilla
     <string name="main_update_downloaded">Passbolt-uppdatering har just laddats ner</string>
     <string name="main_update_download_in_progress">Hämtar i bakgrunden. Vi meddelar dig när hämtningen är klar.</string>
     <string name="main_update_downloaded_install">Installera</string>
+    <string name="deprecated_os_warning_title">Outdated Android version</string>
+    <string name="deprecated_os_warning_message">Your device runs an Android version that no longer receives security updates. Passbolt support for this version is scheduled to be phased out.</string>
+    <string name="deprecated_os_warning_call_to_action">To stay protected and keep receiving Passbolt updates, &lt;b&gt;update your device to a newer Android version&lt;/b&gt;.</string>
+    <string name="deprecated_os_warning_acknowledge">Jag förstår</string>
+    <string name="deprecated_os_warning_hide">Don\'t show again</string>
     <string name="dialog_encryption_error_title">Ett krypteringsfel uppstod</string>
     <string name="dialog_encryption_error_message">Ett krypteringsfel uppstod (%s). Försök igen.</string>
     <string name="resource_tags_section">Taggar</string>
@@ -431,7 +522,20 @@ den aktiverade autofyll-funktionen att föreslå att fylla i dina tidigare tilla
     <string name="create_folder_name">Namn</string>
     <string name="create_folder_name_validation">Mappnamnet kan inte vara tomt</string>
     <string name="create_folder_error_format">Kunde inte skapa mapp. %s</string>
+    <string name="enter_folder_name">Ange mappnamn</string>
     <string name="share_folder_error_format">Kunde inte dela mapp. %s</string>
+    <string name="dialog_accessibility_consent_title">Så använder Passbolt tillgänglighetstjänsten</string>
+    <string name="dialog_accessibility_consent_message">Passbolt använder Androids tillgänglighetstjänst endast för att erbjuda autofyllning i appar och webbläsare som inte stöder Androids vanliga autofyllningsramverk.\n\nVAD SOM NÅS\nNär tjänsten är aktiverad läser Passbolt, endast på din enhet:\n• paketnamnet för appen i förgrunden och webbadressen som visas av webbläsare, för att matcha inloggningsuppgifter till rätt webbplats eller app;\n• layouten och identifierarna för inmatningsfält på den aktuella skärmen (till exempel om ett fält är ett användarnamn, lösenord eller engångskod), för att fylla i rätt värde;\n• fokus- och tryckhändelser för dessa fält, för att veta när autofyllning ska erbjudas.\n\nHUR DATA ANVÄNDS\n• All bearbetning sker lokalt på din enhet. Informationen ovan används endast för att identifiera inloggningsfält och fylla i inloggningsuppgifter när du väljer att använda autofyllning.\n• Passbolt överför, delar, säljer eller lagrar inte skärminnehåll, fältinnehåll, surfaktivitet eller listan över appar du använder. Ingenting som läses av tillgänglighetstjänsten lämnar din enhet eller skickas till Passbolt-servrar eller någon tredje part.\n• Tjänsten är aktiv endast medan skärmen är på, och du kan stänga av den när som helst från Android-inställningar › Tillgänglighet eller från Passbolts inställningar för autofyllning.\n\nGenom att trycka på \"Jag har läst och samtycker\" bekräftar du att du har läst och godkänt ovanstående.</string>
+    <string name="dialog_accessibility_consent_intro">Passbolt använder Androids tillgänglighetstjänst endast för att erbjuda autofyllning i appar och webbläsare som inte stöder Androids vanliga autofyllningsramverk.</string>
+    <string name="dialog_accessibility_consent_section_what_title">Vad som nås</string>
+    <string name="dialog_accessibility_consent_section_what_lead">När tjänsten är aktiverad läser Passbolt, endast på din enhet:</string>
+    <string name="dialog_accessibility_consent_section_what_bullet_1">paketnamnet för appen i förgrunden och webbadressen som visas av webbläsare, för att matcha inloggningsuppgifter till rätt webbplats eller app;</string>
+    <string name="dialog_accessibility_consent_section_what_bullet_2">layouten och identifierarna för inmatningsfält på den aktuella skärmen (till exempel om ett fält är ett användarnamn, lösenord eller engångskod), för att fylla i rätt värde;</string>
+    <string name="dialog_accessibility_consent_section_what_bullet_3">fokus- och tryckhändelser för dessa fält, för att veta när autofyllning ska erbjudas.</string>
+    <string name="dialog_accessibility_consent_section_how_title">Hur data används</string>
+    <string name="dialog_accessibility_consent_section_how_bullet_1">All bearbetning sker lokalt på din enhet. Informationen ovan används endast för att identifiera inloggningsfält och fylla i inloggningsuppgifter när du väljer att använda autofyllning.</string>
+    <string name="dialog_accessibility_consent_section_how_bullet_2">Passbolt överför, delar, säljer eller lagrar inte skärminnehåll, fältinnehåll, surfaktivitet eller listan över appar du använder. Ingenting som läses av tillgänglighetstjänsten lämnar din enhet eller skickas till Passbolt-servrar eller någon tredje part.</string>
+    <string name="dialog_accessibility_consent_section_how_bullet_3">Tjänsten är aktiv endast medan skärmen är på, och du kan stänga av den när som helst från Android-inställningar › Tillgänglighet eller från Passbolts inställningar för autofyllning.</string>
     <string name="import_profile_title">Importera ditt konto</string>
     <string name="import_profile_user_id">Användar-ID</string>
     <string name="import_profile_account_url">Kontots URL</string>
@@ -526,6 +630,9 @@ den aktiverade autofyll-funktionen att föreslå att fylla i dina tidigare tilla
     <string name="create_resource_menu_create_password">Lösenord</string>
     <string name="create_resource_menu_create_note">Anteckning</string>
     <string name="create_resource_menu_create_folder">Mapp</string>
+    <string name="create_resource_menu_other">Annan</string>
+    <string name="create_resource_menu_other_title">Andra resurstyper</string>
+    <string name="create_resource_menu_create_pin_code">Pinkod</string>
     <string name="dialog_new_metadata_key_trust_changed">Metadatanyckeln har ändrats.</string>
     <string name="dialog_new_metadata_key_trust_modified_by_user">Krypteringsnyckeln som används för att dela metadata mellan användare har uppdaterats av %s.</string>
     <string name="dialog_new_metadata_key_trust_key_rotation_info">Om du inte förväntade dig detta kan du verifiera med din administratör.</string>
@@ -540,8 +647,7 @@ den aktiverade autofyll-funktionen att föreslå att fylla i dina tidigare tilla
     arrays can be inconsistent when in other languages
     index / size is not used in code
     -->
-    <string-array name="username_hint_values"
-        tools:ignore="InconsistentArrays">
+    <string-array name="username_hint_values" tools:ignore="InconsistentArrays">
         <item>e-post</item>
         <item>användarnamn</item>
         <item>mobil</item>
@@ -552,11 +658,27 @@ den aktiverade autofyll-funktionen att föreslå att fylla i dina tidigare tilla
       arrays can be inconsistent when in other languages
       index / size is not used in code
     -->
-    <string-array name="password_hint_values"
-        tools:ignore="InconsistentArrays">
+    <string-array name="password_hint_values" tools:ignore="InconsistentArrays">
         <item>lösenord</item>
         <item>hemlighet</item>
         <item>lösenfras</item>
+    </string-array>
+    <!--
+      arrays can be inconsistent when in other languages
+      index / size is not used in code
+    -->
+    <string-array name="totp_hint_values" tools:ignore="InconsistentArrays">
+        <item>otp</item>
+        <item>totp</item>
+        <item>engångs</item>
+        <item>engångskod</item>
+        <item>verifiering</item>
+        <item>verifieringskod</item>
+        <item>autentiseringskod</item>
+        <item>autentiseringskod</item>
+        <item>2fa</item>
+        <item>mfa</item>
+        <item>säkerhetskod</item>
     </string-array>
     <string-array name="dialog_encourage_autofill_setup_steps">
         <item>&lt;b&gt;Aktivera Autofyll&lt;/b&gt;-inställningar</item>

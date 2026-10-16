@@ -1,9 +1,9 @@
 package com.passbolt.mobile.android.entity.metadata
 
-import androidx.room.Embedded
-import androidx.room.Entity
-import androidx.room.PrimaryKey
-import androidx.room.Relation
+import androidx.room3.Embedded
+import androidx.room3.Entity
+import androidx.room3.PrimaryKey
+import androidx.room3.Relation
 import java.time.ZonedDateTime
 
 /**
@@ -43,8 +43,8 @@ data class MetadataKey(
 data class MetadataKeyWithPrivateKeys(
     @Embedded val metadataKey: MetadataKey,
     @Relation(
-        parentColumn = "id",
-        entityColumn = "metadataKeyId",
+        parentColumns = ["id"],
+        entityColumns = ["metadataKeyId"],
     )
     val metadataPrivateKeys: List<MetadataPrivateKey>,
 )

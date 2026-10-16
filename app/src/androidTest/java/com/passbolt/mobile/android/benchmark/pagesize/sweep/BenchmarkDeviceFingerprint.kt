@@ -70,12 +70,7 @@ data class BenchmarkDeviceFingerprint(
                 maxHeapMb = (runtime.maxMemory() / BYTES_IN_MB).toInt(),
                 isLowRamDevice = activityManager.isLowRamDevice,
                 availableProcessors = runtime.availableProcessors(),
-                mediaPerformanceClass =
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                        Build.VERSION.MEDIA_PERFORMANCE_CLASS
-                    } else {
-                        0
-                    },
+                mediaPerformanceClass = Build.VERSION.MEDIA_PERFORMANCE_CLASS,
                 primaryAbi = Build.SUPPORTED_ABIS.firstOrNull().orEmpty(),
             )
         }

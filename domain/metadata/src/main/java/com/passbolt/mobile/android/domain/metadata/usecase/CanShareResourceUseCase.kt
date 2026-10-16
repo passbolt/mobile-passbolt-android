@@ -47,9 +47,9 @@ class CanShareResourceUseCase(
                     getLocalMetadataKeysUseCase
                         .execute(
                             GetLocalMetadataKeysUseCase.Input(ENCRYPT),
-                        ).first()
-                        .metadataPrivateKeys
-                        .isNotEmpty()
+                        ).firstOrNull()
+                        ?.metadataPrivateKeys
+                        ?.isNotEmpty() == true
 
                 Output(canShareResource = hasEncryptionKeys)
             }

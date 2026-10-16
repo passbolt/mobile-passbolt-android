@@ -1,6 +1,5 @@
 package com.passbolt.mobile.android.domain.resources
 
-import com.passbolt.mobile.android.common.search.SearchableMatcher
 import com.passbolt.mobile.android.domain.resources.actions.ConfirmedRecipientsPublicKeysResolver
 import com.passbolt.mobile.android.domain.resources.actions.ResourceCommonActionsInteractor
 import com.passbolt.mobile.android.domain.resources.actions.ResourceCreateActionsInteractor
@@ -63,7 +62,6 @@ val resourcesDomainModule =
 
         singleOf(::GetResourcesPaginatedUseCase)
         singleOf(::ResourceInteractor)
-        singleOf(::SearchableMatcher)
         singleOf(::DeleteResourceUseCase)
         singleOf(::FetchResourcePermissionsUseCase)
         singleOf(::CreatePermissionsSnapshotInteractor)

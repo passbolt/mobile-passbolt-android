@@ -34,7 +34,6 @@ import com.passbolt.mobile.android.domain.resourcetypes.usecase.GetLocalResource
 import com.passbolt.mobile.android.domain.resourcetypes.usecase.GetResourceTypeIdToSlugMappingUseCase
 import com.passbolt.mobile.android.domain.resourcetypes.usecase.ResourceTypeIdToSlugMappingProvider
 import com.passbolt.mobile.android.dto.response.ResourceResponseDto
-import com.passbolt.mobile.android.gopenpgp.OpenPgp
 import com.passbolt.mobile.android.serializers.STRICT_ADAPTERS_ONLY_GSON
 import com.passbolt.mobile.android.serializers.gson.MetadataDecryptor
 import com.passbolt.mobile.android.serializers.gson.ResourceListDeserializer
@@ -64,7 +63,6 @@ val resourceListItemDeserializationTestModule =
         singleOf(::JsonSchemaValidationRunner)
         singleOf(::ResourceListDeserializer)
         singleOf(::TestCoroutineLaunchContext) bind CoroutineLaunchContext::class
-        single { mock<OpenPgp>() }
         single { (resourceTypeIdToSlugMapping: Map<UUID, String>, supportedResourceTypesIds: Set<UUID>) ->
             ResourceListItemDeserializer(
                 jsonSchemaValidationRunner = mockJsonSchemaValidationRunner,

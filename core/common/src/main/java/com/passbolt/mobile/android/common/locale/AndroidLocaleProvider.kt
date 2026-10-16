@@ -1,5 +1,3 @@
-package com.passbolt.mobile.android.common.search
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -22,7 +20,11 @@ package com.passbolt.mobile.android.common.search
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-@Deprecated("Search should be implemented using database now to account for large datasets")
-interface Searchable {
-    val searchCriteria: String
+
+package com.passbolt.mobile.android.common.locale
+
+import java.util.Locale
+
+class AndroidLocaleProvider : LocaleProvider {
+    override fun getCurrentLocale(): Locale = Locale.getDefault()
 }

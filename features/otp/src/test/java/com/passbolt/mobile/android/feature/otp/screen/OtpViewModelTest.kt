@@ -72,6 +72,7 @@ import com.passbolt.mobile.android.feature.otp.screen.OtpSideEffect.NavigateToCr
 import com.passbolt.mobile.android.feature.otp.screen.OtpSideEffect.NavigateToCreateTotp
 import com.passbolt.mobile.android.feature.otp.screen.OtpSideEffect.NavigateToEditResourceForm
 import com.passbolt.mobile.android.feature.otp.screen.OtpSideEffect.ShowSuccessSnackbar
+import com.passbolt.mobile.android.feature.otp.screen.SnackbarSuccessType.OTP_CREATED
 import com.passbolt.mobile.android.feature.otp.screen.SnackbarSuccessType.RESOURCE_CREATED
 import com.passbolt.mobile.android.feature.otp.screen.SnackbarSuccessType.RESOURCE_EDITED
 import com.passbolt.mobile.android.jsonmodel.delegates.TotpSecret
@@ -399,10 +400,14 @@ class OtpViewModelTest : KoinTest {
         runTest {
             viewModel = get { parametersOf(ShowSuggestedModel.DoNotShow) }
 
-            viewModel.onIntent(OtpQRScanReturned(otpCreated = true, otpManualCreationChosen = false))
-
             viewModel.sideEffect.test {
+                viewModel.onIntent(OtpQRScanReturned(otpCreated = true, otpManualCreationChosen = false))
+
                 assertIs<InitiateDataRefresh>(awaitItem())
+
+                val snackbarSideEffect = awaitItem()
+                assertIs<ShowSuccessSnackbar>(snackbarSideEffect)
+                assertThat(snackbarSideEffect.type).isEqualTo(OTP_CREATED)
             }
         }
 

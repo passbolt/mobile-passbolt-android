@@ -1,9 +1,11 @@
 package com.passbolt.mobile.android.database.impl.folders
 
 import androidx.paging.PagingSource
-import androidx.room.Dao
-import androidx.room.Query
-import androidx.room.Transaction
+import androidx.room3.Dao
+import androidx.room3.DaoReturnTypeConverters
+import androidx.room3.Query
+import androidx.room3.Transaction
+import androidx.room3.paging.PagingSourceDaoReturnTypeConverter
 import com.passbolt.mobile.android.database.impl.base.BaseDao
 import com.passbolt.mobile.android.entity.folder.Folder
 import com.passbolt.mobile.android.entity.folder.FolderWithChildItemsCountAndPath
@@ -31,6 +33,7 @@ import com.passbolt.mobile.android.entity.folder.FolderWithChildItemsCountAndPat
  * @since v1.0
  */
 @Dao
+@DaoReturnTypeConverters(PagingSourceDaoReturnTypeConverter::class)
 interface PaginatedFoldersDao : BaseDao<Folder> {
     @Transaction
     @Query(
@@ -66,7 +69,7 @@ interface PaginatedFoldersDao : BaseDao<Folder> {
             "           SELECT 1 FROM FolderFts WHERE FolderFts MATCH :ftsQuery AND FolderFts.docid = k.rowid" +
             "       )" +
             ") " +
-            "ORDER BY k.modified DESC, k.folderId ASC",
+            "ORDER BY k.name COLLATE NOCASE ASC, k.folderId ASC",
     )
     fun getFolderDirectChildFolders(
         folderId: String?,
@@ -104,20 +107,20 @@ interface PaginatedFoldersDao : BaseDao<Folder> {
             "   EXISTS (" +
             "       SELECT 1 FROM FolderFts WHERE FolderFts MATCH :ftsQuery AND FolderFts.docid = f.rowid" +
             "   ) " +
-            "ORDER BY f.modified DESC, f.folderId ASC",
+            "ORDER BY f.name COLLATE NOCASE ASC, f.folderId ASC",
     )
     fun getAllFolders(ftsQuery: String?): PagingSource<Int, FolderWithChildItemsCountAndPath>
 
     @Transaction
     @Query(
-        "WITH RECURSIVE ancestor(folderId, name, permission, parentId, isShared, modified, level) as (" +
-            "SELECT folderId, name, permission, parentId, isShared, modified, 0 " +
+        "WITH RECURSIVE ancestor(folderId, name, permission, parentId, isShared, level) as (" +
+            "SELECT folderId, name, permission, parentId, isShared, 0 " +
             "from Folder " +
             "WHERE folderId IS :folderId " +
             "" +
             "UNION ALL " +
             "" +
-            "SELECT f.folderId, f.name, f.permission, f.parentId, f.isShared, f.modified, a.level + 1 " +
+            "SELECT f.folderId, f.name, f.permission, f.parentId, f.isShared, a.level + 1 " +
             "FROM Folder f " +
             "JOIN ancestor a on f.parentId = a.folderId " +
             ") " +
@@ -154,7 +157,7 @@ interface PaginatedFoldersDao : BaseDao<Folder> {
             "       WHERE FolderFts.docid = Folder.rowid AND FolderFts MATCH :ftsQuery" +
             "   )" +
             ") " +
-            "ORDER BY level, modified DESC, folderId ASC",
+            "ORDER BY level, name COLLATE NOCASE ASC, folderId ASC",
     )
     fun getFolderAllChildFoldersRecursively(
         folderId: String,

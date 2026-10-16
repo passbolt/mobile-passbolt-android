@@ -1,6 +1,5 @@
 package com.passbolt.mobile.android.ui
 
-import com.passbolt.mobile.android.common.search.Searchable
 import kotlinx.serialization.Serializable
 
 /**
@@ -30,15 +29,13 @@ import kotlinx.serialization.Serializable
 data class GroupModel(
     val groupId: String,
     val groupName: String,
-    override val searchCriteria: String = groupName,
-) : Searchable
+)
 
 data class GroupWithCount(
     val groupId: String,
     val groupName: String,
     val groupItemsCount: Int,
-    override val searchCriteria: String = groupName,
-) : Searchable
+)
 
 data class GroupWithUsersModel(
     val group: GroupModel,

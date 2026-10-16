@@ -40,6 +40,7 @@ import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.commontest.session.validSessionTestModule
 import com.passbolt.mobile.android.core.architecture.result.DomainResult
 import com.passbolt.mobile.android.core.architecture.result.DomainResult.Incomplete.Error.Reason.UNKNOWN
+import com.passbolt.mobile.android.core.idlingresource.SearchIdlingResource
 import com.passbolt.mobile.android.core.mvp.authentication.SessionRefreshTrackingFlow
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.navigation.AppContext
@@ -59,6 +60,7 @@ import com.passbolt.mobile.android.feature.home.screen.HomeIntent.CreatePassword
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.CreateTotp
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.Initialize
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.OpenCreateResourceMenu
+import com.passbolt.mobile.android.feature.home.screen.HomeIntent.OtpQRScanReturned
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.Search
 import com.passbolt.mobile.android.feature.home.screen.HomeIntent.SearchEndIconAction
 import com.passbolt.mobile.android.feature.home.screen.HomeSideEffect.InitiateDataRefresh
@@ -72,6 +74,7 @@ import com.passbolt.mobile.android.feature.home.screen.SnackbarErrorType.FAILED_
 import com.passbolt.mobile.android.feature.home.screen.SnackbarErrorType.NO_SHARED_KEY_ACCESS
 import com.passbolt.mobile.android.feature.home.screen.SnackbarErrorType.PROFILE_FETCH_FAILURE
 import com.passbolt.mobile.android.feature.home.screen.SnackbarSuccessType.FOLDER_CREATED
+import com.passbolt.mobile.android.feature.home.screen.SnackbarSuccessType.OTP_CREATED
 import com.passbolt.mobile.android.feature.home.screen.SnackbarSuccessType.RESOURCE_CREATED
 import com.passbolt.mobile.android.feature.home.screen.SnackbarSuccessType.RESOURCE_DELETED
 import com.passbolt.mobile.android.feature.home.screen.SnackbarSuccessType.RESOURCE_EDITED
@@ -156,6 +159,7 @@ class HomeViewModelTest : KoinTest {
                         }
                     }
                     singleOf(::UserProfileRefreshTrackingFlow)
+                    singleOf(::SearchIdlingResource)
                     single(named(JSON_MODEL_GSON)) { GsonBuilder().serializeNulls().create() }
                     single {
                         Configuration
@@ -285,6 +289,31 @@ class HomeViewModelTest : KoinTest {
                 val appliedState = awaitItem()
                 assertThat(appliedState.homeData).isEqualTo(mockHomeData)
                 assertThat(appliedState.isSearching).isFalse()
+            }
+        }
+
+    @Test
+    fun `should keep search idling resource busy until the search query is applied`() =
+        runTest {
+            val mockHomeData = mockResourcesData()
+            whenever(get<HomeDataProvider>().provideData(any(), any(), any(), any())).thenReturn(mockHomeData)
+            val searchIdlingResource = get<SearchIdlingResource>()
+
+            viewModel = get()
+
+            viewModel.viewState.test {
+                assertThat(awaitItem().isSearching).isFalse()
+                assertThat(searchIdlingResource.isIdleNow()).isTrue()
+
+                viewModel.onIntent(Search("test query"))
+
+                assertThat(awaitItem().isSearching).isTrue()
+                assertThat(searchIdlingResource.isIdleNow()).isFalse()
+
+                advanceTimeBy(HomeViewModel.SEARCH_DEBOUNCE + 1.milliseconds)
+
+                assertThat(awaitItem().isSearching).isFalse()
+                assertThat(searchIdlingResource.isIdleNow()).isTrue()
             }
         }
 
@@ -560,6 +589,21 @@ class HomeViewModelTest : KoinTest {
                 assertIs<ShowSuccessSnackbar>(editSnackbarEffect)
                 assertEquals(RESOURCE_EDITED, editSnackbarEffect.type)
                 assertEquals("Test Resource", editSnackbarEffect.message)
+            }
+        }
+
+    @Test
+    fun `should refresh data and show snackbar after otp scan return with created otp`() =
+        runTest {
+            viewModel = get()
+
+            viewModel.sideEffect.test {
+                viewModel.onIntent(OtpQRScanReturned(otpCreated = true, otpManualCreationChosen = false))
+
+                assertIs<InitiateDataRefresh>(awaitItem())
+                val snackbarEffect = awaitItem()
+                assertIs<ShowSuccessSnackbar>(snackbarEffect)
+                assertEquals(OTP_CREATED, snackbarEffect.type)
             }
         }
 
