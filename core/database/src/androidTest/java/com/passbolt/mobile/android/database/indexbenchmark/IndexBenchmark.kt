@@ -2,12 +2,14 @@ package com.passbolt.mobile.android.database.indexbenchmark
 
 import android.content.Context
 import androidx.paging.PagingSource
-import androidx.room.Room
+import androidx.room3.Room
 import androidx.test.core.app.ApplicationProvider
 import com.passbolt.mobile.android.database.ResourceDatabase
 import com.passbolt.mobile.android.database.ftsbenchmark.FtsBenchmarkDataFactory
 import com.passbolt.mobile.android.database.ftsbenchmark.FtsBenchmarkDataFactory.DataSet
 import com.passbolt.mobile.android.database.ftsbenchmark.FtsBenchmarkDataFactory.SLUG
+import com.passbolt.mobile.android.database.helpers.executeSql
+import com.passbolt.mobile.android.database.helpers.testSqlCipherDriver
 import com.passbolt.mobile.android.entity.resource.ResourceUpdateState.PENDING
 import kotlinx.coroutines.runBlocking
 import org.junit.After
@@ -45,9 +47,9 @@ class IndexBenchmark {
     @Before
     fun setup() {
         val context = ApplicationProvider.getApplicationContext<Context>()
-        indexedDb = Room.inMemoryDatabaseBuilder(context, ResourceDatabase::class.java).build()
-        baselineDb = Room.inMemoryDatabaseBuilder(context, ResourceDatabase::class.java).build()
-        dropNewIndexes(baselineDb)
+        indexedDb = Room.inMemoryDatabaseBuilder(context, ResourceDatabase::class.java).setDriver(testSqlCipherDriver()).build()
+        baselineDb = Room.inMemoryDatabaseBuilder(context, ResourceDatabase::class.java).setDriver(testSqlCipherDriver()).build()
+        runBlocking { dropNewIndexes(baselineDb) }
     }
 
     @After
@@ -57,59 +59,62 @@ class IndexBenchmark {
     }
 
     @Test
-    fun benchmarkHomePageLoad() {
-        printHeader("HOME PAGE LOAD (modified DESC, first + middle page, $ITERATIONS iterations)")
-        RESOURCE_DATASET_SIZES.forEach { size ->
-            val dataSet = FtsBenchmarkDataFactory.createDataSet(size)
-            populateResources(indexedDb, dataSet)
-            populateResources(baselineDb, dataSet)
+    fun benchmarkHomePageLoad() =
+        runBlocking {
+            printHeader("HOME PAGE LOAD (modified DESC, first + middle page, $ITERATIONS iterations)")
+            RESOURCE_DATASET_SIZES.forEach { size ->
+                val dataSet = FtsBenchmarkDataFactory.createDataSet(size)
+                populateResources(indexedDb, dataSet)
+                populateResources(baselineDb, dataSet)
 
-            loadHomePages(indexedDb, size)
-            loadHomePages(baselineDb, size)
+                loadHomePages(indexedDb, size)
+                loadHomePages(baselineDb, size)
 
-            val indexedDuration = measureTime { repeat(ITERATIONS) { loadHomePages(indexedDb, size) } }
-            val baselineDuration = measureTime { repeat(ITERATIONS) { loadHomePages(baselineDb, size) } }
+                val indexedDuration = measureTime { repeat(ITERATIONS) { loadHomePages(indexedDb, size) } }
+                val baselineDuration = measureTime { repeat(ITERATIONS) { loadHomePages(baselineDb, size) } }
 
-            printResult("HOME PAGE LOAD", size, indexedDuration, baselineDuration)
-            clearBothDatabases()
+                printResult("HOME PAGE LOAD", size, indexedDuration, baselineDuration)
+                clearBothDatabases()
+            }
         }
-    }
 
     @Test
-    fun benchmarkAllFoldersPageLoad() {
-        printHeader("ALL FOLDERS PAGE LOAD (first + middle page, $ITERATIONS iterations)")
-        FOLDER_DATASET_SIZES.forEach { folderCount ->
-            populateFolders(indexedDb, folderCount)
-            populateFolders(baselineDb, folderCount)
+    fun benchmarkAllFoldersPageLoad() =
+        runBlocking {
+            printHeader("ALL FOLDERS PAGE LOAD (first + middle page, $ITERATIONS iterations)")
+            FOLDER_DATASET_SIZES.forEach { folderCount ->
+                populateFolders(indexedDb, folderCount)
+                populateFolders(baselineDb, folderCount)
 
-            loadFolderPages(indexedDb, folderCount)
-            loadFolderPages(baselineDb, folderCount)
+                loadFolderPages(indexedDb, folderCount)
+                loadFolderPages(baselineDb, folderCount)
 
-            val indexedDuration = measureTime { repeat(ITERATIONS) { loadFolderPages(indexedDb, folderCount) } }
-            val baselineDuration = measureTime { repeat(ITERATIONS) { loadFolderPages(baselineDb, folderCount) } }
+                val indexedDuration = measureTime { repeat(ITERATIONS) { loadFolderPages(indexedDb, folderCount) } }
+                val baselineDuration = measureTime { repeat(ITERATIONS) { loadFolderPages(baselineDb, folderCount) } }
 
-            printResult("ALL FOLDERS PAGE LOAD", folderCount, indexedDuration, baselineDuration)
-            clearBothDatabases()
+                printResult("ALL FOLDERS PAGE LOAD", folderCount, indexedDuration, baselineDuration)
+                clearBothDatabases()
+            }
         }
-    }
 
     @Test
-    fun benchmarkRefreshLoop() {
-        printHeader("REFRESH (mark-and-sweep second sync: mark PENDING, upsert all, sweep)")
-        RESOURCE_DATASET_SIZES.forEach { size ->
-            val dataSet = FtsBenchmarkDataFactory.createDataSet(size)
-            populateResources(indexedDb, dataSet)
-            populateResources(baselineDb, dataSet)
+    fun benchmarkRefreshLoop() =
+        runBlocking {
+            printHeader("REFRESH (mark-and-sweep second sync: mark PENDING, upsert all, sweep)")
+            RESOURCE_DATASET_SIZES.forEach { size ->
+                val dataSet = FtsBenchmarkDataFactory.createDataSet(size)
+                populateResources(indexedDb, dataSet)
+                populateResources(baselineDb, dataSet)
 
-            val indexedDuration = measureTime { runRefreshLoop(indexedDb, dataSet) }
-            val baselineDuration = measureTime { runRefreshLoop(baselineDb, dataSet) }
+                val indexedDuration = measureTime { runRefreshLoop(indexedDb, dataSet) }
+                val baselineDuration = measureTime { runRefreshLoop(baselineDb, dataSet) }
 
-            printResult("REFRESH", size, indexedDuration, baselineDuration)
-            clearBothDatabases()
+                printResult("REFRESH", size, indexedDuration, baselineDuration)
+                clearBothDatabases()
+            }
         }
-    }
 
-    private fun loadHomePages(
+    private suspend fun loadHomePages(
         db: ResourceDatabase,
         size: Int,
     ) {
@@ -117,7 +122,7 @@ class IndexBenchmark {
         loadPage(db.paginatedResourcesDao().getAllOrderedByModifiedDatePaginated(setOf(SLUG), null), key = size / 2)
     }
 
-    private fun loadFolderPages(
+    private suspend fun loadFolderPages(
         db: ResourceDatabase,
         folderCount: Int,
     ) {
@@ -125,29 +130,29 @@ class IndexBenchmark {
         loadPage(db.paginatedFoldersDao().getAllFolders(null), key = folderCount / 2)
     }
 
-    private fun <T : Any> loadPage(
+    private suspend fun <T : Any> loadPage(
         pagingSource: PagingSource<Int, T>,
         key: Int?,
-    ) = runBlocking {
+    ) {
         pagingSource.load(
             PagingSource.LoadParams.Refresh(key = key, loadSize = PAGE_SIZE, placeholdersEnabled = false),
         )
     }
 
-    private fun runRefreshLoop(
+    private suspend fun runRefreshLoop(
         db: ResourceDatabase,
         dataSet: DataSet,
-    ) = runBlocking {
+    ) {
         db.resourcesDao().setAllUpdateState(PENDING)
         dataSet.resources.chunked(BATCH_SIZE).forEach { db.resourcesDao().upsertAll(it) }
         dataSet.metadata.chunked(BATCH_SIZE).forEach { db.resourceMetadataDao().upsertAll(it) }
         db.resourcesDao().removeWithUpdateState(PENDING)
     }
 
-    private fun populateResources(
+    private suspend fun populateResources(
         db: ResourceDatabase,
         dataSet: DataSet,
-    ) = runBlocking {
+    ) {
         db.resourceTypesDao().insert(FtsBenchmarkDataFactory.createResourceType())
         db.tagsDao().insertAll(dataSet.tags)
         dataSet.resources.chunked(BATCH_SIZE).forEach { db.resourcesDao().upsertAll(it) }
@@ -156,10 +161,10 @@ class IndexBenchmark {
         dataSet.tagCrossRefs.chunked(BATCH_SIZE).forEach { db.resourcesAndTagsCrossRefDao().insertAll(it) }
     }
 
-    private fun populateFolders(
+    private suspend fun populateFolders(
         db: ResourceDatabase,
         folderCount: Int,
-    ) = runBlocking {
+    ) {
         val folders = IndexBenchmarkDataFactory.createFolders(folderCount)
         val resources =
             IndexBenchmarkDataFactory.assignToFolders(
@@ -171,13 +176,11 @@ class IndexBenchmark {
         resources.chunked(BATCH_SIZE).forEach { db.resourcesDao().upsertAll(it) }
     }
 
-    private fun dropNewIndexes(db: ResourceDatabase) {
-        with(db.openHelper.writableDatabase) {
-            NEW_INDEX_NAMES.forEach { execSQL("DROP INDEX IF EXISTS $it") }
-        }
+    private suspend fun dropNewIndexes(db: ResourceDatabase) {
+        NEW_INDEX_NAMES.forEach { db.executeSql("DROP INDEX IF EXISTS $it") }
     }
 
-    private fun clearBothDatabases() {
+    private suspend fun clearBothDatabases() {
         indexedDb.clearAllTables()
         baselineDb.clearAllTables()
     }

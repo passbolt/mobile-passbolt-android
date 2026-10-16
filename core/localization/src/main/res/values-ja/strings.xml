@@ -15,6 +15,7 @@
     <string name="default_home_search_hint">名前、ユーザー、またはURLを検索</string>
     <string name="all_items_home_search_hint">名前、ユーザー、URL、またはタグを検索</string>
     <string name="user_search_hint">ユーザーを検索…</string>
+    <string name="search_in_progress">Searching…</string>
     <string name="no_passwords">パスワードがありません</string>
     <string name="no_otps">TOTPがありません</string>
     <string name="authentication_required">認証が必要です</string>
@@ -28,6 +29,9 @@
     <string name="shared_with">共有相手</string>
     <string name="location">場所</string>
     <string name="content_not_available">コンテンツはもう利用できません</string>
+    <string name="consent">内容を読み、同意します</string>
+    <string name="accessibility_policies_accept">同意する</string>
+    <string name="accessibility_policies_decline">同意しない</string>
     <string name="name_suspended">%s (停止中)</string>
     <string name="name_expired">%s (期限切れ)</string>
     <string name="proceed">続行</string>
@@ -43,6 +47,7 @@
     <string name="common_sign_out">サインアウト</string>
     <string name="common_data_refresh_error">データ更新中にエラーが発生しました。下にスワイプして再読み込みしてください。</string>
     <string name="common_decryption_failure">秘密の復号に失敗しました</string>
+    <string name="common_invalid_totp_parameters">無効なTOTPパラメーター</string>
     <string name="common_metadata_encryption_failure">メタデータの暗号化中にエラーが発生しました</string>
     <string name="common_fetch_failure">秘密のダウンロード中にエラーが発生しました</string>
     <string name="common_encryption_failure">秘密の暗号化中にエラーが発生しました</string>
@@ -53,6 +58,8 @@
     <string name="common_metadata_key_verification_failure">メタデータキーを検証できませんでした</string>
     <string name="common_metadata_key_is_trusted">新しいメタデータキーは信頼されました</string>
     <string name="common_metadata_key_trust_failed">新しいメタデータキーを信頼できませんでした</string>
+    <string name="common_password_policies_fetch_failed">Failed to fetch password policies - using defaults</string>
+    <string name="common_password_expiry_fetch_failed">Failed to fetch password expiry settings - using defaults</string>
     <string name="common_message_resource_edited">%s リソースが正常に編集されました。</string>
     <string name="common_message_resource_deleted">%s リソースが削除されました。</string>
     <string name="common_message_resource_shared">リソースのパーミッションが更新されました。</string>
@@ -69,6 +76,9 @@
     <string name="biometric_changed_title">指紋の変更が検出されました</string>
     <string name="biometric_changed_message">今回はパスフレーズでサインインし、再度指紋認証を有効にしてください。</string>
     <string name="biometric_authenticate_again">再度パスフレーズでサインインしてください</string>
+    <string name="biometric_decrypt_error_message">生体認証によるサインインは一時的に利用できません。続行するにはパスフレーズを入力してください。</string>
+    <string name="biometric_encrypt_error_message">生体認証の設定を完了できませんでした。再試行するか、これを使わずに続行してください。</string>
+    <string name="biometric_no_crypto_cipher">お使いのデバイスでは、生体認証の代わりにPINまたはパターンが使用されました。生体認証によるロック解除を使用するか、パスフレーズを入力してください。</string>
     <string name="settings_licenses_title">ライセンス</string>
     <string name="settings_logs_title">ログ</string>
     <string name="resource_will_be_deleted">これにより、このパスワードはアカウントから完全に削除されます。</string>
@@ -150,8 +160,11 @@
     <string name="auth_decryption_error_title">復号エラー</string>
     <string name="auth_decryption_error_description">復号エラーが発生しました。もう一度お試しください。\n</string>
     <string name="auth_decryption_error_cause">Open PGPエラー:\n%s</string>
+    <string name="auth_error_server_signature_invalid">Server signature invalid</string>
     <string name="auth_error_invalid_signature">チャレンジ検証エラー (署名が無効)</string>
     <string name="auth_error_token_expired">チャレンジ検証エラー (トークンの有効期限切れ)</string>
+    <string name="auth_error_verify_token_mismatch">Challenge verification error (verify token mismatch)</string>
+    <string name="auth_error_domain_mismatch">Challenge verification error (domain mismatch)</string>
     <string name="auth_error_challenge_verification_failure">チャレンジ検証に失敗しました</string>
     <string name="auth_error_profile_fetch_failure">プロフィール更新中にエラーが発生しました</string>
     <string name="dialog_account_does_not_exist_title">アカウントが存在しません</string>
@@ -180,10 +193,12 @@
     <string name="autofill_service_name">パスボルト自動入力</string>
     <string name="dialog_encourage_autofill_header">お気に入りのアプリに <b>3</b> 秒でログインしよう！</string>
     <string name="dialog_autofill_header">自動入力</string>
+    <string name="dialog_encourage_autofill_accessibility_description">このオプションは、Androidの標準自動入力に対応していないアプリやブラウザーで認証情報を自動入力するために、Androidのユーザー補助サービスを使用します。以下のスイッチをタップして、アクセスされる内容を確認し、同意してください。</string>
     <string name="dialog_encourage_autofill_accessibility_samsung">Samsung（サムスン）</string>
     <string name="dialog_encourage_autofill_accessibility_xiaomi">Xiaomi（シャオミ）</string>
     <string name="dialog_encourage_autofill_accessibility_huawei">Huawei（ファーウェイ）</string>
     <string name="dialog_encourage_autofill_accessibility_other">その他</string>
+    <string name="dialog_encourage_autofill_accessibility_title">ユーザー補助サービス経由で自動入力を有効にする</string>
     <string name="dialog_encourage_autofill_go_to_settings">設定に移動</string>
     <string name="dialog_encourage_autofill_service_header">ほとんどのアプリで自動入力を有効にする</string>
     <string name="dialog_encourage_autofill_service_description">Androidの設定画面で「パスボルト」を選択し、トグルをオンにして「OK」を押してください。\n    またはデバイス別のガイドを確認してください：</string>
@@ -209,9 +224,12 @@
     <string name="autofill_service_enable_overlay">オーバーレイ権限を有効にする</string>
     <string name="autofill_service_overlay_description"><![CDATA[Androidウェブブラウザでユーザー名とパスワードを自動入力します。パスボルト自動入力に「他のアプリの上に重ねて表示」の権限を付与してください]]></string>
     <string name="autofill_service_enable_service">ほとんどのアプリで自動入力を有効にする</string>
+    <string name="autofill_service_enable_service_description"><![CDATA[アプリやブラウザー内のログイン欄を検出し、自動入力を提供します。有効にするにはユーザー補助サービスへの同意が必要です。]]></string>
     <string name="autofill_dropdown_select">Passboltから選択</string>
     <string name="autofill_dropdown_fill">Passboltで入力</string>
     <string name="autofill_resources_create">作成&amp;入力</string>
+    <string name="autofill_conflict_message">複数の自動入力方法が有効です。\nこれにより問題が発生する可能性があります。</string>
+    <string name="autofill_conflict_message_detailed">複数の自動入力方法が有効です。\nスムーズな自動入力を実現するため、1つを無効にしてください。</string>
     <string name="home_empty_list">リストが空です</string>
     <string name="home_create">作成</string>
     <string name="home_in_sub_folders">サブフォルダ内：</string>
@@ -249,12 +267,23 @@
     <string name="resource_details_description_header">説明</string>
     <string name="resource_details_note_header">ノート</string>
     <string name="resource_details_note_content">内容</string>
+    <string name="resource_details_pin_code_header">Pin code</string>
+    <string name="resource_details_pin_code_code">コード</string>
     <string name="resource_details_tags_header">タグ</string>
     <string name="resource_details_encrypted_description">説明が暗号化されています</string>
+    <string name="action_show">表示</string>
+    <string name="action_hide">非表示</string>
+    <string name="action_copy">コピー</string>
     <string name="resource_details_information">情報</string>
     <string name="resource_details_invalid_totp_scanned">無効なTOTP QRコードがスキャンされました</string>
     <string name="resource_details_metadata_header">メタデータ</string>
     <string name="resource_details_custom_fields_header">カスタムフィールド</string>
+    <string name="resource_details_upgrade_available_header">Upgrade available</string>
+    <string name="resource_details_upgrade_panel_message">This is a legacy resource. Upgrade for security improvements and new features.</string>
+    <string name="resource_details_upgrade_action">Upgrade</string>
+    <string name="resource_details_upgrade_learn_more">詳細情報</string>
+    <string name="resource_details_upgrade_success">Resource upgraded.</string>
+    <string name="resource_details_upgrade_failure">Could not upgrade the resource. Please try again.</string>
     <string name="additional_uri_format">• %s</string>
     <string name="more_details_copy_password">パスワードをコピー</string>
     <string name="more_details_copy_description">説明をコピー</string>
@@ -272,6 +301,34 @@
     <string name="resource_form_totp_url_issuer">URL（発行者）</string>
     <string name="resource_form_totp_more_settings">詳細TOTP設定</string>
     <string name="resource_form_totp_settings">TOTP設定</string>
+    <string name="resource_form_advanced_password_generation">Advanced password generation</string>
+    <string name="resource_form_advanced_passphrase_generation">Advanced passphrase generation</string>
+    <string name="resource_form_advanced_password_generation_save_preferences">Save preferences</string>
+    <string name="resource_form_advanced_password_generation_password_preview">Password preview</string>
+    <string name="resource_form_advanced_password_generation_passphrase_preview">Passphrase preview</string>
+    <string name="resource_form_advanced_password_generation_tab_password">パスワード</string>
+    <string name="resource_form_advanced_password_generation_tab_passphrase">パスフレーズ</string>
+    <string name="resource_form_advanced_password_generation_length">長さ</string>
+    <string name="resource_form_advanced_password_generation_character_types">文字の種類</string>
+    <string name="resource_form_advanced_password_generation_exclude_look_alike">似たような文字を除外</string>
+    <string name="resource_form_advanced_password_generation_exclude_look_alike_description">Skip characters that can be confused with each other (O/0, l/I/1).</string>
+    <string name="resource_form_advanced_password_generation_number_of_words">単語数</string>
+    <string name="resource_form_advanced_password_generation_word_separator">Word separator</string>
+    <string name="resource_form_advanced_password_generation_word_separator_hint">1文字かそれ以上文字を入力してください</string>
+    <string name="resource_form_advanced_password_generation_word_case">Word case</string>
+    <string name="resource_form_character_set_upper">A-Z</string>
+    <string name="resource_form_character_set_digit">0-9</string>
+    <string name="resource_form_character_set_lower">a-z</string>
+    <string name="resource_form_character_set_parenthesis">{ [ ( | ) ] }</string>
+    <string name="resource_form_character_set_special_char1"># $ % &amp; @ ^ ~</string>
+    <string name="resource_form_character_set_special_char2">. , : ;</string>
+    <string name="resource_form_character_set_special_char3">\' \" `</string>
+    <string name="resource_form_character_set_special_char4">/ \\ _ -</string>
+    <string name="resource_form_character_set_special_char5">&lt; * + ! ? =</string>
+    <string name="resource_form_character_set_emoji">🙂</string>
+    <string name="resource_form_word_case_lowercase">小文字</string>
+    <string name="resource_form_word_case_uppercase">大文字</string>
+    <string name="resource_form_word_case_camelcase">キャメルケース</string>
     <string name="resource_form_description">説明</string>
     <string name="resource_form_additional_uris">追加のURI</string>
     <string name="resource_form_enter_description">説明を入力してください</string>
@@ -301,8 +358,22 @@
     <string name="resource_form_save">保存</string>
     <string name="resource_form_edit_init_error">リソース編集の初期化に失敗しました</string>
     <string name="resource_form_create_init_error">リソースの作成を初期化できませんでした</string>
+    <string name="resource_form_created_share_failed">Resource created but not shared - sharing failed.</string>
+    <string name="resource_form_edited_share_failed">Unable to apply the confirmed permissions - please try again.</string>
+    <string name="resource_form_created_permissions_changed">Resource created but not shared - permissions changed in the meantime.</string>
     <string name="resource_form_remove_totp">TOTP を削除</string>
     <string name="resource_form_remove_note">ノートを削除</string>
+    <string name="resource_form_remove_pin_code">Pin codeを削除</string>
+    <string name="resource_form_pin_code">Pin code</string>
+    <string name="resource_form_create_pin_code">Pin codeを作成</string>
+    <string name="resource_form_pin_code_code">コード</string>
+    <string name="resource_form_enter_pin_code">Pin codeを入力</string>
+    <string name="resource_form_pin_code_advanced">Pin codeの詳細生成</string>
+    <string name="resource_form_pin_code_length">長さ</string>
+    <string name="resource_form_pin_code_save_preferences">設定を保存</string>
+    <string name="resource_form_pin_code_additional_information">追加情報</string>
+    <string name="resource_form_pin_code_validation_too_short">Pin codeは少なくとも%d桁である必要があります</string>
+    <string name="resource_form_pin_code_validation_too_long">Pin codeは最大%d桁までです</string>
     <string name="resource_form_no_name">名前なし</string>
     <string name="resource_form_max_additional_uris_limit">追加のURIは最大 %d 件まで追加できます</string>
     <string name="resource_form_appearance">外観</string>
@@ -318,6 +389,7 @@
     <string name="settings_debug_logs">デバッグ、ログ</string>
     <string name="settings_disable">無効にする</string>
     <string name="settings_sign_out">サインアウト</string>
+    <string name="settings_sign_out_server_error">Signed out on this device. The server session may still be active.</string>
     <string name="settings_title">設定</string>
     <string name="settings_disable_biometric_confirmation_message">指紋認証を無効にすると、次回以降はパスフレーズでログインする必要があります。</string>
     <string name="settings_turn_on_biometric_title">指紋認証をオンにする</string>
@@ -341,7 +413,12 @@
     <string name="settings_app_settings_biometry_error">バイオメトリックエラー。%s</string>
     <string name="settings_app_settings_biometry_authentication_error">生体認証エラー。%s</string>
     <string name="settings_app_settings_expert_settings">エキスパート設定</string>
+    <string name="settings_app_settings_expert_settings_require_auth_on_every_entry">アプリを開くたびに認証を必須にする</string>
     <string name="settings_app_settings_expert_settings_hide_root">\"端末がroot化されています\"のダイアログを非表示</string>
+    <string name="settings_app_settings_expert_settings_fetch_page_size">API取得ページサイズ</string>
+    <string name="settings_page_size_description">APIリクエストごとに取得されるリソース数。値を大きくすると使用メモリは増えますが、ネットワークリクエスト数は減少します。</string>
+    <string name="settings_page_size_exceeds_recommended_limit">Exceeds recommended limit. May cause app slowdowns.</string>
+    <string name="settings_page_size_restore_default_values">Restore default values</string>
     <string name="settings_autofill_autofill_title">ここで自動入力の方法を変更できます</string>
     <string name="settings_autofill_autofill_desc">推奨手法としてAutofill Serviceの使用を推奨しますが、デバイスやバッテリー最適化の設定によっては動作が異なる場合があります。\n\n自動入力サービスが信頼できない場合は、アクセシビリティサービスを使った自動入力を試してみてください。</string>
     <string name="settings_autofill_autofill_service">Autofill Service (推奨)</string>
@@ -402,6 +479,15 @@
     <string name="resource_permissions_share_simulation_failed">共有シミュレーション中にエラーが発生しました</string>
     <string name="resource_permissions_share_failed">共有中にエラーが発生しました </string>
     <string name="resource_permissions_edit_permissions">パーミッションを編集</string>
+    <string name="confirm_permissions_title">Confirm permissions</string>
+    <string name="confirm_permissions_fetch_failure">Unable to load current permissions. Please try again.</string>
+    <string name="confirm_permissions_preparing">Preparing permissions to approve…</string>
+    <string name="confirm_permissions_refreshing_users_and_groups">Refreshing users and groups…</string>
+    <string name="confirm_permissions_drifted">The permissions changed in the meantime. Please review them and confirm again.</string>
+    <string name="confirm_permissions_drifted_single">Permissions for %1$s have changed</string>
+    <string name="confirm_permissions_drifted_multiple">Permissions for %1$s (and more) have changed</string>
+    <string name="confirm_permissions_indirect_access_single_user">%1$s is already part of the group %2$s</string>
+    <string name="confirm_permissions_indirect_access_multiple_users">%1$s (and more) already have access via group membership</string>
     <string name="group_permission_permission">パーミッション</string>
     <string name="group_permission_group_members">グループメンバー</string>
     <string name="group_permission_delete">パーミッションを削除</string>
@@ -416,6 +502,11 @@
     <string name="main_update_downloaded">Passboltの更新がダウンロードされました</string>
     <string name="main_update_download_in_progress">バックグラウンドでダウンロード中です。完了したら通知します。</string>
     <string name="main_update_downloaded_install">インストール</string>
+    <string name="deprecated_os_warning_title">Outdated Android version</string>
+    <string name="deprecated_os_warning_message">Your device runs an Android version that no longer receives security updates. Passbolt support for this version is scheduled to be phased out.</string>
+    <string name="deprecated_os_warning_call_to_action">To stay protected and keep receiving Passbolt updates, &lt;b&gt;update your device to a newer Android version&lt;/b&gt;.</string>
+    <string name="deprecated_os_warning_acknowledge">理解しました</string>
+    <string name="deprecated_os_warning_hide">Don\'t show again</string>
     <string name="dialog_encryption_error_title">暗号化エラーが発生しました</string>
     <string name="dialog_encryption_error_message">暗号化エラーが発生しました(%s)。もう一度お試しください。</string>
     <string name="resource_tags_section">タグ</string>
@@ -427,7 +518,20 @@
     <string name="create_folder_name">名前</string>
     <string name="create_folder_name_validation">フォルダ名は空にできません</string>
     <string name="create_folder_error_format">フォルダを作成できませんでした。%s</string>
+    <string name="enter_folder_name">フォルダー名を入力</string>
     <string name="share_folder_error_format">フォルダを共有できませんでした。%s</string>
+    <string name="dialog_accessibility_consent_title">Passbolt におけるユーザー補助サービスの使用方法</string>
+    <string name="dialog_accessibility_consent_message">Passbolt は、Android の標準自動入力フレームワークに対応していないアプリやブラウザーで自動入力を提供するためにのみ、Android のユーザー補助サービスを使用します。\n\nアクセスされる内容\nサービスが有効な間、Passbolt はお使いのデバイス上でのみ、次の情報を読み取ります。\n• 正しいサイトまたはアプリに認証情報を対応付けるための、前面に表示されているアプリのパッケージ名と、ブラウザーに表示されるウェブアドレス。\n• 適切な値を入力するための、現在の画面上の入力欄のレイアウトと識別子（たとえば、その欄がユーザー名、パスワード、またはワンタイムコードのどれであるか）。\n• 自動入力をいつ提供するかを判断するための、それらの欄に対するフォーカスイベントとタップイベント。\n\nデータの使用方法\n• すべての処理はお使いのデバイス上でローカルに行われます。上記の情報は、ログイン欄を検出し、自動入力を選択したときに認証情報を入力するためにのみ使用されます。\n• Passbolt は、画面の内容、欄の内容、閲覧アクティビティ、または使用しているアプリの一覧を送信、共有、販売、保存しません。ユーザー補助サービスによって読み取られた情報がデバイス外に出たり、Passbolt のサーバーや第三者に送信されたりすることはありません。\n• サービスは画面がオンの間のみ有効で、Android の設定 › ユーザー補助、または Passbolt の自動入力設定からいつでもオフにできます。\n\n「内容を読み、同意します」をタップすると、上記を読み、承諾したことを確認したものとみなされます。</string>
+    <string name="dialog_accessibility_consent_intro">Passbolt は、Android の標準自動入力フレームワークに対応していないアプリやブラウザーで自動入力を提供するためにのみ、Android のユーザー補助サービスを使用します。</string>
+    <string name="dialog_accessibility_consent_section_what_title">アクセスされる内容</string>
+    <string name="dialog_accessibility_consent_section_what_lead">サービスが有効な間、Passbolt はお使いのデバイス上でのみ、次の情報を読み取ります：</string>
+    <string name="dialog_accessibility_consent_section_what_bullet_1">正しいサイトまたはアプリに認証情報を対応付けるため、前面に表示されているアプリのパッケージ名と、ブラウザーに表示されるウェブアドレス；</string>
+    <string name="dialog_accessibility_consent_section_what_bullet_2">適切な値を入力するため、現在の画面上の入力欄のレイアウトと識別子（たとえば、その欄がユーザー名、パスワード、またはワンタイムコードのどれであるか）；</string>
+    <string name="dialog_accessibility_consent_section_what_bullet_3">自動入力をいつ提供するかを判断するための、それらの欄に対するフォーカスイベントとタップイベント。</string>
+    <string name="dialog_accessibility_consent_section_how_title">データの使用方法</string>
+    <string name="dialog_accessibility_consent_section_how_bullet_1">すべての処理はお使いのデバイス上でローカルに行われます。上記の情報は、ログイン欄を検出し、自動入力を選択したときに認証情報を入力するためにのみ使用されます。</string>
+    <string name="dialog_accessibility_consent_section_how_bullet_2">Passbolt は、画面の内容、欄の内容、閲覧アクティビティ、または使用しているアプリの一覧を送信、共有、販売、保存しません。ユーザー補助サービスによって読み取られた情報がデバイス外に出たり、Passbolt のサーバーや第三者に送信されたりすることはありません。</string>
+    <string name="dialog_accessibility_consent_section_how_bullet_3">サービスは画面がオンの間のみ有効で、Android の設定 › ユーザー補助、または Passbolt の自動入力設定からいつでもオフにできます。</string>
     <string name="import_profile_title">アカウントをインポート</string>
     <string name="import_profile_user_id">ユーザーID</string>
     <string name="import_profile_account_url">アカウントURL</string>
@@ -522,6 +626,9 @@
     <string name="create_resource_menu_create_password">パスワード</string>
     <string name="create_resource_menu_create_note">ノート</string>
     <string name="create_resource_menu_create_folder">フォルダ</string>
+    <string name="create_resource_menu_other">その他</string>
+    <string name="create_resource_menu_other_title">その他のリソースタイプ</string>
+    <string name="create_resource_menu_create_pin_code">Pin code</string>
     <string name="dialog_new_metadata_key_trust_changed">メタデータキーが変更されました。</string>
     <string name="dialog_new_metadata_key_trust_modified_by_user">ユーザー間でメタデータを共有するための暗号鍵が %s によって更新されました。</string>
     <string name="dialog_new_metadata_key_trust_key_rotation_info">心当たりがない場合は、管理者に確認してください。</string>
@@ -536,8 +643,7 @@
     arrays can be inconsistent when in other languages
     index / size is not used in code
     -->
-    <string-array name="username_hint_values"
-        tools:ignore="InconsistentArrays">
+    <string-array name="username_hint_values" tools:ignore="InconsistentArrays">
         <item>メール</item>
         <item>ユーザー名</item>
         <item>モバイル</item>
@@ -548,11 +654,27 @@
       arrays can be inconsistent when in other languages
       index / size is not used in code
     -->
-    <string-array name="password_hint_values"
-        tools:ignore="InconsistentArrays">
+    <string-array name="password_hint_values" tools:ignore="InconsistentArrays">
         <item>パスワード</item>
         <item>秘密</item>
         <item>パスフレーズ</item>
+    </string-array>
+    <!--
+      arrays can be inconsistent when in other languages
+      index / size is not used in code
+    -->
+    <string-array name="totp_hint_values" tools:ignore="InconsistentArrays">
+        <item>ワンタイムパスワード</item>
+        <item>時間ベースのワンタイムパスワード</item>
+        <item>ワンタイム</item>
+        <item>ワンタイムコード</item>
+        <item>確認</item>
+        <item>確認コード</item>
+        <item>認証コード</item>
+        <item>認証コード</item>
+        <item>二要素認証</item>
+        <item>多要素認証</item>
+        <item>セキュリティコード</item>
     </string-array>
     <string-array name="dialog_encourage_autofill_setup_steps">
         <item>&lt;b&gt;自動入力を有効にする&lt;/b&gt; 設定</item>

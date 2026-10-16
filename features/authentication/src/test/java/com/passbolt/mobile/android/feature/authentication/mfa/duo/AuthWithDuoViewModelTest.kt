@@ -3,7 +3,6 @@ package com.passbolt.mobile.android.feature.authentication.mfa.duo
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetDuoPromptUseCase
-import com.passbolt.mobile.android.feature.authentication.auth.usecase.RefreshSessionUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.VerifyDuoCallbackUseCase
 import com.passbolt.mobile.android.feature.authentication.mfa.duo.AuthWithDuoIntent.AuthenticateWithDuo
@@ -12,6 +11,7 @@ import com.passbolt.mobile.android.feature.authentication.mfa.duo.AuthWithDuoInt
 import com.passbolt.mobile.android.feature.authentication.mfa.duo.AuthWithDuoIntent.DismissSetupLeave
 import com.passbolt.mobile.android.feature.authentication.mfa.duo.AuthWithDuoIntent.DuoAuthFinished
 import com.passbolt.mobile.android.feature.authentication.mfa.duo.AuthWithDuoSideEffect.CloseAndNavigateToStartup
+import com.passbolt.mobile.android.feature.authentication.mfa.duo.AuthWithDuoSideEffect.NavigateToLogin
 import com.passbolt.mobile.android.feature.authentication.mfa.duo.AuthWithDuoSideEffect.NotifyVerificationSucceeded
 import com.passbolt.mobile.android.feature.authentication.mfa.duo.duowebviewsheet.DuoState
 import kotlinx.coroutines.Dispatchers
@@ -49,7 +49,6 @@ class AuthWithDuoViewModelTest : KoinTest {
                 module {
                     single { mock<GetDuoPromptUseCase>() }
                     single { mock<VerifyDuoCallbackUseCase>() }
-                    single { mock<RefreshSessionUseCase>() }
                     single { mock<SignOutUseCase>() }
                     factory { params ->
                         AuthWithDuoViewModel(
@@ -58,7 +57,6 @@ class AuthWithDuoViewModelTest : KoinTest {
                             isSetupFlow = params[2],
                             getDuoPromptUseCase = get(),
                             verifyDuoCallbackUseCase = get(),
-                            refreshSessionUseCase = get(),
                             signOutUseCase = get(),
                         )
                     }
@@ -124,6 +122,20 @@ class AuthWithDuoViewModelTest : KoinTest {
                     duoCode = "duo-code-val",
                 ),
             )
+        }
+
+    @Test
+    fun `unauthorized prompt navigates to login`() =
+        runTest {
+            get<GetDuoPromptUseCase>().stub {
+                on { execute(any()) } doReturn GetDuoPromptUseCase.Output.Unauthorized
+            }
+            viewModel = get(parameters = { parametersOf(AUTH_TOKEN, false, false) })
+
+            viewModel.sideEffect.test {
+                viewModel.onIntent(AuthenticateWithDuo)
+                assertIs<NavigateToLogin>(awaitItem())
+            }
         }
 
     @Test

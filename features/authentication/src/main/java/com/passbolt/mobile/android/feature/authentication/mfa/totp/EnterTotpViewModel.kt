@@ -1,7 +1,6 @@
 package com.passbolt.mobile.android.feature.authentication.mfa.totp
 
 import com.passbolt.mobile.android.core.compose.SideEffectViewModel
-import com.passbolt.mobile.android.feature.authentication.auth.usecase.RefreshSessionUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.VerifyTotpUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.VerifyTotpUseCase.Output.Failure
@@ -37,7 +36,6 @@ class EnterTotpViewModel(
     private val authToken: String?,
     private val signOutUseCase: SignOutUseCase,
     private val verifyTotpUseCase: VerifyTotpUseCase,
-    private val refreshSessionUseCase: RefreshSessionUseCase,
 ) : SideEffectViewModel<EnterTotpState, EnterTotpSideEffect>(
         EnterTotpState(hasOtherProvider = hasOtherProvider),
     ) {
@@ -68,31 +66,19 @@ class EnterTotpViewModel(
         Timber.d("Verifying TOTP")
         updateViewState { copy(showProgress = true) }
         launch {
-            when (
-                val result =
-                    verifyTotpUseCase.execute(
-                        VerifyTotpUseCase.Input(otp, authToken.orEmpty(), viewState.value.rememberMe),
-                    )
-            ) {
+            when (val result = verifyTotpUseCase.execute(VerifyTotpUseCase.Input(otp, authToken.orEmpty(), viewState.value.rememberMe))) {
                 is Failure -> genericError()
                 is NetworkFailure -> networkError()
                 is Success -> otpSuccess(result.mfaHeader)
                 is WrongCode -> totpError()
                 is Unauthorized -> {
-                    if (backgroundSessionRefreshSucceeded()) {
-                        validateOtp(otp)
-                        return@launch
-                    } else {
-                        emitSideEffect(ShowErrorSnackbar(SESSION_EXPIRED))
-                        emitSideEffect(NavigateToLogin)
-                    }
+                    emitSideEffect(ShowErrorSnackbar(SESSION_EXPIRED))
+                    emitSideEffect(NavigateToLogin)
                 }
             }
             updateViewState { copy(showProgress = false) }
         }
     }
-
-    private suspend fun backgroundSessionRefreshSucceeded() = refreshSessionUseCase.execute(Unit) is RefreshSessionUseCase.Output.Success
 
     private fun otpSuccess(mfaHeader: String?) {
         mfaHeader?.let {

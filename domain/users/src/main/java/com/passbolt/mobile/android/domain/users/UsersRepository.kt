@@ -45,7 +45,7 @@ interface UsersRepository {
 
     suspend fun getLocalUsers(
         selectedAccountId: String,
-        excludingIds: List<String>,
+        searchQuery: String?,
     ): List<UserProfile>
 
     suspend fun refreshUsers(selectedAccountId: String): DomainResult<List<UserProfile>>

@@ -18,6 +18,7 @@ import com.passbolt.mobile.android.feature.home.screen.SnackbarErrorType.SECRET_
 import com.passbolt.mobile.android.feature.home.screen.SnackbarErrorType.TOGGLE_FAVOURITE_FAILURE
 import com.passbolt.mobile.android.feature.home.screen.SnackbarSuccessType.FOLDER_CREATED
 import com.passbolt.mobile.android.feature.home.screen.SnackbarSuccessType.METADATA_KEY_IS_TRUSTED
+import com.passbolt.mobile.android.feature.home.screen.SnackbarSuccessType.OTP_CREATED
 import com.passbolt.mobile.android.feature.home.screen.SnackbarSuccessType.RESOURCE_CREATED
 import com.passbolt.mobile.android.feature.home.screen.SnackbarSuccessType.RESOURCE_DELETED
 import com.passbolt.mobile.android.feature.home.screen.SnackbarSuccessType.RESOURCE_EDITED
@@ -57,6 +58,7 @@ internal fun getSuccessMessage(
                 LocalizationR.string.common_message_folder_created,
                 additionalSuccessMessage.orEmpty().toSingleLine(),
             )
+        OTP_CREATED -> context.getString(LocalizationR.string.otp_new_otp_created)
     }
 
 @Suppress("CyclomaticComplexMethod")

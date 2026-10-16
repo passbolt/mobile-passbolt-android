@@ -4,6 +4,8 @@ import com.passbolt.mobile.android.common.coroutinetimer.CoroutineTimerFactory
 import com.passbolt.mobile.android.common.coroutinetimer.TimerFactory
 import com.passbolt.mobile.android.common.datarefresh.DataRefreshTrackingFlow
 import com.passbolt.mobile.android.common.hash.MessageDigestHash
+import com.passbolt.mobile.android.common.locale.AndroidLocaleProvider
+import com.passbolt.mobile.android.common.locale.LocaleProvider
 import com.passbolt.mobile.android.common.time.AndroidTimeProvider
 import com.passbolt.mobile.android.common.time.TimeProvider
 import com.passbolt.mobile.android.common.urimatcher.AutofillUriMatcher
@@ -44,6 +46,7 @@ val commonModule =
             )
         }
         singleOf(::AndroidTimeProvider) bind TimeProvider::class
+        singleOf(::AndroidLocaleProvider) bind LocaleProvider::class
         singleOf(::FetchFileAsStringUseCase)
         singleOf(::MessageDigestHash)
         singleOf(::CoroutineTimerFactory) bind TimerFactory::class

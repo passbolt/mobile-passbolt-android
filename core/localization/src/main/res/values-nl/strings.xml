@@ -15,6 +15,7 @@
     <string name="default_home_search_hint">Zoek naam, gebruiker of url</string>
     <string name="all_items_home_search_hint">Zoek naam, gebruiker, url of label</string>
     <string name="user_search_hint">Zoek naar gebruikers…</string>
+    <string name="search_in_progress">Searching…</string>
     <string name="no_passwords">Er zijn geen wachtwoorden</string>
     <string name="no_otps">Er zijn geen TOTPs</string>
     <string name="authentication_required">Authenticatie vereist</string>
@@ -28,6 +29,9 @@
     <string name="shared_with">Gedeeld met</string>
     <string name="location">Locatie</string>
     <string name="content_not_available">De inhoud is niet meer beschikbaar</string>
+    <string name="consent">Ik heb het gelezen en stem ermee in</string>
+    <string name="accessibility_policies_accept">Accepteren</string>
+    <string name="accessibility_policies_decline">Weigeren</string>
     <string name="name_suspended">%s (opgeschort)</string>
     <string name="name_expired">%s (verlopen)</string>
     <string name="proceed">Doorgaan</string>
@@ -43,6 +47,7 @@
     <string name="common_sign_out">Afmelden</string>
     <string name="common_data_refresh_error">Er is een fout opgetreden bij het vernieuwen van gegevens. Veeg omlaag om te vernieuwen.</string>
     <string name="common_decryption_failure">Fout bij het ontsleutelen van het geheim</string>
+    <string name="common_invalid_totp_parameters">Ongeldige TOTP-parameters</string>
     <string name="common_metadata_encryption_failure">Fout bij het versleutelen van metadata</string>
     <string name="common_fetch_failure">Fout bij het downloaden van het geheim</string>
     <string name="common_encryption_failure">Er is een fout opgetreden bij het versleutelen van het geheim</string>
@@ -53,6 +58,8 @@
     <string name="common_metadata_key_verification_failure">Metadatasleutels konden niet worden geverifieerd</string>
     <string name="common_metadata_key_is_trusted">Nieuwe metadatasleutel is vertrouwd</string>
     <string name="common_metadata_key_trust_failed">Het vertrouwen van de nieuwe metadatasleutel is mislukt</string>
+    <string name="common_password_policies_fetch_failed">Failed to fetch password policies - using defaults</string>
+    <string name="common_password_expiry_fetch_failed">Failed to fetch password expiry settings - using defaults</string>
     <string name="common_message_resource_edited">Resource %s is met succes bewerkt.</string>
     <string name="common_message_resource_deleted">Resource %s is met succes verwijderd.</string>
     <string name="common_message_resource_shared">De machtigingen van het middel zijn bijgewerkt.</string>
@@ -69,6 +76,9 @@
     <string name="biometric_changed_title">Wijzigingen in vingerafdruk gedetecteerd</string>
     <string name="biometric_changed_message">Je moet je deze keer aanmelden met je wachtwoordzin en vervolgens de vingerafdruk opnieuw inschakelen in de instellingen.</string>
     <string name="biometric_authenticate_again">Meld je opnieuw aan met je wachtwoordzin</string>
+    <string name="biometric_decrypt_error_message">Biometrisch aanmelden is tijdelijk niet beschikbaar. Voer je wachtwoordzin in om door te gaan.</string>
+    <string name="biometric_encrypt_error_message">De biometrische configuratie kon niet worden voltooid. Probeer het opnieuw of ga verder zonder biometrie.</string>
+    <string name="biometric_no_crypto_cipher">Je apparaat heeft een pincode of patroon gebruikt in plaats van biometrie. Gebruik biometrische ontgrendeling of voer je wachtwoordzin in.</string>
     <string name="settings_licenses_title">Licenties</string>
     <string name="settings_logs_title">Logboeken</string>
     <string name="resource_will_be_deleted">Dit verwijdert dit wachtwoord permanent uit je account.</string>
@@ -150,8 +160,11 @@
     <string name="auth_decryption_error_title">Fout bij ontsleutelen</string>
     <string name="auth_decryption_error_description">Er trad een fout op bij het ontsleutelen. Probeer het opnieuw</string>
     <string name="auth_decryption_error_cause">Open PGP-fout is:\n%s</string>
+    <string name="auth_error_server_signature_invalid">Server signature invalid</string>
     <string name="auth_error_invalid_signature">Fout bij uitdagingverificatie (ongeldige handtekening)</string>
     <string name="auth_error_token_expired">Fout bij uitdagingverificatie (token verlopen)</string>
+    <string name="auth_error_verify_token_mismatch">Challenge verification error (verify token mismatch)</string>
+    <string name="auth_error_domain_mismatch">Challenge verification error (domain mismatch)</string>
     <string name="auth_error_challenge_verification_failure">Uitdagingverificatie is mislukt</string>
     <string name="auth_error_profile_fetch_failure">Er is een fout opgetreden bij het bijwerken van het profiel</string>
     <string name="dialog_account_does_not_exist_title">Het account bestaat niet</string>
@@ -181,10 +194,12 @@
     <string name="autofill_service_name">Passbolt Automatisch invullen</string>
     <string name="dialog_encourage_autofill_header">Log in bij je favoriete apps in 3 seconden!</string>
     <string name="dialog_autofill_header">Auto-aanvullen</string>
+    <string name="dialog_encourage_autofill_accessibility_description">Deze optie gebruikt de Toegankelijkheidsservice van Android om inloggegevens automatisch in te vullen in apps en browsers die de native functie voor automatisch aanvullen van Android niet ondersteunen. Tik op de schakelaar hieronder om te bekijken waartoe toegang wordt verkregen en om je toestemming te geven.</string>
     <string name="dialog_encourage_autofill_accessibility_samsung">Samsung</string>
     <string name="dialog_encourage_autofill_accessibility_xiaomi">Xiaomi</string>
     <string name="dialog_encourage_autofill_accessibility_huawei">Huawei</string>
     <string name="dialog_encourage_autofill_accessibility_other">Overig</string>
+    <string name="dialog_encourage_autofill_accessibility_title">Automatisch aanvullen via Toegankelijkheidsservice inschakelen</string>
     <string name="dialog_encourage_autofill_go_to_settings">Ga naar de instellingen</string>
     <string name="dialog_encourage_autofill_service_header">Schakel auto-aanvullen in voor de meeste apps</string>
     <string name="dialog_encourage_autofill_service_description">Selecteer in het Android-instellingsscherm Passbolt, schakel de schakelaar in en druk op OK.
@@ -213,9 +228,12 @@
     <string name="autofill_service_enable_overlay">Machtiging overlay inschakelen</string>
     <string name="autofill_service_overlay_description"><![CDATA[Auto-aanvullen van gebruikersnamen en wachtwoorden voor Android-browsers. Schakel svp \'Over andere apps weergeven\' in voor Passbolt Autofill]]></string>
     <string name="autofill_service_enable_service">Auto-aanvullen inschakelen voor de meeste apps</string>
+    <string name="autofill_service_enable_service_description"><![CDATA[Detecteer inlogvelden in apps en browsers en bied automatisch aanvullen aan. Vereist je toestemming om de Toegankelijkheidsservice in te schakelen.]]></string>
     <string name="autofill_dropdown_select">Selecteer uit Passbolt</string>
     <string name="autofill_dropdown_fill">Invullen met Passbolt</string>
     <string name="autofill_resources_create">Aanmaken&amp;invullen</string>
+    <string name="autofill_conflict_message">Er zijn meerdere methoden voor automatisch invullen actief.\nDit kan problemen veroorzaken.</string>
+    <string name="autofill_conflict_message_detailed">Er zijn meerdere methoden voor automatisch invullen actief.\nSchakel er één uit om een soepele ervaring met automatisch invullen te garanderen.</string>
     <string name="home_empty_list">Lege lijst</string>
     <string name="home_create">Aanmaken</string>
     <string name="home_in_sub_folders">in submappen:</string>
@@ -253,12 +271,23 @@
     <string name="resource_details_description_header">Omschrijving</string>
     <string name="resource_details_note_header">Notitie</string>
     <string name="resource_details_note_content">Inhoud</string>
+    <string name="resource_details_pin_code_header">Pincode</string>
+    <string name="resource_details_pin_code_code">Code</string>
     <string name="resource_details_tags_header">Labels</string>
     <string name="resource_details_encrypted_description">Beschrijving is versleuteld</string>
+    <string name="action_show">Tonen</string>
+    <string name="action_hide">Verbergen</string>
+    <string name="action_copy">Kopiëren</string>
     <string name="resource_details_information">Informatie</string>
     <string name="resource_details_invalid_totp_scanned">Ongeldige TOTP-QR-code gescand</string>
     <string name="resource_details_metadata_header">Metadata</string>
     <string name="resource_details_custom_fields_header">Aangepaste velden</string>
+    <string name="resource_details_upgrade_available_header">Upgrade available</string>
+    <string name="resource_details_upgrade_panel_message">This is a legacy resource. Upgrade for security improvements and new features.</string>
+    <string name="resource_details_upgrade_action">Upgrade</string>
+    <string name="resource_details_upgrade_learn_more">Meer informatie</string>
+    <string name="resource_details_upgrade_success">Resource upgraded.</string>
+    <string name="resource_details_upgrade_failure">Could not upgrade the resource. Please try again.</string>
     <string name="additional_uri_format">• %s</string>
     <string name="more_details_copy_password">Wachtwoord kopiëren</string>
     <string name="more_details_copy_description">Beschrijving kopiëren</string>
@@ -276,6 +305,34 @@
     <string name="resource_form_totp_url_issuer">URL (Uitgever)</string>
     <string name="resource_form_totp_more_settings">Meer TOTP-instellingen</string>
     <string name="resource_form_totp_settings">TOTP-instellingen</string>
+    <string name="resource_form_advanced_password_generation">Advanced password generation</string>
+    <string name="resource_form_advanced_passphrase_generation">Advanced passphrase generation</string>
+    <string name="resource_form_advanced_password_generation_save_preferences">Save preferences</string>
+    <string name="resource_form_advanced_password_generation_password_preview">Password preview</string>
+    <string name="resource_form_advanced_password_generation_passphrase_preview">Passphrase preview</string>
+    <string name="resource_form_advanced_password_generation_tab_password">Wachtwoord</string>
+    <string name="resource_form_advanced_password_generation_tab_passphrase">Wachtwoordzin</string>
+    <string name="resource_form_advanced_password_generation_length">Lengte</string>
+    <string name="resource_form_advanced_password_generation_character_types">Soorten tekens</string>
+    <string name="resource_form_advanced_password_generation_exclude_look_alike">Sluit op elkaar lijkende tekens uit</string>
+    <string name="resource_form_advanced_password_generation_exclude_look_alike_description">Skip characters that can be confused with each other (O/0, l/I/1).</string>
+    <string name="resource_form_advanced_password_generation_number_of_words">Aantal woorden</string>
+    <string name="resource_form_advanced_password_generation_word_separator">Word separator</string>
+    <string name="resource_form_advanced_password_generation_word_separator_hint">Voer één of meer tekens in</string>
+    <string name="resource_form_advanced_password_generation_word_case">Word case</string>
+    <string name="resource_form_character_set_upper">A-Z</string>
+    <string name="resource_form_character_set_digit">0-9</string>
+    <string name="resource_form_character_set_lower">a-z</string>
+    <string name="resource_form_character_set_parenthesis">{ [ ( | ) ] }</string>
+    <string name="resource_form_character_set_special_char1"># $ % &amp; @ ^ ~</string>
+    <string name="resource_form_character_set_special_char2">. , : ;</string>
+    <string name="resource_form_character_set_special_char3">\' \" `</string>
+    <string name="resource_form_character_set_special_char4">/ \\ _ -</string>
+    <string name="resource_form_character_set_special_char5">&lt; * + ! ? =</string>
+    <string name="resource_form_character_set_emoji">🙂</string>
+    <string name="resource_form_word_case_lowercase">Kleine letters</string>
+    <string name="resource_form_word_case_uppercase">Hoofdletters</string>
+    <string name="resource_form_word_case_camelcase">camelCase</string>
     <string name="resource_form_description">Omschrijving</string>
     <string name="resource_form_additional_uris">Extra URI\'s</string>
     <string name="resource_form_enter_description">Voeg een beschrijving toe</string>
@@ -305,8 +362,22 @@
     <string name="resource_form_save">Opslaan</string>
     <string name="resource_form_edit_init_error">Kon resourcebewerking niet initialiseren</string>
     <string name="resource_form_create_init_error">Kon resourcecreatie niet initialiseren</string>
+    <string name="resource_form_created_share_failed">Resource created but not shared - sharing failed.</string>
+    <string name="resource_form_edited_share_failed">Unable to apply the confirmed permissions - please try again.</string>
+    <string name="resource_form_created_permissions_changed">Resource created but not shared - permissions changed in the meantime.</string>
     <string name="resource_form_remove_totp">TOTP verwijderen</string>
     <string name="resource_form_remove_note">Notitie verwijderen</string>
+    <string name="resource_form_remove_pin_code">Pincode verwijderen</string>
+    <string name="resource_form_pin_code">Pincode</string>
+    <string name="resource_form_create_pin_code">Een pincode aanmaken</string>
+    <string name="resource_form_pin_code_code">Code</string>
+    <string name="resource_form_enter_pin_code">Pincode invoeren</string>
+    <string name="resource_form_pin_code_advanced">Geavanceerde pincodegeneratie</string>
+    <string name="resource_form_pin_code_length">Lengte</string>
+    <string name="resource_form_pin_code_save_preferences">Voorkeuren opslaan</string>
+    <string name="resource_form_pin_code_additional_information">Aanvullende informatie</string>
+    <string name="resource_form_pin_code_validation_too_short">Pincode moet uit minimaal %d cijfers bestaan</string>
+    <string name="resource_form_pin_code_validation_too_long">Pincode mag uit maximaal %d cijfers bestaan</string>
     <string name="resource_form_no_name">geen naam</string>
     <string name="resource_form_max_additional_uris_limit">Je kunt maximaal %d extra URI\'s toevoegen</string>
     <string name="resource_form_appearance">Uiterlijk</string>
@@ -322,6 +393,7 @@
     <string name="settings_debug_logs">Debug, logboeken</string>
     <string name="settings_disable">Uitschakelen</string>
     <string name="settings_sign_out">Afmelden</string>
+    <string name="settings_sign_out_server_error">Signed out on this device. The server session may still be active.</string>
     <string name="settings_title">Instellingen</string>
     <string name="settings_disable_biometric_confirmation_message">Na het uitschakelen van je vingerafdruk moet je je aanmelden met je wachtwoordzin.</string>
     <string name="settings_turn_on_biometric_title">Vingerafdrukauthenticatie inschakelen</string>
@@ -345,7 +417,12 @@
     <string name="settings_app_settings_biometry_error">Biometrische fout. %s</string>
     <string name="settings_app_settings_biometry_authentication_error">Fout bij biometrische authenticatie. %s</string>
     <string name="settings_app_settings_expert_settings">Expertinstellingen</string>
+    <string name="settings_app_settings_expert_settings_require_auth_on_every_entry">Authenticatie vereisen bij elke toegang tot de app</string>
     <string name="settings_app_settings_expert_settings_hide_root">Verberg “apparaat is geroot”-dialoog</string>
+    <string name="settings_app_settings_expert_settings_fetch_page_size">Ophaalgrootte van API-pagina</string>
+    <string name="settings_page_size_description">Aantal resources dat per API-verzoek wordt opgehaald. Hogere waarden gebruiken meer geheugen, maar verminderen het aantal netwerkverzoeken.</string>
+    <string name="settings_page_size_exceeds_recommended_limit">Exceeds recommended limit. May cause app slowdowns.</string>
+    <string name="settings_page_size_restore_default_values">Restore default values</string>
     <string name="settings_autofill_autofill_title">Hier kunt u auto-aanvulmethoden wijzigen</string>
     <string name="settings_autofill_autofill_desc">Het wordt aanbevolen de autofill-service te gebruiken, maar de Service-prestaties kunnen verschillen afhankelijk van je apparaat en de instellingen voor batterijoptimalisatie. \n\nAls de autofill-service niet betrouwbaar werkt op je apparaat, kun je proberen auto-aanvullen op basis van de toegankelijkheidsservice in te schakelen.</string>
     <string name="settings_autofill_autofill_service">Autofill-service (aanbevolen)</string>
@@ -406,6 +483,15 @@
     <string name="resource_permissions_share_simulation_failed">Er is een fout opgetreden bij de simulatie van delen</string>
     <string name="resource_permissions_share_failed">Er is een fout opgetreden bij het delen </string>
     <string name="resource_permissions_edit_permissions">Machtigingen bewerken</string>
+    <string name="confirm_permissions_title">Confirm permissions</string>
+    <string name="confirm_permissions_fetch_failure">Unable to load current permissions. Please try again.</string>
+    <string name="confirm_permissions_preparing">Preparing permissions to approve…</string>
+    <string name="confirm_permissions_refreshing_users_and_groups">Refreshing users and groups…</string>
+    <string name="confirm_permissions_drifted">The permissions changed in the meantime. Please review them and confirm again.</string>
+    <string name="confirm_permissions_drifted_single">Permissions for %1$s have changed</string>
+    <string name="confirm_permissions_drifted_multiple">Permissions for %1$s (and more) have changed</string>
+    <string name="confirm_permissions_indirect_access_single_user">%1$s is already part of the group %2$s</string>
+    <string name="confirm_permissions_indirect_access_multiple_users">%1$s (and more) already have access via group membership</string>
     <string name="group_permission_permission">Machtiging</string>
     <string name="group_permission_group_members">Groepsleden</string>
     <string name="group_permission_delete">Machtiging verwijderen</string>
@@ -420,6 +506,11 @@
     <string name="main_update_downloaded">Passbolt-update is zojuist gedownload</string>
     <string name="main_update_download_in_progress">Downloaden op de achtergrond. We laten het je weten zodra de download klaar is.</string>
     <string name="main_update_downloaded_install">Installeren</string>
+    <string name="deprecated_os_warning_title">Outdated Android version</string>
+    <string name="deprecated_os_warning_message">Your device runs an Android version that no longer receives security updates. Passbolt support for this version is scheduled to be phased out.</string>
+    <string name="deprecated_os_warning_call_to_action">To stay protected and keep receiving Passbolt updates, &lt;b&gt;update your device to a newer Android version&lt;/b&gt;.</string>
+    <string name="deprecated_os_warning_acknowledge">Ik begrijp het</string>
+    <string name="deprecated_os_warning_hide">Don\'t show again</string>
     <string name="dialog_encryption_error_title">Er is een versleutelingsfout opgetreden</string>
     <string name="dialog_encryption_error_message">Er is een versleutelingsfout opgetreden (%s). Probeer het opnieuw.</string>
     <string name="resource_tags_section">Labels</string>
@@ -431,7 +522,20 @@
     <string name="create_folder_name">Naam</string>
     <string name="create_folder_name_validation">Mapnaam mag niet leeg zijn</string>
     <string name="create_folder_error_format">Kon map niet aanmaken. %s</string>
+    <string name="enter_folder_name">Voer mapnaam in</string>
     <string name="share_folder_error_format">Kon map niet delen. %s</string>
+    <string name="dialog_accessibility_consent_title">Hoe Passbolt de Toegankelijkheidsservice gebruikt</string>
+    <string name="dialog_accessibility_consent_message">Passbolt gebruikt de Toegankelijkheidsservice van Android alleen om automatisch aanvullen aan te bieden in apps en browsers die het standaardframework voor automatisch aanvullen van Android niet ondersteunen.\n\nWAT WORDT GERAADPLEEGD\nTerwijl de service is ingeschakeld, leest Passbolt alleen op je apparaat:\n• de pakketnaam van de app op de voorgrond en het webadres dat door browsers wordt weergegeven, om inloggegevens te koppelen aan de juiste site of app;\n• de lay-out en identificatoren van invoervelden op het huidige scherm (bijvoorbeeld of een veld een gebruikersnaam, wachtwoord of eenmalige code is), om de juiste waarde in te vullen;\n• focus- en tikgebeurtenissen op die velden, om te weten wanneer automatisch aanvullen moet worden aangeboden.\n\nHOE DE GEGEVENS WORDEN GEBRUIKT\n• Alle verwerking gebeurt lokaal op je apparaat. De bovenstaande informatie wordt alleen gebruikt om inlogvelden te detecteren en om inloggegevens in te vullen wanneer je kiest voor automatisch aanvullen.\n• Passbolt verzendt, deelt, verkoopt of bewaart geen scherminhoud, veldinhoud, browseactiviteit of de lijst met apps die je gebruikt. Niets dat door de Toegankelijkheidsservice wordt gelezen, verlaat je apparaat of wordt verzonden naar Passbolt-servers of derden.\n• De service is alleen actief terwijl het scherm aan staat, en je kunt deze op elk moment uitschakelen via Android-instellingen › Toegankelijkheid of via de instellingen voor automatisch aanvullen van Passbolt.\n\nDoor op \"Ik heb het gelezen en stem ermee in\" te tikken, bevestig je dat je het bovenstaande hebt gelezen en geaccepteerd.</string>
+    <string name="dialog_accessibility_consent_intro">Passbolt gebruikt de Toegankelijkheidsservice van Android alleen om automatisch aanvullen aan te bieden in apps en browsers die het standaardframework voor automatisch aanvullen van Android niet ondersteunen.</string>
+    <string name="dialog_accessibility_consent_section_what_title">Wat wordt geraadpleegd</string>
+    <string name="dialog_accessibility_consent_section_what_lead">Terwijl de service is ingeschakeld, leest Passbolt alleen op je apparaat:</string>
+    <string name="dialog_accessibility_consent_section_what_bullet_1">de pakketnaam van de app op de voorgrond en het webadres dat door browsers wordt weergegeven, om inloggegevens te koppelen aan de juiste site of app;</string>
+    <string name="dialog_accessibility_consent_section_what_bullet_2">de lay-out en identificatoren van invoervelden op het huidige scherm (bijvoorbeeld of een veld een gebruikersnaam, wachtwoord of eenmalige code is), om de juiste waarde in te vullen;</string>
+    <string name="dialog_accessibility_consent_section_what_bullet_3">focus- en tikgebeurtenissen op die velden, om te weten wanneer automatisch aanvullen moet worden aangeboden.</string>
+    <string name="dialog_accessibility_consent_section_how_title">Hoe de gegevens worden gebruikt</string>
+    <string name="dialog_accessibility_consent_section_how_bullet_1">Alle verwerking gebeurt lokaal op je apparaat. De bovenstaande informatie wordt alleen gebruikt om inlogvelden te detecteren en om inloggegevens in te vullen wanneer je kiest voor automatisch aanvullen.</string>
+    <string name="dialog_accessibility_consent_section_how_bullet_2">Passbolt verzendt, deelt, verkoopt of bewaart geen scherminhoud, veldinhoud, browseactiviteit of de lijst met apps die je gebruikt. Niets dat door de Toegankelijkheidsservice wordt gelezen, verlaat je apparaat of wordt verzonden naar Passbolt-servers of derden.</string>
+    <string name="dialog_accessibility_consent_section_how_bullet_3">De service is alleen actief terwijl het scherm aan staat, en je kunt deze op elk moment uitschakelen via Android-instellingen › Toegankelijkheid of via de instellingen voor automatisch aanvullen van Passbolt.</string>
     <string name="import_profile_title">Je account importeren</string>
     <string name="import_profile_user_id">Gebruikers-ID</string>
     <string name="import_profile_account_url">Account-URL</string>
@@ -526,6 +630,9 @@
     <string name="create_resource_menu_create_password">Wachtwoord</string>
     <string name="create_resource_menu_create_note">Notitie</string>
     <string name="create_resource_menu_create_folder">Map</string>
+    <string name="create_resource_menu_other">Overig</string>
+    <string name="create_resource_menu_other_title">Andere resourcetypen</string>
+    <string name="create_resource_menu_create_pin_code">Pincode</string>
     <string name="dialog_new_metadata_key_trust_changed">De metadatasleutel is gewijzigd.</string>
     <string name="dialog_new_metadata_key_trust_modified_by_user">De encryptiesleutel die wordt gebruikt om metadata tussen gebruikers te delen, is bijgewerkt door %s.</string>
     <string name="dialog_new_metadata_key_trust_key_rotation_info">Als je dit niet verwachtte, kun je dit verifiëren bij je beheerder.</string>
@@ -540,8 +647,7 @@
     arrays can be inconsistent when in other languages
     index / size is not used in code
     -->
-    <string-array name="username_hint_values"
-        tools:ignore="InconsistentArrays">
+    <string-array name="username_hint_values" tools:ignore="InconsistentArrays">
         <item>mail</item>
         <item>gebruikersnaam</item>
         <item>mobiel</item>
@@ -552,11 +658,27 @@
       arrays can be inconsistent when in other languages
       index / size is not used in code
     -->
-    <string-array name="password_hint_values"
-        tools:ignore="InconsistentArrays">
+    <string-array name="password_hint_values" tools:ignore="InconsistentArrays">
         <item>wachtwoord</item>
         <item>geheim</item>
         <item>wachtwoordzin</item>
+    </string-array>
+    <!--
+      arrays can be inconsistent when in other languages
+      index / size is not used in code
+    -->
+    <string-array name="totp_hint_values" tools:ignore="InconsistentArrays">
+        <item>OTP</item>
+        <item>TOTP</item>
+        <item>eenmalig</item>
+        <item>eenmalige-code</item>
+        <item>verificatie</item>
+        <item>verificatiecode</item>
+        <item>authcode</item>
+        <item>authenticatiecode</item>
+        <item>2FA</item>
+        <item>MFA</item>
+        <item>beveiligingscode</item>
     </string-array>
     <string-array name="dialog_encourage_autofill_setup_steps">
         <item>&lt;b&gt;Schakel Autofill in&lt;/b&gt; instellingen</item>

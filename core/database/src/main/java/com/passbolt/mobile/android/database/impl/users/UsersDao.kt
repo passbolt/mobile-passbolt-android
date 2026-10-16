@@ -1,8 +1,8 @@
 package com.passbolt.mobile.android.database.impl.users
 
-import androidx.room.Dao
-import androidx.room.Query
-import androidx.room.Transaction
+import androidx.room3.Dao
+import androidx.room3.Query
+import androidx.room3.Transaction
 import com.passbolt.mobile.android.database.impl.base.BaseDao
 import com.passbolt.mobile.android.entity.user.User
 import com.passbolt.mobile.android.entity.user.UserUpdateState
@@ -36,8 +36,15 @@ interface UsersDao : BaseDao<User> {
     suspend fun get(userId: String): User
 
     @Transaction
-    @Query("SELECT * FROM User WHERE id NOT IN (:ids)")
-    suspend fun getAllExcluding(ids: List<String>): List<User>
+    @Query(
+        "SELECT * FROM User u " +
+            "WHERE :ftsQuery IS NULL OR " +
+            "   EXISTS (" +
+            "       SELECT 1 FROM UserFts WHERE UserFts MATCH :ftsQuery AND UserFts.docid = u.rowid" +
+            "   ) " +
+            "ORDER BY u.firstName COLLATE NOCASE ASC, u.lastName COLLATE NOCASE ASC, u.userName COLLATE NOCASE ASC",
+    )
+    suspend fun getAll(ftsQuery: String?): List<User>
 
     @Query("UPDATE User SET updateState = :updateState")
     suspend fun setAllUpdateState(updateState: UserUpdateState)

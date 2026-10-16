@@ -1,9 +1,11 @@
 package com.passbolt.mobile.android.database.impl.groups
 
 import androidx.paging.PagingSource
-import androidx.room.Dao
-import androidx.room.Query
-import androidx.room.Transaction
+import androidx.room3.Dao
+import androidx.room3.DaoReturnTypeConverters
+import androidx.room3.Query
+import androidx.room3.Transaction
+import androidx.room3.paging.PagingSourceDaoReturnTypeConverter
 import com.passbolt.mobile.android.database.impl.base.BaseDao
 import com.passbolt.mobile.android.entity.group.UsersGroup
 import com.passbolt.mobile.android.entity.group.UsersGroupWithChildItemsCount
@@ -32,6 +34,7 @@ import com.passbolt.mobile.android.entity.group.UsersGroupWithChildItemsCount
  */
 
 @Dao
+@DaoReturnTypeConverters(PagingSourceDaoReturnTypeConverter::class)
 interface PaginatedGroupsDao : BaseDao<UsersGroup> {
     @Transaction
     @Query(

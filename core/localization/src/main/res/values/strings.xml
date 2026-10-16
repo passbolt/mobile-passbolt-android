@@ -73,7 +73,7 @@
     <string name="common_message_resource_deleted">%s resource was deleted.</string>
     <string name="common_message_resource_shared">The resource permissions were updated.</string>
     <string name="common_message_folder_created">New folder %s has been created!</string>
-    <string name="common_lack_shared_key_access">You cannot perform this action because you lack access to the shared metadata key.</string>
+    <string name="common_lack_shared_key_access">You cannot perform this action because you lack access to a usable shared metadata key.</string>
 
     <string name="validation_required_with_max_length">Length should be between 1 and %d</string>
     <string name="validation_max_length">Maximum length is %d</string>
@@ -208,6 +208,12 @@
     <string name="dialog_mfa_scan_youbikey_not_from_current_user_title">Yubikey is not recognized</string>
     <string name="dialog_mfa_scan_youbikey_not_from_current_user_message">Yubikey is not recognized by the server. Please try another Yubikey or use another provider.</string>
     <string name="dialog_mfa_auth_with_duo">Authenticate with Duo</string>
+    <string name="dialog_mfa_webauthn">Additional Authentication with Passkey</string>
+    <string name="dialog_mfa_auth_with_webauthn">Verify with passkey</string>
+    <string name="dialog_mfa_webauthn_browser_unavailable">No browser available to complete passkey verification</string>
+    <string name="dialog_mfa_webauthn_provider_unavailable">Passkey verification is not available for your organization</string>
+    <string name="dialog_mfa_webauthn_ceremony_failed">Passkey verification failed</string>
+    <string name="dialog_mfa_webauthn_verification_expired">Passkey verification expired, please try again</string>
     <string name="dialog_mfa_other_provider">Try with another provider</string>
     <string name="dialog_mfa_remember_me">Remember this device for 30 days</string>
     <string name="dialog_mfa_scan_empty_otp">Scanned OTP is empty</string>

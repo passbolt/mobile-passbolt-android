@@ -34,7 +34,6 @@ fun Module.permissionRecipientsModule() {
             getLocalGroupsUseCase = get(),
             getLocalUsersUseCase = get(),
             permissionsModelMapper = get(),
-            searchableMatcher = get(),
             coroutineLaunchContext = get(),
         )
     }

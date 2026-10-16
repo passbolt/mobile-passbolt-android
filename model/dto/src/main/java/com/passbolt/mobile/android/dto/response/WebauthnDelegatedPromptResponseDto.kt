@@ -20,11 +20,13 @@
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+package com.passbolt.mobile.android.dto.response
 
-package com.passbolt.mobile.android.domain.metadata.privatekeys
+import com.google.gson.annotations.SerializedName
 
-import com.passbolt.mobile.android.ui.DecryptedMetadataPrivateKeyJsonModel
-
-class MetadataPrivateKeysValidator {
-    fun isValid(key: DecryptedMetadataPrivateKeyJsonModel): Boolean = key.objectType == "PASSBOLT_METADATA_PRIVATE_KEY"
-}
+data class WebauthnDelegatedPromptResponseDto(
+    @SerializedName("mfa_delegated_state")
+    val state: String,
+    @SerializedName("mfa_delegated_secret")
+    val secret: String,
+)

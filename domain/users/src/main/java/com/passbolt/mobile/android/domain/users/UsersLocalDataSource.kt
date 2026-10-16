@@ -38,7 +38,7 @@ interface UsersLocalDataSource {
 
     suspend fun getUsers(
         selectedAccountId: String,
-        excludingIds: List<String>,
+        searchQuery: String?,
     ): List<UserProfile>
 
     suspend fun upsertUsers(

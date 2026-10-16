@@ -27,6 +27,7 @@ import com.passbolt.mobile.android.domain.folders.usecase.GetLocalFolderPermissi
 import com.passbolt.mobile.android.domain.folders.usecase.GetLocalParentFolderPermissionsToApplyToNewItemUseCase
 import com.passbolt.mobile.android.domain.folders.usecase.ItemIdResourceId
 import com.passbolt.mobile.android.domain.metadata.interactor.MetadataPrivateKeysInteractor
+import com.passbolt.mobile.android.domain.metadata.interactor.MetadataPrivateKeysInteractor.Output.InvalidMetadataKey
 import com.passbolt.mobile.android.domain.metadata.interactor.MetadataPrivateKeysInteractor.Output.TrustedKeyDeleted
 import com.passbolt.mobile.android.domain.metadata.model.MetadataKeyPurpose.ENCRYPT
 import com.passbolt.mobile.android.domain.metadata.usecase.GetMetadataKeysSettingsUseCase
@@ -190,11 +191,13 @@ class ResourceCreateActionsInteractor(
             MetadataKeyTypeModel.SHARED -> {
                 val verifyOutput =
                     runAuthenticatedOperation {
-                        metadataPrivateKeysInteractor.verifyMetadataPrivateKey()
+                        metadataPrivateKeysInteractor.refreshAndVerifyMetadataPrivateKey()
                     }
 
                 when (verifyOutput) {
-                    is MetadataPrivateKeysInteractor.Output.Failure -> {
+                    is MetadataPrivateKeysInteractor.Output.Failure,
+                    is InvalidMetadataKey,
+                    -> {
                         MetadataKeyParamsModel.ErrorDuringVerification
                     }
                     is MetadataPrivateKeysInteractor.Output.NewKeyToTrust -> {

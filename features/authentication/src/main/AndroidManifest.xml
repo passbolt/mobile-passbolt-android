@@ -12,6 +12,28 @@
             android:launchMode="singleTop"
             android:theme="@style/Theme.Passbolt"
             tools:ignore="DiscouragedApi" />
+        <activity
+            android:name="com.passbolt.mobile.android.feature.authentication.mfa.webauthn.WebauthnCallbackActivity"
+            android:excludeFromRecents="true"
+            android:exported="true"
+            android:noHistory="true"
+            android:theme="@style/Theme.Passbolt.Translucent">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="mfa"
+                    android:path="/webauthn/callback"
+                    android:scheme="passbolt" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.passbolt.mobile.android.feature.authentication.mfa.webauthn.WebauthnCeremonyActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Passbolt.Translucent" />
     </application>
 
 </manifest>

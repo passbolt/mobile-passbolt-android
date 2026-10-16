@@ -50,6 +50,7 @@ import com.passbolt.mobile.android.feature.authentication.mfa.MfaResult
 import com.passbolt.mobile.android.feature.authentication.mfa.duo.AuthWithDuoScreen
 import com.passbolt.mobile.android.feature.authentication.mfa.totp.EnterTotpScreen
 import com.passbolt.mobile.android.feature.authentication.mfa.unknown.UnknownProviderScreen
+import com.passbolt.mobile.android.feature.authentication.mfa.webauthn.AuthWithWebauthnScreen
 import com.passbolt.mobile.android.feature.authentication.mfa.yubikey.ScanYubikeyScreen
 import org.koin.compose.koinInject
 
@@ -91,6 +92,7 @@ fun AuthenticationHandler(
                             mfaReason = mfaProvidersHandler.firstMfaProvider(),
                             hasMultipleProviders = mfaProvidersHandler.hasMultipleProviders(),
                             sessionAccessToken = getSessionUseCase.execute(Unit).accessToken,
+                            userId = getSelectedAccountUseCase.execute(Unit).selectedAccount,
                         )
                 }
                 is Passphrase -> {
@@ -115,9 +117,11 @@ fun AuthenticationHandler(
                 when (result) {
                     is MfaResult.Succeeded -> {
                         result.mfaHeader?.let { mfaHeader ->
-                            getSelectedAccountUseCase.execute(Unit).selectedAccount?.let { userId ->
-                                saveMfaTokenUseCase.execute(SaveMfaTokenUseCase.Input(userId, mfaHeader))
-                            }
+                            val userId =
+                                requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount) {
+                                    "Selected account is required to save the MFA token"
+                                }
+                            saveMfaTokenUseCase.execute(SaveMfaTokenUseCase.Input(userId, mfaHeader))
                         }
                         sessionRefreshTrackingFlow.notifySessionRefreshed()
                     }
@@ -127,6 +131,7 @@ fun AuthenticationHandler(
                                 mfaReason = mfaProvidersHandler.nextMfaProvider(result.currentProvider),
                                 hasMultipleProviders = mfaProvidersHandler.hasMultipleProviders(),
                                 sessionAccessToken = getSessionUseCase.execute(Unit).accessToken,
+                                userId = getSelectedAccountUseCase.execute(Unit).selectedAccount,
                             )
                     }
                 }
@@ -144,6 +149,7 @@ private fun MfaDialog(
         is MfaDialogState.Totp -> EnterTotpScreen(mfaState = state, onMfaResult = onMfaResult)
         is MfaDialogState.Yubikey -> ScanYubikeyScreen(mfaState = state, onMfaResult = onMfaResult)
         is MfaDialogState.Duo -> AuthWithDuoScreen(mfaState = state, onMfaResult = onMfaResult)
+        is MfaDialogState.Webauthn -> AuthWithWebauthnScreen(mfaState = state, onMfaResult = onMfaResult)
         is MfaDialogState.UnknownProvider -> UnknownProviderScreen()
     }
 }
@@ -152,10 +158,17 @@ private fun toMfaDialogState(
     mfaReason: MfaProvider?,
     hasMultipleProviders: Boolean,
     sessionAccessToken: String?,
+    userId: String?,
 ): MfaDialogState =
     when (mfaReason) {
         MfaProvider.TOTP -> MfaDialogState.Totp(authToken = sessionAccessToken, hasOtherProviders = hasMultipleProviders)
         MfaProvider.YUBIKEY -> MfaDialogState.Yubikey(authToken = sessionAccessToken, hasOtherProviders = hasMultipleProviders)
         MfaProvider.DUO -> MfaDialogState.Duo(authToken = sessionAccessToken, hasOtherProviders = hasMultipleProviders)
+        MfaProvider.WEBAUTHN ->
+            MfaDialogState.Webauthn(
+                userId = requireNotNull(userId) { "Selected account is required for passkey MFA" },
+                authToken = sessionAccessToken,
+                hasOtherProviders = hasMultipleProviders,
+            )
         null -> MfaDialogState.UnknownProvider
     }

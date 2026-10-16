@@ -45,7 +45,6 @@ dependencies {
     implementation(platform(libs.koin.bom))
     implementation(libs.koin)
     implementation(libs.koin.compose)
-    implementation(libs.room.core)
     implementation(libs.espresso.idling.resource)
     implementation(libs.jsonschema.friend)
     implementation(platform(libs.compose.bom))

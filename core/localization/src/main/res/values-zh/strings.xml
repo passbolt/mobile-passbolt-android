@@ -15,6 +15,7 @@
     <string name="default_home_search_hint">搜索名称、用户或网址</string>
     <string name="all_items_home_search_hint">搜索名称、用户、网址或标签</string>
     <string name="user_search_hint">搜索用户</string>
+    <string name="search_in_progress">Searching…</string>
     <string name="no_passwords">没有密码记录</string>
     <string name="no_otps">没有一次性密码</string>
     <string name="authentication_required">需要 MFA 身份验证。</string>
@@ -28,12 +29,15 @@
     <string name="shared_with">共享给</string>
     <string name="location">位置</string>
     <string name="content_not_available">内容不再可用</string>
+    <string name="consent">I have read and consent</string>
+    <string name="accessibility_policies_accept">接受</string>
+    <string name="accessibility_policies_decline">Decline</string>
     <string name="name_suspended">%s (已暂停)</string>
     <string name="name_expired">%s (已过期)</string>
     <string name="proceed">继续</string>
     <string name="edit_password">修改密码</string>
-    <string name="copy_label_fingerprint">Fingerprint</string>
-    <string name="copy_label_uid">UID</string>
+    <string name="copy_label_fingerprint">指纹</string>
+    <string name="copy_label_uid">用户编号</string>
     <string name="common_failure">发生了错误！</string>
     <string name="common_startup_configuration_fetch_error">获取配置时出现错误</string>
     <string name="common_time_is_out_of_sync">服务器和客户端的时间不同步，请联系您的管理员。</string>
@@ -43,6 +47,7 @@
     <string name="common_sign_out">注销</string>
     <string name="common_data_refresh_error">数据刷新时发生错误。请下拉以刷新。</string>
     <string name="common_decryption_failure">密钥解密时出错</string>
+    <string name="common_invalid_totp_parameters">Invalid TOTP parameters</string>
     <string name="common_metadata_encryption_failure">元数据加密时出错</string>
     <string name="common_fetch_failure">下载密钥时出错</string>
     <string name="common_encryption_failure">加密密钥时出错</string>
@@ -53,6 +58,8 @@
     <string name="common_metadata_key_verification_failure">Could not verify metadata keys</string>
     <string name="common_metadata_key_is_trusted">New metadata key is trusted</string>
     <string name="common_metadata_key_trust_failed">Failed to trust new metadata key</string>
+    <string name="common_password_policies_fetch_failed">Failed to fetch password policies - using defaults</string>
+    <string name="common_password_expiry_fetch_failed">Failed to fetch password expiry settings - using defaults</string>
     <string name="common_message_resource_edited">%s 资源密码已成功编辑。</string>
     <string name="common_message_resource_deleted">%s 资源已被删除。</string>
     <string name="common_message_resource_shared">资源权限已更新。</string>
@@ -62,13 +69,16 @@
     <string name="validation_max_length">Maximum length is %d</string>
     <string name="validation_is_required">此输入项为必填项</string>
     <string name="validation_required_integer">应为整数</string>
-    <string name="validation_invalid_totp_secret">Invalid TOTP secret</string>
-    <string name="biometric_error_generic">指纹传感器发生错误。</string>
+    <string name="validation_invalid_totp_secret">无效的 TOTP 密钥</string>
+    <string name="biometric_error_generic">An error has occurred with the biometric sensor.</string>
     <string name="biometric_error_too_many_attempts">由于尝试次数过多，生物鉴别授权已被阻止。</string>
     <string name="biometric_error_blocked">生物鉴别授权已被冻结30秒。</string>
-    <string name="biometric_changed_title">检测到指纹更改</string>
-    <string name="biometric_changed_message">此次您必须使用密码登录，并在设置中再次启用指纹。</string>
+    <string name="biometric_changed_title">Biometric changes detected</string>
+    <string name="biometric_changed_message">You have to sign in with passphrase this time and enable biometric in Settings again.</string>
     <string name="biometric_authenticate_again">请再次使用密码登录</string>
+    <string name="biometric_decrypt_error_message">Biometric sign-in is temporarily unavailable. Please enter your passphrase to continue.</string>
+    <string name="biometric_encrypt_error_message">Biometric setup couldn\'t be completed. Try again or continue without it.</string>
+    <string name="biometric_no_crypto_cipher">Your device used PIN or pattern instead of biometrics. Please use biometric unlock or enter your passphrase.</string>
     <string name="settings_licenses_title">授权协议</string>
     <string name="settings_logs_title">日志</string>
     <string name="resource_will_be_deleted">这将从您的帐户中永久删除此密码。</string>
@@ -140,7 +150,7 @@
     <string name="auth_forgot_password_message">很抱歉，如果您不记得您的密码，您无法访问您的数据。请联系您的管理员解锁您的帐户。</string>
     <string name="auth_enter_passphrase">请输入您的密码</string>
     <string name="auth_exit_dialog_message">如果您离开，您可能需要重新设置您的账户。</string>
-    <string name="auth_biometric_title">使用指纹验证</string>
+    <string name="auth_biometric_title">Confirm using biometric</string>
     <string name="auth_reason_session_expired">请进行身份验证以刷新会话</string>
     <string name="auth_reason_passphrase_expired">请验证密码后访问</string>
     <string name="auth_server_fingerprint_changed_title">抱歉，服务器密钥已更改。</string>
@@ -150,8 +160,11 @@
     <string name="auth_decryption_error_title">解密错误</string>
     <string name="auth_decryption_error_description">解密出错。请再试一次。\n</string>
     <string name="auth_decryption_error_cause">打开 PGP 错误：\n%s</string>
+    <string name="auth_error_server_signature_invalid">Server signature invalid</string>
     <string name="auth_error_invalid_signature">挑战验证错误 (无效签名)</string>
     <string name="auth_error_token_expired">挑战验证错误 (令牌已过期)</string>
+    <string name="auth_error_verify_token_mismatch">Challenge verification error (verify token mismatch)</string>
+    <string name="auth_error_domain_mismatch">Challenge verification error (domain mismatch)</string>
     <string name="auth_error_challenge_verification_failure">挑战验证失败</string>
     <string name="auth_error_profile_fetch_failure">在更新配置文件过程中出现错误</string>
     <string name="dialog_account_does_not_exist_title">账户不存在</string>
@@ -181,10 +194,12 @@
     <string name="autofill_service_name">Passbolt 自动填充</string>
     <string name="dialog_encourage_autofill_header">在 3 秒内登录您最喜欢的应用！</string>
     <string name="dialog_autofill_header">自动填充</string>
+    <string name="dialog_encourage_autofill_accessibility_description">This option uses Android\'s Accessibility Service to autofill credentials in apps and browsers that do not support Android\'s native autofill. Tap the switch below to review what is accessed and grant your consent.</string>
     <string name="dialog_encourage_autofill_accessibility_samsung">三星</string>
     <string name="dialog_encourage_autofill_accessibility_xiaomi">小米</string>
     <string name="dialog_encourage_autofill_accessibility_huawei">华为</string>
     <string name="dialog_encourage_autofill_accessibility_other">其他</string>
+    <string name="dialog_encourage_autofill_accessibility_title">Enable autofill via Accessibility Service</string>
     <string name="dialog_encourage_autofill_go_to_settings">转到设置</string>
     <string name="dialog_encourage_autofill_service_header">对大多数应用启用自动填充</string>
     <string name="dialog_encourage_autofill_service_description">在 Android 设置屏幕上，选择密码，开启开关并按 OK。
@@ -206,16 +221,19 @@
     <string name="autofill_error">自动填充错误</string>
     <string name="autofill_select_password">选择密码记录</string>
     <string name="autofill_service_channel_name">Passbolt 密码自动填充服务</string>
-    <string name="data_sync_service_channel_name">Passbolt data sync service</string>
+    <string name="data_sync_service_channel_name">Passbolt 数据同步服务</string>
     <string name="autofill_service_title">Passbolt</string>
     <string name="autofill_service_content">辅助功能自动填充服务已启用</string>
     <string name="data_sync_service_content">Refreshing resources</string>
     <string name="autofill_service_enable_overlay">启用覆盖权限</string>
     <string name="autofill_service_overlay_description"><![CDATA[Android 网络浏览器的自动填充用户名和密码。请启用“在其他应用上绘制”权限以便自动填充密码]]></string>
     <string name="autofill_service_enable_service">对大多数应用启用自动填充</string>
+    <string name="autofill_service_enable_service_description"><![CDATA[Detect login fields in apps and browsers and offer autofill. Requires your consent to enable the Accessibility Service.]]></string>
     <string name="autofill_dropdown_select">从 Passbolt 中选择密码记录</string>
     <string name="autofill_dropdown_fill">用 Passbolt 的密码记录填充</string>
     <string name="autofill_resources_create">创建&amp;填充</string>
+    <string name="autofill_conflict_message">Multiple autofill methods are active.\nThis may cause issues.</string>
+    <string name="autofill_conflict_message_detailed">Multiple autofill methods are active.\nPlease disable one to ensure a smooth autofill experience.</string>
     <string name="home_empty_list">空列表</string>
     <string name="home_create">创建</string>
     <string name="home_in_sub_folders">在子文件夹：</string>
@@ -253,12 +271,23 @@
     <string name="resource_details_description_header">描述</string>
     <string name="resource_details_note_header">备注</string>
     <string name="resource_details_note_content">内容</string>
+    <string name="resource_details_pin_code_header">Pin code</string>
+    <string name="resource_details_pin_code_code">Code</string>
     <string name="resource_details_tags_header">标签</string>
     <string name="resource_details_encrypted_description">描述已加密</string>
+    <string name="action_show">Show</string>
+    <string name="action_hide">Hide</string>
+    <string name="action_copy">复制</string>
     <string name="resource_details_information">信息</string>
     <string name="resource_details_invalid_totp_scanned">扫描到的TOTP二维码无效</string>
     <string name="resource_details_metadata_header">元数据</string>
     <string name="resource_details_custom_fields_header">Custom fields</string>
+    <string name="resource_details_upgrade_available_header">Upgrade available</string>
+    <string name="resource_details_upgrade_panel_message">This is a legacy resource. Upgrade for security improvements and new features.</string>
+    <string name="resource_details_upgrade_action">Upgrade</string>
+    <string name="resource_details_upgrade_learn_more">了解更多</string>
+    <string name="resource_details_upgrade_success">Resource upgraded.</string>
+    <string name="resource_details_upgrade_failure">Could not upgrade the resource. Please try again.</string>
     <string name="additional_uri_format">• %s</string>
     <string name="more_details_copy_password">复制密码</string>
     <string name="more_details_copy_description">复制描述</string>
@@ -276,8 +305,36 @@
     <string name="resource_form_totp_url_issuer">URL（发行人）</string>
     <string name="resource_form_totp_more_settings">TOTP 更多配置</string>
     <string name="resource_form_totp_settings">TOTP 配置</string>
+    <string name="resource_form_advanced_password_generation">Advanced password generation</string>
+    <string name="resource_form_advanced_passphrase_generation">Advanced passphrase generation</string>
+    <string name="resource_form_advanced_password_generation_save_preferences">Save preferences</string>
+    <string name="resource_form_advanced_password_generation_password_preview">Password preview</string>
+    <string name="resource_form_advanced_password_generation_passphrase_preview">Passphrase preview</string>
+    <string name="resource_form_advanced_password_generation_tab_password">密码</string>
+    <string name="resource_form_advanced_password_generation_tab_passphrase">密码口令</string>
+    <string name="resource_form_advanced_password_generation_length">长度</string>
+    <string name="resource_form_advanced_password_generation_character_types">字符类型</string>
+    <string name="resource_form_advanced_password_generation_exclude_look_alike">排除相似的字符</string>
+    <string name="resource_form_advanced_password_generation_exclude_look_alike_description">Skip characters that can be confused with each other (O/0, l/I/1).</string>
+    <string name="resource_form_advanced_password_generation_number_of_words">单词数量</string>
+    <string name="resource_form_advanced_password_generation_word_separator">Word separator</string>
+    <string name="resource_form_advanced_password_generation_word_separator_hint">输入一个或多个字符</string>
+    <string name="resource_form_advanced_password_generation_word_case">Word case</string>
+    <string name="resource_form_character_set_upper">A-Z</string>
+    <string name="resource_form_character_set_digit">0-9</string>
+    <string name="resource_form_character_set_lower">a-z</string>
+    <string name="resource_form_character_set_parenthesis">{ [ ( | ) ] }</string>
+    <string name="resource_form_character_set_special_char1"># $ % &amp; @ ^ ~</string>
+    <string name="resource_form_character_set_special_char2">. , : ;</string>
+    <string name="resource_form_character_set_special_char3">\' \" `</string>
+    <string name="resource_form_character_set_special_char4">/ \\ _ -</string>
+    <string name="resource_form_character_set_special_char5">&lt; * + ! ? =</string>
+    <string name="resource_form_character_set_emoji">🙂</string>
+    <string name="resource_form_word_case_lowercase">小写格式</string>
+    <string name="resource_form_word_case_uppercase">大写</string>
+    <string name="resource_form_word_case_camelcase">驼峰格式</string>
     <string name="resource_form_description">描述</string>
-    <string name="resource_form_additional_uris">Additional URIs</string>
+    <string name="resource_form_additional_uris">附加的链接地址</string>
     <string name="resource_form_enter_description">输入描述</string>
     <string name="resource_form_metadata_description">元数据描述</string>
     <string name="resource_form_create_metadata_description">创建元数据描述</string>
@@ -305,15 +362,29 @@
     <string name="resource_form_save">保存</string>
     <string name="resource_form_edit_init_error">资源编辑初始化失败</string>
     <string name="resource_form_create_init_error">Failed to initialize resource creation</string>
+    <string name="resource_form_created_share_failed">Resource created but not shared - sharing failed.</string>
+    <string name="resource_form_edited_share_failed">Unable to apply the confirmed permissions - please try again.</string>
+    <string name="resource_form_created_permissions_changed">Resource created but not shared - permissions changed in the meantime.</string>
     <string name="resource_form_remove_totp">移除TOTP</string>
     <string name="resource_form_remove_note">移除备注</string>
+    <string name="resource_form_remove_pin_code">Remove pin code</string>
+    <string name="resource_form_pin_code">Pin code</string>
+    <string name="resource_form_create_pin_code">Create a pin code</string>
+    <string name="resource_form_pin_code_code">Code</string>
+    <string name="resource_form_enter_pin_code">Enter pin code</string>
+    <string name="resource_form_pin_code_advanced">Advanced pin code generation</string>
+    <string name="resource_form_pin_code_length">长度</string>
+    <string name="resource_form_pin_code_save_preferences">Save preferences</string>
+    <string name="resource_form_pin_code_additional_information">Additional information</string>
+    <string name="resource_form_pin_code_validation_too_short">Pin code must be at least %d digits</string>
+    <string name="resource_form_pin_code_validation_too_long">Pin code can be at most %d digits</string>
     <string name="resource_form_no_name">未填写名称</string>
     <string name="resource_form_max_additional_uris_limit">You can add a maximum of %d additional URIs</string>
-    <string name="resource_form_appearance">Appearance</string>
-    <string name="resource_form_appearance_select_color">Select color</string>
-    <string name="resource_form_appearance_select_icon">Select icon</string>
-    <string name="resource_form_appearance_default_color">Default color</string>
-    <string name="resource_form_appearance_default_icon">Default icon</string>
+    <string name="resource_form_appearance">外观</string>
+    <string name="resource_form_appearance_select_color">选择颜色</string>
+    <string name="resource_form_appearance_select_icon">选择图标</string>
+    <string name="resource_form_appearance_default_color">默认颜色</string>
+    <string name="resource_form_appearance_default_icon">默认图标</string>
     <string name="resource_form_no_custom_fields_set">No custom fields set</string>
     <string name="resource_form_custom_fields_edit_not_supported">Edition of custom fields is currently not supported</string>
     <string name="settings_app_settings">应用设置</string>
@@ -322,12 +393,13 @@
     <string name="settings_debug_logs">调试，日志</string>
     <string name="settings_disable">禁用</string>
     <string name="settings_sign_out">注销</string>
+    <string name="settings_sign_out_server_error">Signed out on this device. The server session may still be active.</string>
     <string name="settings_title">设置</string>
-    <string name="settings_disable_biometric_confirmation_message">在禁用指纹后，您需要使用您的密码登录。</string>
-    <string name="settings_turn_on_biometric_title">开启指纹身份验证</string>
-    <string name="settings_turn_on_biometric_subtitle">触摸指纹传感器</string>
-    <string name="settings_add_first_biometric">请先在系统设置中添加您的指纹</string>
-    <string name="settings_add_first_biometric_title">配置指纹</string>
+    <string name="settings_disable_biometric_confirmation_message">After disabling biometric you will need to login by using your passphrase.</string>
+    <string name="settings_turn_on_biometric_title">Turn on biometric authentication</string>
+    <string name="settings_turn_on_biometric_subtitle">Confirm using your biometric</string>
+    <string name="settings_add_first_biometric">Please add your biometric in the system settings first</string>
+    <string name="settings_add_first_biometric_title">Configure biometric</string>
     <string name="settings_add_first_biometric_settings">转到设置</string>
     <string name="settings_debug_logs_settings_logs">访问日志</string>
     <string name="settings_debug_logs_enable_logs">启用调试日志</string>
@@ -341,11 +413,16 @@
     <string name="settings_terms_and_licenses_terms">条款与条件</string>
     <string name="settings_app_settings_default_filter">默认筛选器</string>
     <string name="settings_app_settings_autofill">自动填充</string>
-    <string name="settings_app_settings_biometric">指纹</string>
+    <string name="settings_app_settings_biometric">Biometric</string>
     <string name="settings_app_settings_biometry_error">生物验证错误。 %s</string>
     <string name="settings_app_settings_biometry_authentication_error">Biometry authentication error. %s</string>
     <string name="settings_app_settings_expert_settings">高级设置</string>
+    <string name="settings_app_settings_expert_settings_require_auth_on_every_entry">Require auth on every entry</string>
     <string name="settings_app_settings_expert_settings_hide_root">隐藏“设备已root”对话框</string>
+    <string name="settings_app_settings_expert_settings_fetch_page_size">API fetch page size</string>
+    <string name="settings_page_size_description">Number of resources fetched per API request. Higher values use more memory but reduce the number of network requests.</string>
+    <string name="settings_page_size_exceeds_recommended_limit">Exceeds recommended limit. May cause app slowdowns.</string>
+    <string name="settings_page_size_restore_default_values">Restore default values</string>
     <string name="settings_autofill_autofill_title">您可以在这里更改自动填充方式</string>
     <string name="settings_autofill_autofill_desc">建议使用自动填充服务，但服务性能可能取决于您的设备和电池优化设置。 \n\n如果自动填充服务无法稳定的在您设备上工作，您可以尝试基于辅助服务启用自动填充。</string>
     <string name="settings_autofill_autofill_service">自动填充服务 (推荐)</string>
@@ -391,13 +468,13 @@
     <string name="scan_qr_summary_http_not_supported_title">不支持不安全的 HTTP 连接</string>
     <string name="scan_qr_summary_failure_title">发生了错误！</string>
     <string name="scan_qr_summary_no_network_title">无网络连接</string>
-    <string name="biometric_setup_use_biometric_button">使用指纹</string>
-    <string name="biometric_setup_configure_title">配置指纹</string>
+    <string name="biometric_setup_use_biometric_button">Use Biometric</string>
+    <string name="biometric_setup_configure_title">Configure Biometric</string>
     <string name="biometric_setup_configure_description">更快速地解锁</string>
-    <string name="biometric_setup_use_title">使用指纹代替密码解锁</string>
+    <string name="biometric_setup_use_title">Use Biometric instead of passphrase</string>
     <string name="biometric_setup_use_description">更快速地解锁</string>
-    <string name="biometric_setup_biometric_title">使用指纹验证</string>
-    <string name="biometric_setup_biometric_subtitle">触摸指纹传感器</string>
+    <string name="biometric_setup_biometric_title">Confirm using biometric</string>
+    <string name="biometric_setup_biometric_subtitle">Confirm using your biometric</string>
     <string name="folder_root">Root</string>
     <string name="resource_permissions_can_read">可以读取</string>
     <string name="resource_permissions_can_update">可以更新</string>
@@ -406,6 +483,15 @@
     <string name="resource_permissions_share_simulation_failed">共享模拟时出错</string>
     <string name="resource_permissions_share_failed">分享时出错 </string>
     <string name="resource_permissions_edit_permissions">编辑权限</string>
+    <string name="confirm_permissions_title">Confirm permissions</string>
+    <string name="confirm_permissions_fetch_failure">Unable to load current permissions. Please try again.</string>
+    <string name="confirm_permissions_preparing">Preparing permissions to approve…</string>
+    <string name="confirm_permissions_refreshing_users_and_groups">Refreshing users and groups…</string>
+    <string name="confirm_permissions_drifted">The permissions changed in the meantime. Please review them and confirm again.</string>
+    <string name="confirm_permissions_drifted_single">Permissions for %1$s have changed</string>
+    <string name="confirm_permissions_drifted_multiple">Permissions for %1$s (and more) have changed</string>
+    <string name="confirm_permissions_indirect_access_single_user">%1$s is already part of the group %2$s</string>
+    <string name="confirm_permissions_indirect_access_multiple_users">%1$s (and more) already have access via group membership</string>
     <string name="group_permission_permission">权限</string>
     <string name="group_permission_group_members">群组成员</string>
     <string name="group_permission_delete">删除权限</string>
@@ -420,6 +506,11 @@
     <string name="main_update_downloaded">Passbolt刚刚下载了更新</string>
     <string name="main_update_download_in_progress">下载将在后台进行。下载完毕后，我们将会通知您。</string>
     <string name="main_update_downloaded_install">安装</string>
+    <string name="deprecated_os_warning_title">Outdated Android version</string>
+    <string name="deprecated_os_warning_message">Your device runs an Android version that no longer receives security updates. Passbolt support for this version is scheduled to be phased out.</string>
+    <string name="deprecated_os_warning_call_to_action">To stay protected and keep receiving Passbolt updates, &lt;b&gt;update your device to a newer Android version&lt;/b&gt;.</string>
+    <string name="deprecated_os_warning_acknowledge">我明白了</string>
+    <string name="deprecated_os_warning_hide">Don\'t show again</string>
     <string name="dialog_encryption_error_title">加密出错</string>
     <string name="dialog_encryption_error_message">加密错误 (%s)。请重试。</string>
     <string name="resource_tags_section">标签</string>
@@ -431,7 +522,20 @@
     <string name="create_folder_name">名称</string>
     <string name="create_folder_name_validation">文件夹名称不能为空</string>
     <string name="create_folder_error_format">无法创建文件夹。 %s</string>
+    <string name="enter_folder_name">Enter folder name</string>
     <string name="share_folder_error_format">无法共享文件夹。 %s</string>
+    <string name="dialog_accessibility_consent_title">How Passbolt uses the Accessibility Service</string>
+    <string name="dialog_accessibility_consent_message">Passbolt uses Android\'s Accessibility Service only to offer autofill in apps and browsers that do not support Android\'s standard autofill framework.\n\nWHAT IS ACCESSED\nWhile the service is enabled, Passbolt reads, on your device only:\n• the package name of the foreground app and the web address shown by browsers, to match credentials to the correct site or app;\n• the layout and identifiers of input fields on the current screen (for example, whether a field is a username, password, or one-time code), to fill the right value;\n• focus and tap events on those fields, to know when to offer autofill.\n\nHOW THE DATA IS USED\n• All processing happens locally on your device. The information above is used only to detect login fields and to fill credentials when you choose to autofill.\n• Passbolt does not transmit, share, sell, or store screen contents, field contents, browsing activity, or the list of apps you use. Nothing read by the Accessibility Service leaves your device or is sent to Passbolt servers or any third party.\n• The service is active only while the screen is on, and you can turn it off at any time from Android Settings › Accessibility or from Passbolt\'s autofill settings.\n\nBy tapping \"I have read and consent\" you confirm you have read and accepted the above.</string>
+    <string name="dialog_accessibility_consent_intro">Passbolt uses Android\'s Accessibility Service only to offer autofill in apps and browsers that do not support Android\'s standard autofill framework.</string>
+    <string name="dialog_accessibility_consent_section_what_title">What is accessed</string>
+    <string name="dialog_accessibility_consent_section_what_lead">While the service is enabled, Passbolt reads, on your device only:</string>
+    <string name="dialog_accessibility_consent_section_what_bullet_1">the package name of the foreground app and the web address shown by browsers, to match credentials to the correct site or app;</string>
+    <string name="dialog_accessibility_consent_section_what_bullet_2">the layout and identifiers of input fields on the current screen (for example, whether a field is a username, password, or one-time code), to fill the right value;</string>
+    <string name="dialog_accessibility_consent_section_what_bullet_3">focus and tap events on those fields, to know when to offer autofill.</string>
+    <string name="dialog_accessibility_consent_section_how_title">How the data is used</string>
+    <string name="dialog_accessibility_consent_section_how_bullet_1">All processing happens locally on your device. The information above is used only to detect login fields and to fill credentials when you choose to autofill.</string>
+    <string name="dialog_accessibility_consent_section_how_bullet_2">Passbolt does not transmit, share, sell, or store screen contents, field contents, browsing activity, or the list of apps you use. Nothing read by the Accessibility Service leaves your device or is sent to Passbolt servers or any third party.</string>
+    <string name="dialog_accessibility_consent_section_how_bullet_3">The service is active only while the screen is on, and you can turn it off at any time from Android Settings › Accessibility or from Passbolt\'s autofill settings.</string>
     <string name="import_profile_title">导入您的账户</string>
     <string name="import_profile_user_id">用户 ID</string>
     <string name="import_profile_account_url">账户 URL</string>
@@ -526,13 +630,16 @@
     <string name="create_resource_menu_create_password">密码</string>
     <string name="create_resource_menu_create_note">备注</string>
     <string name="create_resource_menu_create_folder">文件夹</string>
+    <string name="create_resource_menu_other">其他</string>
+    <string name="create_resource_menu_other_title">Other resource types</string>
+    <string name="create_resource_menu_create_pin_code">Pin code</string>
     <string name="dialog_new_metadata_key_trust_changed">The metadata key has changed.</string>
     <string name="dialog_new_metadata_key_trust_modified_by_user">The encryption key used to share metadata between users has been updated by %s.</string>
     <string name="dialog_new_metadata_key_trust_key_rotation_info">If you weren’t expecting this, you can verify with your administrator.</string>
     <string name="dialog_new_metadata_key_trust_key_rollback_info">This is unusual, please verify with your administrator.</string>
     <string name="dialog_new_metadata_key_trust_key_fingerprint">Key fingerprint:</string>
-    <string name="dialog_new_metadata_key_trust_key_trust_the_key">Trust the key</string>
-    <string name="dialog_trusted_metadata_key_deleted">The metadata key has been deleted.</string>
+    <string name="dialog_new_metadata_key_trust_key_trust_the_key">信任该密钥</string>
+    <string name="dialog_trusted_metadata_key_deleted">元数据密钥已被删除。</string>
     <string name="dialog_trusted_metadata_key_deleted_main">The trusted encryption key used to share metadata between users has been deleted.</string>
     <string name="dialog_trusted_metadata_key_deleted_info">If you weren’t expecting this, you can verify with your administrator.</string>
     <string name="dialog_trusted_metadata_key_deleted_trust">Trust</string>
@@ -540,8 +647,7 @@
     arrays can be inconsistent when in other languages
     index / size is not used in code
     -->
-    <string-array name="username_hint_values"
-        tools:ignore="InconsistentArrays">
+    <string-array name="username_hint_values" tools:ignore="InconsistentArrays">
         <item>邮箱</item>
         <item>用户名</item>
         <item>手机</item>
@@ -552,11 +658,27 @@
       arrays can be inconsistent when in other languages
       index / size is not used in code
     -->
-    <string-array name="password_hint_values"
-        tools:ignore="InconsistentArrays">
+    <string-array name="password_hint_values" tools:ignore="InconsistentArrays">
         <item>密码</item>
         <item>密钥</item>
         <item>密码口令</item>
+    </string-array>
+    <!--
+      arrays can be inconsistent when in other languages
+      index / size is not used in code
+    -->
+    <string-array name="totp_hint_values" tools:ignore="InconsistentArrays">
+        <item>otp</item>
+        <item>totp</item>
+        <item>one-time</item>
+        <item>one-time-code</item>
+        <item>verification</item>
+        <item>verification code</item>
+        <item>auth code</item>
+        <item>authentication code</item>
+        <item>2fa</item>
+        <item>mfa</item>
+        <item>security code</item>
     </string-array>
     <string-array name="dialog_encourage_autofill_setup_steps">
         <item>&lt;b&gt;打开自动填充&lt;/b&gt; 设置</item>

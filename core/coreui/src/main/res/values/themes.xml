@@ -5,4 +5,13 @@
         <item name="android:statusBarColor">@color/background</item>
         <item name="android:windowLightStatusBar">@bool/is_light_status_bar</item>
     </style>
+
+    <style name="Theme.Passbolt.Translucent">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowAnimationStyle">@null</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+    </style>
 </resources>

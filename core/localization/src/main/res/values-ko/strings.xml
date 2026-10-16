@@ -15,6 +15,7 @@
     <string name="default_home_search_hint">이름, 사용자 또는 url로 검색</string>
     <string name="all_items_home_search_hint">이름, 사용자, url 또는 태그로 검색</string>
     <string name="user_search_hint">사용자 검색...</string>
+    <string name="search_in_progress">Searching…</string>
     <string name="no_passwords">비밀번호가 없음</string>
     <string name="no_otps">TOTP가 없습니다.</string>
     <string name="authentication_required">인증 필요</string>
@@ -28,6 +29,9 @@
     <string name="shared_with">공유 대상</string>
     <string name="location">위치</string>
     <string name="content_not_available">콘텐츠를 더 이상 사용할 수 없습니다.</string>
+    <string name="consent">읽고 동의합니다</string>
+    <string name="accessibility_policies_accept">수락</string>
+    <string name="accessibility_policies_decline">거절</string>
     <string name="name_suspended">%s (중지됨)</string>
     <string name="name_expired">%s (만료됨)</string>
     <string name="proceed">진행</string>
@@ -43,6 +47,7 @@
     <string name="common_sign_out">로그아웃</string>
     <string name="common_data_refresh_error">데이터 새로 고침 중 오류가 발생했습니다. 새로고침하려면 아래로 스와이프하세요.</string>
     <string name="common_decryption_failure">암호 해독 중 에러</string>
+    <string name="common_invalid_totp_parameters">잘못된 TOTP 매개변수</string>
     <string name="common_metadata_encryption_failure">메타데이터 암호화 중 오류</string>
     <string name="common_fetch_failure">암호 다운로드 중 오류</string>
     <string name="common_encryption_failure">비밀 암호화 중 오류가 발생했습니다.</string>
@@ -53,6 +58,8 @@
     <string name="common_metadata_key_verification_failure">메타데이터 키를 확인할 수 없음</string>
     <string name="common_metadata_key_is_trusted">새로운 메타데이터 키가 신뢰할 수 있음</string>
     <string name="common_metadata_key_trust_failed">새 메타데이터 키를 신뢰하지 못함</string>
+    <string name="common_password_policies_fetch_failed">비밀번호 정책을 불러오기 실패 - 기본값 사용</string>
+    <string name="common_password_expiry_fetch_failed">비밀번호 만료 설정 불러오기 실패 - 기본값 사용</string>
     <string name="common_message_resource_edited">%s 리소스를 정상적으로 변경하였습니다.</string>
     <string name="common_message_resource_deleted">%s 리소스를 삭제하였습니다.</string>
     <string name="common_message_resource_shared">리소스 권한이 업데이트 되었습니다.</string>
@@ -69,6 +76,9 @@
     <string name="biometric_changed_title">지문에 변화가 감지되었습니다.</string>
     <string name="biometric_changed_message">이번에는 비밀문구로 로그인하고 설정에서 지문을 다시 활성화해야 합니다.</string>
     <string name="biometric_authenticate_again">비밀문구로 재로그인 하세요</string>
+    <string name="biometric_decrypt_error_message">생체 인식 로그인이 일시적으로 사용 불가능합니다. 계속하려면 비밀문구를 입력하세요.</string>
+    <string name="biometric_encrypt_error_message">생체 인식 설정을 완료할 수 없습니다. 다시 시도하거나 생체 인식 없이 계속 진행하세요.</string>
+    <string name="biometric_no_crypto_cipher">이 기기는 생체 인식 대신 PIN 또는 패턴을 사용하고 있습니다. 생체 인식 잠금 해제를 사용하거나 비밀문구를 입력하세요.</string>
     <string name="settings_licenses_title">라이선스</string>
     <string name="settings_logs_title">로그</string>
     <string name="resource_will_be_deleted">이 비밀번호를 당신의 계정에서 영구적으로 삭제합니다.</string>
@@ -150,8 +160,11 @@
     <string name="auth_decryption_error_title">복호화 실패</string>
     <string name="auth_decryption_error_description">복호화에 에러가 발생하였습니다. 다시 시도해주세요.\n</string>
     <string name="auth_decryption_error_cause">Open PGPG 에러: \n%s</string>
+    <string name="auth_error_server_signature_invalid">Server signature invalid</string>
     <string name="auth_error_invalid_signature">질문 확인 오류(잘못된 서명)</string>
     <string name="auth_error_token_expired">질문 확인 오류(토큰 만료)</string>
+    <string name="auth_error_verify_token_mismatch">Challenge verification error (verify token mismatch)</string>
+    <string name="auth_error_domain_mismatch">Challenge verification error (domain mismatch)</string>
     <string name="auth_error_challenge_verification_failure">질문 확인 실패</string>
     <string name="auth_error_profile_fetch_failure">프로필을 업데이트하는 동안 오류가 있습니다.</string>
     <string name="dialog_account_does_not_exist_title">계정이 존재하지 않습니다</string>
@@ -178,13 +191,15 @@
 자세한 내용은 관리자에게 문의하십시오.</string>
     <string name="dialog_unable_to_generate_password_title">강력한 비밀번호를 생성할 수 없습니다</string>
     <string name="dialog_unable_to_generate_password_message">비밀번호 생성기에서 강력한 비밀번호 생성되지 않습니다. 최소 %d 비트가 필요합니다</string>
-    <string name="autofill_service_name">Passbolt 자동채우기</string>
+    <string name="autofill_service_name">Passbolt 자동 채우기</string>
     <string name="dialog_encourage_autofill_header">3초만에 즐겨찾는 앱으로 로그인하세요!</string>
     <string name="dialog_autofill_header">자동 채우기</string>
+    <string name="dialog_encourage_autofill_accessibility_description">이 옵션은 Android 기본 자동 채우기를 지원하지 않는 앱과 브라우저에서 자격 증명을 자동 채우기 위해 Android 접근성 서비스를 사용합니다. 아래 스위치를 눌러 접근되는 정보를 검토하고 동의를 부여하세요.</string>
     <string name="dialog_encourage_autofill_accessibility_samsung">삼성</string>
     <string name="dialog_encourage_autofill_accessibility_xiaomi">샤오미</string>
     <string name="dialog_encourage_autofill_accessibility_huawei">화웨이</string>
     <string name="dialog_encourage_autofill_accessibility_other">기타</string>
+    <string name="dialog_encourage_autofill_accessibility_title">접근성 서비스를 통해 자동 완성 채우기 활성화</string>
     <string name="dialog_encourage_autofill_go_to_settings">설정으로 이동</string>
     <string name="dialog_encourage_autofill_service_header">대부분의 앱에 대해 자동 채우기 사용</string>
     <string name="dialog_encourage_autofill_service_description">안드로이드 설정 화면에서 Passbolt를 선택하고 토글을 켠 다음 확인을 누릅니다.
@@ -213,9 +228,12 @@
     <string name="autofill_service_enable_overlay">오버레이 사용 권한 사용</string>
     <string name="autofill_service_overlay_description"><![CDATA[Android 웹 브라우저의 사용자 이름 및 비밀번호 자동 채우기. Passbolt 자동 채우기에 대한 \'다른 앱 위로 그리기\' 권한을 활성화하세요]]></string>
     <string name="autofill_service_enable_service">대부분의 앱에 대해 자동 채우기 사용</string>
+    <string name="autofill_service_enable_service_description"><![CDATA[앱과 브라우저의 로그인 입력란을 감지하여 자동 채우기 기능을 제공합니다. 접근성 서비스를 활성화하려면 사용자의 동의가 필요합니다.]]></string>
     <string name="autofill_dropdown_select">Passbolt에서 선택</string>
     <string name="autofill_dropdown_fill">Passbolt로 채우기</string>
     <string name="autofill_resources_create">생성 &amp; 채우기</string>
+    <string name="autofill_conflict_message">여러 자동 채우기 방법이 활성화되어 있습니다.\n이로 인해 문제가 발생할 수 있습니다.</string>
+    <string name="autofill_conflict_message_detailed">여러 자동 채우기 기능이 활성화되어 있습니다.\n원활한 자동 완성 환경을 위해 하나를 비활성화해 주세요.</string>
     <string name="home_empty_list">목록 비우기</string>
     <string name="home_create">생성</string>
     <string name="home_in_sub_folders">하위폴더에서:</string>
@@ -253,12 +271,23 @@
     <string name="resource_details_description_header">설명</string>
     <string name="resource_details_note_header">노트</string>
     <string name="resource_details_note_content">컨텐츠</string>
+    <string name="resource_details_pin_code_header">Pin 코드</string>
+    <string name="resource_details_pin_code_code">코드</string>
     <string name="resource_details_tags_header">태그</string>
     <string name="resource_details_encrypted_description">설명이 암호화 됨</string>
+    <string name="action_show">보기</string>
+    <string name="action_hide">숨김</string>
+    <string name="action_copy">복사</string>
     <string name="resource_details_information">정보</string>
     <string name="resource_details_invalid_totp_scanned">잘못된 TOTP QR 코드가 스캔되었습니다.</string>
     <string name="resource_details_metadata_header">메타데이터</string>
     <string name="resource_details_custom_fields_header">사용자 정의 필드</string>
+    <string name="resource_details_upgrade_available_header">업그레이드 가능</string>
+    <string name="resource_details_upgrade_panel_message">이 리소스는 레거시 형식입니다. 보안 개선 및 새 기능을 위해 업그레이드하세요.</string>
+    <string name="resource_details_upgrade_action">업그레이드</string>
+    <string name="resource_details_upgrade_learn_more">더 알아보기</string>
+    <string name="resource_details_upgrade_success">리소스가 업그레이드되었습니다.</string>
+    <string name="resource_details_upgrade_failure">리소스를 업그레이드할 수 없습니다. 다시 시도해 주세요.</string>
     <string name="additional_uri_format">• %s</string>
     <string name="more_details_copy_password">비밀번호 복사</string>
     <string name="more_details_copy_description">설명 복사</string>
@@ -276,6 +305,34 @@
     <string name="resource_form_totp_url_issuer">URL (발행자)</string>
     <string name="resource_form_totp_more_settings">추가 TOTP 설정</string>
     <string name="resource_form_totp_settings">TOTP 설정</string>
+    <string name="resource_form_advanced_password_generation">고급 비밀번호 생성</string>
+    <string name="resource_form_advanced_passphrase_generation">고급 비밀문구 생성</string>
+    <string name="resource_form_advanced_password_generation_save_preferences">환경설정 저장</string>
+    <string name="resource_form_advanced_password_generation_password_preview">비밀번호 미리보기</string>
+    <string name="resource_form_advanced_password_generation_passphrase_preview">비밀문구 미리보기</string>
+    <string name="resource_form_advanced_password_generation_tab_password">비밀번호</string>
+    <string name="resource_form_advanced_password_generation_tab_passphrase">비밀문구</string>
+    <string name="resource_form_advanced_password_generation_length">길이</string>
+    <string name="resource_form_advanced_password_generation_character_types">문자 유형</string>
+    <string name="resource_form_advanced_password_generation_exclude_look_alike">비슷한 모양 문자 제외</string>
+    <string name="resource_form_advanced_password_generation_exclude_look_alike_description">서로 혼동될 수 있는 문자를 건너뜁니다 (예: O/0, l/I/1).</string>
+    <string name="resource_form_advanced_password_generation_number_of_words">단어수</string>
+    <string name="resource_form_advanced_password_generation_word_separator">단어 구분자</string>
+    <string name="resource_form_advanced_password_generation_word_separator_hint">하나 이상의 문자 입력</string>
+    <string name="resource_form_advanced_password_generation_word_case">단어 표기법</string>
+    <string name="resource_form_character_set_upper">A-Z</string>
+    <string name="resource_form_character_set_digit">0-9</string>
+    <string name="resource_form_character_set_lower">a-z</string>
+    <string name="resource_form_character_set_parenthesis">{ [ ( | ) ] }</string>
+    <string name="resource_form_character_set_special_char1"># $ % &amp; @ ^ ~</string>
+    <string name="resource_form_character_set_special_char2">. , : ;</string>
+    <string name="resource_form_character_set_special_char3">\' \" `</string>
+    <string name="resource_form_character_set_special_char4">/ \\ _ -</string>
+    <string name="resource_form_character_set_special_char5">&lt; * + ! ? =</string>
+    <string name="resource_form_character_set_emoji">🙂</string>
+    <string name="resource_form_word_case_lowercase">소문자</string>
+    <string name="resource_form_word_case_uppercase">대문자</string>
+    <string name="resource_form_word_case_camelcase">카멜 표기법</string>
     <string name="resource_form_description">설명</string>
     <string name="resource_form_additional_uris">추가 URI</string>
     <string name="resource_form_enter_description">설명 입력</string>
@@ -305,8 +362,22 @@
     <string name="resource_form_save">저장</string>
     <string name="resource_form_edit_init_error">리소스 편집 초기화에 실패함</string>
     <string name="resource_form_create_init_error">리소스 생성 초기화에 실패함</string>
+    <string name="resource_form_created_share_failed">Resource created but not shared - sharing failed.</string>
+    <string name="resource_form_edited_share_failed">Unable to apply the confirmed permissions - please try again.</string>
+    <string name="resource_form_created_permissions_changed">Resource created but not shared - permissions changed in the meantime.</string>
     <string name="resource_form_remove_totp">TOTP 삭제</string>
     <string name="resource_form_remove_note">노트 삭제</string>
+    <string name="resource_form_remove_pin_code">PIN 코드 제거</string>
+    <string name="resource_form_pin_code">Pin 코드</string>
+    <string name="resource_form_create_pin_code">PIN 코드 생성</string>
+    <string name="resource_form_pin_code_code">코드</string>
+    <string name="resource_form_enter_pin_code">PIN 코드 입력</string>
+    <string name="resource_form_pin_code_advanced">고급 PIN 코드 생성</string>
+    <string name="resource_form_pin_code_length">길이</string>
+    <string name="resource_form_pin_code_save_preferences">환경설정 저장</string>
+    <string name="resource_form_pin_code_additional_information">추가 정보</string>
+    <string name="resource_form_pin_code_validation_too_short">PIN 코드는 최소 %d자리여야 합니다.</string>
+    <string name="resource_form_pin_code_validation_too_long">PIN 코드는 최대 %d자리여야 합니다.</string>
     <string name="resource_form_no_name">이름 없음</string>
     <string name="resource_form_max_additional_uris_limit">최대 %d개의 추가 URI를 추가할 수 있습니다.</string>
     <string name="resource_form_appearance">모양새</string>
@@ -322,6 +393,7 @@
     <string name="settings_debug_logs">디버그, 로그</string>
     <string name="settings_disable">중지</string>
     <string name="settings_sign_out">로그아웃</string>
+    <string name="settings_sign_out_server_error">Signed out on this device. The server session may still be active.</string>
     <string name="settings_title">설정</string>
     <string name="settings_disable_biometric_confirmation_message">지문을 비활성화한 후에는 비밀문구를 사용하여 로그인해야 합니다.</string>
     <string name="settings_turn_on_biometric_title">지문 인증 켜기</string>
@@ -345,7 +417,12 @@
     <string name="settings_app_settings_biometry_error">생체 측정 오류. %s</string>
     <string name="settings_app_settings_biometry_authentication_error">생체 인식 인증 오류입니다. %s</string>
     <string name="settings_app_settings_expert_settings">전문가 설정</string>
+    <string name="settings_app_settings_expert_settings_require_auth_on_every_entry">앱을 열 때마다 인증 요구</string>
     <string name="settings_app_settings_expert_settings_hide_root">\"장치가 루팅됨\" 대화 상자 숨기기</string>
+    <string name="settings_app_settings_expert_settings_fetch_page_size">API fetch 페이지 크기</string>
+    <string name="settings_page_size_description">API 요청당 한 번에 가져오는 리소스 수입니다. 값이 클수록 메모리를 더 사용하지만, 네트워크 요청 횟수는 줄어듭니다.</string>
+    <string name="settings_page_size_exceeds_recommended_limit">권장 제한을 초과했습니다. 앱 속도가 느려질 수 있습니다.</string>
+    <string name="settings_page_size_restore_default_values">기본값 복원</string>
     <string name="settings_autofill_autofill_title">여기에서 자동 채우기 방법을 변경할 수 있습니다</string>
     <string name="settings_autofill_autofill_desc">자동 채우기 서비스 방법을 사용하는 것이 좋지만 서비스 성능은 기가 및 배터리 최적화 설정에 따라 달라질 수 있습니다. \n\n자동 채우기 서비스가 기기에서 안정적으로 작동하지 않는 경우 접근성 서비스를 기반으로 자동 채우기를 사용하도록 설정할 수 있습니다.</string>
     <string name="settings_autofill_autofill_service">자동 채우기 서비스 (추천)</string>
@@ -406,6 +483,15 @@
     <string name="resource_permissions_share_simulation_failed">시뮬레이션 공유 중 오류가 발생했습니다.</string>
     <string name="resource_permissions_share_failed">공유 중 오류가 발생했습니다. </string>
     <string name="resource_permissions_edit_permissions">권한 수정</string>
+    <string name="confirm_permissions_title">권한 확인</string>
+    <string name="confirm_permissions_fetch_failure">Unable to load current permissions. Please try again.</string>
+    <string name="confirm_permissions_preparing">Preparing permissions to approve…</string>
+    <string name="confirm_permissions_refreshing_users_and_groups">Refreshing users and groups…</string>
+    <string name="confirm_permissions_drifted">The permissions changed in the meantime. Please review them and confirm again.</string>
+    <string name="confirm_permissions_drifted_single">Permissions for %1$s have changed</string>
+    <string name="confirm_permissions_drifted_multiple">Permissions for %1$s (and more) have changed</string>
+    <string name="confirm_permissions_indirect_access_single_user">%1$s is already part of the group %2$s</string>
+    <string name="confirm_permissions_indirect_access_multiple_users">%1$s (and more) already have access via group membership</string>
     <string name="group_permission_permission">권한</string>
     <string name="group_permission_group_members">그룹 구성원</string>
     <string name="group_permission_delete">권한 제거</string>
@@ -420,6 +506,11 @@
     <string name="main_update_downloaded">Passbolt 업데이트가 방금 다운로드됨</string>
     <string name="main_update_download_in_progress">백그라운드에서 다운로드 중입니다. 다운로드가 완료되면 알려드리겠습니다.</string>
     <string name="main_update_downloaded_install">설치</string>
+    <string name="deprecated_os_warning_title">Outdated Android version</string>
+    <string name="deprecated_os_warning_message">Your device runs an Android version that no longer receives security updates. Passbolt support for this version is scheduled to be phased out.</string>
+    <string name="deprecated_os_warning_call_to_action">To stay protected and keep receiving Passbolt updates, &lt;b&gt;update your device to a newer Android version&lt;/b&gt;.</string>
+    <string name="deprecated_os_warning_acknowledge">이해함</string>
+    <string name="deprecated_os_warning_hide">다시 표시하지 않음</string>
     <string name="dialog_encryption_error_title">암호화 오류가 발생했습니다.</string>
     <string name="dialog_encryption_error_message">(%s) 암호화 에러가 발생하였습니다. 다시 시도해주세요.</string>
     <string name="resource_tags_section">태그</string>
@@ -431,7 +522,20 @@
     <string name="create_folder_name">이름</string>
     <string name="create_folder_name_validation">폴더 이름은 비워질수 없습니다.</string>
     <string name="create_folder_error_format">폴더를 생성할수 없습니다. %s</string>
+    <string name="enter_folder_name">폴더 이름 입력</string>
     <string name="share_folder_error_format">폴더를 공유할수 없습니다. %s</string>
+    <string name="dialog_accessibility_consent_title">패스볼트가 접근성 서비스를 사용하는 방법</string>
+    <string name="dialog_accessibility_consent_message">Passbolt는 Android의 표준 자동 채우기 프레임워크를 지원하지 않는 앱 및 브라우저에서 자동 채우기를 제공하기 위해서만 Android의 접근성 서비스를 사용합니다.\n\n접근되는 정보\n서비스가 활성화되어 있는 동안, Passbolt는 사용자의 기기에서만 다음 정보를 읽습니다:\n• 전면에 표시된 앱의 패키지 이름과 브라우저에 표시된 웹 주소 \n• 올바른 값을 채우기 위해 현재 화면의 입력 필드 레이아웃 및 식별자 (예: 해당 필드가 사용자 이름, 비밀번호 또는 일회용 코드인지 여부):\n*자동 채우기 기능을 제공해야 하는 시점을 파악하기 위해 해당 필드에 대한 포커스 및 탭 이벤트.\n\n데이터 사용 방식\n• 모든 처리는 사용자의 기기 내에서 로컬로 이루어집니다. 위 정보는 로그인 필드를 감지하고 사용자가 자동 채우기를 선택할 때 자격 증명을 입력하는 데에만 사용됩니다.\n• Passbolt는 화면 내용, 입력 필드 내용, 브라우징 활동 또는 사용 중인 앱 목록을 전송, 공유, 판매 또는 저장하지 않습니다. 접근성 서비스를 통해 읽은 어떠한 정보도 기기를 벗어나지 않으며 Passbolt 서버 또는 제3자에게 전송되지 않습니다.\n• 이 서비스는 화면이 켜져 있는 동안에만 활성화되며, Android 설정 › 접근성 또는 Passbolt의 자동 채우기 설정에서 언제든지 비활성화할 수 있습니다.\n\n\"읽고 동의합니다\"를 탭하면 위 내용을 읽고 동의했음을 확인하는 것입니다.</string>
+    <string name="dialog_accessibility_consent_intro">Passbolt는 안드로이드의 표준 자동 채우기 프레임워크를 지원하지 않는 앱과 브라우저에서 자동 채우기 기능을 제공하는 용도로만 안드로이드의 접근성 서비스를 이용합니다.</string>
+    <string name="dialog_accessibility_consent_section_what_title">접근 대상 확인</string>
+    <string name="dialog_accessibility_consent_section_what_lead">서비스가 활성화된 동안 Passbolt는 사용자의 기기에서만 다음을 읽습니다:</string>
+    <string name="dialog_accessibility_consent_section_what_bullet_1">포그라운드 앱의 패키지 이름과 브라우저에 표시되는 웹 주소를 사용하여 자격 증명을 올바른 사이트 또는 앱과 연결합니다;</string>
+    <string name="dialog_accessibility_consent_section_what_bullet_2">현재 화면의 입력 필드 레이아웃 및 식별자(예: 필드가 사용자 이름, 비밀번호 또는 일회용 코드인지 여부)를 파악하여 올바른 값을 입력합니다;</string>
+    <string name="dialog_accessibility_consent_section_what_bullet_3">해당 필드의 포커스 및 탭 이벤트를 파악하여 자동 채우기 기능을 제공할 시점을 판단합니다.</string>
+    <string name="dialog_accessibility_consent_section_how_title">데이터 활용 방법</string>
+    <string name="dialog_accessibility_consent_section_how_bullet_1">모든 처리는 사용자의 기기에서 로컬로 이루어집니다. 위의 정보는 로그인 필드를 감지하고 자동 채우기 기능을 선택했을 때 자격 증명을 입력하는 데에만 사용됩니다.</string>
+    <string name="dialog_accessibility_consent_section_how_bullet_2">Passbolt는 화면 내용, 입력 필드 내용, 브라우징 활동 또는 사용 중인 앱 목록을 전송, 공유, 판매 또는 저장하지 않습니다. 접근성 서비스에서 읽은 어떤 정보도 사용자의 기기를 벗어나거나 Passbolt 서버 또는 제3자에게 전송되지 않습니다.</string>
+    <string name="dialog_accessibility_consent_section_how_bullet_3">이 서비스는 화면이 켜져 있는 동안에만 활성화되며, Android 설정 > 접근성 또는 Passbolt의 자동 채우기 설정에서 언제든지 끌 수 있습니다.</string>
     <string name="import_profile_title">계정 가져오기</string>
     <string name="import_profile_user_id">사용자 ID</string>
     <string name="import_profile_account_url">계정 URL</string>
@@ -526,6 +630,9 @@
     <string name="create_resource_menu_create_password">비밀번호</string>
     <string name="create_resource_menu_create_note">노트</string>
     <string name="create_resource_menu_create_folder">폴더</string>
+    <string name="create_resource_menu_other">기타</string>
+    <string name="create_resource_menu_other_title">기타 리소스 유형</string>
+    <string name="create_resource_menu_create_pin_code">Pin 코드</string>
     <string name="dialog_new_metadata_key_trust_changed">메타데이터 키가 변경되었습니다.</string>
     <string name="dialog_new_metadata_key_trust_modified_by_user">사용자 간에 메타데이터를 공유하는 데 사용되는 암호화 키가 %s에 의해 업데이트되었습니다.</string>
     <string name="dialog_new_metadata_key_trust_key_rotation_info">이것이 예상치 못한 것이라면 관리자에게 확인해보세요.</string>
@@ -540,8 +647,7 @@
     arrays can be inconsistent when in other languages
     index / size is not used in code
     -->
-    <string-array name="username_hint_values"
-        tools:ignore="InconsistentArrays">
+    <string-array name="username_hint_values" tools:ignore="InconsistentArrays">
         <item>메일</item>
         <item>사용자이름</item>
         <item>모바일</item>
@@ -552,11 +658,27 @@
       arrays can be inconsistent when in other languages
       index / size is not used in code
     -->
-    <string-array name="password_hint_values"
-        tools:ignore="InconsistentArrays">
+    <string-array name="password_hint_values" tools:ignore="InconsistentArrays">
         <item>비밀번호</item>
         <item>비밀</item>
         <item>비밀문구</item>
+    </string-array>
+    <!--
+      arrays can be inconsistent when in other languages
+      index / size is not used in code
+    -->
+    <string-array name="totp_hint_values" tools:ignore="InconsistentArrays">
+        <item>otp</item>
+        <item>totp</item>
+        <item>일회성</item>
+        <item>일회성 코드</item>
+        <item>확인</item>
+        <item>확인 코드</item>
+        <item>인증 코드</item>
+        <item>인증 코드</item>
+        <item>2fa</item>
+        <item>mfa</item>
+        <item>보안 코드</item>
     </string-array>
     <string-array name="dialog_encourage_autofill_setup_steps">
         <item>자동완설 설정 켜기</item>

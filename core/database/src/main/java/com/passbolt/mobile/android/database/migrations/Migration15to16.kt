@@ -1,7 +1,8 @@
 package com.passbolt.mobile.android.database.migrations
 
-import androidx.room.migration.Migration
-import androidx.sqlite.db.SupportSQLiteDatabase
+import androidx.room3.migration.Migration
+import androidx.sqlite.SQLiteConnection
+import androidx.sqlite.execSQL
 
 /**
  * Passbolt - Open source password manager for teams
@@ -63,8 +64,8 @@ object Migration15to16 : Migration(15, 16) {
     private const val ADD_RESOURCE_TYPE_DELETED_COLUMN =
         "ALTER TABLE ResourceType ADD COLUMN deleted INTEGER"
 
-    override fun migrate(db: SupportSQLiteDatabase) {
-        with(db) {
+    override suspend fun migrate(connection: SQLiteConnection) {
+        with(connection) {
             execSQL(DROP_RESOURCES)
             execSQL(ADD_RESOURCE_TYPE_DELETED_COLUMN)
             execSQL(CREATE_RESOURCES)

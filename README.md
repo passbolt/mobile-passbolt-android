@@ -62,7 +62,7 @@ If you've found a security related issue in Passbolt, please don't open an issue
 3. Wait until project configuration finishes (couple of minutes) and click `Sync with Gradle files` icon (top right toolbar - elephant
    with blue arrow)
 4. Open the `Build Variants` tab (bottom left vertical pane) and under the `:app` module select `Active Build Variant` as `debug`
-5. Prepare a device for launch - at minimum `Android 11 (API 30)` is required
+5. Prepare a device for launch - at minimum `Android 12 (API 31)` is required
     1. [create and launch Android emulator](https://developer.android.com/studio/run/managing-avds) **or**
     2. [set up and launch on a real device](https://developer.android.com/studio/run/device)
 6. Hit the `Run` arrow (green play icon in the top center)

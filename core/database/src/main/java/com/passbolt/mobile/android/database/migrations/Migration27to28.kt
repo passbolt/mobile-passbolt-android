@@ -1,7 +1,8 @@
 package com.passbolt.mobile.android.database.migrations
 
-import androidx.room.migration.Migration
-import androidx.sqlite.db.SupportSQLiteDatabase
+import androidx.room3.migration.Migration
+import androidx.sqlite.SQLiteConnection
+import androidx.sqlite.execSQL
 
 /**
  * Passbolt - Open source password manager for teams
@@ -39,11 +40,11 @@ object Migration27to28 : Migration(27, 28) {
     private const val CREATE_INDEX_RESOURCE_FAVOURITE_ID =
         "CREATE INDEX IF NOT EXISTS `index_Resource_favouriteId` ON `Resource` (`favouriteId`)"
 
-    override fun migrate(db: SupportSQLiteDatabase) {
-        db.execSQL(CREATE_INDEX_FOLDER_PARENT_ID)
-        db.execSQL(CREATE_INDEX_FOLDER_MODIFIED_FOLDER_ID)
-        db.execSQL(CREATE_INDEX_RESOURCE_MODIFIED_RESOURCE_ID)
-        db.execSQL(CREATE_INDEX_RESOURCE_EXPIRY_RESOURCE_ID)
-        db.execSQL(CREATE_INDEX_RESOURCE_FAVOURITE_ID)
+    override suspend fun migrate(connection: SQLiteConnection) {
+        connection.execSQL(CREATE_INDEX_FOLDER_PARENT_ID)
+        connection.execSQL(CREATE_INDEX_FOLDER_MODIFIED_FOLDER_ID)
+        connection.execSQL(CREATE_INDEX_RESOURCE_MODIFIED_RESOURCE_ID)
+        connection.execSQL(CREATE_INDEX_RESOURCE_EXPIRY_RESOURCE_ID)
+        connection.execSQL(CREATE_INDEX_RESOURCE_FAVOURITE_ID)
     }
 }

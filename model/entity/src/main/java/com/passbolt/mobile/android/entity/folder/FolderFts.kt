@@ -1,8 +1,8 @@
 package com.passbolt.mobile.android.entity.folder
 
-import androidx.room.Entity
-import androidx.room.Fts4
-import androidx.room.FtsOptions
+import androidx.room3.Entity
+import androidx.room3.Fts4
+import androidx.room3.FtsOptions
 
 /**
  * Passbolt - Open source password manager for teams

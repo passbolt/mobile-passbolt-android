@@ -1,6 +1,5 @@
 package com.passbolt.mobile.android.ui
 
-import com.passbolt.mobile.android.common.search.Searchable
 import java.time.ZonedDateTime
 
 /**
@@ -31,8 +30,7 @@ data class UserUiModel(
     val disabled: Boolean,
     val gpgKey: GpgKeyUiModel,
     val profile: UserProfileUiModel,
-    override val searchCriteria: String = "$userName${profile.firstName.orEmpty()}${profile.lastName.orEmpty()}",
-) : Searchable {
+) {
     val fullName: String
         get() = "${profile.firstName.orEmpty()} ${profile.lastName.orEmpty()}"
 }

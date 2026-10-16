@@ -1,10 +1,12 @@
 package com.passbolt.mobile.android.database.ftsbenchmark
 
 import android.content.Context
-import androidx.room.Room
+import androidx.room3.Room
 import androidx.test.core.app.ApplicationProvider
 import com.passbolt.mobile.android.database.ResourceDatabase
 import com.passbolt.mobile.android.database.ftsbenchmark.FtsBenchmarkDataFactory.DataSet
+import com.passbolt.mobile.android.database.helpers.executeSql
+import com.passbolt.mobile.android.database.helpers.testSqlCipherDriver
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
@@ -59,43 +61,41 @@ class FtsStorageBenchmark {
     }
 
     @Test
-    fun benchmarkDiskUsage() {
-        printHeader()
-        DATASET_SIZES.forEach { size ->
-            val dataSet = FtsBenchmarkDataFactory.createDataSet(size)
+    fun benchmarkDiskUsage() =
+        runBlocking {
+            printHeader()
+            DATASET_SIZES.forEach { size ->
+                val dataSet = FtsBenchmarkDataFactory.createDataSet(size)
 
-            val ftsSize = measurePopulatedDbSize(FTS_DB_NAME, dataSet, dropTriggers = false)
-            val likeSize = measurePopulatedDbSize(LIKE_DB_NAME, dataSet, dropTriggers = true)
+                val ftsSize = measurePopulatedDbSize(FTS_DB_NAME, dataSet, dropTriggers = false)
+                val likeSize = measurePopulatedDbSize(LIKE_DB_NAME, dataSet, dropTriggers = true)
 
-            printStorageResult(size, ftsSize, likeSize)
+                printStorageResult(size, ftsSize, likeSize)
+            }
         }
-    }
 
-    private fun measurePopulatedDbSize(
+    private suspend fun measurePopulatedDbSize(
         dbName: String,
         dataSet: DataSet,
         dropTriggers: Boolean,
     ): Long {
-        val db = Room.databaseBuilder(context, ResourceDatabase::class.java, dbName).build()
+        val db = Room.databaseBuilder(context, ResourceDatabase::class.java, dbName).setDriver(testSqlCipherDriver()).build()
         try {
             if (dropTriggers) dropFtsSyncTriggers(db)
 
-            runBlocking {
-                with(db) {
-                    resourceTypesDao().insert(FtsBenchmarkDataFactory.createResourceType())
-                    tagsDao().insertAll(dataSet.tags)
-                    dataSet.resources.chunked(BATCH_SIZE).forEach { resourcesDao().upsertAll(it) }
-                    dataSet.metadata.chunked(BATCH_SIZE).forEach { resourceMetadataDao().upsertAll(it) }
-                    dataSet.uris.chunked(BATCH_SIZE).forEach { resourceUriDao().insertAll(it) }
-                    dataSet.tagCrossRefs.chunked(BATCH_SIZE).forEach {
-                        resourcesAndTagsCrossRefDao().insertAll(it)
-                    }
+            with(db) {
+                resourceTypesDao().insert(FtsBenchmarkDataFactory.createResourceType())
+                tagsDao().insertAll(dataSet.tags)
+                dataSet.resources.chunked(BATCH_SIZE).forEach { resourcesDao().upsertAll(it) }
+                dataSet.metadata.chunked(BATCH_SIZE).forEach { resourceMetadataDao().upsertAll(it) }
+                dataSet.uris.chunked(BATCH_SIZE).forEach { resourceUriDao().insertAll(it) }
+                dataSet.tagCrossRefs.chunked(BATCH_SIZE).forEach {
+                    resourcesAndTagsCrossRefDao().insertAll(it)
                 }
             }
 
             // Flush WAL to main file so file size reflects all data
-            val cursor = db.openHelper.writableDatabase.query("PRAGMA wal_checkpoint(TRUNCATE)")
-            cursor.close()
+            db.executeSql("PRAGMA wal_checkpoint(TRUNCATE)")
         } finally {
             db.close()
         }
@@ -106,12 +106,10 @@ class FtsStorageBenchmark {
         return totalSize
     }
 
-    private fun dropFtsSyncTriggers(db: ResourceDatabase) {
-        with(db.openHelper.writableDatabase) {
-            FTS_TABLE_NAMES.forEach { table ->
-                TRIGGER_SUFFIXES.forEach { suffix ->
-                    execSQL("DROP TRIGGER IF EXISTS room_fts_content_sync_${table}_$suffix")
-                }
+    private suspend fun dropFtsSyncTriggers(db: ResourceDatabase) {
+        FTS_TABLE_NAMES.forEach { table ->
+            TRIGGER_SUFFIXES.forEach { suffix ->
+                db.executeSql("DROP TRIGGER IF EXISTS room_fts_content_sync_${table}_$suffix")
             }
         }
     }

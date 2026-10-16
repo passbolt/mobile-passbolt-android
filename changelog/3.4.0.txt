@@ -1,0 +1,25 @@
+# Passbolt 3.4.0-58 Android app release notes
+
+## Added
+- MOB-5182: Add MFA with passkey provider
+- MOB-5195: New translations strings.xml
+
+## Improved
+- MOB-4914: Remove Searchable in favor of database usage
+- MOB-5104: Remove redundant metadata keys fetch (credits for reporting to @torvalstrom)
+- MOB-5133: Stop forcing a full Go GC (credits for reporting to @torvalstrom)
+
+## Fixed
+- MOB-5172: Close metadata key trust dialog on trust and fix padding
+- MOB-5177: Fix no toast on totp creation
+
+## Security
+- MOB-5191: Verify metadata keys fingerprints locally
+
+## Maintenance
+- MOB-5256: Dependencies update
+- MOB-5137: Drop support for Android 11
+- MOB-5108: Update image Android SDK; disable auto-install
+- MOB-5006: Migrate to Room 3
+- MOB-5198: Add installation source in bug_report.md
+- MOB-5205: Add search idling resource to stabilize automation test; Run developer instrumented tests

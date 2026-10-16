@@ -34,6 +34,7 @@ import com.passbolt.mobile.android.common.autofill.DetectAutofillConflict
 import com.passbolt.mobile.android.common.datarefresh.DataRefreshTrackingFlow
 import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.commontest.session.validSessionTestModule
+import com.passbolt.mobile.android.core.idlingresource.SearchIdlingResource
 import com.passbolt.mobile.android.core.mvp.authentication.SessionRefreshTrackingFlow
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.domain.accounts.usecase.GetSelectedAccountDataUseCase
@@ -132,6 +133,7 @@ class HomeViewModelMenuTest : KoinTest {
                         }
                     }
                     singleOf(::UserProfileRefreshTrackingFlow)
+                    singleOf(::SearchIdlingResource)
                     single(named(JSON_MODEL_GSON)) { GsonBuilder().serializeNulls().create() }
                     single {
                         Configuration

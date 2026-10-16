@@ -55,6 +55,7 @@ import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.St
 import com.passbolt.mobile.android.core.navigation.compose.keys.AuthenticationNavigationKey.MfaDuo
 import com.passbolt.mobile.android.core.navigation.compose.keys.AuthenticationNavigationKey.MfaTotp
 import com.passbolt.mobile.android.core.navigation.compose.keys.AuthenticationNavigationKey.MfaUnknownProvider
+import com.passbolt.mobile.android.core.navigation.compose.keys.AuthenticationNavigationKey.MfaWebauthn
 import com.passbolt.mobile.android.core.navigation.compose.keys.AuthenticationNavigationKey.MfaYubikey
 import com.passbolt.mobile.android.core.navigation.compose.keys.LogsNavigationKey.Logs
 import com.passbolt.mobile.android.core.navigation.compose.results.ResultEffect
@@ -198,6 +199,8 @@ internal fun AuthScreen(
                         is MfaDialogState.Totp -> MfaTotp(mfaState.authToken, mfaState.hasOtherProviders)
                         is MfaDialogState.Yubikey -> MfaYubikey(mfaState.authToken, mfaState.hasOtherProviders)
                         is MfaDialogState.Duo -> MfaDuo(mfaState.authToken, mfaState.hasOtherProviders)
+                        is MfaDialogState.Webauthn ->
+                            MfaWebauthn(mfaState.userId, mfaState.authToken, mfaState.hasOtherProviders)
                         is MfaDialogState.UnknownProvider -> MfaUnknownProvider
                     }
                 navigator.navigateToKey(key)

@@ -2,7 +2,6 @@ package com.passbolt.mobile.android.feature.authentication.mfa.yubikey
 
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
-import com.passbolt.mobile.android.feature.authentication.auth.usecase.RefreshSessionUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.VerifyYubikeyUseCase
 import com.passbolt.mobile.android.feature.authentication.mfa.yubikey.ScanYubikeyIntent.Close
@@ -10,8 +9,10 @@ import com.passbolt.mobile.android.feature.authentication.mfa.yubikey.ScanYubike
 import com.passbolt.mobile.android.feature.authentication.mfa.yubikey.ScanYubikeyIntent.DismissSetupLeave
 import com.passbolt.mobile.android.feature.authentication.mfa.yubikey.ScanYubikeyIntent.ValidateYubikeyOtp
 import com.passbolt.mobile.android.feature.authentication.mfa.yubikey.ScanYubikeySideEffect.CloseAndNavigateToStartup
+import com.passbolt.mobile.android.feature.authentication.mfa.yubikey.ScanYubikeySideEffect.NavigateToLogin
 import com.passbolt.mobile.android.feature.authentication.mfa.yubikey.ScanYubikeySideEffect.ShowErrorSnackbar
 import com.passbolt.mobile.android.feature.authentication.mfa.yubikey.ScanYubikeySideEffect.SnackbarErrorType.EMPTY_OTP
+import com.passbolt.mobile.android.feature.authentication.mfa.yubikey.ScanYubikeySideEffect.SnackbarErrorType.SESSION_EXPIRED
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -46,7 +47,6 @@ class ScanYubikeyViewModelTest : KoinTest {
                 module {
                     single { mock<SignOutUseCase>() }
                     single { mock<VerifyYubikeyUseCase>() }
-                    single { mock<RefreshSessionUseCase>() }
                     factory { params ->
                         ScanYubikeyViewModel(
                             authToken = params[0],
@@ -54,7 +54,6 @@ class ScanYubikeyViewModelTest : KoinTest {
                             isSetupFlow = params[2],
                             signOutUseCase = get(),
                             verifyYubikeyUseCase = get(),
-                            refreshSessionUseCase = get(),
                         )
                     }
                 },
@@ -85,6 +84,23 @@ class ScanYubikeyViewModelTest : KoinTest {
                 val error = awaitItem()
                 assertIs<ShowErrorSnackbar>(error)
                 assertThat(error.kind).isEqualTo(EMPTY_OTP)
+            }
+        }
+
+    @Test
+    fun `unauthorized navigates to login`() =
+        runTest {
+            get<VerifyYubikeyUseCase>().stub {
+                on { execute(any()) } doReturn VerifyYubikeyUseCase.Output.Unauthorized
+            }
+            viewModel = get(parameters = { parametersOf(AUTH_TOKEN, false, false) })
+
+            viewModel.sideEffect.test {
+                viewModel.onIntent(ValidateYubikeyOtp(OTP))
+                val error = awaitItem()
+                assertIs<ShowErrorSnackbar>(error)
+                assertThat(error.kind).isEqualTo(SESSION_EXPIRED)
+                assertIs<NavigateToLogin>(awaitItem())
             }
         }
 
@@ -163,5 +179,7 @@ class ScanYubikeyViewModelTest : KoinTest {
 
     private companion object {
         const val AUTH_TOKEN = "test-auth-token"
+        const val MFA_HEADER = "passbolt_mfa=jwt"
+        const val OTP = "yubikey-otp-value"
     }
 }

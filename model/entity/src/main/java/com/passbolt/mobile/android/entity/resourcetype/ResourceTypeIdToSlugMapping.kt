@@ -23,7 +23,7 @@
 
 package com.passbolt.mobile.android.entity.resourcetype
 
-import androidx.room.Entity
+import androidx.room3.Entity
 
 @Entity
 data class ResourceTypeIdToSlugMapping(

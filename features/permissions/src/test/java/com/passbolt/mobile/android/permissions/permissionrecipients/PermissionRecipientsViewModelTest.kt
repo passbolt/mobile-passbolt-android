@@ -2,7 +2,6 @@ package com.passbolt.mobile.android.permissions.permissionrecipients
 
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
-import com.passbolt.mobile.android.common.search.SearchableMatcher
 import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.core.mvp.authentication.SessionRefreshTrackingFlow
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
@@ -19,6 +18,7 @@ import com.passbolt.mobile.android.permissions.permissionrecipients.PermissionRe
 import com.passbolt.mobile.android.permissions.permissionrecipients.PermissionRecipientsIntent.ToggleUserSelection
 import com.passbolt.mobile.android.permissions.permissionrecipients.PermissionRecipientsSideEffect.NavigateBack
 import com.passbolt.mobile.android.permissions.permissionrecipients.PermissionRecipientsSideEffect.NavigateBackWithResult
+import com.passbolt.mobile.android.permissions.permissionrecipients.PermissionRecipientsViewModel.Companion.SEARCH_DEBOUNCE
 import com.passbolt.mobile.android.ui.GpgKeyUiModel
 import com.passbolt.mobile.android.ui.GroupModel
 import com.passbolt.mobile.android.ui.PermissionModelUi.GroupPermissionModel
@@ -31,6 +31,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.advanceTimeBy
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
@@ -48,10 +50,13 @@ import org.koin.test.KoinTestRule
 import org.koin.test.get
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.stub
+import org.mockito.kotlin.verify
 import java.time.ZonedDateTime
 import java.util.UUID
 import kotlin.test.assertIs
+import kotlin.time.Duration.Companion.milliseconds
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class PermissionRecipientsViewModelTest : KoinTest {
@@ -67,7 +72,6 @@ class PermissionRecipientsViewModelTest : KoinTest {
                     factory { GroupsModelMapper() }
                     factory { UsersModelMapper() }
                     factory { PermissionsModelMapper(groupsModelMapper = get(), usersModelMapper = get()) }
-                    factory { SearchableMatcher() }
                     singleOf(::SessionRefreshTrackingFlow)
                     factory { params ->
                         PermissionRecipientsViewModel(
@@ -76,7 +80,6 @@ class PermissionRecipientsViewModelTest : KoinTest {
                             getLocalGroupsUseCase = get(),
                             getLocalUsersUseCase = get(),
                             permissionsModelMapper = get(),
-                            searchableMatcher = get(),
                             coroutineLaunchContext = get(),
                         )
                     }
@@ -92,12 +95,24 @@ class PermissionRecipientsViewModelTest : KoinTest {
         Dispatchers.setMain(testDispatcher)
 
         get<GetLocalGroupsUseCase>().stub {
-            on { execute(GetLocalGroupsUseCase.Input(emptyList())) }
+            on { execute(GetLocalGroupsUseCase.Input(searchQuery = "")) }
+                .doReturn(GetLocalGroupsUseCase.Output(listOf(GROUP, EXISTING_GROUP)))
+            on { execute(GetLocalGroupsUseCase.Input(searchQuery = GROUP.groupName)) }
                 .doReturn(GetLocalGroupsUseCase.Output(listOf(GROUP)))
+            on { execute(GetLocalGroupsUseCase.Input(searchQuery = EXISTING_GROUP.groupName)) }
+                .doReturn(GetLocalGroupsUseCase.Output(listOf(EXISTING_GROUP)))
+            on { execute(GetLocalGroupsUseCase.Input(searchQuery = NON_MATCHING_QUERY)) }
+                .doReturn(GetLocalGroupsUseCase.Output(emptyList()))
         }
         get<GetLocalUsersUseCase>().stub {
-            on { execute(GetLocalUsersUseCase.Input(emptyList())) }
+            on { execute(GetLocalUsersUseCase.Input(searchQuery = "")) }
                 .doReturn(GetLocalUsersUseCase.Output(listOf(USER)))
+            on { execute(GetLocalUsersUseCase.Input(searchQuery = GROUP.groupName)) }
+                .doReturn(GetLocalUsersUseCase.Output(emptyList()))
+            on { execute(GetLocalUsersUseCase.Input(searchQuery = EXISTING_GROUP.groupName)) }
+                .doReturn(GetLocalUsersUseCase.Output(emptyList()))
+            on { execute(GetLocalUsersUseCase.Input(searchQuery = NON_MATCHING_QUERY)) }
+                .doReturn(GetLocalUsersUseCase.Output(emptyList()))
         }
     }
 
@@ -111,13 +126,15 @@ class PermissionRecipientsViewModelTest : KoinTest {
         runTest {
             viewModel =
                 get(parameters = {
-                    parametersOf(emptyArray<GroupPermissionModel>(), emptyArray<UserPermissionModel>())
+                    parametersOf(arrayOf(EXISTING_GROUP_PERMISSION), emptyArray<UserPermissionModel>())
                 })
 
             viewModel.viewState.test {
                 val state = awaitItem()
                 assertThat(state.filteredGroups).containsExactly(GROUP)
                 assertThat(state.filteredUsers).containsExactly(USER)
+                assertThat(state.filteredExistingPermissions).isEmpty()
+                assertThat(state.currentPermissions).containsExactly(EXISTING_GROUP_PERMISSION)
             }
         }
 
@@ -130,12 +147,37 @@ class PermissionRecipientsViewModelTest : KoinTest {
                 })
 
             viewModel.viewState.drop(1).test {
-                viewModel.onIntent(Search("grName"))
-                val state = awaitItem()
-                assertThat(state.filteredGroups).containsExactly(GROUP)
-                assertThat(state.filteredUsers).isEmpty()
-                assertThat(state.searchInputEndIconMode).isEqualTo(SearchInputEndIconMode.CLEAR)
+                viewModel.onIntent(Search(GROUP.groupName))
+
+                val typedState = awaitItem()
+                assertThat(typedState.searchInputEndIconMode).isEqualTo(SearchInputEndIconMode.CLEAR)
+
+                advanceTimeBy(SEARCH_DEBOUNCE + 1.milliseconds)
+
+                val searchedState = awaitItem()
+                assertThat(searchedState.filteredGroups).containsExactly(GROUP)
+                assertThat(searchedState.filteredUsers).isEmpty()
+                assertThat(searchedState.showEmptyState).isFalse()
             }
+        }
+
+    @Test
+    fun `search should apply only the latest query when typing multiple characters quickly`() =
+        runTest {
+            viewModel =
+                get(parameters = {
+                    parametersOf(emptyArray<GroupPermissionModel>(), emptyArray<UserPermissionModel>())
+                })
+
+            viewModel.onIntent(Search("g"))
+            viewModel.onIntent(Search("gr"))
+            viewModel.onIntent(Search(GROUP.groupName))
+            advanceUntilIdle()
+
+            verify(get<GetLocalGroupsUseCase>(), never()).execute(GetLocalGroupsUseCase.Input(searchQuery = "g"))
+            verify(get<GetLocalGroupsUseCase>(), never()).execute(GetLocalGroupsUseCase.Input(searchQuery = "gr"))
+            verify(get<GetLocalGroupsUseCase>()).execute(GetLocalGroupsUseCase.Input(searchQuery = GROUP.groupName))
+            verify(get<GetLocalUsersUseCase>()).execute(GetLocalUsersUseCase.Input(searchQuery = GROUP.groupName))
         }
 
     @Test
@@ -147,13 +189,21 @@ class PermissionRecipientsViewModelTest : KoinTest {
                 })
 
             viewModel.viewState.drop(1).test {
-                viewModel.onIntent(Search("abc"))
+                viewModel.onIntent(Search(NON_MATCHING_QUERY))
+                awaitItem()
+                advanceTimeBy(SEARCH_DEBOUNCE + 1.milliseconds)
                 awaitItem()
 
                 viewModel.onIntent(Search(""))
                 val state = awaitItem()
                 assertThat(state.searchInputEndIconMode).isEqualTo(SearchInputEndIconMode.NONE)
-                assertThat(state.filteredExistingPermissions).isEmpty()
+
+                advanceTimeBy(SEARCH_DEBOUNCE + 1.milliseconds)
+                val resetState = awaitItem()
+                assertThat(resetState.filteredGroups).containsExactly(GROUP, EXISTING_GROUP)
+                assertThat(resetState.filteredUsers).containsExactly(USER)
+                assertThat(resetState.filteredExistingPermissions).isEmpty()
+                assertThat(resetState.showEmptyState).isFalse()
             }
         }
 
@@ -166,14 +216,17 @@ class PermissionRecipientsViewModelTest : KoinTest {
                 })
 
             viewModel.viewState.drop(1).test {
-                viewModel.onIntent(Search("nonexistent"))
+                viewModel.onIntent(Search(NON_MATCHING_QUERY))
+                awaitItem()
+                advanceTimeBy(SEARCH_DEBOUNCE + 1.milliseconds)
+
                 val state = awaitItem()
                 assertThat(state.showEmptyState).isTrue()
             }
         }
 
     @Test
-    fun `toggle group selection should update selected ids and display permissions`() =
+    fun `toggle group selection should update selected groups and display permissions`() =
         runTest {
             viewModel =
                 get(parameters = {
@@ -183,7 +236,7 @@ class PermissionRecipientsViewModelTest : KoinTest {
             viewModel.viewState.drop(1).test {
                 viewModel.onIntent(ToggleGroupSelection(GROUP))
                 val state = awaitItem()
-                assertThat(state.selectedGroupIds).contains(GROUP.groupId)
+                assertThat(state.selectedGroups).containsExactly(GROUP.groupId, GROUP)
                 val recomputed = awaitItem()
                 assertThat(recomputed.currentPermissions).hasSize(1)
             }
@@ -204,14 +257,14 @@ class PermissionRecipientsViewModelTest : KoinTest {
 
                 viewModel.onIntent(ToggleGroupSelection(GROUP))
                 val state = awaitItem()
-                assertThat(state.selectedGroupIds).isEmpty()
+                assertThat(state.selectedGroups).isEmpty()
                 val recomputed = awaitItem()
                 assertThat(recomputed.currentPermissions).isEmpty()
             }
         }
 
     @Test
-    fun `toggle user selection should update selected ids and display permissions`() =
+    fun `toggle user selection should update selected users and display permissions`() =
         runTest {
             viewModel =
                 get(parameters = {
@@ -221,9 +274,30 @@ class PermissionRecipientsViewModelTest : KoinTest {
             viewModel.viewState.drop(1).test {
                 viewModel.onIntent(ToggleUserSelection(USER))
                 val state = awaitItem()
-                assertThat(state.selectedUserIds).contains(USER.id)
+                assertThat(state.selectedUsers).containsExactly(USER.id, USER)
                 val recomputed = awaitItem()
                 assertThat(recomputed.currentPermissions).hasSize(1)
+            }
+        }
+
+    @Test
+    fun `selection should survive a search that hides the selected recipient`() =
+        runTest {
+            viewModel =
+                get(parameters = {
+                    parametersOf(emptyArray<GroupPermissionModel>(), emptyArray<UserPermissionModel>())
+                })
+
+            viewModel.onIntent(ToggleUserSelection(USER))
+            viewModel.onIntent(Search(GROUP.groupName))
+            advanceUntilIdle()
+
+            viewModel.sideEffect.test {
+                viewModel.onIntent(Save)
+                val effect = awaitItem()
+                assertIs<NavigateBackWithResult>(effect)
+                assertThat(effect.permissions).hasSize(1)
+                assertIs<UserPermissionModel>(effect.permissions[0])
             }
         }
 
@@ -263,33 +337,34 @@ class PermissionRecipientsViewModelTest : KoinTest {
     @Test
     fun `search should show existing permissions that match`() =
         runTest {
-            val existingGroupPermission =
-                GroupPermissionModel(
-                    permission = ResourcePermission.READ,
-                    permissionId = "existingPermId",
-                    group = EXISTING_GROUP,
-                )
-
-            get<GetLocalGroupsUseCase>().stub {
-                on { execute(GetLocalGroupsUseCase.Input(listOf(EXISTING_GROUP.groupId))) }
-                    .doReturn(GetLocalGroupsUseCase.Output(listOf(GROUP)))
-            }
-
             viewModel =
                 get(parameters = {
-                    parametersOf(arrayOf(existingGroupPermission), emptyArray<UserPermissionModel>())
+                    parametersOf(arrayOf(EXISTING_GROUP_PERMISSION), emptyArray<UserPermissionModel>())
                 })
 
             viewModel.viewState.drop(1).test {
                 viewModel.onIntent(Search(EXISTING_GROUP.groupName))
+                awaitItem()
+                advanceTimeBy(SEARCH_DEBOUNCE + 1.milliseconds)
+
                 val state = awaitItem()
-                assertThat(state.filteredExistingPermissions).hasSize(1)
+                assertThat(state.filteredExistingPermissions).containsExactly(EXISTING_GROUP_PERMISSION)
+                assertThat(state.filteredGroups).isEmpty()
+                assertThat(state.showEmptyState).isFalse()
             }
         }
 
     private companion object {
+        private const val NON_MATCHING_QUERY = "nonexistent"
+
         private val GROUP = GroupModel(groupId = "grId", groupName = "grName")
         private val EXISTING_GROUP = GroupModel(groupId = "existingGrId", groupName = "existingGroup")
+        private val EXISTING_GROUP_PERMISSION =
+            GroupPermissionModel(
+                permission = ResourcePermission.READ,
+                permissionId = "existingPermId",
+                group = EXISTING_GROUP,
+            )
 
         private val USER_WITH_AVATAR =
             UserWithAvatar(

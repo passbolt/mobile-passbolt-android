@@ -1,10 +1,13 @@
 package com.passbolt.mobile.android.database
 
 import android.content.Context
-import androidx.room.Room
-import androidx.sqlite.db.SimpleSQLiteQuery
+import androidx.room3.Room
+import androidx.room3.useReaderConnection
+import androidx.sqlite.SQLiteStatement
 import androidx.test.core.app.ApplicationProvider
 import com.google.common.truth.Truth.assertThat
+import com.passbolt.mobile.android.database.helpers.testSqlCipherDriver
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -37,7 +40,11 @@ class IndexQueryPlanTest {
     @Before
     fun setup() {
         val context = ApplicationProvider.getApplicationContext<Context>()
-        db = Room.inMemoryDatabaseBuilder(context, ResourceDatabase::class.java).build()
+        db =
+            Room
+                .inMemoryDatabaseBuilder(context, ResourceDatabase::class.java)
+                .setDriver(testSqlCipherDriver())
+                .build()
     }
 
     @After
@@ -46,86 +53,105 @@ class IndexQueryPlanTest {
     }
 
     @Test
-    fun homePaginatedQueryStreamsFromModifiedIndexWithoutSorting() {
-        val plan =
-            queryPlan(
-                paginated(HOME_BY_MODIFIED_SQL),
-                arrayOf<Any?>(SLUG, null, null, null, null, PAGE_SIZE, OFFSET_FIRST_PAGE),
-            )
+    fun homePaginatedQueryStreamsFromModifiedIndexWithoutSorting() =
+        runTest {
+            val plan =
+                queryPlan(
+                    paginated(HOME_BY_MODIFIED_SQL),
+                    arrayOf<Any?>(SLUG, null, null, null, null, PAGE_SIZE, OFFSET_FIRST_PAGE),
+                )
 
-        assertThat(plan).contains("index_Resource_modified_resourceId")
-        assertThat(plan).doesNotContain(TEMP_B_TREE_FOR_ORDER_BY)
-    }
-
-    @Test
-    fun allFoldersPaginatedQueryUsesModifiedIndexForOrderingAndParentIdIndexForCounts() {
-        val plan =
-            queryPlan(
-                paginated(ALL_FOLDERS_SQL),
-                arrayOf(null, null, PAGE_SIZE, OFFSET_FIRST_PAGE),
-            )
-
-        assertThat(plan).contains("index_Folder_modified_folderId")
-        assertThat(plan).contains("index_Folder_parentId")
-    }
+            assertThat(plan).contains("index_Resource_modified_resourceId")
+            assertThat(plan).doesNotContain(TEMP_B_TREE_FOR_ORDER_BY)
+        }
 
     @Test
-    fun recursiveSubFoldersQueryUsesParentIdIndex() {
-        val plan =
-            queryPlan(
-                RECURSIVE_SUB_FOLDERS_SQL,
-                arrayOf(FOLDER_ID, null, null),
-            )
+    fun allFoldersPaginatedQueryUsesParentIdIndexForCounts() =
+        runTest {
+            val plan =
+                queryPlan(
+                    paginated(ALL_FOLDERS_SQL),
+                    arrayOf(null, null, PAGE_SIZE, OFFSET_FIRST_PAGE),
+                )
 
-        assertThat(plan).contains("index_Folder_parentId")
-    }
-
-    @Test
-    fun expiredResourcesPaginatedQueryUsesExpiryIndexWithoutSorting() {
-        val plan =
-            queryPlan(
-                paginated(EXPIRED_RESOURCES_SQL),
-                arrayOf<Any?>(EXPIRY_MILLIS, SLUG, null, null, null, null, PAGE_SIZE, OFFSET_FIRST_PAGE),
-            )
-
-        assertThat(plan).contains("index_Resource_expiry_resourceId")
-        assertThat(plan).doesNotContain(TEMP_B_TREE_FOR_ORDER_BY)
-    }
+            assertThat(plan).contains("index_Folder_parentId")
+        }
 
     @Test
-    fun folderScopedResourcesQueryKeepsDrivingFromFolderIdIndex() {
-        val plan =
-            queryPlan(
-                paginated(FOLDER_RESOURCES_SQL),
-                arrayOf<Any?>(FOLDER_ID, SLUG, null, null, null, null, PAGE_SIZE, OFFSET_FIRST_PAGE),
-            )
+    fun recursiveSubFoldersQueryUsesParentIdIndex() =
+        runTest {
+            val plan =
+                queryPlan(
+                    RECURSIVE_SUB_FOLDERS_SQL,
+                    arrayOf(FOLDER_ID, null, null),
+                )
 
-        assertThat(plan).contains("index_Resource_folderId")
-    }
+            assertThat(plan).contains("index_Folder_parentId")
+        }
 
     @Test
-    fun groupScopedResourcesQueryKeepsDrivingFromCrossRefIndex() {
-        val plan =
-            queryPlan(
-                paginated(GROUP_RESOURCES_SQL),
-                arrayOf<Any?>(GROUP_ID, SLUG, null, null, null, PAGE_SIZE, OFFSET_FIRST_PAGE),
-            )
+    fun expiredResourcesPaginatedQueryUsesExpiryIndexWithoutSorting() =
+        runTest {
+            val plan =
+                queryPlan(
+                    paginated(EXPIRED_RESOURCES_SQL),
+                    arrayOf<Any?>(EXPIRY_MILLIS, SLUG, null, null, null, null, PAGE_SIZE, OFFSET_FIRST_PAGE),
+                )
 
-        assertThat(plan).contains("index_ResourceAndGroupsCrossRef_groupId")
-    }
+            assertThat(plan).contains("index_Resource_expiry_resourceId")
+            assertThat(plan).doesNotContain(TEMP_B_TREE_FOR_ORDER_BY)
+        }
 
-    private fun queryPlan(
+    @Test
+    fun folderScopedResourcesQueryKeepsDrivingFromFolderIdIndex() =
+        runTest {
+            val plan =
+                queryPlan(
+                    paginated(FOLDER_RESOURCES_SQL),
+                    arrayOf<Any?>(FOLDER_ID, SLUG, null, null, null, null, PAGE_SIZE, OFFSET_FIRST_PAGE),
+                )
+
+            assertThat(plan).contains("index_Resource_folderId")
+        }
+
+    @Test
+    fun groupScopedResourcesQueryKeepsDrivingFromCrossRefIndex() =
+        runTest {
+            val plan =
+                queryPlan(
+                    paginated(GROUP_RESOURCES_SQL),
+                    arrayOf<Any?>(GROUP_ID, SLUG, null, null, null, PAGE_SIZE, OFFSET_FIRST_PAGE),
+                )
+
+            assertThat(plan).contains("index_ResourceAndGroupsCrossRef_groupId")
+        }
+
+    private suspend fun queryPlan(
         sql: String,
         args: Array<out Any?>,
-    ): String {
-        val cursor = db.query(SimpleSQLiteQuery("EXPLAIN QUERY PLAN $sql", args))
-        val plan = StringBuilder()
-        val detailColumn = cursor.getColumnIndexOrThrow("detail")
-        while (cursor.moveToNext()) {
-            plan.appendLine(cursor.getString(detailColumn))
+    ): String =
+        db.useReaderConnection { transactor ->
+            transactor.usePrepared("EXPLAIN QUERY PLAN $sql") { statement ->
+                args.forEachIndexed { index, arg -> statement.bind(index + 1, arg) }
+                buildString {
+                    while (statement.step()) {
+                        appendLine(statement.getText(statement.getColumnNames().indexOf("detail")))
+                    }
+                }
+            }
         }
-        cursor.close()
-        return plan.toString()
+
+    private fun SQLiteStatement.bind(
+        index: Int,
+        value: Any?,
+    ) {
+        when (value) {
+            null -> bindNull(index)
+            is String -> bindText(index, value)
+            is Int -> bindInt(index, value)
+            is Long -> bindLong(index, value)
+            else -> error("Unsupported bind type: ${value::class}")
+        }
     }
 
     private fun paginated(sql: String) = "SELECT * FROM ($sql) LIMIT ? OFFSET ?"
@@ -147,9 +173,7 @@ class IndexQueryPlanTest {
                 "ON r.resourceId = rm.resourceId " +
                 "INNER JOIN ResourceType rt " +
                 "ON r.resourceTypeId = rt.resourceTypeId " +
-                "WHERE r.resourceTypeId IN(" +
-                "   SELECT resourceTypeId FROM ResourceType WHERE slug IN (?)" +
-                ") " +
+                "WHERE rt.slug IN (?) " +
                 "AND (" +
                 "   ? IS NULL OR (" +
                 "   EXISTS (SELECT 1 FROM ResourceMetadataFts WHERE ResourceMetadataFts MATCH ? AND docid = rm.rowid) OR " +
@@ -196,7 +220,7 @@ class IndexQueryPlanTest {
                 "   EXISTS (" +
                 "       SELECT 1 FROM FolderFts WHERE FolderFts MATCH ? AND FolderFts.docid = f.rowid" +
                 "   ) " +
-                "ORDER BY f.modified DESC, f.folderId ASC"
+                "ORDER BY f.name COLLATE NOCASE ASC, f.folderId ASC"
 
         const val RECURSIVE_SUB_FOLDERS_SQL =
             "WITH RECURSIVE ancestor(folderId, name, permission, parentId, isShared, level) as (" +
@@ -253,9 +277,7 @@ class IndexQueryPlanTest {
                 "ON r.resourceId = rm.resourceId " +
                 "INNER JOIN ResourceType rt " +
                 "ON r.resourceTypeId = rt.resourceTypeId " +
-                "WHERE r.expiry IS NOT NULL AND r.expiry < ? AND r.resourceTypeId IN(" +
-                "   SELECT resourceTypeId FROM ResourceType WHERE slug IN (?)" +
-                ") " +
+                "WHERE r.expiry IS NOT NULL AND r.expiry < ? AND rt.slug IN (?) " +
                 "AND (" +
                 "   ? IS NULL OR (" +
                 "   EXISTS (SELECT 1 FROM ResourceMetadataFts WHERE ResourceMetadataFts MATCH ? AND docid = rm.rowid) OR " +

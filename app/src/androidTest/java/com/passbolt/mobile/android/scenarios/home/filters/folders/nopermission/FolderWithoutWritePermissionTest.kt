@@ -31,6 +31,7 @@ import androidx.test.filters.MediumTest
 import androidx.test.platform.app.InstrumentationRegistry
 import com.passbolt.mobile.android.core.idlingresource.CreateFolderIdlingResource
 import com.passbolt.mobile.android.core.idlingresource.ResourcesFullRefreshIdlingResource
+import com.passbolt.mobile.android.core.idlingresource.SearchIdlingResource
 import com.passbolt.mobile.android.core.idlingresource.SignInIdlingResource
 import com.passbolt.mobile.android.core.localization.R.string.filters_menu_folders
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
@@ -80,11 +81,13 @@ class FolderWithoutWritePermissionTest : KoinTest {
         let {
             val signInIdlingResource: SignInIdlingResource by inject()
             val createFolderIdlingResource: CreateFolderIdlingResource by inject()
+            val searchIdlingResource: SearchIdlingResource by inject()
             IdlingResourceRule(
                 arrayOf(
                     signInIdlingResource,
                     createFolderIdlingResource,
                     resourcesFullRefreshIdlingResource,
+                    searchIdlingResource,
                 ),
             )
         }

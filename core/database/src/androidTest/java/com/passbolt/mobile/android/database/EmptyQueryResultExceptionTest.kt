@@ -24,8 +24,9 @@
 package com.passbolt.mobile.android.database
 
 import android.content.Context
-import androidx.room.Room
+import androidx.room3.Room
 import androidx.test.core.app.ApplicationProvider
+import com.passbolt.mobile.android.database.helpers.testSqlCipherDriver
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert.assertThrows
@@ -46,7 +47,8 @@ class EmptyQueryResultExceptionTest {
                 .inMemoryDatabaseBuilder(
                     context,
                     ResourceDatabase::class.java,
-                ).build()
+                ).setDriver(testSqlCipherDriver())
+                .build()
     }
 
     @After

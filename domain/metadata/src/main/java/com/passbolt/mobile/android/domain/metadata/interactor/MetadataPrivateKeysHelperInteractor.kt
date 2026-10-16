@@ -209,7 +209,9 @@ class MetadataPrivateKeysHelperInteractor(
                         Timber.e("Failed to refresh local keys; Manual refresh required")
                         Output.Success
                     }
-                    is MetadataKeysInteractor.Output.Success -> Output.Success
+                    is MetadataKeysInteractor.Output.Success,
+                    is MetadataKeysInteractor.Output.InvalidEncryptionKey,
+                    -> Output.Success
                 }
             }
         }

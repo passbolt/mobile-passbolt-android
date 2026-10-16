@@ -37,13 +37,13 @@ class GetLocalGroupsUseCase(
         val userId = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
         return Output(
             groupsRepository
-                .getGroups(input.excludeByIds, userId)
+                .getGroups(input.searchQuery, userId)
                 .map { it.toUiModel() },
         )
     }
 
     data class Input(
-        val excludeByIds: List<String> = emptyList(),
+        val searchQuery: String? = null,
     )
 
     data class Output(
