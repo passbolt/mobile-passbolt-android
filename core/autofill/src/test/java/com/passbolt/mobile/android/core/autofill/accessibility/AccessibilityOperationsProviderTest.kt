@@ -180,6 +180,33 @@ class AccessibilityOperationsProviderTest {
         assertThat(provider.classifyAutofillType(root, event)).isNull()
     }
 
+    // Fix in release 3.4.1 should prevent the StackOverflowError crash reported in Play Console:
+    // https://play.google.com/console/u/0/developers/6981067101532377663/app/4975521299215488239/vitals/crashes/00dbba9defc0f8a0a09a05124548856c/details?days=28&isUserPerceived=true
+    // TODO monitor the crash in Play Console after the 3.4.1 rollout
+    @Test
+    fun `getAllNodes terminates when a child references its ancestor`() {
+        val event = mock<AccessibilityEvent> { on { this.windowId } doReturn 1 }
+        val root =
+            mock<AccessibilityNodeInfo> {
+                on { childCount } doReturn 1
+                on { className } doReturn "android.widget.FrameLayout"
+            }
+        val editText = createEditTextNode(hintText = "username", windowId = 1)
+        val container =
+            mock<AccessibilityNodeInfo> {
+                on { childCount } doReturn 2
+                on { className } doReturn "android.widget.LinearLayout"
+            }
+        whenever(root.getChild(0)).thenReturn(container)
+        whenever(container.getChild(0)).thenReturn(editText)
+        whenever(container.getChild(1)).thenReturn(root)
+
+        val outcome = runCatching { provider.getAllNodes(root, event) }
+
+        assertThat(outcome.exceptionOrNull()).isNull()
+        assertThat(outcome.getOrNull()).containsExactly(editText)
+    }
+
     private fun createNode(
         hintText: String? = null,
         contentDescription: String? = null,
