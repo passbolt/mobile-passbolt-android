@@ -1,5 +1,5 @@
 # Passbolt 3.4.1-59 Android app release notes
-ł
+
 ## Fixed
 - MOB-5469: Fix accessibility service crash for websites with duplicated ids
 - MOB-5472: Fix accessibility autofill container click action after migration
