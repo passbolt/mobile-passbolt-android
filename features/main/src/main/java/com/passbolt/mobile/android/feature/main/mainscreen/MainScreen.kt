@@ -10,11 +10,15 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
+import androidx.lifecycle.viewmodel.compose.rememberViewModelStoreOwner
 import com.passbolt.mobile.android.core.compose.PassboltTheme
 import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
 import com.passbolt.mobile.android.core.navigation.compose.BottomTab.HOME
@@ -25,6 +29,7 @@ import com.passbolt.mobile.android.core.navigation.compose.SettingsNavigation
 import com.passbolt.mobile.android.core.navigation.compose.keys.HomeNavigationKey.Home
 import com.passbolt.mobile.android.core.navigation.compose.keys.OtpNavigationKey.Otp
 import com.passbolt.mobile.android.core.navigation.compose.keys.SettingsNavigationKey.SettingsMain
+import com.passbolt.mobile.android.domain.accounts.AuthenticatedAccountFlow
 import com.passbolt.mobile.android.feature.authentication.compose.AuthenticationHandler
 import com.passbolt.mobile.android.feature.home.navigation.HomeTabContent
 import com.passbolt.mobile.android.feature.main.mainscreen.MainIntent.CloseChromeNativeAutofill
@@ -40,10 +45,11 @@ fun MainScreen(
     modifier: Modifier = Modifier,
     mainViewModel: MainViewModel = koinViewModel(),
     appNavigator: AppNavigator = koinInject(),
+    authenticatedAccountFlow: AuthenticatedAccountFlow = koinInject(),
 ) {
     val state by mainViewModel.viewState.collectAsStateWithLifecycle()
+    val authenticatedAccount by authenticatedAccountFlow.authenticatedAccount.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
-    val tabStateHolder = rememberSaveableStateHolder()
 
     AuthenticationHandler()
 
@@ -82,10 +88,17 @@ fun MainScreen(
                         .padding(innerPadding)
                         .consumeWindowInsets(innerPadding),
             ) {
-                when (state.selectedTab) {
-                    HOME -> tabStateHolder.SaveableStateProvider(HOME.name) { HomeTabContent() }
-                    OTP -> tabStateHolder.SaveableStateProvider(OTP.name) { OtpNavigation() }
-                    SETTINGS -> tabStateHolder.SaveableStateProvider(SETTINGS.name) { SettingsNavigation() }
+                key(authenticatedAccount) {
+                    val tabStateHolder = rememberSaveableStateHolder()
+                    CompositionLocalProvider(
+                        LocalViewModelStoreOwner provides rememberViewModelStoreOwner(),
+                    ) {
+                        when (state.selectedTab) {
+                            HOME -> tabStateHolder.SaveableStateProvider(HOME.name) { HomeTabContent() }
+                            OTP -> tabStateHolder.SaveableStateProvider(OTP.name) { OtpNavigation() }
+                            SETTINGS -> tabStateHolder.SaveableStateProvider(SETTINGS.name) { SettingsNavigation() }
+                        }
+                    }
                 }
             }
         }
