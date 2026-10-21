@@ -11,4 +11,6 @@ sealed interface MfaResult {
         val bearer: String?,
         val currentProvider: MfaProvider,
     ) : MfaResult
+
+    data object Closed : MfaResult
 }

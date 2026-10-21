@@ -225,6 +225,7 @@ internal fun AuthScreen(
                 viewModel.onIntent(
                     AuthIntent.ChooseOtherMfaProvider(result.bearer, result.currentProvider),
                 )
+            is MfaResult.Closed -> viewModel.onIntent(AuthIntent.MfaClosed)
         }
     }
 }
