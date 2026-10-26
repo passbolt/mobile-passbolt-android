@@ -135,7 +135,8 @@ class AccessibilityService :
 
     private fun viewClicked(event: AccessibilityEvent) {
         val root = rootInActiveWindow
-        if (event.source == null ||
+        val source = event.source
+        if (source == null ||
             (event.packageName != null && event.packageName.contains(PASSBOLT_PACKAGE))
         ) {
             Timber.d("Event source is null or package is Passbolt - hiding overlay")
@@ -143,7 +144,7 @@ class AccessibilityService :
             return
         } else if (root == null || root.packageName != event.packageName) {
             Timber.d("Root is null or root package name is different than event - ignoring")
-        } else if (event.source?.isPassword != true &&
+        } else if (!source.isPassword &&
             !accessibilityOperationsProvider.isUsernameEditText(root, event) &&
             !accessibilityOperationsProvider.isTotpEditText(root, event)
         ) {
@@ -163,7 +164,7 @@ class AccessibilityService :
             uri = accessibilityOperationsProvider.getUri(root)
             pendingAutofillType = classifiedType
             if (Settings.canDrawOverlays(this)) {
-                displayOverlay(event)
+                displayOverlay(source)
             } else {
                 Timber.e(
                     "Permission to draw over other apps not granted " +
@@ -260,7 +261,7 @@ class AccessibilityService :
         )
     }
 
-    private fun displayOverlay(event: AccessibilityEvent) {
+    private fun displayOverlay(anchor: AccessibilityNodeInfo) {
         if (!overlayDisplayed) {
             overlayDisplayed = true
             scope.launch {
@@ -285,11 +286,11 @@ class AccessibilityService :
 
                 val anchorPosition =
                     accessibilityOperationsProvider.getOverlayAnchorPosition(
-                        event.source,
+                        anchor,
                         overlayViewHeight,
                         isOverlayAboveAnchor,
                     )
-                anchorNode = event.source
+                anchorNode = anchor
 
                 params.x = anchorPosition.x
                 params.y = anchorPosition.y
