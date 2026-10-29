@@ -27,6 +27,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -64,8 +65,8 @@ class AccessibilityService :
     private val windowManager: WindowManager by inject()
     private val job = SupervisorJob()
     private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
-    private var overlayDisplayed = false
     private var overlayView: View? = null
+    private var displayOverlayJob: Job? = null
     private val powerManager: PowerManager by inject()
     private var uri: String? = null
     private var pendingAutofillType: AutofillType = AutofillType.CREDENTIALS
@@ -73,8 +74,7 @@ class AccessibilityService :
     private var overlayViewHeight: Int = 0
     private var anchorNode: AccessibilityNodeInfo? = null
     private var isOverlayAboveAnchor: Boolean = false
-    private var overlayAnchorObserverRunning = false
-    private var overlayAnchorObserverRunnable: Job? = null
+    private var overlayAnchorObserverJob: Job? = null
     private var clearLastFillJob: Job? = null
     private var lastAnchorX = 0
     private var lastAnchorY = 0
@@ -262,8 +262,8 @@ class AccessibilityService :
     }
 
     private fun displayOverlay(anchor: AccessibilityNodeInfo) {
-        if (!overlayDisplayed) {
-            overlayDisplayed = true
+        if (overlayView != null || displayOverlayJob?.isActive == true) return
+        displayOverlayJob =
             scope.launch {
                 val view =
                     composeAutofillLabelView(
@@ -274,8 +274,6 @@ class AccessibilityService :
                         },
                         onClose = ::hideOverlay,
                     )
-                if (!overlayDisplayed) return@launch
-                overlayView = view
 
                 val params = accessibilityOperationsProvider.createOverlayParams()
                 view.measure(
@@ -295,22 +293,20 @@ class AccessibilityService :
                 params.x = anchorPosition.x
                 params.y = anchorPosition.y
                 windowManager.addView(view, params)
+                overlayView = view
                 startOverlayAnchorObserver()
             }
-        }
     }
 
     private fun startOverlayAnchorObserver() {
-        if (!overlayAnchorObserverRunning) {
-            overlayAnchorObserverRunning = true
-            overlayAnchorObserverRunnable =
-                scope.launch {
-                    while (overlayAnchorObserverRunning) {
-                        delay(OBSERVE_POSITION_DELAY)
-                        adjustOverlayForScroll()
-                    }
+        overlayAnchorObserverJob?.cancel()
+        overlayAnchorObserverJob =
+            scope.launch {
+                while (isActive) {
+                    delay(OBSERVE_POSITION_DELAY)
+                    adjustOverlayForScroll()
                 }
-        }
+            }
     }
 
     private fun adjustOverlayForScroll() {
@@ -362,18 +358,29 @@ class AccessibilityService :
     }
 
     private fun hideOverlay() {
-        if (overlayDisplayed) {
-            overlayView?.let { windowManager.removeViewImmediate(it) }
-            overlayView = null
-            overlayDisplayed = false
-            lastAnchorX = 0
-            lastAnchorY = 0
-            isOverlayAboveAnchor = false
+        displayOverlayJob?.cancel()
+        displayOverlayJob = null
+        overlayAnchorObserverJob?.cancel()
+        overlayAnchorObserverJob = null
+        overlayView?.let { view ->
+            runCatching { windowManager.removeViewImmediate(view) }
+                .onFailure { Timber.e(it, "Could not remove the autofill overlay") }
         }
+        overlayView = null
+        lastAnchorX = 0
+        lastAnchorY = 0
+        isOverlayAboveAnchor = false
     }
 
     override fun onInterrupt() {
         hideOverlay()
+    }
+
+    override fun onDestroy() {
+        hideOverlay()
+        accessibilityCommunicator.lastFill = null
+        job.cancel()
+        super.onDestroy()
     }
 
     companion object {
