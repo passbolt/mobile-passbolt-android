@@ -32,6 +32,7 @@ import com.passbolt.mobile.android.feature.authentication.auth.AuthIntent.Connec
 import com.passbolt.mobile.android.feature.authentication.auth.AuthIntent.DismissNoAccountExplanation
 import com.passbolt.mobile.android.feature.authentication.auth.AuthIntent.ForgotPassword
 import com.passbolt.mobile.android.feature.authentication.auth.AuthIntent.GoBack
+import com.passbolt.mobile.android.feature.authentication.auth.AuthIntent.MfaClosed
 import com.passbolt.mobile.android.feature.authentication.auth.AuthIntent.MfaSucceeded
 import com.passbolt.mobile.android.feature.authentication.auth.AuthIntent.OpenHelpMenu
 import com.passbolt.mobile.android.feature.authentication.auth.AuthIntent.PassphraseInputChanged
@@ -337,6 +338,17 @@ class AuthViewModelTest : KoinTest {
 
             viewModel.sideEffect.test {
                 viewModel.onIntent(GoBack)
+                assertIs<NavigateBack>(awaitItem())
+            }
+        }
+
+    @Test
+    fun `mfa closed emits navigate back`() =
+        runTest {
+            viewModel = get(parameters = { parametersOf(AuthConfig.SignIn, USER_ID, AppContext.AUTOFILL) })
+
+            viewModel.sideEffect.test {
+                viewModel.onIntent(MfaClosed)
                 assertIs<NavigateBack>(awaitItem())
             }
         }

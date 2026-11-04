@@ -321,17 +321,31 @@ class AccessibilityOperationsProvider(
     }
 
     private fun getNodes(
-        node: AccessibilityNodeInfo,
+        root: AccessibilityNodeInfo,
         event: AccessibilityEvent,
         result: MutableList<AccessibilityNodeInfo>,
     ) {
-        for (i in 0 until node.childCount) {
-            val child = node.getChild(i)
-            if (child != null) {
-                if (child.windowId == event.windowId && isEditText(child)) {
-                    result.add(child)
-                }
-                getNodes(child, event, result)
+        val visited = hashSetOf(root)
+        val pending = ArrayDeque<AccessibilityNodeInfo>()
+        pushChildren(root, visited, pending)
+        while (pending.isNotEmpty() && visited.size < MAX_VISITED_NODES) {
+            val node = pending.removeLast()
+            if (node.windowId == event.windowId && isEditText(node)) {
+                result.add(node)
+            }
+            pushChildren(node, visited, pending)
+        }
+    }
+
+    private fun pushChildren(
+        node: AccessibilityNodeInfo,
+        visited: MutableSet<AccessibilityNodeInfo>,
+        pending: ArrayDeque<AccessibilityNodeInfo>,
+    ) {
+        for (i in node.childCount - 1 downTo 0) {
+            val child = node.getChild(i) ?: continue
+            if (visited.add(child)) {
+                pending.addLast(child)
             }
         }
     }
@@ -401,5 +415,6 @@ class AccessibilityOperationsProvider(
 
     companion object {
         private const val ANDROID_APP_PROTOCOL = "androidapp://"
+        private const val MAX_VISITED_NODES = 10_000
     }
 }

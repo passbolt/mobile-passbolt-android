@@ -49,6 +49,7 @@ import com.passbolt.mobile.android.feature.authentication.auth.AuthIntent.Dismis
 import com.passbolt.mobile.android.feature.authentication.auth.AuthIntent.DismissServerNotReachable
 import com.passbolt.mobile.android.feature.authentication.auth.AuthIntent.ForgotPassword
 import com.passbolt.mobile.android.feature.authentication.auth.AuthIntent.GoBack
+import com.passbolt.mobile.android.feature.authentication.auth.AuthIntent.MfaClosed
 import com.passbolt.mobile.android.feature.authentication.auth.AuthIntent.MfaSucceeded
 import com.passbolt.mobile.android.feature.authentication.auth.AuthIntent.OpenHelpMenu
 import com.passbolt.mobile.android.feature.authentication.auth.AuthIntent.PassphraseInputChanged
@@ -218,6 +219,7 @@ class AuthViewModel(
             is AcceptChangedServerFingerprint -> acceptChangedServerFingerprint(intent.fingerprint)
             is MfaSucceeded -> mfaSucceeded(intent.mfaHeader)
             is ChooseOtherMfaProvider -> chooseOtherMfaProvider(intent.bearer, intent.currentProvider)
+            is MfaClosed -> emitSideEffect(NavigateBack)
             is Retry -> retry()
             is SignOut -> signOut()
             is DismissNoAccountExplanation -> updateViewState { copy(showForgotPasswordDialog = false) }

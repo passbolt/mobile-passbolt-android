@@ -48,12 +48,12 @@ import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated.Reason.Mfa.MfaProvider
 import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
 import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.AuthenticationSignIn
-import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.Start
 import com.passbolt.mobile.android.core.ui.dialogs.LeaveSetupAlertDialog
 import com.passbolt.mobile.android.core.ui.progressdialog.ProgressDialog
 import com.passbolt.mobile.android.core.ui.snackbar.ColoredSnackbarVisuals
 import com.passbolt.mobile.android.feature.authentication.mfa.MfaDialogState
 import com.passbolt.mobile.android.feature.authentication.mfa.MfaResult
+import com.passbolt.mobile.android.feature.authentication.mfa.MfaResult.Closed
 import com.passbolt.mobile.android.feature.authentication.mfa.MfaResult.OtherProvider
 import com.passbolt.mobile.android.feature.authentication.mfa.MfaResult.Succeeded
 import com.passbolt.mobile.android.feature.authentication.mfa.totp.EnterTotpIntent.ChooseOtherProvider
@@ -120,7 +120,7 @@ internal fun EnterTotpScreen(
                 onMfaResult(Succeeded(null))
             is NotifyChooseOtherProvider ->
                 onMfaResult(OtherProvider(sideEffect.bearer, MfaProvider.TOTP))
-            is CloseAndNavigateToStartup -> appNavigator.startNavigationActivity(context, Start)
+            is CloseAndNavigateToStartup -> onMfaResult(Closed)
             is NavigateToLogin -> appNavigator.startNavigationActivity(context, AuthenticationSignIn)
             is ShowErrorSnackbar -> {
                 coroutineScope.launch {

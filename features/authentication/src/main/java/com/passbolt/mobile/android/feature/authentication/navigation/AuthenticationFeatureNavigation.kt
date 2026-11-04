@@ -115,8 +115,15 @@ class AuthenticationFeatureNavigation : FeatureModuleNavigation {
             }
 
             entry<MfaUnknownProvider> {
+                val resultBus = NavigationResultEventBus.current
+                val navigator: AppNavigator = koinInject()
                 PassboltTheme {
-                    UnknownProviderScreen()
+                    UnknownProviderScreen(
+                        onMfaResult = {
+                            resultBus.sendResult<MfaResult>(result = it)
+                            navigator.navigateBack()
+                        },
+                    )
                 }
             }
         }
