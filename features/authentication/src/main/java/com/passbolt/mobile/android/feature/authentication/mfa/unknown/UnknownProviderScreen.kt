@@ -17,7 +17,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -26,29 +25,27 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.passbolt.mobile.android.core.compose.PassboltTheme
 import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
-import com.passbolt.mobile.android.core.navigation.compose.AppNavigator
-import com.passbolt.mobile.android.core.navigation.compose.NavigationActivity.Start
 import com.passbolt.mobile.android.core.ui.progressdialog.ProgressDialog
+import com.passbolt.mobile.android.feature.authentication.mfa.MfaResult
+import com.passbolt.mobile.android.feature.authentication.mfa.MfaResult.Closed
 import com.passbolt.mobile.android.feature.authentication.mfa.unknown.UnknownProviderIntent.Close
 import com.passbolt.mobile.android.feature.authentication.mfa.unknown.UnknownProviderSideEffect.CloseAndNavigateToStartup
 import org.koin.androidx.compose.koinViewModel
-import org.koin.compose.koinInject
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 @Composable
 internal fun UnknownProviderScreen(
+    onMfaResult: (MfaResult) -> Unit,
     viewModel: UnknownProviderViewModel = koinViewModel(),
-    appNavigator: AppNavigator = koinInject(),
 ) {
-    val context = LocalContext.current
     val state by viewModel.viewState.collectAsStateWithLifecycle()
 
     BackHandler { viewModel.onIntent(Close) }
 
     SideEffectDispatcher(viewModel.sideEffect) { sideEffect ->
         when (sideEffect) {
-            is CloseAndNavigateToStartup -> appNavigator.startNavigationActivity(context, Start)
+            is CloseAndNavigateToStartup -> onMfaResult(Closed)
         }
     }
 

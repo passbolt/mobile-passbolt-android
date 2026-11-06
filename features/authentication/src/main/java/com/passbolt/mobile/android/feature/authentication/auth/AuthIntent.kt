@@ -54,6 +54,8 @@ sealed interface AuthIntent {
         val currentProvider: MfaProvider,
     ) : AuthIntent
 
+    data object MfaClosed : AuthIntent
+
     data object Retry : AuthIntent
 
     data object SignOut : AuthIntent

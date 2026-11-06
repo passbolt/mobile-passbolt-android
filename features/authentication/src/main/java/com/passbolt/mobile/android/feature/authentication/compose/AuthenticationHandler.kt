@@ -134,6 +134,7 @@ fun AuthenticationHandler(
                                 userId = getSelectedAccountUseCase.execute(Unit).selectedAccount,
                             )
                     }
+                    is MfaResult.Closed -> context.startActivity(ActivityIntents.start(context))
                 }
             },
         )
@@ -150,7 +151,7 @@ private fun MfaDialog(
         is MfaDialogState.Yubikey -> ScanYubikeyScreen(mfaState = state, onMfaResult = onMfaResult)
         is MfaDialogState.Duo -> AuthWithDuoScreen(mfaState = state, onMfaResult = onMfaResult)
         is MfaDialogState.Webauthn -> AuthWithWebauthnScreen(mfaState = state, onMfaResult = onMfaResult)
-        is MfaDialogState.UnknownProvider -> UnknownProviderScreen()
+        is MfaDialogState.UnknownProvider -> UnknownProviderScreen(onMfaResult = onMfaResult)
     }
 }
 

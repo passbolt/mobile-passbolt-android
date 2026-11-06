@@ -29,16 +29,22 @@ import com.google.common.truth.Truth.assertThat
 import com.passbolt.mobile.android.common.ResourceDimenProvider
 import com.passbolt.mobile.android.core.autofill.system.AutofillField
 import com.passbolt.mobile.android.core.autofill.system.AutofillHintsFactory
+import com.passbolt.mobile.android.core.autofill.system.BrowserSignatureVerifier
 import com.passbolt.mobile.android.core.navigation.AutofillType
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
 class AccessibilityOperationsProviderTest {
     private val resourceDimenProvider = mock<ResourceDimenProvider>()
     private val autofillHintsFactory = mock<AutofillHintsFactory>()
+    private val browserSignatureVerifier = mock<BrowserSignatureVerifier>()
     private lateinit var provider: AccessibilityOperationsProvider
 
     @Before
@@ -50,7 +56,49 @@ class AccessibilityOperationsProviderTest {
         whenever(autofillHintsFactory.getHintValues(AutofillField.USERNAME))
             .thenReturn(arrayOf("username", "email", "mail", "login"))
 
-        provider = AccessibilityOperationsProvider(resourceDimenProvider, autofillHintsFactory)
+        provider =
+            AccessibilityOperationsProvider(
+                resourceDimenProvider,
+                autofillHintsFactory,
+                TrustedBrowserPackages(),
+                browserSignatureVerifier,
+            )
+    }
+
+    @Test
+    fun `getUri reads the address bar of an allow-listed browser with a verified signature`() {
+        whenever(browserSignatureVerifier.isTrustedBrowser("com.android.chrome")).thenReturn(true)
+        val root =
+            mock<AccessibilityNodeInfo> {
+                on { packageName } doReturn "com.android.chrome"
+                on { findAccessibilityNodeInfosByViewId("com.android.chrome:id/url_bar") } doReturn emptyList()
+            }
+
+        val result = provider.getUri(root)
+
+        assertThat(result).isNull()
+        verify(root).findAccessibilityNodeInfosByViewId("com.android.chrome:id/url_bar")
+    }
+
+    @Test
+    fun `getUri treats an allow-listed browser with an unverified signature as a plain app`() {
+        whenever(browserSignatureVerifier.isTrustedBrowser("com.android.chrome")).thenReturn(false)
+        val root = mock<AccessibilityNodeInfo> { on { packageName } doReturn "com.android.chrome" }
+
+        val result = provider.getUri(root)
+
+        assertThat(result).isEqualTo("androidapp://com.android.chrome")
+        verify(root, never()).findAccessibilityNodeInfosByViewId(any())
+    }
+
+    @Test
+    fun `getUri identifies a package that is not allow-listed by its name without a signature check`() {
+        val root = mock<AccessibilityNodeInfo> { on { packageName } doReturn "com.example.spoofer" }
+
+        val result = provider.getUri(root)
+
+        assertThat(result).isEqualTo("androidapp://com.example.spoofer")
+        verify(browserSignatureVerifier, never()).isTrustedBrowser(anyOrNull())
     }
 
     @Test
@@ -178,6 +226,33 @@ class AccessibilityOperationsProviderTest {
     fun `classifyAutofillType returns null when no fields found`() {
         val (root, event) = createTree()
         assertThat(provider.classifyAutofillType(root, event)).isNull()
+    }
+
+    // Fix in release 3.4.1 should prevent the StackOverflowError crash reported in Play Console:
+    // https://play.google.com/console/u/0/developers/6981067101532377663/app/4975521299215488239/vitals/crashes/00dbba9defc0f8a0a09a05124548856c/details?days=28&isUserPerceived=true
+    // TODO monitor the crash in Play Console after the 3.4.1 rollout
+    @Test
+    fun `getAllNodes terminates when a child references its ancestor`() {
+        val event = mock<AccessibilityEvent> { on { this.windowId } doReturn 1 }
+        val root =
+            mock<AccessibilityNodeInfo> {
+                on { childCount } doReturn 1
+                on { className } doReturn "android.widget.FrameLayout"
+            }
+        val editText = createEditTextNode(hintText = "username", windowId = 1)
+        val container =
+            mock<AccessibilityNodeInfo> {
+                on { childCount } doReturn 2
+                on { className } doReturn "android.widget.LinearLayout"
+            }
+        whenever(root.getChild(0)).thenReturn(container)
+        whenever(container.getChild(0)).thenReturn(editText)
+        whenever(container.getChild(1)).thenReturn(root)
+
+        val outcome = runCatching { provider.getAllNodes(root, event) }
+
+        assertThat(outcome.exceptionOrNull()).isNull()
+        assertThat(outcome.getOrNull()).containsExactly(editText)
     }
 
     private fun createNode(

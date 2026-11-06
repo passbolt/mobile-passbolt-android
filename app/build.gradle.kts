@@ -51,7 +51,7 @@ android {
             applicationIdSuffix = ".debug"
             isDebuggable = true
             isMinifyEnabled = false
-            firebaseDistribution(project, appId = "1:660923335137:android:08eec6c125f36ba9b092a0")
+            firebaseDistribution(appId = "1:660923335137:android:08eec6c125f36ba9b092a0")
             enableUnitTestCoverage = true
             enableAndroidTestCoverage = true
         }
@@ -63,7 +63,7 @@ android {
             isDebuggable = false
             isMinifyEnabled = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-            firebaseDistribution(project, appId = "1:660923335137:android:c7e452d7912a9e3ab092a0")
+            firebaseDistribution(appId = "1:660923335137:android:c7e452d7912a9e3ab092a0")
         }
         create("automatedTests") {
             initWith(getByName("debug"))
@@ -71,7 +71,7 @@ android {
 
             applicationIdSuffix = ".qa.automated"
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-            firebaseDistribution(project, appId = "1:660923335137:android:c7e452d7912a9e3ab092a0")
+            firebaseDistribution(appId = "1:660923335137:android:c7e452d7912a9e3ab092a0")
 
             // automated tests fields
             buildConfigField("String", "PROPERTY_USER_ID", "\"${System.getenv("PASSBOLT_TEST_USER_ID")}\"")

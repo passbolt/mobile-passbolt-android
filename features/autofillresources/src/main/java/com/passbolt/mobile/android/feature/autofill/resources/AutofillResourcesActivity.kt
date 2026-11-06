@@ -9,6 +9,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.remember
 import androidx.core.content.IntentCompat
+import com.passbolt.mobile.android.core.autofill.system.BrowserSignatureVerifier
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AutofillMode
 import com.passbolt.mobile.android.core.navigation.AutofillType
@@ -19,6 +20,7 @@ import com.passbolt.mobile.android.feature.autofill.resources.AutofillResourcesI
 import com.passbolt.mobile.android.feature.autofill.resources.datasetstrategy.AutofillCallback
 import com.passbolt.mobile.android.feature.autofill.resources.datasetstrategy.ReturnAutofillDatasetStrategy
 import com.passbolt.mobile.android.feature.home.screen.ResourceHandlingStrategyProvider
+import org.koin.android.ext.android.inject
 import org.koin.android.scope.AndroidScopeComponent
 import org.koin.androidx.compose.koinViewModel
 import org.koin.androidx.scope.activityScope
@@ -38,12 +40,18 @@ class AutofillResourcesActivity :
     override val scope: Scope by activityScope()
     private val autofillNavigatorScopeId = "autofill_navigator_${UUID.randomUUID()}"
 
+    private val browserSignatureVerifier: BrowserSignatureVerifier by inject()
+
     private lateinit var viewModel: AutofillResourcesViewModel
 
     override lateinit var resourceHandlingStrategy: AutofillResourceHandlingStrategy
 
     private val bundledAutofillUri by lazy {
-        intent.getStringExtra(ActivityIntents.EXTRA_AUTOFILL_URI)
+        val uri = intent.getStringExtra(ActivityIntents.EXTRA_AUTOFILL_URI)
+        when (bundledAutofillMode) {
+            AutofillMode.AUTOFILL -> browserSignatureVerifier.trustedUriForCaller(uri, callingPackage)
+            AutofillMode.ACCESSIBILITY -> uri
+        }
     }
     private val bundledAutofillMode by lazy {
         intent.getStringExtra(ActivityIntents.EXTRA_AUTOFILL_MODE_NAME).let {
