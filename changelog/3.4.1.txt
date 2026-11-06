@@ -6,5 +6,8 @@
 - MOB-5536: Fix accessibility overlay staying on screen after a possible show/hide race
 - MOB-5495: Fix app loosing autofill mode when switch account during autofill
 
+## Security
+- MOB-5780: Use the reported web domain only for a signature-checked list of trusted browsers
+
 ## Maintenance
 - MOB-4887: Remove firebase service account config

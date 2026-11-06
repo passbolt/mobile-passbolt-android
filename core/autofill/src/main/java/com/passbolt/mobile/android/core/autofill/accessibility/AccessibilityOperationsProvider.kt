@@ -14,6 +14,7 @@ import androidx.core.net.toUri
 import com.passbolt.mobile.android.common.ResourceDimenProvider
 import com.passbolt.mobile.android.core.autofill.system.AutofillField
 import com.passbolt.mobile.android.core.autofill.system.AutofillHintsFactory
+import com.passbolt.mobile.android.core.autofill.system.BrowserSignatureVerifier
 import com.passbolt.mobile.android.core.navigation.AutofillType
 
 /**
@@ -41,6 +42,8 @@ import com.passbolt.mobile.android.core.navigation.AutofillType
 class AccessibilityOperationsProvider(
     private val resourceDimenProvider: ResourceDimenProvider,
     private val autofillHintsFactory: AutofillHintsFactory,
+    private val trustedBrowserPackages: TrustedBrowserPackages,
+    private val browserSignatureVerifier: BrowserSignatureVerifier,
 ) {
     fun fillNode(
         node: AccessibilityNodeInfo,
@@ -112,8 +115,8 @@ class AccessibilityOperationsProvider(
 
     fun getUri(root: AccessibilityNodeInfo): String? {
         val uri = ANDROID_APP_PROTOCOL + root.packageName
-        val browser = supportedBrowsers.find { it.packageName == root.packageName }
-        if (browser != null) {
+        val browser = trustedBrowserPackages.browsersWithUrlBar.find { it.packageName == root.packageName }
+        if (browser != null && browserSignatureVerifier.isTrustedBrowser(root.packageName?.toString())) {
             val addressNode =
                 root
                     .findAccessibilityNodeInfosByViewId(
@@ -372,30 +375,6 @@ class AccessibilityOperationsProvider(
         hashSetOf(
             "com.android.systemui",
             "com.google.android.googlequicksearchbox",
-        )
-
-    private val supportedBrowsers =
-        listOf(
-            Browser("com.android.browser", "url"),
-            Browser("com.android.chrome", "url_bar"),
-            Browser(
-                "org.mozilla.firefox",
-                "mozac_browser_toolbar_url_view",
-            ),
-            Browser("org.mozilla.firefox_beta", "mozac_browser_toolbar_url_view"),
-            Browser("com.opera.browser", "url_field"),
-            Browser("com.opera.browser.beta", "url_field"),
-            Browser("com.opera.mini.native", "url_field"),
-            Browser("com.opera.mini.native.beta", "url_field"),
-            Browser("com.opera.touch", "addressbarEdit"),
-            Browser("com.brave.browser", "url_bar"),
-            Browser("com.brave.browser_beta", "url_bar"),
-            Browser("com.brave.browser_default", "url_bar"),
-            Browser("com.brave.browser_dev", "url_bar"),
-            Browser("com.brave.browser_nightly", "url_bar"),
-            Browser("com.chrome.beta", "url_bar"),
-            Browser("com.chrome.canary", "url_bar"),
-            Browser("com.chrome.dev", "url_bar"),
         )
 
     sealed class OverlayPosition {

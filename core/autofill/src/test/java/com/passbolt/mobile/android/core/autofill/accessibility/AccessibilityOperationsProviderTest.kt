@@ -29,16 +29,22 @@ import com.google.common.truth.Truth.assertThat
 import com.passbolt.mobile.android.common.ResourceDimenProvider
 import com.passbolt.mobile.android.core.autofill.system.AutofillField
 import com.passbolt.mobile.android.core.autofill.system.AutofillHintsFactory
+import com.passbolt.mobile.android.core.autofill.system.BrowserSignatureVerifier
 import com.passbolt.mobile.android.core.navigation.AutofillType
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
 class AccessibilityOperationsProviderTest {
     private val resourceDimenProvider = mock<ResourceDimenProvider>()
     private val autofillHintsFactory = mock<AutofillHintsFactory>()
+    private val browserSignatureVerifier = mock<BrowserSignatureVerifier>()
     private lateinit var provider: AccessibilityOperationsProvider
 
     @Before
@@ -50,7 +56,49 @@ class AccessibilityOperationsProviderTest {
         whenever(autofillHintsFactory.getHintValues(AutofillField.USERNAME))
             .thenReturn(arrayOf("username", "email", "mail", "login"))
 
-        provider = AccessibilityOperationsProvider(resourceDimenProvider, autofillHintsFactory)
+        provider =
+            AccessibilityOperationsProvider(
+                resourceDimenProvider,
+                autofillHintsFactory,
+                TrustedBrowserPackages(),
+                browserSignatureVerifier,
+            )
+    }
+
+    @Test
+    fun `getUri reads the address bar of an allow-listed browser with a verified signature`() {
+        whenever(browserSignatureVerifier.isTrustedBrowser("com.android.chrome")).thenReturn(true)
+        val root =
+            mock<AccessibilityNodeInfo> {
+                on { packageName } doReturn "com.android.chrome"
+                on { findAccessibilityNodeInfosByViewId("com.android.chrome:id/url_bar") } doReturn emptyList()
+            }
+
+        val result = provider.getUri(root)
+
+        assertThat(result).isNull()
+        verify(root).findAccessibilityNodeInfosByViewId("com.android.chrome:id/url_bar")
+    }
+
+    @Test
+    fun `getUri treats an allow-listed browser with an unverified signature as a plain app`() {
+        whenever(browserSignatureVerifier.isTrustedBrowser("com.android.chrome")).thenReturn(false)
+        val root = mock<AccessibilityNodeInfo> { on { packageName } doReturn "com.android.chrome" }
+
+        val result = provider.getUri(root)
+
+        assertThat(result).isEqualTo("androidapp://com.android.chrome")
+        verify(root, never()).findAccessibilityNodeInfosByViewId(any())
+    }
+
+    @Test
+    fun `getUri identifies a package that is not allow-listed by its name without a signature check`() {
+        val root = mock<AccessibilityNodeInfo> { on { packageName } doReturn "com.example.spoofer" }
+
+        val result = provider.getUri(root)
+
+        assertThat(result).isEqualTo("androidapp://com.example.spoofer")
+        verify(browserSignatureVerifier, never()).isTrustedBrowser(anyOrNull())
     }
 
     @Test

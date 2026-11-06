@@ -30,7 +30,9 @@ import timber.log.Timber
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class AssistStructureParser {
+class AssistStructureParser(
+    private val browserSignatureVerifier: BrowserSignatureVerifier,
+) {
     fun parse(assistStructure: AssistStructure): ParsedStructures {
         val structuresRef = mutableSetOf<ParsedStructure>()
 
@@ -40,7 +42,20 @@ class AssistStructureParser {
             visitNode(rootViewNode, structuresRef)
         }
 
-        return ParsedStructures(structuresRef)
+        return applyDomainTrust(structuresRef, assistStructure.activityComponent?.packageName)
+    }
+
+    internal fun applyDomainTrust(
+        structures: Set<ParsedStructure>,
+        requestingPackage: String?,
+    ): ParsedStructures {
+        if (browserSignatureVerifier.isTrustedBrowser(requestingPackage)) {
+            return ParsedStructures(structures)
+        }
+        if (structures.any { it.domain != null }) {
+            Timber.d("Requesting package is not a trusted browser; dropping app-reported web domains")
+        }
+        return ParsedStructures(structures.map { it.copy(domain = null) }.toSet())
     }
 
     private fun visitNode(

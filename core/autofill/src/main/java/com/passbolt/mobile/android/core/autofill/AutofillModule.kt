@@ -3,8 +3,10 @@ package com.passbolt.mobile.android.core.autofill
 import com.passbolt.mobile.android.common.autofill.DetectAutofillConflict
 import com.passbolt.mobile.android.core.autofill.accessibility.AccessibilityCommunicator
 import com.passbolt.mobile.android.core.autofill.accessibility.AccessibilityOperationsProvider
+import com.passbolt.mobile.android.core.autofill.accessibility.TrustedBrowserPackages
 import com.passbolt.mobile.android.core.autofill.conflict.DetectSystemAutofillConflict
 import com.passbolt.mobile.android.core.autofill.system.AutofillHintsFactory
+import com.passbolt.mobile.android.core.autofill.system.BrowserSignatureVerifier
 import com.passbolt.mobile.android.core.autofill.system.FillableInputsFinder
 import com.passbolt.mobile.android.core.autofill.system.classification.AutofillFieldClassifier
 import org.koin.android.ext.koin.androidContext
@@ -40,6 +42,8 @@ val autofillModule =
     module {
         factoryOf(::FillableInputsFinder)
         factoryOf(::AutofillFieldClassifier)
+        singleOf(::TrustedBrowserPackages)
+        singleOf(::BrowserSignatureVerifier)
         singleOf(::AccessibilityOperationsProvider)
         singleOf(::AccessibilityCommunicator)
         single {
