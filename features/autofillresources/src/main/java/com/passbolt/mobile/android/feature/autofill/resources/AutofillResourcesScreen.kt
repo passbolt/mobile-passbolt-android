@@ -18,6 +18,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.rememberViewModelStoreOwner
+import com.passbolt.mobile.android.core.clipboard.ClipboardAccess
 import com.passbolt.mobile.android.core.compose.PassboltTheme
 import com.passbolt.mobile.android.core.compose.SideEffectDispatcher
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
@@ -40,6 +41,7 @@ import com.passbolt.mobile.android.feature.otp.navigation.TotpTabContent
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 import org.koin.core.parameter.parametersOf
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 @Composable
 fun AutofillResourcesScreen(
@@ -49,10 +51,11 @@ fun AutofillResourcesScreen(
     modifier: Modifier = Modifier,
     viewModel: AutofillResourcesViewModel =
         koinViewModel(
-            parameters = { parametersOf(autofillUri) },
+            parameters = { parametersOf(autofillUri, autofillType) },
         ),
     appNavigator: AppNavigator = koinInject(),
     authenticatedAccountFlow: AuthenticatedAccountFlow = koinInject(),
+    clipboardAccess: ClipboardAccess = koinInject(),
 ) {
     val state by viewModel.viewState.collectAsStateWithLifecycle()
     val authenticatedAccount by authenticatedAccountFlow.authenticatedAccount.collectAsStateWithLifecycle()
@@ -89,8 +92,19 @@ fun AutofillResourcesScreen(
                     finishActivity(activity)
                 }
             }
-            is AutofillReturn ->
+            is AutofillReturn -> {
+                // Must happen BEFORE returnDataset(): the strategies finish the
+                // activity from inside that call.
+                it.payload.totpCodeToCopy?.let { totp ->
+                    clipboardAccess.setPrimaryClip(
+                        context = context,
+                        label = context.getString(LocalizationR.string.settings_autofill_copy_totp_clipboard_label),
+                        value = totp,
+                        isSensitive = true,
+                    )
+                }
                 returnAutofillDatasetStrategy.returnDataset(it.payload)
+            }
             is ShowToast ->
                 Toast.makeText(context, getToastMessage(context, it.type), Toast.LENGTH_SHORT).show()
         }

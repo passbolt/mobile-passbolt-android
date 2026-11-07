@@ -132,6 +132,7 @@ class ResourceInteractorTest : KoinTest {
                     isApiFetchPageSizeManuallySet = false,
                     accessibilityPoliciesConsentGiven = true,
                     deprecatedOsWarningHiddenForSdk = null,
+                    isCopyTotpOnAutofillEnabled = false,
                 ),
             )
     }

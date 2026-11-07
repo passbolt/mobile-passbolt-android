@@ -104,6 +104,7 @@ class PageSizeViewModelTest : KoinTest {
                 isApiFetchPageSizeManuallySet = false,
                 accessibilityPoliciesConsentGiven = true,
                 deprecatedOsWarningHiddenForSdk = null,
+                isCopyTotpOnAutofillEnabled = false,
             )
         val getAutomaticPageSizeUseCase: GetAutomaticPageSizeUseCase = get()
         whenever(getAutomaticPageSizeUseCase.execute(Unit)) doReturn

@@ -79,7 +79,7 @@ class AutofillResourcesActivity :
             LockCompactScreenOrientation()
             viewModel =
                 koinViewModel(
-                    parameters = { parametersOf(bundledAutofillUri) },
+                    parameters = { parametersOf(bundledAutofillUri, bundledAutofillType) },
                 )
             resourceHandlingStrategy =
                 remember {

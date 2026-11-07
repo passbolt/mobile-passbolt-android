@@ -12,4 +12,5 @@ data class GlobalPreferencesUiModel(
     val isApiFetchPageSizeManuallySet: Boolean,
     val accessibilityPoliciesConsentGiven: Boolean,
     val deprecatedOsWarningHiddenForSdk: Int?,
+    val isCopyTotpOnAutofillEnabled: Boolean,
 )
